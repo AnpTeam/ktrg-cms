@@ -4,6 +4,7 @@
   "workspaces": ["apps/*"],
   "scripts": {
     "dev:api": "bun --cwd apps/api run dev",
+    "dev:web": "bun --cwd apps/web run dev",
     "typecheck": "bun run --filter '*' typecheck",
     "test": "bun run --filter '*' test"
   }
