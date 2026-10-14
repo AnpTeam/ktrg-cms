@@ -13,6 +13,10 @@
     "noUncheckedIndexedAccess": true,
     "skipLibCheck": true,
     "noEmit": true,
+    "types": [
+      "node",
+      "bun"
+    ],
     "allowJs": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
