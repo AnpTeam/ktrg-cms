@@ -1,0 +1,10 @@
+{
+  "name": "ktrg-cms",
+  "private": true,
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev:api": "bun --cwd apps/api run dev",
+    "typecheck": "bun run --filter '*' typecheck",
+    "test": "bun run --filter '*' test"
+  }
+}
