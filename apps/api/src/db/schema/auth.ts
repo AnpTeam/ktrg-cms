@@ -1,6 +1,5 @@
 import { sql } from "drizzle-orm";
 import {
-  boolean,
   index,
   integer,
   pgEnum,
@@ -38,9 +37,6 @@ export const users = pgTable(
     displayName: text("display_name"),
     createdAt: createdAt(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
-    lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
-    // Set when the user asks to delete their account (GET/PATCH/DELETE /me).
-    deletionRequestedAt: timestamp("deletion_requested_at", { withTimezone: true }),
   },
   (t) => [uniqueIndex("users_email_lower_uq").on(sql`lower(${t.email})`)],
 );
@@ -54,7 +50,6 @@ export const sessions = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     tokenHash: text("token_hash").notNull().unique(),
-    createdAt: createdAt(),
     lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull().defaultNow(),
     // Sliding expiry (idle) and hard expiry (absolute). Lengths depend on role.
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
@@ -76,13 +71,9 @@ export const passkeys = pgTable(
     credentialId: text("credential_id").notNull().unique(),
     publicKey: bytea("public_key").notNull(),
     counter: integer("counter").notNull().default(0),
-    transports: text("transports").array(),
-    deviceType: text("device_type", { enum: ["singleDevice", "multiDevice"] }).notNull(),
-    backedUp: boolean("backed_up").notNull().default(false),
     // Device label shown in settings.
     label: text("label"),
     createdAt: createdAt(),
-    lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
   },
   (t) => [index("passkeys_user_id_idx").on(t.userId)],
 );
@@ -100,10 +91,9 @@ export const otpCodes = pgTable(
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     attempts: integer("attempts").notNull().default(0),
     usedAt: timestamp("used_at", { withTimezone: true }),
-    createdAt: createdAt(),
   },
   // Looks up the latest code per email (verify + 60 s resend cooldown).
-  (t) => [index("otp_codes_email_created_idx").on(t.email, t.createdAt)],
+  (t) => [index("otp_codes_email_expires_idx").on(t.email, t.expiresAt)],
 );
 
 /** Short-lived WebAuthn challenges. userId is null for discoverable-credential login. */
