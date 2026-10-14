@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ktrg
+          POSTGRES_PASSWORD: ci_password
+          POSTGRES_DB: ktrg_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ktrg -d ktrg_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://ktrg:ci_password@localhost:5432/ktrg_test
+      APP_ORIGIN: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Each step runs the root script if it exists, so CI stays green on the
+      # skeleton and starts enforcing as scripts are added.
+      - name: Type-check
+        run: bun run --if-present typecheck
+
+      - name: Unit tests
+        run: bun run --if-present test
+
+      - name: Build (Next.js)
+        run: bun run --if-present build
