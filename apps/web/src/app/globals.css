@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+/* Older users: large base font and high contrast by default. */
+html {
+  font-size: 18px;
+}
+
+body {
+  @apply bg-white text-neutral-900 antialiased;
+}
