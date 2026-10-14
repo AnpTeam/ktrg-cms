@@ -1,6 +1,5 @@
 import { sql } from "drizzle-orm";
 import {
-  bigint,
   boolean,
   index,
   integer,
@@ -10,6 +9,7 @@ import {
   timestamp,
   uniqueIndex,
   uuid,
+  customType,
 } from "drizzle-orm/pg-core";
 
 export const userRole = pgEnum("user_role", ["participant", "admin"]);
@@ -18,6 +18,11 @@ export const webauthnChallengeType = pgEnum("webauthn_challenge_type", [
   "registration",
   "authentication",
 ]);
+
+/** PostgreSQL bytea (used for the passkey public key). */
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({
+  dataType: () => "bytea",
+});
 
 const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
 
@@ -52,15 +57,15 @@ export const sessions = pgTable(
     createdAt: createdAt(),
     lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).notNull().defaultNow(),
     // Sliding expiry (idle) and hard expiry (absolute). Lengths depend on role.
-    idleExpiresAt: timestamp("idle_expires_at", { withTimezone: true }).notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     absoluteExpiresAt: timestamp("absolute_expires_at", { withTimezone: true }).notNull(),
     // Last full login (OTP or passkey); used for the "fresh login" check.
-    authenticatedAt: timestamp("authenticated_at", { withTimezone: true }).notNull().defaultNow(),
+    lastLoginAt: timestamp("last_login_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [index("sessions_user_id_idx").on(t.userId)],
 );
 
-/** WebAuthn credentials (SimpleWebAuthn). Binary values are stored base64url. */
+/** WebAuthn credentials (SimpleWebAuthn). */
 export const passkeys = pgTable(
   "passkeys",
   {
@@ -69,12 +74,13 @@ export const passkeys = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     credentialId: text("credential_id").notNull().unique(),
-    publicKey: text("public_key").notNull(),
-    counter: bigint("counter", { mode: "number" }).notNull().default(0),
+    publicKey: bytea("public_key").notNull(),
+    counter: integer("counter").notNull().default(0),
     transports: text("transports").array(),
     deviceType: text("device_type", { enum: ["singleDevice", "multiDevice"] }).notNull(),
     backedUp: boolean("backed_up").notNull().default(false),
-    name: text("name"),
+    // Device label shown in settings.
+    label: text("label"),
     createdAt: createdAt(),
     lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
   },
@@ -93,7 +99,7 @@ export const otpCodes = pgTable(
     codeHash: text("code_hash").notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     attempts: integer("attempts").notNull().default(0),
-    consumedAt: timestamp("consumed_at", { withTimezone: true }),
+    usedAt: timestamp("used_at", { withTimezone: true }),
     createdAt: createdAt(),
   },
   // Looks up the latest code per email (verify + 60 s resend cooldown).
