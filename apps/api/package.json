@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "@sinclair/typebox": "^0.34.52",
+    "drizzle-orm": "^0.45.4",
     "elysia": "^1.4.30"
   },
   "devDependencies": {
     "@types/bun": "^1.4.3",
+    "drizzle-kit": "^0.31.11",
     "typescript": "^7.0.2"
   }
 }
