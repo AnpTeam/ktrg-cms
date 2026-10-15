@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { buildPasskeyAlertEmail } from "./passkey-alert-email";
+import { buildPasskeyAlertEmail } from "./passkey-alert";
 
 const at = new Date("2026-10-15T05:30:00Z"); // 14:30 in Japan
 const base = { to: "a@example.com", at };
@@ -65,5 +65,26 @@ describe("buildPasskeyAlertEmail", () => {
       const m = buildPasskeyAlertEmail({ ...base, locale, action: "added", label: "x" });
       expect(m.text).not.toMatch(/https?:\/\//);
     }
+  });
+});
+
+describe("buildPasskeyAlertEmail html", () => {
+  test("has the same content as the text, in the right language", () => {
+    const en = buildPasskeyAlertEmail({ ...base, locale: "en", action: "added", label: "My iPhone" });
+    const ja = buildPasskeyAlertEmail({ ...base, locale: "ja", action: "removed", label: "iPhone" });
+    expect(en.html).toContain('<html lang="en">');
+    expect(en.html).toContain("A passkey was added to your account");
+    expect(en.html).toContain("My iPhone");
+    expect(ja.html).toContain('<html lang="ja">');
+    expect(ja.html).toContain("パスキーが削除されました");
+    expect(ja.html).toContain("14:30");
+  });
+
+  test("a typed name cannot inject markup", () => {
+    const m = buildPasskeyAlertEmail({ ...base, locale: "en", action: "added", label: '<a href="https://evil.example">Click</a>' });
+    // The name shows up as harmless escaped text, never as a real tag or attribute.
+    expect(m.html).not.toContain("<a ");
+    expect(m.html).not.toContain('href="');
+    expect(m.html).toContain("&lt;a href=&quot;https://evil.example&quot;&gt;Click&lt;/a&gt;");
   });
 });

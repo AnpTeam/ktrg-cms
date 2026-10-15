@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { Mailer } from "../lib/mailer";
-import { buildPasskeyAlertEmail, type PasskeyAlertAction } from "./passkey-alert-email";
+import { buildPasskeyAlertEmail, type PasskeyAlertAction } from "../emails/passkey-alert";
 import {
   generateAuthenticationOptions,
   generateRegistrationOptions,

@@ -78,6 +78,15 @@ describe("otp request", () => {
     await expect(service.request("a@example.com")).resolves.toBeUndefined();
     expect(logs[0]).toContain("smtp down");
   });
+
+  test("the email is in the requested language, Japanese by default", async () => {
+    const { service, sent } = setup();
+    await service.request("a@example.com", "en");
+    await service.request("b@example.com");
+    expect(sent[0]!.subject).toBe("[KTRG] Your verification code");
+    expect(sent[0]!.html).toContain('<html lang="en">');
+    expect(sent[1]!.subject).toBe("【KTRG】確認コード");
+  });
 });
 
 describe("otp verify", () => {
