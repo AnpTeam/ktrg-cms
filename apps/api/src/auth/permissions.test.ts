@@ -1,0 +1,73 @@
+import { describe, expect, test } from "bun:test";
+import { userRole } from "../db/schema";
+import { PERMISSIONS, can, type Permission, type Role } from "./permissions";
+
+const permissions = Object.keys(PERMISSIONS) as Permission[];
+
+describe("permission table", () => {
+  test("the roles match the user_role type in the database", () => {
+    expect([...userRole.enumValues].sort()).toEqual(["admin", "participant"]);
+  });
+
+  test("every permission names at least one role, with no repeats and no unknown roles", () => {
+    const valid: readonly string[] = userRole.enumValues;
+    for (const p of permissions) {
+      const roles: readonly string[] = PERMISSIONS[p];
+      expect(roles.length).toBeGreaterThan(0);
+      expect(new Set(roles).size).toBe(roles.length);
+      for (const r of roles) expect(valid).toContain(r);
+    }
+  });
+
+  test("participants can only do these things (a change here must be deliberate)", () => {
+    const forParticipant: string[] = permissions.filter((p) => can("participant", p)).sort();
+    expect(forParticipant).toEqual(["me.manage", "stamp.create"]);
+  });
+
+  test("admins can do everything participants can, plus the CMS", () => {
+    const forAdmin: string[] = permissions.filter((p) => can("admin", p)).sort();
+    expect(forAdmin).toEqual(
+      [
+        "audit.read",
+        "me.manage",
+        "notice.manage",
+        "rally.manage",
+        "route.manage",
+        "spot.manage",
+        "spot.publish",
+        "stamp.create",
+        "stamp.review",
+        "upload.create",
+        "user.manage_roles",
+      ].sort(),
+    );
+  });
+
+  test("every CMS permission is admin-only", () => {
+    const cms = permissions.filter((p) => p !== "me.manage" && p !== "stamp.create");
+    expect(cms.length).toBeGreaterThan(0);
+    for (const p of cms) {
+      expect(can("participant", p)).toBe(false);
+      expect(can("admin", p)).toBe(true);
+    }
+  });
+});
+
+describe("can", () => {
+  test("answers per role and permission", () => {
+    expect(can("participant", "me.manage")).toBe(true);
+    expect(can("participant", "route.manage")).toBe(false);
+    expect(can("admin", "route.manage")).toBe(true);
+  });
+
+  test("an unknown role or permission is refused, never allowed", () => {
+    expect(can("superuser" as Role, "me.manage")).toBe(false);
+    expect(can("admin", "nuke.everything" as Permission)).toBe(false);
+    expect(can(undefined as unknown as Role, "me.manage")).toBe(false);
+  });
+
+  test("a prototype-chain name is not a permission", () => {
+    expect(can("admin", "constructor" as Permission)).toBe(false);
+    expect(can("admin", "__proto__" as Permission)).toBe(false);
+  });
+});
