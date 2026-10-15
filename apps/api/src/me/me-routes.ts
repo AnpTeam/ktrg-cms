@@ -25,7 +25,7 @@ export function meRoutes(getServices: () => MeServices, opts: { secureCookies: b
   });
 
   return (
-    new Elysia({ prefix: "/me" })
+    new Elysia({ prefix: "/me", detail: { tags: ["Me"] } })
       .use(authGuards({ getSession: () => getServices().session, secureCookies: opts.secureCookies }))
       .get(
         "/",

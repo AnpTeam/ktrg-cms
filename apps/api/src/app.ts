@@ -17,6 +17,7 @@ import { createMailer } from "./lib/mailer";
 import { createMeService } from "./me/me-service";
 import { createDrizzleMeStore } from "./me/me-store";
 import { meRoutes, type MeServices } from "./me/me-routes";
+import { apiDocs } from "./openapi";
 
 // Built on first use, so importing the app never opens a database connection.
 let services: (AuthServices & PasskeyServices & MeServices) | undefined;
@@ -56,9 +57,14 @@ function getServices(): AuthServices & PasskeyServices & MeServices {
 const routeOpts = { secureCookies: env.NODE_ENV === "production", trustProxy: env.TRUST_PROXY };
 
 export const app = new Elysia({ prefix: "/api/v1" })
-  .get("/health", () => ({
-    status: "ok" as const,
-  }))
+  .use(apiDocs({ enabled: env.NODE_ENV !== "production" || env.API_DOCS }))
+  .get(
+    "/health",
+    () => ({
+      status: "ok" as const,
+    }),
+    { detail: { tags: ["Health"], summary: "Is the API up?" } },
+  )
   .use(authRoutes(getServices, routeOpts))
   .use(passkeyRoutes(getServices, routeOpts))
   .use(meRoutes(getServices, routeOpts));

@@ -72,7 +72,7 @@ export function passkeyRoutes(
     getSession: () => getServices().session,
   });
 
-  return new Elysia({ prefix: "/auth/passkeys" })
+  return new Elysia({ prefix: "/auth/passkeys", detail: { tags: ["Passkeys"] } })
     // `auth: "me.manage"` on a route = must be logged in (401 otherwise); `user` is then set.
     .use(authGuards({ getSession: () => getServices().session, secureCookies: opts.secureCookies }))
     // `audit: "<action>"` on a route = record it (user id + target id only) when it succeeds.

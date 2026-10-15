@@ -1,6 +1,7 @@
 import { Elysia, t } from "elysia";
 import type { AuditWriter } from "../audit/audit-log";
 import { auditTrail } from "../audit/audit-trail";
+import { SESSION_SECURITY } from "../openapi";
 import { authGuards } from "./guards";
 import { createHttpHelpers } from "./http";
 import { normalizeEmail } from "./otp";
@@ -32,7 +33,7 @@ export function authRoutes(
     getSession: () => getServices().session,
   });
 
-  return new Elysia({ prefix: "/auth" })
+  return new Elysia({ prefix: "/auth", detail: { tags: ["Auth"] } })
     .use(authGuards({ getSession: () => getServices().session, secureCookies: opts.secureCookies }))
     .use(auditTrail({ getAudit: () => getServices().audit }))
     .post(
@@ -80,14 +81,18 @@ export function authRoutes(
       { body: t.Object({ email, code: t.String({ pattern: "^[0-9]{6}$" }) }) },
     )
     // Minimal "who am I" (from the session). The full profile is GET /me.
-    .get("/session", async ({ headers, set }) => {
-      const user = await http.authenticate(headers, set);
-      if (!user) {
-        set.status = 401;
-        return { ok: false as const, error: "unauthenticated" as const };
-      }
-      return { ok: true as const, user };
-    })
+    .get(
+      "/session",
+      async ({ headers, set }) => {
+        const user = await http.authenticate(headers, set);
+        if (!user) {
+          set.status = 401;
+          return { ok: false as const, error: "unauthenticated" as const };
+        }
+        return { ok: true as const, user };
+      },
+      { detail: { security: SESSION_SECURITY, description: "The logged-in user, or 401 `unauthenticated`." } },
+    )
     // Fresh login, step 1: email a code to the logged-in account. Needed before a permission
     // marked FRESH_LOGIN_REQUIRED (the guard answers 403 reauth_required until then).
     .post(

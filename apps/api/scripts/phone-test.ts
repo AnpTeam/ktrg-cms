@@ -22,6 +22,7 @@ import { createSessionService } from "../src/auth/session-service";
 import { createConsoleMailer } from "../src/lib/mailer";
 import { createMemoryMeStore } from "../src/me/me-memory-store";
 import { meRoutes } from "../src/me/me-routes";
+import { apiDocs } from "../src/openapi";
 import { createMeService } from "../src/me/me-service";
 
 const port = Number(process.env.PORT ?? 3001);
@@ -252,6 +253,7 @@ new Elysia()
   })
   .group("/api/v1", (g) =>
     g
+      .use(apiDocs({ enabled: true })) // /api/v1/openapi
       .use(authRoutes(() => services, routeOpts))
       .use(passkeyRoutes(() => services, routeOpts))
       .use(meRoutes(() => services, routeOpts)),

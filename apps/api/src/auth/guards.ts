@@ -1,5 +1,6 @@
 import { Elysia } from "elysia";
 import { createHttpHelpers } from "./http";
+import { SESSION_SECURITY } from "../openapi";
 import { can, needsFreshLogin, type Permission } from "./permissions";
 import type { SessionService } from "./session-service";
 
@@ -38,6 +39,11 @@ export function authGuards(opts: { getSession: () => SessionService; secureCooki
 
   return new Elysia({ name: "auth-guards" }).macro({
     auth: (permission: Permission) => ({
+      // API docs: this route needs the session cookie, and this permission.
+      detail: {
+        security: SESSION_SECURITY,
+        description: `Needs a login with the \`${permission}\` permission${needsFreshLogin(permission) ? " and a fresh login (POST /auth/reauth/verify in the last 10 minutes)" : ""}.`,
+      },
       resolve: async ({ headers, set, status }) => {
         const auth = await http.session(headers, set);
         if (!auth) return status(401, UNAUTHENTICATED);

@@ -28,6 +28,8 @@ const EnvSchema = Type.Object({
   // First admin: comma-separated emails promoted to admin when they log in
   // with an email code. Promote-only: removing an address later does not demote anyone.
   ADMIN_EMAILS: Type.Optional(Type.String()),
+  // API docs at /api/v1/openapi. Always on outside production; set true to show them there too.
+  API_DOCS: Type.Boolean({ default: false }),
 });
 
 export type Env = Static<typeof EnvSchema>;
