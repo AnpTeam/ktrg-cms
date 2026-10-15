@@ -79,7 +79,7 @@ export function authRoutes(
       },
       { body: t.Object({ email, code: t.String({ pattern: "^[0-9]{6}$" }) }) },
     )
-    // Minimal "who am I": the full /me API is WBS 2.1.14.
+    // Minimal "who am I" (from the session). The full profile is GET /me.
     .get("/session", async ({ headers, set }) => {
       const user = await http.authenticate(headers, set);
       if (!user) {

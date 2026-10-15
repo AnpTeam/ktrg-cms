@@ -7,6 +7,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { asc, eq, inArray, like, sql } from "drizzle-orm";
 import { createDrizzleAuditWriter, writeAudit } from "../audit/audit-store";
 import { createDrizzleOtpStore } from "../auth/otp-store";
+import { createDrizzleMeStore } from "../me/me-store";
 import { createDrizzlePasskeyStore } from "../auth/passkey-store";
 import { createDrizzleRateLimitStore } from "../auth/rate-limit-store";
 import { createDrizzleSessionStore } from "../auth/session-store";
@@ -192,6 +193,39 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       await sessions.create({ userId: user.id, tokenHash, expiresAt: future(), absoluteExpiresAt: future(), now: new Date() });
       await db.delete(users).where(inArray(users.id, [user.id]));
       expect(await sessions.find(tokenHash)).toBeNull();
+    });
+  });
+
+  describe("me store", () => {
+    test("update sets language and name; read back the same", async () => {
+      const me = createDrizzleMeStore(db);
+      const user = await newUser("me-update");
+      const updated = await me.update(user.id, { locale: "en", displayName: "山田 太郎" });
+      expect(updated).toMatchObject({ id: user.id, email: user.email, role: "participant", locale: "en", displayName: "山田 太郎" });
+      expect(await me.get(user.id)).toEqual(updated);
+      expect((await me.update(user.id, { displayName: null }))!.displayName).toBeNull();
+      expect(await me.get(randomUUID())).toBeNull();
+    });
+
+    test("deletion: 3 parallel requests write one audit row; cancel writes one more", async () => {
+      const me = createDrizzleMeStore(db);
+      const user = await newUser("me-delete");
+      try {
+        const at = new Date();
+        const results = await Promise.all(Array.from({ length: 3 }, () => me.requestDeletion(user.id, at)));
+        expect(results.filter((r) => r!.changed)).toHaveLength(1);
+        expect((await me.get(user.id))!.deletionRequestedAt!.getTime()).toBe(at.getTime());
+
+        expect((await me.cancelDeletion(user.id))!.changed).toBe(true);
+        expect((await me.cancelDeletion(user.id))!.changed).toBe(false);
+        expect((await me.get(user.id))!.deletionRequestedAt).toBeNull();
+
+        const rows = await db.select().from(auditLog).where(eq(auditLog.targetId, user.id));
+        expect(rows.map((r) => r.action).sort()).toEqual(["user.deletion_cancel", "user.deletion_request"]);
+        expect(rows.every((r) => r.actorUserId === user.id && r.targetType === "user")).toBe(true);
+      } finally {
+        await db.delete(auditLog).where(eq(auditLog.targetId, user.id));
+      }
     });
   });
 

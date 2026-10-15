@@ -15,6 +15,10 @@ export const AUDIT_ACTIONS = {
   "session.reauth": "user",
   "passkey.add": "passkey",
   "passkey.remove": "passkey",
+  /** DELETE /me: the owner asked for their account to be deleted. */
+  "user.deletion_request": "user",
+  /** The owner cancelled a pending deletion request. */
+  "user.deletion_cancel": "user",
 } as const satisfies Record<string, string>;
 
 export type AuditAction = keyof typeof AUDIT_ACTIONS;

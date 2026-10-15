@@ -39,6 +39,9 @@ export const users = pgTable(
     role: userRole("role").notNull().default("participant"),
     locale: userLocale("locale").notNull().default("ja"),
     displayName: text("display_name"),
+    // Set by DELETE /me: the owner asked for the account to be deleted. Nothing is deleted
+    // yet; cleared again if they cancel. Null when no deletion is pending.
+    deletionRequestedAt: timestamp("deletion_requested_at", { withTimezone: true }),
     createdAt: createdAt(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },

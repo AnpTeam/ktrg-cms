@@ -20,6 +20,9 @@ import { authRoutes } from "../src/auth/routes";
 import { createMemorySessionStore } from "../src/auth/session-memory-store";
 import { createSessionService } from "../src/auth/session-service";
 import { createConsoleMailer } from "../src/lib/mailer";
+import { createMemoryMeStore } from "../src/me/me-memory-store";
+import { meRoutes } from "../src/me/me-routes";
+import { createMeService } from "../src/me/me-service";
 
 const port = Number(process.env.PORT ?? 3001);
 const secure = process.env.HTTPS_TUNNEL === "1"; // set when you front this with an HTTPS tunnel
@@ -51,6 +54,8 @@ const services = {
       console.log(`[audit] ${row.action} actor=${row.actorUserId} ${row.targetType}=${row.targetId}`);
     },
   } satisfies AuditWriter,
+  // GET/PATCH/DELETE /api/v1/me. The deletion-request email is printed in this terminal.
+  me: createMeService({ store: createMemoryMeStore(users).store, mailer: createConsoleMailer("KTRG <no-reply@localhost>") }),
   passkeys: createPasskeyService({
     store: createMemoryPasskeyStore(users).store,
     config: passkeyConfig,
@@ -245,7 +250,12 @@ new Elysia()
     set.headers["content-type"] = "text/html; charset=utf-8";
     return page;
   })
-  .group("/api/v1", (g) => g.use(authRoutes(() => services, routeOpts)).use(passkeyRoutes(() => services, routeOpts)))
+  .group("/api/v1", (g) =>
+    g
+      .use(authRoutes(() => services, routeOpts))
+      .use(passkeyRoutes(() => services, routeOpts))
+      .use(meRoutes(() => services, routeOpts)),
+  )
   .listen({ port, hostname: "0.0.0.0" });
 
 console.log(`Test server on port ${port} (cookies ${secure ? "Secure/__Host-" : "plain http"}).`);

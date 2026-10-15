@@ -14,10 +14,13 @@ import { createDrizzleSessionStore } from "./auth/session-store";
 import { createDb } from "./db/client";
 import { env } from "./env";
 import { createMailer } from "./lib/mailer";
+import { createMeService } from "./me/me-service";
+import { createDrizzleMeStore } from "./me/me-store";
+import { meRoutes, type MeServices } from "./me/me-routes";
 
 // Built on first use, so importing the app never opens a database connection.
-let services: (AuthServices & PasskeyServices) | undefined;
-function getServices(): AuthServices & PasskeyServices {
+let services: (AuthServices & PasskeyServices & MeServices) | undefined;
+function getServices(): AuthServices & PasskeyServices & MeServices {
   if (!services) {
     const { db } = createDb(env.DATABASE_URL);
     // Production requires the secret (parse-env); this dev fallback never ships.
@@ -33,6 +36,8 @@ function getServices(): AuthServices & PasskeyServices {
       session: createSessionService({ store: createDrizzleSessionStore(db) }),
       rateLimit: createRateLimiter({ store: createDrizzleRateLimitStore(db), secret }),
       audit: createDrizzleAuditWriter(db),
+      // Profile, language, display name and deletion requests (emails the owner).
+      me: createMeService({ store: createDrizzleMeStore(db), mailer }),
       passkeys: createPasskeyService({
         store: createDrizzlePasskeyStore(db),
         mailer, // emails the owner when a passkey is added or removed
@@ -55,6 +60,7 @@ export const app = new Elysia({ prefix: "/api/v1" })
     status: "ok" as const,
   }))
   .use(authRoutes(getServices, routeOpts))
-  .use(passkeyRoutes(getServices, routeOpts));
+  .use(passkeyRoutes(getServices, routeOpts))
+  .use(meRoutes(getServices, routeOpts));
 
 export type App = typeof app;
