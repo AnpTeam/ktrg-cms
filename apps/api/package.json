@@ -2,10 +2,13 @@
   "name": "@ktrg/api",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./src/app.ts"
+  },
   "scripts": {
     "dev": "bun --env-file=../../.env --watch src/server.ts",
     "start": "bun --env-file=../../.env src/server.ts",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "node node_modules/@typescript/native/bin/tsc --noEmit",
     "mail:test": "bun --env-file=../../.env scripts/send-test-mail.ts",
     "test": "bun test"
   },
@@ -19,6 +22,7 @@
     "@types/bun": "^1.4.3",
     "@types/nodemailer": "^8.0.2",
     "drizzle-kit": "^0.31.11",
-    "typescript": "^7.0.2"
+    "@typescript/native": "npm:typescript@^7.0.2",
+    "typescript": "npm:@typescript/typescript6@^6.0.2"
   }
 }
