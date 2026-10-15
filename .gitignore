@@ -83,3 +83,6 @@ Desktop.ini
 **.pdf
 *.docx
 *.md
+
+# Database dumps
+sql/
