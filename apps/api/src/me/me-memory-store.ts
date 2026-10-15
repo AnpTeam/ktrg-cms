@@ -1,5 +1,5 @@
 import { auditRow } from "../audit/audit-log";
-import type { AuthUser } from "../auth/otp-service";
+import type { AuthUser } from "../auth/user";
 import type { MeStore, Profile } from "./me-service";
 
 type Extra = { displayName: string | null; deletionRequestedAt: Date | null; createdAt: Date };

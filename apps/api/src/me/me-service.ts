@@ -1,15 +1,15 @@
-import type { AuthUser } from "../auth/otp-service";
+import type { AuthUser, Locale, Role } from "../auth/user";
 import { buildDeletionRequestEmail } from "../emails/deletion-request";
 import type { Mailer } from "../lib/mailer";
 
-export type Locale = AuthUser["locale"];
+export type { Locale };
 
 /** What the account owner sees about themselves. */
 export interface Profile {
   id: string;
   /** Null for an account made with a passkey alone. */
   email: string | null;
-  role: AuthUser["role"];
+  role: Role;
   locale: Locale;
   displayName: string | null;
   /** Set while a deletion request is pending; null otherwise. */

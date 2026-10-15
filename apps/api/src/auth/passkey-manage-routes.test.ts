@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { Elysia } from "elysia";
 import { createMemoryAuditWriter } from "../audit/audit-log";
 import type { MailMessage } from "../lib/mailer";
-import type { AuthUser } from "./otp-service";
+import type { AuthUser } from "./user";
 import { createMemoryPasskeyStore } from "./passkey-memory-store";
 import { passkeyRoutes } from "./passkey-routes";
 import { createPasskeyService } from "./passkey-service";

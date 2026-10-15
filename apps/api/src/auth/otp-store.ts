@@ -2,7 +2,8 @@ import { and, desc, eq, isNull, lt, ne, sql } from "drizzle-orm";
 import type { Db } from "../db/client";
 import { writeAudit } from "../audit/audit-store";
 import { otpCodes, users } from "../db/schema";
-import type { AuthUser, OtpStore } from "./otp-service";
+import type { AuthUser } from "./user";
+import type { OtpStore } from "./otp-service";
 
 export function createDrizzleOtpStore(db: Db): OtpStore {
   return {

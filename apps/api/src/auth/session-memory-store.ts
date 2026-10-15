@@ -1,4 +1,4 @@
-import type { AuthUser } from "./otp-service";
+import type { AuthUser } from "./user";
 import type { SessionStore } from "./session-service";
 
 /** In-memory store for tests and manual checks. `users` is the same map the OTP memory store fills. */

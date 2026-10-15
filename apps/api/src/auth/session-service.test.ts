@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { FRESH_LOGIN_MS, SESSION_POLICY, SESSION_TOUCH_INTERVAL_MS } from "./session";
-import type { AuthUser } from "./otp-service";
+import type { AuthUser } from "./user";
 import { createMemorySessionStore } from "./session-memory-store";
 import { createSessionService } from "./session-service";
 

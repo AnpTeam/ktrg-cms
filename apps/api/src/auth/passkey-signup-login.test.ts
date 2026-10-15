@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { AuthUser } from "./otp-service";
+import type { AuthUser } from "./user";
 import { createMemoryPasskeyStore } from "./passkey-memory-store";
 import { CHALLENGE_TTL_MS, createPasskeyService } from "./passkey-service";
 import { TestAuthenticator } from "./webauthn-test-authenticator";

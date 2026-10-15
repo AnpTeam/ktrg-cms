@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { MailMessage } from "../lib/mailer";
-import type { AuthUser } from "./otp-service";
+import type { AuthUser } from "./user";
 import { createMemoryPasskeyStore } from "./passkey-memory-store";
 import { createPasskeyService } from "./passkey-service";
 import { TestAuthenticator } from "./webauthn-test-authenticator";

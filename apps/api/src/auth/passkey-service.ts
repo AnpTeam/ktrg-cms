@@ -11,7 +11,7 @@ import {
   type PublicKeyCredentialRequestOptionsJSON,
   type RegistrationResponseJSON,
 } from "@simplewebauthn/server";
-import type { AuthUser } from "./otp-service";
+import type { AuthUser } from "./user";
 
 /** A passkey ceremony must finish within this long. */
 export const CHALLENGE_TTL_MS = 5 * 60 * 1000;

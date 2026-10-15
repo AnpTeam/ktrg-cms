@@ -1,4 +1,7 @@
-export type EmailLocale = "ja" | "en";
+import type { Locale } from "../auth/user";
+
+/** Emails come in the same languages as the app. */
+export type EmailLocale = Locale;
 
 export interface EmailContent {
   to: string;

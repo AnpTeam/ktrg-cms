@@ -5,7 +5,7 @@ import {
   generateSessionToken,
   hashSessionToken,
 } from "./session";
-import type { AuthUser } from "./otp-service";
+import type { AuthUser } from "./user";
 
 export interface SessionRecord {
   id: string;

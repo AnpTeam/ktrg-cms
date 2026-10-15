@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { AuthUser } from "./otp-service";
+import type { AuthUser } from "./user";
 import type { ChallengeType, PasskeyStore } from "./passkey-service";
 
 /** In-memory store for tests and manual checks. Mirrors the Drizzle store's rules. */

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { Elysia } from "elysia";
 import { authGuards } from "../auth/guards";
-import type { AuthUser } from "../auth/otp-service";
+import type { AuthUser } from "../auth/user";
 import { createMemorySessionStore } from "../auth/session-memory-store";
 import { createSessionService } from "../auth/session-service";
 import { createMemoryAuditWriter, type AuditWriter } from "./audit-log";

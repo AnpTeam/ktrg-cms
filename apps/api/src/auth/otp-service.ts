@@ -1,4 +1,4 @@
-import type { EmailLocale } from "../emails/layout";
+import type { AuthUser, Locale } from "./user";
 import { buildOtpEmail } from "../emails/otp-code";
 import { buildReauthEmail } from "../emails/reauth-code";
 import type { Mailer } from "../lib/mailer";
@@ -20,13 +20,6 @@ export interface OtpRow {
   usedAt: Date | null;
 }
 
-export interface AuthUser {
-  id: string;
-  /** Null for an account made with a passkey alone: never assume you can email a user. */
-  email: string | null;
-  role: "participant" | "admin";
-  locale: "ja" | "en";
-}
 
 /** Storage the service needs; the Drizzle version is in otp-store.ts. */
 export interface OtpStore {
@@ -102,7 +95,7 @@ export function createOtpService({
      */
     async request(
       rawEmail: string,
-      locale: EmailLocale = "ja",
+      locale: Locale = "ja",
       purpose: "login" | "reauth" = "login",
     ): Promise<void> {
       const email = normalizeEmail(rawEmail);
