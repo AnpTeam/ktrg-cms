@@ -30,13 +30,19 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     <html lang={i18n.locale}>
       <body>
         <LinguiClientProvider initialLocale={i18n.locale} initialMessages={i18n.messages}>
+          <a
+            href="#main"
+            className="tap-target sr-only rounded-lg bg-ink px-4 text-paper focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-10 focus:inline-flex focus:items-center"
+          >
+            <Trans>本文へ移動</Trans>
+          </a>
           <header className="mx-auto flex max-w-xl items-center justify-between gap-4 px-4 py-4">
             <p className="text-lg font-bold">
               <Trans>葛城修験</Trans>
             </p>
             <LocaleSwitcher />
           </header>
-          {children}
+          <main id="main">{children}</main>
         </LinguiClientProvider>
       </body>
     </html>

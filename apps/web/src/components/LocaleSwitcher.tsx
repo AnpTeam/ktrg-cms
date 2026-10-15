@@ -32,10 +32,8 @@ export function LocaleSwitcher() {
             hrefLang={locale}
             aria-current={active ? "true" : undefined}
             onClick={() => rememberLocale(locale)}
-            className={`inline-flex min-h-12 min-w-24 items-center justify-center rounded-lg border-2 px-4 text-lg font-bold ${
-              active
-                ? "border-neutral-900 bg-neutral-900 text-white"
-                : "border-neutral-900 bg-white text-neutral-900 hover:bg-neutral-100"
+            className={`tap-target inline-flex min-w-24 items-center justify-center rounded-lg border-2 border-ink px-4 text-lg font-bold ${
+              active ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"
             }`}
           >
             {names[locale]}
