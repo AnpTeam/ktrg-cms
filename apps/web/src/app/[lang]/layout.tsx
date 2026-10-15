@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { LinguiClientProvider } from "@/i18n/LinguiClientProvider";
 import { locales } from "@/i18n/locales";
 import { initLingui } from "@/i18n/server";
+import { themeCookie, themeFromValue } from "@/lib/theme";
 import "../globals.css";
 
 // Colors match the paper token of each palette in globals.css.
@@ -33,9 +35,12 @@ export async function generateMetadata(): Promise<Metadata> {
 // (admin)) brings its own header, <main id="main"> and navigation.
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const i18n = await initLingui();
+  // The visitor's Light or Dark choice, written into the HTML so the first paint is already right.
+  // Reading the cookie makes pages render per request; that is the price of no flash and no script.
+  const theme = themeFromValue((await cookies()).get(themeCookie)?.value);
 
   return (
-    <html lang={i18n.locale}>
+    <html lang={i18n.locale} data-theme={theme === "auto" ? undefined : theme}>
       <body>
         <LinguiClientProvider initialLocale={i18n.locale} initialMessages={i18n.messages}>
           <a

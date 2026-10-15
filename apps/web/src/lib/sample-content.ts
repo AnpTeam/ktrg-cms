@@ -1,4 +1,5 @@
 import type { RouteDetail, SpotDetail, SpotListItem } from "./content";
+import { route02Draft } from "./sample-route-02";
 import type { Sketch } from "./sketch";
 
 // SAMPLE DATA, for design review only; never shown unless SHOW_SAMPLE_CONTENT=1.
@@ -53,7 +54,6 @@ const spot = (s: Partial<SpotDetail> & Pick<SpotDetail, "id" | "routeId" | "rout
 });
 
 const R1 = { routeId: "sample-r1", routeNameJa: "（見本）友ヶ島と加太周辺", routeNameEn: "(Sample) Tomogashima and Kada Surroundings" };
-const R2 = { routeId: "sample-r2", routeNameJa: "（見本）甲山から孝子越え", routeNameEn: null };
 
 const handSpots: SpotDetail[] = [
   spot({
@@ -87,14 +87,6 @@ const handSpots: SpotDetail[] = [
     statusNoteJa: "（見本）がけくずれのため、立ち入れません。",
     statusUpdatedAt: "2026-10-14T23:10:00Z",
   }),
-  spot({
-    id: "sample-s4",
-    ...R2,
-    nameJa: "（見本）スポット4",
-    stamped: false,
-    descriptionJa: "日本語だけの見本です。英語の説明は入力されていません。",
-  }),
-  spot({ id: "sample-s5", ...R2, nameJa: "（見本）スポット5", stamped: false }),
 ];
 
 /** n invented spots for a route; the first `stamped` of them are stamped. */
@@ -111,12 +103,26 @@ function plainSpots(routeId: string, routeNameJa: string, count: number, stamped
   );
 }
 
+// Route 2: real draft stops. The first two are shown as stamped, for the signed-in preview only.
+const R2 = { id: "sample-r2", name: route02Draft.nameJa };
+const r2Spots: SpotDetail[] = route02Draft.spots.map((s, i) =>
+  spot({
+    id: `sample-r2-s${i + 1}`,
+    routeId: R2.id,
+    routeNameJa: R2.name,
+    routeNameEn: "From Mt. Kabuto across Kyōshi-tōge",
+    nameJa: s.nameJa,
+    stamped: i < 2,
+    descriptionJa: s.descriptionJa,
+  }),
+);
+
 const R3 = { id: "sample-r3", name: "（見本）飯盛山から札立山" };
 const R4 = { id: "sample-r4", name: "（見本）大福山から雲山峰" };
 const r3Spots = plainSpots(R3.id, R3.name, 6, 6); // complete
 const r4Spots = plainSpots(R4.id, R4.name, 9, 3); // in progress
 
-export const sampleSpots: SpotDetail[] = [...handSpots, ...r3Spots, ...r4Spots];
+export const sampleSpots: SpotDetail[] = [...handSpots, ...r2Spots, ...r3Spots, ...r4Spots];
 
 function listItem(s: SpotDetail): SpotListItem {
   return { id: s.id, nameJa: s.nameJa, nameEn: s.nameEn, status: s.status, stamped: s.stamped };
@@ -163,15 +169,14 @@ const rich: Record<number, Partial<RouteDetail>> = {
   },
   2: {
     status: "ready",
-    nameJa: R2.routeNameJa,
-    nameEn: null,
-    prefecture: "osaka",
-    distanceKm: 12.5,
-    expectedTimeMin: 90,
-    sketch: sketchB,
-    spotCount: 2,
-    stampedCount: 0,
-    spots: handSpots.filter((s) => s.routeId === "sample-r2").map(listItem),
+    nameJa: R2.name,
+    prefecture: route02Draft.prefecture,
+    municipality: route02Draft.municipality,
+    distanceKm: route02Draft.distanceKm,
+    sketch: { points: route02Draft.sketch },
+    spotCount: r2Spots.length,
+    stampedCount: 2,
+    spots: r2Spots.map(listItem),
   },
   3: {
     status: "ready",

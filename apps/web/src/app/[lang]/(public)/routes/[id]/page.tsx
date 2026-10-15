@@ -5,6 +5,7 @@ import { BackLink } from "@/components/BackLink";
 import { Localized } from "@/components/Localized";
 import { Notice } from "@/components/Notice";
 import { PrefectureName } from "@/components/PrefectureName";
+import { RouteSilhouette } from "@/components/RouteSketch";
 import { RouteStats } from "@/components/RouteStats";
 import { RowLink } from "@/components/RowLink";
 import { StatusWord } from "@/components/StatusBanner";
@@ -41,9 +42,12 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
       </div>
 
       <header className="px-4">
-        <h1 className="text-3xl font-bold">
-          <Localized value={pickText(i18n.locale, route.nameJa, route.nameEn)} />
-        </h1>
+        <div className="flex items-start justify-between gap-4">
+          <h1 className="min-w-0 text-3xl font-bold">
+            <Localized value={pickText(i18n.locale, route.nameJa, route.nameEn)} />
+          </h1>
+          {route.sketch ? <RouteSilhouette sketch={route.sketch} size={96} /> : null}
+        </div>
         {route.prefecture || route.municipality ? (
           <p className="mt-2 text-lg text-muted">
             {route.prefecture ? <PrefectureName value={route.prefecture} /> : null}

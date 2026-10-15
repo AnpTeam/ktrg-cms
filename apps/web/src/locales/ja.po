@@ -76,7 +76,7 @@ msgstr "スタンプカード"
 msgid "スタンプカードを見る"
 msgstr "スタンプカードを見る"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:65
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:69
 msgid "スタンプの場所"
 msgstr "スタンプの場所"
 
@@ -103,6 +103,10 @@ msgstr "すべてそろいました。"
 #: src/app/[lang]/(public)/routes/page.tsx:74
 msgid "すべてのルートを見る"
 msgstr "すべてのルートを見る"
+
+#: src/components/ThemeSwitcher.tsx:30
+msgid "ダーク"
+msgstr "ダーク"
 
 #: src/components/StampGrid.tsx:35
 #: src/components/StampLegend.tsx:10
@@ -141,6 +145,10 @@ msgstr "まだスタンプを押していません"
 msgid "メインメニュー"
 msgstr "メインメニュー"
 
+#: src/components/ThemeSwitcher.tsx:30
+msgid "ライト"
+msgstr "ライト"
+
 #: src/app/[lang]/(public)/routes/page.tsx:18
 #: src/components/TabBar.tsx:16
 msgid "ルート"
@@ -163,7 +171,7 @@ msgstr "ルートや場所は、ログインしなくても見られます。"
 msgid "ルートをさがす"
 msgstr "ルートをさがす"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:39
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:40
 msgid "ルート一覧"
 msgstr "ルート一覧"
 
@@ -182,7 +190,7 @@ msgid "公開できるようになったら、ここにルートが表示され�
 msgstr "公開できるようになったら、ここにルートが表示されます。"
 
 #: src/app/[lang]/(public)/page.tsx:72
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:91
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:95
 #: src/app/[lang]/(public)/routes/page.tsx:82
 #: src/app/[lang]/(public)/stamps/page.tsx:44
 #: src/components/SpotSheet.tsx:62
@@ -205,7 +213,7 @@ msgstr "大阪府"
 msgid "奈良県"
 msgstr "奈良県"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:78
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:82
 #: src/components/StampLegend.tsx:8
 msgid "押した"
 msgstr "押した"
@@ -222,7 +230,7 @@ msgstr "時間"
 msgid "更新 {updated}（日本時間）"
 msgstr "更新 {updated}（日本時間）"
 
-#: src/app/[lang]/layout.tsx:45
+#: src/app/[lang]/layout.tsx:50
 msgid "本文へ移動"
 msgstr "本文へ移動"
 
@@ -242,8 +250,16 @@ msgstr "注意"
 msgid "準備中"
 msgstr "準備中"
 
+#: src/components/ThemeSwitcher.tsx:37
+msgid "画面の明るさ：{label}。押すと切り替わります。"
+msgstr "画面の明るさ：{label}。押すと切り替わります。"
+
+#: src/components/ThemeSwitcher.tsx:30
+msgid "自動"
+msgstr "自動"
+
 #: src/app/[lang]/(public)/page.tsx:28
-#: src/app/[lang]/layout.tsx:28
+#: src/app/[lang]/layout.tsx:30
 msgid "葛城修験"
 msgstr "葛城修験"
 
@@ -252,8 +268,8 @@ msgid "葛城修験の道"
 msgstr "葛城修験の道"
 
 #: src/components/SampleBanner.tsx:9
-msgid "見本のデータを表示しています。実際の情報ではありません。"
-msgstr "見本のデータを表示しています。実際の情報ではありません。"
+msgid "見本・下書きのデータを表示しています。確認前の情報を含みます。"
+msgstr "見本・下書きのデータを表示しています。確認前の情報を含みます。"
 
 #: src/components/LocaleSwitcher.tsx:24
 msgid "言語"

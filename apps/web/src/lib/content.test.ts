@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { filterByPrefecture, isPrefecture, pickText } from "./content";
+import { filterByPrefecture, isPrefecture, pickText, sampleContentEnabled } from "./content";
 import { formatUpdated } from "./format";
 
 describe("pickText", () => {
@@ -52,5 +52,18 @@ describe("formatUpdated", () => {
 
   test("rolls over to the next day in Japan", () => {
     expect(formatUpdated("ja", "2026-10-14T23:10:00Z")).toBe("10月15日" + NBSP + "08:10");
+  });
+});
+
+describe("sampleContentEnabled", () => {
+  test("on by default in development, off in production and previews", () => {
+    expect(sampleContentEnabled({ NODE_ENV: "development" })).toBe(true);
+    expect(sampleContentEnabled({ NODE_ENV: "production" })).toBe(false);
+    expect(sampleContentEnabled({})).toBe(false);
+  });
+
+  test("the flag decides when it is set", () => {
+    expect(sampleContentEnabled({ NODE_ENV: "production", SHOW_SAMPLE_CONTENT: "1" })).toBe(true);
+    expect(sampleContentEnabled({ NODE_ENV: "development", SHOW_SAMPLE_CONTENT: "0" })).toBe(false);
   });
 });

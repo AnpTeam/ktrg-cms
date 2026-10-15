@@ -110,11 +110,15 @@ export function forViewer<T extends { stampedCount?: number | null; stamped?: bo
 }
 
 /**
- * Sample content is for design review only. It is off unless SHOW_SAMPLE_CONTENT=1,
+ * Sample content is for design review only. It is on by default in development (set
+ * SHOW_SAMPLE_CONTENT=0 to see the real empty state) and off everywhere else unless
+ * SHOW_SAMPLE_CONTENT=1 (for example a preview deployment),
  * and every screen that shows it says so (see SampleBanner).
  */
-export function sampleContentEnabled() {
-  return process.env.SHOW_SAMPLE_CONTENT === "1";
+export function sampleContentEnabled(env: { NODE_ENV?: string; SHOW_SAMPLE_CONTENT?: string } = process.env) {
+  if (env.SHOW_SAMPLE_CONTENT === "1") return true;
+  if (env.SHOW_SAMPLE_CONTENT === "0") return false;
+  return env.NODE_ENV === "development"; // on by default only while developing
 }
 
 // What GET /routes will return per route: no description, no spot list.

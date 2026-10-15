@@ -109,6 +109,40 @@
   }
 }
 
+/*
+ * The theme switch (Auto, Light, Dark). Auto follows the device (the blocks above); a
+ * visitor's own choice sets data-theme on <html> and beats the device. The values are the
+ * same as above; contrast.test.ts fails if they ever drift apart.
+ */
+:root[data-theme="dark"] {
+  /* The primary look: deep cedar night, lantern amber, vermilion seals that glow. */
+  --color-ink: #f3efe6;
+  --color-muted: #c9d0c8;
+  --color-paper: #0c1311;
+  --color-surface: #17221d;
+  --color-accent: #f2b24a;
+  --color-moss: #86d0a1;
+  --color-shu: #e8603f;
+  --color-caution: #fbbf24;
+  --color-danger: #fca5a5;
+  --color-line: #8fa095;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --color-ink: #10201a; /* body text: deep green-black */
+  --color-muted: #33413b; /* secondary text */
+  --color-paper: #fbfbf8; /* page background: near-white (strong tints glare outdoors) */
+  --color-surface: #e9efea; /* rows and empty slots: misty green-grey */
+  --color-accent: #764000; /* links, primary button, active tab, focus ring: lantern brown-amber (灯) */
+  --color-moss: #1a4f33; /* done, open, trail progress: moss (苔) */
+  --color-shu: #b3321b; /* the stamp seal only: vermilion (朱). Never text, never a warning */
+  --color-caution: #b45309; /* warnings: caution status, graphic only (amber 琥珀) */
+  --color-danger: #991b1b; /* errors */
+  --color-line: #66756c; /* borders of inputs and buttons, the trail line */
+  color-scheme: light;
+}
+
 /* Furigana: use only in headings of text-2xl or larger, so the reading stays legible. */
 rt {
   font-size: 0.45em;
@@ -116,7 +150,8 @@ rt {
 }
 
 @media (prefers-contrast: more) {
-  :root {
+  :root,
+  :root[data-theme] {
     --color-line: var(--color-ink);
     --color-muted: var(--color-ink);
   }

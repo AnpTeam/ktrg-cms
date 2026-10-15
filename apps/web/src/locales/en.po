@@ -76,7 +76,7 @@ msgstr "Stamp card"
 msgid "スタンプカードを見る"
 msgstr "See your stamp card"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:65
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:69
 msgid "スタンプの場所"
 msgstr "Stamp locations"
 
@@ -103,6 +103,10 @@ msgstr "You have all the stamps."
 #: src/app/[lang]/(public)/routes/page.tsx:74
 msgid "すべてのルートを見る"
 msgstr "See all routes"
+
+#: src/components/ThemeSwitcher.tsx:30
+msgid "ダーク"
+msgstr "Dark"
 
 #: src/components/StampGrid.tsx:35
 #: src/components/StampLegend.tsx:10
@@ -141,6 +145,10 @@ msgstr "You haven't collected this stamp yet"
 msgid "メインメニュー"
 msgstr "Main menu"
 
+#: src/components/ThemeSwitcher.tsx:30
+msgid "ライト"
+msgstr "Light"
+
 #: src/app/[lang]/(public)/routes/page.tsx:18
 #: src/components/TabBar.tsx:16
 msgid "ルート"
@@ -163,7 +171,7 @@ msgstr "You can browse routes and places without signing in."
 msgid "ルートをさがす"
 msgstr "Find a route"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:39
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:40
 msgid "ルート一覧"
 msgstr "All routes"
 
@@ -182,7 +190,7 @@ msgid "公開できるようになったら、ここにルートが表示され�
 msgstr "Routes will appear here once they are published."
 
 #: src/app/[lang]/(public)/page.tsx:72
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:91
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:95
 #: src/app/[lang]/(public)/routes/page.tsx:82
 #: src/app/[lang]/(public)/stamps/page.tsx:44
 #: src/components/SpotSheet.tsx:62
@@ -205,7 +213,7 @@ msgstr "Osaka"
 msgid "奈良県"
 msgstr "Nara"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:78
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:82
 #: src/components/StampLegend.tsx:8
 msgid "押した"
 msgstr "Stamped"
@@ -222,7 +230,7 @@ msgstr "Time"
 msgid "更新 {updated}（日本時間）"
 msgstr "Updated {updated} (Japan time)"
 
-#: src/app/[lang]/layout.tsx:45
+#: src/app/[lang]/layout.tsx:50
 msgid "本文へ移動"
 msgstr "Skip to main content"
 
@@ -242,8 +250,16 @@ msgstr "Caution"
 msgid "準備中"
 msgstr "Coming soon"
 
+#: src/components/ThemeSwitcher.tsx:37
+msgid "画面の明るさ：{label}。押すと切り替わります。"
+msgstr "Screen brightness: {label}. Tap to change."
+
+#: src/components/ThemeSwitcher.tsx:30
+msgid "自動"
+msgstr "Auto"
+
 #: src/app/[lang]/(public)/page.tsx:28
-#: src/app/[lang]/layout.tsx:28
+#: src/app/[lang]/layout.tsx:30
 msgid "葛城修験"
 msgstr "Katsuragi Shugendō"
 
@@ -252,8 +268,8 @@ msgid "葛城修験の道"
 msgstr "The Katsuragi Shugendō Trail"
 
 #: src/components/SampleBanner.tsx:9
-msgid "見本のデータを表示しています。実際の情報ではありません。"
-msgstr "Showing sample data. This is not real information."
+msgid "見本・下書きのデータを表示しています。確認前の情報を含みます。"
+msgstr "Showing sample and draft data. It includes information that has not been checked."
 
 #: src/components/LocaleSwitcher.tsx:24
 msgid "言語"

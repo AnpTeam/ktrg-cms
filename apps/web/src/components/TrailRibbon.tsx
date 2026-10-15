@@ -18,7 +18,7 @@ type Kind = "done" | "open" | "soon";
 
 // The node is 44px tall and the row has 1rem of padding above it: its centre is 2.375rem down.
 const NODE_CENTER = "2.375rem";
-const COLUMN = "3.75rem"; // the node column; the line runs through its middle
+const COLUMN = "3.25rem"; // the node column; the line runs through its middle
 
 const segmentClass: Record<Kind, string> = {
   done: "border-solid border-moss",
@@ -128,7 +128,7 @@ function StopRow({ stop, href, locale }: { stop: Stop; href: string; locale: str
     </span>
   );
   const body = (
-    <span className="block py-4 pr-4">
+    <span className="block py-4 pr-2">
       <StopContent route={route} state={state} locale={locale} />
     </span>
   );
@@ -147,7 +147,7 @@ function StopRow({ stop, href, locale }: { stop: Stop; href: string; locale: str
           {node}
           <span className="flex items-start justify-between gap-3 rounded-xl group-hover:bg-surface">
             {body}
-            <span className="shrink-0 self-center pr-3 text-muted">
+            <span className="shrink-0 self-center pr-1 text-muted">
               <ChevronIcon />
             </span>
           </span>
@@ -161,7 +161,7 @@ function GroupHeading({ prefecture, next, first }: { prefecture: Prefecture; nex
   return (
     <li className="relative" role="presentation">
       {next ? <Segment kind={next} from={first ? "50%" : "0"} to="0" /> : null}
-      <h2 className="py-3 pl-[3.75rem] pr-4 text-lg font-bold text-muted">
+      <h2 className="py-3 pl-[3.25rem] pr-4 text-lg font-bold text-muted">
         <PrefectureName value={prefecture} />
       </h2>
     </li>

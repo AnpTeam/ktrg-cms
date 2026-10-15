@@ -29,7 +29,20 @@ function block(marker: string): string {
 const palettes: Record<string, Record<string, string>> = {
   light: tokens(block("@theme")),
   dark: tokens(block("@media (prefers-color-scheme: dark)")),
+  // The theme switch's forced palettes (data-theme on <html>).
+  darkForced: tokens(block(':root[data-theme="dark"]')),
+  lightForced: tokens(block(':root[data-theme="light"]')),
 };
+
+describe("theme switch", () => {
+  test("a forced dark palette equals the automatic dark palette", () => {
+    expect(palettes.darkForced).toEqual(palettes.dark!);
+  });
+
+  test("a forced light palette equals the default light palette", () => {
+    expect(palettes.lightForced).toEqual(palettes.light!);
+  });
+});
 
 function channel(hex: string, start: number) {
   const value = parseInt(hex.slice(start, start + 2), 16) / 255;
