@@ -16,6 +16,8 @@ const EnvSchema = Type.Object({
   SMTP_USER: Type.Optional(Type.String()),
   SMTP_PASS: Type.Optional(Type.String()),
   MAIL_FROM: Type.String({ minLength: 3, default: "KTRG <no-reply@localhost>" }),
+  // Key for hashing one-time codes (WBS 2.1.3). Required in production.
+  OTP_HMAC_SECRET: Type.Optional(Type.String({ minLength: 32 })),
 });
 
 export type Env = Static<typeof EnvSchema>;
@@ -31,5 +33,9 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
     const lines = [...first].map(([path, msg]) => `  - ${path.slice(1) || "(root)"}: ${msg}`);
     throw new Error(`Invalid environment:\n${lines.join("\n")}`);
   }
-  return Value.Clean(EnvSchema, candidate) as Env;
+  const env = Value.Clean(EnvSchema, candidate) as Env;
+  if (env.NODE_ENV === "production" && !env.OTP_HMAC_SECRET) {
+    throw new Error("Invalid environment:\n  - OTP_HMAC_SECRET: required in production (32+ characters)");
+  }
+  return env;
 }
