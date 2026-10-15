@@ -39,6 +39,13 @@ export interface RouteSummary {
   stampedCount: number | null;
 }
 
+/** Where a stop is. `verified` is false for draft positions (for example clicked on Navivi's map). */
+export interface SpotPosition {
+  lat: number;
+  lng: number;
+  verified: boolean;
+}
+
 export interface SpotListItem {
   id: string;
   nameJa: string;
@@ -46,6 +53,8 @@ export interface SpotListItem {
   status: SpotStatus;
   /** null when not signed in. */
   stamped: boolean | null;
+  /** null when the CMS has no coordinates yet; the API returns them only for published spots. */
+  position: SpotPosition | null;
 }
 
 export interface RouteDetail extends RouteSummary {

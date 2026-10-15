@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
 import { Localized } from "@/components/Localized";
@@ -8,7 +9,9 @@ import { PrefectureName } from "@/components/PrefectureName";
 import { RouteSilhouette } from "@/components/RouteSketch";
 import { RouteStats } from "@/components/RouteStats";
 import { RowLink } from "@/components/RowLink";
-import { StatusWord } from "@/components/StatusBanner";
+import { TrailMapLoader } from "@/components/map/TrailMapLoader";
+import type { MapStop } from "@/components/map/TrailMap";
+import { StatusWord } from "@/components/StatusWord";
 import { forViewer, getRoute, pickText } from "@/lib/content";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
@@ -32,6 +35,31 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
   const route = forViewer(found, viewer);
   const to = (path: string) => localePath(i18n.locale, path);
   const description = pickText(i18n.locale, route.descriptionJa, route.descriptionEn);
+
+  // Stops that have a position become map markers, numbered by their place in the list.
+  const stops: MapStop[] = route.spots.flatMap((spot, index) => {
+    if (!spot.position) return [];
+    const name = pickText(i18n.locale, spot.nameJa, spot.nameEn);
+    if (!name) return [];
+    const parts = [`${index + 1}. ${name.text}`];
+    if (spot.stamped) parts.push(i18n._(msg`スタンプ済み`));
+    if (spot.status === "closed") parts.push(i18n._(msg`閉鎖中`));
+    return [
+      {
+        id: spot.id,
+        order: index + 1,
+        name: name.text,
+        label: parts.join(", "),
+        nameLang: name.lang,
+        position: { lat: spot.position.lat, lng: spot.position.lng },
+        stamped: spot.stamped,
+        status: spot.status,
+        href: to(`/spots/${spot.id}`),
+      },
+    ];
+  });
+  // Straight segments between stops are only an approximation of the walked path.
+  const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
 
   return (
     <div className="flex flex-col gap-6">
@@ -63,17 +91,27 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
         ) : null}
       </header>
 
+      {stops.length > 0 ? (
+        <section className="px-4">
+          <TrailMapLoader stops={stops} approximate draft={draftPositions} />
+        </section>
+      ) : null}
+
       {route.spots.length > 0 ? (
         <section>
           <h2 className="px-4 pb-3 text-xl font-bold">
             <Trans>スタンプの場所</Trans>
           </h2>
           <ul>
-            {route.spots.map((spot) => (
+            {route.spots.map((spot, index) => (
               <li key={spot.id}>
                 <RowLink
                   href={to(`/spots/${spot.id}`)}
-                  title={<Localized value={pickText(i18n.locale, spot.nameJa, spot.nameEn)} />}
+                  title={
+                    <>
+                      {index + 1}. <Localized value={pickText(i18n.locale, spot.nameJa, spot.nameEn)} />
+                    </>
+                  }
                   detail={
                     <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
                       <StatusWord status={spot.status} />

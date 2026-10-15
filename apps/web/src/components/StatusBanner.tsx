@@ -1,36 +1,8 @@
 import { Trans } from "@lingui/react/macro";
 import { pickText, type SpotStatus } from "@/lib/content";
 import { formatUpdated } from "@/lib/format";
-import { CheckIcon, ClosedIcon, WarningIcon } from "./icons";
+import { StatusWord } from "./StatusWord";
 import { Localized } from "./Localized";
-
-/** The word for a status, with its icon: a colour never stands alone. */
-export function StatusWord({ status }: { status: SpotStatus }) {
-  if (status === "closed") {
-    return (
-      <span className="inline-flex items-center gap-1 font-bold">
-        <ClosedIcon />
-        <Trans>閉鎖中</Trans>
-      </span>
-    );
-  }
-  if (status === "caution") {
-    return (
-      <span className="inline-flex items-center gap-1 font-bold">
-        <span className="text-caution">
-          <WarningIcon />
-        </span>
-        <Trans>注意</Trans>
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex items-center gap-1 font-bold text-moss">
-      <CheckIcon />
-      <Trans>開放中</Trans>
-    </span>
-  );
-}
 
 /**
  * The status block on a spot. Open is a calm line. Caution has a thick amber

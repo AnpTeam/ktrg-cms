@@ -47,13 +47,25 @@ msgstr "あと{remaining}か所"
 msgid "アドレスがちがうか、ページが公開されていません。"
 msgstr "アドレスがちがうか、ページが公開されていません。"
 
-#: src/components/StatusBanner.tsx:105
+#: src/components/StatusBanner.tsx:77
 msgid "いまは、ここでスタンプを押せません。"
 msgstr "いまは、ここでスタンプを押せません。"
 
 #: src/app/[lang]/(public)/routes/page.tsx:72
 msgid "この地域のルートはまだありません。"
 msgstr "この地域のルートはまだありません。"
+
+#: src/components/map/StopCard.tsx:38
+msgid "この場所の位置は仮のもので、まだ確認されていません。"
+msgstr "この場所の位置は仮のもので、まだ確認されていません。"
+
+#: src/components/map/StopCard.tsx:45
+msgid "この場所を見る"
+msgstr "この場所を見る"
+
+#: src/components/map/TrailMap.tsx:181
+msgid "この端末では地図を表示できません。下の一覧から場所を選べます。"
+msgstr "この端末では地図を表示できません。下の一覧から場所を選べます。"
 
 #: src/components/SpotSheet.tsx:55
 msgid "この説明は日本語のみです。"
@@ -76,7 +88,7 @@ msgstr "スタンプカード"
 msgid "スタンプカードを見る"
 msgstr "スタンプカードを見る"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:69
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:103
 msgid "スタンプの場所"
 msgstr "スタンプの場所"
 
@@ -91,6 +103,10 @@ msgstr "スタンプを押しました"
 #: src/components/TrailRibbon.tsx:96
 msgid "スタンプ場所 {spotCount}か所"
 msgstr "スタンプ場所 {spotCount}か所"
+
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:45
+msgid "スタンプ済み"
+msgstr "スタンプ済み"
 
 #: src/components/PrefectureFilter.tsx:32
 msgid "すべて"
@@ -171,13 +187,17 @@ msgstr "ルートや場所は、ログインしなくても見られます。"
 msgid "ルートをさがす"
 msgstr "ルートをさがす"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:40
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:68
 msgid "ルート一覧"
 msgstr "ルート一覧"
 
 #: src/components/SignInPrompt.tsx:16
 msgid "ログインすると、スタンプを記録できます。"
 msgstr "ログインすると、スタンプを記録できます。"
+
+#: src/components/map/TrailMap.tsx:223
+msgid "仮の位置（未確認）"
+msgstr "仮の位置（未確認）"
 
 #: src/app/[lang]/(public)/page.tsx:58
 #: src/app/[lang]/(public)/page.tsx:65
@@ -190,7 +210,7 @@ msgid "公開できるようになったら、ここにルートが表示され�
 msgstr "公開できるようになったら、ここにルートが表示されます。"
 
 #: src/app/[lang]/(public)/page.tsx:72
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:95
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:133
 #: src/app/[lang]/(public)/routes/page.tsx:82
 #: src/app/[lang]/(public)/stamps/page.tsx:44
 #: src/components/SpotSheet.tsx:62
@@ -201,9 +221,22 @@ msgstr "出かける前に、公式の最新情報を確認してください。
 msgid "和歌山県"
 msgstr "和歌山県"
 
+#: src/components/map/TrailMap.tsx:188
+msgid "地図"
+msgstr "地図"
+
+#: src/components/map/TrailMap.tsx:214
+#: src/components/map/TrailMapLoader.tsx:12
+msgid "地図を読み込み中…"
+msgstr "地図を読み込み中…"
+
 #: src/components/PrefectureFilter.tsx:28
 msgid "地域でしぼる"
 msgstr "地域でしぼる"
+
+#: src/components/map/TrailMap.tsx:245
+msgid "大きな地図で見る"
+msgstr "大きな地図で見る"
 
 #: src/components/PrefectureName.tsx:7
 msgid "大阪府"
@@ -213,10 +246,14 @@ msgstr "大阪府"
 msgid "奈良県"
 msgstr "奈良県"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:82
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:120
 #: src/components/StampLegend.tsx:8
 msgid "押した"
 msgstr "押した"
+
+#: src/components/map/TrailMap.tsx:228
+msgid "拡大"
+msgstr "拡大"
 
 #: src/components/Localized.tsx:16
 msgid "日本語のみ"
@@ -226,7 +263,7 @@ msgstr "日本語のみ"
 msgid "時間"
 msgstr "時間"
 
-#: src/components/StatusBanner.tsx:65
+#: src/components/StatusBanner.tsx:37
 msgid "更新 {updated}（日本時間）"
 msgstr "更新 {updated}（日本時間）"
 
@@ -242,7 +279,7 @@ msgstr "歩いた場所で、スタンプを押そう。"
 msgid "歩き終えた区間 {done} / {TOTAL_ROUTES}"
 msgstr "歩き終えた区間 {done} / {TOTAL_ROUTES}"
 
-#: src/components/StatusBanner.tsx:23
+#: src/components/StatusWord.tsx:23
 msgid "注意"
 msgstr "注意"
 
@@ -253,6 +290,10 @@ msgstr "準備中"
 #: src/components/ThemeSwitcher.tsx:37
 msgid "画面の明るさ：{label}。押すと切り替わります。"
 msgstr "画面の明るさ：{label}。押すと切り替わります。"
+
+#: src/components/map/TrailMap.tsx:231
+msgid "縮小"
+msgstr "縮小"
 
 #: src/components/ThemeSwitcher.tsx:30
 msgid "自動"
@@ -279,15 +320,28 @@ msgstr "言語"
 msgid "説明"
 msgstr "説明"
 
+#: src/components/map/TrailMap.tsx:238
+msgid "起伏を消す"
+msgstr "起伏を消す"
+
+#: src/components/map/TrailMap.tsx:238
+msgid "起伏を見る"
+msgstr "起伏を見る"
+
 #: src/components/RouteStats.tsx:20
 msgid "距離"
 msgstr "距離"
 
-#: src/components/StatusBanner.tsx:13
+#: src/components/map/TrailMap.tsx:194
+msgid "閉じる"
+msgstr "閉じる"
+
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:46
+#: src/components/StatusWord.tsx:13
 msgid "閉鎖中"
 msgstr "閉鎖中"
 
-#: src/components/StatusBanner.tsx:30
+#: src/components/StatusWord.tsx:30
 msgid "開放中"
 msgstr "開放中"
 

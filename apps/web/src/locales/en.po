@@ -47,13 +47,25 @@ msgstr "{remaining} left to go"
 msgid "アドレスがちがうか、ページが公開されていません。"
 msgstr "The address may be wrong, or the page is not published."
 
-#: src/components/StatusBanner.tsx:105
+#: src/components/StatusBanner.tsx:77
 msgid "いまは、ここでスタンプを押せません。"
 msgstr "Stamps can't be collected here right now."
 
 #: src/app/[lang]/(public)/routes/page.tsx:72
 msgid "この地域のルートはまだありません。"
 msgstr "There are no routes in this area yet."
+
+#: src/components/map/StopCard.tsx:38
+msgid "この場所の位置は仮のもので、まだ確認されていません。"
+msgstr "The position of this place is a draft and has not been checked yet."
+
+#: src/components/map/StopCard.tsx:45
+msgid "この場所を見る"
+msgstr "See this place"
+
+#: src/components/map/TrailMap.tsx:181
+msgid "この端末では地図を表示できません。下の一覧から場所を選べます。"
+msgstr "This device can't show the map. You can pick a place from the list below."
 
 #: src/components/SpotSheet.tsx:55
 msgid "この説明は日本語のみです。"
@@ -76,7 +88,7 @@ msgstr "Stamp card"
 msgid "スタンプカードを見る"
 msgstr "See your stamp card"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:69
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:103
 msgid "スタンプの場所"
 msgstr "Stamp locations"
 
@@ -91,6 +103,10 @@ msgstr "You collected this stamp"
 #: src/components/TrailRibbon.tsx:96
 msgid "スタンプ場所 {spotCount}か所"
 msgstr "{spotCount} stamp locations"
+
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:45
+msgid "スタンプ済み"
+msgstr "stamped"
 
 #: src/components/PrefectureFilter.tsx:32
 msgid "すべて"
@@ -171,13 +187,17 @@ msgstr "You can browse routes and places without signing in."
 msgid "ルートをさがす"
 msgstr "Find a route"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:40
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:68
 msgid "ルート一覧"
 msgstr "All routes"
 
 #: src/components/SignInPrompt.tsx:16
 msgid "ログインすると、スタンプを記録できます。"
 msgstr "Sign in to record your stamps."
+
+#: src/components/map/TrailMap.tsx:223
+msgid "仮の位置（未確認）"
+msgstr "Draft positions (unchecked)"
 
 #: src/app/[lang]/(public)/page.tsx:58
 #: src/app/[lang]/(public)/page.tsx:65
@@ -190,7 +210,7 @@ msgid "公開できるようになったら、ここにルートが表示され�
 msgstr "Routes will appear here once they are published."
 
 #: src/app/[lang]/(public)/page.tsx:72
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:95
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:133
 #: src/app/[lang]/(public)/routes/page.tsx:82
 #: src/app/[lang]/(public)/stamps/page.tsx:44
 #: src/components/SpotSheet.tsx:62
@@ -201,9 +221,22 @@ msgstr "Check official sources before you go."
 msgid "和歌山県"
 msgstr "Wakayama"
 
+#: src/components/map/TrailMap.tsx:188
+msgid "地図"
+msgstr "Map"
+
+#: src/components/map/TrailMap.tsx:214
+#: src/components/map/TrailMapLoader.tsx:12
+msgid "地図を読み込み中…"
+msgstr "Loading the map…"
+
 #: src/components/PrefectureFilter.tsx:28
 msgid "地域でしぼる"
 msgstr "Filter by area"
+
+#: src/components/map/TrailMap.tsx:245
+msgid "大きな地図で見る"
+msgstr "Open a bigger map"
 
 #: src/components/PrefectureName.tsx:7
 msgid "大阪府"
@@ -213,10 +246,14 @@ msgstr "Osaka"
 msgid "奈良県"
 msgstr "Nara"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:82
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:120
 #: src/components/StampLegend.tsx:8
 msgid "押した"
 msgstr "Stamped"
+
+#: src/components/map/TrailMap.tsx:228
+msgid "拡大"
+msgstr "Zoom in"
 
 #: src/components/Localized.tsx:16
 msgid "日本語のみ"
@@ -226,7 +263,7 @@ msgstr "Japanese only"
 msgid "時間"
 msgstr "Time"
 
-#: src/components/StatusBanner.tsx:65
+#: src/components/StatusBanner.tsx:37
 msgid "更新 {updated}（日本時間）"
 msgstr "Updated {updated} (Japan time)"
 
@@ -242,7 +279,7 @@ msgstr "Collect a stamp at each place you walk to."
 msgid "歩き終えた区間 {done} / {TOTAL_ROUTES}"
 msgstr "Sections walked {done} / {TOTAL_ROUTES}"
 
-#: src/components/StatusBanner.tsx:23
+#: src/components/StatusWord.tsx:23
 msgid "注意"
 msgstr "Caution"
 
@@ -253,6 +290,10 @@ msgstr "Coming soon"
 #: src/components/ThemeSwitcher.tsx:37
 msgid "画面の明るさ：{label}。押すと切り替わります。"
 msgstr "Screen brightness: {label}. Tap to change."
+
+#: src/components/map/TrailMap.tsx:231
+msgid "縮小"
+msgstr "Zoom out"
 
 #: src/components/ThemeSwitcher.tsx:30
 msgid "自動"
@@ -279,15 +320,28 @@ msgstr "Language"
 msgid "説明"
 msgstr "About this place"
 
+#: src/components/map/TrailMap.tsx:238
+msgid "起伏を消す"
+msgstr "Hide relief"
+
+#: src/components/map/TrailMap.tsx:238
+msgid "起伏を見る"
+msgstr "Show relief"
+
 #: src/components/RouteStats.tsx:20
 msgid "距離"
 msgstr "Distance"
 
-#: src/components/StatusBanner.tsx:13
+#: src/components/map/TrailMap.tsx:194
+msgid "閉じる"
+msgstr "Close"
+
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:46
+#: src/components/StatusWord.tsx:13
 msgid "閉鎖中"
 msgstr "Closed"
 
-#: src/components/StatusBanner.tsx:30
+#: src/components/StatusWord.tsx:30
 msgid "開放中"
 msgstr "Open"
 

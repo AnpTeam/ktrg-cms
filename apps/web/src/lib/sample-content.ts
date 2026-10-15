@@ -45,6 +45,7 @@ const spot = (s: Partial<SpotDetail> & Pick<SpotDetail, "id" | "routeId" | "rout
   nameEn: null,
   status: "open",
   stamped: true,
+  position: null,
   descriptionJa: null,
   descriptionEn: null,
   statusNoteJa: null,
@@ -113,6 +114,7 @@ const r2Spots: SpotDetail[] = route02Draft.spots.map((s, i) =>
     routeNameEn: "From Mt. Kabuto across Kyōshi-tōge",
     nameJa: s.nameJa,
     stamped: i < 2,
+    position: { lat: s.lat, lng: s.lng, verified: false }, // draft: clicked on Navivi's map
     descriptionJa: s.descriptionJa,
   }),
 );
@@ -125,7 +127,7 @@ const r4Spots = plainSpots(R4.id, R4.name, 9, 3); // in progress
 export const sampleSpots: SpotDetail[] = [...handSpots, ...r2Spots, ...r3Spots, ...r4Spots];
 
 function listItem(s: SpotDetail): SpotListItem {
-  return { id: s.id, nameJa: s.nameJa, nameEn: s.nameEn, status: s.status, stamped: s.stamped };
+  return { id: s.id, nameJa: s.nameJa, nameEn: s.nameEn, status: s.status, stamped: s.stamped, position: s.position };
 }
 
 const skeleton = (order: number, ja: string, en: string): RouteDetail => ({
