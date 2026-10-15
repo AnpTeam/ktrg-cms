@@ -19,7 +19,7 @@ describe("escapeHtml", () => {
 
 describe("flattenUserText", () => {
   test("joins lines, trims and caps", () => {
-    expect(flattenUserText(" a\r\n\tbc ")).toBe("a b c");
+    expect(flattenUserText(" a\r\n\tb c ")).toBe("a b c");
     expect(flattenUserText("x".repeat(100), 10)).toBe("x".repeat(10));
   });
 

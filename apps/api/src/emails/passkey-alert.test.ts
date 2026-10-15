@@ -82,8 +82,9 @@ describe("buildPasskeyAlertEmail html", () => {
 
   test("a typed name cannot inject markup", () => {
     const m = buildPasskeyAlertEmail({ ...base, locale: "en", action: "added", label: '<a href="https://evil.example">Click</a>' });
+    // The name shows up as harmless escaped text, never as a real tag or attribute.
     expect(m.html).not.toContain("<a ");
-    expect(m.html).not.toMatch(/href=/);
-    expect(m.html).toContain("&lt;a href=&quot;");
+    expect(m.html).not.toContain('href="');
+    expect(m.html).toContain("&lt;a href=&quot;https://evil.example&quot;&gt;Click&lt;/a&gt;");
   });
 });
