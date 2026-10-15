@@ -29,6 +29,8 @@ export interface ServiceDeps {
   /** ADMIN_EMAILS, normalized: promoted to admin on an email-code login. */
   adminEmails?: ReadonlySet<string>;
   passkey: PasskeyConfig;
+  /** The clock every service reads. Tests move it; the app uses real time. */
+  now?: () => Date;
 }
 
 /**
@@ -36,15 +38,15 @@ export interface ServiceDeps {
  * passes in-memory ones (scripts/phone-test.ts). Same wiring, so both behave the same.
  */
 export function createServices(deps: ServiceDeps): Services {
-  const { stores, mailer, secret } = deps;
+  const { stores, mailer, secret, now } = deps;
   return {
-    otp: createOtpService({ store: stores.otp, mailer, secret, adminEmails: deps.adminEmails }),
-    session: createSessionService({ store: stores.session }),
-    rateLimit: createRateLimiter({ store: stores.rateLimit, secret }),
+    otp: createOtpService({ store: stores.otp, mailer, secret, adminEmails: deps.adminEmails, now }),
+    session: createSessionService({ store: stores.session, now }),
+    rateLimit: createRateLimiter({ store: stores.rateLimit, secret, now }),
     audit: deps.audit,
     // Emails the owner when a passkey is added or removed.
-    passkeys: createPasskeyService({ store: stores.passkeys, mailer, config: deps.passkey }),
+    passkeys: createPasskeyService({ store: stores.passkeys, mailer, config: deps.passkey, now }),
     // Profile, language, display name and deletion requests (emails the owner).
-    me: createMeService({ store: stores.me, mailer }),
+    me: createMeService({ store: stores.me, mailer, now }),
   };
 }

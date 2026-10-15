@@ -5,6 +5,7 @@ import { createDrizzleOtpStore } from "./auth/otp-store";
 import { passkeyRoutes } from "./auth/passkey-routes";
 import { createDrizzlePasskeyStore } from "./auth/passkey-store";
 import { createDrizzleRateLimitStore } from "./auth/rate-limit-store";
+import type { RouteOptions } from "./auth/route-kit";
 import { authRoutes } from "./auth/routes";
 import { createDrizzleSessionStore } from "./auth/session-store";
 import { createDb } from "./db/client";
@@ -44,19 +45,29 @@ function getServices(): Services {
   return services;
 }
 
-const routeOpts = { secureCookies: env.NODE_ENV === "production", trustProxy: env.TRUST_PROXY };
+/**
+ * The whole API: every route file, mounted under /api/v1. The services come from outside, so
+ * the tests and the dev page (scripts/phone-test.ts) run exactly this route tree on memory stores.
+ */
+export function createApp(getServices: () => Services, opts: RouteOptions & { docs: boolean }) {
+  return new Elysia({ prefix: "/api/v1" })
+    .use(apiDocs({ enabled: opts.docs }))
+    .get(
+      "/health",
+      () => ({
+        status: "ok" as const,
+      }),
+      { detail: { tags: ["Health"], summary: "Is the API up?" } },
+    )
+    .use(authRoutes(getServices, opts))
+    .use(passkeyRoutes(getServices, opts))
+    .use(meRoutes(getServices, opts));
+}
 
-export const app = new Elysia({ prefix: "/api/v1" })
-  .use(apiDocs({ enabled: env.NODE_ENV !== "production" || env.API_DOCS }))
-  .get(
-    "/health",
-    () => ({
-      status: "ok" as const,
-    }),
-    { detail: { tags: ["Health"], summary: "Is the API up?" } },
-  )
-  .use(authRoutes(getServices, routeOpts))
-  .use(passkeyRoutes(getServices, routeOpts))
-  .use(meRoutes(getServices, routeOpts));
+export const app = createApp(getServices, {
+  secureCookies: env.NODE_ENV === "production",
+  trustProxy: env.TRUST_PROXY,
+  docs: env.NODE_ENV !== "production" || env.API_DOCS,
+});
 
 export type App = typeof app;
