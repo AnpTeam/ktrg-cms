@@ -1,6 +1,6 @@
 import { clientIp } from "../lib/client-ip";
 import type { RateLimitResult } from "./rate-limit";
-import type { AuthUser } from "./otp-service";
+import type { AuthUser } from "./user";
 import {
   clearSessionCookie,
   readCookie,
@@ -67,6 +67,12 @@ export function createHttpHelpers(opts: {
 
     session,
 
+    /** Start a session for a user who just logged in (email code or passkey) and set its cookie. */
+    async startSession(set: SetLike, user: AuthUser): Promise<void> {
+      const { token, expiresAt } = await opts.getSession().create(user);
+      set.headers["set-cookie"] = cookieFor(token, expiresAt);
+    },
+
     /** The user behind the request's session cookie, re-issuing the cookie if the expiry slid. */
     async authenticate(headers: Headers, set: SetLike): Promise<AuthUser | null> {
       return (await session(headers, set))?.user ?? null;
@@ -75,3 +81,12 @@ export function createHttpHelpers(opts: {
 }
 
 export type HttpHelpers = ReturnType<typeof createHttpHelpers>;
+
+/**
+ * Answer with an error: sets the status and returns the `{ ok: false, error }` body every
+ * endpoint uses. `return fail(set, 409, "no_email")`.
+ */
+export function fail<const Status extends number, const Code extends string>(set: SetLike, status: Status, error: Code) {
+  set.status = status;
+  return { ok: false as const, error };
+}

@@ -8,22 +8,18 @@
 // (VS Code port forwarding with Public visibility, cloudflared, ngrok). No setup needed:
 // the page tells the server which address it is on.
 import { Elysia } from "elysia";
-import { auditRow, type AuditWriter } from "../src/audit/audit-log";
+import { auditRow } from "../src/audit/audit-log";
 import { createMemoryOtpStore } from "../src/auth/otp-memory-store";
-import { createOtpService } from "../src/auth/otp-service";
 import { createMemoryPasskeyStore } from "../src/auth/passkey-memory-store";
 import { passkeyRoutes } from "../src/auth/passkey-routes";
-import { createPasskeyService } from "../src/auth/passkey-service";
-import { createRateLimiter } from "../src/auth/rate-limit";
 import { createMemoryRateLimitStore } from "../src/auth/rate-limit-memory-store";
 import { authRoutes } from "../src/auth/routes";
 import { createMemorySessionStore } from "../src/auth/session-memory-store";
-import { createSessionService } from "../src/auth/session-service";
 import { createConsoleMailer } from "../src/lib/mailer";
 import { createMemoryMeStore } from "../src/me/me-memory-store";
 import { meRoutes } from "../src/me/me-routes";
 import { apiDocs } from "../src/openapi";
-import { createMeService } from "../src/me/me-service";
+import { createServices } from "../src/services";
 
 const port = Number(process.env.PORT ?? 3001);
 const secure = process.env.HTTPS_TUNNEL === "1"; // set when you front this with an HTTPS tunnel
@@ -42,28 +38,27 @@ const passkeyConfig = {
 };
 
 const { store, users } = createMemoryOtpStore();
-const sessions = createMemorySessionStore(users);
-const secret = "phone-test-secret-phone-test-secret-0";
-const services = {
-  otp: createOtpService({ store, secret, mailer: createConsoleMailer("KTRG <no-reply@localhost>") }),
-  session: createSessionService({ store: sessions.store }),
-  rateLimit: createRateLimiter({ store: createMemoryRateLimitStore().store, secret }),
+// Same wiring as the app (src/services.ts), with in-memory stores and the console mailer.
+const services = createServices({
+  stores: {
+    otp: store,
+    session: createMemorySessionStore(users).store,
+    rateLimit: createMemoryRateLimitStore().store,
+    passkeys: createMemoryPasskeyStore(users).store,
+    me: createMemoryMeStore(users).store,
+  },
   // Audit entries are checked like the real writer and printed in this terminal.
   audit: {
     async record(entry) {
       const row = auditRow(entry);
       console.log(`[audit] ${row.action} actor=${row.actorUserId} ${row.targetType}=${row.targetId}`);
     },
-  } satisfies AuditWriter,
-  // GET/PATCH/DELETE /api/v1/me. The deletion-request email is printed in this terminal.
-  me: createMeService({ store: createMemoryMeStore(users).store, mailer: createConsoleMailer("KTRG <no-reply@localhost>") }),
-  passkeys: createPasskeyService({
-    store: createMemoryPasskeyStore(users).store,
-    config: passkeyConfig,
-    // Add/remove alert emails are printed in this terminal.
-    mailer: createConsoleMailer("KTRG <no-reply@localhost>"),
-  }),
-};
+  },
+  // Codes and alert emails are printed in this terminal.
+  mailer: createConsoleMailer("KTRG <no-reply@localhost>"),
+  secret: "phone-test-secret-phone-test-secret-0",
+  passkey: passkeyConfig,
+});
 
 const page = `<!doctype html>
 <html lang="en"><head>

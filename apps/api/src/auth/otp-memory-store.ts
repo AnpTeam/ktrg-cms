@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
-import type { AuthUser, OtpRow, OtpStore } from "./otp-service";
+import type { AuthUser } from "./user";
+import type { OtpRow, OtpStore } from "./otp-service";
 
 /** In-memory store for tests and manual checks. Mirrors the Drizzle store's rules. */
 export function createMemoryOtpStore() {

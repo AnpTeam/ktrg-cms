@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import type { AuthUser } from "../auth/otp-service";
+import type { AuthUser } from "../auth/user";
 import type { Mailer, MailMessage } from "../lib/mailer";
 import { createMemoryMeStore } from "./me-memory-store";
 import { DISPLAY_NAME_MAX, createMeService, normalizeDisplayName } from "./me-service";

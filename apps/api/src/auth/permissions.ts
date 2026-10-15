@@ -1,7 +1,6 @@
-import type { AuthUser } from "./otp-service";
+import type { Role } from "./user";
 
-/** The roles an account can have. Matches the user_role type in the database. */
-export type Role = AuthUser["role"];
+export type { Role };
 
 /**
  * THE permission table: who may do what, in one place.

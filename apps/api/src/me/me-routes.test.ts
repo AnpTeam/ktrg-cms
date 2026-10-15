@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { Elysia } from "elysia";
-import type { AuthUser } from "../auth/otp-service";
+import { createMemoryAuditWriter } from "../audit/audit-log";
+import type { AuthUser } from "../auth/user";
 import { createRateLimiter } from "../auth/rate-limit";
 import { createMemoryRateLimitStore } from "../auth/rate-limit-memory-store";
 import { createMemorySessionStore } from "../auth/session-memory-store";
@@ -43,7 +44,7 @@ function setup() {
     },
   });
   const rateLimit = createRateLimiter({ store: createMemoryRateLimitStore().store, secret: "m".repeat(32) });
-  const app = new Elysia({ prefix: "/api/v1" }).use(meRoutes(() => ({ me, session, rateLimit }), { secureCookies: false }));
+  const app = new Elysia({ prefix: "/api/v1" }).use(meRoutes(() => ({ me, session, rateLimit, audit: createMemoryAuditWriter().writer }), { secureCookies: false }));
 
   const call = (method: string, path: string, cookie?: string, body?: unknown) =>
     app.handle(

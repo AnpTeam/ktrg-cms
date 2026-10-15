@@ -1,21 +1,12 @@
 import { Elysia, t } from "elysia";
-import type { AuditWriter } from "../audit/audit-log";
-import { auditTrail } from "../audit/audit-trail";
+import { emailSchema, localeSchema, otpCodeSchema } from "../lib/schemas";
 import { SESSION_SECURITY } from "../openapi";
-import { authGuards } from "./guards";
-import { createHttpHelpers } from "./http";
-import { normalizeEmail } from "./otp";
+import { fail } from "./http";
 import type { OtpService } from "./otp-service";
-import { AUTH_LIMITS, type RateLimiter } from "./rate-limit";
-import type { SessionService } from "./session-service";
+import { routeKit, type KitServices, type RouteOptions } from "./route-kit";
 
-const email = t.String({ format: "email", maxLength: 254 });
-
-export interface AuthServices {
+export interface AuthServices extends KitServices {
   otp: OtpService;
-  session: SessionService;
-  rateLimit: RateLimiter;
-  audit: AuditWriter;
 }
 
 /**
@@ -23,72 +14,43 @@ export interface AuthServices {
  * side-effect free. `secureCookies` is true in production (HTTPS); `trustProxy`
  * says whether X-Forwarded-For can be believed for the rate limits.
  */
-export function authRoutes(
-  getServices: () => AuthServices,
-  opts: { secureCookies: boolean; trustProxy?: boolean },
-) {
-  const http = createHttpHelpers({
-    secureCookies: opts.secureCookies,
-    trustProxy: opts.trustProxy ?? false,
-    getSession: () => getServices().session,
-  });
+export function authRoutes(getServices: () => AuthServices, opts: RouteOptions) {
+  const { http, plugins } = routeKit(getServices, opts);
 
   return new Elysia({ prefix: "/auth", detail: { tags: ["Auth"] } })
-    .use(authGuards({ getSession: () => getServices().session, secureCookies: opts.secureCookies }))
-    .use(auditTrail({ getAudit: () => getServices().audit }))
+    .use(plugins)
     .post(
       "/otp/request",
-      async ({ body, set, ...ctx }) => {
-        const { otp, rateLimit } = getServices();
-        const limited = http.tooMany(
-          set,
-          await rateLimit.checkAll([
-            { rule: AUTH_LIMITS.otpRequestEmail, identifier: normalizeEmail(body.email) },
-            { rule: AUTH_LIMITS.otpRequestIp, identifier: http.ipOf(ctx) },
-          ]),
-        );
-        if (limited) return limited;
-
-        await otp.request(body.email, body.locale);
+      async ({ body }) => {
+        await getServices().otp.request(body.email, body.locale);
         // Same answer whether a code was sent, throttled or the mail failed.
         return { ok: true as const };
       },
-      { body: t.Object({ email, locale: t.Optional(t.Union([t.Literal("ja"), t.Literal("en")])) }) },
+      {
+        body: t.Object({ email: emailSchema, locale: t.Optional(localeSchema) }),
+        rateLimit: { otpRequestEmail: "body.email", otpRequestIp: "ip" },
+      },
     )
     .post(
       "/otp/verify",
-      async ({ body, set, ...ctx }) => {
-        const { otp, session, rateLimit } = getServices();
-        const limited = http.tooMany(
-          set,
-          await rateLimit.checkAll([
-            { rule: AUTH_LIMITS.otpVerifyEmail, identifier: normalizeEmail(body.email) },
-            { rule: AUTH_LIMITS.otpVerifyIp, identifier: http.ipOf(ctx) },
-          ]),
-        );
-        if (limited) return limited;
-
-        const result = await otp.verify(body.email, body.code);
-        if (!result.ok) {
-          // One answer for wrong, expired, used, locked or unknown.
-          set.status = 401;
-          return { ok: false as const, error: "invalid_code" as const };
-        }
-        const { token, expiresAt } = await session.create(result.user);
-        set.headers["set-cookie"] = http.cookieFor(token, expiresAt);
+      async ({ body, set }) => {
+        const result = await getServices().otp.verify(body.email, body.code);
+        // One answer for wrong, expired, used, locked or unknown.
+        if (!result.ok) return fail(set, 401, "invalid_code");
+        await http.startSession(set, result.user);
         return { ok: true as const, user: result.user };
       },
-      { body: t.Object({ email, code: t.String({ pattern: "^[0-9]{6}$" }) }) },
+      {
+        body: t.Object({ email: emailSchema, code: otpCodeSchema }),
+        rateLimit: { otpVerifyEmail: "body.email", otpVerifyIp: "ip" },
+      },
     )
     // Minimal "who am I" (from the session). The full profile is GET /me.
     .get(
       "/session",
       async ({ headers, set }) => {
         const user = await http.authenticate(headers, set);
-        if (!user) {
-          set.status = 401;
-          return { ok: false as const, error: "unauthenticated" as const };
-        }
+        if (!user) return fail(set, 401, "unauthenticated");
         return { ok: true as const, user };
       },
       { detail: { security: SESSION_SECURITY, description: "The logged-in user, or 401 `unauthenticated`." } },
@@ -97,58 +59,31 @@ export function authRoutes(
     // marked FRESH_LOGIN_REQUIRED (the guard answers 403 reauth_required until then).
     .post(
       "/reauth/request",
-      async ({ user, set, ...ctx }) => {
+      async ({ user, set }) => {
         // A passkey-only account has no mailbox to prove (a passkey re-check is not built yet).
-        if (!user.email) {
-          set.status = 409;
-          return { ok: false as const, error: "no_email" as const };
-        }
-        const { otp, rateLimit } = getServices();
-        const limited = http.tooMany(
-          set,
-          await rateLimit.checkAll([
-            { rule: AUTH_LIMITS.otpRequestEmail, identifier: user.email },
-            { rule: AUTH_LIMITS.otpRequestIp, identifier: http.ipOf(ctx) },
-          ]),
-        );
-        if (limited) return limited;
-
-        await otp.request(user.email, user.locale, "reauth");
+        if (!user.email) return fail(set, 409, "no_email");
+        await getServices().otp.request(user.email, user.locale, "reauth");
         // Same answer whether a code was sent or held back by the 60 s cooldown.
         return { ok: true as const };
       },
-      { auth: "me.manage" },
+      { auth: "me.manage", rateLimit: { otpRequestEmail: "user.email", otpRequestIp: "ip" } },
     )
     // Fresh login, step 2: the right code makes this session fresh for FRESH_LOGIN_MS.
     .post(
       "/reauth/verify",
-      async ({ user, authSession, body, set, ...ctx }) => {
-        if (!user.email) {
-          set.status = 409;
-          return { ok: false as const, error: "no_email" as const };
-        }
-        const { otp, session, rateLimit } = getServices();
-        const limited = http.tooMany(
-          set,
-          await rateLimit.checkAll([
-            { rule: AUTH_LIMITS.otpVerifyEmail, identifier: user.email },
-            { rule: AUTH_LIMITS.otpVerifyIp, identifier: http.ipOf(ctx) },
-          ]),
-        );
-        if (limited) return limited;
-
-        if (!(await otp.checkCode(user.email, body.code))) {
-          // 400, not 401: the session itself is still fine.
-          set.status = 400;
-          return { ok: false as const, error: "invalid_code" as const };
-        }
+      async ({ user, authSession, body, set }) => {
+        if (!user.email) return fail(set, 409, "no_email");
+        const { otp, session } = getServices();
+        // 400, not 401: the session itself is still fine.
+        if (!(await otp.checkCode(user.email, body.code))) return fail(set, 400, "invalid_code");
         const freshUntil = await session.markFresh(authSession.id);
         return { ok: true as const, freshUntil: freshUntil.toISOString() };
       },
       {
         auth: "me.manage",
+        rateLimit: { otpVerifyEmail: "user.email", otpVerifyIp: "ip" },
         audit: { action: "session.reauth", target: "self" },
-        body: t.Object({ code: t.String({ pattern: "^[0-9]{6}$" }) }),
+        body: t.Object({ code: otpCodeSchema }),
       },
     )
     .post("/logout", async ({ headers, set }) => {
