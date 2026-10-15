@@ -3,10 +3,10 @@
 // In-memory stores and the console mailer: no database, no real email. The 6-digit
 // code is printed in THIS terminal. Never deploy this file.
 //
-// Passkeys only work on HTTPS or http://localhost, and the address you open must match
-// PASSKEY_ORIGIN. On this PC:   open http://localhost:3001/   (Windows Hello)
-// On a phone: run an HTTPS tunnel to this port, then
-//   PASSKEY_ORIGIN=https://<tunnel-host> HTTPS_TUNNEL=1 bun run phone:test
+// Passkeys only work on HTTPS or http://localhost. Open the page on this PC at
+// http://localhost:3001/ (Windows Hello), or on a phone through any HTTPS forwarded address
+// (VS Code port forwarding with Public visibility, cloudflared, ngrok). No setup needed:
+// the page tells the server which address it is on.
 import { Elysia } from "elysia";
 import { createMemoryOtpStore } from "../src/auth/otp-memory-store";
 import { createOtpService } from "../src/auth/otp-service";
@@ -22,8 +22,19 @@ import { createConsoleMailer } from "../src/lib/mailer";
 
 const port = Number(process.env.PORT ?? 3001);
 const secure = process.env.HTTPS_TUNNEL === "1"; // set when you front this with an HTTPS tunnel
-const origin = process.env.PASSKEY_ORIGIN ?? `http://localhost:${port}`;
-const rpId = new URL(origin).hostname;
+// Passkeys are tied to the exact address they are made on. For this dev tool the page tells
+// the server which address it is open on (x-test-origin), so a forwarded address, a tunnel or
+// localhost all just work. A real deployment uses a fixed APP_ORIGIN instead.
+const current = { origin: process.env.PASSKEY_ORIGIN ?? `http://localhost:${port}` };
+const passkeyConfig = {
+  rpName: "KTRG test",
+  get origin() {
+    return current.origin;
+  },
+  get rpId() {
+    return new URL(current.origin).hostname;
+  },
+};
 
 const { store, users } = createMemoryOtpStore();
 const sessions = createMemorySessionStore(users);
@@ -32,10 +43,7 @@ const services = {
   otp: createOtpService({ store, secret, mailer: createConsoleMailer("KTRG <no-reply@localhost>") }),
   session: createSessionService({ store: sessions.store }),
   rateLimit: createRateLimiter({ store: createMemoryRateLimitStore().store, secret }),
-  passkeys: createPasskeyService({
-    store: createMemoryPasskeyStore(users).store,
-    config: { rpName: "KTRG test", rpId, origin },
-  }),
+  passkeys: createPasskeyService({ store: createMemoryPasskeyStore(users).store, config: passkeyConfig }),
 };
 
 const page = `<!doctype html>
@@ -74,17 +82,18 @@ const page = `<!doctype html>
 <pre id="out">Ready.</pre>
 <script>
   const out = document.getElementById("out");
-  const EXPECTED = ${JSON.stringify(origin)};
   document.getElementById("mode").innerHTML =
     (navigator.standalone ? "Mode: installed app" : "Mode: browser tab") +
-    " | JS can see cookies: " + JSON.stringify(document.cookie) +
-    (location.origin === EXPECTED ? "" : '<br><span class="warn">You are on ' + location.origin +
-      " but passkeys are set up for " + EXPECTED + ". Passkeys will fail until you open that address.</span>");
+    "<br>Address: " + location.origin +
+    "<br>Secure context (passkeys allowed): " + window.isSecureContext +
+    (window.isSecureContext ? "" : '<br><span class="warn">Passkeys need HTTPS or localhost. Use the https:// forwarded address.</span>') +
+    "<br>JS can see cookies: " + JSON.stringify(document.cookie);
 
   async function call(method, path, body) {
     const res = await fetch("/api/v1/auth/" + path, {
       method,
-      headers: { "content-type": "application/json" },
+      // x-test-origin: dev only, tells the server which address this page is on (passkeys are per address).
+      headers: { "content-type": "application/json", "x-test-origin": location.origin },
       body: body ? JSON.stringify(body) : undefined,
     });
     const text = await res.text();
@@ -151,6 +160,13 @@ const page = `<!doctype html>
 const routeOpts = { secureCookies: secure };
 
 new Elysia()
+  .onRequest(({ request }) => {
+    const claimed = request.headers.get("x-test-origin");
+    if (claimed && /^https?:\/\/[^/\s]+$/.test(claimed) && claimed !== current.origin) {
+      current.origin = claimed;
+      console.log(`Passkey site is now ${claimed} (RP ID ${passkeyConfig.rpId})`);
+    }
+  })
   .get("/", ({ set }) => {
     set.headers["content-type"] = "text/html; charset=utf-8";
     return page;
@@ -159,5 +175,6 @@ new Elysia()
   .listen({ port, hostname: "0.0.0.0" });
 
 console.log(`Test server on port ${port} (cookies ${secure ? "Secure/__Host-" : "plain http"}).`);
-console.log(`Passkeys are set up for ${origin} (RP ID ${rpId}). Open exactly that address.`);
+console.log("Passkeys follow whichever address the page is opened on (localhost, a forwarded address, a tunnel).");
+console.log("A passkey made on one address does not work on another. Passkeys need HTTPS or localhost.");
 console.log("Email codes will be printed below.\n");
