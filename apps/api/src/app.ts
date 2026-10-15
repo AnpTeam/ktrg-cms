@@ -1,4 +1,5 @@
 import { Elysia } from "elysia";
+import { parseAdminEmails } from "./auth/admin-emails";
 import { createOtpService } from "./auth/otp-service";
 import { createDrizzleOtpStore } from "./auth/otp-store";
 import { createRateLimiter } from "./auth/rate-limit";
@@ -22,7 +23,12 @@ function getServices(): AuthServices & PasskeyServices {
     const secret = env.OTP_HMAC_SECRET ?? "dev-only-otp-secret-change-me-0000000";
     const mailer = createMailer(env);
     services = {
-      otp: createOtpService({ store: createDrizzleOtpStore(db), mailer, secret }),
+      otp: createOtpService({
+        store: createDrizzleOtpStore(db),
+        mailer,
+        secret,
+        adminEmails: parseAdminEmails(env.ADMIN_EMAILS).emails, // checked at boot (parse-env)
+      }),
       session: createSessionService({ store: createDrizzleSessionStore(db) }),
       rateLimit: createRateLimiter({ store: createDrizzleRateLimitStore(db), secret }),
       passkeys: createPasskeyService({

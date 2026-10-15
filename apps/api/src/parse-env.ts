@@ -1,5 +1,6 @@
 import { Type, type Static } from "@sinclair/typebox";
 import { Value } from "@sinclair/typebox/value";
+import { parseAdminEmails } from "./auth/admin-emails";
 
 const EnvSchema = Type.Object({
   NODE_ENV: Type.Union(
@@ -24,6 +25,9 @@ const EnvSchema = Type.Object({
   // Set only behind a trusted reverse proxy (e.g. Vercel): the client IP is then read
   // from X-Forwarded-For. Otherwise that header is ignored (it can be forged).
   TRUST_PROXY: Type.Boolean({ default: false }),
+  // First admin: comma-separated emails promoted to admin when they log in
+  // with an email code. Promote-only: removing an address later does not demote anyone.
+  ADMIN_EMAILS: Type.Optional(Type.String()),
 });
 
 export type Env = Static<typeof EnvSchema>;
@@ -34,6 +38,11 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
   const first = new Map<string, string>();
   for (const e of Value.Errors(EnvSchema, candidate)) {
     if (!first.has(e.path)) first.set(e.path, e.message);
+  }
+  const rawAdmins = (candidate as { ADMIN_EMAILS?: unknown }).ADMIN_EMAILS;
+  const badAdmins = parseAdminEmails(typeof rawAdmins === "string" ? rawAdmins : undefined).invalid;
+  if (badAdmins.length > 0 && !first.has("/ADMIN_EMAILS")) {
+    first.set("/ADMIN_EMAILS", `not an email address: ${badAdmins.join(", ")}`);
   }
   if (first.size > 0) {
     const lines = [...first].map(([path, msg]) => `  - ${path.slice(1) || "(root)"}: ${msg}`);

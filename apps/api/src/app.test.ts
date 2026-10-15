@@ -29,6 +29,12 @@ describe("parseEnv", () => {
     expect(parseEnv({}).PORT).toBe(3001);
   });
 
+  test("ADMIN_EMAILS must list real addresses", () => {
+    expect(parseEnv({ ADMIN_EMAILS: "Owner@Example.com, b@example.org" }).ADMIN_EMAILS).toBe("Owner@Example.com, b@example.org");
+    expect(parseEnv({ ADMIN_EMAILS: "" }).ADMIN_EMAILS).toBe("");
+    expect(() => parseEnv({ ADMIN_EMAILS: "owner@example.com, owner" })).toThrow(/ADMIN_EMAILS: not an email address: owner/);
+  });
+
   test("lists every problem at once", () => {
     expect(() => parseEnv({ PORT: "abc", NODE_ENV: "staging" })).toThrow(/NODE_ENV[\s\S]*PORT|PORT[\s\S]*NODE_ENV/);
   });

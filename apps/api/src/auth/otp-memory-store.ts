@@ -4,6 +4,8 @@ import type { AuthUser, OtpRow, OtpStore } from "./otp-service";
 export function createMemoryOtpStore() {
   const rows: (OtpRow & { email: string })[] = [];
   const users = new Map<string, AuthUser>();
+  /** Ids promoted by promoteToAdmin, in order: stands in for the audit log. */
+  const promotions: string[] = [];
   let nextId = 1;
 
   const store: OtpStore = {
@@ -35,7 +37,14 @@ export function createMemoryOtpStore() {
       }
       return user;
     },
+    async promoteToAdmin(userId) {
+      const user = [...users.values()].find((u) => u.id === userId);
+      if (!user || user.role === "admin") return false;
+      user.role = "admin";
+      promotions.push(userId);
+      return true;
+    },
   };
 
-  return { store, rows, users };
+  return { store, rows, users, promotions };
 }

@@ -10,7 +10,7 @@ import { createDrizzlePasskeyStore } from "../auth/passkey-store";
 import { createDrizzleRateLimitStore } from "../auth/rate-limit-store";
 import { createDrizzleSessionStore } from "../auth/session-store";
 import { createDb } from "./client";
-import { otpCodes, rallies, rateLimits, routes, spots, users, webauthnChallenges } from "./schema";
+import { auditLog, otpCodes, rallies, rateLimits, routes, spots, users, webauthnChallenges } from "./schema";
 import { seed } from "./seed";
 import { SEED_ROUTES } from "./seed-data";
 
@@ -135,6 +135,24 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       expect(made[0]).toMatchObject({ email: e, role: "participant", locale: "ja" });
       const rows = await db.select({ id: users.id }).from(users).where(sql`lower(${users.email}) = ${e}`);
       expect(rows).toHaveLength(1);
+    });
+
+    test("promoteToAdmin: 3 parallel calls promote once and write exactly one audit row", async () => {
+      const user = await otp.findOrCreateUser(email("otp-admin"));
+      try {
+        const results = await Promise.all(Array.from({ length: 3 }, () => otp.promoteToAdmin(user.id)));
+        expect(results.filter(Boolean)).toHaveLength(1);
+
+        const [row] = await db.select({ role: users.role }).from(users).where(eq(users.id, user.id));
+        expect(row!.role).toBe("admin");
+        const audits = await db.select().from(auditLog).where(eq(auditLog.targetId, user.id));
+        expect(audits).toHaveLength(1);
+        expect(audits[0]).toMatchObject({ actorUserId: user.id, action: "user.role.bootstrap_admin", targetType: "user" });
+
+        expect(await otp.promoteToAdmin(user.id)).toBe(false);
+      } finally {
+        await db.delete(auditLog).where(eq(auditLog.targetId, user.id));
+      }
     });
   });
 

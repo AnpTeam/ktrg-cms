@@ -41,12 +41,22 @@ export interface OtpStore {
   markUsed(id: string, at: Date): Promise<boolean>;
   /** The user with this email, created (participant, ja) on first sight. */
   findOrCreateUser(email: string): Promise<AuthUser>;
+  /**
+   * Atomically make this user an admin and write the audit row. Returns false when they
+   * already were one (nothing is written then).
+   */
+  promoteToAdmin(userId: string): Promise<boolean>;
 }
 
 export interface OtpServiceDeps {
   store: OtpStore;
   mailer: Mailer;
   secret: string;
+  /**
+   * ADMIN_EMAILS, normalized. A listed address becomes admin on a successful code check:
+   * the code proves they own the mailbox. Promote-only; nobody is ever demoted here.
+   */
+  adminEmails?: ReadonlySet<string>;
   now?: () => Date;
   log?: (message: string) => void;
 }
@@ -61,6 +71,7 @@ export function createOtpService({
   store,
   mailer,
   secret,
+  adminEmails = new Set(),
   now = () => new Date(),
   log = console.error,
 }: OtpServiceDeps) {
@@ -107,7 +118,12 @@ export function createOtpService({
       // Single use: only one concurrent caller can win this.
       if (!(await store.markUsed(row.id, at))) return { ok: false };
 
-      return { ok: true, user: await store.findOrCreateUser(email) };
+      const user = await store.findOrCreateUser(email);
+      if (user.role !== "admin" && adminEmails.has(email)) {
+        if (await store.promoteToAdmin(user.id)) log(`[auth] ${user.id} promoted to admin (ADMIN_EMAILS)`);
+        return { ok: true, user: { ...user, role: "admin" } };
+      }
+      return { ok: true, user };
     },
   };
 }

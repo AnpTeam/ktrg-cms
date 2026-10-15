@@ -1,6 +1,6 @@
-import { and, desc, eq, isNull, lt, sql } from "drizzle-orm";
+import { and, desc, eq, isNull, lt, ne, sql } from "drizzle-orm";
 import type { Db } from "../db/client";
-import { otpCodes, users } from "../db/schema";
+import { auditLog, otpCodes, users } from "../db/schema";
 import type { AuthUser, OtpStore } from "./otp-service";
 
 export function createDrizzleOtpStore(db: Db): OtpStore {
@@ -53,6 +53,26 @@ export function createDrizzleOtpStore(db: Db): OtpStore {
         .limit(1);
       if (!user) throw new Error("user lookup failed after insert");
       return user satisfies AuthUser;
+    },
+
+    async promoteToAdmin(userId) {
+      return db.transaction(async (tx) => {
+        // Only a real change counts, so two parallel logins write one audit row, not two.
+        const changed = await tx
+          .update(users)
+          .set({ role: "admin", updatedAt: sql`now()` })
+          .where(and(eq(users.id, userId), ne(users.role, "admin")))
+          .returning({ id: users.id });
+        if (changed.length === 0) return false;
+        // The account promoted itself by proving it owns a listed mailbox.
+        await tx.insert(auditLog).values({
+          actorUserId: userId,
+          action: "user.role.bootstrap_admin",
+          targetType: "user",
+          targetId: userId,
+        });
+        return true;
+      });
     },
   };
 }
