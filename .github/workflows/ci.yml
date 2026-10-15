@@ -33,6 +33,7 @@ jobs:
     env:
       DATABASE_URL: postgres://ktrg:ci_password@localhost:5432/ktrg_test
       APP_ORIGIN: http://localhost:3000
+      MAIL_FROM: KTRG <no-reply@localhost>
     steps:
       - uses: actions/checkout@v4
 

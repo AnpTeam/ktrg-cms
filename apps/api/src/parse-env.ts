@@ -10,6 +10,12 @@ const EnvSchema = Type.Object({
   // Optional until the database is wired up (WBS 1.2.x).
   DATABASE_URL: Type.Optional(Type.String({ pattern: "^postgres(ql)?://.+" })),
   APP_ORIGIN: Type.String({ pattern: "^https?://[^/]+$", default: "http://localhost:3000" }),
+  // Mail (WBS 2.1.1). Without SMTP_HOST, non-production logs emails to the console.
+  SMTP_HOST: Type.Optional(Type.String()),
+  SMTP_PORT: Type.Integer({ minimum: 1, maximum: 65535, default: 587 }),
+  SMTP_USER: Type.Optional(Type.String()),
+  SMTP_PASS: Type.Optional(Type.String()),
+  MAIL_FROM: Type.String({ minLength: 3, default: "KTRG <no-reply@localhost>" }),
 });
 
 export type Env = Static<typeof EnvSchema>;
