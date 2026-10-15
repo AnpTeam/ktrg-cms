@@ -1,3 +1,5 @@
+import type { EmailLocale } from "../emails/layout";
+import { buildOtpEmail } from "../emails/otp-code";
 import type { Mailer } from "../lib/mailer";
 import {
   OTP_COOLDOWN_MS,
@@ -63,7 +65,8 @@ export function createOtpService({
   log = console.error,
 }: OtpServiceDeps) {
   return {
-    async request(rawEmail: string): Promise<void> {
+    /** `locale` is the language of the page the code was asked from; Japanese if unknown. */
+    async request(rawEmail: string, locale: EmailLocale = "ja"): Promise<void> {
       const email = normalizeEmail(rawEmail);
       const issuedAt = now();
 
@@ -81,7 +84,7 @@ export function createOtpService({
       });
 
       try {
-        await mailer.send(buildOtpEmail(email, code));
+        await mailer.send(buildOtpEmail({ to: email, locale, code, ttlMinutes: OTP_TTL_MS / 60_000 }));
       } catch (err) {
         // Never surface mail failures: it would tell a caller more than "ok".
         log(`[otp] mail send failed: ${err instanceof Error ? err.message : String(err)}`);
@@ -110,15 +113,3 @@ export function createOtpService({
 }
 
 export type OtpService = ReturnType<typeof createOtpService>;
-
-/** Plain bilingual placeholder until the JA/EN templates (WBS 2.1.2) land. */
-function buildOtpEmail(to: string, code: string) {
-  const minutes = OTP_TTL_MS / 60_000;
-  return {
-    to,
-    subject: "確認コード / Your verification code",
-    text:
-      `確認コード: ${code}\nこのコードは${minutes}分間有効です。心当たりがない場合は無視してください。\n\n` +
-      `Your verification code: ${code}\nIt is valid for ${minutes} minutes. If you did not request it, ignore this email.`,
-  };
-}
