@@ -1,7 +1,12 @@
+import { randomUUID } from "node:crypto";
 import {
+  generateAuthenticationOptions,
   generateRegistrationOptions,
+  verifyAuthenticationResponse,
   verifyRegistrationResponse,
+  type AuthenticationResponseJSON,
   type PublicKeyCredentialCreationOptionsJSON,
+  type PublicKeyCredentialRequestOptionsJSON,
   type RegistrationResponseJSON,
 } from "@simplewebauthn/server";
 import type { AuthUser } from "./otp-service";
@@ -13,31 +18,59 @@ export const MAX_PASSKEYS_PER_USER = 10;
 
 export type ChallengeType = "registration" | "authentication";
 
+export interface StoredPasskey {
+  userId: string;
+  credentialId: string;
+  publicKey: Uint8Array;
+  counter: number;
+}
+
+export interface NewPasskey {
+  userId: string;
+  credentialId: string;
+  publicKey: Uint8Array;
+  counter: number;
+  label: string | null;
+}
+
 /** Storage the passkey service needs; the Drizzle version is in passkey-store.ts. */
 export interface PasskeyStore {
+  /** The stored passkey for a credential id, or null. */
+  findCredential(credentialId: string): Promise<StoredPasskey | null>;
+  /** Remember how many times the authenticator says it has been used (clone detection). */
+  updateCounter(credentialId: string, counter: number): Promise<void>;
+  userById(userId: string): Promise<AuthUser | null>;
   /** Credential ids the user already has (so the same device is not added twice). */
   credentialIds(userId: string): Promise<string[]>;
   saveChallenge(row: {
     challenge: string;
     type: ChallengeType;
+    /** Whose challenge it is; null for login and for sign-up (no account yet). */
     userId: string | null;
+    /** Sign-up only: the id the new account will get once the passkey verifies. */
+    pendingUserId: string | null;
     expiresAt: Date;
   }): Promise<void>;
   /**
    * Atomically take (delete) an unexpired challenge of this type that belongs to
-   * this user. Returns false if it is unknown, expired, someone else's or already used.
+   * this user (or to nobody, when userId is null). Returns null if it is unknown,
+   * expired, someone else's or already used.
    */
-  takeChallenge(challenge: string, type: ChallengeType, userId: string | null, now: Date): Promise<boolean>;
+  takeChallenge(
+    challenge: string,
+    type: ChallengeType,
+    userId: string | null,
+    now: Date,
+  ): Promise<{ pendingUserId: string | null } | null>;
   /** Forget challenges that expired before this time. */
   pruneChallenges(before: Date): Promise<void>;
   /** Returns false if the credential id is already registered. */
-  insertPasskey(row: {
-    userId: string;
-    credentialId: string;
-    publicKey: Uint8Array;
-    counter: number;
-    label: string | null;
-  }): Promise<boolean>;
+  insertPasskey(row: NewPasskey): Promise<boolean>;
+  /**
+   * Create a passkey-only account (no email) together with its first passkey, all
+   * or nothing. Returns false, creating nothing, if the credential id is already taken.
+   */
+  createUserWithPasskey(row: NewPasskey): Promise<boolean>;
 }
 
 export interface PasskeyConfig {
@@ -53,6 +86,8 @@ export type RegisterResult =
   | { ok: true; passkey: { credentialId: string; label: string | null } }
   | { ok: false; reason: "too_many" | "failed" };
 
+export type LoginResult = { ok: true; user: AuthUser } | { ok: false };
+
 export function createPasskeyService({
   store,
   config,
@@ -62,8 +97,37 @@ export function createPasskeyService({
   config: PasskeyConfig;
   now?: () => Date;
 }) {
+  /**
+   * Make a NEW key on this device by scanning a face or fingerprint (Face ID, Touch ID,
+   * Windows Hello), instead of asking the user to find a security key or another device.
+   * It is a discoverable passkey, so login needs no email.
+   */
+  const registrationPrefs = {
+    authenticatorSelection: { residentKey: "required", userVerification: "required", authenticatorAttachment: "platform" },
+    // Also tells browsers that support it to go straight to the built-in scanner.
+    preferredAuthenticatorType: "localDevice",
+  } as const;
+  // The library edits the object it is given, so every call gets its own copy.
+  const registrationSettings = () =>
+    ({
+      authenticatorSelection: { ...registrationPrefs.authenticatorSelection },
+      preferredAuthenticatorType: registrationPrefs.preferredAuthenticatorType,
+    }) as const;
+
+  async function newChallenge(row: {
+    challenge: string;
+    type: ChallengeType;
+    userId: string | null;
+    pendingUserId: string | null;
+  }) {
+    const at = now();
+    await store.saveChallenge({ ...row, expiresAt: new Date(at.getTime() + CHALLENGE_TTL_MS) });
+    // Tidy up challenges nobody finished.
+    await store.pruneChallenges(at).catch(() => {});
+  }
+
   return {
-    /** Step 1: settings for the phone, plus a one-time challenge we remember. */
+    /** Add a passkey to an account you are logged into. Step 1: settings plus a one-time challenge. */
     async registrationOptions(
       user: AuthUser,
     ): Promise<{ ok: true; options: PublicKeyCredentialCreationOptionsJSON } | { ok: false; reason: "too_many" }> {
@@ -73,29 +137,20 @@ export function createPasskeyService({
       const options = await generateRegistrationOptions({
         rpName: config.rpName,
         rpID: config.rpId,
-        userName: user.email,
+        // Shown in the phone's passkey list. A passkey-only account has no email to show.
+        userName: user.email ?? `ktrg-${user.id.slice(0, 8)}`,
         // An opaque id, never the email: the phone stores it with the passkey.
         userID: new TextEncoder().encode(user.id),
         attestationType: "none",
         excludeCredentials: existing.map((id) => ({ id })),
-        // A discoverable passkey (so "log in with passkey" needs no email) and Face ID / fingerprint.
-        authenticatorSelection: { residentKey: "required", userVerification: "required" },
+        ...registrationSettings(),
       });
 
-      const at = now();
-      await store.saveChallenge({
-        challenge: options.challenge,
-        type: "registration",
-        userId: user.id,
-        expiresAt: new Date(at.getTime() + CHALLENGE_TTL_MS),
-      });
-      // Tidy up challenges nobody finished.
-      await store.pruneChallenges(at).catch(() => {});
-
+      await newChallenge({ challenge: options.challenge, type: "registration", userId: user.id, pendingUserId: null });
       return { ok: true, options };
     },
 
-    /** Step 3: check the phone's answer and keep the public key. */
+    /** Add a passkey, step 3: check the phone's answer and keep the public key. */
     async verifyRegistration(
       user: AuthUser,
       response: RegistrationResponseJSON,
@@ -105,34 +160,118 @@ export function createPasskeyService({
         return { ok: false, reason: "too_many" };
       }
 
+      const credential = await verifyNewCredential(response, async (challenge) =>
+        (await store.takeChallenge(challenge, "registration", user.id, now())) !== null,
+      );
+      if (!credential) return { ok: false, reason: "failed" };
+
+      const saved = await store.insertPasskey({ userId: user.id, ...credential, label });
+      if (!saved) return { ok: false, reason: "failed" };
+
+      return { ok: true, passkey: { credentialId: credential.credentialId, label } };
+    },
+
+    /**
+     * Sign up with a passkey alone, no email. Step 1. Nobody is logged in and no account
+     * exists yet: we only reserve the id the account will get, and create it in step 3.
+     */
+    async signupOptions(): Promise<PublicKeyCredentialCreationOptionsJSON> {
+      const pendingUserId = randomUUID();
+      const options = await generateRegistrationOptions({
+        rpName: config.rpName,
+        rpID: config.rpId,
+        userName: `ktrg-${pendingUserId.slice(0, 8)}`,
+        userID: new TextEncoder().encode(pendingUserId),
+        attestationType: "none",
+        ...registrationSettings(),
+      });
+      await newChallenge({ challenge: options.challenge, type: "registration", userId: null, pendingUserId });
+      return options;
+    },
+
+    /** Sign up with a passkey, step 3: a good passkey creates the account (participant, Japanese). */
+    async verifySignup(response: RegistrationResponseJSON, label: string | null): Promise<LoginResult> {
+      const taken = { pendingUserId: null as string | null };
+      const credential = await verifyNewCredential(response, async (challenge) => {
+        const row = await store.takeChallenge(challenge, "registration", null, now());
+        taken.pendingUserId = row?.pendingUserId ?? null;
+        return taken.pendingUserId !== null;
+      });
+      if (!credential || !taken.pendingUserId) return { ok: false };
+
+      const created = await store.createUserWithPasskey({ userId: taken.pendingUserId, ...credential, label });
+      if (!created) return { ok: false };
+
+      return { ok: true, user: { id: taken.pendingUserId, email: null, role: "participant", locale: "ja" } };
+    },
+
+    /**
+     * Login step 1. No email is asked for: with no allowCredentials the phone shows
+     * whichever passkeys it holds for this site and the user picks one.
+     */
+    async loginOptions(): Promise<PublicKeyCredentialRequestOptionsJSON> {
+      const options = await generateAuthenticationOptions({ rpID: config.rpId, userVerification: "required" });
+      await newChallenge({ challenge: options.challenge, type: "authentication", userId: null, pendingUserId: null });
+      return options;
+    },
+
+    /** Login step 3: check the phone's signature against the public key we stored. */
+    async verifyLogin(response: AuthenticationResponseJSON): Promise<LoginResult> {
+      const stored = await store.findCredential(response.id);
+      if (!stored) return { ok: false };
+
+      // The phone also returns the id we gave it at registration; it must be this passkey's owner.
+      const handle = response.response.userHandle;
+      if (handle !== undefined && Buffer.from(handle, "base64url").toString() !== stored.userId) {
+        return { ok: false };
+      }
+
       let verification;
       try {
-        verification = await verifyRegistrationResponse({
+        verification = await verifyAuthenticationResponse({
           response,
-          // The challenge must be one WE issued to THIS user, unexpired, and it is used up here.
-          expectedChallenge: (challenge) => store.takeChallenge(challenge, "registration", user.id, now()),
+          // A challenge WE issued for a login, unexpired, used up here.
+          expectedChallenge: async (challenge) =>
+            (await store.takeChallenge(challenge, "authentication", null, now())) !== null,
           expectedOrigin: config.origin,
           expectedRPID: config.rpId,
+          credential: { id: stored.credentialId, publicKey: new Uint8Array(stored.publicKey), counter: stored.counter },
           requireUserVerification: true,
         });
       } catch {
-        return { ok: false, reason: "failed" };
+        return { ok: false };
       }
-      if (!verification.verified) return { ok: false, reason: "failed" };
+      if (!verification.verified) return { ok: false };
 
-      const { credential } = verification.registrationInfo;
-      const saved = await store.insertPasskey({
-        userId: user.id,
-        credentialId: credential.id,
-        publicKey: credential.publicKey,
-        counter: credential.counter,
-        label,
-      });
-      if (!saved) return { ok: false, reason: "failed" };
+      const user = await store.userById(stored.userId);
+      if (!user) return { ok: false };
 
-      return { ok: true, passkey: { credentialId: credential.id, label } };
+      await store.updateCounter(stored.credentialId, verification.authenticationInfo.newCounter);
+      return { ok: true, user };
     },
   };
+
+  /** Run the library's registration check; returns the new credential or null. */
+  async function verifyNewCredential(
+    response: RegistrationResponseJSON,
+    challengeIsOurs: (challenge: string) => Promise<boolean>,
+  ): Promise<Omit<NewPasskey, "userId" | "label"> | null> {
+    try {
+      const verification = await verifyRegistrationResponse({
+        response,
+        // The challenge must be one WE issued for this ceremony, unexpired, and it is used up here.
+        expectedChallenge: challengeIsOurs,
+        expectedOrigin: config.origin,
+        expectedRPID: config.rpId,
+        requireUserVerification: true,
+      });
+      if (!verification.verified) return null;
+      const { credential } = verification.registrationInfo;
+      return { credentialId: credential.id, publicKey: credential.publicKey, counter: credential.counter };
+    } catch {
+      return null;
+    }
+  }
 }
 
 export type PasskeyService = ReturnType<typeof createPasskeyService>;

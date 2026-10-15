@@ -1,5 +1,5 @@
-import { createHash, generateKeyPairSync, randomBytes, type KeyObject } from "node:crypto";
-import type { RegistrationResponseJSON } from "@simplewebauthn/server";
+import { createHash, generateKeyPairSync, randomBytes, sign, type KeyObject } from "node:crypto";
+import type { AuthenticationResponseJSON, RegistrationResponseJSON } from "@simplewebauthn/server";
 
 // Test support: a tiny software "phone" that makes real WebAuthn registrations
 // (ES256, "none" attestation) so the real verifier can be exercised without a device.
@@ -30,12 +30,23 @@ export interface RegisterOverrides {
   userVerified?: boolean;
 }
 
+export interface AuthenticateOverrides extends RegisterOverrides {
+  /** Sign with a different key, as an impostor would. */
+  signWithOtherKey?: boolean;
+  /** Send this userHandle (base64url) instead of the one stored at registration. */
+  userHandle?: string | null;
+  /** Report this signature counter instead of counting up. */
+  counter?: number;
+}
+
 export class TestAuthenticator {
   readonly credentialId = randomBytes(32);
   readonly privateKey: KeyObject;
   private readonly x: Buffer;
   private readonly y: Buffer;
   counter = 0;
+  /** The user id the site gave the phone at registration (base64url). */
+  userHandle: string | undefined;
 
   constructor(private readonly defaults: { origin: string; rpId: string }) {
     const { privateKey, publicKey } = generateKeyPairSync("ec", { namedCurve: "P-256" });
@@ -50,7 +61,8 @@ export class TestAuthenticator {
   }
 
   /** What navigator.credentials.create() returns, as JSON, for the given options. */
-  register(options: { challenge: string }, o: RegisterOverrides = {}): RegistrationResponseJSON {
+  register(options: { challenge: string; user?: { id: string } }, o: RegisterOverrides = {}): RegistrationResponseJSON {
+    this.userHandle = options.user?.id ?? this.userHandle;
     const rpId = o.rpId ?? this.defaults.rpId;
     const flags = 0x01 /* user present */ | (o.userVerified === false ? 0 : 0x04) | 0x40; /* has credential data */
 
@@ -81,6 +93,43 @@ export class TestAuthenticator {
         clientDataJSON: b64url(clientDataJSON),
         attestationObject: b64url(attestationObject),
         transports: ["internal"],
+      },
+      clientExtensionResults: {},
+      authenticatorAttachment: "platform",
+    };
+  }
+
+  /** What navigator.credentials.get() returns, as JSON: a signature over the challenge. */
+  authenticate(options: { challenge: string }, o: AuthenticateOverrides = {}): AuthenticationResponseJSON {
+    const rpId = o.rpId ?? this.defaults.rpId;
+    this.counter = o.counter ?? this.counter + 1;
+    const flags = 0x01 /* user present */ | (o.userVerified === false ? 0 : 0x04); /* user verified */
+
+    const authData = Buffer.concat([createHash("sha256").update(rpId).digest(), Buffer.from([flags]), u32(this.counter)]);
+    const clientDataJSON = Buffer.from(
+      JSON.stringify({
+        type: "webauthn.get",
+        challenge: o.challenge ?? options.challenge,
+        origin: o.origin ?? this.defaults.origin,
+        crossOrigin: false,
+      }),
+    );
+
+    // The signature covers authenticatorData || SHA-256(clientDataJSON).
+    const signed = Buffer.concat([authData, createHash("sha256").update(clientDataJSON).digest()]);
+    const key = o.signWithOtherKey ? generateKeyPairSync("ec", { namedCurve: "P-256" }).privateKey : this.privateKey;
+    const signature = sign("sha256", signed, key); // DER, as WebAuthn expects for ES256
+
+    const userHandle = o.userHandle === undefined ? this.userHandle : (o.userHandle ?? undefined);
+    return {
+      id: this.id,
+      rawId: this.id,
+      type: "public-key",
+      response: {
+        clientDataJSON: b64url(clientDataJSON),
+        authenticatorData: b64url(authData),
+        signature: b64url(signature),
+        ...(userHandle ? { userHandle } : {}),
       },
       clientExtensionResults: {},
       authenticatorAttachment: "platform",

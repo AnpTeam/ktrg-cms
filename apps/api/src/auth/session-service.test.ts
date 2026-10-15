@@ -10,8 +10,8 @@ const admin: AuthUser = { id: "u2", email: "a@example.com", role: "admin", local
 
 function setup() {
   const users = new Map<string, AuthUser>([
-    [participant.email, participant],
-    [admin.email, admin],
+    [participant.id, participant],
+    [admin.id, admin],
   ]);
   const { store, rows } = createMemorySessionStore(users);
   let clock = new Date("2026-10-15T00:00:00Z");

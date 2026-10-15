@@ -19,7 +19,8 @@ export interface OtpRow {
 
 export interface AuthUser {
   id: string;
-  email: string;
+  /** Null for an account made with a passkey alone: never assume you can email a user. */
+  email: string | null;
   role: "participant" | "admin";
   locale: "ja" | "en";
 }

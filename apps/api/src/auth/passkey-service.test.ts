@@ -31,6 +31,8 @@ describe("registrationOptions", () => {
     expect(options.user.name).toBe("alice@example.com");
     expect(options.authenticatorSelection).toMatchObject({ residentKey: "required", userVerification: "required" });
     expect(options.attestation).toBe("none");
+    expect(options.authenticatorSelection?.authenticatorAttachment).toBe("platform");
+    expect(options.hints).toEqual(["client-device"]);
     expect(options.challenge.length).toBeGreaterThanOrEqual(32);
   });
 

@@ -38,4 +38,20 @@ describe("auth schema", () => {
     const col = getTableConfig(webauthnChallenges).columns.find((c) => c.name === "user_id")!;
     expect(col.notNull).toBe(false);
   });
+
+  test("a user's email is optional: an account can be made with a passkey alone", () => {
+    const col = getTableConfig(users).columns.find((c) => c.name === "email")!;
+    expect(col.notNull).toBe(false);
+  });
+
+  test("email is still unique ignoring case when present", () => {
+    const idx = getTableConfig(users).indexes.find((i) => i.config.name === "users_email_lower_uq")!;
+    expect(idx.config.unique).toBe(true);
+  });
+
+  test("passkey sign-up reserves the new account id without a foreign key", () => {
+    const col = getTableConfig(webauthnChallenges).columns.find((c) => c.name === "pending_user_id")!;
+    expect(col.notNull).toBe(false);
+    expect(getTableConfig(webauthnChallenges).foreignKeys).toHaveLength(1); // only user_id
+  });
 });

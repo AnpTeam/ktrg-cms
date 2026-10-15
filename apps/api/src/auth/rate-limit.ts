@@ -25,6 +25,11 @@ export const AUTH_LIMITS = {
   otpRequestIp: { name: "otp-request-ip", limit: 20, windowMs: 15 * MINUTE },
   otpVerifyEmail: { name: "otp-verify-email", limit: 10, windowMs: 15 * MINUTE },
   otpVerifyIp: { name: "otp-verify-ip", limit: 30, windowMs: 15 * MINUTE },
+  // Passkey sign-up creates an account with no email to throttle on. Generous, because
+  // many people on one trailhead mobile network share an IP.
+  passkeySignupIp: { name: "passkey-signup-ip", limit: 30, windowMs: 15 * MINUTE },
+  // Passkey login needs no email, so the only handle is the caller's IP.
+  passkeyLoginIp: { name: "passkey-login-ip", limit: 30, windowMs: 15 * MINUTE },
   // Keyed by user id: adding a passkey needs a login, so this just caps abuse.
   passkeyRegisterUser: { name: "passkey-register-user", limit: 10, windowMs: 15 * MINUTE },
 } as const satisfies Record<string, RateLimitRule>;

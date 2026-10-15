@@ -25,13 +25,17 @@ const bytea = customType<{ data: Buffer; driverData: Buffer }>({
 
 const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
 
-/** One row per person. Created on the first successful OTP login. */
+/**
+ * One row per person. Created on the first successful email-code login, or on
+ * the first passkey sign-up (which has no email).
+ */
 export const users = pgTable(
   "users",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    // Stored lowercase by the app; the unique index below also enforces it.
-    email: text("email").notNull(),
+    // Null for an account made with a passkey alone. Stored lowercase by the app;
+    // the unique index below also enforces it (Postgres allows many nulls).
+    email: text("email"),
     role: userRole("role").notNull().default("participant"),
     locale: userLocale("locale").notNull().default("ja"),
     displayName: text("display_name"),
@@ -96,7 +100,11 @@ export const otpCodes = pgTable(
   (t) => [index("otp_codes_email_expires_idx").on(t.email, t.expiresAt)],
 );
 
-/** Short-lived WebAuthn challenges. userId is null for discoverable-credential login. */
+/**
+ * Short-lived WebAuthn challenges. userId is null for discoverable-credential
+ * login and for passkey sign-up; sign-up also records the id the new account
+ * will get (pendingUserId, no foreign key: the user exists only once the passkey verifies).
+ */
 export const webauthnChallenges = pgTable(
   "webauthn_challenges",
   {
@@ -104,6 +112,7 @@ export const webauthnChallenges = pgTable(
     challenge: text("challenge").notNull().unique(),
     type: webauthnChallengeType("type").notNull(),
     userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+    pendingUserId: uuid("pending_user_id"),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     createdAt: createdAt(),
   },

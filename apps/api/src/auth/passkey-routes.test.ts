@@ -15,7 +15,7 @@ const config = { rpName: "KTRG", rpId: "example.com", origin: "https://example.c
 const alice: AuthUser = { id: "11111111-1111-1111-1111-111111111111", email: "alice@example.com", role: "participant", locale: "ja" };
 
 function setup() {
-  const users = new Map<string, AuthUser>([[alice.email, alice]]);
+  const users = new Map<string, AuthUser>([[alice.id, alice]]);
   const sessions = createMemorySessionStore(users);
   const session = createSessionService({ store: sessions.store });
   const mem = createMemoryPasskeyStore();
