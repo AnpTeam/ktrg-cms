@@ -1,3 +1,4 @@
+import type { ErrorCode } from "../lib/api-errors";
 import { clientIp } from "../lib/client-ip";
 import type { RateLimitResult } from "./rate-limit";
 import type { AuthUser } from "./user";
@@ -84,9 +85,10 @@ export type HttpHelpers = ReturnType<typeof createHttpHelpers>;
 
 /**
  * Answer with an error: sets the status and returns the `{ ok: false, error }` body every
- * endpoint uses. `return fail(set, 409, "no_email")`.
+ * endpoint uses. `return fail(set, 409, "no_email")`. The code must be in ERROR_CODES
+ * (lib/api-errors.ts).
  */
-export function fail<const Status extends number, const Code extends string>(set: SetLike, status: Status, error: Code) {
+export function fail<const Status extends number, const Code extends ErrorCode>(set: SetLike, status: Status, error: Code) {
   set.status = status;
   return { ok: false as const, error };
 }

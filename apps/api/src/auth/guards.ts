@@ -1,13 +1,14 @@
 import { Elysia } from "elysia";
+import type { ApiError } from "../lib/api-errors";
 import { createHttpHelpers } from "./http";
 import { SESSION_SECURITY } from "../openapi";
 import { can, needsFreshLogin, type Permission } from "./permissions";
 import type { SessionService } from "./session-service";
 
-export const UNAUTHENTICATED = { ok: false, error: "unauthenticated" } as const;
-export const FORBIDDEN = { ok: false, error: "forbidden" } as const;
+export const UNAUTHENTICATED = { ok: false, error: "unauthenticated" } as const satisfies ApiError;
+export const FORBIDDEN = { ok: false, error: "forbidden" } as const satisfies ApiError;
 /** The role is allowed, but this permission needs a fresh login: run POST /auth/reauth/request + verify. */
-export const REAUTH_REQUIRED = { ok: false, error: "reauth_required" } as const;
+export const REAUTH_REQUIRED = { ok: false, error: "reauth_required" } as const satisfies ApiError;
 
 /**
  * Route guards. Use the plugin, then name the permission a route needs:

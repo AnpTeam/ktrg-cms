@@ -83,7 +83,7 @@ export function routeKit<S extends KitServices>(getServices: () => S, opts: Rout
     rateLimit: (spec: RateLimitSpec) => ({
       // Name every field this reads in the parameters: Elysia only prepares (parses) the parts
       // of the request a hook visibly uses, so reading `headers` through a cast would see none.
-      beforeHandle: async ({ headers, request, server, body, set, ...rest }) => {
+      beforeHandle: async ({ headers, request, server, body, set, status, ...rest }) => {
         const user = (rest as { user?: LimitContext["user"] }).user;
         const c: LimitContext = { headers, request, server, body, set, user };
         const hits: { rule: (typeof AUTH_LIMITS)[keyof typeof AUTH_LIMITS]; identifier: string }[] = [];
@@ -93,7 +93,8 @@ export function routeKit<S extends KitServices>(getServices: () => S, opts: Rout
           hits.push({ rule: AUTH_LIMITS[rule], identifier: id });
         }
         const limited = http.tooMany(c.set, await getServices().rateLimit.checkAll(hits));
-        if (limited) return limited;
+        // status(), not the bare body: a bare body would join the route's success type.
+        if (limited) return status(429, limited);
       },
     }),
   });

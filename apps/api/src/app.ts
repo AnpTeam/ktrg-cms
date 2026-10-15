@@ -10,6 +10,7 @@ import { authRoutes } from "./auth/routes";
 import { createDrizzleSessionStore } from "./auth/session-store";
 import { createDb } from "./db/client";
 import { env } from "./env";
+import { apiBase } from "./lib/api-errors";
 import { createMailer } from "./lib/mailer";
 import { meRoutes } from "./me/me-routes";
 import { createDrizzleMeStore } from "./me/me-store";
@@ -51,6 +52,7 @@ function getServices(): Services {
  */
 export function createApp(getServices: () => Services, opts: RouteOptions & { docs: boolean }) {
   return new Elysia({ prefix: "/api/v1" })
+    .use(apiBase()) // first: request ids and the one error shape, for everything below
     .use(apiDocs({ enabled: opts.docs }))
     .get(
       "/health",
@@ -71,3 +73,5 @@ export const app = createApp(getServices, {
 });
 
 export type App = typeof app;
+/** The `{ ok: false, error }` body of every failure, for the web app's error handling. */
+export type { ApiError, ErrorCode, ValidationIssue } from "./lib/api-errors";

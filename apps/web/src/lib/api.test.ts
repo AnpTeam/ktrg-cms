@@ -21,6 +21,17 @@ describe("typed API client", () => {
     expect(status).toBe("ok");
   });
 
+  test("error answers are typed under `error`, never as data", () => {
+    // Compile-time only (never called): fails to compile if an error body, such as the 429
+    // from a rate limit or the API's shared error answers, joins a route's success type.
+    const check = async () => {
+      const { data } = await api.auth.otp.request.post({ email: "a@example.com" });
+      const ok: { ok: true } | null = data;
+      return ok;
+    };
+    void check;
+  });
+
   test("unknown routes are a compile-time error", () => {
     // @ts-expect-error there is no /api/v1/nope route
     void api.nope;
