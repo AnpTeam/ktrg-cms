@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { AuthUser } from "./otp-service";
 import type { ChallengeType, PasskeyStore } from "./passkey-service";
 
@@ -11,14 +12,30 @@ export function createMemoryPasskeyStore(users: Map<string, AuthUser> = new Map(
     expiresAt: Date;
   }[] = [];
   const passkeys: {
+    id: string;
     userId: string;
     credentialId: string;
     publicKey: Uint8Array;
     counter: number;
     label: string | null;
+    createdAt: Date;
   }[] = [];
 
   const store: PasskeyStore = {
+    async list(userId) {
+      return passkeys
+        .filter((p) => p.userId === userId)
+        .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+        .map((p) => ({ id: p.id, label: p.label, createdAt: p.createdAt }));
+    },
+    async remove(userId, passkeyId, opts) {
+      const mine = passkeys.filter((p) => p.userId === userId);
+      const target = mine.find((p) => p.id === passkeyId);
+      if (!target) return { ok: false, reason: "not_found" };
+      if (opts.keepAtLeastOne && mine.length <= 1) return { ok: false, reason: "last_method" };
+      passkeys.splice(passkeys.indexOf(target), 1);
+      return { ok: true, label: target.label };
+    },
     async findCredential(credentialId) {
       const p = passkeys.find((x) => x.credentialId === credentialId);
       return p ? { userId: p.userId, credentialId: p.credentialId, publicKey: p.publicKey, counter: p.counter } : null;
@@ -52,13 +69,13 @@ export function createMemoryPasskeyStore(users: Map<string, AuthUser> = new Map(
     },
     async insertPasskey(row) {
       if (passkeys.some((p) => p.credentialId === row.credentialId)) return false;
-      passkeys.push(row);
+      passkeys.push({ id: randomUUID(), createdAt: new Date(), ...row });
       return true;
     },
     async createUserWithPasskey(row) {
       if (passkeys.some((p) => p.credentialId === row.credentialId)) return false;
       users.set(row.userId, { id: row.userId, email: null, role: "participant", locale: "ja" });
-      passkeys.push(row);
+      passkeys.push({ id: randomUUID(), createdAt: new Date(), ...row });
       return true;
     },
   };

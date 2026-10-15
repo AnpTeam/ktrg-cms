@@ -1,4 +1,6 @@
 import { randomUUID } from "node:crypto";
+import type { Mailer } from "../lib/mailer";
+import { buildPasskeyAlertEmail, type PasskeyAlertAction } from "./passkey-alert-email";
 import {
   generateAuthenticationOptions,
   generateRegistrationOptions,
@@ -33,8 +35,27 @@ export interface NewPasskey {
   label: string | null;
 }
 
+/** What the settings screen may show about a passkey: never the key material. */
+export interface PasskeySummary {
+  id: string;
+  label: string | null;
+  createdAt: Date;
+}
+
+export type RemoveStoreResult =
+  | { ok: true; label: string | null }
+  | { ok: false; reason: "not_found" | "last_method" };
+
 /** Storage the passkey service needs; the Drizzle version is in passkey-store.ts. */
 export interface PasskeyStore {
+  /** The user's passkeys, oldest first. */
+  list(userId: string): Promise<PasskeySummary[]>;
+  /**
+   * Remove one of THIS user's passkeys (another user's id is "not_found"). With
+   * keepAtLeastOne, refuses to remove the last one. Atomic, so two removals at once
+   * cannot both slip past that rule.
+   */
+  remove(userId: string, passkeyId: string, opts: { keepAtLeastOne: boolean }): Promise<RemoveStoreResult>;
   /** The stored passkey for a credential id, or null. */
   findCredential(credentialId: string): Promise<StoredPasskey | null>;
   /** Remember how many times the authenticator says it has been used (clone detection). */
@@ -88,15 +109,32 @@ export type RegisterResult =
 
 export type LoginResult = { ok: true; user: AuthUser } | { ok: false };
 
+export type RemoveResult = { ok: true } | { ok: false; reason: "not_found" | "last_method" };
+
 export function createPasskeyService({
   store,
   config,
   now = () => new Date(),
+  mailer,
+  log = console.error,
 }: {
   store: PasskeyStore;
   config: PasskeyConfig;
   now?: () => Date;
+  /** Sends the add/remove alert. Without one, no alert is sent. */
+  mailer?: Mailer;
+  log?: (message: string) => void;
 }) {
+  /** Tell the account owner by email. Accounts with no email are skipped; a failure never blocks the action. */
+  async function alert(user: AuthUser, action: PasskeyAlertAction, label: string | null) {
+    if (!mailer || !user.email) return;
+    try {
+      await mailer.send(buildPasskeyAlertEmail({ to: user.email, locale: user.locale, action, label, at: now() }));
+    } catch (err) {
+      log(`[passkey] alert email failed: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+
   /**
    * Make a NEW key on this device by scanning a face or fingerprint (Face ID, Touch ID,
    * Windows Hello), instead of asking the user to find a security key or another device.
@@ -168,7 +206,24 @@ export function createPasskeyService({
       const saved = await store.insertPasskey({ userId: user.id, ...credential, label });
       if (!saved) return { ok: false, reason: "failed" };
 
+      await alert(user, "added", label);
       return { ok: true, passkey: { credentialId: credential.credentialId, label } };
+    },
+
+    /** The account's passkeys, for the settings screen. */
+    list(user: AuthUser): Promise<PasskeySummary[]> {
+      return store.list(user.id);
+    },
+
+    /**
+     * Remove one of the user's own passkeys. A passkey-only account (no email) cannot remove
+     * its last one: it would have no way to log in again.
+     */
+    async remove(user: AuthUser, passkeyId: string): Promise<RemoveResult> {
+      const result = await store.remove(user.id, passkeyId, { keepAtLeastOne: user.email === null });
+      if (!result.ok) return result;
+      await alert(user, "removed", result.label);
+      return { ok: true };
     },
 
     /**

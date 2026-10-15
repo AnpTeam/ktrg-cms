@@ -20,12 +20,14 @@ function getServices(): AuthServices & PasskeyServices {
     const { db } = createDb(env.DATABASE_URL);
     // Production requires the secret (parse-env); this dev fallback never ships.
     const secret = env.OTP_HMAC_SECRET ?? "dev-only-otp-secret-change-me-0000000";
+    const mailer = createMailer(env);
     services = {
-      otp: createOtpService({ store: createDrizzleOtpStore(db), mailer: createMailer(env), secret }),
+      otp: createOtpService({ store: createDrizzleOtpStore(db), mailer, secret }),
       session: createSessionService({ store: createDrizzleSessionStore(db) }),
       rateLimit: createRateLimiter({ store: createDrizzleRateLimitStore(db), secret }),
       passkeys: createPasskeyService({
         store: createDrizzlePasskeyStore(db),
+        mailer, // emails the owner when a passkey is added or removed
         config: {
           rpName: "KTRG",
           // Passkeys only work on this domain, so it must be the site users actually visit.

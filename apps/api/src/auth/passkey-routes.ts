@@ -69,6 +69,45 @@ export function passkeyRoutes(
   });
 
   return new Elysia({ prefix: "/auth/passkeys" })
+    // The account's passkeys, for the settings screen. No key material, only id, name and date.
+    .get("/", async ({ headers, set }) => {
+      const user = await http.authenticate(headers, set);
+      if (!user) {
+        set.status = 401;
+        return { ok: false as const, error: "unauthenticated" as const };
+      }
+      const list = await getServices().passkeys.list(user);
+      return { ok: true as const, passkeys: list };
+    })
+    // Remove one of your own passkeys. The owner is emailed.
+    .delete(
+      "/:id",
+      async ({ headers, set, params }) => {
+        const user = await http.authenticate(headers, set);
+        if (!user) {
+          set.status = 401;
+          return { ok: false as const, error: "unauthenticated" as const };
+        }
+        const { passkeys, rateLimit } = getServices();
+        const limited = http.tooMany(
+          set,
+          await rateLimit.checkAll([{ rule: AUTH_LIMITS.passkeyRemoveUser, identifier: user.id }]),
+        );
+        if (limited) return limited;
+
+        const result = await passkeys.remove(user, params.id);
+        if (!result.ok) {
+          // Someone else's passkey looks exactly like one that does not exist.
+          set.status = result.reason === "not_found" ? 404 : 409;
+          return {
+            ok: false as const,
+            error: result.reason === "not_found" ? ("not_found" as const) : ("last_login_method" as const),
+          };
+        }
+        return { ok: true as const };
+      },
+      { params: t.Object({ id: t.String({ pattern: "^[0-9a-fA-F-]{36}$" }) }) },
+    )
     // Step 1: the browser asks for registration settings.
     .post("/register/options", async ({ headers, set }) => {
       const user = await http.authenticate(headers, set);

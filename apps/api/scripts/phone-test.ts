@@ -43,7 +43,12 @@ const services = {
   otp: createOtpService({ store, secret, mailer: createConsoleMailer("KTRG <no-reply@localhost>") }),
   session: createSessionService({ store: sessions.store }),
   rateLimit: createRateLimiter({ store: createMemoryRateLimitStore().store, secret }),
-  passkeys: createPasskeyService({ store: createMemoryPasskeyStore(users).store, config: passkeyConfig }),
+  passkeys: createPasskeyService({
+    store: createMemoryPasskeyStore(users).store,
+    config: passkeyConfig,
+    // Add/remove alert emails are printed in this terminal.
+    mailer: createConsoleMailer("KTRG <no-reply@localhost>"),
+  }),
 };
 
 const page = `<!doctype html>
@@ -75,6 +80,12 @@ const page = `<!doctype html>
 <button onclick="send()">1. Send code (see PC terminal)</button>
 <input id="code" inputmode="numeric" maxlength="6" placeholder="6-digit code">
 <button onclick="verify()">2. Verify and log in</button>
+
+<h3>My passkeys (log in first)</h3>
+<input id="pkname" placeholder="name for the new passkey" value="test device">
+<button class="pk" onclick="pkAdd()">Add a passkey to this account</button>
+<button class="alt" onclick="pkList()">List my passkeys</button>
+<div id="pklist"></div>
 
 <h3>Session</h3>
 <button class="alt" onclick="check()">Check session</button>
@@ -132,6 +143,61 @@ const page = `<!doctype html>
         },
       });
     } catch (e) { out.textContent += "\\n\\nERROR: " + e.name + ": " + e.message; }
+  }
+
+  // Add another passkey to the account you are logged into (an alert email prints in the PC terminal).
+  async function pkAdd() {
+    try {
+      const o = (await call("POST", "passkeys/register/options")).options;
+      if (!o) return;
+      out.textContent += "\\n\\nWaiting for the passkey prompt...";
+      const cred = await navigator.credentials.create({
+        publicKey: {
+          ...o,
+          challenge: unb64(o.challenge),
+          user: { ...o.user, id: unb64(o.user.id) },
+          excludeCredentials: (o.excludeCredentials || []).map((c) => ({ ...c, id: unb64(c.id) })),
+        },
+      });
+      const r = cred.response;
+      await call("POST", "passkeys/register/verify", {
+        label: document.getElementById("pkname").value,
+        response: {
+          id: cred.id, rawId: b64(cred.rawId), type: cred.type,
+          response: {
+            clientDataJSON: b64(r.clientDataJSON),
+            attestationObject: b64(r.attestationObject),
+            transports: r.getTransports ? r.getTransports() : [],
+          },
+          clientExtensionResults: cred.getClientExtensionResults(),
+          ...(cred.authenticatorAttachment ? { authenticatorAttachment: cred.authenticatorAttachment } : {}),
+        },
+      });
+      await pkList();
+    } catch (e) { out.textContent += "\\n\\nERROR: " + e.name + ": " + e.message; }
+  }
+
+  async function pkList() {
+    const body = await call("GET", "passkeys");
+    const box = document.getElementById("pklist");
+    box.textContent = "";
+    for (const p of (body && body.passkeys) || []) {
+      const row = document.createElement("div");
+      const text = document.createElement("div");
+      text.textContent = (p.label || "(no name)") + " - added " + new Date(p.createdAt).toLocaleString();
+      const btn = document.createElement("button");
+      btn.className = "alt";
+      btn.textContent = "Remove this passkey";
+      btn.onclick = async () => {
+        await call("DELETE", "passkeys/" + p.id);
+        const result = out.textContent; // keep the answer (e.g. a refusal) visible after refreshing the list
+        await pkList();
+        out.textContent = result + "\\n\\n(list refreshed)";
+      };
+      row.append(text, btn);
+      box.append(row);
+    }
+    if (body && body.ok && !box.children.length) box.textContent = "No passkeys.";
   }
 
   async function pkLogin() {

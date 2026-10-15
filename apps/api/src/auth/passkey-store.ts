@@ -1,10 +1,36 @@
-import { and, eq, gt, isNull, lt } from "drizzle-orm";
+import { and, asc, eq, gt, isNull, lt } from "drizzle-orm";
 import type { Db } from "../db/client";
 import { passkeys, users, webauthnChallenges } from "../db/schema";
-import type { PasskeyStore } from "./passkey-service";
+import type { PasskeyStore, RemoveStoreResult } from "./passkey-service";
 
 export function createDrizzlePasskeyStore(db: Db): PasskeyStore {
   return {
+    async list(userId) {
+      return db
+        .select({ id: passkeys.id, label: passkeys.label, createdAt: passkeys.createdAt })
+        .from(passkeys)
+        .where(eq(passkeys.userId, userId))
+        .orderBy(asc(passkeys.createdAt));
+    },
+
+    async remove(userId, passkeyId, opts): Promise<RemoveStoreResult> {
+      return db.transaction(async (tx): Promise<RemoveStoreResult> => {
+        // Lock the user row so two removals at once cannot both take what looks like "not the last one".
+        await tx.select({ id: users.id }).from(users).where(eq(users.id, userId)).for("update");
+
+        const mine = await tx
+          .select({ id: passkeys.id, label: passkeys.label })
+          .from(passkeys)
+          .where(eq(passkeys.userId, userId));
+        const target = mine.find((p) => p.id === passkeyId);
+        if (!target) return { ok: false, reason: "not_found" };
+        if (opts.keepAtLeastOne && mine.length <= 1) return { ok: false, reason: "last_method" };
+
+        await tx.delete(passkeys).where(and(eq(passkeys.id, passkeyId), eq(passkeys.userId, userId)));
+        return { ok: true, label: target.label };
+      });
+    },
+
     async findCredential(credentialId) {
       const [row] = await db
         .select({

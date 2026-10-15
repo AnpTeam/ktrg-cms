@@ -30,6 +30,8 @@ export const AUTH_LIMITS = {
   passkeySignupIp: { name: "passkey-signup-ip", limit: 30, windowMs: 15 * MINUTE },
   // Passkey login needs no email, so the only handle is the caller's IP.
   passkeyLoginIp: { name: "passkey-login-ip", limit: 30, windowMs: 15 * MINUTE },
+  // Keyed by user id: removing passkeys.
+  passkeyRemoveUser: { name: "passkey-remove-user", limit: 10, windowMs: 15 * MINUTE },
   // Keyed by user id: adding a passkey needs a login, so this just caps abuse.
   passkeyRegisterUser: { name: "passkey-register-user", limit: 10, windowMs: 15 * MINUTE },
 } as const satisfies Record<string, RateLimitRule>;
