@@ -25,6 +25,8 @@ export const AUTH_LIMITS = {
   otpRequestIp: { name: "otp-request-ip", limit: 20, windowMs: 15 * MINUTE },
   otpVerifyEmail: { name: "otp-verify-email", limit: 10, windowMs: 15 * MINUTE },
   otpVerifyIp: { name: "otp-verify-ip", limit: 30, windowMs: 15 * MINUTE },
+  // Keyed by user id: adding a passkey needs a login, so this just caps abuse.
+  passkeyRegisterUser: { name: "passkey-register-user", limit: 10, windowMs: 15 * MINUTE },
 } as const satisfies Record<string, RateLimitRule>;
 
 export type RateLimitResult = { allowed: true } | { allowed: false; retryAfterSec: number };

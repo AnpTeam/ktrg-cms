@@ -18,6 +18,9 @@ const EnvSchema = Type.Object({
   MAIL_FROM: Type.String({ minLength: 3, default: "KTRG <no-reply@localhost>" }),
   // Key for hashing one-time codes (WBS 2.1.3). Required in production.
   OTP_HMAC_SECRET: Type.Optional(Type.String({ minLength: 32 })),
+  // Passkeys (WBS 2.1.7). Defaults to the hostname of APP_ORIGIN; set it only to share
+  // passkeys across subdomains (use the parent domain, e.g. example.com).
+  PASSKEY_RP_ID: Type.Optional(Type.String({ minLength: 1 })),
   // Set only behind a trusted reverse proxy (e.g. Vercel): the client IP is then read
   // from X-Forwarded-For. Otherwise that header is ignored (it can be forged).
   TRUST_PROXY: Type.Boolean({ default: false }),
