@@ -21,8 +21,16 @@ if (url) {
   if (!safe) throw new Error(`Refusing to run integration tests against ${parsed.hostname}: use localhost or a *test* database.`);
 }
 
+/**
+ * describe.skipIf still RUNS the describe body (it only skips the tests), so the connection must
+ * not be opened when there is no database URL. Without one this returns an unused placeholder.
+ */
+function connect(): ReturnType<typeof createDb> {
+  return url ? createDb(url) : ({ db: undefined, client: undefined } as unknown as ReturnType<typeof createDb>);
+}
+
 describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
-  const { db, client } = createDb(url);
+  const { db, client } = connect();
   const otp = createDrizzleOtpStore(db);
   const sessions = createDrizzleSessionStore(db);
   const rate = createDrizzleRateLimitStore(db);
@@ -320,7 +328,7 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
 });
 
 describe.skipIf(!url)("seed on real PostgreSQL", () => {
-  const { db, client } = createDb(url);
+  const { db, client } = connect();
   type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
   class Rollback extends Error {}
 
