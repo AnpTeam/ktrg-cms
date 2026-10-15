@@ -1,10 +1,105 @@
 @import "tailwindcss";
 
-/* Older users: large base font and high contrast by default. */
-html {
-  font-size: 18px;
+/*
+ * Accessibility base (WBS 1.1.10). The app is used outdoors, in sunlight, by
+ * many older visitors, so these are defaults every screen inherits:
+ *  - large type that still follows the browser's own font-size setting
+ *  - colors that meet WCAG AAA (7:1) for text and 3:1 for borders and focus,
+ *    in both the light and the dark palette
+ *  - tap targets of at least 3rem (about 54px), never gesture-only
+ * src/styles/contrast.test.ts fails if a color pair below drops under its ratio.
+ */
+@theme {
+  --color-ink: #111827; /* body text */
+  --color-muted: #374151; /* secondary text */
+  --color-paper: #ffffff; /* page background */
+  --color-surface: #f3f4f6; /* raised areas, hover */
+  --color-accent: #1e40af; /* links, primary buttons, focus ring */
+  --color-danger: #991b1b; /* errors and closed spots */
+  --color-line: #6b7280; /* borders of inputs and buttons */
+
+  /* System fonts only: nothing to download on a weak mountain connection. */
+  --font-sans:
+    system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Hiragino Sans",
+    "Noto Sans JP", "Yu Gothic UI", Meiryo, sans-serif;
 }
 
-body {
-  @apply bg-white text-neutral-900 antialiased;
+/* Smallest comfortable touch target: use on every link or control. */
+@utility tap-target {
+  min-height: 3rem;
+  min-width: 3rem;
+}
+
+@layer base {
+  html {
+    /* A percentage, not px, so the visitor's browser font setting still scales it. */
+    font-size: 112.5%;
+    -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Plain links look like links: coloured and underlined, not colour alone. */
+  a:not([class]) {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  button,
+  [role="button"],
+  input,
+  select,
+  textarea,
+  summary {
+    min-height: 3rem;
+  }
+
+  /* Always visible for keyboard and switch users; never removed. */
+  :focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+}
+
+/*
+ * Dark mode follows the device setting. Same token names as above, so no
+ * component changes. Kept before prefers-contrast so that override wins in both.
+ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-ink: #f9fafb;
+    --color-muted: #d1d5db;
+    --color-paper: #0b0f14;
+    --color-surface: #1f2937;
+    --color-accent: #93c5fd;
+    --color-danger: #fca5a5;
+    --color-line: #9ca3af;
+    color-scheme: dark;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --color-line: var(--color-ink);
+    --color-muted: var(--color-ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
