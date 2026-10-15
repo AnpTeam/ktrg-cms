@@ -5,6 +5,8 @@
 import { Elysia } from "elysia";
 import { createMemoryOtpStore } from "../src/auth/otp-memory-store";
 import { createOtpService } from "../src/auth/otp-service";
+import { createRateLimiter } from "../src/auth/rate-limit";
+import { createMemoryRateLimitStore } from "../src/auth/rate-limit-memory-store";
 import { authRoutes } from "../src/auth/routes";
 import { createMemorySessionStore } from "../src/auth/session-memory-store";
 import { createSessionService } from "../src/auth/session-service";
@@ -22,6 +24,10 @@ const services = {
     mailer: createConsoleMailer("KTRG <no-reply@localhost>"),
   }),
   session: createSessionService({ store: sessions.store }),
+  rateLimit: createRateLimiter({
+    store: createMemoryRateLimitStore().store,
+    secret: "phone-test-secret-phone-test-secret-0",
+  }),
 };
 
 const page = `<!doctype html>

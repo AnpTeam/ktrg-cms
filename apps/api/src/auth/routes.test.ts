@@ -2,11 +2,13 @@ import { describe, expect, test } from "bun:test";
 import { Elysia } from "elysia";
 import { createMemoryOtpStore } from "./otp-memory-store";
 import { createOtpService } from "./otp-service";
+import { createRateLimiter } from "./rate-limit";
+import { createMemoryRateLimitStore } from "./rate-limit-memory-store";
 import { authRoutes } from "./routes";
 import { createMemorySessionStore } from "./session-memory-store";
 import { createSessionService } from "./session-service";
 
-function setup(opts: { secureCookies?: boolean } = {}) {
+function setup(opts: { secureCookies?: boolean; trustProxy?: boolean } = {}) {
   const { store, users } = createMemoryOtpStore();
   const sessions = createMemorySessionStore(users);
   const codes: string[] = [];
@@ -20,15 +22,19 @@ function setup(opts: { secureCookies?: boolean } = {}) {
     },
   });
   const session = createSessionService({ store: sessions.store });
+  const rateLimit = createRateLimiter({ store: createMemoryRateLimitStore().store, secret: "l".repeat(32) });
   const app = new Elysia({ prefix: "/api/v1" }).use(
-    authRoutes(() => ({ otp, session }), { secureCookies: opts.secureCookies ?? false }),
+    authRoutes(() => ({ otp, session, rateLimit }), {
+      secureCookies: opts.secureCookies ?? false,
+      trustProxy: opts.trustProxy ?? false,
+    }),
   );
 
-  const post = (path: string, body?: unknown, cookie?: string) =>
+  const post = (path: string, body?: unknown, cookie?: string, extraHeaders: Record<string, string> = {}) =>
     app.handle(
       new Request(`http://localhost/api/v1/auth/${path}`, {
         method: "POST",
-        headers: { "content-type": "application/json", ...(cookie ? { cookie } : {}) },
+        headers: { "content-type": "application/json", ...(cookie ? { cookie } : {}), ...extraHeaders },
         body: body === undefined ? undefined : JSON.stringify(body),
       }),
     );
@@ -172,5 +178,79 @@ describe("session cookie", () => {
   test("logout without a session still succeeds", async () => {
     const { post } = setup();
     expect((await post("logout")).status).toBe(200);
+  });
+});
+
+describe("rate limits", () => {
+  test("otp/request: the 6th request for one email in 15 minutes gets 429 with Retry-After", async () => {
+    const { post } = setup();
+    for (let i = 0; i < 5; i++) expect((await post("otp/request", { email: "a@example.com" })).status).toBe(200);
+
+    const res = await post("otp/request", { email: "A@example.com" }); // case does not dodge it
+    expect(res.status).toBe(429);
+    expect(await res.json()).toEqual({ ok: false, error: "rate_limited" });
+    const wait = Number(res.headers.get("retry-after"));
+    expect(wait).toBeGreaterThan(0);
+    expect(wait).toBeLessThanOrEqual(15 * 60);
+  });
+
+  test("a blocked request sends no email", async () => {
+    const { post, codes } = setup();
+    for (let i = 0; i < 5; i++) await post("otp/request", { email: "a@example.com" });
+    const before = codes.length;
+    await post("otp/request", { email: "a@example.com" });
+    expect(codes.length).toBe(before);
+  });
+
+  test("otp/request: one IP asking for many different emails is stopped at 20", async () => {
+    const { post } = setup();
+    for (let i = 0; i < 20; i++) {
+      expect((await post("otp/request", { email: `user${i}@example.com` })).status).toBe(200);
+    }
+    expect((await post("otp/request", { email: "one-more@example.com" })).status).toBe(429);
+  });
+
+  test("otp/verify: guessing against one email is stopped at 10 in 15 minutes", async () => {
+    const { post } = setup();
+    await post("otp/request", { email: "a@example.com" });
+    for (let i = 0; i < 10; i++) {
+      expect((await post("otp/verify", { email: "a@example.com", code: "000000" })).status).not.toBe(429);
+    }
+    expect((await post("otp/verify", { email: "a@example.com", code: "000000" })).status).toBe(429);
+  });
+
+  test("otp/verify: even the right code is refused once the limit is hit", async () => {
+    const { post, codes } = setup();
+    await post("otp/request", { email: "a@example.com" });
+    for (let i = 0; i < 10; i++) await post("otp/verify", { email: "a@example.com", code: "000000" });
+    const res = await post("otp/verify", { email: "a@example.com", code: codes[0] });
+    expect(res.status).toBe(429);
+    expect(res.headers.get("set-cookie")).toBeNull();
+  });
+
+  test("a forged X-Forwarded-For does not dodge the IP limit when no proxy is trusted", async () => {
+    const { post } = setup({ trustProxy: false });
+    for (let i = 0; i < 20; i++) {
+      await post("otp/request", { email: `u${i}@example.com` }, undefined, { "x-forwarded-for": `9.9.9.${i}` });
+    }
+    const res = await post("otp/request", { email: "x@example.com" }, undefined, { "x-forwarded-for": "1.2.3.4" });
+    expect(res.status).toBe(429);
+  });
+
+  test("behind a trusted proxy, different clients get separate IP limits", async () => {
+    const { post } = setup({ trustProxy: true });
+    for (let i = 0; i < 20; i++) {
+      await post("otp/request", { email: `u${i}@example.com` }, undefined, { "x-forwarded-for": "203.0.113.1" });
+    }
+    const blocked = await post("otp/request", { email: "x@example.com" }, undefined, { "x-forwarded-for": "203.0.113.1" });
+    const other = await post("otp/request", { email: "y@example.com" }, undefined, { "x-forwarded-for": "203.0.113.2" });
+    expect(blocked.status).toBe(429);
+    expect(other.status).toBe(200);
+  });
+
+  test("malformed requests are rejected before they count", async () => {
+    const { post } = setup();
+    for (let i = 0; i < 30; i++) await post("otp/request", { email: "not-an-email" });
+    expect((await post("otp/request", { email: "a@example.com" })).status).toBe(200);
   });
 });

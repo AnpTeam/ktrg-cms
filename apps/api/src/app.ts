@@ -1,6 +1,8 @@
 import { Elysia } from "elysia";
 import { createOtpService } from "./auth/otp-service";
 import { createDrizzleOtpStore } from "./auth/otp-store";
+import { createRateLimiter } from "./auth/rate-limit";
+import { createDrizzleRateLimitStore } from "./auth/rate-limit-store";
 import { authRoutes, type AuthServices } from "./auth/routes";
 import { createSessionService } from "./auth/session-service";
 import { createDrizzleSessionStore } from "./auth/session-store";
@@ -13,14 +15,12 @@ let services: AuthServices | undefined;
 function getServices(): AuthServices {
   if (!services) {
     const { db } = createDb(env.DATABASE_URL);
+    // Production requires the secret (parse-env); this dev fallback never ships.
+    const secret = env.OTP_HMAC_SECRET ?? "dev-only-otp-secret-change-me-0000000";
     services = {
-      otp: createOtpService({
-        store: createDrizzleOtpStore(db),
-        mailer: createMailer(env),
-        // Production requires the secret (parse-env); this dev fallback never ships.
-        secret: env.OTP_HMAC_SECRET ?? "dev-only-otp-secret-change-me-0000000",
-      }),
+      otp: createOtpService({ store: createDrizzleOtpStore(db), mailer: createMailer(env), secret }),
       session: createSessionService({ store: createDrizzleSessionStore(db) }),
+      rateLimit: createRateLimiter({ store: createDrizzleRateLimitStore(db), secret }),
     };
   }
   return services;
@@ -30,6 +30,11 @@ export const app = new Elysia({ prefix: "/api/v1" })
   .get("/health", () => ({
     status: "ok" as const,
   }))
-  .use(authRoutes(getServices, { secureCookies: env.NODE_ENV === "production" }));
+  .use(
+    authRoutes(getServices, {
+      secureCookies: env.NODE_ENV === "production",
+      trustProxy: env.TRUST_PROXY,
+    }),
+  );
 
 export type App = typeof app;
