@@ -20,6 +20,11 @@ describe("parseEnv", () => {
     expect(env.APP_ORIGIN).toBe("http://localhost:3000");
   });
 
+  test("production requires OTP_HMAC_SECRET", () => {
+    expect(() => parseEnv({ NODE_ENV: "production", SMTP_HOST: "smtp.example.com" })).toThrow(/OTP_HMAC_SECRET/);
+    expect(parseEnv({ NODE_ENV: "production", OTP_HMAC_SECRET: "k".repeat(32) }).OTP_HMAC_SECRET).toHaveLength(32);
+  });
+
   test("boots with an empty environment", () => {
     expect(parseEnv({}).PORT).toBe(3001);
   });
