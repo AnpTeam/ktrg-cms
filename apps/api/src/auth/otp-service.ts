@@ -1,17 +1,43 @@
 import type { Mailer } from "../lib/mailer";
 import {
   OTP_COOLDOWN_MS,
+  OTP_MAX_ATTEMPTS,
   OTP_TTL_MS,
   generateOtpCode,
   hashOtpCode,
+  hashesMatch,
   normalizeEmail,
 } from "./otp";
 
+export interface OtpRow {
+  id: string;
+  codeHash: string;
+  expiresAt: Date;
+  attempts: number;
+  usedAt: Date | null;
+}
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  role: "participant" | "admin";
+  locale: "ja" | "en";
+}
+
 /** Storage the service needs; the Drizzle version is in otp-store.ts. */
 export interface OtpStore {
-  /** Expiry of the newest code issued to this email, or null if none. */
-  latestExpiry(email: string): Promise<Date | null>;
+  /** The newest code issued to this email, or null if none. */
+  latest(email: string): Promise<OtpRow | null>;
   insert(row: { email: string; codeHash: string; expiresAt: Date }): Promise<void>;
+  /**
+   * Atomically count one guess against an unused code. Returns false when the
+   * code is already used or has no attempts left.
+   */
+  consumeAttempt(id: string, max: number): Promise<boolean>;
+  /** Atomically mark a code used. Returns false if someone else already did. */
+  markUsed(id: string, at: Date): Promise<boolean>;
+  /** The user with this email, created (participant, ja) on first sight. */
+  findOrCreateUser(email: string): Promise<AuthUser>;
 }
 
 export interface OtpServiceDeps {
@@ -22,9 +48,11 @@ export interface OtpServiceDeps {
   log?: (message: string) => void;
 }
 
+export type VerifyResult = { ok: true; user: AuthUser } | { ok: false };
+
 /**
- * Issues a login code by email. The caller always gets the same answer, so the
- * response never reveals whether a code was sent, throttled or failed.
+ * Issues and checks login codes. Callers get no detail on why a check failed
+ * (wrong, expired, used, locked or unknown email), so nothing can be probed.
  */
 export function createOtpService({
   store,
@@ -39,8 +67,8 @@ export function createOtpService({
       const issuedAt = now();
 
       // The code's age is derived from its expiry: created = expiresAt - TTL.
-      const latest = await store.latestExpiry(email);
-      if (latest && latest.getTime() - OTP_TTL_MS + OTP_COOLDOWN_MS > issuedAt.getTime()) {
+      const latest = await store.latest(email);
+      if (latest && latest.expiresAt.getTime() - OTP_TTL_MS + OTP_COOLDOWN_MS > issuedAt.getTime()) {
         return;
       }
 
@@ -57,6 +85,25 @@ export function createOtpService({
         // Never surface mail failures: it would tell a caller more than "ok".
         log(`[otp] mail send failed: ${err instanceof Error ? err.message : String(err)}`);
       }
+    },
+
+    async verify(rawEmail: string, code: string): Promise<VerifyResult> {
+      const email = normalizeEmail(rawEmail);
+      const at = now();
+
+      // Only the newest code counts: requesting a new one retires the old.
+      const row = await store.latest(email);
+      if (!row || row.usedAt || row.expiresAt.getTime() <= at.getTime()) return { ok: false };
+
+      // Count the guess first, atomically, so parallel guesses cannot beat the limit.
+      if (!(await store.consumeAttempt(row.id, OTP_MAX_ATTEMPTS))) return { ok: false };
+
+      if (!hashesMatch(row.codeHash, hashOtpCode(secret, email, code))) return { ok: false };
+
+      // Single use: only one concurrent caller can win this.
+      if (!(await store.markUsed(row.id, at))) return { ok: false };
+
+      return { ok: true, user: await store.findOrCreateUser(email) };
     },
   };
 }
