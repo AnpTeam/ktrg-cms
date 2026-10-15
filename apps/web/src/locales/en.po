@@ -51,6 +51,15 @@ msgstr "The address may be wrong, or the page is not published."
 msgid "いまは、ここでスタンプを押せません。"
 msgstr "Stamps can't be collected here right now."
 
+#: src/components/SampleNotice.tsx:54
+msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
+msgstr "What you see now is sample and draft data. It includes information that has not been checked."
+
+#: src/components/SampleNotice.tsx:51
+#: src/components/SampleNotice.tsx:78
+msgid "このデータについて"
+msgstr "About this data"
+
 #: src/app/[lang]/(public)/routes/page.tsx:72
 msgid "この地域のルートはまだありません。"
 msgstr "There are no routes in this area yet."
@@ -63,7 +72,7 @@ msgstr "The position of this place is a draft and has not been checked yet."
 msgid "この場所を見る"
 msgstr "See this place"
 
-#: src/components/map/TrailMap.tsx:181
+#: src/components/map/TrailMap.tsx:213
 msgid "この端末では地図を表示できません。下の一覧から場所を選べます。"
 msgstr "This device can't show the map. You can pick a place from the list below."
 
@@ -88,7 +97,7 @@ msgstr "Stamp card"
 msgid "スタンプカードを見る"
 msgstr "See your stamp card"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:103
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:105
 msgid "スタンプの場所"
 msgstr "Stamp locations"
 
@@ -104,7 +113,7 @@ msgstr "You collected this stamp"
 msgid "スタンプ場所 {spotCount}か所"
 msgstr "{spotCount} stamp locations"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:45
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:47
 msgid "スタンプ済み"
 msgstr "stamped"
 
@@ -120,9 +129,17 @@ msgstr "You have all the stamps."
 msgid "すべてのルートを見る"
 msgstr "See all routes"
 
+#: src/components/map/MapSettingsForm.tsx:36
+msgid "そのまま"
+msgstr "As is"
+
 #: src/components/ThemeSwitcher.tsx:30
 msgid "ダーク"
 msgstr "Dark"
+
+#: src/components/map/MapSettingsForm.tsx:73
+msgid "ダークモードの地図"
+msgstr "Map in dark mode"
 
 #: src/components/StampGrid.tsx:35
 #: src/components/StampLegend.tsx:10
@@ -136,6 +153,10 @@ msgstr "Climb"
 #: src/app/[lang]/(public)/not-found.tsx:12
 msgid "ページが見つかりません"
 msgstr "Page not found"
+
+#: src/components/map/MapSettingsForm.tsx:41
+msgid "ベースマップ"
+msgstr "Base map"
 
 #: src/components/TabBar.tsx:15
 msgid "ホーム"
@@ -187,7 +208,7 @@ msgstr "You can browse routes and places without signing in."
 msgid "ルートをさがす"
 msgstr "Find a route"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:68
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:70
 msgid "ルート一覧"
 msgstr "All routes"
 
@@ -195,9 +216,17 @@ msgstr "All routes"
 msgid "ログインすると、スタンプを記録できます。"
 msgstr "Sign in to record your stamps."
 
-#: src/components/map/TrailMap.tsx:223
-msgid "仮の位置（未確認）"
-msgstr "Draft positions (unchecked)"
+#: src/components/map/TrailMap.tsx:257
+msgid "仮のルート・位置（未確認）"
+msgstr "Draft route and positions (unchecked)"
+
+#: src/components/map/MapSettingsForm.tsx:92
+msgid "保存"
+msgstr "Save"
+
+#: src/components/map/MapSettingsForm.tsx:105
+msgid "保存しました"
+msgstr "Saved"
 
 #: src/app/[lang]/(public)/page.tsx:58
 #: src/app/[lang]/(public)/page.tsx:65
@@ -210,22 +239,34 @@ msgid "公開できるようになったら、ここにルートが表示され�
 msgstr "Routes will appear here once they are published."
 
 #: src/app/[lang]/(public)/page.tsx:72
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:133
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:135
 #: src/app/[lang]/(public)/routes/page.tsx:82
 #: src/app/[lang]/(public)/stamps/page.tsx:44
 #: src/components/SpotSheet.tsx:62
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "Check official sources before you go."
 
+#: src/components/map/MapSettingsForm.tsx:103
+msgid "初期値に戻す"
+msgstr "Reset to defaults"
+
 #: src/components/PrefectureName.tsx:9
 msgid "和歌山県"
 msgstr "Wakayama"
 
-#: src/components/map/TrailMap.tsx:188
+#: src/components/map/TrailMap.tsx:220
 msgid "地図"
 msgstr "Map"
 
-#: src/components/map/TrailMap.tsx:214
+#: src/components/SampleNotice.tsx:57
+msgid "地図のルートと場所は仮のものです。実際の公開情報ではありません。"
+msgstr "The route and places on the map are provisional. They are not published information."
+
+#: src/app/[lang]/(public)/settings/map/page.tsx:41
+msgid "地図の見た目"
+msgstr "Map appearance"
+
+#: src/components/map/TrailMap.tsx:248
 #: src/components/map/TrailMapLoader.tsx:12
 msgid "地図を読み込み中…"
 msgstr "Loading the map…"
@@ -234,7 +275,19 @@ msgstr "Loading the map…"
 msgid "地域でしぼる"
 msgstr "Filter by area"
 
-#: src/components/map/TrailMap.tsx:245
+#: src/components/map/TrailMap.tsx:208
+msgid "地形の陰影を消す"
+msgstr "Hide terrain shading"
+
+#: src/components/map/TrailMap.tsx:208
+msgid "地形の陰影を見る"
+msgstr "Show terrain shading"
+
+#: src/components/map/MapSettingsForm.tsx:51
+msgid "地形ボタンで重ねるもの"
+msgstr "What the terrain button adds"
+
+#: src/components/map/TrailMap.tsx:279
 msgid "大きな地図で見る"
 msgstr "Open a bigger map"
 
@@ -246,12 +299,16 @@ msgstr "Osaka"
 msgid "奈良県"
 msgstr "Nara"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:120
+#: src/components/map/MapSettingsForm.tsx:36
+msgid "少し暗く"
+msgstr "Slightly darker"
+
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:122
 #: src/components/StampLegend.tsx:8
 msgid "押した"
 msgstr "Stamped"
 
-#: src/components/map/TrailMap.tsx:228
+#: src/components/map/TrailMap.tsx:262
 msgid "拡大"
 msgstr "Zoom in"
 
@@ -271,6 +328,18 @@ msgstr "Updated {updated} (Japan time)"
 msgid "本文へ移動"
 msgstr "Skip to main content"
 
+#: src/components/map/MapSettingsForm.tsx:34
+msgid "標準"
+msgstr "Standard"
+
+#: src/components/map/TrailMap.tsx:207
+msgid "標高の色を消す"
+msgstr "Hide elevation colours"
+
+#: src/components/map/TrailMap.tsx:207
+msgid "標高の色を見る"
+msgstr "Show elevation colours"
+
 #: src/app/[lang]/(public)/page.tsx:32
 msgid "歩いた場所で、スタンプを押そう。"
 msgstr "Collect a stamp at each place you walk to."
@@ -283,21 +352,37 @@ msgstr "Sections walked {done} / {TOTAL_ROUTES}"
 msgid "注意"
 msgstr "Caution"
 
+#: src/components/map/MapSettingsForm.tsx:34
+msgid "淡色"
+msgstr "Pale"
+
 #: src/components/TrailRibbon.tsx:83
 msgid "準備中"
 msgstr "Coming soon"
+
+#: src/components/map/MapSettingsForm.tsx:60
+msgid "濃さ"
+msgstr "Strength"
 
 #: src/components/ThemeSwitcher.tsx:37
 msgid "画面の明るさ：{label}。押すと切り替わります。"
 msgstr "Screen brightness: {label}. Tap to change."
 
-#: src/components/map/TrailMap.tsx:231
+#: src/components/map/TrailMap.tsx:265
 msgid "縮小"
 msgstr "Zoom out"
 
 #: src/components/ThemeSwitcher.tsx:30
 msgid "自動"
 msgstr "Auto"
+
+#: src/components/map/MapSettingsForm.tsx:36
+msgid "色を反転"
+msgstr "Invert colours"
+
+#: src/components/map/MapSettingsForm.tsx:35
+msgid "色別標高図（緑〜茶）"
+msgstr "Elevation colours (green to brown)"
 
 #: src/app/[lang]/(public)/page.tsx:28
 #: src/app/[lang]/layout.tsx:30
@@ -308,10 +393,6 @@ msgstr "Katsuragi Shugendō"
 msgid "葛城修験の道"
 msgstr "The Katsuragi Shugendō Trail"
 
-#: src/components/SampleBanner.tsx:9
-msgid "見本・下書きのデータを表示しています。確認前の情報を含みます。"
-msgstr "Showing sample and draft data. It includes information that has not been checked."
-
 #: src/components/LocaleSwitcher.tsx:24
 msgid "言語"
 msgstr "Language"
@@ -320,23 +401,16 @@ msgstr "Language"
 msgid "説明"
 msgstr "About this place"
 
-#: src/components/map/TrailMap.tsx:238
-msgid "起伏を消す"
-msgstr "Hide relief"
-
-#: src/components/map/TrailMap.tsx:238
-msgid "起伏を見る"
-msgstr "Show relief"
-
 #: src/components/RouteStats.tsx:20
 msgid "距離"
 msgstr "Distance"
 
-#: src/components/map/TrailMap.tsx:194
+#: src/components/map/TrailMap.tsx:228
+#: src/components/SampleNotice.tsx:64
 msgid "閉じる"
 msgstr "Close"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:46
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:48
 #: src/components/StatusWord.tsx:13
 msgid "閉鎖中"
 msgstr "Closed"
@@ -344,6 +418,14 @@ msgstr "Closed"
 #: src/components/StatusWord.tsx:30
 msgid "開放中"
 msgstr "Open"
+
+#: src/app/[lang]/(public)/settings/map/page.tsx:43
+msgid "開発用の設定です。公開版では表示されません。"
+msgstr "Developer setting. Not shown in the public version."
+
+#: src/components/map/MapSettingsForm.tsx:35
+msgid "陰影（やわらかい影）"
+msgstr "Shading (soft shadow)"
 
 #: src/components/RouteStats.tsx:34
 msgid "難しさ"

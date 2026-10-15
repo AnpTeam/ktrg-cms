@@ -35,7 +35,7 @@ export function ThemeSwitcher() {
       type="button"
       onClick={() => write(nextTheme(theme))}
       aria-label={t`画面の明るさ：${label}。押すと切り替わります。`}
-      className="tap-target inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border-2 border-ink bg-paper px-3 text-lg font-bold text-ink hover:bg-surface"
+      className="inline-flex min-h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border-2 border-ink bg-paper px-2.5 text-base font-bold text-ink hover:bg-surface [&>svg]:size-5"
     >
       {icon}
       <span>{label}</span>

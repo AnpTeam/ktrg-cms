@@ -21,7 +21,7 @@ export function LocaleSwitcher() {
   };
 
   return (
-    <nav aria-label={t`言語`} className="flex gap-2">
+    <nav aria-label={t`言語`} className="flex gap-1.5">
       {locales.map((locale) => {
         const active = locale === i18n.locale;
         return (
@@ -32,7 +32,7 @@ export function LocaleSwitcher() {
             hrefLang={locale}
             aria-current={active ? "true" : undefined}
             onClick={() => rememberLocale(locale)}
-            className={`tap-target inline-flex min-w-24 items-center justify-center rounded-lg border-2 border-ink px-4 text-lg font-bold ${
+            className={`inline-flex min-h-10 min-w-16 items-center justify-center rounded-lg border-2 border-ink px-2.5 text-base font-bold ${
               active ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"
             }`}
           >

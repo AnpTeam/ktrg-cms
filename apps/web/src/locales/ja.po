@@ -51,6 +51,15 @@ msgstr "アドレスがちがうか、ページが公開されていません。
 msgid "いまは、ここでスタンプを押せません。"
 msgstr "いまは、ここでスタンプを押せません。"
 
+#: src/components/SampleNotice.tsx:54
+msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
+msgstr "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
+
+#: src/components/SampleNotice.tsx:51
+#: src/components/SampleNotice.tsx:78
+msgid "このデータについて"
+msgstr "このデータについて"
+
 #: src/app/[lang]/(public)/routes/page.tsx:72
 msgid "この地域のルートはまだありません。"
 msgstr "この地域のルートはまだありません。"
@@ -63,7 +72,7 @@ msgstr "この場所の位置は仮のもので、まだ確認されていませ
 msgid "この場所を見る"
 msgstr "この場所を見る"
 
-#: src/components/map/TrailMap.tsx:181
+#: src/components/map/TrailMap.tsx:213
 msgid "この端末では地図を表示できません。下の一覧から場所を選べます。"
 msgstr "この端末では地図を表示できません。下の一覧から場所を選べます。"
 
@@ -88,7 +97,7 @@ msgstr "スタンプカード"
 msgid "スタンプカードを見る"
 msgstr "スタンプカードを見る"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:103
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:105
 msgid "スタンプの場所"
 msgstr "スタンプの場所"
 
@@ -104,7 +113,7 @@ msgstr "スタンプを押しました"
 msgid "スタンプ場所 {spotCount}か所"
 msgstr "スタンプ場所 {spotCount}か所"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:45
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:47
 msgid "スタンプ済み"
 msgstr "スタンプ済み"
 
@@ -120,9 +129,17 @@ msgstr "すべてそろいました。"
 msgid "すべてのルートを見る"
 msgstr "すべてのルートを見る"
 
+#: src/components/map/MapSettingsForm.tsx:36
+msgid "そのまま"
+msgstr "そのまま"
+
 #: src/components/ThemeSwitcher.tsx:30
 msgid "ダーク"
 msgstr "ダーク"
+
+#: src/components/map/MapSettingsForm.tsx:73
+msgid "ダークモードの地図"
+msgstr "ダークモードの地図"
 
 #: src/components/StampGrid.tsx:35
 #: src/components/StampLegend.tsx:10
@@ -136,6 +153,10 @@ msgstr "のぼり"
 #: src/app/[lang]/(public)/not-found.tsx:12
 msgid "ページが見つかりません"
 msgstr "ページが見つかりません"
+
+#: src/components/map/MapSettingsForm.tsx:41
+msgid "ベースマップ"
+msgstr "ベースマップ"
 
 #: src/components/TabBar.tsx:15
 msgid "ホーム"
@@ -187,7 +208,7 @@ msgstr "ルートや場所は、ログインしなくても見られます。"
 msgid "ルートをさがす"
 msgstr "ルートをさがす"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:68
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:70
 msgid "ルート一覧"
 msgstr "ルート一覧"
 
@@ -195,9 +216,17 @@ msgstr "ルート一覧"
 msgid "ログインすると、スタンプを記録できます。"
 msgstr "ログインすると、スタンプを記録できます。"
 
-#: src/components/map/TrailMap.tsx:223
-msgid "仮の位置（未確認）"
-msgstr "仮の位置（未確認）"
+#: src/components/map/TrailMap.tsx:257
+msgid "仮のルート・位置（未確認）"
+msgstr "仮のルート・位置（未確認）"
+
+#: src/components/map/MapSettingsForm.tsx:92
+msgid "保存"
+msgstr "保存"
+
+#: src/components/map/MapSettingsForm.tsx:105
+msgid "保存しました"
+msgstr "保存しました"
 
 #: src/app/[lang]/(public)/page.tsx:58
 #: src/app/[lang]/(public)/page.tsx:65
@@ -210,22 +239,34 @@ msgid "公開できるようになったら、ここにルートが表示され�
 msgstr "公開できるようになったら、ここにルートが表示されます。"
 
 #: src/app/[lang]/(public)/page.tsx:72
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:133
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:135
 #: src/app/[lang]/(public)/routes/page.tsx:82
 #: src/app/[lang]/(public)/stamps/page.tsx:44
 #: src/components/SpotSheet.tsx:62
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "出かける前に、公式の最新情報を確認してください。"
 
+#: src/components/map/MapSettingsForm.tsx:103
+msgid "初期値に戻す"
+msgstr "初期値に戻す"
+
 #: src/components/PrefectureName.tsx:9
 msgid "和歌山県"
 msgstr "和歌山県"
 
-#: src/components/map/TrailMap.tsx:188
+#: src/components/map/TrailMap.tsx:220
 msgid "地図"
 msgstr "地図"
 
-#: src/components/map/TrailMap.tsx:214
+#: src/components/SampleNotice.tsx:57
+msgid "地図のルートと場所は仮のものです。実際の公開情報ではありません。"
+msgstr "地図のルートと場所は仮のものです。実際の公開情報ではありません。"
+
+#: src/app/[lang]/(public)/settings/map/page.tsx:41
+msgid "地図の見た目"
+msgstr "地図の見た目"
+
+#: src/components/map/TrailMap.tsx:248
 #: src/components/map/TrailMapLoader.tsx:12
 msgid "地図を読み込み中…"
 msgstr "地図を読み込み中…"
@@ -234,7 +275,19 @@ msgstr "地図を読み込み中…"
 msgid "地域でしぼる"
 msgstr "地域でしぼる"
 
-#: src/components/map/TrailMap.tsx:245
+#: src/components/map/TrailMap.tsx:208
+msgid "地形の陰影を消す"
+msgstr "地形の陰影を消す"
+
+#: src/components/map/TrailMap.tsx:208
+msgid "地形の陰影を見る"
+msgstr "地形の陰影を見る"
+
+#: src/components/map/MapSettingsForm.tsx:51
+msgid "地形ボタンで重ねるもの"
+msgstr "地形ボタンで重ねるもの"
+
+#: src/components/map/TrailMap.tsx:279
 msgid "大きな地図で見る"
 msgstr "大きな地図で見る"
 
@@ -246,12 +299,16 @@ msgstr "大阪府"
 msgid "奈良県"
 msgstr "奈良県"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:120
+#: src/components/map/MapSettingsForm.tsx:36
+msgid "少し暗く"
+msgstr "少し暗く"
+
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:122
 #: src/components/StampLegend.tsx:8
 msgid "押した"
 msgstr "押した"
 
-#: src/components/map/TrailMap.tsx:228
+#: src/components/map/TrailMap.tsx:262
 msgid "拡大"
 msgstr "拡大"
 
@@ -271,6 +328,18 @@ msgstr "更新 {updated}（日本時間）"
 msgid "本文へ移動"
 msgstr "本文へ移動"
 
+#: src/components/map/MapSettingsForm.tsx:34
+msgid "標準"
+msgstr "標準"
+
+#: src/components/map/TrailMap.tsx:207
+msgid "標高の色を消す"
+msgstr "標高の色を消す"
+
+#: src/components/map/TrailMap.tsx:207
+msgid "標高の色を見る"
+msgstr "標高の色を見る"
+
 #: src/app/[lang]/(public)/page.tsx:32
 msgid "歩いた場所で、スタンプを押そう。"
 msgstr "歩いた場所で、スタンプを押そう。"
@@ -283,21 +352,37 @@ msgstr "歩き終えた区間 {done} / {TOTAL_ROUTES}"
 msgid "注意"
 msgstr "注意"
 
+#: src/components/map/MapSettingsForm.tsx:34
+msgid "淡色"
+msgstr "淡色"
+
 #: src/components/TrailRibbon.tsx:83
 msgid "準備中"
 msgstr "準備中"
+
+#: src/components/map/MapSettingsForm.tsx:60
+msgid "濃さ"
+msgstr "濃さ"
 
 #: src/components/ThemeSwitcher.tsx:37
 msgid "画面の明るさ：{label}。押すと切り替わります。"
 msgstr "画面の明るさ：{label}。押すと切り替わります。"
 
-#: src/components/map/TrailMap.tsx:231
+#: src/components/map/TrailMap.tsx:265
 msgid "縮小"
 msgstr "縮小"
 
 #: src/components/ThemeSwitcher.tsx:30
 msgid "自動"
 msgstr "自動"
+
+#: src/components/map/MapSettingsForm.tsx:36
+msgid "色を反転"
+msgstr "色を反転"
+
+#: src/components/map/MapSettingsForm.tsx:35
+msgid "色別標高図（緑〜茶）"
+msgstr "色別標高図（緑〜茶）"
 
 #: src/app/[lang]/(public)/page.tsx:28
 #: src/app/[lang]/layout.tsx:30
@@ -308,10 +393,6 @@ msgstr "葛城修験"
 msgid "葛城修験の道"
 msgstr "葛城修験の道"
 
-#: src/components/SampleBanner.tsx:9
-msgid "見本・下書きのデータを表示しています。確認前の情報を含みます。"
-msgstr "見本・下書きのデータを表示しています。確認前の情報を含みます。"
-
 #: src/components/LocaleSwitcher.tsx:24
 msgid "言語"
 msgstr "言語"
@@ -320,23 +401,16 @@ msgstr "言語"
 msgid "説明"
 msgstr "説明"
 
-#: src/components/map/TrailMap.tsx:238
-msgid "起伏を消す"
-msgstr "起伏を消す"
-
-#: src/components/map/TrailMap.tsx:238
-msgid "起伏を見る"
-msgstr "起伏を見る"
-
 #: src/components/RouteStats.tsx:20
 msgid "距離"
 msgstr "距離"
 
-#: src/components/map/TrailMap.tsx:194
+#: src/components/map/TrailMap.tsx:228
+#: src/components/SampleNotice.tsx:64
 msgid "閉じる"
 msgstr "閉じる"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:46
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:48
 #: src/components/StatusWord.tsx:13
 msgid "閉鎖中"
 msgstr "閉鎖中"
@@ -344,6 +418,14 @@ msgstr "閉鎖中"
 #: src/components/StatusWord.tsx:30
 msgid "開放中"
 msgstr "開放中"
+
+#: src/app/[lang]/(public)/settings/map/page.tsx:43
+msgid "開発用の設定です。公開版では表示されません。"
+msgstr "開発用の設定です。公開版では表示されません。"
+
+#: src/components/map/MapSettingsForm.tsx:35
+msgid "陰影（やわらかい影）"
+msgstr "陰影（やわらかい影）"
 
 #: src/components/RouteStats.tsx:34
 msgid "難しさ"

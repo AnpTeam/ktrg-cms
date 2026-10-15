@@ -1,4 +1,5 @@
 import type { LayerSpecification, StyleSpecification } from "maplibre-gl";
+import { defaultMapSettings, type MapSettings } from "./map-settings";
 
 // Pure helpers for the trail map (WBS 3.2.1, 3.2.2). No DOM and no MapLibre runtime, so they
 // are unit-tested. The map component (components/map/TrailMap.tsx) puts them together.
@@ -9,10 +10,10 @@ export const gsiTileListUrl = "https://maps.gsi.go.jp/development/ichiran.html";
 /** Required credit for GSI tiles ("国土地理院" or "地理院タイル", linking to the tile list). */
 export const gsiAttribution = `<a href="${gsiTileListUrl}" target="_blank" rel="noopener noreferrer">国土地理院（地理院タイル）</a>`;
 
-/** Real tile ranges of the two layers we use (checked on the GSI tile list). */
-export const zoomLimits = { min: 5, max: 18, reliefMax: 15 } as const;
+/** Real tile ranges (checked on the GSI tile list): base map 5 to 18, relief 5 to 15, hillshade 2 to 16. */
+export const zoomLimits = { min: 5, max: 18, reliefMax: 15, hillshadeMax: 16 } as const;
 
-export const gsiTileUrl = (layer: "std" | "pale" | "relief") =>
+export const gsiTileUrl = (layer: "std" | "pale" | "relief" | "hillshademap") =>
   `https://cyberjapandata.gsi.go.jp/xyz/${layer}/{z}/{x}/{y}.png`;
 
 export interface Position {
@@ -46,36 +47,48 @@ export function lineFeature(points: readonly Position[]): LineFeature {
   };
 }
 
+/** The id of the layer behind the visitor's terrain button (shown or hidden, never removed). */
+export const terrainLayerId = "gsi-terrain";
+
 /**
- * The base map: GSI standard tiles, plus the relief overlay (hidden until the visitor turns it on).
- * Raster tiles only. The relief layer stops at zoom 15, so it is stretched beyond that.
+ * The base map: GSI tiles (standard or pale), plus the terrain overlay (hidden until the visitor
+ * turns it on). Raster tiles only. The overlay's tiles stop at their own maximum zoom, so they
+ * are stretched beyond it.
  */
-export function mapStyle(): StyleSpecification {
+export function mapStyle(settings: MapSettings = defaultMapSettings): StyleSpecification {
+  const terrainTiles = settings.terrain === "relief" ? gsiTileUrl("relief") : gsiTileUrl("hillshademap");
+  const terrainMax = settings.terrain === "relief" ? zoomLimits.reliefMax : zoomLimits.hillshadeMax;
   return {
     version: 8,
     sources: {
-      "gsi-std": {
+      "gsi-base": {
         type: "raster",
-        tiles: [gsiTileUrl("std")],
+        tiles: [gsiTileUrl(settings.base)],
         tileSize: 256,
         minzoom: zoomLimits.min,
         maxzoom: zoomLimits.max,
         attribution: gsiAttribution,
       },
-      "gsi-relief": {
+      "gsi-terrain": {
         type: "raster",
-        tiles: [gsiTileUrl("relief")],
+        tiles: [terrainTiles],
         tileSize: 256,
         minzoom: zoomLimits.min,
-        maxzoom: zoomLimits.reliefMax,
+        maxzoom: terrainMax,
         attribution: gsiAttribution,
       },
     },
     layers: [
       // A calm colour shows where tiles have not arrived yet (weak signal), instead of a hole.
       { id: "background", type: "background", paint: { "background-color": "#dfe7e1" } },
-      { id: "gsi-std", type: "raster", source: "gsi-std" },
-      { id: "gsi-relief", type: "raster", source: "gsi-relief", layout: { visibility: "none" }, paint: { "raster-opacity": 0.45 } },
+      { id: "gsi-base", type: "raster", source: "gsi-base" },
+      {
+        id: terrainLayerId,
+        type: "raster",
+        source: "gsi-terrain",
+        layout: { visibility: "none" },
+        paint: { "raster-opacity": settings.terrainOpacity },
+      },
     ],
   };
 }

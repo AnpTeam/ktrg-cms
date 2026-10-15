@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { msg } from "@lingui/core/macro";
@@ -16,6 +17,7 @@ import { forViewer, getRoute, pickText } from "@/lib/content";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
 import { localePath } from "@/lib/rally";
+import { mapSettingsCookie, parseMapSettings } from "@/lib/map-settings";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ as?: string }> };
 
@@ -58,7 +60,7 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
       },
     ];
   });
-  // Straight segments between stops are only an approximation of the walked path.
+  const settings = parseMapSettings((await cookies()).get(mapSettingsCookie)?.value);
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
 
   return (
@@ -93,7 +95,7 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
 
       {stops.length > 0 ? (
         <section className="px-4">
-          <TrailMapLoader stops={stops} approximate draft={draftPositions} />
+          <TrailMapLoader stops={stops} line={route.line} draft={draftPositions} settings={settings} />
         </section>
       ) : null}
 

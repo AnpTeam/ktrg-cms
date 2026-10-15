@@ -239,13 +239,20 @@ rt {
   text-decoration: underline;
 }
 
-/* GSI has no dark tiles: dim and invert the light tiles in dark. The markers are HTML, so unaffected. */
-:root[data-theme="dark"] .trail-map-canvas canvas {
-  filter: invert(1) hue-rotate(180deg) brightness(0.82) contrast(0.92);
+/* GSI has no dark tiles. By default they stay as they are (dimming made the map too dark to read).
+   The map settings can choose "dim" or "invert" through data-dark on the map. Markers are HTML, so unaffected. */
+:root[data-theme="dark"] .trail-map[data-dark="dim"] .trail-map-canvas canvas {
+  filter: brightness(0.8);
+}
+:root[data-theme="dark"] .trail-map[data-dark="invert"] .trail-map-canvas canvas {
+  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.95);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .trail-map-canvas canvas {
-    filter: invert(1) hue-rotate(180deg) brightness(0.82) contrast(0.92);
+  :root:not([data-theme="light"]) .trail-map[data-dark="dim"] .trail-map-canvas canvas {
+    filter: brightness(0.8);
+  }
+  :root:not([data-theme="light"]) .trail-map[data-dark="invert"] .trail-map-canvas canvas {
+    filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.95);
   }
 }

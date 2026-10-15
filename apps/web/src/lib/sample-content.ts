@@ -148,6 +148,7 @@ const skeleton = (order: number, ja: string, en: string): RouteDetail => ({
   descriptionJa: null,
   descriptionEn: null,
   spots: [],
+  line: null,
 });
 
 /** Filled-in routes replace their skeleton: same id, name prefixed （見本）. */
@@ -175,7 +176,9 @@ const rich: Record<number, Partial<RouteDetail>> = {
     prefecture: route02Draft.prefecture,
     municipality: route02Draft.municipality,
     distanceKm: route02Draft.distanceKm,
-    sketch: { points: route02Draft.sketch },
+    elevationGainM: route02Draft.elevationGainM,
+    sketch: { points: [...route02Draft.sketch], elevations: [...route02Draft.elevations] },
+    line: route02Draft.line.map(([lat, lng]) => ({ lat, lng })),
     spotCount: r2Spots.length,
     stampedCount: 2,
     spots: r2Spots.map(listItem),

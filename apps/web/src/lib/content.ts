@@ -61,6 +61,8 @@ export interface RouteDetail extends RouteSummary {
   descriptionJa: string | null;
   descriptionEn: string | null;
   spots: SpotListItem[];
+  /** The path to draw on the map, in order; null until the CMS has the track (then the map joins the stops). */
+  line: { lat: number; lng: number }[] | null;
 }
 
 export interface SpotDetail extends SpotListItem {
@@ -122,7 +124,7 @@ export function forViewer<T extends { stampedCount?: number | null; stamped?: bo
  * Sample content is for design review only. It is on by default in development (set
  * SHOW_SAMPLE_CONTENT=0 to see the real empty state) and off everywhere else unless
  * SHOW_SAMPLE_CONTENT=1 (for example a preview deployment),
- * and every screen that shows it says so (see SampleBanner).
+ * and every screen that shows it says so (see SampleNotice).
  */
 export function sampleContentEnabled(env: { NODE_ENV?: string; SHOW_SAMPLE_CONTENT?: string } = process.env) {
   if (env.SHOW_SAMPLE_CONTENT === "1") return true;

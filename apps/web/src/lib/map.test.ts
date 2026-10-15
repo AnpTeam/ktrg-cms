@@ -9,6 +9,7 @@ import {
   markerKind,
   nextStopId,
   routeLineLayers,
+  terrainLayerId,
   zoomLimits,
 } from "./map";
 
@@ -24,28 +25,40 @@ describe("GSI tiles", () => {
     expect(gsiAttribution).toContain('rel="noopener noreferrer"');
   });
 
-  test("the style uses only the two GSI raster layers, with relief hidden at first", () => {
+  test("the style uses only GSI raster layers, with the terrain overlay hidden at first", () => {
     const style = mapStyle();
-    expect(Object.keys(style.sources)).toEqual(["gsi-std", "gsi-relief"]);
+    expect(Object.keys(style.sources)).toEqual(["gsi-base", "gsi-terrain"]);
     for (const source of Object.values(style.sources)) {
       expect(source.type).toBe("raster");
       expect("tiles" in source && source.tiles?.every((t) => t.startsWith("https://cyberjapandata.gsi.go.jp/"))).toBe(true);
       expect("attribution" in source && source.attribution).toContain("国土地理院");
     }
-    const relief = style.layers.find((l) => l.id === "gsi-relief");
-    expect(relief?.layout?.visibility).toBe("none");
+    expect(style.layers.find((l) => l.id === terrainLayerId)?.layout?.visibility).toBe("none");
   });
 
   test("a background layer sits under the tiles so missing tiles are not holes", () => {
     const ids = mapStyle().layers.map((l) => l.id);
     expect(ids[0]).toBe("background");
-    expect(ids.indexOf("background")).toBeLessThan(ids.indexOf("gsi-std"));
+    expect(ids.indexOf("background")).toBeLessThan(ids.indexOf("gsi-base"));
+  });
+
+  test("the settings choose the tiles: base map, terrain kind, strength", () => {
+    const plain = mapStyle({ base: "pale", terrain: "relief", terrainOpacity: 0.3, dark: "none" });
+    const base = plain.sources["gsi-base"];
+    const terrain = plain.sources["gsi-terrain"];
+    expect(base && "tiles" in base ? base.tiles?.[0] : "").toContain("/pale/");
+    expect(terrain && "tiles" in terrain ? terrain.tiles?.[0] : "").toContain("/relief/");
+    expect(terrain && "maxzoom" in terrain ? terrain.maxzoom : 0).toBe(15);
+    expect(plain.layers.find((l) => l.id === terrainLayerId)?.paint).toEqual({ "raster-opacity": 0.3 });
+
+    const hill = mapStyle();
+    const hillTerrain = hill.sources["gsi-terrain"];
+    expect(hillTerrain && "tiles" in hillTerrain ? hillTerrain.tiles?.[0] : "").toContain("/hillshademap/");
+    expect(hillTerrain && "maxzoom" in hillTerrain ? hillTerrain.maxzoom : 0).toBe(16);
   });
 
   test("zoom limits match the real tile ranges", () => {
-    expect(zoomLimits).toEqual({ min: 5, max: 18, reliefMax: 15 });
-    const relief = mapStyle().sources["gsi-relief"];
-    expect(relief && "maxzoom" in relief ? relief.maxzoom : undefined).toBe(15);
+    expect(zoomLimits).toEqual({ min: 5, max: 18, reliefMax: 15, hillshadeMax: 16 });
   });
 });
 

@@ -5,8 +5,20 @@ import { useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import { WarningIcon } from "@/components/icons";
+import { SampleNoticeButton } from "@/components/SampleNotice";
 import type { SpotStatus } from "@/lib/content";
-import { boundsOf, lineFeature, mapStyle, markerKind, nextStopId, routeLineLayers, zoomLimits } from "@/lib/map";
+import {
+  boundsOf,
+  lineFeature,
+  mapStyle,
+  markerKind,
+  nextStopId,
+  routeLineLayers,
+  terrainLayerId,
+  zoomLimits,
+  type Position,
+} from "@/lib/map";
+import type { MapSettings } from "@/lib/map-settings";
 import { createMarkerElement } from "./MapMarker";
 import { StopCard } from "./StopCard";
 
@@ -28,7 +40,7 @@ export interface MapStop {
 
 const LINE_SOURCE = "route";
 // Keep every stop clear of the buttons: zoom buttons at the top right, the chip at the top left,
-// the two buttons and the credit line along the bottom.
+// the terrain button and the credit line along the bottom.
 const FIT = { padding: { top: 76, bottom: 112, left: 56, right: 72 }, maxZoom: 16, animate: false } as const;
 const buttonClass =
   "tap-target inline-flex items-center justify-center gap-2 rounded-lg border-2 border-ink bg-paper px-3 text-lg font-bold text-ink hover:bg-surface";
@@ -37,8 +49,19 @@ const buttonClass =
  * The trail map (WBS 3.2.1, 3.2.2): GSI tiles, the route line and one numbered button per stop.
  * Embedded, it does not capture one-finger drags, so the page keeps scrolling; the visible
  * "bigger map" button expands it to the full screen with full pan and zoom.
+ * `line` is the real path when the CMS has it; without it the stops are joined by dashed straight lines.
  */
-export function TrailMap({ stops, approximate, draft }: { stops: MapStop[]; approximate: boolean; draft: boolean }) {
+export function TrailMap({
+  stops,
+  line,
+  draft,
+  settings,
+}: {
+  stops: MapStop[];
+  line: Position[] | null;
+  draft: boolean;
+  settings: MapSettings;
+}) {
   const { t } = useLingui();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -48,10 +71,10 @@ export function TrailMap({ stops, approximate, draft }: { stops: MapStop[]; appr
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const [relief, setRelief] = useState(false);
+  const [terrain, setTerrain] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  // Create the map once for these stops; remove it again on unmount (CLAUDE.md: map.remove()).
+  // Create the map once for these inputs; remove it again on unmount (CLAUDE.md: map.remove()).
   useEffect(() => {
     let cancelled = false;
     let map: MapLibreMap | undefined;
@@ -66,11 +89,12 @@ export function TrailMap({ stops, approximate, draft }: { stops: MapStop[]; appr
         // emit that file, which this new URL(..., import.meta.url) pattern (from MapLibre's own
         // docs for Next.js 15 and later) does. Without it: "Worker failed to load".
         ml.setWorkerUrl(new URL("maplibre-gl/dist/maplibre-gl-worker.mjs", import.meta.url).toString());
-        const points = stops.map((s) => s.position);
-        const bounds = boundsOf(points);
+        const stopPoints = stops.map((s) => s.position);
+        const linePoints = line ?? stopPoints;
+        const bounds = boundsOf([...stopPoints, ...linePoints]);
         map = new ml.Map({
           container: containerRef.current,
-          style: mapStyle(),
+          style: mapStyle(settings),
           bounds: bounds ?? undefined,
           fitBoundsOptions: FIT,
           minZoom: zoomLimits.min,
@@ -94,8 +118,8 @@ export function TrailMap({ stops, approximate, draft }: { stops: MapStop[]; appr
         const start = () => {
           if (started || cancelled || !map || !map.isStyleLoaded()) return;
           started = true;
-          map.addSource(LINE_SOURCE, { type: "geojson", data: lineFeature(points) });
-          for (const layer of routeLineLayers(LINE_SOURCE, approximate)) map.addLayer(layer);
+          map.addSource(LINE_SOURCE, { type: "geojson", data: lineFeature(linePoints) });
+          for (const layer of routeLineLayers(LINE_SOURCE, line === null)) map.addLayer(layer);
           setLoaded(true);
         };
         map.on("styledata", start);
@@ -127,22 +151,26 @@ export function TrailMap({ stops, approximate, draft }: { stops: MapStop[]; appr
       map?.remove();
       mapRef.current = null;
     };
-  }, [stops, approximate]);
+  }, [stops, line, settings]);
 
   // Embedded: no one-finger capture. Expanded: full interaction. Either way the map is resized.
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
     setInteractive(map, expanded);
-    map.resize();
-    const bounds = boundsOf(stops.map((s) => s.position));
-    if (bounds) map.fitBounds(bounds, FIT);
-  }, [expanded, loaded, stops]);
+    // Wait for the layout change to settle so the map measures its new size before it fits.
+    const frame = window.setTimeout(() => {
+      map.resize();
+      const bounds = boundsOf([...stops.map((s) => s.position), ...(line ?? [])]);
+      if (bounds) map.fitBounds(bounds, FIT);
+    }, 150);
+    return () => window.clearTimeout(frame);
+  }, [expanded, loaded, stops, line]);
 
   useEffect(() => {
     const map = mapRef.current;
-    if (map && loaded) map.setLayoutProperty("gsi-relief", "visibility", relief ? "visible" : "none");
-  }, [relief, loaded]);
+    if (map && loaded) map.setLayoutProperty(terrainLayerId, "visibility", terrain ? "visible" : "none");
+  }, [terrain, loaded]);
 
   // Mark the selected stop for screen readers and for the highlighted look.
   useEffect(() => {
@@ -174,6 +202,10 @@ export function TrailMap({ stops, approximate, draft }: { stops: MapStop[]; appr
   };
 
   const selected = stops.find((s) => s.id === selectedId);
+  const terrainLabel =
+    settings.terrain === "relief"
+      ? terrain ? t`標高の色を消す` : t`標高の色を見る`
+      : terrain ? t`地形の陰影を消す` : t`地形の陰影を見る`;
 
   if (failed) {
     return (
@@ -186,10 +218,12 @@ export function TrailMap({ stops, approximate, draft }: { stops: MapStop[]; appr
   return (
     <section
       aria-label={t`地図`}
+      data-dark={settings.dark}
       className={expanded ? "trail-map fixed inset-0 z-30 flex flex-col gap-3 bg-paper p-3" : "trail-map flex flex-col gap-3"}
     >
       {expanded ? (
-        <div className="flex justify-end">
+        <div className="flex items-center justify-between gap-2">
+          {draft ? <SampleNoticeButton /> : <span />}
           <button ref={closeRef} type="button" onClick={() => setExpanded(false)} className={buttonClass}>
             {t`閉じる`}
           </button>
@@ -220,7 +254,7 @@ export function TrailMap({ stops, approximate, draft }: { stops: MapStop[]; appr
             <span className="text-caution">
               <WarningIcon />
             </span>
-            {t`仮の位置（未確認）`}
+            {t`仮のルート・位置（未確認）`}
           </p>
         ) : null}
 
@@ -234,8 +268,8 @@ export function TrailMap({ stops, approximate, draft }: { stops: MapStop[]; appr
         </div>
 
         <div className="absolute bottom-9 left-2 z-10">
-          <button type="button" onClick={() => setRelief((on) => !on)} aria-pressed={relief} className={buttonClass}>
-            {relief ? t`起伏を消す` : t`起伏を見る`}
+          <button type="button" onClick={() => setTerrain((on) => !on)} aria-pressed={terrain} className={buttonClass}>
+            {terrainLabel}
           </button>
         </div>
       </div>
