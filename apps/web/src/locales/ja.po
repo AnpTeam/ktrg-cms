@@ -7,7 +7,7 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: ja\n"
 
-#: src/app/[lang]/layout.tsx:37
+#: src/app/[lang]/layout.tsx:43
 msgid "本文へ移動"
 msgstr "本文へ移動"
 
@@ -15,8 +15,8 @@ msgstr "本文へ移動"
 msgid "準備中です。"
 msgstr "準備中です。"
 
-#: src/app/[lang]/layout.tsx:23
-#: src/app/[lang]/layout.tsx:41
+#: src/app/[lang]/layout.tsx:29
+#: src/app/[lang]/layout.tsx:47
 #: src/app/[lang]/page.tsx:11
 msgid "葛城修験"
 msgstr "葛城修験"

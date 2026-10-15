@@ -8,9 +8,15 @@ import { locales } from "@/i18n/locales";
 import { initLingui } from "@/i18n/server";
 import "../globals.css";
 
+// Colors match the paper token of each palette in globals.css.
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0f14" },
+  ],
 };
 
 // Pre-render every page in every supported locale at build time.

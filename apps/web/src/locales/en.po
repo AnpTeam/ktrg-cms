@@ -7,7 +7,7 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: en\n"
 
-#: src/app/[lang]/layout.tsx:37
+#: src/app/[lang]/layout.tsx:43
 msgid "本文へ移動"
 msgstr "Skip to main content"
 
@@ -15,8 +15,8 @@ msgstr "Skip to main content"
 msgid "準備中です。"
 msgstr "Coming soon."
 
-#: src/app/[lang]/layout.tsx:23
-#: src/app/[lang]/layout.tsx:41
+#: src/app/[lang]/layout.tsx:29
+#: src/app/[lang]/layout.tsx:47
 #: src/app/[lang]/page.tsx:11
 msgid "葛城修験"
 msgstr "Katsuragi Shugendō"
