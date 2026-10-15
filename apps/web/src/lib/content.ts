@@ -1,4 +1,6 @@
 import { sampleRoutes, sampleSpots } from "./sample-content";
+import type { Sketch } from "./sketch";
+import type { Viewer } from "./viewer";
 
 // View-models for the public content screens (WBS 3.2.3, 3.2.4, 3.2.5). Each field
 // mirrors a CMS column in apps/api/src/db/schema/content.ts, so what an editor types
@@ -7,7 +9,9 @@ import { sampleRoutes, sampleSpots } from "./sample-content";
 //
 // TODO(WBS 2.2.1, 2.2.2): replace the bodies of the three functions below with Eden
 // calls to GET /routes, /routes/{id} and /spots/{id}, and take these types from the
-// API response instead of declaring them here.
+// API response instead of declaring them here. The API should send `sketch` already
+// simplified (at most about 40 points), never the full GeoJSON line, and should say
+// whether routes without published spots are listed as "soon" (decide with 2.2.1).
 
 export const prefectures = ["osaka", "wakayama", "nara"] as const;
 export type Prefecture = (typeof prefectures)[number];
@@ -16,6 +20,10 @@ export type SpotStatus = "open" | "caution" | "closed";
 
 export interface RouteSummary {
   id: string;
+  /** Position on the trail, 1 to 19, from Tomogashima to Kamenose. */
+  order: number;
+  /** "soon" = no published spots yet: shown as 準備中. */
+  status: "ready" | "soon";
   nameJa: string;
   nameEn: string | null;
   prefecture: Prefecture | null;
@@ -24,6 +32,8 @@ export interface RouteSummary {
   elevationGainM: number | null;
   difficulty: string | null;
   expectedTimeMin: number | null;
+  /** A simplified route line for the list silhouette, when the CMS has geometry. */
+  sketch: Sketch | null;
   spotCount: number;
   /** Stamps this visitor holds on the route; null when not signed in. */
   stampedCount: number | null;
@@ -81,6 +91,24 @@ export function filterByPrefecture<T extends { prefecture: Prefecture | null }>(
   return prefecture ? routes.filter((r) => r.prefecture === prefecture) : routes;
 }
 
+/** Sections by prefecture only when every route has one; otherwise one plain ribbon. */
+export function canGroupByPrefecture(routes: { prefecture: Prefecture | null }[]) {
+  return routes.length > 0 && routes.every((r) => r.prefecture !== null);
+}
+
+/** Remove everything personal for a signed-out visitor: progress counts and stamp state. */
+export function forViewer<T extends { stampedCount?: number | null; stamped?: boolean | null; spots?: SpotListItem[] }>(
+  item: T,
+  viewer: Viewer,
+): T {
+  if (viewer.signedIn) return item;
+  const out = { ...item };
+  if ("stampedCount" in out) out.stampedCount = null;
+  if ("stamped" in out) out.stamped = null;
+  if (out.spots) out.spots = out.spots.map((s) => ({ ...s, stamped: null }));
+  return out;
+}
+
 /**
  * Sample content is for design review only. It is off unless SHOW_SAMPLE_CONTENT=1,
  * and every screen that shows it says so (see SampleBanner).
@@ -93,6 +121,8 @@ export function sampleContentEnabled() {
 function toSummary(r: RouteDetail): RouteSummary {
   return {
     id: r.id,
+    order: r.order,
+    status: r.status,
     nameJa: r.nameJa,
     nameEn: r.nameEn,
     prefecture: r.prefecture,
@@ -101,6 +131,7 @@ function toSummary(r: RouteDetail): RouteSummary {
     elevationGainM: r.elevationGainM,
     difficulty: r.difficulty,
     expectedTimeMin: r.expectedTimeMin,
+    sketch: r.sketch,
     spotCount: r.spotCount,
     stampedCount: r.stampedCount,
   };

@@ -4,12 +4,21 @@ import { Notice } from "@/components/Notice";
 import { ProgressSummary } from "@/components/ProgressSummary";
 import { RowLink } from "@/components/RowLink";
 import { Ruby } from "@/components/Ruby";
+import { SignInPrompt } from "@/components/SignInPrompt";
+import { forViewer, listRoutes } from "@/lib/content";
+import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
-import { localePath, TOTAL_ROUTES, TRAIL_KM } from "@/lib/rally";
+import { localePath, TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
 
-export default async function HomePage() {
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
   const i18n = await initLingui();
+  const viewer = await getViewer(searchParams);
   const to = (path: string) => localePath(i18n.locale, path);
+
+  // Signed in: progress across everything that has published spots. Signed out: none at all.
+  const routes = viewer.signedIn ? (await listRoutes()).map((r) => forViewer(r, viewer)) : [];
+  const stamped = routes.reduce((n, r) => n + (r.stampedCount ?? 0), 0);
+  const total = routes.reduce((n, r) => n + r.spotCount, 0) || TOTAL_STAMPS;
 
   return (
     <div className="flex flex-col gap-8">
@@ -24,22 +33,40 @@ export default async function HomePage() {
         </p>
       </section>
 
-      {/* No account or stamp data yet, so the honest count is 0. */}
-      <ProgressSummary stamped={0}>
-        <ButtonLink href={to("/stamps")}>
-          <Trans>スタンプカードを見る</Trans>
-        </ButtonLink>
-      </ProgressSummary>
+      {viewer.signedIn ? (
+        <ProgressSummary stamped={stamped} total={total}>
+          <ButtonLink href={to("/stamps")}>
+            <Trans>スタンプカードを見る</Trans>
+          </ButtonLink>
+        </ProgressSummary>
+      ) : (
+        <section className="flex flex-col gap-4">
+          <div className="px-4">
+            <ButtonLink href={to("/routes")}>
+              <Trans>ルートをさがす</Trans>
+            </ButtonLink>
+          </div>
+          <SignInPrompt />
+        </section>
+      )}
 
-      <RowLink
-        href={to("/routes")}
-        title={<Trans>ルートをさがす</Trans>}
-        detail={
+      {viewer.signedIn ? (
+        <RowLink
+          href={to("/routes")}
+          title={<Trans>ルートをさがす</Trans>}
+          detail={
+            <Trans>
+              全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）
+            </Trans>
+          }
+        />
+      ) : (
+        <p className="px-4 text-xl">
           <Trans>
             全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）
           </Trans>
-        }
-      />
+        </p>
+      )}
 
       <Notice>
         <Trans>出かける前に、公式の最新情報を確認してください。</Trans>

@@ -3,11 +3,12 @@ import type { Metadata } from "next";
 import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
 import { SpotSheet } from "@/components/SpotSheet";
-import { getSpot, pickText } from "@/lib/content";
+import { forViewer, getSpot, pickText } from "@/lib/content";
+import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
 import { localePath } from "@/lib/rally";
 
-type Props = { params: Promise<{ id: string }> };
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ as?: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const i18n = await initLingui();
@@ -16,10 +17,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 // Spot detail (WBS 3.2.5). A draft or unknown spot is a 404 (the API does the same).
-export default async function SpotPage({ params }: Props) {
+export default async function SpotPage({ params, searchParams }: Props) {
   const i18n = await initLingui();
-  const spot = await getSpot((await params).id);
-  if (!spot) notFound();
+  const viewer = await getViewer(searchParams);
+  const found = await getSpot((await params).id);
+  if (!found) notFound();
+  const spot = forViewer(found, viewer);
 
   return (
     <div className="flex flex-col gap-6">

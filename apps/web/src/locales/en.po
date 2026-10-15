@@ -7,23 +7,23 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: en\n"
 
-#: src/components/RouteStats.tsx:30
+#: src/components/RouteStats.tsx:31
 msgid "{hours}時間"
 msgstr "{hours} h"
 
-#: src/components/RouteStats.tsx:30
+#: src/components/RouteStats.tsx:31
 msgid "{hours}時間{minutes}分"
 msgstr "{hours} h {minutes} min"
 
-#: src/components/RouteStats.tsx:19
+#: src/components/RouteStats.tsx:20
 msgid "{km}km"
 msgstr "{km} km"
 
-#: src/components/RouteStats.tsx:23
+#: src/components/RouteStats.tsx:24
 msgid "{meters}m"
 msgstr "{meters} m"
 
-#: src/components/RouteStats.tsx:30
+#: src/components/RouteStats.tsx:31
 msgid "{minutes}分"
 msgstr "{minutes} min"
 
@@ -51,7 +51,7 @@ msgstr "The address may be wrong, or the page is not published."
 msgid "いまは、ここでスタンプを押せません。"
 msgstr "Stamps can't be collected here right now."
 
-#: src/app/[lang]/(public)/routes/page.tsx:49
+#: src/app/[lang]/(public)/routes/page.tsx:72
 msgid "この地域のルートはまだありません。"
 msgstr "There are no routes in this area yet."
 
@@ -64,19 +64,19 @@ msgstr "This description is in Japanese only."
 msgid "スタンプ"
 msgstr "Stamps"
 
-#: src/components/RouteRow.tsx:34
+#: src/components/TrailRibbon.tsx:100
 msgid "スタンプ {stampedCount} / {spotCount}"
 msgstr "Stamps {stampedCount} / {spotCount}"
 
-#: src/app/[lang]/(public)/stamps/page.tsx:33
+#: src/app/[lang]/(public)/stamps/page.tsx:37
 msgid "スタンプカード"
 msgstr "Stamp card"
 
-#: src/app/[lang]/(public)/page.tsx:30
+#: src/app/[lang]/(public)/page.tsx:39
 msgid "スタンプカードを見る"
 msgstr "See your stamp card"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:62
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:65
 msgid "スタンプの場所"
 msgstr "Stamp locations"
 
@@ -88,7 +88,7 @@ msgstr "Stamp progress"
 msgid "スタンプを押しました"
 msgstr "You collected this stamp"
 
-#: src/components/RouteRow.tsx:32
+#: src/components/TrailRibbon.tsx:96
 msgid "スタンプ場所 {spotCount}か所"
 msgstr "{spotCount} stamp locations"
 
@@ -100,7 +100,7 @@ msgstr "All"
 msgid "すべてそろいました。"
 msgstr "You have all the stamps."
 
-#: src/app/[lang]/(public)/routes/page.tsx:51
+#: src/app/[lang]/(public)/routes/page.tsx:74
 msgid "すべてのルートを見る"
 msgstr "See all routes"
 
@@ -109,7 +109,7 @@ msgstr "See all routes"
 msgid "つぎ"
 msgstr "Next"
 
-#: src/components/RouteStats.tsx:23
+#: src/components/RouteStats.tsx:24
 msgid "のぼり"
 msgstr "Climb"
 
@@ -141,41 +141,50 @@ msgstr "You haven't collected this stamp yet"
 msgid "メインメニュー"
 msgstr "Main menu"
 
-#: src/app/[lang]/(public)/routes/page.tsx:15
-#: src/app/[lang]/(public)/routes/page.tsx:33
+#: src/app/[lang]/(public)/routes/page.tsx:18
 #: src/components/TabBar.tsx:16
 msgid "ルート"
 msgstr "Routes"
 
-#: src/app/[lang]/(public)/spots/[id]/page.tsx:28
+#: src/app/[lang]/(public)/spots/[id]/page.tsx:31
 msgid "ルートにもどる"
 msgstr "Back to route"
 
-#: src/app/[lang]/(public)/routes/page.tsx:45
+#: src/app/[lang]/(public)/routes/page.tsx:68
 msgid "ルートの案内は準備中です。"
 msgstr "Route guides are coming soon."
 
-#: src/app/[lang]/(public)/page.tsx:36
+#: src/components/SignInPrompt.tsx:19
+msgid "ルートや場所は、ログインしなくても見られます。"
+msgstr "You can browse routes and places without signing in."
+
+#: src/app/[lang]/(public)/page.tsx:46
+#: src/app/[lang]/(public)/page.tsx:56
 msgid "ルートをさがす"
 msgstr "Find a route"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:36
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:39
 msgid "ルート一覧"
 msgstr "All routes"
 
-#: src/app/[lang]/(public)/page.tsx:38
-#: src/app/[lang]/(public)/routes/page.tsx:36
+#: src/components/SignInPrompt.tsx:16
+msgid "ログインすると、スタンプを記録できます。"
+msgstr "Sign in to record your stamps."
+
+#: src/app/[lang]/(public)/page.tsx:58
+#: src/app/[lang]/(public)/page.tsx:65
+#: src/app/[lang]/(public)/routes/page.tsx:50
 msgid "全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）"
 msgstr "{TOTAL_ROUTES} sections, about {TRAIL_KM} km"
 
-#: src/app/[lang]/(public)/routes/page.tsx:46
+#: src/app/[lang]/(public)/routes/page.tsx:69
 msgid "公開できるようになったら、ここにルートが表示されます。"
 msgstr "Routes will appear here once they are published."
 
-#: src/app/[lang]/(public)/page.tsx:45
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:88
-#: src/app/[lang]/(public)/routes/page.tsx:65
-#: src/app/[lang]/(public)/stamps/page.tsx:39
+#: src/app/[lang]/(public)/page.tsx:72
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:91
+#: src/app/[lang]/(public)/routes/page.tsx:82
+#: src/app/[lang]/(public)/stamps/page.tsx:44
 #: src/components/SpotSheet.tsx:62
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "Check official sources before you go."
@@ -196,7 +205,7 @@ msgstr "Osaka"
 msgid "奈良県"
 msgstr "Nara"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:75
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:78
 #: src/components/StampLegend.tsx:8
 msgid "押した"
 msgstr "Stamped"
@@ -205,7 +214,7 @@ msgstr "Stamped"
 msgid "日本語のみ"
 msgstr "Japanese only"
 
-#: src/components/RouteStats.tsx:29
+#: src/components/RouteStats.tsx:30
 msgid "時間"
 msgstr "Time"
 
@@ -217,18 +226,30 @@ msgstr "Updated {updated} (Japan time)"
 msgid "本文へ移動"
 msgstr "Skip to main content"
 
-#: src/app/[lang]/(public)/page.tsx:23
+#: src/app/[lang]/(public)/page.tsx:32
 msgid "歩いた場所で、スタンプを押そう。"
 msgstr "Collect a stamp at each place you walk to."
+
+#: src/app/[lang]/(public)/routes/page.tsx:56
+msgid "歩き終えた区間 {done} / {TOTAL_ROUTES}"
+msgstr "Sections walked {done} / {TOTAL_ROUTES}"
 
 #: src/components/StatusBanner.tsx:23
 msgid "注意"
 msgstr "Caution"
 
-#: src/app/[lang]/(public)/page.tsx:19
+#: src/components/TrailRibbon.tsx:83
+msgid "準備中"
+msgstr "Coming soon"
+
+#: src/app/[lang]/(public)/page.tsx:28
 #: src/app/[lang]/layout.tsx:28
 msgid "葛城修験"
 msgstr "Katsuragi Shugendō"
+
+#: src/app/[lang]/(public)/routes/page.tsx:47
+msgid "葛城修験の道"
+msgstr "The Katsuragi Shugendō Trail"
 
 #: src/components/SampleBanner.tsx:9
 msgid "見本のデータを表示しています。実際の情報ではありません。"
@@ -242,7 +263,7 @@ msgstr "Language"
 msgid "説明"
 msgstr "About this place"
 
-#: src/components/RouteStats.tsx:19
+#: src/components/RouteStats.tsx:20
 msgid "距離"
 msgstr "Distance"
 
@@ -254,6 +275,6 @@ msgstr "Closed"
 msgid "開放中"
 msgstr "Open"
 
-#: src/components/RouteStats.tsx:33
+#: src/components/RouteStats.tsx:34
 msgid "難しさ"
 msgstr "Difficulty"

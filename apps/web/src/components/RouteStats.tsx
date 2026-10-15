@@ -4,10 +4,11 @@ import type { RouteSummary } from "@/lib/content";
 type Stats = Pick<RouteSummary, "distanceKm" | "elevationGainM" | "expectedTimeMin" | "difficulty">;
 
 /**
- * Distance, climb, time and difficulty as big values with small labels. Anything
- * the CMS has not filled in yet is simply left out (skeleton routes start empty).
+ * Distance, climb, time and difficulty. Anything the CMS has not filled in yet is simply
+ * left out (skeleton routes start empty). `compact` is for the trail list: label and value
+ * on one line; the default stacks a small label over a big value (route page).
  */
-export function RouteStats({ route }: { route: Stats }) {
+export function RouteStats({ route, compact = false }: { route: Stats; compact?: boolean }) {
   const { t, i18n } = useLingui();
   const numbers = new Intl.NumberFormat(i18n.locale === "ja" ? "ja-JP" : "en-US", {
     maximumFractionDigits: 1,
@@ -33,6 +34,20 @@ export function RouteStats({ route }: { route: Stats }) {
   if (route.difficulty) items.push({ label: t`難しさ`, value: route.difficulty });
 
   if (items.length === 0) return null;
+
+  if (compact) {
+    return (
+      <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2">
+        {items.map(({ label, value }) => (
+          <div key={label}>
+            <dt className="text-base leading-tight text-muted">{label}</dt>
+            <dd className="text-lg font-bold leading-snug tabular-nums">{value}</dd>
+          </div>
+        ))}
+      </dl>
+    );
+  }
+
   return (
     <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-3">
       {items.map(({ label, value }) => (

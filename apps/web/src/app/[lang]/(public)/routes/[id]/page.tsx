@@ -8,11 +8,12 @@ import { PrefectureName } from "@/components/PrefectureName";
 import { RouteStats } from "@/components/RouteStats";
 import { RowLink } from "@/components/RowLink";
 import { StatusWord } from "@/components/StatusBanner";
-import { getRoute, pickText } from "@/lib/content";
+import { forViewer, getRoute, pickText } from "@/lib/content";
+import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
 import { localePath } from "@/lib/rally";
 
-type Props = { params: Promise<{ id: string }> };
+type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ as?: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const i18n = await initLingui();
@@ -22,10 +23,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 // Minimal route page: the header, the stats and the spot list, so that every spot
 // is reachable. History, video, elevation profile and notices are WBS 3.2.4.
-export default async function RouteDetailPage({ params }: Props) {
+export default async function RouteDetailPage({ params, searchParams }: Props) {
   const i18n = await initLingui();
-  const route = await getRoute((await params).id);
-  if (!route) notFound();
+  const viewer = await getViewer(searchParams);
+  const found = await getRoute((await params).id);
+  if (!found) notFound();
+  const route = forViewer(found, viewer);
   const to = (path: string) => localePath(i18n.locale, path);
   const description = pickText(i18n.locale, route.descriptionJa, route.descriptionEn);
 

@@ -9,9 +9,9 @@ export function nextStamp(stamped: ReadonlySet<number>) {
 }
 
 // 4 columns by 7 rows. Each slot is at least 76px square at 360px wide.
-export function StampGrid({ stamped }: { stamped: ReadonlySet<number> }) {
+export function StampGrid({ stamped, showNext = true }: { stamped: ReadonlySet<number>; showNext?: boolean }) {
   const { t } = useLingui();
-  const next = nextStamp(stamped);
+  const next = showNext ? nextStamp(stamped) : undefined; // signed out: no personal "next"
 
   return (
     <ol className="grid grid-cols-4 gap-2 px-4">
