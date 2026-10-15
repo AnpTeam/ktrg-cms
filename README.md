@@ -24,7 +24,7 @@ Participants follow a map of 19 trail routes, tap **Stamp here** at each of the 
 | Web app | Next.js, React, TypeScript, Tailwind CSS |
 | Map | MapLibre GL JS, GSI map tiles (tentative) |
 | API | Bun, Elysia, TypeBox |
-| Database | PostgreSQL 16, Drizzle ORM |
+| Database | PostgreSQL 18, Drizzle ORM |
 | Auth | Email OTP, passkeys (WebAuthn via SimpleWebAuthn), cookie sessions |
 | Client data | Eden Treaty, TanStack Query, Zustand |
 | i18n | next-intl |
@@ -42,4 +42,4 @@ apps/
 
 ## Getting started
 
-Setup instructions will be added once the project is scaffolded. Requirements: Bun, Node, Git and PostgreSQL 16 (Docker recommended). Geolocation and passkeys need HTTPS, so phone testing uses an HTTPS tunnel.
+Setup instructions will be added once the project is scaffolded. Requirements: Bun, Node, Git and PostgreSQL 18 (Docker recommended). Geolocation and passkeys need HTTPS, so phone testing uses an HTTPS tunnel.
