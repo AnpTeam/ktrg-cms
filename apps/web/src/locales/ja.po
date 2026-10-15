@@ -7,20 +7,253 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: ja\n"
 
-#: src/app/[lang]/layout.tsx:43
+#: src/components/RouteStats.tsx:30
+msgid "{hours}時間"
+msgstr "{hours}時間"
+
+#: src/components/RouteStats.tsx:30
+msgid "{hours}時間{minutes}分"
+msgstr "{hours}時間{minutes}分"
+
+#: src/components/RouteStats.tsx:19
+msgid "{km}km"
+msgstr "{km}km"
+
+#: src/components/RouteStats.tsx:23
+msgid "{meters}m"
+msgstr "{meters}m"
+
+#: src/components/RouteStats.tsx:30
+msgid "{minutes}分"
+msgstr "{minutes}分"
+
+#: src/components/StampGrid.tsx:27
+msgid "{number}番 スタンプ済み"
+msgstr "{number}番 スタンプ済み"
+
+#: src/components/StampGrid.tsx:29
+msgid "{number}番 つぎのスタンプ"
+msgstr "{number}番 つぎのスタンプ"
+
+#: src/components/StampGrid.tsx:30
+msgid "{number}番 まだ押していません"
+msgstr "{number}番 まだ押していません"
+
+#: src/components/ProgressSummary.tsx:14
+msgid "あと{remaining}か所"
+msgstr "あと{remaining}か所"
+
+#: src/app/[lang]/(public)/not-found.tsx:15
+msgid "アドレスがちがうか、ページが公開されていません。"
+msgstr "アドレスがちがうか、ページが公開されていません。"
+
+#: src/components/StatusBanner.tsx:105
+msgid "いまは、ここでスタンプを押せません。"
+msgstr "いまは、ここでスタンプを押せません。"
+
+#: src/app/[lang]/(public)/routes/page.tsx:49
+msgid "この地域のルートはまだありません。"
+msgstr "この地域のルートはまだありません。"
+
+#: src/components/SpotSheet.tsx:55
+msgid "この説明は日本語のみです。"
+msgstr "この説明は日本語のみです。"
+
+#: src/components/ProgressSummary.tsx:18
+#: src/components/TabBar.tsx:17
+msgid "スタンプ"
+msgstr "スタンプ"
+
+#: src/components/RouteRow.tsx:34
+msgid "スタンプ {stampedCount} / {spotCount}"
+msgstr "スタンプ {stampedCount} / {spotCount}"
+
+#: src/app/[lang]/(public)/stamps/page.tsx:33
+msgid "スタンプカード"
+msgstr "スタンプカード"
+
+#: src/app/[lang]/(public)/page.tsx:30
+msgid "スタンプカードを見る"
+msgstr "スタンプカードを見る"
+
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:62
+msgid "スタンプの場所"
+msgstr "スタンプの場所"
+
+#: src/components/ProgressSummary.tsx:26
+msgid "スタンプの進み具合"
+msgstr "スタンプの進み具合"
+
+#: src/components/SpotSheet.tsx:39
+msgid "スタンプを押しました"
+msgstr "スタンプを押しました"
+
+#: src/components/RouteRow.tsx:32
+msgid "スタンプ場所 {spotCount}か所"
+msgstr "スタンプ場所 {spotCount}か所"
+
+#: src/components/PrefectureFilter.tsx:32
+msgid "すべて"
+msgstr "すべて"
+
+#: src/components/ProgressSummary.tsx:13
+msgid "すべてそろいました。"
+msgstr "すべてそろいました。"
+
+#: src/app/[lang]/(public)/routes/page.tsx:51
+msgid "すべてのルートを見る"
+msgstr "すべてのルートを見る"
+
+#: src/components/StampGrid.tsx:35
+#: src/components/StampLegend.tsx:10
+msgid "つぎ"
+msgstr "つぎ"
+
+#: src/components/RouteStats.tsx:23
+msgid "のぼり"
+msgstr "のぼり"
+
+#: src/app/[lang]/(public)/not-found.tsx:12
+msgid "ページが見つかりません"
+msgstr "ページが見つかりません"
+
+#: src/components/TabBar.tsx:15
+msgid "ホーム"
+msgstr "ホーム"
+
+#: src/app/[lang]/(public)/not-found.tsx:18
+msgid "ホームにもどる"
+msgstr "ホームにもどる"
+
+#: src/components/StampLegend.tsx:9
+msgid "まだ"
+msgstr "まだ"
+
+#: src/components/ProgressSummary.tsx:11
+msgid "まだスタンプはありません。"
+msgstr "まだスタンプはありません。"
+
+#: src/components/SpotSheet.tsx:39
+msgid "まだスタンプを押していません"
+msgstr "まだスタンプを押していません"
+
+#: src/components/TabBar.tsx:22
+msgid "メインメニュー"
+msgstr "メインメニュー"
+
+#: src/app/[lang]/(public)/routes/page.tsx:15
+#: src/app/[lang]/(public)/routes/page.tsx:33
+#: src/components/TabBar.tsx:16
+msgid "ルート"
+msgstr "ルート"
+
+#: src/app/[lang]/(public)/spots/[id]/page.tsx:28
+msgid "ルートにもどる"
+msgstr "ルートにもどる"
+
+#: src/app/[lang]/(public)/routes/page.tsx:45
+msgid "ルートの案内は準備中です。"
+msgstr "ルートの案内は準備中です。"
+
+#: src/app/[lang]/(public)/page.tsx:36
+msgid "ルートをさがす"
+msgstr "ルートをさがす"
+
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:36
+msgid "ルート一覧"
+msgstr "ルート一覧"
+
+#: src/app/[lang]/(public)/page.tsx:38
+#: src/app/[lang]/(public)/routes/page.tsx:36
+msgid "全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）"
+msgstr "全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）"
+
+#: src/app/[lang]/(public)/routes/page.tsx:46
+msgid "公開できるようになったら、ここにルートが表示されます。"
+msgstr "公開できるようになったら、ここにルートが表示されます。"
+
+#: src/app/[lang]/(public)/page.tsx:45
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:88
+#: src/app/[lang]/(public)/routes/page.tsx:65
+#: src/app/[lang]/(public)/stamps/page.tsx:39
+#: src/components/SpotSheet.tsx:62
+msgid "出かける前に、公式の最新情報を確認してください。"
+msgstr "出かける前に、公式の最新情報を確認してください。"
+
+#: src/components/PrefectureName.tsx:9
+msgid "和歌山県"
+msgstr "和歌山県"
+
+#: src/components/PrefectureFilter.tsx:28
+msgid "地域でしぼる"
+msgstr "地域でしぼる"
+
+#: src/components/PrefectureName.tsx:7
+msgid "大阪府"
+msgstr "大阪府"
+
+#: src/components/PrefectureName.tsx:11
+msgid "奈良県"
+msgstr "奈良県"
+
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:75
+#: src/components/StampLegend.tsx:8
+msgid "押した"
+msgstr "押した"
+
+#: src/components/Localized.tsx:16
+msgid "日本語のみ"
+msgstr "日本語のみ"
+
+#: src/components/RouteStats.tsx:29
+msgid "時間"
+msgstr "時間"
+
+#: src/components/StatusBanner.tsx:65
+msgid "更新 {updated}（日本時間）"
+msgstr "更新 {updated}（日本時間）"
+
+#: src/app/[lang]/layout.tsx:45
 msgid "本文へ移動"
 msgstr "本文へ移動"
 
-#: src/app/[lang]/page.tsx:14
-msgid "準備中です。"
-msgstr "準備中です。"
+#: src/app/[lang]/(public)/page.tsx:23
+msgid "歩いた場所で、スタンプを押そう。"
+msgstr "歩いた場所で、スタンプを押そう。"
 
-#: src/app/[lang]/layout.tsx:29
-#: src/app/[lang]/layout.tsx:47
-#: src/app/[lang]/page.tsx:11
+#: src/components/StatusBanner.tsx:23
+msgid "注意"
+msgstr "注意"
+
+#: src/app/[lang]/(public)/page.tsx:19
+#: src/app/[lang]/layout.tsx:28
 msgid "葛城修験"
 msgstr "葛城修験"
+
+#: src/components/SampleBanner.tsx:9
+msgid "見本のデータを表示しています。実際の情報ではありません。"
+msgstr "見本のデータを表示しています。実際の情報ではありません。"
 
 #: src/components/LocaleSwitcher.tsx:24
 msgid "言語"
 msgstr "言語"
+
+#: src/components/SpotSheet.tsx:47
+msgid "説明"
+msgstr "説明"
+
+#: src/components/RouteStats.tsx:19
+msgid "距離"
+msgstr "距離"
+
+#: src/components/StatusBanner.tsx:13
+msgid "閉鎖中"
+msgstr "閉鎖中"
+
+#: src/components/StatusBanner.tsx:30
+msgid "開放中"
+msgstr "開放中"
+
+#: src/components/RouteStats.tsx:33
+msgid "難しさ"
+msgstr "難しさ"

@@ -12,16 +12,20 @@
 @theme {
   --color-ink: #111827; /* body text */
   --color-muted: #374151; /* secondary text */
-  --color-paper: #ffffff; /* page background */
-  --color-surface: #f3f4f6; /* raised areas, hover */
-  --color-accent: #1e40af; /* links, primary buttons, focus ring */
-  --color-danger: #991b1b; /* errors and closed spots */
+  --color-paper: #ffffff; /* page background (white: glare outdoors punishes tints) */
+  --color-surface: #edf1f0; /* rows and empty slots: a cool, misty grey-green */
+  --color-accent: #1c3f6e; /* links, primary buttons, active tab, focus ring: indigo (藍) */
+  --color-moss: #1f5a3a; /* done and open: moss (苔) */
+  --color-shu: #b3321b; /* the stamp seal only: vermilion (朱). Never text, never a warning */
+  --color-caution: #b45309; /* warnings: caution status, never text (amber 琥珀) */
+  --color-danger: #991b1b; /* errors */
   --color-line: #6b7280; /* borders of inputs and buttons */
 
-  /* System fonts only: nothing to download on a weak mountain connection. */
+  /* System fonts only: nothing to download on a weak mountain connection.
+     UD (universal design) fonts first: BIZ UDPGothic ships with Windows 10+. */
   --font-sans:
-    system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Hiragino Sans",
-    "Noto Sans JP", "Yu Gothic UI", Meiryo, sans-serif;
+    "BIZ UDPGothic", "BIZ UDGothic", "Hiragino Kaku Gothic ProN", "Hiragino Sans",
+    "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
 }
 
 /* Smallest comfortable touch target: use on every link or control. */
@@ -44,6 +48,20 @@
     font-family: var(--font-sans);
     line-height: 1.7;
     -webkit-font-smoothing: antialiased;
+    /* Japanese breaks between phrases, not mid-word (ignored for other languages). */
+    word-break: auto-phrase;
+  }
+
+  /* No lonely last word or character on a line. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p,
+  li {
+    text-wrap: pretty;
   }
 
   /* Plain links look like links: coloured and underlined, not colour alone. */
@@ -78,12 +96,21 @@
     --color-ink: #f9fafb;
     --color-muted: #d1d5db;
     --color-paper: #0b0f14;
-    --color-surface: #1f2937;
-    --color-accent: #93c5fd;
+    --color-surface: #1a232c;
+    --color-accent: #9cc0ec;
+    --color-moss: #86d0a1;
+    --color-shu: #e8603f;
+    --color-caution: #fbbf24;
     --color-danger: #fca5a5;
     --color-line: #9ca3af;
     color-scheme: dark;
   }
+}
+
+/* Furigana: use only in headings of text-2xl or larger, so the reading stays legible. */
+rt {
+  font-size: 0.45em;
+  font-weight: 700;
 }
 
 @media (prefers-contrast: more) {

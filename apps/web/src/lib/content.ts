@@ -1,0 +1,119 @@
+import { sampleRoutes, sampleSpots } from "./sample-content";
+
+// View-models for the public content screens (WBS 3.2.3, 3.2.4, 3.2.5). Each field
+// mirrors a CMS column in apps/api/src/db/schema/content.ts, so what an editor types
+// in the admin (3.4.x) is exactly what appears here. Japanese is required; English is
+// optional and falls back to Japanese.
+//
+// TODO(WBS 2.2.1, 2.2.2): replace the bodies of the three functions below with Eden
+// calls to GET /routes, /routes/{id} and /spots/{id}, and take these types from the
+// API response instead of declaring them here.
+
+export const prefectures = ["osaka", "wakayama", "nara"] as const;
+export type Prefecture = (typeof prefectures)[number];
+
+export type SpotStatus = "open" | "caution" | "closed";
+
+export interface RouteSummary {
+  id: string;
+  nameJa: string;
+  nameEn: string | null;
+  prefecture: Prefecture | null;
+  municipality: string | null;
+  distanceKm: number | null;
+  elevationGainM: number | null;
+  difficulty: string | null;
+  expectedTimeMin: number | null;
+  spotCount: number;
+  /** Stamps this visitor holds on the route; null when not signed in. */
+  stampedCount: number | null;
+}
+
+export interface SpotListItem {
+  id: string;
+  nameJa: string;
+  nameEn: string | null;
+  status: SpotStatus;
+  /** null when not signed in. */
+  stamped: boolean | null;
+}
+
+export interface RouteDetail extends RouteSummary {
+  descriptionJa: string | null;
+  descriptionEn: string | null;
+  spots: SpotListItem[];
+}
+
+export interface SpotDetail extends SpotListItem {
+  routeId: string;
+  routeNameJa: string;
+  routeNameEn: string | null;
+  descriptionJa: string | null;
+  descriptionEn: string | null;
+  statusNoteJa: string | null;
+  statusNoteEn: string | null;
+  /** ISO timestamp of the last status change. */
+  statusUpdatedAt: string | null;
+}
+
+export interface Picked {
+  text: string;
+  lang: "ja" | "en";
+  /** English was requested but only Japanese exists. */
+  fallback: boolean;
+}
+
+/** The text for a locale: English if asked and entered, otherwise Japanese. */
+export function pickText(locale: string, ja: string | null, en: string | null): Picked | null {
+  if (locale === "en" && en) return { text: en, lang: "en", fallback: false };
+  if (ja) return { text: ja, lang: "ja", fallback: locale === "en" };
+  return null;
+}
+
+export function isPrefecture(value: string | undefined): value is Prefecture {
+  return prefectures.some((p) => p === value);
+}
+
+export function filterByPrefecture<T extends { prefecture: Prefecture | null }>(
+  routes: T[],
+  prefecture: Prefecture | undefined,
+) {
+  return prefecture ? routes.filter((r) => r.prefecture === prefecture) : routes;
+}
+
+/**
+ * Sample content is for design review only. It is off unless SHOW_SAMPLE_CONTENT=1,
+ * and every screen that shows it says so (see SampleBanner).
+ */
+export function sampleContentEnabled() {
+  return process.env.SHOW_SAMPLE_CONTENT === "1";
+}
+
+// What GET /routes will return per route: no description, no spot list.
+function toSummary(r: RouteDetail): RouteSummary {
+  return {
+    id: r.id,
+    nameJa: r.nameJa,
+    nameEn: r.nameEn,
+    prefecture: r.prefecture,
+    municipality: r.municipality,
+    distanceKm: r.distanceKm,
+    elevationGainM: r.elevationGainM,
+    difficulty: r.difficulty,
+    expectedTimeMin: r.expectedTimeMin,
+    spotCount: r.spotCount,
+    stampedCount: r.stampedCount,
+  };
+}
+
+export async function listRoutes(): Promise<RouteSummary[]> {
+  return sampleContentEnabled() ? sampleRoutes.map(toSummary) : [];
+}
+
+export async function getRoute(id: string): Promise<RouteDetail | undefined> {
+  return sampleContentEnabled() ? sampleRoutes.find((r) => r.id === id) : undefined;
+}
+
+export async function getSpot(id: string): Promise<SpotDetail | undefined> {
+  return sampleContentEnabled() ? sampleSpots.find((s) => s.id === id) : undefined;
+}
