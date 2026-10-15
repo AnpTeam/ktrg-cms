@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import type { AuthUser, OtpRow, OtpStore } from "./otp-service";
 
 /** In-memory store for tests and manual checks. Mirrors the Drizzle store's rules. */
@@ -32,7 +33,7 @@ export function createMemoryOtpStore() {
     async findOrCreateUser(email) {
       let user = users.get(email);
       if (!user) {
-        user = { id: `user-${users.size + 1}`, email, role: "participant", locale: "ja" };
+        user = { id: randomUUID(), email, role: "participant", locale: "ja" };
         users.set(email, user);
       }
       return user;

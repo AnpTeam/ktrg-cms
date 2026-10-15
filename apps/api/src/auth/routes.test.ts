@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { Elysia } from "elysia";
+import { createMemoryAuditWriter } from "../audit/audit-log";
 import { createMemoryOtpStore } from "./otp-memory-store";
 import { createOtpService } from "./otp-service";
 import { createRateLimiter } from "./rate-limit";
@@ -26,9 +27,10 @@ function setup(opts: { secureCookies?: boolean; trustProxy?: boolean } = {}) {
     now: () => clock,
   });
   const session = createSessionService({ store: sessions.store });
+  const audit = createMemoryAuditWriter();
   const rateLimit = createRateLimiter({ store: createMemoryRateLimitStore().store, secret: "l".repeat(32) });
   const app = new Elysia({ prefix: "/api/v1" }).use(
-    authRoutes(() => ({ otp, session, rateLimit }), {
+    authRoutes(() => ({ otp, session, rateLimit, audit: audit.writer }), {
       secureCookies: opts.secureCookies ?? false,
       trustProxy: opts.trustProxy ?? false,
     }),
@@ -59,6 +61,7 @@ function setup(opts: { secureCookies?: boolean; trustProxy?: boolean } = {}) {
     post,
     get,
     login,
+    auditRows: audit.rows,
     codes,
     subjects,
     users,
@@ -315,6 +318,8 @@ describe("fresh login: POST /auth/reauth/request and /auth/reauth/verify", () =>
     expect(until).toBeGreaterThanOrEqual(before + 10 * 60_000);
     expect(until).toBeLessThanOrEqual(Date.now() + 10 * 60_000);
     expect(t.sessions.rows[0]!.lastLoginAt.getTime()).toBe(until - 10 * 60_000);
+    const me = [...t.users.values()][0]!.id;
+    expect(t.auditRows).toEqual([{ actorUserId: me, action: "session.reauth", targetType: "user", targetId: me }]);
   });
 
   test("a wrong code is 400 invalid_code, and the session itself keeps working", async () => {
@@ -327,6 +332,7 @@ describe("fresh login: POST /auth/reauth/request and /auth/reauth/verify", () =>
     expect(res.status).toBe(400);
     expect(await res.json()).toEqual({ ok: false, error: "invalid_code" });
     expect((await t.get("session", cookie)).status).toBe(200);
+    expect(t.auditRows).toEqual([]); // a failed re-check is not recorded
   });
 
   test("a code works once", async () => {

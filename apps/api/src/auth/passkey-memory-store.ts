@@ -68,9 +68,10 @@ export function createMemoryPasskeyStore(users: Map<string, AuthUser> = new Map(
       }
     },
     async insertPasskey(row) {
-      if (passkeys.some((p) => p.credentialId === row.credentialId)) return false;
-      passkeys.push({ id: randomUUID(), createdAt: new Date(), ...row });
-      return true;
+      if (passkeys.some((p) => p.credentialId === row.credentialId)) return null;
+      const id = randomUUID();
+      passkeys.push({ id, createdAt: new Date(), ...row });
+      return id;
     },
     async createUserWithPasskey(row) {
       if (passkeys.some((p) => p.credentialId === row.credentialId)) return false;

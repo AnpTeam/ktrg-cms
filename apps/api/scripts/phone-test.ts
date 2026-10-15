@@ -8,6 +8,7 @@
 // (VS Code port forwarding with Public visibility, cloudflared, ngrok). No setup needed:
 // the page tells the server which address it is on.
 import { Elysia } from "elysia";
+import { auditRow, type AuditWriter } from "../src/audit/audit-log";
 import { createMemoryOtpStore } from "../src/auth/otp-memory-store";
 import { createOtpService } from "../src/auth/otp-service";
 import { createMemoryPasskeyStore } from "../src/auth/passkey-memory-store";
@@ -43,6 +44,13 @@ const services = {
   otp: createOtpService({ store, secret, mailer: createConsoleMailer("KTRG <no-reply@localhost>") }),
   session: createSessionService({ store: sessions.store }),
   rateLimit: createRateLimiter({ store: createMemoryRateLimitStore().store, secret }),
+  // Audit entries are checked like the real writer and printed in this terminal.
+  audit: {
+    async record(entry) {
+      const row = auditRow(entry);
+      console.log(`[audit] ${row.action} actor=${row.actorUserId} ${row.targetType}=${row.targetId}`);
+    },
+  } satisfies AuditWriter,
   passkeys: createPasskeyService({
     store: createMemoryPasskeyStore(users).store,
     config: passkeyConfig,

@@ -1,4 +1,6 @@
 import { Elysia, t } from "elysia";
+import type { AuditWriter } from "../audit/audit-log";
+import { auditTrail } from "../audit/audit-trail";
 import { authGuards } from "./guards";
 import { createHttpHelpers } from "./http";
 import { normalizeEmail } from "./otp";
@@ -12,6 +14,7 @@ export interface AuthServices {
   otp: OtpService;
   session: SessionService;
   rateLimit: RateLimiter;
+  audit: AuditWriter;
 }
 
 /**
@@ -31,6 +34,7 @@ export function authRoutes(
 
   return new Elysia({ prefix: "/auth" })
     .use(authGuards({ getSession: () => getServices().session, secureCookies: opts.secureCookies }))
+    .use(auditTrail({ getAudit: () => getServices().audit }))
     .post(
       "/otp/request",
       async ({ body, set, ...ctx }) => {
@@ -136,7 +140,11 @@ export function authRoutes(
         const freshUntil = await session.markFresh(authSession.id);
         return { ok: true as const, freshUntil: freshUntil.toISOString() };
       },
-      { auth: "me.manage", body: t.Object({ code: t.String({ pattern: "^[0-9]{6}$" }) }) },
+      {
+        auth: "me.manage",
+        audit: { action: "session.reauth", target: "self" },
+        body: t.Object({ code: t.String({ pattern: "^[0-9]{6}$" }) }),
+      },
     )
     .post("/logout", async ({ headers, set }) => {
       const token = http.tokenFrom(headers);

@@ -1,5 +1,7 @@
 import type { AuthenticationResponseJSON, RegistrationResponseJSON } from "@simplewebauthn/server";
 import { Elysia, t } from "elysia";
+import type { AuditWriter } from "../audit/audit-log";
+import { auditTrail } from "../audit/audit-trail";
 import { authGuards } from "./guards";
 import { createHttpHelpers } from "./http";
 import type { PasskeyService } from "./passkey-service";
@@ -10,6 +12,7 @@ export interface PasskeyServices {
   passkeys: PasskeyService;
   session: SessionService;
   rateLimit: RateLimiter;
+  audit: AuditWriter;
 }
 
 const str = (max = 4096) => t.String({ maxLength: max });
@@ -72,6 +75,8 @@ export function passkeyRoutes(
   return new Elysia({ prefix: "/auth/passkeys" })
     // `auth: "me.manage"` on a route = must be logged in (401 otherwise); `user` is then set.
     .use(authGuards({ getSession: () => getServices().session, secureCookies: opts.secureCookies }))
+    // `audit: "<action>"` on a route = record it (user id + target id only) when it succeeds.
+    .use(auditTrail({ getAudit: () => getServices().audit }))
     // The account's passkeys, for the settings screen. No key material, only id, name and date.
     .get(
       "/",
@@ -103,7 +108,11 @@ export function passkeyRoutes(
         }
         return { ok: true as const };
       },
-      { auth: "me.manage", params: t.Object({ id: t.String({ pattern: "^[0-9a-fA-F-]{36}$" }) }) },
+      {
+        auth: "me.manage",
+        audit: "passkey.remove", // target: the :id removed
+        params: t.Object({ id: t.String({ pattern: "^[0-9a-fA-F-]{36}$" }) }),
+      },
     )
     // Step 1: the browser asks for registration settings.
     .post(
@@ -152,6 +161,7 @@ export function passkeyRoutes(
       },
       {
         auth: "me.manage",
+        audit: { action: "passkey.add", target: "response:passkey.id" }, // the new passkey's id
         body: t.Object({ response: registrationResponse, label: t.Optional(t.String({ maxLength: 64 })) }),
       },
     )

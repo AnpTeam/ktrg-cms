@@ -85,8 +85,8 @@ export interface PasskeyStore {
   ): Promise<{ pendingUserId: string | null } | null>;
   /** Forget challenges that expired before this time. */
   pruneChallenges(before: Date): Promise<void>;
-  /** Returns false if the credential id is already registered. */
-  insertPasskey(row: NewPasskey): Promise<boolean>;
+  /** The new passkey's id, or null if the credential id is already registered. */
+  insertPasskey(row: NewPasskey): Promise<string | null>;
   /**
    * Create a passkey-only account (no email) together with its first passkey, all
    * or nothing. Returns false, creating nothing, if the credential id is already taken.
@@ -104,7 +104,7 @@ export interface PasskeyConfig {
 }
 
 export type RegisterResult =
-  | { ok: true; passkey: { credentialId: string; label: string | null } }
+  | { ok: true; passkey: { id: string; credentialId: string; label: string | null } }
   | { ok: false; reason: "too_many" | "failed" };
 
 export type LoginResult = { ok: true; user: AuthUser } | { ok: false };
@@ -203,11 +203,11 @@ export function createPasskeyService({
       );
       if (!credential) return { ok: false, reason: "failed" };
 
-      const saved = await store.insertPasskey({ userId: user.id, ...credential, label });
-      if (!saved) return { ok: false, reason: "failed" };
+      const id = await store.insertPasskey({ userId: user.id, ...credential, label });
+      if (!id) return { ok: false, reason: "failed" };
 
       await alert(user, "added", label);
-      return { ok: true, passkey: { credentialId: credential.credentialId, label } };
+      return { ok: true, passkey: { id, credentialId: credential.credentialId, label } };
     },
 
     /** The account's passkeys, for the settings screen. */

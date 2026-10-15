@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { Elysia } from "elysia";
+import { createMemoryAuditWriter } from "../audit/audit-log";
 import type { MailMessage } from "../lib/mailer";
 import type { AuthUser } from "./otp-service";
 import { createMemoryPasskeyStore } from "./passkey-memory-store";
@@ -33,9 +34,10 @@ function setup() {
       },
     },
   });
+  const audit = createMemoryAuditWriter();
   const rateLimit = createRateLimiter({ store: createMemoryRateLimitStore().store, secret: "p".repeat(32) });
   const app = new Elysia({ prefix: "/api/v1" }).use(
-    passkeyRoutes(() => ({ passkeys, session, rateLimit }), { secureCookies: false }),
+    passkeyRoutes(() => ({ passkeys, session, rateLimit, audit: audit.writer }), { secureCookies: false }),
   );
 
   const call = (method: string, path: string, body?: unknown, cookie?: string) =>
@@ -55,7 +57,7 @@ function setup() {
     await passkeys.verifyRegistration(user, phone.register(r.options), label);
   }
 
-  return { call, cookieFor, addPasskey, service: passkeys, sent, session };
+  return { call, cookieFor, addPasskey, service: passkeys, sent, session, auditRows: audit.rows };
 }
 
 type ListBody = { ok: boolean; passkeys: { id: string; label: string | null; createdAt: string }[] };
@@ -88,7 +90,7 @@ describe("DELETE /auth/passkeys/:id", () => {
   });
 
   test("removes your own passkey and emails you", async () => {
-    const { call, cookieFor, addPasskey, sent } = setup();
+    const { call, cookieFor, addPasskey, sent, auditRows } = setup();
     await addPasskey(alice, "Old laptop");
     sent.length = 0;
     const cookie = await cookieFor(alice);
@@ -101,10 +103,11 @@ describe("DELETE /auth/passkeys/:id", () => {
     expect(((await (await call("GET", "/", undefined, cookie)).json()) as ListBody).passkeys).toEqual([]);
     expect(sent).toHaveLength(1);
     expect(sent[0]!.subject).toContain("removed");
+    expect(auditRows).toEqual([{ actorUserId: alice.id, action: "passkey.remove", targetType: "passkey", targetId: id }]);
   });
 
   test("someone else's passkey is a plain 404 and stays", async () => {
-    const { call, cookieFor, addPasskey, sent } = setup();
+    const { call, cookieFor, addPasskey, sent, auditRows } = setup();
     await addPasskey(bob, "Bob's phone");
     sent.length = 0;
     const bobsId = ((await (await call("GET", "/", undefined, await cookieFor(bob))).json()) as ListBody).passkeys[0]!.id;
@@ -115,6 +118,7 @@ describe("DELETE /auth/passkeys/:id", () => {
     expect(await res.json()).toEqual({ ok: false, error: "not_found" });
     expect(((await (await call("GET", "/", undefined, await cookieFor(bob))).json()) as ListBody).passkeys).toHaveLength(1);
     expect(sent).toHaveLength(0);
+    expect(auditRows).toEqual([]); // nothing was removed, so nothing is recorded
   });
 
   test("a made-up id is 404, and a malformed id is rejected before anything runs", async () => {

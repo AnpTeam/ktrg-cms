@@ -96,7 +96,7 @@ describe("verifyRegistration", () => {
 
     const result = await service.verifyRegistration(alice, p.register(options), "My iPhone");
 
-    expect(result).toEqual({ ok: true, passkey: { credentialId: p.id, label: "My iPhone" } });
+    expect(result).toEqual({ ok: true, passkey: { id: passkeys[0]!.id, credentialId: p.id, label: "My iPhone" } });
     expect(passkeys).toHaveLength(1);
     expect(passkeys[0]).toMatchObject({ userId: alice.id, credentialId: p.id, counter: 0, label: "My iPhone" });
     expect(passkeys[0]!.publicKey.length).toBeGreaterThan(0);

@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { PublicKeyCredentialCreationOptionsJSON } from "@simplewebauthn/server";
 import { Elysia } from "elysia";
+import { createMemoryAuditWriter } from "../audit/audit-log";
 import type { AuthUser } from "./otp-service";
 import { createMemoryPasskeyStore } from "./passkey-memory-store";
 import { passkeyRoutes } from "./passkey-routes";
@@ -20,9 +21,10 @@ function setup() {
   const session = createSessionService({ store: sessions.store });
   const mem = createMemoryPasskeyStore();
   const passkeys = createPasskeyService({ store: mem.store, config });
+  const audit = createMemoryAuditWriter();
   const rateLimit = createRateLimiter({ store: createMemoryRateLimitStore().store, secret: "p".repeat(32) });
   const app = new Elysia({ prefix: "/api/v1" }).use(
-    passkeyRoutes(() => ({ passkeys, session, rateLimit }), { secureCookies: false }),
+    passkeyRoutes(() => ({ passkeys, session, rateLimit, audit: audit.writer }), { secureCookies: false }),
   );
 
   const post = (path: string, body?: unknown, cookie?: string) =>
@@ -36,7 +38,7 @@ function setup() {
   const loginCookie = async () => `session=${(await session.create(alice)).token}`;
   const phone = () => new TestAuthenticator({ origin: config.origin, rpId: config.rpId });
 
-  return { post, loginCookie, phone, ...mem };
+  return { post, loginCookie, phone, ...mem, auditRows: audit.rows };
 }
 
 async function getOptions(post: ReturnType<typeof setup>["post"], cookie: string) {
@@ -47,7 +49,7 @@ async function getOptions(post: ReturnType<typeof setup>["post"], cookie: string
 
 describe("passkey registration over HTTP", () => {
   test("the full flow: options, then verify, stores the passkey", async () => {
-    const { post, loginCookie, phone, passkeys } = setup();
+    const { post, loginCookie, phone, passkeys, auditRows } = setup();
     const cookie = await loginCookie();
     const p = phone();
 
@@ -57,8 +59,10 @@ describe("passkey registration over HTTP", () => {
 
     const verify = await post("register/verify", { response: p.register(options), label: "  My iPhone  " }, cookie);
     expect(verify.status).toBe(200);
-    expect(await verify.json()).toEqual({ ok: true, passkey: { credentialId: p.id, label: "My iPhone" } });
+    expect(await verify.json()).toEqual({ ok: true, passkey: { id: passkeys[0]!.id, credentialId: p.id, label: "My iPhone" } });
     expect(passkeys).toHaveLength(1);
+    // Ids only: the label "My iPhone" is not in the audit log.
+    expect(auditRows).toEqual([{ actorUserId: alice.id, action: "passkey.add", targetType: "passkey", targetId: passkeys[0]!.id }]);
   });
 
   test("both steps need a login", async () => {

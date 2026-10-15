@@ -5,6 +5,7 @@
 import { afterAll, describe, expect, test } from "bun:test";
 import { randomBytes, randomUUID } from "node:crypto";
 import { asc, eq, inArray, like, sql } from "drizzle-orm";
+import { createDrizzleAuditWriter, writeAudit } from "../audit/audit-store";
 import { createDrizzleOtpStore } from "../auth/otp-store";
 import { createDrizzlePasskeyStore } from "../auth/passkey-store";
 import { createDrizzleRateLimitStore } from "../auth/rate-limit-store";
@@ -194,6 +195,51 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
     });
   });
 
+  describe("audit log", () => {
+    test("the writer stores ids only; a bad entry writes nothing", async () => {
+      const user = await newUser("audit-writer");
+      const target = randomUUID();
+      const audit = createDrizzleAuditWriter(db);
+      try {
+        await audit.record({ actorUserId: user.id, action: "passkey.remove", targetId: target });
+        await expect(audit.record({ actorUserId: user.id, action: "passkey.remove", targetId: user.email })).rejects.toThrow(
+          /must be a UUID/,
+        );
+
+        const rows = await db.select().from(auditLog).where(eq(auditLog.actorUserId, user.id));
+        expect(rows).toHaveLength(1);
+        expect(rows[0]).toMatchObject({ action: "passkey.remove", targetType: "passkey", targetId: target });
+        expect(JSON.stringify(rows)).not.toContain(user.email!);
+      } finally {
+        await db.delete(auditLog).where(eq(auditLog.actorUserId, user.id));
+      }
+    });
+
+    test("written inside a transaction, the row rolls back with the change", async () => {
+      const user = await newUser("audit-rollback");
+      await expect(
+        db.transaction(async (tx) => {
+          await writeAudit(tx, { actorUserId: user.id, action: "session.reauth", targetId: user.id });
+          throw new Error("the change failed");
+        }),
+      ).rejects.toThrow("the change failed");
+      expect(await db.select().from(auditLog).where(eq(auditLog.actorUserId, user.id))).toEqual([]);
+    });
+
+    test("rows outlive the actor's account, with the actor set to null", async () => {
+      const user = await newUser("audit-deleted");
+      await writeAudit(db, { actorUserId: user.id, action: "session.reauth", targetId: user.id });
+      await db.delete(users).where(eq(users.id, user.id));
+      try {
+        const rows = await db.select().from(auditLog).where(eq(auditLog.targetId, user.id));
+        expect(rows).toHaveLength(1);
+        expect(rows[0]!.actorUserId).toBeNull();
+      } finally {
+        await db.delete(auditLog).where(eq(auditLog.targetId, user.id));
+      }
+    });
+  });
+
   describe("rate limit store", () => {
     test("hit counts up per key and window", async () => {
       const w1 = new Date("2026-10-15T00:00:00Z");
@@ -263,8 +309,8 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       const user = await newUser("pk-store");
       const cred = newCredential();
 
-      expect(await passkeys.insertPasskey({ userId: user.id, ...cred, label: "My iPhone" })).toBe(true);
-      expect(await passkeys.insertPasskey({ userId: user.id, ...cred })).toBe(false);
+      expect(await passkeys.insertPasskey({ userId: user.id, ...cred, label: "My iPhone" })).toMatch(/^[0-9a-f-]{36}$/);
+      expect(await passkeys.insertPasskey({ userId: user.id, ...cred })).toBeNull();
 
       const found = await passkeys.findCredential(cred.credentialId);
       expect(found?.userId).toBe(user.id);

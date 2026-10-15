@@ -1,4 +1,5 @@
 import { Elysia } from "elysia";
+import { createDrizzleAuditWriter } from "./audit/audit-store";
 import { parseAdminEmails } from "./auth/admin-emails";
 import { createOtpService } from "./auth/otp-service";
 import { createDrizzleOtpStore } from "./auth/otp-store";
@@ -31,6 +32,7 @@ function getServices(): AuthServices & PasskeyServices {
       }),
       session: createSessionService({ store: createDrizzleSessionStore(db) }),
       rateLimit: createRateLimiter({ store: createDrizzleRateLimitStore(db), secret }),
+      audit: createDrizzleAuditWriter(db),
       passkeys: createPasskeyService({
         store: createDrizzlePasskeyStore(db),
         mailer, // emails the owner when a passkey is added or removed

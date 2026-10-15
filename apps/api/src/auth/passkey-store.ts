@@ -96,7 +96,7 @@ export function createDrizzlePasskeyStore(db: Db): PasskeyStore {
         .values({ userId, credentialId, publicKey: Buffer.from(publicKey), counter, label })
         .onConflictDoNothing({ target: passkeys.credentialId })
         .returning({ id: passkeys.id });
-      return rows.length === 1;
+      return rows[0]?.id ?? null;
     },
 
     async createUserWithPasskey({ userId, credentialId, publicKey, counter, label }) {

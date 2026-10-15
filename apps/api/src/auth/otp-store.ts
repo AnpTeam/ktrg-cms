@@ -1,6 +1,7 @@
 import { and, desc, eq, isNull, lt, ne, sql } from "drizzle-orm";
 import type { Db } from "../db/client";
-import { auditLog, otpCodes, users } from "../db/schema";
+import { writeAudit } from "../audit/audit-store";
+import { otpCodes, users } from "../db/schema";
 import type { AuthUser, OtpStore } from "./otp-service";
 
 export function createDrizzleOtpStore(db: Db): OtpStore {
@@ -64,13 +65,9 @@ export function createDrizzleOtpStore(db: Db): OtpStore {
           .where(and(eq(users.id, userId), ne(users.role, "admin")))
           .returning({ id: users.id });
         if (changed.length === 0) return false;
-        // The account promoted itself by proving it owns a listed mailbox.
-        await tx.insert(auditLog).values({
-          actorUserId: userId,
-          action: "user.role.bootstrap_admin",
-          targetType: "user",
-          targetId: userId,
-        });
+        // The account promoted itself by proving it owns a listed mailbox. Same transaction:
+        // the role change and its audit row commit or roll back together.
+        await writeAudit(tx, { actorUserId: userId, action: "user.role.bootstrap_admin", targetId: userId });
         return true;
       });
     },

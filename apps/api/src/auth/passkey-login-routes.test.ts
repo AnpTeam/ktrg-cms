@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import type { PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON } from "@simplewebauthn/server";
 import { Elysia } from "elysia";
+import { createMemoryAuditWriter } from "../audit/audit-log";
 import type { AuthUser } from "./otp-service";
 import { createMemoryPasskeyStore } from "./passkey-memory-store";
 import { passkeyRoutes } from "./passkey-routes";
@@ -19,9 +20,10 @@ function setup() {
   const session = createSessionService({ store: sessions.store });
   const mem = createMemoryPasskeyStore(users);
   const passkeys = createPasskeyService({ store: mem.store, config });
+  const audit = createMemoryAuditWriter();
   const rateLimit = createRateLimiter({ store: createMemoryRateLimitStore().store, secret: "p".repeat(32) });
   const app = new Elysia({ prefix: "/api/v1" }).use(
-    passkeyRoutes(() => ({ passkeys, session, rateLimit }), { secureCookies: false }),
+    passkeyRoutes(() => ({ passkeys, session, rateLimit, audit: audit.writer }), { secureCookies: false }),
   );
 
   const post = (path: string, body?: unknown, headers: Record<string, string> = {}) =>
