@@ -42,11 +42,11 @@ export function authRoutes(
         );
         if (limited) return limited;
 
-        await otp.request(body.email);
+        await otp.request(body.email, body.locale);
         // Same answer whether a code was sent, throttled or the mail failed.
         return { ok: true as const };
       },
-      { body: t.Object({ email }) },
+      { body: t.Object({ email, locale: t.Optional(t.Union([t.Literal("ja"), t.Literal("en")])) }) },
     )
     .post(
       "/otp/verify",

@@ -7,20 +7,253 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: en\n"
 
-#: src/app/[lang]/layout.tsx:43
+#: src/components/RouteStats.tsx:30
+msgid "{hours}時間"
+msgstr "{hours} h"
+
+#: src/components/RouteStats.tsx:30
+msgid "{hours}時間{minutes}分"
+msgstr "{hours} h {minutes} min"
+
+#: src/components/RouteStats.tsx:19
+msgid "{km}km"
+msgstr "{km} km"
+
+#: src/components/RouteStats.tsx:23
+msgid "{meters}m"
+msgstr "{meters} m"
+
+#: src/components/RouteStats.tsx:30
+msgid "{minutes}分"
+msgstr "{minutes} min"
+
+#: src/components/StampGrid.tsx:27
+msgid "{number}番 スタンプ済み"
+msgstr "No. {number}, stamped"
+
+#: src/components/StampGrid.tsx:29
+msgid "{number}番 つぎのスタンプ"
+msgstr "No. {number}, next stamp"
+
+#: src/components/StampGrid.tsx:30
+msgid "{number}番 まだ押していません"
+msgstr "No. {number}, not stamped yet"
+
+#: src/components/ProgressSummary.tsx:14
+msgid "あと{remaining}か所"
+msgstr "{remaining} left to go"
+
+#: src/app/[lang]/(public)/not-found.tsx:15
+msgid "アドレスがちがうか、ページが公開されていません。"
+msgstr "The address may be wrong, or the page is not published."
+
+#: src/components/StatusBanner.tsx:105
+msgid "いまは、ここでスタンプを押せません。"
+msgstr "Stamps can't be collected here right now."
+
+#: src/app/[lang]/(public)/routes/page.tsx:49
+msgid "この地域のルートはまだありません。"
+msgstr "There are no routes in this area yet."
+
+#: src/components/SpotSheet.tsx:55
+msgid "この説明は日本語のみです。"
+msgstr "This description is in Japanese only."
+
+#: src/components/ProgressSummary.tsx:18
+#: src/components/TabBar.tsx:17
+msgid "スタンプ"
+msgstr "Stamps"
+
+#: src/components/RouteRow.tsx:34
+msgid "スタンプ {stampedCount} / {spotCount}"
+msgstr "Stamps {stampedCount} / {spotCount}"
+
+#: src/app/[lang]/(public)/stamps/page.tsx:33
+msgid "スタンプカード"
+msgstr "Stamp card"
+
+#: src/app/[lang]/(public)/page.tsx:30
+msgid "スタンプカードを見る"
+msgstr "See your stamp card"
+
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:62
+msgid "スタンプの場所"
+msgstr "Stamp locations"
+
+#: src/components/ProgressSummary.tsx:26
+msgid "スタンプの進み具合"
+msgstr "Stamp progress"
+
+#: src/components/SpotSheet.tsx:39
+msgid "スタンプを押しました"
+msgstr "You collected this stamp"
+
+#: src/components/RouteRow.tsx:32
+msgid "スタンプ場所 {spotCount}か所"
+msgstr "{spotCount} stamp locations"
+
+#: src/components/PrefectureFilter.tsx:32
+msgid "すべて"
+msgstr "All"
+
+#: src/components/ProgressSummary.tsx:13
+msgid "すべてそろいました。"
+msgstr "You have all the stamps."
+
+#: src/app/[lang]/(public)/routes/page.tsx:51
+msgid "すべてのルートを見る"
+msgstr "See all routes"
+
+#: src/components/StampGrid.tsx:35
+#: src/components/StampLegend.tsx:10
+msgid "つぎ"
+msgstr "Next"
+
+#: src/components/RouteStats.tsx:23
+msgid "のぼり"
+msgstr "Climb"
+
+#: src/app/[lang]/(public)/not-found.tsx:12
+msgid "ページが見つかりません"
+msgstr "Page not found"
+
+#: src/components/TabBar.tsx:15
+msgid "ホーム"
+msgstr "Home"
+
+#: src/app/[lang]/(public)/not-found.tsx:18
+msgid "ホームにもどる"
+msgstr "Back to Home"
+
+#: src/components/StampLegend.tsx:9
+msgid "まだ"
+msgstr "Not yet"
+
+#: src/components/ProgressSummary.tsx:11
+msgid "まだスタンプはありません。"
+msgstr "No stamps yet."
+
+#: src/components/SpotSheet.tsx:39
+msgid "まだスタンプを押していません"
+msgstr "You haven't collected this stamp yet"
+
+#: src/components/TabBar.tsx:22
+msgid "メインメニュー"
+msgstr "Main menu"
+
+#: src/app/[lang]/(public)/routes/page.tsx:15
+#: src/app/[lang]/(public)/routes/page.tsx:33
+#: src/components/TabBar.tsx:16
+msgid "ルート"
+msgstr "Routes"
+
+#: src/app/[lang]/(public)/spots/[id]/page.tsx:28
+msgid "ルートにもどる"
+msgstr "Back to route"
+
+#: src/app/[lang]/(public)/routes/page.tsx:45
+msgid "ルートの案内は準備中です。"
+msgstr "Route guides are coming soon."
+
+#: src/app/[lang]/(public)/page.tsx:36
+msgid "ルートをさがす"
+msgstr "Find a route"
+
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:36
+msgid "ルート一覧"
+msgstr "All routes"
+
+#: src/app/[lang]/(public)/page.tsx:38
+#: src/app/[lang]/(public)/routes/page.tsx:36
+msgid "全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）"
+msgstr "{TOTAL_ROUTES} sections, about {TRAIL_KM} km"
+
+#: src/app/[lang]/(public)/routes/page.tsx:46
+msgid "公開できるようになったら、ここにルートが表示されます。"
+msgstr "Routes will appear here once they are published."
+
+#: src/app/[lang]/(public)/page.tsx:45
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:88
+#: src/app/[lang]/(public)/routes/page.tsx:65
+#: src/app/[lang]/(public)/stamps/page.tsx:39
+#: src/components/SpotSheet.tsx:62
+msgid "出かける前に、公式の最新情報を確認してください。"
+msgstr "Check official sources before you go."
+
+#: src/components/PrefectureName.tsx:9
+msgid "和歌山県"
+msgstr "Wakayama"
+
+#: src/components/PrefectureFilter.tsx:28
+msgid "地域でしぼる"
+msgstr "Filter by area"
+
+#: src/components/PrefectureName.tsx:7
+msgid "大阪府"
+msgstr "Osaka"
+
+#: src/components/PrefectureName.tsx:11
+msgid "奈良県"
+msgstr "Nara"
+
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:75
+#: src/components/StampLegend.tsx:8
+msgid "押した"
+msgstr "Stamped"
+
+#: src/components/Localized.tsx:16
+msgid "日本語のみ"
+msgstr "Japanese only"
+
+#: src/components/RouteStats.tsx:29
+msgid "時間"
+msgstr "Time"
+
+#: src/components/StatusBanner.tsx:65
+msgid "更新 {updated}（日本時間）"
+msgstr "Updated {updated} (Japan time)"
+
+#: src/app/[lang]/layout.tsx:45
 msgid "本文へ移動"
 msgstr "Skip to main content"
 
-#: src/app/[lang]/page.tsx:14
-msgid "準備中です。"
-msgstr "Coming soon."
+#: src/app/[lang]/(public)/page.tsx:23
+msgid "歩いた場所で、スタンプを押そう。"
+msgstr "Collect a stamp at each place you walk to."
 
-#: src/app/[lang]/layout.tsx:29
-#: src/app/[lang]/layout.tsx:47
-#: src/app/[lang]/page.tsx:11
+#: src/components/StatusBanner.tsx:23
+msgid "注意"
+msgstr "Caution"
+
+#: src/app/[lang]/(public)/page.tsx:19
+#: src/app/[lang]/layout.tsx:28
 msgid "葛城修験"
 msgstr "Katsuragi Shugendō"
+
+#: src/components/SampleBanner.tsx:9
+msgid "見本のデータを表示しています。実際の情報ではありません。"
+msgstr "Showing sample data. This is not real information."
 
 #: src/components/LocaleSwitcher.tsx:24
 msgid "言語"
 msgstr "Language"
+
+#: src/components/SpotSheet.tsx:47
+msgid "説明"
+msgstr "About this place"
+
+#: src/components/RouteStats.tsx:19
+msgid "距離"
+msgstr "Distance"
+
+#: src/components/StatusBanner.tsx:13
+msgid "閉鎖中"
+msgstr "Closed"
+
+#: src/components/StatusBanner.tsx:30
+msgid "開放中"
+msgstr "Open"
+
+#: src/components/RouteStats.tsx:33
+msgid "難しさ"
+msgstr "Difficulty"

@@ -45,7 +45,7 @@ function ratio(a: string, b: string) {
   return (light + 0.05) / (dark + 0.05);
 }
 
-const names = ["accent", "danger", "ink", "line", "muted", "paper", "surface"];
+const names = ["accent", "caution", "danger", "ink", "line", "moss", "muted", "paper", "shu", "surface"];
 
 // Text must reach WCAG AAA (7:1).
 const text: [string, string][] = [
@@ -59,6 +59,9 @@ const text: [string, string][] = [
   ["danger", "surface"],
   ["paper", "accent"], // button label on an accent button
   ["paper", "ink"], // selected state
+  ["moss", "paper"],
+  ["moss", "surface"],
+  ["paper", "moss"], // label on a moss fill
 ];
 
 // Borders and the focus ring must reach 3:1 (WCAG 1.4.11).
@@ -67,7 +70,15 @@ const parts: [string, string][] = [
   ["line", "surface"],
   ["accent", "paper"],
   ["accent", "surface"],
+  ["shu", "paper"], // the seal against the page
+  ["shu", "surface"],
+  ["moss", "paper"], // progress bar fill
+  ["caution", "paper"], // warning icon and border
+  ["caution", "surface"],
 ];
+
+// The numeral inside a stamped seal: large bold text, held to 4.5:1.
+const seal: [string, string][] = [["paper", "shu"]];
 
 for (const [scheme, colors] of Object.entries(palettes)) {
   describe(`${scheme} palette`, () => {
@@ -91,6 +102,12 @@ for (const [scheme, colors] of Object.entries(palettes)) {
     for (const [foreground, background] of parts) {
       test(`${foreground} against ${background} is at least 3:1`, () => {
         expect(pair(foreground, background)).toBeGreaterThanOrEqual(3);
+      });
+    }
+
+    for (const [foreground, background] of seal) {
+      test(`${foreground} on ${background} (seal numeral) is at least 4.5:1`, () => {
+        expect(pair(foreground, background)).toBeGreaterThanOrEqual(4.5);
       });
     }
   });

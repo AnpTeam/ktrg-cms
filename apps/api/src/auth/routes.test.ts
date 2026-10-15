@@ -73,6 +73,13 @@ describe("POST /auth/otp/request", () => {
     expect((await post("otp/request", { email: "not-an-email" })).status).toBe(422);
     expect((await post("otp/request", { email: "a".repeat(250) + "@x.com" })).status).toBe(422);
   });
+
+  test("accepts ja or en as the email language and rejects anything else", async () => {
+    const { post } = setup();
+    expect((await post("otp/request", { email: "a@example.com", locale: "en" })).status).toBe(200);
+    expect((await post("otp/request", { email: "b@example.com", locale: "ja" })).status).toBe(200);
+    expect((await post("otp/request", { email: "c@example.com", locale: "fr" })).status).toBe(422);
+  });
 });
 
 describe("POST /auth/otp/verify", () => {
