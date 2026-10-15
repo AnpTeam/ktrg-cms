@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "lingui:extract": "lingui extract --clean",
+    "build": "lingui extract --clean && next build",
     "lint": "eslint .",
     "start": "next start",
     "typecheck": "node node_modules/@typescript/native/bin/tsc --noEmit",
@@ -13,11 +14,16 @@
   "dependencies": {
     "@elysiajs/eden": "^1.4.9",
     "@ktrg/api": "workspace:*",
+    "@lingui/core": "^6.9.1",
+    "@lingui/react": "^6.9.1",
     "next": "^16.4.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },
   "devDependencies": {
+    "@lingui/cli": "^6.9.1",
+    "@lingui/loader": "^6.9.1",
+    "@lingui/swc-plugin": "6.7.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/bun": "^1.4.3",
     "@types/node": "^26.6.5",
