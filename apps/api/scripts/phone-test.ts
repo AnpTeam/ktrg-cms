@@ -8,17 +8,14 @@
 // (VS Code port forwarding with Public visibility, cloudflared, ngrok). No setup needed:
 // the page tells the server which address it is on.
 import { Elysia } from "elysia";
+import { createApp } from "../src/app";
 import { auditRow } from "../src/audit/audit-log";
 import { createMemoryOtpStore } from "../src/auth/otp-memory-store";
 import { createMemoryPasskeyStore } from "../src/auth/passkey-memory-store";
-import { passkeyRoutes } from "../src/auth/passkey-routes";
 import { createMemoryRateLimitStore } from "../src/auth/rate-limit-memory-store";
-import { authRoutes } from "../src/auth/routes";
 import { createMemorySessionStore } from "../src/auth/session-memory-store";
 import { createConsoleMailer } from "../src/lib/mailer";
 import { createMemoryMeStore } from "../src/me/me-memory-store";
-import { meRoutes } from "../src/me/me-routes";
-import { apiDocs } from "../src/openapi";
 import { createServices } from "../src/services";
 
 const port = Number(process.env.PORT ?? 3001);
@@ -246,13 +243,8 @@ new Elysia()
     set.headers["content-type"] = "text/html; charset=utf-8";
     return page;
   })
-  .group("/api/v1", (g) =>
-    g
-      .use(apiDocs({ enabled: true })) // /api/v1/openapi
-      .use(authRoutes(() => services, routeOpts))
-      .use(passkeyRoutes(() => services, routeOpts))
-      .use(meRoutes(() => services, routeOpts)),
-  )
+  // The app's own route tree (with /api/v1/openapi docs), on the in-memory services.
+  .use(createApp(() => services, { ...routeOpts, docs: true }))
   .listen({ port, hostname: "0.0.0.0" });
 
 console.log(`Test server on port ${port} (cookies ${secure ? "Secure/__Host-" : "plain http"}).`);
