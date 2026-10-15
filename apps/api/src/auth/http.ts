@@ -7,7 +7,7 @@ import {
   serializeSessionCookie,
   sessionCookieName,
 } from "./session";
-import type { SessionService } from "./session-service";
+import type { Authenticated, SessionService } from "./session-service";
 
 type Headers = Record<string, string | undefined>;
 export type SetLike = { status?: number | string; headers: Record<string, string | number> };
@@ -33,6 +33,15 @@ export function createHttpHelpers(opts: {
       secure: opts.secureCookies,
     });
 
+  /** The session behind the request's cookie, re-issuing the cookie if the expiry slid. */
+  async function session(headers: Headers, set: SetLike): Promise<Authenticated | null> {
+    const token = readCookie(headers.cookie, cookieName);
+    const auth = token ? await opts.getSession().authenticate(token) : null;
+    if (!auth || !token) return null;
+    if (auth.refreshed) set.headers["set-cookie"] = cookieFor(token, auth.expiresAt);
+    return auth;
+  }
+
   return {
     cookieName,
     cookieFor,
@@ -56,13 +65,11 @@ export function createHttpHelpers(opts: {
       return { ok: false as const, error: "rate_limited" as const };
     },
 
+    session,
+
     /** The user behind the request's session cookie, re-issuing the cookie if the expiry slid. */
     async authenticate(headers: Headers, set: SetLike): Promise<AuthUser | null> {
-      const token = readCookie(headers.cookie, cookieName);
-      const auth = token ? await opts.getSession().authenticate(token) : null;
-      if (!auth || !token) return null;
-      if (auth.refreshed) set.headers["set-cookie"] = cookieFor(token, auth.expiresAt);
-      return auth.user;
+      return (await session(headers, set))?.user ?? null;
     },
   };
 }

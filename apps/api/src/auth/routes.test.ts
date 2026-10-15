@@ -12,14 +12,18 @@ function setup(opts: { secureCookies?: boolean; trustProxy?: boolean } = {}) {
   const { store, users } = createMemoryOtpStore();
   const sessions = createMemorySessionStore(users);
   const codes: string[] = [];
+  const subjects: string[] = [];
+  let clock = new Date();
   const otp = createOtpService({
     secret: "r".repeat(32),
     store,
     mailer: {
       async send(m) {
         codes.push(m.text.match(/\d{6}/)![0]);
+        subjects.push(m.subject);
       },
     },
+    now: () => clock,
   });
   const session = createSessionService({ store: sessions.store });
   const rateLimit = createRateLimiter({ store: createMemoryRateLimitStore().store, secret: "l".repeat(32) });
@@ -51,7 +55,18 @@ function setup(opts: { secureCookies?: boolean; trustProxy?: boolean } = {}) {
     return { res, setCookie, cookie: setCookie.split(";")[0]! };
   }
 
-  return { post, get, login, codes, users, sessions };
+  return {
+    post,
+    get,
+    login,
+    codes,
+    subjects,
+    users,
+    sessions,
+    session,
+    /** Moves only the OTP clock (codes, cooldown); sessions keep real time. */
+    advanceOtp: (ms: number) => (clock = new Date(clock.getTime() + ms)),
+  };
 }
 
 describe("POST /auth/otp/request", () => {
@@ -259,5 +274,110 @@ describe("rate limits", () => {
     const { post } = setup();
     for (let i = 0; i < 30; i++) await post("otp/request", { email: "not-an-email" });
     expect((await post("otp/request", { email: "a@example.com" })).status).toBe(200);
+  });
+});
+
+describe("fresh login: POST /auth/reauth/request and /auth/reauth/verify", () => {
+  /** Log in, then wait out the 60 s resend cooldown so a re-check code can be sent. */
+  async function loggedIn(t: ReturnType<typeof setup>, emailAddress = "a@example.com") {
+    const { cookie } = await t.login(emailAddress);
+    t.advanceOtp(61_000);
+    return cookie;
+  }
+
+  test("both steps need a login", async () => {
+    const { post } = setup();
+    expect((await post("reauth/request")).status).toBe(401);
+    expect((await post("reauth/verify", { code: "123456" })).status).toBe(401);
+  });
+
+  test("request emails a confirmation code to the account's own address, in its language", async () => {
+    const t = setup();
+    const cookie = await loggedIn(t);
+    const res = await t.post("reauth/request", undefined, cookie);
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ ok: true });
+    expect(t.subjects.at(-1)).toBe("【KTRG】本人確認コード"); // new accounts are Japanese
+  });
+
+  test("the right code makes the session fresh for 10 minutes", async () => {
+    const t = setup();
+    const cookie = await loggedIn(t);
+    await t.post("reauth/request", undefined, cookie);
+
+    const before = Date.now();
+    const res = await t.post("reauth/verify", { code: t.codes.at(-1) }, cookie);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { ok: boolean; freshUntil: string };
+    expect(body.ok).toBe(true);
+    const until = new Date(body.freshUntil).getTime();
+    expect(until).toBeGreaterThanOrEqual(before + 10 * 60_000);
+    expect(until).toBeLessThanOrEqual(Date.now() + 10 * 60_000);
+    expect(t.sessions.rows[0]!.lastLoginAt.getTime()).toBe(until - 10 * 60_000);
+  });
+
+  test("a wrong code is 400 invalid_code, and the session itself keeps working", async () => {
+    const t = setup();
+    const cookie = await loggedIn(t);
+    await t.post("reauth/request", undefined, cookie);
+    const wrong = t.codes.at(-1) === "000000" ? "111111" : "000000";
+
+    const res = await t.post("reauth/verify", { code: wrong }, cookie);
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ ok: false, error: "invalid_code" });
+    expect((await t.get("session", cookie)).status).toBe(200);
+  });
+
+  test("a code works once", async () => {
+    const t = setup();
+    const cookie = await loggedIn(t);
+    await t.post("reauth/request", undefined, cookie);
+    const code = t.codes.at(-1);
+
+    expect((await t.post("reauth/verify", { code }, cookie)).status).toBe(200);
+    expect((await t.post("reauth/verify", { code }, cookie)).status).toBe(400);
+  });
+
+  test("a code sent to another account's mailbox does not work", async () => {
+    const t = setup();
+    const mine = await loggedIn(t, "a@example.com");
+    const theirs = await loggedIn(t, "b@example.com");
+    await t.post("reauth/request", undefined, theirs);
+
+    expect((await t.post("reauth/verify", { code: t.codes.at(-1) }, mine)).status).toBe(400);
+  });
+
+  test("a passkey-only account has no email: 409 no_email, and nothing is sent", async () => {
+    const t = setup();
+    const user = { id: "pk-only", email: null, role: "admin" as const, locale: "en" as const };
+    t.users.set("pk-only", user);
+    const cookie = `session=${(await t.session.create(user)).token}`;
+    const sent = t.codes.length;
+
+    for (const [path, body] of [["reauth/request", undefined], ["reauth/verify", { code: "123456" }]] as const) {
+      const res = await t.post(path, body, cookie);
+      expect(res.status).toBe(409);
+      expect(await res.json()).toEqual({ ok: false, error: "no_email" });
+    }
+    expect(t.codes.length).toBe(sent);
+  });
+
+  test("a malformed code is rejected before anything is checked", async () => {
+    const t = setup();
+    const cookie = await loggedIn(t);
+    expect((await t.post("reauth/verify", { code: "12345" }, cookie)).status).toBe(422);
+    expect((await t.post("reauth/verify", {}, cookie)).status).toBe(422);
+  });
+
+  test("guessing is capped by the same per-email limit as login: 429 after 10 tries", async () => {
+    const t = setup();
+    const cookie = await loggedIn(t); // the login used 1 of the 10 verify tries for this email
+    for (let i = 0; i < 9; i++) {
+      expect((await t.post("reauth/verify", { code: "000000" }, cookie)).status).not.toBe(429);
+    }
+    const res = await t.post("reauth/verify", { code: "000000" }, cookie);
+    expect(res.status).toBe(429);
+    expect(res.headers.get("retry-after")).toMatch(/^\d+$/);
   });
 });

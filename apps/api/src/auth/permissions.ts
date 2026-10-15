@@ -31,11 +31,21 @@ export const PERMISSIONS = {
   /** Review flagged stamps and revoke them. */
   "stamp.review": ["admin"],
   "audit.read": ["admin"],
-  /** Change another account's role. Also needs a fresh login (WBS 2.1.12). */
+  /** Change another account's role. Also needs a fresh login (below). */
   "user.manage_roles": ["admin"],
 } as const satisfies Record<string, readonly Role[]>;
 
 export type Permission = keyof typeof PERMISSIONS;
+
+/**
+ * Permissions that also need a fresh login: a login or POST /auth/reauth/verify within
+ * FRESH_LOGIN_MS. The guard enforces this, so a route only names the permission.
+ */
+export const FRESH_LOGIN_REQUIRED: readonly Permission[] = ["user.manage_roles"];
+
+export function needsFreshLogin(permission: Permission): boolean {
+  return FRESH_LOGIN_REQUIRED.includes(permission);
+}
 
 /** May an account with this role do this? Unknown roles and unknown permissions are refused. */
 export function can(role: Role, permission: Permission): boolean {

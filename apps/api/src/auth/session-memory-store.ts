@@ -10,19 +10,21 @@ export function createMemorySessionStore(users: Map<string, AuthUser>) {
     expiresAt: Date;
     absoluteExpiresAt: Date;
     lastSeenAt: Date;
+    lastLoginAt: Date;
   }[] = [];
   let nextId = 1;
 
   const store: SessionStore = {
     async create({ userId, tokenHash, expiresAt, absoluteExpiresAt, now }) {
-      rows.push({ id: `s${nextId++}`, userId, tokenHash, expiresAt, absoluteExpiresAt, lastSeenAt: now });
+      rows.push({ id: `s${nextId++}`, userId, tokenHash, expiresAt, absoluteExpiresAt, lastSeenAt: now, lastLoginAt: now });
     },
     async find(tokenHash) {
       const row = rows.find((r) => r.tokenHash === tokenHash);
       if (!row) return null;
       const user = [...users.values()].find((u) => u.id === row.userId);
       if (!user) return null;
-      return { session: { id: row.id, expiresAt: row.expiresAt, absoluteExpiresAt: row.absoluteExpiresAt }, user };
+      const { id, expiresAt, absoluteExpiresAt, lastLoginAt } = row;
+      return { session: { id, expiresAt, absoluteExpiresAt, lastLoginAt }, user };
     },
     async touch(id, lastSeenAt, expiresAt) {
       const row = rows.find((r) => r.id === id);
@@ -31,6 +33,10 @@ export function createMemorySessionStore(users: Map<string, AuthUser>) {
     async remove(tokenHash) {
       const i = rows.findIndex((r) => r.tokenHash === tokenHash);
       if (i !== -1) rows.splice(i, 1);
+    },
+    async markFresh(id, at) {
+      const row = rows.find((r) => r.id === id);
+      if (row) row.lastLoginAt = at;
     },
   };
 

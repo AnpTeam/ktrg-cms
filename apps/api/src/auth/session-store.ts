@@ -22,6 +22,7 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
           id: sessions.id,
           expiresAt: sessions.expiresAt,
           absoluteExpiresAt: sessions.absoluteExpiresAt,
+          lastLoginAt: sessions.lastLoginAt,
           userId: users.id,
           email: users.email,
           role: users.role,
@@ -33,7 +34,12 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
         .limit(1);
       if (!row) return null;
       return {
-        session: { id: row.id, expiresAt: row.expiresAt, absoluteExpiresAt: row.absoluteExpiresAt },
+        session: {
+          id: row.id,
+          expiresAt: row.expiresAt,
+          absoluteExpiresAt: row.absoluteExpiresAt,
+          lastLoginAt: row.lastLoginAt,
+        },
         user: { id: row.userId, email: row.email, role: row.role, locale: row.locale },
       };
     },
@@ -44,6 +50,10 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
 
     async remove(tokenHash) {
       await db.delete(sessions).where(eq(sessions.tokenHash, tokenHash));
+    },
+
+    async markFresh(id, at) {
+      await db.update(sessions).set({ lastLoginAt: at }).where(eq(sessions.id, id));
     },
   };
 }

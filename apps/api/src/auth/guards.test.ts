@@ -3,6 +3,7 @@ import { Elysia } from "elysia";
 import { authGuards } from "./guards";
 import type { AuthUser } from "./otp-service";
 import { createMemorySessionStore } from "./session-memory-store";
+import { FRESH_LOGIN_MS } from "./session";
 import { createSessionService } from "./session-service";
 
 const DAY = 24 * 3600 * 1000;
@@ -23,13 +24,25 @@ function setup(opts: { secureCookies?: boolean } = {}) {
     .get("/public", () => ({ ok: true }))
     .get("/me", ({ user }) => ({ id: user.id, role: user.role }), { auth: "me.manage" })
     .post("/routes", ({ user }) => ({ created: true, by: user.id }), { auth: "route.manage" })
-    .get("/audit", () => ({ rows: [] }), { auth: "audit.read" });
+    .get("/audit", () => ({ rows: [] }), { auth: "audit.read" })
+    // user.manage_roles also needs a fresh login (FRESH_LOGIN_REQUIRED).
+    .post("/roles", ({ authSession }) => ({ changed: true, freshUntil: authSession.freshUntil.toISOString() }), {
+      auth: "user.manage_roles",
+    });
 
   const call = (method: string, path: string, cookie?: string) =>
     app.handle(new Request(`http://localhost/api/v1${path}`, { method, headers: cookie ? { cookie } : {} }));
   const login = async (user: AuthUser) => `session=${(await session.create(users.get(user.id)!)).token}`;
+  const sessionIdOf = async (cookie: string) => (await session.authenticate(cookie.slice("session=".length)))!.sessionId;
 
-  return { call, login, session, users, advance: (ms: number) => (clock = new Date(clock.getTime() + ms)) };
+  return {
+    call,
+    login,
+    session,
+    sessionIdOf,
+    users,
+    advance: (ms: number) => (clock = new Date(clock.getTime() + ms)),
+  };
 }
 
 describe("a route with no guard", () => {
@@ -154,5 +167,70 @@ describe("the session cookie", () => {
     const { call } = setup({ secureCookies: true });
     // a plain "session" cookie is not accepted when the app expects "__Host-session"
     expect((await call("GET", "/me", "session=anything")).status).toBe(401);
+  });
+});
+
+describe("permissions that need a fresh login", () => {
+  test("an admin can use one right after logging in", async () => {
+    const { call, login } = setup();
+    const res = await call("POST", "/roles", await login(root));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ changed: true, freshUntil: "2026-10-15T00:10:00.000Z" });
+  });
+
+  test("once the login is older than 10 minutes: 403 reauth_required", async () => {
+    const { call, login, advance } = setup();
+    const cookie = await login(root);
+    advance(FRESH_LOGIN_MS - 1);
+    expect((await call("POST", "/roles", cookie)).status).toBe(200);
+
+    advance(1); // exactly 10 minutes: no longer fresh
+    const res = await call("POST", "/roles", cookie);
+    expect(res.status).toBe(403);
+    expect(await res.json()).toEqual({ ok: false, error: "reauth_required" });
+  });
+
+  test("a stale session can still use everything that needs no fresh login", async () => {
+    const { call, login, advance } = setup();
+    const cookie = await login(root);
+    advance(DAY);
+    expect((await call("POST", "/routes", cookie)).status).toBe(200);
+    expect((await call("GET", "/me", cookie)).status).toBe(200);
+  });
+
+  test("a re-check makes the same session fresh again, for another 10 minutes", async () => {
+    const { call, login, session, sessionIdOf, advance } = setup();
+    const cookie = await login(root);
+    advance(DAY);
+    expect((await call("POST", "/roles", cookie)).status).toBe(403);
+
+    await session.markFresh(await sessionIdOf(cookie));
+    expect((await call("POST", "/roles", cookie)).status).toBe(200);
+
+    advance(FRESH_LOGIN_MS);
+    expect((await call("POST", "/roles", cookie)).status).toBe(403);
+  });
+
+  test("a re-check is per session: another device stays stale", async () => {
+    const { call, login, session, sessionIdOf, advance } = setup();
+    const laptop = await login(root);
+    const phone = await login(root);
+    advance(DAY);
+
+    await session.markFresh(await sessionIdOf(laptop));
+    expect((await call("POST", "/roles", laptop)).status).toBe(200);
+    expect((await call("POST", "/roles", phone)).status).toBe(403);
+  });
+
+  test("a participant gets plain forbidden, even when fresh: the re-check would not help", async () => {
+    const { call, login } = setup();
+    const res = await call("POST", "/roles", await login(alice));
+    expect(res.status).toBe(403);
+    expect(await res.json()).toEqual({ ok: false, error: "forbidden" });
+  });
+
+  test("not logged in is still 401 first", async () => {
+    const { call } = setup();
+    expect((await call("POST", "/roles")).status).toBe(401);
   });
 });

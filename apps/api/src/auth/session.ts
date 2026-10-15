@@ -17,6 +17,13 @@ export const SESSION_POLICY: Record<SessionRole, { idleMs: number; absoluteMs: n
 /** Only write a slid expiry back when it moved by at least this much. */
 export const SESSION_TOUCH_INTERVAL_MS = 60 * 60 * 1000;
 
+/**
+ * A login (or a re-check with POST /auth/reauth/verify) counts as "fresh" for this long.
+ * Permissions marked fresh in the permission table need one, so a stolen or forgotten
+ * session cannot use them on its own.
+ */
+export const FRESH_LOGIN_MS = 10 * 60 * 1000;
+
 /** 256 random bits, URL-safe. Only its SHA-256 hash is stored. */
 export function generateSessionToken(): string {
   return randomBytes(32).toString("base64url");

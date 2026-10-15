@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { userRole } from "../db/schema";
-import { PERMISSIONS, can, type Permission, type Role } from "./permissions";
+import { FRESH_LOGIN_REQUIRED, PERMISSIONS, can, needsFreshLogin, type Permission, type Role } from "./permissions";
 
 const permissions = Object.keys(PERMISSIONS) as Permission[];
 
@@ -69,5 +69,20 @@ describe("can", () => {
   test("a prototype-chain name is not a permission", () => {
     expect(can("admin", "constructor" as Permission)).toBe(false);
     expect(can("admin", "__proto__" as Permission)).toBe(false);
+  });
+});
+
+describe("fresh-login permissions", () => {
+  test("changing roles needs a fresh login; everyday permissions do not", () => {
+    expect(needsFreshLogin("user.manage_roles")).toBe(true);
+    expect(needsFreshLogin("me.manage")).toBe(false);
+    expect(needsFreshLogin("route.manage")).toBe(false);
+  });
+
+  test("only admin-only permissions need one (a participant action never asks for a re-check)", () => {
+    for (const p of FRESH_LOGIN_REQUIRED) {
+      expect(Object.hasOwn(PERMISSIONS, p)).toBe(true);
+      expect(can("participant", p)).toBe(false);
+    }
   });
 });

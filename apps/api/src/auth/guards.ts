@@ -1,10 +1,12 @@
 import { Elysia } from "elysia";
 import { createHttpHelpers } from "./http";
-import { can, type Permission } from "./permissions";
+import { can, needsFreshLogin, type Permission } from "./permissions";
 import type { SessionService } from "./session-service";
 
 export const UNAUTHENTICATED = { ok: false, error: "unauthenticated" } as const;
 export const FORBIDDEN = { ok: false, error: "forbidden" } as const;
+/** The role is allowed, but this permission needs a fresh login: run POST /auth/reauth/request + verify. */
+export const REAUTH_REQUIRED = { ok: false, error: "reauth_required" } as const;
 
 /**
  * Route guards. Use the plugin, then name the permission a route needs:
@@ -17,8 +19,12 @@ export const FORBIDDEN = { ok: false, error: "forbidden" } as const;
  *
  * - Not logged in, or the session ended: 401 `unauthenticated`.
  * - Logged in but the role lacks the permission: 403 `forbidden`.
+ * - Allowed, but the permission needs a fresh login (FRESH_LOGIN_REQUIRED) and the last
+ *   login or re-check is older than FRESH_LOGIN_MS: 403 `reauth_required`. Only someone
+ *   who has the permission is ever told this.
  * - Otherwise the handler runs, with `user` set (never null) from the database on every
- *   request, so a role change or a deleted session takes effect immediately.
+ *   request, so a role change or a deleted session takes effect immediately. `authSession`
+ *   carries the session id and its `freshUntil`.
  *
  * The 401 and 403 bodies are fixed and say nothing about why, so they reveal nothing about
  * other accounts or about what exists.
@@ -33,10 +39,14 @@ export function authGuards(opts: { getSession: () => SessionService; secureCooki
   return new Elysia({ name: "auth-guards" }).macro({
     auth: (permission: Permission) => ({
       resolve: async ({ headers, set, status }) => {
-        const user = await http.authenticate(headers, set);
-        if (!user) return status(401, UNAUTHENTICATED);
+        const auth = await http.session(headers, set);
+        if (!auth) return status(401, UNAUTHENTICATED);
+        const { user } = auth;
         if (!can(user.role, permission)) return status(403, FORBIDDEN);
-        return { user };
+        if (needsFreshLogin(permission) && !auth.fresh) {
+          return status(403, REAUTH_REQUIRED);
+        }
+        return { user, authSession: { id: auth.sessionId, freshUntil: auth.freshUntil } };
       },
     }),
   });

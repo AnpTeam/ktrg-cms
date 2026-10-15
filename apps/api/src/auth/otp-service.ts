@@ -1,5 +1,6 @@
 import type { EmailLocale } from "../emails/layout";
 import { buildOtpEmail } from "../emails/otp-code";
+import { buildReauthEmail } from "../emails/reauth-code";
 import type { Mailer } from "../lib/mailer";
 import {
   OTP_COOLDOWN_MS,
@@ -75,9 +76,35 @@ export function createOtpService({
   now = () => new Date(),
   log = console.error,
 }: OtpServiceDeps) {
+  /** The shared code check: newest code only, attempts counted first, single use. */
+  async function checkCode(email: string, code: string): Promise<boolean> {
+    const at = now();
+
+    // Only the newest code counts: requesting a new one retires the old.
+    const row = await store.latest(email);
+    if (!row || row.usedAt || row.expiresAt.getTime() <= at.getTime()) return false;
+
+    // Count the guess first, atomically, so parallel guesses cannot beat the limit.
+    if (!(await store.consumeAttempt(row.id, OTP_MAX_ATTEMPTS))) return false;
+
+    if (!hashesMatch(row.codeHash, hashOtpCode(secret, email, code))) return false;
+
+    // Single use: only one concurrent caller can win this.
+    return store.markUsed(row.id, at);
+  }
+
   return {
-    /** `locale` is the language of the page the code was asked from; Japanese if unknown. */
-    async request(rawEmail: string, locale: EmailLocale = "ja"): Promise<void> {
+    /**
+     * Email a code. `locale` is the language of the page the code was asked from (or the
+     * account's language); Japanese if unknown. `purpose` only picks the email's wording:
+     * a login code and a fresh-login code are the same kind of proof (you can read this
+     * mailbox), so they share one cooldown and one "newest code wins" rule.
+     */
+    async request(
+      rawEmail: string,
+      locale: EmailLocale = "ja",
+      purpose: "login" | "reauth" = "login",
+    ): Promise<void> {
       const email = normalizeEmail(rawEmail);
       const issuedAt = now();
 
@@ -95,28 +122,27 @@ export function createOtpService({
       });
 
       try {
-        await mailer.send(buildOtpEmail({ to: email, locale, code, ttlMinutes: OTP_TTL_MS / 60_000 }));
+        const build = purpose === "reauth" ? buildReauthEmail : buildOtpEmail;
+        await mailer.send(build({ to: email, locale, code, ttlMinutes: OTP_TTL_MS / 60_000 }));
       } catch (err) {
         // Never surface mail failures: it would tell a caller more than "ok".
         log(`[otp] mail send failed: ${err instanceof Error ? err.message : String(err)}`);
       }
     },
 
+    /**
+     * Fresh-login re-check for an account that is already logged in: true when the code is
+     * right. Same rules as login (newest code only, 5 guesses, single use), but it creates
+     * and promotes nothing.
+     */
+    async checkCode(rawEmail: string, code: string): Promise<boolean> {
+      return checkCode(normalizeEmail(rawEmail), code);
+    },
+
+    /** Log in with a code: the account is created on first success. */
     async verify(rawEmail: string, code: string): Promise<VerifyResult> {
       const email = normalizeEmail(rawEmail);
-      const at = now();
-
-      // Only the newest code counts: requesting a new one retires the old.
-      const row = await store.latest(email);
-      if (!row || row.usedAt || row.expiresAt.getTime() <= at.getTime()) return { ok: false };
-
-      // Count the guess first, atomically, so parallel guesses cannot beat the limit.
-      if (!(await store.consumeAttempt(row.id, OTP_MAX_ATTEMPTS))) return { ok: false };
-
-      if (!hashesMatch(row.codeHash, hashOtpCode(secret, email, code))) return { ok: false };
-
-      // Single use: only one concurrent caller can win this.
-      if (!(await store.markUsed(row.id, at))) return { ok: false };
+      if (!(await checkCode(email, code))) return { ok: false };
 
       const user = await store.findOrCreateUser(email);
       if (user.role !== "admin" && adminEmails.has(email)) {

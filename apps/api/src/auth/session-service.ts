@@ -1,4 +1,5 @@
 import {
+  FRESH_LOGIN_MS,
   SESSION_POLICY,
   SESSION_TOUCH_INTERVAL_MS,
   generateSessionToken,
@@ -10,6 +11,8 @@ export interface SessionRecord {
   id: string;
   expiresAt: Date;
   absoluteExpiresAt: Date;
+  /** The last full login or fresh-login re-check. */
+  lastLoginAt: Date;
 }
 
 /** Storage the session service needs; the Drizzle version is in session-store.ts. */
@@ -24,10 +27,17 @@ export interface SessionStore {
   find(tokenHash: string): Promise<{ session: SessionRecord; user: AuthUser } | null>;
   touch(id: string, lastSeenAt: Date, expiresAt: Date): Promise<void>;
   remove(tokenHash: string): Promise<void>;
+  /** Record a fresh-login re-check: sets lastLoginAt. */
+  markFresh(id: string, at: Date): Promise<void>;
 }
 
 export interface Authenticated {
   user: AuthUser;
+  sessionId: string;
+  /** Until when this session counts as freshly logged in (see FRESH_LOGIN_MS). */
+  freshUntil: Date;
+  /** Is it still before freshUntil? */
+  fresh: boolean;
   expiresAt: Date;
   /** True when the expiry slid forward, so the cookie should be re-issued. */
   refreshed: boolean;
@@ -60,6 +70,8 @@ export function createSessionService({
 
       const at = now().getTime();
       const { session, user } = found;
+      const freshEnd = freshUntil(session.lastLoginAt);
+      const base = { user, sessionId: session.id, freshUntil: freshEnd, fresh: at < freshEnd.getTime() };
       if (at >= session.expiresAt.getTime() || at >= session.absoluteExpiresAt.getTime()) {
         await store.remove(tokenHash);
         return null;
@@ -68,11 +80,18 @@ export function createSessionService({
       // Slide the idle expiry forward, never past the absolute cap.
       const slid = Math.min(at + SESSION_POLICY[user.role].idleMs, session.absoluteExpiresAt.getTime());
       if (slid - session.expiresAt.getTime() < SESSION_TOUCH_INTERVAL_MS) {
-        return { user, expiresAt: session.expiresAt, refreshed: false };
+        return { ...base, expiresAt: session.expiresAt, refreshed: false };
       }
       const expiresAt = new Date(slid);
       await store.touch(session.id, new Date(at), expiresAt);
-      return { user, expiresAt, refreshed: true };
+      return { ...base, expiresAt, refreshed: true };
+    },
+
+    /** The user just proved it is them again (POST /auth/reauth/verify). Returns the new freshUntil. */
+    async markFresh(sessionId: string): Promise<Date> {
+      const at = now();
+      await store.markFresh(sessionId, at);
+      return freshUntil(at);
     },
 
     /** Log out: forget the session on the server. */
@@ -80,6 +99,10 @@ export function createSessionService({
       await store.remove(hashSessionToken(token));
     },
   };
+}
+
+function freshUntil(lastLoginAt: Date): Date {
+  return new Date(lastLoginAt.getTime() + FRESH_LOGIN_MS);
 }
 
 export type SessionService = ReturnType<typeof createSessionService>;

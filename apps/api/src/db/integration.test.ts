@@ -173,6 +173,14 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       await sessions.touch(found!.session.id, new Date(), slid);
       expect((await sessions.find(tokenHash))!.session.expiresAt.getTime()).toBe(slid.getTime());
 
+      // A fresh-login re-check moves last_login_at, nothing else.
+      expect(found!.session.lastLoginAt.getTime()).toBe(now.getTime());
+      const recheck = new Date(now.getTime() + 3_600_000);
+      await sessions.markFresh(found!.session.id, recheck);
+      const after = (await sessions.find(tokenHash))!.session;
+      expect(after.lastLoginAt.getTime()).toBe(recheck.getTime());
+      expect(after.expiresAt.getTime()).toBe(slid.getTime());
+
       await sessions.remove(tokenHash);
       expect(await sessions.find(tokenHash)).toBeNull();
     });

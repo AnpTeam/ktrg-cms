@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { SESSION_POLICY, SESSION_TOUCH_INTERVAL_MS } from "./session";
+import { FRESH_LOGIN_MS, SESSION_POLICY, SESSION_TOUCH_INTERVAL_MS } from "./session";
 import type { AuthUser } from "./otp-service";
 import { createMemorySessionStore } from "./session-memory-store";
 import { createSessionService } from "./session-service";
@@ -120,6 +120,46 @@ describe("authenticate", () => {
     advance(364 * DAY);
     expect(await service.authenticate(token)).not.toBeNull();
     advance(2 * DAY);
+    expect(await service.authenticate(token)).toBeNull();
+  });
+});
+
+describe("fresh login", () => {
+  test("a new login is fresh for 10 minutes, then not", async () => {
+    const { service, advance } = setup();
+    const { token } = await service.create(admin);
+
+    const now = await service.authenticate(token);
+    expect(now).toMatchObject({ fresh: true, freshUntil: new Date("2026-10-15T00:10:00Z") });
+    expect(now!.sessionId).toBeTruthy();
+
+    advance(FRESH_LOGIN_MS);
+    expect((await service.authenticate(token))!.fresh).toBe(false);
+  });
+
+  test("markFresh restarts the 10 minutes from now, on that session only", async () => {
+    const { service, rows, advance } = setup();
+    const a = await service.create(admin);
+    const b = await service.create(admin);
+    advance(DAY);
+
+    const id = (await service.authenticate(a.token))!.sessionId;
+    expect(await service.markFresh(id)).toEqual(new Date("2026-10-16T00:10:00Z"));
+    expect(rows.find((r) => r.id === id)!.lastLoginAt).toEqual(new Date("2026-10-16T00:00:00Z"));
+    expect((await service.authenticate(a.token))!.fresh).toBe(true);
+    expect((await service.authenticate(b.token))!.fresh).toBe(false);
+  });
+
+  test("freshness never extends the session itself", async () => {
+    const { service, advance } = setup();
+    const { token } = await service.create(admin);
+    // Stay active (under the 14 day idle limit) until just before the 30 day cap.
+    for (let i = 0; i < 3; i++) {
+      advance(10 * DAY - FRESH_LOGIN_MS / 6);
+      expect(await service.authenticate(token)).not.toBeNull();
+    }
+    await service.markFresh((await service.authenticate(token))!.sessionId);
+    advance(FRESH_LOGIN_MS / 2); // still fresh by the clock, but past the 30 day cap
     expect(await service.authenticate(token)).toBeNull();
   });
 });
