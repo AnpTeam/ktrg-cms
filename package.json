@@ -6,6 +6,7 @@
   "scripts": {
     "dev:api": "bun run --cwd apps/api dev",
     "dev:web": "bun run --cwd apps/web dev",
+    "db:seed": "bun run --cwd apps/api db:seed",
     "lint": "bun run --filter '*' --if-present lint",
     "typecheck": "bun run --filter '*' typecheck",
     "test": "bun run --filter '*' test"

@@ -14,7 +14,8 @@
     "test": "bun test",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "bun --env-file=../../.env drizzle-kit migrate",
-    "db:migrate:ci": "drizzle-kit migrate"
+    "db:migrate:ci": "drizzle-kit migrate",
+    "db:seed": "bun --env-file=../../.env src/db/seed.ts"
   },
   "dependencies": {
     "@simplewebauthn/server": "^14.0.3",

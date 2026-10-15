@@ -34,6 +34,8 @@ jobs:
       DATABASE_URL: postgres://ktrg:ci_password@localhost:5432/ktrg_test
       APP_ORIGIN: http://localhost:3000
       MAIL_FROM: KTRG <no-reply@localhost>
+      # Turns on the real-PostgreSQL tests (they skip when this is unset).
+      TEST_DATABASE_URL: postgres://ktrg:ci_password@localhost:5432/ktrg_test
     steps:
       - uses: actions/checkout@v4
 
@@ -51,6 +53,11 @@ jobs:
 
       - name: Lint
         run: bun run --if-present lint
+
+      # Creates the tables in the CI database, so the tests below can also run the
+      # real database stores (src/db/integration.test.ts) and not just in-memory copies.
+      - name: Migrate test database
+        run: bun run --cwd apps/api db:migrate:ci
 
       - name: Unit tests
         run: bun run --if-present test
