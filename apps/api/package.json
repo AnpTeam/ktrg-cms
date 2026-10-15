@@ -9,6 +9,7 @@
     "dev": "bun --env-file=../../.env --watch src/server.ts",
     "start": "bun --env-file=../../.env src/server.ts",
     "typecheck": "node node_modules/@typescript/native/bin/tsc --noEmit",
+    "phone:test": "bun scripts/phone-test.ts",
     "mail:test": "bun --env-file=../../.env scripts/send-test-mail.ts",
     "test": "bun test"
   },
