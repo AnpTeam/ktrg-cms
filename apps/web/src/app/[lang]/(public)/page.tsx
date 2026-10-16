@@ -1,10 +1,10 @@
 import { Trans } from "@lingui/react/macro";
 import { ButtonLink } from "@/components/ButtonLink";
+import { Landing } from "@/components/landing/Landing";
 import { Notice } from "@/components/Notice";
 import { ProgressSummary } from "@/components/ProgressSummary";
 import { RowLink } from "@/components/RowLink";
 import { Ruby } from "@/components/Ruby";
-import { SignInPrompt } from "@/components/SignInPrompt";
 import { forViewer, listRoutes } from "@/lib/content";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
@@ -15,10 +15,14 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const viewer = await getViewer(searchParams);
   const to = (path: string) => localePath(i18n.locale, path);
 
-  // Signed in: progress across everything that has published spots. Signed out: none at all.
-  const routes = viewer.signedIn ? (await listRoutes()).map((r) => forViewer(r, viewer)) : [];
+  // Not signed in: the landing page for a first-time visitor. No progress is shown at all.
+  if (!viewer.signedIn) return <Landing to={to} />;
+
+  // Signed in: progress across everything that has published spots.
+  const routes = (await listRoutes()).map((r) => forViewer(r, viewer));
   const stamped = routes.reduce((n, r) => n + (r.stampedCount ?? 0), 0);
   const total = routes.reduce((n, r) => n + r.spotCount, 0) || TOTAL_STAMPS;
+  const name = viewer.name;
 
   return (
     <div className="flex flex-col gap-8">
@@ -28,45 +32,31 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
             <Trans>葛城修験</Trans>
           </Ruby>
         </h1>
+        {name ? (
+          <p className="mt-2 text-xl font-bold">
+            <Trans>{name}さん、こんにちは。</Trans>
+          </p>
+        ) : null}
         <p className="mt-3 text-xl">
           <Trans>歩いた場所で、スタンプを押そう。</Trans>
         </p>
       </section>
 
-      {viewer.signedIn ? (
-        <ProgressSummary stamped={stamped} total={total}>
-          <ButtonLink href={to("/stamps")}>
-            <Trans>スタンプカードを見る</Trans>
-          </ButtonLink>
-        </ProgressSummary>
-      ) : (
-        <section className="flex flex-col gap-4">
-          <div className="px-4">
-            <ButtonLink href={to("/routes")}>
-              <Trans>ルートをさがす</Trans>
-            </ButtonLink>
-          </div>
-          <SignInPrompt />
-        </section>
-      )}
+      <ProgressSummary stamped={stamped} total={total}>
+        <ButtonLink href={to("/stamps")}>
+          <Trans>スタンプカードを見る</Trans>
+        </ButtonLink>
+      </ProgressSummary>
 
-      {viewer.signedIn ? (
-        <RowLink
-          href={to("/routes")}
-          title={<Trans>ルートをさがす</Trans>}
-          detail={
-            <Trans>
-              全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）
-            </Trans>
-          }
-        />
-      ) : (
-        <p className="px-4 text-xl">
+      <RowLink
+        href={to("/routes")}
+        title={<Trans>ルートをさがす</Trans>}
+        detail={
           <Trans>
             全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）
           </Trans>
-        </p>
-      )}
+        }
+      />
 
       <Notice>
         <Trans>出かける前に、公式の最新情報を確認してください。</Trans>
