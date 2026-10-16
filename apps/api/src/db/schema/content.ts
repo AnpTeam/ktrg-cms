@@ -85,7 +85,7 @@ export const routes = pgTable(
 );
 
 /**
- * A sutra mound (28 of them), the place a stamp is collected. Each belongs to
+ * A sutra mound (31 places: 28 numbers, three of them with two places), the place a stamp is collected. Each belongs to
  * one route (an assumption in the design doc; a join table if that changes).
  * Seeded as drafts without coordinates: coordinates are never guessed.
  */

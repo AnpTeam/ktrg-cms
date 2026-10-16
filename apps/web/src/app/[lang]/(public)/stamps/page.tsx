@@ -21,7 +21,7 @@ async function stampedNumbers(searchParams: Promise<{ demo?: string }>) {
   return new Set(numbers);
 }
 
-// TODO(N-08): the card becomes one per rally and data-driven; 28 slots is the old single-rally layout.
+// TODO(N-08): the card becomes one per rally and data-driven; 31 slots is the old single-rally layout.
 export default async function StampsPage({
   searchParams,
 }: {

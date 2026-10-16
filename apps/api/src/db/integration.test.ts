@@ -14,7 +14,7 @@ import { createDrizzleSessionStore } from "../auth/session-store";
 import { createDb } from "./client";
 import { auditLog, otpCodes, rallies, rateLimits, routes, spots, users, webauthnChallenges } from "./schema";
 import { seed } from "./seed";
-import { SEED_ROUTES } from "./seed-data";
+import { SEED_ROUTES, SEED_SPOTS } from "./seed-data";
 
 const url = process.env.TEST_DATABASE_URL;
 if (url) {
@@ -466,9 +466,9 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
     if (failure) throw failure;
   }
 
-  test("fills an empty database: 1 rally, 19 routes in order, 28 draft spots", async () => {
+  test("fills an empty database: 1 rally, 19 routes in order, 31 draft spots on their courses", async () => {
     await inRollback(async (tx) => {
-      expect(await seed(tx)).toEqual({ rally: true, routes: 19, spots: 28 });
+      expect(await seed(tx)).toEqual({ rally: true, routes: 19, spots: 31 });
 
       expect(await tx.select().from(rallies)).toHaveLength(1);
       const rs = await tx.select().from(routes).orderBy(asc(routes.sortOrder));
@@ -476,14 +476,18 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       expect(rs.map((r) => r.sortOrder)).toEqual(Array.from({ length: 19 }, (_, i) => i + 1));
 
       const ss = await tx.select().from(spots);
-      expect(ss).toHaveLength(28);
+      expect(ss).toHaveLength(31);
+      const idOfCourse = (n: number) => rs[n - 1]!.id;
       for (const s of ss) {
         expect(s.lat).toBeNull(); // coordinates are never guessed
         expect(s.lng).toBeNull();
         expect(s.published).toBe(false);
         expect(s.permissionConfirmed).toBe(false);
-        expect(s.routeId).toBe(rs[0]!.id);
+        const wanted = SEED_SPOTS.find((x) => x.nameJa === s.nameJa)!;
+        expect(s.routeId).toBe(idOfCourse(wanted.routeNumber));
+        expect(s.sortOrder).toBe(wanted.sortOrder);
       }
+      expect(ss.filter((s) => s.routeId === idOfCourse(3))).toHaveLength(0); // course 3 has no mound
     });
   });
 
@@ -492,7 +496,7 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       await seed(tx);
       expect(await seed(tx)).toEqual({ rally: false, routes: 0, spots: 0 });
       expect(await tx.select().from(routes)).toHaveLength(19);
-      expect(await tx.select().from(spots)).toHaveLength(28);
+      expect(await tx.select().from(spots)).toHaveLength(31);
       expect(await tx.select().from(rallies)).toHaveLength(1);
     });
   });

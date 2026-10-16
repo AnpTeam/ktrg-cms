@@ -30,13 +30,15 @@ export async function seed(db: Executor): Promise<SeedResult> {
 
   let spotsCreated = 0;
   const spotCount = (await db.select({ n: count() }).from(spots))[0]?.n ?? 0;
-  const [first] = await db.select({ id: routes.id }).from(routes).orderBy(asc(routes.sortOrder)).limit(1);
-  if (spotCount === 0 && first) {
+  // The courses in trail order: course N is the Nth row. A mound whose course is missing is skipped.
+  const courses = await db.select({ id: routes.id }).from(routes).orderBy(asc(routes.sortOrder));
+  if (spotCount === 0 && courses.length > 0) {
     // No lat/lng, published=false, permissionConfirmed=false: drafts only.
-    const made = await db
-      .insert(spots)
-      .values(seedSpots().map((s) => ({ ...s, routeId: first.id })))
-      .returning({ id: spots.id });
+    const values = seedSpots().flatMap(({ routeNumber, ...s }) => {
+      const course = courses[routeNumber - 1];
+      return course ? [{ ...s, routeId: course.id }] : [];
+    });
+    const made = values.length > 0 ? await db.insert(spots).values(values).returning({ id: spots.id }) : [];
     spotsCreated = made.length;
   }
 
