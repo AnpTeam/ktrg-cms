@@ -12,7 +12,8 @@ import { createDrizzlePasskeyStore } from "../auth/passkey-store";
 import { createDrizzleRateLimitStore } from "../auth/rate-limit-store";
 import { createDrizzleSessionStore } from "../auth/session-store";
 import { createDb } from "./client";
-import { auditLog, otpCodes, rallies, rateLimits, routes, spots, users, webauthnChallenges } from "./schema";
+import { listRalliesWithProgress } from "../rallies/rally-store";
+import { auditLog, otpCodes, rallies, rallySpots, rateLimits, routes, spots, stamps, users, webauthnChallenges } from "./schema";
 import { seed } from "./seed";
 import { SEED_ROUTES, SEED_SPOTS } from "./seed-data";
 
@@ -77,20 +78,6 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       const b = await db.insert(users).values({}).returning({ id: users.id });
       extraUserIds.push(a[0]!.id, b[0]!.id);
       expect(a[0]!.id).not.toBe(b[0]!.id);
-    });
-
-    test("there can only ever be one rally row", async () => {
-      const existing = await db.select({ id: rallies.id }).from(rallies);
-      if (existing.length === 0) {
-        await db.insert(rallies).values({});
-        await db.delete(rallies);
-      } else {
-        await expect(
-          (async () => {
-            await db.insert(rallies).values({});
-          })(),
-        ).rejects.toThrow();
-      }
     });
   });
 
@@ -205,6 +192,14 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       expect(await me.get(user.id)).toEqual(updated);
       expect((await me.update(user.id, { displayName: null }))!.displayName).toBeNull();
       expect(await me.get(randomUUID())).toBeNull();
+    });
+
+    test("where you come from can be set and cleared", async () => {
+      const me = createDrizzleMeStore(db);
+      const user = await newUser("me-origin");
+      expect((await me.get(user.id))!.origin).toBeNull();
+      expect((await me.update(user.id, { origin: "nara" }))!.origin).toBe("nara");
+      expect((await me.update(user.id, { origin: null }))!.origin).toBeNull();
     });
 
     test("preferences are saved as a whole, read back and replaced (jsonb)", async () => {
@@ -465,9 +460,10 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       .transaction(async (tx) => {
         try {
           // Start from an empty database inside the transaction (undone afterwards).
+          // Rallies first: they hold the links to places and belong to courses.
+          await tx.delete(rallies);
           await tx.delete(spots);
           await tx.delete(routes);
-          await tx.delete(rallies);
           await body(tx);
         } catch (err) {
           failure = err;
@@ -480,11 +476,11 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
     if (failure) throw failure;
   }
 
-  test("fills an empty database: 1 rally, 19 routes in order, 31 draft spots on their courses", async () => {
+  test("fills an empty database: 20 rallies, 19 routes in order, 31 draft spots on their courses, 62 links", async () => {
     await inRollback(async (tx) => {
-      expect(await seed(tx)).toEqual({ rally: true, routes: 19, spots: 31 });
+      expect(await seed(tx)).toEqual({ rallies: 20, routes: 19, spots: 31, links: 62 });
 
-      expect(await tx.select().from(rallies)).toHaveLength(1);
+      expect(await tx.select().from(rallies)).toHaveLength(20);
       const rs = await tx.select().from(routes).orderBy(asc(routes.sortOrder));
       expect(rs.map((r) => r.nameJa)).toEqual(SEED_ROUTES.map((r) => r.nameJa));
       expect(rs.map((r) => r.sortOrder)).toEqual(Array.from({ length: 19 }, (_, i) => i + 1));
@@ -508,10 +504,11 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
   test("running it again changes nothing", async () => {
     await inRollback(async (tx) => {
       await seed(tx);
-      expect(await seed(tx)).toEqual({ rally: false, routes: 0, spots: 0 });
+      expect(await seed(tx)).toEqual({ rallies: 0, routes: 0, spots: 0, links: 0 });
       expect(await tx.select().from(routes)).toHaveLength(19);
       expect(await tx.select().from(spots)).toHaveLength(31);
-      expect(await tx.select().from(rallies)).toHaveLength(1);
+      expect(await tx.select().from(rallies)).toHaveLength(20);
+      expect(await tx.select().from(rallySpots)).toHaveLength(62);
     });
   });
 
@@ -524,6 +521,110 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
 
       const [first] = await tx.select().from(routes).where(eq(routes.sortOrder, 1));
       expect(first).toMatchObject({ nameJa: "編集済み", videoUrl: "https://youtu.be/x" });
+    });
+  });
+
+  test("one mound rally holds all 31 places, and each course rally the places on its course", async () => {
+    await inRollback(async (tx) => {
+      await seed(tx);
+      const rs = await tx.select().from(routes).orderBy(asc(routes.sortOrder));
+      const rl = await tx.select().from(rallies);
+      const mounds = rl.filter((r) => r.kind === "mounds");
+      expect(mounds).toHaveLength(1);
+      expect(mounds[0]).toMatchObject({ nameJa: "経塚スタンプラリー", routeId: null });
+      const links = await tx.select().from(rallySpots);
+      expect(links.filter((l) => l.rallyId === mounds[0]!.id)).toHaveLength(31);
+
+      const courses = rl.filter((r) => r.kind === "course");
+      expect(courses).toHaveLength(19);
+      expect(new Set(courses.map((c) => c.routeId)).size).toBe(19);
+      const members = (course: number) => {
+        const rally = courses.find((c) => c.routeId === rs[course - 1]!.id)!;
+        return links.filter((l) => l.rallyId === rally.id).sort((x, y) => x.position - y.position);
+      };
+      expect(members(3)).toHaveLength(0); // course 3 has no mound yet
+      expect(members(4)).toHaveLength(2);
+      expect(members(11)).toHaveLength(3);
+      expect(members(4).map((l) => l.position)).toEqual([1, 2]);
+
+      // a place is in two rallies at once: the mound rally and its course's rally
+      const aSpot = members(4)[0]!.spotId;
+      expect(links.filter((l) => l.spotId === aSpot)).toHaveLength(2);
+    });
+  });
+
+  test("the database refuses a second mound rally, a second rally for a course, and a course rally with no course", async () => {
+    await inRollback(async (tx) => {
+      await seed(tx);
+      const [first] = await tx.select().from(routes).where(eq(routes.sortOrder, 1));
+      const attempt = async (values: typeof rallies.$inferInsert) => {
+        await expect(
+          (async () => {
+            await tx.transaction(async (t) => {
+              await t.insert(rallies).values(values);
+            });
+          })(),
+        ).rejects.toThrow();
+      };
+      await attempt({ kind: "mounds", nameJa: "もう一つ" });
+      await attempt({ kind: "course", routeId: first!.id, nameJa: "同じコース" });
+      await attempt({ kind: "course", nameJa: "コースなし" });
+      await attempt({ kind: "mounds", routeId: first!.id, nameJa: "経塚なのにコース" });
+      // a link cannot be made twice
+      const [link] = await tx.select().from(rallySpots).limit(1);
+      await expect(
+        (async () => {
+          await tx.transaction(async (t) => {
+            await t.insert(rallySpots).values({ rallyId: link!.rallyId, spotId: link!.spotId });
+          });
+        })(),
+      ).rejects.toThrow();
+    });
+  });
+
+  test("deleting a rally removes its links, not the places or anyone's stamps", async () => {
+    await inRollback(async (tx) => {
+      await seed(tx);
+      const [rally] = await tx.select().from(rallies).where(eq(rallies.kind, "mounds"));
+      await tx.delete(rallies).where(eq(rallies.id, rally!.id));
+      expect(await tx.select().from(rallySpots).where(eq(rallySpots.rallyId, rally!.id))).toHaveLength(0);
+      expect(await tx.select().from(spots)).toHaveLength(31);
+    });
+  });
+
+  test("progress: one stamp counts in the mound rally AND the course rally; others' stamps and drafts do not", async () => {
+    await inRollback(async (tx) => {
+      await seed(tx);
+      const rs = await tx.select().from(routes).orderBy(asc(routes.sortOrder));
+      const onCourse4 = await tx.select().from(spots).where(eq(spots.routeId, rs[3]!.id)).orderBy(asc(spots.sortOrder));
+      const [a, b] = onCourse4 as [(typeof onCourse4)[number], (typeof onCourse4)[number]];
+
+      // Publish a (coordinates and permission are required) and leave b a draft.
+      await tx.update(spots).set({ lat: 34.3, lng: 135.1, permissionConfirmed: true, published: true }).where(eq(spots.id, a.id));
+      const [me] = await tx.insert(users).values({}).returning({ id: users.id });
+      const [other] = await tx.insert(users).values({}).returning({ id: users.id });
+      await tx.insert(stamps).values([
+        { userId: me!.id, spotId: a.id },
+        { userId: other!.id, spotId: a.id },
+        { userId: me!.id, spotId: b.id }, // a stamp on a draft place counts for nothing
+      ]);
+
+      const mine = await listRalliesWithProgress(tx, me!.id);
+      const mounds = mine.find((r) => r.kind === "mounds")!;
+      const course4 = mine.find((r) => r.routeId === rs[3]!.id)!;
+      expect(mounds).toMatchObject({ total: 1, stamped: 1, complete: true });
+      expect(course4).toMatchObject({ total: 1, stamped: 1, complete: true });
+      expect(course4.lastStampedAt).toBeInstanceOf(Date);
+
+      const theirs = await listRalliesWithProgress(tx, other!.id);
+      expect(theirs.find((r) => r.kind === "mounds")).toMatchObject({ stamped: 1 });
+      const nobody = await listRalliesWithProgress(tx, "00000000-0000-4000-8000-000000000000");
+      expect(nobody.every((r) => r.stamped === 0 && r.lastStampedAt === null)).toBe(true);
+
+      // an admin revokes my stamp: it counts for nothing any more, in both rallies
+      await tx.update(stamps).set({ revokedAt: new Date() }).where(eq(stamps.userId, me!.id));
+      const after = await listRalliesWithProgress(tx, me!.id);
+      expect(after.find((r) => r.kind === "mounds")).toMatchObject({ stamped: 0, complete: false });
     });
   });
 

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { getTableConfig } from "drizzle-orm/pg-core";
 import { users } from "./auth";
-import { auditLog, rallies, routes, spots, stamps, trailNotices } from "./content";
+import { auditLog, rallies, rallySpots, routes, spots, stamps, trailNotices } from "./content";
 
 type Table = Parameters<typeof getTableConfig>[0];
 const cols = (t: Table) => getTableConfig(t).columns.map((c) => c.name);
@@ -9,11 +9,12 @@ const col = (t: Table, name: string) => getTableConfig(t).columns.find((c) => c.
 
 describe("content schema", () => {
   test("table names", () => {
-    const tables = [rallies, routes, spots, stamps, trailNotices, auditLog];
+    const tables = [routes, spots, rallies, rallySpots, stamps, trailNotices, auditLog];
     expect(tables.map((t) => getTableConfig(t).name)).toEqual([
-      "rallies",
       "routes",
       "spots",
+      "rallies",
+      "rally_spots",
       "stamps",
       "trail_notices",
       "audit_log",
@@ -61,6 +62,26 @@ describe("content schema", () => {
 
   test("a rally with no stampsRequired means every published spot", () => {
     expect(col(rallies, "stamps_required").notNull).toBe(false);
+  });
+
+  test("there can be many rallies: only one mound rally and one rally per course", () => {
+    const idx = Object.fromEntries(getTableConfig(rallies).indexes.map((i) => [i.config.name, i.config]));
+    expect(idx.rallies_single_row_uq).toBeUndefined(); // the one-row rule is gone
+    expect(idx.rallies_one_mounds_uq?.unique).toBe(true);
+    expect(idx.rallies_route_uq?.unique).toBe(true);
+    expect(getTableConfig(rallies).checks.map((c) => c.name)).toContain("rallies_route_matches_kind");
+    expect(col(rallies, "kind").notNull).toBe(true);
+    expect(col(rallies, "name_ja").notNull).toBe(true);
+    expect(col(rallies, "name_en").notNull).toBe(false);
+    expect(col(rallies, "route_id").notNull).toBe(false);
+  });
+
+  test("a place can be in many rallies: the link table is keyed by both and never stores stamps", () => {
+    const cfg = getTableConfig(rallySpots);
+    expect(cfg.primaryKeys[0]!.columns.map((c) => c.name)).toEqual(["rally_id", "spot_id"]);
+    expect(cols(rallySpots)).not.toContain("user_id"); // progress is computed from stamps, not stored per rally
+    expect(cfg.indexes.map((i) => i.config.name)).toContain("rally_spots_spot_idx");
+    for (const fk of cfg.foreignKeys) expect(fk.onDelete).toBe("cascade");
   });
 
   test("trail notices need an official source and a verified date", () => {

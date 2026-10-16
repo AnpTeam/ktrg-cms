@@ -29,6 +29,9 @@ export const SEED_ROUTES: readonly { nameJa: string; nameEn: string }[] = [
   { nameJa: "明神山から亀の瀬", nameEn: "From Mount Myōjin to Kamenose" },
 ];
 
+/** The rally over all 31 sutra mound places (one more rally per course is made from the courses' names). */
+export const MOUND_RALLY = { nameJa: "経塚スタンプラリー", nameEn: "Sutra mound stamp rally" } as const;
+
 export const SEED_SPOT_COUNT = 31;
 
 /**

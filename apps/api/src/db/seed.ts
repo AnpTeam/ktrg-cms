@@ -1,23 +1,23 @@
 // Starting content: bun run db:seed
-// Safe to run again: it only fills tables that are empty, so it never overwrites CMS edits.
+// Safe to run again: it only adds what is missing and never overwrites CMS edits.
 import { asc, count } from "drizzle-orm";
 import { createDb, type Db } from "./client";
-import { rallies, routes, spots } from "./schema";
-import { SEED_ROUTES, seedSpots } from "./seed-data";
+import { rallies, rallySpots, routes, spots } from "./schema";
+import { MOUND_RALLY, SEED_ROUTES, seedSpots } from "./seed-data";
 
 /** A database or a transaction: all the seed needs is select and insert. */
 export type Executor = Pick<Db, "select" | "insert">;
 
 export interface SeedResult {
-  rally: boolean;
+  /** Rallies created: the mound rally and one per course. */
+  rallies: number;
   routes: number;
   spots: number;
+  /** Place-in-rally links created. */
+  links: number;
 }
 
 export async function seed(db: Executor): Promise<SeedResult> {
-  // The one permanent rally. A second insert is refused by the single-row unique index.
-  const rally = await db.insert(rallies).values({}).onConflictDoNothing().returning({ id: rallies.id });
-
   let routesCreated = 0;
   const routeCount = (await db.select({ n: count() }).from(routes))[0]?.n ?? 0;
   if (routeCount === 0) {
@@ -28,10 +28,14 @@ export async function seed(db: Executor): Promise<SeedResult> {
     routesCreated = made.length;
   }
 
+  // The courses in trail order: course N is the Nth row. A mound whose course is missing is skipped.
+  const courses = await db
+    .select({ id: routes.id, nameJa: routes.nameJa, nameEn: routes.nameEn })
+    .from(routes)
+    .orderBy(asc(routes.sortOrder));
+
   let spotsCreated = 0;
   const spotCount = (await db.select({ n: count() }).from(spots))[0]?.n ?? 0;
-  // The courses in trail order: course N is the Nth row. A mound whose course is missing is skipped.
-  const courses = await db.select({ id: routes.id }).from(routes).orderBy(asc(routes.sortOrder));
   if (spotCount === 0 && courses.length > 0) {
     // No lat/lng, published=false, permissionConfirmed=false: drafts only.
     const values = seedSpots().flatMap(({ routeNumber, ...s }) => {
@@ -42,14 +46,50 @@ export async function seed(db: Executor): Promise<SeedResult> {
     spotsCreated = made.length;
   }
 
-  return { rally: rally.length === 1, routes: routesCreated, spots: spotsCreated };
+  // Rallies: the mound rally and one per course, each only if it is missing.
+  const existing = await db.select({ kind: rallies.kind, routeId: rallies.routeId }).from(rallies);
+  const missing = [
+    ...(existing.some((r) => r.kind === "mounds")
+      ? []
+      : [{ kind: "mounds" as const, nameJa: MOUND_RALLY.nameJa, nameEn: MOUND_RALLY.nameEn, sortOrder: 0 }]),
+    ...courses.flatMap((c, i) =>
+      existing.some((r) => r.routeId === c.id)
+        ? []
+        : [{ kind: "course" as const, routeId: c.id, nameJa: c.nameJa, nameEn: c.nameEn, sortOrder: i + 1 }],
+    ),
+  ];
+  const ralliesCreated = missing.length > 0 ? (await db.insert(rallies).values(missing).returning({ id: rallies.id })).length : 0;
+
+  // Which places are in which rally: only for a rally that has none yet (never undoes an admin's changes).
+  const allRallies = await db
+    .select({ id: rallies.id, kind: rallies.kind, routeId: rallies.routeId })
+    .from(rallies);
+  const linked = new Set((await db.select({ id: rallySpots.rallyId }).from(rallySpots)).map((r) => r.id));
+  const allSpots = await db.select({ id: spots.id, routeId: spots.routeId, sortOrder: spots.sortOrder }).from(spots);
+  const courseOrder = new Map(courses.map((c, i) => [c.id, i]));
+  const inTrailOrder = [...allSpots].sort(
+    (a, b) => (courseOrder.get(a.routeId) ?? 0) - (courseOrder.get(b.routeId) ?? 0) || a.sortOrder - b.sortOrder,
+  );
+
+  const links: { rallyId: string; spotId: string; position: number }[] = [];
+  for (const rally of allRallies) {
+    if (linked.has(rally.id)) continue;
+    // The mound rally holds every mound place in trail order; a course rally the places on its course.
+    const members = rally.kind === "mounds" ? inTrailOrder : inTrailOrder.filter((s) => s.routeId === rally.routeId);
+    members.forEach((s, i) => links.push({ rallyId: rally.id, spotId: s.id, position: i + 1 }));
+  }
+  if (links.length > 0) await db.insert(rallySpots).values(links);
+
+  return { rallies: ralliesCreated, routes: routesCreated, spots: spotsCreated, links: links.length };
 }
 
 if (import.meta.main) {
   const { db, client } = createDb(process.env.DATABASE_URL);
   const host = new URL(process.env.DATABASE_URL!).hostname;
   const result = await seed(db);
-  console.log(`Seeded ${host}: rally ${result.rally ? "created" : "already there"}, ${result.routes} routes, ${result.spots} spots.`);
-  if (!result.rally && !result.routes && !result.spots) console.log("Nothing to do: the tables already have data.");
+  console.log(
+    `Seeded ${host}: ${result.rallies} rallies, ${result.routes} routes, ${result.spots} spots, ${result.links} place-in-rally links.`,
+  );
+  if (!result.rallies && !result.routes && !result.spots && !result.links) console.log("Nothing to do: everything is already there.");
   await client.end();
 }
