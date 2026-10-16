@@ -10,28 +10,27 @@
  * src/styles/contrast.test.ts fails if a color pair below drops under its ratio.
  */
 @theme {
-  --color-ink: #2a1a14; /* body text: warm near-black */
-  --color-muted: #4e352a; /* secondary text */
-  --color-paper: #f0d499; /* page background: the pamphlet's warm cream-gold */
-  --color-surface: #fbf3dc; /* panels, rows, empty slots: pale cream */
-  --color-brand: #cc6256; /* the brand red (朱の赤): banners, buttons, borders, icons. Not for text on cream */
+  --color-ink: #1f1b1a; /* body text */
+  --color-muted: #57504d; /* secondary text */
+  --color-paper: #ffffff; /* page background: plain white */
+  --color-surface: #f5f5f4; /* panels, rows, empty slots: light grey */
+  --color-brand: #cc6256; /* the brand red: buttons, the active tab, icons, the bar beside headings. Not for text on white */
   --color-on-brand: #ffffff; /* the words on the brand red (large bold text only) */
-  --color-accent: #6e241c; /* red you can READ on cream: links, headings, focus ring (deep red) */
-  --color-moss: #164530; /* done, open, trail progress: moss (苔) */
+  --color-accent: #8e2a21; /* red you can READ: links, headings, focus ring (deep red) */
+  --color-moss: #14532d; /* done, open, trail progress: moss (苔) */
   --color-shu: #b3321b; /* the stamp seal only: vermilion (朱). Never text, never a warning */
   --color-on-shu: #ffffff; /* the numeral inside a seal */
   --color-caution: #b45309; /* warnings: caution status, graphic only (amber 琥珀) */
-  --color-danger: #761b1b; /* errors */
-  --color-line: #8a6a4f; /* borders of inputs and buttons, the trail line */
+  --color-danger: #991b1b; /* errors */
+  --color-line: #8a7f7a; /* borders of inputs and buttons, the trail line */
 
   /* System fonts only: nothing to download on a weak mountain connection.
      UD (universal design) fonts first: BIZ UDPGothic ships with Windows 10+. */
   --font-sans:
     "BIZ UDPGothic", "BIZ UDGothic", "Hiragino Kaku Gothic ProN", "Hiragino Sans",
     "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
-  /* For the page title and the red banners only (the pamphlet's look); body text stays sans. */
-  --font-serif:
-    "BIZ UDPMincho", "BIZ UDMincho", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+  /* No serif any more: font-serif is the same clean sans, so older classes need no edit. */
+  --font-serif: var(--font-sans);
 }
 
 
@@ -142,19 +141,19 @@
 }
 
 :root[data-theme="light"] {
-  --color-ink: #2a1a14; /* body text: warm near-black */
-  --color-muted: #4e352a; /* secondary text */
-  --color-paper: #f0d499; /* page background: the pamphlet's warm cream-gold */
-  --color-surface: #fbf3dc; /* panels, rows, empty slots: pale cream */
-  --color-brand: #cc6256; /* the brand red (朱の赤): banners, buttons, borders, icons. Not for text on cream */
+  --color-ink: #1f1b1a; /* body text */
+  --color-muted: #57504d; /* secondary text */
+  --color-paper: #ffffff; /* page background: plain white */
+  --color-surface: #f5f5f4; /* panels, rows, empty slots: light grey */
+  --color-brand: #cc6256; /* the brand red: buttons, the active tab, icons, the bar beside headings. Not for text on white */
   --color-on-brand: #ffffff; /* the words on the brand red (large bold text only) */
-  --color-accent: #6e241c; /* red you can READ on cream: links, headings, focus ring (deep red) */
-  --color-moss: #164530; /* done, open, trail progress: moss (苔) */
+  --color-accent: #8e2a21; /* red you can READ: links, headings, focus ring (deep red) */
+  --color-moss: #14532d; /* done, open, trail progress: moss (苔) */
   --color-shu: #b3321b; /* the stamp seal only: vermilion (朱). Never text, never a warning */
   --color-on-shu: #ffffff; /* the numeral inside a seal */
   --color-caution: #b45309; /* warnings: caution status, graphic only (amber 琥珀) */
-  --color-danger: #761b1b; /* errors */
-  --color-line: #8a6a4f; /* borders of inputs and buttons, the trail line */
+  --color-danger: #991b1b; /* errors */
+  --color-line: #8a7f7a; /* borders of inputs and buttons, the trail line */
   color-scheme: light;
 }
 
@@ -338,14 +337,11 @@ rt {
   border-radius: 0.75rem;
 }
 
-/* A framed panel like the pamphlet's: a red line with a second thin line just inside it. */
+/* A plain card: a thin line, soft corners, light grey fill. */
 .frame {
-  border: 2px solid var(--color-brand);
+  border: 1px solid var(--color-line);
   border-radius: 0.75rem;
   background: var(--color-surface);
-  box-shadow:
-    inset 0 0 0 3px var(--color-surface),
-    inset 0 0 0 4.5px var(--color-brand);
 }
 
 /*

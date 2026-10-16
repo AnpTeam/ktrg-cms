@@ -98,7 +98,7 @@ const seal: [string, string][] = [["on-shu", "shu"]];
 const onBrand: [string, string][] = [["on-brand", "brand"]];
 
 // The brand red as a plain fill against the page (banners, buttons): the words on it name the
-// control, so the fill is decoration and is held to 2.5:1 only. Borders and inputs use "line".
+// control, so the fill is decoration and is held to 2.5:1 only (on white it is 3.85:1). Borders and inputs use "line".
 const brandFill: [string, string][] = [
   ["brand", "paper"],
   ["brand", "surface"],

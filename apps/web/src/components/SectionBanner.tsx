@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 
 /**
- * A section heading as a red pill, like the pamphlet's: bold white words on the brand red, inside a
- * thin double line. The words sit on the red (about 3.9:1, fine for large bold text), never red on
- * the cream page (about 2.7:1), which is why headings are banners and not red text.
+ * A section heading: bold deep-red text with a short bar of the brand red beside it. (It used to be a
+ * red pill with white words; the team found that pamphlet look too busy. The name stayed so no screen
+ * needed to change.) Text is the readable deep red on the page, never the lighter brand red.
  */
 export function SectionBanner({
   children,
@@ -15,9 +15,7 @@ export function SectionBanner({
   className?: string;
 }) {
   return (
-    <Tag
-      className={`rounded-full bg-brand px-5 py-2 text-center font-serif text-xl font-bold leading-snug text-on-brand shadow-[0_0_0_2px_var(--color-paper),0_0_0_3.5px_var(--color-brand)] ${className}`}
-    >
+    <Tag className={`border-l-4 border-brand pl-3 text-left text-xl font-bold leading-snug text-accent ${className}`}>
       {children}
     </Tag>
   );
