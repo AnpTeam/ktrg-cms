@@ -12,6 +12,7 @@ import {
   type MapSettings,
 } from "@/lib/map-settings";
 import type { Position } from "@/lib/map";
+import type { MapPlace } from "@/lib/places";
 import { TrailMapLoader } from "./TrailMapLoader";
 import type { MapStop } from "./TrailMap";
 
@@ -21,7 +22,17 @@ const choiceClass = (on: boolean) =>
   }`;
 
 /** Pick the map style; the preview below uses the unsaved choice, "Save" writes the cookie every map reads. */
-export function MapSettingsForm({ initial, stops, line }: { initial: MapSettings; stops: MapStop[]; line: Position[] | null }) {
+export function MapSettingsForm({
+  initial,
+  stops,
+  line,
+  places,
+}: {
+  initial: MapSettings;
+  stops: MapStop[];
+  line: Position[] | null;
+  places: MapPlace[];
+}) {
   const { t } = useLingui();
   const [s, setS] = useState(initial);
   const [saved, setSaved] = useState(false);
@@ -105,7 +116,7 @@ export function MapSettingsForm({ initial, stops, line }: { initial: MapSettings
         {saved ? <span role="status" className="text-base font-bold">{t`保存しました`}</span> : null}
       </div>
 
-      <TrailMapLoader stops={stops} line={line} draft settings={s} />
+      <TrailMapLoader stops={stops} line={line} places={places} draft settings={s} />
     </div>
   );
 }

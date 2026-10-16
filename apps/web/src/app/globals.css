@@ -269,3 +269,56 @@ rt {
     transform: translateY(-0.75rem);
   }
 }
+
+/*
+ * Places along the course (toilets, shops ...) and merged groups. A place is a rounded square with a
+ * picture, so it never looks like a numbered stop (a circle); closed places carry a diagonal bar.
+ */
+.place-marker {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  border: 3px solid var(--color-ink);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.45);
+  cursor: pointer;
+}
+
+.place-marker[data-closed="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: linear-gradient(135deg, transparent 46%, var(--color-ink) 46% 54%, transparent 54%);
+}
+
+.place-marker[aria-pressed="true"] {
+  transform: scale(1.18);
+  outline: 4px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.map-cluster {
+  display: grid;
+  place-items: center;
+  min-width: 3rem;
+  height: 3rem;
+  padding: 0 0.5rem;
+  border-radius: 9999px;
+  border: 3px solid var(--color-ink);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.45), 0 0 0 4px var(--color-paper);
+  cursor: pointer;
+}
+
+.map-cluster[data-kind="places"] {
+  border-radius: 0.75rem;
+}

@@ -21,3 +21,14 @@ export function formatUpdated(locale: string, iso: string): string {
   const time = `${get("hour")}:${get("minute")}`;
   return locale === "ja" ? `${month}月${get("day")}日${NBSP}${time}` : `${monthsEn[month - 1]} ${get("day")},${NBSP}${time}`;
 }
+
+/**
+ * A calendar day (YYYY-MM-DD) as people say it: "2026年10月16日" or "Oct 16, 2026". It is a plain date with
+ * no time zone, so it is built from its parts and never shifted.
+ */
+export function formatDay(locale: string, day: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day);
+  if (!m) return day;
+  const [year, month, date] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  return locale === "ja" ? `${year}年${month}月${date}日` : `${monthsEn[month - 1]} ${date}, ${year}`;
+}

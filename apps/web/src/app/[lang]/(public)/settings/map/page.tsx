@@ -4,7 +4,7 @@ import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { MapSettingsForm } from "@/components/map/MapSettingsForm";
 import type { MapStop } from "@/components/map/TrailMap";
-import { getRoute, pickText } from "@/lib/content";
+import { getRoute, listPlacesForRoute, pickText, toMapPlace } from "@/lib/content";
 import { mapSettingsCookie, parseMapSettings } from "@/lib/map-settings";
 import { initLingui } from "@/i18n/server";
 import { localePath } from "@/lib/rally";
@@ -35,13 +35,15 @@ export default async function MapSettingsPage() {
     ];
   });
 
+  const places = route ? (await listPlacesForRoute(route.order)).map((p) => toMapPlace(i18n.locale, p)) : [];
+
   return (
     <div className="flex flex-col gap-4 px-4 pt-2">
       <h1 className="text-3xl font-bold">
         <Trans>地図の見た目</Trans>
       </h1>
       <p className="text-lg">{i18n._(msg`開発用の設定です。公開版では表示されません。`)}</p>
-      <MapSettingsForm initial={settings} stops={stops} line={route?.line ?? null} />
+      <MapSettingsForm initial={settings} stops={stops} line={route?.line ?? null} places={places} />
     </div>
   );
 }

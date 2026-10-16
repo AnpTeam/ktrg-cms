@@ -1,3 +1,5 @@
+import type { MapPlace, PlaceCategory, PlaceStatus } from "./places";
+import { samplePlaces } from "./sample-places";
 import { sampleRoutes, sampleSpots } from "./sample-content";
 import type { Sketch } from "./sketch";
 import type { Viewer } from "./viewer";
@@ -149,6 +151,49 @@ function toSummary(r: RouteDetail): RouteSummary {
     sketch: r.sketch,
     spotCount: r.spotCount,
     stampedCount: r.stampedCount,
+  };
+}
+
+/** A place along the courses as the CMS holds it (Japanese required, English optional). */
+export interface PlaceItem {
+  id: string;
+  category: PlaceCategory;
+  nameJa: string;
+  nameEn: string | null;
+  /** The course numbers (1 to 19) this place serves. */
+  routes: number[];
+  position: { lat: number; lng: number; verified: boolean };
+  hoursJa: string | null;
+  hoursEn: string | null;
+  closedDaysJa: string | null;
+  closedDaysEn: string | null;
+  descriptionJa: string | null;
+  descriptionEn: string | null;
+  status: PlaceStatus;
+  /** YYYY-MM-DD of the last check by a person; null when never. */
+  lastVerified: string | null;
+}
+
+/** The places that serve a course. Only sample data for now (the places API does not exist yet). */
+export async function listPlacesForRoute(order: number): Promise<PlaceItem[]> {
+  return sampleContentEnabled() ? samplePlaces.filter((p) => p.routes.includes(order)) : [];
+}
+
+/** A place with its text chosen for the visitor's language (English falls back to Japanese). */
+export function toMapPlace(locale: string, p: PlaceItem): MapPlace {
+  const name = pickText(locale, p.nameJa, p.nameEn);
+  return {
+    id: p.id,
+    category: p.category,
+    name: name?.text ?? p.nameJa,
+    nameLang: name?.lang ?? "ja",
+    hours: pickText(locale, p.hoursJa, p.hoursEn)?.text ?? null,
+    closedDays: pickText(locale, p.closedDaysJa, p.closedDaysEn)?.text ?? null,
+    description: pickText(locale, p.descriptionJa, p.descriptionEn)?.text ?? null,
+    status: p.status,
+    position: { lat: p.position.lat, lng: p.position.lng },
+    verified: p.position.verified,
+    lastVerified: p.lastVerified,
   };
 }
 

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { placeIconPaths, type PlaceGroup } from "@/lib/places";
 
 // Plain, heavy-stroke icons. Always shown next to a word, never alone.
 function Icon({ children }: { children: ReactNode }) {
@@ -141,5 +142,23 @@ export const MailIcon = () => (
   <Icon>
     <path d="M4 6h16v12H4z" />
     <path d="m4 7 8 6 8-6" />
+  </Icon>
+);
+
+/** The picture of a group of places (toilets and rest, shops and food ...). */
+export const PlaceGroupIcon = ({ group }: { group: PlaceGroup }) => (
+  <Icon>
+    {placeIconPaths[group].map((d) => (
+      <path key={d} d={d} />
+    ))}
+  </Icon>
+);
+
+export const ExpandIcon = () => (
+  <Icon>
+    <path d="M4 9V4h5" />
+    <path d="M20 9V4h-5" />
+    <path d="M4 15v5h5" />
+    <path d="M20 15v5h-5" />
   </Icon>
 );

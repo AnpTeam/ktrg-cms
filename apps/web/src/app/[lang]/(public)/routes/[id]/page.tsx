@@ -13,7 +13,7 @@ import { RowLink } from "@/components/RowLink";
 import { TrailMapLoader } from "@/components/map/TrailMapLoader";
 import type { MapStop } from "@/components/map/TrailMap";
 import { StatusWord } from "@/components/StatusWord";
-import { forViewer, getRoute, pickText } from "@/lib/content";
+import { forViewer, getRoute, listPlacesForRoute, pickText, toMapPlace } from "@/lib/content";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
 import { localePath } from "@/lib/rally";
@@ -61,6 +61,7 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
     ];
   });
   const settings = parseMapSettings((await cookies()).get(mapSettingsCookie)?.value);
+  const places = (await listPlacesForRoute(route.order)).map((p) => toMapPlace(i18n.locale, p));
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
 
   return (
@@ -95,7 +96,7 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
 
       {stops.length > 0 ? (
         <section className="px-4">
-          <TrailMapLoader stops={stops} line={route.line} draft={draftPositions} settings={settings} />
+          <TrailMapLoader stops={stops} line={route.line} places={places} draft={draftPositions} settings={settings} />
         </section>
       ) : null}
 
