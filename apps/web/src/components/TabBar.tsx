@@ -20,7 +20,7 @@ export function TabBar() {
   return (
     <nav
       aria-label={t`メインメニュー`}
-      className="fixed inset-x-0 bottom-0 z-10 border-t-2 border-line bg-paper pb-[env(safe-area-inset-bottom)]"
+      className="fixed inset-x-0 bottom-0 z-10 border-t-2 border-brand bg-surface pb-[env(safe-area-inset-bottom)]"
     >
       <ul className="mx-auto grid max-w-xl grid-cols-3">
         {tabs.map(({ path, label, icon }) => {
@@ -31,8 +31,8 @@ export function TabBar() {
               <Link
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`tap-target flex min-h-[4.5rem] flex-col items-center justify-center gap-1 text-base font-bold ${
-                  active ? "bg-accent text-paper" : "text-ink hover:bg-surface"
+                className={`flex min-h-[3.25rem] min-w-0 flex-col items-center justify-center gap-0.5 text-sm font-bold leading-tight [&_svg]:size-6 ${
+                  active ? "bg-brand text-on-brand" : "text-ink hover:bg-paper"
                 }`}
               >
                 {icon}

@@ -99,22 +99,26 @@ describe("resolveViewer", () => {
   test("development can force signed in or out; otherwise the session decides", () => {
     const dev = { NODE_ENV: "development" };
     expect(resolveViewer({}, dev)).toBeNull();
-    expect(resolveViewer({ as: "in" }, dev)).toEqual({ signedIn: true, name: null });
-    expect(resolveViewer({ as: "out" }, dev)).toEqual({ signedIn: false, name: null });
+    expect(resolveViewer({ as: "in" }, dev)).toEqual({ signedIn: true, name: null, preferences: null });
+    expect(resolveViewer({ as: "out" }, dev)).toEqual({ signedIn: false, name: null, preferences: null });
     expect(resolveViewer({ as: "auto" }, dev)).toBeNull();
   });
 });
 
 describe("viewerFromMe", () => {
   test("a good answer gives the name", () => {
-    expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana" } })).toEqual({ signedIn: true, name: "Hana" });
-    expect(viewerFromMe(200, { ok: true, me: { displayName: null } })).toEqual({ signedIn: true, name: null });
+    expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana" } })).toEqual({ signedIn: true, name: "Hana", preferences: null });
+    expect(viewerFromMe(200, { ok: true, me: { displayName: null } })).toEqual({ signedIn: true, name: null, preferences: null });
+    // The account's saved choices come with it.
+    const saved = { size: "large", mergeStops: true, placesOnMap: false, setupDone: true } as const;
+    expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana", preferences: saved } }).preferences).toEqual(saved);
   });
 
   test("anything else is signed out", () => {
-    expect(viewerFromMe(401, { ok: false, error: "unauthenticated" })).toEqual({ signedIn: false, name: null });
-    expect(viewerFromMe(200, null)).toEqual({ signedIn: false, name: null });
-    expect(viewerFromMe(200, { ok: false })).toEqual({ signedIn: false, name: null });
-    expect(viewerFromMe(500, { ok: true, me: { displayName: "x" } })).toEqual({ signedIn: false, name: null });
+    const out = { signedIn: false, name: null, preferences: null };
+    expect(viewerFromMe(401, { ok: false, error: "unauthenticated" })).toEqual(out);
+    expect(viewerFromMe(200, null)).toEqual(out);
+    expect(viewerFromMe(200, { ok: false })).toEqual(out);
+    expect(viewerFromMe(500, { ok: true, me: { displayName: "x" } })).toEqual(out);
   });
 });

@@ -59,7 +59,7 @@ export function SampleNoticeHost() {
       <form method="dialog" className="mt-5">
         <button
           type="submit"
-          className="tap-target inline-flex w-full items-center justify-center rounded-lg bg-accent px-5 text-lg font-bold text-paper"
+          className="tap-target inline-flex w-full items-center justify-center rounded-lg bg-brand px-5 text-lg font-bold text-on-brand"
         >
           <Trans>閉じる</Trans>
         </button>

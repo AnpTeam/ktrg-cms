@@ -5,7 +5,9 @@ import { Notice } from "@/components/Notice";
 import { ProgressSummary } from "@/components/ProgressSummary";
 import { RowLink } from "@/components/RowLink";
 import { Ruby } from "@/components/Ruby";
+import Link from "next/link";
 import { forViewer, listRoutes } from "@/lib/content";
+import { getPrefs } from "@/lib/server-prefs";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
 import { localePath, TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
@@ -23,24 +25,41 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const stamped = routes.reduce((n, r) => n + (r.stampedCount ?? 0), 0);
   const total = routes.reduce((n, r) => n + r.spotCount, 0) || TOTAL_STAMPS;
   const name = viewer.name;
+  const prefs = await getPrefs();
 
   return (
     <div className="flex flex-col gap-8">
       <section className="px-4">
-        <h1 className="text-4xl font-bold leading-snug">
-          <Ruby reading="かつらぎしゅげん">
-            <Trans>葛城修験</Trans>
-          </Ruby>
-        </h1>
-        {name ? (
-          <p className="mt-2 text-xl font-bold">
-            <Trans>{name}さん、こんにちは。</Trans>
+        <div className="frame p-4">
+          <h1 className="font-serif text-4xl font-bold leading-snug">
+            <Ruby reading="かつらぎしゅげん">
+              <Trans>葛城修験</Trans>
+            </Ruby>
+          </h1>
+          {name ? (
+            <p className="mt-2 text-xl font-bold">
+              <Trans>{name}さん、こんにちは。</Trans>
+            </p>
+          ) : null}
+          <p className="mt-3 font-serif text-xl font-bold">
+            <Trans>歩いた場所で、スタンプを押そう。</Trans>
           </p>
-        ) : null}
-        <p className="mt-3 text-xl">
-          <Trans>歩いた場所で、スタンプを押そう。</Trans>
-        </p>
+        </div>
       </section>
+
+      {prefs.setupDone ? null : (
+        <Link
+          href={to("/welcome")}
+          className="tap-target mx-4 flex flex-col rounded-xl border-2 border-brand bg-surface p-4"
+        >
+          <span className="text-xl font-bold text-accent">
+            <Trans>見やすさを設定しませんか</Trans>
+          </span>
+          <span className="mt-1 text-lg">
+            <Trans>文字やボタンの大きさ、地図の見せ方を選べます。</Trans>
+          </span>
+        </Link>
+      )}
 
       <ProgressSummary stamped={stamped} total={total}>
         <ButtonLink href={to("/stamps")}>

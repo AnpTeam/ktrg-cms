@@ -30,8 +30,10 @@ export function RegisterFlow({ next, loginHref }: { next?: string; loginHref: st
   const [error, setError] = useState<AuthFailure | null>(null);
 
   const profile = (): SignupProfile => ({ displayName: name.trim(), origin, locale });
+  // A new account meets the set-up screen first (how big, how the map looks), then goes where it was going.
   const finish = () => {
-    router.replace(safeNextPath(next, `/${locale}`));
+    const after = safeNextPath(next, `/${locale}`);
+    router.replace(`/${locale}/welcome?next=${encodeURIComponent(after)}`);
     router.refresh();
   };
   const choose = (m: Method) => {

@@ -6,7 +6,7 @@ import { origins, type AuthFailure, type Origin } from "@/lib/auth-flow";
 // Pieces shared by the login and register screens. Big targets, plain words, one action per step.
 
 export const primaryButton =
-  "tap-target flex min-h-14 w-full items-center justify-center gap-3 rounded-xl bg-accent px-6 text-xl font-bold text-paper disabled:opacity-60";
+  "tap-target flex min-h-14 w-full items-center justify-center gap-3 rounded-xl bg-brand px-6 text-xl font-bold text-on-brand disabled:opacity-60";
 export const secondaryButton =
   "tap-target flex min-h-14 w-full items-center justify-center gap-3 rounded-xl border-2 border-ink bg-paper px-6 text-xl font-bold text-ink hover:bg-surface disabled:opacity-60";
 export const inputClass =

@@ -27,11 +27,15 @@ export function MapSettingsForm({
   stops,
   line,
   places,
+  mergeStops,
+  placesFirst,
 }: {
   initial: MapSettings;
   stops: MapStop[];
   line: Position[] | null;
   places: MapPlace[];
+  mergeStops: boolean;
+  placesFirst: boolean;
 }) {
   const { t } = useLingui();
   const [s, setS] = useState(initial);
@@ -116,7 +120,7 @@ export function MapSettingsForm({
         {saved ? <span role="status" className="text-base font-bold">{t`保存しました`}</span> : null}
       </div>
 
-      <TrailMapLoader stops={stops} line={line} places={places} draft settings={s} />
+      <TrailMapLoader stops={stops} line={line} places={places} draft settings={s} mergeStops={mergeStops} placesFirst={placesFirst} />
     </div>
   );
 }

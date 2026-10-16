@@ -26,7 +26,7 @@ export async function SignInPrompt() {
       <div className="flex flex-col gap-3">
         <Link
           href={localePath(locale, "/register")}
-          className="tap-target flex min-h-14 items-center justify-center rounded-xl bg-accent px-6 text-xl font-bold text-paper"
+          className="tap-target flex min-h-14 items-center justify-center rounded-xl bg-brand px-6 text-xl font-bold text-on-brand"
         >
           <Trans>新規登録</Trans>
         </Link>

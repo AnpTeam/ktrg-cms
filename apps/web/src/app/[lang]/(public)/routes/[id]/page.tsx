@@ -18,6 +18,7 @@ import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
 import { localePath } from "@/lib/rally";
 import { mapSettingsCookie, parseMapSettings } from "@/lib/map-settings";
+import { getPrefs } from "@/lib/server-prefs";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ as?: string }> };
 
@@ -60,6 +61,7 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
       },
     ];
   });
+  const prefs = await getPrefs();
   const settings = parseMapSettings((await cookies()).get(mapSettingsCookie)?.value);
   const places = (await listPlacesForRoute(route.order)).map((p) => toMapPlace(i18n.locale, p));
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
@@ -96,7 +98,7 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
 
       {stops.length > 0 ? (
         <section className="px-4">
-          <TrailMapLoader stops={stops} line={route.line} places={places} draft={draftPositions} settings={settings} />
+          <TrailMapLoader stops={stops} line={route.line} places={places} draft={draftPositions} settings={settings} mergeStops={prefs.mergeStops} placesFirst={prefs.placesOnMap} />
         </section>
       ) : null}
 

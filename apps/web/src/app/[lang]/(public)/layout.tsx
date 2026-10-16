@@ -15,9 +15,9 @@ export default async function PublicLayout({ children }: { children: ReactNode }
 
   return (
     <>
-      <SiteHeader signedIn={viewer.signedIn} name={viewer.name} sample={sample} />
+      <SiteHeader signedIn={viewer.signedIn} name={viewer.name} sample={sample} devTools={process.env.NODE_ENV !== "production"} />
       {sample ? <SampleNoticeHost /> : null}
-      <main id="main" className="mx-auto max-w-xl pb-32">
+      <main id="main" className="mx-auto max-w-xl pb-24">
         {children}
       </main>
       <TabBar />

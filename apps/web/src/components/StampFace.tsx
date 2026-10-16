@@ -8,7 +8,7 @@ export type StampState = "stamped" | "next" | "empty";
 //  empty:   a dashed outline
 const faces: Record<StampState, string> = {
   stamped:
-    "bg-shu text-paper shadow-[inset_0_0_0_3px_var(--color-shu),inset_0_0_0_5px_var(--color-paper)]",
+    "bg-shu text-on-shu shadow-[inset_0_0_0_3px_var(--color-shu),inset_0_0_0_5px_var(--color-on-shu)]",
   next: "border-4 border-accent bg-surface text-accent",
   empty: "border-2 border-dashed border-line bg-paper text-muted",
 };

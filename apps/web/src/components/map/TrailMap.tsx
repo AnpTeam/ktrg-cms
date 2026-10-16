@@ -71,12 +71,18 @@ export function TrailMap({
   places,
   draft,
   settings,
+  mergeStops,
+  placesFirst,
 }: {
   stops: MapStop[];
   line: Position[] | null;
   places: MapPlace[];
   draft: boolean;
   settings: MapSettings;
+  /** The visitor's choice: merge stops that are close together (off = every stop is its own button). */
+  mergeStops: boolean;
+  /** The visitor's choice: show the nearby places from the start. */
+  placesFirst: boolean;
 }) {
   const { t } = useLingui();
   const groupNames = useGroupNames();
@@ -94,7 +100,10 @@ export function TrailMap({
   const [expanded, setExpanded] = useState(false);
   const [terrain, setTerrain] = useState(false);
   const [selected, setSelected] = useState<Selection>(null);
-  const [active, setActive] = useState<ReadonlySet<PlaceGroup>>(new Set());
+  // Every kind of place that exists on this course is on from the start when the visitor chose that.
+  const [active, setActive] = useState<ReadonlySet<PlaceGroup>>(
+    () => new Set(placesFirst ? (Object.keys(groupCounts(places)) as PlaceGroup[]) : []),
+  );
 
   const counts = useMemo(() => groupCounts(places), [places]);
   const visiblePlaces = useMemo(() => places.filter((p) => active.has(groupOf(p.category))), [places, active]);
@@ -112,6 +121,8 @@ export function TrailMap({
       try {
         const ml = await import("maplibre-gl");
         if (cancelled || !containerRef.current) return;
+        // A rebuilt map (the style settings changed) has not loaded its style yet, whatever the old one did.
+        setLoaded(false);
         // MapLibre 6 runs its tile work in a separate worker file. Under Next.js the bundler must
         // emit that file, which this new URL(..., import.meta.url) pattern (from MapLibre's own
         // docs for Next.js 15 and later) does. Without it: "Worker failed to load".
@@ -204,7 +215,9 @@ export function TrailMap({
 
     // Places first, so the numbered stops sit on top of them.
     const placeById = new Map(visiblePlaces.map((p) => [p.id, p]));
-    for (const ids of clusterByPixels(visiblePlaces.map((p) => pixel(p.id, p.position)), CLUSTER_PX)) {
+    const group = (points: { id: string; x: number; y: number }[]) =>
+      mergeStops ? clusterByPixels(points, CLUSTER_PX) : points.map((p) => [p.id]);
+    for (const ids of group(visiblePlaces.map((p) => pixel(p.id, p.position)))) {
       const members = ids.map((id) => placeById.get(id)!);
       if (members.length === 1) {
         const place = members[0]!;
@@ -230,7 +243,7 @@ export function TrailMap({
 
     const next = nextStopId(stops);
     const stopById = new Map(stops.map((s) => [s.id, s]));
-    for (const ids of clusterByPixels(stops.map((s) => pixel(s.id, s.position)), CLUSTER_PX)) {
+    for (const ids of group(stops.map((s) => pixel(s.id, s.position)))) {
       const members = ids.map((id) => stopById.get(id)!);
       if (members.length === 1) {
         const stop = members[0]!;
@@ -261,7 +274,7 @@ export function TrailMap({
       buttons.clear();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapGen, view, stops, visiblePlaces]);
+  }, [mapGen, view, stops, visiblePlaces, mergeStops]);
 
   // Mark the selected marker for screen readers and for the highlighted look.
   useEffect(() => {
@@ -291,7 +304,10 @@ export function TrailMap({
 
   useEffect(() => {
     const map = mapRef.current;
-    if (map && loaded) map.setLayoutProperty(terrainLayerId, "visibility", terrain ? "visible" : "none");
+    // Only on a map whose style has finished loading, and only if it has the overlay.
+    if (map && loaded && map.isStyleLoaded() && map.getLayer(terrainLayerId)) {
+      map.setLayoutProperty(terrainLayerId, "visibility", terrain ? "visible" : "none");
+    }
   }, [terrain, loaded, mapGen]);
 
   // Expanded view: keep the page still behind it, close on Escape, and move focus sensibly.
@@ -316,6 +332,18 @@ export function TrailMap({
     const options = calm ? { duration: 0 } : undefined;
     if (delta > 0) map.zoomIn(options);
     else map.zoomOut(options);
+  };
+
+  // The plain map's stop-by-stop control: previous and next move the map to one stop at a time, so a
+  // visitor never has to tap a stop in a crowd of markers.
+  const stopIndex = selectedStop ? stops.findIndex((s) => s.id === selectedStop.id) : -1;
+  const goToStop = (delta: 1 | -1) => {
+    const index = Math.min(stops.length - 1, Math.max(0, stopIndex === -1 ? (delta > 0 ? 0 : stops.length - 1) : stopIndex + delta));
+    const stop = stops[index];
+    const map = mapRef.current;
+    if (!stop) return;
+    setSelected({ kind: "stop", id: stop.id });
+    map?.easeTo({ center: [stop.position.lng, stop.position.lat], zoom: Math.max(map.getZoom(), 15.5) });
   };
 
   const toggleGroup = (group: PlaceGroup) =>
@@ -432,6 +460,25 @@ export function TrailMap({
         <div className="flex flex-col gap-2">
           {expanded ? null : <p className="text-lg font-bold">{t`まわりの場所を地図に出す`}</p>}
           <PlaceChips counts={counts} active={active} onToggle={toggleGroup} />
+        </div>
+      ) : null}
+
+      {!mergeStops && stops.length > 1 ? (
+        <div role="group" aria-label={t`スタンプの場所を順に見る`} className="flex items-stretch gap-2">
+          <button type="button" onClick={() => goToStop(-1)} disabled={stopIndex === 0} className={`${buttonClass} flex-1`}>
+            {t`＜ 前へ`}
+          </button>
+          <p aria-live="polite" className="flex min-w-[5.5rem] items-center justify-center text-xl font-bold tabular-nums">
+            {stopIndex === -1 ? "－" : stopIndex + 1} / {stops.length}
+          </p>
+          <button
+            type="button"
+            onClick={() => goToStop(1)}
+            disabled={stopIndex === stops.length - 1}
+            className={`${buttonClass} flex-1`}
+          >
+            {t`次へ ＞`}
+          </button>
         </div>
       ) : null}
 

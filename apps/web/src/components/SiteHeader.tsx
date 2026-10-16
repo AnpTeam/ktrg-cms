@@ -20,7 +20,18 @@ const wideButton =
  * everything that used to crowd the bar (theme, language, sign in or the profile) and opens as a
  * panel dropping down from the top. While it is open the notice button is hidden.
  */
-export function SiteHeader({ signedIn, name, sample }: { signedIn: boolean; name: string | null; sample: boolean }) {
+export function SiteHeader({
+  signedIn,
+  name,
+  sample,
+  devTools,
+}: {
+  signedIn: boolean;
+  name: string | null;
+  sample: boolean;
+  /** Development only: shows the developer links (the map style page). */
+  devTools: boolean;
+}) {
   const { t, i18n } = useLingui();
   const router = useRouter();
   const pathname = usePathname() ?? "/";
@@ -87,7 +98,7 @@ export function SiteHeader({ signedIn, name, sample }: { signedIn: boolean; name
         <div
           ref={panelRef}
           id="site-menu"
-          className="menu-drop absolute inset-x-0 top-full border-b-2 border-ink bg-paper shadow-lg"
+          className="menu-drop absolute inset-x-0 top-full border-b-2 border-brand bg-surface shadow-lg"
         >
           <div className="mx-auto flex max-w-xl flex-col gap-5 px-4 py-5">
             {signedIn ? (
@@ -107,7 +118,7 @@ export function SiteHeader({ signedIn, name, sample }: { signedIn: boolean; name
               </div>
             ) : (
               <div className="flex flex-col gap-3">
-                <Link href={loginHref} className={`${wideButton} bg-accent text-paper`}>
+                <Link href={loginHref} className={`${wideButton} bg-brand text-on-brand`}>
                   {t`ログイン`}
                 </Link>
                 <Link href={registerHref} className={`${wideButton} border-2 border-ink text-ink hover:bg-surface`}>
@@ -126,6 +137,26 @@ export function SiteHeader({ signedIn, name, sample }: { signedIn: boolean; name
               <p className="text-lg font-bold">{t`言語`}</p>
               <LocaleSwitcher />
             </div>
+            <div className="flex flex-col gap-2 border-t-2 border-line pt-4">
+              <Link
+                href={`/${i18n.locale}/settings`}
+                className="tap-target flex items-center rounded-xl border-2 border-ink px-4 text-lg font-bold text-ink hover:bg-paper"
+              >
+                {t`見やすさの設定`}
+              </Link>
+              <p className="text-base text-muted">{t`文字やボタンの大きさ、地図の見せ方`}</p>
+            </div>
+            {devTools ? (
+              <div className="flex flex-col gap-2 border-t-2 border-line pt-4">
+                <p className="text-lg font-bold">{t`開発用`}</p>
+                <Link
+                  href={`/${i18n.locale}/settings/map`}
+                  className="tap-target flex items-center rounded-xl border-2 border-ink px-4 text-lg font-bold text-ink hover:bg-paper"
+                >
+                  {t`地図の見た目の設定`}
+                </Link>
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}
