@@ -99,23 +99,25 @@ describe("resolveViewer", () => {
   test("development can force signed in or out; otherwise the session decides", () => {
     const dev = { NODE_ENV: "development" };
     expect(resolveViewer({}, dev)).toBeNull();
-    expect(resolveViewer({ as: "in" }, dev)).toEqual({ signedIn: true, name: null, preferences: null });
-    expect(resolveViewer({ as: "out" }, dev)).toEqual({ signedIn: false, name: null, preferences: null });
+    expect(resolveViewer({ as: "in" }, dev)).toEqual({ signedIn: true, name: null, origin: null, preferences: null });
+    expect(resolveViewer({ as: "out" }, dev)).toEqual({ signedIn: false, name: null, origin: null, preferences: null });
     expect(resolveViewer({ as: "auto" }, dev)).toBeNull();
   });
 });
 
 describe("viewerFromMe", () => {
   test("a good answer gives the name", () => {
-    expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana" } })).toEqual({ signedIn: true, name: "Hana", preferences: null });
-    expect(viewerFromMe(200, { ok: true, me: { displayName: null } })).toEqual({ signedIn: true, name: null, preferences: null });
+    expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana" } })).toEqual({ signedIn: true, name: "Hana", origin: null, preferences: null });
+    expect(viewerFromMe(200, { ok: true, me: { displayName: null } })).toEqual({ signedIn: true, name: null, origin: null, preferences: null });
+    expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana", origin: "nara" } }).origin).toBe("nara");
+    expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana", origin: "mars" } }).origin).toBeNull();
     // The account's saved choices come with it.
     const saved = { size: "large", mergeStops: true, placesOnMap: false, setupDone: true, updatedAt: 1760000000000 } as const;
     expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana", preferences: saved } }).preferences).toEqual(saved);
   });
 
   test("anything else is signed out", () => {
-    const out = { signedIn: false, name: null, preferences: null };
+    const out = { signedIn: false, name: null, origin: null, preferences: null };
     expect(viewerFromMe(401, { ok: false, error: "unauthenticated" })).toEqual(out);
     expect(viewerFromMe(200, null)).toEqual(out);
     expect(viewerFromMe(200, { ok: false })).toEqual(out);

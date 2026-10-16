@@ -3,17 +3,20 @@
 // the server forwards it to GET /me (it is never readable from the browser's JavaScript).
 
 import { cache } from "react";
+import { origins, type Origin } from "./auth-flow";
 import { accountPrefs, type Prefs } from "./prefs";
 
 export interface Viewer {
   signedIn: boolean;
   /** The display name given at sign-up; null when signed out or when there is none. */
   name: string | null;
+  /** Where they say they come from (set at sign-up); null when not said. */
+  origin: Origin | null;
   /** The accessibility and map choices saved on the account; null when none were saved. */
   preferences: Prefs | null;
 }
 
-export const signedOut: Viewer = { signedIn: false, name: null, preferences: null };
+export const signedOut: Viewer = { signedIn: false, name: null, origin: null, preferences: null };
 
 /**
  * Development only: `?as=in` / `?as=out` forces a viewer so both screens can be reviewed without
@@ -21,7 +24,7 @@ export const signedOut: Viewer = { signedIn: false, name: null, preferences: nul
  */
 export function resolveViewer(params: { as?: string }, env: { NODE_ENV?: string } = process.env): Viewer | null {
   if (env.NODE_ENV === "production") return null;
-  if (params.as === "in") return { signedIn: true, name: null, preferences: null };
+  if (params.as === "in") return { signedIn: true, name: null, origin: null, preferences: null };
   if (params.as === "out") return signedOut;
   return null;
 }
@@ -32,11 +35,12 @@ export const devViewerCookie = "dev_as";
 /** Read the profile from GET /me's answer; anything unexpected is signed out. */
 export function viewerFromMe(status: number, body: unknown): Viewer {
   if (status !== 200) return signedOut;
-  const me = (body as { ok?: unknown; me?: { displayName?: unknown; preferences?: unknown } } | null)?.me;
+  const me = (body as { ok?: unknown; me?: { displayName?: unknown; origin?: unknown; preferences?: unknown } } | null)?.me;
   if ((body as { ok?: unknown } | null)?.ok !== true || !me) return signedOut;
   return {
     signedIn: true,
     name: typeof me.displayName === "string" && me.displayName ? me.displayName : null,
+    origin: origins.find((o) => o === me.origin) ?? null,
     preferences: accountPrefs(me.preferences),
   };
 }

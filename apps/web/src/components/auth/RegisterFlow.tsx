@@ -7,15 +7,16 @@ import { useLingui } from "@lingui/react/macro";
 import { KeyIcon, MailIcon } from "@/components/icons";
 import { requestEmailCode, signUpWithPasskey, verifyEmailCode, type SignupProfile } from "@/lib/auth-client";
 import { hasName, NAME_MAX, safeNextPath, type AuthFailure, type Origin } from "@/lib/auth-flow";
-import { AuthError, inputClass, OriginPicker, primaryButton, secondaryButton } from "./authUi";
+import { AuthError, ChoiceCard, inputClass, OriginPicker, primaryButton, secondaryButton } from "./authUi";
 import { EmailCodeStep } from "./EmailCodeStep";
 
 type Method = "passkey" | "email";
 type Step = "choose" | "details" | "code";
 
 /**
- * Register, as short as it can be: pick a way (passkey or email), say a name and where you come
- * from, then do the passkey scan or type the mailed code. The account is only created at the end.
+ * Register, with as few words as possible: two big tiles to pick a way (face or fingerprint, or
+ * email), then a name and where you come from, then the scan or the mailed number. The account is
+ * only created at the end.
  */
 export function RegisterFlow({ next, loginHref }: { next?: string; loginHref: string }) {
   const { t, i18n } = useLingui();
@@ -79,9 +80,9 @@ export function RegisterFlow({ next, loginHref }: { next?: string; loginHref: st
   if (step === "details") {
     const ready = hasName(name) && (method === "passkey" || email.includes("@"));
     return (
-      <form onSubmit={submitDetails} className="flex flex-col gap-5" noValidate>
+      <form onSubmit={submitDetails} className="flex flex-col gap-6" noValidate>
         <label className="flex flex-col gap-2 text-lg font-bold">
-          {t`お名前（ニックネームでもかまいません）`}
+          {t`お名前`}
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -90,6 +91,7 @@ export function RegisterFlow({ next, loginHref }: { next?: string; loginHref: st
             maxLength={NAME_MAX}
             className={inputClass}
           />
+          <span className="text-base font-normal text-muted">{t`ニックネームでもかまいません。`}</span>
         </label>
         <OriginPicker value={origin} onChange={setOrigin} />
         {method === "email" ? (
@@ -108,38 +110,29 @@ export function RegisterFlow({ next, loginHref }: { next?: string; loginHref: st
           </label>
         ) : null}
         <AuthError code={error} />
-        <button type="submit" disabled={busy || !ready} className={primaryButton}>
-          {method === "passkey" ? (
-            <>
-              <KeyIcon />
-              {t`パスキーを作って登録`}
-            </>
-          ) : (
-            t`確認番号を送る`
-          )}
-        </button>
-        {method === "passkey" ? (
-          <p className="text-lg text-muted">{t`次の画面で、顔や指紋などで本人確認をします。`}</p>
-        ) : null}
-        <button type="button" onClick={() => setStep("choose")} className={secondaryButton}>
-          {t`戻る`}
-        </button>
+        <div className="flex flex-col gap-3">
+          <button type="submit" disabled={busy || !ready} className={primaryButton}>
+            {method === "passkey" ? (
+              <>
+                <KeyIcon />
+                {t`顔・指紋で登録する`}
+              </>
+            ) : (
+              t`確認番号を送る`
+            )}
+          </button>
+          <button type="button" onClick={() => setStep("choose")} className={secondaryButton}>
+            {t`戻る`}
+          </button>
+        </div>
       </form>
     );
   }
 
   return (
     <div className="flex flex-col gap-4">
-      <button type="button" onClick={() => choose("passkey")} className={primaryButton}>
-        <KeyIcon />
-        {t`パスキーで登録（おすすめ）`}
-      </button>
-      <p className="text-lg text-muted">{t`顔や指紋で、すぐに登録できます。パスワードは要りません。`}</p>
-      <button type="button" onClick={() => choose("email")} className={secondaryButton}>
-        <MailIcon />
-        {t`メールで登録`}
-      </button>
-      <p className="text-lg text-muted">{t`メールに届く6桁の番号で登録します。`}</p>
+      <ChoiceCard primary icon={<KeyIcon />} title={t`顔・指紋で登録`} onClick={() => choose("passkey")} />
+      <ChoiceCard icon={<MailIcon />} title={t`メールで登録`} onClick={() => choose("email")} />
       <p className="mt-2 text-lg">
         {t`登録済みの方は`}{" "}
         <Link href={loginHref} className="font-bold">

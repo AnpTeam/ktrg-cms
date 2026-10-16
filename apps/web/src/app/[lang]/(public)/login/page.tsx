@@ -29,7 +29,7 @@ export default async function LoginPage({ searchParams }: Props) {
       <BackLink href={home}>
         <Trans>ホーム</Trans>
       </BackLink>
-      <h1 className="text-3xl font-bold">
+      <h1 className="font-serif text-3xl font-bold">
         <Trans>ログイン</Trans>
       </h1>
       <LoginFlow next={next} registerHref={`${localePath(i18n.locale, "/register")}?next=${encodeURIComponent(next)}`} />

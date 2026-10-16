@@ -1,4 +1,6 @@
 import type { MapPlace, PlaceCategory, PlaceStatus } from "./places";
+import type { RallyItem } from "./rally-model";
+import { sampleLastStamped, sampleMounds, sampleMoundsStamped } from "./sample-mounds";
 import { samplePlaces } from "./sample-places";
 import { sampleRoutes, sampleSpots } from "./sample-content";
 import type { Sketch } from "./sketch";
@@ -195,6 +197,51 @@ export function toMapPlace(locale: string, p: PlaceItem): MapPlace {
     verified: p.position.verified,
     lastVerified: p.lastVerified,
   };
+}
+
+/**
+ * Every stamp rally: the 31 sutra mound places as one rally, then one rally per course (a course
+ * with no published places has none to show and is 準備中). Only sample data for now (the
+ * rallies API does not exist yet); the personal parts are removed for a signed-out visitor by
+ * forRallyViewer.
+ */
+export async function listRallies(): Promise<RallyItem[]> {
+  if (!sampleContentEnabled()) return [];
+  const moundSlots = sampleMounds.map((m) => ({
+    id: `sample-m${m.number}`,
+    number: m.number,
+    nameJa: m.nameJa,
+    nameEn: m.nameEn,
+    stamped: sampleMoundsStamped.has(m.number),
+  }));
+  const mounds: RallyItem = {
+    id: "mounds",
+    kind: "mounds",
+    order: 0,
+    nameJa: "経塚スタンプラリー",
+    nameEn: "Sutra mound stamp rally",
+    routeId: null,
+    total: moundSlots.length,
+    stamped: moundSlots.filter((s) => s.stamped).length,
+    lastStampedAt: sampleLastStamped.mounds ?? null,
+    slots: moundSlots,
+  };
+  const courses = sampleRoutes.map((r): RallyItem => {
+    const slots = r.spots.map((s, i) => ({ id: s.id, number: i + 1, nameJa: s.nameJa, nameEn: s.nameEn, stamped: s.stamped === true }));
+    return {
+      id: `course-${r.order}`,
+      kind: "course",
+      order: r.order,
+      nameJa: r.nameJa,
+      nameEn: r.nameEn,
+      routeId: r.id,
+      total: slots.length,
+      stamped: slots.filter((s) => s.stamped).length,
+      lastStampedAt: sampleLastStamped[r.id] ?? null,
+      slots,
+    };
+  });
+  return [mounds, ...courses];
 }
 
 export async function listRoutes(): Promise<RouteSummary[]> {

@@ -103,10 +103,14 @@ export function SiteHeader({
           <div className="mx-auto flex max-w-xl flex-col gap-5 px-4 py-5">
             {signedIn ? (
               <div className="flex flex-col gap-3">
-                <p className="flex items-center gap-3 text-xl font-bold">
+                <Link
+                  href={`/${i18n.locale}/stamps`}
+                  className="tap-target flex items-center gap-3 rounded-xl border-2 border-brand bg-paper px-4 text-xl font-bold hover:bg-surface"
+                >
                   <UserIcon />
-                  <span className="min-w-0 break-words">{name ?? t`ログイン中`}</span>
-                </p>
+                  <span className="min-w-0 flex-1 break-words">{name ?? t`ログイン中`}</span>
+                  <span className="shrink-0 text-lg text-muted">{t`プロフィールとスタンプ`}</span>
+                </Link>
                 <button
                   type="button"
                   onClick={signOut}

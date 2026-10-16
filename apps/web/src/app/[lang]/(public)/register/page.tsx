@@ -31,9 +31,6 @@ export default async function RegisterPage({ searchParams }: Props) {
       <h1 className="text-3xl font-bold">
         <Trans>新規登録</Trans>
       </h1>
-      <p className="text-lg">
-        <Trans>登録すると、歩いた場所のスタンプが記録されます。</Trans>
-      </p>
       <RegisterFlow next={next} loginHref={`${localePath(i18n.locale, "/login")}?next=${encodeURIComponent(next)}`} />
     </div>
   );
