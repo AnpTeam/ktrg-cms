@@ -36,6 +36,8 @@ export const preferencesSchema = t.Object(
     mergeStops: t.Boolean(),
     placesOnMap: t.Boolean(),
     setupDone: t.Boolean(),
+    // Milliseconds since 1970, up to the year 2100: a number, never a date string.
+    updatedAt: t.Integer({ minimum: 0, maximum: 4102444800000 }),
   },
   { additionalProperties: false },
 );

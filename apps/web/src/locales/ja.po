@@ -79,11 +79,11 @@ msgstr "Ctrlキーを押しながら地図を動かします"
 msgid "あと{remaining}か所"
 msgstr "あと{remaining}か所"
 
-#: src/components/settings/PrefsForm.tsx:156
+#: src/components/settings/PrefsForm.tsx:157
 msgid "あとからでも、「メニュー」の「見やすさの設定」で変えられます。"
 msgstr "あとからでも、「メニュー」の「見やすさの設定」で変えられます。"
 
-#: src/components/settings/PrefsForm.tsx:154
+#: src/components/settings/PrefsForm.tsx:155
 msgid "あとで決める"
 msgstr "あとで決める"
 
@@ -99,7 +99,7 @@ msgstr "いまは、ここでスタンプを押せません。"
 msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 msgstr "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 
-#: src/components/settings/PrefsForm.tsx:128
+#: src/components/settings/PrefsForm.tsx:129
 msgid "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 msgstr "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 
@@ -165,11 +165,11 @@ msgstr "この端末・ブラウザではパスキーを使えません。メー
 msgid "この端末では地図を表示できません。下の一覧から場所を選べます。"
 msgstr "この端末では地図を表示できません。下の一覧から場所を選べます。"
 
-#: src/components/settings/PrefsForm.tsx:59
-msgid "この端末には保存しました。アカウントには保存できませんでした。"
-msgstr "この端末には保存しました。アカウントには保存できませんでした。"
+#: src/components/settings/PrefsForm.tsx:60
+msgid "この端末には保存しました。つながったときに、アカウントにも保存されます。"
+msgstr "この端末には保存しました。つながったときに、アカウントにも保存されます。"
 
-#: src/components/settings/PrefsForm.tsx:146
+#: src/components/settings/PrefsForm.tsx:147
 msgid "この設定ではじめる"
 msgstr "この設定ではじめる"
 
@@ -280,7 +280,7 @@ msgstr "トイレ"
 msgid "トイレ・休憩"
 msgstr "トイレ・休憩"
 
-#: src/components/settings/PrefsForm.tsx:133
+#: src/components/settings/PrefsForm.tsx:134
 msgid "トイレやお店などを、地図を開いたときから表示します。"
 msgstr "トイレやお店などを、地図を開いたときから表示します。"
 
@@ -368,7 +368,7 @@ msgstr "まだスタンプを押していません"
 msgid "まわりの場所"
 msgstr "まわりの場所"
 
-#: src/components/settings/PrefsForm.tsx:132
+#: src/components/settings/PrefsForm.tsx:133
 msgid "まわりの場所を最初から出す"
 msgstr "まわりの場所を最初から出す"
 
@@ -503,11 +503,11 @@ msgstr "保存"
 msgid "保存しました"
 msgstr "保存しました"
 
-#: src/components/settings/PrefsForm.tsx:73
+#: src/components/settings/PrefsForm.tsx:74
 msgid "保存しました。"
 msgstr "保存しました。"
 
-#: src/components/settings/PrefsForm.tsx:160
+#: src/components/settings/PrefsForm.tsx:161
 msgid "保存する"
 msgstr "保存する"
 
@@ -575,7 +575,7 @@ msgstr "地図で、歩く道とスタンプの場所を確認できます。"
 msgid "地図のルートと場所は仮のものです。実際の公開情報ではありません。"
 msgstr "地図のルートと場所は仮のものです。実際の公開情報ではありません。"
 
-#: src/components/settings/PrefsForm.tsx:124
+#: src/components/settings/PrefsForm.tsx:125
 msgid "地図の見せ方"
 msgstr "地図の見せ方"
 
@@ -670,7 +670,7 @@ msgstr "押した"
 msgid "拡大"
 msgstr "拡大"
 
-#: src/components/settings/PrefsForm.tsx:96
+#: src/components/settings/PrefsForm.tsx:97
 msgid "文字とボタンの大きさ"
 msgstr "文字とボタンの大きさ"
 
@@ -933,7 +933,7 @@ msgstr "説明"
 msgid "距離"
 msgstr "距離"
 
-#: src/components/settings/PrefsForm.tsx:127
+#: src/components/settings/PrefsForm.tsx:128
 msgid "近い場所をまとめて表示する"
 msgstr "近い場所をまとめて表示する"
 

@@ -44,7 +44,8 @@ export function PrefsForm({
   async function save(value: Prefs): Promise<boolean> {
     setSaving(true);
     setMessage(null);
-    const toSave: Prefs = { ...value, setupDone: true };
+    // Stamped with the time of the choice: the newer copy (phone or account) is the one that applies.
+    const toSave: Prefs = { ...value, setupDone: true, updatedAt: Date.now() };
     document.cookie = prefsCookieString(toSave, window.location.protocol === "https:");
     let onAccount = true;
     if (signedIn) {
@@ -56,7 +57,7 @@ export function PrefsForm({
       }
     }
     setSaving(false);
-    if (!onAccount) setMessage(t`この端末には保存しました。アカウントには保存できませんでした。`);
+    if (!onAccount) setMessage(t`この端末には保存しました。つながったときに、アカウントにも保存されます。`);
     return onAccount;
   }
 

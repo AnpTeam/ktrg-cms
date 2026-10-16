@@ -22,7 +22,7 @@ type MeBody = {
     role: string;
     locale: string;
     displayName: string | null;
-    preferences: { size: string; mergeStops: boolean; placesOnMap: boolean; setupDone: boolean } | null;
+    preferences: { size: string; mergeStops: boolean; placesOnMap: boolean; setupDone: boolean; updatedAt: number } | null;
     deletionRequestedAt: string | null;
     createdAt: string;
   };
@@ -148,7 +148,7 @@ describe("PATCH /me", () => {
 });
 
 describe("preferences", () => {
-  const prefs = { size: "large", mergeStops: false, placesOnMap: true, setupDone: true };
+  const prefs = { size: "large", mergeStops: false, placesOnMap: true, setupDone: true, updatedAt: 1760000000000 };
 
   test("none until set, then saved as a whole and returned", async () => {
     const t = setup();
@@ -161,7 +161,7 @@ describe("preferences", () => {
     expect(((await (await t.call("GET", "", cookie)).json()) as MeBody).me.preferences).toEqual(prefs);
 
     // Saved again, they are replaced, not merged.
-    const again = { size: "xlarge", mergeStops: true, placesOnMap: false, setupDone: true };
+    const again = { size: "xlarge", mergeStops: true, placesOnMap: false, setupDone: true, updatedAt: 1760000100000 };
     await t.call("PATCH", "", cookie, { preferences: again });
     expect(((await (await t.call("GET", "", cookie)).json()) as MeBody).me.preferences).toEqual(again);
   });
@@ -179,6 +179,11 @@ describe("preferences", () => {
       { ...prefs, size: "huge" },
       { size: "large", mergeStops: false },
       { ...prefs, mergeStops: "yes" },
+      { size: "large", mergeStops: false, placesOnMap: true, setupDone: true }, // no updatedAt
+      { ...prefs, updatedAt: -1 },
+      { ...prefs, updatedAt: 1.5 },
+      { ...prefs, updatedAt: "2026-10-16" },
+      { ...prefs, updatedAt: 9999999999999999 },
     ]) {
       expect((await t.call("PATCH", "", cookie, { preferences: bad })).status).toBe(422);
     }

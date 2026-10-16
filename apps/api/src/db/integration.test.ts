@@ -211,9 +211,9 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       const me = createDrizzleMeStore(db);
       const user = await newUser("me-prefs");
       expect((await me.get(user.id))!.preferences).toBeNull();
-      const first = { size: "large", mergeStops: false, placesOnMap: true, setupDone: true } as const;
+      const first = { size: "large", mergeStops: false, placesOnMap: true, setupDone: true, updatedAt: 1760000000000 } as const;
       expect((await me.update(user.id, { preferences: first }))!.preferences).toEqual(first);
-      const second = { size: "xlarge", mergeStops: true, placesOnMap: false, setupDone: true } as const;
+      const second = { size: "xlarge", mergeStops: true, placesOnMap: false, setupDone: true, updatedAt: 1760000100000 } as const;
       await me.update(user.id, { preferences: second });
       expect((await me.get(user.id))!.preferences).toEqual(second);
       // A change to something else leaves them alone.

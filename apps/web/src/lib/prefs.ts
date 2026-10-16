@@ -16,10 +16,12 @@ export interface Prefs {
   placesOnMap: boolean;
   /** The first-time set-up was done or skipped, so it is not offered again. */
   setupDone: boolean;
+  /** When this choice was made (milliseconds since 1970, by the phone's clock); the newer copy wins. 0 = unknown. */
+  updatedAt: number;
 }
 
 /** The plain map and standard size: the simplest choices. */
-export const defaultPrefs: Prefs = { size: "standard", mergeStops: false, placesOnMap: false, setupDone: false };
+export const defaultPrefs: Prefs = { size: "standard", mergeStops: false, placesOnMap: false, setupDone: false, updatedAt: 0 };
 
 export const prefsCookie = "prefs";
 
@@ -36,6 +38,7 @@ export function sanitizePrefs(value: unknown): Prefs {
     mergeStops: typeof v.mergeStops === "boolean" ? v.mergeStops : defaultPrefs.mergeStops,
     placesOnMap: typeof v.placesOnMap === "boolean" ? v.placesOnMap : defaultPrefs.placesOnMap,
     setupDone: typeof v.setupDone === "boolean" ? v.setupDone : defaultPrefs.setupDone,
+    updatedAt: Number.isSafeInteger(v.updatedAt) && (v.updatedAt as number) >= 0 ? (v.updatedAt as number) : 0,
   };
 }
 
@@ -56,11 +59,26 @@ export function accountPrefs(value: unknown): Prefs | null {
 }
 
 /**
- * Which choices apply: the account's first (so a new phone gets them), else this device's, else the
- * defaults. Saving writes both, so they agree whenever someone changed them on this phone.
+ * Which choices apply: the NEWER of the account's copy and this phone's copy (by `updatedAt`), so a
+ * new phone gets the account's choices, and a change that could not reach the account (no signal) is
+ * not undone by the older copy there. A tie goes to the account. With only one copy, that one;
+ * with none, the defaults.
  */
 export function effectivePrefs(account: Prefs | null, device: Prefs | null): Prefs {
+  if (account && device) return device.updatedAt > account.updatedAt ? device : account;
   return account ?? device ?? defaultPrefs;
+}
+
+/**
+ * What a signed-in visitor's phone should do to keep the two copies equal:
+ *  "push"  the phone's copy is newer (or the account has none): send it to the account;
+ *  "pull"  the account's copy is newer (or the phone has none): write it to the phone's cookie;
+ *  "none"  they already agree (same time), or neither exists.
+ */
+export function syncDirection(account: Prefs | null, device: Prefs | null): "push" | "pull" | "none" {
+  if (device && (!account || device.updatedAt > account.updatedAt)) return "push";
+  if (account && (!device || account.updatedAt > device.updatedAt)) return "pull";
+  return "none";
 }
 
 export function prefsCookieString(prefs: Prefs, secure: boolean): string {

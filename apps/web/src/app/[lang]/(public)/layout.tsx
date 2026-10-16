@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import { SampleNoticeHost } from "@/components/SampleNotice";
 import { SiteHeader } from "@/components/SiteHeader";
 import { TabBar } from "@/components/TabBar";
+import { PrefsSync } from "@/components/settings/PrefsSync";
+import { getPrefsState } from "@/lib/server-prefs";
 import { getViewer } from "@/lib/viewer";
 import { sampleContentEnabled } from "@/lib/content";
 import { initLingui } from "@/i18n/server";
@@ -12,11 +14,13 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   await initLingui();
   const sample = sampleContentEnabled();
   const viewer = await getViewer();
+  const prefsState = await getPrefsState();
 
   return (
     <>
       <SiteHeader signedIn={viewer.signedIn} name={viewer.name} sample={sample} devTools={process.env.NODE_ENV !== "production"} />
       {sample ? <SampleNoticeHost /> : null}
+      <PrefsSync signedIn={viewer.signedIn} account={prefsState.account} device={prefsState.device} />
       <main id="main" className="mx-auto max-w-xl pb-24">
         {children}
       </main>

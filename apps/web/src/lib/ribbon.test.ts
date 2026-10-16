@@ -110,7 +110,7 @@ describe("viewerFromMe", () => {
     expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana" } })).toEqual({ signedIn: true, name: "Hana", preferences: null });
     expect(viewerFromMe(200, { ok: true, me: { displayName: null } })).toEqual({ signedIn: true, name: null, preferences: null });
     // The account's saved choices come with it.
-    const saved = { size: "large", mergeStops: true, placesOnMap: false, setupDone: true } as const;
+    const saved = { size: "large", mergeStops: true, placesOnMap: false, setupDone: true, updatedAt: 1760000000000 } as const;
     expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana", preferences: saved } }).preferences).toEqual(saved);
   });
 

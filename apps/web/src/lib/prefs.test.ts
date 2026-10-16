@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   accountPrefs,
+  syncDirection,
   defaultPrefs,
   effectivePrefs,
   parsePrefsCookie,
@@ -12,7 +13,7 @@ import {
 
 describe("defaults", () => {
   test("the plain map, standard size, set-up not done", () => {
-    expect(defaultPrefs).toEqual({ size: "standard", mergeStops: false, placesOnMap: false, setupDone: false });
+    expect(defaultPrefs).toEqual({ size: "standard", mergeStops: false, placesOnMap: false, setupDone: false, updatedAt: 0 });
   });
 
   test("each size has a percentage, growing", () => {
@@ -22,7 +23,7 @@ describe("defaults", () => {
 
 describe("sanitizePrefs", () => {
   test("a good value passes through", () => {
-    const p = { size: "large", mergeStops: true, placesOnMap: true, setupDone: true } as const;
+    const p = { size: "large", mergeStops: true, placesOnMap: true, setupDone: true, updatedAt: 1760000000000 } as const;
     expect(sanitizePrefs(p)).toEqual(p);
   });
 
@@ -32,19 +33,20 @@ describe("sanitizePrefs", () => {
       mergeStops: false,
       placesOnMap: true,
       setupDone: false,
+      updatedAt: 0,
     });
     expect(sanitizePrefs(null)).toEqual(defaultPrefs);
     expect(sanitizePrefs("x")).toEqual(defaultPrefs);
   });
 
   test("extra fields are dropped", () => {
-    expect(Object.keys(sanitizePrefs({ ...defaultPrefs, role: "admin" })).sort()).toEqual(["mergeStops", "placesOnMap", "setupDone", "size"]);
+    expect(Object.keys(sanitizePrefs({ ...defaultPrefs, role: "admin" })).sort()).toEqual(["mergeStops", "placesOnMap", "setupDone", "size", "updatedAt"]);
   });
 });
 
 describe("the device cookie", () => {
   test("what is written can be read back", () => {
-    const p = { size: "xlarge", mergeStops: true, placesOnMap: false, setupDone: true } as const;
+    const p = { size: "xlarge", mergeStops: true, placesOnMap: false, setupDone: true, updatedAt: 1760000000000 } as const;
     const cookie = prefsCookieString(p, false);
     expect(cookie).toContain("Max-Age=31536000");
     expect(cookie).not.toContain("Secure");
@@ -62,12 +64,23 @@ describe("the device cookie", () => {
 });
 
 describe("which choices apply", () => {
-  const device = { ...defaultPrefs, size: "large" } as const;
-  const account = { ...defaultPrefs, size: "xlarge" } as const;
+  const older = { ...defaultPrefs, size: "xlarge", updatedAt: 1000 } as const;
+  const newer = { ...defaultPrefs, size: "large", updatedAt: 2000 } as const;
 
-  test("the account wins, then the device, then the defaults", () => {
-    expect(effectivePrefs(account, device)).toEqual(account);
-    expect(effectivePrefs(null, device)).toEqual(device);
+  test("the newer copy wins, whichever side it is on", () => {
+    expect(effectivePrefs(older, newer)).toEqual(newer); // the phone's change that never reached the account
+    expect(effectivePrefs(newer, older)).toEqual(newer); // a new phone with an old cookie
+  });
+
+  test("a tie goes to the account; a copy with no time is the oldest", () => {
+    const same = { ...older, size: "large" } as const;
+    expect(effectivePrefs(older, same)).toEqual(older);
+    expect(effectivePrefs({ ...older, updatedAt: 0 }, { ...newer, updatedAt: 1 })).toEqual({ ...newer, updatedAt: 1 });
+  });
+
+  test("with one copy, that one; with none, the defaults", () => {
+    expect(effectivePrefs(null, newer)).toEqual(newer);
+    expect(effectivePrefs(older, null)).toEqual(older);
     expect(effectivePrefs(null, null)).toEqual(defaultPrefs);
   });
 
@@ -75,5 +88,25 @@ describe("which choices apply", () => {
     expect(accountPrefs(null)).toBeNull();
     expect(accountPrefs(undefined)).toBeNull();
     expect(accountPrefs({ size: "large" })).toEqual({ ...defaultPrefs, size: "large" });
+  });
+});
+
+describe("keeping the two copies equal", () => {
+  const older = { ...defaultPrefs, updatedAt: 1000 };
+  const newer = { ...defaultPrefs, size: "large", updatedAt: 2000 } as const;
+
+  test("the phone's newer copy is pushed to the account; the account's newer copy is pulled to the phone", () => {
+    expect(syncDirection(older, newer)).toBe("push");
+    expect(syncDirection(newer, older)).toBe("pull");
+  });
+
+  test("a missing copy is filled from the other", () => {
+    expect(syncDirection(null, newer)).toBe("push");
+    expect(syncDirection(newer, null)).toBe("pull");
+  });
+
+  test("equal times, or nothing at all, need nothing", () => {
+    expect(syncDirection(newer, { ...newer })).toBe("none");
+    expect(syncDirection(null, null)).toBe("none");
   });
 });

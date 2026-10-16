@@ -79,11 +79,11 @@ msgstr "Hold the Ctrl key to move the map"
 msgid "あと{remaining}か所"
 msgstr "{remaining} left to go"
 
-#: src/components/settings/PrefsForm.tsx:156
+#: src/components/settings/PrefsForm.tsx:157
 msgid "あとからでも、「メニュー」の「見やすさの設定」で変えられます。"
 msgstr "You can change this later under \"Menu\", \"Display settings\"."
 
-#: src/components/settings/PrefsForm.tsx:154
+#: src/components/settings/PrefsForm.tsx:155
 msgid "あとで決める"
 msgstr "Decide later"
 
@@ -99,7 +99,7 @@ msgstr "Stamps can't be collected here right now."
 msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 msgstr "What you see now is sample and draft data. It includes information that has not been checked."
 
-#: src/components/settings/PrefsForm.tsx:128
+#: src/components/settings/PrefsForm.tsx:129
 msgid "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 msgstr "When off, every stamp place is shown on its own (recommended). When on, places close together are merged into a group such as \"3-5\"."
 
@@ -165,11 +165,11 @@ msgstr "Passkeys cannot be used on this device or browser. Please try email inst
 msgid "この端末では地図を表示できません。下の一覧から場所を選べます。"
 msgstr "This device can't show the map. You can pick a place from the list below."
 
-#: src/components/settings/PrefsForm.tsx:59
-msgid "この端末には保存しました。アカウントには保存できませんでした。"
-msgstr "Saved on this phone. It could not be saved to your account."
+#: src/components/settings/PrefsForm.tsx:60
+msgid "この端末には保存しました。つながったときに、アカウントにも保存されます。"
+msgstr "Saved on this phone. It will be saved to your account when you are connected."
 
-#: src/components/settings/PrefsForm.tsx:146
+#: src/components/settings/PrefsForm.tsx:147
 msgid "この設定ではじめる"
 msgstr "Start with these settings"
 
@@ -280,7 +280,7 @@ msgstr "Toilet"
 msgid "トイレ・休憩"
 msgstr "Toilets and rest"
 
-#: src/components/settings/PrefsForm.tsx:133
+#: src/components/settings/PrefsForm.tsx:134
 msgid "トイレやお店などを、地図を開いたときから表示します。"
 msgstr "Show toilets, shops and so on as soon as the map opens."
 
@@ -368,7 +368,7 @@ msgstr "You haven't collected this stamp yet"
 msgid "まわりの場所"
 msgstr "Places nearby"
 
-#: src/components/settings/PrefsForm.tsx:132
+#: src/components/settings/PrefsForm.tsx:133
 msgid "まわりの場所を最初から出す"
 msgstr "Show places nearby from the start"
 
@@ -503,11 +503,11 @@ msgstr "Save"
 msgid "保存しました"
 msgstr "Saved"
 
-#: src/components/settings/PrefsForm.tsx:73
+#: src/components/settings/PrefsForm.tsx:74
 msgid "保存しました。"
 msgstr "Saved."
 
-#: src/components/settings/PrefsForm.tsx:160
+#: src/components/settings/PrefsForm.tsx:161
 msgid "保存する"
 msgstr "Save"
 
@@ -575,7 +575,7 @@ msgstr "See the path and the stamp places on a map."
 msgid "地図のルートと場所は仮のものです。実際の公開情報ではありません。"
 msgstr "The route and places on the map are provisional. They are not published information."
 
-#: src/components/settings/PrefsForm.tsx:124
+#: src/components/settings/PrefsForm.tsx:125
 msgid "地図の見せ方"
 msgstr "How the map is shown"
 
@@ -670,7 +670,7 @@ msgstr "Stamped"
 msgid "拡大"
 msgstr "Zoom in"
 
-#: src/components/settings/PrefsForm.tsx:96
+#: src/components/settings/PrefsForm.tsx:97
 msgid "文字とボタンの大きさ"
 msgstr "Size of text and buttons"
 
@@ -933,7 +933,7 @@ msgstr "About this place"
 msgid "距離"
 msgstr "Distance"
 
-#: src/components/settings/PrefsForm.tsx:127
+#: src/components/settings/PrefsForm.tsx:128
 msgid "近い場所をまとめて表示する"
 msgstr "Merge places that are close together"
 
