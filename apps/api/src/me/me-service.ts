@@ -28,6 +28,8 @@ export interface ProfileChanges {
   displayName?: string | null;
   /** Replaces the stored choices as a whole. */
   preferences?: Preferences;
+  /** Where they come from; null clears it. */
+  origin?: Origin | null;
 }
 
 /** Storage the service needs; the Drizzle version is in me-store.ts. */
@@ -89,6 +91,7 @@ export function createMeService({
         changes.displayName = name;
       }
       if (input.preferences !== undefined) changes.preferences = input.preferences;
+      if (input.origin !== undefined) changes.origin = input.origin;
       const profile = await store.update(user.id, changes);
       return profile ? { ok: true, profile } : { ok: false, reason: "gone" };
     },

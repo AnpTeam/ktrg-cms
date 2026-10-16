@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 import { fail } from "../auth/http";
 import { routeKit, type KitServices, type RouteOptions } from "../auth/route-kit";
-import { localeSchema, preferencesSchema } from "../lib/schemas";
+import { localeSchema, originSchema, preferencesSchema } from "../lib/schemas";
 import type { MeService } from "./me-service";
 
 export interface MeServices extends KitServices {
@@ -27,7 +27,7 @@ export function meRoutes(getServices: () => MeServices, opts: RouteOptions) {
         },
         { auth: "me.manage" },
       )
-      // Change your language, display name and/or preferences. Email and role cannot be changed here.
+      // Change your language, display name, where you come from and/or preferences. Email and role cannot be changed here.
       .patch(
         "/",
         async ({ user, body, set }) => {
@@ -42,6 +42,8 @@ export function meRoutes(getServices: () => MeServices, opts: RouteOptions) {
               locale: t.Optional(localeSchema),
               // null clears it. Checked further in the service (length, hidden characters).
               displayName: t.Optional(t.Union([t.String({ maxLength: 200 }), t.Null()])),
+              // Where you come from; null clears it.
+              origin: t.Optional(t.Union([originSchema, t.Null()])),
               // The whole set of choices, replaced at once.
               preferences: t.Optional(preferencesSchema),
             },

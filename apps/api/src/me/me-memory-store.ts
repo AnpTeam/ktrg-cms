@@ -48,6 +48,7 @@ export function createMemoryMeStore(
       if (changes.locale !== undefined) user.locale = changes.locale;
       if (changes.displayName !== undefined) extraOf(userId).displayName = changes.displayName;
       if (changes.preferences !== undefined) extraOf(userId).preferences = changes.preferences;
+      if (changes.origin !== undefined) extraOf(userId).origin = changes.origin;
       return profile(user);
     },
     async requestDeletion(userId, at) {

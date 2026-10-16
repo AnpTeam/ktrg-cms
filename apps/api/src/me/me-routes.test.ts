@@ -22,6 +22,7 @@ type MeBody = {
     role: string;
     locale: string;
     displayName: string | null;
+    origin: string | null;
     preferences: { size: string; mergeStops: boolean; placesOnMap: boolean; setupDone: boolean; updatedAt: number } | null;
     deletionRequestedAt: string | null;
     createdAt: string;
@@ -144,6 +145,27 @@ describe("PATCH /me", () => {
       role: "participant",
       locale: "en",
     });
+  });
+});
+
+describe("PATCH /me: where you come from", () => {
+  test("can be set, changed and cleared, and only for yourself", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    const set = await t.call("PATCH", "", cookie, { origin: "nara" });
+    expect(((await set.json()) as MeBody).me.origin).toBe("nara");
+    expect(((await (await t.call("PATCH", "", cookie, { origin: "overseas", displayName: "Hana" })).json()) as MeBody).me).toMatchObject({ origin: "overseas", displayName: "Hana" });
+    expect(((await (await t.call("PATCH", "", cookie, { origin: null })).json()) as MeBody).me.origin).toBeNull();
+
+    await t.call("PATCH", "", cookie, { origin: "osaka" });
+    expect(((await (await t.call("GET", "", await t.login(bob))).json()) as MeBody).me.origin).toBeNull();
+  });
+
+  test("an unknown place is rejected (422) and changes nothing", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    expect((await t.call("PATCH", "", cookie, { origin: "mars" })).status).toBe(422);
+    expect(((await (await t.call("GET", "", cookie)).json()) as MeBody).me.origin).toBeNull();
   });
 });
 
