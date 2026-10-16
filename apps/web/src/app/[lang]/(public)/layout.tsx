@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
-import { LocaleSwitcher } from "@/components/LocaleSwitcher";
-import { SampleNoticeButton, SampleNoticeHost } from "@/components/SampleNotice";
+import { SampleNoticeHost } from "@/components/SampleNotice";
+import { SiteHeader } from "@/components/SiteHeader";
 import { TabBar } from "@/components/TabBar";
-import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { getViewer } from "@/lib/viewer";
 import { sampleContentEnabled } from "@/lib/content";
 import { initLingui } from "@/i18n/server";
 
@@ -11,16 +11,11 @@ import { initLingui } from "@/i18n/server";
 export default async function PublicLayout({ children }: { children: ReactNode }) {
   await initLingui();
   const sample = sampleContentEnabled();
+  const viewer = await getViewer();
 
   return (
     <>
-      <header className="mx-auto flex max-w-xl items-center justify-between gap-1.5 px-3 py-2">
-        <div className="flex items-center gap-1.5">
-          <ThemeSwitcher />
-          {sample ? <SampleNoticeButton /> : null}
-        </div>
-        <LocaleSwitcher />
-      </header>
+      <SiteHeader signedIn={viewer.signedIn} name={viewer.name} sample={sample} />
       {sample ? <SampleNoticeHost /> : null}
       <main id="main" className="mx-auto max-w-xl pb-32">
         {children}

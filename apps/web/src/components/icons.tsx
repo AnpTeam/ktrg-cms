@@ -105,3 +105,41 @@ export const AutoThemeIcon = () => (
     <path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor" />
   </Icon>
 );
+
+export const MenuIcon = () => (
+  <Icon>
+    <path d="M4 7h16" />
+    <path d="M4 12h16" />
+    <path d="M4 17h16" />
+  </Icon>
+);
+
+export const CloseIcon = () => (
+  <Icon>
+    <path d="m6 6 12 12" />
+    <path d="M18 6 6 18" />
+  </Icon>
+);
+
+export const UserIcon = () => (
+  <Icon>
+    <circle cx="12" cy="8" r="3.5" />
+    <path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6" />
+  </Icon>
+);
+
+export const KeyIcon = () => (
+  <Icon>
+    <circle cx="8" cy="12" r="3.5" />
+    <path d="M11.5 12H21" />
+    <path d="M17 12v3" />
+    <path d="M20 12v2" />
+  </Icon>
+);
+
+export const MailIcon = () => (
+  <Icon>
+    <path d="M4 6h16v12H4z" />
+    <path d="m4 7 8 6 8-6" />
+  </Icon>
+);

@@ -256,3 +256,16 @@ rt {
     filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.95);
   }
 }
+
+/* The header menu drops down from the top. Reduced motion: it just appears. */
+@media (prefers-reduced-motion: no-preference) {
+  .menu-drop {
+    animation: menu-drop 160ms ease-out;
+  }
+}
+@keyframes menu-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-0.75rem);
+  }
+}

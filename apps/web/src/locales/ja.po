@@ -7,6 +7,10 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: ja\n"
 
+#: src/components/auth/EmailCodeStep.tsx:56
+msgid "{email} に6桁の番号を送りました。メールに書かれた番号を入力してください。"
+msgstr "{email} に6桁の番号を送りました。メールに書かれた番号を入力してください。"
+
 #: src/components/RouteStats.tsx:31
 msgid "{hours}時間"
 msgstr "{hours}時間"
@@ -55,6 +59,14 @@ msgstr "いまは、ここでスタンプを押せません。"
 msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 msgstr "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 
+#: src/components/auth/RegisterFlow.tsx:82
+msgid "お名前（ニックネームでもかまいません）"
+msgstr "お名前（ニックネームでもかまいません）"
+
+#: src/components/auth/authUi.tsx:21
+msgid "お名前に使えない文字が含まれているか、長すぎます（40文字まで）。"
+msgstr "お名前に使えない文字が含まれているか、長すぎます（40文字まで）。"
+
 #: src/components/SampleNotice.tsx:51
 #: src/components/SampleNotice.tsx:78
 msgid "このデータについて"
@@ -71,6 +83,10 @@ msgstr "この場所の位置は仮のもので、まだ確認されていませ
 #: src/components/map/StopCard.tsx:45
 msgid "この場所を見る"
 msgstr "この場所を見る"
+
+#: src/components/auth/authUi.tsx:19
+msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
+msgstr "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 
 #: src/components/map/TrailMap.tsx:213
 msgid "この端末では地図を表示できません。下の一覧から場所を選べます。"
@@ -146,9 +162,33 @@ msgstr "ダークモードの地図"
 msgid "つぎ"
 msgstr "つぎ"
 
+#: src/components/auth/authUi.tsx:53
+msgid "どちらからお越しですか？（答えなくても大丈夫です）"
+msgstr "どちらからお越しですか？（答えなくても大丈夫です）"
+
 #: src/components/RouteStats.tsx:24
 msgid "のぼり"
 msgstr "のぼり"
+
+#: src/components/auth/LoginFlow.tsx:107
+msgid "はじめての方は"
+msgstr "はじめての方は"
+
+#: src/components/auth/LoginFlow.tsx:98
+msgid "パスキーでログイン"
+msgstr "パスキーでログイン"
+
+#: src/components/auth/RegisterFlow.tsx:133
+msgid "パスキーで登録（おすすめ）"
+msgstr "パスキーで登録（おすすめ）"
+
+#: src/components/auth/authUi.tsx:20
+msgid "パスキーの確認が中止されました。もう一度お試しください。"
+msgstr "パスキーの確認が中止されました。もう一度お試しください。"
+
+#: src/components/auth/RegisterFlow.tsx:113
+msgid "パスキーを作って登録"
+msgstr "パスキーを作って登録"
 
 #: src/app/[lang]/(public)/not-found.tsx:12
 msgid "ページが見つかりません"
@@ -158,6 +198,8 @@ msgstr "ページが見つかりません"
 msgid "ベースマップ"
 msgstr "ベースマップ"
 
+#: src/app/[lang]/(public)/login/page.tsx:30
+#: src/app/[lang]/(public)/register/page.tsx:29
 #: src/components/TabBar.tsx:15
 msgid "ホーム"
 msgstr "ホーム"
@@ -178,9 +220,38 @@ msgstr "まだスタンプはありません。"
 msgid "まだスタンプを押していません"
 msgstr "まだスタンプを押していません"
 
+#: src/components/auth/LoginFlow.tsx:70
+#: src/components/auth/RegisterFlow.tsx:95
+msgid "メールアドレス"
+msgstr "メールアドレス"
+
+#: src/components/auth/EmailCodeStep.tsx:83
+msgid "メールアドレスを直す"
+msgstr "メールアドレスを直す"
+
+#: src/components/auth/LoginFlow.tsx:104
+msgid "メールでログイン"
+msgstr "メールでログイン"
+
+#: src/components/auth/RegisterFlow.tsx:138
+msgid "メールで登録"
+msgstr "メールで登録"
+
+#: src/components/auth/RegisterFlow.tsx:140
+msgid "メールに届く6桁の番号で登録します。"
+msgstr "メールに届く6桁の番号で登録します。"
+
 #: src/components/TabBar.tsx:22
 msgid "メインメニュー"
 msgstr "メインメニュー"
+
+#: src/components/SiteHeader.tsx:81
+msgid "メニュー"
+msgstr "メニュー"
+
+#: src/components/auth/EmailCodeStep.tsx:73
+msgid "もう一度送りました。届かないときは1分ほど待ってからお試しください。"
+msgstr "もう一度送りました。届かないときは1分ほど待ってからお試しください。"
 
 #: src/components/ThemeSwitcher.tsx:30
 msgid "ライト"
@@ -199,7 +270,7 @@ msgstr "ルートにもどる"
 msgid "ルートの案内は準備中です。"
 msgstr "ルートの案内は準備中です。"
 
-#: src/components/SignInPrompt.tsx:19
+#: src/components/SignInPrompt.tsx:22
 msgid "ルートや場所は、ログインしなくても見られます。"
 msgstr "ルートや場所は、ログインしなくても見られます。"
 
@@ -212,9 +283,30 @@ msgstr "ルートをさがす"
 msgid "ルート一覧"
 msgstr "ルート一覧"
 
-#: src/components/SignInPrompt.tsx:16
+#: src/components/SiteHeader.tsx:105
+msgid "ログアウト"
+msgstr "ログアウト"
+
+#: src/app/[lang]/(public)/login/page.tsx:16
+#: src/app/[lang]/(public)/login/page.tsx:33
+#: src/components/auth/LoginFlow.tsx:55
+#: src/components/auth/RegisterFlow.tsx:144
+#: src/components/SignInPrompt.tsx:37
+#: src/components/SiteHeader.tsx:111
+msgid "ログイン"
+msgstr "ログイン"
+
+#: src/components/SignInPrompt.tsx:19
 msgid "ログインすると、スタンプを記録できます。"
 msgstr "ログインすると、スタンプを記録できます。"
+
+#: src/components/auth/authUi.tsx:23
+msgid "ログインできませんでした。この端末にパスキーがないときは、メールでログインしてください。"
+msgstr "ログインできませんでした。この端末にパスキーがないときは、メールでログインしてください。"
+
+#: src/components/SiteHeader.tsx:97
+msgid "ログイン中"
+msgstr "ログイン中"
 
 #: src/components/map/TrailMap.tsx:257
 msgid "仮のルート・位置（未確認）"
@@ -250,9 +342,14 @@ msgstr "出かける前に、公式の最新情報を確認してください。
 msgid "初期値に戻す"
 msgstr "初期値に戻す"
 
+#: src/components/auth/authUi.tsx:46
 #: src/components/PrefectureName.tsx:9
 msgid "和歌山県"
 msgstr "和歌山県"
+
+#: src/components/auth/authUi.tsx:27
+msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
+msgstr "問題が発生しました。しばらくしてからもう一度お試しください。"
 
 #: src/components/map/TrailMap.tsx:220
 msgid "地図"
@@ -291,10 +388,12 @@ msgstr "地形ボタンで重ねるもの"
 msgid "大きな地図で見る"
 msgstr "大きな地図で見る"
 
+#: src/components/auth/authUi.tsx:45
 #: src/components/PrefectureName.tsx:7
 msgid "大阪府"
 msgstr "大阪府"
 
+#: src/components/auth/authUi.tsx:47
 #: src/components/PrefectureName.tsx:11
 msgid "奈良県"
 msgstr "奈良県"
@@ -302,6 +401,11 @@ msgstr "奈良県"
 #: src/components/map/MapSettingsForm.tsx:36
 msgid "少し暗く"
 msgstr "少し暗く"
+
+#: src/components/auth/LoginFlow.tsx:88
+#: src/components/auth/RegisterFlow.tsx:123
+msgid "戻る"
+msgstr "戻る"
 
 #: src/app/[lang]/(public)/routes/[id]/page.tsx:122
 #: src/components/StampLegend.tsx:8
@@ -311,6 +415,18 @@ msgstr "押した"
 #: src/components/map/TrailMap.tsx:262
 msgid "拡大"
 msgstr "拡大"
+
+#: src/app/[lang]/(public)/register/page.tsx:16
+#: src/app/[lang]/(public)/register/page.tsx:32
+#: src/components/auth/LoginFlow.tsx:109
+#: src/components/SignInPrompt.tsx:31
+#: src/components/SiteHeader.tsx:114
+msgid "新規登録"
+msgstr "新規登録"
+
+#: src/components/auth/authUi.tsx:48
+msgid "日本のほかの地域"
+msgstr "日本のほかの地域"
 
 #: src/components/Localized.tsx:16
 msgid "日本語のみ"
@@ -340,6 +456,10 @@ msgstr "標高の色を消す"
 msgid "標高の色を見る"
 msgstr "標高の色を見る"
 
+#: src/components/auth/RegisterFlow.tsx:120
+msgid "次の画面で、顔や指紋などで本人確認をします。"
+msgstr "次の画面で、顔や指紋などで本人確認をします。"
+
 #: src/app/[lang]/(public)/page.tsx:32
 msgid "歩いた場所で、スタンプを押そう。"
 msgstr "歩いた場所で、スタンプを押そう。"
@@ -351,6 +471,10 @@ msgstr "歩き終えた区間 {done} / {TOTAL_ROUTES}"
 #: src/components/StatusWord.tsx:23
 msgid "注意"
 msgstr "注意"
+
+#: src/components/auth/authUi.tsx:49
+msgid "海外"
+msgstr "海外"
 
 #: src/components/map/MapSettingsForm.tsx:34
 msgid "淡色"
@@ -364,9 +488,50 @@ msgstr "準備中"
 msgid "濃さ"
 msgstr "濃さ"
 
+#: src/components/SiteHeader.tsx:120
+msgid "画面の明るさ"
+msgstr "画面の明るさ"
+
 #: src/components/ThemeSwitcher.tsx:37
 msgid "画面の明るさ：{label}。押すと切り替わります。"
 msgstr "画面の明るさ：{label}。押すと切り替わります。"
+
+#: src/components/auth/authUi.tsx:22
+msgid "番号が違うか、期限が切れています。もう一度お試しください。"
+msgstr "番号が違うか、期限が切れています。もう一度お試しください。"
+
+#: src/components/auth/EmailCodeStep.tsx:80
+msgid "番号をもう一度送る"
+msgstr "番号をもう一度送る"
+
+#: src/components/auth/RegisterFlow.tsx:66
+msgid "登録する"
+msgstr "登録する"
+
+#: src/app/[lang]/(public)/register/page.tsx:35
+msgid "登録すると、歩いた場所のスタンプが記録されます。"
+msgstr "登録すると、歩いた場所のスタンプが記録されます。"
+
+#: src/components/auth/authUi.tsx:24
+msgid "登録できませんでした。もう一度お試しください。"
+msgstr "登録できませんでした。もう一度お試しください。"
+
+#: src/components/auth/RegisterFlow.tsx:142
+msgid "登録済みの方は"
+msgstr "登録済みの方は"
+
+#: src/components/auth/authUi.tsx:25
+msgid "短い間に何度も操作されました。しばらくしてからお試しください。"
+msgstr "短い間に何度も操作されました。しばらくしてからお試しください。"
+
+#: src/components/auth/EmailCodeStep.tsx:58
+msgid "確認番号（6桁）"
+msgstr "確認番号（6桁）"
+
+#: src/components/auth/LoginFlow.tsx:85
+#: src/components/auth/RegisterFlow.tsx:116
+msgid "確認番号を送る"
+msgstr "確認番号を送る"
 
 #: src/components/map/TrailMap.tsx:265
 msgid "縮小"
@@ -394,6 +559,7 @@ msgid "葛城修験の道"
 msgstr "葛城修験の道"
 
 #: src/components/LocaleSwitcher.tsx:24
+#: src/components/SiteHeader.tsx:126
 msgid "言語"
 msgstr "言語"
 
@@ -405,8 +571,13 @@ msgstr "説明"
 msgid "距離"
 msgstr "距離"
 
+#: src/components/auth/authUi.tsx:26
+msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
+msgstr "通信できませんでした。電波の良い場所でもう一度お試しください。"
+
 #: src/components/map/TrailMap.tsx:228
 #: src/components/SampleNotice.tsx:64
+#: src/components/SiteHeader.tsx:81
 msgid "閉じる"
 msgstr "閉じる"
 
@@ -430,3 +601,11 @@ msgstr "陰影（やわらかい影）"
 #: src/components/RouteStats.tsx:34
 msgid "難しさ"
 msgstr "難しさ"
+
+#: src/components/auth/LoginFlow.tsx:100
+msgid "顔や指紋で、すぐにログインできます。"
+msgstr "顔や指紋で、すぐにログインできます。"
+
+#: src/components/auth/RegisterFlow.tsx:135
+msgid "顔や指紋で、すぐに登録できます。パスワードは要りません。"
+msgstr "顔や指紋で、すぐに登録できます。パスワードは要りません。"

@@ -1,23 +1,41 @@
+import Link from "next/link";
 import { Trans } from "@lingui/react/macro";
+import { initLingui } from "@/i18n/server";
+import { localePath } from "@/lib/rally";
 import { StampFace } from "./StampFace";
 
 /**
  * Shown to a signed-out visitor where progress would be. It explains what an account is
- * for and reassures that browsing needs none. TODO(WBS 3.1.1): add the sign-in button
- * when the login page exists; until then there is no control, because a button to a
- * missing page would be worse than none.
+ * for, reassures that browsing needs none, and offers the two ways in.
  */
-export function SignInPrompt() {
+export async function SignInPrompt() {
+  const { locale } = await initLingui();
   return (
-    <section className="mx-4 flex items-start gap-4 rounded-xl border-2 border-line bg-surface p-4">
-      <StampFace state="empty" className="h-12 w-12 shrink-0" />
-      <div className="text-lg">
-        <p className="font-bold">
-          <Trans>ログインすると、スタンプを記録できます。</Trans>
-        </p>
-        <p className="mt-1 text-muted">
-          <Trans>ルートや場所は、ログインしなくても見られます。</Trans>
-        </p>
+    <section className="mx-4 flex flex-col gap-4 rounded-xl border-2 border-line bg-surface p-4">
+      <div className="flex items-start gap-4">
+        <StampFace state="empty" className="h-12 w-12 shrink-0" />
+        <div className="text-lg">
+          <p className="font-bold">
+            <Trans>ログインすると、スタンプを記録できます。</Trans>
+          </p>
+          <p className="mt-1 text-muted">
+            <Trans>ルートや場所は、ログインしなくても見られます。</Trans>
+          </p>
+        </div>
+      </div>
+      <div className="flex flex-col gap-3">
+        <Link
+          href={localePath(locale, "/register")}
+          className="tap-target flex min-h-14 items-center justify-center rounded-xl bg-accent px-6 text-xl font-bold text-paper"
+        >
+          <Trans>新規登録</Trans>
+        </Link>
+        <Link
+          href={localePath(locale, "/login")}
+          className="tap-target flex min-h-14 items-center justify-center rounded-xl border-2 border-ink px-6 text-xl font-bold text-ink hover:bg-surface"
+        >
+          <Trans>ログイン</Trans>
+        </Link>
       </div>
     </section>
   );

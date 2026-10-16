@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { completedCount, connectorStates, nodeState, progressShare } from "./ribbon";
 import { downsample, elevationArea, fitPoints, linePath, normalizePoints } from "./sketch";
-import { resolveViewer } from "./viewer";
+import { resolveViewer, viewerFromMe } from "./viewer";
 
 describe("nodeState", () => {
   test("a route without published spots is soon, whoever is looking", () => {
@@ -92,14 +92,29 @@ describe("sketch", () => {
 });
 
 describe("resolveViewer", () => {
-  test("production is always signed out", () => {
-    expect(resolveViewer({ as: "in" }, { NODE_ENV: "production" })).toEqual({ signedIn: false });
+  test("production never accepts an override: the real session decides", () => {
+    expect(resolveViewer({ as: "in" }, { NODE_ENV: "production" })).toBeNull();
   });
 
-  test("development is signed in by default, and signed out on request", () => {
+  test("development can force signed in or out; otherwise the session decides", () => {
     const dev = { NODE_ENV: "development" };
-    expect(resolveViewer({}, dev)).toEqual({ signedIn: true });
-    expect(resolveViewer({ as: "in" }, dev)).toEqual({ signedIn: true });
-    expect(resolveViewer({ as: "out" }, dev)).toEqual({ signedIn: false });
+    expect(resolveViewer({}, dev)).toBeNull();
+    expect(resolveViewer({ as: "in" }, dev)).toEqual({ signedIn: true, name: null });
+    expect(resolveViewer({ as: "out" }, dev)).toEqual({ signedIn: false, name: null });
+    expect(resolveViewer({ as: "auto" }, dev)).toBeNull();
+  });
+});
+
+describe("viewerFromMe", () => {
+  test("a good answer gives the name", () => {
+    expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana" } })).toEqual({ signedIn: true, name: "Hana" });
+    expect(viewerFromMe(200, { ok: true, me: { displayName: null } })).toEqual({ signedIn: true, name: null });
+  });
+
+  test("anything else is signed out", () => {
+    expect(viewerFromMe(401, { ok: false, error: "unauthenticated" })).toEqual({ signedIn: false, name: null });
+    expect(viewerFromMe(200, null)).toEqual({ signedIn: false, name: null });
+    expect(viewerFromMe(200, { ok: false })).toEqual({ signedIn: false, name: null });
+    expect(viewerFromMe(500, { ok: true, me: { displayName: "x" } })).toEqual({ signedIn: false, name: null });
   });
 });
