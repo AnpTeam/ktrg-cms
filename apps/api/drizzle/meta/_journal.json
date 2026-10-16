@@ -15,6 +15,13 @@
       "when": 1792045904128,
       "tag": "0001_me_deletion_request",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792114332032,
+      "tag": "0002_luxuriant_ozymandias",
+      "breakpoints": true
     }
   ]
 }

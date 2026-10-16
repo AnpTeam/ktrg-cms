@@ -11,7 +11,7 @@ import {
   type PublicKeyCredentialRequestOptionsJSON,
   type RegistrationResponseJSON,
 } from "@simplewebauthn/server";
-import type { AuthUser } from "./user";
+import type { AuthUser, NewAccountProfile } from "./user";
 
 /** A passkey ceremony must finish within this long. */
 export const CHALLENGE_TTL_MS = 5 * 60 * 1000;
@@ -91,7 +91,7 @@ export interface PasskeyStore {
    * Create a passkey-only account (no email) together with its first passkey, all
    * or nothing. Returns false, creating nothing, if the credential id is already taken.
    */
-  createUserWithPasskey(row: NewPasskey): Promise<boolean>;
+  createUserWithPasskey(row: NewPasskey & { profile: NewAccountProfile }): Promise<boolean>;
 }
 
 export interface PasskeyConfig {
@@ -244,8 +244,12 @@ export function createPasskeyService({
       return options;
     },
 
-    /** Sign up with a passkey, step 3: a good passkey creates the account (participant, Japanese). */
-    async verifySignup(response: RegistrationResponseJSON, label: string | null): Promise<LoginResult> {
+    /** Sign up with a passkey, step 3: a good passkey creates the account (participant) with the name and origin given. */
+    async verifySignup(
+      response: RegistrationResponseJSON,
+      label: string | null,
+      profile: NewAccountProfile,
+    ): Promise<LoginResult> {
       const taken = { pendingUserId: null as string | null };
       const credential = await verifyNewCredential(response, async (challenge) => {
         const row = await store.takeChallenge(challenge, "registration", null, now());
@@ -254,10 +258,10 @@ export function createPasskeyService({
       });
       if (!credential || !taken.pendingUserId) return { ok: false };
 
-      const created = await store.createUserWithPasskey({ userId: taken.pendingUserId, ...credential, label });
+      const created = await store.createUserWithPasskey({ userId: taken.pendingUserId, ...credential, label, profile });
       if (!created) return { ok: false };
 
-      return { ok: true, user: { id: taken.pendingUserId, email: null, role: "participant", locale: "ja" } };
+      return { ok: true, user: { id: taken.pendingUserId, email: null, role: "participant", locale: profile.locale } };
     },
 
     /**

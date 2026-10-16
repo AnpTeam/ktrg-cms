@@ -5,6 +5,8 @@ import { createMemoryPasskeyStore } from "./passkey-memory-store";
 import { createPasskeyService } from "./passkey-service";
 import { TestAuthenticator } from "./webauthn-test-authenticator";
 
+const testProfile = { displayName: "Hiker", origin: null, locale: "ja" } as const;
+
 const config = { rpName: "KTRG", rpId: "example.com", origin: "https://example.com" };
 const alice: AuthUser = { id: "11111111-1111-1111-1111-111111111111", email: "alice@example.com", role: "participant", locale: "en" };
 const taro: AuthUser = { id: "22222222-2222-2222-2222-222222222222", email: "taro@example.com", role: "participant", locale: "ja" };
@@ -39,7 +41,7 @@ function setup(opts: { mailFails?: boolean } = {}) {
   }
   /** A passkey-only account (no email), with its first passkey. */
   async function passkeyOnlyUser(): Promise<AuthUser> {
-    const result = await service.verifySignup(phone().register(await service.signupOptions()), "first");
+    const result = await service.verifySignup(phone().register(await service.signupOptions()), "first", testProfile);
     if (!result.ok) throw new Error("sign-up failed");
     return result.user;
   }

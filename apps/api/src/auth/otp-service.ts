@@ -1,4 +1,4 @@
-import type { AuthUser, Locale } from "./user";
+import type { AuthUser, Locale, NewAccountProfile } from "./user";
 import { buildOtpEmail } from "../emails/otp-code";
 import { buildReauthEmail } from "../emails/reauth-code";
 import type { Mailer } from "../lib/mailer";
@@ -33,8 +33,11 @@ export interface OtpStore {
   consumeAttempt(id: string, max: number): Promise<boolean>;
   /** Atomically mark a code used. Returns false if someone else already did. */
   markUsed(id: string, at: Date): Promise<boolean>;
-  /** The user with this email, created (participant, ja) on first sight. */
-  findOrCreateUser(email: string): Promise<AuthUser>;
+  /**
+   * The user with this email, created (participant) on first sight. `profile` (name, origin,
+   * language) is applied only when the account is created here; an existing account is untouched.
+   */
+  findOrCreateUser(email: string, profile?: NewAccountProfile): Promise<AuthUser>;
   /**
    * Atomically make this user an admin and write the audit row. Returns false when they
    * already were one (nothing is written then).
@@ -132,12 +135,12 @@ export function createOtpService({
       return checkCode(normalizeEmail(rawEmail), code);
     },
 
-    /** Log in with a code: the account is created on first success. */
-    async verify(rawEmail: string, code: string): Promise<VerifyResult> {
+    /** Log in with a code: the account is created on first success (with `profile`, if given). */
+    async verify(rawEmail: string, code: string, profile?: NewAccountProfile): Promise<VerifyResult> {
       const email = normalizeEmail(rawEmail);
       if (!(await checkCode(email, code))) return { ok: false };
 
-      const user = await store.findOrCreateUser(email);
+      const user = await store.findOrCreateUser(email, profile);
       if (user.role !== "admin" && adminEmails.has(email)) {
         if (await store.promoteToAdmin(user.id)) log(`[auth] ${user.id} promoted to admin (ADMIN_EMAILS)`);
         return { ok: true, user: { ...user, role: "admin" } };

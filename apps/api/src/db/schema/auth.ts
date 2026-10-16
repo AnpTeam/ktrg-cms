@@ -13,6 +13,8 @@ import {
 
 export const userRole = pgEnum("user_role", ["participant", "admin"]);
 export const userLocale = pgEnum("user_locale", ["ja", "en"]);
+/** Where a visitor says they come from (asked at sign-up; optional, for knowing who the app serves). */
+export const userOrigin = pgEnum("user_origin", ["osaka", "wakayama", "nara", "other_japan", "overseas"]);
 export const webauthnChallengeType = pgEnum("webauthn_challenge_type", [
   "registration",
   "authentication",
@@ -39,6 +41,8 @@ export const users = pgTable(
     role: userRole("role").notNull().default("participant"),
     locale: userLocale("locale").notNull().default("ja"),
     displayName: text("display_name"),
+    // Where the person says they come from; null when they did not say.
+    origin: userOrigin("origin"),
     // Set by DELETE /me: the owner asked for the account to be deleted. Nothing is deleted
     // yet; cleared again if they cancel. Null when no deletion is pending.
     deletionRequestedAt: timestamp("deletion_requested_at", { withTimezone: true }),

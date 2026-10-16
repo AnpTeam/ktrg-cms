@@ -1,14 +1,18 @@
 import { auditRow } from "../audit/audit-log";
-import type { AuthUser } from "../auth/user";
+import type { AuthUser, Origin } from "../auth/user";
 import type { MeStore, Profile } from "./me-service";
 
-type Extra = { displayName: string | null; deletionRequestedAt: Date | null; createdAt: Date };
+type Extra = { displayName: string | null; origin: Origin | null; deletionRequestedAt: Date | null; createdAt: Date };
 
 /**
  * In-memory store for tests and the dev test page. `users` is the same map the OTP and
  * session memory stores use, so a language change is seen by the session at once.
  */
-export function createMemoryMeStore(users: Map<string, AuthUser>) {
+export function createMemoryMeStore(
+  users: Map<string, AuthUser>,
+  /** Name and origin given at sign-up (shared with the OTP and passkey memory stores). */
+  profiles: Map<string, { displayName: string | null; origin: string | null }> = new Map(),
+) {
   const extras = new Map<string, Extra>();
   /** Stands in for the audit rows the Drizzle store writes in its transactions. */
   const audit: ReturnType<typeof auditRow>[] = [];
@@ -16,7 +20,11 @@ export function createMemoryMeStore(users: Map<string, AuthUser>) {
   const find = (userId: string) => [...users.values()].find((u) => u.id === userId);
   function extraOf(userId: string): Extra {
     let e = extras.get(userId);
-    if (!e) extras.set(userId, (e = { displayName: null, deletionRequestedAt: null, createdAt: new Date() }));
+    if (!e) {
+      const given = profiles.get(userId);
+      e = { displayName: given?.displayName ?? null, origin: (given?.origin as Origin | null | undefined) ?? null, deletionRequestedAt: null, createdAt: new Date() };
+      extras.set(userId, e);
+    }
     return e;
   }
   const profile = (user: AuthUser): Profile => ({

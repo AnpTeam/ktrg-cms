@@ -1,4 +1,4 @@
-import type { AuthUser, Locale, Role } from "../auth/user";
+import type { AuthUser, Locale, Origin, Role } from "../auth/user";
 import { buildDeletionRequestEmail } from "../emails/deletion-request";
 import type { Mailer } from "../lib/mailer";
 
@@ -12,6 +12,8 @@ export interface Profile {
   role: Role;
   locale: Locale;
   displayName: string | null;
+  /** Where they said they come from; null if they did not say. */
+  origin: Origin | null;
   /** Set while a deletion request is pending; null otherwise. */
   deletionRequestedAt: Date | null;
   createdAt: Date;

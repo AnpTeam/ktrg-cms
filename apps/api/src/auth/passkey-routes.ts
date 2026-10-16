@@ -1,6 +1,7 @@
 import type { AuthenticationResponseJSON, RegistrationResponseJSON } from "@simplewebauthn/server";
 import { Elysia, t } from "elysia";
-import { uuidParams } from "../lib/schemas";
+import { normalizeDisplayName } from "../me/me-service";
+import { signupProfileSchema, uuidParams } from "../lib/schemas";
 import { fail } from "./http";
 import type { PasskeyService } from "./passkey-service";
 import { routeKit, type KitServices, type RouteOptions } from "./route-kit";
@@ -54,6 +55,13 @@ const authenticationResponse = t.Object(
   },
   { additionalProperties: false },
 );
+
+/** Sign-up: the registration answer plus who is signing up (name required, origin optional). */
+const signupBody = t.Object({
+  response: registrationResponse,
+  label: t.Optional(t.String({ maxLength: 64 })),
+  profile: signupProfileSchema,
+});
 
 /** A registration answer plus the optional name the person gives the passkey. */
 const registrationBody = t.Object({ response: registrationResponse, label: t.Optional(t.String({ maxLength: 64 })) });
@@ -118,19 +126,23 @@ export function passkeyRoutes(getServices: () => PasskeyServices, opts: RouteOpt
       .post("/signup/options", async () => ({ ok: true as const, options: await getServices().passkeys.signupOptions() }), {
         rateLimit: { passkeySignupIp: "ip" },
       })
-      // Sign-up step 3: a good passkey creates the account and logs it in.
+      // Sign-up step 3: a good passkey creates the account (with the name and origin given) and logs it in.
       .post(
         "/signup/verify",
         async ({ body, set }) => {
+          // Checked before the passkey is spent: a bad name should not burn the challenge.
+          const displayName = normalizeDisplayName(body.profile.displayName);
+          if (!displayName) return fail(set, 400, "invalid_display_name");
           const result = await getServices().passkeys.verifySignup(
             body.response as RegistrationResponseJSON,
             body.label?.trim() || null,
+            { displayName, origin: body.profile.origin ?? null, locale: body.profile.locale ?? "ja" },
           );
           if (!result.ok) return fail(set, 400, "registration_failed");
           await http.startSession(set, result.user);
           return { ok: true as const, user: result.user };
         },
-        { body: registrationBody, rateLimit: { passkeySignupIp: "ip" } },
+        { body: signupBody, rateLimit: { passkeySignupIp: "ip" } },
       )
       // Login step 1: no session and no email yet.
       .post("/login/options", async () => ({ ok: true as const, options: await getServices().passkeys.loginOptions() }), {

@@ -3,7 +3,11 @@ import type { AuthUser } from "./user";
 import type { ChallengeType, PasskeyStore } from "./passkey-service";
 
 /** In-memory store for tests and manual checks. Mirrors the Drizzle store's rules. */
-export function createMemoryPasskeyStore(users: Map<string, AuthUser> = new Map()) {
+export function createMemoryPasskeyStore(
+  users: Map<string, AuthUser> = new Map(),
+  /** Name and origin given at sign-up, by user id. Pass the same map to the other memory stores to share it. */
+  profiles: Map<string, { displayName: string | null; origin: string | null }> = new Map(),
+) {
   const challenges: {
     challenge: string;
     type: ChallengeType;
@@ -73,13 +77,14 @@ export function createMemoryPasskeyStore(users: Map<string, AuthUser> = new Map(
       passkeys.push({ id, createdAt: new Date(), ...row });
       return id;
     },
-    async createUserWithPasskey(row) {
+    async createUserWithPasskey({ profile, ...row }) {
       if (passkeys.some((p) => p.credentialId === row.credentialId)) return false;
-      users.set(row.userId, { id: row.userId, email: null, role: "participant", locale: "ja" });
+      users.set(row.userId, { id: row.userId, email: null, role: "participant", locale: profile.locale });
+      profiles.set(row.userId, { displayName: profile.displayName, origin: profile.origin });
       passkeys.push({ id: randomUUID(), createdAt: new Date(), ...row });
       return true;
     },
   };
 
-  return { store, challenges, passkeys, users };
+  return { store, challenges, passkeys, users, profiles };
 }

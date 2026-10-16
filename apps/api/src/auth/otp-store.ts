@@ -45,9 +45,13 @@ export function createDrizzleOtpStore(db: Db): OtpStore {
       return rows.length === 1;
     },
 
-    async findOrCreateUser(email) {
-      // The unique index is on lower(email); do nothing if the user already exists.
-      await db.insert(users).values({ email }).onConflictDoNothing();
+    async findOrCreateUser(email, profile) {
+      // The unique index is on lower(email); do nothing if the user already exists
+      // (an existing account keeps its own name, origin and language).
+      await db
+        .insert(users)
+        .values({ email, displayName: profile?.displayName, origin: profile?.origin, locale: profile?.locale })
+        .onConflictDoNothing();
       const [user] = await db
         .select({ id: users.id, email: users.email, role: users.role, locale: users.locale })
         .from(users)

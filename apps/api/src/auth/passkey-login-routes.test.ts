@@ -38,7 +38,7 @@ function setup() {
 
   async function signUp(p = phone()) {
     const opt = (await (await post("signup/options")).json()) as { options: PublicKeyCredentialCreationOptionsJSON };
-    const res = await post("signup/verify", { response: p.register(opt.options), label: "My iPhone" });
+    const res = await post("signup/verify", { response: p.register(opt.options), label: "My iPhone", profile: { displayName: "Hana", origin: "nara", locale: "en" } });
     return { res, phone: p };
   }
   async function loginOptions() {
@@ -60,7 +60,7 @@ describe("sign up with a passkey over HTTP", () => {
     expect(res.status).toBe(200);
     const body = (await res.json()) as { ok: boolean; user: AuthUser };
     expect(body.ok).toBe(true);
-    expect(body.user).toMatchObject({ email: null, role: "participant", locale: "ja" });
+    expect(body.user).toMatchObject({ email: null, role: "participant", locale: "en" });
 
     // The cookie is a real, persistent session for the new account.
     const setCookie = res.headers.get("set-cookie");
@@ -82,11 +82,34 @@ describe("sign up with a passkey over HTTP", () => {
     const opt = (await (await post("signup/options")).json()) as { options: PublicKeyCredentialCreationOptionsJSON };
     const res = await post("signup/verify", {
       response: phone().register(opt.options, { origin: "https://evil.example.net" }),
+      profile: { displayName: "Hana" },
     });
 
     expect(res.status).toBe(400);
     expect(await res.json()).toEqual({ ok: false, error: "registration_failed" });
     expect(res.headers.get("set-cookie")).toBeNull();
+  });
+
+  test("sign-up needs a usable name, checked before the passkey is spent", async () => {
+    const { post, phone } = setup();
+    const opt = (await (await post("signup/options")).json()) as { options: PublicKeyCredentialCreationOptionsJSON };
+    const response = phone().register(opt.options);
+    for (const displayName of ["", "   ", "x".repeat(41), "a‮b"]) {
+      const bad = await post("signup/verify", { response, profile: { displayName } });
+      expect(bad.status).toBe(400);
+      expect(await bad.json()).toEqual({ ok: false, error: "invalid_display_name" });
+    }
+    // The challenge was not used up by the rejected tries.
+    const good = await post("signup/verify", { response, profile: { displayName: "Hana" } });
+    expect(good.status).toBe(200);
+  });
+
+  test("sign-up without a profile, or with an unknown origin, is rejected", async () => {
+    const { post } = setup();
+    expect((await post("signup/verify", { response: { id: "x" } })).status).toBe(422);
+    const opt = (await (await post("signup/options")).json()) as { options: PublicKeyCredentialCreationOptionsJSON };
+    const response = new TestAuthenticator({ origin: config.origin, rpId: config.rpId }).register(opt.options);
+    expect((await post("signup/verify", { response, profile: { displayName: "Hana", origin: "mars" } })).status).toBe(422);
   });
 
   test("a malformed body is rejected", async () => {

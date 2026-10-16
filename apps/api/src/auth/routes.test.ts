@@ -10,7 +10,7 @@ import { createMemorySessionStore } from "./session-memory-store";
 import { createSessionService } from "./session-service";
 
 function setup(opts: { secureCookies?: boolean; trustProxy?: boolean } = {}) {
-  const { store, users } = createMemoryOtpStore();
+  const { store, users, profiles: otpProfiles } = createMemoryOtpStore();
   const sessions = createMemorySessionStore(users);
   const codes: string[] = [];
   const subjects: string[] = [];
@@ -65,6 +65,7 @@ function setup(opts: { secureCookies?: boolean; trustProxy?: boolean } = {}) {
     codes,
     subjects,
     users,
+    otpProfiles,
     sessions,
     session,
     /** Moves only the OTP clock (codes, cooldown); sessions keep real time. */
@@ -385,5 +386,42 @@ describe("fresh login: POST /auth/reauth/request and /auth/reauth/verify", () =>
     const res = await t.post("reauth/verify", { code: "000000" }, cookie);
     expect(res.status).toBe(429);
     expect(res.headers.get("retry-after")).toMatch(/^\d+$/);
+  });
+});
+
+describe("register with a name and origin", () => {
+  test("the first code creates the account with them; a returning login keeps its own", async () => {
+    const { post, codes, users, otpProfiles, advanceOtp } = setup();
+    await post("otp/request", { email: "new@example.com" });
+    const res = await post("otp/verify", {
+      email: "new@example.com",
+      code: codes.at(-1),
+      profile: { displayName: "  Hana  ", origin: "wakayama", locale: "en" },
+    });
+    expect(res.status).toBe(200);
+    const id = users.get("new@example.com")!.id;
+    expect(users.get("new@example.com")!.locale).toBe("en");
+    expect(otpProfiles.get(id)).toEqual({ displayName: "Hana", origin: "wakayama" });
+
+    // Logging in again with different details changes nothing.
+    advanceOtp(61_000); // past the resend cooldown
+    await post("otp/request", { email: "new@example.com" });
+    const later = await post("otp/verify", {
+      email: "new@example.com",
+      code: codes.at(-1),
+      profile: { displayName: "Someone else", origin: "overseas" },
+    });
+    expect(later.status).toBe(200);
+    expect(otpProfiles.get(id)).toEqual({ displayName: "Hana", origin: "wakayama" });
+  });
+
+  test("a bad name is a 400 and does not use up the code", async () => {
+    const { post, codes } = setup();
+    await post("otp/request", { email: "n@example.com" });
+    const bad = await post("otp/verify", { email: "n@example.com", code: codes.at(-1), profile: { displayName: "a‮b" } });
+    expect(bad.status).toBe(400);
+    expect(await bad.json()).toEqual({ ok: false, error: "invalid_display_name" });
+    const good = await post("otp/verify", { email: "n@example.com", code: codes.at(-1) });
+    expect(good.status).toBe(200);
   });
 });

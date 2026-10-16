@@ -361,9 +361,11 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       extraUserIds.push(id);
       const cred = newCredential();
 
-      expect(await passkeys.createUserWithPasskey({ userId: id, ...cred, label: "first" })).toBe(true);
+      expect(await passkeys.createUserWithPasskey({ userId: id, ...cred, label: "first", profile: { displayName: "Hana", origin: "nara", locale: "en" } })).toBe(true);
 
-      expect(await passkeys.userById(id)).toEqual({ id, email: null, role: "participant", locale: "ja" });
+      expect(await passkeys.userById(id)).toEqual({ id, email: null, role: "participant", locale: "en" });
+      const [saved] = await db.select({ displayName: users.displayName, origin: users.origin }).from(users).where(eq(users.id, id));
+      expect(saved).toEqual({ displayName: "Hana", origin: "nara" });
       expect((await passkeys.list(id)).map((p) => p.label)).toEqual(["first"]);
     });
 
@@ -374,7 +376,7 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
 
       const strayId = randomUUID();
       extraUserIds.push(strayId);
-      expect(await passkeys.createUserWithPasskey({ userId: strayId, ...cred, label: null })).toBe(false);
+      expect(await passkeys.createUserWithPasskey({ userId: strayId, ...cred, label: null, profile: { displayName: null, origin: null, locale: "ja" } })).toBe(false);
 
       expect(await passkeys.userById(strayId)).toBeNull();
     });

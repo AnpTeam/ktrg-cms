@@ -10,6 +10,7 @@ const profileColumns = {
   role: users.role,
   locale: users.locale,
   displayName: users.displayName,
+  origin: users.origin,
   deletionRequestedAt: users.deletionRequestedAt,
   createdAt: users.createdAt,
 };

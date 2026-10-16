@@ -12,6 +12,8 @@ import { createMemorySessionStore } from "./session-memory-store";
 import { createSessionService } from "./session-service";
 import { TestAuthenticator } from "./webauthn-test-authenticator";
 
+const testProfile = { displayName: "Hiker", origin: null, locale: "ja" } as const;
+
 const config = { rpName: "KTRG", rpId: "example.com", origin: "https://example.com" };
 const alice: AuthUser = { id: "11111111-1111-1111-1111-111111111111", email: "alice@example.com", role: "participant", locale: "en" };
 const bob: AuthUser = { id: "22222222-2222-2222-2222-222222222222", email: "bob@example.com", role: "participant", locale: "en" };
@@ -132,7 +134,7 @@ describe("DELETE /auth/passkeys/:id", () => {
   test("a passkey-only account cannot remove its last passkey: 409", async () => {
     const { call, service, session } = setup();
     const phone = new TestAuthenticator({ origin: config.origin, rpId: config.rpId });
-    const signup = await service.verifySignup(phone.register(await service.signupOptions()), "only");
+    const signup = await service.verifySignup(phone.register(await service.signupOptions()), "only", testProfile);
     if (!signup.ok) throw new Error("sign-up failed");
     const cookie = `session=${(await session.create(signup.user)).token}`;
     const id = ((await (await call("GET", "/", undefined, cookie)).json()) as ListBody).passkeys[0]!.id;

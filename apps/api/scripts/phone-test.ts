@@ -7,6 +7,7 @@
 // http://localhost:3001/ (Windows Hello), or on a phone through any HTTPS forwarded address
 // (VS Code port forwarding with Public visibility, cloudflared, ngrok). No setup needed:
 // the page tells the server which address it is on.
+import { appendFileSync } from "node:fs";
 import { Elysia } from "elysia";
 import { createApp } from "../src/app";
 import { auditRow } from "../src/audit/audit-log";
@@ -34,15 +35,30 @@ const passkeyConfig = {
   },
 };
 
-const { store, users } = createMemoryOtpStore();
+const profiles = new Map<string, { displayName: string | null; origin: string | null }>();
+// Browser tests (not a person) can set MAIL_LOG to a file: every mail body is also appended there,
+// because stdout redirected to a file is buffered and the code would not show up in time.
+function withMailFile<T extends { send(message: { text: string }): Promise<unknown> }>(mailer: T): T {
+  const file = process.env.MAIL_LOG;
+  if (!file) return mailer;
+  return {
+    ...mailer,
+    async send(message: { text: string }) {
+      appendFileSync(file, `${message.text}\n----\n`);
+      return mailer.send(message);
+    },
+  };
+}
+
+const { store, users } = createMemoryOtpStore(profiles);
 // Same wiring as the app (src/services.ts), with in-memory stores and the console mailer.
 const services = createServices({
   stores: {
     otp: store,
     session: createMemorySessionStore(users).store,
     rateLimit: createMemoryRateLimitStore().store,
-    passkeys: createMemoryPasskeyStore(users).store,
-    me: createMemoryMeStore(users).store,
+    passkeys: createMemoryPasskeyStore(users, profiles).store,
+    me: createMemoryMeStore(users, profiles).store,
   },
   // Audit entries are checked like the real writer and printed in this terminal.
   audit: {
@@ -52,7 +68,7 @@ const services = createServices({
     },
   },
   // Codes and alert emails are printed in this terminal.
-  mailer: createConsoleMailer("KTRG <no-reply@localhost>"),
+  mailer: withMailFile(createConsoleMailer("KTRG <no-reply@localhost>")),
   secret: "phone-test-secret-phone-test-secret-0",
   passkey: passkeyConfig,
 });

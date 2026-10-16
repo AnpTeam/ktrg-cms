@@ -99,11 +99,11 @@ export function createDrizzlePasskeyStore(db: Db): PasskeyStore {
       return rows[0]?.id ?? null;
     },
 
-    async createUserWithPasskey({ userId, credentialId, publicKey, counter, label }) {
+    async createUserWithPasskey({ userId, credentialId, publicKey, counter, label, profile }) {
       try {
         await db.transaction(async (tx) => {
-          // No email: the column is null, role and locale take their defaults (participant, ja).
-          await tx.insert(users).values({ id: userId });
+          // No email: the column is null, the role takes its default (participant).
+          await tx.insert(users).values({ id: userId, displayName: profile.displayName, origin: profile.origin, locale: profile.locale });
           const rows = await tx
             .insert(passkeys)
             .values({ userId, credentialId, publicKey: Buffer.from(publicKey), counter, label })
