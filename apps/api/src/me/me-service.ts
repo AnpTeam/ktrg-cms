@@ -1,5 +1,6 @@
 import type { AuthUser, Locale, Origin, Role } from "../auth/user";
 import { buildDeletionRequestEmail } from "../emails/deletion-request";
+import type { Preferences } from "./preferences";
 import type { Mailer } from "../lib/mailer";
 
 export type { Locale };
@@ -14,6 +15,8 @@ export interface Profile {
   displayName: string | null;
   /** Where they said they come from; null if they did not say. */
   origin: Origin | null;
+  /** Accessibility and map choices; null until the person has set them. */
+  preferences: Preferences | null;
   /** Set while a deletion request is pending; null otherwise. */
   deletionRequestedAt: Date | null;
   createdAt: Date;
@@ -23,6 +26,8 @@ export interface ProfileChanges {
   locale?: Locale;
   /** null clears the name. */
   displayName?: string | null;
+  /** Replaces the stored choices as a whole. */
+  preferences?: Preferences;
 }
 
 /** Storage the service needs; the Drizzle version is in me-store.ts. */
@@ -83,6 +88,7 @@ export function createMeService({
         if (name === undefined) return { ok: false, reason: "invalid_display_name" };
         changes.displayName = name;
       }
+      if (input.preferences !== undefined) changes.preferences = input.preferences;
       const profile = await store.update(user.id, changes);
       return profile ? { ok: true, profile } : { ok: false, reason: "gone" };
     },

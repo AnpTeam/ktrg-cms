@@ -207,6 +207,20 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       expect(await me.get(randomUUID())).toBeNull();
     });
 
+    test("preferences are saved as a whole, read back and replaced (jsonb)", async () => {
+      const me = createDrizzleMeStore(db);
+      const user = await newUser("me-prefs");
+      expect((await me.get(user.id))!.preferences).toBeNull();
+      const first = { size: "large", mergeStops: false, placesOnMap: true, setupDone: true } as const;
+      expect((await me.update(user.id, { preferences: first }))!.preferences).toEqual(first);
+      const second = { size: "xlarge", mergeStops: true, placesOnMap: false, setupDone: true } as const;
+      await me.update(user.id, { preferences: second });
+      expect((await me.get(user.id))!.preferences).toEqual(second);
+      // A change to something else leaves them alone.
+      await me.update(user.id, { displayName: "Hana" });
+      expect((await me.get(user.id))!.preferences).toEqual(second);
+    });
+
     test("deletion: 3 parallel requests write one audit row; cancel writes one more", async () => {
       const me = createDrizzleMeStore(db);
       const user = await newUser("me-delete");

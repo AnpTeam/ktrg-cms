@@ -29,6 +29,17 @@ export const originSchema = t.Union([
 const _originCovered: Exclude<(typeof userOrigin.enumValues)[number], Static<typeof originSchema>> extends never ? true : never = true;
 void [_localeCovered, _originCovered];
 
+/** The accessibility and map choices (me/preferences.ts): every field is required, nothing else is allowed. */
+export const preferencesSchema = t.Object(
+  {
+    size: t.Union([t.Literal("standard"), t.Literal("large"), t.Literal("xlarge")]),
+    mergeStops: t.Boolean(),
+    placesOnMap: t.Boolean(),
+    setupDone: t.Boolean(),
+  },
+  { additionalProperties: false },
+);
+
 /** The name and origin asked at sign-up. The name is cleaned and checked in the route (normalizeDisplayName). */
 export const signupProfileSchema = t.Object(
   {

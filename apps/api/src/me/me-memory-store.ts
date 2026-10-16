@@ -1,8 +1,9 @@
 import { auditRow } from "../audit/audit-log";
 import type { AuthUser, Origin } from "../auth/user";
+import type { Preferences } from "./preferences";
 import type { MeStore, Profile } from "./me-service";
 
-type Extra = { displayName: string | null; origin: Origin | null; deletionRequestedAt: Date | null; createdAt: Date };
+type Extra = { displayName: string | null; origin: Origin | null; preferences: Preferences | null; deletionRequestedAt: Date | null; createdAt: Date };
 
 /**
  * In-memory store for tests and the dev test page. `users` is the same map the OTP and
@@ -22,7 +23,8 @@ export function createMemoryMeStore(
     let e = extras.get(userId);
     if (!e) {
       const given = profiles.get(userId);
-      e = { displayName: given?.displayName ?? null, origin: (given?.origin as Origin | null | undefined) ?? null, deletionRequestedAt: null, createdAt: new Date() };
+      e = { displayName: given?.displayName ?? null, origin: (given?.origin as Origin | null | undefined) ?? null,
+        preferences: null, deletionRequestedAt: null, createdAt: new Date() };
       extras.set(userId, e);
     }
     return e;
@@ -45,6 +47,7 @@ export function createMemoryMeStore(
       if (!user) return null;
       if (changes.locale !== undefined) user.locale = changes.locale;
       if (changes.displayName !== undefined) extraOf(userId).displayName = changes.displayName;
+      if (changes.preferences !== undefined) extraOf(userId).preferences = changes.preferences;
       return profile(user);
     },
     async requestDeletion(userId, at) {

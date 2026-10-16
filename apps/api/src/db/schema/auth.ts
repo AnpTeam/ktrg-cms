@@ -9,7 +9,9 @@ import {
   uniqueIndex,
   uuid,
   customType,
+  jsonb,
 } from "drizzle-orm/pg-core";
+import type { Preferences } from "../../me/preferences";
 
 export const userRole = pgEnum("user_role", ["participant", "admin"]);
 export const userLocale = pgEnum("user_locale", ["ja", "en"]);
@@ -43,6 +45,8 @@ export const users = pgTable(
     displayName: text("display_name"),
     // Where the person says they come from; null when they did not say.
     origin: userOrigin("origin"),
+    // Accessibility and map choices (see me/preferences.ts); null until the person sets them.
+    preferences: jsonb("preferences").$type<Preferences>(),
     // Set by DELETE /me: the owner asked for the account to be deleted. Nothing is deleted
     // yet; cleared again if they cancel. Null when no deletion is pending.
     deletionRequestedAt: timestamp("deletion_requested_at", { withTimezone: true }),

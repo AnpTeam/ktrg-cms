@@ -22,6 +22,7 @@ type MeBody = {
     role: string;
     locale: string;
     displayName: string | null;
+    preferences: { size: string; mergeStops: boolean; placesOnMap: boolean; setupDone: boolean } | null;
     deletionRequestedAt: string | null;
     createdAt: string;
   };
@@ -143,6 +144,62 @@ describe("PATCH /me", () => {
       role: "participant",
       locale: "en",
     });
+  });
+});
+
+describe("preferences", () => {
+  const prefs = { size: "large", mergeStops: false, placesOnMap: true, setupDone: true };
+
+  test("none until set, then saved as a whole and returned", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    expect(((await (await t.call("GET", "", cookie)).json()) as MeBody).me.preferences).toBeNull();
+
+    const saved = await t.call("PATCH", "", cookie, { preferences: prefs });
+    expect(saved.status).toBe(200);
+    expect(((await saved.json()) as MeBody).me.preferences).toEqual(prefs);
+    expect(((await (await t.call("GET", "", cookie)).json()) as MeBody).me.preferences).toEqual(prefs);
+
+    // Saved again, they are replaced, not merged.
+    const again = { size: "xlarge", mergeStops: true, placesOnMap: false, setupDone: true };
+    await t.call("PATCH", "", cookie, { preferences: again });
+    expect(((await (await t.call("GET", "", cookie)).json()) as MeBody).me.preferences).toEqual(again);
+  });
+
+  test("they are the caller's own: another account does not see them", async () => {
+    const t = setup();
+    await t.call("PATCH", "", await t.login(alice), { preferences: prefs });
+    expect(((await (await t.call("GET", "", await t.login(bob))).json()) as MeBody).me.preferences).toBeNull();
+  });
+
+  test("unknown sizes, missing fields and wrong types are rejected (422) and change nothing", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    for (const bad of [
+      { ...prefs, size: "huge" },
+      { size: "large", mergeStops: false },
+      { ...prefs, mergeStops: "yes" },
+    ]) {
+      expect((await t.call("PATCH", "", cookie, { preferences: bad })).status).toBe(422);
+    }
+    expect(((await (await t.call("GET", "", cookie)).json()) as MeBody).me.preferences).toBeNull();
+  });
+
+  test("a field that is not a preference is dropped, never stored", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    const res = await t.call("PATCH", "", cookie, { preferences: { ...prefs, role: "admin" } });
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as MeBody).me.preferences).toEqual(prefs);
+  });
+
+  test("they can be saved together with the language", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    const res = await t.call("PATCH", "", cookie, { locale: "en", preferences: prefs });
+    const me = ((await res.json()) as MeBody).me;
+    expect(me.locale).toBe("en");
+    expect(me.preferences).toEqual(prefs);
   });
 });
 

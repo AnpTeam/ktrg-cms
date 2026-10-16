@@ -11,6 +11,7 @@ const profileColumns = {
   locale: users.locale,
   displayName: users.displayName,
   origin: users.origin,
+  preferences: users.preferences,
   deletionRequestedAt: users.deletionRequestedAt,
   createdAt: users.createdAt,
 };
