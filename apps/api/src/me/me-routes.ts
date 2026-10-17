@@ -65,7 +65,7 @@ export function meRoutes(getServices: () => MeServices, opts: RouteOptions) {
           set.status = 202; // accepted: carried out later
           return { ok: true as const, me: profile };
         },
-        { auth: "me.manage", rateLimit: { meDeletionUser: "user.id" } },
+        { auth: "me.sensitive", rateLimit: { meDeletionUser: "user.id" } },
       )
       .post(
         "/deletion/cancel",

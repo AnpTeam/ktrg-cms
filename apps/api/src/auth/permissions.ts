@@ -15,6 +15,11 @@ export const PERMISSIONS = {
   // --- Any logged-in account -------------------------------------------------------------
   /** Own profile, language, passkeys and account deletion request. */
   "me.manage": ["participant", "admin"],
+  /**
+   * Account security: add or remove a passkey, ask for the account to be deleted. Needs a fresh login (below),
+   * so someone holding a signed-in phone cannot give themselves a login that outlives the owner's changes.
+   */
+  "me.sensitive": ["participant", "admin"],
   /** Collect a stamp at a spot. */
   "stamp.create": ["participant", "admin"],
 
@@ -40,7 +45,7 @@ export type Permission = keyof typeof PERMISSIONS;
  * Permissions that also need a fresh login: a login or POST /auth/reauth/verify within
  * FRESH_LOGIN_MS. The guard enforces this, so a route only names the permission.
  */
-export const FRESH_LOGIN_REQUIRED: readonly Permission[] = ["user.manage_roles"];
+export const FRESH_LOGIN_REQUIRED: readonly Permission[] = ["user.manage_roles", "me.sensitive"];
 
 export function needsFreshLogin(permission: Permission): boolean {
   return FRESH_LOGIN_REQUIRED.includes(permission);

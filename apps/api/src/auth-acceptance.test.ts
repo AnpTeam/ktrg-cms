@@ -277,6 +277,9 @@ describe("user B cannot touch user A", () => {
   const BODIES: Record<string, () => unknown> = {
     "PATCH /api/v1/me": () => ({ locale: "en" }),
     "POST /api/v1/auth/reauth/verify": () => ({ code: "123456" }),
+    "POST /api/v1/auth/passkeys/reauth/verify": () => ({
+      response: new TestAuthenticator(passkeyConfig).authenticate({ challenge: "x".repeat(43) }),
+    }),
     "POST /api/v1/auth/passkeys/register/verify": () => ({
       response: new TestAuthenticator(passkeyConfig).register({ challenge: "x".repeat(43) }),
     }),

@@ -6,9 +6,11 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { AgeRangePicker, GenderPicker, useAgeRangeNames, useGenderNames } from "@/components/auth/AboutYou";
 import { AuthError, inputClass, OriginPicker, primaryButton, secondaryButton, useOriginNames } from "@/components/auth/authUi";
+import { useReauth } from "@/components/auth/ReauthDialog";
 import { UserIcon } from "@/components/icons";
 import { PrivacyNote } from "@/components/PrivacyNote";
 import { api } from "@/lib/api";
+import { requestAccountDeletion } from "@/lib/auth-client";
 import { formatUpdated } from "@/lib/format";
 import { failureFromApi, formatPublicId, hasName, NAME_MAX, type AgeRange, type AuthFailure, type Gender, type Origin } from "@/lib/auth-flow";
 
@@ -52,6 +54,7 @@ export function ProfileCard({
   const [error, setError] = useState<AuthFailure | null>(null);
   const [confirming, setConfirming] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
+  const { guard, dialog: reauthDialog } = useReauth();
 
   // The confirmation is a native modal dialog: focus is trapped in it and Escape closes it.
   useEffect(() => {
@@ -65,21 +68,14 @@ export function ProfileCard({
     if (busy) return;
     setBusy(true);
     setError(null);
-    try {
-      const res = await api.me.delete();
-      if (res.error) {
-        const status = typeof res.error.status === "number" ? res.error.status : 0;
-        setError(status === 0 ? "network" : failureFromApi(status, res.error.value));
-        setConfirming(false);
-        setBusy(false);
-        return;
-      }
-      setConfirming(false);
+    // Close the confirmation first, so the "confirm it is you" window is not stacked on it.
+    setConfirming(false);
+    const res = await guard(requestAccountDeletion);
+    if (!res.ok) {
+      setError(res.code === "cancelled" ? null : res.code);
+    } else {
       setEditing(false);
       router.refresh();
-    } catch {
-      setError("network");
-      setConfirming(false);
     }
     setBusy(false);
   }
@@ -208,6 +204,7 @@ export function ProfileCard({
           </div>
         </form>
         {confirmDialog}
+        {reauthDialog}
       </>
     );
   }

@@ -168,3 +168,56 @@ export async function removePasskey(id: string): Promise<AuthResult> {
     return fail("network");
   }
 }
+
+// ---- Fresh login: "confirm it is you again" before a sensitive action -----------------------------------------
+
+/** Confirm with the phone's face, fingerprint or lock code (a passkey the account already holds). */
+export async function reauthWithPasskey(): Promise<AuthResult> {
+  if (!passkeysSupported()) return fail("unsupported");
+  try {
+    const opts = await api.auth.passkeys.reauth.options.post();
+    if (opts.error || !opts.data) return fail(apiFailure(opts.error));
+    if (!opts.data.ok) return fail("no_passkey");
+
+    let assertion;
+    try {
+      assertion = await startAuthentication({ optionsJSON: opts.data.options as unknown as PublicKeyCredentialRequestOptionsJSON });
+    } catch (err) {
+      return fail(ceremonyFailure(err, "reauth_failed"));
+    }
+
+    const verified = await api.auth.passkeys.reauth.verify.post({ response: withoutNulls(assertion) as never });
+    return verified.error ? fail(apiFailure(verified.error)) : done;
+  } catch {
+    return fail("network");
+  }
+}
+
+/** Email a 6-digit number to the signed-in account (for an account with no passkey, or none on this phone). */
+export async function requestReauthCode(): Promise<AuthResult> {
+  try {
+    const res = await api.auth.reauth.request.post();
+    return res.error ? fail(apiFailure(res.error)) : done;
+  } catch {
+    return fail("network");
+  }
+}
+
+export async function verifyReauthCode(code: string): Promise<AuthResult> {
+  try {
+    const res = await api.auth.reauth.verify.post({ code });
+    return res.error ? fail(apiFailure(res.error)) : done;
+  } catch {
+    return fail("network");
+  }
+}
+
+/** Ask for the account to be deleted after the grace period (needs a fresh login). */
+export async function requestAccountDeletion(): Promise<AuthResult> {
+  try {
+    const res = await api.me.delete();
+    return res.error ? fail(apiFailure(res.error)) : done;
+  } catch {
+    return fail("network");
+  }
+}

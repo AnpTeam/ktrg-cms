@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { AuthError, primaryButton, secondaryButton } from "@/components/auth/authUi";
+import { useReauth } from "@/components/auth/ReauthDialog";
 import { KeyIcon } from "@/components/icons";
 import { addPasskey, listPasskeys, passkeysSupported, removePasskey, type PasskeyItem } from "@/lib/auth-client";
 import type { AuthFailure } from "@/lib/auth-flow";
@@ -24,6 +25,7 @@ export function PasskeyManager({ locale }: { locale: string }) {
   const [busy, setBusy] = useState(false);
   const [removing, setRemoving] = useState<PasskeyItem | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
+  const { guard, dialog: reauthDialog } = useReauth();
   // Known only in the browser, so it starts unknown (the server render and the first browser render must match).
   const supported = useSyncExternalStore(
     () => () => {},
@@ -64,8 +66,8 @@ export function PasskeyManager({ locale }: { locale: string }) {
     if (busy) return;
     setBusy(true);
     setError(null);
-    const res = await addPasskey();
-    if (!res.ok) setError(res.code);
+    const res = await guard(addPasskey);
+    if (!res.ok) setError(res.code === "cancelled" ? null : res.code);
     else await load();
     setBusy(false);
   }
@@ -74,9 +76,11 @@ export function PasskeyManager({ locale }: { locale: string }) {
     if (busy || !removing) return;
     setBusy(true);
     setError(null);
-    const res = await removePasskey(removing.id);
+    const id = removing.id;
+    // Close the confirmation first, so the "confirm it is you" window is not stacked on it.
     setRemoving(null);
-    if (!res.ok) setError(res.code);
+    const res = await guard(() => removePasskey(id));
+    if (!res.ok) setError(res.code === "cancelled" ? null : res.code);
     else await load();
     setBusy(false);
   }
@@ -129,6 +133,7 @@ export function PasskeyManager({ locale }: { locale: string }) {
       ) : null}
       {supported === false ? <p className="rounded-2xl bg-surface p-4 text-lg">{t`この端末・ブラウザではパスキーを使えません。`}</p> : null}
 
+      {reauthDialog}
       <dialog
         ref={dialog}
         aria-labelledby="remove-passkey-title"

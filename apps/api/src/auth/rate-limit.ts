@@ -34,6 +34,8 @@ export const AUTH_LIMITS = {
   passkeyRemoveUser: { name: "passkey-remove-user", limit: 10, windowMs: 15 * MINUTE },
   // Keyed by user id: adding a passkey needs a login, so this just caps abuse.
   passkeyRegisterUser: { name: "passkey-register-user", limit: 10, windowMs: 15 * MINUTE },
+  // Keyed by user id: proving it is you again with a passkey (each try asks the phone for a face or fingerprint).
+  passkeyReauthUser: { name: "passkey-reauth-user", limit: 10, windowMs: 15 * MINUTE },
   // Keyed by user id: deletion requests and cancels. Each request emails the owner, so a
   // request/cancel loop must not be able to flood their inbox.
   meDeletionUser: { name: "me-deletion-user", limit: 5, windowMs: 15 * MINUTE },

@@ -18,9 +18,11 @@ export const ERROR_CODES = {
   // --- Login and permissions -------------------------------------------------------------
   unauthenticated: "401: not logged in, or the session ended",
   forbidden: "403: logged in, but not allowed",
-  reauth_required: "403: allowed, but needs a fresh login first (POST /auth/reauth/request + verify)",
+  reauth_required: "403: allowed, but needs a fresh login first (a passkey check at /auth/passkeys/reauth, or POST /auth/reauth/request + verify)",
   invalid_code: "401 at login, 400 at the fresh-login re-check: wrong, expired, used or locked code",
   no_email: "409: this account has no email to send a code to",
+  no_passkey: "409: this account has no passkey to confirm with (use the emailed code)",
+  reauth_failed: "400: the passkey check for a fresh login did not pass",
 
   // --- Passkeys --------------------------------------------------------------------------
   login_failed: "401: passkey login failed",

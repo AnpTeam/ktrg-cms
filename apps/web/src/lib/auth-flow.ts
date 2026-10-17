@@ -37,11 +37,15 @@ export type AuthFailure =
   | "registration_failed"
   | "too_many_passkeys"
   | "last_login_method"
+  | "reauth_required"
+  | "reauth_failed"
+  | "no_passkey"
+  | "no_email"
   | "too_many_requests"
   | "network"
   | "failed";
 
-const apiCodes: readonly string[] = ["invalid_display_name", "invalid_code", "login_failed", "registration_failed", "too_many_passkeys", "last_login_method"];
+const apiCodes: readonly string[] = ["invalid_display_name", "invalid_code", "login_failed", "registration_failed", "too_many_passkeys", "last_login_method", "reauth_required", "reauth_failed", "no_passkey", "no_email"];
 
 /** Turn an API failure (HTTP status plus the `{ ok: false, error }` body) into an AuthFailure. */
 export function failureFromApi(status: number, value: unknown): AuthFailure {

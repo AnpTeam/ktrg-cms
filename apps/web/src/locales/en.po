@@ -7,7 +7,7 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: en\n"
 
-#: src/components/settings/PasskeyManager.tsx:102
+#: src/components/settings/PasskeyManager.tsx:111
 msgid "{added} に追加"
 msgstr "Added {added}"
 
@@ -19,7 +19,7 @@ msgstr "Checked on {checked}"
 msgid "{count}か所の場所がここに集まっています。押すと拡大します"
 msgstr "{count} places are gathered here. Tap to zoom in."
 
-#: src/components/ProfileCard.tsx:220
+#: src/components/ProfileCard.tsx:217
 msgid "{due}（日本時間）に、アカウントとすべての記録が消えます。それまでは、取り消せます。"
 msgstr "Your account and all your records will be erased on {due} (Japan time). Until then, you can cancel."
 
@@ -100,7 +100,7 @@ msgstr "Use two fingers to move the map"
 msgid "30代"
 msgstr "30s"
 
-#: src/components/ProfileCard.tsx:137
+#: src/components/ProfileCard.tsx:133
 msgid "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 msgstr "For 3 days you can sign in and cancel. After that, it cannot be undone."
 
@@ -125,7 +125,7 @@ msgid "Ctrlキーを押しながら地図を動かします"
 msgstr "Hold the Ctrl key to move the map"
 
 #. placeholder {0}: formatPublicId(publicId)
-#: src/components/ProfileCard.tsx:241
+#: src/components/ProfileCard.tsx:238
 msgid "ID: {0}"
 msgstr "ID: {0}"
 
@@ -133,19 +133,19 @@ msgstr "ID: {0}"
 msgid "アカウント"
 msgstr "Account"
 
-#: src/components/ProfileCard.tsx:198
+#: src/components/ProfileCard.tsx:194
 msgid "アカウントの削除を依頼ずみです。"
 msgstr "You have already asked to delete this account."
 
-#: src/components/ProfileCard.tsx:219
+#: src/components/ProfileCard.tsx:216
 msgid "アカウントを削除します"
 msgstr "Your account will be deleted"
 
-#: src/components/ProfileCard.tsx:132
+#: src/components/ProfileCard.tsx:128
 msgid "アカウントを削除しますか？"
 msgstr "Delete your account?"
 
-#: src/components/ProfileCard.tsx:205
+#: src/components/ProfileCard.tsx:201
 msgid "アカウントを削除する"
 msgstr "Delete account"
 
@@ -195,7 +195,7 @@ msgid "オフのままだと、スタンプの場所を1つずつ表示します
 msgstr "When off, every stamp place is shown on its own (recommended). When on, places close together are merged into a group such as \"3-5\"."
 
 #: src/components/auth/RegisterFlow.tsx:86
-#: src/components/ProfileCard.tsx:154
+#: src/components/ProfileCard.tsx:150
 msgid "お名前"
 msgstr "Your name"
 
@@ -203,7 +203,7 @@ msgstr "Your name"
 msgid "お名前に使えない文字が含まれているか、長すぎます（40文字まで）。"
 msgstr "The name has characters that cannot be used, or is too long (40 characters at most)."
 
-#: src/components/ProfileCard.tsx:232
+#: src/components/ProfileCard.tsx:229
 msgid "お名前は未設定です"
 msgstr "No name set"
 
@@ -239,16 +239,24 @@ msgstr "Nearest first from the start of the course (straight-line distance)"
 msgid "コースを見る"
 msgstr "See the courses"
 
-#: src/components/settings/PasskeyManager.tsx:88
+#: src/components/settings/PasskeyManager.tsx:97
 msgid "このアカウントに、パスキーはまだありません。"
 msgstr "This account has no passkeys yet."
+
+#: src/components/auth/authUi.tsx:74
+msgid "このアカウントには、パスキーがありません。メールの番号で確認してください。"
+msgstr "This account has no passkey. Confirm with the number sent to your email."
+
+#: src/components/auth/authUi.tsx:75
+msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
+msgstr "This account has no email. Confirm with your face or fingerprint."
 
 #: src/components/SampleNotice.tsx:51
 #: src/components/SampleNotice.tsx:78
 msgid "このデータについて"
 msgstr "About this data"
 
-#: src/components/settings/PasskeyManager.tsx:135
+#: src/components/settings/PasskeyManager.tsx:144
 msgid "このパスキーを消しますか？"
 msgstr "Remove this passkey?"
 
@@ -269,7 +277,7 @@ msgstr "This place is closed right now."
 msgid "この場所を見る"
 msgstr "See this place"
 
-#: src/components/settings/PasskeyManager.tsx:125
+#: src/components/settings/PasskeyManager.tsx:134
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "This device or browser can't use passkeys."
 
@@ -285,7 +293,7 @@ msgstr "This device can't show the map. You can pick a place from the list below
 msgid "この端末には保存しました。つながったときに、アカウントにも保存されます。"
 msgstr "Saved on this phone. It will be saved to your account when you are connected."
 
-#: src/components/settings/PasskeyManager.tsx:122
+#: src/components/settings/PasskeyManager.tsx:131
 msgid "この端末のパスキーを追加する"
 msgstr "Add a passkey for this device"
 
@@ -433,11 +441,11 @@ msgstr "Toilets and rest"
 msgid "トイレやお店などを、地図を開いたときから表示します。"
 msgstr "Show toilets, shops and so on as soon as the map opens."
 
-#: src/components/auth/authUi.tsx:105
+#: src/components/auth/authUi.tsx:109
 msgid "どちらからお越しですか？"
 msgstr "Where are you visiting from?"
 
-#: src/components/ProfileCard.tsx:233
+#: src/components/ProfileCard.tsx:230
 msgid "どちらからかは未設定です"
 msgstr "Place not set"
 
@@ -465,7 +473,7 @@ msgstr "First-time set-up"
 msgid "はじめのラリー"
 msgstr "First rally"
 
-#: src/components/settings/PasskeyManager.tsx:101
+#: src/components/settings/PasskeyManager.tsx:110
 msgid "パスキー {number}"
 msgstr "Passkey {number}"
 
@@ -507,7 +515,7 @@ msgstr "Privacy policy"
 msgid "ブログを見る"
 msgstr "Read the blog"
 
-#: src/components/ProfileCard.tsx:227
+#: src/components/ProfileCard.tsx:224
 msgid "プロフィール"
 msgstr "Profile"
 
@@ -591,6 +599,14 @@ msgstr "Email"
 msgid "メールで登録"
 msgstr "Email"
 
+#: src/components/auth/ReauthDialog.tsx:67
+msgid "メールに、6桁の番号を送りました。"
+msgstr "We sent a 6-digit number to your email."
+
+#: src/components/auth/ReauthDialog.tsx:59
+msgid "メールの番号で確認"
+msgstr "Confirm with an email number"
+
 #: src/components/TabBar.tsx:29
 msgid "メインメニュー"
 msgstr "Main menu"
@@ -600,6 +616,10 @@ msgstr "Main menu"
 msgid "メニュー"
 msgstr "Menu"
 
+#: src/components/auth/authUi.tsx:72
+msgid "もう一度、本人かどうかの確認が必要です。"
+msgstr "We need to confirm it is you again."
+
 #: src/components/auth/EmailCodeStep.tsx:73
 msgid "もう一度送りました。届かないときは、1分ほど待ってからお試しください。"
 msgstr "Sent again. If it does not arrive, wait about a minute and try again."
@@ -608,9 +628,11 @@ msgstr "Sent again. If it does not arrive, wait about a minute and try again."
 msgid "もっと見る（あと{hidden}か所）"
 msgstr "Show more ({hidden} more)"
 
-#: src/components/ProfileCard.tsx:143
-#: src/components/ProfileCard.tsx:185
-#: src/components/settings/PasskeyManager.tsx:143
+#: src/components/auth/ReauthDialog.tsx:62
+#: src/components/auth/ReauthDialog.tsx:84
+#: src/components/ProfileCard.tsx:139
+#: src/components/ProfileCard.tsx:181
+#: src/components/settings/PasskeyManager.tsx:152
 msgid "やめる"
 msgstr "Cancel"
 
@@ -703,7 +725,7 @@ msgstr "Could not log in. If this device has no passkey, log in with email."
 msgid "ログインの方法"
 msgstr "Ways to log in"
 
-#: src/components/ProfileCard.tsx:195
+#: src/components/ProfileCard.tsx:191
 msgid "ログインの方法（パスキー）"
 msgstr "Ways to log in (passkeys)"
 
@@ -743,7 +765,7 @@ msgstr "Saved"
 msgid "保存しました。"
 msgstr "Saved."
 
-#: src/components/ProfileCard.tsx:171
+#: src/components/ProfileCard.tsx:167
 #: src/components/settings/PrefsForm.tsx:161
 msgid "保存する"
 msgstr "Save"
@@ -822,11 +844,11 @@ msgstr "Reset to defaults"
 msgid "利用規約"
 msgstr "Terms of use"
 
-#: src/components/ProfileCard.tsx:140
+#: src/components/ProfileCard.tsx:136
 msgid "削除を依頼する"
 msgstr "Ask to delete"
 
-#: src/components/ProfileCard.tsx:223
+#: src/components/ProfileCard.tsx:220
 msgid "削除を取り消す"
 msgstr "Cancel deletion"
 
@@ -846,7 +868,7 @@ msgstr "Open the video page"
 msgid "動画を見る"
 msgstr "Play the video"
 
-#: src/components/auth/authUi.tsx:92
+#: src/components/auth/authUi.tsx:96
 #: src/components/PrefectureName.tsx:9
 msgid "和歌山県"
 msgstr "Wakayama"
@@ -855,7 +877,7 @@ msgstr "Wakayama"
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "From the Izumi range to the Kongo mountains, these ridges run along the borders of Osaka, Wakayama and Nara. They have long been called Katsuragi and revered as mountains where the gods dwell. It is said that En no Gyoja, who is believed to have founded Shugendo, the path of training in the mountains, first practised here."
 
-#: src/components/auth/authUi.tsx:74
+#: src/components/auth/authUi.tsx:78
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "Something went wrong. Please try again in a little while."
 
@@ -904,7 +926,7 @@ msgstr "Show terrain shading"
 msgid "地形ボタンで重ねるもの"
 msgstr "What the terrain button adds"
 
-#: src/components/ProfileCard.tsx:248
+#: src/components/ProfileCard.tsx:245
 msgid "変える"
 msgstr "Change"
 
@@ -916,12 +938,16 @@ msgstr "Large"
 msgid "大きく表示"
 msgstr "Bigger map"
 
-#: src/components/auth/authUi.tsx:91
+#: src/components/auth/ReauthDialog.tsx:43
+msgid "大切な操作なので、もう一度、確認します。"
+msgstr "This is an important action, so we confirm it is you once more."
+
+#: src/components/auth/authUi.tsx:95
 #: src/components/PrefectureName.tsx:7
 msgid "大阪府"
 msgstr "Osaka"
 
-#: src/components/auth/authUi.tsx:93
+#: src/components/auth/authUi.tsx:97
 #: src/components/PrefectureName.tsx:11
 msgid "奈良県"
 msgstr "Nara"
@@ -973,7 +999,7 @@ msgstr "Stamped"
 msgid "押し方: 場所の近くで、ボタンを押します（位置情報）"
 msgstr "How: press the button near the place (uses your location)"
 
-#: src/components/ProfileCard.tsx:135
+#: src/components/ProfileCard.tsx:131
 msgid "押すと、アカウントと、集めたスタンプなどの記録を、3日後にすべて消します。"
 msgstr "If you press this, your account and your records, such as your stamps, will all be erased after 3 days."
 
@@ -1016,7 +1042,7 @@ msgstr "Choose the size of text and buttons and how the map is shown. The size c
 msgid "新規登録"
 msgstr "Register"
 
-#: src/components/auth/authUi.tsx:94
+#: src/components/auth/authUi.tsx:98
 msgid "日本のほかの地域"
 msgstr "Elsewhere in Japan"
 
@@ -1032,6 +1058,10 @@ msgstr "Time"
 #: src/components/StatusBanner.tsx:37
 msgid "更新 {updated}（日本時間）"
 msgstr "Updated {updated} (Japan time)"
+
+#: src/components/auth/ReauthDialog.tsx:41
+msgid "本人かどうか、確認します"
+msgstr "Confirming it is you"
 
 #: src/app/[lang]/layout.tsx:53
 msgid "本文へ移動"
@@ -1089,16 +1119,16 @@ msgstr "Drinking water"
 msgid "注意"
 msgstr "Caution"
 
-#: src/components/auth/authUi.tsx:95
+#: src/components/auth/authUi.tsx:99
 msgid "海外"
 msgstr "Overseas"
 
-#: src/components/settings/PasskeyManager.tsx:110
-#: src/components/settings/PasskeyManager.tsx:140
+#: src/components/settings/PasskeyManager.tsx:119
+#: src/components/settings/PasskeyManager.tsx:149
 msgid "消す"
 msgstr "Remove"
 
-#: src/components/settings/PasskeyManager.tsx:137
+#: src/components/settings/PasskeyManager.tsx:146
 msgid "消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。"
 msgstr "After removing it, you can no longer log in with your face or fingerprint on that device. It can only be removed if you have another way to log in."
 
@@ -1162,7 +1192,7 @@ msgstr "Already registered?"
 msgid "着いたらボタンを押すだけ。場所を確かめて、スタンプがたまります。"
 msgstr "Just press the button when you arrive. The app checks where you are, and your stamps add up."
 
-#: src/components/auth/authUi.tsx:72
+#: src/components/auth/authUi.tsx:76
 msgid "短い間に何度も操作されました。しばらくしてからお試しください。"
 msgstr "Too many attempts in a short time. Please try again in a little while."
 
@@ -1170,7 +1200,16 @@ msgstr "Too many attempts in a short time. Please try again in a little while."
 msgid "確認した日：{checkedOn}"
 msgstr "Checked on: {checkedOn}"
 
+#: src/components/auth/ReauthDialog.tsx:81
+msgid "確認する"
+msgstr "Confirm"
+
+#: src/components/auth/authUi.tsx:73
+msgid "確認できませんでした。もう一度お試しください。"
+msgstr "We could not confirm it. Please try again."
+
 #: src/components/auth/EmailCodeStep.tsx:58
+#: src/components/auth/ReauthDialog.tsx:76
 msgid "確認番号"
 msgstr "Confirmation number"
 
@@ -1183,7 +1222,7 @@ msgstr "Send the confirmation number"
 msgid "答えたくない"
 msgstr "Prefer not to say"
 
-#: src/components/auth/authUi.tsx:106
+#: src/components/auth/authUi.tsx:110
 msgid "答えなくても大丈夫です。"
 msgstr "You can skip this."
 
@@ -1270,7 +1309,7 @@ msgstr "Language"
 msgid "説明"
 msgstr "About this place"
 
-#: src/components/settings/PasskeyManager.tsx:84
+#: src/components/settings/PasskeyManager.tsx:93
 msgid "読み込み中"
 msgstr "Loading"
 
@@ -1282,7 +1321,7 @@ msgstr "Distance"
 msgid "近い場所をまとめて表示する"
 msgstr "Merge places that are close together"
 
-#: src/components/auth/authUi.tsx:73
+#: src/components/auth/authUi.tsx:77
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not connect. Please try again where the signal is better."
 
@@ -1335,6 +1374,10 @@ msgstr "Shading (soft shadow)"
 #: src/components/RouteStats.tsx:34
 msgid "難しさ"
 msgstr "Difficulty"
+
+#: src/components/auth/ReauthDialog.tsx:50
+msgid "顔・指紋・ロック番号で確認"
+msgstr "Confirm with face, fingerprint or lock code"
 
 #: src/components/auth/LoginFlow.tsx:98
 msgid "顔・指紋でログイン"

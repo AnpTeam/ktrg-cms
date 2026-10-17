@@ -227,6 +227,45 @@ export function createPasskeyService({
     },
 
     /**
+     * Fresh login with a passkey, step 1: ask the phone to prove it is the owner again (face, fingerprint or the
+     * device's own lock code). Only this account's passkeys are offered. `null` when the account has none.
+     */
+    async reauthOptions(user: AuthUser): Promise<PublicKeyCredentialRequestOptionsJSON | null> {
+      const ids = await store.credentialIds(user.id);
+      if (ids.length === 0) return null;
+      const options = await generateAuthenticationOptions({
+        rpID: config.rpId,
+        userVerification: "required",
+        allowCredentials: ids.map((id) => ({ id })),
+      });
+      await newChallenge({ challenge: options.challenge, type: "authentication", userId: user.id, pendingUserId: null });
+      return options;
+    },
+
+    /** Fresh login with a passkey, step 3: the signature must come from one of THIS account's own passkeys. */
+    async verifyReauth(user: AuthUser, response: AuthenticationResponseJSON): Promise<boolean> {
+      const stored = await store.findCredential(response.id);
+      if (!stored || stored.userId !== user.id) return false;
+      try {
+        const verification = await verifyAuthenticationResponse({
+          response,
+          // A challenge WE issued to this account for this check, unexpired, used up here.
+          expectedChallenge: async (challenge) =>
+            (await store.takeChallenge(challenge, "authentication", user.id, now())) !== null,
+          expectedOrigin: config.origin,
+          expectedRPID: config.rpId,
+          credential: { id: stored.credentialId, publicKey: new Uint8Array(stored.publicKey), counter: stored.counter },
+          requireUserVerification: true,
+        });
+        if (!verification.verified) return false;
+        await store.updateCounter(stored.credentialId, verification.authenticationInfo.newCounter);
+        return true;
+      } catch {
+        return false;
+      }
+    },
+
+    /**
      * Sign up with a passkey alone, no email. Step 1. Nobody is logged in and no account
      * exists yet: we only reserve the id the account will get, and create it in step 3.
      */
