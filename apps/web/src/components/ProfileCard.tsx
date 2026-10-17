@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useLingui } from "@lingui/react/macro";
@@ -186,7 +187,13 @@ export function ProfileCard({
           </div>
 
           {/* Deleting the account is one tap away from editing, but needs a confirmation. */}
-          <div className="border-t border-line/30 pt-5">
+          <div className="flex flex-col gap-3 border-t border-line/30 pt-5">
+            <Link
+              href={`/${locale}/settings/passkeys`}
+              className="tap-target flex w-full items-center justify-center rounded-xl border-2 border-ink px-4 text-lg font-bold hover:bg-paper"
+            >
+              {t`ログインの方法（パスキー）`}
+            </Link>
             {deletionDueAt ? (
               <p className="text-lg text-muted">{t`アカウントの削除を依頼ずみです。`}</p>
             ) : (

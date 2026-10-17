@@ -86,6 +86,9 @@ export default async function SitemapPage() {
         <LinkRow href={to("/settings")}>
           <Trans>見やすさの設定</Trans>
         </LinkRow>
+        <LinkRow href={to("/settings/passkeys")}>
+          <Trans>ログインの方法</Trans>
+        </LinkRow>
       </Group>
 
       <Group title={<Trans>ご案内</Trans>}>

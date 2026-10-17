@@ -67,6 +67,8 @@ export function useFailureMessages(): Record<AuthFailure, string> {
     invalid_code: t`番号が違うか、期限が切れています。もう一度お試しください。`,
     login_failed: t`ログインできませんでした。この端末にパスキーがないときは、メールでログインしてください。`,
     registration_failed: t`登録できませんでした。もう一度お試しください。`,
+    too_many_passkeys: t`パスキーは、これ以上ふやせません。使わないものを消してから、お試しください。`,
+    last_login_method: t`ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。`,
     too_many_requests: t`短い間に何度も操作されました。しばらくしてからお試しください。`,
     network: t`通信できませんでした。電波の良い場所でもう一度お試しください。`,
     failed: t`問題が発生しました。しばらくしてからもう一度お試しください。`,

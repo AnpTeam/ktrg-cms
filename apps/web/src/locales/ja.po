@@ -7,6 +7,10 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: ja\n"
 
+#: src/components/settings/PasskeyManager.tsx:102
+msgid "{added} に追加"
+msgstr "{added} に追加"
+
 #: src/components/landing/TrailNotices.tsx:40
 msgid "{checked} に確認"
 msgstr "{checked} に確認"
@@ -15,7 +19,7 @@ msgstr "{checked} に確認"
 msgid "{count}か所の場所がここに集まっています。押すと拡大します"
 msgstr "{count}か所の場所がここに集まっています。押すと拡大します"
 
-#: src/components/ProfileCard.tsx:213
+#: src/components/ProfileCard.tsx:220
 msgid "{due}（日本時間）に、アカウントとすべての記録が消えます。それまでは、取り消せます。"
 msgstr "{due}（日本時間）に、アカウントとすべての記録が消えます。それまでは、取り消せます。"
 
@@ -96,7 +100,7 @@ msgstr "2本の指で地図を動かします"
 msgid "30代"
 msgstr "30代"
 
-#: src/components/ProfileCard.tsx:136
+#: src/components/ProfileCard.tsx:137
 msgid "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 msgstr "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 
@@ -121,7 +125,7 @@ msgid "Ctrlキーを押しながら地図を動かします"
 msgstr "Ctrlキーを押しながら地図を動かします"
 
 #. placeholder {0}: formatPublicId(publicId)
-#: src/components/ProfileCard.tsx:234
+#: src/components/ProfileCard.tsx:241
 msgid "ID: {0}"
 msgstr "ID: {0}"
 
@@ -129,19 +133,19 @@ msgstr "ID: {0}"
 msgid "アカウント"
 msgstr "アカウント"
 
-#: src/components/ProfileCard.tsx:191
+#: src/components/ProfileCard.tsx:198
 msgid "アカウントの削除を依頼ずみです。"
 msgstr "アカウントの削除を依頼ずみです。"
 
-#: src/components/ProfileCard.tsx:212
+#: src/components/ProfileCard.tsx:219
 msgid "アカウントを削除します"
 msgstr "アカウントを削除します"
 
-#: src/components/ProfileCard.tsx:131
+#: src/components/ProfileCard.tsx:132
 msgid "アカウントを削除しますか？"
 msgstr "アカウントを削除しますか？"
 
-#: src/components/ProfileCard.tsx:198
+#: src/components/ProfileCard.tsx:205
 msgid "アカウントを削除する"
 msgstr "アカウントを削除する"
 
@@ -191,7 +195,7 @@ msgid "オフのままだと、スタンプの場所を1つずつ表示します
 msgstr "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 
 #: src/components/auth/RegisterFlow.tsx:86
-#: src/components/ProfileCard.tsx:153
+#: src/components/ProfileCard.tsx:154
 msgid "お名前"
 msgstr "お名前"
 
@@ -199,7 +203,7 @@ msgstr "お名前"
 msgid "お名前に使えない文字が含まれているか、長すぎます（40文字まで）。"
 msgstr "お名前に使えない文字が含まれているか、長すぎます（40文字まで）。"
 
-#: src/components/ProfileCard.tsx:225
+#: src/components/ProfileCard.tsx:232
 msgid "お名前は未設定です"
 msgstr "お名前は未設定です"
 
@@ -235,10 +239,18 @@ msgstr "コースの出発地点から近い順（まっすぐ測った距離で
 msgid "コースを見る"
 msgstr "コースを見る"
 
+#: src/components/settings/PasskeyManager.tsx:88
+msgid "このアカウントに、パスキーはまだありません。"
+msgstr "このアカウントに、パスキーはまだありません。"
+
 #: src/components/SampleNotice.tsx:51
 #: src/components/SampleNotice.tsx:78
 msgid "このデータについて"
 msgstr "このデータについて"
+
+#: src/components/settings/PasskeyManager.tsx:135
+msgid "このパスキーを消しますか？"
+msgstr "このパスキーを消しますか？"
 
 #: src/app/[lang]/(public)/routes/page.tsx:72
 msgid "この地域のルートはまだありません。"
@@ -257,6 +269,10 @@ msgstr "この場所は、いまは閉鎖中です。"
 msgid "この場所を見る"
 msgstr "この場所を見る"
 
+#: src/components/settings/PasskeyManager.tsx:125
+msgid "この端末・ブラウザではパスキーを使えません。"
+msgstr "この端末・ブラウザではパスキーを使えません。"
+
 #: src/components/auth/authUi.tsx:64
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
@@ -268,6 +284,10 @@ msgstr "この端末では地図を表示できません。下の一覧から場
 #: src/components/settings/PrefsForm.tsx:60
 msgid "この端末には保存しました。つながったときに、アカウントにも保存されます。"
 msgstr "この端末には保存しました。つながったときに、アカウントにも保存されます。"
+
+#: src/components/settings/PasskeyManager.tsx:122
+msgid "この端末のパスキーを追加する"
+msgstr "この端末のパスキーを追加する"
 
 #: src/components/settings/PrefsForm.tsx:147
 msgid "この設定ではじめる"
@@ -285,7 +305,7 @@ msgstr "これは見本です。経塚のスタンプは全{TOTAL_STAMPS}か所�
 msgid "コンビニ・商店"
 msgstr "コンビニ・商店"
 
-#: src/app/[lang]/(public)/sitemap/page.tsx:91
+#: src/app/[lang]/(public)/sitemap/page.tsx:94
 msgid "ご案内"
 msgstr "ご案内"
 
@@ -299,6 +319,7 @@ msgstr "さあ、はじめましょう"
 msgid "サイトマップ"
 msgstr "サイトマップ"
 
+#: src/app/[lang]/(public)/settings/passkeys/page.tsx:24
 #: src/app/[lang]/(public)/sitemap/page.tsx:70
 #: src/app/[lang]/(public)/sitemap/page.tsx:72
 #: src/app/[lang]/(public)/stamps/page.tsx:28
@@ -412,11 +433,11 @@ msgstr "トイレ・休憩"
 msgid "トイレやお店などを、地図を開いたときから表示します。"
 msgstr "トイレやお店などを、地図を開いたときから表示します。"
 
-#: src/components/auth/authUi.tsx:103
+#: src/components/auth/authUi.tsx:105
 msgid "どちらからお越しですか？"
 msgstr "どちらからお越しですか？"
 
-#: src/components/ProfileCard.tsx:226
+#: src/components/ProfileCard.tsx:233
 msgid "どちらからかは未設定です"
 msgstr "どちらからかは未設定です"
 
@@ -444,9 +465,21 @@ msgstr "はじめての設定"
 msgid "はじめのラリー"
 msgstr "はじめのラリー"
 
+#: src/components/settings/PasskeyManager.tsx:101
+msgid "パスキー {number}"
+msgstr "パスキー {number}"
+
 #: src/components/auth/authUi.tsx:65
 msgid "パスキーの確認が中止されました。もう一度お試しください。"
 msgstr "パスキーの確認が中止されました。もう一度お試しください。"
+
+#: src/components/auth/authUi.tsx:70
+msgid "パスキーは、これ以上ふやせません。使わないものを消してから、お試しください。"
+msgstr "パスキーは、これ以上ふやせません。使わないものを消してから、お試しください。"
+
+#: src/app/[lang]/(public)/settings/passkeys/page.tsx:32
+msgid "パスキーは、顔や指紋でログインするための鍵です。この端末のものを追加すると、メールを待たずにログインできます。"
+msgstr "パスキーは、顔や指紋でログインするための鍵です。この端末のものを追加すると、メールを待たずにログインできます。"
 
 #: src/components/map/PlacesPanel.tsx:43
 msgid "バス停"
@@ -464,7 +497,7 @@ msgstr "ふつうの大きさです。"
 msgid "フッター"
 msgstr "フッター"
 
-#: src/app/[lang]/(public)/sitemap/page.tsx:99
+#: src/app/[lang]/(public)/sitemap/page.tsx:102
 #: src/components/SiteFooter.tsx:26
 #: src/components/SiteHeader.tsx:195
 msgid "プライバシーポリシー"
@@ -474,7 +507,7 @@ msgstr "プライバシーポリシー"
 msgid "ブログを見る"
 msgstr "ブログを見る"
 
-#: src/components/ProfileCard.tsx:220
+#: src/components/ProfileCard.tsx:227
 msgid "プロフィール"
 msgstr "プロフィール"
 
@@ -508,6 +541,10 @@ msgstr "ホーム"
 #: src/app/[lang]/(public)/not-found.tsx:18
 msgid "ホームにもどる"
 msgstr "ホームにもどる"
+
+#: src/components/auth/authUi.tsx:71
+msgid "ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。"
+msgstr "ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。"
 
 #: src/components/RallyViews.tsx:150
 #: src/components/StampLegend.tsx:9
@@ -571,18 +608,19 @@ msgstr "もう一度送りました。届かないときは、1分ほど待っ�
 msgid "もっと見る（あと{hidden}か所）"
 msgstr "もっと見る（あと{hidden}か所）"
 
-#: src/components/ProfileCard.tsx:142
-#: src/components/ProfileCard.tsx:184
+#: src/components/ProfileCard.tsx:143
+#: src/components/ProfileCard.tsx:185
+#: src/components/settings/PasskeyManager.tsx:143
 msgid "やめる"
 msgstr "やめる"
 
-#: src/app/[lang]/(public)/sitemap/page.tsx:93
+#: src/app/[lang]/(public)/sitemap/page.tsx:96
 #: src/components/SiteFooter.tsx:14
 #: src/components/SiteHeader.tsx:193
 msgid "よくあるご質問"
 msgstr "よくあるご質問"
 
-#: src/app/[lang]/(public)/sitemap/page.tsx:102
+#: src/app/[lang]/(public)/sitemap/page.tsx:105
 #: src/components/SiteFooter.tsx:17
 #: src/components/SiteHeader.tsx:196
 msgid "ライセンス情報"
@@ -659,6 +697,16 @@ msgstr "ログインすると、スタンプを記録できます。"
 msgid "ログインできませんでした。この端末にパスキーがないときは、メールでログインしてください。"
 msgstr "ログインできませんでした。この端末にパスキーがないときは、メールでログインしてください。"
 
+#: src/app/[lang]/(public)/settings/passkeys/page.tsx:13
+#: src/app/[lang]/(public)/settings/passkeys/page.tsx:27
+#: src/app/[lang]/(public)/sitemap/page.tsx:90
+msgid "ログインの方法"
+msgstr "ログインの方法"
+
+#: src/components/ProfileCard.tsx:195
+msgid "ログインの方法（パスキー）"
+msgstr "ログインの方法（パスキー）"
+
 #: src/components/SiteHeader.tsx:149
 msgid "ログイン中"
 msgstr "ログイン中"
@@ -695,7 +743,7 @@ msgstr "保存しました"
 msgid "保存しました。"
 msgstr "保存しました。"
 
-#: src/components/ProfileCard.tsx:170
+#: src/components/ProfileCard.tsx:171
 #: src/components/settings/PrefsForm.tsx:161
 msgid "保存する"
 msgstr "保存する"
@@ -768,17 +816,17 @@ msgstr "出典: {0}"
 msgid "初期値に戻す"
 msgstr "初期値に戻す"
 
-#: src/app/[lang]/(public)/sitemap/page.tsx:96
+#: src/app/[lang]/(public)/sitemap/page.tsx:99
 #: src/components/SiteFooter.tsx:23
 #: src/components/SiteHeader.tsx:194
 msgid "利用規約"
 msgstr "利用規約"
 
-#: src/components/ProfileCard.tsx:139
+#: src/components/ProfileCard.tsx:140
 msgid "削除を依頼する"
 msgstr "削除を依頼する"
 
-#: src/components/ProfileCard.tsx:216
+#: src/components/ProfileCard.tsx:223
 msgid "削除を取り消す"
 msgstr "削除を取り消す"
 
@@ -798,7 +846,7 @@ msgstr "動画のページをひらく"
 msgid "動画を見る"
 msgstr "動画を見る"
 
-#: src/components/auth/authUi.tsx:90
+#: src/components/auth/authUi.tsx:92
 #: src/components/PrefectureName.tsx:9
 msgid "和歌山県"
 msgstr "和歌山県"
@@ -807,7 +855,7 @@ msgstr "和歌山県"
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 
-#: src/components/auth/authUi.tsx:72
+#: src/components/auth/authUi.tsx:74
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "問題が発生しました。しばらくしてからもう一度お試しください。"
 
@@ -856,7 +904,7 @@ msgstr "地形の陰影を見る"
 msgid "地形ボタンで重ねるもの"
 msgstr "地形ボタンで重ねるもの"
 
-#: src/components/ProfileCard.tsx:241
+#: src/components/ProfileCard.tsx:248
 msgid "変える"
 msgstr "変える"
 
@@ -868,12 +916,12 @@ msgstr "大きい"
 msgid "大きく表示"
 msgstr "大きく表示"
 
-#: src/components/auth/authUi.tsx:89
+#: src/components/auth/authUi.tsx:91
 #: src/components/PrefectureName.tsx:7
 msgid "大阪府"
 msgstr "大阪府"
 
-#: src/components/auth/authUi.tsx:91
+#: src/components/auth/authUi.tsx:93
 #: src/components/PrefectureName.tsx:11
 msgid "奈良県"
 msgstr "奈良県"
@@ -925,7 +973,7 @@ msgstr "押した"
 msgid "押し方: 場所の近くで、ボタンを押します（位置情報）"
 msgstr "押し方: 場所の近くで、ボタンを押します（位置情報）"
 
-#: src/components/ProfileCard.tsx:134
+#: src/components/ProfileCard.tsx:135
 msgid "押すと、アカウントと、集めたスタンプなどの記録を、3日後にすべて消します。"
 msgstr "押すと、アカウントと、集めたスタンプなどの記録を、3日後にすべて消します。"
 
@@ -968,7 +1016,7 @@ msgstr "文字やボタンの大きさ、地図の見せ方を選べます。大
 msgid "新規登録"
 msgstr "新規登録"
 
-#: src/components/auth/authUi.tsx:92
+#: src/components/auth/authUi.tsx:94
 msgid "日本のほかの地域"
 msgstr "日本のほかの地域"
 
@@ -1041,9 +1089,18 @@ msgstr "水場"
 msgid "注意"
 msgstr "注意"
 
-#: src/components/auth/authUi.tsx:93
+#: src/components/auth/authUi.tsx:95
 msgid "海外"
 msgstr "海外"
+
+#: src/components/settings/PasskeyManager.tsx:110
+#: src/components/settings/PasskeyManager.tsx:140
+msgid "消す"
+msgstr "消す"
+
+#: src/components/settings/PasskeyManager.tsx:137
+msgid "消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。"
+msgstr "消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。"
 
 #: src/components/map/MapSettingsForm.tsx:49
 msgid "淡色"
@@ -1105,7 +1162,7 @@ msgstr "登録済みの方は"
 msgid "着いたらボタンを押すだけ。場所を確かめて、スタンプがたまります。"
 msgstr "着いたらボタンを押すだけ。場所を確かめて、スタンプがたまります。"
 
-#: src/components/auth/authUi.tsx:70
+#: src/components/auth/authUi.tsx:72
 msgid "短い間に何度も操作されました。しばらくしてからお試しください。"
 msgstr "短い間に何度も操作されました。しばらくしてからお試しください。"
 
@@ -1126,7 +1183,7 @@ msgstr "確認番号を送る"
 msgid "答えたくない"
 msgstr "答えたくない"
 
-#: src/components/auth/authUi.tsx:104
+#: src/components/auth/authUi.tsx:106
 msgid "答えなくても大丈夫です。"
 msgstr "答えなくても大丈夫です。"
 
@@ -1213,6 +1270,10 @@ msgstr "言語"
 msgid "説明"
 msgstr "説明"
 
+#: src/components/settings/PasskeyManager.tsx:84
+msgid "読み込み中"
+msgstr "読み込み中"
+
 #: src/components/RouteStats.tsx:20
 msgid "距離"
 msgstr "距離"
@@ -1221,7 +1282,7 @@ msgstr "距離"
 msgid "近い場所をまとめて表示する"
 msgstr "近い場所をまとめて表示する"
 
-#: src/components/auth/authUi.tsx:71
+#: src/components/auth/authUi.tsx:73
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "通信できませんでした。電波の良い場所でもう一度お試しください。"
 
