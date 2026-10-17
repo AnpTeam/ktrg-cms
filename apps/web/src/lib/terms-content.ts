@@ -1,7 +1,9 @@
-// The terms of use, reused as written from the foundation's other web application
-// (katsuragi-shugen.naraiseki.org/terms, updated 2026-04-01) with the team's agreement. It is the Japanese
-// original only; the page tells English readers so. Do not edit the legal wording here without the people who own it.
-// "当財団" is the foundation named in `foundation` below.
+// The terms of use, taken from the foundation's other web application (katsuragi-shugen.naraiseki.org/terms,
+// updated 2026-04-01) with the team's agreement, and adapted to this app on 2026-10-17: login is by email code or
+// passkey (no passwords or user names), and the parts about user-created content (uploaded photos, comments)
+// and a community guideline are left out, because this app has none of those. It is the Japanese text only; the
+// page tells English readers so. The foundation (the owner of the original text) still has to approve this version.
+// "当財団" is the foundation named in `foundationJa` below.
 
 export interface TermsSection {
   heading: string;
@@ -10,10 +12,10 @@ export interface TermsSection {
 
 export const termsContent = {
   title: "利用規約／サービス規約",
-  updated: "2026年4月1日",
+  updated: "2026年10月17日（案）",
   lead: "当財団のWebアプリケーションをご利用になる前によくお読みください",
   intro:
-    "当財団のWebアプリケーションに（直接またはソーシャルチャネルなどを介して）アクセスすることにより、お客様は、本利用規約、当財団のプライバシーポリシーを読み、理解し、お客様と当財団との間の法的拘束力のある合意（以下「合意」）を構成する以下の条件に拘束されることに同意するものとします。お客様が会社または他の団体を代表して本合意を締結している場合は、お客様がその団体を本契約に結びつける権限を有する人物であることを意味し、この場合、「お客様」という言葉はそのような団体を指定するものとします。お客様がそのような権限を有していない場合、またはお客様が本利用規約（サービス規約）、当財団のプライバシーポリシーまたはコミュニティガイドラインに同意しない場合は、Webアプリケーションまたはサービスを使用することができません。",
+    "当財団のWebアプリケーションに（直接またはソーシャルチャネルなどを介して）アクセスすることにより、お客様は、本利用規約、当財団のプライバシーポリシーを読み、理解し、お客様と当財団との間の法的拘束力のある合意（以下「合意」）を構成する以下の条件に拘束されることに同意するものとします。お客様が会社または他の団体を代表して本合意を締結している場合は、お客様がその団体を本契約に結びつける権限を有する人物であることを意味し、この場合、「お客様」という言葉はそのような団体を指定するものとします。お客様がそのような権限を有していない場合、またはお客様が本利用規約（サービス規約）または当財団のプライバシーポリシーに同意しない場合は、Webアプリケーションまたはサービスを使用することができません。",
   sections: [
     {
       heading: "利用規約の変更の可能性",
@@ -37,14 +39,7 @@ export const termsContent = {
     {
       heading: "登録",
       paragraphs: [
-        "Webアプリケーションまたはサービスの一部を使用するには、特定の情報（お名前、電子メールアドレス、及び/又はパスワードの確定を含む）を登録して提供する必要があります。お客様は、登録時にお客様の登録情報が最新で完全で正確であること、及び必要に応じてそれを更新することを表明するものとします。お客様は、他人がお客様のユーザー名、パスワード、且つ／またはアカウントを使用することを許可しないこと、またお客様も他人のアカウントを使用しないことに同意するものとします。パスワードとユーザー名の秘匿はお客様の責任です。お客様のアカウントの不正使用のために、当財団または他者が損失を蒙った場合、お客様に責任が発生することがあります。",
-      ],
-    },
-    {
-      heading: "お客様の責任",
-      paragraphs: [
-        "お客様がWebアプリケーションとサービスを利用して作成したユーザー作成コンテンツ（例えば、Webアプリケーション中でアップロードした写真や書き込んだコメント等を含みます）については、お客様が単独で責任を負うものとします。お客様は、当財団に法的権利、権限を付記し、お客様によるWebアプリケーションの使用やユーザー作成コンテンツが知的財産権、プライバシー権、肖像権、または他の当事者の何らかの権利を侵害したり、違反したり、他の方法で干渉したりせず、また、他の当事者の機密情報の営業機密を暴露したりしないことを当財団に表明し保証するものとします。当財団は何らかの理由により、いつでもWebアプリケーションおよびサービスからお客様のアカウント及び／またはお客様によるWebアプリケーションの使用を削除する権利を有します。",
-        "お客様は以下のものをアップロード、投稿、転送、追加、リンク、または他の方法で利用可能となるようにWebアプリケーションを使用しないことに同意するものとします。すなわち、非合法、有害、脅迫、虐待、嫌がらせ、違法、中傷、下品、非常識、名誉棄損、他者のプライバシーの侵害、憎悪、または人種民族差別などを行うようなユーザー作成コンテンツ。虚偽、誤解、不正を招くとお客様が承知しているユーザー作成コンテンツ。お客様が利用可能な権利を有していないユーザー作成コンテンツ。個人または団体の肖像権、特許、商標、営業機密、著作権、その他の所有権を侵害するユーザー作成コンテンツ。個人利益のための金銭、商品、またはサービスの要求、あるいは勧誘。コンピュータソフトウェア、ハードウェア、通信機器の機能を妨害、破壊、制限するよう設計されたソフトウェアウィルスまたは他のコンピュータコード、ファイル、プログラム。写真に写っている各人の許可を得ていない写真や、当人に通知または同意を得ていない個人名。スパイダー、検索ロボット、アバター、知的エージェントの使用または使用の試み。通常のブラウザ以外での抽出またはナビゲーション。Webアプリケーションまたはサービスで利用可能な素材の集約、コピー、複製。",
+        "Webアプリケーションまたはサービスの一部を使用するには、特定の情報（お名前、及び、メールアドレスまたはパスキーの登録を含む）を登録して提供する必要があります。お客様は、登録時にお客様の登録情報が最新で完全で正確であること、及び必要に応じてそれを更新することを表明するものとします。お客様は、他人がお客様のアカウント（メールアドレスに届く確認番号やパスキーを含みます）を使用することを許可しないこと、またお客様も他人のアカウントを使用しないことに同意するものとします。確認番号の秘匿と、パスキーを登録した端末の管理はお客様の責任です。お客様のアカウントの不正使用のために、当財団または他者が損失を蒙った場合、お客様に責任が発生することがあります。",
       ],
     },
     {
@@ -77,11 +72,12 @@ export const termsContent = {
     {
       role: "開発",
       name: "株式会社エヌ・ディ・アール",
-      address: "〒550-0011 大阪市西区阿波座 2-1-1 大阪本町西第一ビルディング 2F",
+      address: "〒550-0011 大阪市西区阿波座2-1-1 CAMCO西本町ビル2階",
       url: "https://ndr.co.jp/",
     },
   ],
 } as const;
 
-/** The foundation's name, shown in every page's footer. */
-export const foundation = "一般財団法人奈良遺跡文化財保存活性化財団";
+/** The foundation's name, shown in every page's footer: Japanese on the Japanese pages, English on the English ones. */
+export const foundationJa = "一般財団法人奈良遺跡文化財保存活性化財団";
+export const foundationEn = "Nara Kofun & Heritage Foundation";

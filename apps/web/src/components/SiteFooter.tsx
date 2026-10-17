@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Trans, useLingui } from "@lingui/react/macro";
 import { localePath } from "@/lib/rally";
-import { foundation } from "@/lib/terms-content";
+import { foundationEn, foundationJa } from "@/lib/terms-content";
 
 /** What every page ends with: the questions people ask, the terms, the licenses, the privacy policy, and who makes the app. */
 export function SiteFooter({ locale }: { locale: string }) {
@@ -23,9 +23,9 @@ export function SiteFooter({ locale }: { locale: string }) {
         <Trans>プライバシーポリシー</Trans>
       </Link>
       </nav>
-      {/* The foundation's name stays in Japanese in every language. */}
-      <p lang="ja" className="mt-3 text-base text-muted">
-        {foundation}
+      {/* A credit line, kept small: Japanese name on the Japanese pages, English name on the English ones. */}
+      <p lang={locale === "ja" ? "ja" : "en"} className="mt-3 text-sm text-muted">
+        {locale === "ja" ? foundationJa : foundationEn}
       </p>
     </footer>
   );

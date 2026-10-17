@@ -32,6 +32,8 @@ export default async function TermsPage() {
         <Notice>The terms of use are available in Japanese only. They are shown below as written.</Notice>
       )}
 
+      <Notice>{i18n.locale === "ja" ? "この文章は案です。公開の前に、財団が内容を確認します。" : "This text is a draft. The foundation will check it before the app is published."}</Notice>
+
       <div lang="ja" className="flex flex-col gap-8">
         <p className="px-4 text-lg text-muted">更新日：{t.updated}</p>
         <p className="px-4 text-xl font-bold">{t.lead}</p>
