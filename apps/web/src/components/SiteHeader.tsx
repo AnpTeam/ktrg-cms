@@ -191,6 +191,7 @@ export function SiteHeader({
             <ul className="flex flex-col border-t-2 border-line pt-2">
               {[
                 { path: "/faq", label: t`よくあるご質問` },
+                { path: "/terms", label: t`利用規約` },
                 { path: "/privacy", label: t`プライバシーポリシー` },
                 { path: "/licenses", label: t`ライセンス情報` },
               ].map(({ path, label }) => (

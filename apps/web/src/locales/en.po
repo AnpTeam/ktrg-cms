@@ -446,8 +446,12 @@ msgstr "Standard"
 msgid "ふつうの大きさです。"
 msgstr "The usual size."
 
-#: src/components/SiteFooter.tsx:17
-#: src/components/SiteHeader.tsx:194
+#: src/components/SiteFooter.tsx:12
+msgid "フッター"
+msgstr "Footer"
+
+#: src/components/SiteFooter.tsx:23
+#: src/components/SiteHeader.tsx:195
 msgid "プライバシーポリシー"
 msgstr "Privacy policy"
 
@@ -478,6 +482,7 @@ msgstr "Base map"
 #: src/app/[lang]/(public)/privacy/page.tsx:25
 #: src/app/[lang]/(public)/register/page.tsx:29
 #: src/app/[lang]/(public)/settings/page.tsx:27
+#: src/app/[lang]/(public)/terms/page.tsx:24
 #: src/components/TabBar.tsx:19
 msgid "ホーム"
 msgstr "Home"
@@ -553,13 +558,13 @@ msgstr "Show more ({hidden} more)"
 msgid "やめる"
 msgstr "Cancel"
 
-#: src/components/SiteFooter.tsx:11
+#: src/components/SiteFooter.tsx:14
 #: src/components/SiteHeader.tsx:193
 msgid "よくあるご質問"
 msgstr "FAQ"
 
-#: src/components/SiteFooter.tsx:14
-#: src/components/SiteHeader.tsx:195
+#: src/components/SiteFooter.tsx:17
+#: src/components/SiteHeader.tsx:196
 msgid "ライセンス情報"
 msgstr "Licenses"
 
@@ -725,6 +730,11 @@ msgstr "Source: {0}"
 msgid "初期値に戻す"
 msgstr "Reset to defaults"
 
+#: src/components/SiteFooter.tsx:20
+#: src/components/SiteHeader.tsx:194
+msgid "利用規約"
+msgstr "Terms of use"
+
 #: src/components/ProfileCard.tsx:139
 msgid "削除を依頼する"
 msgstr "Ask to delete"
@@ -778,7 +788,7 @@ msgstr "How the map is shown"
 msgid "地図の見た目"
 msgstr "Map appearance"
 
-#: src/components/SiteHeader.tsx:212
+#: src/components/SiteHeader.tsx:213
 msgid "地図の見た目の設定"
 msgstr "Map style settings"
 
@@ -1195,7 +1205,7 @@ msgstr "Closed"
 msgid "開放中"
 msgstr "Open"
 
-#: src/components/SiteHeader.tsx:207
+#: src/components/SiteHeader.tsx:208
 msgid "開発用"
 msgstr "For developers"
 
