@@ -465,3 +465,20 @@ html[data-size="xlarge"] {
     opacity: 0;
   }
 }
+
+/* A stamp that has just been given lands on the page: it starts a little large and light, and presses down once. */
+@media (prefers-reduced-motion: no-preference) {
+  .stamp-land {
+    animation: stamp-land 450ms ease-out both;
+  }
+}
+@keyframes stamp-land {
+  from {
+    transform: scale(1.5) rotate(-6deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(-2deg);
+    opacity: 1;
+  }
+}

@@ -1,0 +1,84 @@
+import { geoFailureFromCode, parseStampResponse, readingFrom, type GeoFailure, type Reading, type StampMock, type StampResult } from "./stamp-flow";
+
+// The browser side of stamping. It asks the phone for ONE position (high accuracy, never a cached one) and sends it
+// with the request; it never keeps it and never decides anything: the server does (CLAUDE.md, hard rule 5).
+
+export type PositionResult = { ok: true; reading: Reading } | { ok: false; reason: GeoFailure };
+
+/** Wait this long for the phone's position before giving up. */
+const POSITION_TIMEOUT_MS = 20_000;
+
+export function readPosition(): Promise<PositionResult> {
+  if (typeof navigator === "undefined" || !navigator.geolocation) return Promise.resolve({ ok: false, reason: "unsupported" });
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => resolve({ ok: true, reading: readingFrom(pos) }),
+      (err) => resolve({ ok: false, reason: geoFailureFromCode(err.code) }),
+      { enableHighAccuracy: true, timeout: POSITION_TIMEOUT_MS, maximumAge: 0 },
+    );
+  });
+}
+
+/** Has the visitor already allowed location for this site? Then the explanation before the browser prompt is skipped. */
+export async function locationAlreadyAllowed(): Promise<boolean> {
+  try {
+    const status = await navigator.permissions?.query({ name: "geolocation" });
+    return status?.state === "granted";
+  } catch {
+    return false;
+  }
+}
+
+/** Ask the server for the stamp (contract in stamp-flow.ts). Never throws. */
+export async function requestStamp(spotId: string, reading: Reading): Promise<StampResult> {
+  try {
+    const res = await fetch(`/api/v1/spots/${encodeURIComponent(spotId)}/stamp`, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ lat: reading.lat, lng: reading.lng, accuracyM: reading.accuracyM }),
+    });
+    let body: unknown = null;
+    try {
+      body = await res.json();
+    } catch {
+      // no readable body: the status alone decides
+    }
+    return parseStampResponse(res.status, body);
+  } catch {
+    return { ok: false, failure: "network" };
+  }
+}
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Development only (the spot page passes `mock` only when NODE_ENV is not production): pretend the phone and the
+ * server answered, so every screen of the flow can be reviewed before the stamping API exists. It never runs
+ * otherwise, and it cannot give a real stamp.
+ */
+export async function mockPosition(mock: StampMock): Promise<PositionResult> {
+  await wait(500);
+  if (mock === "denied" || mock === "unavailable" || mock === "timeout") return { ok: false, reason: mock };
+  return { ok: true, reading: { lat: 0, lng: 0, accuracyM: 10 } };
+}
+
+export async function mockStamp(mock: StampMock): Promise<StampResult> {
+  await wait(600);
+  switch (mock) {
+    case "already":
+      return { ok: true, already: true };
+    case "far":
+      return { ok: false, failure: "too_far", distanceM: 247 };
+    case "weak":
+      return { ok: false, failure: "low_accuracy" };
+    case "closed":
+      return { ok: false, failure: "spot_closed" };
+    case "inactive":
+      return { ok: false, failure: "rally_not_active" };
+    case "notready":
+      return { ok: false, failure: "not_ready" };
+    default:
+      return { ok: true, already: false };
+  }
+}

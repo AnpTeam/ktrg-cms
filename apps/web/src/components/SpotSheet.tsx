@@ -4,16 +4,28 @@ import { pickText, type SpotDetail } from "@/lib/content";
 import { Localized } from "./Localized";
 import { Notice } from "./Notice";
 import { StampFace } from "./StampFace";
+import { StampHere } from "./StampHere";
 import { StatusBanner } from "./StatusBanner";
+import type { StampMock } from "@/lib/stamp-flow";
 
 /**
  * The spot detail sheet (WBS 3.2.5). Presentational on purpose: today it is the
  * body of /spots/[id]; the map's bottom sheet (3.2.10) will render the same thing.
- * The big stamp button at the bottom stays in view while the page scrolls. Stamping itself (3.3.1) is not built
- * yet, so for a signed-in visitor the button is shown switched off with the reason, never as a control that
- * does nothing; a signed-out visitor gets a real link to log in.
+ * The big stamp button at the bottom stays in view while the page scrolls (`StampHere`, WBS 3.3.1): it reads the
+ * phone's position once and asks the server, which decides. A signed-out visitor gets a real link to log in.
  */
-export function SpotSheet({ spot, locale, loginHref }: { spot: SpotDetail; locale: string; loginHref: string }) {
+export function SpotSheet({
+  spot,
+  locale,
+  loginHref,
+  stampMock,
+}: {
+  spot: SpotDetail;
+  locale: string;
+  loginHref: string;
+  /** Development only: pretend answers for the stamp button. */
+  stampMock?: StampMock;
+}) {
   const description = pickText(locale, spot.descriptionJa, spot.descriptionEn);
 
   return (
@@ -77,27 +89,14 @@ export function SpotSheet({ spot, locale, loginHref }: { spot: SpotDetail; local
         <Trans>出かける前に、公式の最新情報を確認してください。</Trans>
       </Notice>
 
-      {spot.stamped === true ? null : (
+      {spot.stamped === null ? (
         <div className="sticky bottom-24 z-10 flex flex-col gap-2 px-4 md:bottom-6">
-          {spot.stamped === null ? (
-            <Link href={loginHref} className="tap-target flex min-h-14 items-center justify-center rounded-xl bg-brand px-6 text-xl font-bold text-on-brand shadow-lg">
-              <Trans>ログインしてスタンプを押す</Trans>
-            </Link>
-          ) : (
-            <>
-              <button
-                type="button"
-                disabled
-                className="tap-target flex min-h-14 items-center justify-center rounded-xl bg-brand px-6 text-xl font-bold text-on-brand opacity-50 shadow-lg"
-              >
-                <Trans>スタンプを押す</Trans>
-              </button>
-              <p className="rounded-xl bg-paper/95 px-3 py-1 text-center text-base text-muted">
-                {spot.status === "closed" ? <Trans>この場所は、いまは閉鎖中です。</Trans> : <Trans>スタンプを押す機能は、準備中です。</Trans>}
-              </p>
-            </>
-          )}
+          <Link href={loginHref} className="tap-target flex min-h-14 items-center justify-center rounded-xl bg-brand px-6 text-xl font-bold text-on-brand shadow-lg">
+            <Trans>ログインしてスタンプを押す</Trans>
+          </Link>
         </div>
+      ) : (
+        <StampHere spotId={spot.id} status={spot.status} alreadyStamped={spot.stamped} loginHref={loginHref} mock={stampMock} />
       )}
     </article>
   );

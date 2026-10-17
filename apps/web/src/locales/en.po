@@ -124,6 +124,10 @@ msgstr "70 or older"
 msgid "Ctrlキーを押しながら地図を動かします"
 msgstr "Hold the Ctrl key to move the map"
 
+#: src/components/StampHere.tsx:84
+msgid "GPSの電波が弱いようです。空の開けた場所に動いて、もう一度お試しください。"
+msgstr "The GPS signal looks weak. Move to open sky and try again."
+
 #. placeholder {0}: formatPublicId(publicId)
 #: src/components/ProfileCard.tsx:238
 msgid "ID: {0}"
@@ -181,6 +185,26 @@ msgstr "We use what you tell us only to understand who uses this app, and we put
 #: src/components/RallyViews.tsx:43
 msgid "いまのラリー"
 msgstr "Current rally"
+
+#: src/components/StampHere.tsx:81
+msgid "いまの位置が、わかりません。空の開けた場所で、もう一度お試しください。"
+msgstr "We can't tell where you are. Try again in an open place."
+
+#: src/components/StampHere.tsx:140
+msgid "いまの位置を調べています…"
+msgstr "Checking your location…"
+
+#: src/components/StampHere.tsx:156
+msgid "いまの位置を調べます"
+msgstr "We will check your location"
+
+#: src/components/StampHere.tsx:120
+msgid "いまの場所から、約{km}km"
+msgstr "About {km} km from where you are"
+
+#: src/components/StampHere.tsx:120
+msgid "いまの場所から、約{m}m"
+msgstr "About {m} m from where you are"
 
 #: src/components/StatusBanner.tsx:77
 msgid "いまは、ここでスタンプを押せません。"
@@ -251,6 +275,10 @@ msgstr "This account has no passkey. Confirm with the number sent to your email.
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
 msgstr "This account has no email. Confirm with your face or fingerprint."
 
+#: src/components/StampHere.tsx:101
+msgid "このスタンプは、もう押してあります。"
+msgstr "You already have this stamp."
+
 #: src/components/SampleNotice.tsx:51
 #: src/components/SampleNotice.tsx:78
 msgid "このデータについて"
@@ -259,6 +287,10 @@ msgstr "About this data"
 #: src/components/settings/PasskeyManager.tsx:144
 msgid "このパスキーを消しますか？"
 msgstr "Remove this passkey?"
+
+#: src/components/StampHere.tsx:86
+msgid "このラリーは、いまは行われていません。"
+msgstr "This rally is not running right now."
 
 #: src/app/[lang]/(public)/routes/page.tsx:72
 msgid "この地域のルートはまだありません。"
@@ -269,13 +301,21 @@ msgstr "There are no routes in this area yet."
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
 msgstr "The position of this place is a draft and has not been checked yet."
 
-#: src/components/SpotSheet.tsx:96
+#: src/components/StampHere.tsx:135
 msgid "この場所は、いまは閉鎖中です。"
 msgstr "This place is closed right now."
+
+#: src/components/StampHere.tsx:85
+msgid "この場所は、いまは閉鎖中です。スタンプは押せません。"
+msgstr "This place is closed right now. You can't collect the stamp."
 
 #: src/components/map/StopCard.tsx:45
 msgid "この場所を見る"
 msgstr "See this place"
+
+#: src/components/StampHere.tsx:79
+msgid "この端末・ブラウザでは、位置情報を使えません。"
+msgstr "This device or browser can't use location."
 
 #: src/components/settings/PasskeyManager.tsx:134
 msgid "この端末・ブラウザではパスキーを使えません。"
@@ -301,7 +341,7 @@ msgstr "Add a passkey for this device"
 msgid "この設定ではじめる"
 msgstr "Start with these settings"
 
-#: src/components/SpotSheet.tsx:70
+#: src/components/SpotSheet.tsx:82
 msgid "この説明は日本語のみです。"
 msgstr "This description is in Japanese only."
 
@@ -350,13 +390,17 @@ msgid "スタンプカードを見る"
 msgstr "See your stamp card"
 
 #: src/app/[lang]/(public)/routes/[id]/page.tsx:128
-#: src/components/SpotSheet.tsx:42
+#: src/components/SpotSheet.tsx:54
 msgid "スタンプの場所"
 msgstr "Stamp locations"
 
 #: src/components/map/TrailMap.tsx:264
 msgid "スタンプの場所 {text} がここに集まっています。押すと拡大します"
 msgstr "Stamp places {text} are gathered here. Tap to zoom in."
+
+#: src/components/StampHere.tsx:158
+msgid "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
+msgstr "To check that you are near the stamp place, we look at your phone's location once."
 
 #: src/components/map/TrailMap.tsx:467
 msgid "スタンプの場所を順に見る"
@@ -368,17 +412,26 @@ msgstr "Go through the stamp places one by one"
 msgid "スタンプの進み具合"
 msgstr "Stamp progress"
 
-#: src/components/SpotSheet.tsx:54
+#: src/components/StampHere.tsx:142
+msgid "スタンプを押しています…"
+msgstr "Collecting the stamp…"
+
+#: src/components/SpotSheet.tsx:66
 msgid "スタンプを押しました"
 msgstr "You collected this stamp"
 
-#: src/components/SpotSheet.tsx:93
+#: src/components/StampHere.tsx:101
+msgid "スタンプを押しました！"
+msgstr "Stamp collected!"
+
+#: src/components/StampHere.tsx:133
+#: src/components/StampHere.tsx:145
 msgid "スタンプを押す"
 msgstr "Stamp here"
 
-#: src/components/SpotSheet.tsx:96
-msgid "スタンプを押す機能は、準備中です。"
-msgstr "Stamping is not available yet."
+#: src/components/StampHere.tsx:87
+msgid "スタンプを押す機能は、まだ使えません。"
+msgstr "Collecting stamps isn't available yet."
 
 #: src/components/TrailRibbon.tsx:97
 msgid "スタンプ場所 {spotCount}か所"
@@ -559,12 +612,16 @@ msgstr "This passkey can't be removed because it is your only way to log in. Set
 msgid "まだ"
 msgstr "Not yet"
 
+#: src/components/StampHere.tsx:83
+msgid "まだ、この場所から遠いようです。場所の近くで、もう一度お試しください。"
+msgstr "You still seem to be far from this place. Try again when you are near it."
+
 #: src/components/ProgressSummary.tsx:12
 #: src/components/RallyViews.tsx:56
 msgid "まだスタンプはありません。"
 msgstr "No stamps yet."
 
-#: src/components/SpotSheet.tsx:54
+#: src/components/SpotSheet.tsx:66
 msgid "まだスタンプを押していません"
 msgstr "You haven't collected this stamp yet"
 
@@ -620,6 +677,10 @@ msgstr "Menu"
 msgid "もう一度、本人かどうかの確認が必要です。"
 msgstr "We need to confirm it is you again."
 
+#: src/components/StampHere.tsx:144
+msgid "もう一度試す"
+msgstr "Try again"
+
 #: src/components/auth/EmailCodeStep.tsx:73
 msgid "もう一度送りました。届かないときは、1分ほど待ってからお試しください。"
 msgstr "Sent again. If it does not arrive, wait about a minute and try again."
@@ -633,6 +694,7 @@ msgstr "Show more ({hidden} more)"
 #: src/components/ProfileCard.tsx:139
 #: src/components/ProfileCard.tsx:181
 #: src/components/settings/PasskeyManager.tsx:152
+#: src/components/StampHere.tsx:165
 msgid "やめる"
 msgstr "Cancel"
 
@@ -662,7 +724,7 @@ msgstr "All rallies"
 msgid "ルート"
 msgstr "Routes"
 
-#: src/app/[lang]/(public)/spots/[id]/page.tsx:31
+#: src/app/[lang]/(public)/spots/[id]/page.tsx:35
 msgid "ルートにもどる"
 msgstr "Back to route"
 
@@ -707,9 +769,17 @@ msgstr "Log out"
 msgid "ログイン"
 msgstr "Log in"
 
-#: src/components/SpotSheet.tsx:84
+#: src/components/StampHere.tsx:88
+msgid "ログインが切れたようです。ログインしなおしてください。"
+msgstr "You seem to have been logged out. Please log in again."
+
+#: src/components/SpotSheet.tsx:95
 msgid "ログインしてスタンプを押す"
 msgstr "Log in to stamp"
+
+#: src/components/StampHere.tsx:124
+msgid "ログインする"
+msgstr "Log in"
 
 #: src/components/SignInPrompt.tsx:19
 msgid "ログインすると、スタンプを記録できます。"
@@ -752,6 +822,22 @@ msgstr "Rest area / shelter"
 #: src/components/map/PlacesPanel.tsx:53
 msgid "休業中"
 msgstr "Closed now"
+
+#: src/components/StampHere.tsx:159
+msgid "位置は、保存しません。保存するのは、スタンプだけです。"
+msgstr "We don't save your location. We only save the stamp."
+
+#: src/components/StampHere.tsx:162
+msgid "位置を調べてスタンプを押す"
+msgstr "Check my location and collect the stamp"
+
+#: src/components/StampHere.tsx:82
+msgid "位置を調べるのに、時間がかかっています。空の開けた場所で、もう一度お試しください。"
+msgstr "Checking your location is taking a while. Try again in an open place."
+
+#: src/components/StampHere.tsx:80
+msgid "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてから、もう一度お試しください。"
+msgstr "Location isn't allowed. In your browser settings, allow location for this site, then try again."
 
 #: src/components/map/MapSettingsForm.tsx:107
 msgid "保存"
@@ -825,7 +911,7 @@ msgstr "Before you go"
 #: src/app/[lang]/(public)/routes/page.tsx:82
 #: src/app/[lang]/(public)/stamps/page.tsx:59
 #: src/components/landing/Landing.tsx:201
-#: src/components/SpotSheet.tsx:77
+#: src/components/SpotSheet.tsx:89
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "Check official sources before you go."
 
@@ -878,6 +964,7 @@ msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境に�
 msgstr "From the Izumi range to the Kongo mountains, these ridges run along the borders of Osaka, Wakayama and Nara. They have long been called Katsuragi and revered as mountains where the gods dwell. It is said that En no Gyoja, who is believed to have founded Shugendo, the path of training in the mountains, first practised here."
 
 #: src/components/auth/authUi.tsx:78
+#: src/components/StampHere.tsx:91
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "Something went wrong. Please try again in a little while."
 
@@ -995,7 +1082,7 @@ msgstr "Back"
 msgid "押した"
 msgstr "Stamped"
 
-#: src/components/SpotSheet.tsx:45
+#: src/components/SpotSheet.tsx:57
 msgid "押し方: 場所の近くで、ボタンを押します（位置情報）"
 msgstr "How: press the button near the place (uses your location)"
 
@@ -1193,6 +1280,7 @@ msgid "着いたらボタンを押すだけ。場所を確かめて、スタン�
 msgstr "Just press the button when you arrive. The app checks where you are, and your stamps add up."
 
 #: src/components/auth/authUi.tsx:76
+#: src/components/StampHere.tsx:89
 msgid "短い間に何度も操作されました。しばらくしてからお試しください。"
 msgstr "Too many attempts in a short time. Please try again in a little while."
 
@@ -1305,7 +1393,7 @@ msgstr "Choose how it looks"
 msgid "言語"
 msgstr "Language"
 
-#: src/components/SpotSheet.tsx:62
+#: src/components/SpotSheet.tsx:74
 msgid "説明"
 msgstr "About this place"
 
@@ -1322,6 +1410,7 @@ msgid "近い場所をまとめて表示する"
 msgstr "Merge places that are close together"
 
 #: src/components/auth/authUi.tsx:77
+#: src/components/StampHere.tsx:90
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not connect. Please try again where the signal is better."
 
