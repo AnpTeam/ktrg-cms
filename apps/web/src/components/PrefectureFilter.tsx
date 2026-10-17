@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Trans, useLingui } from "@lingui/react/macro";
 import type { Prefecture } from "@/lib/content";
+import { PrefectureIcon } from "./PrefectureIcon";
 import { PrefectureName } from "./PrefectureName";
 
 /**
@@ -20,7 +21,7 @@ export function PrefectureFilter({
   if (available.length < 2) return null;
 
   const chip = (selected: boolean) =>
-    `tap-target inline-flex items-center justify-center rounded-lg border-2 border-ink px-4 text-lg font-bold ${
+    `tap-target inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-ink px-4 text-lg font-bold ${
       selected ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"
     }`;
 
@@ -29,6 +30,7 @@ export function PrefectureFilter({
       <ul className="flex flex-wrap gap-2">
         <li>
           <Link href={base} aria-current={active ? undefined : "true"} className={chip(!active)}>
+            <PrefectureIcon value="all" />
             <Trans>すべて</Trans>
           </Link>
         </li>
@@ -39,6 +41,7 @@ export function PrefectureFilter({
               aria-current={active === prefecture ? "true" : undefined}
               className={chip(active === prefecture)}
             >
+              <PrefectureIcon value={prefecture} />
               <PrefectureName value={prefecture} />
             </Link>
           </li>

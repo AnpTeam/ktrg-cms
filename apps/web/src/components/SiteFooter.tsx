@@ -16,6 +16,9 @@ export function SiteFooter({ locale }: { locale: string }) {
       <Link href={localePath(locale, "/licenses")} className={link}>
         <Trans>ライセンス情報</Trans>
       </Link>
+      <Link href={localePath(locale, "/sitemap")} className={link}>
+        <Trans>サイトマップ</Trans>
+      </Link>
       <Link href={localePath(locale, "/terms")} className={link}>
         <Trans>利用規約</Trans>
       </Link>

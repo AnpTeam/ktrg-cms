@@ -128,6 +128,10 @@ msgstr "Hold the Ctrl key to move the map"
 msgid "ID: {0}"
 msgstr "ID: {0}"
 
+#: src/app/[lang]/(public)/sitemap/page.tsx:79
+msgid "アカウント"
+msgstr "Account"
+
 #: src/components/ProfileCard.tsx:191
 msgid "アカウントの削除を依頼ずみです。"
 msgstr "You have already asked to delete this account."
@@ -284,17 +288,29 @@ msgstr "This is an example. There are {TOTAL_STAMPS} sutra mound stamps in all."
 msgid "コンビニ・商店"
 msgstr "Convenience store / local shop"
 
+#: src/app/[lang]/(public)/sitemap/page.tsx:91
+msgid "ご案内"
+msgstr "Information"
+
 #: src/components/landing/Landing.tsx:206
 msgid "さあ、はじめましょう"
 msgstr "Let's get started"
 
+#: src/app/[lang]/(public)/sitemap/page.tsx:15
+#: src/app/[lang]/(public)/sitemap/page.tsx:50
+#: src/components/SiteFooter.tsx:20
+msgid "サイトマップ"
+msgstr "Site map"
+
+#: src/app/[lang]/(public)/sitemap/page.tsx:70
+#: src/app/[lang]/(public)/sitemap/page.tsx:72
 #: src/app/[lang]/(public)/stamps/page.tsx:28
 #: src/components/ProgressSummary.tsx:19
 #: src/components/TabBar.tsx:21
 msgid "スタンプ"
 msgstr "Stamps"
 
-#: src/components/TrailRibbon.tsx:100
+#: src/components/TrailRibbon.tsx:101
 msgid "スタンプ {stampedCount} / {spotCount}"
 msgstr "Stamps {stampedCount} / {spotCount}"
 
@@ -337,7 +353,7 @@ msgstr "Stamp here"
 msgid "スタンプを押す機能は、準備中です。"
 msgstr "Stamping is not available yet."
 
-#: src/components/TrailRibbon.tsx:96
+#: src/components/TrailRibbon.tsx:97
 msgid "スタンプ場所 {spotCount}か所"
 msgstr "{spotCount} stamp locations"
 
@@ -345,7 +361,7 @@ msgstr "{spotCount} stamp locations"
 msgid "スタンプ済み"
 msgstr "stamped"
 
-#: src/components/PrefectureFilter.tsx:32
+#: src/components/PrefectureFilter.tsx:34
 msgid "すべて"
 msgstr "All"
 
@@ -450,7 +466,8 @@ msgstr "The usual size."
 msgid "フッター"
 msgstr "Footer"
 
-#: src/components/SiteFooter.tsx:23
+#: src/app/[lang]/(public)/sitemap/page.tsx:99
+#: src/components/SiteFooter.tsx:26
 #: src/components/SiteHeader.tsx:195
 msgid "プライバシーポリシー"
 msgstr "Privacy policy"
@@ -482,6 +499,9 @@ msgstr "Base map"
 #: src/app/[lang]/(public)/privacy/page.tsx:25
 #: src/app/[lang]/(public)/register/page.tsx:29
 #: src/app/[lang]/(public)/settings/page.tsx:27
+#: src/app/[lang]/(public)/sitemap/page.tsx:48
+#: src/app/[lang]/(public)/sitemap/page.tsx:53
+#: src/app/[lang]/(public)/sitemap/page.tsx:55
 #: src/app/[lang]/(public)/terms/page.tsx:24
 #: src/components/TabBar.tsx:19
 msgid "ホーム"
@@ -558,11 +578,13 @@ msgstr "Show more ({hidden} more)"
 msgid "やめる"
 msgstr "Cancel"
 
+#: src/app/[lang]/(public)/sitemap/page.tsx:93
 #: src/components/SiteFooter.tsx:14
 #: src/components/SiteHeader.tsx:193
 msgid "よくあるご質問"
 msgstr "FAQ"
 
+#: src/app/[lang]/(public)/sitemap/page.tsx:102
 #: src/components/SiteFooter.tsx:17
 #: src/components/SiteHeader.tsx:196
 msgid "ライセンス情報"
@@ -577,6 +599,7 @@ msgid "ラリーの一覧"
 msgstr "All rallies"
 
 #: src/app/[lang]/(public)/routes/page.tsx:18
+#: src/app/[lang]/(public)/sitemap/page.tsx:59
 #: src/components/TabBar.tsx:20
 msgid "ルート"
 msgstr "Routes"
@@ -584,6 +607,10 @@ msgstr "Routes"
 #: src/app/[lang]/(public)/spots/[id]/page.tsx:31
 msgid "ルートにもどる"
 msgstr "Back to route"
+
+#: src/app/[lang]/(public)/sitemap/page.tsx:61
+msgid "ルートの一覧"
+msgstr "All routes"
 
 #: src/app/[lang]/(public)/routes/page.tsx:68
 msgid "ルートの案内は準備中です。"
@@ -609,6 +636,7 @@ msgstr "Log out"
 
 #: src/app/[lang]/(public)/login/page.tsx:16
 #: src/app/[lang]/(public)/login/page.tsx:33
+#: src/app/[lang]/(public)/sitemap/page.tsx:81
 #: src/components/auth/LoginFlow.tsx:55
 #: src/components/auth/RegisterFlow.tsx:141
 #: src/components/landing/Landing.tsx:84
@@ -730,7 +758,8 @@ msgstr "Source: {0}"
 msgid "初期値に戻す"
 msgstr "Reset to defaults"
 
-#: src/components/SiteFooter.tsx:20
+#: src/app/[lang]/(public)/sitemap/page.tsx:96
+#: src/components/SiteFooter.tsx:23
 #: src/components/SiteHeader.tsx:194
 msgid "利用規約"
 msgstr "Terms of use"
@@ -797,7 +826,7 @@ msgstr "Map style settings"
 msgid "地図を読み込み中…"
 msgstr "Loading the map…"
 
-#: src/components/PrefectureFilter.tsx:28
+#: src/components/PrefectureFilter.tsx:29
 msgid "地域でしぼる"
 msgstr "Filter by area"
 
@@ -920,6 +949,7 @@ msgstr "Choose the size of text and buttons and how the map is shown. The size c
 
 #: src/app/[lang]/(public)/register/page.tsx:16
 #: src/app/[lang]/(public)/register/page.tsx:32
+#: src/app/[lang]/(public)/sitemap/page.tsx:84
 #: src/components/auth/LoginFlow.tsx:104
 #: src/components/landing/Landing.tsx:76
 #: src/components/landing/Landing.tsx:210
@@ -999,7 +1029,7 @@ msgstr "Pale"
 
 #: src/components/landing/Landing.tsx:254
 #: src/components/RallyViews.tsx:105
-#: src/components/TrailRibbon.tsx:83
+#: src/components/TrailRibbon.tsx:84
 msgid "準備中"
 msgstr "Coming soon"
 
@@ -1135,6 +1165,7 @@ msgstr "The Katsuragi Shugendō Trail"
 
 #: src/app/[lang]/(public)/settings/page.tsx:13
 #: src/app/[lang]/(public)/settings/page.tsx:30
+#: src/app/[lang]/(public)/sitemap/page.tsx:87
 #: src/components/SiteHeader.tsx:187
 msgid "見やすさの設定"
 msgstr "Display settings"
@@ -1172,6 +1203,7 @@ msgstr "Merge places that are close together"
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not connect. Please try again where the signal is better."
 
+#: src/app/[lang]/(public)/sitemap/page.tsx:75
 #: src/app/[lang]/(public)/stamps/page.tsx:36
 msgid "遊び方"
 msgstr "How to play"
