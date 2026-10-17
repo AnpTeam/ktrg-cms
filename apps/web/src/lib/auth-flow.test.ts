@@ -9,15 +9,15 @@ describe("failureFromApi", () => {
     expect(failureFromApi(400, { ok: false, error: "registration_failed" })).toBe("registration_failed");
   });
 
-  test("429 is its own case, whatever the body says", () => {
-    expect(failureFromApi(429, { ok: false, error: "too_many_requests" })).toBe("too_many_requests");
-    expect(failureFromApi(429, undefined)).toBe("too_many_requests");
+  test("429 is rate-limited, whatever the body says", () => {
+    expect(failureFromApi(429, { ok: false, error: "rate_limited" })).toBe("rate_limited");
+    expect(failureFromApi(429, undefined)).toBe("rate_limited");
   });
 
-  test("anything unknown is a plain failure", () => {
-    expect(failureFromApi(500, { ok: false, error: "internal_error" })).toBe("failed");
+  test("with no usable code the status decides; anything else is a plain failure", () => {
+    expect(failureFromApi(500, { ok: false, error: "internal_error" })).toBe("internal_error");
+    expect(failureFromApi(500, null)).toBe("internal_error");
     expect(failureFromApi(422, "text")).toBe("failed");
-    expect(failureFromApi(500, null)).toBe("failed");
   });
 });
 

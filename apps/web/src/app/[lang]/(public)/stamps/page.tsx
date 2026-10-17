@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Trans } from "@lingui/react/macro";
 import { ChevronIcon } from "@/components/icons";
+import { EmptyState } from "@/components/EmptyState";
 import { Notice } from "@/components/Notice";
 import { ProfileCard } from "@/components/ProfileCard";
 import { FeaturedRally, RallyCard } from "@/components/RallyViews";
@@ -39,6 +40,12 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
 
       {/* Signed out: a reason to sign in and the rallies, never a false "0 stamps". */}
       {viewer.signedIn ? <ProfileCard publicId={viewer.publicId} deletionDueAt={viewer.deletionDueAt} locale={i18n.locale} name={viewer.name} origin={viewer.origin} ageRange={viewer.ageRange} gender={viewer.gender} /> : <SignInPrompt />}
+
+      {rallies.length === 0 ? (
+        <EmptyState title={<Trans>ラリーは、まだ準備中です。</Trans>}>
+          <Trans>公開できるようになったら、ここにスタンプのラリーが表示されます。</Trans>
+        </EmptyState>
+      ) : null}
 
       {featured ? <FeaturedRally rally={featured} locale={i18n.locale} signedIn={viewer.signedIn} /> : null}
 

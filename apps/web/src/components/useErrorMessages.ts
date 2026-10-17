@@ -1,0 +1,39 @@
+import { useLingui } from "@lingui/react/macro";
+import type { ErrorKey } from "@/lib/api-error";
+
+/**
+ * The sentence for every error name, in the visitor's language (WBS 3.3.4). One table for the whole app, so the
+ * same problem is always worded the same way. `Record<ErrorKey, string>` makes the compiler refuse a name that
+ * has no sentence, and `lib/api-error.ts` refuses an API code that is not listed there.
+ */
+export function useErrorMessages(): Record<ErrorKey, string> {
+  const { t } = useLingui();
+  return {
+    // Any request
+    bad_request: t`送った内容が、読み取れませんでした。もう一度お試しください。`,
+    validation_failed: t`入力に、まちがいがあるようです。見直して、もう一度お試しください。`,
+    not_found: t`お探しのものは、見つかりませんでした。`,
+    rate_limited: t`短い間に何度も操作されました。しばらくしてからお試しください。`,
+    internal_error: t`こちらの問題で、うまくいきませんでした。しばらくしてからもう一度お試しください。`,
+    // Login and permissions
+    unauthenticated: t`ログインが切れたようです。ログインしなおしてください。`,
+    forbidden: t`この操作は、できません。`,
+    reauth_required: t`もう一度、本人かどうかの確認が必要です。`,
+    invalid_code: t`番号が違うか、期限が切れています。もう一度お試しください。`,
+    no_email: t`このアカウントには、メールがありません。顔・指紋で確認してください。`,
+    no_passkey: t`このアカウントには、パスキーがありません。メールの番号で確認してください。`,
+    reauth_failed: t`確認できませんでした。もう一度お試しください。`,
+    // Passkeys
+    login_failed: t`ログインできませんでした。この端末にパスキーがないときは、メールでログインしてください。`,
+    registration_failed: t`登録できませんでした。もう一度お試しください。`,
+    too_many_passkeys: t`パスキーは、これ以上ふやせません。使わないものを消してから、お試しください。`,
+    last_login_method: t`ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。`,
+    // Profile
+    invalid_display_name: t`お名前に使えない文字が含まれているか、長すぎます（40文字まで）。`,
+    // From the phone itself
+    unsupported: t`この端末・ブラウザではパスキーを使えません。メールでお試しください。`,
+    cancelled: t`パスキーの確認が中止されました。もう一度お試しください。`,
+    network: t`通信できませんでした。電波の良い場所でもう一度お試しください。`,
+    failed: t`問題が発生しました。しばらくしてからもう一度お試しください。`,
+  };
+}

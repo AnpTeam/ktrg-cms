@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { MenuProvider } from "@/components/MenuProvider";
+import { OfflineNotice } from "@/components/OfflineNotice";
 import { SampleNoticeHost } from "@/components/SampleNotice";
 import { SiteFooter } from "@/components/SiteFooter";
 import { StampFilters } from "@/components/StampFilters";
@@ -29,6 +30,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
       <TabBar />
       <div className="min-w-0 max-w-xl flex-1 md:border-x md:border-surface">
         <SiteHeader signedIn={viewer.signedIn} name={viewer.name} sample={sample} devTools={process.env.NODE_ENV !== "production"} />
+        <OfflineNotice />
         {sample ? <SampleNoticeHost /> : null}
         <PrefsSync signedIn={viewer.signedIn} account={prefsState.account} device={prefsState.device} />
         <main id="main" className="pb-28 md:pb-10">

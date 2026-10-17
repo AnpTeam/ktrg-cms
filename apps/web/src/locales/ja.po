@@ -182,6 +182,10 @@ msgstr "あなたのことを、少しだけ教えてください。答えなく
 msgid "いただいた情報は、どんな方がこのアプリを使っているかを知るためだけに使います。個人が分からない形でまとめます。くわしくは<0>プライバシーポリシー</0>をご覧ください。"
 msgstr "いただいた情報は、どんな方がこのアプリを使っているかを知るためだけに使います。個人が分からない形でまとめます。くわしくは<0>プライバシーポリシー</0>をご覧ください。"
 
+#: src/components/OfflineNotice.tsx:26
+msgid "いま、通信がつながっていません。つながると、また使えます。"
+msgstr "いま、通信がつながっていません。つながると、また使えます。"
+
 #: src/components/RallyViews.tsx:43
 msgid "いまのラリー"
 msgstr "いまのラリー"
@@ -214,6 +218,10 @@ msgstr "いまは、ここでスタンプを押せません。"
 msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 msgstr "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 
+#: src/app/[lang]/(public)/error.tsx:20
+msgid "うまく表示できませんでした"
+msgstr "うまく表示できませんでした"
+
 #: src/components/settings/PrefsForm.tsx:129
 msgid "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 msgstr "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
@@ -223,7 +231,7 @@ msgstr "オフのままだと、スタンプの場所を1つずつ表示しま�
 msgid "お名前"
 msgstr "お名前"
 
-#: src/components/auth/authUi.tsx:66
+#: src/components/useErrorMessages.ts:32
 msgid "お名前に使えない文字が含まれているか、長すぎます（40文字まで）。"
 msgstr "お名前に使えない文字が含まれているか、長すぎます（40文字まで）。"
 
@@ -238,6 +246,10 @@ msgstr "お土産店"
 #: src/components/map/PlacesPanel.tsx:24
 msgid "お店・食事"
 msgstr "お店・食事"
+
+#: src/components/useErrorMessages.ts:15
+msgid "お探しのものは、見つかりませんでした。"
+msgstr "お探しのものは、見つかりませんでした。"
 
 #: src/components/landing/TrailNotices.tsx:30
 msgid "お知らせ"
@@ -263,15 +275,23 @@ msgstr "コースの出発地点から近い順（まっすぐ測った距離で
 msgid "コースを見る"
 msgstr "コースを見る"
 
+#: src/components/useErrorMessages.ts:17
+msgid "こちらの問題で、うまくいきませんでした。しばらくしてからもう一度お試しください。"
+msgstr "こちらの問題で、うまくいきませんでした。しばらくしてからもう一度お試しください。"
+
+#: src/app/[lang]/(public)/error.tsx:21
+msgid "こちらの問題です。もう一度お試しください。それでも直らないときは、しばらくしてからお試しください。"
+msgstr "こちらの問題です。もう一度お試しください。それでも直らないときは、しばらくしてからお試しください。"
+
 #: src/components/settings/PasskeyManager.tsx:97
 msgid "このアカウントに、パスキーはまだありません。"
 msgstr "このアカウントに、パスキーはまだありません。"
 
-#: src/components/auth/authUi.tsx:74
+#: src/components/useErrorMessages.ts:24
 msgid "このアカウントには、パスキーがありません。メールの番号で確認してください。"
 msgstr "このアカウントには、パスキーがありません。メールの番号で確認してください。"
 
-#: src/components/auth/authUi.tsx:75
+#: src/components/useErrorMessages.ts:23
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
 msgstr "このアカウントには、メールがありません。顔・指紋で確認してください。"
 
@@ -313,6 +333,10 @@ msgstr "この場所は、いまは閉鎖中です。スタンプは押せませ
 msgid "この場所を見る"
 msgstr "この場所を見る"
 
+#: src/components/useErrorMessages.ts:20
+msgid "この操作は、できません。"
+msgstr "この操作は、できません。"
+
 #: src/components/StampHere.tsx:79
 msgid "この端末・ブラウザでは、位置情報を使えません。"
 msgstr "この端末・ブラウザでは、位置情報を使えません。"
@@ -321,7 +345,7 @@ msgstr "この端末・ブラウザでは、位置情報を使えません。"
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "この端末・ブラウザではパスキーを使えません。"
 
-#: src/components/auth/authUi.tsx:64
+#: src/components/useErrorMessages.ts:34
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 
@@ -370,13 +394,13 @@ msgstr "サイトマップ"
 #: src/app/[lang]/(public)/settings/passkeys/page.tsx:24
 #: src/app/[lang]/(public)/sitemap/page.tsx:70
 #: src/app/[lang]/(public)/sitemap/page.tsx:72
-#: src/app/[lang]/(public)/stamps/page.tsx:28
+#: src/app/[lang]/(public)/stamps/page.tsx:29
 #: src/components/ProgressSummary.tsx:19
 #: src/components/TabBar.tsx:21
 msgid "スタンプ"
 msgstr "スタンプ"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:132
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:139
 #: src/components/TrailRibbon.tsx:101
 msgid "スタンプ {stampedCount} / {spotCount}"
 msgstr "スタンプ {stampedCount} / {spotCount}"
@@ -389,7 +413,7 @@ msgstr "スタンプカード"
 msgid "スタンプカードを見る"
 msgstr "スタンプカードを見る"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:128
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:135
 #: src/components/SpotSheet.tsx:54
 msgid "スタンプの場所"
 msgstr "スタンプの場所"
@@ -401,6 +425,10 @@ msgstr "スタンプの場所 {text} がここに集まっています。押す�
 #: src/components/StampHere.tsx:158
 msgid "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 msgstr "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
+
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:126
+msgid "スタンプの場所は、まだ準備中です。"
+msgstr "スタンプの場所は、まだ準備中です。"
 
 #: src/components/map/TrailMap.tsx:467
 msgid "スタンプの場所を順に見る"
@@ -437,7 +465,7 @@ msgstr "スタンプを押す機能は、まだ使えません。"
 msgid "スタンプ場所 {spotCount}か所"
 msgstr "スタンプ場所 {spotCount}か所"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:50
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:51
 msgid "スタンプ済み"
 msgstr "スタンプ済み"
 
@@ -494,7 +522,7 @@ msgstr "トイレ・休憩"
 msgid "トイレやお店などを、地図を開いたときから表示します。"
 msgstr "トイレやお店などを、地図を開いたときから表示します。"
 
-#: src/components/auth/authUi.tsx:109
+#: src/components/auth/authUi.tsx:91
 msgid "どちらからお越しですか？"
 msgstr "どちらからお越しですか？"
 
@@ -530,11 +558,11 @@ msgstr "はじめのラリー"
 msgid "パスキー {number}"
 msgstr "パスキー {number}"
 
-#: src/components/auth/authUi.tsx:65
+#: src/components/useErrorMessages.ts:35
 msgid "パスキーの確認が中止されました。もう一度お試しください。"
 msgstr "パスキーの確認が中止されました。もう一度お試しください。"
 
-#: src/components/auth/authUi.tsx:70
+#: src/components/useErrorMessages.ts:29
 msgid "パスキーは、これ以上ふやせません。使わないものを消してから、お試しください。"
 msgstr "パスキーは、これ以上ふやせません。使わないものを消してから、お試しください。"
 
@@ -599,11 +627,12 @@ msgstr "ベースマップ"
 msgid "ホーム"
 msgstr "ホーム"
 
+#: src/app/[lang]/(public)/error.tsx:34
 #: src/app/[lang]/(public)/not-found.tsx:18
 msgid "ホームにもどる"
 msgstr "ホームにもどる"
 
-#: src/components/auth/authUi.tsx:71
+#: src/components/useErrorMessages.ts:30
 msgid "ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。"
 msgstr "ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。"
 
@@ -673,9 +702,13 @@ msgstr "メインメニュー"
 msgid "メニュー"
 msgstr "メニュー"
 
-#: src/components/auth/authUi.tsx:72
+#: src/components/useErrorMessages.ts:21
 msgid "もう一度、本人かどうかの確認が必要です。"
 msgstr "もう一度、本人かどうかの確認が必要です。"
+
+#: src/app/[lang]/(public)/error.tsx:28
+msgid "もう一度ひらく"
+msgstr "もう一度ひらく"
 
 #: src/components/StampHere.tsx:144
 msgid "もう一度試す"
@@ -714,9 +747,13 @@ msgstr "ライセンス情報"
 msgid "ライト"
 msgstr "ライト"
 
-#: src/app/[lang]/(public)/stamps/page.tsx:48
+#: src/app/[lang]/(public)/stamps/page.tsx:55
 msgid "ラリーの一覧"
 msgstr "ラリーの一覧"
+
+#: src/app/[lang]/(public)/stamps/page.tsx:45
+msgid "ラリーは、まだ準備中です。"
+msgstr "ラリーは、まだ準備中です。"
 
 #: src/app/[lang]/(public)/routes/page.tsx:18
 #: src/app/[lang]/(public)/sitemap/page.tsx:59
@@ -732,7 +769,7 @@ msgstr "ルートにもどる"
 msgid "ルートの一覧"
 msgstr "ルートの一覧"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:112
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:113
 msgid "ルートの動画"
 msgstr "ルートの動画"
 
@@ -750,7 +787,7 @@ msgstr "ルートや場所は、ログインしなくても見られます。"
 msgid "ルートをさがす"
 msgstr "ルートをさがす"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:77
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:78
 msgid "ルート一覧"
 msgstr "ルート一覧"
 
@@ -770,6 +807,7 @@ msgid "ログイン"
 msgstr "ログイン"
 
 #: src/components/StampHere.tsx:88
+#: src/components/useErrorMessages.ts:19
 msgid "ログインが切れたようです。ログインしなおしてください。"
 msgstr "ログインが切れたようです。ログインしなおしてください。"
 
@@ -785,7 +823,7 @@ msgstr "ログインする"
 msgid "ログインすると、スタンプを記録できます。"
 msgstr "ログインすると、スタンプを記録できます。"
 
-#: src/components/auth/authUi.tsx:68
+#: src/components/useErrorMessages.ts:27
 msgid "ログインできませんでした。この端末にパスキーがないときは、メールでログインしてください。"
 msgstr "ログインできませんでした。この端末にパスキーがないときは、メールでログインしてください。"
 
@@ -856,6 +894,10 @@ msgstr "保存しました。"
 msgid "保存する"
 msgstr "保存する"
 
+#: src/components/useErrorMessages.ts:14
+msgid "入力に、まちがいがあるようです。見直して、もう一度お試しください。"
+msgstr "入力に、まちがいがあるようです。見直して、もう一度お試しください。"
+
 #: src/components/landing/Landing.tsx:167
 msgid "全{TOTAL_ROUTES}区間"
 msgstr "全{TOTAL_ROUTES}区間"
@@ -878,9 +920,17 @@ msgstr "全{total}か所"
 msgid "公式サイトをひらく"
 msgstr "公式サイトをひらく"
 
+#: src/app/[lang]/(public)/stamps/page.tsx:46
+msgid "公開できるようになったら、ここにスタンプのラリーが表示されます。"
+msgstr "公開できるようになったら、ここにスタンプのラリーが表示されます。"
+
 #: src/app/[lang]/(public)/routes/page.tsx:69
 msgid "公開できるようになったら、ここにルートが表示されます。"
 msgstr "公開できるようになったら、ここにルートが表示されます。"
+
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:127
+msgid "公開できるようになったら、ここに場所の一覧が表示されます。"
+msgstr "公開できるようになったら、ここに場所の一覧が表示されます。"
 
 #: src/components/ElevationProfile.tsx:35
 msgid "最低 {lowest}m"
@@ -907,9 +957,9 @@ msgid "出かける前に"
 msgstr "出かける前に"
 
 #: src/app/[lang]/(public)/page.tsx:93
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:143
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:150
 #: src/app/[lang]/(public)/routes/page.tsx:82
-#: src/app/[lang]/(public)/stamps/page.tsx:59
+#: src/app/[lang]/(public)/stamps/page.tsx:66
 #: src/components/landing/Landing.tsx:201
 #: src/components/SpotSheet.tsx:89
 msgid "出かける前に、公式の最新情報を確認してください。"
@@ -954,7 +1004,7 @@ msgstr "動画のページをひらく"
 msgid "動画を見る"
 msgstr "動画を見る"
 
-#: src/components/auth/authUi.tsx:96
+#: src/components/auth/authUi.tsx:78
 #: src/components/PrefectureName.tsx:9
 msgid "和歌山県"
 msgstr "和歌山県"
@@ -963,8 +1013,8 @@ msgstr "和歌山県"
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 
-#: src/components/auth/authUi.tsx:78
 #: src/components/StampHere.tsx:91
+#: src/components/useErrorMessages.ts:37
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "問題が発生しました。しばらくしてからもう一度お試しください。"
 
@@ -1029,12 +1079,12 @@ msgstr "大きく表示"
 msgid "大切な操作なので、もう一度、確認します。"
 msgstr "大切な操作なので、もう一度、確認します。"
 
-#: src/components/auth/authUi.tsx:95
+#: src/components/auth/authUi.tsx:77
 #: src/components/PrefectureName.tsx:7
 msgid "大阪府"
 msgstr "大阪府"
 
-#: src/components/auth/authUi.tsx:97
+#: src/components/auth/authUi.tsx:79
 #: src/components/PrefectureName.tsx:11
 msgid "奈良県"
 msgstr "奈良県"
@@ -1129,7 +1179,7 @@ msgstr "文字やボタンの大きさ、地図の見せ方を選べます。大
 msgid "新規登録"
 msgstr "新規登録"
 
-#: src/components/auth/authUi.tsx:98
+#: src/components/auth/authUi.tsx:80
 msgid "日本のほかの地域"
 msgstr "日本のほかの地域"
 
@@ -1206,7 +1256,7 @@ msgstr "水場"
 msgid "注意"
 msgstr "注意"
 
-#: src/components/auth/authUi.tsx:99
+#: src/components/auth/authUi.tsx:81
 msgid "海外"
 msgstr "海外"
 
@@ -1249,7 +1299,7 @@ msgstr "画面の明るさ"
 msgid "画面の明るさ：{label}。押すと切り替わります。"
 msgstr "画面の明るさ：{label}。押すと切り替わります。"
 
-#: src/components/auth/authUi.tsx:67
+#: src/components/useErrorMessages.ts:22
 msgid "番号が違うか、期限が切れています。もう一度お試しください。"
 msgstr "番号が違うか、期限が切れています。もう一度お試しください。"
 
@@ -1266,7 +1316,7 @@ msgstr "登録ありがとうございます"
 msgid "登録する"
 msgstr "登録する"
 
-#: src/components/auth/authUi.tsx:69
+#: src/components/useErrorMessages.ts:28
 msgid "登録できませんでした。もう一度お試しください。"
 msgstr "登録できませんでした。もう一度お試しください。"
 
@@ -1279,8 +1329,8 @@ msgstr "登録済みの方は"
 msgid "着いたらボタンを押すだけ。場所を確かめて、スタンプがたまります。"
 msgstr "着いたらボタンを押すだけ。場所を確かめて、スタンプがたまります。"
 
-#: src/components/auth/authUi.tsx:76
 #: src/components/StampHere.tsx:89
+#: src/components/useErrorMessages.ts:16
 msgid "短い間に何度も操作されました。しばらくしてからお試しください。"
 msgstr "短い間に何度も操作されました。しばらくしてからお試しください。"
 
@@ -1292,7 +1342,7 @@ msgstr "確認した日：{checkedOn}"
 msgid "確認する"
 msgstr "確認する"
 
-#: src/components/auth/authUi.tsx:73
+#: src/components/useErrorMessages.ts:25
 msgid "確認できませんでした。もう一度お試しください。"
 msgstr "確認できませんでした。もう一度お試しください。"
 
@@ -1310,7 +1360,7 @@ msgstr "確認番号を送る"
 msgid "答えたくない"
 msgstr "答えたくない"
 
-#: src/components/auth/authUi.tsx:110
+#: src/components/auth/authUi.tsx:92
 msgid "答えなくても大丈夫です。"
 msgstr "答えなくても大丈夫です。"
 
@@ -1409,13 +1459,17 @@ msgstr "距離"
 msgid "近い場所をまとめて表示する"
 msgstr "近い場所をまとめて表示する"
 
-#: src/components/auth/authUi.tsx:77
+#: src/components/useErrorMessages.ts:13
+msgid "送った内容が、読み取れませんでした。もう一度お試しください。"
+msgstr "送った内容が、読み取れませんでした。もう一度お試しください。"
+
 #: src/components/StampHere.tsx:90
+#: src/components/useErrorMessages.ts:36
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "通信できませんでした。電波の良い場所でもう一度お試しください。"
 
 #: src/app/[lang]/(public)/sitemap/page.tsx:75
-#: src/app/[lang]/(public)/stamps/page.tsx:36
+#: src/app/[lang]/(public)/stamps/page.tsx:37
 msgid "遊び方"
 msgstr "遊び方"
 
@@ -1439,7 +1493,7 @@ msgstr "閉じる"
 msgid "閉店・撤去"
 msgstr "閉店・撤去"
 
-#: src/app/[lang]/(public)/routes/[id]/page.tsx:51
+#: src/app/[lang]/(public)/routes/[id]/page.tsx:52
 #: src/components/StatusWord.tsx:13
 msgid "閉鎖中"
 msgstr "閉鎖中"

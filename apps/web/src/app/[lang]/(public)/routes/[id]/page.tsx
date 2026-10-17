@@ -10,6 +10,7 @@ import { PrefectureName } from "@/components/PrefectureName";
 import { RouteSilhouette } from "@/components/RouteSketch";
 import { RouteStats } from "@/components/RouteStats";
 import { ElevationProfile } from "@/components/ElevationProfile";
+import { EmptyState } from "@/components/EmptyState";
 import { IntroVideo } from "@/components/IntroVideo";
 import { StopList } from "@/components/StopList";
 import { TrailMapLoader } from "@/components/map/TrailMapLoader";
@@ -119,6 +120,12 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
         <section className="px-4">
           <TrailMapLoader stops={stops} line={route.line} places={places} draft={draftPositions} settings={settings} mergeStops={prefs.mergeStops} placesFirst={prefs.placesOnMap} />
         </section>
+      ) : null}
+
+      {route.spots.length === 0 ? (
+        <EmptyState title={<Trans>スタンプの場所は、まだ準備中です。</Trans>}>
+          <Trans>公開できるようになったら、ここに場所の一覧が表示されます。</Trans>
+        </EmptyState>
       ) : null}
 
       {route.spots.length > 0 ? (

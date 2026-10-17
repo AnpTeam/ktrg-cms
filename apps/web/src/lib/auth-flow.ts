@@ -1,3 +1,4 @@
+import { errorKeyFromApi, type ErrorKey } from "./api-error";
 // Pure helpers for the login and register screens (no browser APIs here, so they are unit-tested).
 
 /** The sign-up choices for "where do you come from"; the keys match the API's `user_origin`. */
@@ -25,33 +26,14 @@ export function formatPublicId(publicId: string): string {
 export const NAME_MAX = 40;
 
 /**
- * Why a sign-in step failed, in words the screens can translate. The API sends error codes,
- * never display text; the rest come from the browser's passkey prompt.
+ * Why a sign-in step failed: the shared error names (lib/api-error.ts), which the screens translate through
+ * `useErrorMessages`. Kept under its old name because the sign-in code speaks of "failures".
  */
-export type AuthFailure =
-  | "unsupported"
-  | "cancelled"
-  | "invalid_display_name"
-  | "invalid_code"
-  | "login_failed"
-  | "registration_failed"
-  | "too_many_passkeys"
-  | "last_login_method"
-  | "reauth_required"
-  | "reauth_failed"
-  | "no_passkey"
-  | "no_email"
-  | "too_many_requests"
-  | "network"
-  | "failed";
-
-const apiCodes: readonly string[] = ["invalid_display_name", "invalid_code", "login_failed", "registration_failed", "too_many_passkeys", "last_login_method", "reauth_required", "reauth_failed", "no_passkey", "no_email"];
+export type AuthFailure = ErrorKey;
 
 /** Turn an API failure (HTTP status plus the `{ ok: false, error }` body) into an AuthFailure. */
 export function failureFromApi(status: number, value: unknown): AuthFailure {
-  if (status === 429) return "too_many_requests";
-  const code = (value as { error?: unknown } | null)?.error;
-  return typeof code === "string" && apiCodes.includes(code) ? (code as AuthFailure) : "failed";
+  return errorKeyFromApi(status, value);
 }
 
 /**

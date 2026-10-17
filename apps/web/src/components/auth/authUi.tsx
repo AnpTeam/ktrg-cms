@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { origins, type AuthFailure, type Origin } from "@/lib/auth-flow";
+import { useErrorMessages } from "../useErrorMessages";
 
 // Pieces shared by the login, register and profile screens. Big targets, few words, one action per step.
 
@@ -57,27 +58,8 @@ export function ChoiceCard({
   );
 }
 
-/** The visitor-facing sentence for each failure. */
-export function useFailureMessages(): Record<AuthFailure, string> {
-  const { t } = useLingui();
-  return {
-    unsupported: t`この端末・ブラウザではパスキーを使えません。メールでお試しください。`,
-    cancelled: t`パスキーの確認が中止されました。もう一度お試しください。`,
-    invalid_display_name: t`お名前に使えない文字が含まれているか、長すぎます（40文字まで）。`,
-    invalid_code: t`番号が違うか、期限が切れています。もう一度お試しください。`,
-    login_failed: t`ログインできませんでした。この端末にパスキーがないときは、メールでログインしてください。`,
-    registration_failed: t`登録できませんでした。もう一度お試しください。`,
-    too_many_passkeys: t`パスキーは、これ以上ふやせません。使わないものを消してから、お試しください。`,
-    last_login_method: t`ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。`,
-    reauth_required: t`もう一度、本人かどうかの確認が必要です。`,
-    reauth_failed: t`確認できませんでした。もう一度お試しください。`,
-    no_passkey: t`このアカウントには、パスキーがありません。メールの番号で確認してください。`,
-    no_email: t`このアカウントには、メールがありません。顔・指紋で確認してください。`,
-    too_many_requests: t`短い間に何度も操作されました。しばらくしてからお試しください。`,
-    network: t`通信できませんでした。電波の良い場所でもう一度お試しください。`,
-    failed: t`問題が発生しました。しばらくしてからもう一度お試しください。`,
-  };
-}
+/** The visitor-facing sentence for each failure: the app-wide table (components/useErrorMessages.ts). */
+export const useFailureMessages = useErrorMessages;
 
 export function AuthError({ code }: { code: AuthFailure | null }) {
   const messages = useFailureMessages();
