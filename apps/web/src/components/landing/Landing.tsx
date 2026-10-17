@@ -48,6 +48,7 @@ export function Landing({
   introVideo,
   slides,
   blogUrl,
+  hero = true,
 }: {
   to: (path: string) => string;
   locale: string;
@@ -56,6 +57,8 @@ export function Landing({
   introVideo: EmbedVideo | null;
   slides: BannerSlide[];
   blogUrl: string | null;
+  /** Show the title card with the register and login buttons (the home map shows them in its own sheet instead). */
+  hero?: boolean;
 }) {
   const firstRoutes = [...routes].sort((a, b) => a.order - b.order).slice(0, PREVIEW_ROUTES);
 
@@ -63,6 +66,7 @@ export function Landing({
     <div className="flex flex-col gap-10 pt-4">
       {slides.length > 0 ? <BannerCarousel slides={slides} /> : null}
 
+      {hero ? (
       <section className="px-4">
         <div className="frame pattern-shippo p-5">
           <h1 className="font-serif text-4xl font-bold leading-snug text-accent">
@@ -88,6 +92,7 @@ export function Landing({
           </div>
         </div>
       </section>
+      ) : null}
 
       <TrailNotices notices={notices} locale={locale} blogUrl={blogUrl} />
 

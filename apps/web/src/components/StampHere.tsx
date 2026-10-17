@@ -29,6 +29,7 @@ export function StampHere({
   alreadyStamped,
   loginHref,
   mock,
+  inSheet = false,
 }: {
   spotId: string;
   status: "open" | "caution" | "closed";
@@ -37,6 +38,8 @@ export function StampHere({
   loginHref: string;
   /** Development only: pretend answers, see stamp-client.ts. Never set in production. */
   mock?: StampMock;
+  /** Shown inside the home map's bottom sheet: it sticks to the bottom of the sheet, not above the tab bar. */
+  inSheet?: boolean;
 }) {
   const { t, i18n } = useLingui();
   const router = useRouter();
@@ -91,7 +94,7 @@ export function StampHere({
     failed: t`問題が発生しました。しばらくしてからもう一度お試しください。`,
   };
 
-  const wrapper = "sticky bottom-24 z-10 flex flex-col gap-2 px-4 md:bottom-6";
+  const wrapper = inSheet ? "sticky bottom-0 z-10 flex flex-col gap-2 bg-paper/95 py-2" : "sticky bottom-24 z-10 flex flex-col gap-2 px-4 md:bottom-6";
 
   if (phase.name === "done") {
     return (

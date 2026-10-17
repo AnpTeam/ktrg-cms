@@ -8,7 +8,7 @@ export function SiteFooter({ locale }: { locale: string }) {
   const { t } = useLingui();
   const link = "tap-target inline-flex items-center text-lg font-bold underline";
   return (
-    <footer className="mt-10 border-t border-line/30 px-4 pt-4">
+    <footer className="site-footer mt-10 border-t border-line/30 px-4 pt-4">
       <nav aria-label={t`フッター`} className="flex flex-wrap gap-x-6 gap-y-1">
       <Link href={localePath(locale, "/faq")} className={link}>
         <Trans>よくあるご質問</Trans>

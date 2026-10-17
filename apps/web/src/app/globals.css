@@ -482,3 +482,34 @@ html[data-size="xlarge"] {
     opacity: 1;
   }
 }
+
+/* The home map (WBS 3.2.10): the number of a course's area, and the page furniture that gives way to the map. */
+.map-area {
+  display: grid;
+  place-items: center;
+  min-width: 2.75rem;
+  height: 2.75rem;
+  padding: 0 0.5rem;
+  border-radius: 9999px;
+  border: 3px solid var(--color-brand);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.45);
+  cursor: pointer;
+}
+
+.map-area[data-soon="true"] {
+  border-style: dashed;
+}
+
+/* On the home map the map is the screen: the page behind it does not scroll, and the footer lives in the sheet. */
+body.home-map-active {
+  overflow: hidden;
+}
+body.home-map-active .site-footer {
+  display: none;
+}

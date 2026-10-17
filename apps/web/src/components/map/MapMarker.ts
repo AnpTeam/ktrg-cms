@@ -72,6 +72,28 @@ export function createPlaceMarkerElement({
   return el;
 }
 
+/** The number of a course's area on the overview map: a round button; a dashed edge means the course is not ready. */
+export function createAreaElement({
+  text,
+  label,
+  soon,
+  onSelect,
+}: {
+  text: string;
+  label: string;
+  soon: boolean;
+  onSelect: () => void;
+}): HTMLButtonElement {
+  const el = document.createElement("button");
+  el.type = "button";
+  el.className = "map-area";
+  if (soon) el.dataset.soon = "true";
+  el.textContent = text;
+  el.setAttribute("aria-label", label);
+  el.addEventListener("click", onSelect);
+  return el;
+}
+
 /** Several markers too close to tell apart at this zoom: one button showing what is inside; a tap zooms in. */
 export function createClusterElement({
   text,

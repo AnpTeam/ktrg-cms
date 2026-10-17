@@ -1,3 +1,4 @@
+import type { RouteArea } from "./home-map";
 import type { MapPlace, PlaceCategory, PlaceStatus } from "./places";
 import type { RallyItem } from "./rally-model";
 import { sampleLastStamped, sampleMounds, sampleMoundsStamped } from "./sample-mounds";
@@ -38,6 +39,8 @@ export interface RouteSummary {
   expectedTimeMin: number | null;
   /** A simplified route line for the list silhouette, when the CMS has geometry. */
   sketch: Sketch | null;
+  /** Where the course is, as one round area on the home map; null until the CMS has it. */
+  area: RouteArea | null;
   spotCount: number;
   /** Stamps this visitor holds on the route; null when not signed in. */
   stampedCount: number | null;
@@ -153,6 +156,7 @@ function toSummary(r: RouteDetail): RouteSummary {
     difficulty: r.difficulty,
     expectedTimeMin: r.expectedTimeMin,
     sketch: r.sketch,
+    area: r.area,
     spotCount: r.spotCount,
     stampedCount: r.stampedCount,
   };

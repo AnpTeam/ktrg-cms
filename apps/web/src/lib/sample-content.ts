@@ -1,3 +1,5 @@
+import type { RouteArea } from "./home-map";
+import { distanceMeters } from "./places";
 import type { RouteDetail, SpotDetail, SpotListItem } from "./content";
 import { route02Draft } from "./sample-route-02";
 import type { Sketch } from "./sketch";
@@ -130,6 +132,51 @@ function listItem(s: SpotDetail): SpotListItem {
   return { id: s.id, nameJa: s.nameJa, nameEn: s.nameEn, status: s.status, stamped: s.stamped, position: s.position };
 }
 
+// ROUGH, INVENTED PLACEMENT for the home map's areas (sample data only, shown with the note 見本の位置（目安です）).
+// The 19 courses are spread evenly along a hand-drawn line from Tomogashima in the west, across the Izumi range,
+// to the Kongo and Nijo mountains and Kamenose in the east. The real area of each course must be entered in the
+// CMS from an authoritative source (CLAUDE.md: positions are never guessed); course 2 uses its draft path.
+const TRAIL_AXIS: readonly { lat: number; lng: number }[] = [
+  { lat: 34.275, lng: 135.06 },
+  { lat: 34.262, lng: 135.125 },
+  { lat: 34.3, lng: 135.22 },
+  { lat: 34.35, lng: 135.35 },
+  { lat: 34.39, lng: 135.48 },
+  { lat: 34.43, lng: 135.58 },
+  { lat: 34.43, lng: 135.67 },
+  { lat: 34.46, lng: 135.72 },
+  { lat: 34.5, lng: 135.7 },
+  { lat: 34.53, lng: 135.67 },
+  { lat: 34.58, lng: 135.69 },
+];
+
+function sampleArea(order: number): RouteArea {
+  const lengths = TRAIL_AXIS.slice(1).map((p, i) => distanceMeters(TRAIL_AXIS[i] as RouteArea, p));
+  const total = lengths.reduce((a, b) => a + b, 0);
+  let left = (total * (order - 1)) / 18;
+  for (let i = 0; i < lengths.length; i++) {
+    const segment = lengths[i] as number;
+    if (left <= segment || i === lengths.length - 1) {
+      const t = Math.min(1, left / segment);
+      const a = TRAIL_AXIS[i] as RouteArea;
+      const b = TRAIL_AXIS[i + 1] as RouteArea;
+      return { lat: a.lat + (b.lat - a.lat) * t, lng: a.lng + (b.lng - a.lng) * t, radiusM: 3200, verified: false };
+    }
+    left -= segment;
+  }
+  return { ...(TRAIL_AXIS[0] as RouteArea), radiusM: 3200, verified: false };
+}
+
+/** Course 2's area follows its own draft path: the middle of it, wide enough to hold all of it. */
+function route02Area(): RouteArea {
+  const points = route02Draft.line.map(([lat, lng]) => ({ lat: lat as number, lng: lng as number }));
+  const lats = points.map((p) => p.lat);
+  const lngs = points.map((p) => p.lng);
+  const center = { lat: (Math.min(...lats) + Math.max(...lats)) / 2, lng: (Math.min(...lngs) + Math.max(...lngs)) / 2 };
+  const radiusM = Math.max(...points.map((p) => distanceMeters(center, p))) * 1.15;
+  return { ...center, radiusM: Math.round(radiusM), verified: false };
+}
+
 const skeleton = (order: number, ja: string, en: string): RouteDetail => ({
   id: `sample-r${order}`,
   order,
@@ -143,6 +190,7 @@ const skeleton = (order: number, ja: string, en: string): RouteDetail => ({
   difficulty: null,
   expectedTimeMin: null,
   sketch: null,
+  area: sampleArea(order),
   spotCount: 0,
   stampedCount: null,
   descriptionJa: null,
@@ -179,6 +227,7 @@ const rich: Record<number, Partial<RouteDetail>> = {
     distanceKm: route02Draft.distanceKm,
     elevationGainM: route02Draft.elevationGainM,
     sketch: { points: [...route02Draft.sketch], elevations: [...route02Draft.elevations] },
+    area: route02Area(),
     line: route02Draft.line.map(([lat, lng]) => ({ lat, lng })),
     spotCount: r2Spots.length,
     stampedCount: 2,
