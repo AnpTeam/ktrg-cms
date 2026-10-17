@@ -160,21 +160,22 @@ function sampleArea(order: number): RouteArea {
       const t = Math.min(1, left / segment);
       const a = TRAIL_AXIS[i] as RouteArea;
       const b = TRAIL_AXIS[i + 1] as RouteArea;
-      return { lat: a.lat + (b.lat - a.lat) * t, lng: a.lng + (b.lng - a.lng) * t, radiusM: 3200, verified: false };
+      return { lat: a.lat + (b.lat - a.lat) * t, lng: a.lng + (b.lng - a.lng) * t, widthM: 9000, heightM: 6000, verified: false };
     }
     left -= segment;
   }
-  return { ...(TRAIL_AXIS[0] as RouteArea), radiusM: 3200, verified: false };
+  return { ...(TRAIL_AXIS[0] as RouteArea), widthM: 9000, heightM: 6000, verified: false };
 }
 
-/** Course 2's area follows its own draft path: the middle of it, wide enough to hold all of it. */
+/** Course 2's area follows its own draft path: a box around all of it, with a margin. */
 function route02Area(): RouteArea {
   const points = route02Draft.line.map(([lat, lng]) => ({ lat: lat as number, lng: lng as number }));
   const lats = points.map((p) => p.lat);
   const lngs = points.map((p) => p.lng);
   const center = { lat: (Math.min(...lats) + Math.max(...lats)) / 2, lng: (Math.min(...lngs) + Math.max(...lngs)) / 2 };
-  const radiusM = Math.max(...points.map((p) => distanceMeters(center, p))) * 1.15;
-  return { ...center, radiusM: Math.round(radiusM), verified: false };
+  const widthM = distanceMeters({ lat: center.lat, lng: Math.min(...lngs) }, { lat: center.lat, lng: Math.max(...lngs) });
+  const heightM = distanceMeters({ lat: Math.min(...lats), lng: center.lng }, { lat: Math.max(...lats), lng: center.lng });
+  return { ...center, widthM: Math.round(widthM * 1.25), heightM: Math.round(heightM * 1.25), verified: false };
 }
 
 const skeleton = (order: number, ja: string, en: string): RouteDetail => ({

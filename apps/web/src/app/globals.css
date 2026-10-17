@@ -484,12 +484,23 @@ html[data-size="xlarge"] {
 }
 
 /* The home map (WBS 3.2.10): the number of a course's area, and the page furniture that gives way to the map. */
-.map-area {
+.map-pin {
+  position: relative;
+  display: block;
+  width: 2.75rem;
+  height: 3.5rem;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+/* The pin: a round head with the number, and a point (the triangle) at the middle of the course. */
+.map-pin-head {
+  position: absolute;
+  inset: 0 0 0.75rem 0;
   display: grid;
   place-items: center;
-  min-width: 2.75rem;
-  height: 2.75rem;
-  padding: 0 0.5rem;
   border-radius: 9999px;
   border: 3px solid var(--color-brand);
   background: var(--color-paper);
@@ -499,11 +510,54 @@ html[data-size="xlarge"] {
   line-height: 1;
   font-variant-numeric: tabular-nums;
   box-shadow: 0 1px 4px rgb(0 0 0 / 0.45);
-  cursor: pointer;
 }
 
-.map-area[data-soon="true"] {
+.map-pin::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  transform: translateX(-50%);
+  border: 0.55rem solid transparent;
+  border-top: 0.9rem solid var(--color-brand);
+  border-bottom: 0;
+}
+
+.map-pin[data-soon="true"] .map-pin-head {
   border-style: dashed;
+}
+
+/* The name beside the pin. Fixed colours, like the route line: the map tiles do not change with the theme. */
+.map-pin-name {
+  position: absolute;
+  left: calc(100% + 0.25rem);
+  top: 0;
+  padding: 0.3rem 0.4rem;
+  border-radius: 0.5rem;
+  background: #8e2a21;
+  color: #ffffff;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: left;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.45);
+}
+
+/* Japanese runs top to bottom and, when it is long, folds into a second column. */
+.map-pin-name[data-vertical="true"] {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  max-block-size: 8.5rem;
+  letter-spacing: 0.08em;
+}
+
+/* Other languages: a few short lines. */
+.map-pin-name[data-vertical="false"] {
+  width: max-content;
+  max-width: 7.5rem;
+  text-wrap: balance;
 }
 
 /* On the home map the map is the screen: the page behind it does not scroll, and the footer lives in the sheet. */
@@ -512,4 +566,14 @@ body.home-map-active {
 }
 body.home-map-active .site-footer {
   display: none;
+}
+
+/* A wide screen (1280px and up): on the home map the free space at the right holds the detail panel. */
+@media (min-width: 1280px) {
+  body.home-map-active .site-shell {
+    max-width: 84rem;
+  }
+  body.home-map-active .home-aside-slot {
+    width: 26rem;
+  }
 }

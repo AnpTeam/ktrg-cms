@@ -5,11 +5,13 @@ import type { Position } from "./map";
 // can rest at. No React and no map library, so they are unit-tested.
 
 /**
- * Where a course is, as one round area on the overview map (a centre and a radius). The CMS holds it per course;
- * `verified` is false for a rough placement (sample data), and the map then says so.
+ * Where a course is, as one outlined rectangle on the map (its centre and its size in metres, edges running
+ * east-west and north-south, like the boxes on the official map). The CMS holds it per course; `verified` is
+ * false for a rough placement (sample data), and the map then says so.
  */
 export interface RouteArea extends Position {
-  radiusM: number;
+  widthM: number;
+  heightM: number;
   verified: boolean;
 }
 
@@ -65,18 +67,52 @@ export interface HomeRoute {
 
 const EARTH_RADIUS_M = 6_371_008.8;
 
-/** A closed ring of points around a centre, `radiusM` away (a polygon close enough to a circle for a map). */
-export function circlePolygon(center: Position, radiusM: number, steps = 48): Position[] {
-  const lat = (center.lat * Math.PI) / 180;
-  const ring: Position[] = [];
-  for (let i = 0; i < steps; i++) {
-    const angle = (i / steps) * 2 * Math.PI;
-    const dLat = (radiusM * Math.cos(angle)) / EARTH_RADIUS_M;
-    const dLng = (radiusM * Math.sin(angle)) / (EARTH_RADIUS_M * Math.cos(lat));
-    ring.push({ lat: center.lat + (dLat * 180) / Math.PI, lng: center.lng + (dLng * 180) / Math.PI });
+/** How far, in degrees, half of the area's height and width reach from its centre. */
+function halfSpan(area: RouteArea): { dLat: number; dLng: number } {
+  const lat = (area.lat * Math.PI) / 180;
+  return {
+    dLat: ((area.heightM / 2 / EARTH_RADIUS_M) * 180) / Math.PI,
+    dLng: ((area.widthM / 2 / (EARTH_RADIUS_M * Math.cos(lat))) * 180) / Math.PI,
+  };
+}
+
+/** The corners of an area, as a closed ring (the first point is repeated at the end). */
+export function rectangleRing(area: RouteArea): Position[] {
+  const { dLat, dLng } = halfSpan(area);
+  const [s, n, w, e] = [area.lat - dLat, area.lat + dLat, area.lng - dLng, area.lng + dLng];
+  return [
+    { lat: s, lng: w },
+    { lat: s, lng: e },
+    { lat: n, lng: e },
+    { lat: n, lng: w },
+    { lat: s, lng: w },
+  ];
+}
+
+/** Is this point inside the area? */
+export function areaContains(area: RouteArea, point: Position): boolean {
+  const { dLat, dLng } = halfSpan(area);
+  return Math.abs(point.lat - area.lat) <= dLat && Math.abs(point.lng - area.lng) <= dLng;
+}
+
+/**
+ * The course whose area is under the middle of the map, once the map is zoomed in far enough to be "inside" it
+ * (and only a course that has stops to show). That course's stops appear without anyone choosing it. With two
+ * areas overlapping, the one whose centre is nearer wins.
+ */
+export function revealedRouteId(routes: readonly HomeRoute[], center: Position, zoom: number, minZoom: number): string | null {
+  if (zoom < minZoom) return null;
+  let best: HomeRoute | null = null;
+  let bestDistance = Infinity;
+  for (const r of routes) {
+    if (!r.area || !r.stops || r.stops.length === 0 || !areaContains(r.area, center)) continue;
+    const d = Math.hypot(r.area.lat - center.lat, r.area.lng - center.lng);
+    if (d < bestDistance) {
+      best = r;
+      bestDistance = d;
+    }
   }
-  ring.push(ring[0] as Position);
-  return ring;
+  return best?.id ?? null;
 }
 
 export interface AreaCollection {
@@ -96,7 +132,7 @@ export function areaCollection(routes: readonly HomeRoute[], selectedId: string 
     features: shown.map((r) => ({
       type: "Feature",
       properties: { id: r.id, order: r.order, selected: r.id === selectedId },
-      geometry: { type: "Polygon", coordinates: [circlePolygon(r.area as RouteArea, (r.area as RouteArea).radiusM).map((p): [number, number] => [p.lng, p.lat])] },
+      geometry: { type: "Polygon", coordinates: [rectangleRing(r.area as RouteArea).map((p): [number, number] => [p.lng, p.lat])] },
     })),
   };
 }
@@ -105,7 +141,57 @@ export function areaCollection(routes: readonly HomeRoute[], selectedId: string 
 export function framePoints(route: HomeRoute): Position[] {
   const detail = [...(route.stops?.map((s) => s.position) ?? []), ...(route.line ?? [])];
   if (detail.length > 0) return detail;
-  return route.area ? circlePolygon(route.area, route.area.radiusM, 12) : [];
+  return route.area ? rectangleRing(route.area) : [];
+}
+
+// ---- Names beside the pins ----------------------------------------------------------------------------------------
+
+/** The size, in px, of a pin's head and of the room its name takes up beside it (see .map-pin in globals.css). */
+const PIN_W = 44;
+const PIN_H = 56;
+const LABEL_GAP = 4;
+const LABEL_MAX_VERTICAL = 136; // 8.5rem: a longer name folds into another column
+const LABEL_MAX_WIDTH = 120; // 7.5rem
+
+/** About how big a name's label comes out. An estimate: it only has to keep names from covering each other. */
+export function estimateLabel(name: string, vertical: boolean): { w: number; h: number } {
+  const n = [...name].length;
+  if (vertical) {
+    const column = n * 19.2 + 10;
+    const columns = Math.max(1, Math.ceil(column / LABEL_MAX_VERTICAL));
+    return { w: columns * 18 + 13, h: Math.min(LABEL_MAX_VERTICAL, column) };
+  }
+  const w = Math.min(LABEL_MAX_WIDTH, n * 8 + 13);
+  const lines = Math.max(1, Math.ceil((n * 8) / (LABEL_MAX_WIDTH - 13)));
+  return { w, h: lines * 18 + 10 };
+}
+
+interface Box {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+const overlaps = (a: Box, b: Box) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+
+/**
+ * Which pins may show their name. `x` and `y` are where the pin's point is on screen. Every pin keeps its head;
+ * a name is shown only if it clears all the heads and the names already shown, taking the pins in the order given
+ * (lowest course number first), so two names never print over each other.
+ */
+export function namesThatFit(pins: readonly { id: string; x: number; y: number; name: string; vertical: boolean }[]): Set<string> {
+  const heads: Box[] = pins.map((p) => ({ x: p.x - PIN_W / 2, y: p.y - PIN_H, w: PIN_W, h: PIN_H }));
+  const placed: Box[] = [];
+  const shown = new Set<string>();
+  pins.forEach((p, i) => {
+    const { w, h } = estimateLabel(p.name, p.vertical);
+    const box: Box = { x: p.x + PIN_W / 2 + LABEL_GAP, y: p.y - PIN_H, w, h };
+    const others = heads.filter((_, j) => j !== i);
+    if ([...others, ...placed].some((o) => overlaps(box, o))) return;
+    placed.push(box);
+    shown.add(p.id);
+  });
+  return shown;
 }
 
 // ---- The bottom sheet ----------------------------------------------------------------------------------------

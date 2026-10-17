@@ -72,23 +72,43 @@ export function createPlaceMarkerElement({
   return el;
 }
 
-/** The number of a course's area on the overview map: a round button; a dashed edge means the course is not ready. */
-export function createAreaElement({
-  text,
+/**
+ * A course on the map: a pin whose point is the middle of the course's rectangle, with the course number in its
+ * head and, once the map is zoomed in far enough, its name beside it. Japanese names run top to bottom (as on the
+ * official map, and they take far less width that way); other languages wrap onto a few short lines. A dashed
+ * head means the course is not ready.
+ */
+export function createPinElement({
+  number,
+  name,
+  vertical,
   label,
   soon,
   onSelect,
 }: {
-  text: string;
+  number: string;
+  /** null while the map is zoomed out: only the number is shown. */
+  name: string | null;
+  vertical: boolean;
   label: string;
   soon: boolean;
   onSelect: () => void;
 }): HTMLButtonElement {
   const el = document.createElement("button");
   el.type = "button";
-  el.className = "map-area";
+  el.className = "map-pin";
   if (soon) el.dataset.soon = "true";
-  el.textContent = text;
+  const head = document.createElement("span");
+  head.className = "map-pin-head";
+  head.textContent = number;
+  el.appendChild(head);
+  if (name) {
+    const text = document.createElement("span");
+    text.className = "map-pin-name";
+    text.dataset.vertical = String(vertical);
+    text.textContent = name;
+    el.appendChild(text);
+  }
   el.setAttribute("aria-label", label);
   el.addEventListener("click", onSelect);
   return el;

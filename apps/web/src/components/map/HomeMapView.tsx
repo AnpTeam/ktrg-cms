@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { ChevronIcon, ChevronLeftIcon, WarningIcon } from "@/components/icons";
 import { ElevationProfile } from "@/components/ElevationProfile";
@@ -26,6 +26,14 @@ const linkButton = "tap-target flex min-h-12 w-full items-center justify-center 
 const primaryLink = "tap-target flex min-h-12 w-full items-center justify-center rounded-xl bg-brand px-5 text-lg font-bold text-on-brand";
 // Room kept under the sheet for the floating tab bar (a rail on wide screens).
 const TAB_ROOM_REM = 5.5;
+// From this width the free space at the right of the page holds the detail of the chosen course or stop.
+const WIDE_QUERY = "(min-width: 1280px)";
+
+function subscribeWide(onChange: () => void) {
+  const query = window.matchMedia(WIDE_QUERY);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+}
 
 export function HomeMapView({
   routes,
@@ -61,6 +69,7 @@ export function HomeMapView({
   const [available, setAvailable] = useState(520);
   // The room under the sheet taken by the tab bar (none on a wide screen, where it is a rail).
   const [tabPx, setTabPx] = useState(88);
+  const wide = useSyncExternalStore(subscribeWide, () => window.matchMedia(WIDE_QUERY).matches, () => false);
 
   const route = routes.find((r) => r.id === routeId) ?? null;
   const stop = route?.stops?.find((s) => s.id === stopId) ?? null;
@@ -88,22 +97,31 @@ export function HomeMapView({
     return () => observer.disconnect();
   }, []);
 
-  const chooseRoute = useCallback((id: string) => {
-    setRouteId(id);
-    setStopId(null);
-    setSnap("half");
-  }, []);
-  const chooseStop = useCallback((id: string) => {
-    setStopId(id);
-    setSnap((s) => (s === "peek" ? "half" : s));
-  }, []);
+  // On a narrow screen the sheet rises to show what was chosen; on a wide one the detail has its own panel at the
+  // right and the sheet stays as it is.
+  const chooseRoute = useCallback(
+    (id: string) => {
+      setRouteId(id);
+      setStopId(null);
+      if (!wide) setSnap("half");
+    },
+    [wide],
+  );
+  const chooseStop = useCallback(
+    (routeId: string, id: string) => {
+      setRouteId(routeId);
+      setStopId(id);
+      if (!wide) setSnap((s) => (s === "peek" ? "half" : s));
+    },
+    [wide],
+  );
   const back = useCallback(() => {
     if (stopId) setStopId(null);
     else {
       setRouteId(null);
-      setSnap("peek");
+      if (!wide) setSnap("peek");
     }
-  }, [stopId]);
+  }, [stopId, wide]);
 
   useEffect(() => {
     if (!routeId) return;
@@ -112,24 +130,29 @@ export function HomeMapView({
     return () => document.removeEventListener("keydown", onKey);
   }, [routeId, back]);
 
-  const name_ = route?.name ?? "";
-  const header = stop ? (
-    <SheetTitle back={back} backLabel={name_} title={`${stop.order}. ${stop.name}`} lang={stop.nameLang} />
+  const routeName = route?.name ?? "";
+  const detailHeader = stop ? (
+    <SheetTitle back={back} backLabel={routeName} title={`${stop.order}. ${stop.name}`} lang={stop.nameLang} />
   ) : route ? (
     <SheetTitle back={back} backLabel={t`全体の地図`} title={`${route.order}. ${route.name}`} lang={route.nameLang} />
-  ) : (
+  ) : null;
+
+  const homeHeader = (
     <div>
       <h1 className="font-serif text-2xl font-bold leading-snug text-accent">{t`葛城修験`}</h1>
       <p className="text-lg font-bold leading-snug">{signedIn && name ? t`${name}さん、こんにちは。` : t`「祈り」を見つめる再発見の旅`}</p>
-      <RouteChips routes={routes} onChoose={chooseRoute} />
+      <RouteChips routes={routes} onChoose={chooseRoute} selectedId={routeId} />
     </div>
   );
 
-  const body = stop && route ? (
-    <StopPanel route={route} stop={stop} signedIn={signedIn} locale={locale} loginHref={loginHref} registerHref={registerHref} stampMock={stampMock} />
-  ) : route ? (
-    <RoutePanel route={route} signedIn={signedIn} loginHref={loginHref} registerHref={registerHref} onChooseStop={chooseStop} />
-  ) : (
+  const detailBody =
+    stop && route ? (
+      <StopPanel route={route} stop={stop} signedIn={signedIn} locale={locale} loginHref={loginHref} registerHref={registerHref} stampMock={stampMock} />
+    ) : route ? (
+      <RoutePanel route={route} signedIn={signedIn} loginHref={loginHref} registerHref={registerHref} onChooseStop={(id) => chooseStop(route.id, id)} />
+    ) : null;
+
+  const homeBody = (
     <>
       {signedIn ? null : (
         <div className="flex flex-col gap-3 px-4 pb-4">
@@ -148,7 +171,12 @@ export function HomeMapView({
     </>
   );
 
+  // Narrow: one sheet that shows the home content or the chosen course or stop. Wide: the sheet is always the
+  // home content, and the chosen course or stop is shown in the panel at the right.
+  const showDetailInSheet = !wide && detailBody !== null;
+
   return (
+    <div className="relative">
     <div
       ref={wrap}
       data-dark={settings.dark}
@@ -164,9 +192,19 @@ export function HomeMapView({
         settings={settings}
         mergeStops={mergeStops}
       />
-      <HomeSheet snap={snap} onSnap={setSnap} available={available} header={header}>
-        {body}
+      <HomeSheet snap={snap} onSnap={setSnap} available={available} header={showDetailInSheet ? detailHeader : homeHeader}>
+        {showDetailInSheet ? detailBody : homeBody}
       </HomeSheet>
+    </div>
+
+    {wide && detailBody ? (
+      <aside aria-label={t`くわしい情報`} className="absolute left-full top-0 ml-10 h-dvh w-[26rem] py-3 pr-3">
+        <div className="flex h-full flex-col overflow-hidden rounded-3xl bg-paper shadow-[0_2px_24px_rgb(0_0_0/0.22)]">
+          <div className="shrink-0 px-4 pb-2 pt-4">{detailHeader}</div>
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-6">{detailBody}</div>
+        </div>
+      </aside>
+    ) : null}
     </div>
   );
 }
@@ -188,7 +226,7 @@ function SheetTitle({ back, backLabel, title, lang }: { back: () => void; backLa
 }
 
 /** The 19 courses as numbered buttons, so a course can be chosen without finding its area on the map. */
-function RouteChips({ routes, onChoose }: { routes: HomeRoute[]; onChoose: (id: string) => void }) {
+function RouteChips({ routes, onChoose, selectedId }: { routes: HomeRoute[]; onChoose: (id: string) => void; selectedId: string | null }) {
   const { t } = useLingui();
   const ordered = [...routes].sort((a, b) => a.order - b.order);
   return (
@@ -203,9 +241,10 @@ function RouteChips({ routes, onChoose }: { routes: HomeRoute[]; onChoose: (id: 
             type="button"
             onClick={() => onChoose(r.id)}
             aria-label={label}
-            className={`tap-target grid min-w-12 shrink-0 place-items-center rounded-full border-[3px] bg-paper px-3 text-lg font-bold tabular-nums text-ink hover:bg-surface ${
-              r.status === "soon" ? "border-dashed border-line" : "border-brand"
-            }`}
+            aria-pressed={r.id === selectedId}
+            className={`tap-target grid min-w-12 shrink-0 place-items-center rounded-full border-[3px] px-3 text-lg font-bold tabular-nums ${
+              r.id === selectedId ? "bg-brand text-on-brand" : "bg-paper text-ink hover:bg-surface"
+            } ${r.status === "soon" ? "border-dashed border-line" : "border-brand"}`}
           >
             {r.order}
           </button>

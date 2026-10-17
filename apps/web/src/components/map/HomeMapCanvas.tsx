@@ -6,18 +6,23 @@ import { useLingui } from "@lingui/react/macro";
 import type { GeoJSONSource, Map as MapLibreMap } from "maplibre-gl";
 import { WarningIcon } from "@/components/icons";
 import { clusterByPixels } from "@/lib/cluster";
-import { areaCollection, framePoints, type HomeRoute } from "@/lib/home-map";
+import { areaCollection, framePoints, namesThatFit, revealedRouteId, type HomeRoute } from "@/lib/home-map";
 import { boundsOf, lineFeature, mapStyle, markerKind, nextStopId, routeLineLayers, zoomLimits, type Position } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
-import { createAreaElement, createClusterElement, createMarkerElement } from "./MapMarker";
+import { createClusterElement, createMarkerElement, createPinElement } from "./MapMarker";
 
-// The map of the home screen (WBS 3.2.10). Overview: one round area per course, each with its number. Choose a
-// course and the other areas fold away; that course shows its path and its numbered stops. Everything is drawn
-// here; what is chosen and what the sheet says live in HomeMapView.
+// The map of the home screen (WBS 3.2.10). Each course is an outlined rectangle with a pin in the middle that
+// carries its name. Zoom in over a course and its stops appear by themselves; choose a course and the others fold
+// away while its path and stops show. Everything is drawn here; what is chosen and what the sheet says live in
+// HomeMapView.
 
 const AREAS = "areas";
 const DETAIL = "route-detail";
 const CLUSTER_PX = 50;
+/** From this zoom on, the pins may carry their names (those with room); below it they are bare numbers that merge where they touch. */
+const NAMES_ZOOM = 9.4;
+/** From this zoom on, being "inside" a course opens it: its stops appear without anyone choosing it. */
+const REVEAL_ZOOM = 11.3;
 const EMPTY = { type: "FeatureCollection" as const, features: [] };
 // Where the camera starts before any area is known: the middle of the trail (Osaka, Wakayama, Nara).
 const START_CENTER: [number, number] = [135.35, 34.4];
@@ -41,30 +46,35 @@ export function HomeMapCanvas({
   routeId: string | null;
   stopId: string | null;
   onSelectRoute: (id: string) => void;
-  onSelectStop: (id: string) => void;
+  onSelectStop: (routeId: string, stopId: string) => void;
   /** How much of the map's bottom the sheet and the tab bar cover right now: what is framed stays clear of it. */
   coveredPx: number;
   settings: MapSettings;
   mergeStops: boolean;
 }) {
-  const { t } = useLingui();
+  const { t, i18n } = useLingui();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const mlRef = useRef<typeof import("maplibre-gl") | null>(null);
   const coveredRef = useRef(coveredPx);
+  const routesRef = useRef(routes);
   const selectRouteRef = useRef(onSelectRoute);
   const [mapGen, setMapGen] = useState(0);
   const [view, setView] = useState(0);
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [autoId, setAutoId] = useState<string | null>(null);
 
   useEffect(() => {
     coveredRef.current = coveredPx;
+    routesRef.current = routes;
     selectRouteRef.current = onSelectRoute;
   });
 
   const route = routes.find((r) => r.id === routeId) ?? null;
-  const draftShown = route ? route.draft || route.area?.verified === false : routes.some((r) => r.area && !r.area.verified);
+  // The course whose stops are shown: the chosen one, or else the one the visitor has zoomed into.
+  const focus = route ?? routes.find((r) => r.id === autoId) ?? null;
+  const draftShown = focus ? focus.draft || focus.area?.verified === false : routes.some((r) => r.area && !r.area.verified);
 
   // Keep what is framed above the sheet and clear of the buttons (menu on the left, zoom on the right).
   const padding = () => ({ top: 96, left: 36, right: 72, bottom: coveredRef.current + 28 });
@@ -93,15 +103,20 @@ export function HomeMapCanvas({
         });
         map.touchZoomRotate.disableRotation();
         map.on("error", () => {});
-        map.on("moveend", () => setView((v) => v + 1));
+        map.on("moveend", () => {
+          if (!map) return;
+          const c = map.getCenter();
+          setAutoId(revealedRouteId(routesRef.current, { lat: c.lat, lng: c.lng }, map.getZoom(), REVEAL_ZOOM));
+          setView((v) => v + 1);
+        });
 
         let started = false;
         const start = () => {
           if (started || cancelled || !map || !map.isStyleLoaded()) return;
           started = true;
           map.addSource(AREAS, { type: "geojson", data: EMPTY });
-          map.addLayer({ id: `${AREAS}-fill`, type: "fill", source: AREAS, paint: { "fill-color": "#cc6256", "fill-opacity": ["case", ["get", "selected"], 0.1, 0.24] } });
-          map.addLayer({ id: `${AREAS}-line`, type: "line", source: AREAS, paint: { "line-color": "#a8362b", "line-width": ["case", ["get", "selected"], 3, 2], "line-opacity": 0.9 } });
+          map.addLayer({ id: `${AREAS}-fill`, type: "fill", source: AREAS, paint: { "fill-color": "#cc6256", "fill-opacity": ["case", ["get", "selected"], 0.06, 0.16] } });
+          map.addLayer({ id: `${AREAS}-line`, type: "line", source: AREAS, paint: { "line-color": "#a8362b", "line-width": ["case", ["get", "selected"], 3, 2.2], "line-opacity": 0.95 } });
           map.addSource(DETAIL, { type: "geojson", data: EMPTY });
           for (const layer of routeLineLayers(DETAIL, false)) map.addLayer(layer);
           map.on("click", `${AREAS}-fill`, (e) => {
@@ -132,14 +147,14 @@ export function HomeMapCanvas({
     };
   }, [settings]);
 
-  // What is drawn: the areas (all of them, or only the chosen course) and the chosen course's path.
+  // What is drawn: the rectangles (all of them, or only the chosen course) and the shown course's path.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
     (map.getSource(AREAS) as GeoJSONSource | undefined)?.setData(areaCollection(routes, routeId));
-    const points = route?.line ?? route?.stops?.map((s) => s.position) ?? null;
+    const points = focus?.line ?? focus?.stops?.map((s) => s.position) ?? null;
     (map.getSource(DETAIL) as GeoJSONSource | undefined)?.setData(points && points.length > 1 ? lineFeature(points) : EMPTY);
-  }, [ready, routes, routeId, route, mapGen]);
+  }, [ready, routes, routeId, focus, mapGen]);
 
   // Where the camera goes: all the areas at first, a chosen course when there is one.
   useEffect(() => {
@@ -153,19 +168,20 @@ export function HomeMapCanvas({
   // A chosen stop is brought into view above the sheet.
   useEffect(() => {
     const map = mapRef.current;
-    const stop = route?.stops?.find((s) => s.id === stopId);
+    const stop = focus?.stops?.find((s) => s.id === stopId);
     if (!map || !ready || !stop) return;
     map.easeTo({ center: [stop.position.lng, stop.position.lat], zoom: Math.max(map.getZoom(), 15), padding: padding(), duration: 500 });
   }, [ready, stopId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // The markers: numbered areas (merged where they would overlap) or, for a chosen course, its stops.
+  // The markers: a pin for each course (with its name once zoomed in, merged into groups while zoomed out), and
+  // the numbered stops of the course that is shown.
   useEffect(() => {
     const map = mapRef.current;
     const ml = mlRef.current;
     if (!map || !ml || !ready) return;
     const live: { remove: () => void }[] = [];
-    const put = (el: HTMLElement, at: Position) =>
-      live.push(new ml.Marker({ element: el, anchor: "center" }).setLngLat([at.lng, at.lat]).addTo(map));
+    const put = (el: HTMLElement, at: Position, anchor: "center" | "bottom" = "center") =>
+      live.push(new ml.Marker({ element: el, anchor }).setLngLat([at.lng, at.lat]).addTo(map));
     const pixel = (id: string, at: Position) => {
       const p = map.project([at.lng, at.lat]);
       return { id, x: p.x, y: p.y };
@@ -174,40 +190,55 @@ export function HomeMapCanvas({
       const bounds = boundsOf(points);
       if (bounds) map.fitBounds(bounds, { padding: padding(), maxZoom: 17 });
     };
+    const withNames = map.getZoom() >= NAMES_ZOOM;
 
-    if (!route) {
-      const withArea = routes.filter((r) => r.area);
-      const byId = new Map(withArea.map((r) => [r.id, r]));
-      for (const ids of clusterByPixels(withArea.map((r) => pixel(r.id, r.area as Position)), CLUSTER_PX)) {
-        const members = ids.map((id) => byId.get(id)!);
-        if (members.length === 1) {
-          const r = members[0]!;
-          const name = r.name;
-          const order = r.order;
-          put(
-            createAreaElement({ text: String(r.order), label: t`${order}. ${name}`, soon: r.status === "soon", onSelect: () => onSelectRoute(r.id) }),
-            r.area as Position,
-          );
-        } else {
-          const orders = members.map((m) => m.order);
-          const text = `${Math.min(...orders)}–${Math.max(...orders)}`;
-          put(
-            createClusterElement({
-              text,
-              label: t`区間 ${text} がここに集まっています。押すと拡大します`,
-              kind: "stops",
-              onSelect: () => zoomTo(members.flatMap((m) => framePoints(m))),
-            }),
-            centerOf(members.map((m) => m.area as Position)),
-          );
-        }
+    // Pins: none once a course is chosen (the others fold away); otherwise every course except the one opened.
+    const pinned = route ? [] : routes.filter((r) => r.area && r.id !== focus?.id);
+    const byId = new Map(pinned.map((r) => [r.id, r]));
+    const groups = withNames ? pinned.map((r) => [r.id]) : clusterByPixels(pinned.map((r) => pixel(r.id, r.area as Position)), CLUSTER_PX);
+    // A name is printed only where it has room: never over another pin or another name.
+    const named = withNames
+      ? namesThatFit(pinned.map((r) => ({ ...pixel(r.id, r.area as Position), name: r.name, vertical: r.nameLang === "ja" })))
+      : new Set<string>();
+    for (const ids of groups) {
+      const members = ids.map((id) => byId.get(id)!);
+      if (members.length === 1) {
+        const r = members[0]!;
+        const order = r.order;
+        const name = r.name;
+        put(
+          createPinElement({
+            number: String(r.order),
+            name: named.has(r.id) ? r.name : null,
+            vertical: r.nameLang === "ja",
+            label: t`${order}. ${name}`,
+            soon: r.status === "soon",
+            onSelect: () => onSelectRoute(r.id),
+          }),
+          r.area as Position,
+          "bottom",
+        );
+      } else {
+        const orders = members.map((m) => m.order);
+        const text = `${Math.min(...orders)}–${Math.max(...orders)}`;
+        put(
+          createClusterElement({
+            text,
+            label: t`区間 ${text} がここに集まっています。押すと拡大します`,
+            kind: "stops",
+            onSelect: () => zoomTo(members.flatMap((m) => framePoints(m))),
+          }),
+          centerOf(members.map((m) => m.area as Position)),
+        );
       }
-    } else if (route.stops) {
-      const next = nextStopId(route.stops);
-      const byId = new Map(route.stops.map((s) => [s.id, s]));
-      const groups = mergeStops ? clusterByPixels(route.stops.map((s) => pixel(s.id, s.position)), CLUSTER_PX) : route.stops.map((s) => [s.id]);
-      for (const ids of groups) {
-        const members = ids.map((id) => byId.get(id)!);
+    }
+
+    if (focus?.stops) {
+      const next = nextStopId(focus.stops);
+      const stopById = new Map(focus.stops.map((s) => [s.id, s]));
+      const stopGroups = mergeStops ? clusterByPixels(focus.stops.map((s) => pixel(s.id, s.position)), CLUSTER_PX) : focus.stops.map((s) => [s.id]);
+      for (const ids of stopGroups) {
+        const members = ids.map((id) => stopById.get(id)!);
         if (members.length === 1) {
           const s = members[0]!;
           const el = createMarkerElement({
@@ -215,7 +246,7 @@ export function HomeMapCanvas({
             label: s.label,
             kind: markerKind(s.stamped, s.id === next),
             status: s.status,
-            onSelect: () => onSelectStop(s.id),
+            onSelect: () => onSelectStop(focus.id, s.id),
           });
           el.setAttribute("aria-pressed", String(s.id === stopId));
           put(el, s.position);
@@ -238,7 +269,7 @@ export function HomeMapCanvas({
     return () => live.forEach((m) => m.remove());
     // `t` changes only with the language, which reloads the page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, mapGen, view, routes, routeId, stopId, mergeStops]);
+  }, [ready, mapGen, view, routes, routeId, autoId, stopId, mergeStops]);
 
   const zoom = (delta: 1 | -1) => {
     const map = mapRef.current;
@@ -254,7 +285,7 @@ export function HomeMapCanvas({
 
   return (
     <>
-      <div className="absolute inset-0">
+      <div className="absolute inset-0" lang={i18n.locale}>
         <div ref={containerRef} className="h-full w-full" />
       </div>
 

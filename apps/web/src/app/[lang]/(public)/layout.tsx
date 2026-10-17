@@ -26,7 +26,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   return (
     <MenuProvider>
     <StampFilters />
-    <div className="mx-auto flex w-full max-w-5xl justify-center md:gap-6 lg:gap-10">
+    <div className="site-shell mx-auto flex w-full max-w-5xl justify-center md:gap-6 lg:gap-10">
       <TabBar />
       <div className="min-w-0 max-w-xl flex-1 md:border-x md:border-surface">
         <SiteHeader signedIn={viewer.signedIn} name={viewer.name} sample={sample} devTools={process.env.NODE_ENV !== "production"} />
@@ -38,7 +38,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           <SiteFooter locale={i18n.locale} />
         </main>
       </div>
-      <div aria-hidden="true" className="hidden w-60 shrink-0 lg:block" />
+      <div aria-hidden="true" className="home-aside-slot hidden w-60 shrink-0 lg:block" />
     </div>
     </MenuProvider>
   );
