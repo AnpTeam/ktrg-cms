@@ -76,9 +76,6 @@ export function Landing({
             <Link href={to("/register")} className={primary}>
               <Trans>新規登録</Trans>
             </Link>
-            <Link href={to("/map")} className={secondary}>
-              <Trans>地図を見る</Trans>
-            </Link>
             <Link href={to("/routes")} className={secondary}>
               <Trans>ルートをさがす</Trans>
             </Link>

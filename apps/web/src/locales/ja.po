@@ -48,7 +48,7 @@ msgstr "{meters}m"
 msgid "{minutes}分"
 msgstr "{minutes}分"
 
-#: src/app/[lang]/(public)/page.tsx:61
+#: src/app/[lang]/(public)/page.tsx:54
 msgid "{name}さん、こんにちは。"
 msgstr "{name}さん、こんにちは。"
 
@@ -69,7 +69,7 @@ msgstr "{number}番 まだ押していません"
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
 
-#: src/components/landing/Landing.tsx:172
+#: src/components/landing/Landing.tsx:169
 msgid "{TOTAL_STAMPS}か所"
 msgstr "{TOTAL_STAMPS}か所"
 
@@ -276,7 +276,7 @@ msgstr "くわしい地図は、準備中です。この区間のページでは
 msgid "くわしい情報"
 msgstr "くわしい情報"
 
-#: src/components/landing/Landing.tsx:170
+#: src/components/landing/Landing.tsx:167
 msgid "コース"
 msgstr "コース"
 
@@ -403,7 +403,7 @@ msgstr "この設定ではじめる"
 msgid "この説明は日本語のみです。"
 msgstr "この説明は日本語のみです。"
 
-#: src/components/landing/Landing.tsx:112
+#: src/components/landing/Landing.tsx:109
 msgid "これは見本です。経塚のスタンプは全{TOTAL_STAMPS}か所。"
 msgstr "これは見本です。経塚のスタンプは全{TOTAL_STAMPS}か所。"
 
@@ -415,7 +415,7 @@ msgstr "コンビニ・商店"
 msgid "ご案内"
 msgstr "ご案内"
 
-#: src/components/landing/Landing.tsx:210
+#: src/components/landing/Landing.tsx:207
 msgid "さあ、はじめましょう"
 msgstr "さあ、はじめましょう"
 
@@ -444,11 +444,11 @@ msgstr "スタンプ"
 msgid "スタンプ {stampedCount} / {spotCount}"
 msgstr "スタンプ {stampedCount} / {spotCount}"
 
-#: src/components/landing/Landing.tsx:100
+#: src/components/landing/Landing.tsx:97
 msgid "スタンプカード"
 msgstr "スタンプカード"
 
-#: src/app/[lang]/(public)/page.tsx:86
+#: src/app/[lang]/(public)/page.tsx:79
 msgid "スタンプカードを見る"
 msgstr "スタンプカードを見る"
 
@@ -831,9 +831,9 @@ msgstr "ルートの案内は準備中です。"
 msgid "ルートや場所は、ログインしなくても見られます。"
 msgstr "ルートや場所は、ログインしなくても見られます。"
 
-#: src/app/[lang]/(public)/page.tsx:94
-#: src/components/landing/Landing.tsx:83
-#: src/components/landing/Landing.tsx:217
+#: src/app/[lang]/(public)/page.tsx:85
+#: src/components/landing/Landing.tsx:80
+#: src/components/landing/Landing.tsx:214
 msgid "ルートをさがす"
 msgstr "ルートをさがす"
 
@@ -850,7 +850,7 @@ msgstr "ログアウト"
 #: src/app/[lang]/(public)/sitemap/page.tsx:87
 #: src/components/auth/LoginFlow.tsx:55
 #: src/components/auth/RegisterFlow.tsx:141
-#: src/components/landing/Landing.tsx:88
+#: src/components/landing/Landing.tsx:85
 #: src/components/map/MapScreen.tsx:288
 #: src/components/SignInPrompt.tsx:37
 #: src/components/SiteHeader.tsx:167
@@ -957,16 +957,16 @@ msgstr "保存する"
 msgid "入力に、まちがいがあるようです。見直して、もう一度お試しください。"
 msgstr "入力に、まちがいがあるようです。見直して、もう一度お試しください。"
 
-#: src/components/landing/Landing.tsx:170
+#: src/components/landing/Landing.tsx:167
 msgid "全{TOTAL_ROUTES}区間"
 msgstr "全{TOTAL_ROUTES}区間"
 
-#: src/app/[lang]/(public)/page.tsx:96
+#: src/app/[lang]/(public)/page.tsx:87
 #: src/app/[lang]/(public)/routes/page.tsx:50
 msgid "全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）"
 msgstr "全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）"
 
-#: src/components/landing/Landing.tsx:137
+#: src/components/landing/Landing.tsx:134
 msgid "全{TOTAL_ROUTES}区間を見る"
 msgstr "全{TOTAL_ROUTES}区間を見る"
 
@@ -979,7 +979,7 @@ msgstr "全{total}か所"
 msgid "全体の地図"
 msgstr "全体の地図"
 
-#: src/components/landing/Landing.tsx:232
+#: src/components/landing/Landing.tsx:229
 msgid "公式サイトをひらく"
 msgstr "公式サイトをひらく"
 
@@ -1015,15 +1015,15 @@ msgstr "最高 {highest}m"
 msgid "写真"
 msgstr "写真"
 
-#: src/components/landing/Landing.tsx:180
+#: src/components/landing/Landing.tsx:177
 msgid "出かける前に"
 msgstr "出かける前に"
 
-#: src/app/[lang]/(public)/page.tsx:103
+#: src/app/[lang]/(public)/page.tsx:94
 #: src/app/[lang]/(public)/routes/[id]/page.tsx:150
 #: src/app/[lang]/(public)/routes/page.tsx:82
 #: src/app/[lang]/(public)/stamps/page.tsx:66
-#: src/components/landing/Landing.tsx:204
+#: src/components/landing/Landing.tsx:201
 #: src/components/SpotSheet.tsx:89
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "出かける前に、公式の最新情報を確認してください。"
@@ -1055,7 +1055,7 @@ msgstr "削除を取り消す"
 msgid "前の写真"
 msgstr "前の写真"
 
-#: src/components/landing/Landing.tsx:147
+#: src/components/landing/Landing.tsx:144
 msgid "動画で見る"
 msgstr "動画で見る"
 
@@ -1088,7 +1088,7 @@ msgstr "半分"
 msgid "和歌山県"
 msgstr "和歌山県"
 
-#: src/components/landing/Landing.tsx:165
+#: src/components/landing/Landing.tsx:162
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 
@@ -1120,12 +1120,6 @@ msgstr "地図の見た目"
 #: src/components/SiteHeader.tsx:216
 msgid "地図の見た目の設定"
 msgstr "地図の見た目の設定"
-
-#: src/app/[lang]/(public)/page.tsx:90
-#: src/components/landing/Landing.tsx:80
-#: src/components/MapShortcut.tsx:37
-msgid "地図を見る"
-msgstr "地図を見る"
 
 #: src/components/map/MapScreenCanvas.tsx:293
 #: src/components/map/MapScreenCanvasLoader.tsx:12
@@ -1188,11 +1182,11 @@ msgstr "少し暗く"
 msgid "少なく表示"
 msgstr "少なく表示"
 
-#: src/components/landing/Landing.tsx:194
+#: src/components/landing/Landing.tsx:191
 msgid "山の中は、電波がつながりにくいことがあります。"
 msgstr "山の中は、電波がつながりにくいことがあります。"
 
-#: src/components/landing/Landing.tsx:188
+#: src/components/landing/Landing.tsx:185
 msgid "山道です。天気と、水や食べ物、歩きやすい靴を用意してください。"
 msgstr "山道です。天気と、水や食べ物、歩きやすい靴を用意してください。"
 
@@ -1249,7 +1243,7 @@ msgstr "文字もボタンも、少し大きくなります。"
 msgid "文字やボタンの大きさ、地図の見せ方"
 msgstr "文字やボタンの大きさ、地図の見せ方"
 
-#: src/app/[lang]/(public)/page.tsx:79
+#: src/app/[lang]/(public)/page.tsx:72
 msgid "文字やボタンの大きさ、地図の見せ方を選べます。"
 msgstr "文字やボタンの大きさ、地図の見せ方を選べます。"
 
@@ -1262,7 +1256,7 @@ msgstr "文字やボタンの大きさ、地図の見せ方を選べます。大
 #: src/app/[lang]/(public)/sitemap/page.tsx:90
 #: src/components/auth/LoginFlow.tsx:104
 #: src/components/landing/Landing.tsx:77
-#: src/components/landing/Landing.tsx:214
+#: src/components/landing/Landing.tsx:211
 #: src/components/map/MapScreen.tsx:285
 #: src/components/SignInPrompt.tsx:31
 #: src/components/SiteHeader.tsx:170
@@ -1322,7 +1316,7 @@ msgstr "次の写真"
 msgid "次へ ＞"
 msgstr "次へ ＞"
 
-#: src/app/[lang]/(public)/page.tsx:65
+#: src/app/[lang]/(public)/page.tsx:58
 msgid "歩いた場所で、スタンプを押そう。"
 msgstr "歩いた場所で、スタンプを押そう。"
 
@@ -1330,11 +1324,11 @@ msgstr "歩いた場所で、スタンプを押そう。"
 msgid "歩き終えた区間 {done} / {TOTAL_ROUTES}"
 msgstr "歩き終えた区間 {done} / {TOTAL_ROUTES}"
 
-#: src/components/landing/Landing.tsx:121
+#: src/components/landing/Landing.tsx:118
 msgid "歩く道"
 msgstr "歩く道"
 
-#: src/components/landing/Landing.tsx:224
+#: src/components/landing/Landing.tsx:221
 msgid "歴史や観光の情報は、日本遺産「葛城修験」の公式サイトでも見られます。"
 msgstr "歴史や観光の情報は、日本遺産「葛城修験」の公式サイトでも見られます。"
 
@@ -1363,7 +1357,7 @@ msgstr "消すと、その端末では、顔や指紋でログインできなく
 msgid "淡色"
 msgstr "淡色"
 
-#: src/components/landing/Landing.tsx:258
+#: src/components/landing/Landing.tsx:255
 #: src/components/map/MapScreen.tsx:268
 #: src/components/RallyViews.tsx:105
 #: src/components/TrailRibbon.tsx:84
@@ -1412,11 +1406,11 @@ msgid "登録できませんでした。もう一度お試しください。"
 msgstr "登録できませんでした。もう一度お試しください。"
 
 #: src/components/auth/RegisterFlow.tsx:139
-#: src/components/landing/Landing.tsx:86
+#: src/components/landing/Landing.tsx:83
 msgid "登録済みの方は"
 msgstr "登録済みの方は"
 
-#: src/components/landing/Landing.tsx:105
+#: src/components/landing/Landing.tsx:102
 msgid "着いたらボタンを押すだけ。場所を確かめて、スタンプがたまります。"
 msgstr "着いたらボタンを押すだけ。場所を確かめて、スタンプがたまります。"
 
@@ -1463,11 +1457,11 @@ msgstr "約{amount}km"
 msgid "約{amount}m"
 msgstr "約{amount}m"
 
-#: src/components/landing/Landing.tsx:171
+#: src/components/landing/Landing.tsx:168
 msgid "約{TRAIL_KM}km"
 msgstr "約{TRAIL_KM}km"
 
-#: src/components/landing/Landing.tsx:172
+#: src/components/landing/Landing.tsx:169
 msgid "経塚"
 msgstr "経塚"
 
@@ -1501,13 +1495,13 @@ msgstr "色を反転"
 msgid "色別標高図（緑〜茶）"
 msgstr "色別標高図（緑〜茶）"
 
-#: src/app/[lang]/(public)/page.tsx:56
+#: src/app/[lang]/(public)/page.tsx:49
 #: src/app/[lang]/layout.tsx:31
 #: src/components/landing/Landing.tsx:69
 msgid "葛城修験"
 msgstr "葛城修験"
 
-#: src/components/landing/Landing.tsx:159
+#: src/components/landing/Landing.tsx:156
 msgid "葛城修験とは"
 msgstr "葛城修験とは"
 
@@ -1530,7 +1524,7 @@ msgstr "見やすさの設定"
 msgid "見やすさを、あなたに合わせましょう。大きさは、選ぶとすぐに変わります。"
 msgstr "見やすさを、あなたに合わせましょう。大きさは、選ぶとすぐに変わります。"
 
-#: src/app/[lang]/(public)/page.tsx:76
+#: src/app/[lang]/(public)/page.tsx:69
 msgid "見やすさを設定しませんか"
 msgstr "見やすさを設定しませんか"
 
@@ -1577,15 +1571,11 @@ msgstr "通信できませんでした。電波の良い場所でもう一度お
 msgid "遊び方"
 msgstr "遊び方"
 
-#: src/components/landing/Landing.tsx:200
+#: src/components/landing/Landing.tsx:197
 msgid "道が通れないときは、無理をせず引き返してください。"
 msgstr "道が通れないときは、無理をせず引き返してください。"
 
-#: src/app/[lang]/(public)/page.tsx:90
-msgid "道とスタンプの場所を、地図で見られます。"
-msgstr "道とスタンプの場所を、地図で見られます。"
-
-#: src/components/landing/Landing.tsx:171
+#: src/components/landing/Landing.tsx:168
 msgid "長さ"
 msgstr "長さ"
 

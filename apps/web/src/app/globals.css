@@ -621,19 +621,3 @@ body.map-screen-active .site-footer {
 .map-tag[data-soon="true"] .map-tag-head {
   border-style: dashed;
 }
-
-/* The "see the map" shortcut on the home page: it slides in from the left once the visitor has scrolled well
-   down, so they need not scroll all the way back up. Reduced motion: it just appears. */
-.map-shortcut {
-  transition: transform 220ms ease-out, opacity 220ms ease-out;
-}
-.map-shortcut[data-shown="false"] {
-  transform: translateX(-130%);
-  opacity: 0;
-  pointer-events: none;
-}
-@media (prefers-reduced-motion: reduce) {
-  .map-shortcut {
-    transition: none;
-  }
-}
