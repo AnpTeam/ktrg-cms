@@ -1,6 +1,7 @@
 import { Trans } from "@lingui/react/macro";
 import { ButtonLink } from "@/components/ButtonLink";
 import { Landing } from "@/components/landing/Landing";
+import { BannerCarousel } from "@/components/landing/BannerCarousel";
 import { MapShortcut } from "@/components/MapShortcut";
 import { Notice } from "@/components/Notice";
 import { ProgressSummary } from "@/components/ProgressSummary";
@@ -42,10 +43,12 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const total = routes.reduce((n, r) => n + r.spotCount, 0) || TOTAL_STAMPS;
   const name = viewer.name;
   const prefs = await getPrefs();
+  const slides = slidesToShow(bannerSlides, sampleContentEnabled());
 
   return (
     <div className="flex flex-col gap-8">
       <MapShortcut href={to("/map")} />
+      {slides.length > 0 ? <BannerCarousel slides={slides} /> : null}
       <section className="px-4">
         <div className="frame p-4">
           <h1 className="font-serif text-4xl font-bold leading-snug">

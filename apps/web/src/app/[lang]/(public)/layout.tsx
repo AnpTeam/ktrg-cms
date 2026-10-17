@@ -33,7 +33,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
         <OfflineNotice />
         {sample ? <SampleNoticeHost /> : null}
         <PrefsSync signedIn={viewer.signedIn} account={prefsState.account} device={prefsState.device} />
-        <main id="main" className="pb-28 md:pb-10">
+        <main id="main" className="pb-28 md:pb-10 md:pt-6">
           {children}
           <SiteFooter locale={i18n.locale} />
         </main>

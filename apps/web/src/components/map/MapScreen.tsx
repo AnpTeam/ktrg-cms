@@ -158,7 +158,7 @@ export function MapScreen({
   const showDetailInSheet = !wide && detailBody !== null;
 
   return (
-    <div className="relative">
+    <div className="relative md:-mt-6">
     <div
       ref={wrap}
       data-dark={settings.dark}
