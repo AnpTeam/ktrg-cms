@@ -72,7 +72,7 @@ export function HomeMapCanvas({
   });
 
   const route = routes.find((r) => r.id === routeId) ?? null;
-  // The course whose stops are shown: the chosen one, or else the one the visitor has zoomed into.
+  // The course shown on its own: the chosen one, or else the one the visitor has zoomed into (the others fold away).
   const focus = route ?? routes.find((r) => r.id === autoId) ?? null;
   const draftShown = focus ? focus.draft || focus.area?.verified === false : routes.some((r) => r.area && !r.area.verified);
 
@@ -151,7 +151,7 @@ export function HomeMapCanvas({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
-    (map.getSource(AREAS) as GeoJSONSource | undefined)?.setData(areaCollection(routes, routeId));
+    (map.getSource(AREAS) as GeoJSONSource | undefined)?.setData(areaCollection(routes, focus?.id ?? null));
     const points = focus?.line ?? focus?.stops?.map((s) => s.position) ?? null;
     (map.getSource(DETAIL) as GeoJSONSource | undefined)?.setData(points && points.length > 1 ? lineFeature(points) : EMPTY);
   }, [ready, routes, routeId, focus, mapGen]);
@@ -192,8 +192,9 @@ export function HomeMapCanvas({
     };
     const withNames = map.getZoom() >= NAMES_ZOOM;
 
-    // Pins: none once a course is chosen (the others fold away); otherwise every course except the one opened.
-    const pinned = route ? [] : routes.filter((r) => r.area && r.id !== focus?.id);
+    // Pins: all of them while nothing is open. Once a course is open the others fold away; an opened course
+    // with no stops of its own to show keeps its pin, so there is still something to read and press.
+    const pinned = route ? [] : focus ? (focus.stops?.length ? [] : [focus]) : routes.filter((r) => r.area);
     const byId = new Map(pinned.map((r) => [r.id, r]));
     const groups = withNames ? pinned.map((r) => [r.id]) : clusterByPixels(pinned.map((r) => pixel(r.id, r.area as Position)), CLUSTER_PX);
     // A name is printed only where it has room: never over another pin or another name.

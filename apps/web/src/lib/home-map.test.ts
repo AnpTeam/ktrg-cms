@@ -61,9 +61,13 @@ describe("revealedRouteId", () => {
     expect(revealedRouteId(routes, { lat: 34.425, lng: 135.5 }, 12, 11)).toBe("b");
   });
 
-  test("a course with no stops never opens, and neither does empty ground", () => {
-    expect(revealedRouteId([route("c", 3)], { lat: 34.4, lng: 135.5 }, 13, 11)).toBeNull();
+  test("a course with an area but no stops is shown on its own too", () => {
+    expect(revealedRouteId([route("c", 3)], { lat: 34.4, lng: 135.5 }, 13, 11)).toBe("c");
+  });
+
+  test("empty ground, and a course with no area, never open", () => {
     expect(revealedRouteId(routes, { lat: 35.5, lng: 135.5 }, 13, 11)).toBeNull();
+    expect(revealedRouteId([route("d", 4, { area: null })], { lat: 34.4, lng: 135.5 }, 13, 11)).toBeNull();
   });
 });
 

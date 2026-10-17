@@ -96,16 +96,16 @@ export function areaContains(area: RouteArea, point: Position): boolean {
 }
 
 /**
- * The course whose area is under the middle of the map, once the map is zoomed in far enough to be "inside" it
- * (and only a course that has stops to show). That course's stops appear without anyone choosing it. With two
- * areas overlapping, the one whose centre is nearer wins.
+ * The course whose area is under the middle of the map, once the map is zoomed in far enough to be "inside" it.
+ * That course is shown on its own (the others fold away, and its stops appear) without anyone choosing it. Where
+ * two areas overlap, the one whose centre is nearer wins, so the courses are shown one at a time.
  */
 export function revealedRouteId(routes: readonly HomeRoute[], center: Position, zoom: number, minZoom: number): string | null {
   if (zoom < minZoom) return null;
   let best: HomeRoute | null = null;
   let bestDistance = Infinity;
   for (const r of routes) {
-    if (!r.area || !r.stops || r.stops.length === 0 || !areaContains(r.area, center)) continue;
+    if (!r.area || !areaContains(r.area, center)) continue;
     const d = Math.hypot(r.area.lat - center.lat, r.area.lng - center.lng);
     if (d < bestDistance) {
       best = r;
