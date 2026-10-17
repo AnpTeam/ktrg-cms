@@ -242,7 +242,7 @@ export function ProfileCard({
           onClick={() => setEditing(true)}
           className="tap-target shrink-0 rounded-lg border-2 border-ink px-4 text-lg font-bold hover:bg-paper"
         >
-          {t`変える`}
+          {t`編集`}
         </button>
       </section>
     </>
