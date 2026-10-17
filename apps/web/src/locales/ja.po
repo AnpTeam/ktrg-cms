@@ -72,10 +72,6 @@ msgstr "「{stopName}」から近い順"
 msgid "「祈り」を見つめる再発見の旅"
 msgstr "「祈り」を見つめる再発見の旅"
 
-#: src/components/landing/Landing.tsx:221
-msgid "「葛城修験とは」の文章は、日本遺産「葛城修験」公式サイトによります。歴史や観光の情報も、公式サイトで見られます。"
-msgstr "「葛城修験とは」の文章は、日本遺産「葛城修験」公式サイトによります。歴史や観光の情報も、公式サイトで見られます。"
-
 #: src/components/map/TrailMap.tsx:469
 msgid "＜ 前へ"
 msgstr "＜ 前へ"
@@ -807,6 +803,10 @@ msgstr "動画を見る"
 msgid "和歌山県"
 msgstr "和歌山県"
 
+#: src/components/landing/Landing.tsx:162
+msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
+msgstr "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
+
 #: src/components/auth/authUi.tsx:72
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "問題が発生しました。しばらくしてからもう一度お試しください。"
@@ -867,10 +867,6 @@ msgstr "大きい"
 #: src/components/map/TrailMap.tsx:453
 msgid "大きく表示"
 msgstr "大きく表示"
-
-#: src/components/landing/Landing.tsx:162
-msgid "大阪と和歌山の府県境を東西に走る和泉山脈。大阪と奈良の府県境に南北に聳える金剛山地。この峰々一帯は「葛城」と呼ばれ、多くの神々が住まう山として人々に崇められておりました。そして修験道の開祖である役行者が最初の修行を積んだのがこの地です。"
-msgstr "大阪と和歌山の府県境を東西に走る和泉山脈。大阪と奈良の府県境に南北に聳える金剛山地。この峰々一帯は「葛城」と呼ばれ、多くの神々が住まう山として人々に崇められておりました。そして修験道の開祖である役行者が最初の修行を積んだのがこの地です。"
 
 #: src/components/auth/authUi.tsx:89
 #: src/components/PrefectureName.tsx:7
@@ -1032,6 +1028,10 @@ msgstr "歩き終えた区間 {done} / {TOTAL_ROUTES}"
 #: src/components/landing/Landing.tsx:118
 msgid "歩く道"
 msgstr "歩く道"
+
+#: src/components/landing/Landing.tsx:221
+msgid "歴史や観光の情報は、日本遺産「葛城修験」の公式サイトでも見られます。"
+msgstr "歴史や観光の情報は、日本遺産「葛城修験」の公式サイトでも見られます。"
 
 #: src/components/map/PlacesPanel.tsx:40
 msgid "水場"

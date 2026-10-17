@@ -157,10 +157,10 @@ export function Landing({
           </SectionBanner>
         </div>
         <div className={panel}>
-          {/* The official Japan Heritage story, as written there; the source is credited in the footer. */}
+          {/* Our own wording of well-known facts (the official site's text is protected; see CLAUDE.md, 2026-10-17). */}
           <p className="max-w-prose text-lg leading-8">
             <Trans>
-              大阪と和歌山の府県境を東西に走る和泉山脈。大阪と奈良の府県境に南北に聳える金剛山地。この峰々一帯は「葛城」と呼ばれ、多くの神々が住まう山として人々に崇められておりました。そして修験道の開祖である役行者が最初の修行を積んだのがこの地です。
+              和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。
             </Trans>
           </p>
           <dl className="mt-4">
@@ -218,7 +218,7 @@ export function Landing({
 
       <footer className="flex flex-col gap-4 border-t-2 border-line px-4 pb-6 pt-6">
         <p className="text-lg leading-7">
-          <Trans>「葛城修験とは」の文章は、日本遺産「葛城修験」公式サイトによります。歴史や観光の情報も、公式サイトで見られます。</Trans>
+          <Trans>歴史や観光の情報は、日本遺産「葛城修験」の公式サイトでも見られます。</Trans>
         </p>
         <a
           href="https://katsuragisyugen-nihonisan.com/"

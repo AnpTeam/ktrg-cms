@@ -72,10 +72,6 @@ msgstr "Nearest first, from \"{stopName}\""
 msgid "「祈り」を見つめる再発見の旅"
 msgstr "A journey of rediscovery, looking at \"prayer\""
 
-#: src/components/landing/Landing.tsx:221
-msgid "「葛城修験とは」の文章は、日本遺産「葛城修験」公式サイトによります。歴史や観光の情報も、公式サイトで見られます。"
-msgstr "The text under \"About Katsuragi Shugen\" is from the Japan Heritage \"Katsuragi Shugen\" official site, which also has history and sightseeing information."
-
 #: src/components/map/TrailMap.tsx:469
 msgid "＜ 前へ"
 msgstr "< Previous"
@@ -807,6 +803,10 @@ msgstr "Play the video"
 msgid "和歌山県"
 msgstr "Wakayama"
 
+#: src/components/landing/Landing.tsx:162
+msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
+msgstr "From the Izumi range to the Kongo mountains, these ridges run along the borders of Osaka, Wakayama and Nara. They have long been called Katsuragi and revered as mountains where the gods dwell. It is said that En no Gyoja, who is believed to have founded Shugendo, the path of training in the mountains, first practised here."
+
 #: src/components/auth/authUi.tsx:72
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "Something went wrong. Please try again in a little while."
@@ -867,10 +867,6 @@ msgstr "Large"
 #: src/components/map/TrailMap.tsx:453
 msgid "大きく表示"
 msgstr "Bigger map"
-
-#: src/components/landing/Landing.tsx:162
-msgid "大阪と和歌山の府県境を東西に走る和泉山脈。大阪と奈良の府県境に南北に聳える金剛山地。この峰々一帯は「葛城」と呼ばれ、多くの神々が住まう山として人々に崇められておりました。そして修験道の開祖である役行者が最初の修行を積んだのがこの地です。"
-msgstr "The Izumi Mountains run east to west along the border of Osaka and Wakayama. The Kongo Mountains rise north to south along the border of Osaka and Nara. These peaks are together called \"Katsuragi\", and people have long revered them as mountains where many gods dwell. It is also the place where En no Gyoja, the founder of Shugendo, first trained."
 
 #: src/components/auth/authUi.tsx:89
 #: src/components/PrefectureName.tsx:7
@@ -1032,6 +1028,10 @@ msgstr "Sections walked {done} / {TOTAL_ROUTES}"
 #: src/components/landing/Landing.tsx:118
 msgid "歩く道"
 msgstr "The path"
+
+#: src/components/landing/Landing.tsx:221
+msgid "歴史や観光の情報は、日本遺産「葛城修験」の公式サイトでも見られます。"
+msgstr "You can also find history and sightseeing information on the official Japan Heritage Katsuragi Shugen site."
 
 #: src/components/map/PlacesPanel.tsx:40
 msgid "水場"

@@ -74,7 +74,6 @@ const ja: Help = {
       url: "https://maps.gsi.go.jp/development/ichiran.html",
     },
     { name: "地図の表示", text: "MapLibre GL JS（BSDライセンス）。" },
-    { name: "「葛城修験とは」の文章", text: "日本遺産「葛城修験」公式サイトの文章です。", url: "https://katsuragisyugen-nihonisan.com/" },
     { name: "そのほか", text: "ほかのソフトウェアのライセンスは、公開までに、ここに一覧にします。" },
   ],
 };
@@ -126,7 +125,6 @@ const en: Help = {
       url: "https://maps.gsi.go.jp/development/ichiran.html",
     },
     { name: "Map display", text: "MapLibre GL JS (BSD license)." },
-    { name: "\"About Katsuragi Shugen\" text", text: "The text of the Japan Heritage \"Katsuragi Shugen\" official site.", url: "https://katsuragisyugen-nihonisan.com/" },
     { name: "Others", text: "The licenses of other software will be listed here before the app is published." },
   ],
 };
