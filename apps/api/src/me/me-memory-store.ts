@@ -1,9 +1,10 @@
 import { auditRow } from "../audit/audit-log";
-import type { AuthUser, Origin } from "../auth/user";
+import type { AgeRange, AuthUser, Gender, Origin } from "../auth/user";
 import type { Preferences } from "./preferences";
-import type { MeStore, Profile } from "./me-service";
+import { publicIdFor } from "../lib/public-id";
+import type { MeStore, StoredProfile } from "./me-service";
 
-type Extra = { displayName: string | null; origin: Origin | null; preferences: Preferences | null; deletionRequestedAt: Date | null; createdAt: Date };
+type Extra = { publicId: string; displayName: string | null; origin: Origin | null; ageRange: AgeRange | null; gender: Gender | null; preferences: Preferences | null; deletionRequestedAt: Date | null; createdAt: Date };
 
 /**
  * In-memory store for tests and the dev test page. `users` is the same map the OTP and
@@ -15,6 +16,7 @@ export function createMemoryMeStore(
   profiles: Map<string, { displayName: string | null; origin: string | null }> = new Map(),
 ) {
   const extras = new Map<string, Extra>();
+  let sequence = 0;
   /** Stands in for the audit rows the Drizzle store writes in its transactions. */
   const audit: ReturnType<typeof auditRow>[] = [];
 
@@ -23,13 +25,13 @@ export function createMemoryMeStore(
     let e = extras.get(userId);
     if (!e) {
       const given = profiles.get(userId);
-      e = { displayName: given?.displayName ?? null, origin: (given?.origin as Origin | null | undefined) ?? null,
-        preferences: null, deletionRequestedAt: null, createdAt: new Date() };
+      e = { publicId: publicIdFor(++sequence), displayName: given?.displayName ?? null, origin: (given?.origin as Origin | null | undefined) ?? null,
+        ageRange: null, gender: null, preferences: null, deletionRequestedAt: null, createdAt: new Date() };
       extras.set(userId, e);
     }
     return e;
   }
-  const profile = (user: AuthUser): Profile => ({
+  const profile = (user: AuthUser): StoredProfile => ({
     id: user.id,
     email: user.email,
     role: user.role,
@@ -49,6 +51,8 @@ export function createMemoryMeStore(
       if (changes.displayName !== undefined) extraOf(userId).displayName = changes.displayName;
       if (changes.preferences !== undefined) extraOf(userId).preferences = changes.preferences;
       if (changes.origin !== undefined) extraOf(userId).origin = changes.origin;
+      if (changes.ageRange !== undefined) extraOf(userId).ageRange = changes.ageRange;
+      if (changes.gender !== undefined) extraOf(userId).gender = changes.gender;
       return profile(user);
     },
     async requestDeletion(userId, at) {
@@ -59,6 +63,19 @@ export function createMemoryMeStore(
       e.deletionRequestedAt = at;
       audit.push(auditRow({ actorUserId: userId, action: "user.deletion_request", targetId: userId }));
       return { profile: profile(user), changed: true };
+    },
+    async purgeDue(cutoff) {
+      let deleted = 0;
+      for (const [userId, e] of [...extras]) {
+        if (!e.deletionRequestedAt || e.deletionRequestedAt > cutoff) continue;
+        const user = find(userId);
+        if (!user) continue;
+        for (const [key, u] of [...users]) if (u.id === user.id) users.delete(key);
+        extras.delete(userId);
+        audit.push(auditRow({ actorUserId: null, action: "user.deleted", targetId: userId }));
+        deleted++;
+      }
+      return deleted;
     },
     async cancelDeletion(userId) {
       const user = find(userId);

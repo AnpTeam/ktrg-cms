@@ -131,3 +131,58 @@ describe("deletion request", () => {
     expect(audit.map((r) => r.action)).toEqual(["user.deletion_request", "user.deletion_cancel"]);
   });
 });
+
+describe("deletion after the grace period", () => {
+  const DAY = 24 * 60 * 60 * 1000;
+
+  function clocked() {
+    const users = new Map<string, AuthUser>([
+      [alice.id, { ...alice }],
+      [passkeyOnly.id, { ...passkeyOnly }],
+    ]);
+    const mem = createMemoryMeStore(users);
+    let now = new Date("2026-10-15T05:30:00Z");
+    const service = createMeService({ store: mem.store, now: () => now });
+    return { service, users, audit: mem.audit, advance: (days: number) => (now = new Date(now.getTime() + days * DAY)) };
+  }
+
+  test("a request shows the day it will happen: 3 days later", async () => {
+    const { service } = clocked();
+    const profile = await service.requestDeletion(alice);
+    expect(profile!.deletionDueAt!.getTime() - profile!.deletionRequestedAt!.getTime()).toBe(3 * DAY);
+    expect((await service.get(passkeyOnly))!.deletionDueAt).toBeNull();
+  });
+
+  test("nothing is deleted before 3 days, then the account is deleted and audited by id only", async () => {
+    const { service, users, audit, advance } = clocked();
+    await service.requestDeletion(alice);
+    advance(2.9);
+    expect(await service.purgeDue()).toBe(0);
+    expect(users.has(alice.id)).toBe(true);
+
+    advance(0.2);
+    expect(await service.purgeDue()).toBe(1);
+    expect(users.has(alice.id)).toBe(false);
+    expect(users.has(passkeyOnly.id)).toBe(true); // nobody else is touched
+    expect(audit.at(-1)).toEqual({ actorUserId: null, action: "user.deleted", targetType: "user", targetId: alice.id });
+  });
+
+  test("a request cancelled in time is never deleted", async () => {
+    const { service, users, advance } = clocked();
+    await service.requestDeletion(alice);
+    advance(2);
+    await service.cancelDeletion(alice);
+    advance(5);
+    expect(await service.purgeDue()).toBe(0);
+    expect(users.has(alice.id)).toBe(true);
+  });
+
+  test("every account has its own 8-digit ID", async () => {
+    const { service } = clocked();
+    const a = (await service.get(alice))!.publicId;
+    const b = (await service.get(passkeyOnly))!.publicId;
+    expect(a).toMatch(/^\d{8}$/);
+    expect(b).toMatch(/^\d{8}$/);
+    expect(a).not.toBe(b);
+  });
+});

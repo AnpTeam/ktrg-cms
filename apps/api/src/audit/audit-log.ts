@@ -19,6 +19,8 @@ export const AUDIT_ACTIONS = {
   "user.deletion_request": "user",
   /** The owner cancelled a pending deletion request. */
   "user.deletion_cancel": "user",
+  /** The grace period ended and the account and its data were deleted (done by the purge script, so no actor). */
+  "user.deleted": "user",
 } as const satisfies Record<string, string>;
 
 export type AuditAction = keyof typeof AUDIT_ACTIONS;

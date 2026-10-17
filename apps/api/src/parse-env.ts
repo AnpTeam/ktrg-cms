@@ -28,6 +28,9 @@ const EnvSchema = Type.Object({
   // First admin: comma-separated emails promoted to admin when they log in
   // with an email code. Promote-only: removing an address later does not demote anyone.
   ADMIN_EMAILS: Type.Optional(Type.String()),
+  // Secret for the scheduled clean-up (POST /internal/purge-deletions, called hourly by a GitHub Actions workflow).
+  // Unset: that route does not exist.
+  CRON_SECRET: Type.Optional(Type.String({ minLength: 32 })),
   // API docs at /api/v1/openapi. Always on outside production; set true to show them there too.
   API_DOCS: Type.Boolean({ default: false }),
 });

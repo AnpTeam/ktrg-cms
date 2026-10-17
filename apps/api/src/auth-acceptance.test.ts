@@ -270,6 +270,8 @@ describe("user B cannot touch user A", () => {
     "POST /api/v1/auth/passkeys/signup/verify",
     "POST /api/v1/auth/passkeys/login/options",
     "POST /api/v1/auth/passkeys/login/verify",
+    // Not for people: a scheduler calls it with a bearer secret (404 without one configured); see internal/purge-routes.test.ts.
+    "POST /api/v1/internal/purge-deletions",
   ]);
   /** A well-formed body for each logged-in route that needs one (validation runs before the guard). */
   const BODIES: Record<string, () => unknown> = {

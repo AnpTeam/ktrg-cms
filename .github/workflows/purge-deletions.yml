@@ -1,0 +1,47 @@
+name: Purge deleted accounts
+
+# Accounts that asked to be deleted are erased 3 days later. Something has to ask the API to do it: this
+# workflow does, every hour. The API only answers when it is sent the secret (CRON_SECRET).
+#
+# Setup (once): in the repository settings add the VARIABLE APP_URL (the site's address, for example
+# https://example.com, no trailing slash) and the SECRET CRON_SECRET (the same value as the API's CRON_SECRET,
+# 32 or more random characters). Until APP_URL is set the job does nothing.
+# Scheduled workflows run from the default branch only, and GitHub switches them off after 60 days without
+# repository activity: re-enable it in the Actions tab if that happens.
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: purge-deletions
+  cancel-in-progress: false
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ask the API to erase the accounts that are due
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$APP_URL" ]; then
+            echo "APP_URL is not set: nothing to do yet."
+            exit 0
+          fi
+          if [ -z "$CRON_SECRET" ]; then
+            echo "CRON_SECRET is not set."
+            exit 1
+          fi
+          status=$(curl --silent --show-error --max-time 60 --output response.json --write-out "%{http_code}" \
+            --request POST --header "Authorization: Bearer $CRON_SECRET" \
+            "$APP_URL/api/v1/internal/purge-deletions")
+          echo "HTTP $status"
+          cat response.json
+          echo
+          [ "$status" = "200" ]

@@ -12,6 +12,7 @@ import { createDb } from "./db/client";
 import { env } from "./env";
 import { apiBase } from "./lib/api-errors";
 import { createMailer } from "./lib/mailer";
+import { purgeRoutes } from "./internal/purge-routes";
 import { meRoutes } from "./me/me-routes";
 import { createDrizzleMeStore } from "./me/me-store";
 import { apiDocs } from "./openapi";
@@ -50,7 +51,7 @@ function getServices(): Services {
  * The whole API: every route file, mounted under /api/v1. The services come from outside, so
  * the tests and the dev page (scripts/phone-test.ts) run exactly this route tree on memory stores.
  */
-export function createApp(getServices: () => Services, opts: RouteOptions & { docs: boolean }) {
+export function createApp(getServices: () => Services, opts: RouteOptions & { docs: boolean; cronSecret?: string }) {
   return new Elysia({ prefix: "/api/v1" })
     .use(apiBase()) // first: request ids and the one error shape, for everything below
     .use(apiDocs({ enabled: opts.docs }))
@@ -63,13 +64,15 @@ export function createApp(getServices: () => Services, opts: RouteOptions & { do
     )
     .use(authRoutes(getServices, opts))
     .use(passkeyRoutes(getServices, opts))
-    .use(meRoutes(getServices, opts));
+    .use(meRoutes(getServices, opts))
+    .use(purgeRoutes(getServices, opts.cronSecret));
 }
 
 export const app = createApp(getServices, {
   secureCookies: env.NODE_ENV === "production",
   trustProxy: env.TRUST_PROXY,
   docs: env.NODE_ENV !== "production" || env.API_DOCS,
+  cronSecret: env.CRON_SECRET,
 });
 
 export type App = typeof app;

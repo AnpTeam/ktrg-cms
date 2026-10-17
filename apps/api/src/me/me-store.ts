@@ -1,16 +1,19 @@
-import { and, eq, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, eq, isNotNull, isNull, lte, sql } from "drizzle-orm";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
 import { users } from "../db/schema";
-import type { MeStore, Profile } from "./me-service";
+import type { MeStore, StoredProfile } from "./me-service";
 
 const profileColumns = {
   id: users.id,
+  publicId: users.publicId,
   email: users.email,
   role: users.role,
   locale: users.locale,
   displayName: users.displayName,
   origin: users.origin,
+  ageRange: users.ageRange,
+  gender: users.gender,
   preferences: users.preferences,
   deletionRequestedAt: users.deletionRequestedAt,
   createdAt: users.createdAt,
@@ -18,7 +21,7 @@ const profileColumns = {
 
 type Executor = Pick<Db, "select">;
 
-async function getProfile(db: Executor, userId: string): Promise<Profile | null> {
+async function getProfile(db: Executor, userId: string): Promise<StoredProfile | null> {
   const [row] = await db.select(profileColumns).from(users).where(eq(users.id, userId)).limit(1);
   return row ?? null;
 }
@@ -51,6 +54,28 @@ export function createDrizzleMeStore(db: Db): MeStore {
         }
         await writeAudit(tx, { actorUserId: userId, action: "user.deletion_request", targetId: userId });
         return { profile: row, changed: true };
+      });
+    },
+
+    async purgeDue(cutoff) {
+      return db.transaction(async (tx) => {
+        const due = await tx
+          .select({ id: users.id })
+          .from(users)
+          .where(and(isNotNull(users.deletionRequestedAt), lte(users.deletionRequestedAt, cutoff)));
+        let deleted = 0;
+        for (const { id } of due) {
+          // The conditions are repeated so a request cancelled a moment ago is not deleted.
+          const [gone] = await tx
+            .delete(users)
+            .where(and(eq(users.id, id), isNotNull(users.deletionRequestedAt), lte(users.deletionRequestedAt, cutoff)))
+            .returning({ id: users.id });
+          if (!gone) continue;
+          // Ids only: the audit log keeps rows for good and holds no personal data.
+          await writeAudit(tx, { actorUserId: null, action: "user.deleted", targetId: id });
+          deleted++;
+        }
+        return deleted;
       });
     },
 

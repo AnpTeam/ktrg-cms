@@ -202,6 +202,44 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       expect((await me.update(user.id, { origin: null }))!.origin).toBeNull();
     });
 
+    test("every account gets its own 8-digit ID", async () => {
+      const me = createDrizzleMeStore(db);
+      const a = await newUser("pid-a");
+      const b = await newUser("pid-b");
+      const pa = (await me.get(a.id))!.publicId;
+      const pb = (await me.get(b.id))!.publicId;
+      expect(pa).toMatch(/^\d{8}$/);
+      expect(pb).toMatch(/^\d{8}$/);
+      expect(pa).not.toBe(pb);
+    });
+
+    test("purgeDue deletes only accounts requested before the cutoff, and audits by id", async () => {
+      const me = createDrizzleMeStore(db);
+      const old = await newUser("purge-old");
+      const fresh = await newUser("purge-fresh");
+      const never = await newUser("purge-never");
+      await me.requestDeletion(old.id, new Date("2026-01-01T00:00:00Z"));
+      await me.requestDeletion(fresh.id, new Date("2026-06-01T00:00:00Z"));
+      try {
+        expect(await me.purgeDue(new Date("2026-03-01T00:00:00Z"))).toBe(1);
+        expect(await me.get(old.id)).toBeNull();
+        expect(await me.get(fresh.id)).not.toBeNull();
+        expect(await me.get(never.id)).not.toBeNull();
+        const rows = await db.select().from(auditLog).where(eq(auditLog.targetId, old.id));
+        expect(rows.map((r) => r.action).sort()).toEqual(["user.deleted", "user.deletion_request"]);
+      } finally {
+        await db.delete(auditLog).where(inArray(auditLog.targetId, [old.id, fresh.id, never.id]));
+      }
+    });
+
+    test("age range and gender can be set (including 'unspecified') and cleared", async () => {
+      const me = createDrizzleMeStore(db);
+      const user = await newUser("me-about");
+      expect(await me.get(user.id)).toMatchObject({ ageRange: null, gender: null });
+      expect(await me.update(user.id, { ageRange: "60s", gender: "unspecified" })).toMatchObject({ ageRange: "60s", gender: "unspecified" });
+      expect(await me.update(user.id, { ageRange: null, gender: null })).toMatchObject({ ageRange: null, gender: null });
+    });
+
     test("preferences are saved as a whole, read back and replaced (jsonb)", async () => {
       const me = createDrizzleMeStore(db);
       const user = await newUser("me-prefs");

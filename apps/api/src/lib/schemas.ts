@@ -1,5 +1,5 @@
 import { t, type Static } from "elysia";
-import { userLocale, userOrigin } from "../db/schema";
+import { userAgeRange, userGender, userLocale, userOrigin } from "../db/schema";
 
 /** Request-body pieces shared by several routes, so each rule lives in one place. */
 
@@ -28,6 +28,22 @@ export const originSchema = t.Union([
 ]);
 const _originCovered: Exclude<(typeof userOrigin.enumValues)[number], Static<typeof originSchema>> extends never ? true : never = true;
 void [_localeCovered, _originCovered];
+
+/** Age band, asked after registering; literal unions for the same reason as originSchema. */
+export const ageRangeSchema = t.Union([
+  t.Literal("under20"),
+  t.Literal("20s"),
+  t.Literal("30s"),
+  t.Literal("40s"),
+  t.Literal("50s"),
+  t.Literal("60s"),
+  t.Literal("70plus"),
+]);
+/** "unspecified" is the answer "I'd rather not say". */
+export const genderSchema = t.Union([t.Literal("female"), t.Literal("male"), t.Literal("other"), t.Literal("unspecified")]);
+const _ageCovered: Exclude<(typeof userAgeRange.enumValues)[number], Static<typeof ageRangeSchema>> extends never ? true : never = true;
+const _genderCovered: Exclude<(typeof userGender.enumValues)[number], Static<typeof genderSchema>> extends never ? true : never = true;
+void [_ageCovered, _genderCovered];
 
 /** The accessibility and map choices (me/preferences.ts): every field is required, nothing else is allowed. */
 export const preferencesSchema = t.Object(

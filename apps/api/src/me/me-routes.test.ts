@@ -23,8 +23,12 @@ type MeBody = {
     locale: string;
     displayName: string | null;
     origin: string | null;
+    ageRange: string | null;
+    gender: string | null;
     preferences: { size: string; mergeStops: boolean; placesOnMap: boolean; setupDone: boolean; updatedAt: number } | null;
     deletionRequestedAt: string | null;
+    deletionDueAt: string | null;
+    publicId: string;
     createdAt: string;
   };
 };
@@ -169,6 +173,30 @@ describe("PATCH /me: where you come from", () => {
   });
 });
 
+describe("PATCH /me: age range and gender", () => {
+  test("can be set, changed (including the answer 'unspecified') and cleared, only for yourself", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    const first = (await (await t.call("GET", "", cookie)).json()) as MeBody;
+    expect(first.me).toMatchObject({ ageRange: null, gender: null });
+    const set = (await (await t.call("PATCH", "", cookie, { ageRange: "60s", gender: "unspecified" })).json()) as MeBody;
+    expect(set.me).toMatchObject({ ageRange: "60s", gender: "unspecified" });
+    expect(((await (await t.call("PATCH", "", cookie, { gender: "female" })).json()) as MeBody).me).toMatchObject({ ageRange: "60s", gender: "female" });
+    expect(((await (await t.call("PATCH", "", cookie, { ageRange: null, gender: null })).json()) as MeBody).me).toMatchObject({ ageRange: null, gender: null });
+
+    await t.call("PATCH", "", cookie, { ageRange: "20s" });
+    expect(((await (await t.call("GET", "", await t.login(bob))).json()) as MeBody).me.ageRange).toBeNull();
+  });
+
+  test("values outside the lists are rejected (422) and change nothing", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    expect((await t.call("PATCH", "", cookie, { ageRange: "teens" })).status).toBe(422);
+    expect((await t.call("PATCH", "", cookie, { gender: "robot" })).status).toBe(422);
+    expect(((await (await t.call("GET", "", cookie)).json()) as MeBody).me).toMatchObject({ ageRange: null, gender: null });
+  });
+});
+
 describe("preferences", () => {
   const prefs = { size: "large", mergeStops: false, placesOnMap: true, setupDone: true, updatedAt: 1760000000000 };
 
@@ -239,6 +267,7 @@ describe("DELETE /me (deletion request) and POST /me/deletion/cancel", () => {
     expect(res.status).toBe(202);
     const { me } = (await res.json()) as MeBody;
     expect(me.deletionRequestedAt).not.toBeNull();
+    expect(me.deletionDueAt).not.toBeNull();
     expect(users.has(alice.id)).toBe(true);
     expect((await call("GET", "", cookie)).status).toBe(200); // still logged in, still there
     expect(sent.map((m) => m.subject)).toEqual(["【KTRG】アカウント削除のリクエストを受け付けました"]);
