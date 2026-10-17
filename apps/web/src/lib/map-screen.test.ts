@@ -18,6 +18,9 @@ const route = (id: string, order: number, over: Partial<MapScreenRoute> = {}): M
   stampedCount: null,
   area: { lat: 34.4, lng: 135.5, widthM: 8000, heightM: 5000, verified: false },
   elevations: null,
+  description: null,
+  photo: null,
+  spots: [],
   href: `/ja/routes/${id}`,
   stops: null,
   line: null,
@@ -45,7 +48,7 @@ describe("rectangleRing", () => {
 });
 
 describe("revealedRouteId", () => {
-  const stop = { id: "s", order: 1, name: "s", nameLang: "ja" as const, label: "1", position: { lat: 34.4, lng: 135.5 }, stamped: null, status: "open" as const, href: "/", description: null, statusNote: null, statusUpdatedAt: null };
+  const stop = { id: "s", order: 1, name: "s", nameLang: "ja" as const, label: "1", position: { lat: 34.4, lng: 135.5 }, stamped: null, status: "open" as const, href: "/", description: null, statusNote: null, statusUpdatedAt: null, photo: null };
   const withStops = (id: string, order: number, lat: number) => route(id, order, { area: { lat, lng: 135.5, widthM: 8000, heightM: 8000, verified: false }, stops: [stop] });
   const routes = [withStops("a", 1, 34.4), withStops("b", 2, 34.43), route("c", 3)];
 
@@ -93,7 +96,7 @@ describe("areaCollection", () => {
 describe("framePoints", () => {
   test("uses the stops and the path when there are some", () => {
     const r = route("a", 1, {
-      stops: [{ id: "s", order: 1, name: "s", nameLang: "ja", label: "1", position: { lat: 1, lng: 2 }, stamped: null, status: "open", href: "/", description: null, statusNote: null, statusUpdatedAt: null }],
+      stops: [{ id: "s", order: 1, name: "s", nameLang: "ja", label: "1", position: { lat: 1, lng: 2 }, stamped: null, status: "open", href: "/", description: null, statusNote: null, statusUpdatedAt: null, photo: null }],
       line: [{ lat: 3, lng: 4 }],
     });
     expect(framePoints(r)).toEqual([{ lat: 1, lng: 2 }, { lat: 3, lng: 4 }]);

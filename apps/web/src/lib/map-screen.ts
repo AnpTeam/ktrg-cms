@@ -15,6 +15,25 @@ export interface RouteArea extends Position {
   verified: boolean;
 }
 
+/** A photo for the top of a card, with the words a screen reader says for it. */
+export interface MapPhoto {
+  src: string;
+  alt: string;
+}
+
+/** One stamp place of a course, as a row in its list (with or without a position on the map). */
+export interface MapScreenSpot {
+  id: string;
+  order: number;
+  name: string;
+  nameLang: "ja" | "en";
+  status: SpotStatus;
+  /** null when signed out. */
+  stamped: boolean | null;
+  /** The spot's own page, with the locale. */
+  href: string;
+}
+
 /** A stop on a course's detailed map, with what its bottom sheet shows. Sent to the browser, so plain data only. */
 export interface MapScreenStop {
   id: string;
@@ -34,6 +53,7 @@ export interface MapScreenStop {
   statusNote: string | null;
   /** ISO timestamp of the last status change. */
   statusUpdatedAt: string | null;
+  photo: MapPhoto | null;
 }
 
 /** One course as the home map needs it. Texts are already in the visitor's language. */
@@ -58,6 +78,10 @@ export interface MapScreenRoute {
   elevations: number[] | null;
   /** The course page, with the locale. */
   href: string;
+  description: string | null;
+  photo: MapPhoto | null;
+  /** Every stamp place of the course, in walking order (the detailed map below needs positions; this does not). */
+  spots: MapScreenSpot[];
   /** The detailed map: only courses that have positions for their stops. */
   stops: MapScreenStop[] | null;
   line: Position[] | null;

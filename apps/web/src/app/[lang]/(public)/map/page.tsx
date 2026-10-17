@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { msg } from "@lingui/core/macro";
 import { MapScreen } from "@/components/map/MapScreen";
-import { forViewer, getRoute, getSpot, listRoutes, pickText, type RouteSummary } from "@/lib/content";
-import type { MapScreenRoute, MapScreenStop } from "@/lib/map-screen";
+import { forViewer, getRoute, getSpot, listRoutes, pickText, sampleContentEnabled, type RouteSummary } from "@/lib/content";
+import type { MapPhoto, MapScreenRoute, MapScreenSpot, MapScreenStop } from "@/lib/map-screen";
 import { mapSettingsCookie, parseMapSettings } from "@/lib/map-settings";
 import { isStampMock } from "@/lib/stamp-flow";
 import { getPrefs } from "@/lib/server-prefs";
@@ -32,11 +32,24 @@ async function mapRoutes(routes: RouteSummary[], viewer: Viewer, locale: string,
         let stops: MapScreenStop[] | null = null;
         let line: MapScreenRoute["line"] = null;
         let draft = false;
+        let spots: MapScreenSpot[] = [];
+        let photo: MapPhoto | null = null;
+        let description: string | null = null;
 
         if (r.status === "ready" && r.spotCount > 0) {
           const found = await getRoute(r.id);
           const detail = found ? forViewer(found, viewer) : null;
           const positioned = detail?.spots.filter((s) => s.position) ?? [];
+          if (detail) {
+            description = pickText(locale, detail.descriptionJa, detail.descriptionEn)?.text ?? null;
+            photo = detail.photoUrl ? { src: detail.photoUrl, alt: name?.text ?? detail.nameJa } : null;
+            spots = detail.spots.flatMap((s, index): MapScreenSpot[] => {
+              const spotName = pickText(locale, s.nameJa, s.nameEn);
+              return spotName
+                ? [{ id: s.id, order: index + 1, name: spotName.text, nameLang: spotName.lang, status: s.status, stamped: s.stamped, href: to(`/spots/${s.id}`) }]
+                : [];
+            });
+          }
           if (detail && positioned.length > 0) {
             line = detail.line;
             draft = positioned.some((s) => !s.position?.verified);
@@ -65,6 +78,7 @@ async function mapRoutes(routes: RouteSummary[], viewer: Viewer, locale: string,
                     description: full ? (pickText(locale, full.descriptionJa, full.descriptionEn)?.text ?? null) : null,
                     statusNote: note?.text ?? null,
                     statusUpdatedAt: full?.statusUpdatedAt ?? null,
+                    photo: full?.photoUrl ? { src: full.photoUrl, alt: spotName.text } : null,
                   };
                 }),
               )
@@ -88,6 +102,9 @@ async function mapRoutes(routes: RouteSummary[], viewer: Viewer, locale: string,
           stampedCount: r.stampedCount,
           area: r.area,
           elevations: r.sketch?.elevations ?? null,
+          description,
+          photo,
+          spots,
           href: to(`/routes/${r.id}`),
           stops,
           line,
@@ -119,6 +136,7 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
       settings={settings}
       mergeStops={prefs.mergeStops}
       signedIn={viewer.signedIn}
+      photoPlaceholder={sampleContentEnabled()}
       locale={i18n.locale}
       loginHref={`${to("/login")}${next}`}
       registerHref={`${to("/register")}${next}`}

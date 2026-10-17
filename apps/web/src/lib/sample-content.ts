@@ -53,6 +53,7 @@ const spot = (s: Partial<SpotDetail> & Pick<SpotDetail, "id" | "routeId" | "rout
   statusNoteJa: null,
   statusNoteEn: null,
   statusUpdatedAt: null,
+  photoUrl: null,
   ...s,
 });
 
@@ -227,6 +228,7 @@ const skeleton = (order: number, ja: string, en: string): RouteDetail => ({
   spots: [],
   line: null,
   videoUrl: null,
+  photoUrl: null,
 });
 
 /** Filled-in routes replace their skeleton: same id, name prefixed （見本）. */

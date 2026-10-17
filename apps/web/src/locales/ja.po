@@ -64,7 +64,7 @@ msgstr "{number}番 つぎのスタンプ"
 msgid "{number}番 まだ押していません"
 msgstr "{number}番 まだ押していません"
 
-#: src/components/map/MapScreen.tsx:219
+#: src/components/map/MapScreen.tsx:229
 #: src/components/map/MapScreenCanvas.tsx:216
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
@@ -73,7 +73,7 @@ msgstr "{order}. {name}"
 msgid "{TOTAL_STAMPS}か所"
 msgstr "{TOTAL_STAMPS}か所"
 
-#: src/components/map/MapScreen.tsx:399
+#: src/components/map/MapScreen.tsx:435
 msgid "{updated} 更新"
 msgstr "{updated} 更新"
 
@@ -268,11 +268,7 @@ msgstr "お知らせ"
 msgid "カフェ・喫茶"
 msgstr "カフェ・喫茶"
 
-#: src/components/map/MapScreen.tsx:363
-msgid "くわしい地図は、準備中です。この区間のページでは、場所の一覧を見られます。"
-msgstr "くわしい地図は、準備中です。この区間のページでは、場所の一覧を見られます。"
-
-#: src/components/map/MapScreen.tsx:183
+#: src/components/map/MapScreen.tsx:192
 msgid "くわしい情報"
 msgstr "くわしい情報"
 
@@ -329,11 +325,11 @@ msgstr "このパスキーを消しますか？"
 msgid "このラリーは、いまは行われていません。"
 msgstr "このラリーは、いまは行われていません。"
 
-#: src/components/map/MapScreen.tsx:329
+#: src/components/map/MapScreen.tsx:345
 msgid "この区間のページを開く"
 msgstr "この区間のページを開く"
 
-#: src/components/map/MapScreen.tsx:319
+#: src/components/map/MapScreen.tsx:333
 msgid "この区間は、準備中です。"
 msgstr "この区間は、準備中です。"
 
@@ -341,11 +337,11 @@ msgstr "この区間は、準備中です。"
 msgid "この地域のルートはまだありません。"
 msgstr "この地域のルートはまだありません。"
 
-#: src/components/map/MapScreen.tsx:428
+#: src/components/map/MapScreen.tsx:464
 msgid "この場所のページを開く"
 msgstr "この場所のページを開く"
 
-#: src/components/map/MapScreen.tsx:408
+#: src/components/map/MapScreen.tsx:444
 #: src/components/map/PlacesPanel.tsx:227
 #: src/components/map/StopCard.tsx:38
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
@@ -439,7 +435,7 @@ msgid "スタンプ"
 msgstr "スタンプ"
 
 #: src/app/[lang]/(public)/routes/[id]/page.tsx:139
-#: src/components/map/MapScreen.tsx:324
+#: src/components/map/MapScreen.tsx:340
 #: src/components/TrailRibbon.tsx:101
 msgid "スタンプ {stampedCount} / {spotCount}"
 msgstr "スタンプ {stampedCount} / {spotCount}"
@@ -453,7 +449,7 @@ msgid "スタンプカードを見る"
 msgstr "スタンプカードを見る"
 
 #: src/app/[lang]/(public)/routes/[id]/page.tsx:135
-#: src/components/map/MapScreen.tsx:337
+#: src/components/map/MapScreen.tsx:353
 #: src/components/SpotSheet.tsx:54
 msgid "スタンプの場所"
 msgstr "スタンプの場所"
@@ -468,6 +464,7 @@ msgid "スタンプの場所の近くにいるか、たしかめるために、�
 msgstr "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 
 #: src/app/[lang]/(public)/routes/[id]/page.tsx:126
+#: src/components/map/MapScreen.tsx:395
 msgid "スタンプの場所は、まだ準備中です。"
 msgstr "スタンプの場所は、まだ準備中です。"
 
@@ -485,7 +482,7 @@ msgstr "スタンプの進み具合"
 msgid "スタンプを押しています…"
 msgstr "スタンプを押しています…"
 
-#: src/components/map/MapScreen.tsx:417
+#: src/components/map/MapScreen.tsx:453
 #: src/components/SpotSheet.tsx:66
 msgid "スタンプを押しました"
 msgstr "スタンプを押しました"
@@ -507,7 +504,7 @@ msgstr "スタンプを押す機能は、まだ使えません。"
 msgid "スタンプ場所 {spotCount}か所"
 msgstr "スタンプ場所 {spotCount}か所"
 
-#: src/app/[lang]/(public)/map/page.tsx:113
+#: src/app/[lang]/(public)/map/page.tsx:130
 #: src/app/[lang]/(public)/routes/[id]/page.tsx:51
 msgid "スタンプ済み"
 msgstr "スタンプ済み"
@@ -699,7 +696,7 @@ msgstr "まだスタンプを押していません"
 
 #: src/app/[lang]/(public)/map/page.tsx:16
 #: src/app/[lang]/(public)/sitemap/page.tsx:59
-#: src/components/map/MapScreen.tsx:136
+#: src/components/map/MapScreen.tsx:140
 #: src/components/TabBar.tsx:20
 msgid "マップ"
 msgstr "マップ"
@@ -851,7 +848,7 @@ msgstr "ログアウト"
 #: src/components/auth/LoginFlow.tsx:55
 #: src/components/auth/RegisterFlow.tsx:141
 #: src/components/landing/Landing.tsx:85
-#: src/components/map/MapScreen.tsx:288
+#: src/components/map/MapScreen.tsx:298
 #: src/components/SignInPrompt.tsx:37
 #: src/components/SiteHeader.tsx:167
 msgid "ログイン"
@@ -874,7 +871,7 @@ msgstr "ログインする"
 msgid "ログインすると、スタンプを記録できます。"
 msgstr "ログインすると、スタンプを記録できます。"
 
-#: src/components/map/MapScreen.tsx:283
+#: src/components/map/MapScreen.tsx:293
 msgid "ログインすると、ルート案内とスタンプが使えます。見るだけなら、このままどうぞ。"
 msgstr "ログインすると、ルート案内とスタンプが使えます。見るだけなら、このままどうぞ。"
 
@@ -975,7 +972,7 @@ msgstr "全{TOTAL_ROUTES}区間を見る"
 msgid "全{total}か所"
 msgstr "全{total}か所"
 
-#: src/components/map/MapScreen.tsx:131
+#: src/components/map/MapScreen.tsx:135
 msgid "全体の地図"
 msgstr "全体の地図"
 
@@ -1014,6 +1011,10 @@ msgstr "最高 {highest}m"
 #: src/components/landing/BannerCarousel.tsx:37
 msgid "写真"
 msgstr "写真"
+
+#: src/components/map/HeroPhoto.tsx:21
+msgid "写真（準備中）"
+msgstr "写真（準備中）"
 
 #: src/components/landing/Landing.tsx:177
 msgid "出かける前に"
@@ -1071,11 +1072,11 @@ msgstr "動画を見る"
 msgid "区間 {text} がここに集まっています。押すと拡大します"
 msgstr "区間 {text} がここに集まっています。押すと拡大します"
 
-#: src/components/map/MapScreen.tsx:215
+#: src/components/map/MapScreen.tsx:225
 msgid "区間をえらぶ"
 msgstr "区間をえらぶ"
 
-#: src/components/map/MapScreen.tsx:137
+#: src/components/map/MapScreen.tsx:141
 msgid "区間を選ぶと、道とスタンプの場所が見えます。"
 msgstr "区間を選ぶと、道とスタンプの場所が見えます。"
 
@@ -1108,6 +1109,10 @@ msgstr "地図"
 #: src/components/SampleNotice.tsx:57
 msgid "地図のルートと場所は仮のものです。実際の公開情報ではありません。"
 msgstr "地図のルートと場所は仮のものです。実際の公開情報ではありません。"
+
+#: src/components/map/MapScreen.tsx:392
+msgid "地図の上の場所は、準備中です。"
+msgstr "地図の上の場所は、準備中です。"
 
 #: src/components/settings/PrefsForm.tsx:125
 msgid "地図の見せ方"
@@ -1207,7 +1212,7 @@ msgstr "情報"
 msgid "戻る"
 msgstr "戻る"
 
-#: src/components/map/MapScreen.tsx:353
+#: src/components/map/MapScreen.tsx:370
 #: src/components/RallyViews.tsx:150
 #: src/components/StampLegend.tsx:8
 #: src/components/StopList.tsx:58
@@ -1257,7 +1262,7 @@ msgstr "文字やボタンの大きさ、地図の見せ方を選べます。大
 #: src/components/auth/LoginFlow.tsx:104
 #: src/components/landing/Landing.tsx:77
 #: src/components/landing/Landing.tsx:211
-#: src/components/map/MapScreen.tsx:285
+#: src/components/map/MapScreen.tsx:295
 #: src/components/SignInPrompt.tsx:31
 #: src/components/SiteHeader.tsx:170
 msgid "新規登録"
@@ -1358,7 +1363,7 @@ msgid "淡色"
 msgstr "淡色"
 
 #: src/components/landing/Landing.tsx:255
-#: src/components/map/MapScreen.tsx:268
+#: src/components/map/MapScreen.tsx:278
 #: src/components/RallyViews.tsx:105
 #: src/components/TrailRibbon.tsx:84
 msgid "準備中"
@@ -1591,7 +1596,7 @@ msgstr "閉じる"
 msgid "閉店・撤去"
 msgstr "閉店・撤去"
 
-#: src/app/[lang]/(public)/map/page.tsx:113
+#: src/app/[lang]/(public)/map/page.tsx:130
 #: src/app/[lang]/(public)/routes/[id]/page.tsx:52
 #: src/components/StatusWord.tsx:13
 msgid "閉鎖中"

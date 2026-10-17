@@ -72,6 +72,8 @@ export interface RouteDetail extends RouteSummary {
   line: { lat: number; lng: number }[] | null;
   /** The guidance video's address (the CMS `video_url`); only YouTube and Vimeo links are shown (`parseVideoUrl`). */
   videoUrl: string | null;
+  /** A photo of the course (a path inside the site, or an address), shown at the top of its card; null when none. */
+  photoUrl: string | null;
 }
 
 export interface SpotDetail extends SpotListItem {
@@ -84,6 +86,8 @@ export interface SpotDetail extends SpotListItem {
   statusNoteEn: string | null;
   /** ISO timestamp of the last status change. */
   statusUpdatedAt: string | null;
+  /** A photo of the place, shown at the top of its card; null when none. */
+  photoUrl: string | null;
 }
 
 export interface Picked {

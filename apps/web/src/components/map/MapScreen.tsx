@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { ChevronIcon, ChevronLeftIcon, WarningIcon } from "@/components/icons";
 import { ElevationProfile } from "@/components/ElevationProfile";
+import { HeroPhoto } from "./HeroPhoto";
 import { PrefectureName } from "@/components/PrefectureName";
 import { RouteStats } from "@/components/RouteStats";
 import { StampHere } from "@/components/StampHere";
@@ -40,6 +41,7 @@ export function MapScreen({
   settings,
   mergeStops,
   signedIn,
+  photoPlaceholder,
   locale,
   loginHref,
   registerHref,
@@ -49,6 +51,8 @@ export function MapScreen({
   settings: MapSettings;
   mergeStops: boolean;
   signedIn: boolean;
+  /** Show a "photo coming" frame where a course or place has no photo (development only). */
+  photoPlaceholder: boolean;
   locale: string;
   loginHref: string;
   registerHref: string;
@@ -139,12 +143,17 @@ export function MapScreen({
     </div>
   );
 
-  const detailBody =
+  // The photo at the top of the chosen course or stop (a stop without its own photo shows its course's).
+  const photo = stop?.photo ?? route?.photo ?? null;
+
+  // In the sheet the photo is the first thing in the scrolling part; at the right it sits above the title.
+  const detailBody = (withPhoto: boolean) =>
     stop && route ? (
-      <StopPanel route={route} stop={stop} signedIn={signedIn} locale={locale} loginHref={loginHref} registerHref={registerHref} stampMock={stampMock} />
+      <StopPanel route={route} stop={stop} photo={withPhoto ? <HeroPhoto photo={photo} placeholder={photoPlaceholder} /> : null} signedIn={signedIn} locale={locale} loginHref={loginHref} registerHref={registerHref} stampMock={stampMock} />
     ) : route ? (
-      <RoutePanel route={route} signedIn={signedIn} loginHref={loginHref} registerHref={registerHref} onChooseStop={(id) => chooseStop(route.id, id)} />
+      <RoutePanel route={route} photo={withPhoto ? <HeroPhoto photo={photo} placeholder={photoPlaceholder} /> : null} signedIn={signedIn} loginHref={loginHref} registerHref={registerHref} onChooseStop={(id) => chooseStop(route.id, id)} />
     ) : null;
+  const hasDetail = route !== null;
 
   const homeBody = (
     <div className="flex flex-col gap-5 px-4 pb-4">
@@ -155,7 +164,7 @@ export function MapScreen({
 
   // Narrow: one sheet that shows the home content or the chosen course or stop. Wide: the sheet is always the
   // home content, and the chosen course or stop is shown in the panel at the right.
-  const showDetailInSheet = !wide && detailBody !== null;
+  const showDetailInSheet = !wide && hasDetail;
 
   return (
     <div className="relative md:-mt-6">
@@ -175,15 +184,16 @@ export function MapScreen({
         mergeStops={mergeStops}
       />
       <MapSheet snap={snap} onSnap={setSnap} available={available} tabPx={tabPx} header={showDetailInSheet ? detailHeader : homeHeader}>
-        {showDetailInSheet ? detailBody : homeBody}
+        {showDetailInSheet ? detailBody(true) : homeBody}
       </MapSheet>
     </div>
 
-    {wide && detailBody ? (
-      <aside aria-label={t`くわしい情報`} className="absolute left-full top-0 ml-10 h-dvh w-[21rem] py-3">
-        <div className="flex h-full flex-col overflow-hidden rounded-3xl bg-paper shadow-[0_2px_24px_rgb(0_0_0/0.22)]">
-          <div className="shrink-0 px-4 pb-2 pt-4">{detailHeader}</div>
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-6">{detailBody}</div>
+    {wide && hasDetail ? (
+      <aside aria-label={t`くわしい情報`} className="absolute left-full top-0 ml-10 h-dvh w-[21rem] border-l border-surface">
+        <div className="h-full overflow-y-auto overscroll-contain px-6 py-5">
+          <HeroPhoto photo={photo} placeholder={photoPlaceholder} />
+          <div className="pt-3">{detailHeader}</div>
+          <div className="-mx-4 pb-6 pt-3">{detailBody(false)}</div>
         </div>
       </aside>
     ) : null}
@@ -293,12 +303,15 @@ function LockedNote({ loginHref, registerHref }: { loginHref: string; registerHr
 
 function RoutePanel({
   route,
+  photo,
   signedIn,
   loginHref,
   registerHref,
   onChooseStop,
 }: {
   route: MapScreenRoute;
+  /** The photo frame, when it belongs in this part of the page (in the sheet; at the right it sits above the title). */
+  photo: ReactNode;
   signedIn: boolean;
   loginHref: string;
   registerHref: string;
@@ -308,6 +321,7 @@ function RoutePanel({
   const { stampedCount, spotCount } = route;
   return (
     <div className="flex flex-col gap-5 px-4">
+      {photo}
       {route.prefecture || route.municipality ? (
         <p className="text-lg text-muted">
           {route.prefecture ? <PrefectureName value={route.prefecture} /> : null}
@@ -317,6 +331,8 @@ function RoutePanel({
       ) : null}
 
       {route.status === "soon" ? <p className="rounded-2xl bg-surface p-4 text-lg font-bold">{t`この区間は、準備中です。`}</p> : null}
+
+      {route.description ? <p className="whitespace-pre-line text-lg leading-8">{route.description}</p> : null}
 
       <RouteStats route={route} />
 
@@ -332,35 +348,51 @@ function RoutePanel({
 
       {route.elevations ? <ElevationProfile elevations={route.elevations} distanceKm={route.distanceKm} /> : null}
 
-      {route.stops ? (
+      {route.spots.length > 0 ? (
         <section>
           <h3 className="pb-2 text-xl font-bold">{t`スタンプの場所`}</h3>
           <ol className="flex flex-col">
-            {route.stops.map((s) => (
-              <li key={s.id}>
-                <button
-                  type="button"
-                  onClick={() => onChooseStop(s.id)}
-                  className="tap-target flex w-full items-center gap-3 border-t border-line/30 py-3 text-left hover:bg-surface"
-                >
-                  <span className="grid size-10 shrink-0 place-items-center rounded-full border-[3px] border-ink text-lg font-bold tabular-nums">{s.order}</span>
+            {route.spots.map((spot) => {
+              const onMap = route.stops?.some((x) => x.id === spot.id) ?? false;
+              const row = (
+                <>
+                  <span
+                    className={`grid size-10 shrink-0 place-items-center rounded-full border-[3px] text-lg font-bold tabular-nums ${spot.stamped ? "border-shu bg-shu text-on-shu" : "border-ink"}`}
+                  >
+                    {spot.order}
+                  </span>
                   <span className="min-w-0 flex-1">
-                    <span lang={s.nameLang} className="block text-xl font-bold leading-snug">
-                      {s.name}
+                    <span lang={spot.nameLang} className="block text-xl font-bold leading-snug">
+                      {spot.name}
                     </span>
                     <span className="flex flex-wrap items-center gap-x-3 text-lg">
-                      <StatusWord status={s.status} />
-                      {s.stamped === true ? <span className="font-bold">{t`押した`}</span> : null}
+                      <StatusWord status={spot.status} />
+                      {spot.stamped === true ? <span className="font-bold">{t`押した`}</span> : null}
                     </span>
                   </span>
                   <ChevronIcon />
-                </button>
-              </li>
-            ))}
+                </>
+              );
+              const rowClass = "tap-target flex w-full items-center gap-3 border-t border-line/30 py-3 text-left hover:bg-surface";
+              return (
+                <li key={spot.id}>
+                  {onMap ? (
+                    <button type="button" onClick={() => onChooseStop(spot.id)} className={rowClass}>
+                      {row}
+                    </button>
+                  ) : (
+                    <Link href={spot.href} className={rowClass}>
+                      {row}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
           </ol>
+          {route.stops ? null : <p className="pt-2 text-base text-muted">{t`地図の上の場所は、準備中です。`}</p>}
         </section>
       ) : route.status === "ready" ? (
-        <p className="rounded-2xl bg-surface p-4 text-lg">{t`くわしい地図は、準備中です。この区間のページでは、場所の一覧を見られます。`}</p>
+        <p className="rounded-2xl bg-surface p-4 text-lg">{t`スタンプの場所は、まだ準備中です。`}</p>
       ) : null}
 
       {signedIn ? null : <LockedNote loginHref={loginHref} registerHref={registerHref} />}
@@ -371,6 +403,7 @@ function RoutePanel({
 function StopPanel({
   route,
   stop,
+  photo,
   signedIn,
   locale,
   loginHref,
@@ -379,6 +412,8 @@ function StopPanel({
 }: {
   route: MapScreenRoute;
   stop: MapScreenStop;
+  /** The photo frame, when it belongs in this part of the page. */
+  photo: ReactNode;
   signedIn: boolean;
   locale: string;
   loginHref: string;
@@ -389,6 +424,7 @@ function StopPanel({
   const updated = stop.statusUpdatedAt ? formatUpdated(locale, stop.statusUpdatedAt) : "";
   return (
     <div className="flex flex-col gap-5 px-4">
+      {photo}
       <p className="text-xl">
         <StatusWord status={stop.status} />
       </p>
