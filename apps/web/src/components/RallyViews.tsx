@@ -41,7 +41,7 @@ export function FeaturedRally({ rally, locale, signedIn }: { rally: RallyItem; l
   return (
     <section className="flex flex-col gap-3 px-4">
       <SectionBanner>{signedIn && rally.lastStampedAt ? t`いまのラリー` : t`はじめのラリー`}</SectionBanner>
-      <div className="frame p-4">
+      <div className="frame pattern-shippo p-4">
         {signedIn && rally.lastStampedAt ? (
           <p className="text-base text-muted">{t`最後に押した日時　${when}`}</p>
         ) : null}

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { MenuProvider } from "@/components/MenuProvider";
 import { SampleNoticeHost } from "@/components/SampleNotice";
 import { SiteFooter } from "@/components/SiteFooter";
+import { StampFilters } from "@/components/StampFilters";
 import { SiteHeader } from "@/components/SiteHeader";
 import { TabBar } from "@/components/TabBar";
 import { PrefsSync } from "@/components/settings/PrefsSync";
@@ -23,6 +24,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   // width on the right keeps the column in the middle.
   return (
     <MenuProvider>
+    <StampFilters />
     <div className="mx-auto flex w-full max-w-5xl justify-center md:gap-6 lg:gap-10">
       <TabBar />
       <div className="min-w-0 max-w-xl flex-1 md:border-x md:border-surface">

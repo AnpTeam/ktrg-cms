@@ -24,6 +24,7 @@ const secondary =
   "tap-target flex min-h-14 items-center justify-center rounded-xl border-2 border-brand bg-surface px-6 text-xl font-bold text-accent hover:bg-paper";
 // Panels have no outline: a light grey fill with round corners, and room around them.
 const panel = "mx-4 rounded-3xl bg-surface p-5";
+const patternPanel = `${panel} pattern-shippo`;
 
 // The few stamp slots drawn in the example card; they are an illustration, never anyone's progress.
 const EXAMPLE_SLOTS = 8;
@@ -63,7 +64,7 @@ export function Landing({
       {slides.length > 0 ? <BannerCarousel slides={slides} /> : null}
 
       <section className="px-4">
-        <div className="frame p-5">
+        <div className="frame pattern-shippo p-5">
           <h1 className="font-serif text-4xl font-bold leading-snug text-accent">
             <Trans>葛城修験</Trans>
           </h1>
@@ -96,7 +97,7 @@ export function Landing({
             <Trans>スタンプカード</Trans>
           </SectionBanner>
         </div>
-        <div className={panel}>
+        <div className={patternPanel}>
           <p className="text-xl font-bold leading-snug">
             <Trans>着いたらボタンを押すだけ。場所を確かめて、スタンプがたまります。</Trans>
           </p>

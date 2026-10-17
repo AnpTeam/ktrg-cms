@@ -47,7 +47,7 @@ export function StampGrid({
               : t`${number}番 まだ押していません`;
         return (
           <li key={number} className="aspect-square">
-            <StampFace state={state} number={number} className={`h-full w-full ${big ? "rounded-full! p-4 text-center" : ""}`}>
+            <StampFace state={state} number={number} rough={big} className={`h-full w-full ${big ? "rounded-full! p-4 text-center" : ""}`}>
               <span className={`${big ? "text-4xl" : "text-3xl"} font-bold leading-none tabular-nums`}>{number}</span>
               {big && name ? <span className="mt-2 line-clamp-3 break-all text-lg font-bold leading-snug [text-wrap:balance]">{name}</span> : null}
               {state === "next" ? <span className="mt-1 text-base font-bold">{t`つぎ`}</span> : null}

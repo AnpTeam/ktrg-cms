@@ -49,7 +49,7 @@ export function SpotSheet({ spot, locale, loginHref }: { spot: SpotDetail; local
 
       {spot.stamped !== null ? (
         <section className="flex items-center gap-4 px-4">
-          <StampFace state={spot.stamped ? "stamped" : "empty"} className="h-14 w-14 shrink-0" />
+          <StampFace state={spot.stamped ? "stamped" : "empty"} rough className="h-14 w-14 shrink-0" />
           <p className="text-xl font-bold">
             {spot.stamped ? <Trans>スタンプを押しました</Trans> : <Trans>まだスタンプを押していません</Trans>}
           </p>

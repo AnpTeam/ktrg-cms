@@ -387,3 +387,81 @@ html[data-size="large"] {
 html[data-size="xlarge"] {
   font-size: 125%;
 }
+
+/*
+ * 七宝 (shippo, "seven treasures"): overlapping circles, a traditional Japanese pattern. A very faint tint of the
+ * brand red behind a panel (the home page's title card, the stamp card). It is drawn on a layer behind the
+ * content (a mask filled with the brand colour at about 8%), so it follows the light and dark palettes and never
+ * carries information.
+ */
+.pattern-shippo {
+  position: relative;
+  isolation: isolate;
+}
+.pattern-shippo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background-color: var(--color-brand);
+  opacity: 0.09;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='black' stroke-width='1.6'%3E%3Ccircle cx='0' cy='0' r='20'/%3E%3Ccircle cx='40' cy='0' r='20'/%3E%3Ccircle cx='0' cy='40' r='20'/%3E%3Ccircle cx='40' cy='40' r='20'/%3E%3Ccircle cx='20' cy='20' r='20'/%3E%3C/g%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='black' stroke-width='1.6'%3E%3Ccircle cx='0' cy='0' r='20'/%3E%3Ccircle cx='40' cy='0' r='20'/%3E%3Ccircle cx='0' cy='40' r='20'/%3E%3Ccircle cx='40' cy='40' r='20'/%3E%3Ccircle cx='20' cy='20' r='20'/%3E%3C/g%3E%3C/svg%3E");
+  -webkit-mask-size: 40px 40px;
+  mask-size: 40px 40px;
+}
+
+/*
+ * The loading screen: a seal that is pressed down again and again, with a ring that spreads like ink. It shows
+ * only after a short wait (a quick page change never flashes it). Reduced motion: the seal just sits there.
+ */
+.loading-fade {
+  animation: loading-fade 200ms ease-out 300ms both;
+}
+@keyframes loading-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .loading-seal {
+    animation: seal-press 1400ms ease-in-out infinite;
+  }
+  .loading-ring {
+    animation: seal-ring 1400ms ease-out infinite;
+  }
+}
+@keyframes seal-press {
+  0%,
+  100% {
+    transform: scale(1.18) rotate(-4deg);
+    opacity: 0.55;
+  }
+  40% {
+    transform: scale(1) rotate(-2deg);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1) rotate(-2deg);
+    opacity: 1;
+  }
+}
+@keyframes seal-ring {
+  0%,
+  35% {
+    transform: scale(1);
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
