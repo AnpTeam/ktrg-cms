@@ -38,7 +38,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           <SiteFooter locale={i18n.locale} />
         </main>
       </div>
-      <div aria-hidden="true" className="home-aside-slot hidden w-60 shrink-0 lg:block" />
+      <div aria-hidden="true" className="map-aside-slot hidden w-60 shrink-0 lg:block" />
     </div>
     </MenuProvider>
   );

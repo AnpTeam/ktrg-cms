@@ -16,7 +16,7 @@ export interface RouteArea extends Position {
 }
 
 /** A stop on a course's detailed map, with what its bottom sheet shows. Sent to the browser, so plain data only. */
-export interface HomeStop {
+export interface MapScreenStop {
   id: string;
   /** 1, 2, 3 ... in walking order. */
   order: number;
@@ -37,7 +37,7 @@ export interface HomeStop {
 }
 
 /** One course as the home map needs it. Texts are already in the visitor's language. */
-export interface HomeRoute {
+export interface MapScreenRoute {
   id: string;
   /** 1 to 19, from Tomogashima to Kamenose. */
   order: number;
@@ -59,7 +59,7 @@ export interface HomeRoute {
   /** The course page, with the locale. */
   href: string;
   /** The detailed map: only courses that have positions for their stops. */
-  stops: HomeStop[] | null;
+  stops: MapScreenStop[] | null;
   line: Position[] | null;
   /** Some position on this course is a rough draft, not a verified one. */
   draft: boolean;
@@ -100,9 +100,9 @@ export function areaContains(area: RouteArea, point: Position): boolean {
  * That course is shown on its own (the others fold away, and its stops appear) without anyone choosing it. Where
  * two areas overlap, the one whose centre is nearer wins, so the courses are shown one at a time.
  */
-export function revealedRouteId(routes: readonly HomeRoute[], center: Position, zoom: number, minZoom: number): string | null {
+export function revealedRouteId(routes: readonly MapScreenRoute[], center: Position, zoom: number, minZoom: number): string | null {
   if (zoom < minZoom) return null;
-  let best: HomeRoute | null = null;
+  let best: MapScreenRoute | null = null;
   let bestDistance = Infinity;
   for (const r of routes) {
     if (!r.area || !areaContains(r.area, center)) continue;
@@ -125,7 +125,7 @@ export interface AreaCollection {
 }
 
 /** The areas to draw. With a course chosen only its own area is drawn: the others fold away. */
-export function areaCollection(routes: readonly HomeRoute[], selectedId: string | null): AreaCollection {
+export function areaCollection(routes: readonly MapScreenRoute[], selectedId: string | null): AreaCollection {
   const shown = routes.filter((r) => r.area !== null && (selectedId === null || r.id === selectedId));
   return {
     type: "FeatureCollection",
@@ -138,7 +138,7 @@ export function areaCollection(routes: readonly HomeRoute[], selectedId: string 
 }
 
 /** The points that frame a chosen course: its stops and path when it has them, else its area's edge. */
-export function framePoints(route: HomeRoute): Position[] {
+export function framePoints(route: MapScreenRoute): Position[] {
   const detail = [...(route.stops?.map((s) => s.position) ?? []), ...(route.line ?? [])];
   if (detail.length > 0) return detail;
   return route.area ? rectangleRing(route.area) : [];

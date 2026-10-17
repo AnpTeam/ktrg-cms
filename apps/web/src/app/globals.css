@@ -561,19 +561,19 @@ html[data-size="xlarge"] {
 }
 
 /* On the home map the map is the screen: the page behind it does not scroll, and the footer lives in the sheet. */
-body.home-map-active {
+body.map-screen-active {
   overflow: hidden;
 }
-body.home-map-active .site-footer {
+body.map-screen-active .site-footer {
   display: none;
 }
 
 /* A wide screen (1280px and up): on the home map the free space at the right holds the detail panel. */
 @media (min-width: 1280px) {
-  body.home-map-active .site-shell {
+  body.map-screen-active .site-shell {
     max-width: 84rem;
   }
-  body.home-map-active .home-aside-slot {
+  body.map-screen-active .map-aside-slot {
     width: 26rem;
   }
 }

@@ -36,6 +36,14 @@ export const RouteIcon = () => (
   </Icon>
 );
 
+export const MapIcon = () => (
+  <Icon>
+    <path d="M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7z" />
+    <path d="M9 4v13" />
+    <path d="M15 7v13" />
+  </Icon>
+);
+
 export const StampIcon = () => (
   <Icon>
     <path d="M9.5 12V8a2.5 2.5 0 1 1 5 0v4" />

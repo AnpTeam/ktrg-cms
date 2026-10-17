@@ -1,4 +1,4 @@
-import type { RouteArea } from "./home-map";
+import type { RouteArea } from "./map-screen";
 import type { MapPlace, PlaceCategory, PlaceStatus } from "./places";
 import type { RallyItem } from "./rally-model";
 import { sampleLastStamped, sampleMounds, sampleMoundsStamped } from "./sample-mounds";

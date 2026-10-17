@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { areaCollection, areaContains, estimateLabel, framePoints, namesThatFit, nextSnap, rectangleRing, revealedRouteId, sheetHeightPx, snapAfterDrag, type HomeRoute } from "./home-map";
+import { areaCollection, areaContains, estimateLabel, framePoints, namesThatFit, nextSnap, rectangleRing, revealedRouteId, sheetHeightPx, snapAfterDrag, type MapScreenRoute } from "./map-screen";
 import { distanceMeters } from "./places";
 
-const route = (id: string, order: number, over: Partial<HomeRoute> = {}): HomeRoute => ({
+const route = (id: string, order: number, over: Partial<MapScreenRoute> = {}): MapScreenRoute => ({
   id,
   order,
   name: `route ${order}`,

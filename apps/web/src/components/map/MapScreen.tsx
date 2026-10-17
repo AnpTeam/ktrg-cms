@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { ChevronIcon, ChevronLeftIcon, WarningIcon } from "@/components/icons";
 import { ElevationProfile } from "@/components/ElevationProfile";
@@ -11,14 +11,14 @@ import { StampHere } from "@/components/StampHere";
 import { StampFace } from "@/components/StampFace";
 import { StatusWord } from "@/components/StatusWord";
 import { formatUpdated } from "@/lib/format";
-import { sheetHeightPx, type HomeRoute, type HomeStop, type SheetSnap } from "@/lib/home-map";
+import { sheetHeightPx, type MapScreenRoute, type MapScreenStop, type SheetSnap } from "@/lib/map-screen";
 import type { MapSettings } from "@/lib/map-settings";
 import type { StampMock } from "@/lib/stamp-flow";
-import { HomeMapCanvasLoader } from "./HomeMapCanvasLoader";
-import { HomeSheet } from "./HomeSheet";
+import { MapScreenCanvasLoader } from "./MapScreenCanvasLoader";
+import { MapSheet } from "./MapSheet";
 
-// The home screen (WBS 3.2.10): a map of the whole trail with a bottom sheet that never hides it. Nothing is
-// chosen at first: the sheet says what the app is and offers the 19 courses. Choose a course (on the map or in the
+// The map tab (WBS 3.2.10): a map of the whole trail with a bottom sheet that never hides it. Nothing is
+// chosen at first: the sheet offers the 19 courses. Choose a course (on the map or in the
 // sheet) and the other areas fold away while its path and stops appear; choose a stop and the sheet shows it, with
 // the stamp button for someone who is signed in. Anyone may look around; navigation and stamps are for accounts.
 
@@ -35,31 +35,25 @@ function subscribeWide(onChange: () => void) {
   return () => query.removeEventListener("change", onChange);
 }
 
-export function HomeMapView({
+export function MapScreen({
   routes,
   settings,
   mergeStops,
   signedIn,
-  name,
   locale,
   loginHref,
   registerHref,
   stampMock,
-  children,
 }: {
-  routes: HomeRoute[];
+  routes: MapScreenRoute[];
   settings: MapSettings;
   mergeStops: boolean;
   signedIn: boolean;
-  /** The signed-in visitor's name, or null. */
-  name: string | null;
   locale: string;
   loginHref: string;
   registerHref: string;
   /** Development only: pretend answers for the stamp button. */
   stampMock?: StampMock;
-  /** What the app is: shown in the sheet when nothing is chosen (server-rendered by the page). */
-  children: ReactNode;
 }) {
   const { t } = useLingui();
   const wrap = useRef<HTMLDivElement>(null);
@@ -76,8 +70,8 @@ export function HomeMapView({
 
   // The page behind does not scroll: the map and the sheet are the screen.
   useEffect(() => {
-    document.body.classList.add("home-map-active");
-    return () => document.body.classList.remove("home-map-active");
+    document.body.classList.add("map-screen-active");
+    return () => document.body.classList.remove("map-screen-active");
   }, []);
 
   // The room the sheet may use: the screen's height minus the tab bar.
@@ -139,8 +133,8 @@ export function HomeMapView({
 
   const homeHeader = (
     <div>
-      <h1 className="font-serif text-2xl font-bold leading-snug text-accent">{t`葛城修験`}</h1>
-      <p className="text-lg font-bold leading-snug">{signedIn && name ? t`${name}さん、こんにちは。` : t`「祈り」を見つめる再発見の旅`}</p>
+      <h1 className="font-serif text-2xl font-bold leading-snug text-accent">{t`マップ`}</h1>
+      <p className="text-lg leading-snug">{t`区間を選ぶと、道とスタンプの場所が見えます。`}</p>
       <RouteChips routes={routes} onChoose={chooseRoute} selectedId={routeId} />
     </div>
   );
@@ -153,22 +147,10 @@ export function HomeMapView({
     ) : null;
 
   const homeBody = (
-    <>
-      {signedIn ? null : (
-        <div className="flex flex-col gap-3 px-4 pb-4">
-          <Link href={registerHref} className={primaryLink}>
-            {t`新規登録`}
-          </Link>
-          <p className="text-lg opacity-80">
-            {t`登録済みの方は`}{" "}
-            <Link href={loginHref} className="font-bold underline underline-offset-4">
-              {t`ログイン`}
-            </Link>
-          </p>
-        </div>
-      )}
-      {children}
-    </>
+    <div className="flex flex-col gap-5 px-4 pb-4">
+      <CourseList routes={routes} onChoose={chooseRoute} />
+      {signedIn ? null : <LockedNote loginHref={loginHref} registerHref={registerHref} />}
+    </div>
   );
 
   // Narrow: one sheet that shows the home content or the chosen course or stop. Wide: the sheet is always the
@@ -182,7 +164,7 @@ export function HomeMapView({
       data-dark={settings.dark}
       className="trail-map relative h-dvh w-full overflow-hidden [--tab-room:5.5rem] md:[--tab-room:0rem]"
     >
-      <HomeMapCanvasLoader
+      <MapScreenCanvasLoader
         routes={routes}
         routeId={routeId}
         stopId={stopId}
@@ -192,9 +174,9 @@ export function HomeMapView({
         settings={settings}
         mergeStops={mergeStops}
       />
-      <HomeSheet snap={snap} onSnap={setSnap} available={available} header={showDetailInSheet ? detailHeader : homeHeader}>
+      <MapSheet snap={snap} onSnap={setSnap} available={available} header={showDetailInSheet ? detailHeader : homeHeader}>
         {showDetailInSheet ? detailBody : homeBody}
-      </HomeSheet>
+      </MapSheet>
     </div>
 
     {wide && detailBody ? (
@@ -226,7 +208,7 @@ function SheetTitle({ back, backLabel, title, lang }: { back: () => void; backLa
 }
 
 /** The 19 courses as numbered buttons, so a course can be chosen without finding its area on the map. */
-function RouteChips({ routes, onChoose, selectedId }: { routes: HomeRoute[]; onChoose: (id: string) => void; selectedId: string | null }) {
+function RouteChips({ routes, onChoose, selectedId }: { routes: MapScreenRoute[]; onChoose: (id: string) => void; selectedId: string | null }) {
   const { t } = useLingui();
   const ordered = [...routes].sort((a, b) => a.order - b.order);
   return (
@@ -254,6 +236,45 @@ function RouteChips({ routes, onChoose, selectedId }: { routes: HomeRoute[]; onC
   );
 }
 
+/** Every course as a row, so a course can be chosen by its name without finding it on the map. */
+function CourseList({ routes, onChoose }: { routes: MapScreenRoute[]; onChoose: (id: string) => void }) {
+  const { t } = useLingui();
+  const ordered = [...routes].sort((a, b) => a.order - b.order);
+  return (
+    <ol className="flex flex-col">
+      {ordered.map((r) => (
+        <li key={r.id}>
+          <button
+            type="button"
+            onClick={() => onChoose(r.id)}
+            className="tap-target flex w-full items-center gap-3 border-t border-line/30 py-3 text-left hover:bg-surface"
+          >
+            <span
+              className={`grid size-10 shrink-0 place-items-center rounded-full border-[3px] text-lg font-bold tabular-nums ${r.status === "soon" ? "border-dashed border-line text-muted" : "border-brand"}`}
+            >
+              {r.order}
+            </span>
+            <span className="min-w-0 flex-1">
+              <span lang={r.nameLang} className={`block text-xl font-bold leading-snug ${r.status === "soon" ? "text-muted" : ""}`}>
+                {r.name}
+              </span>
+              {r.prefecture || r.municipality ? (
+                <span className="block text-lg text-muted">
+                  {r.prefecture ? <PrefectureName value={r.prefecture} /> : null}
+                  {r.prefecture && r.municipality ? " " : null}
+                  {r.municipality}
+                </span>
+              ) : null}
+              {r.status === "soon" ? <span className="block text-base font-bold text-muted">{t`準備中`}</span> : null}
+            </span>
+            <ChevronIcon />
+          </button>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 /** Navigation and stamps need an account: a visitor who is not signed in is told so, and offered the way in. */
 function LockedNote({ loginHref, registerHref }: { loginHref: string; registerHref: string }) {
   const { t } = useLingui();
@@ -277,7 +298,7 @@ function RoutePanel({
   registerHref,
   onChooseStop,
 }: {
-  route: HomeRoute;
+  route: MapScreenRoute;
   signedIn: boolean;
   loginHref: string;
   registerHref: string;
@@ -356,8 +377,8 @@ function StopPanel({
   registerHref,
   stampMock,
 }: {
-  route: HomeRoute;
-  stop: HomeStop;
+  route: MapScreenRoute;
+  stop: MapScreenStop;
   signedIn: boolean;
   locale: string;
   loginHref: string;

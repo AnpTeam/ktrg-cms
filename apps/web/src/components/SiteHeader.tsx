@@ -13,6 +13,8 @@ import { ThemeSwitcher } from "./ThemeSwitcher";
 
 const barButton =
   "inline-flex min-h-10 items-center gap-1.5 rounded-lg border-2 border-ink bg-paper px-2.5 text-base font-bold text-ink hover:bg-surface [&>svg]:size-5";
+// How far the signed-out home page is scrolled (in px) before its menu button appears.
+const SHOW_MENU_AFTER = 240;
 const wideButton =
   "tap-target flex w-full items-center justify-center rounded-xl px-5 text-lg font-bold";
 
@@ -24,7 +26,7 @@ const wideButton =
  * On the home page for someone who is signed out the bar takes no room and stays out of sight at first, so the
  * banner and the title get the whole top of the screen (the register and login buttons are right there). It
  * fades in once the visitor has scrolled a little, floating over the page. It never appears on a timer: a
- * button that shows up by itself moves under the finger.
+ * button that shows up by itself moves under the finger. On the map page the bar floats over the map, always.
  */
 export function SiteHeader({
   signedIn,
@@ -43,8 +45,17 @@ export function SiteHeader({
   const pathname = usePathname() ?? "/";
   const { open, setOpen } = useMenu();
   const [leaving, setLeaving] = useState(false);
-  // The home page is the map: the bar floats over it as one button, for everyone.
-  const onLanding = /^\/(ja|en)\/?$/.test(pathname);
+  const onMap = /^\/(ja|en)\/map\/?$/.test(pathname);
+  const onLanding = onMap || (!signedIn && /^\/(ja|en)\/?$/.test(pathname));
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    if (!onLanding || onMap) return;
+    const onScroll = () => setScrolled(window.scrollY > SHOW_MENU_AFTER);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [onLanding, onMap]);
+  const hidden = onLanding && !onMap && !scrolled && !open;
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -91,10 +102,15 @@ export function SiteHeader({
         <div aria-hidden="true" onClick={() => setOpen(false)} className="fixed inset-0 bg-black/50" />
       ) : null}
       <div
+        inert={hidden}
         className={
-          onLanding
+          onMap
             ? "pointer-events-none absolute inset-x-0 top-0 mx-auto flex max-w-xl items-center justify-between gap-2 px-3 py-3 md:hidden [&>*]:pointer-events-auto"
-            : "relative mx-auto flex max-w-xl items-center justify-between gap-2 px-3 pb-5 pt-3 md:hidden"
+            : onLanding
+              ? `absolute inset-x-0 top-0 mx-auto flex max-w-xl md:hidden items-center justify-between gap-2 bg-paper/95 px-3 py-2 transition-opacity motion-reduce:transition-none ${
+                  hidden ? "pointer-events-none opacity-0" : ""
+                }`
+              : "relative mx-auto flex max-w-xl items-center justify-between gap-2 px-3 pb-5 pt-3 md:hidden"
         }
       >
         <button

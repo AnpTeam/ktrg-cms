@@ -1,4 +1,4 @@
-import type { RouteArea } from "./home-map";
+import type { RouteArea } from "./map-screen";
 import { distanceMeters } from "./places";
 import type { RouteDetail, SpotDetail, SpotListItem } from "./content";
 import { route02Draft } from "./sample-route-02";

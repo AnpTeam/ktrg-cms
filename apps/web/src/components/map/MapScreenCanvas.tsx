@@ -6,7 +6,7 @@ import { useLingui } from "@lingui/react/macro";
 import type { GeoJSONSource, Map as MapLibreMap } from "maplibre-gl";
 import { WarningIcon } from "@/components/icons";
 import { clusterByPixels } from "@/lib/cluster";
-import { areaCollection, framePoints, namesThatFit, revealedRouteId, type HomeRoute } from "@/lib/home-map";
+import { areaCollection, framePoints, namesThatFit, revealedRouteId, type MapScreenRoute } from "@/lib/map-screen";
 import { boundsOf, lineFeature, mapStyle, markerKind, nextStopId, routeLineLayers, zoomLimits, type Position } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
 import { createClusterElement, createMarkerElement, createPinElement } from "./MapMarker";
@@ -14,7 +14,7 @@ import { createClusterElement, createMarkerElement, createPinElement } from "./M
 // The map of the home screen (WBS 3.2.10). Each course is an outlined rectangle with a pin in the middle that
 // carries its name. Zoom in over a course and its stops appear by themselves; choose a course and the others fold
 // away while its path and stops show. Everything is drawn here; what is chosen and what the sheet says live in
-// HomeMapView.
+// MapScreen.
 
 const AREAS = "areas";
 const DETAIL = "route-detail";
@@ -32,7 +32,7 @@ const centerOf = (points: readonly Position[]): Position => ({
   lng: points.reduce((n, p) => n + p.lng, 0) / points.length,
 });
 
-export function HomeMapCanvas({
+export function MapScreenCanvas({
   routes,
   routeId,
   stopId,
@@ -42,7 +42,7 @@ export function HomeMapCanvas({
   settings,
   mergeStops,
 }: {
-  routes: HomeRoute[];
+  routes: MapScreenRoute[];
   routeId: string | null;
   stopId: string | null;
   onSelectRoute: (id: string) => void;

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLingui } from "@lingui/react/macro";
 import { localePath } from "@/lib/rally";
-import { HomeIcon, MenuIcon, RouteIcon, StampIcon } from "./icons";
+import { HomeIcon, MapIcon, MenuIcon, RouteIcon, StampIcon } from "./icons";
 import { useMenu } from "./MenuProvider";
 
 // Tabs with an icon plus a word. On a phone: a floating rounded bar near the bottom, where the thumb is, with
@@ -17,6 +17,7 @@ export function TabBar() {
 
   const tabs = [
     { path: "", label: t`ホーム`, icon: <HomeIcon /> },
+    { path: "/map", label: t`マップ`, icon: <MapIcon /> },
     { path: "/routes", label: t`ルート`, icon: <RouteIcon /> },
     { path: "/stamps", label: t`スタンプ`, icon: <StampIcon /> },
   ];
@@ -29,7 +30,7 @@ export function TabBar() {
       aria-label={t`メインメニュー`}
       className="fixed inset-x-3 bottom-3 z-10 mb-[env(safe-area-inset-bottom)] rounded-full bg-surface p-1.5 shadow-lg md:sticky md:inset-x-auto md:bottom-auto md:top-0 md:mb-0 md:h-dvh md:w-44 md:shrink-0 md:self-start md:rounded-none md:bg-transparent md:p-0 md:px-2 md:pt-6 md:shadow-none lg:w-60"
     >
-      <ul className="mx-auto grid max-w-xl grid-cols-3 gap-1 md:flex md:max-w-none md:flex-col md:gap-2">
+      <ul className="mx-auto grid max-w-xl grid-cols-4 gap-1 md:flex md:max-w-none md:flex-col md:gap-2">
         {tabs.map(({ path, label, icon }) => {
           const href = localePath(i18n.locale, path);
           const active = path === "" ? pathname === href : pathname.startsWith(href);

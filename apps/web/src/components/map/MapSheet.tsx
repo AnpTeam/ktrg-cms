@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
-import { nextSnap, sheetHeightPx, snapAfterDrag, sheetSnaps, type SheetSnap } from "@/lib/home-map";
+import { nextSnap, sheetHeightPx, snapAfterDrag, sheetSnaps, type SheetSnap } from "@/lib/map-screen";
 
 /**
  * The bottom sheet of the home map (WBS 3.2.10). It rests at three heights, so the map stays in view while the
@@ -12,7 +12,7 @@ import { nextSnap, sheetHeightPx, snapAfterDrag, sheetSnaps, type SheetSnap } fr
  * `header` stays at the top of the sheet; `children` scroll under it. `available` is the room the sheet may use
  * (the map's height minus the tab bar), measured by the parent.
  */
-export function HomeSheet({
+export function MapSheet({
   snap,
   onSnap,
   available,
