@@ -67,6 +67,8 @@ export interface RouteDetail extends RouteSummary {
   spots: SpotListItem[];
   /** The path to draw on the map, in order; null until the CMS has the track (then the map joins the stops). */
   line: { lat: number; lng: number }[] | null;
+  /** The guidance video's address (the CMS `video_url`); only YouTube and Vimeo links are shown (`parseVideoUrl`). */
+  videoUrl: string | null;
 }
 
 export interface SpotDetail extends SpotListItem {

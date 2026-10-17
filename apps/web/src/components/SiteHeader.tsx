@@ -107,7 +107,7 @@ export function SiteHeader({
             ? `absolute inset-x-0 top-0 mx-auto flex max-w-xl md:hidden items-center justify-between gap-2 bg-paper/95 px-3 py-2 transition-opacity motion-reduce:transition-none ${
                 hidden ? "pointer-events-none opacity-0" : ""
               }`
-            : "relative mx-auto flex max-w-xl items-center justify-between gap-2 px-3 py-2 md:hidden"
+            : "relative mx-auto flex max-w-xl items-center justify-between gap-2 px-3 pb-5 pt-3 md:hidden"
         }
       >
         <button

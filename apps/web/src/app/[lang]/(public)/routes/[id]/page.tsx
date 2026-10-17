@@ -9,15 +9,17 @@ import { Notice } from "@/components/Notice";
 import { PrefectureName } from "@/components/PrefectureName";
 import { RouteSilhouette } from "@/components/RouteSketch";
 import { RouteStats } from "@/components/RouteStats";
-import { RowLink } from "@/components/RowLink";
+import { ElevationProfile } from "@/components/ElevationProfile";
+import { IntroVideo } from "@/components/IntroVideo";
+import { StopList } from "@/components/StopList";
 import { TrailMapLoader } from "@/components/map/TrailMapLoader";
 import type { MapStop } from "@/components/map/TrailMap";
-import { StatusWord } from "@/components/StatusWord";
 import { forViewer, getRoute, listPlacesForRoute, pickText, toMapPlace } from "@/lib/content";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
 import { localePath } from "@/lib/rally";
 import { mapSettingsCookie, parseMapSettings } from "@/lib/map-settings";
+import { parseVideoUrl } from "@/lib/video";
 import { getPrefs } from "@/lib/server-prefs";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ as?: string }> };
@@ -28,8 +30,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: route ? pickText(i18n.locale, route.nameJa, route.nameEn)?.text : undefined };
 }
 
-// Minimal route page: the header, the stats and the spot list, so that every spot
-// is reachable. History, video, elevation profile and notices are WBS 3.2.4.
+// Route page (WBS 3.2.4, 3.2.8): header with stat tiles, elevation profile, the guidance video when the CMS has one,
+// the map, and the stamp places as a numbered trail. History text and notices are not built yet.
 export default async function RouteDetailPage({ params, searchParams }: Props) {
   const i18n = await initLingui();
   const viewer = await getViewer(searchParams);
@@ -65,6 +67,8 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
   const settings = parseMapSettings((await cookies()).get(mapSettingsCookie)?.value);
   const places = (await listPlacesForRoute(route.order)).map((p) => toMapPlace(i18n.locale, p));
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
+  const video = parseVideoUrl(route.videoUrl);
+  const { stampedCount, spotCount } = route;
 
   return (
     <div className="flex flex-col gap-6">
@@ -96,6 +100,21 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
         ) : null}
       </header>
 
+      {route.sketch?.elevations ? (
+        <section className="px-4">
+          <ElevationProfile elevations={route.sketch.elevations} distanceKm={route.distanceKm} />
+        </section>
+      ) : null}
+
+      {video ? (
+        <section className="flex flex-col gap-3 px-4">
+          <h2 className="text-xl font-bold">
+            <Trans>ルートの動画</Trans>
+          </h2>
+          <IntroVideo video={video} title={pickText(i18n.locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
+        </section>
+      ) : null}
+
       {stops.length > 0 ? (
         <section className="px-4">
           <TrailMapLoader stops={stops} line={route.line} places={places} draft={draftPositions} settings={settings} mergeStops={prefs.mergeStops} placesFirst={prefs.placesOnMap} />
@@ -104,33 +123,19 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
 
       {route.spots.length > 0 ? (
         <section>
-          <h2 className="px-4 pb-3 text-xl font-bold">
-            <Trans>スタンプの場所</Trans>
-          </h2>
-          <ul>
-            {route.spots.map((spot, index) => (
-              <li key={spot.id}>
-                <RowLink
-                  href={to(`/spots/${spot.id}`)}
-                  title={
-                    <>
-                      {index + 1}. <Localized value={pickText(i18n.locale, spot.nameJa, spot.nameEn)} />
-                    </>
-                  }
-                  detail={
-                    <span className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                      <StatusWord status={spot.status} />
-                      {spot.stamped === true ? (
-                        <span className="font-bold text-ink">
-                          <Trans>押した</Trans>
-                        </span>
-                      ) : null}
-                    </span>
-                  }
-                />
-              </li>
-            ))}
-          </ul>
+          <div className="flex flex-wrap items-baseline justify-between gap-x-4 px-4 pb-2">
+            <h2 className="text-xl font-bold">
+              <Trans>スタンプの場所</Trans>
+            </h2>
+            {stampedCount !== null ? (
+              <p className="text-lg font-bold tabular-nums">
+                <Trans>
+                  スタンプ {stampedCount} / {spotCount}
+                </Trans>
+              </p>
+            ) : null}
+          </div>
+          <StopList spots={route.spots} hrefFor={(spot) => to(`/spots/${spot.id}`)} locale={i18n.locale} />
         </section>
       ) : null}
 

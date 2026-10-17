@@ -49,11 +49,11 @@ export function RouteStats({ route, compact = false }: { route: Stats; compact?:
   }
 
   return (
-    <dl className="mt-3 flex flex-wrap gap-x-8 gap-y-3">
+    <dl className="mt-4 grid grid-cols-2 gap-3">
       {items.map(({ label, value }) => (
-        <div key={label}>
+        <div key={label} className="rounded-2xl bg-surface px-4 py-3">
           <dt className="text-base text-muted">{label}</dt>
-          <dd className="whitespace-nowrap text-xl font-bold tabular-nums">{value}</dd>
+          <dd className="text-2xl font-bold tabular-nums">{value}</dd>
         </div>
       ))}
     </dl>

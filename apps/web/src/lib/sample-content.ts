@@ -149,6 +149,7 @@ const skeleton = (order: number, ja: string, en: string): RouteDetail => ({
   descriptionEn: null,
   spots: [],
   line: null,
+  videoUrl: null,
 });
 
 /** Filled-in routes replace their skeleton: same id, name prefixed （見本）. */
