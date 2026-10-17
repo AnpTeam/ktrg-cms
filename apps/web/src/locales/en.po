@@ -64,7 +64,7 @@ msgstr "No. {number}, next stamp"
 msgid "{number}番 まだ押していません"
 msgstr "No. {number}, not stamped yet"
 
-#: src/components/map/HomeMapCanvas.tsx:214
+#: src/components/map/HomeMapCanvas.tsx:215
 #: src/components/map/HomeMapView.tsx:237
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
@@ -380,7 +380,7 @@ msgstr "This device or browser can't use passkeys."
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "Passkeys cannot be used on this device or browser. Please try email instead."
 
-#: src/components/map/HomeMapCanvas.tsx:283
+#: src/components/map/HomeMapCanvas.tsx:284
 msgid "この端末では地図を表示できません。下の一覧から区間を選べます。"
 msgstr "This device can't show the map. You can choose a course from the list below."
 
@@ -459,7 +459,7 @@ msgstr "See your stamp card"
 msgid "スタンプの場所"
 msgstr "Stamp locations"
 
-#: src/components/map/HomeMapCanvas.tsx:259
+#: src/components/map/HomeMapCanvas.tsx:260
 #: src/components/map/TrailMap.tsx:264
 msgid "スタンプの場所 {text} がここに集まっています。押すと拡大します"
 msgstr "Stamp places {text} are gathered here. Tap to zoom in."
@@ -1062,7 +1062,7 @@ msgstr "Open the video page"
 msgid "動画を見る"
 msgstr "Play the video"
 
-#: src/components/map/HomeMapCanvas.tsx:227
+#: src/components/map/HomeMapCanvas.tsx:228
 msgid "区間 {text} がここに集まっています。押すと拡大します"
 msgstr "Courses {text} are gathered here. Press to zoom in"
 
@@ -1112,7 +1112,7 @@ msgstr "Map appearance"
 msgid "地図の見た目の設定"
 msgstr "Map style settings"
 
-#: src/components/map/HomeMapCanvas.tsx:292
+#: src/components/map/HomeMapCanvas.tsx:293
 #: src/components/map/HomeMapCanvasLoader.tsx:12
 #: src/components/map/TrailMap.tsx:427
 #: src/components/map/TrailMapLoader.tsx:12
@@ -1217,7 +1217,7 @@ msgstr "How: press the button near the place (uses your location)"
 msgid "押すと、アカウントと、集めたスタンプなどの記録を、3日後にすべて消します。"
 msgstr "If you press this, your account and your records, such as your stamps, will all be erased after 3 days."
 
-#: src/components/map/HomeMapCanvas.tsx:309
+#: src/components/map/HomeMapCanvas.tsx:310
 #: src/components/map/TrailMap.tsx:441
 msgid "拡大"
 msgstr "Zoom in"
@@ -1461,7 +1461,7 @@ msgstr "Sutra mounds"
 msgid "経塚ラリー"
 msgstr "Sutra mound rally"
 
-#: src/components/map/HomeMapCanvas.tsx:309
+#: src/components/map/HomeMapCanvas.tsx:310
 #: src/components/map/TrailMap.tsx:444
 msgid "縮小"
 msgstr "Zoom out"
@@ -1516,7 +1516,7 @@ msgstr "Set up how things look?"
 msgid "見やすさを選びましょう"
 msgstr "Choose how it looks"
 
-#: src/components/map/HomeMapCanvas.tsx:299
+#: src/components/map/HomeMapCanvas.tsx:300
 msgid "見本の位置（目安です）"
 msgstr "Sample positions (rough)"
 

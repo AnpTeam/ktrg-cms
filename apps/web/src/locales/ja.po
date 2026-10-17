@@ -64,7 +64,7 @@ msgstr "{number}番 つぎのスタンプ"
 msgid "{number}番 まだ押していません"
 msgstr "{number}番 まだ押していません"
 
-#: src/components/map/HomeMapCanvas.tsx:214
+#: src/components/map/HomeMapCanvas.tsx:215
 #: src/components/map/HomeMapView.tsx:237
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
@@ -380,7 +380,7 @@ msgstr "この端末・ブラウザではパスキーを使えません。"
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 
-#: src/components/map/HomeMapCanvas.tsx:283
+#: src/components/map/HomeMapCanvas.tsx:284
 msgid "この端末では地図を表示できません。下の一覧から区間を選べます。"
 msgstr "この端末では地図を表示できません。下の一覧から区間を選べます。"
 
@@ -459,7 +459,7 @@ msgstr "スタンプカードを見る"
 msgid "スタンプの場所"
 msgstr "スタンプの場所"
 
-#: src/components/map/HomeMapCanvas.tsx:259
+#: src/components/map/HomeMapCanvas.tsx:260
 #: src/components/map/TrailMap.tsx:264
 msgid "スタンプの場所 {text} がここに集まっています。押すと拡大します"
 msgstr "スタンプの場所 {text} がここに集まっています。押すと拡大します"
@@ -1062,7 +1062,7 @@ msgstr "動画のページをひらく"
 msgid "動画を見る"
 msgstr "動画を見る"
 
-#: src/components/map/HomeMapCanvas.tsx:227
+#: src/components/map/HomeMapCanvas.tsx:228
 msgid "区間 {text} がここに集まっています。押すと拡大します"
 msgstr "区間 {text} がここに集まっています。押すと拡大します"
 
@@ -1112,7 +1112,7 @@ msgstr "地図の見た目"
 msgid "地図の見た目の設定"
 msgstr "地図の見た目の設定"
 
-#: src/components/map/HomeMapCanvas.tsx:292
+#: src/components/map/HomeMapCanvas.tsx:293
 #: src/components/map/HomeMapCanvasLoader.tsx:12
 #: src/components/map/TrailMap.tsx:427
 #: src/components/map/TrailMapLoader.tsx:12
@@ -1217,7 +1217,7 @@ msgstr "押し方: 場所の近くで、ボタンを押します（位置情報�
 msgid "押すと、アカウントと、集めたスタンプなどの記録を、3日後にすべて消します。"
 msgstr "押すと、アカウントと、集めたスタンプなどの記録を、3日後にすべて消します。"
 
-#: src/components/map/HomeMapCanvas.tsx:309
+#: src/components/map/HomeMapCanvas.tsx:310
 #: src/components/map/TrailMap.tsx:441
 msgid "拡大"
 msgstr "拡大"
@@ -1461,7 +1461,7 @@ msgstr "経塚"
 msgid "経塚ラリー"
 msgstr "経塚ラリー"
 
-#: src/components/map/HomeMapCanvas.tsx:309
+#: src/components/map/HomeMapCanvas.tsx:310
 #: src/components/map/TrailMap.tsx:444
 msgid "縮小"
 msgstr "縮小"
@@ -1516,7 +1516,7 @@ msgstr "見やすさを設定しませんか"
 msgid "見やすさを選びましょう"
 msgstr "見やすさを選びましょう"
 
-#: src/components/map/HomeMapCanvas.tsx:299
+#: src/components/map/HomeMapCanvas.tsx:300
 msgid "見本の位置（目安です）"
 msgstr "見本の位置（目安です）"
 
