@@ -126,44 +126,30 @@ const R4 = { id: "sample-r4", name: "（見本）大福山から雲山峰" };
 const r3Spots = plainSpots(R3.id, R3.name, 6, 6); // complete
 const r4Spots = plainSpots(R4.id, R4.name, 9, 3); // in progress
 
-// Route 16 (葛城の道, Gose in Nara): DRAFT text copied by the user on 2026-10-17 from the foundation's other app (the
-// NIS version). It is the foundation's own content, but its source and our right to reuse it still have to be
-// confirmed (the manager or the foundation) and kept in the source record; the English names are that app's. There are
-// no coordinates, because none may be taken from anywhere but an authoritative source (CLAUDE.md), so this course
-// shows its stop list but no stops on the map. The walk starts at the Teradabashi bus stop, passes Kintetsu-Gose
-// station and ends at JR Tamade station (transit points, not stamp places). Shown only when sample content is on.
+// Route 16 (葛城の道, Gose in Nara): a DEV placeholder so the Nara filter and the Nara emblem can be tried. Only the
+// course name, its place (Gose city) and the plain names of its eight stops, in walking order, are kept; every text
+// that describes the course or a stop was removed (it came from the foundation's other app and our right to reuse it
+// is not settled), and there are no English names or coordinates yet. Descriptions are to be written by us from
+// official sources, and coordinates entered from an authoritative source (CLAUDE.md). Shown only when sample content
+// is on. The walk starts at a bus stop and ends at a station; those are transit points, not stamp places.
 const R16 = { id: "sample-r16", nameJa: "葛城の道", nameEn: "Katsuragi no Michi Route" };
-const r16Stops: readonly [string, string, string][] = [
-  ["葛木水分神社（葛城第二十二経塚）", "Katsuragi Mikumari Shrine", "御所市関谷にある神社で、祭神は葛城山の灌漑用水を司る水分神。"],
-  [
-    "中村家住宅（重要文化財）",
-    "Nakamura Residence",
-    "本邸は御所市では現存するなかで最も古く、かつ重要な建築である。中世吐田の城主吐田越前守の子孫中村正勝が慶長頃に建てたと推定される。昭和43年に重要文化財に指定された。",
-  ],
-  ["郵便名柄館", "Nagara Post Office (museum)", "100年ほど前の旧長柄郵便局を改装したカフェ。ランチ以外でも郵便資料館もあり、郵便の歴史も見学できる。"],
-  ["葛城一言主神社", "Katsuragi Hitokotonushi Shrine", "全国にある一言主神社の総本社で、地元では一言で何でも叶えてくれる「いちごんさん」として親しまれている。"],
-  ["九品寺（御所市）", "Kuhonji Temple", "御所市楢原にある浄土宗の寺院で、1600体以上の「千体石仏」で有名。"],
-  [
-    "六地蔵石仏",
-    "Six Jizo Stone Statues",
-    "村人の強い信仰心から大きな石に刻んだものと考えられ、向かって右から天上道（日光菩薩）人間道（除蓋障菩薩）修羅道（持地菩薩）畜生道（宝印菩薩）餓鬼道（宝珠菩薩）地獄道（壇蛇菩薩）となっています。",
-  ],
-  ["第二十三経塚", "The 23rd Sutra Mound", "役小角が法華経八巻二十八品を埋納したとされる経塚、葛城二十八宿のひとつ。"],
-  [
-    "吉祥草寺",
-    "Kisshosouji Temple",
-    "茅原の地は、修験道の開祖役行者神変大菩薩生誕の地とされ、吉祥草寺は役行者（役小角）の開基と伝えられています。西には若き日の小角の修行の場となった葛城山系が聳えています。",
-  ],
+const r16Names = [
+  "葛木水分神社（葛城第二十二経塚）",
+  "中村家住宅（重要文化財）",
+  "郵便名柄館",
+  "葛城一言主神社",
+  "九品寺（御所市）",
+  "六地蔵石仏",
+  "第二十三経塚",
+  "吉祥草寺",
 ];
-const r16Spots: SpotDetail[] = r16Stops.map(([nameJa, nameEn, descriptionJa], i) =>
+const r16Spots: SpotDetail[] = r16Names.map((nameJa, i) =>
   spot({
     id: `${R16.id}-s${i + 1}`,
     routeId: R16.id,
     routeNameJa: R16.nameJa,
     routeNameEn: R16.nameEn,
     nameJa,
-    nameEn,
-    descriptionJa,
     stamped: i < 3, // invented progress, for the signed-in preview only
   }),
 );
@@ -282,8 +268,6 @@ const rich: Record<number, Partial<RouteDetail>> = {
     nameEn: R16.nameEn,
     prefecture: "nara",
     municipality: "御所市",
-    descriptionJa:
-      "大和葛城山の麓は古代の歴史が息づく場所で、葛城の道が整備されています。古来、大和葛城山だけでなく金剛山も葛城山（葛城岳）と呼ばれていました。本コースでは、金剛山麓にある第二十二経塚および第二十三経塚をめぐり、葛城の道を散策します。あわせて、少し足を延ばし、役行者生誕の地とされる茅原の吉祥草寺も訪れます。",
     spotCount: r16Spots.length,
     stampedCount: 3,
     spots: r16Spots.map(listItem),
