@@ -7,6 +7,7 @@ import { useLingui } from "@lingui/react/macro";
 import { KeyIcon, MailIcon } from "@/components/icons";
 import { requestEmailCode, signUpWithPasskey, verifyEmailCode, type SignupProfile } from "@/lib/auth-client";
 import { hasName, NAME_MAX, safeNextPath, type AuthFailure, type Origin } from "@/lib/auth-flow";
+import { PrivacyNote } from "@/components/PrivacyNote";
 import { AuthError, ChoiceCard, inputClass, OriginPicker, primaryButton, secondaryButton } from "./authUi";
 import { EmailCodeStep } from "./EmailCodeStep";
 
@@ -94,6 +95,7 @@ export function RegisterFlow({ next, loginHref }: { next?: string; loginHref: st
           <span className="text-base font-normal text-muted">{t`ニックネームでもかまいません。`}</span>
         </label>
         <OriginPicker value={origin} onChange={setOrigin} />
+        <PrivacyNote />
         {method === "email" ? (
           <label className="flex flex-col gap-2 text-lg font-bold">
             {t`メールアドレス`}

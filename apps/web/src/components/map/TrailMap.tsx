@@ -382,7 +382,7 @@ export function TrailMap({
 
   if (failed) {
     return (
-      <p className="rounded-xl border-2 border-line bg-surface p-4 text-lg">
+      <p className="rounded-2xl bg-surface p-4 text-lg">
         {t`この端末では地図を表示できません。下の一覧から場所を選べます。`}
       </p>
     );

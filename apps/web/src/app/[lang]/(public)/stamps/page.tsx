@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { Trans } from "@lingui/react/macro";
+import { ChevronIcon } from "@/components/icons";
 import { Notice } from "@/components/Notice";
 import { ProfileCard } from "@/components/ProfileCard";
 import { FeaturedRally, RallyCard } from "@/components/RallyViews";
@@ -8,6 +10,7 @@ import { listRallies } from "@/lib/content";
 import { forRallyViewer, otherRallies, pickFeatured } from "@/lib/rally-model";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
+import { localePath } from "@/lib/rally";
 
 // The stamp page: who you are, the rally you stamped in most recently (with how many are left), and
 // below it every other rally: the 31 sutra mound places as one rally and one rally for each course.
@@ -25,8 +28,17 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
         <Trans>スタンプ</Trans>
       </h1>
 
+      {/* How to play lives here, with the stamps, and nowhere else. */}
+      <Link
+        href={localePath(i18n.locale, "/guide")}
+        className="tap-target mx-4 flex items-center justify-between rounded-2xl bg-surface px-5 text-xl font-bold text-accent"
+      >
+        <Trans>遊び方</Trans>
+        <ChevronIcon />
+      </Link>
+
       {/* Signed out: a reason to sign in and the rallies, never a false "0 stamps". */}
-      {viewer.signedIn ? <ProfileCard name={viewer.name} origin={viewer.origin} /> : <SignInPrompt />}
+      {viewer.signedIn ? <ProfileCard publicId={viewer.publicId} deletionDueAt={viewer.deletionDueAt} locale={i18n.locale} name={viewer.name} origin={viewer.origin} ageRange={viewer.ageRange} gender={viewer.gender} /> : <SignInPrompt />}
 
       {featured ? <FeaturedRally rally={featured} locale={i18n.locale} signedIn={viewer.signedIn} /> : null}
 

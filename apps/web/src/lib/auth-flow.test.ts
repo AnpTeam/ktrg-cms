@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { failureFromApi, hasName, origins, safeNextPath } from "./auth-flow";
+import { ageRanges, failureFromApi, genders, hasName, origins, safeNextPath, formatPublicId } from "./auth-flow";
 
 describe("failureFromApi", () => {
   test("known API codes pass through", () => {
@@ -44,5 +44,17 @@ describe("sign-up choices", () => {
 
   test("the origin keys are the API's", () => {
     expect(origins).toEqual(["osaka", "wakayama", "nara", "other_japan", "overseas"]);
+  });
+});
+
+describe("about-you choices", () => {
+  test("the age bands and gender answers are the API's, and 'unspecified' is an answer", () => {
+    expect(ageRanges).toEqual(["under20", "20s", "30s", "40s", "50s", "60s", "70plus"]);
+    expect(genders).toEqual(["female", "male", "other", "unspecified"]);
+  });
+
+  test("the public ID is shown as two groups of four digits", () => {
+    expect(formatPublicId("00048271")).toBe("0004-8271");
+    expect(formatPublicId("abc")).toBe("abc");
   });
 });

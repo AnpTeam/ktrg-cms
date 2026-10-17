@@ -5,6 +5,7 @@ import {
   nextSlot,
   otherRallies,
   pickFeatured,
+  sealName,
   stampedNumbers,
   type RallyItem,
 } from "./rally-model";
@@ -92,5 +93,16 @@ describe("forRallyViewer", () => {
     expect(r.lastStampedAt).toBeNull();
     expect(r.slots.every((s) => s.stamped === null)).toBe(true);
     expect(r.slots.map((s) => s.nameJa)).toEqual(["場所1", "場所2", "場所3"]); // the names stay: they are public
+  });
+});
+
+describe("sealName", () => {
+  test("shows only the chapter: the part after the last ・", () => {
+    expect(sealName("友ヶ島・序品")).toBe("序品");
+    expect(sealName("犬鳴山七宝龍寺鈴杵ヶ嶽・五百弟子受記品")).toBe("五百弟子受記品");
+  });
+
+  test("a name with no separator is shown as it is", () => {
+    expect(sealName("経塚")).toBe("経塚");
   });
 });

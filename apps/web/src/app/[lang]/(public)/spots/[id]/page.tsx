@@ -31,7 +31,7 @@ export default async function SpotPage({ params, searchParams }: Props) {
           <Trans>ルートにもどる</Trans>
         </BackLink>
       </div>
-      <SpotSheet spot={spot} locale={i18n.locale} />
+      <SpotSheet spot={spot} locale={i18n.locale} loginHref={`${localePath(i18n.locale, "/login")}?next=${encodeURIComponent(localePath(i18n.locale, `/spots/${spot.id}`))}`} />
     </div>
   );
 }

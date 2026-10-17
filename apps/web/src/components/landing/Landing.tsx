@@ -1,58 +1,84 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
+import { IntroVideo } from "@/components/IntroVideo";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { Localized } from "@/components/Localized";
 import { Notice } from "@/components/Notice";
-import { RouteIcon, StampIcon, UserIcon } from "@/components/icons";
-import { Ruby } from "@/components/Ruby";
+import { PrefectureName } from "@/components/PrefectureName";
+import { RouteSilhouette } from "@/components/RouteSketch";
 import { SectionBanner } from "@/components/SectionBanner";
-import { StampFace } from "@/components/StampFace";
+import { StampGrid } from "@/components/StampGrid";
 import { TrailNode } from "@/components/TrailNode";
+import { BannerCarousel } from "@/components/landing/BannerCarousel";
+import { TrailNotices } from "@/components/landing/TrailNotices";
+import type { BannerSlide } from "@/lib/banners";
+import { pickText, type RouteSummary } from "@/lib/content";
+import type { TrailNotice } from "@/lib/notices";
 import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
+import type { EmbedVideo } from "@/lib/video";
 
 const primary =
   "tap-target flex min-h-14 items-center justify-center rounded-xl bg-brand px-6 text-xl font-bold text-on-brand";
 const secondary =
   "tap-target flex min-h-14 items-center justify-center rounded-xl border-2 border-brand bg-surface px-6 text-xl font-bold text-accent hover:bg-paper";
-const panel = "mx-4 rounded-xl border-2 border-brand/40 bg-surface p-4";
+// Panels have no outline: a light grey fill with round corners, and room around them.
+const panel = "mx-4 rounded-3xl bg-surface p-5";
+
+// The few stamp slots drawn in the example card; they are an illustration, never anyone's progress.
+const EXAMPLE_SLOTS = 8;
+const EXAMPLE_STAMPED: ReadonlySet<number> = new Set([1, 2, 3]);
+const PREVIEW_ROUTES = 3;
 
 /**
- * The first screen for someone who is not signed in: what this is, where the trail goes, what the
- * app does, and how to start. Plain words, no photos (none are cleared for use yet), no invented
- * facts: the numbers come from `lib/rally`, the place names from the course list.
- * `to` adds the language prefix to a path.
+ * The first screen for someone who is not signed in. From the top: what this is and the way west to east,
+ * dated trail notices (only when there are any), the stamp card, the first courses, an intro video (only when
+ * one is set), what Katsuragi Shugen is (the official text), and a footer with the source.
+ *
+ * No photos (none are cleared for use yet) and no invented facts: the numbers come from `lib/rally`, the
+ * course names from the course list, the Katsuragi text from the official Japan Heritage site. `to` adds the
+ * language prefix to a path.
  */
-export function Landing({ to }: { to: (path: string) => string }) {
+export function Landing({
+  to,
+  locale,
+  routes,
+  notices,
+  introVideo,
+  slides,
+  blogUrl,
+}: {
+  to: (path: string) => string;
+  locale: string;
+  routes: RouteSummary[];
+  notices: TrailNotice[];
+  introVideo: EmbedVideo | null;
+  slides: BannerSlide[];
+  blogUrl: string | null;
+}) {
+  const firstRoutes = [...routes].sort((a, b) => a.order - b.order).slice(0, PREVIEW_ROUTES);
+
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-10 pt-4">
+      {slides.length > 0 ? <BannerCarousel slides={slides} /> : null}
+
       <section className="px-4">
-        <div className="frame p-4">
-          <div className="flex items-start justify-between gap-4">
-            <h1 className="font-serif text-4xl font-bold leading-snug">
-              <Ruby reading="かつらぎしゅげん">
-                <Trans>葛城修験</Trans>
-              </Ruby>
-            </h1>
-            {/* The stamp is the thing you collect here, so it is also the mark of the page. */}
-            <StampFace state="stamped" className="h-20 w-20 shrink-0 -rotate-3 text-2xl font-bold">
-              経塚
-            </StampFace>
-          </div>
-          <p className="mt-3 font-serif text-2xl font-bold leading-snug">
-            <Trans>歩いた場所で、スタンプを押そう。</Trans>
+        <div className="frame p-5">
+          <h1 className="font-serif text-4xl font-bold leading-snug text-accent">
+            <Trans>葛城修験</Trans>
+          </h1>
+          <p className="mt-2 font-serif text-2xl font-bold leading-snug">
+            <Trans>「祈り」を見つめる再発見の旅</Trans>
           </p>
-          <p className="mt-3 max-w-prose text-xl leading-8">
-            <Trans>
-              大阪・和歌山・奈良にまたがる、<span className="whitespace-nowrap">約{TRAIL_KM}km</span>の山の道。スタンプを集めながら、ゆっくり歩けます。
-            </Trans>
-          </p>
-          <div className="mt-5 flex flex-col gap-3">
+
+          <div className="mt-6 flex flex-col gap-3">
             <Link href={to("/register")} className={primary}>
-              <Trans>新規登録（無料）</Trans>
+              <Trans>新規登録</Trans>
             </Link>
             <Link href={to("/routes")} className={secondary}>
               <Trans>ルートをさがす</Trans>
             </Link>
-            <p className="text-lg">
+            <p className="text-lg opacity-80">
               <Trans>登録済みの方は</Trans>{" "}
               <Link href={to("/login")} className="font-bold">
                 <Trans>ログイン</Trans>
@@ -62,48 +88,66 @@ export function Landing({ to }: { to: (path: string) => string }) {
         </div>
       </section>
 
-      <section className="flex flex-col gap-3">
-        <div className="px-4">
-          <SectionBanner>
-            <Trans>歩く道</Trans>
-          </SectionBanner>
-        </div>
-        <div className={panel}>
-          <p className="max-w-prose text-lg leading-8">
-            <Trans>和歌山県の友ヶ島から、大阪府をとおり、奈良県へ。西から東へ、つながる道です。</Trans>
-          </p>
-          <ol className="mt-5">
-            <TrailStop order={1} last={false} href={to("/routes?pref=wakayama")} title={<Trans>和歌山県</Trans>}>
-              <Trans>友ヶ島と加太のあたりから、はじまります。</Trans>
-            </TrailStop>
-            <TrailStop order={2} last={false} href={to("/routes?pref=osaka")} title={<Trans>大阪府</Trans>}>
-              <Trans>山なみに沿って、東へ進みます。</Trans>
-            </TrailStop>
-            <TrailStop order={3} last href={to("/routes?pref=nara")} title={<Trans>奈良県</Trans>}>
-              <Trans>二上山や金剛山のあたりを通って、ゴールへ。</Trans>
-            </TrailStop>
-          </ol>
-        </div>
-      </section>
+      <TrailNotices notices={notices} locale={locale} blogUrl={blogUrl} />
 
       <section className="flex flex-col gap-3">
         <div className="px-4">
           <SectionBanner>
-            <Trans>このアプリでできること</Trans>
+            <Trans>スタンプカード</Trans>
           </SectionBanner>
         </div>
-        <ul className={`${panel} flex flex-col gap-5`}>
-          <Feature icon={<RouteIcon />} title={<Trans>コースを見る</Trans>}>
-            <Trans>地図で、歩く道とスタンプの場所を確認できます。</Trans>
-          </Feature>
-          <Feature icon={<StampIcon />} title={<Trans>スタンプを押す</Trans>}>
-            <Trans>その場所に着いたら、ボタンを押すだけ。アプリが場所を確かめて、スタンプを押します。</Trans>
-          </Feature>
-          <Feature icon={<UserIcon />} title={<Trans>記録を残す</Trans>}>
-            <Trans>登録すると、集めたスタンプが記録されます。</Trans>
-          </Feature>
-        </ul>
+        <div className={panel}>
+          <p className="text-xl font-bold leading-snug">
+            <Trans>着いたらボタンを押すだけ。場所を確かめて、スタンプがたまります。</Trans>
+          </p>
+          {/* An illustration: hidden from screen readers so it is not read out as someone's progress. */}
+          <div aria-hidden="true" className="mt-4">
+            <StampGrid total={EXAMPLE_SLOTS} stamped={EXAMPLE_STAMPED} showNext={false} columns={4} />
+          </div>
+          <p className="mt-3 text-lg text-muted">
+            <Trans>これは見本です。経塚のスタンプは全{TOTAL_STAMPS}か所。</Trans>
+          </p>
+        </div>
       </section>
+
+      {firstRoutes.length > 0 ? (
+        <section className="flex flex-col gap-3">
+          <div className="px-4">
+            <SectionBanner>
+              <Trans>歩く道</Trans>
+            </SectionBanner>
+          </div>
+          <div className={panel}>
+            <ol>
+              {firstRoutes.map((route, i) => (
+                <PreviewStop
+                  key={route.id}
+                  route={route}
+                  locale={locale}
+                  last={i === firstRoutes.length - 1}
+                  href={to(`/routes/${route.id}`)}
+                />
+              ))}
+            </ol>
+            <Link href={to("/routes")} className={`${secondary} mt-4`}>
+              <Trans>全{TOTAL_ROUTES}区間を見る</Trans>
+            </Link>
+          </div>
+        </section>
+      ) : null}
+
+      {introVideo ? (
+        <section className="flex flex-col gap-3">
+          <div className="px-4">
+            <SectionBanner>
+              <Trans>動画で見る</Trans>
+            </SectionBanner>
+          </div>
+          <div className="px-4">
+            <IntroVideo video={introVideo} title={locale === "ja" ? "葛城修験の紹介動画" : "Katsuragi Shugen introduction video"} />
+          </div>
+        </section>
+      ) : null}
 
       <section className="flex flex-col gap-3">
         <div className="px-4">
@@ -112,12 +156,13 @@ export function Landing({ to }: { to: (path: string) => string }) {
           </SectionBanner>
         </div>
         <div className={panel}>
+          {/* The official Japan Heritage story, as written there; the source is credited in the footer. */}
           <p className="max-w-prose text-lg leading-8">
             <Trans>
-              葛城の山々は、山で心と体をきたえる「修験道（しゅげんどう）」のはじまりの地といわれます。役行者（えんのぎょうじゃ）が、お経を納めたと伝わる場所が「経塚（きょうづか）」です。経塚は、お経の28の章にあたる28番まであり、3つの番号には2か所ずつあるので、全部で31か所です。
+              大阪と和歌山の府県境を東西に走る和泉山脈。大阪と奈良の府県境に南北に聳える金剛山地。この峰々一帯は「葛城」と呼ばれ、多くの神々が住まう山として人々に崇められておりました。そして修験道の開祖である役行者が最初の修行を積んだのがこの地です。
             </Trans>
           </p>
-          <dl className="mt-4 border-t-2 border-brand/40">
+          <dl className="mt-4">
             <Fact term={<Trans>コース</Trans>} value={<Trans>全{TOTAL_ROUTES}区間</Trans>} />
             <Fact term={<Trans>長さ</Trans>} value={<Trans>約{TRAIL_KM}km</Trans>} />
             <Fact term={<Trans>経塚</Trans>} value={<Trans>{TOTAL_STAMPS}か所</Trans>} />
@@ -156,66 +201,83 @@ export function Landing({ to }: { to: (path: string) => string }) {
         </Notice>
       </section>
 
-      <section className="flex flex-col gap-3 px-4 pb-4">
+      <section className="flex flex-col gap-3 px-4">
         <SectionBanner>
           <Trans>さあ、はじめましょう</Trans>
         </SectionBanner>
         <div className="flex flex-col gap-3">
           <Link href={to("/register")} className={primary}>
-            <Trans>新規登録（無料）</Trans>
+            <Trans>新規登録</Trans>
           </Link>
           <Link href={to("/routes")} className={secondary}>
             <Trans>ルートをさがす</Trans>
           </Link>
         </div>
       </section>
+
+      <footer className="flex flex-col gap-4 border-t-2 border-line px-4 pb-6 pt-6">
+        <p className="text-lg leading-7">
+          <Trans>「葛城修験とは」の文章は、日本遺産「葛城修験」公式サイトによります。歴史や観光の情報も、公式サイトで見られます。</Trans>
+        </p>
+        <a
+          href="https://katsuragisyugen-nihonisan.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="tap-target inline-flex items-center text-lg font-bold underline"
+        >
+          <Trans>公式サイトをひらく</Trans>
+        </a>
+        <LocaleSwitcher />
+      </footer>
     </div>
   );
 }
 
-/** One stop on the page's own little trail: a node, a line down to the next, and a link. */
-function TrailStop({
-  order,
-  last,
-  href,
-  title,
-  children,
-}: {
-  order: number;
-  last: boolean;
-  href: string;
-  title: ReactNode;
-  children: ReactNode;
-}) {
+/** One of the first courses on the page's own little trail: a node, a line down to the next, its name. */
+function PreviewStop({ route, locale, last, href }: { route: RouteSummary; locale: string; last: boolean; href: string }) {
+  const soon = route.status === "soon";
+  const body = (
+    <span className="flex items-start justify-between gap-3">
+      <span className="min-w-0">
+        <span className={`block text-xl font-bold leading-snug ${soon ? "text-muted" : "text-accent"}`}>
+          <Localized value={pickText(locale, route.nameJa, route.nameEn)} />
+        </span>
+        {route.prefecture || route.municipality ? (
+          <span className="mt-1 block text-lg text-muted">
+            {route.prefecture ? <PrefectureName value={route.prefecture} /> : null}
+            {route.prefecture && route.municipality ? " " : null}
+            {route.municipality}
+          </span>
+        ) : null}
+        {soon ? (
+          <span className="mt-1 inline-block rounded-lg border-2 border-dashed border-line px-2 text-base font-bold text-muted">
+            <Trans>準備中</Trans>
+          </span>
+        ) : null}
+      </span>
+      {route.sketch ? <RouteSilhouette sketch={route.sketch} /> : null}
+    </span>
+  );
   return (
     <li className="relative pb-6 pl-16 last:pb-0">
       <span className="absolute left-0 top-0">
-        <TrailNode state="neutral" order={order} share={0} />
+        <TrailNode state={soon ? "soon" : "neutral"} order={route.order} share={0} />
       </span>
       {last ? null : <span aria-hidden="true" className="absolute bottom-0 left-[21px] top-11 w-0.5 bg-brand" />}
-      <Link href={href} className="tap-target block">
-        <span className="block text-xl font-bold text-accent">{title}</span>
-        <span className="mt-1 block text-lg leading-7 text-muted">{children}</span>
-      </Link>
-    </li>
-  );
-}
-
-function Feature({ icon, title, children }: { icon: ReactNode; title: ReactNode; children: ReactNode }) {
-  return (
-    <li className="flex items-start gap-4">
-      <span className="mt-1 shrink-0 rounded-full bg-brand p-2 text-on-brand">{icon}</span>
-      <div>
-        <p className="text-xl font-bold text-accent">{title}</p>
-        <p className="mt-1 text-lg leading-8">{children}</p>
-      </div>
+      {soon ? (
+        <div className="py-1">{body}</div>
+      ) : (
+        <Link href={href} className="tap-target block">
+          {body}
+        </Link>
+      )}
     </li>
   );
 }
 
 function Fact({ term, value }: { term: ReactNode; value: ReactNode }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 border-b-2 border-brand/40 py-3">
+    <div className="flex items-baseline justify-between gap-4 border-t border-line/30 py-3">
       <dt className="text-lg text-muted">{term}</dt>
       <dd className="text-2xl font-bold tabular-nums text-accent">{value}</dd>
     </div>

@@ -6,7 +6,10 @@ import { ProgressSummary } from "@/components/ProgressSummary";
 import { RowLink } from "@/components/RowLink";
 import { Ruby } from "@/components/Ruby";
 import Link from "next/link";
-import { forViewer, listRoutes } from "@/lib/content";
+import { bannerSlides, slidesToShow } from "@/lib/banners";
+import { forViewer, listRoutes, sampleContentEnabled } from "@/lib/content";
+import { listNotices } from "@/lib/notices";
+import { parseVideoUrl } from "@/lib/video";
 import { getPrefs } from "@/lib/server-prefs";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
@@ -18,7 +21,16 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const to = (path: string) => localePath(i18n.locale, path);
 
   // Not signed in: the landing page for a first-time visitor. No progress is shown at all.
-  if (!viewer.signedIn) return <Landing to={to} />;
+  if (!viewer.signedIn) {
+    const [routes, notices] = await Promise.all([listRoutes(), listNotices()]);
+    // The intro video is set by the deployment (a YouTube or Vimeo link); with none, the section is left out.
+    const introVideo = parseVideoUrl(process.env.INTRO_VIDEO_URL);
+    const slides = slidesToShow(bannerSlides, sampleContentEnabled());
+    const blogUrl = process.env.BLOG_URL ?? null;
+    return (
+      <Landing to={to} locale={i18n.locale} routes={routes} notices={notices} introVideo={introVideo} slides={slides} blogUrl={blogUrl} />
+    );
+  }
 
   // Signed in: progress across everything that has published spots.
   const routes = (await listRoutes()).map((r) => forViewer(r, viewer));
@@ -50,7 +62,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       {prefs.setupDone ? null : (
         <Link
           href={to("/welcome")}
-          className="tap-target mx-4 flex flex-col rounded-xl border-2 border-brand bg-surface p-4"
+          className="tap-target mx-4 flex flex-col rounded-3xl bg-surface p-5"
         >
           <span className="text-xl font-bold text-accent">
             <Trans>見やすさを設定しませんか</Trans>

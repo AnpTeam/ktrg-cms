@@ -31,6 +31,12 @@
     "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
   /* No serif any more: font-serif is the same clean sans, so older classes need no edit. */
   --font-serif: var(--font-sans);
+
+  /* A little rounder than Tailwind's defaults (12px was the largest in common use): 12, 16, 20, 24 px. */
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.5rem;
 }
 
 
@@ -46,6 +52,32 @@
     font-size: 100%;
     -webkit-text-size-adjust: 100%;
     color-scheme: light;
+    /* A thin, quiet scrollbar in the page's own colours (the grey system bar looked heavy). It is still there
+       and still visible: hiding scrollbars would hurt people who rely on them. */
+    scrollbar-width: thin;
+    /* Keep room for the scrollbar even on pages that do not scroll, so the layout does not jump sideways when
+       one appears (and when the open menu locks the page). */
+    scrollbar-gutter: stable;
+    scrollbar-color: color-mix(in srgb, var(--color-line) 55%, transparent) transparent;
+  }
+
+  /* Chrome, Edge and Safari that do not read scrollbar-color/width yet. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--color-line) 55%, transparent);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-line);
+    background-clip: content-box;
   }
 
   body {
@@ -337,10 +369,9 @@ rt {
   border-radius: 0.75rem;
 }
 
-/* A plain card: a thin line, soft corners, light grey fill. */
+/* A plain card: no line, round corners (24px), light grey fill. */
 .frame {
-  border: 1px solid var(--color-line);
-  border-radius: 0.75rem;
+  border-radius: 1.5rem;
   background: var(--color-surface);
 }
 

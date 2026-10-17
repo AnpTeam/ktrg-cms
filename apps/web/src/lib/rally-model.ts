@@ -28,6 +28,19 @@ export interface RallyItem {
   slots: RallySlot[];
 }
 
+/**
+ * What a stamp seal says besides its number, for the sutra mound rally only (other rallies show just the number).
+ * A mound's name is "place・chapter" (友ヶ島・序品): the place can be long, so the seal shows only the chapter, the
+ * part after the last "・". It is always the Japanese chapter, in every language: the romanised chapter names
+ * (Gohyakudeshijukihon, Yakuoubosatsuhonjihon ...) are long single words that do not fit a seal, while the kanji
+ * are short and are the real inscription. The English name stays in the rally list. A name with no separator
+ * is shown as it is.
+ */
+export function sealName(nameJa: string): string {
+  const parts = nameJa.split("・");
+  return (parts[parts.length - 1] as string).trim() || nameJa;
+}
+
 /** A rally with no places yet (a course whose spots are not published) is shown as 準備中. */
 export const isSoon = (rally: RallyItem) => rally.total === 0;
 

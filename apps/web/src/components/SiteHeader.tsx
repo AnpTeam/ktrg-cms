@@ -5,13 +5,16 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { logOut } from "@/lib/auth-client";
-import { CloseIcon, MenuIcon, UserIcon } from "./icons";
+import { ChevronIcon, CloseIcon, MenuIcon, UserIcon } from "./icons";
 import { LocaleSwitcher } from "./LocaleSwitcher";
+import { useMenu } from "./MenuProvider";
 import { SampleNoticeButton } from "./SampleNotice";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 
 const barButton =
   "inline-flex min-h-10 items-center gap-1.5 rounded-lg border-2 border-ink bg-paper px-2.5 text-base font-bold text-ink hover:bg-surface [&>svg]:size-5";
+// How far the signed-out home page is scrolled (in px) before its menu button appears.
+const SHOW_MENU_AFTER = 240;
 const wideButton =
   "tap-target flex w-full items-center justify-center rounded-xl px-5 text-lg font-bold";
 
@@ -19,6 +22,11 @@ const wideButton =
  * The top bar: one menu button on the left, the data-notice button on the right. The menu holds
  * everything that used to crowd the bar (theme, language, sign in or the profile) and opens as a
  * panel dropping down from the top. While it is open the notice button is hidden.
+ *
+ * On the home page for someone who is signed out the bar takes no room and stays out of sight at first, so the
+ * banner and the title get the whole top of the screen (the register and login buttons are right there). It
+ * fades in once the visitor has scrolled a little, floating over the page. It never appears on a timer: a
+ * button that shows up by itself moves under the finger.
  */
 export function SiteHeader({
   signedIn,
@@ -35,17 +43,30 @@ export function SiteHeader({
   const { t, i18n } = useLingui();
   const router = useRouter();
   const pathname = usePathname() ?? "/";
-  const [open, setOpen] = useState(false);
-  // Going to another page closes the menu. (State adjusted while rendering, the pattern React
-  // recommends for resetting state on a prop change; an effect would flash the old state.)
-  const [seenPath, setSeenPath] = useState(pathname);
-  if (seenPath !== pathname) {
-    setSeenPath(pathname);
-    setOpen(false);
-  }
+  const { open, setOpen } = useMenu();
   const [leaving, setLeaving] = useState(false);
+  const onLanding = !signedIn && /^\/(ja|en)\/?$/.test(pathname);
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    if (!onLanding) return;
+    const onScroll = () => setScrolled(window.scrollY > SHOW_MENU_AFTER);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [onLanding]);
+  const hidden = onLanding && !scrolled && !open;
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  // While the menu is open the page behind it must not scroll: only the menu does.
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
 
   // Escape closes it and puts focus back on the button; focus moves into the panel when it opens.
   useEffect(() => {
@@ -58,7 +79,7 @@ export function SiteHeader({
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [open, setOpen]);
 
   // After signing in the visitor comes back to where they were (login and register pages excepted).
   const here = /\/(login|register)(\/|$)/.test(pathname) ? "" : `?next=${encodeURIComponent(pathname)}`;
@@ -74,12 +95,21 @@ export function SiteHeader({
   }
 
   return (
-    <header className="relative z-30">
+    <header className={onLanding ? "sticky top-0 z-30 h-0" : "relative z-30 md:sticky md:top-0 md:h-0"}>
       {open ? (
         // Tapping outside the panel closes it. (Escape and the button do the same for the keyboard.)
         <div aria-hidden="true" onClick={() => setOpen(false)} className="fixed inset-0 bg-black/50" />
       ) : null}
-      <div className="relative mx-auto flex max-w-xl items-center justify-between gap-2 px-3 py-2">
+      <div
+        inert={hidden}
+        className={
+          onLanding
+            ? `absolute inset-x-0 top-0 mx-auto flex max-w-xl md:hidden items-center justify-between gap-2 bg-paper/95 px-3 py-2 transition-opacity motion-reduce:transition-none ${
+                hidden ? "pointer-events-none opacity-0" : ""
+              }`
+            : "relative mx-auto flex max-w-xl items-center justify-between gap-2 px-3 py-2 md:hidden"
+        }
+      >
         <button
           ref={buttonRef}
           type="button"
@@ -98,9 +128,17 @@ export function SiteHeader({
         <div
           ref={panelRef}
           id="site-menu"
-          className="menu-drop absolute inset-x-0 top-full border-b-2 border-brand bg-surface shadow-lg"
+          className={`menu-drop absolute inset-x-0 overflow-y-auto overscroll-contain border-b-2 border-brand bg-surface shadow-lg md:top-0 md:max-h-dvh md:rounded-b-3xl ${onLanding ? "top-14 max-h-[calc(100dvh-3.5rem)]" : "top-full max-h-[calc(100dvh-3.5rem)]"}`}
         >
           <div className="mx-auto flex max-w-xl flex-col gap-5 px-4 py-5">
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="tap-target hidden items-center gap-2 self-end rounded-lg border-2 border-ink px-3 text-lg font-bold md:inline-flex"
+            >
+              <CloseIcon />
+              {t`閉じる`}
+            </button>
             {signedIn ? (
               <div className="flex flex-col gap-3">
                 <Link
@@ -150,6 +188,20 @@ export function SiteHeader({
               </Link>
               <p className="text-base text-muted">{t`文字やボタンの大きさ、地図の見せ方`}</p>
             </div>
+            <ul className="flex flex-col border-t-2 border-line pt-2">
+              {[
+                { path: "/faq", label: t`よくあるご質問` },
+                { path: "/privacy", label: t`プライバシーポリシー` },
+                { path: "/licenses", label: t`ライセンス情報` },
+              ].map(({ path, label }) => (
+                <li key={path}>
+                  <Link href={`/${i18n.locale}${path}`} className="tap-target flex items-center justify-between py-1 text-lg font-bold">
+                    {label}
+                    <ChevronIcon />
+                  </Link>
+                </li>
+              ))}
+            </ul>
             {devTools ? (
               <div className="flex flex-col gap-2 border-t-2 border-line pt-4">
                 <p className="text-lg font-bold">{t`開発用`}</p>

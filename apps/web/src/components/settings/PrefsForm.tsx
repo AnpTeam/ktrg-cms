@@ -136,7 +136,7 @@ export function PrefsForm({
       </fieldset>
 
       {message ? (
-        <p role="status" className="rounded-xl border-2 border-line bg-surface p-3 text-lg font-bold">
+        <p role="status" className="rounded-2xl bg-surface p-3 text-lg font-bold">
           {message}
         </p>
       ) : null}

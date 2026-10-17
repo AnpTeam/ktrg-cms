@@ -11,7 +11,7 @@ import { StampFace } from "./StampFace";
 export async function SignInPrompt() {
   const { locale } = await initLingui();
   return (
-    <section className="mx-4 flex flex-col gap-4 rounded-xl border-2 border-line bg-surface p-4">
+    <section className="mx-4 flex flex-col gap-4 rounded-3xl bg-surface p-5">
       <div className="flex items-start gap-4">
         <StampFace state="empty" className="h-12 w-12 shrink-0" />
         <div className="text-lg">

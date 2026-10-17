@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Trans, useLingui } from "@lingui/react/macro";
 import { pickText } from "@/lib/content";
 import { formatUpdated } from "@/lib/format";
-import { isSoon, nextSlot, stampedNumbers, type RallyItem } from "@/lib/rally-model";
+import { isSoon, nextSlot, sealName, stampedNumbers, type RallyItem } from "@/lib/rally-model";
 import { localePath } from "@/lib/rally";
 import { ChevronIcon } from "./icons";
 import { SectionBanner } from "./SectionBanner";
@@ -76,7 +76,12 @@ export function FeaturedRally({ rally, locale, signedIn }: { rally: RallyItem; l
           </div>
         ) : null}
         <div className="mt-4">
-          <StampGrid total={rally.total} stamped={stampedNumbers(rally)} showNext={signedIn} />
+          <StampGrid
+            total={rally.total}
+            stamped={stampedNumbers(rally)}
+            showNext={signedIn}
+            names={rally.kind === "mounds" ? new Map(rally.slots.map((slot) => [slot.number, sealName(slot.nameJa)])) : undefined}
+          />
         </div>
       </div>
     </section>
@@ -105,7 +110,7 @@ export function RallyCard({ rally, locale, signedIn }: { rally: RallyItem; local
 
   const stamped = rally.stamped ?? 0;
   return (
-    <li className="rounded-xl border-2 border-line bg-surface">
+    <li className="rounded-3xl bg-surface">
       <details className="group">
         <summary className="tap-target flex cursor-pointer list-none flex-col gap-2 p-4 [&::-webkit-details-marker]:hidden">
           <span className="text-base text-muted">{kind}</span>
