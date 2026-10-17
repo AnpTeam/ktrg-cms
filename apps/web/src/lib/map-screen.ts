@@ -150,17 +150,11 @@ export function framePoints(route: MapScreenRoute): Position[] {
 const PIN_W = 44;
 const PIN_H = 56;
 const LABEL_GAP = 4;
-const LABEL_MAX_VERTICAL = 136; // 8.5rem: a longer name folds into another column
 const LABEL_MAX_WIDTH = 120; // 7.5rem
 
-/** About how big a name's label comes out. An estimate: it only has to keep names from covering each other. */
-export function estimateLabel(name: string, vertical: boolean): { w: number; h: number } {
+/** About how big a sideways name's label comes out. An estimate: it only has to keep names from covering each other. */
+export function estimateLabel(name: string): { w: number; h: number } {
   const n = [...name].length;
-  if (vertical) {
-    const column = n * 19.2 + 10;
-    const columns = Math.max(1, Math.ceil(column / LABEL_MAX_VERTICAL));
-    return { w: columns * 18 + 13, h: Math.min(LABEL_MAX_VERTICAL, column) };
-  }
   const w = Math.min(LABEL_MAX_WIDTH, n * 8 + 13);
   const lines = Math.max(1, Math.ceil((n * 8) / (LABEL_MAX_WIDTH - 13)));
   return { w, h: lines * 18 + 10 };
@@ -179,12 +173,12 @@ const overlaps = (a: Box, b: Box) => a.x < b.x + b.w && b.x < a.x + a.w && a.y <
  * a name is shown only if it clears all the heads and the names already shown, taking the pins in the order given
  * (lowest course number first), so two names never print over each other.
  */
-export function namesThatFit(pins: readonly { id: string; x: number; y: number; name: string; vertical: boolean }[]): Set<string> {
+export function namesThatFit(pins: readonly { id: string; x: number; y: number; name: string }[]): Set<string> {
   const heads: Box[] = pins.map((p) => ({ x: p.x - PIN_W / 2, y: p.y - PIN_H, w: PIN_W, h: PIN_H }));
   const placed: Box[] = [];
   const shown = new Set<string>();
   pins.forEach((p, i) => {
-    const { w, h } = estimateLabel(p.name, p.vertical);
+    const { w, h } = estimateLabel(p.name);
     const box: Box = { x: p.x + PIN_W / 2 + LABEL_GAP, y: p.y - PIN_H, w, h };
     const others = heads.filter((_, j) => j !== i);
     if ([...others, ...placed].some((o) => overlaps(box, o))) return;

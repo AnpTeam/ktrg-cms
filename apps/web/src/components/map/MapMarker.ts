@@ -73,23 +73,20 @@ export function createPlaceMarkerElement({
 }
 
 /**
- * A course on the map: a pin whose point is the middle of the course's rectangle, with the course number in its
- * head and, once the map is zoomed in far enough, its name beside it. Japanese names run top to bottom (as on the
- * official map, and they take far less width that way); other languages wrap onto a few short lines. A dashed
- * head means the course is not ready.
+ * A course on the map in a language that is written sideways: a pin whose point is the middle of the course's
+ * rectangle, with the course number in its head and, where there is room, its name beside it on a few short lines.
+ * A dashed head means the course is not ready. (Japanese uses the narrower top-to-bottom tag below.)
  */
 export function createPinElement({
   number,
   name,
-  vertical,
   label,
   soon,
   onSelect,
 }: {
   number: string;
-  /** null while the map is zoomed out: only the number is shown. */
+  /** null where there is no room: only the number is shown. */
   name: string | null;
-  vertical: boolean;
   label: string;
   soon: boolean;
   onSelect: () => void;
@@ -105,10 +102,43 @@ export function createPinElement({
   if (name) {
     const text = document.createElement("span");
     text.className = "map-pin-name";
-    text.dataset.vertical = String(vertical);
     text.textContent = name;
     el.appendChild(text);
   }
+  el.setAttribute("aria-label", label);
+  el.addEventListener("click", onSelect);
+  return el;
+}
+
+/**
+ * A course on the map in Japanese: a name tag read top to bottom (as on the official map) standing on the middle of
+ * the course's rectangle, with the course number in a round head above it. It is narrow, so all the courses can
+ * show their names together even when the whole trail is in view. A dashed head means the course is not ready.
+ */
+export function createTagElement({
+  number,
+  name,
+  label,
+  soon,
+  onSelect,
+}: {
+  number: string;
+  name: string;
+  label: string;
+  soon: boolean;
+  onSelect: () => void;
+}): HTMLButtonElement {
+  const el = document.createElement("button");
+  el.type = "button";
+  el.className = "map-tag";
+  if (soon) el.dataset.soon = "true";
+  const head = document.createElement("span");
+  head.className = "map-tag-head";
+  head.textContent = number;
+  const text = document.createElement("span");
+  text.className = "map-tag-name";
+  text.textContent = name;
+  el.append(head, text);
   el.setAttribute("aria-label", label);
   el.addEventListener("click", onSelect);
   return el;

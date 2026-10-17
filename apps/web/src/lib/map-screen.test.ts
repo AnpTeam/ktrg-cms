@@ -106,39 +106,35 @@ describe("framePoints", () => {
 });
 
 describe("names beside the pins", () => {
-  test("a long Japanese name folds into more columns; a short one stays in one", () => {
-    expect(estimateLabel("金剛山", true).w).toBeLessThan(estimateLabel("志野峠から中津川・粉河寺へ", true).w);
-    expect(estimateLabel("志野峠から中津川・粉河寺へ", true).h).toBeLessThanOrEqual(136);
-  });
-
-  test("a long English name takes more lines", () => {
-    expect(estimateLabel("From Shino-toge Pass to Nakatsugawa and Kokawa-dera Temple", false).h).toBeGreaterThan(estimateLabel("Mount Kongo", false).h);
+  test("a long name takes more lines than a short one", () => {
+    expect(estimateLabel("From Shino-toge Pass to Nakatsugawa and Kokawa-dera Temple").h).toBeGreaterThan(estimateLabel("Mount Kongo").h);
+    expect(estimateLabel("Mount Kongo").w).toBeLessThanOrEqual(120);
   });
 
   test("a name with room is shown", () => {
-    expect([...namesThatFit([{ id: "a", x: 200, y: 300, name: "金剛山", vertical: true }])]).toEqual(["a"]);
+    expect([...namesThatFit([{ id: "a", x: 200, y: 300, name: "Mount Kongo" }])]).toEqual(["a"]);
   });
 
   test("pins far apart all keep their names", () => {
     const pins = [
-      { id: "a", x: 100, y: 300, name: "金剛山", vertical: true },
-      { id: "b", x: 300, y: 300, name: "二上山", vertical: true },
+      { id: "a", x: 100, y: 300, name: "Mount Kongo" },
+      { id: "b", x: 400, y: 300, name: "Mount Nijo" },
     ];
     expect(namesThatFit(pins).size).toBe(2);
   });
 
   test("when two names would collide, the earlier one wins and the other shows only its pin", () => {
     const pins = [
-      { id: "a", x: 100, y: 300, name: "葛城の道・長い名前の区間", vertical: true },
-      { id: "b", x: 60, y: 380, name: "金剛山と葛城の道旅", vertical: true },
+      { id: "a", x: 100, y: 300, name: "From Mt. Kabuto across Kyoshi-toge" },
+      { id: "b", x: 60, y: 340, name: "From Nagaredani to Iwawaki-ji Temple" },
     ];
     expect([...namesThatFit(pins)]).toEqual(["a"]);
   });
 
   test("a name never covers another pin's head", () => {
     const pins = [
-      { id: "a", x: 100, y: 300, name: "葛城の道", vertical: true },
-      { id: "b", x: 140, y: 330, name: "x", vertical: true },
+      { id: "a", x: 100, y: 300, name: "Mount Kongo" },
+      { id: "b", x: 150, y: 300, name: "x" },
     ];
     expect(namesThatFit(pins).has("a")).toBe(false);
   });

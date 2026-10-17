@@ -174,13 +174,13 @@ export function MapScreen({
         settings={settings}
         mergeStops={mergeStops}
       />
-      <MapSheet snap={snap} onSnap={setSnap} available={available} header={showDetailInSheet ? detailHeader : homeHeader}>
+      <MapSheet snap={snap} onSnap={setSnap} available={available} tabPx={tabPx} header={showDetailInSheet ? detailHeader : homeHeader}>
         {showDetailInSheet ? detailBody : homeBody}
       </MapSheet>
     </div>
 
     {wide && detailBody ? (
-      <aside aria-label={t`くわしい情報`} className="absolute left-full top-0 ml-10 h-dvh w-[26rem] py-3 pr-3">
+      <aside aria-label={t`くわしい情報`} className="absolute left-full top-0 ml-10 h-dvh w-[21rem] py-3">
         <div className="flex h-full flex-col overflow-hidden rounded-3xl bg-paper shadow-[0_2px_24px_rgb(0_0_0/0.22)]">
           <div className="shrink-0 px-4 pb-2 pt-4">{detailHeader}</div>
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-6">{detailBody}</div>

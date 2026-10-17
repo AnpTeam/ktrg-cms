@@ -48,7 +48,7 @@ msgstr "{meters}m"
 msgid "{minutes}分"
 msgstr "{minutes}分"
 
-#: src/app/[lang]/(public)/page.tsx:53
+#: src/app/[lang]/(public)/page.tsx:58
 msgid "{name}さん、こんにちは。"
 msgstr "{name}さん、こんにちは。"
 
@@ -65,7 +65,7 @@ msgid "{number}番 まだ押していません"
 msgstr "{number}番 まだ押していません"
 
 #: src/components/map/MapScreen.tsx:219
-#: src/components/map/MapScreenCanvas.tsx:215
+#: src/components/map/MapScreenCanvas.tsx:216
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
 
@@ -425,7 +425,7 @@ msgstr "さあ、はじめましょう"
 msgid "サイトマップ"
 msgstr "サイトマップ"
 
-#: src/components/map/MapSheet.tsx:85
+#: src/components/map/MapSheet.tsx:89
 msgid "シートの高さ（上下の矢印キーで変えられます）"
 msgstr "シートの高さ（上下の矢印キーで変えられます）"
 
@@ -448,7 +448,7 @@ msgstr "スタンプ {stampedCount} / {spotCount}"
 msgid "スタンプカード"
 msgstr "スタンプカード"
 
-#: src/app/[lang]/(public)/page.tsx:78
+#: src/app/[lang]/(public)/page.tsx:83
 msgid "スタンプカードを見る"
 msgstr "スタンプカードを見る"
 
@@ -831,7 +831,7 @@ msgstr "ルートの案内は準備中です。"
 msgid "ルートや場所は、ログインしなくても見られます。"
 msgstr "ルートや場所は、ログインしなくても見られます。"
 
-#: src/app/[lang]/(public)/page.tsx:86
+#: src/app/[lang]/(public)/page.tsx:91
 #: src/components/landing/Landing.tsx:83
 #: src/components/landing/Landing.tsx:217
 msgid "ルートをさがす"
@@ -932,7 +932,7 @@ msgstr "位置を調べるのに、時間がかかっています。空の開け
 msgid "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてから、もう一度お試しください。"
 msgstr "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてから、もう一度お試しください。"
 
-#: src/components/map/MapSheet.tsx:90
+#: src/components/map/MapSheet.tsx:94
 msgid "低い"
 msgstr "低い"
 
@@ -961,7 +961,7 @@ msgstr "入力に、まちがいがあるようです。見直して、もう一
 msgid "全{TOTAL_ROUTES}区間"
 msgstr "全{TOTAL_ROUTES}区間"
 
-#: src/app/[lang]/(public)/page.tsx:88
+#: src/app/[lang]/(public)/page.tsx:93
 #: src/app/[lang]/(public)/routes/page.tsx:50
 msgid "全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）"
 msgstr "全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）"
@@ -1019,7 +1019,7 @@ msgstr "写真"
 msgid "出かける前に"
 msgstr "出かける前に"
 
-#: src/app/[lang]/(public)/page.tsx:95
+#: src/app/[lang]/(public)/page.tsx:100
 #: src/app/[lang]/(public)/routes/[id]/page.tsx:150
 #: src/app/[lang]/(public)/routes/page.tsx:82
 #: src/app/[lang]/(public)/stamps/page.tsx:66
@@ -1079,7 +1079,7 @@ msgstr "区間をえらぶ"
 msgid "区間を選ぶと、道とスタンプの場所が見えます。"
 msgstr "区間を選ぶと、道とスタンプの場所が見えます。"
 
-#: src/components/map/MapSheet.tsx:90
+#: src/components/map/MapSheet.tsx:94
 msgid "半分"
 msgstr "半分"
 
@@ -1121,8 +1121,9 @@ msgstr "地図の見た目"
 msgid "地図の見た目の設定"
 msgstr "地図の見た目の設定"
 
-#: src/app/[lang]/(public)/page.tsx:82
+#: src/app/[lang]/(public)/page.tsx:87
 #: src/components/landing/Landing.tsx:80
+#: src/components/MapShortcut.tsx:37
 msgid "地図を見る"
 msgstr "地図を見る"
 
@@ -1207,7 +1208,7 @@ msgstr "年代"
 msgid "性別"
 msgstr "性別"
 
-#: src/components/map/MapSheet.tsx:78
+#: src/components/map/MapSheet.tsx:82
 msgid "情報"
 msgstr "情報"
 
@@ -1252,7 +1253,7 @@ msgstr "文字もボタンも、少し大きくなります。"
 msgid "文字やボタンの大きさ、地図の見せ方"
 msgstr "文字やボタンの大きさ、地図の見せ方"
 
-#: src/app/[lang]/(public)/page.tsx:71
+#: src/app/[lang]/(public)/page.tsx:76
 msgid "文字やボタンの大きさ、地図の見せ方を選べます。"
 msgstr "文字やボタンの大きさ、地図の見せ方を選べます。"
 
@@ -1325,7 +1326,7 @@ msgstr "次の写真"
 msgid "次へ ＞"
 msgstr "次へ ＞"
 
-#: src/app/[lang]/(public)/page.tsx:57
+#: src/app/[lang]/(public)/page.tsx:62
 msgid "歩いた場所で、スタンプを押そう。"
 msgstr "歩いた場所で、スタンプを押そう。"
 
@@ -1500,7 +1501,7 @@ msgstr "色を反転"
 msgid "色別標高図（緑〜茶）"
 msgstr "色別標高図（緑〜茶）"
 
-#: src/app/[lang]/(public)/page.tsx:48
+#: src/app/[lang]/(public)/page.tsx:53
 #: src/app/[lang]/layout.tsx:31
 #: src/components/landing/Landing.tsx:69
 msgid "葛城修験"
@@ -1529,7 +1530,7 @@ msgstr "見やすさの設定"
 msgid "見やすさを、あなたに合わせましょう。大きさは、選ぶとすぐに変わります。"
 msgstr "見やすさを、あなたに合わせましょう。大きさは、選ぶとすぐに変わります。"
 
-#: src/app/[lang]/(public)/page.tsx:68
+#: src/app/[lang]/(public)/page.tsx:73
 msgid "見やすさを設定しませんか"
 msgstr "見やすさを設定しませんか"
 
@@ -1580,7 +1581,7 @@ msgstr "遊び方"
 msgid "道が通れないときは、無理をせず引き返してください。"
 msgstr "道が通れないときは、無理をせず引き返してください。"
 
-#: src/app/[lang]/(public)/page.tsx:82
+#: src/app/[lang]/(public)/page.tsx:87
 msgid "道とスタンプの場所を、地図で見られます。"
 msgstr "道とスタンプの場所を、地図で見られます。"
 
@@ -1658,6 +1659,6 @@ msgstr "駅・バス・駐車場"
 msgid "駐車場"
 msgstr "駐車場"
 
-#: src/components/map/MapSheet.tsx:90
+#: src/components/map/MapSheet.tsx:94
 msgid "高い"
 msgstr "高い"

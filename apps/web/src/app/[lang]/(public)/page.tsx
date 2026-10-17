@@ -1,6 +1,7 @@
 import { Trans } from "@lingui/react/macro";
 import { ButtonLink } from "@/components/ButtonLink";
 import { Landing } from "@/components/landing/Landing";
+import { MapShortcut } from "@/components/MapShortcut";
 import { Notice } from "@/components/Notice";
 import { ProgressSummary } from "@/components/ProgressSummary";
 import { RowLink } from "@/components/RowLink";
@@ -28,7 +29,10 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     const slides = slidesToShow(bannerSlides, sampleContentEnabled());
     const blogUrl = process.env.BLOG_URL ?? null;
     return (
-      <Landing to={to} locale={i18n.locale} routes={routes} notices={notices} introVideo={introVideo} slides={slides} blogUrl={blogUrl} />
+      <>
+        <Landing to={to} locale={i18n.locale} routes={routes} notices={notices} introVideo={introVideo} slides={slides} blogUrl={blogUrl} />
+        <MapShortcut href={to("/map")} />
+      </>
     );
   }
 
@@ -41,6 +45,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   return (
     <div className="flex flex-col gap-8">
+      <MapShortcut href={to("/map")} />
       <section className="px-4">
         <div className="frame p-4">
           <h1 className="font-serif text-4xl font-bold leading-snug">

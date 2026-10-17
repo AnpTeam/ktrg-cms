@@ -9,7 +9,7 @@ import { clusterByPixels } from "@/lib/cluster";
 import { areaCollection, framePoints, namesThatFit, revealedRouteId, type MapScreenRoute } from "@/lib/map-screen";
 import { boundsOf, lineFeature, mapStyle, markerKind, nextStopId, routeLineLayers, zoomLimits, type Position } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
-import { createClusterElement, createMarkerElement, createPinElement } from "./MapMarker";
+import { createClusterElement, createMarkerElement, createPinElement, createTagElement } from "./MapMarker";
 
 // The map of the home screen (WBS 3.2.10). Each course is an outlined rectangle with a pin in the middle that
 // carries its name. Zoom in over a course and its stops appear by themselves; choose a course and the others fold
@@ -19,8 +19,10 @@ import { createClusterElement, createMarkerElement, createPinElement } from "./M
 const AREAS = "areas";
 const DETAIL = "route-detail";
 const CLUSTER_PX = 50;
-/** From this zoom on, the pins may carry their names (those with room); below it they are bare numbers that merge where they touch. */
+/** Sideways names: from this zoom on the pins may carry their names (those with room); below it they are bare numbers that merge where they touch. */
 const NAMES_ZOOM = 9.4;
+/** Japanese tags are narrow, so on a wide screen all of them stand side by side; on a phone those closer than this merge into a numbered group. */
+const TAG_CLUSTER_PX = 40;
 /** From this zoom on, being "inside" a course opens it: its stops appear without anyone choosing it. */
 const REVEAL_ZOOM = 11.3;
 const EMPTY = { type: "FeatureCollection" as const, features: [] };
@@ -196,26 +198,24 @@ export function MapScreenCanvas({
     // with no stops of its own to show keeps its pin, so there is still something to read and press.
     const pinned = route ? [] : focus ? (focus.stops?.length ? [] : [focus]) : routes.filter((r) => r.area);
     const byId = new Map(pinned.map((r) => [r.id, r]));
-    const groups = withNames ? pinned.map((r) => [r.id]) : clusterByPixels(pinned.map((r) => pixel(r.id, r.area as Position)), CLUSTER_PX);
-    // A name is printed only where it has room: never over another pin or another name.
-    const named = withNames
-      ? namesThatFit(pinned.map((r) => ({ ...pixel(r.id, r.area as Position), name: r.name, vertical: r.nameLang === "ja" })))
-      : new Set<string>();
+    const sideways = pinned.filter((r) => r.nameLang !== "ja");
+    const groups =
+      sideways.length === 0
+        ? clusterByPixels(pinned.map((r) => pixel(r.id, r.area as Position)), TAG_CLUSTER_PX)
+        : withNames
+          ? pinned.map((r) => [r.id])
+          : clusterByPixels(pinned.map((r) => pixel(r.id, r.area as Position)), CLUSTER_PX);
+    // A sideways name is printed only where it has room: never over another pin or another name.
+    const named = withNames ? namesThatFit(sideways.map((r) => ({ ...pixel(r.id, r.area as Position), name: r.name }))) : new Set<string>();
     for (const ids of groups) {
       const members = ids.map((id) => byId.get(id)!);
       if (members.length === 1) {
         const r = members[0]!;
         const order = r.order;
         const name = r.name;
+        const common = { number: String(r.order), label: t`${order}. ${name}`, soon: r.status === "soon", onSelect: () => onSelectRoute(r.id) };
         put(
-          createPinElement({
-            number: String(r.order),
-            name: named.has(r.id) ? r.name : null,
-            vertical: r.nameLang === "ja",
-            label: t`${order}. ${name}`,
-            soon: r.status === "soon",
-            onSelect: () => onSelectRoute(r.id),
-          }),
+          r.nameLang === "ja" ? createTagElement({ ...common, name }) : createPinElement({ ...common, name: named.has(r.id) ? name : null }),
           r.area as Position,
           "bottom",
         );
@@ -293,7 +293,7 @@ export function MapScreenCanvas({
       {ready ? null : <p className="pointer-events-none absolute inset-0 flex items-center justify-center bg-surface text-lg">{t`地図を読み込み中…`}</p>}
 
       {draftShown ? (
-        <p className="absolute left-3 top-16 z-10 flex max-w-[calc(100%-6rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">
+        <p className="absolute left-3 top-16 z-[4] flex max-w-[calc(100%-6rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">
           <span className="text-caution">
             <WarningIcon />
           </span>
@@ -301,7 +301,7 @@ export function MapScreenCanvas({
         </p>
       ) : null}
 
-      <div className="absolute right-3 top-16 z-10 flex flex-col gap-2">
+      <div className="absolute right-3 top-16 z-[4] flex flex-col gap-2">
         {(["＋", "－"] as const).map((sign) => (
           <button
             key={sign}

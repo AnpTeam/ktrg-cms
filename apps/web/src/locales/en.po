@@ -48,7 +48,7 @@ msgstr "{meters} m"
 msgid "{minutes}分"
 msgstr "{minutes} min"
 
-#: src/app/[lang]/(public)/page.tsx:53
+#: src/app/[lang]/(public)/page.tsx:58
 msgid "{name}さん、こんにちは。"
 msgstr "Hello, {name}."
 
@@ -65,7 +65,7 @@ msgid "{number}番 まだ押していません"
 msgstr "No. {number}, not stamped yet"
 
 #: src/components/map/MapScreen.tsx:219
-#: src/components/map/MapScreenCanvas.tsx:215
+#: src/components/map/MapScreenCanvas.tsx:216
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
 
@@ -425,7 +425,7 @@ msgstr "Let's get started"
 msgid "サイトマップ"
 msgstr "Site map"
 
-#: src/components/map/MapSheet.tsx:85
+#: src/components/map/MapSheet.tsx:89
 msgid "シートの高さ（上下の矢印キーで変えられます）"
 msgstr "Height of the sheet (change it with the up and down arrow keys)"
 
@@ -448,7 +448,7 @@ msgstr "Stamps {stampedCount} / {spotCount}"
 msgid "スタンプカード"
 msgstr "Stamp card"
 
-#: src/app/[lang]/(public)/page.tsx:78
+#: src/app/[lang]/(public)/page.tsx:83
 msgid "スタンプカードを見る"
 msgstr "See your stamp card"
 
@@ -831,7 +831,7 @@ msgstr "Route guides are coming soon."
 msgid "ルートや場所は、ログインしなくても見られます。"
 msgstr "You can browse routes and places without signing in."
 
-#: src/app/[lang]/(public)/page.tsx:86
+#: src/app/[lang]/(public)/page.tsx:91
 #: src/components/landing/Landing.tsx:83
 #: src/components/landing/Landing.tsx:217
 msgid "ルートをさがす"
@@ -932,7 +932,7 @@ msgstr "Checking your location is taking a while. Try again in an open place."
 msgid "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてから、もう一度お試しください。"
 msgstr "Location isn't allowed. In your browser settings, allow location for this site, then try again."
 
-#: src/components/map/MapSheet.tsx:90
+#: src/components/map/MapSheet.tsx:94
 msgid "低い"
 msgstr "low"
 
@@ -961,7 +961,7 @@ msgstr "Something in what you entered looks wrong. Please check it and try again
 msgid "全{TOTAL_ROUTES}区間"
 msgstr "{TOTAL_ROUTES} sections"
 
-#: src/app/[lang]/(public)/page.tsx:88
+#: src/app/[lang]/(public)/page.tsx:93
 #: src/app/[lang]/(public)/routes/page.tsx:50
 msgid "全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）"
 msgstr "{TOTAL_ROUTES} sections, about {TRAIL_KM} km"
@@ -1019,7 +1019,7 @@ msgstr "Photos"
 msgid "出かける前に"
 msgstr "Before you go"
 
-#: src/app/[lang]/(public)/page.tsx:95
+#: src/app/[lang]/(public)/page.tsx:100
 #: src/app/[lang]/(public)/routes/[id]/page.tsx:150
 #: src/app/[lang]/(public)/routes/page.tsx:82
 #: src/app/[lang]/(public)/stamps/page.tsx:66
@@ -1079,7 +1079,7 @@ msgstr "Choose a course"
 msgid "区間を選ぶと、道とスタンプの場所が見えます。"
 msgstr "Choose a course to see its path and its stamp places."
 
-#: src/components/map/MapSheet.tsx:90
+#: src/components/map/MapSheet.tsx:94
 msgid "半分"
 msgstr "half"
 
@@ -1121,8 +1121,9 @@ msgstr "Map appearance"
 msgid "地図の見た目の設定"
 msgstr "Map style settings"
 
-#: src/app/[lang]/(public)/page.tsx:82
+#: src/app/[lang]/(public)/page.tsx:87
 #: src/components/landing/Landing.tsx:80
+#: src/components/MapShortcut.tsx:37
 msgid "地図を見る"
 msgstr "View the map"
 
@@ -1207,7 +1208,7 @@ msgstr "Age"
 msgid "性別"
 msgstr "Gender"
 
-#: src/components/map/MapSheet.tsx:78
+#: src/components/map/MapSheet.tsx:82
 msgid "情報"
 msgstr "Information"
 
@@ -1252,7 +1253,7 @@ msgstr "Text and buttons become a little bigger."
 msgid "文字やボタンの大きさ、地図の見せ方"
 msgstr "Size of text and buttons, how the map is shown"
 
-#: src/app/[lang]/(public)/page.tsx:71
+#: src/app/[lang]/(public)/page.tsx:76
 msgid "文字やボタンの大きさ、地図の見せ方を選べます。"
 msgstr "Choose the size of text and buttons and how the map is shown."
 
@@ -1325,7 +1326,7 @@ msgstr "Next photo"
 msgid "次へ ＞"
 msgstr "Next >"
 
-#: src/app/[lang]/(public)/page.tsx:57
+#: src/app/[lang]/(public)/page.tsx:62
 msgid "歩いた場所で、スタンプを押そう。"
 msgstr "Collect a stamp wherever you have walked."
 
@@ -1500,7 +1501,7 @@ msgstr "Invert colours"
 msgid "色別標高図（緑〜茶）"
 msgstr "Elevation colours (green to brown)"
 
-#: src/app/[lang]/(public)/page.tsx:48
+#: src/app/[lang]/(public)/page.tsx:53
 #: src/app/[lang]/layout.tsx:31
 #: src/components/landing/Landing.tsx:69
 msgid "葛城修験"
@@ -1529,7 +1530,7 @@ msgstr "Display settings"
 msgid "見やすさを、あなたに合わせましょう。大きさは、選ぶとすぐに変わります。"
 msgstr "Let us make things easy for you to see. The size changes as soon as you choose it."
 
-#: src/app/[lang]/(public)/page.tsx:68
+#: src/app/[lang]/(public)/page.tsx:73
 msgid "見やすさを設定しませんか"
 msgstr "Set up how things look?"
 
@@ -1580,7 +1581,7 @@ msgstr "How to play"
 msgid "道が通れないときは、無理をせず引き返してください。"
 msgstr "If the path is closed, do not push on. Turn back."
 
-#: src/app/[lang]/(public)/page.tsx:82
+#: src/app/[lang]/(public)/page.tsx:87
 msgid "道とスタンプの場所を、地図で見られます。"
 msgstr "See the paths and stamp places on a map."
 
@@ -1658,6 +1659,6 @@ msgstr "Station, bus, parking"
 msgid "駐車場"
 msgstr "Parking"
 
-#: src/components/map/MapSheet.tsx:90
+#: src/components/map/MapSheet.tsx:94
 msgid "高い"
 msgstr "high"

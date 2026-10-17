@@ -16,12 +16,15 @@ export function MapSheet({
   snap,
   onSnap,
   available,
+  tabPx,
   header,
   children,
 }: {
   snap: SheetSnap;
   onSnap: (snap: SheetSnap) => void;
   available: number;
+  /** The room the floating tab bar takes at the bottom: the sheet reaches the screen's edge under it. */
+  tabPx: number;
   header: ReactNode;
   children: ReactNode;
 }) {
@@ -71,13 +74,14 @@ export function MapSheet({
     e.preventDefault();
   }
 
+  // `height` is the part above the tab bar; the sheet itself is that much taller, so it runs under the bar.
   const height = dragPx ?? restingPx;
 
   return (
     <section
       aria-label={t`情報`}
-      className="absolute inset-x-0 bottom-[var(--tab-room)] z-20 flex flex-col rounded-t-3xl bg-paper shadow-[0_-4px_24px_rgb(0_0_0/0.28)] motion-reduce:transition-none"
-      style={{ height, transition: dragPx === null ? "height 240ms ease-out" : "none" }}
+      className="absolute inset-x-0 bottom-0 z-[5] flex flex-col rounded-t-3xl bg-paper shadow-[0_-4px_24px_rgb(0_0_0/0.28)] motion-reduce:transition-none"
+      style={{ height: height + tabPx, transition: dragPx === null ? "height 240ms ease-out" : "none" }}
     >
       <div
         role="slider"
@@ -98,7 +102,7 @@ export function MapSheet({
         <span aria-hidden="true" className="h-1.5 w-12 rounded-full bg-line/60" />
       </div>
       <div className="shrink-0 px-4 pb-2">{header}</div>
-      <div ref={body} className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-6">
+      <div ref={body} className="min-h-0 flex-1 overflow-y-auto overscroll-contain" style={{ paddingBottom: tabPx + 24 }}>
         {children}
       </div>
     </section>

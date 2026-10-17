@@ -94,7 +94,7 @@ export function StampHere({
     failed: t`問題が発生しました。しばらくしてからもう一度お試しください。`,
   };
 
-  const wrapper = inSheet ? "sticky bottom-0 z-10 flex flex-col gap-2 bg-paper/95 py-2" : "sticky bottom-24 z-10 flex flex-col gap-2 px-4 md:bottom-6";
+  const wrapper = inSheet ? "sticky bottom-[var(--tab-room)] z-10 flex flex-col gap-2 bg-paper/95 py-2" : "sticky bottom-24 z-10 flex flex-col gap-2 px-4 md:bottom-6";
 
   if (phase.name === "done") {
     return (
