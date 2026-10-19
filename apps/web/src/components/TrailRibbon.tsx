@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
 import { canGroupByPrefecture, pickText, type Prefecture, type RouteSummary } from "@/lib/content";
+import { municipalityName } from "@/lib/municipalities";
 import { connectorStates, nodeState, progressShare, type NodeState } from "@/lib/ribbon";
 import { ChevronIcon } from "./icons";
 import { Localized } from "./Localized";
@@ -72,7 +73,7 @@ function StopContent({ route, state, locale }: { route: RouteSummary; state: Nod
             <span className="mt-1 block text-lg text-muted">
               {route.prefecture ? <PrefectureName value={route.prefecture} /> : null}
               {route.prefecture && route.municipality ? " " : null}
-              {route.municipality}
+              {municipalityName(locale, route.municipality)}
             </span>
           ) : null}
         </span>

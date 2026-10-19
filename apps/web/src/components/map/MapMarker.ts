@@ -149,18 +149,34 @@ export function createClusterElement({
   text,
   label,
   kind,
+  names,
   onSelect,
 }: {
   text: string;
   label: string;
   kind: "stops" | "places";
+  /** When given, the group also lists who is inside (a line each, then "+n more"), so no course name is ever hidden. */
+  names?: { lines: string[]; more: string | null };
   onSelect: () => void;
 }): HTMLButtonElement {
   const el = document.createElement("button");
   el.type = "button";
   el.className = "map-cluster";
   el.dataset.kind = kind;
-  el.textContent = text;
+  if (names) {
+    el.dataset.named = "true";
+    const count = document.createElement("span");
+    count.className = "map-cluster-count";
+    count.textContent = text;
+    const list = document.createElement("span");
+    list.className = "map-cluster-names";
+    for (const line of [...names.lines, ...(names.more ? [names.more] : [])]) {
+      const row = document.createElement("span");
+      row.textContent = line;
+      list.appendChild(row);
+    }
+    el.append(count, list);
+  } else el.textContent = text;
   el.setAttribute("aria-label", label);
   el.addEventListener("click", onSelect);
   return el;

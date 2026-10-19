@@ -27,6 +27,8 @@ import { BilingualField, Check, Field, inputClass, NumberInput, Section, TextInp
 import { LivePreview } from "./LivePreview";
 import { MapEditorLoader } from "./map-editor/MapEditorLoader";
 import type { ElevationStatus } from "./map-editor/MapEditor";
+import { isListedMunicipality } from "@/lib/municipalities";
+import { MunicipalityField } from "./MunicipalityField";
 import { PhotoSlot } from "./PhotoSlot";
 import { PlacePanel } from "./PlacePanel";
 import { useChecklistLabels } from "./useChecklistLabels";
@@ -316,7 +318,12 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   {problemOf("route_name") ? <p role="alert" className="text-base font-bold text-danger">{t`日本語の名前を入れてください。`}</p> : null}
                   <div className="flex flex-wrap gap-4">
                     <Field label={t`都道府県`} htmlFor="route-pref">
-                      <select id="route-pref" value={draft.prefecture ?? ""} onChange={(e) => dispatch({ type: "prefecture", value: (e.target.value || null) as Prefecture | null })} className={`${inputClass} min-w-48`}>
+                      <select id="route-pref" value={draft.prefecture ?? ""} onChange={(e) => {
+                          const next = (e.target.value || null) as Prefecture | null;
+                          // A city of the old prefecture does not belong to the new one: start the city again.
+                          if (isListedMunicipality(draft.prefecture, draft.municipality) && !isListedMunicipality(next, draft.municipality)) text("municipality")("");
+                          dispatch({ type: "prefecture", value: next });
+                        }} className={`${inputClass} min-w-48`}>
                         <option value="">{t`未選択`}</option>
                         {(["wakayama", "osaka", "nara"] as const).map((p) => (
                           <option key={p} value={p}>
@@ -325,9 +332,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                         ))}
                       </select>
                     </Field>
-                    <Field label={t`市区町村`} htmlFor="route-muni">
-                      <TextInput id="route-muni" value={draft.municipality} onChange={text("municipality")} maxLength={100} />
-                    </Field>
+                    <MunicipalityField id="route-muni" prefecture={draft.prefecture} value={draft.municipality} onChange={text("municipality")} />
                   </div>
                 </Section>
 

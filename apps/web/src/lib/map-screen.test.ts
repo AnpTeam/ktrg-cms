@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { areaCollection, areaContains, estimateLabel, framePoints, namesThatFit, nextSnap, rectangleRing, revealedRouteId, sheetHeightPx, snapAfterDrag, type MapScreenRoute } from "./map-screen";
+import { areaCollection, areaContains, estimateGroupBox, estimateLabel, framePoints, groupLabelLines, MERGE_PX, namesThatFit, nextSnap, rectangleRing, revealedRouteId, sheetHeightPx, snapAfterDrag, spreadLabels, stopMergePx, type LabelBox, type MapScreenRoute } from "./map-screen";
 import { distanceMeters } from "./places";
 
 const route = (id: string, order: number, over: Partial<MapScreenRoute> = {}): MapScreenRoute => ({
@@ -19,6 +19,10 @@ const route = (id: string, order: number, over: Partial<MapScreenRoute> = {}): M
   area: { lat: 34.4, lng: 135.5, widthM: 8000, heightM: 5000, verified: false },
   elevations: null,
   description: null,
+  history: null,
+  access: null,
+  gallery: [],
+  points: [],
   photo: null,
   spots: [],
   href: `/ja/routes/${id}`,
@@ -149,7 +153,47 @@ describe("the bottom sheet", () => {
   test("heights grow from peek to full", () => {
     expect(sheetHeightPx("peek", room)).toBeLessThan(sheetHeightPx("half", room));
     expect(sheetHeightPx("half", room)).toBeLessThan(sheetHeightPx("full", room));
-    expect(sheetHeightPx("full", room)).toBeLessThan(room);
+    expect(sheetHeightPx("full", room)).toBe(room); // the top resting place covers the whole page
+  });
+
+  test("pins that are too close always merge: a stop merges once it touches its neighbour, earlier when asked", () => {
+    expect(stopMergePx(false)).toBeGreaterThanOrEqual(40);
+    expect(stopMergePx(true)).toBeGreaterThan(stopMergePx(false));
+    expect(MERGE_PX.namedPin).toBeGreaterThan(MERGE_PX.pin);
+    expect(MERGE_PX.pin).toBeGreaterThan(MERGE_PX.tag);
+  });
+
+  test("group labels are pushed apart and kept inside the visible area", () => {
+    const area = { left: 0, top: 0, right: 400, bottom: 600 };
+    const touching = [
+      { id: "a", x: 200, y: 200, w: 176, h: 100 },
+      { id: "b", x: 210, y: 220, w: 176, h: 100 },
+    ];
+    const [a, b] = spreadLabels(touching, area) as [LabelBox, LabelBox];
+    const apart = Math.abs(a.x - b.x) >= (a.w + b.w) / 2 - 1 || Math.abs(a.y - b.y) >= (a.h + b.h) / 2 - 1;
+    expect(apart).toBe(true);
+    // Far outside the area: pulled back in.
+    const [c] = spreadLabels([{ id: "c", x: -500, y: 9000, w: 176, h: 100 }], area) as [LabelBox];
+    expect(c.x).toBe(88);
+    expect(c.y).toBe(550);
+    // Too big for the area: pinned to the top-left corner, not thrown off screen.
+    const [d] = spreadLabels([{ id: "d", x: 100, y: 100, w: 176, h: 900 }], area) as [LabelBox];
+    expect(d.y - 450).toBe(0);
+  });
+
+  test("the estimated size of a group grows with its names", () => {
+    expect(estimateGroupBox(["a", "b", "c"]).h).toBeLessThan(estimateGroupBox(["a", "b", "c", "d", "e", "f"]).h);
+    expect(estimateGroupBox(["大福山から雲山峰を越えて長い名前の区間へ"]).h).toBeGreaterThan(estimateGroupBox(["大福山"]).h);
+  });
+
+  test("a merged group names its members, the first few and how many more", () => {
+    expect(groupLabelLines(["a", "b"])).toEqual({ lines: ["a", "b"], more: 0 });
+    const seven = ["a", "b", "c", "d", "e", "f", "g"];
+    expect(groupLabelLines(seven).more).toBe(0); // room enough: every name
+    const tight = groupLabelLines(seven, estimateGroupBox(seven.slice(0, 5)).h + 18);
+    expect(tight.lines).toEqual(["a", "b", "c", "d", "e"]);
+    expect(tight.more).toBe(2);
+    expect(groupLabelLines(seven, 1).lines).toEqual(["a"]); // never fewer than one name
   });
 
   test("a slow drag settles at the nearest resting place", () => {

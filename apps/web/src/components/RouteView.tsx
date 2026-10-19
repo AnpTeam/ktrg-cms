@@ -1,6 +1,7 @@
 import { Trans } from "@lingui/react/macro";
 import { ElevationProfile } from "@/components/ElevationProfile";
 import { EmptyState } from "@/components/EmptyState";
+import { ExpandableText } from "@/components/ExpandableText";
 import { IntroVideo } from "@/components/IntroVideo";
 import { Localized } from "@/components/Localized";
 import { Notice } from "@/components/Notice";
@@ -13,6 +14,7 @@ import type { MapStop } from "@/components/map/TrailMap";
 import { TrailMapLoader } from "@/components/map/TrailMapLoader";
 import type { RouteDetail } from "@/lib/content";
 import type { MapSettings } from "@/lib/map-settings";
+import { municipalityName } from "@/lib/municipalities";
 import { pickText } from "@/lib/pick-text";
 import { pointsAsPlaces } from "@/lib/point-places";
 import type { MapPlace } from "@/lib/places";
@@ -95,14 +97,16 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           <p className="mt-2 text-lg text-muted">
             {route.prefecture ? <PrefectureName value={route.prefecture} /> : null}
             {route.prefecture && route.municipality ? " " : null}
-            {route.municipality}
+            {municipalityName(locale, route.municipality)}
           </p>
         ) : null}
         <RouteStats route={route} />
         {description ? (
-          <p className="mt-4 max-w-prose whitespace-pre-line text-lg leading-8">
-            <Localized value={description} tag={false} />
-          </p>
+          <div className="mt-4">
+            <ExpandableText text={description.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
+              <Localized value={description} tag={false} />
+            </ExpandableText>
+          </div>
         ) : null}
       </header>
 
@@ -132,9 +136,11 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           <h2 className="text-xl font-bold">
             <Trans>歴史・由来</Trans>
           </h2>
-          <p className="mt-2 max-w-prose whitespace-pre-line text-lg leading-8">
-            <Localized value={history} tag={false} />
-          </p>
+          <div className="mt-2">
+            <ExpandableText text={history.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
+              <Localized value={history} tag={false} />
+            </ExpandableText>
+          </div>
           {history.fallback ? (
             <p className="mt-2 text-base text-muted">
               <Trans>この文章は日本語のみです。</Trans>
@@ -148,9 +154,11 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           <h2 className="text-xl font-bold">
             <Trans>アクセス・交通</Trans>
           </h2>
-          <p className="mt-2 max-w-prose whitespace-pre-line text-lg leading-8">
-            <Localized value={access} tag={false} />
-          </p>
+          <div className="mt-2">
+            <ExpandableText text={access.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
+              <Localized value={access} tag={false} />
+            </ExpandableText>
+          </div>
           {access.fallback ? (
             <p className="mt-2 text-base text-muted">
               <Trans>この文章は日本語のみです。</Trans>
