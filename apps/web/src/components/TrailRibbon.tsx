@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Trans, useLingui } from "@lingui/react/macro";
 import { canGroupByPrefecture, pickText, type Prefecture, type RouteSummary } from "@/lib/content";
+import { municipalityName } from "@/lib/municipalities";
 import { connectorStates, nodeState, progressShare, type NodeState } from "@/lib/ribbon";
 import { Localized } from "./Localized";
 import { MedalRow } from "./MedalRow";
@@ -57,7 +58,7 @@ function RouteCard({ route, state, locale }: { route: RouteSummary; state: NodeS
   const { t } = useLingui();
   const { spotCount, stampedCount } = route;
   const name = pickText(locale, route.nameJa, route.nameEn);
-  const place = route.municipality;
+  const place = municipalityName(locale, route.municipality);
   const medalLabel = stampedCount === null ? t`スタンプ場所 ${spotCount}か所` : t`スタンプ ${stampedCount} / ${spotCount}`;
 
   return (
