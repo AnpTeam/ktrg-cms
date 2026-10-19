@@ -37,9 +37,19 @@ const EnvSchema = Type.Object({
 
 export type Env = Static<typeof EnvSchema>;
 
+/**
+ * The database URL: DATABASE_URL, else the names Vercel's Postgres integrations set
+ * (DB_POSTGRES_URL with the "DB" prefix chosen when connecting it, or plain POSTGRES_URL).
+ */
+export function databaseUrlFrom(source: Record<string, string | undefined>): string | undefined {
+  return source.DATABASE_URL || source.DB_POSTGRES_URL || source.POSTGRES_URL || undefined;
+}
+
 /** Validate a raw environment; throws one error listing every problem. */
 export function parseEnv(source: Record<string, string | undefined>): Env {
-  const candidate = Value.Default(EnvSchema, Value.Convert(EnvSchema, { ...source }));
+  const databaseUrl = databaseUrlFrom(source);
+  const raw = { ...source, ...(databaseUrl ? { DATABASE_URL: databaseUrl } : {}) };
+  const candidate = Value.Default(EnvSchema, Value.Convert(EnvSchema, raw));
   const first = new Map<string, string>();
   for (const e of Value.Errors(EnvSchema, candidate)) {
     if (!first.has(e.path)) first.set(e.path, e.message);
