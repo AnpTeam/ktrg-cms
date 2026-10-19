@@ -48,6 +48,18 @@ msgstr "{meters} m"
 msgid "{minutes}分"
 msgstr "{minutes} min"
 
+#: src/components/admin/AdminShell.tsx:21
+msgid "{name} さんでログイン中"
+msgstr "Signed in as {name}"
+
+#: src/components/admin/RouteTable.tsx:118
+msgid "{name} を1つ前へ"
+msgstr "Move {name} one step earlier"
+
+#: src/components/admin/RouteTable.tsx:127
+msgid "{name} を1つ後ろへ"
+msgstr "Move {name} one step later"
+
 #: src/app/[lang]/(public)/page.tsx:54
 msgid "{name}さん、こんにちは。"
 msgstr "Hello, {name}."
@@ -260,6 +272,7 @@ msgstr "Shops and food"
 msgid "お探しのものは、見つかりませんでした。"
 msgstr "We could not find what you were looking for."
 
+#: src/components/admin/AdminNav.tsx:15
 #: src/components/landing/TrailNotices.tsx:30
 msgid "お知らせ"
 msgstr "Notices"
@@ -320,6 +333,10 @@ msgstr "About this data"
 #: src/components/settings/PasskeyManager.tsx:144
 msgid "このパスキーを消しますか？"
 msgstr "Remove this passkey?"
+
+#: src/app/[lang]/(admin)/layout.tsx:32
+msgid "このページを見る権限がありません"
+msgstr "You do not have permission to view this page"
 
 #: src/components/StampHere.tsx:89
 msgid "このラリーは、いまは行われていません。"
@@ -402,6 +419,10 @@ msgstr "Start with these settings"
 #: src/components/SpotSheet.tsx:82
 msgid "この説明は日本語のみです。"
 msgstr "This description is in Japanese only."
+
+#: src/components/admin/AdminNav.tsx:32
+msgid "これから追加します"
+msgstr "Coming later"
 
 #: src/components/landing/Landing.tsx:109
 msgid "これは見本です。経塚のスタンプは全{TOTAL_STAMPS}か所。"
@@ -517,6 +538,7 @@ msgstr "{spotCount} stamp locations"
 msgid "スタンプ済み"
 msgstr "stamped"
 
+#: src/components/admin/RouteTable.tsx:66
 #: src/components/PrefectureFilter.tsx:34
 msgid "すべて"
 msgstr "All"
@@ -622,6 +644,10 @@ msgstr "A passkey lets you log in with your face or fingerprint. Add one for thi
 msgid "バス停"
 msgstr "Bus stop"
 
+#: src/components/admin/AdminNav.tsx:15
+msgid "バナー"
+msgstr "Banners"
+
 #: src/components/settings/PrefsForm.tsx:39
 msgid "ふつう"
 msgstr "Standard"
@@ -656,6 +682,10 @@ msgstr "Profile and stamps"
 msgid "ページが見つかりません"
 msgstr "Page not found"
 
+#: src/components/admin/AdminNav.tsx:15
+msgid "ページの文章"
+msgstr "Page text"
+
 #: src/components/map/MapSettingsForm.tsx:56
 msgid "ベースマップ"
 msgstr "Base map"
@@ -679,6 +709,10 @@ msgstr "Home"
 #: src/app/[lang]/(public)/not-found.tsx:18
 msgid "ホームにもどる"
 msgstr "Back to Home"
+
+#: src/app/[lang]/(admin)/layout.tsx:38
+msgid "ホームへ戻る"
+msgstr "Back to home"
 
 #: src/components/useErrorMessages.ts:30
 msgid "ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。"
@@ -786,6 +820,10 @@ msgstr "Show more ({hidden} more)"
 msgid "やめる"
 msgstr "Cancel"
 
+#: src/components/admin/AdminNav.tsx:15
+msgid "ユーザーと権限"
+msgstr "Users and permissions"
+
 #: src/app/[lang]/(public)/sitemap/page.tsx:102
 #: src/components/SiteFooter.tsx:14
 #: src/components/SiteHeader.tsx:196
@@ -802,6 +840,10 @@ msgstr "Licenses"
 msgid "ライト"
 msgstr "Light"
 
+#: src/components/admin/AdminNav.tsx:15
+msgid "ラリー"
+msgstr "Rallies"
+
 #: src/app/[lang]/(public)/stamps/page.tsx:55
 msgid "ラリーの一覧"
 msgstr "All rallies"
@@ -810,11 +852,21 @@ msgstr "All rallies"
 msgid "ラリーは、まだ準備中です。"
 msgstr "The rallies are not ready yet."
 
+#: src/app/[lang]/(admin)/admin/routes/page.tsx:22
 #: src/app/[lang]/(public)/routes/page.tsx:18
 #: src/app/[lang]/(public)/sitemap/page.tsx:65
+#: src/components/admin/AdminNav.tsx:14
 #: src/components/TabBar.tsx:21
 msgid "ルート"
 msgstr "Routes"
+
+#: src/app/[lang]/(admin)/admin/routes/page.tsx:11
+msgid "ルート（管理）"
+msgstr "Routes (admin)"
+
+#: src/components/admin/RouteTable.tsx:86
+msgid "ルートがまだありません。「新しいルート」から作ってください。"
+msgstr "There are no routes yet. Create one with \"New route\"."
 
 #: src/app/[lang]/(public)/spots/[id]/page.tsx:35
 msgid "ルートにもどる"
@@ -841,10 +893,15 @@ msgid "ルートや場所は、ログインしなくても見られます。"
 msgstr "You can browse routes and places without signing in."
 
 #: src/app/[lang]/(public)/page.tsx:85
+#: src/components/admin/RouteTable.tsx:50
 #: src/components/landing/Landing.tsx:80
 #: src/components/landing/Landing.tsx:214
 msgid "ルートをさがす"
 msgstr "Find a route"
+
+#: src/app/[lang]/(admin)/admin/routes/page.tsx:31
+msgid "ルートを読み込めませんでした。しばらくしてから、ページを開き直してください。"
+msgstr "Could not load the routes. Please wait a moment and reopen the page."
 
 #: src/app/[lang]/(public)/routes/[id]/page.tsx:78
 msgid "ルート一覧"
@@ -908,6 +965,14 @@ msgstr "Logged in"
 #: src/components/map/TrailMap.tsx:508
 msgid "上のボタンを押すと、{restName}や{shopsName}などが地図と一覧に出ます。"
 msgstr "Tap a button above to show {restName}, {shopsName} and more on the map and in the list."
+
+#: src/components/admin/RouteTable.tsx:25
+msgid "下書き"
+msgstr "Draft"
+
+#: src/components/admin/RouteTable.tsx:138
+msgid "並べ替えは、検索や絞り込みを外してからできます。"
+msgstr "You can reorder once the search and filter are cleared."
 
 #: src/components/map/TrailMap.tsx:436
 msgid "仮のルート・位置（未確認）"
@@ -1000,6 +1065,10 @@ msgstr "Whole map"
 msgid "公式サイトをひらく"
 msgstr "Open the official site"
 
+#: src/components/admin/AdminShell.tsx:26
+msgid "公開サイトを見る"
+msgstr "View the public site"
+
 #: src/app/[lang]/(public)/stamps/page.tsx:46
 msgid "公開できるようになったら、ここにスタンプのラリーが表示されます。"
 msgstr "When they are ready to publish, the stamp rallies will appear here."
@@ -1011,6 +1080,10 @@ msgstr "Routes will appear here once they are published."
 #: src/app/[lang]/(public)/routes/[id]/page.tsx:127
 msgid "公開できるようになったら、ここに場所の一覧が表示されます。"
 msgstr "When they are ready to publish, the list of places will appear here."
+
+#: src/components/admin/RouteTable.tsx:25
+msgid "公開中"
+msgstr "Published"
 
 #: src/components/ElevationProfile.tsx:35
 msgid "最低 {lowest}m"
@@ -1080,6 +1153,10 @@ msgstr "Cancel deletion"
 msgid "前の写真"
 msgstr "Previous photo"
 
+#: src/components/admin/RouteTable.tsx:121
+msgid "前へ"
+msgstr "Earlier"
+
 #: src/components/landing/Landing.tsx:144
 msgid "動画で見る"
 msgstr "Watch the video"
@@ -1112,6 +1189,11 @@ msgstr "Choose a course to see its path and its stamp places."
 msgid "半分"
 msgstr "half"
 
+#: src/components/admin/RouteTable.tsx:55
+msgid "名前の一部を入力"
+msgstr "Part of the name"
+
+#: src/components/admin/RouteTable.tsx:26
 #: src/components/auth/authUi.tsx:78
 #: src/components/PrefectureName.tsx:9
 msgid "和歌山県"
@@ -1177,9 +1259,23 @@ msgstr "Show terrain shading"
 msgid "地形ボタンで重ねるもの"
 msgstr "What the terrain button adds"
 
+#. placeholder {0}: r.publishedSpotCount
+#. placeholder {1}: r.spotCount
+#: src/components/admin/RouteTable.tsx:108
+msgid "場所 {0} / {1}"
+msgstr "Places {0} / {1}"
+
 #: src/components/useErrorMessages.ts:37
 msgid "場所が残っているルートは消せません。先に場所を消してください。"
 msgstr "A route that still has places cannot be deleted. Delete its places first."
+
+#: src/components/admin/AdminNav.tsx:15
+msgid "場所の一覧"
+msgstr "All places"
+
+#: src/components/admin/AdminNav.tsx:15
+msgid "変更の記録"
+msgstr "Change log"
 
 #: src/components/settings/PrefsForm.tsx:40
 msgid "大きい"
@@ -1193,11 +1289,13 @@ msgstr "Bigger map"
 msgid "大切な操作なので、もう一度、確認します。"
 msgstr "This is an important action, so we confirm it is you once more."
 
+#: src/components/admin/RouteTable.tsx:26
 #: src/components/auth/authUi.tsx:77
 #: src/components/PrefectureName.tsx:7
 msgid "大阪府"
 msgstr "Osaka"
 
+#: src/components/admin/RouteTable.tsx:26
 #: src/components/auth/authUi.tsx:79
 #: src/components/PrefectureName.tsx:11
 msgid "奈良県"
@@ -1230,6 +1328,10 @@ msgstr "These are mountain paths. Check the weather and bring water, food and st
 #: src/components/auth/AboutYou.tsx:76
 msgid "年代"
 msgstr "Age"
+
+#: src/components/admin/RouteTable.tsx:130
+msgid "後ろへ"
+msgstr "Later"
 
 #: src/components/auth/AboutYou.tsx:91
 msgid "性別"
@@ -1288,6 +1390,10 @@ msgstr "Choose the size of text and buttons and how the map is shown."
 msgid "文字やボタンの大きさ、地図の見せ方を選べます。大きさは、選ぶとすぐに変わります。"
 msgstr "Choose the size of text and buttons and how the map is shown. The size changes as soon as you choose it."
 
+#: src/components/admin/RouteTable.tsx:75
+msgid "新しいルート"
+msgstr "New route"
+
 #: src/app/[lang]/(public)/register/page.tsx:16
 #: src/app/[lang]/(public)/register/page.tsx:32
 #: src/app/[lang]/(public)/sitemap/page.tsx:90
@@ -1313,6 +1419,11 @@ msgstr "Japanese only"
 msgid "時間"
 msgstr "Time"
 
+#. placeholder {0}: formatUpdated(locale, r.updatedAt)
+#: src/components/admin/RouteTable.tsx:110
+msgid "更新 {0}"
+msgstr "Updated {0}"
+
 #: src/components/StatusBanner.tsx:37
 msgid "更新 {updated}（日本時間）"
 msgstr "Updated {updated} (Japan time)"
@@ -1324,6 +1435,10 @@ msgstr "Confirming it is you"
 #: src/app/[lang]/layout.tsx:53
 msgid "本文へ移動"
 msgstr "Skip to main content"
+
+#: src/components/admin/RouteTable.tsx:88
+msgid "条件に合うルートがありません。"
+msgstr "No routes match."
 
 #: src/components/map/MapSettingsForm.tsx:49
 msgid "標準"
@@ -1365,6 +1480,10 @@ msgstr "Sections walked {done} / {TOTAL_ROUTES}"
 msgid "歩く道"
 msgstr "The path"
 
+#: src/app/[lang]/(admin)/admin/routes/page.tsx:25
+msgid "歩く順番に並んでいます。名前を押すと、文章や地図を直せます。"
+msgstr "Routes are in walking order. Select a name to edit its text and map."
+
 #: src/components/landing/Landing.tsx:221
 msgid "歴史や観光の情報は、日本遺産「葛城修験」の公式サイトでも見られます。"
 msgstr "You can also find history and sightseeing information on the official Japan Heritage Katsuragi Shugen site."
@@ -1394,6 +1513,8 @@ msgstr "After removing it, you can no longer log in with your face or fingerprin
 msgid "淡色"
 msgstr "Pale"
 
+#: src/components/admin/AdminNav.tsx:37
+#: src/components/admin/RouteTable.tsx:25
 #: src/components/landing/Landing.tsx:255
 #: src/components/map/MapScreen.tsx:278
 #: src/components/RallyViews.tsx:105
@@ -1490,6 +1611,18 @@ msgstr "Prefer not to say"
 msgid "答えなくても大丈夫です。"
 msgstr "You can skip this."
 
+#: src/components/admin/AdminNav.tsx:18
+msgid "管理メニュー"
+msgstr "Admin menu"
+
+#: src/app/[lang]/(admin)/layout.tsx:35
+msgid "管理画面は、管理者だけが使えます。権限が必要な場合は、管理者にお知らせください。"
+msgstr "Only administrators can use the admin area. If you need access, tell an administrator."
+
+#: src/components/admin/AdminShell.tsx:21
+msgid "管理者としてログイン中"
+msgstr "Signed in as an administrator"
+
 #: src/components/map/PlacesPanel.tsx:65
 msgid "約{amount}km"
 msgstr "About {amount} km"
@@ -1541,6 +1674,10 @@ msgstr "Elevation colours (green to brown)"
 #: src/components/landing/Landing.tsx:69
 msgid "葛城修験"
 msgstr "Katsuragi Shugendō"
+
+#: src/components/admin/AdminShell.tsx:14
+msgid "葛城修験 管理"
+msgstr "Katsuragi Shugen Admin"
 
 #: src/components/landing/Landing.tsx:156
 msgid "葛城修験とは"
@@ -1615,6 +1752,14 @@ msgstr "How to play"
 #: src/components/landing/Landing.tsx:197
 msgid "道が通れないときは、無理をせず引き返してください。"
 msgstr "If the path is closed, do not push on. Turn back."
+
+#: src/components/admin/RouteTable.tsx:60
+msgid "都道府県"
+msgstr "Prefecture"
+
+#: src/components/admin/RouteTable.tsx:104
+msgid "都道府県が未入力"
+msgstr "Prefecture not set"
 
 #: src/components/landing/Landing.tsx:168
 msgid "長さ"

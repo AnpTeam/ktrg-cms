@@ -8,6 +8,8 @@ import { accountPrefs, type Prefs } from "./prefs";
 
 export interface Viewer {
   signedIn: boolean;
+  /** The account's role (what it may do); null when signed out or when the API did not say. */
+  role: "participant" | "admin" | null;
   /** The unique 8-digit ID shown on the profile (quote it to support); null when signed out. */
   publicId: string | null;
   /** When a requested account deletion will really happen (ISO time); null with no request. */
@@ -23,7 +25,7 @@ export interface Viewer {
   preferences: Prefs | null;
 }
 
-export const signedOut: Viewer = { signedIn: false, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, preferences: null };
+export const signedOut: Viewer = { signedIn: false, role: null, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, preferences: null };
 
 /**
  * Development only: `?as=in` / `?as=out` forces a viewer so both screens can be reviewed without
@@ -31,7 +33,7 @@ export const signedOut: Viewer = { signedIn: false, publicId: null, deletionDueA
  */
 export function resolveViewer(params: { as?: string }, env: { NODE_ENV?: string } = process.env): Viewer | null {
   if (env.NODE_ENV === "production") return null;
-  if (params.as === "in") return { signedIn: true, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, preferences: null };
+  if (params.as === "in") return { signedIn: true, role: null, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, preferences: null };
   if (params.as === "out") return signedOut;
   return null;
 }
@@ -42,10 +44,11 @@ export const devViewerCookie = "dev_as";
 /** Read the profile from GET /me's answer; anything unexpected is signed out. */
 export function viewerFromMe(status: number, body: unknown): Viewer {
   if (status !== 200) return signedOut;
-  const me = (body as { ok?: unknown; me?: { publicId?: unknown; deletionDueAt?: unknown; displayName?: unknown; origin?: unknown; ageRange?: unknown; gender?: unknown; preferences?: unknown } } | null)?.me;
+  const me = (body as { ok?: unknown; me?: { role?: unknown; publicId?: unknown; deletionDueAt?: unknown; displayName?: unknown; origin?: unknown; ageRange?: unknown; gender?: unknown; preferences?: unknown } } | null)?.me;
   if ((body as { ok?: unknown } | null)?.ok !== true || !me) return signedOut;
   return {
     signedIn: true,
+    role: me.role === "admin" || me.role === "participant" ? me.role : null,
     publicId: typeof me.publicId === "string" && me.publicId ? me.publicId : null,
     deletionDueAt: typeof me.deletionDueAt === "string" && me.deletionDueAt ? me.deletionDueAt : null,
     name: typeof me.displayName === "string" && me.displayName ? me.displayName : null,
