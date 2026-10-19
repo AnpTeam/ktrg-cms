@@ -6,10 +6,11 @@ import { useLingui } from "@lingui/react/macro";
 import type { GeoJSONSource, Map as MapLibreMap } from "maplibre-gl";
 import { WarningIcon } from "@/components/icons";
 import { clusterByPixels } from "@/lib/cluster";
-import { areaCollection, framePoints, namesThatFit, revealedRouteId, type MapScreenRoute } from "@/lib/map-screen";
+import { areaCollection, estimateGroupBox, framePoints, groupLabelLines, MERGE_PX, revealedRouteId, spreadLabels, stopMergePx, type LabelBox, type MapScreenRoute } from "@/lib/map-screen";
+import { groupOf } from "@/lib/places";
 import { boundsOf, lineFeature, mapStyle, markerKind, nextStopId, routeLineLayers, zoomLimits, type Position } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
-import { createClusterElement, createMarkerElement, createPinElement, createTagElement } from "./MapMarker";
+import { createClusterElement, createMarkerElement, createPinElement, createPlaceMarkerElement, createTagElement } from "./MapMarker";
 
 // The map of the home screen (WBS 3.2.10). Each course is an outlined rectangle with a pin in the middle that
 // carries its name. Zoom in over a course and its stops appear by themselves; choose a course and the others fold
@@ -18,11 +19,8 @@ import { createClusterElement, createMarkerElement, createPinElement, createTagE
 
 const AREAS = "areas";
 const DETAIL = "route-detail";
-const CLUSTER_PX = 50;
-/** Sideways names: from this zoom on the pins may carry their names (those with room); below it they are bare numbers that merge where they touch. */
-const NAMES_ZOOM = 9.4;
-/** Japanese tags are narrow, so on a wide screen all of them stand side by side; on a phone those closer than this merge into a numbered group. */
-const TAG_CLUSTER_PX = 40;
+/** A course's navigation points (toilets, turns ...) show from this zoom on, once the course is open. */
+const POINTS_ZOOM = 13;
 /** From this zoom on, being "inside" a course opens it: its stops appear without anyone choosing it. */
 const REVEAL_ZOOM = 11.3;
 const EMPTY = { type: "FeatureCollection" as const, features: [] };
@@ -192,21 +190,16 @@ export function MapScreenCanvas({
       const bounds = boundsOf(points);
       if (bounds) map.fitBounds(bounds, { padding: padding(), maxZoom: 17 });
     };
-    const withNames = map.getZoom() >= NAMES_ZOOM;
 
     // Pins: all of them while nothing is open. Once a course is open the others fold away; an opened course
     // with no stops of its own to show keeps its pin, so there is still something to read and press.
     const pinned = route ? [] : focus ? (focus.stops?.length ? [] : [focus]) : routes.filter((r) => r.area);
     const byId = new Map(pinned.map((r) => [r.id, r]));
-    const sideways = pinned.filter((r) => r.nameLang !== "ja");
-    const groups =
-      sideways.length === 0
-        ? clusterByPixels(pinned.map((r) => pixel(r.id, r.area as Position)), TAG_CLUSTER_PX)
-        : withNames
-          ? pinned.map((r) => [r.id])
-          : clusterByPixels(pinned.map((r) => pixel(r.id, r.area as Position)), CLUSTER_PX);
-    // A sideways name is printed only where it has room: never over another pin or another name.
-    const named = withNames ? namesThatFit(sideways.map((r) => ({ ...pixel(r.id, r.area as Position), name: r.name }))) : new Set<string>();
+    // The map's own rule, whatever the settings: pins closer than their size merge into one group. Every course keeps
+    // its name: a pin carries its own name, and a group lists the names of the courses inside it.
+    const sideways = pinned.some((r) => r.nameLang !== "ja");
+    const groups = clusterByPixels(pinned.map((r) => pixel(r.id, r.area as Position)), sideways ? MERGE_PX.namedPin : MERGE_PX.tag);
+    const merged: { box: LabelBox; node: HTMLElement }[] = [];
     for (const ids of groups) {
       const members = ids.map((id) => byId.get(id)!);
       if (members.length === 1) {
@@ -214,30 +207,47 @@ export function MapScreenCanvas({
         const order = r.order;
         const name = r.name;
         const common = { number: String(r.order), label: t`${order}. ${name}`, soon: r.status === "soon", onSelect: () => onSelectRoute(r.id) };
-        put(
-          r.nameLang === "ja" ? createTagElement({ ...common, name }) : createPinElement({ ...common, name: named.has(r.id) ? name : null }),
-          r.area as Position,
-          "bottom",
-        );
+        put(r.nameLang === "ja" ? createTagElement({ ...common, name }) : createPinElement({ ...common, name }), r.area as Position, "bottom");
       } else {
-        const orders = members.map((m) => m.order);
-        const text = `${Math.min(...orders)}–${Math.max(...orders)}`;
-        put(
-          createClusterElement({
-            text,
-            label: t`区間 ${text} がここに集まっています。押すと拡大します`,
-            kind: "stops",
-            onSelect: () => zoomTo(members.flatMap((m) => framePoints(m))),
-          }),
-          centerOf(members.map((m) => m.area as Position)),
-        );
+        const sorted = [...members].sort((x, y) => x.order - y.order);
+        const orders = sorted.map((m) => m.order);
+        const text = `${orders[0]}–${orders[orders.length - 1]}`;
+        const lines = sorted.map((m) => `${m.order}. ${m.name}`);
+        // As many names as fit in the visible height; the rest are in the sheet's list.
+        // Two columns of groups fit side by side, so each group may use its share of the height.
+        const rows = Math.max(1, Math.ceil(groups.filter((g) => g.length > 1).length / 2));
+        // (The size estimate is generous, so the share is widened a little.)
+        const room = (((containerRef.current?.clientHeight ?? 700) - coveredRef.current - 100 - 16) / rows) * 1.35;
+        const { lines: shown, more } = groupLabelLines(lines, room);
+        const node = createClusterElement({
+          text,
+          label: t`区間 ${text} がここに集まっています。押すと拡大します`,
+          kind: "stops",
+          names: { lines: shown, more: more > 0 ? t`ほか ${more} 区間` : null },
+          onSelect: () => zoomTo(members.flatMap((m) => framePoints(m))),
+        });
+        const middle = map.project([centerOf(members.map((m) => m.area as Position)).lng, centerOf(members.map((m) => m.area as Position)).lat]);
+        merged.push({ box: { id: ids.join(","), x: middle.x, y: middle.y, ...estimateGroupBox(more > 0 ? [...shown, ""] : shown) }, node });
       }
+    }
+    // The labels of merged groups must not cover each other or sit under the buttons and the sheet: every name stays readable.
+    if (merged.length > 0) {
+      const size = containerRef.current;
+      const spread = spreadLabels(
+        merged.map((m) => m.box),
+        { left: 8, top: 100, right: (size?.clientWidth ?? 360) - 8, bottom: (size?.clientHeight ?? 700) - coveredRef.current - 8 },
+      );
+      merged.forEach((m, i) => {
+        const at = map.unproject([spread[i]!.x, spread[i]!.y]);
+        put(m.node, { lat: at.lat, lng: at.lng });
+      });
     }
 
     if (focus?.stops) {
       const next = nextStopId(focus.stops);
       const stopById = new Map(focus.stops.map((s) => [s.id, s]));
-      const stopGroups = mergeStops ? clusterByPixels(focus.stops.map((s) => pixel(s.id, s.position)), CLUSTER_PX) : focus.stops.map((s) => [s.id]);
+      // Stops that touch always merge; the accessibility choice only makes them merge earlier.
+      const stopGroups = clusterByPixels(focus.stops.map((s) => pixel(s.id, s.position)), stopMergePx(mergeStops));
       for (const ids of stopGroups) {
         const members = ids.map((id) => stopById.get(id)!);
         if (members.length === 1) {
@@ -264,6 +274,21 @@ export function MapScreenCanvas({
             centerOf(members.map((m) => m.position)),
           );
         }
+      }
+    }
+
+    // The course's other points (toilets, turns, viewpoints), once zoomed in on it.
+    if (focus && focus.points.length > 0 && map.getZoom() >= POINTS_ZOOM) {
+      for (const p of focus.points) {
+        put(
+          createPlaceMarkerElement({
+            group: groupOf(p.category),
+            label: p.name,
+            closed: false,
+            onSelect: () => map.easeTo({ center: [p.position.lng, p.position.lat], zoom: Math.max(map.getZoom(), 16), duration: 400 }),
+          }),
+          p.position,
+        );
       }
     }
 

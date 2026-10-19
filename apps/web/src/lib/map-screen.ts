@@ -1,5 +1,6 @@
 import type { SpotStatus } from "./content";
 import type { Position } from "./map";
+import type { PlaceCategory } from "./places";
 
 // The pure parts of the home map (WBS 3.2.10): the area drawn for each course, and the heights the bottom sheet
 // can rest at. No React and no map library, so they are unit-tested.
@@ -56,6 +57,16 @@ export interface MapScreenStop {
   photo: MapPhoto | null;
 }
 
+/** A route's navigation point (a toilet, a turn, a viewpoint ...) shown on the map once the course is open and zoomed in. */
+export interface MapScreenPoint {
+  id: string;
+  /** The place picture group it is drawn with (see lib/places.ts). */
+  category: PlaceCategory;
+  name: string;
+  nameLang: "ja" | "en";
+  position: Position;
+}
+
 /** One course as the home map needs it. Texts are already in the visitor's language. */
 export interface MapScreenRoute {
   id: string;
@@ -79,7 +90,14 @@ export interface MapScreenRoute {
   /** The course page, with the locale. */
   href: string;
   description: string | null;
+  /** The story of the course, and how to get there; read by scrolling down in the course's sheet. */
+  history: string | null;
+  access: string | null;
   photo: MapPhoto | null;
+  /** The course's photo and the photos of its places, for the gallery (the course's own first). */
+  gallery: MapPhoto[];
+  /** The course's navigation points that have a position. */
+  points: MapScreenPoint[];
   /** Every stamp place of the course, in walking order (the detailed map below needs positions; this does not). */
   spots: MapScreenSpot[];
   /** The detailed map: only courses that have positions for their stops. */
@@ -212,13 +230,104 @@ export function namesThatFit(pins: readonly { id: string; x: number; y: number; 
   return shown;
 }
 
+// ---- Pins that are too close ---------------------------------------------------------------------------------------
+
+/**
+ * How far apart, in screen pixels, two pins must be to stay separate; closer ones merge into one group. This is a rule
+ * of the map, not a setting: pins never sit on top of each other. (A Japanese tag is narrow; a pin with its name beside
+ * it is wide, and every name stays readable, so it needs the most room.)
+ */
+export const MERGE_PX = { tag: 40, pin: 50, namedPin: 120 } as const;
+
+export interface LabelBox {
+  id: string;
+  /** The centre of the box on screen, in px. */
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/** About how big a merged group's label comes out: the count line plus each name on one or two lines. An estimate. */
+export function estimateGroupBox(names: readonly string[]): { w: number; h: number } {
+  const W = 176;
+  const lines = names.reduce((n, name) => {
+    const width = [...name].reduce((sum, ch) => sum + (ch.charCodeAt(0) > 0x2e80 ? 14 : 8), 0);
+    // Words wrap early, so the room is estimated generously: a label that is too roomy is harmless, one that is too small overlaps.
+    return n + Math.max(1, Math.ceil(width / 130));
+  }, 0);
+  return { w: W + 12, h: 52 + lines * 18 };
+}
+
+/**
+ * Moves group labels apart so none covers another, and keeps each inside `area` (the part of the map that is
+ * visible: clear of the buttons at the top and the sheet at the bottom). Each box moves as little as it can; the
+ * order of the input decides which way a tie is broken, so the same input always gives the same result. A box too big
+ * for the area is pinned to its top-left corner.
+ */
+export function spreadLabels(boxes: readonly LabelBox[], area: { left: number; top: number; right: number; bottom: number }): LabelBox[] {
+  const out = boxes.map((b) => ({ ...b }));
+  const clamp = (b: LabelBox) => {
+    const minX = area.left + b.w / 2;
+    const maxX = Math.max(minX, area.right - b.w / 2);
+    const minY = area.top + b.h / 2;
+    const maxY = Math.max(minY, area.bottom - b.h / 2);
+    b.x = Math.min(maxX, Math.max(minX, b.x));
+    b.y = Math.min(maxY, Math.max(minY, b.y));
+  };
+  out.forEach(clamp);
+  for (let round = 0; round < 40; round++) {
+    let moved = false;
+    for (let i = 0; i < out.length; i++) {
+      for (let j = i + 1; j < out.length; j++) {
+        const a = out[i]!;
+        const b = out[j]!;
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const overlapX = (a.w + b.w) / 2 - Math.abs(dx);
+        const overlapY = (a.h + b.h) / 2 - Math.abs(dy);
+        if (overlapX <= 0.5 || overlapY <= 0.5) continue;
+        moved = true;
+        if (overlapX < overlapY) {
+          const step = (overlapX / 2 + 0.5) * (dx === 0 ? (i % 2 === 0 ? -1 : 1) : Math.sign(dx));
+          a.x -= step;
+          b.x += step;
+        } else {
+          const step = (overlapY / 2 + 0.5) * (dy === 0 ? (i % 2 === 0 ? -1 : 1) : Math.sign(dy));
+          a.y -= step;
+          b.y += step;
+        }
+      }
+    }
+    out.forEach(clamp);
+    if (!moved) break;
+  }
+  return out;
+}
+
+/** The same for a course's stops. The accessibility choice 「まとめる」 merges them earlier; when it is off they still merge once they touch. */
+export function stopMergePx(mergeEarly: boolean): number {
+  return mergeEarly ? 56 : 40;
+}
+
+/**
+ * The names printed in a merged group's label: as many as fit in `maxHeight` px (all of them when they fit), then how
+ * many more there are. The rest are always in the sheet's list of courses, so no course is out of reach.
+ */
+export function groupLabelLines(names: readonly string[], maxHeight = Infinity): { lines: string[]; more: number } {
+  let count = names.length;
+  // Leave room for the "n more" line once something is left out.
+  while (count > 1 && estimateGroupBox(names.slice(0, count)).h + (count < names.length ? 18 : 0) > maxHeight) count--;
+  return { lines: names.slice(0, count), more: names.length - count };
+}
+
 // ---- The bottom sheet ----------------------------------------------------------------------------------------
 
 export type SheetSnap = "peek" | "half" | "full";
 export const sheetSnaps: readonly SheetSnap[] = ["peek", "half", "full"];
 
-/** How tall each resting place is, as a share of the room above the tab bar. */
-export const SNAP_FRACTION: Record<SheetSnap, number> = { peek: 0.3, half: 0.56, full: 0.94 };
+/** How tall each resting place is, as a share of the room above the tab bar. The top one covers the whole page. */
+export const SNAP_FRACTION: Record<SheetSnap, number> = { peek: 0.3, half: 0.56, full: 1 };
 
 export function sheetHeightPx(snap: SheetSnap, available: number): number {
   return Math.round(SNAP_FRACTION[snap] * available);

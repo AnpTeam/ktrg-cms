@@ -25,7 +25,8 @@ export function MapSheet({
   available: number;
   /** The room the floating tab bar takes at the bottom: the sheet reaches the screen's edge under it. */
   tabPx: number;
-  header: ReactNode;
+  /** Null when the content brings its own top (a course's banner), which then scrolls with the rest. */
+  header: ReactNode | null;
   children: ReactNode;
 }) {
   const { t } = useLingui();
@@ -101,7 +102,7 @@ export function MapSheet({
       >
         <span aria-hidden="true" className="h-1.5 w-12 rounded-full bg-line/60" />
       </div>
-      <div className="shrink-0 px-4 pb-2">{header}</div>
+      {header ? <div className="shrink-0 px-4 pb-2">{header}</div> : null}
       <div ref={body} className="min-h-0 flex-1 overflow-y-auto overscroll-contain" style={{ paddingBottom: tabPx + 24 }}>
         {children}
       </div>
