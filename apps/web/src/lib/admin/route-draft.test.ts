@@ -1,0 +1,188 @@
+import { describe, expect, test } from "bun:test";
+import { draftFromServer, draftReducer, emptyDraft, initialState, isDirty, placeFromServer, previewRoute, publishBlockers, type DraftAction, type DraftState } from "./route-draft";
+import { draftProblems, planSave, placeBody, routeBody, videoLinkLooksValid } from "./save-plan";
+import type { AdminRoute, AdminSpot } from "./types";
+
+const run = (state: DraftState, ...actions: DraftAction[]) => actions.reduce(draftReducer, state);
+const fresh = () => initialState(emptyDraft());
+
+const serverRoute = (over: Partial<AdminRoute> = {}): AdminRoute => ({
+  id: "r1", nameJa: "甲山から孝子越え", nameEn: null, descriptionJa: null, descriptionEn: null, distanceKm: null, elevationGainM: null,
+  difficulty: null, expectedTimeMin: null, prefecture: "wakayama", municipality: null, geometry: null, lineVerified: false, lineSource: null,
+  videoUrl: null, sortOrder: 2, createdAt: "2026-10-19T00:00:00.000Z", updatedAt: "2026-10-19T00:00:00.000Z", ...over,
+});
+const serverSpot = (id: string, over: Partial<AdminSpot> = {}): AdminSpot => ({
+  id, routeId: "r1", nameJa: "虎島の経塚", nameEn: null, descriptionJa: null, descriptionEn: null, lat: null, lng: null, positionVerified: false,
+  positionSource: null, radiusM: 50, status: "open", statusNoteJa: null, statusNoteEn: null, statusUpdatedAt: null, sortOrder: 1, published: false,
+  permissionConfirmed: false, permissionNote: null, createdAt: "2026-10-19T00:00:00.000Z", updatedAt: "2026-10-19T00:00:00.000Z", ...over,
+});
+
+describe("drawing", () => {
+  test("a line sets the distance, redrawing cancels the check, and a typed distance is kept", () => {
+    let s = run(fresh(), { type: "line", points: [[135, 34], [135, 34.01]] });
+    expect(s.present.distanceKm).toBe(1.11);
+    s = run(s, { type: "text", field: "lineSource", value: "公式" }, { type: "lineVerified", value: true });
+    expect(s.present.lineVerified).toBe(true);
+    s = run(s, { type: "line", points: [[135, 34], [135, 34.02]] });
+    expect(s.present.lineVerified).toBe(false);
+    expect(s.present.distanceKm).toBe(2.22);
+    s = run(s, { type: "distance", value: 9.3 }, { type: "line", points: [[135, 34], [135, 34.03]] });
+    expect(s.present.distanceKm).toBe(9.3);
+  });
+  test("the climb follows the elevations unless typed", () => {
+    const s = run(fresh(), { type: "line", points: [[135, 34, 100], [135, 34.01, 200], [135, 34.02, 300]] });
+    expect(s.present.elevationGainM).toBeGreaterThan(150);
+    const typed = run(s, { type: "climb", value: 50 }, { type: "line", points: [[135, 34, 100], [135, 34.01, 400]] });
+    expect(typed.present.elevationGainM).toBe(50);
+  });
+  test("undo and redo restore the line and the places, and a new action clears redo", () => {
+    let s = run(fresh(), { type: "line", points: [[135, 34], [135, 34.01]] }, { type: "addPlace", key: "a", lat: 34, lng: 135 });
+    expect(s.present.places).toHaveLength(1);
+    s = run(s, { type: "undo" });
+    expect(s.present.places).toHaveLength(0);
+    expect(s.present.line).toHaveLength(2);
+    s = run(s, { type: "undo" });
+    expect(s.present.line).toHaveLength(0);
+    s = run(s, { type: "redo" });
+    expect(s.present.line).toHaveLength(2);
+    s = run(s, { type: "addPlace", key: "b", lat: 34, lng: 135 });
+    expect(s.future).toHaveLength(0);
+    expect(run(fresh(), { type: "undo" }).present).toEqual(emptyDraft());
+  });
+  test("typing is not an undo step", () => {
+    const s = run(fresh(), { type: "text", field: "nameJa", value: "甲山" });
+    expect(s.past).toHaveLength(0);
+  });
+  test("history is capped at 100 steps", () => {
+    let s = fresh();
+    for (let i = 0; i < 150; i++) s = run(s, { type: "addPlace", key: `k${i}`, lat: 34, lng: 135 });
+    expect(s.past).toHaveLength(100);
+  });
+});
+
+describe("places", () => {
+  test("moving a place cancels the check on its position; moving it through the panel too", () => {
+    let s = run(fresh(), { type: "addPlace", key: "a", lat: 34, lng: 135 });
+    s = run(s, { type: "place", key: "a", patch: { positionVerified: true, positionSource: "公式" } });
+    expect(s.present.places[0]!.positionVerified).toBe(true);
+    s = run(s, { type: "movePlace", key: "a", lat: 34.001, lng: 135 });
+    expect(s.present.places[0]!.positionVerified).toBe(false);
+    s = run(s, { type: "place", key: "a", patch: { positionVerified: true } }, { type: "place", key: "a", patch: { lat: 34.5 } });
+    expect(s.present.places[0]!.positionVerified).toBe(false);
+  });
+  test("reorder needs exactly the same places", () => {
+    let s = run(fresh(), { type: "addPlace", key: "a", lat: 1, lng: 1 }, { type: "addPlace", key: "b", lat: 1, lng: 1 });
+    s = run(s, { type: "reorderPlaces", keys: ["b", "a"] });
+    expect(s.present.places.map((p) => p.key)).toEqual(["b", "a"]);
+    const same = run(s, { type: "reorderPlaces", keys: ["b"] });
+    expect(same).toBe(s);
+  });
+  test("the next default name counts the places", () => {
+    const s = run(fresh(), { type: "addPlace", key: "a", lat: 1, lng: 1 }, { type: "addPlace", key: "b", lat: 1, lng: 1 });
+    expect(s.present.places.map((p) => p.nameJa)).toEqual(["場所1", "場所2"]);
+  });
+});
+
+describe("publish blockers", () => {
+  const p = (over = {}) => ({ ...placeFromServer(serverSpot("s1")), ...over });
+  test("in the order the API checks them", () => {
+    expect(publishBlockers(p())).toEqual(["no_coordinates", "permission_required"]);
+    expect(publishBlockers(p({ lat: 34, lng: 135 }))).toEqual(["position_not_verified", "permission_required"]);
+    expect(publishBlockers(p({ lat: 34, lng: 135, positionVerified: true }))).toEqual(["position_not_verified", "permission_required"]); // no source named
+    expect(publishBlockers(p({ lat: 34, lng: 135, positionVerified: true, positionSource: "公式", permissionConfirmed: true }))).toEqual([]);
+  });
+  test("an unsaved place, or one with unsaved changes, must be saved first", () => {
+    expect(publishBlockers(p({ id: null }))).toContain("unsaved");
+    expect(publishBlockers(p({ lat: 34, lng: 135, positionVerified: true, positionSource: "公式", permissionConfirmed: true }), true)).toEqual(["unsaved"]);
+  });
+});
+
+describe("dirty and loading", () => {
+  test("a freshly loaded draft is clean, an edit makes it dirty", () => {
+    const d = draftFromServer(serverRoute(), [serverSpot("s1")]);
+    expect(isDirty(d, d)).toBe(false);
+    expect(isDirty(draftReducer(initialState(d), { type: "text", field: "nameEn", value: "x" }).present, d)).toBe(true);
+  });
+  test("a saved distance that is not the line's length counts as typed by hand", () => {
+    const line = { type: "LineString" as const, coordinates: [[135, 34], [135, 34.01]] as [number, number][] };
+    expect(draftFromServer(serverRoute({ geometry: line, distanceKm: 1.11 }), []).distanceManual).toBe(false);
+    expect(draftFromServer(serverRoute({ geometry: line, distanceKm: 9.3 }), []).distanceManual).toBe(true);
+    expect(draftFromServer(serverRoute({ distanceKm: 9.3 }), []).distanceManual).toBe(true);
+  });
+});
+
+describe("preview", () => {
+  test("shows drafts (an admin is looking) with their position unverified, and falls back to Japanese", () => {
+    let s = run(fresh(), { type: "text", field: "nameJa", value: "甲山" }, { type: "line", points: [[135, 34], [135.1, 34.05]] });
+    s = run(s, { type: "addPlace", key: "a", lat: 34.01, lng: 135.01 });
+    const v = previewRoute(s.present, 2);
+    expect(v).toMatchObject({ nameJa: "甲山", nameEn: null, order: 2, status: "soon", spotCount: 1 });
+    expect(v.spots[0]!.position).toEqual({ lat: 34.01, lng: 135.01, verified: false });
+    expect(v.line).toHaveLength(2);
+    expect(v.area).not.toBeNull();
+    expect(v.sketch).not.toBeNull();
+    expect(previewRoute(emptyDraft(), 1).line).toBeNull();
+  });
+});
+
+describe("save plan", () => {
+  const savedDraft = () =>
+    draftFromServer(serverRoute({ geometry: { type: "LineString", coordinates: [[135, 34], [135, 34.01]] }, distanceKm: 1.11 }), [serverSpot("s1"), serverSpot("s2", { nameJa: "二つ目" })]);
+
+  test("nothing changed: nothing to send", () => {
+    expect(planSave(savedDraft(), savedDraft())).toEqual([]);
+  });
+  test("a new route creates the route, then its places, and no separate order step", () => {
+    let s = run(fresh(), { type: "text", field: "nameJa", value: "新しいルート" }, { type: "addPlace", key: "a", lat: 34, lng: 135 }, { type: "addPlace", key: "b", lat: 34.1, lng: 135 });
+    const steps = planSave(s.present, null);
+    expect(steps.map((x) => x.op)).toEqual(["createRoute", "createSpot", "createSpot"]);
+    s = run(s, { type: "reorderPlaces", keys: ["b", "a"] });
+    // New places are created in the draft's own order, so the server ends up in that order without an extra step.
+    const reordered = planSave(s.present, null);
+    expect(reordered.map((x) => x.op)).toEqual(["createRoute", "createSpot", "createSpot"]);
+    expect(reordered.filter((x) => x.op === "createSpot").map((x) => (x as { key: string }).key)).toEqual(["b", "a"]);
+  });
+  test("only the changed fields go; the line never goes without its check", () => {
+    const saved = savedDraft();
+    const edited = run(initialState(saved), { type: "text", field: "nameEn", value: "Koyama" }).present;
+    expect(planSave(edited, saved)).toEqual([{ op: "updateRoute", body: { nameEn: "Koyama" } }]);
+    const redrawn = run(initialState(saved), { type: "line", points: [[135, 34], [135, 34.02]] }).present;
+    const step = planSave(redrawn, saved)[0]!;
+    expect(step.op).toBe("updateRoute");
+    expect((step as { body: object }).body).toMatchObject({ lineVerified: false, lineSource: null, distanceKm: 2.22 });
+  });
+  test("a moved place sends both numbers and says what its check is; a renamed one sends only the name", () => {
+    const saved = savedDraft();
+    const moved = run(initialState(saved), { type: "movePlace", key: "s1", lat: 34.2, lng: 135.3 }).present;
+    expect(planSave(moved, saved)).toEqual([{ op: "updateSpot", key: "s1", id: "s1", body: { lat: 34.2, lng: 135.3, positionVerified: false, positionSource: null } }]);
+    const renamed = run(initialState(saved), { type: "place", key: "s2", patch: { nameJa: "改名" } }).present;
+    expect(planSave(renamed, saved)).toEqual([{ op: "updateSpot", key: "s2", id: "s2", body: { nameJa: "改名" } }]);
+  });
+  test("deleted places go first; reordering is one step at the end", () => {
+    const saved = savedDraft();
+    const removed = run(initialState(saved), { type: "removePlace", key: "s1" }).present;
+    expect(planSave(removed, saved)).toEqual([{ op: "deleteSpot", key: "s1", id: "s1" }]);
+    const swapped = run(initialState(saved), { type: "reorderPlaces", keys: ["s2", "s1"] }).present;
+    expect(planSave(swapped, saved)).toEqual([{ op: "orderSpots", keys: ["s2", "s1"] }]);
+  });
+  test("empty text is sent as null, never as an empty string", () => {
+    const b = routeBody({ ...emptyDraft(), nameJa: " 甲山 " });
+    expect(b).toMatchObject({ nameJa: "甲山", nameEn: null, descriptionJa: null, videoUrl: null, geometry: null });
+    expect(placeBody(placeFromServer(serverSpot("s1")))).toMatchObject({ nameEn: null, positionSource: null });
+  });
+});
+
+describe("checks before saving", () => {
+  test("a blank route or place name, and a video link that is not YouTube or Vimeo", () => {
+    let s = run(fresh(), { type: "addPlace", key: "a", lat: 1, lng: 1 }, { type: "place", key: "a", patch: { nameJa: "  " } });
+    expect(draftProblems(s.present)).toEqual([{ kind: "route_name" }, { kind: "place_name", key: "a" }]);
+    s = run(s, { type: "text", field: "videoUrl", value: "https://example.com/x" });
+    expect(draftProblems(s.present).map((p) => p.kind)).toContain("video_link");
+  });
+  test("video links", () => {
+    expect(videoLinkLooksValid("")).toBe(true);
+    expect(videoLinkLooksValid("https://youtu.be/dQw4w9WgXcQ")).toBe(true);
+    expect(videoLinkLooksValid("http://youtu.be/dQw4w9WgXcQ")).toBe(false);
+    expect(videoLinkLooksValid("not a url")).toBe(false);
+  });
+});

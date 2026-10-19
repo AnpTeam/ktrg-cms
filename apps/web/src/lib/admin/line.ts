@@ -7,7 +7,7 @@ export type LngLatEle = [lng: number, lat: number, ele?: number];
 const EARTH_RADIUS_M = 6_371_008.8;
 const rad = (d: number) => (d * Math.PI) / 180;
 
-export function distanceM(a: readonly number[], b: readonly number[]): number {
+export function distanceM(a: readonly (number | undefined)[], b: readonly (number | undefined)[]): number {
   const dLat = rad(b[1]! - a[1]!);
   const dLng = rad(b[0]! - a[0]!);
   const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a[1]!)) * Math.cos(rad(b[1]!)) * Math.sin(dLng / 2) ** 2;
@@ -15,7 +15,7 @@ export function distanceM(a: readonly number[], b: readonly number[]): number {
 }
 
 /** Length along the line in kilometres, to two decimals (the same rounding as the API). */
-export function lengthKm(points: readonly (readonly number[])[]): number {
+export function lengthKm(points: readonly (readonly (number | undefined)[])[]): number {
   let m = 0;
   for (let i = 1; i < points.length; i++) m += distanceM(points[i - 1]!, points[i]!);
   return Math.round(m / 10) / 100;

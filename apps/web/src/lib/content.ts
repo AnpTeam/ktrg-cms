@@ -1,5 +1,6 @@
 import { fetchPublicRoute, fetchPublicRoutes, fetchPublicSpot, isEmptyRoute, routeDetailFromApi, routeSummaryFromApi, spotDetailFromApi } from "./api-content";
 import type { RouteArea } from "./map-screen";
+import { pickText } from "./pick-text";
 import type { MapPlace, PlaceCategory, PlaceStatus } from "./places";
 import type { RallyItem } from "./rally-model";
 import { sampleLastStamped, sampleMounds, sampleMoundsStamped } from "./sample-mounds";
@@ -90,19 +91,7 @@ export interface SpotDetail extends SpotListItem {
   photoUrl: string | null;
 }
 
-export interface Picked {
-  text: string;
-  lang: "ja" | "en";
-  /** English was requested but only Japanese exists. */
-  fallback: boolean;
-}
-
-/** The text for a locale: English if asked and entered, otherwise Japanese. */
-export function pickText(locale: string, ja: string | null, en: string | null): Picked | null {
-  if (locale === "en" && en) return { text: en, lang: "en", fallback: false };
-  if (ja) return { text: ja, lang: "ja", fallback: locale === "en" };
-  return null;
-}
+export { pickText, type Picked } from "./pick-text";
 
 export function isPrefecture(value: string | undefined): value is Prefecture {
   return prefectures.some((p) => p === value);
