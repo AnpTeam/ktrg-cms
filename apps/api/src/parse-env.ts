@@ -33,7 +33,16 @@ const EnvSchema = Type.Object({
   CRON_SECRET: Type.Optional(Type.String({ minLength: 32 })),
   // API docs at /api/v1/openapi. Always on outside production; set true to show them there too.
   API_DOCS: Type.Boolean({ default: false }),
+  // Photo uploads to Cloudflare R2: all five or none. Unset: POST /admin/uploads answers 503.
+  R2_ACCOUNT_ID: Type.Optional(Type.String({ minLength: 1 })),
+  R2_ACCESS_KEY_ID: Type.Optional(Type.String({ minLength: 1 })),
+  R2_SECRET_ACCESS_KEY: Type.Optional(Type.String({ minLength: 1 })),
+  R2_BUCKET_NAME: Type.Optional(Type.String({ minLength: 1 })),
+  // The bucket's public address (its r2.dev URL or a custom domain), https and no trailing slash.
+  R2_PUBLIC_URL: Type.Optional(Type.String({ pattern: "^https://[^/]+(/[^?#]*[^/?#])?$" })),
 });
+
+const R2_SETTINGS = ["R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET_NAME", "R2_PUBLIC_URL"] as const;
 
 export type Env = Static<typeof EnvSchema>;
 
@@ -58,6 +67,11 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
   const badAdmins = parseAdminEmails(typeof rawAdmins === "string" ? rawAdmins : undefined).invalid;
   if (badAdmins.length > 0 && !first.has("/ADMIN_EMAILS")) {
     first.set("/ADMIN_EMAILS", `not an email address: ${badAdmins.join(", ")}`);
+  }
+  const r2Set = R2_SETTINGS.filter((k) => (candidate as Record<string, unknown>)[k] !== undefined);
+  if (r2Set.length > 0 && r2Set.length < R2_SETTINGS.length) {
+    const missing = R2_SETTINGS.filter((k) => !r2Set.includes(k));
+    first.set(`/${missing[0]}`, `photo uploads need all of ${R2_SETTINGS.join(", ")}; missing ${missing.join(", ")}`);
   }
   if (first.size > 0) {
     const lines = [...first].map(([path, msg]) => `  - ${path.slice(1) || "(root)"}: ${msg}`);

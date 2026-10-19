@@ -34,6 +34,8 @@ export const AUDIT_ACTIONS = {
   "spot.unpublish": "spot",
   "spot.status.change": "spot",
   "spot.reorder": "route",
+  /** An admin uploaded a photo (the target is the file's UUID in storage). */
+  "upload.create": "upload",
 } as const satisfies Record<string, string>;
 
 export type AuditAction = keyof typeof AUDIT_ACTIONS;

@@ -20,6 +20,8 @@ import { meRoutes } from "./me/me-routes";
 import { createDrizzleMeStore } from "./me/me-store";
 import { apiDocs } from "./openapi";
 import { createServices, type Services } from "./services";
+import { uploadRoutes } from "./uploads/upload-routes";
+import { createR2Storage } from "./uploads/upload-storage";
 
 // Built on first use, so importing the app never opens a database connection.
 let services: Services | undefined;
@@ -46,6 +48,18 @@ function getServices(): Services {
         rpId: env.PASSKEY_RP_ID ?? new URL(env.APP_ORIGIN).hostname,
         origin: env.APP_ORIGIN,
       },
+      // All five R2 settings or none (parse-env checks): without them uploads answer 503.
+      uploads: env.R2_BUCKET_NAME
+        ? {
+            storage: createR2Storage({
+              accountId: env.R2_ACCOUNT_ID!,
+              accessKeyId: env.R2_ACCESS_KEY_ID!,
+              secretAccessKey: env.R2_SECRET_ACCESS_KEY!,
+              bucket: env.R2_BUCKET_NAME,
+            }),
+            publicBaseUrl: env.R2_PUBLIC_URL!,
+          }
+        : undefined,
     });
   }
   return services;
@@ -71,6 +85,7 @@ export function createApp(getServices: () => Services, opts: RouteOptions & { do
     .use(meRoutes(getServices, opts))
     .use(adminContentRoutes(getServices, opts))
     .use(publicContentRoutes(() => getServices().content))
+    .use(uploadRoutes(getServices, opts))
     .use(purgeRoutes(getServices, opts.cronSecret));
 }
 
