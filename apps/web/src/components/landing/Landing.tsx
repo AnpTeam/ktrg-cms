@@ -14,6 +14,7 @@ import { TrailNode } from "@/components/TrailNode";
 import { BannerCarousel } from "@/components/landing/BannerCarousel";
 import { TrailNotices } from "@/components/landing/TrailNotices";
 import type { BannerSlide } from "@/lib/banners";
+import { municipalityName } from "@/lib/municipalities";
 import { pickText, type RouteSummary } from "@/lib/content";
 import type { TrailNotice } from "@/lib/notices";
 import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
@@ -252,7 +253,7 @@ function PreviewStop({ route, locale, last, href }: { route: RouteSummary; local
           <span className="mt-1 block text-lg text-muted">
             {route.prefecture ? <PrefectureName value={route.prefecture} /> : null}
             {route.prefecture && route.municipality ? " " : null}
-            {route.municipality}
+            {municipalityName(locale, route.municipality)}
           </span>
         ) : null}
         {soon ? (
