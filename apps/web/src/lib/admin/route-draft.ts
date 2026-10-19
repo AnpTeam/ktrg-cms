@@ -1,10 +1,15 @@
-import type { RouteDetail } from "../content";
+import type { RouteDetail, RoutePoint } from "../content";
+import { navigationKinds, type PointKind } from "../point-kinds";
 import { areaFromBounds, sketchFromPoints } from "../route-geometry";
 import { climbM, elevationsOf, lengthKm, type LngLatEle } from "./line";
 import type { AdminRoute, AdminSpot, Prefecture, SpotStatus } from "./types";
+import { estimateWalkMinutes } from "./walk-time";
 
 // What the route editor holds while someone is typing and drawing: every field as the form shows it (text is "" when
-// empty), the line as points, and the places in order. Pure, so the rules are tested without a browser.
+// empty), the line as points, and the points of the route in order. Pure, so the rules are tested without a browser.
+//
+// A "place" here is any point of the route: a stamp place (kind "stamp") or one of its navigation points (a turn, a
+// toilet, a danger ...). They share one list, because they share the map and the same checks for a position.
 
 export interface PlaceDraft {
   /** A client-side id, stable while the place is not saved yet (and equal to `id` once it is). */
@@ -13,10 +18,12 @@ export interface PlaceDraft {
   id: string | null;
   updatedAt: string | null;
   published: boolean;
+  kind: PointKind;
   nameJa: string;
   nameEn: string;
   descriptionJa: string;
   descriptionEn: string;
+  photoUrl: string;
   lat: number | null;
   lng: number | null;
   positionVerified: boolean;
@@ -36,6 +43,11 @@ export interface RouteDraft {
   nameEn: string;
   descriptionJa: string;
   descriptionEn: string;
+  historyJa: string;
+  historyEn: string;
+  accessJa: string;
+  accessEn: string;
+  photoUrl: string;
   prefecture: Prefecture | null;
   municipality: string;
   distanceKm: number | null;
@@ -44,6 +56,8 @@ export interface RouteDraft {
   elevationGainM: number | null;
   climbManual: boolean;
   expectedTimeMin: number | null;
+  /** True once someone typed a walking time: it no longer follows the distance and climb. */
+  timeManual: boolean;
   difficulty: string;
   videoUrl: string;
   line: LngLatEle[];
@@ -53,17 +67,18 @@ export interface RouteDraft {
 }
 
 export const emptyDraft = (): RouteDraft => ({
-  id: null, updatedAt: null, nameJa: "", nameEn: "", descriptionJa: "", descriptionEn: "", prefecture: null, municipality: "",
-  distanceKm: null, distanceManual: false, elevationGainM: null, climbManual: false, expectedTimeMin: null, difficulty: "",
-  videoUrl: "", line: [], lineVerified: false, lineSource: "", places: [],
+  id: null, updatedAt: null, nameJa: "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
+  accessJa: "", accessEn: "", photoUrl: "", prefecture: null, municipality: "",
+  distanceKm: null, distanceManual: false, elevationGainM: null, climbManual: false, expectedTimeMin: null, timeManual: false,
+  difficulty: "", videoUrl: "", line: [], lineVerified: false, lineSource: "", places: [],
 });
 
 const s = (v: string | null) => v ?? "";
 
 export function placeFromServer(p: AdminSpot): PlaceDraft {
   return {
-    key: p.id, id: p.id, updatedAt: p.updatedAt, published: p.published,
-    nameJa: p.nameJa, nameEn: s(p.nameEn), descriptionJa: s(p.descriptionJa), descriptionEn: s(p.descriptionEn),
+    key: p.id, id: p.id, updatedAt: p.updatedAt, published: p.published, kind: p.kind,
+    nameJa: p.nameJa, nameEn: s(p.nameEn), descriptionJa: s(p.descriptionJa), descriptionEn: s(p.descriptionEn), photoUrl: s(p.photoUrl),
     lat: p.lat, lng: p.lng, positionVerified: p.positionVerified, positionSource: s(p.positionSource), radiusM: p.radiusM,
     status: p.status, statusNoteJa: s(p.statusNoteJa), statusNoteEn: s(p.statusNoteEn),
     permissionConfirmed: p.permissionConfirmed, permissionNote: s(p.permissionNote),
@@ -75,23 +90,33 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
   const eles = elevationsOf(line);
   return {
     id: route.id, updatedAt: route.updatedAt, nameJa: route.nameJa, nameEn: s(route.nameEn), descriptionJa: s(route.descriptionJa),
-    descriptionEn: s(route.descriptionEn), prefecture: route.prefecture, municipality: s(route.municipality),
+    descriptionEn: s(route.descriptionEn), historyJa: s(route.historyJa), historyEn: s(route.historyEn),
+    accessJa: s(route.accessJa), accessEn: s(route.accessEn), photoUrl: s(route.photoUrl),
+    prefecture: route.prefecture, municipality: s(route.municipality),
     distanceKm: route.distanceKm,
     // A saved distance that is not the line's own length was typed by hand: keep it when the line changes.
     distanceManual: route.distanceKm !== null && (line.length < 2 || route.distanceKm !== lengthKm(line)),
     elevationGainM: route.elevationGainM,
     climbManual: route.elevationGainM !== null && (!eles || route.elevationGainM !== climbM(eles)),
-    expectedTimeMin: route.expectedTimeMin, difficulty: s(route.difficulty), videoUrl: s(route.videoUrl),
+    expectedTimeMin: route.expectedTimeMin,
+    // A saved time that is not what the distance and climb give was typed by hand.
+    timeManual: route.expectedTimeMin !== null && route.expectedTimeMin !== estimateWalkMinutes(route.distanceKm, route.elevationGainM),
+    difficulty: s(route.difficulty), videoUrl: s(route.videoUrl),
     line, lineVerified: route.lineVerified, lineSource: s(route.lineSource),
     places: spots.map(placeFromServer),
   };
 }
 
-export const newPlace = (key: string, lat: number, lng: number, n: number): PlaceDraft => ({
-  key, id: null, updatedAt: null, published: false, nameJa: `場所${n}`, nameEn: "", descriptionJa: "", descriptionEn: "",
-  lat, lng, positionVerified: false, positionSource: "", radiusM: 50, status: "open", statusNoteJa: "", statusNoteEn: "",
+export const newPlace = (key: string, lat: number, lng: number, n: number, kind: PointKind = "stamp"): PlaceDraft => ({
+  key, id: null, updatedAt: null, published: false, kind, nameJa: kind === "stamp" ? `場所${n}` : "", nameEn: "", descriptionJa: "", descriptionEn: "",
+  photoUrl: "", lat, lng, positionVerified: false, positionSource: "", radiusM: 50, status: "open", statusNoteJa: "", statusNoteEn: "",
   permissionConfirmed: false, permissionNote: "",
 });
+
+/** The stamp places of a draft, in order (the numbers on the map and in the public list). */
+export const stampPlaces = (d: Pick<RouteDraft, "places">): PlaceDraft[] => d.places.filter((p) => p.kind === "stamp");
+/** The route's other points, in order. */
+export const navigationPoints = (d: Pick<RouteDraft, "places">): PlaceDraft[] => d.places.filter((p) => p.kind !== "stamp");
 
 // ---- the state and its actions -------------------------------------------------------------------------------
 
@@ -103,7 +128,20 @@ export interface DraftState {
 
 export const initialState = (draft: RouteDraft): DraftState => ({ present: draft, past: [], future: [] });
 
-export type TextField = "nameJa" | "nameEn" | "descriptionJa" | "descriptionEn" | "municipality" | "difficulty" | "videoUrl" | "lineSource";
+export type TextField =
+  | "nameJa"
+  | "nameEn"
+  | "descriptionJa"
+  | "descriptionEn"
+  | "historyJa"
+  | "historyEn"
+  | "accessJa"
+  | "accessEn"
+  | "photoUrl"
+  | "municipality"
+  | "difficulty"
+  | "videoUrl"
+  | "lineSource";
 
 export type DraftAction =
   | { type: "text"; field: TextField; value: string }
@@ -115,7 +153,9 @@ export type DraftAction =
   | { type: "line"; points: LngLatEle[] }
   /** The same points with elevations filled in (from the map tiles): not an undo step, and the line stays as drawn. */
   | { type: "elevations"; points: LngLatEle[] }
-  | { type: "addPlace"; key: string; lat: number; lng: number }
+  | { type: "addPlace"; key: string; lat: number; lng: number; kind?: PointKind }
+  /** Several places at once (named points of a GPX file): one undo step, all drafts. */
+  | { type: "addPlaces"; places: { key: string; name: string; lat: number; lng: number }[] }
   | { type: "movePlace"; key: string; lat: number; lng: number }
   | { type: "place"; key: string; patch: Partial<PlaceDraft> }
   | { type: "removePlace"; key: string }
@@ -139,7 +179,17 @@ function withLine(d: RouteDraft, points: LngLatEle[]): RouteDraft {
 }
 
 /** The actions that change the map or the order of places can be undone; typing is left to the browser's own undo. */
-const undoable = new Set<DraftAction["type"]>(["line", "addPlace", "movePlace", "removePlace", "reorderPlaces"]);
+const undoable = new Set<DraftAction["type"]>(["line", "addPlace", "addPlaces", "movePlace", "removePlace", "reorderPlaces"]);
+
+/** The walking time follows the distance and the climb until someone types one. */
+const withAutoTime = (d: RouteDraft): RouteDraft => {
+  if (d.timeManual) return d;
+  const t = estimateWalkMinutes(d.distanceKm, d.elevationGainM);
+  return t === d.expectedTimeMin ? d : { ...d, expectedTimeMin: t };
+};
+
+/** The kinds that change the distance or the climb, and so the estimate of the time. */
+const moves = new Set<DraftAction["type"]>(["distance", "climb", "line", "elevations", "time"]);
 
 function apply(d: RouteDraft, a: DraftAction): RouteDraft {
   switch (a.type) {
@@ -158,7 +208,8 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       return { ...d, elevationGainM: eles ? climbM(eles) : null, climbManual: false };
     }
     case "time":
-      return { ...d, expectedTimeMin: a.value };
+      // Emptying the field hands the number back to the estimate.
+      return a.value === null ? { ...d, timeManual: false } : { ...d, expectedTimeMin: a.value, timeManual: true };
     case "lineVerified":
       return { ...d, lineVerified: a.value };
     case "line":
@@ -171,8 +222,17 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       if (!d.climbManual && eles) next.elevationGainM = climbM(eles);
       return next;
     }
-    case "addPlace":
-      return { ...d, places: [...d.places, newPlace(a.key, a.lat, a.lng, d.places.length + 1)] };
+    case "addPlace": {
+      const kind = a.kind ?? "stamp";
+      const n = d.places.filter((p) => p.kind === kind).length + 1;
+      return { ...d, places: [...d.places, newPlace(a.key, a.lat, a.lng, n, kind)] };
+    }
+    case "addPlaces": {
+      if (a.places.length === 0) return d;
+      const start = d.places.filter((p) => p.kind === "stamp").length;
+      const added = a.places.map((p, i) => ({ ...newPlace(p.key, p.lat, p.lng, start + i + 1), nameJa: p.name.trim() || `場所${start + i + 1}` }));
+      return { ...d, places: [...d.places, ...added] };
+    }
     case "movePlace":
       return { ...d, places: d.places.map((p) => (p.key === a.key ? { ...p, lat: a.lat, lng: a.lng, positionVerified: false } : p)) };
     case "place":
@@ -210,8 +270,9 @@ export function draftReducer(state: DraftState, a: DraftAction): DraftState {
     const next = state.future[0];
     return next ? { present: next, past: [...state.past, state.present], future: state.future.slice(1) } : state;
   }
-  const present = apply(state.present, a);
+  let present = apply(state.present, a);
   if (present === state.present) return state;
+  if (moves.has(a.type)) present = withAutoTime(present);
   if (!undoable.has(a.type)) return { ...state, present };
   return { present, past: [...state.past, state.present].slice(-HISTORY), future: [] };
 }
@@ -222,13 +283,16 @@ export const isDirty = (draft: RouteDraft, saved: RouteDraft): boolean => JSON.s
 
 export type PublishBlocker = "no_coordinates" | "position_not_verified" | "permission_required" | "unsaved";
 
-/** What still stops a place from being published, in the order the API checks it (the API decides in the end). */
+/**
+ * What still stops a place from being published, in the order the API checks it (the API decides in the end).
+ * Only a stamp place needs the site's permission; a toilet or a turn on the path does not.
+ */
 export function publishBlockers(p: PlaceDraft, dirty = false): PublishBlocker[] {
   const out: PublishBlocker[] = [];
   if (p.id === null || dirty) out.push("unsaved");
   if (p.lat === null || p.lng === null) out.push("no_coordinates");
   else if (!p.positionVerified || !p.positionSource.trim()) out.push("position_not_verified");
-  if (!p.permissionConfirmed) out.push("permission_required");
+  if (p.kind === "stamp" && !p.permissionConfirmed) out.push("permission_required");
   return out;
 }
 
@@ -236,15 +300,26 @@ export function publishBlockers(p: PlaceDraft, dirty = false): PublishBlocker[] 
 
 const nz = (v: string) => (v.trim() === "" ? null : v);
 
+const pointOf = (p: PlaceDraft): RoutePoint => ({
+  id: p.id ?? p.key,
+  kind: p.kind === "stamp" ? "other" : p.kind,
+  nameJa: p.nameJa,
+  nameEn: nz(p.nameEn),
+  descriptionJa: nz(p.descriptionJa),
+  descriptionEn: nz(p.descriptionEn),
+  position: p.lat !== null && p.lng !== null ? { lat: p.lat, lng: p.lng, verified: p.positionVerified } : null,
+});
+
 /** The draft as the public route page would show it (every place, checked or not: an admin is looking). */
 export function previewRoute(d: RouteDraft, order: number): RouteDetail {
   const lats = d.line.map((p) => p[1]);
   const lngs = d.line.map((p) => p[0]);
   const bounds = d.line.length >= 2 ? { west: Math.min(...lngs), east: Math.max(...lngs), south: Math.min(...lats), north: Math.max(...lats) } : null;
+  const stamps = stampPlaces(d);
   return {
     id: d.id ?? "new",
     order,
-    status: d.places.some((p) => p.published) ? "ready" : "soon",
+    status: stamps.some((p) => p.published) ? "ready" : "soon",
     nameJa: d.nameJa,
     nameEn: nz(d.nameEn),
     prefecture: d.prefecture,
@@ -255,11 +330,15 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
     expectedTimeMin: d.expectedTimeMin,
     sketch: sketchFromPoints(d.line),
     area: areaFromBounds(bounds),
-    spotCount: d.places.length,
+    spotCount: stamps.length,
     stampedCount: null,
     descriptionJa: nz(d.descriptionJa),
     descriptionEn: nz(d.descriptionEn),
-    spots: d.places.map((p) => ({
+    historyJa: nz(d.historyJa),
+    historyEn: nz(d.historyEn),
+    accessJa: nz(d.accessJa),
+    accessEn: nz(d.accessEn),
+    spots: stamps.map((p) => ({
       id: p.id ?? p.key,
       nameJa: p.nameJa,
       nameEn: nz(p.nameEn),
@@ -267,8 +346,12 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
       stamped: null,
       position: p.lat !== null && p.lng !== null ? { lat: p.lat, lng: p.lng, verified: p.positionVerified } : null,
     })),
+    points: navigationPoints(d).map(pointOf),
     line: d.line.length >= 2 ? d.line.map(([lng, lat]) => ({ lat, lng })) : null,
     videoUrl: nz(d.videoUrl),
-    photoUrl: null,
+    photoUrl: nz(d.photoUrl),
   };
 }
+
+/** Whether a kind is one of the route's navigation points (handy for forms). */
+export const isNavigationKind = (kind: PointKind): boolean => (navigationKinds as readonly string[]).includes(kind);

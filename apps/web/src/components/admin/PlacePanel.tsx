@@ -1,9 +1,11 @@
 "use client";
 
 import { useLingui } from "@lingui/react/macro";
+import { pointKinds, type PointKind } from "@/lib/point-kinds";
 import { publishBlockers, type PlaceDraft, type PublishBlocker } from "@/lib/admin/route-draft";
 import type { SpotStatus } from "@/lib/admin/types";
 import { BilingualField, Check, Field, inputClass, NumberInput, TextInput } from "./fields";
+import { PhotoSlot } from "./PhotoSlot";
 
 export interface PlacePanelProps {
   place: PlaceDraft;
@@ -15,6 +17,7 @@ export interface PlacePanelProps {
   canMoveUp: boolean;
   canMoveDown: boolean;
   invalidName: boolean;
+  invalidPhoto: boolean;
   onSelect: () => void;
   onChange: (patch: Partial<PlaceDraft>) => void;
   onRemove: () => void;
@@ -23,11 +26,35 @@ export interface PlacePanelProps {
   onUnpublish: () => void;
 }
 
-/** One stamp place: its text, its position and where that came from, its status, the site's permission, and publishing. */
+/** The words for what a point on a route can be. */
+export function useKindLabels(): Record<PointKind, string> {
+  const { t } = useLingui();
+  return {
+    stamp: t`スタンプ場所`,
+    turn: t`曲がり角`,
+    danger: t`危険な所`,
+    view: t`見どころ`,
+    toilet: t`トイレ`,
+    rest_area: t`休憩所`,
+    drinking_water: t`水場`,
+    vending_machine: t`自動販売機`,
+    bus_stop: t`バス停`,
+    station: t`駅`,
+    parking: t`駐車場`,
+    other: t`その他`,
+  };
+}
+
+/**
+ * One place on the route. The short form (name, text, photo, position, kind) is what most edits need; the stamp
+ * settings (range, status, permission) are folded away. What still stops it being published is always visible.
+ */
 export function PlacePanel(p: PlacePanelProps) {
   const { t } = useLingui();
   const { place } = p;
   const blockers = publishBlockers(place, p.dirty);
+  const kindName = useKindLabels();
+  const isStamp = place.kind === "stamp";
   const blockerText: Record<PublishBlocker, string> = {
     unsaved: t`先に「保存」してください。`,
     no_coordinates: t`位置を決めてください（地図に置くか、緯度と経度を入れます）。`,
@@ -46,15 +73,36 @@ export function PlacePanel(p: PlacePanelProps) {
         <button type="button" onClick={p.onSelect} aria-expanded={p.selected} className="min-w-0 flex-1 text-left text-xl font-bold text-accent underline underline-offset-4">
           {place.nameJa || t`（名前がありません）`}
         </button>
+        <span className="rounded-lg bg-surface px-3 py-1 text-base">{kindName[place.kind]}</span>
         <span className={`rounded-lg px-3 py-1 text-base font-bold ${place.published ? "bg-moss text-paper" : "bg-surface text-ink"}`}>{place.published ? t`公開中` : t`下書き`}</span>
-        <span className="text-base text-muted">{statusName[place.status]}</span>
         {p.dirty ? <span className="text-base font-bold text-accent">{t`未保存`}</span> : null}
+        {!place.published && !p.selected && blockers.filter((b) => b !== "unsaved").length > 0 ? (
+          <p className="w-full pl-[3.25rem] text-base text-muted">{t`公開まで、あと${blockers.filter((b) => b !== "unsaved").length}つ`}</p>
+        ) : null}
       </div>
 
       {p.selected ? (
         <div className="flex flex-col gap-5 border-t border-line p-4">
           <BilingualField id={`${id}-name`} label={t`場所の名前`} ja={place.nameJa} en={place.nameEn} onJa={(v) => p.onChange({ nameJa: v })} onEn={(v) => p.onChange({ nameEn: v })} required invalid={p.invalidName} />
           <BilingualField id={`${id}-desc`} label={t`説明`} ja={place.descriptionJa} en={place.descriptionEn} onJa={(v) => p.onChange({ descriptionJa: v })} onEn={(v) => p.onChange({ descriptionEn: v })} multiline />
+
+          <Field label={t`種類`} htmlFor={`${id}-kind`} hint={isStamp ? t`スタンプを押せる場所です。` : t`道案内のための点です。スタンプは押せません。`}>
+            <select id={`${id}-kind`} value={place.kind} onChange={(e) => p.onChange({ kind: e.target.value as PointKind })} className={`${inputClass} max-w-xs`}>
+              {pointKinds.map((k) => (
+                <option key={k} value={k}>
+                  {kindName[k]}
+                </option>
+              ))}
+            </select>
+          </Field>
+
+          <div className="flex flex-col gap-2">
+            <Field label={t`写真のリンク`} htmlFor={`${id}-photo`} hint={t`https:// で始まるリンクを入れます。空にすると、写真は表示されません。`}>
+              <TextInput id={`${id}-photo`} value={place.photoUrl} onChange={(v) => p.onChange({ photoUrl: v })} maxLength={500} invalid={p.invalidPhoto} />
+            </Field>
+            {p.invalidPhoto ? <p role="alert" className="text-base font-bold text-danger">{t`写真のリンクは、https:// で始まるものだけ使えます。`}</p> : null}
+            <PhotoSlot url={place.photoUrl} className="max-w-md" />
+          </div>
 
           <fieldset className="flex flex-col gap-3">
             <legend className="text-base font-bold">{t`位置`}</legend>
@@ -73,33 +121,43 @@ export function PlacePanel(p: PlacePanelProps) {
             <Field label={t`確認した情報源（サイト名やリンク）`} htmlFor={`${id}-source`}>
               <TextInput id={`${id}-source`} value={place.positionSource} onChange={(v) => p.onChange({ positionSource: v })} maxLength={500} />
             </Field>
-            <Field label={t`スタンプを押せる範囲（メートル）`} htmlFor={`${id}-radius`} hint={t`この場所から、この距離の中にいるとスタンプを押せます。`}>
-              <div className="flex items-center gap-3">
-                <input id={`${id}-radius`} type="range" min={10} max={500} step={5} value={place.radiusM} onChange={(e) => p.onChange({ radiusM: Number(e.target.value) })} className="h-10 w-full max-w-sm accent-[var(--color-brand)]" />
-                <span className="w-20 text-lg font-bold tabular-nums">{place.radiusM} m</span>
-              </div>
-            </Field>
           </fieldset>
 
-          <fieldset className="flex flex-col gap-3">
-            <legend className="text-base font-bold">{t`いまの状態`}</legend>
-            <select aria-label={t`いまの状態`} value={place.status} onChange={(e) => p.onChange({ status: e.target.value as SpotStatus })} className={`${inputClass} max-w-xs`}>
-              <option value="open">{statusName.open}</option>
-              <option value="caution">{statusName.caution}</option>
-              <option value="closed">{statusName.closed}</option>
-            </select>
-            <BilingualField id={`${id}-note`} label={t`状態のひとこと`} ja={place.statusNoteJa} en={place.statusNoteEn} onJa={(v) => p.onChange({ statusNoteJa: v })} onEn={(v) => p.onChange({ statusNoteEn: v })} />
-          </fieldset>
+          <details className="rounded-xl bg-surface p-4">
+            <summary className="tap-target flex cursor-pointer items-center text-lg font-bold">{isStamp ? t`スタンプ・状態・許可の設定` : t`状態の設定`}</summary>
+            <div className="mt-3 flex flex-col gap-5">
+              {isStamp ? (
+                <Field label={t`スタンプを押せる範囲（メートル）`} htmlFor={`${id}-radius`} hint={t`この場所から、この距離の中にいるとスタンプを押せます。`}>
+                  <div className="flex items-center gap-3">
+                    <input id={`${id}-radius`} type="range" min={10} max={500} step={5} value={place.radiusM} onChange={(e) => p.onChange({ radiusM: Number(e.target.value) })} className="h-10 w-full max-w-sm accent-[var(--color-brand)]" />
+                    <span className="w-20 text-lg font-bold tabular-nums">{place.radiusM} m</span>
+                  </div>
+                </Field>
+              ) : null}
 
-          <fieldset className="flex flex-col gap-3">
-            <legend className="text-base font-bold">{t`現地の許可`}</legend>
-            <Check id={`${id}-permission`} checked={place.permissionConfirmed} onChange={(v) => p.onChange({ permissionConfirmed: v })}>
-              {t`許可確認済み`}
-            </Check>
-            <Field label={t`許可してくれた人`} htmlFor={`${id}-permnote`}>
-              <TextInput id={`${id}-permnote`} value={place.permissionNote} onChange={(v) => p.onChange({ permissionNote: v })} maxLength={500} />
-            </Field>
-          </fieldset>
+              <fieldset className="flex flex-col gap-3">
+                <legend className="text-base font-bold">{t`いまの状態`}</legend>
+                <select aria-label={t`いまの状態`} value={place.status} onChange={(e) => p.onChange({ status: e.target.value as SpotStatus })} className={`${inputClass} max-w-xs`}>
+                  <option value="open">{statusName.open}</option>
+                  <option value="caution">{statusName.caution}</option>
+                  <option value="closed">{statusName.closed}</option>
+                </select>
+                <BilingualField id={`${id}-note`} label={t`状態のひとこと`} ja={place.statusNoteJa} en={place.statusNoteEn} onJa={(v) => p.onChange({ statusNoteJa: v })} onEn={(v) => p.onChange({ statusNoteEn: v })} />
+              </fieldset>
+
+              {isStamp ? (
+                <fieldset className="flex flex-col gap-3">
+                  <legend className="text-base font-bold">{t`現地の許可`}</legend>
+                  <Check id={`${id}-permission`} checked={place.permissionConfirmed} onChange={(v) => p.onChange({ permissionConfirmed: v })}>
+                    {t`許可確認済み`}
+                  </Check>
+                  <Field label={t`許可してくれた人`} htmlFor={`${id}-permnote`}>
+                    <TextInput id={`${id}-permnote`} value={place.permissionNote} onChange={(v) => p.onChange({ permissionNote: v })} maxLength={500} />
+                  </Field>
+                </fieldset>
+              ) : null}
+            </div>
+          </details>
 
           <div className="flex flex-col gap-3 rounded-xl bg-surface p-4">
             {place.published ? (

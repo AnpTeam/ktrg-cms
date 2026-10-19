@@ -17,7 +17,7 @@ export function publicContentRoutes(getContent: () => ContentService) {
       "/routes/:id",
       async ({ params, set }) => {
         const found = await getContent().publicRoute(params.id);
-        return found ? { ok: true as const, route: found.route, spots: found.spots.map(spotOut) } : fail(set, 404, "not_found");
+        return found ? { ok: true as const, route: found.route, spots: found.spots.map(spotOut), points: found.points.map(spotOut) } : fail(set, 404, "not_found");
       },
       { params: idParams },
     )

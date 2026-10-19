@@ -1,5 +1,6 @@
 import { fetchPublicRoute, fetchPublicRoutes, fetchPublicSpot, isEmptyRoute, routeDetailFromApi, routeSummaryFromApi, spotDetailFromApi } from "./api-content";
 import type { RouteArea } from "./map-screen";
+import type { PointKind } from "./point-kinds";
 import { pickText } from "./pick-text";
 import type { MapPlace, PlaceCategory, PlaceStatus } from "./places";
 import type { RallyItem } from "./rally-model";
@@ -65,10 +66,28 @@ export interface SpotListItem {
   position: SpotPosition | null;
 }
 
+/** One of a route's navigation points (a turn, a toilet, a danger ...): not a stamp place. */
+export interface RoutePoint {
+  id: string;
+  kind: Exclude<PointKind, "stamp">;
+  nameJa: string;
+  nameEn: string | null;
+  descriptionJa: string | null;
+  descriptionEn: string | null;
+  position: SpotPosition | null;
+}
+
 export interface RouteDetail extends RouteSummary {
   descriptionJa: string | null;
   descriptionEn: string | null;
+  /** The story of the route, and how to get there and back. */
+  historyJa: string | null;
+  historyEn: string | null;
+  accessJa: string | null;
+  accessEn: string | null;
   spots: SpotListItem[];
+  /** The route's other points, in order along the way. */
+  points: RoutePoint[];
   /** The path to draw on the map, in order; null until the CMS has the track (then the map joins the stops). */
   line: { lat: number; lng: number }[] | null;
   /** The guidance video's address (the CMS `video_url`); only YouTube and Vimeo links are shown (`parseVideoUrl`). */
@@ -263,14 +282,15 @@ export async function getRoute(id: string): Promise<RouteDetail | undefined> {
   const [found, all] = await Promise.all([fetchPublicRoute(id), fetchPublicRoutes()]);
   if (!found || !all) return undefined;
   const order = all.findIndex((r) => r.id === id) + 1;
-  return routeDetailFromApi(found.route, found.spots, order);
+  return routeDetailFromApi(found.route, found.spots, order, found.points);
 }
 
 export async function getSpot(id: string): Promise<SpotDetail | undefined> {
   const fromSample = sampleContentEnabled() ? sampleSpots.find((s) => s.id === id) : undefined;
   if (fromSample) return fromSample;
   const spot = await fetchPublicSpot(id);
-  if (!spot) return undefined;
+  // A navigation point (a turn, a toilet) has no page of its own: only stamp places do.
+  if (!spot || spot.kind !== "stamp") return undefined;
   const route = await fetchPublicRoute(spot.routeId);
   return route ? spotDetailFromApi(spot, route.route) : undefined;
 }

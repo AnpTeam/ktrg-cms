@@ -46,7 +46,12 @@ export function MapScreen({
   loginHref,
   registerHref,
   stampMock,
+  initialRouteId = null,
+  initialStopId = null,
 }: {
+  /** Open with this course (and stop) chosen, as when a place page links here with "show in the map". */
+  initialRouteId?: string | null;
+  initialStopId?: string | null;
   routes: MapScreenRoute[];
   settings: MapSettings;
   mergeStops: boolean;
@@ -61,9 +66,9 @@ export function MapScreen({
 }) {
   const { t } = useLingui();
   const wrap = useRef<HTMLDivElement>(null);
-  const [routeId, setRouteId] = useState<string | null>(null);
-  const [stopId, setStopId] = useState<string | null>(null);
-  const [snap, setSnap] = useState<SheetSnap>("peek");
+  const [routeId, setRouteId] = useState<string | null>(initialRouteId);
+  const [stopId, setStopId] = useState<string | null>(initialRouteId ? initialStopId : null);
+  const [snap, setSnap] = useState<SheetSnap>(initialRouteId ? "half" : "peek");
   const [available, setAvailable] = useState(520);
   // The room under the sheet taken by the tab bar (none on a wide screen, where it is a rail).
   const [tabPx, setTabPx] = useState(88);

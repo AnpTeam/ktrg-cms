@@ -1,5 +1,8 @@
 import type { ErrorCode } from "../lib/api-errors";
+import type { spotKinds } from "../db/schema/content";
 import type { LineString } from "./line";
+
+export type SpotKind = (typeof spotKinds)[number];
 
 export type Prefecture = "osaka" | "wakayama" | "nara";
 export type SpotStatus = "open" | "caution" | "closed";
@@ -22,14 +25,21 @@ export interface RouteRow {
   lineVerified: boolean;
   lineSource: string | null;
   videoUrl: string | null;
+  historyJa: string | null;
+  historyEn: string | null;
+  accessJa: string | null;
+  accessEn: string | null;
+  photoUrl: string | null;
   sortOrder: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface RouteSummaryRow extends RouteRow {
+  /** Stamp places (the route's own navigation points are counted apart). */
   spotCount: number;
   publishedSpotCount: number;
+  pointCount: number;
 }
 
 /** A stamp place as the admin sees it. */
@@ -45,6 +55,9 @@ export interface SpotRow {
   positionVerified: boolean;
   positionSource: string | null;
   radiusM: number;
+  /** A stamp place, or one of the route's navigation points (see spotKinds). */
+  kind: SpotKind;
+  photoUrl: string | null;
   status: SpotStatus;
   statusNoteJa: string | null;
   statusNoteEn: string | null;
@@ -74,6 +87,11 @@ export interface RouteFields {
   lineVerified: boolean;
   lineSource: string | null;
   videoUrl: string | null;
+  historyJa: string | null;
+  historyEn: string | null;
+  accessJa: string | null;
+  accessEn: string | null;
+  photoUrl: string | null;
 }
 
 export interface SpotFields {
@@ -86,6 +104,8 @@ export interface SpotFields {
   positionVerified: boolean;
   positionSource: string | null;
   radiusM: number;
+  kind: SpotKind;
+  photoUrl: string | null;
   status: SpotStatus;
   statusNoteJa: string | null;
   statusNoteEn: string | null;
@@ -115,7 +135,7 @@ export interface ContentStore {
 
   /** Also adds the place to its route's course rally (never to the mound rally). */
   createSpot(actor: string, routeId: string, fields: Partial<SpotFields> & { nameJa: string }): Promise<SpotRow | null>;
-  updateSpot(actor: string, id: string, expected: Date, changes: Partial<SpotFields>): Promise<SpotRow | "conflict" | null>;
+  updateSpot(actor: string, id: string, expected: Date, changes: Partial<SpotFields>): Promise<SpotRow | "conflict" | "has_stamps" | null>;
   setPublished(actor: string, id: string, published: boolean): Promise<SpotRow | null>;
   deleteSpot(actor: string, id: string): Promise<"ok" | "has_stamps" | "not_found">;
   reorderSpots(actor: string, routeId: string, ids: string[]): Promise<boolean>;

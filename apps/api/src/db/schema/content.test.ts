@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { getTableConfig } from "drizzle-orm/pg-core";
 import { users } from "./auth";
-import { auditLog, rallies, rallySpots, routes, spots, stamps, trailNotices } from "./content";
+import { auditLog, rallies, rallySpots, routes, spotKinds, spots, stamps, trailNotices } from "./content";
 
 type Table = Parameters<typeof getTableConfig>[0];
 const cols = (t: Table) => getTableConfig(t).columns.map((c) => c.name);
@@ -50,6 +50,20 @@ describe("content schema", () => {
     expect(names).toContain("spots_publish_requires_coordinates");
     expect(names).toContain("spots_publish_requires_permission");
     expect(names).toContain("spots_publish_requires_verified_position");
+  });
+
+  test("routes have a history, an access text (each in two languages) and a photo", () => {
+    for (const c of ["history_ja", "history_en", "access_ja", "access_en", "photo_url"]) {
+      expect(col(routes, c).notNull).toBe(false);
+    }
+  });
+
+  test("a point is a stamp place unless it says otherwise; the other kinds are the route's own points and map categories", () => {
+    expect(col(spots, "kind").default).toBe("stamp");
+    expect(col(spots, "kind").notNull).toBe(true);
+    expect(spotKinds[0]).toBe("stamp");
+    for (const k of ["turn", "danger", "toilet", "rest_area", "drinking_water", "bus_stop"]) expect(spotKinds as readonly string[]).toContain(k);
+    expect(col(spots, "photo_url").notNull).toBe(false);
   });
 
   test("a route line is a draft until a person checks it against a source", () => {

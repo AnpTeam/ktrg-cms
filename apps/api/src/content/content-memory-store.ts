@@ -28,7 +28,8 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
         .sort((a, b) => a.sortOrder - b.sortOrder)
         .map<RouteSummaryRow>((r) => {
           const ss = sortedSpots(r.id);
-          return { ...r, spotCount: ss.length, publishedSpotCount: ss.filter((s) => s.published).length };
+          const stamps = ss.filter((s) => s.kind === "stamp");
+          return { ...r, spotCount: stamps.length, publishedSpotCount: stamps.filter((s) => s.published).length, pointCount: ss.length - stamps.length };
         });
     },
     async getRoute(id) {
@@ -44,7 +45,7 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       const row: RouteRow = {
         id: uuid(), nameEn: null, descriptionJa: null, descriptionEn: null, distanceKm: null,
         elevationGainM: null, difficulty: null, expectedTimeMin: null, prefecture: null, municipality: null, geometry: null, lineVerified: false, lineSource: null,
-        videoUrl: null, sortOrder: routes.size + 1, createdAt: at, updatedAt: at, ...fields,
+        videoUrl: null, historyJa: null, historyEn: null, accessJa: null, accessEn: null, photoUrl: null, sortOrder: routes.size + 1, createdAt: at, updatedAt: at, ...fields,
       };
       routes.set(row.id, row);
       await audit.record({ actorUserId: actor, action: "route.create", targetId: row.id });
@@ -79,12 +80,13 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       const at = stampTime();
       const row: SpotRow = {
         id: uuid(), routeId, nameEn: null, descriptionJa: null, descriptionEn: null, lat: null, lng: null,
-        positionVerified: false, positionSource: null, radiusM: 50, status: "open", statusNoteJa: null, statusNoteEn: null,
+        positionVerified: false, positionSource: null, radiusM: 50, kind: "stamp", photoUrl: null, status: "open", statusNoteJa: null, statusNoteEn: null,
         statusUpdatedAt: null, sortOrder: sortedSpots(routeId).length + 1, published: false, permissionConfirmed: false,
         permissionNote: null, createdAt: at, updatedAt: at, ...fields,
       };
       spots.set(row.id, row);
-      courseRally.set(routeId, [...(courseRally.get(routeId) ?? []), row.id]);
+      // Only stamp places are in a rally; the route's other points never count.
+      if (row.kind === "stamp") courseRally.set(routeId, [...(courseRally.get(routeId) ?? []), row.id]);
       await audit.record({ actorUserId: actor, action: "spot.create", targetId: row.id });
       return row;
     },
@@ -92,6 +94,12 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       const cur = spots.get(id);
       if (!cur) return null;
       if (cur.updatedAt.getTime() !== expected.getTime()) return "conflict";
+      const kindChanged = changes.kind !== undefined && changes.kind !== cur.kind;
+      if (kindChanged && cur.kind === "stamp" && stamped.has(id)) return "has_stamps";
+      if (kindChanged) {
+        const list = (courseRally.get(cur.routeId) ?? []).filter((x) => x !== id);
+        courseRally.set(cur.routeId, changes.kind === "stamp" ? [...list, id] : list);
+      }
       const statusChanged = changes.status !== undefined && changes.status !== cur.status;
       const next: SpotRow = { ...cur, ...changes, updatedAt: stampTime(), statusUpdatedAt: statusChanged ? now() : cur.statusUpdatedAt };
       spots.set(id, next);

@@ -14,6 +14,11 @@ export interface PublicRoute {
   prefecture: string | null;
   municipality: string | null;
   videoUrl: string | null;
+  historyJa: string | null;
+  historyEn: string | null;
+  accessJa: string | null;
+  accessEn: string | null;
+  photoUrl: string | null;
   sortOrder: number;
   status: "ready" | "soon";
   publishedSpotCount: number;
@@ -31,6 +36,8 @@ export interface PublicSpot {
   descriptionEn: string | null;
   position: { lat: number; lng: number; verified: true } | null;
   radiusM: number;
+  kind: string;
+  photoUrl: string | null;
   status: "open" | "caution" | "closed";
   statusNoteJa: string | null;
   statusNoteEn: string | null;

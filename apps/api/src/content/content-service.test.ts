@@ -187,6 +187,79 @@ describe("what visitors see", () => {
   });
 });
 
+describe("history, access and photo", () => {
+  test("they are saved in both languages, blank becomes empty, and a photo must be an https link", async () => {
+    const r = await route();
+    const saved = await svc.updateRoute(ADMIN, r.id, r.updatedAt, {
+      historyJa: "  役行者が修行した道  ",
+      historyEn: "",
+      accessJa: "近鉄御所駅から徒歩",
+      photoUrl: "https://example.com/koyama.jpg",
+    });
+    expect(saved.ok && saved.value).toMatchObject({ historyJa: "役行者が修行した道", historyEn: null, accessJa: "近鉄御所駅から徒歩", photoUrl: "https://example.com/koyama.jpg" });
+    const cur = saved.ok ? saved.value : r;
+    for (const bad of ["http://example.com/a.jpg", "javascript:alert(1)", "/images/a.jpg", "x".repeat(501)]) {
+      expect(await svc.updateRoute(ADMIN, r.id, cur.updatedAt, { photoUrl: bad })).toEqual({ ok: false, reason: "invalid_photo_url" });
+    }
+    expect((await svc.publicRoute(r.id))?.route).toMatchObject({ historyJa: "役行者が修行した道", photoUrl: "https://example.com/koyama.jpg" });
+  });
+});
+
+describe("the route's other points (turns, toilets, danger ...)", () => {
+  const verified = { lat: 34.3, lng: 135.1, positionVerified: true, positionSource: "公式" };
+
+  test("a stamp place is the default; another kind never joins a rally", async () => {
+    const r = await route();
+    const stamp = await spot(r.id);
+    const toilet = await spot(r.id, { nameJa: "トイレ", kind: "toilet" });
+    expect(stamp.kind).toBe("stamp");
+    expect(toilet.kind).toBe("toilet");
+    expect(mem.courseRallySpotIds(r.id)).toEqual([stamp.id]);
+  });
+
+  test("a point other than a stamp place can be published without the site's permission, but still needs a checked position", async () => {
+    const r = await route();
+    const turn = await spot(r.id, { nameJa: "分かれ道", kind: "turn", lat: 34.3, lng: 135.1 });
+    expect(await svc.publishSpot(ADMIN, turn.id)).toEqual({ ok: false, reason: "position_not_verified" });
+    const checked = await svc.updateSpot(ADMIN, turn.id, turn.updatedAt, { positionVerified: true, positionSource: "現地確認" });
+    if (!checked.ok) throw new Error(checked.reason);
+    const published = await svc.publishSpot(ADMIN, turn.id);
+    expect(published.ok && published.value.published).toBe(true);
+    // a stamp place still needs the permission
+    const stamp = await spot(r.id, { nameJa: "経塚", ...verified });
+    expect(await svc.publishSpot(ADMIN, stamp.id)).toEqual({ ok: false, reason: "permission_required" });
+  });
+
+  test("changing the kind moves the point out of, or into, its course's rally; a stamped place stays a stamp place", async () => {
+    const r = await route();
+    const s = await spot(r.id);
+    expect(mem.courseRallySpotIds(r.id)).toEqual([s.id]);
+    const asTurn = await svc.updateSpot(ADMIN, s.id, s.updatedAt, { kind: "turn" });
+    if (!asTurn.ok) throw new Error(asTurn.reason);
+    expect(mem.courseRallySpotIds(r.id)).toEqual([]);
+    const back = await svc.updateSpot(ADMIN, s.id, asTurn.value.updatedAt, { kind: "stamp" });
+    if (!back.ok) throw new Error(back.reason);
+    expect(mem.courseRallySpotIds(r.id)).toEqual([s.id]);
+    mem.stampPlace(s.id);
+    expect(await svc.updateSpot(ADMIN, s.id, back.value.updatedAt, { kind: "rest_area" })).toEqual({ ok: false, reason: "spot_has_stamps" });
+  });
+
+  test("visitors get stamp places and the other points apart; only stamp places make a route ready; the lists count stamp places only", async () => {
+    const r = await route({ geometry: LINE });
+    const stamp = await spot(r.id, { nameJa: "経塚", ...verified, permissionConfirmed: true });
+    const water = await spot(r.id, { nameJa: "水場", kind: "drinking_water", ...verified });
+    await svc.publishSpot(ADMIN, water.id);
+    expect((await svc.publicRoutes())[0]?.status).toBe("soon"); // only a water point is public: no stamp place yet
+    await svc.publishSpot(ADMIN, stamp.id);
+    const detail = await svc.publicRoute(r.id);
+    expect(detail?.route.status).toBe("ready");
+    expect(detail?.spots.map((x) => x.nameJa)).toEqual(["経塚"]);
+    expect(detail?.points.map((x) => [x.nameJa, x.kind])).toEqual([["水場", "drinking_water"]]);
+    const row = (await svc.listRoutes())[0]!;
+    expect([row.spotCount, row.publishedSpotCount, row.pointCount]).toEqual([1, 1, 1]);
+  });
+});
+
 describe("audit", () => {
   test("every change records one entry with the admin and the target, ids only", async () => {
     const r = await route();
