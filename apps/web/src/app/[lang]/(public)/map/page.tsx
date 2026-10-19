@@ -5,6 +5,7 @@ import { MapScreen } from "@/components/map/MapScreen";
 import { forViewer, getRoute, getSpot, listRoutes, pickText, sampleContentEnabled, type RouteSummary } from "@/lib/content";
 import type { MapPhoto, MapScreenRoute, MapScreenSpot, MapScreenStop } from "@/lib/map-screen";
 import { mapSettingsCookie, parseMapSettings } from "@/lib/map-settings";
+import { municipalityName } from "@/lib/municipalities";
 import { isStampMock } from "@/lib/stamp-flow";
 import { getPrefs } from "@/lib/server-prefs";
 import { getViewer, type Viewer } from "@/lib/viewer";
@@ -92,7 +93,7 @@ async function mapRoutes(routes: RouteSummary[], viewer: Viewer, locale: string,
           name: name?.text ?? r.nameJa,
           nameLang: name?.lang ?? "ja",
           prefecture: r.prefecture,
-          municipality: r.municipality,
+          municipality: municipalityName(locale, r.municipality),
           distanceKm: r.distanceKm,
           elevationGainM: r.elevationGainM,
           expectedTimeMin: r.expectedTimeMin,
