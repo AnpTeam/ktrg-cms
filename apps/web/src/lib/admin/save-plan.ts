@@ -1,4 +1,5 @@
 import type { PlaceDraft, RouteDraft } from "./route-draft";
+import type { PointKind } from "../point-kinds";
 import type { Prefecture, SpotStatus } from "./types";
 
 // Works out what has to be sent to the API to turn the saved copy of a route into the edited one: which fields, in what
@@ -19,12 +20,19 @@ export interface RouteBody {
   expectedTimeMin: number | null;
   difficulty: string | null;
   videoUrl: string | null;
+  historyJa: string | null;
+  historyEn: string | null;
+  accessJa: string | null;
+  accessEn: string | null;
+  photoUrl: string | null;
   geometry: { type: "LineString"; coordinates: [number, number, number?][] } | null;
   lineVerified: boolean;
   lineSource: string | null;
 }
 
 export interface PlaceBody {
+  kind: PointKind;
+  photoUrl: string | null;
   nameJa: string;
   nameEn: string | null;
   descriptionJa: string | null;
@@ -54,6 +62,11 @@ export function routeBody(d: RouteDraft): RouteBody {
     expectedTimeMin: d.expectedTimeMin,
     difficulty: nullIfEmpty(d.difficulty),
     videoUrl: nullIfEmpty(d.videoUrl),
+    historyJa: nullIfEmpty(d.historyJa),
+    historyEn: nullIfEmpty(d.historyEn),
+    accessJa: nullIfEmpty(d.accessJa),
+    accessEn: nullIfEmpty(d.accessEn),
+    photoUrl: nullIfEmpty(d.photoUrl),
     geometry: d.line.length >= 2 ? { type: "LineString", coordinates: d.line.map((p) => (p[2] === undefined ? [p[0], p[1]] : [p[0], p[1], p[2]])) } : null,
     lineVerified: d.lineVerified,
     lineSource: nullIfEmpty(d.lineSource),
@@ -62,6 +75,8 @@ export function routeBody(d: RouteDraft): RouteBody {
 
 export function placeBody(p: PlaceDraft): PlaceBody {
   return {
+    kind: p.kind,
+    photoUrl: nullIfEmpty(p.photoUrl),
     nameJa: p.nameJa.trim(),
     nameEn: nullIfEmpty(p.nameEn),
     descriptionJa: nullIfEmpty(p.descriptionJa),
@@ -153,7 +168,24 @@ export function planSave(draft: RouteDraft, saved: RouteDraft | null): SaveStep[
 
 // ---- checks before saving ------------------------------------------------------------------------------------
 
-export type DraftProblem = { kind: "route_name" } | { kind: "place_name"; key: string } | { kind: "place_position"; key: string } | { kind: "video_link" };
+export type DraftProblem =
+  | { kind: "route_name" }
+  | { kind: "place_name"; key: string }
+  | { kind: "place_position"; key: string }
+  | { kind: "video_link" }
+  | { kind: "photo_link" }
+  | { kind: "place_photo_link"; key: string };
+
+/** Whether a typed photo address could be accepted: empty, or an https link (the API makes the final decision). */
+export function photoLinkLooksValid(raw: string): boolean {
+  if (raw.trim() === "") return true;
+  if (raw.trim().length > 500) return false;
+  try {
+    return new URL(raw.trim()).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
 
 const VIDEO_HOSTS = ["youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be", "vimeo.com", "www.vimeo.com", "player.vimeo.com"];
 
@@ -173,8 +205,10 @@ export function draftProblems(d: RouteDraft): DraftProblem[] {
   const out: DraftProblem[] = [];
   if (d.nameJa.trim() === "") out.push({ kind: "route_name" });
   if (!videoLinkLooksValid(d.videoUrl)) out.push({ kind: "video_link" });
+  if (!photoLinkLooksValid(d.photoUrl)) out.push({ kind: "photo_link" });
   for (const p of d.places) {
     if (p.nameJa.trim() === "") out.push({ kind: "place_name", key: p.key });
+    if (!photoLinkLooksValid(p.photoUrl)) out.push({ kind: "place_photo_link", key: p.key });
     // A position is both numbers or neither; the app never fills in the missing one.
     if ((p.lat === null) !== (p.lng === null)) out.push({ kind: "place_position", key: p.key });
   }

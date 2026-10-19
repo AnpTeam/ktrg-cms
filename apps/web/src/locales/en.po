@@ -400,7 +400,7 @@ msgstr "Visitors within this distance of the place can collect the stamp."
 msgid "この場所のページを開く"
 msgstr "Open this place's page"
 
-#: src/components/useErrorMessages.ts:39
+#: src/components/useErrorMessages.ts:40
 msgid "この場所の位置がまだ決まっていません。地図で位置を決めてください。"
 msgstr "This place has no position yet. Set it on the map."
 
@@ -442,7 +442,7 @@ msgstr "This device or browser can't use location."
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "This device or browser can't use passkeys."
 
-#: src/components/useErrorMessages.ts:44
+#: src/components/useErrorMessages.ts:45
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "Passkeys cannot be used on this device or browser. Please try email instead."
 
@@ -523,7 +523,7 @@ msgstr "Stamp card"
 msgid "スタンプカードを見る"
 msgstr "See your stamp card"
 
-#: src/components/useErrorMessages.ts:38
+#: src/components/useErrorMessages.ts:39
 msgid "スタンプが押されたことのある場所は消せません。「公開をやめる」をお使いください。"
 msgstr "A place that has been stamped cannot be deleted. Use \"Unpublish\" instead."
 
@@ -688,7 +688,7 @@ msgstr "First rally"
 msgid "パスキー {number}"
 msgstr "Passkey {number}"
 
-#: src/components/useErrorMessages.ts:45
+#: src/components/useErrorMessages.ts:46
 msgid "パスキーの確認が中止されました。もう一度お試しください。"
 msgstr "The passkey check was cancelled. Please try again."
 
@@ -1102,7 +1102,7 @@ msgstr "Enter the position from official information and check it on the map. Ne
 msgid "位置を公式の情報で確認し、「位置を確認した」にチェックを入れて情報源を書いてください。"
 msgstr "Check the position against official information, tick \"Position checked\" and write the source."
 
-#: src/components/useErrorMessages.ts:40
+#: src/components/useErrorMessages.ts:41
 msgid "位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。"
 msgstr "The position has not been checked against an official source. Check it, then tick \"Position checked\"."
 
@@ -1114,7 +1114,7 @@ msgstr "Set the position (place it on the map, or enter latitude and longitude).
 msgid "位置を確認した"
 msgstr "Position checked"
 
-#: src/components/useErrorMessages.ts:41
+#: src/components/useErrorMessages.ts:42
 msgid "位置を確認した情報源（サイトの名前やリンク）を書いてください。"
 msgstr "Write the source you checked the position against (a site name or link)."
 
@@ -1293,6 +1293,10 @@ msgstr "Photos"
 msgid "写真（準備中）"
 msgstr "Photo coming soon"
 
+#: src/components/useErrorMessages.ts:37
+msgid "写真のリンクは、https:// で始まるものだけ使えます。"
+msgstr "Photo links must start with https://."
+
 #: src/components/landing/Landing.tsx:177
 msgid "出かける前に"
 msgstr "Before you go"
@@ -1401,7 +1405,7 @@ msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境に�
 msgstr "From the Izumi range to the Kongo mountains, these ridges run along the borders of Osaka, Wakayama and Nara. They have long been called Katsuragi and revered as mountains where the gods dwell. It is said that En no Gyoja, who is believed to have founded Shugendo, the path of training in the mountains, first practised here."
 
 #: src/components/StampHere.tsx:94
-#: src/components/useErrorMessages.ts:47
+#: src/components/useErrorMessages.ts:48
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "Something went wrong. Please try again in a little while."
 
@@ -1500,7 +1504,7 @@ msgstr "Places {0} / {1}"
 msgid "場所が残っているルートは削除できません。"
 msgstr "A route that still has places cannot be deleted."
 
-#: src/components/useErrorMessages.ts:37
+#: src/components/useErrorMessages.ts:38
 msgid "場所が残っているルートは消せません。先に場所を消してください。"
 msgstr "A route that still has places cannot be deleted. Delete its places first."
 
@@ -1853,7 +1857,7 @@ msgstr "Status not checked"
 msgid "現地の許可"
 msgstr "Permission from the site"
 
-#: src/components/useErrorMessages.ts:42
+#: src/components/useErrorMessages.ts:43
 msgid "現地の許可がまだ確認できていません。許可を得たら「許可確認済み」にチェックを入れてください。"
 msgstr "Permission from the site has not been confirmed yet. Once you have it, tick \"Permission confirmed\"."
 
@@ -2161,7 +2165,7 @@ msgid "送った内容が、読み取れませんでした。もう一度お試�
 msgstr "We could not read what was sent. Please try again."
 
 #: src/components/StampHere.tsx:93
-#: src/components/useErrorMessages.ts:46
+#: src/components/useErrorMessages.ts:47
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not connect. Please try again where the signal is better."
 

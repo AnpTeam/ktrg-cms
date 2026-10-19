@@ -400,7 +400,7 @@ msgstr "この場所から、この距離の中にいるとスタンプを押せ
 msgid "この場所のページを開く"
 msgstr "この場所のページを開く"
 
-#: src/components/useErrorMessages.ts:39
+#: src/components/useErrorMessages.ts:40
 msgid "この場所の位置がまだ決まっていません。地図で位置を決めてください。"
 msgstr "この場所の位置がまだ決まっていません。地図で位置を決めてください。"
 
@@ -442,7 +442,7 @@ msgstr "この端末・ブラウザでは、位置情報を使えません。"
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "この端末・ブラウザではパスキーを使えません。"
 
-#: src/components/useErrorMessages.ts:44
+#: src/components/useErrorMessages.ts:45
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 
@@ -523,7 +523,7 @@ msgstr "スタンプカード"
 msgid "スタンプカードを見る"
 msgstr "スタンプカードを見る"
 
-#: src/components/useErrorMessages.ts:38
+#: src/components/useErrorMessages.ts:39
 msgid "スタンプが押されたことのある場所は消せません。「公開をやめる」をお使いください。"
 msgstr "スタンプが押されたことのある場所は消せません。「公開をやめる」をお使いください。"
 
@@ -688,7 +688,7 @@ msgstr "はじめのラリー"
 msgid "パスキー {number}"
 msgstr "パスキー {number}"
 
-#: src/components/useErrorMessages.ts:45
+#: src/components/useErrorMessages.ts:46
 msgid "パスキーの確認が中止されました。もう一度お試しください。"
 msgstr "パスキーの確認が中止されました。もう一度お試しください。"
 
@@ -1102,7 +1102,7 @@ msgstr "位置は、公式の情報から入れて、地図で確かめます。
 msgid "位置を公式の情報で確認し、「位置を確認した」にチェックを入れて情報源を書いてください。"
 msgstr "位置を公式の情報で確認し、「位置を確認した」にチェックを入れて情報源を書いてください。"
 
-#: src/components/useErrorMessages.ts:40
+#: src/components/useErrorMessages.ts:41
 msgid "位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。"
 msgstr "位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。"
 
@@ -1114,7 +1114,7 @@ msgstr "位置を決めてください（地図に置くか、緯度と経度を
 msgid "位置を確認した"
 msgstr "位置を確認した"
 
-#: src/components/useErrorMessages.ts:41
+#: src/components/useErrorMessages.ts:42
 msgid "位置を確認した情報源（サイトの名前やリンク）を書いてください。"
 msgstr "位置を確認した情報源（サイトの名前やリンク）を書いてください。"
 
@@ -1293,6 +1293,10 @@ msgstr "写真"
 msgid "写真（準備中）"
 msgstr "写真（準備中）"
 
+#: src/components/useErrorMessages.ts:37
+msgid "写真のリンクは、https:// で始まるものだけ使えます。"
+msgstr "写真のリンクは、https:// で始まるものだけ使えます。"
+
 #: src/components/landing/Landing.tsx:177
 msgid "出かける前に"
 msgstr "出かける前に"
@@ -1401,7 +1405,7 @@ msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境に�
 msgstr "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 
 #: src/components/StampHere.tsx:94
-#: src/components/useErrorMessages.ts:47
+#: src/components/useErrorMessages.ts:48
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "問題が発生しました。しばらくしてからもう一度お試しください。"
 
@@ -1500,7 +1504,7 @@ msgstr "場所 {0} / {1}"
 msgid "場所が残っているルートは削除できません。"
 msgstr "場所が残っているルートは削除できません。"
 
-#: src/components/useErrorMessages.ts:37
+#: src/components/useErrorMessages.ts:38
 msgid "場所が残っているルートは消せません。先に場所を消してください。"
 msgstr "場所が残っているルートは消せません。先に場所を消してください。"
 
@@ -1853,7 +1857,7 @@ msgstr "状態は未確認"
 msgid "現地の許可"
 msgstr "現地の許可"
 
-#: src/components/useErrorMessages.ts:42
+#: src/components/useErrorMessages.ts:43
 msgid "現地の許可がまだ確認できていません。許可を得たら「許可確認済み」にチェックを入れてください。"
 msgstr "現地の許可がまだ確認できていません。許可を得たら「許可確認済み」にチェックを入れてください。"
 
@@ -2161,7 +2165,7 @@ msgid "送った内容が、読み取れませんでした。もう一度お試�
 msgstr "送った内容が、読み取れませんでした。もう一度お試しください。"
 
 #: src/components/StampHere.tsx:93
-#: src/components/useErrorMessages.ts:46
+#: src/components/useErrorMessages.ts:47
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "通信できませんでした。電波の良い場所でもう一度お試しください。"
 
