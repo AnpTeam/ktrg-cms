@@ -1,0 +1,48 @@
+name: Migrate production database
+
+# Applies apps/api/drizzle migrations to the hosted database (Supabase), from GitHub's servers.
+# Run by hand: Actions → "Migrate production database" → Run workflow. Needs the repository
+# secret PRODUCTION_DATABASE_URL (Supabase session pooler, port 5432, ?sslmode=require).
+# Use this instead of migrating from a laptop: some networks block the Postgres port.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "migrate" to apply the migrations on main to the production database'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: migrate-production
+  cancel-in-progress: false # never cut a migration off halfway
+
+jobs:
+  migrate:
+    if: github.event.inputs.confirm == 'migrate' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.3
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check the secret is set
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::Add the repository secret PRODUCTION_DATABASE_URL first."
+            exit 1
+          fi
+
+      - name: Apply migrations
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+        run: bun run --cwd apps/api db:migrate:ci
