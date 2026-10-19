@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { msg } from "@lingui/core/macro";
 import { MapScreen } from "@/components/map/MapScreen";
-import { forViewer, getRoute, getSpot, listRoutes, pickText, sampleContentEnabled, type RouteSummary } from "@/lib/content";
-import type { MapPhoto, MapScreenRoute, MapScreenSpot, MapScreenStop } from "@/lib/map-screen";
+import { forViewer, getRoute, getSpot, listRoutes, pickText, type RouteSummary } from "@/lib/content";
+import type { MapPhoto, MapScreenPoint, MapScreenRoute, MapScreenSpot, MapScreenStop } from "@/lib/map-screen";
+import { categoryOfKind } from "@/lib/point-kinds";
 import { mapSettingsCookie, parseMapSettings } from "@/lib/map-settings";
 import { municipalityName } from "@/lib/municipalities";
 import { isStampMock } from "@/lib/stamp-flow";
@@ -18,6 +19,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 type Translate = (path: string) => string;
+
+/** The gallery of a course: its own photo first, then the photos of its places, each address once. */
+function galleryOf(photo: MapPhoto | null, stops: MapScreenStop[] | null): MapPhoto[] {
+  const seen = new Set<string>();
+  return [photo, ...(stops?.map((s) => s.photo) ?? [])].filter((p): p is MapPhoto => p !== null && !seen.has(p.src) && !!seen.add(p.src));
+}
 
 /**
  * What the map needs for each course. The detailed map (path, stops, what a stop's sheet says) is prepared
@@ -36,6 +43,9 @@ async function mapRoutes(routes: RouteSummary[], viewer: Viewer, locale: string,
         let spots: MapScreenSpot[] = [];
         let photo: MapPhoto | null = null;
         let description: string | null = null;
+        let history: string | null = null;
+        let access: string | null = null;
+        let points: MapScreenPoint[] = [];
 
         if (r.status === "ready" && r.spotCount > 0) {
           const found = await getRoute(r.id);
@@ -43,6 +53,14 @@ async function mapRoutes(routes: RouteSummary[], viewer: Viewer, locale: string,
           const positioned = detail?.spots.filter((s) => s.position) ?? [];
           if (detail) {
             description = pickText(locale, detail.descriptionJa, detail.descriptionEn)?.text ?? null;
+            history = pickText(locale, detail.historyJa, detail.historyEn)?.text ?? null;
+            access = pickText(locale, detail.accessJa, detail.accessEn)?.text ?? null;
+            points = detail.points.flatMap((p): MapScreenPoint[] => {
+              const pointName = pickText(locale, p.nameJa, p.nameEn);
+              return p.position && pointName
+                ? [{ id: p.id, category: categoryOfKind(p.kind), name: pointName.text, nameLang: pointName.lang, position: { lat: p.position.lat, lng: p.position.lng } }]
+                : [];
+            });
             photo = detail.photoUrl ? { src: detail.photoUrl, alt: name?.text ?? detail.nameJa } : null;
             spots = detail.spots.flatMap((s, index): MapScreenSpot[] => {
               const spotName = pickText(locale, s.nameJa, s.nameEn);
@@ -104,7 +122,11 @@ async function mapRoutes(routes: RouteSummary[], viewer: Viewer, locale: string,
           area: r.area,
           elevations: r.sketch?.elevations ?? null,
           description,
+          history,
+          access,
           photo,
+          gallery: galleryOf(photo, stops),
+          points,
           spots,
           href: to(`/routes/${r.id}`),
           stops,
@@ -142,7 +164,6 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
       settings={settings}
       mergeStops={prefs.mergeStops}
       signedIn={viewer.signedIn}
-      photoPlaceholder={sampleContentEnabled()}
       locale={i18n.locale}
       loginHref={`${to("/login")}${next}`}
       registerHref={`${to("/register")}${next}`}
