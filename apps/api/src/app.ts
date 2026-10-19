@@ -4,6 +4,8 @@ import { parseAdminEmails } from "./auth/admin-emails";
 import { createDrizzleOtpStore } from "./auth/otp-store";
 import { adminContentRoutes } from "./content/admin-routes";
 import { createDrizzleContentStore } from "./content/content-store";
+import { createDrizzleRallyAdminStore } from "./rallies/rally-admin-store";
+import { rallyAdminRoutes } from "./rallies/rally-admin-routes";
 import { publicContentRoutes } from "./content/public-routes";
 import { passkeyRoutes } from "./auth/passkey-routes";
 import { createDrizzlePasskeyStore } from "./auth/passkey-store";
@@ -36,6 +38,7 @@ function getServices(): Services {
         passkeys: createDrizzlePasskeyStore(db),
         me: createDrizzleMeStore(db),
         content: createDrizzleContentStore(db),
+        rallyAdmin: createDrizzleRallyAdminStore(db),
       },
       audit: createDrizzleAuditWriter(db),
       mailer: createMailer(env),
@@ -86,6 +89,7 @@ export function createApp(getServices: () => Services, opts: RouteOptions & { do
     .use(adminContentRoutes(getServices, opts))
     .use(publicContentRoutes(() => getServices().content))
     .use(uploadRoutes(getServices, opts))
+    .use(rallyAdminRoutes(getServices, opts))
     .use(purgeRoutes(getServices, opts.cronSecret));
 }
 

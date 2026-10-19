@@ -41,6 +41,8 @@ const SERVER_CODES: Record<ErrorCode, true> = {
   position_not_verified: true,
   source_required: true,
   permission_required: true,
+  rally_empty: true,
+  invalid_rally_members: true,
   invalid_file: true,
   uploads_unavailable: true,
 };

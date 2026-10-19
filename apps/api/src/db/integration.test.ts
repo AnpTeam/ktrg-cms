@@ -14,6 +14,7 @@ import { createDrizzleRateLimitStore } from "../auth/rate-limit-store";
 import { createDrizzleSessionStore } from "../auth/session-store";
 import { createDb } from "./client";
 import { listRalliesWithProgress, ralliesForPlace, recordFinished } from "../rallies/rally-store";
+import { createDrizzleRallyAdminStore } from "../rallies/rally-admin-store";
 import {
   auditLog,
   courseCompletions,
@@ -967,6 +968,118 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
           const saved = await store.updateRoute(actor, r!.id, r!.updatedAt, { geometry: line, distanceKm: 1.5 });
           expect(saved).toMatchObject({ geometry: line, distanceKm: 1.5 });
           expect((await store.getRoute(r!.id))!.route.geometry).toEqual(line);
+        });
+      });
+    });
+  });
+
+  describe("rally admin store", () => {
+    async function withAdmin(tx: Tx, body: (store: ReturnType<typeof createDrizzleRallyAdminStore>, actor: string) => Promise<void>) {
+      await seed(tx);
+      const [u] = await tx.insert(users).values({ role: "admin" }).returning({ id: users.id });
+      await body(createDrizzleRallyAdminStore(tx as unknown as typeof db), u!.id);
+    }
+
+    test("lists the seeded rallies; a rally of places shows its places in order, a rally of courses its courses", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store) => {
+          const list = await store.listRallies();
+          expect(list).toHaveLength(20);
+          const mounds = list.find((r) => r.kind === "places")!;
+          expect(mounds).toMatchObject({ memberCount: 31, published: true, completionCount: 0 });
+          expect(list.filter((r) => r.kind === "course").every((r) => r.memberCount === 1)).toBe(true);
+          expect(await store.candidatePlaces()).toHaveLength(31);
+          const courses = await store.candidateCourses();
+          expect(courses).toHaveLength(19);
+          expect(courses.reduce((n, c) => n + c.stampPlaceCount, 0)).toBe(31);
+
+          const read = await store.getRally(mounds.id);
+          if (!read || !("places" in read)) throw new Error("expected a rally of places");
+          expect(read.places.map((p) => p.position)).toEqual(read.places.map((_, i) => i + 1));
+          const aCourse = list.find((r) => r.kind === "course")!;
+          const courseRead = await store.getRally(aCourse.id);
+          if (!courseRead || !("courses" in courseRead)) throw new Error("expected a rally of courses");
+          expect(courseRead.courses).toHaveLength(1);
+          expect(await store.getRally("00000000-0000-4000-8000-000000000000")).toBeNull();
+        });
+      });
+    });
+
+    test("a new rally comes with all its ticked members in one go, as a draft at the end, with one audit row", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const routeIds = (await store.candidateCourses()).slice(0, 5).map((c) => c.routeId).reverse();
+          const made = await store.createRally(actor, { kind: "course", nameJa: "和歌山のコース", nameEn: null, memberIds: routeIds });
+          expect(made).toMatchObject({ kind: "course", published: false, memberCount: 5, sortOrder: 20 }); // the seed numbers rallies 0 to 19
+          const links = await tx.select().from(rallyRoutes).where(eq(rallyRoutes.rallyId, made.id)).orderBy(asc(rallyRoutes.position));
+          expect(links.map((l) => [l.routeId, l.position])).toEqual(routeIds.map((id, i) => [id, i + 1]));
+
+          const spotIds = (await store.candidatePlaces()).slice(0, 3).map((p) => p.spotId);
+          const ofPlaces = await store.createRally(actor, { kind: "places", nameJa: "三つの経塚", nameEn: "Three", memberIds: spotIds });
+          expect(ofPlaces).toMatchObject({ kind: "places", memberCount: 3, nameEn: "Three" });
+          const rows = await tx.select().from(auditLog).where(inArray(auditLog.targetId, [made.id, ofPlaces.id]));
+          expect(rows.map((r) => r.action)).toEqual(["rally.create", "rally.create"]);
+        });
+      });
+    });
+
+    test("an update saves names and publishing (two audit rows), and a stale updatedAt is a conflict", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const [first] = await store.listRallies();
+          const saved = await store.updateRally(actor, first!.id, first!.updatedAt, { nameJa: "新しい名前", nameEn: "New", published: false });
+          expect(saved).toMatchObject({ nameJa: "新しい名前", nameEn: "New", published: false });
+          expect(await store.updateRally(actor, first!.id, first!.updatedAt, { nameEn: "Again" })).toBe("conflict");
+          expect(await store.updateRally(actor, "00000000-0000-4000-8000-000000000000", new Date(), {})).toBeNull();
+          const words = await tx.select().from(rallyTranslations).where(eq(rallyTranslations.rallyId, first!.id));
+          expect(new Map(words.map((w) => [w.locale, w.name]))).toEqual(new Map([["ja", "新しい名前"], ["en", "New"]]));
+          const rows = await tx.select().from(auditLog).where(eq(auditLog.targetId, first!.id));
+          expect(rows.map((r) => r.action).sort()).toEqual(["rally.unpublish", "rally.update"]);
+        });
+      });
+    });
+
+    test("members are replaced in order (places or courses), a stale copy is a conflict, and stamps are never touched", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const list = await store.listRallies();
+          const mounds = list.find((r) => r.kind === "places")!;
+          const picks = (await store.candidatePlaces()).slice(0, 3).map((c) => c.spotId).reverse();
+          const [visitor] = await tx.insert(users).values({}).returning({ id: users.id });
+          await tx.insert(stamps).values({ userId: visitor!.id, spotId: picks[2]! });
+          expect(await store.setPlaces(actor, mounds.id, mounds.updatedAt, picks)).toMatchObject({ memberCount: 3 });
+          const read = await store.getRally(mounds.id);
+          if (!read || !("places" in read)) throw new Error("expected a rally of places");
+          expect(read.places.map((p) => [p.spotId, p.position])).toEqual(picks.map((id, i) => [id, i + 1]));
+          expect(await store.setPlaces(actor, mounds.id, mounds.updatedAt, [])).toBe("conflict");
+          expect(await tx.select().from(stamps).where(eq(stamps.userId, visitor!.id))).toHaveLength(1);
+
+          const course = list.find((r) => r.kind === "course")!;
+          const two = (await store.candidateCourses()).slice(0, 2).map((c) => c.routeId);
+          expect(await store.setCourses(actor, course.id, course.updatedAt, two)).toMatchObject({ memberCount: 2 });
+        });
+      });
+    });
+
+    test("reordering takes every rally; deleting takes its links and finishes, and is recorded", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const list = await store.listRallies();
+          const reversed = list.map((r) => r.id).reverse();
+          expect(await store.reorderRallies(actor, reversed)).toBe(true);
+          expect((await store.listRallies()).map((r) => r.id)).toEqual(reversed);
+          expect(await store.reorderRallies(actor, reversed.slice(1))).toBe(false);
+
+          const mounds = list.find((r) => r.kind === "places")!;
+          const [visitor] = await tx.insert(users).values({}).returning({ id: users.id });
+          await tx.insert(rallyCompletions).values({ userId: visitor!.id, rallyId: mounds.id });
+          expect((await store.listRallies()).find((r) => r.id === mounds.id)!.completionCount).toBe(1);
+          expect(await store.deleteRally(actor, mounds.id)).toBe("ok");
+          expect(await tx.select().from(rallySpots).where(eq(rallySpots.rallyId, mounds.id))).toHaveLength(0);
+          expect(await tx.select().from(rallyCompletions).where(eq(rallyCompletions.rallyId, mounds.id))).toHaveLength(0);
+          expect(await store.deleteRally(actor, mounds.id)).toBe("not_found");
+          const rows = await tx.select().from(auditLog).where(eq(auditLog.targetId, mounds.id));
+          expect(rows.map((r) => r.action)).toEqual(["rally.delete"]);
         });
       });
     });
