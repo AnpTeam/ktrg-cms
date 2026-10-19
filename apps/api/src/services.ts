@@ -9,6 +9,7 @@ import type { Mailer } from "./lib/mailer";
 import type { MeServices } from "./me/me-routes";
 import type { ContentServices } from "./content/admin-routes";
 import { createContentService } from "./content/content-service";
+import { createRoutingService, type RoutingService } from "./routing/routing-service";
 import type { ContentStore } from "./content/content-types";
 import { createMeService, type MeStore } from "./me/me-service";
 import type { UploadServices } from "./uploads/upload-routes";
@@ -38,6 +39,8 @@ export interface ServiceDeps {
   passkey: PasskeyConfig;
   /** Photo storage (Cloudflare R2) and its public address. Without them uploads answer 503. */
   uploads?: { storage: FileStorage; publicBaseUrl: string };
+  /** Snaps a drawn line to trails. Without one, the admin is told the service is not set up. */
+  routing?: RoutingService;
   /** The clock every service reads. Tests move it; the app uses real time. */
   now?: () => Date;
 }
@@ -61,5 +64,7 @@ export function createServices(deps: ServiceDeps): Services {
     content: createContentService({ store: stores.content }),
     // Admin photo uploads.
     uploads: createUploadService({ ...deps.uploads }),
+    // The route-finding service behind the map editor's "snap to trails" (no key: it answers "not set up").
+    routing: deps.routing ?? createRoutingService({}),
   };
 }

@@ -286,6 +286,7 @@ describe("user B cannot touch user A", () => {
     "PATCH /api/v1/me": () => ({ locale: "en" }),
     "POST /api/v1/admin/routes": () => ({ nameJa: "x" }),
     "PUT /api/v1/admin/routes/order": () => ({ ids: [] }),
+    "POST /api/v1/admin/route-snap": () => ({ points: [{ lat: 34, lng: 135 }, { lat: 34.1, lng: 135.1 }] }),
     "PATCH /api/v1/admin/routes/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/routes/:id/spots": () => ({ nameJa: "x" }),
     "PUT /api/v1/admin/routes/:id/spots/order": () => ({ ids: [] }),

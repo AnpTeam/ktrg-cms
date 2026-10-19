@@ -19,6 +19,7 @@ import { purgeRoutes } from "./internal/purge-routes";
 import { meRoutes } from "./me/me-routes";
 import { createDrizzleMeStore } from "./me/me-store";
 import { apiDocs } from "./openapi";
+import { createRoutingService } from "./routing/routing-service";
 import { createServices, type Services } from "./services";
 import { uploadRoutes } from "./uploads/upload-routes";
 import { createR2Storage } from "./uploads/upload-storage";
@@ -39,6 +40,7 @@ function getServices(): Services {
       },
       audit: createDrizzleAuditWriter(db),
       mailer: createMailer(env),
+      routing: createRoutingService({ apiKey: env.ORS_API_KEY }),
       // Production requires the secret (parse-env); this dev fallback never ships.
       secret: env.OTP_HMAC_SECRET ?? "dev-only-otp-secret-change-me-0000000",
       adminEmails: parseAdminEmails(env.ADMIN_EMAILS).emails, // checked at boot (parse-env)
