@@ -3,7 +3,10 @@ import { getTableConfig } from "drizzle-orm/pg-core";
 import { users } from "./auth";
 import {
   auditLog,
+  courseCompletions,
   rallies,
+  rallyCompletions,
+  rallyRoutes,
   rallySpots,
   rallyTranslations,
   routes,
@@ -114,18 +117,26 @@ describe("content schema", () => {
     expect(getTableConfig(trailNoticeTranslations).checks.map((c) => c.name)).toEqual(["trail_notice_translations_ja_body"]);
   });
 
-  test("a rally with no stampsRequired means every published spot", () => {
-    expect(col(rallies, "stamps_required").notNull).toBe(false);
+  test("a rally is made of places or of courses, and is a draft until published; no N-of-M rule and no dates", () => {
+    expect(col(rallies, "kind").notNull).toBe(true);
+    expect(col(rallies, "published").notNull).toBe(true);
+    expect(cols(rallies)).not.toContain("stamps_required");
+    expect(cols(rallies)).not.toContain("route_id");
+    expect(cols(rallies)).not.toContain("starts_at");
+    expect(getTableConfig(rallies).indexes).toHaveLength(0); // any number of rallies of either kind
   });
 
-  test("there can be many rallies: only one mound rally and one rally per course", () => {
-    const idx = Object.fromEntries(getTableConfig(rallies).indexes.map((i) => [i.config.name, i.config]));
-    expect(idx.rallies_single_row_uq).toBeUndefined(); // the one-row rule is gone
-    expect(idx.rallies_one_mounds_uq?.unique).toBe(true);
-    expect(idx.rallies_route_uq?.unique).toBe(true);
-    expect(getTableConfig(rallies).checks.map((c) => c.name)).toContain("rallies_route_matches_kind");
-    expect(col(rallies, "kind").notNull).toBe(true);
-    expect(col(rallies, "route_id").notNull).toBe(false);
+  test("a rally of courses lists courses by foreign key, keyed by both, findable from the course", () => {
+    const cfg = getTableConfig(rallyRoutes);
+    expect(cfg.primaryKeys[0]!.columns.map((c) => c.name)).toEqual(["rally_id", "route_id"]);
+    expect(cfg.foreignKeys.map((f) => f.reference().foreignTable)).toEqual([rallies, routes]);
+    expect(cfg.indexes.map((i) => i.config.name)).toContain("rally_routes_route_idx");
+  });
+
+  test("finishes are saved once per visitor: a course, and a rally", () => {
+    expect(getTableConfig(courseCompletions).primaryKeys[0]!.columns.map((c) => c.name)).toEqual(["user_id", "route_id"]);
+    expect(getTableConfig(rallyCompletions).primaryKeys[0]!.columns.map((c) => c.name)).toEqual(["user_id", "rally_id"]);
+    expect(col(rallyCompletions, "completed_at").notNull).toBe(true);
   });
 
   test("a place can be in many rallies: the link table is keyed by both and never stores stamps", () => {

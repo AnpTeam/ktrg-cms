@@ -88,11 +88,11 @@ describe("routes", () => {
 });
 
 describe("places", () => {
-  test("a new place is a draft and joins its route's course rally only", async () => {
+  test("a new place is a draft and joins no rally of places by itself (its course counts it through its route)", async () => {
     const r = await route();
     const s = await spot(r.id);
-    expect(s).toMatchObject({ published: false, positionVerified: false, radiusM: 50, lat: null });
-    expect(mem.courseRallySpotIds(r.id)).toEqual([s.id]);
+    expect(s).toMatchObject({ published: false, positionVerified: false, radiusM: 50, lat: null, routeId: r.id });
+    expect(mem.ralliesListing(s.id)).toEqual([]);
   });
 
   test("publishing fails in order: no coordinates, position not checked, no permission", async () => {
@@ -208,13 +208,12 @@ describe("history, access and photo", () => {
 describe("the route's other points (turns, toilets, danger ...)", () => {
   const verified = { lat: 34.3, lng: 135.1, positionVerified: true, positionSource: "公式" };
 
-  test("a stamp place is the default; another kind never joins a rally", async () => {
+  test("a stamp place is the default; another kind is a navigation point", async () => {
     const r = await route();
     const stamp = await spot(r.id);
     const toilet = await spot(r.id, { nameJa: "トイレ", kind: "toilet" });
     expect(stamp.kind).toBe("stamp");
     expect(toilet.kind).toBe("toilet");
-    expect(mem.courseRallySpotIds(r.id)).toEqual([stamp.id]);
   });
 
   test("a point other than a stamp place can be published without the site's permission, but still needs a checked position", async () => {
@@ -230,16 +229,18 @@ describe("the route's other points (turns, toilets, danger ...)", () => {
     expect(await svc.publishSpot(ADMIN, stamp.id)).toEqual({ ok: false, reason: "permission_required" });
   });
 
-  test("changing the kind moves the point out of, or into, its course's rally; a stamped place stays a stamp place", async () => {
+  test("a place that stops being a stamp place leaves every rally of places; a stamped place stays a stamp place", async () => {
     const r = await route();
     const s = await spot(r.id);
-    expect(mem.courseRallySpotIds(r.id)).toEqual([s.id]);
+    mem.listInRally(s.id, "rally-of-places-1");
+    mem.listInRally(s.id, "rally-of-places-2");
     const asTurn = await svc.updateSpot(ADMIN, s.id, s.updatedAt, { kind: "turn" });
     if (!asTurn.ok) throw new Error(asTurn.reason);
-    expect(mem.courseRallySpotIds(r.id)).toEqual([]);
+    expect(mem.ralliesListing(s.id)).toEqual([]);
+    // Back to a stamp place: it does not rejoin by itself (an admin adds it again).
     const back = await svc.updateSpot(ADMIN, s.id, asTurn.value.updatedAt, { kind: "stamp" });
     if (!back.ok) throw new Error(back.reason);
-    expect(mem.courseRallySpotIds(r.id)).toEqual([s.id]);
+    expect(mem.ralliesListing(s.id)).toEqual([]);
     mem.stampPlace(s.id);
     expect(await svc.updateSpot(ADMIN, s.id, back.value.updatedAt, { kind: "rest_area" })).toEqual({ ok: false, reason: "spot_has_stamps" });
   });

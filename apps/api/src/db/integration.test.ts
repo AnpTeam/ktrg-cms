@@ -13,11 +13,14 @@ import { createDrizzlePasskeyStore } from "../auth/passkey-store";
 import { createDrizzleRateLimitStore } from "../auth/rate-limit-store";
 import { createDrizzleSessionStore } from "../auth/session-store";
 import { createDb } from "./client";
-import { listRalliesWithProgress } from "../rallies/rally-store";
+import { listRalliesWithProgress, ralliesForPlace, recordFinished } from "../rallies/rally-store";
 import {
   auditLog,
+  courseCompletions,
   otpCodes,
   rallies,
+  rallyCompletions,
+  rallyRoutes,
   rallySpots,
   rallyTranslations,
   rateLimits,
@@ -539,9 +542,9 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
     return new Map(rows.map((r) => [`${ownerOf(r)}:${r.locale}`, r.name]));
   }
 
-  test("fills an empty database: 20 rallies, 19 routes in order, 31 draft spots on their courses, 62 links", async () => {
+  test("fills an empty database: 20 rallies, 19 routes in order, 31 draft spots on their courses, 50 links", async () => {
     await inRollback(async (tx) => {
-      expect(await seed(tx)).toEqual({ rallies: 20, routes: 19, spots: 31, links: 62 });
+      expect(await seed(tx)).toEqual({ rallies: 20, routes: 19, spots: 31, links: 50 });
 
       expect(await tx.select().from(rallies)).toHaveLength(20);
       const rs = await tx.select().from(routes).orderBy(asc(routes.sortOrder));
@@ -575,7 +578,8 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       expect(await tx.select().from(routes)).toHaveLength(19);
       expect(await tx.select().from(spots)).toHaveLength(31);
       expect(await tx.select().from(rallies)).toHaveLength(20);
-      expect(await tx.select().from(rallySpots)).toHaveLength(62);
+      expect(await tx.select().from(rallySpots)).toHaveLength(31);
+      expect(await tx.select().from(rallyRoutes)).toHaveLength(19);
     });
   });
 
@@ -597,108 +601,139 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
     });
   });
 
-  test("one mound rally holds all 31 places, and each course rally the places on its course", async () => {
+  test("the sutra-mound rally is a rally of places holding all 31; each course gets a rally of courses holding it; all published", async () => {
     await inRollback(async (tx) => {
       await seed(tx);
       const rs = await tx.select().from(routes).orderBy(asc(routes.sortOrder));
       const rl = await tx.select().from(rallies);
-      const mounds = rl.filter((r) => r.kind === "mounds");
-      expect(mounds).toHaveLength(1);
-      expect(mounds[0]).toMatchObject({ routeId: null });
-      expect((await nameOf(tx, rallyTranslations, (t) => t.rallyId)).get(`${mounds[0]!.id}:ja`)).toBe("経塚スタンプラリー");
-      const links = await tx.select().from(rallySpots);
-      expect(links.filter((l) => l.rallyId === mounds[0]!.id)).toHaveLength(31);
+      expect(rl.every((r) => r.published)).toBe(true);
+      const ofPlaces = rl.filter((r) => r.kind === "places");
+      expect(ofPlaces).toHaveLength(1);
+      expect((await nameOf(tx, rallyTranslations, (t) => t.rallyId)).get(`${ofPlaces[0]!.id}:ja`)).toBe("経塚スタンプラリー");
+      const placeLinks = await tx.select().from(rallySpots);
+      expect(placeLinks.filter((l) => l.rallyId === ofPlaces[0]!.id)).toHaveLength(31);
 
-      const courses = rl.filter((r) => r.kind === "course");
-      expect(courses).toHaveLength(19);
-      expect(new Set(courses.map((c) => c.routeId)).size).toBe(19);
-      const members = (course: number) => {
-        const rally = courses.find((c) => c.routeId === rs[course - 1]!.id)!;
-        return links.filter((l) => l.rallyId === rally.id).sort((x, y) => x.position - y.position);
-      };
-      expect(members(3)).toHaveLength(0); // course 3 has no mound yet
-      expect(members(4)).toHaveLength(2);
-      expect(members(11)).toHaveLength(3);
-      expect(members(4).map((l) => l.position)).toEqual([1, 2]);
-
-      // a place is in two rallies at once: the mound rally and its course's rally
-      const aSpot = members(4)[0]!.spotId;
-      expect(links.filter((l) => l.spotId === aSpot)).toHaveLength(2);
+      const ofCourses = rl.filter((r) => r.kind === "course");
+      expect(ofCourses).toHaveLength(19);
+      const courseLinks = await tx.select().from(rallyRoutes);
+      expect(courseLinks).toHaveLength(19);
+      expect(new Set(courseLinks.map((l) => l.routeId))).toEqual(new Set(rs.map((r) => r.id)));
+      // A rally of courses lists courses, never places.
+      expect(placeLinks.filter((l) => ofCourses.some((c) => c.id === l.rallyId))).toHaveLength(0);
     });
   });
 
-  test("the database refuses a second mound rally, a second rally for a course, and a course rally with no course", async () => {
+  test("the links are foreign keys: no link to a missing rally, place or course, and no link twice", async () => {
     await inRollback(async (tx) => {
       await seed(tx);
-      const [first] = await tx.select().from(routes).where(eq(routes.sortOrder, 1));
-      const attempt = async (values: typeof rallies.$inferInsert) => {
+      const refused = async (body: (t: Tx) => Promise<unknown>) => {
         await expect(
           (async () => {
             await tx.transaction(async (t) => {
-              await t.insert(rallies).values(values);
+              await body(t);
             });
           })(),
         ).rejects.toThrow();
       };
-      await attempt({ kind: "mounds" });
-      await attempt({ kind: "course", routeId: first!.id });
-      await attempt({ kind: "course" });
-      await attempt({ kind: "mounds", routeId: first!.id });
-      // a link cannot be made twice
-      const [link] = await tx.select().from(rallySpots).limit(1);
-      await expect(
-        (async () => {
-          await tx.transaction(async (t) => {
-            await t.insert(rallySpots).values({ rallyId: link!.rallyId, spotId: link!.spotId });
-          });
-        })(),
-      ).rejects.toThrow();
+      const missing = "00000000-0000-4000-8000-000000000000";
+      const [placeLink] = await tx.select().from(rallySpots).limit(1);
+      const [courseLink] = await tx.select().from(rallyRoutes).limit(1);
+      await refused((t) => t.insert(rallySpots).values({ rallyId: placeLink!.rallyId, spotId: placeLink!.spotId }));
+      await refused((t) => t.insert(rallySpots).values({ rallyId: placeLink!.rallyId, spotId: missing }));
+      await refused((t) => t.insert(rallySpots).values({ rallyId: missing, spotId: placeLink!.spotId }));
+      await refused((t) => t.insert(rallyRoutes).values({ rallyId: courseLink!.rallyId, routeId: courseLink!.routeId }));
+      await refused((t) => t.insert(rallyRoutes).values({ rallyId: courseLink!.rallyId, routeId: missing }));
+      await refused((t) => t.insert(courseCompletions).values({ userId: missing, routeId: courseLink!.routeId }));
+      await refused((t) => t.insert(rallyCompletions).values({ userId: missing, rallyId: courseLink!.rallyId }));
     });
   });
 
-  test("deleting a rally removes its links, not the places or anyone's stamps", async () => {
+  test("deleting a rally removes its links and its finishes, never places, stamps or course finishes", async () => {
     await inRollback(async (tx) => {
       await seed(tx);
-      const [rally] = await tx.select().from(rallies).where(eq(rallies.kind, "mounds"));
+      const [rally] = await tx.select().from(rallies).where(eq(rallies.kind, "course")).limit(1);
+      const [link] = await tx.select().from(rallyRoutes).where(eq(rallyRoutes.rallyId, rally!.id));
+      const [visitor] = await tx.insert(users).values({}).returning({ id: users.id });
+      await tx.insert(courseCompletions).values({ userId: visitor!.id, routeId: link!.routeId });
+      await tx.insert(rallyCompletions).values({ userId: visitor!.id, rallyId: rally!.id });
       await tx.delete(rallies).where(eq(rallies.id, rally!.id));
-      expect(await tx.select().from(rallySpots).where(eq(rallySpots.rallyId, rally!.id))).toHaveLength(0);
+      expect(await tx.select().from(rallyRoutes).where(eq(rallyRoutes.rallyId, rally!.id))).toHaveLength(0);
+      expect(await tx.select().from(rallyCompletions).where(eq(rallyCompletions.userId, visitor!.id))).toHaveLength(0);
+      expect(await tx.select().from(courseCompletions).where(eq(courseCompletions.userId, visitor!.id))).toHaveLength(1);
       expect(await tx.select().from(spots)).toHaveLength(31);
     });
   });
 
-  test("progress: one stamp counts in the mound rally AND the course rally; others' stamps and drafts do not", async () => {
+  test("ONE stamp on a sutra mound is found in its course, every rally of places listing it, and every rally of courses holding its course", async () => {
     await inRollback(async (tx) => {
       await seed(tx);
       const rs = await tx.select().from(routes).orderBy(asc(routes.sortOrder));
-      const onCourse4 = await tx.select().from(spots).where(eq(spots.routeId, rs[3]!.id)).orderBy(asc(spots.sortOrder));
+      const course4 = rs[3]!.id;
+      const onCourse4 = await tx.select().from(spots).where(eq(spots.routeId, course4)).orderBy(asc(spots.sortOrder));
       const [a, b] = onCourse4 as [(typeof onCourse4)[number], (typeof onCourse4)[number]];
+      const ready = { lat: 34.3, lng: 135.1, permissionConfirmed: true, positionVerified: true, published: true };
+      await tx.update(spots).set(ready).where(inArray(spots.id, [a.id, b.id]));
+      const [mounds] = await tx.select({ id: rallies.id }).from(rallies).where(eq(rallies.kind, "places"));
+      const [course4Rally] = await tx.select({ id: rallyRoutes.rallyId }).from(rallyRoutes).where(eq(rallyRoutes.routeId, course4));
 
-      // Publish a (coordinates and permission are required) and leave b a draft.
-      await tx.update(spots).set({ lat: 34.3, lng: 135.1, permissionConfirmed: true, positionVerified: true, published: true }).where(eq(spots.id, a.id));
+      // A second rally of places that also lists mound a, and a bigger rally of courses holding course 4 and course 11.
+      const [extra] = await tx.insert(rallies).values({ kind: "places", published: true }).returning({ id: rallies.id });
+      await tx.insert(rallySpots).values({ rallyId: extra!.id, spotId: a.id, position: 1 });
+      const [big] = await tx.insert(rallies).values({ kind: "course", published: true }).returning({ id: rallies.id });
+      await tx.insert(rallyRoutes).values([
+        { rallyId: big!.id, routeId: course4, position: 1 },
+        { rallyId: big!.id, routeId: rs[10]!.id, position: 2 },
+      ]);
+
+      const found = await ralliesForPlace(tx, a.id);
+      expect(found.routeId).toBe(course4);
+      expect(new Set(found.rallyIds)).toEqual(new Set([mounds!.id, extra!.id, course4Rally!.id, big!.id]));
+
       const [me] = await tx.insert(users).values({}).returning({ id: users.id });
       const [other] = await tx.insert(users).values({}).returning({ id: users.id });
       await tx.insert(stamps).values([
         { userId: me!.id, spotId: a.id },
         { userId: other!.id, spotId: a.id },
-        { userId: me!.id, spotId: b.id }, // a stamp on a draft place counts for nothing
       ]);
+      // One of the two mounds of course 4: only the second rally of places (just mound a) is finished.
+      expect(await recordFinished(tx, me!.id, { spotId: a.id })).toEqual({ routeIds: [], rallyIds: [extra!.id] });
+
+      await tx.insert(stamps).values({ userId: me!.id, spotId: b.id });
+      const second = await recordFinished(tx, me!.id, { spotId: b.id });
+      // Course 4 is finished, so its rally of courses is, and so is the mound rally (only a and b are published).
+      // The big rally still waits for course 11, whose mounds are drafts: it cannot be finished yet.
+      expect(second.routeIds).toEqual([course4]);
+      expect(new Set(second.rallyIds)).toEqual(new Set([course4Rally!.id, mounds!.id]));
+      expect(await recordFinished(tx, me!.id)).toEqual({ routeIds: [], rallyIds: [] });
 
       const mine = await listRalliesWithProgress(tx, me!.id);
-      const mounds = mine.find((r) => r.kind === "mounds")!;
-      const course4 = mine.find((r) => r.routeId === rs[3]!.id)!;
-      expect(mounds).toMatchObject({ total: 1, stamped: 1, complete: true });
-      expect(course4).toMatchObject({ total: 1, stamped: 1, complete: true });
-      expect(course4.lastStampedAt).toBeInstanceOf(Date);
+      expect(mine.find((r) => r.id === big!.id)).toMatchObject({ kind: "course", progress: { total: 2, finished: 1, complete: false }, completedAt: null });
+      expect(mine.find((r) => r.id === mounds!.id)).toMatchObject({ kind: "places", progress: { total: 2, stamped: 2, complete: true } });
+      expect(mine.find((r) => r.id === mounds!.id)!.completedAt).toBeInstanceOf(Date);
+      // The other visitor's stamp is theirs only.
+      expect((await listRalliesWithProgress(tx, other!.id)).find((r) => r.id === mounds!.id)).toMatchObject({ progress: { stamped: 1 }, completedAt: null });
+    });
+  });
 
-      const theirs = await listRalliesWithProgress(tx, other!.id);
-      expect(theirs.find((r) => r.kind === "mounds")).toMatchObject({ stamped: 1 });
-      const nobody = await listRalliesWithProgress(tx, "00000000-0000-4000-8000-000000000000");
-      expect(nobody.every((r) => r.stamped === 0 && r.lastStampedAt === null)).toBe(true);
+  test("a saved course finish stays when the course gets another place later", async () => {
+    await inRollback(async (tx) => {
+      await seed(tx);
+      const rs = await tx.select().from(routes).orderBy(asc(routes.sortOrder));
+      const course4 = rs[3]!.id;
+      const ready = { lat: 34.3, lng: 135.1, permissionConfirmed: true, positionVerified: true, published: true };
+      const onCourse4 = await tx.select({ id: spots.id }).from(spots).where(eq(spots.routeId, course4));
+      await tx.update(spots).set(ready).where(inArray(spots.id, onCourse4.map((s) => s.id)));
+      const [me] = await tx.insert(users).values({}).returning({ id: users.id });
+      await tx.insert(stamps).values(onCourse4.map((s) => ({ userId: me!.id, spotId: s.id })));
+      expect((await recordFinished(tx, me!.id)).routeIds).toEqual([course4]);
 
-      // an admin revokes my stamp: it counts for nothing any more, in both rallies
-      await tx.update(stamps).set({ revokedAt: new Date() }).where(eq(stamps.userId, me!.id));
-      const after = await listRalliesWithProgress(tx, me!.id);
-      expect(after.find((r) => r.kind === "mounds")).toMatchObject({ stamped: 0, complete: false });
+      // A new published stamp place on course 4 that I have not visited.
+      const [added] = await tx.insert(spots).values({ routeId: course4, sortOrder: 99, ...ready }).returning({ id: spots.id });
+      await tx.insert(spotTranslations).values({ spotId: added!.id, locale: "ja", name: "新しい場所" });
+      const [course4Rally] = await tx.select({ id: rallyRoutes.rallyId }).from(rallyRoutes).where(eq(rallyRoutes.routeId, course4));
+      const after = (await listRalliesWithProgress(tx, me!.id)).find((r) => r.id === course4Rally!.id)!;
+      expect(after).toMatchObject({ progress: { finished: 1, complete: true } });
+      expect(await tx.select().from(courseCompletions).where(eq(courseCompletions.userId, me!.id))).toHaveLength(1);
     });
   });
 
@@ -755,17 +790,15 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       });
     });
 
-    test("creating a place adds it to the route's course rally (not the mound rally) and audits it", async () => {
+    test("creating a place puts it on its course (and so in its course's rallies) but in no rally of places; it is audited", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {
           const list = await store.listRoutes();
           const course3 = list[2]!; // the seed gives course 3 no mounds
           const s = await store.createSpot(actor, course3.id, { nameJa: "新しい場所" });
-          expect(s).toMatchObject({ published: false, positionVerified: false, sortOrder: 1 });
-          const [rally] = await tx.select().from(rallies).where(eq(rallies.routeId, course3.id));
-          const links = await tx.select().from(rallySpots).where(eq(rallySpots.spotId, s!.id));
-          expect(links.map((l) => l.rallyId)).toEqual([rally!.id]);
-          expect(links[0]!.position).toBe(1);
+          expect(s).toMatchObject({ published: false, positionVerified: false, sortOrder: 1, routeId: course3.id });
+          expect(await tx.select().from(rallySpots).where(eq(rallySpots.spotId, s!.id))).toHaveLength(0);
+          expect((await ralliesForPlace(tx, s!.id)).rallyIds.length).toBeGreaterThan(0); // course 3's rally of courses
           const rows = await tx.select().from(auditLog).where(eq(auditLog.targetId, s!.id));
           expect(rows.map((r) => r.action)).toEqual(["spot.create"]);
           expect(rows[0]!.actorUserId).toBe(actor);
@@ -773,13 +806,15 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       });
     });
 
-    test("deleting: a route with places is refused; its empty course rally goes with it; a stamped place is refused", async () => {
+    test("deleting: a route with places is refused; an empty one leaves its rallies of courses (they stay); a stamped place is refused", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {
           const list = await store.listRoutes();
           expect(await store.deleteRoute(actor, list[3]!.id)).toBe("has_places");
+          const [link] = await tx.select().from(rallyRoutes).where(eq(rallyRoutes.routeId, list[2]!.id));
           expect(await store.deleteRoute(actor, list[2]!.id)).toBe("ok");
-          expect(await tx.select().from(rallies).where(eq(rallies.routeId, list[2]!.id))).toHaveLength(0);
+          expect(await tx.select().from(rallyRoutes).where(eq(rallyRoutes.routeId, list[2]!.id))).toHaveLength(0);
+          expect(await tx.select().from(rallies).where(eq(rallies.id, link!.rallyId))).toHaveLength(1);
 
           const [placeOnCourse4] = await tx.select().from(spots).where(eq(spots.routeId, list[3]!.id)).limit(1);
           const [visitor] = await tx.insert(users).values({}).returning({ id: users.id });
@@ -830,23 +865,28 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       });
     });
 
-    test("another kind of point stays out of the rallies; changing the kind moves it; a stamped place cannot stop being one", async () => {
+    test("a point that stops being a stamp place leaves every rally of places; a stamped place cannot stop being one", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {
           const list = await store.listRoutes();
           const course3 = list[2]!; // no mounds yet
-          const toilet = await store.createSpot(actor, course3.id, { nameJa: "トイレ", kind: "toilet" });
-          expect(toilet).toMatchObject({ kind: "toilet" });
-          expect(await tx.select().from(rallySpots).where(eq(rallySpots.spotId, toilet!.id))).toHaveLength(0);
+          const place = await store.createSpot(actor, course3.id, { nameJa: "経塚かもしれない場所" });
+          const [mounds] = await tx.select({ id: rallies.id }).from(rallies).where(eq(rallies.kind, "places"));
+          await tx.insert(rallySpots).values({ rallyId: mounds!.id, spotId: place!.id, position: 99 });
 
-          const asStamp = await store.updateSpot(actor, toilet!.id, toilet!.updatedAt, { kind: "stamp" });
+          const asToilet = await store.updateSpot(actor, place!.id, place!.updatedAt, { kind: "toilet" });
+          expect(asToilet).toMatchObject({ kind: "toilet" });
+          expect(await tx.select().from(rallySpots).where(eq(rallySpots.spotId, place!.id))).toHaveLength(0);
+
+          // Back to a stamp place: it counts in its course again (no link needed), but does not rejoin the rally of places.
+          const asStamp = await store.updateSpot(actor, place!.id, (asToilet as { updatedAt: Date }).updatedAt, { kind: "stamp" });
           expect(asStamp).toMatchObject({ kind: "stamp" });
-          expect(await tx.select().from(rallySpots).where(eq(rallySpots.spotId, toilet!.id))).toHaveLength(1);
+          expect(await tx.select().from(rallySpots).where(eq(rallySpots.spotId, place!.id))).toHaveLength(0);
 
           const stamped = asStamp as { updatedAt: Date };
           const visitor = (await tx.insert(users).values({}).returning({ id: users.id }))[0]!;
-          await tx.insert(stamps).values({ userId: visitor.id, spotId: toilet!.id });
-          expect(await store.updateSpot(actor, toilet!.id, stamped.updatedAt, { kind: "turn" })).toBe("has_stamps");
+          await tx.insert(stamps).values({ userId: visitor.id, spotId: place!.id });
+          expect(await store.updateSpot(actor, place!.id, stamped.updatedAt, { kind: "turn" })).toBe("has_stamps");
         });
       });
     });
