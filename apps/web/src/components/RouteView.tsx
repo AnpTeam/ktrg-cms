@@ -8,11 +8,13 @@ import { PrefectureName } from "@/components/PrefectureName";
 import { RouteSilhouette } from "@/components/RouteSketch";
 import { RouteStats } from "@/components/RouteStats";
 import { StopList } from "@/components/StopList";
+import { HeroPhoto } from "@/components/map/HeroPhoto";
 import type { MapStop } from "@/components/map/TrailMap";
 import { TrailMapLoader } from "@/components/map/TrailMapLoader";
 import type { RouteDetail } from "@/lib/content";
 import type { MapSettings } from "@/lib/map-settings";
 import { pickText } from "@/lib/pick-text";
+import { pointsAsPlaces } from "@/lib/point-places";
 import type { MapPlace } from "@/lib/places";
 import { parseVideoUrl } from "@/lib/video";
 
@@ -70,9 +72,18 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
   const video = parseVideoUrl(route.videoUrl);
   const { stampedCount, spotCount } = route;
+  const history = pickText(locale, route.historyJa, route.historyEn);
+  const access = pickText(locale, route.accessJa, route.accessEn);
+  const mapPlaces = [...places, ...pointsAsPlaces(route.points, locale)];
+  const photo = route.photoUrl ? { src: route.photoUrl, alt: pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa } : null;
 
   return (
     <>
+      {photo ? (
+        <div className="px-4">
+          <HeroPhoto photo={photo} placeholder={false} />
+        </div>
+      ) : null}
       <header className="px-4">
         <div className="flex items-start justify-between gap-4">
           <h1 className="min-w-0 text-3xl font-bold">
@@ -112,7 +123,39 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
 
       {stops.length > 0 ? (
         <section className="px-4">
-          <TrailMapLoader stops={stops} line={route.line} places={places} draft={draftPositions} settings={settings} mergeStops={mergeStops} placesFirst={placesFirst} />
+          <TrailMapLoader stops={stops} line={route.line} places={mapPlaces} draft={draftPositions} settings={settings} mergeStops={mergeStops} placesFirst={placesFirst} />
+        </section>
+      ) : null}
+
+      {history ? (
+        <section className="px-4">
+          <h2 className="text-xl font-bold">
+            <Trans>歴史・由来</Trans>
+          </h2>
+          <p className="mt-2 max-w-prose whitespace-pre-line text-lg leading-8">
+            <Localized value={history} tag={false} />
+          </p>
+          {history.fallback ? (
+            <p className="mt-2 text-base text-muted">
+              <Trans>この文章は日本語のみです。</Trans>
+            </p>
+          ) : null}
+        </section>
+      ) : null}
+
+      {access ? (
+        <section className="px-4">
+          <h2 className="text-xl font-bold">
+            <Trans>アクセス・交通</Trans>
+          </h2>
+          <p className="mt-2 max-w-prose whitespace-pre-line text-lg leading-8">
+            <Localized value={access} tag={false} />
+          </p>
+          {access.fallback ? (
+            <p className="mt-2 text-base text-muted">
+              <Trans>この文章は日本語のみです。</Trans>
+            </p>
+          ) : null}
         </section>
       ) : null}
 

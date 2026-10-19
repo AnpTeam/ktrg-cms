@@ -34,6 +34,7 @@ export function useErrorMessages(): Record<ErrorKey, string> {
     conflict: t`別の人が先に保存しました。読み込み直してから、もう一度お試しください。`,
     invalid_video_url: t`動画のリンクは、https:// で始まるYouTubeかVimeoのものだけ使えます。`,
     invalid_line: t`ルートの線が正しくありません。日本の中に、2点以上の線を描いてください。`,
+    invalid_photo_url: t`写真のリンクは、https:// で始まるものだけ使えます。`,
     route_has_places: t`場所が残っているルートは消せません。先に場所を消してください。`,
     spot_has_stamps: t`スタンプが押されたことのある場所は消せません。「公開をやめる」をお使いください。`,
     no_coordinates: t`この場所の位置がまだ決まっていません。地図で位置を決めてください。`,

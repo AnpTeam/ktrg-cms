@@ -795,6 +795,59 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       });
     });
 
+    test("another kind of point stays out of the rallies; changing the kind moves it; a stamped place cannot stop being one", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const list = await store.listRoutes();
+          const course3 = list[2]!; // no mounds yet
+          const toilet = await store.createSpot(actor, course3.id, { nameJa: "トイレ", kind: "toilet" });
+          expect(toilet).toMatchObject({ kind: "toilet" });
+          expect(await tx.select().from(rallySpots).where(eq(rallySpots.spotId, toilet!.id))).toHaveLength(0);
+
+          const asStamp = await store.updateSpot(actor, toilet!.id, toilet!.updatedAt, { kind: "stamp" });
+          expect(asStamp).toMatchObject({ kind: "stamp" });
+          expect(await tx.select().from(rallySpots).where(eq(rallySpots.spotId, toilet!.id))).toHaveLength(1);
+
+          const stamped = asStamp as { updatedAt: Date };
+          const visitor = (await tx.insert(users).values({}).returning({ id: users.id }))[0]!;
+          await tx.insert(stamps).values({ userId: visitor.id, spotId: toilet!.id });
+          expect(await store.updateSpot(actor, toilet!.id, stamped.updatedAt, { kind: "turn" })).toBe("has_stamps");
+        });
+      });
+    });
+
+    test("the lists count stamp places and other points apart; a point other than a stamp place can be published without permission, a stamp place cannot", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const list = await store.listRoutes();
+          const route = list[2]!;
+          const verified = { lat: 34.3, lng: 135.1, positionVerified: true, positionSource: "公式" };
+          const turn = await store.createSpot(actor, route.id, { nameJa: "分かれ道", kind: "turn", ...verified });
+          expect(await store.setPublished(actor, turn!.id, true)).toMatchObject({ published: true });
+          const stamp = await store.createSpot(actor, route.id, { nameJa: "経塚", kind: "stamp", ...verified });
+          await expect(
+            (async () => {
+              await tx.transaction(async (t) => {
+                await createDrizzleContentStore(t as unknown as typeof db).setPublished(actor, stamp!.id, true);
+              });
+            })(),
+          ).rejects.toThrow(); // the database still demands permission for a stamp place
+          const row = (await store.listRoutes()).find((r) => r.id === route.id)!;
+          expect([row.spotCount, row.publishedSpotCount, row.pointCount]).toEqual([1, 0, 1]);
+        });
+      });
+    });
+
+    test("history, access and photo round-trip", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const [r] = await store.listRoutes();
+          const saved = await store.updateRoute(actor, r!.id, r!.updatedAt, { historyJa: "歴史", accessEn: "By train", photoUrl: "https://example.com/a.jpg" });
+          expect(saved).toMatchObject({ historyJa: "歴史", historyEn: null, accessEn: "By train", photoUrl: "https://example.com/a.jpg" });
+        });
+      });
+    });
+
     test("a route line round-trips as GeoJSON", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {

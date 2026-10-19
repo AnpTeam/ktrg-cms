@@ -38,8 +38,10 @@ export function createDrizzleContentStore(db: Db): ContentStore {
       const counts = await db
         .select({
           routeId: spots.routeId,
-          total: count(),
-          published: sql<number>`count(*) filter (where ${spots.published})`.mapWith(Number),
+          // Stamp places and the route's other points are counted apart.
+          total: sql<number>`count(*) filter (where ${spots.kind} = 'stamp')`.mapWith(Number),
+          published: sql<number>`count(*) filter (where ${spots.published} and ${spots.kind} = 'stamp')`.mapWith(Number),
+          points: sql<number>`count(*) filter (where ${spots.kind} <> 'stamp')`.mapWith(Number),
         })
         .from(spots)
         .groupBy(spots.routeId);
@@ -48,6 +50,7 @@ export function createDrizzleContentStore(db: Db): ContentStore {
         ...routeFromDb(r),
         spotCount: byRoute.get(r.id)?.total ?? 0,
         publishedSpotCount: byRoute.get(r.id)?.published ?? 0,
+        pointCount: byRoute.get(r.id)?.points ?? 0,
       }));
     },
 
@@ -122,8 +125,9 @@ export function createDrizzleContentStore(db: Db): ContentStore {
           .insert(spots)
           .values({ ...fields, routeId, sortOrder: await nextSpotOrder(tx, routeId) })
           .returning();
-        // Every place of a course is in that course's rally; the mound rally is managed separately.
-        const rallyId = await courseRallyOf(tx, routeId);
+        // Every stamp place of a course is in that course's rally; the mound rally is managed separately.
+        // The route's other points (a turn, a toilet) never are.
+        const rallyId = row!.kind === "stamp" ? await courseRallyOf(tx, routeId) : null;
         if (rallyId) {
           const [m] = await tx.select({ m: max(rallySpots.position) }).from(rallySpots).where(eq(rallySpots.rallyId, rallyId));
           await tx.insert(rallySpots).values({ rallyId, spotId: row!.id, position: (m?.m ?? 0) + 1 }).onConflictDoNothing();
@@ -135,15 +139,30 @@ export function createDrizzleContentStore(db: Db): ContentStore {
 
     async updateSpot(actor, id, expected, changes) {
       return db.transaction(async (tx) => {
-        const [before] = await tx.select({ status: spots.status }).from(spots).where(eq(spots.id, id)).limit(1);
+        const [before] = await tx.select({ status: spots.status, kind: spots.kind, routeId: spots.routeId }).from(spots).where(eq(spots.id, id)).limit(1);
         if (!before) return null;
         const statusChanged = changes.status !== undefined && changes.status !== before.status;
+        const kindChanged = changes.kind !== undefined && changes.kind !== before.kind;
+        if (kindChanged && before.kind === "stamp") {
+          // A place visitors have stamped stays a stamp place.
+          const [n] = await tx.select({ n: count() }).from(stamps).where(eq(stamps.spotId, id));
+          if ((n?.n ?? 0) > 0) return "has_stamps";
+        }
         const [row] = await tx
           .update(spots)
           .set({ ...changes, updatedAt: sql`clock_timestamp()`, ...(statusChanged ? { statusUpdatedAt: sql`clock_timestamp()` } : {}) })
           .where(and(eq(spots.id, id), sameInstant(spots.updatedAt, expected)))
           .returning();
         if (!row) return "conflict";
+        if (kindChanged) {
+          // Keep the rallies in step: a point that is no longer a stamp place leaves them, a new stamp place joins its course's.
+          await tx.delete(rallySpots).where(eq(rallySpots.spotId, id));
+          const rallyId = row.kind === "stamp" ? await courseRallyOf(tx, before.routeId) : null;
+          if (rallyId) {
+            const [m] = await tx.select({ m: max(rallySpots.position) }).from(rallySpots).where(eq(rallySpots.rallyId, rallyId));
+            await tx.insert(rallySpots).values({ rallyId, spotId: id, position: (m?.m ?? 0) + 1 }).onConflictDoNothing();
+          }
+        }
         await writeAudit(tx, { actorUserId: actor, action: "spot.update", targetId: id });
         if (statusChanged) await writeAudit(tx, { actorUserId: actor, action: "spot.status.change", targetId: id });
         return spotFromDb(row);

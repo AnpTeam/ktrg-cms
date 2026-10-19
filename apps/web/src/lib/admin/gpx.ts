@@ -13,7 +13,39 @@ const attr = (tag: string, name: string): number | null => {
   return Number.isFinite(v) ? v : null;
 };
 
-export function parseGpx(xml: string): { ok: true; points: LngLatEle[] } | { ok: false } {
+/** A named point of a GPX file (`<wpt>`): a GPS watch's marked spot, or a stop exported from a planning tool. */
+export interface GpxWaypoint {
+  lat: number;
+  lng: number;
+  name: string;
+}
+
+const decode = (s: string) =>
+  s
+    .replace(/^\s*<!\[CDATA\[([\s\S]*?)\]\]>\s*$/, "$1")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, "&")
+    .trim();
+
+/** The named points (`<wpt>`) of a file; one with a position out of range is skipped. */
+function waypointsOf(xml: string): GpxWaypoint[] {
+  const out: GpxWaypoint[] = [];
+  for (const m of xml.matchAll(/<wpt\b([^>]*?)(\/>|>([\s\S]*?)<\/wpt>)/gi)) {
+    const lat = attr(m[1]!, "lat");
+    const lng = attr(m[1]!, "lon");
+    if (lat === null || lng === null || lat < -90 || lat > 90 || lng < -180 || lng > 180) continue;
+    const name = m[3] ? /<name>([\s\S]*?)<\/name>/i.exec(m[3])?.[1] : undefined;
+    out.push({ lat, lng, name: name ? decode(name).slice(0, 200) : "" });
+    if (out.length >= 500) break;
+  }
+  return out;
+}
+
+/** A file is usable when it has a path of at least two points or at least one named point (or both). */
+export function parseGpx(xml: string): { ok: true; points: LngLatEle[]; waypoints: GpxWaypoint[] } | { ok: false } {
   if (/<!DOCTYPE|<!ENTITY/i.test(xml)) return { ok: false };
   const points: LngLatEle[] = [];
   // Track points first; a file with only a planned route uses route points instead.
@@ -30,5 +62,7 @@ export function parseGpx(xml: string): { ok: true; points: LngLatEle[] } | { ok:
     }
     if (points.length > 0) break;
   }
-  return points.length >= 2 ? { ok: true, points } : { ok: false };
+  const waypoints = waypointsOf(xml);
+  const path = points.length >= 2 ? points : [];
+  return path.length > 0 || waypoints.length > 0 ? { ok: true, points: path, waypoints } : { ok: false };
 }

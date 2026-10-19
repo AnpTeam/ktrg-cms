@@ -1,5 +1,6 @@
 import type { PublicRoute, PublicSpot } from "./api-content-types";
-import type { Prefecture, RouteDetail, RouteSummary, SpotDetail, SpotListItem } from "./content";
+import type { Prefecture, RouteDetail, RoutePoint, RouteSummary, SpotDetail, SpotListItem } from "./content";
+import { isPointKind } from "./point-kinds";
 import { areaFromBounds, sketchFromPoints } from "./route-geometry";
 import type { Sketch } from "./sketch";
 
@@ -48,7 +49,21 @@ export function spotListItemFromApi(s: PublicSpot): SpotListItem {
   };
 }
 
-export function routeDetailFromApi(r: PublicRoute, spots: PublicSpot[], order: number): RouteDetail {
+/** A navigation point; null for a stamp place or a kind this app does not know. */
+export function routePointFromApi(s: PublicSpot): RoutePoint | null {
+  if (!isPointKind(s.kind) || s.kind === "stamp") return null;
+  return {
+    id: s.id,
+    kind: s.kind,
+    nameJa: s.nameJa,
+    nameEn: s.nameEn,
+    descriptionJa: s.descriptionJa,
+    descriptionEn: s.descriptionEn,
+    position: s.position ? { lat: s.position.lat, lng: s.position.lng, verified: true } : null,
+  };
+}
+
+export function routeDetailFromApi(r: PublicRoute, spots: PublicSpot[], order: number, points: PublicSpot[] = []): RouteDetail {
   const line = r.line?.coordinates ?? null;
   return {
     ...routeSummaryFromApi(r, order),
@@ -56,10 +71,15 @@ export function routeDetailFromApi(r: PublicRoute, spots: PublicSpot[], order: n
     sketch: line ? sketchFromPoints(line) : null,
     descriptionJa: r.descriptionJa,
     descriptionEn: r.descriptionEn,
+    historyJa: r.historyJa,
+    historyEn: r.historyEn,
+    accessJa: r.accessJa,
+    accessEn: r.accessEn,
     spots: spots.map(spotListItemFromApi),
+    points: points.flatMap((p) => routePointFromApi(p) ?? []),
     line: line ? line.map(([lng, lat]) => ({ lat, lng })) : null,
     videoUrl: r.videoUrl,
-    photoUrl: null,
+    photoUrl: r.photoUrl,
   };
 }
 
@@ -74,7 +94,7 @@ export function spotDetailFromApi(s: PublicSpot, route: Pick<PublicRoute, "id" |
     statusNoteJa: s.statusNoteJa,
     statusNoteEn: s.statusNoteEn,
     statusUpdatedAt: s.statusUpdatedAt,
-    photoUrl: null,
+    photoUrl: s.photoUrl,
   };
 }
 
@@ -103,9 +123,9 @@ export async function fetchPublicRoutes(): Promise<PublicRoute[] | null> {
   return okBody<{ routes: PublicRoute[] }>(await getJson("/routes"))?.routes ?? null;
 }
 
-export async function fetchPublicRoute(id: string): Promise<{ route: PublicRoute; spots: PublicSpot[] } | null> {
-  const body = okBody<{ route: PublicRoute; spots: PublicSpot[] }>(await getJson(`/routes/${encodeURIComponent(id)}`));
-  return body ? { route: body.route, spots: body.spots } : null;
+export async function fetchPublicRoute(id: string): Promise<{ route: PublicRoute; spots: PublicSpot[]; points: PublicSpot[] } | null> {
+  const body = okBody<{ route: PublicRoute; spots: PublicSpot[]; points?: PublicSpot[] }>(await getJson(`/routes/${encodeURIComponent(id)}`));
+  return body ? { route: body.route, spots: body.spots, points: body.points ?? [] } : null;
 }
 
 export async function fetchPublicSpot(id: string): Promise<PublicSpot | null> {

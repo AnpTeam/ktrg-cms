@@ -116,11 +116,11 @@ async function mapRoutes(routes: RouteSummary[], viewer: Viewer, locale: string,
 
 // The map tab (WBS 3.2.10): all 19 courses as areas, with a bottom sheet that keeps the map in view. Anyone can look
 // around; stamps and navigation are for accounts.
-export default async function MapPage({ searchParams }: { searchParams: Promise<{ as?: string; stamp?: string }> }) {
+export default async function MapPage({ searchParams }: { searchParams: Promise<{ as?: string; stamp?: string; route?: string; stop?: string }> }) {
   const i18n = await initLingui();
   const viewer = await getViewer(searchParams);
   const to: Translate = (path) => localePath(i18n.locale, path);
-  const { stamp } = await searchParams;
+  const { stamp, route: wantedRoute, stop: wantedStop } = await searchParams;
   // Development only: `?stamp=far` and so on pretends the answers of the stamping API, which does not exist yet.
   const stampMock = process.env.NODE_ENV !== "production" && isStampMock(stamp) ? stamp : undefined;
 
@@ -129,9 +129,14 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
   const summaries = (await listRoutes()).map((r) => forViewer(r, viewer));
   const routes = await mapRoutes(summaries, viewer, i18n.locale, to, { stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`) });
   const next = `?next=${encodeURIComponent(to("/map"))}`;
+  // "Show in the map" from a place page: only an existing course (and a stop of it) is taken over from the address.
+  const initialRoute = routes.find((r) => r.id === wantedRoute) ?? null;
+  const initialStop = initialRoute?.stops?.find((s) => s.id === wantedStop) ?? null;
 
   return (
     <MapScreen
+      initialRouteId={initialRoute?.id ?? null}
+      initialStopId={initialStop?.id ?? null}
       routes={routes}
       settings={settings}
       mergeStops={prefs.mergeStops}

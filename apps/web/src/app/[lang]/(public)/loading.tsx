@@ -1,3 +1,4 @@
+import { KatsuragiLogo } from "@/components/KatsuragiLogo";
 import { initLingui } from "@/i18n/server";
 
 // Shown by Next.js while a page is being fetched, so a slow connection never looks like a frozen app. The
@@ -18,6 +19,7 @@ export default async function Loading() {
           <span className="text-3xl font-bold">葛城</span>
         </span>
       </div>
+      <KatsuragiLogo compact className="h-auto w-48 opacity-90" />
       <p className="text-xl font-bold">{label}</p>
     </div>
   );

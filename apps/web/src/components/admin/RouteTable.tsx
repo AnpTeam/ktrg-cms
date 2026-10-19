@@ -6,7 +6,9 @@ import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { api } from "@/lib/api";
 import { outcome } from "@/lib/admin/admin-client";
+import { checklist, factsFromSummary, progress } from "@/lib/admin/checklist";
 import { filterRoutes, moveId, routeState, type RouteState } from "@/lib/admin/route-list";
+import { useChecklistLabels } from "./useChecklistLabels";
 import type { AdminRouteSummary, Prefecture } from "@/lib/admin/types";
 import { formatUpdated } from "@/lib/format";
 
@@ -19,13 +21,21 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
   const [routes, setRoutes] = useState(initial);
   const [query, setQuery] = useState("");
   const [prefecture, setPrefecture] = useState<Prefecture | null>(null);
+  const [needsWorkOnly, setNeedsWorkOnly] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const labels = useChecklistLabels();
 
   const stateLabel: Record<RouteState, string> = { soon: t`準備中`, draft: t`下書き`, published: t`公開中` };
   const prefName: Record<Prefecture, string> = { osaka: t`大阪府`, wakayama: t`和歌山県`, nara: t`奈良県` };
-  const shown = useMemo(() => filterRoutes(routes, query, prefecture), [routes, query, prefecture]);
-  const filtering = query.trim() !== "" || prefecture !== null;
+  const items = useMemo(() => new Map(routes.map((r) => [r.id, checklist(factsFromSummary(r))])), [routes]);
+  const needsWork = (id: string) => progress(items.get(id) ?? []).needsWork;
+  const needsWorkCount = routes.filter((r) => needsWork(r.id)).length;
+  const shown = useMemo(
+    () => filterRoutes(routes, query, prefecture).filter((r) => !needsWorkOnly || progress(items.get(r.id) ?? []).needsWork),
+    [routes, query, prefecture, needsWorkOnly, items],
+  );
+  const filtering = query.trim() !== "" || prefecture !== null || needsWorkOnly;
 
   async function move(id: string, step: -1 | 1) {
     if (busy) return;
@@ -71,6 +81,10 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
             ))}
           </select>
         </label>
+        <label className="tap-target flex items-center gap-2 text-base font-bold">
+          <input type="checkbox" checked={needsWorkOnly} onChange={(e) => setNeedsWorkOnly(e.target.checked)} className="size-6" />
+          {t`手直しが必要なルートだけ（${needsWorkCount}）`}
+        </label>
         <Link href={`/${locale}/admin/routes/new`} className="tap-target inline-flex items-center rounded-xl bg-brand px-5 text-lg font-bold text-on-brand">
           {t`新しいルート`}
         </Link>
@@ -109,6 +123,20 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
                     {" ・ "}
                     {t`更新 ${formatUpdated(locale, r.updatedAt)}`}
                   </p>
+                  <ul className="mt-1 flex flex-wrap gap-1.5" aria-label={t`足りないもの`}>
+                    {(items.get(r.id) ?? [])
+                      .filter((i) => !i.done)
+                      .map((i) => (
+                        <li key={i.id}>
+                          <Link
+                            href={`/${locale}/admin/routes/${r.id}?tab=${i.tab}`}
+                            className={`inline-flex items-center rounded-full px-3 py-1 text-base ${i.required ? "bg-danger font-bold text-white" : "bg-surface text-ink"}`}
+                          >
+                            {i.required ? t`必要：${labels.item[i.id]}` : t`あるとよい：${labels.item[i.id]}`}
+                          </Link>
+                        </li>
+                      ))}
+                  </ul>
                 </div>
                 <div className="flex gap-2">
                   <button

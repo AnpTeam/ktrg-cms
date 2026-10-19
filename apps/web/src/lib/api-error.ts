@@ -34,6 +34,7 @@ const SERVER_CODES: Record<ErrorCode, true> = {
   conflict: true,
   invalid_video_url: true,
   invalid_line: true,
+  invalid_photo_url: true,
   route_has_places: true,
   spot_has_stamps: true,
   no_coordinates: true,

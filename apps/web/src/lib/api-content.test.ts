@@ -12,13 +12,13 @@ import type { PublicRoute, PublicSpot } from "./api-content-types";
 
 const route = (over: Partial<PublicRoute> = {}): PublicRoute => ({
   id: "r1", nameJa: "甲山から孝子越え", nameEn: null, descriptionJa: null, descriptionEn: null, distanceKm: 9.3, elevationGainM: 379,
-  difficulty: null, expectedTimeMin: null, prefecture: "wakayama", municipality: "和歌山市", videoUrl: null, sortOrder: 2,
+  difficulty: null, expectedTimeMin: null, prefecture: "wakayama", municipality: "和歌山市", videoUrl: null, historyJa: null, historyEn: null, accessJa: null, accessEn: null, photoUrl: null, sortOrder: 2,
   status: "ready", publishedSpotCount: 2, sketch: [[135, 34], [135.01, 34.01]], line: null,
   bounds: { west: 135, south: 34, east: 135.1, north: 34.05 }, ...over,
 });
 const spot = (over: Partial<PublicSpot> = {}): PublicSpot => ({
   id: "s1", routeId: "r1", nameJa: "虎島の経塚", nameEn: null, descriptionJa: null, descriptionEn: null,
-  position: { lat: 34.3, lng: 135.1, verified: true }, radiusM: 50, status: "open", statusNoteJa: null, statusNoteEn: null,
+  position: { lat: 34.3, lng: 135.1, verified: true }, radiusM: 50, kind: "stamp", photoUrl: null, status: "open", statusNoteJa: null, statusNoteEn: null,
   statusUpdatedAt: null, sortOrder: 1, ...over,
 });
 
