@@ -7,6 +7,7 @@ import { createMemorySessionStore } from "../auth/session-memory-store";
 import { createSessionService } from "../auth/session-service";
 import type { AuthUser } from "../auth/user";
 import { apiBase } from "../lib/api-errors";
+import type { RoutingService } from "../routing/routing-service";
 import { adminContentRoutes } from "./admin-routes";
 import { createMemoryContentStore } from "./content-memory-store";
 import { createContentService } from "./content-service";
@@ -16,14 +17,16 @@ const admin: AuthUser = { id: "11111111-1111-4111-8111-111111111111", email: "ad
 const alice: AuthUser = { id: "22222222-2222-4222-8222-222222222222", email: "alice@example.com", role: "participant", locale: "ja" };
 const LINE = { type: "LineString", coordinates: [[135, 34], [135.01, 34.01]] };
 
-function setup() {
+const NO_ROUTING: RoutingService = { snap: async () => ({ ok: false, reason: "routing_unavailable" }) };
+
+function setup(routing: RoutingService = NO_ROUTING) {
   const users = new Map<string, AuthUser>([[admin.id, { ...admin }], [alice.id, { ...alice }]]);
   const session = createSessionService({ store: createMemorySessionStore(users).store });
   const audit = createMemoryAuditWriter();
   const mem = createMemoryContentStore(audit.writer);
   const content = createContentService({ store: mem.store });
   const rateLimit = createRateLimiter({ store: createMemoryRateLimitStore().store, secret: "m".repeat(32) });
-  const services = { session, rateLimit, audit: audit.writer, content };
+  const services = { session, rateLimit, audit: audit.writer, content, routing };
   const app = new Elysia({ prefix: "/api/v1" })
     .use(apiBase())
     .use(adminContentRoutes(() => services, { secureCookies: false }))
@@ -56,6 +59,7 @@ describe("admin routes need an admin", () => {
     ["POST", `/admin/spots/${someId}/publish`],
     ["POST", `/admin/spots/${someId}/unpublish`],
     ["DELETE", `/admin/spots/${someId}`],
+    ["POST", "/admin/route-snap", { points: [{ lat: 34, lng: 135 }, { lat: 34.1, lng: 135.1 }] }],
   ];
 
   test("signed out: 401 on every route, with one fixed body", async () => {
@@ -204,5 +208,53 @@ describe("what visitors read", () => {
     await mem.store.setPublished(admin.id, spot.id, true);
     const detail = (await (await call("GET", `/routes/${route.id}`)).json()) as Json;
     expect(detail.spots[0].position).toBeNull();
+  });
+
+});
+
+describe("snapping a line to trails", () => {
+  const body = { points: [{ lat: 34.25, lng: 135.2 }, { lat: 34.26, lng: 135.21 }] };
+
+  test("an admin gets the line the service found", async () => {
+    const seen: unknown[] = [];
+    const routing: RoutingService = { snap: async (points) => (seen.push(points), { ok: true, line: [[135.2, 34.25, 10], [135.205, 34.255, 15], [135.21, 34.26, 20]], distanceM: 1500 }) };
+    const { call, login } = setup(routing);
+    const res = await call("POST", "/admin/route-snap", { cookie: await login(admin), body });
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ ok: true, line: [[135.2, 34.25, 10], [135.205, 34.255, 15], [135.21, 34.26, 20]], distanceM: 1500 });
+    expect(seen).toEqual([body.points]);
+  });
+
+  test("each refusal of the service has its own status and code", async () => {
+    const cases: [Extract<Parameters<typeof JSON.stringify>[0], unknown> & string, number][] = [
+      ["routing_unavailable", 503],
+      ["routing_no_route", 422],
+      ["routing_failed", 502],
+    ];
+    for (const [reason, status] of cases) {
+      const routing = { snap: async () => ({ ok: false as const, reason }) } as RoutingService;
+      const { call, login } = setup(routing);
+      const res = await call("POST", "/admin/route-snap", { cookie: await login(admin), body });
+      expect([res.status, ((await res.json()) as Json).error]).toEqual([status, reason]);
+    }
+  });
+
+  test("without a key the answer is 'not set up', never a crash", async () => {
+    const { call, login } = setup();
+    const res = await call("POST", "/admin/route-snap", { cookie: await login(admin), body });
+    expect([res.status, ((await res.json()) as Json).error]).toEqual([503, "routing_unavailable"]);
+  });
+
+  test("fewer than two points, too many points and positions out of range are refused before the service is asked", async () => {
+    let asked = 0;
+    const routing: RoutingService = { snap: async () => (asked++, { ok: false, reason: "routing_failed" }) };
+    const { call, login } = setup(routing);
+    const cookie = await login(admin);
+    const point = { lat: 34, lng: 135 };
+    for (const points of [[point], [], Array.from({ length: 51 }, () => point), [point, { lat: 95, lng: 135 }], [point, { lat: 34, lng: 200 }]]) {
+      const res = await call("POST", "/admin/route-snap", { cookie, body: { points } });
+      expect(res.status).toBe(422);
+    }
+    expect(asked).toBe(0);
   });
 });

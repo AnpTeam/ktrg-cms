@@ -41,6 +41,9 @@ export const AUTH_LIMITS = {
   meDeletionUser: { name: "me-deletion-user", limit: 5, windowMs: 15 * MINUTE },
   // Keyed by user id: an admin saving routes and places. Generous, because the editor saves often.
   adminWriteUser: { name: "admin-write-user", limit: 300, windowMs: 15 * MINUTE },
+  // Keyed by user id: asking the route-finding service to snap a line to trails. The service has a daily allowance
+  // (and may bill beyond it), so a slip or a script cannot use it all up.
+  adminRoutingUser: { name: "admin-routing-user", limit: 40, windowMs: 15 * MINUTE },
 } as const satisfies Record<string, RateLimitRule>;
 
 export type RateLimitResult = { allowed: true } | { allowed: false; retryAfterSec: number };

@@ -2,11 +2,14 @@ import { Elysia, t } from "elysia";
 import { fail } from "../auth/http";
 import { routeKit, type KitServices, type RouteOptions } from "../auth/route-kit";
 import type { ErrorCode } from "../lib/api-errors";
+import type { RoutingService } from "../routing/routing-service";
 import type { ContentService } from "./content-service";
 import type { Result, RouteRow, RouteSummaryRow, SpotRow } from "./content-types";
 
 export interface ContentServices extends KitServices {
   content: ContentService;
+  /** Snaps a drawn line to trails (the admin's map editor). */
+  routing: RoutingService;
 }
 
 const iso = (d: Date | null) => (d ? d.toISOString() : null);
@@ -168,6 +171,23 @@ export function adminContentRoutes(getServices: () => ContentServices, opts: Rou
         return r.ok ? { ok: true as const } : fail(set, statusOf(r.reason), r.reason);
       },
       { auth: "route.manage", rateLimit: { adminWriteUser: "user.id" }, params: idParams },
+    )
+    // ---- snapping a drawn line to trails -----------------------------------------------------
+    .post(
+      "/route-snap",
+      async ({ body, set }) => {
+        const r = await getServices().routing.snap(body.points);
+        if (r.ok) return { ok: true as const, line: r.line, distanceM: r.distanceM };
+        return fail(set, r.reason === "routing_unavailable" ? 503 : r.reason === "routing_no_route" ? 422 : 502, r.reason);
+      },
+      {
+        auth: "route.manage",
+        rateLimit: { adminRoutingUser: "user.id" },
+        body: t.Object({
+          // Two to fifty points: the most the service takes in one request.
+          points: t.Array(t.Object({ lat: t.Number({ minimum: -90, maximum: 90 }), lng: t.Number({ minimum: -180, maximum: 180 }) }), { minItems: 2, maxItems: 50 }),
+        }),
+      },
     )
     // ---- places ----------------------------------------------------------------------------
     .post(

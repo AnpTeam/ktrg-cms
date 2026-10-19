@@ -48,6 +48,11 @@ export const ERROR_CODES = {
   // --- Uploads ---------------------------------------------------------------------------
   invalid_file: "400: only a JPEG, PNG or WebP image of at most 4 MB",
   uploads_unavailable: "503: photo storage is not set up here, or did not answer; try again later",
+
+  // --- Snapping a drawn line to trails (admin) ---------------------------------------------
+  routing_unavailable: "503: the route-finding service is not set up, its key was refused, or its daily allowance is used up",
+  routing_no_route: "422: no walkable path was found near the points (or between them)",
+  routing_failed: "502: the route-finding service did not answer properly; try again",
 } as const satisfies Record<string, string>;
 
 export type ErrorCode = keyof typeof ERROR_CODES;
