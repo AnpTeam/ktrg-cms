@@ -18,6 +18,7 @@ import { createMemorySessionStore } from "../src/auth/session-memory-store";
 import { createConsoleMailer } from "../src/lib/mailer";
 import { createMemoryMeStore } from "../src/me/me-memory-store";
 import { createMemoryContentStore } from "../src/content/content-memory-store";
+import { createMemoryRallyAdminStore } from "../src/rallies/rally-admin-memory-store";
 import { createServices } from "../src/services";
 
 const port = Number(process.env.PORT ?? 3001);
@@ -68,6 +69,7 @@ const services = createServices({
     passkeys: createMemoryPasskeyStore(users, profiles).store,
     me: createMemoryMeStore(users, profiles).store,
     content: createMemoryContentStore(audit).store,
+    rallyAdmin: createMemoryRallyAdminStore(audit).store,
   },
   audit,
   // This address becomes an admin on an email-code login, so the admin screens can be tried (this page only).
@@ -76,6 +78,22 @@ const services = createServices({
   mailer: withMailFile(createConsoleMailer("KTRG <no-reply@localhost>")),
   secret: "phone-test-secret-phone-test-secret-0",
   passkey: passkeyConfig,
+  // A pretend route-finder, so the admin's "snap to trails" can be tried here without a key: it joins the points with a
+  // gentle sideways wobble and heights that rise and fall (this page only; the real one is src/routing).
+  routing: {
+    async snap(points) {
+      const line: [number, number, number][] = [];
+      points.forEach((p, i) => {
+        const next = points[i + 1];
+        if (!next) return line.push([p.lng, p.lat, 100]);
+        for (let k = 0; k < 10; k++) {
+          const f = k / 10;
+          line.push([p.lng + (next.lng - p.lng) * f + Math.sin((f + i) * 6) * 0.0004, p.lat + (next.lat - p.lat) * f, 100 + Math.round(Math.sin(f * 3 + i) * 40)]);
+        }
+      });
+      return { ok: true, line, distanceM: line.length * 50 };
+    },
+  },
 });
 
 const page = `<!doctype html>
@@ -265,7 +283,7 @@ new Elysia()
     return page;
   })
   // The app's own route tree (with /api/v1/openapi docs), on the in-memory services.
-  .use(createApp(() => services, { ...routeOpts, docs: true }))
+  .use(createApp(() => services, { ...routeOpts, docs: true, appOrigin: () => current.origin }))
   .listen({ port, hostname: "0.0.0.0" });
 
 console.log(`Test server on port ${port} (cookies ${secure ? "Secure/__Host-" : "plain http"}).`);

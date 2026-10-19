@@ -1,91 +1,67 @@
 import { describe, expect, test } from "bun:test";
-import { computeProgress, type HeldStamp, type RallyMember } from "./progress";
+import { courseProgress, placeProgress, type HeldStamp, type PlaceMember } from "./progress";
 
-const member = (id: string, over: Partial<RallyMember> = {}): RallyMember => ({ spotId: id, published: true, status: "open", ...over });
+const member = (id: string, over: Partial<PlaceMember> = {}): PlaceMember => ({ spotId: id, published: true, status: "open", ...over });
 const stamp = (id: string, at: string, revokedAt: string | null = null): HeldStamp => ({
   spotId: id,
   createdAt: new Date(at),
   revokedAt: revokedAt ? new Date(revokedAt) : null,
 });
 
-describe("computeProgress", () => {
+describe("placeProgress (a course's stamp places, or a rally of places)", () => {
   const members = [member("a"), member("b"), member("c"), member("d")];
 
   test("counts the places stamped, and when the latest was", () => {
-    const p = computeProgress({
-      members,
-      stamps: [stamp("a", "2026-10-10T00:00:00Z"), stamp("c", "2026-10-12T00:00:00Z")],
-      stampsRequired: null,
-    });
-    expect(p).toMatchObject({ total: 4, stamped: 2, waived: 0, required: 4, complete: false });
+    const p = placeProgress({ members, stamps: [stamp("a", "2026-10-10T00:00:00Z"), stamp("c", "2026-10-12T00:00:00Z")] });
+    expect(p).toMatchObject({ total: 4, stamped: 2, waived: 0, complete: false });
     expect(p.lastStampedAt).toEqual(new Date("2026-10-12T00:00:00Z"));
   });
 
-  test("every place stamped completes the rally", () => {
-    const p = computeProgress({ members, stamps: members.map((m) => stamp(m.spotId, "2026-10-10T00:00:00Z")), stampsRequired: null });
-    expect(p).toMatchObject({ stamped: 4, complete: true });
+  test("every place stamped finishes it", () => {
+    expect(placeProgress({ members, stamps: members.map((m) => stamp(m.spotId, "2026-10-10T00:00:00Z")) })).toMatchObject({ stamped: 4, complete: true });
   });
 
-  test("a stamp for a place that is not in the rally changes nothing", () => {
-    expect(computeProgress({ members, stamps: [stamp("zzz", "2026-10-10T00:00:00Z")], stampsRequired: null })).toMatchObject({
-      stamped: 0,
-      lastStampedAt: null,
-    });
+  test("a stamp for a place that is not in it changes nothing", () => {
+    expect(placeProgress({ members, stamps: [stamp("zzz", "2026-10-10T00:00:00Z")] })).toMatchObject({ stamped: 0, lastStampedAt: null });
   });
 
   test("a revoked stamp counts for nothing, and the latest valid time is used", () => {
-    const p = computeProgress({
-      members,
-      stamps: [stamp("a", "2026-10-10T00:00:00Z"), stamp("b", "2026-10-14T00:00:00Z", "2026-10-15T00:00:00Z")],
-      stampsRequired: null,
-    });
+    const p = placeProgress({ members, stamps: [stamp("a", "2026-10-10T00:00:00Z"), stamp("b", "2026-10-14T00:00:00Z", "2026-10-15T00:00:00Z")] });
     expect(p.stamped).toBe(1);
     expect(p.lastStampedAt).toEqual(new Date("2026-10-10T00:00:00Z"));
   });
 
   test("draft places never count: not in the total, not as stamped", () => {
-    const p = computeProgress({
-      members: [member("a"), member("b", { published: false })],
-      stamps: [stamp("b", "2026-10-10T00:00:00Z")],
-      stampsRequired: null,
-    });
+    const p = placeProgress({ members: [member("a"), member("b", { published: false })], stamps: [stamp("b", "2026-10-10T00:00:00Z")] });
     expect(p).toMatchObject({ total: 1, stamped: 0, complete: false, lastStampedAt: null });
   });
 
-  test("a closed place counts as done for the rally, until it reopens, unless it was stamped", () => {
+  test("a closed place counts as done, until it reopens, unless it was stamped", () => {
     const closed = [member("a"), member("b", { status: "closed" })];
-    expect(computeProgress({ members: closed, stamps: [stamp("a", "2026-10-10T00:00:00Z")], stampsRequired: null })).toMatchObject({
-      stamped: 1,
-      waived: 1,
-      complete: true,
-    });
-    // stamped AND closed: counted once, as stamped
-    expect(computeProgress({ members: closed, stamps: [stamp("b", "2026-10-10T00:00:00Z")], stampsRequired: null })).toMatchObject({
-      stamped: 1,
-      waived: 0,
-      complete: false,
-    });
-    // reopened: no longer waived
-    const reopened = [member("a"), member("b")];
-    expect(computeProgress({ members: reopened, stamps: [stamp("a", "2026-10-10T00:00:00Z")], stampsRequired: null }).complete).toBe(false);
+    expect(placeProgress({ members: closed, stamps: [stamp("a", "2026-10-10T00:00:00Z")] })).toMatchObject({ stamped: 1, waived: 1, complete: true });
+    expect(placeProgress({ members: closed, stamps: [stamp("b", "2026-10-10T00:00:00Z")] })).toMatchObject({ stamped: 1, waived: 0, complete: false });
+    expect(placeProgress({ members: [member("a"), member("b")], stamps: [stamp("a", "2026-10-10T00:00:00Z")] }).complete).toBe(false);
   });
 
-  test("a rally can need fewer places than it has, never more than it has", () => {
-    const two = [stamp("a", "2026-10-10T00:00:00Z"), stamp("b", "2026-10-10T00:00:00Z")];
-    expect(computeProgress({ members, stamps: two, stampsRequired: 2 })).toMatchObject({ required: 2, complete: true });
-    expect(computeProgress({ members, stamps: two, stampsRequired: 10 })).toMatchObject({ required: 4, complete: false });
+  test("nothing published is never finished", () => {
+    expect(placeProgress({ members: [], stamps: [] })).toMatchObject({ total: 0, complete: false });
+    expect(placeProgress({ members: [member("a", { published: false })], stamps: [] }).complete).toBe(false);
   });
 
-  test("a rally with no published places is never complete", () => {
-    expect(computeProgress({ members: [], stamps: [], stampsRequired: null })).toMatchObject({ total: 0, complete: false });
-    expect(computeProgress({ members: [member("a", { published: false })], stamps: [], stampsRequired: null }).complete).toBe(false);
+  test("ONE stamp counts in every set that includes the place (its course and a rally of places)", () => {
+    const held = [stamp("mound-1", "2026-10-10T00:00:00Z")];
+    expect(placeProgress({ members: [member("mound-1"), member("mound-2")], stamps: held }).stamped).toBe(1);
+    expect(placeProgress({ members: [member("mound-1"), member("waypoint-1")], stamps: held }).stamped).toBe(1);
+  });
+});
+
+describe("courseProgress (a rally of courses)", () => {
+  test("finished when every course in it is finished", () => {
+    expect(courseProgress({ routeIds: ["r1", "r2"], finishedRouteIds: new Set(["r1"]) })).toEqual({ total: 2, finished: 1, complete: false });
+    expect(courseProgress({ routeIds: ["r1", "r2"], finishedRouteIds: new Set(["r1", "r2", "r9"]) })).toEqual({ total: 2, finished: 2, complete: true });
   });
 
-  test("ONE stamp counts in every rally that includes the place", () => {
-    const heldStamps = [stamp("mound-1", "2026-10-10T00:00:00Z")];
-    const moundRally = [member("mound-1"), member("mound-2")];
-    const courseRally = [member("mound-1"), member("waypoint-1")];
-    expect(computeProgress({ members: moundRally, stamps: heldStamps, stampsRequired: null }).stamped).toBe(1);
-    expect(computeProgress({ members: courseRally, stamps: heldStamps, stampsRequired: null }).stamped).toBe(1);
+  test("a rally with no courses is never finished", () => {
+    expect(courseProgress({ routeIds: [], finishedRouteIds: new Set(["r1"]) })).toEqual({ total: 0, finished: 0, complete: false });
   });
 });

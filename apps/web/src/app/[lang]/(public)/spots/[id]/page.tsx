@@ -29,7 +29,7 @@ export default async function SpotPage({ params, searchParams }: Props) {
   const spot = forViewer(found, viewer);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="page-narrow flex flex-col gap-6">
       <div className="px-4">
         <BackLink href={localePath(i18n.locale, `/routes/${spot.routeId}`)}>
           <Trans>ルートにもどる</Trans>

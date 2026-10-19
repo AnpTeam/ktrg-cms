@@ -12,8 +12,10 @@ import { SectionBanner } from "@/components/SectionBanner";
 import { StampGrid } from "@/components/StampGrid";
 import { TrailNode } from "@/components/TrailNode";
 import { BannerCarousel } from "@/components/landing/BannerCarousel";
+import { LandingHero } from "@/components/landing/LandingHero";
 import { TrailNotices } from "@/components/landing/TrailNotices";
 import type { BannerSlide } from "@/lib/banners";
+import { municipalityName } from "@/lib/municipalities";
 import { pickText, type RouteSummary } from "@/lib/content";
 import type { TrailNotice } from "@/lib/notices";
 import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
@@ -61,10 +63,20 @@ export function Landing({
   const firstRoutes = [...routes].sort((a, b) => a.order - b.order).slice(0, PREVIEW_ROUTES);
 
   return (
-    <div className="flex flex-col gap-10 pt-4">
-      {slides.length > 0 ? <BannerCarousel slides={slides} /> : null}
+    // One column on a phone and a tablet; two columns from 1024 px, where the big drawn hero comes first and the wide
+    // sections (notices, video, the start buttons, the footer) span both.
+    <div className="grid grid-cols-1 gap-10 pt-4 lg:grid-cols-2 lg:gap-x-8 lg:pt-0">
+      <div className="hidden lg:col-span-2 lg:block">
+        <LandingHero to={to} />
+      </div>
 
-      <section className="px-4">
+      {slides.length > 0 ? (
+        <div className="lg:col-span-2">
+          <BannerCarousel slides={slides} />
+        </div>
+      ) : null}
+
+      <section className="px-4 lg:hidden">
         <div className="frame pattern-shippo p-5">
           {/* The logo is the picture of the name; the heading keeps the real text for screen readers and search. */}
           <h1>
@@ -94,7 +106,9 @@ export function Landing({
         </div>
       </section>
 
-      <TrailNotices notices={notices} locale={locale} blogUrl={blogUrl} />
+      <div className="lg:col-span-2">
+        <TrailNotices notices={notices} locale={locale} blogUrl={blogUrl} />
+      </div>
 
       <section className="flex flex-col gap-3">
         <div className="px-4">
@@ -143,7 +157,7 @@ export function Landing({
       ) : null}
 
       {introVideo ? (
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 lg:col-span-2">
           <div className="px-4">
             <SectionBanner>
               <Trans>動画で見る</Trans>
@@ -207,7 +221,7 @@ export function Landing({
         </Notice>
       </section>
 
-      <section className="flex flex-col gap-3 px-4">
+      <section className="flex flex-col gap-3 px-4 lg:col-span-2 lg:hidden">
         <SectionBanner>
           <Trans>さあ、はじめましょう</Trans>
         </SectionBanner>
@@ -221,7 +235,7 @@ export function Landing({
         </div>
       </section>
 
-      <footer className="flex flex-col gap-4 border-t-2 border-line px-4 pb-6 pt-6">
+      <footer className="flex flex-col gap-4 border-t-2 border-line px-4 pb-6 pt-6 lg:col-span-2">
         <p className="text-lg leading-7">
           <Trans>歴史や観光の情報は、日本遺産「葛城修験」の公式サイトでも見られます。</Trans>
         </p>
@@ -252,7 +266,7 @@ function PreviewStop({ route, locale, last, href }: { route: RouteSummary; local
           <span className="mt-1 block text-lg text-muted">
             {route.prefecture ? <PrefectureName value={route.prefecture} /> : null}
             {route.prefecture && route.municipality ? " " : null}
-            {route.municipality}
+            {municipalityName(locale, route.municipality)}
           </span>
         ) : null}
         {soon ? (

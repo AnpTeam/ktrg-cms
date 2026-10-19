@@ -9,11 +9,18 @@ import type { Mailer } from "./lib/mailer";
 import type { MeServices } from "./me/me-routes";
 import type { ContentServices } from "./content/admin-routes";
 import { createContentService } from "./content/content-service";
+import { createRoutingService, type RoutingService } from "./routing/routing-service";
 import type { ContentStore } from "./content/content-types";
+import type { RallyAdminServices } from "./rallies/rally-admin-routes";
+import { createRallyAdminService } from "./rallies/rally-admin-service";
+import type { RallyAdminStore } from "./rallies/rally-admin-types";
 import { createMeService, type MeStore } from "./me/me-service";
+import type { UploadServices } from "./uploads/upload-routes";
+import { createUploadService } from "./uploads/upload-service";
+import type { FileStorage } from "./uploads/upload-storage";
 
 /** Everything the routes use. */
-export type Services = AuthServices & PasskeyServices & MeServices & ContentServices;
+export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices;
 
 /** What the services are built from: the storage (database or in-memory) and the outside world. */
 export interface ServiceDeps {
@@ -24,6 +31,7 @@ export interface ServiceDeps {
     passkeys: PasskeyStore;
     me: MeStore;
     content: ContentStore;
+    rallyAdmin: RallyAdminStore;
   };
   audit: AuditWriter;
   /** Sends login codes and the passkey / deletion alerts. */
@@ -33,6 +41,10 @@ export interface ServiceDeps {
   /** ADMIN_EMAILS, normalized: promoted to admin on an email-code login. */
   adminEmails?: ReadonlySet<string>;
   passkey: PasskeyConfig;
+  /** Photo storage (Cloudflare R2) and its public address. Without them uploads answer 503. */
+  uploads?: { storage: FileStorage; publicBaseUrl: string };
+  /** Snaps a drawn line to trails. Without one, the admin is told the service is not set up. */
+  routing?: RoutingService;
   /** The clock every service reads. Tests move it; the app uses real time. */
   now?: () => Date;
 }
@@ -54,5 +66,11 @@ export function createServices(deps: ServiceDeps): Services {
     me: createMeService({ store: stores.me, mailer, now }),
     // Routes and places: what the admin edits and visitors read.
     content: createContentService({ store: stores.content }),
+    // Rallies: names, dates, required count and which places they hold.
+    rallyAdmin: createRallyAdminService({ store: stores.rallyAdmin }),
+    // Admin photo uploads.
+    uploads: createUploadService({ ...deps.uploads }),
+    // The route-finding service behind the map editor's "snap to trails" (no key: it answers "not set up").
+    routing: deps.routing ?? createRoutingService({}),
   };
 }

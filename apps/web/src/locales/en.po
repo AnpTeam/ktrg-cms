@@ -7,28 +7,38 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: en\n"
 
-#: src/components/admin/map-editor/MapEditor.tsx:490
+#: src/components/admin/map-editor/MapEditor.tsx:518
 #: src/components/admin/PlacePanel.tsx:74
-#: src/components/admin/RouteEditor.tsx:266
+#: src/components/admin/RouteEditor.tsx:269
 msgid "（名前がありません）"
 msgstr "(no name)"
 
-#: src/components/admin/map-editor/MapEditor.tsx:442
+#: src/components/admin/map-editor/MapEditor.tsx:470
 msgid "（名前なし）"
 msgstr "(no name)"
 
+#. placeholder {0}: name(r)
+#: src/components/admin/RallyList.tsx:70
+msgid "{0} を1つ前へ"
+msgstr "Move {0} up"
+
+#. placeholder {0}: name(r)
+#: src/components/admin/RallyList.tsx:73
+msgid "{0} を1つ後ろへ"
+msgstr "Move {0} down"
+
 #. placeholder {0}: waypoints.length
-#: src/components/admin/map-editor/MapEditor.tsx:346
+#: src/components/admin/map-editor/MapEditor.tsx:365
 msgid "{0}か所を、場所として追加しました。名前や種類は「スタンプ場所」で直せます。"
 msgstr "Added {0} places. You can change their names and types in the Stamp places tab."
 
 #. placeholder {0}: p.name || p.number
-#: src/components/admin/map-editor/MapEditor.tsx:493
+#: src/components/admin/map-editor/MapEditor.tsx:521
 msgid "{0}を消す"
 msgstr "Delete {0}"
 
 #. placeholder {0}: labels.tab[i.tab]
-#: src/components/admin/RouteEditor.tsx:487
+#: src/components/admin/RouteEditor.tsx:497
 msgid "{0}を開く"
 msgstr "Open {0}"
 
@@ -85,7 +95,7 @@ msgstr "Move {name} one step earlier"
 msgid "{name} を1つ後ろへ"
 msgstr "Move {name} one step later"
 
-#: src/app/[lang]/(public)/page.tsx:54
+#: src/app/[lang]/(public)/page.tsx:58
 msgid "{name}さん、こんにちは。"
 msgstr "Hello, {name}."
 
@@ -101,16 +111,24 @@ msgstr "No. {number}, next stamp"
 msgid "{number}番 まだ押していません"
 msgstr "No. {number}, not stamped yet"
 
-#: src/components/map/MapScreen.tsx:234
-#: src/components/map/MapScreenCanvas.tsx:216
+#: src/components/map/MapScreen.tsx:243
+#: src/components/map/MapScreenCanvas.tsx:214
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
 
-#: src/components/landing/Landing.tsx:169
+#: src/components/admin/RallyMemberPicker.tsx:109
+msgid "{text} を1つ前へ"
+msgstr "Move {text} up"
+
+#: src/components/admin/RallyMemberPicker.tsx:112
+msgid "{text} を1つ後ろへ"
+msgstr "Move {text} down"
+
+#: src/components/landing/Landing.tsx:188
 msgid "{TOTAL_STAMPS}か所"
 msgstr "{TOTAL_STAMPS} places"
 
-#: src/components/map/MapScreen.tsx:440
+#: src/components/map/MapScreen.tsx:462
 msgid "{updated} 更新"
 msgstr "Updated {updated}"
 
@@ -118,11 +136,12 @@ msgstr "Updated {updated}"
 msgid "「{stopName}」から近い順"
 msgstr "Nearest first, from \"{stopName}\""
 
-#: src/components/admin/RouteEditor.tsx:428
+#: src/components/admin/RouteEditor.tsx:438
 msgid "「地図と線」で場所を置く"
 msgstr "Place stops in Map & line"
 
-#: src/components/landing/Landing.tsx:72
+#: src/components/landing/Landing.tsx:89
+#: src/components/landing/LandingHero.tsx:41
 msgid "「祈り」を見つめる再発見の旅"
 msgstr "A journey of rediscovery, looking at \"prayer\""
 
@@ -178,36 +197,36 @@ msgstr "Hold the Ctrl key to move the map"
 msgid "GPSの電波が弱いようです。空の開けた場所に動いて、もう一度お試しください。"
 msgstr "The GPS signal looks weak. Move to open sky and try again."
 
-#: src/components/admin/map-editor/MapEditor.tsx:438
+#: src/components/admin/map-editor/MapEditor.tsx:466
 msgid "GPXの地点"
 msgstr "GPX points"
 
-#: src/components/admin/map-editor/MapEditor.tsx:413
+#: src/components/admin/map-editor/MapEditor.tsx:432
 msgid "GPXファイルから読み込む"
 msgstr "Import from a GPX file"
 
-#: src/components/admin/map-editor/MapEditor.tsx:327
+#: src/components/admin/map-editor/MapEditor.tsx:331
 msgid "GPXファイルに道すじはありませんでした。名前のついた地点だけ見つかりました。"
 msgstr "The GPX file had no path. Only named points were found."
 
-#: src/components/admin/map-editor/MapEditor.tsx:469
+#: src/components/admin/map-editor/MapEditor.tsx:497
 msgid "GPXファイルをここで離すと、読み込みます"
 msgstr "Drop the GPX file here to import it"
 
-#: src/components/admin/map-editor/MapEditor.tsx:323
+#: src/components/admin/map-editor/MapEditor.tsx:327
 msgid "GPXファイルを読み込みました。形を確かめてから、保存してください。"
 msgstr "GPX file imported. Check the shape, then save."
 
-#: src/components/admin/map-editor/MapEditor.tsx:318
+#: src/components/admin/map-editor/MapEditor.tsx:322
 msgid "GPXファイルを読み込めませんでした。道すじ（トラック）か、名前のついた地点が入ったファイルを選んでください。"
 msgstr "Could not read the GPX file. Choose a file with a path (track) or named points."
 
 #: src/components/admin/PlacePanel.tsx:100
-#: src/components/admin/RouteEditor.tsx:351
+#: src/components/admin/RouteEditor.tsx:357
 msgid "https:// で始まるリンクを入れます。空にすると、写真は表示されません。"
 msgstr "Enter a link that starts with https://. If left empty, no photo is shown."
 
-#: src/components/admin/RouteEditor.tsx:356
+#: src/components/admin/RouteEditor.tsx:362
 msgid "https:// で始まるリンクを入れます。空にすると、動画は表示されません。"
 msgstr "Enter a link that starts with https://. If left empty, no video is shown."
 
@@ -216,7 +235,7 @@ msgstr "Enter a link that starts with https://. If left empty, no video is shown
 msgid "ID: {0}"
 msgstr "ID: {0}"
 
-#: src/components/admin/RouteEditor.tsx:359
+#: src/components/admin/RouteEditor.tsx:365
 msgid "YouTube か Vimeo の、https:// で始まるリンクにしてください。"
 msgstr "Use a YouTube or Vimeo link that starts with https://."
 
@@ -240,10 +259,11 @@ msgstr "Delete your account?"
 msgid "アカウントを削除する"
 msgstr "Delete account"
 
-#: src/components/admin/RouteEditor.tsx:373
-#: src/components/admin/RouteEditor.tsx:374
+#: src/components/admin/RouteEditor.tsx:379
+#: src/components/admin/RouteEditor.tsx:380
 #: src/components/admin/useChecklistLabels.ts:18
-#: src/components/RouteView.tsx:149
+#: src/components/map/MapScreen.tsx:415
+#: src/components/RouteView.tsx:142
 msgid "アクセス・交通"
 msgstr "Access and transport"
 
@@ -272,7 +292,7 @@ msgstr "The address may be wrong, or the page is not published."
 msgid "あなたのことを、少しだけ教えてください。答えなくても大丈夫です。あとから変えられます。"
 msgstr "Tell us a little about yourself. You don't have to answer, and you can change it later."
 
-#: src/components/admin/RouteEditor.tsx:473
+#: src/components/admin/RouteEditor.tsx:483
 msgid "あると、もっとよいこと"
 msgstr "Nice to have"
 
@@ -330,6 +350,14 @@ msgstr "What you see now is sample and draft data. It includes information that 
 msgid "うまく表示できませんでした"
 msgstr "This page could not be shown"
 
+#: src/components/admin/RallyCreate.tsx:68
+msgid "えらんだコースを全部歩き終えると達成。コースはスタンプ場所を全部押すと完了。"
+msgstr "Complete when every chosen course is finished. A course is finished when all its stamp places are stamped."
+
+#: src/components/admin/RallyCreate.tsx:69
+msgid "えらんだスタンプ場所を全部押すと達成（経塚のラリーなど）。"
+msgstr "Complete when every chosen stamp place is stamped (like the sutra mound rally)."
+
 #: src/components/settings/PrefsForm.tsx:129
 msgid "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 msgstr "When off, every stamp place is shown on its own (recommended). When on, places close together are merged into a group such as \"3-5\"."
@@ -359,7 +387,7 @@ msgstr "Shops and food"
 msgid "お探しのものは、見つかりませんでした。"
 msgstr "We could not find what you were looking for."
 
-#: src/components/admin/AdminNav.tsx:18
+#: src/components/admin/AdminNav.tsx:21
 #: src/components/landing/TrailNotices.tsx:30
 msgid "お知らせ"
 msgstr "Notices"
@@ -368,17 +396,26 @@ msgstr "Notices"
 msgid "カフェ・喫茶"
 msgstr "Cafe"
 
-#: src/components/map/MapScreen.tsx:197
-msgid "くわしい情報"
-msgstr "Details"
-
-#: src/components/landing/Landing.tsx:167
+#: src/components/landing/Landing.tsx:186
 msgid "コース"
 msgstr "Courses"
+
+#. placeholder {0}: r.memberCount
+#: src/components/admin/RallyList.tsx:62
+msgid "コース {0}"
+msgstr "{0} courses"
 
 #: src/components/RallyViews.tsx:97
 msgid "コース{order}"
 msgstr "Course {order}"
+
+#: src/components/admin/RallyEditor.tsx:98
+msgid "コースでつくったラリー：えらんだコースを全部終えると達成。"
+msgstr "A rally of courses: complete when every chosen course is finished."
+
+#: src/components/admin/RallyCreate.tsx:68
+msgid "コースでつくる"
+msgstr "Make it from courses"
 
 #: src/components/map/TrailMap.tsx:374
 msgid "コースの出発地点から近い順（まっすぐ測った距離です）"
@@ -429,27 +466,48 @@ msgstr "You do not have permission to view this page"
 msgid "このラリーは、いまは行われていません。"
 msgstr "This rally is not running right now."
 
+#: src/components/admin/RallyEditor.tsx:149
+msgid "このラリーを削除"
+msgstr "Delete this rally"
+
+#: src/components/admin/RallyEditor.tsx:85
+msgid "このラリーを削除します。よろしいですか？"
+msgstr "This rally will be deleted. Are you sure?"
+
+#. placeholder {0}: saved.completionCount
+#: src/components/admin/RallyEditor.tsx:85
+msgid "このラリーを削除します。達成した {0} 人の達成記録も消えます（スタンプは残ります）。よろしいですか？"
+msgstr "This rally will be deleted, and so will the completion records of the {0} visitors who finished it (their stamps stay). Are you sure?"
+
 #: src/components/admin/PhotoSlot.tsx:17
 msgid "このリンクは使えません"
 msgstr "This link cannot be used"
 
-#: src/components/admin/RouteEditor.tsx:502
+#: src/components/admin/RallyMemberPicker.tsx:65
+msgid "このルートの場所をすべて"
+msgstr "All places on this route"
+
+#: src/components/admin/RouteEditor.tsx:512
 msgid "このルートを削除"
 msgstr "Delete this route"
 
-#: src/components/admin/RouteEditor.tsx:247
+#: src/components/admin/RouteEditor.tsx:250
 msgid "このルートを削除します。元に戻せません。よろしいですか？"
 msgstr "This route will be deleted and cannot be restored. Continue?"
 
-#: src/components/map/MapScreen.tsx:350
+#: src/components/map/MapScreen.tsx:351
 msgid "この区間のページを開く"
 msgstr "Open this course's page"
 
-#: src/components/map/MapScreen.tsx:338
+#: src/components/map/MapScreen.tsx:425
+msgid "この区間の写真"
+msgstr "Photos of this course"
+
+#: src/components/map/MapScreen.tsx:335
 msgid "この区間は、準備中です。"
 msgstr "This course isn't ready yet."
 
-#: src/app/[lang]/(public)/routes/page.tsx:72
+#: src/app/[lang]/(public)/routes/page.tsx:76
 msgid "この地域のルートはまだありません。"
 msgstr "There are no routes in this area yet."
 
@@ -457,7 +515,7 @@ msgstr "There are no routes in this area yet."
 msgid "この場所から、この距離の中にいるとスタンプを押せます。"
 msgstr "Visitors within this distance of the place can collect the stamp."
 
-#: src/components/map/MapScreen.tsx:469
+#: src/components/map/MapScreen.tsx:491
 msgid "この場所のページを開く"
 msgstr "Open this place's page"
 
@@ -465,7 +523,7 @@ msgstr "Open this place's page"
 msgid "この場所の位置がまだ決まっていません。地図で位置を決めてください。"
 msgstr "This place has no position yet. Set it on the map."
 
-#: src/components/map/MapScreen.tsx:449
+#: src/components/map/MapScreen.tsx:471
 #: src/components/map/PlacesPanel.tsx:227
 #: src/components/map/StopCard.tsx:38
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
@@ -495,8 +553,8 @@ msgstr "See this place"
 msgid "この操作は、できません。"
 msgstr "You can't do this."
 
-#: src/components/RouteView.tsx:140
-#: src/components/RouteView.tsx:156
+#: src/components/RouteView.tsx:133
+#: src/components/RouteView.tsx:151
 msgid "この文章は日本語のみです。"
 msgstr "This text is only available in Japanese."
 
@@ -508,11 +566,11 @@ msgstr "This device or browser can't use location."
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "This device or browser can't use passkeys."
 
-#: src/components/useErrorMessages.ts:45
+#: src/components/useErrorMessages.ts:55
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "Passkeys cannot be used on this device or browser. Please try email instead."
 
-#: src/components/map/MapScreenCanvas.tsx:284
+#: src/components/map/MapScreenCanvas.tsx:314
 msgid "この端末では地図を表示できません。下の一覧から区間を選べます。"
 msgstr "This device can't show the map. You can choose a course from the list below."
 
@@ -536,11 +594,15 @@ msgstr "Start with these settings"
 msgid "この説明は日本語のみです。"
 msgstr "This description is in Japanese only."
 
-#: src/components/admin/AdminNav.tsx:46
+#: src/components/useErrorMessages.ts:52
+msgid "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
+msgstr "No walkable path was found near here. Move the points of the line closer to a path and try again."
+
+#: src/components/admin/AdminNav.tsx:49
 msgid "これから追加します"
 msgstr "Coming later"
 
-#: src/components/landing/Landing.tsx:109
+#: src/components/landing/Landing.tsx:128
 msgid "これは見本です。経塚のスタンプは全{TOTAL_STAMPS}か所。"
 msgstr "This is an example. There are {TOTAL_STAMPS} sutra mound stamps in all."
 
@@ -552,32 +614,32 @@ msgstr "Convenience store / local shop"
 msgid "ご案内"
 msgstr "Information"
 
-#: src/components/landing/Landing.tsx:207
+#: src/components/landing/Landing.tsx:226
 msgid "さあ、はじめましょう"
 msgstr "Let's get started"
 
 #: src/app/[lang]/(public)/sitemap/page.tsx:15
 #: src/app/[lang]/(public)/sitemap/page.tsx:50
-#: src/components/SiteFooter.tsx:20
+#: src/components/SiteFooter.tsx:25
 msgid "サイトマップ"
 msgstr "Site map"
 
-#: src/components/map/MapSheet.tsx:89
+#: src/components/map/MapSheet.tsx:98
 msgid "シートの高さ（上下の矢印キーで変えられます）"
 msgstr "Height of the sheet (change it with the up and down arrow keys)"
 
 #: src/app/[lang]/(public)/settings/passkeys/page.tsx:24
 #: src/app/[lang]/(public)/sitemap/page.tsx:76
 #: src/app/[lang]/(public)/sitemap/page.tsx:78
-#: src/app/[lang]/(public)/stamps/page.tsx:29
+#: src/app/[lang]/(public)/stamps/page.tsx:32
 #: src/components/ProgressSummary.tsx:19
-#: src/components/TabBar.tsx:22
+#: src/components/TabBar.tsx:26
 msgid "スタンプ"
 msgstr "Stamps"
 
-#: src/components/map/MapScreen.tsx:345
-#: src/components/RouteView.tsx:176
-#: src/components/TrailRibbon.tsx:101
+#: src/components/map/MapScreen.tsx:346
+#: src/components/RouteView.tsx:196
+#: src/components/TrailRibbon.tsx:61
 msgid "スタンプ {stampedCount} / {spotCount}"
 msgstr "Stamps {stampedCount} / {spotCount}"
 
@@ -585,11 +647,11 @@ msgstr "Stamps {stampedCount} / {spotCount}"
 msgid "スタンプ・状態・許可の設定"
 msgstr "Stamp, status and permission settings"
 
-#: src/components/landing/Landing.tsx:97
+#: src/components/landing/Landing.tsx:116
 msgid "スタンプカード"
 msgstr "Stamp card"
 
-#: src/app/[lang]/(public)/page.tsx:79
+#: src/app/[lang]/(public)/page.tsx:83
 msgid "スタンプカードを見る"
 msgstr "See your stamp card"
 
@@ -597,13 +659,13 @@ msgstr "See your stamp card"
 msgid "スタンプが押されたことのある場所は消せません。「公開をやめる」をお使いください。"
 msgstr "A place that has been stamped cannot be deleted. Use \"Unpublish\" instead."
 
-#: src/components/map/MapScreen.tsx:358
-#: src/components/RouteView.tsx:172
+#: src/components/map/MapScreen.tsx:359
+#: src/components/RouteView.tsx:192
 #: src/components/SpotSheet.tsx:74
 msgid "スタンプの場所"
 msgstr "Stamp locations"
 
-#: src/components/map/MapScreenCanvas.tsx:260
+#: src/components/map/MapScreenCanvas.tsx:275
 #: src/components/map/TrailMap.tsx:264
 msgid "スタンプの場所 {text} がここに集まっています。押すと拡大します"
 msgstr "Stamp places {text} are gathered here. Tap to zoom in."
@@ -612,8 +674,8 @@ msgstr "Stamp places {text} are gathered here. Tap to zoom in."
 msgid "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 msgstr "To check that you are near the stamp place, we look at your phone's location once."
 
-#: src/components/map/MapScreen.tsx:400
-#: src/components/RouteView.tsx:163
+#: src/components/map/MapScreen.tsx:401
+#: src/components/RouteView.tsx:182
 msgid "スタンプの場所は、まだ準備中です。"
 msgstr "The stamp places are not ready yet."
 
@@ -631,7 +693,7 @@ msgstr "Stamp progress"
 msgid "スタンプを押しています…"
 msgstr "Collecting the stamp…"
 
-#: src/components/map/MapScreen.tsx:458
+#: src/components/map/MapScreen.tsx:480
 #: src/components/SpotSheet.tsx:86
 msgid "スタンプを押しました"
 msgstr "You collected this stamp"
@@ -662,18 +724,27 @@ msgstr "Stamp range (metres)"
 msgid "スタンプ場所"
 msgstr "Stamp place"
 
-#: src/components/TrailRibbon.tsx:97
+#. placeholder {0}: c.publishedStampPlaceCount
+#: src/components/admin/RallyMemberPicker.tsx:88
+msgid "スタンプ場所 {0}"
+msgstr "{0} stamp places"
+
+#: src/components/TrailRibbon.tsx:61
 msgid "スタンプ場所 {spotCount}か所"
 msgstr "{spotCount} stamp locations"
 
-#: src/app/[lang]/(public)/map/page.tsx:130
+#: src/components/admin/RallyMemberPicker.tsx:48
+msgid "スタンプ場所がまだありません。ルートの画面で場所を作ってください。"
+msgstr "There are no stamp places yet. Create places on a route first."
+
+#: src/app/[lang]/(public)/map/page.tsx:153
 #: src/app/[lang]/(public)/routes/[id]/page.tsx:49
 #: src/components/admin/LivePreview.tsx:31
 msgid "スタンプ済み"
 msgstr "stamped"
 
 #: src/components/admin/RouteTable.tsx:76
-#: src/components/PrefectureFilter.tsx:34
+#: src/components/PrefectureFilter.tsx:36
 msgid "すべて"
 msgstr "All"
 
@@ -682,9 +753,17 @@ msgstr "All"
 msgid "すべてそろいました。"
 msgstr "You have all the stamps."
 
-#: src/app/[lang]/(public)/routes/page.tsx:74
+#: src/app/[lang]/(public)/routes/page.tsx:78
 msgid "すべてのルートを見る"
 msgstr "See all routes"
+
+#: src/components/admin/RallyMemberPicker.tsx:42
+msgid "すべて外す"
+msgstr "Clear all"
+
+#: src/components/admin/RallyMemberPicker.tsx:39
+msgid "すべて選ぶ"
+msgstr "Select all"
 
 #: src/components/map/MapSettingsForm.tsx:51
 msgid "そのまま"
@@ -696,6 +775,10 @@ msgstr "As is"
 #: src/components/map/PlacesPanel.tsx:45
 msgid "その他"
 msgstr "Other"
+
+#: src/components/admin/MunicipalityField.tsx:63
+msgid "その他（入力する）"
+msgstr "Other (type it in)"
 
 #: src/components/ThemeSwitcher.tsx:30
 msgid "ダーク"
@@ -719,7 +802,15 @@ msgstr "Next"
 msgid "つぎへ"
 msgstr "Next"
 
-#: src/components/admin/RouteEditor.tsx:483
+#: src/components/admin/RallyCreate.tsx:66
+msgid "つくり方"
+msgstr "How it is made"
+
+#: src/components/admin/RallyCreate.tsx:71
+msgid "つくり方は、あとから変えられません。"
+msgstr "This cannot be changed later."
+
+#: src/components/admin/RouteEditor.tsx:493
 msgid "できた"
 msgstr "Done"
 
@@ -772,7 +863,7 @@ msgstr "First rally"
 msgid "パスキー {number}"
 msgstr "Passkey {number}"
 
-#: src/components/useErrorMessages.ts:46
+#: src/components/useErrorMessages.ts:56
 msgid "パスキーの確認が中止されました。もう一度お試しください。"
 msgstr "The passkey check was cancelled. Please try again."
 
@@ -789,11 +880,11 @@ msgstr "A passkey lets you log in with your face or fingerprint. Add one for thi
 msgid "バス停"
 msgstr "Bus stop"
 
-#: src/components/admin/AdminNav.tsx:18
+#: src/components/admin/AdminNav.tsx:21
 msgid "バナー"
 msgstr "Banners"
 
-#: src/components/admin/map-editor/MapEditor.tsx:316
+#: src/components/admin/map-editor/MapEditor.tsx:320
 msgid "ファイルが大きすぎます（20MBまで）。"
 msgstr "The file is too large (up to 20 MB)."
 
@@ -805,13 +896,13 @@ msgstr "Standard"
 msgid "ふつうの大きさです。"
 msgstr "The usual size."
 
-#: src/components/SiteFooter.tsx:12
+#: src/components/SiteFooter.tsx:17
 msgid "フッター"
 msgstr "Footer"
 
 #: src/app/[lang]/(public)/sitemap/page.tsx:108
-#: src/components/SiteFooter.tsx:26
-#: src/components/SiteHeader.tsx:198
+#: src/components/SiteFooter.tsx:31
+#: src/components/SiteHeader.tsx:205
 msgid "プライバシーポリシー"
 msgstr "Privacy policy"
 
@@ -823,7 +914,7 @@ msgstr "Read the blog"
 msgid "プロフィール"
 msgstr "Profile"
 
-#: src/components/SiteHeader.tsx:153
+#: src/components/SiteHeader.tsx:160
 msgid "プロフィールとスタンプ"
 msgstr "Profile and stamps"
 
@@ -831,7 +922,7 @@ msgstr "Profile and stamps"
 msgid "ページが見つかりません"
 msgstr "Page not found"
 
-#: src/components/admin/AdminNav.tsx:18
+#: src/components/admin/AdminNav.tsx:21
 msgid "ページの文章"
 msgstr "Page text"
 
@@ -850,7 +941,9 @@ msgstr "Base map"
 #: src/app/[lang]/(public)/sitemap/page.tsx:53
 #: src/app/[lang]/(public)/sitemap/page.tsx:55
 #: src/app/[lang]/(public)/terms/page.tsx:24
-#: src/components/TabBar.tsx:19
+#: src/components/SiteHeader.tsx:130
+#: src/components/TabBar.tsx:23
+#: src/components/TabBar.tsx:35
 msgid "ホーム"
 msgstr "Home"
 
@@ -863,15 +956,19 @@ msgstr "Back to Home"
 msgid "ホームへ戻る"
 msgstr "Back to home"
 
+#: src/components/map/MapScreenCanvas.tsx:231
+msgid "ほか {more} 区間"
+msgstr "{more} more courses"
+
 #: src/components/useErrorMessages.ts:30
 msgid "ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。"
 msgstr "This passkey can't be removed because it is your only way to log in. Set up email or another passkey first."
 
-#: src/components/admin/map-editor/MapEditor.tsx:403
+#: src/components/admin/map-editor/MapEditor.tsx:422
 msgid "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「線を描く」で道すじを、「場所を置く」でスタンプの場所を入れます。"
 msgstr "First, drag a GPX file here or press \"Import from a GPX file\". To enter by hand, use \"Draw line\" for the path and \"Place a stop\" for stamp places."
 
-#: src/components/admin/RouteEditor.tsx:483
+#: src/components/admin/RouteEditor.tsx:493
 #: src/components/RallyViews.tsx:150
 #: src/components/StampLegend.tsx:9
 msgid "まだ"
@@ -881,7 +978,7 @@ msgstr "Not yet"
 msgid "まだ、この場所から遠いようです。場所の近くで、もう一度お試しください。"
 msgstr "You still seem to be far from this place. Try again when you are near it."
 
-#: src/components/admin/RouteEditor.tsx:426
+#: src/components/admin/RouteEditor.tsx:436
 msgid "まだありません。"
 msgstr "None yet."
 
@@ -894,10 +991,10 @@ msgstr "No stamps yet."
 msgid "まだスタンプを押していません"
 msgstr "You haven't collected this stamp yet"
 
-#: src/app/[lang]/(public)/map/page.tsx:16
+#: src/app/[lang]/(public)/map/page.tsx:18
 #: src/app/[lang]/(public)/sitemap/page.tsx:59
-#: src/components/map/MapScreen.tsx:145
-#: src/components/TabBar.tsx:20
+#: src/components/map/MapScreen.tsx:150
+#: src/components/TabBar.tsx:24
 msgid "マップ"
 msgstr "Map"
 
@@ -915,7 +1012,7 @@ msgstr "Show places nearby from the start"
 msgid "まわりの場所を地図に出す"
 msgstr "Show places nearby on the map"
 
-#: src/components/admin/RouteEditor.tsx:345
+#: src/components/admin/RouteEditor.tsx:351
 msgid "むずかしさ"
 msgstr "Difficulty"
 
@@ -944,13 +1041,13 @@ msgstr "We sent a 6-digit number to your email."
 msgid "メールの番号で確認"
 msgstr "Confirm with an email number"
 
-#: src/components/TabBar.tsx:30
+#: src/components/TabBar.tsx:39
 msgid "メインメニュー"
 msgstr "Main menu"
 
-#: src/components/admin/AdminNav.tsx:29
-#: src/components/SiteHeader.tsx:125
-#: src/components/TabBar.tsx:59
+#: src/components/admin/AdminNav.tsx:32
+#: src/components/SiteHeader.tsx:126
+#: src/components/TabBar.tsx:68
 msgid "メニュー"
 msgstr "Menu"
 
@@ -983,23 +1080,23 @@ msgstr "Show more ({hidden} more)"
 msgid "やめる"
 msgstr "Cancel"
 
-#: src/components/admin/map-editor/MapEditor.tsx:420
+#: src/components/admin/map-editor/MapEditor.tsx:448
 msgid "やり直す"
 msgstr "Redo"
 
-#: src/components/admin/AdminNav.tsx:18
+#: src/components/admin/AdminNav.tsx:21
 msgid "ユーザーと権限"
 msgstr "Users and permissions"
 
 #: src/app/[lang]/(public)/sitemap/page.tsx:102
-#: src/components/SiteFooter.tsx:14
-#: src/components/SiteHeader.tsx:196
+#: src/components/SiteFooter.tsx:19
+#: src/components/SiteHeader.tsx:203
 msgid "よくあるご質問"
 msgstr "FAQ"
 
 #: src/app/[lang]/(public)/sitemap/page.tsx:111
-#: src/components/SiteFooter.tsx:17
-#: src/components/SiteHeader.tsx:199
+#: src/components/SiteFooter.tsx:22
+#: src/components/SiteHeader.tsx:206
 msgid "ライセンス情報"
 msgstr "Licenses"
 
@@ -1007,29 +1104,98 @@ msgstr "Licenses"
 msgid "ライト"
 msgstr "Light"
 
-#: src/components/admin/AdminNav.tsx:18
+#: src/app/[lang]/(admin)/admin/rallies/page.tsx:22
+#: src/components/admin/AdminNav.tsx:19
 msgid "ラリー"
 msgstr "Rallies"
 
-#: src/app/[lang]/(public)/stamps/page.tsx:55
+#: src/app/[lang]/(admin)/admin/rallies/page.tsx:11
+msgid "ラリー（管理）"
+msgstr "Rallies (admin)"
+
+#: src/components/admin/RallyList.tsx:49
+msgid "ラリーがまだありません。「新しいラリー」から作ってください。"
+msgstr "There are no rallies yet. Create one with \"New rally\"."
+
+#: src/components/admin/RallyEditor.tsx:138
+msgid "ラリーに入るコース"
+msgstr "Courses in this rally"
+
+#: src/components/admin/RallyEditor.tsx:138
+msgid "ラリーに入るスタンプ場所"
+msgstr "Stamp places in this rally"
+
+#: src/components/admin/RallyCreate.tsx:78
+msgid "ラリーに入れるコース"
+msgstr "Courses to put in the rally"
+
+#: src/components/admin/RallyCreate.tsx:78
+msgid "ラリーに入れるスタンプ場所"
+msgstr "Stamp places to put in the rally"
+
+#: src/app/[lang]/(public)/stamps/page.tsx:61
 msgid "ラリーの一覧"
 msgstr "All rallies"
 
-#: src/app/[lang]/(public)/stamps/page.tsx:45
+#: src/components/admin/RallyMemberPicker.tsx:98
+msgid "ラリーの中の順番"
+msgstr "Order in the rally"
+
+#: src/components/admin/RallyEditor.tsx:141
+msgid "ラリーの中身を保存"
+msgstr "Save what is in the rally"
+
+#: src/components/admin/RallyEditor.tsx:81
+msgid "ラリーの中身を保存しました。"
+msgstr "What is in the rally was saved."
+
+#: src/components/admin/RallyCreate.tsx:75
+#: src/components/admin/RallyEditor.tsx:114
+msgid "ラリーの名前"
+msgstr "Rally name"
+
+#: src/app/[lang]/(admin)/admin/rallies/page.tsx:25
+msgid "ラリーは、コースを集めてつくるか、スタンプ場所を集めてつくります。名前を押すと、名前・公開・中身を直せます。"
+msgstr "A rally is made from courses or from stamp places. Open one to change its name, whether it is public, and what is in it."
+
+#: src/app/[lang]/(public)/stamps/page.tsx:51
 msgid "ラリーは、まだ準備中です。"
 msgstr "The rallies are not ready yet."
+
+#: src/components/admin/RallyEditor.tsx:147
+msgid "ラリーを削除しても、スタンプやコースの達成は消えません。このラリーの達成記録だけが消えます。"
+msgstr "Deleting a rally keeps visitors' stamps and finished courses. Only the completion records of this rally are removed."
+
+#: src/app/[lang]/(admin)/admin/rallies/[id]/page.tsx:13
+msgid "ラリーを直す（管理）"
+msgstr "Edit rally (admin)"
+
+#: src/app/[lang]/(admin)/admin/rallies/[id]/page.tsx:32
+#: src/app/[lang]/(admin)/admin/rallies/new/page.tsx:27
+#: src/app/[lang]/(admin)/admin/rallies/page.tsx:31
+msgid "ラリーを読み込めませんでした。しばらくしてから、ページを開き直してください。"
+msgstr "The rallies could not be loaded. Please open the page again in a moment."
+
+#: src/app/[lang]/(admin)/admin/rallies/[id]/page.tsx:46
+#: src/app/[lang]/(admin)/admin/rallies/new/page.tsx:36
+msgid "ラリー一覧にもどる"
+msgstr "Back to the rallies"
 
 #: src/app/[lang]/(admin)/admin/routes/page.tsx:22
 #: src/app/[lang]/(public)/routes/page.tsx:18
 #: src/app/[lang]/(public)/sitemap/page.tsx:65
-#: src/components/admin/AdminNav.tsx:17
-#: src/components/TabBar.tsx:21
+#: src/components/admin/AdminNav.tsx:18
+#: src/components/TabBar.tsx:25
 msgid "ルート"
 msgstr "Routes"
 
 #: src/app/[lang]/(admin)/admin/routes/page.tsx:11
 msgid "ルート（管理）"
 msgstr "Routes (admin)"
+
+#: src/components/admin/RallyMemberPicker.tsx:48
+msgid "ルートがまだありません。"
+msgstr "There are no routes yet."
 
 #: src/components/admin/RouteTable.tsx:100
 msgid "ルートがまだありません。「新しいルート」から作ってください。"
@@ -1043,19 +1209,19 @@ msgstr "Back to route"
 msgid "ルートの一覧"
 msgstr "All routes"
 
-#: src/components/admin/RouteEditor.tsx:351
+#: src/components/admin/RouteEditor.tsx:357
 msgid "ルートの写真のリンク"
 msgstr "Route photo link"
 
-#: src/components/RouteView.tsx:118
+#: src/components/RouteView.tsx:168
 msgid "ルートの動画"
 msgstr "Route video"
 
-#: src/components/admin/RouteEditor.tsx:314
+#: src/components/admin/RouteEditor.tsx:317
 msgid "ルートの名前"
 msgstr "Route name"
 
-#: src/app/[lang]/(public)/routes/page.tsx:68
+#: src/app/[lang]/(public)/routes/page.tsx:72
 msgid "ルートの案内は準備中です。"
 msgstr "Route guides are coming soon."
 
@@ -1067,8 +1233,8 @@ msgstr "The route line is not valid. Draw a line of at least 2 points inside Jap
 msgid "ルートの線を確認済み"
 msgstr "Route line checked"
 
-#: src/components/admin/RouteEditor.tsx:366
-#: src/components/admin/RouteEditor.tsx:367
+#: src/components/admin/RouteEditor.tsx:372
+#: src/components/admin/RouteEditor.tsx:373
 msgid "ルートの説明"
 msgstr "Route description"
 
@@ -1076,10 +1242,11 @@ msgstr "Route description"
 msgid "ルートや場所は、ログインしなくても見られます。"
 msgstr "You can browse routes and places without signing in."
 
-#: src/app/[lang]/(public)/page.tsx:85
+#: src/app/[lang]/(public)/page.tsx:89
 #: src/components/admin/RouteTable.tsx:60
-#: src/components/landing/Landing.tsx:80
-#: src/components/landing/Landing.tsx:214
+#: src/components/landing/Landing.tsx:97
+#: src/components/landing/Landing.tsx:233
+#: src/components/landing/LandingHero.tsx:48
 msgid "ルートをさがす"
 msgstr "Find a route"
 
@@ -1105,7 +1272,7 @@ msgstr "Back to the route list"
 msgid "ルート名（日本語）"
 msgstr "Route name (Japanese)"
 
-#: src/components/SiteHeader.tsx:161
+#: src/components/SiteHeader.tsx:168
 msgid "ログアウト"
 msgstr "Log out"
 
@@ -1114,10 +1281,11 @@ msgstr "Log out"
 #: src/app/[lang]/(public)/sitemap/page.tsx:87
 #: src/components/auth/LoginFlow.tsx:55
 #: src/components/auth/RegisterFlow.tsx:141
-#: src/components/landing/Landing.tsx:85
-#: src/components/map/MapScreen.tsx:303
+#: src/components/landing/Landing.tsx:102
+#: src/components/landing/LandingHero.tsx:54
+#: src/components/map/MapScreen.tsx:312
 #: src/components/SignInPrompt.tsx:37
-#: src/components/SiteHeader.tsx:167
+#: src/components/SiteHeader.tsx:174
 msgid "ログイン"
 msgstr "Log in"
 
@@ -1138,7 +1306,7 @@ msgstr "Log in"
 msgid "ログインすると、スタンプを記録できます。"
 msgstr "Sign in to record your stamps."
 
-#: src/components/map/MapScreen.tsx:298
+#: src/components/map/MapScreen.tsx:307
 msgid "ログインすると、ルート案内とスタンプが使えます。見るだけなら、このままどうぞ。"
 msgstr "Log in to use route guidance and stamps. If you only want to look around, carry on as you are."
 
@@ -1156,7 +1324,7 @@ msgstr "Ways to log in"
 msgid "ログインの方法（パスキー）"
 msgstr "Ways to log in (passkeys)"
 
-#: src/components/SiteHeader.tsx:152
+#: src/components/SiteHeader.tsx:159
 msgid "ログイン中"
 msgstr "Logged in"
 
@@ -1165,13 +1333,28 @@ msgid "上のボタンを押すと、{restName}や{shopsName}などが地図と�
 msgstr "Tap a button above to show {restName}, {shopsName} and more on the map and in the list."
 
 #: src/components/admin/PlacePanel.tsx:77
+#: src/components/admin/RallyEditor.tsx:100
+#: src/components/admin/RallyList.tsx:64
+#: src/components/admin/RallyMemberPicker.tsx:72
 #: src/components/admin/RouteTable.tsx:29
 msgid "下書き"
 msgstr "Draft"
 
+#: src/components/admin/RallyCreate.tsx:96
+msgid "下書きとして作る"
+msgstr "Create as a draft"
+
+#: src/components/admin/RallyEditor.tsx:143
+msgid "下書きの場所は、公開されるまで数に入りません。スタンプの記録は変わりません。"
+msgstr "Draft places do not count until they are published. Visitors' stamps are not changed."
+
 #: src/components/admin/RouteTable.tsx:166
 msgid "並べ替えは、検索や絞り込みを外してからできます。"
 msgstr "You can reorder once the search and filter are cleared."
+
+#: src/components/useErrorMessages.ts:45
+msgid "中身のないラリーは公開できません。公開中のラリーを空にすることもできません。"
+msgstr "An empty rally cannot be published, and a published rally cannot be emptied."
 
 #: src/components/map/TrailMap.tsx:436
 msgid "仮のルート・位置（未確認）"
@@ -1197,11 +1380,11 @@ msgstr "Closed now"
 msgid "位置"
 msgstr "Position"
 
-#: src/components/admin/map-editor/MapEditor.tsx:492
+#: src/components/admin/map-editor/MapEditor.tsx:520
 msgid "位置あり"
 msgstr "Has position"
 
-#: src/components/admin/map-editor/MapEditor.tsx:492
+#: src/components/admin/map-editor/MapEditor.tsx:520
 msgid "位置なし"
 msgstr "No position"
 
@@ -1213,7 +1396,7 @@ msgstr "We don't save your location. We only save the stamp."
 msgid "位置は、公式の情報から入れて、地図で確かめます。推測では入れません。"
 msgstr "Enter the position from official information and check it on the map. Never guess it."
 
-#: src/components/admin/map-editor/MapEditor.tsx:445
+#: src/components/admin/map-editor/MapEditor.tsx:473
 msgid "位置は「確認していない」状態で入ります。公開する前に、公式の情報で確かめてください。"
 msgstr "Positions are added as \"not checked\". Check them against official information before publishing."
 
@@ -1249,63 +1432,80 @@ msgstr "Checking your location is taking a while. Try again in an open place."
 msgid "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてから、もう一度お試しください。"
 msgstr "Location isn't allowed. In your browser settings, allow location for this site, then try again."
 
-#: src/components/map/MapSheet.tsx:94
+#: src/components/map/MapSheet.tsx:103
 msgid "低い"
 msgstr "low"
+
+#: src/components/admin/RallyCreate.tsx:96
+msgid "作っています…"
+msgstr "Creating…"
 
 #: src/components/map/MapSettingsForm.tsx:107
 msgid "保存"
 msgstr "Save"
 
-#: src/components/admin/RouteEditor.tsx:469
+#: src/components/admin/RouteEditor.tsx:479
 msgid "保存していない内容も含めて調べています。"
 msgstr "This includes changes you have not saved yet."
 
-#: src/components/admin/RouteEditor.tsx:268
+#: src/components/admin/RouteEditor.tsx:271
 msgid "保存していない変更があります"
 msgstr "You have unsaved changes"
+
+#: src/components/admin/RallyEditor.tsx:135
+msgid "保存していない変更があります。先に保存してから公開を切りかえてください。"
+msgstr "There are unsaved changes. Save them before publishing or unpublishing."
 
 #: src/components/map/MapSettingsForm.tsx:120
 msgid "保存しました"
 msgstr "Saved"
 
-#: src/components/admin/RouteEditor.tsx:223
+#: src/components/admin/RallyEditor.tsx:66
+#: src/components/admin/RouteEditor.tsx:226
 #: src/components/settings/PrefsForm.tsx:74
 msgid "保存しました。"
 msgstr "Saved."
 
-#: src/components/admin/RouteEditor.tsx:271
+#: src/components/admin/RouteEditor.tsx:274
 #: src/components/ProfileCard.tsx:167
 #: src/components/settings/PrefsForm.tsx:161
 msgid "保存する"
 msgstr "Save"
 
-#: src/components/admin/RouteEditor.tsx:129
+#: src/components/admin/RouteEditor.tsx:132
 msgid "保存できません。赤く示した項目を直してください。"
 msgstr "Cannot save. Fix the items marked in red."
 
-#: src/components/admin/RouteEditor.tsx:271
+#: src/components/admin/RouteEditor.tsx:274
 msgid "保存中…"
 msgstr "Saving…"
 
 #. placeholder {0}: formatUpdated(locale, draft.updatedAt ?? new Date().toISOString())
-#: src/components/admin/RouteEditor.tsx:268
+#: src/components/admin/RouteEditor.tsx:271
 msgid "保存済み（更新 {0}）"
 msgstr "Saved (updated {0})"
 
-#: src/components/admin/map-editor/MapEditor.tsx:417
+#: src/components/admin/map-editor/MapEditor.tsx:445
 msgid "元に戻す"
 msgstr "Undo"
+
+#: src/components/admin/map-editor/MapEditor.tsx:338
+msgid "先に、線を描くか、場所を2つ以上置いてください。"
+msgstr "First draw a line, or place two or more stops."
+
+#: src/components/admin/MunicipalityField.tsx:39
+msgid "先に、都道府県を選んでください。"
+msgstr "Choose a prefecture first."
 
 #: src/components/admin/PlacePanel.tsx:59
 msgid "先に「保存」してください。"
 msgstr "Save first."
 
-#: src/components/admin/RouteEditor.tsx:345
+#: src/components/admin/RouteEditor.tsx:351
 msgid "入れた文字が、そのまま表示されます。"
 msgstr "What you type is shown as it is."
 
-#: src/components/admin/RouteEditor.tsx:285
+#: src/components/admin/RouteEditor.tsx:288
 msgid "入力"
 msgstr "Edit"
 
@@ -1313,16 +1513,16 @@ msgstr "Edit"
 msgid "入力に、まちがいがあるようです。見直して、もう一度お試しください。"
 msgstr "Something in what you entered looks wrong. Please check it and try again."
 
-#: src/components/landing/Landing.tsx:167
+#: src/components/landing/Landing.tsx:186
 msgid "全{TOTAL_ROUTES}区間"
 msgstr "{TOTAL_ROUTES} sections"
 
-#: src/app/[lang]/(public)/page.tsx:87
-#: src/app/[lang]/(public)/routes/page.tsx:50
+#: src/app/[lang]/(public)/page.tsx:91
+#: src/app/[lang]/(public)/routes/page.tsx:51
 msgid "全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）"
 msgstr "{TOTAL_ROUTES} sections, about {TRAIL_KM} km"
 
-#: src/components/landing/Landing.tsx:134
+#: src/components/landing/Landing.tsx:153
 msgid "全{TOTAL_ROUTES}区間を見る"
 msgstr "See all {TOTAL_ROUTES} sections"
 
@@ -1331,15 +1531,15 @@ msgstr "See all {TOTAL_ROUTES} sections"
 msgid "全{total}か所"
 msgstr "{total} places"
 
-#: src/components/map/MapScreen.tsx:140
+#: src/components/map/MapScreen.tsx:175
 msgid "全体の地図"
 msgstr "Whole map"
 
-#: src/components/admin/map-editor/MapEditor.tsx:426
+#: src/components/admin/map-editor/MapEditor.tsx:454
 msgid "全体を見る"
 msgstr "Show everything"
 
-#: src/components/landing/Landing.tsx:229
+#: src/components/landing/Landing.tsx:248
 msgid "公式サイトをひらく"
 msgstr "Open the official site"
 
@@ -1347,40 +1547,50 @@ msgstr "Open the official site"
 msgid "公開サイトを見る"
 msgstr "View the public site"
 
-#: src/components/admin/RouteEditor.tsx:240
+#: src/components/admin/RallyEditor.tsx:72
+#: src/components/admin/RouteEditor.tsx:243
 msgid "公開しました。"
 msgstr "Published."
 
 #: src/components/admin/PlacePanel.tsx:173
+#: src/components/admin/RallyEditor.tsx:132
 msgid "公開する"
 msgstr "Publish"
 
-#: src/app/[lang]/(public)/stamps/page.tsx:46
+#: src/app/[lang]/(public)/stamps/page.tsx:52
 msgid "公開できるようになったら、ここにスタンプのラリーが表示されます。"
 msgstr "When they are ready to publish, the stamp rallies will appear here."
 
-#: src/app/[lang]/(public)/routes/page.tsx:69
+#: src/app/[lang]/(public)/routes/page.tsx:73
 msgid "公開できるようになったら、ここにルートが表示されます。"
 msgstr "Routes will appear here once they are published."
 
-#: src/components/RouteView.tsx:164
+#: src/components/RouteView.tsx:183
 msgid "公開できるようになったら、ここに場所の一覧が表示されます。"
 msgstr "When they are ready to publish, the list of places will appear here."
+
+#: src/components/admin/RallyCreate.tsx:98
+msgid "公開は、作ったあとのラリーの画面からできます。"
+msgstr "You can publish it from the rally's page once it is created."
 
 #. placeholder {0}: blockers.filter((b) => b !== "unsaved").length
 #: src/components/admin/PlacePanel.tsx:80
 msgid "公開まで、あと{0}つ"
 msgstr "{0} more to do before it can be published"
 
-#: src/components/admin/RouteEditor.tsx:240
+#: src/components/admin/RallyEditor.tsx:72
+#: src/components/admin/RouteEditor.tsx:243
 msgid "公開をやめました。"
 msgstr "Unpublished."
 
 #: src/components/admin/PlacePanel.tsx:167
+#: src/components/admin/RallyEditor.tsx:132
 msgid "公開をやめる"
 msgstr "Unpublish"
 
 #: src/components/admin/PlacePanel.tsx:77
+#: src/components/admin/RallyEditor.tsx:100
+#: src/components/admin/RallyList.tsx:64
 #: src/components/admin/RouteTable.tsx:29
 msgid "公開中"
 msgstr "Published"
@@ -1389,15 +1599,19 @@ msgstr "Published"
 msgid "公開中のスタンプ場所"
 msgstr "Published stamp places"
 
+#: src/components/admin/RallyMemberPicker.tsx:88
+msgid "公開中のスタンプ場所なし（達成できません）"
+msgstr "No published stamp places (cannot be finished)"
+
 #: src/components/admin/PlacePanel.tsx:197
 msgid "公開中の場所は、先に「公開をやめる」と、削除できます。"
 msgstr "A published place can be deleted after you unpublish it."
 
-#: src/components/admin/RouteEditor.tsx:403
+#: src/components/admin/RouteEditor.tsx:409
 msgid "公開中の場所は消せません。先に「公開をやめる」を押してください。"
 msgstr "A published place cannot be deleted. Unpublish it first."
 
-#: src/components/admin/RouteEditor.tsx:468
+#: src/components/admin/RouteEditor.tsx:478
 msgid "公開前のチェック"
 msgstr "Check before publishing"
 
@@ -1409,7 +1623,7 @@ msgstr "Places that are not published yet are shown here too."
 msgid "最低 {lowest}m"
 msgstr "Lowest {lowest}m"
 
-#: src/components/admin/RouteEditor.tsx:375
+#: src/components/admin/RouteEditor.tsx:381
 msgid "最寄りの駅やバス停、スタート地点とゴール地点への行き方を書きます。"
 msgstr "Write the nearest station or bus stop and how to get to the start and from the finish."
 
@@ -1427,6 +1641,7 @@ msgstr "Highest {highest}m"
 
 #: src/components/admin/useChecklistLabels.ts:19
 #: src/components/landing/BannerCarousel.tsx:37
+#: src/components/map/MapScreen.tsx:424
 msgid "写真"
 msgstr "Photos"
 
@@ -1434,7 +1649,7 @@ msgstr "Photos"
 msgid "写真（準備中）"
 msgstr "Photo coming soon"
 
-#: src/components/admin/RouteEditor.tsx:350
+#: src/components/admin/RouteEditor.tsx:356
 msgid "写真と動画"
 msgstr "Photo and video"
 
@@ -1443,24 +1658,36 @@ msgid "写真のリンク"
 msgstr "Photo link"
 
 #: src/components/admin/PlacePanel.tsx:103
-#: src/components/admin/RouteEditor.tsx:354
+#: src/components/admin/RouteEditor.tsx:360
 #: src/components/useErrorMessages.ts:37
 msgid "写真のリンクは、https:// で始まるものだけ使えます。"
 msgstr "Photo links must start with https://."
+
+#: src/components/RoutePhoto.tsx:22
+msgid "写真は、まだありません"
+msgstr "No photo yet"
+
+#: src/components/useErrorMessages.ts:48
+msgid "写真は4MBまでのJPEG・PNG・WebPだけアップロードできます。"
+msgstr "Photos must be JPEG, PNG or WebP, up to 4 MB."
 
 #: src/components/admin/PhotoSlot.tsx:17
 msgid "写真はまだありません"
 msgstr "No photo yet"
 
-#: src/components/landing/Landing.tsx:177
+#: src/components/useErrorMessages.ts:49
+msgid "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
+msgstr "The photo could not be saved. Please try again in a moment."
+
+#: src/components/landing/Landing.tsx:196
 msgid "出かける前に"
 msgstr "Before you go"
 
-#: src/app/[lang]/(public)/page.tsx:94
-#: src/app/[lang]/(public)/routes/page.tsx:82
-#: src/app/[lang]/(public)/stamps/page.tsx:66
-#: src/components/landing/Landing.tsx:201
-#: src/components/RouteView.tsx:187
+#: src/app/[lang]/(public)/page.tsx:99
+#: src/app/[lang]/(public)/routes/page.tsx:86
+#: src/app/[lang]/(public)/stamps/page.tsx:75
+#: src/components/landing/Landing.tsx:220
+#: src/components/RouteView.tsx:209
 #: src/components/SpotSheet.tsx:109
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "Check official sources before you go."
@@ -1470,7 +1697,7 @@ msgstr "Check official sources before you go."
 msgid "出典: {0}"
 msgstr "Source: {0}"
 
-#: src/components/admin/RouteEditor.tsx:342
+#: src/components/admin/RouteEditor.tsx:348
 msgid "分"
 msgstr "min"
 
@@ -1483,10 +1710,14 @@ msgid "別の人が先に保存しました。読み込み直してから、も�
 msgstr "Someone else saved first. Reload the page and try again."
 
 #: src/app/[lang]/(public)/sitemap/page.tsx:105
-#: src/components/SiteFooter.tsx:23
-#: src/components/SiteHeader.tsx:197
+#: src/components/SiteFooter.tsx:28
+#: src/components/SiteHeader.tsx:204
 msgid "利用規約"
 msgstr "Terms of use"
+
+#: src/components/admin/RallyEditor.tsx:146
+msgid "削除"
+msgstr "Delete"
 
 #: src/components/ProfileCard.tsx:136
 msgid "削除を依頼する"
@@ -1500,6 +1731,8 @@ msgstr "Cancel deletion"
 msgid "前の写真"
 msgstr "Previous photo"
 
+#: src/components/admin/RallyList.tsx:71
+#: src/components/admin/RallyMemberPicker.tsx:110
 #: src/components/admin/RouteTable.tsx:149
 msgid "前へ"
 msgstr "Earlier"
@@ -1508,7 +1741,7 @@ msgstr "Earlier"
 msgid "動画"
 msgstr "Video"
 
-#: src/components/landing/Landing.tsx:144
+#: src/components/landing/Landing.tsx:163
 msgid "動画で見る"
 msgstr "Watch the video"
 
@@ -1516,7 +1749,7 @@ msgstr "Watch the video"
 msgid "動画のページをひらく"
 msgstr "Open the video page"
 
-#: src/components/admin/RouteEditor.tsx:356
+#: src/components/admin/RouteEditor.tsx:362
 msgid "動画のリンク（YouTube か Vimeo）"
 msgstr "Video link (YouTube or Vimeo)"
 
@@ -1528,19 +1761,19 @@ msgstr "Only YouTube or Vimeo links that start with https:// can be used for vid
 msgid "動画を見る"
 msgstr "Play the video"
 
-#: src/components/map/MapScreenCanvas.tsx:228
+#: src/components/map/MapScreenCanvas.tsx:229
 msgid "区間 {text} がここに集まっています。押すと拡大します"
 msgstr "Courses {text} are gathered here. Press to zoom in"
 
-#: src/components/map/MapScreen.tsx:230
+#: src/components/map/MapScreen.tsx:239
 msgid "区間をえらぶ"
 msgstr "Choose a course"
 
-#: src/components/map/MapScreen.tsx:146
+#: src/components/map/MapScreen.tsx:151
 msgid "区間を選ぶと、道とスタンプの場所が見えます。"
 msgstr "Choose a course to see its path and its stamp places."
 
-#: src/components/map/MapSheet.tsx:94
+#: src/components/map/MapSheet.tsx:103
 msgid "半分"
 msgstr "half"
 
@@ -1548,8 +1781,16 @@ msgstr "half"
 msgid "危険な所"
 msgstr "Danger spot"
 
+#: src/components/admin/RallyCreate.tsx:74
+msgid "名前"
+msgstr "Name"
+
+#: src/components/admin/RallyEditor.tsx:111
+msgid "名前と公開"
+msgstr "Name and publishing"
+
 #. placeholder {0}: waypoints.length
-#: src/components/admin/map-editor/MapEditor.tsx:439
+#: src/components/admin/map-editor/MapEditor.tsx:467
 msgid "名前のついた地点が{0}か所ありました。場所として追加しますか？"
 msgstr "Found {0} named points. Add them as places?"
 
@@ -1557,19 +1798,23 @@ msgstr "Found {0} named points. Add them as places?"
 msgid "名前の一部を入力"
 msgstr "Part of the name"
 
-#: src/components/admin/RouteEditor.tsx:256
+#: src/components/admin/RallyEditor.tsx:124
+msgid "名前を保存"
+msgstr "Save the name"
+
+#: src/components/admin/RouteEditor.tsx:259
 #: src/components/admin/RouteTable.tsx:30
 #: src/components/auth/authUi.tsx:78
 #: src/components/PrefectureName.tsx:9
 msgid "和歌山県"
 msgstr "Wakayama"
 
-#: src/components/landing/Landing.tsx:162
+#: src/components/landing/Landing.tsx:181
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "From the Izumi range to the Kongo mountains, these ridges run along the borders of Osaka, Wakayama and Nara. They have long been called Katsuragi and revered as mountains where the gods dwell. It is said that En no Gyoja, who is believed to have founded Shugendo, the path of training in the mountains, first practised here."
 
 #: src/components/StampHere.tsx:94
-#: src/components/useErrorMessages.ts:48
+#: src/components/useErrorMessages.ts:58
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "Something went wrong. Please try again in a little while."
 
@@ -1585,7 +1830,7 @@ msgstr "Map"
 msgid "地図で見る"
 msgstr "Show in the map"
 
-#: src/components/admin/RouteEditor.tsx:381
+#: src/components/admin/RouteEditor.tsx:387
 #: src/components/admin/useChecklistLabels.ts:22
 msgid "地図と線"
 msgstr "Map & line"
@@ -1594,7 +1839,7 @@ msgstr "Map & line"
 msgid "地図のルートと場所は仮のものです。実際の公開情報ではありません。"
 msgstr "The route and places on the map are provisional. They are not published information."
 
-#: src/components/map/MapScreen.tsx:397
+#: src/components/map/MapScreen.tsx:398
 msgid "地図の上の場所は、準備中です。"
 msgstr "The places on the map are not ready yet."
 
@@ -1606,36 +1851,36 @@ msgstr "How the map is shown"
 msgid "地図の見た目"
 msgstr "Map appearance"
 
-#: src/components/SiteHeader.tsx:216
+#: src/components/SiteHeader.tsx:223
 msgid "地図の見た目の設定"
 msgstr "Map style settings"
 
-#: src/components/admin/map-editor/MapEditor.tsx:407
+#: src/components/admin/map-editor/MapEditor.tsx:426
 msgid "地図の道具"
 msgstr "Map tools"
 
-#: src/components/admin/map-editor/MapEditor.tsx:398
+#: src/components/admin/map-editor/MapEditor.tsx:417
 msgid "地図をクリックして、点を置いていきます。最後の点をもう一度クリックする（またはEnterキーを押す）と、線ができます。Escキーでやり直します。"
 msgstr "Click the map to add points. Click the last point again (or press Enter) to finish the line. Press Esc to start over."
 
-#: src/components/admin/map-editor/MapEditor.tsx:396
+#: src/components/admin/map-editor/MapEditor.tsx:415
 msgid "地図をクリックすると、その位置にスタンプの場所を置きます。"
 msgstr "Click the map to put a stamp place at that position."
 
-#: src/components/admin/map-editor/MapEditor.tsx:470
+#: src/components/admin/map-editor/MapEditor.tsx:498
 #: src/components/admin/map-editor/MapEditorLoader.tsx:11
-#: src/components/map/MapScreenCanvas.tsx:293
+#: src/components/map/MapScreenCanvas.tsx:323
 #: src/components/map/MapScreenCanvasLoader.tsx:12
 #: src/components/map/TrailMap.tsx:427
 #: src/components/map/TrailMapLoader.tsx:12
 msgid "地図を読み込み中…"
 msgstr "Loading the map…"
 
-#: src/components/PrefectureFilter.tsx:29
+#: src/components/PrefectureFilter.tsx:30
 msgid "地域でしぼる"
 msgstr "Filter by area"
 
-#: src/components/admin/map-editor/MapEditor.tsx:429
+#: src/components/admin/map-editor/MapEditor.tsx:457
 msgid "地形の陰影"
 msgstr "Terrain shading"
 
@@ -1651,9 +1896,14 @@ msgstr "Show terrain shading"
 msgid "地形ボタンで重ねるもの"
 msgstr "What the terrain button adds"
 
-#: src/components/admin/RouteEditor.tsx:313
+#: src/components/admin/RouteEditor.tsx:316
 msgid "基本"
 msgstr "Basics"
+
+#. placeholder {0}: r.memberCount
+#: src/components/admin/RallyList.tsx:62
+msgid "場所 {0}"
+msgstr "{0} places"
 
 #. placeholder {0}: r.publishedSpotCount
 #. placeholder {1}: r.spotCount
@@ -1662,11 +1912,11 @@ msgid "場所 {0} / {1}"
 msgstr "Places {0} / {1}"
 
 #. placeholder {0}: draft.places.length
-#: src/components/admin/RouteEditor.tsx:423
+#: src/components/admin/RouteEditor.tsx:433
 msgid "場所（{0}か所）"
 msgstr "Places ({0})"
 
-#: src/components/admin/RouteEditor.tsx:504
+#: src/components/admin/RouteEditor.tsx:514
 msgid "場所が残っているルートは削除できません。"
 msgstr "A route that still has places cannot be deleted."
 
@@ -1674,7 +1924,19 @@ msgstr "A route that still has places cannot be deleted."
 msgid "場所が残っているルートは消せません。先に場所を消してください。"
 msgstr "A route that still has places cannot be deleted. Delete its places first."
 
-#: src/components/admin/AdminNav.tsx:18
+#: src/components/admin/RallyEditor.tsx:98
+msgid "場所でつくったラリー：えらんだスタンプ場所を全部押すと達成。"
+msgstr "A rally of places: complete when every chosen stamp place is stamped."
+
+#: src/components/useErrorMessages.ts:46
+msgid "場所でつくったラリーにはスタンプ場所を、コースでつくったラリーにはコースを入れてください。同じものは一度だけです。"
+msgstr "A rally of places takes stamp places and a rally of courses takes courses, each once."
+
+#: src/components/admin/RallyCreate.tsx:69
+msgid "場所でつくる"
+msgstr "Make it from places"
+
+#: src/components/admin/AdminNav.tsx:21
 msgid "場所の一覧"
 msgstr "All places"
 
@@ -1682,11 +1944,11 @@ msgstr "All places"
 msgid "場所の名前"
 msgstr "Place name"
 
-#: src/components/admin/map-editor/MapEditor.tsx:409
+#: src/components/admin/map-editor/MapEditor.tsx:428
 msgid "場所を置く"
 msgstr "Place a stop"
 
-#: src/components/admin/AdminNav.tsx:18
+#: src/components/admin/AdminNav.tsx:21
 msgid "変更の記録"
 msgstr "Change log"
 
@@ -1702,14 +1964,14 @@ msgstr "Bigger map"
 msgid "大切な操作なので、もう一度、確認します。"
 msgstr "This is an important action, so we confirm it is you once more."
 
-#: src/components/admin/RouteEditor.tsx:256
+#: src/components/admin/RouteEditor.tsx:259
 #: src/components/admin/RouteTable.tsx:30
 #: src/components/auth/authUi.tsx:77
 #: src/components/PrefectureName.tsx:7
 msgid "大阪府"
 msgstr "Osaka"
 
-#: src/components/admin/RouteEditor.tsx:256
+#: src/components/admin/RouteEditor.tsx:259
 #: src/components/admin/RouteTable.tsx:30
 #: src/components/auth/authUi.tsx:79
 #: src/components/PrefectureName.tsx:11
@@ -1732,15 +1994,19 @@ msgstr "Slightly darker"
 msgid "少なく表示"
 msgstr "Show less"
 
-#: src/components/landing/Landing.tsx:191
+#: src/components/landing/Landing.tsx:210
 msgid "山の中は、電波がつながりにくいことがあります。"
 msgstr "Mobile signal can be weak in the mountains."
 
-#: src/components/landing/Landing.tsx:185
+#: src/components/landing/Landing.tsx:204
 msgid "山道です。天気と、水や食べ物、歩きやすい靴を用意してください。"
 msgstr "These are mountain paths. Check the weather and bring water, food and sturdy shoes."
 
-#: src/components/admin/RouteEditor.tsx:327
+#: src/components/admin/MunicipalityField.tsx:39
+msgid "市の名前を選びます。町や村は「その他」を選んで入力します。"
+msgstr "Choose a city. For a town or village, choose \"Other\" and type its name."
+
+#: src/components/admin/MunicipalityField.tsx:37
 msgid "市区町村"
 msgstr "City or town"
 
@@ -1748,6 +2014,8 @@ msgstr "City or town"
 msgid "年代"
 msgstr "Age"
 
+#: src/components/admin/RallyList.tsx:74
+#: src/components/admin/RallyMemberPicker.tsx:113
 #: src/components/admin/RouteTable.tsx:158
 msgid "後ろへ"
 msgstr "Later"
@@ -1757,7 +2025,7 @@ msgstr "Later"
 msgid "必要：{0}"
 msgstr "Required: {0}"
 
-#: src/components/admin/RouteEditor.tsx:472
+#: src/components/admin/RouteEditor.tsx:482
 msgid "必要なこと"
 msgstr "Required"
 
@@ -1769,7 +2037,7 @@ msgstr "Required"
 msgid "性別"
 msgstr "Gender"
 
-#: src/components/map/MapSheet.tsx:82
+#: src/components/map/MapSheet.tsx:86
 msgid "情報"
 msgstr "Information"
 
@@ -1778,15 +2046,15 @@ msgstr "Information"
 msgid "戻る"
 msgstr "Back"
 
-#: src/components/admin/RouteEditor.tsx:338
+#: src/components/admin/RouteEditor.tsx:344
 msgid "手で入れた数字です。空にすると、標高から計算します。"
 msgstr "Entered by hand. Empty it to calculate from the elevation."
 
-#: src/components/admin/RouteEditor.tsx:335
+#: src/components/admin/RouteEditor.tsx:341
 msgid "手で入れた数字です。空にすると、線から計算します。"
 msgstr "Entered by hand. Empty it to calculate from the line."
 
-#: src/components/admin/RouteEditor.tsx:341
+#: src/components/admin/RouteEditor.tsx:347
 msgid "手で入れた数字です。空にすると、距離と登りから計算します。"
 msgstr "Entered by hand. Leave it empty to calculate it from the distance and climb."
 
@@ -1794,7 +2062,7 @@ msgstr "Entered by hand. Leave it empty to calculate it from the distance and cl
 msgid "手直しが必要なルートだけ（{needsWorkCount}）"
 msgstr "Only routes that need work ({needsWorkCount})"
 
-#: src/components/map/MapScreen.tsx:375
+#: src/components/map/MapScreen.tsx:376
 #: src/components/RallyViews.tsx:150
 #: src/components/StampLegend.tsx:8
 #: src/components/StopList.tsx:59
@@ -1809,20 +2077,24 @@ msgstr "How: press the button near the place (uses your location)"
 msgid "押すと、アカウントと、集めたスタンプなどの記録を、3日後にすべて消します。"
 msgstr "If you press this, your account and your records, such as your stamps, will all be erased after 3 days."
 
-#: src/components/map/MapScreenCanvas.tsx:310
+#: src/components/map/MapScreenCanvas.tsx:340
 #: src/components/map/TrailMap.tsx:441
 msgid "拡大"
 msgstr "Zoom in"
 
-#: src/components/admin/RouteEditor.tsx:368
+#: src/components/admin/map-editor/MapEditor.tsx:440
+msgid "描いた線を、地図の道に沿わせます"
+msgstr "Makes the drawn line follow the paths on the map"
+
+#: src/components/admin/RouteEditor.tsx:374
 msgid "改行は、そのまま表示されます。"
 msgstr "Line breaks are shown as typed."
 
-#: src/components/admin/RouteEditor.tsx:333
+#: src/components/admin/RouteEditor.tsx:339
 msgid "数字"
 msgstr "Numbers"
 
-#: src/components/admin/map-editor/MapEditor.tsx:402
+#: src/components/admin/map-editor/MapEditor.tsx:421
 msgid "数字の丸をドラッグすると、場所を動かせます。道すじは「線を描く」か、GPXファイルで入れます。"
 msgstr "Drag a numbered circle to move a place. Add the path with \"Draw line\" or a GPX file."
 
@@ -1838,11 +2110,11 @@ msgstr "Text and buttons become as big as they go."
 msgid "文字もボタンも、少し大きくなります。"
 msgstr "Text and buttons become a little bigger."
 
-#: src/components/SiteHeader.tsx:192
+#: src/components/SiteHeader.tsx:199
 msgid "文字やボタンの大きさ、地図の見せ方"
 msgstr "Size of text and buttons, how the map is shown"
 
-#: src/app/[lang]/(public)/page.tsx:72
+#: src/app/[lang]/(public)/page.tsx:76
 msgid "文字やボタンの大きさ、地図の見せ方を選べます。"
 msgstr "Choose the size of text and buttons and how the map is shown."
 
@@ -1854,7 +2126,16 @@ msgstr "Choose the size of text and buttons and how the map is shown. The size c
 msgid "文章"
 msgstr "Text"
 
-#: src/components/admin/RouteEditor.tsx:266
+#: src/components/admin/RallyCreate.tsx:59
+#: src/components/admin/RallyList.tsx:41
+msgid "新しいラリー"
+msgstr "New rally"
+
+#: src/app/[lang]/(admin)/admin/rallies/new/page.tsx:12
+msgid "新しいラリー（管理）"
+msgstr "New rally (admin)"
+
+#: src/components/admin/RouteEditor.tsx:269
 #: src/components/admin/RouteTable.tsx:89
 msgid "新しいルート"
 msgstr "New route"
@@ -1867,11 +2148,12 @@ msgstr "New route (admin)"
 #: src/app/[lang]/(public)/register/page.tsx:32
 #: src/app/[lang]/(public)/sitemap/page.tsx:90
 #: src/components/auth/LoginFlow.tsx:104
-#: src/components/landing/Landing.tsx:77
-#: src/components/landing/Landing.tsx:211
-#: src/components/map/MapScreen.tsx:300
+#: src/components/landing/Landing.tsx:94
+#: src/components/landing/Landing.tsx:230
+#: src/components/landing/LandingHero.tsx:45
+#: src/components/map/MapScreen.tsx:309
 #: src/components/SignInPrompt.tsx:31
-#: src/components/SiteHeader.tsx:170
+#: src/components/SiteHeader.tsx:177
 msgid "新規登録"
 msgstr "Register"
 
@@ -1887,7 +2169,7 @@ msgstr "日本語"
 msgid "日本語のみ"
 msgstr "Japanese only"
 
-#: src/components/admin/RouteEditor.tsx:315
+#: src/components/admin/RouteEditor.tsx:318
 msgid "日本語の名前を入れてください。"
 msgstr "Enter the Japanese name."
 
@@ -1913,7 +2195,8 @@ msgstr "Updated {updated} (Japan time)"
 msgid "未保存"
 msgstr "Unsaved"
 
-#: src/components/admin/RouteEditor.tsx:319
+#: src/components/admin/MunicipalityField.tsx:57
+#: src/components/admin/RouteEditor.tsx:327
 msgid "未選択"
 msgstr "Not chosen"
 
@@ -1937,7 +2220,7 @@ msgstr "Overview"
 msgid "標準"
 msgstr "Standard"
 
-#: src/components/admin/map-editor/MapEditor.tsx:477
+#: src/components/admin/map-editor/MapEditor.tsx:505
 msgid "標高が調べられない場所があります。"
 msgstr "Elevation could not be found for some points."
 
@@ -1957,7 +2240,7 @@ msgstr "Show elevation colours"
 msgid "標高は{lowest}mから{highest}mまで"
 msgstr "Elevation from {lowest}m to {highest}m"
 
-#: src/components/admin/map-editor/MapEditor.tsx:476
+#: src/components/admin/map-editor/MapEditor.tsx:504
 msgid "標高を調べています…"
 msgstr "Looking up elevation…"
 
@@ -1969,19 +2252,19 @@ msgstr "Next photo"
 msgid "次へ ＞"
 msgstr "Next >"
 
-#: src/app/[lang]/(public)/page.tsx:58
+#: src/app/[lang]/(public)/page.tsx:62
 msgid "歩いた場所で、スタンプを押そう。"
 msgstr "Collect a stamp wherever you have walked."
 
-#: src/app/[lang]/(public)/routes/page.tsx:56
+#: src/app/[lang]/(public)/routes/page.tsx:57
 msgid "歩き終えた区間 {done} / {TOTAL_ROUTES}"
 msgstr "Sections walked {done} / {TOTAL_ROUTES}"
 
-#: src/components/admin/RouteEditor.tsx:341
+#: src/components/admin/RouteEditor.tsx:347
 msgid "歩く時間"
 msgstr "Walking time"
 
-#: src/components/landing/Landing.tsx:118
+#: src/components/landing/Landing.tsx:137
 msgid "歩く道"
 msgstr "The path"
 
@@ -1989,14 +2272,15 @@ msgstr "The path"
 msgid "歩く順番に並んでいます。名前を押すと、文章や地図を直せます。"
 msgstr "Routes are in walking order. Select a name to edit its text and map."
 
-#: src/components/admin/RouteEditor.tsx:370
-#: src/components/admin/RouteEditor.tsx:371
+#: src/components/admin/RouteEditor.tsx:376
+#: src/components/admin/RouteEditor.tsx:377
 #: src/components/admin/useChecklistLabels.ts:17
-#: src/components/RouteView.tsx:133
+#: src/components/map/MapScreen.tsx:406
+#: src/components/RouteView.tsx:124
 msgid "歴史・由来"
 msgstr "History and background"
 
-#: src/components/landing/Landing.tsx:221
+#: src/components/landing/Landing.tsx:240
 msgid "歴史や観光の情報は、日本遺産「葛城修験」の公式サイトでも見られます。"
 msgstr "You can also find history and sightseeing information on the official Japan Heritage Katsuragi Shugen site."
 
@@ -2014,7 +2298,7 @@ msgstr "Caution"
 msgid "海外"
 msgstr "Overseas"
 
-#: src/components/admin/map-editor/MapEditor.tsx:494
+#: src/components/admin/map-editor/MapEditor.tsx:522
 #: src/components/settings/PasskeyManager.tsx:119
 #: src/components/settings/PasskeyManager.tsx:149
 msgid "消す"
@@ -2028,12 +2312,12 @@ msgstr "After removing it, you can no longer log in with your face or fingerprin
 msgid "淡色"
 msgstr "Pale"
 
-#: src/components/admin/AdminNav.tsx:51
+#: src/components/admin/AdminNav.tsx:54
 #: src/components/admin/RouteTable.tsx:29
-#: src/components/landing/Landing.tsx:255
-#: src/components/map/MapScreen.tsx:283
+#: src/components/landing/Landing.tsx:274
+#: src/components/map/MapScreen.tsx:292
 #: src/components/RallyViews.tsx:105
-#: src/components/TrailRibbon.tsx:84
+#: src/components/TrailRibbon.tsx:73
 msgid "準備中"
 msgstr "Coming soon"
 
@@ -2069,7 +2353,11 @@ msgstr "Confirm permission from the site and tick \"Permission confirmed\"."
 msgid "男性"
 msgstr "Male"
 
-#: src/components/SiteHeader.tsx:176
+#: src/components/admin/MunicipalityField.tsx:67
+msgid "町や村の名前"
+msgstr "Name of the town or village"
+
+#: src/components/SiteHeader.tsx:183
 msgid "画面の明るさ"
 msgstr "Screen brightness"
 
@@ -2086,11 +2374,11 @@ msgid "番号をもう一度送る"
 msgstr "Send the number again"
 
 #. placeholder {0}: props.climbM
-#: src/components/admin/map-editor/MapEditor.tsx:475
+#: src/components/admin/map-editor/MapEditor.tsx:503
 msgid "登り {0} m"
 msgstr "Climb {0} m"
 
-#: src/components/admin/RouteEditor.tsx:338
+#: src/components/admin/RouteEditor.tsx:344
 msgid "登り（獲得標高）"
 msgstr "Climb (elevation gain)"
 
@@ -2108,11 +2396,12 @@ msgid "登録できませんでした。もう一度お試しください。"
 msgstr "Could not register. Please try again."
 
 #: src/components/auth/RegisterFlow.tsx:139
-#: src/components/landing/Landing.tsx:83
+#: src/components/landing/Landing.tsx:100
+#: src/components/landing/LandingHero.tsx:52
 msgid "登録済みの方は"
 msgstr "Already registered?"
 
-#: src/components/landing/Landing.tsx:102
+#: src/components/landing/Landing.tsx:121
 msgid "着いたらボタンを押すだけ。場所を確かめて、スタンプがたまります。"
 msgstr "Just press the button when you arrive. The app checks where you are, and your stamps add up."
 
@@ -2122,7 +2411,7 @@ msgid "短い間に何度も操作されました。しばらくしてからお�
 msgstr "Too many attempts in a short time. Please try again in a little while."
 
 #: src/components/admin/PlacePanel.tsx:121
-#: src/components/admin/RouteEditor.tsx:415
+#: src/components/admin/RouteEditor.tsx:425
 msgid "確認した情報源（サイト名やリンク）"
 msgstr "Source checked (site name or link)"
 
@@ -2130,7 +2419,7 @@ msgstr "Source checked (site name or link)"
 msgid "確認した日：{checkedOn}"
 msgstr "Checked on: {checkedOn}"
 
-#: src/components/admin/RouteEditor.tsx:411
+#: src/components/admin/RouteEditor.tsx:421
 msgid "確認していない線は、利用者には表示されません。公式の地図などと見比べてから、チェックを入れてください。"
 msgstr "A line that has not been checked is not shown to visitors. Compare it with an official map, then tick the box."
 
@@ -2164,7 +2453,7 @@ msgstr "Prefer not to say"
 msgid "答えなくても大丈夫です。"
 msgstr "You can skip this."
 
-#: src/components/admin/AdminNav.tsx:21
+#: src/components/admin/AdminNav.tsx:24
 msgid "管理メニュー"
 msgstr "Admin menu"
 
@@ -2184,11 +2473,11 @@ msgstr "About {amount} km"
 msgid "約{amount}m"
 msgstr "About {amount} m"
 
-#: src/components/landing/Landing.tsx:168
+#: src/components/landing/Landing.tsx:187
 msgid "約{TRAIL_KM}km"
 msgstr "About {TRAIL_KM} km"
 
-#: src/components/landing/Landing.tsx:169
+#: src/components/landing/Landing.tsx:188
 msgid "経塚"
 msgstr "Sutra mounds"
 
@@ -2200,48 +2489,56 @@ msgstr "Sutra mound rally"
 msgid "経度"
 msgstr "Longitude"
 
-#: src/components/admin/RouteEditor.tsx:338
+#: src/components/ExpandableText.tsx:32
+msgid "続きを読む"
+msgstr "Read more"
+
+#: src/components/admin/RouteEditor.tsx:344
 msgid "線の標高から、自動で計算します。"
 msgstr "Calculated automatically from the elevation of the line."
 
-#: src/components/admin/map-editor/MapEditor.tsx:400
+#: src/components/admin/map-editor/MapEditor.tsx:419
 msgid "線の点をドラッグして動かします。線の途中の小さな点を引くと、点を増やせます。点を選んでDeleteキーで消せます。数字の丸をドラッグすると、場所を動かせます。"
 msgstr "Drag the points of the line to move them. Drag a small dot on the line to add a point. Select a point and press Delete to remove it. Drag a numbered circle to move a place."
 
-#: src/components/admin/RouteEditor.tsx:410
+#: src/components/admin/RouteEditor.tsx:420
 msgid "線の確認"
 msgstr "Line check"
 
 #. placeholder {0}: props.distanceKm ?? 0
-#: src/components/admin/map-editor/MapEditor.tsx:474
+#: src/components/admin/map-editor/MapEditor.tsx:502
 msgid "線の長さ {0} km"
 msgstr "Line length {0} km"
 
-#: src/components/admin/RouteEditor.tsx:335
+#: src/components/admin/RouteEditor.tsx:341
 msgid "線の長さから、自動で計算しています。"
 msgstr "Calculated automatically from the length of the line."
 
-#: src/components/admin/map-editor/MapEditor.tsx:474
+#: src/components/admin/map-editor/MapEditor.tsx:502
 msgid "線は、まだありません。"
 msgstr "There is no line yet."
 
-#: src/components/admin/map-editor/MapEditor.tsx:410
+#: src/components/admin/map-editor/MapEditor.tsx:429
 msgid "線を描く"
 msgstr "Draw line"
 
-#: src/components/admin/map-editor/MapEditor.tsx:423
+#: src/components/admin/map-editor/MapEditor.tsx:451
 msgid "線を消す"
 msgstr "Clear line"
 
-#: src/components/admin/RouteEditor.tsx:413
+#: src/components/admin/RouteEditor.tsx:423
 msgid "線を確認した"
 msgstr "Line checked"
+
+#: src/components/admin/map-editor/MapEditor.tsx:347
+msgid "線を道に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。"
+msgstr "The line now follows the paths. Check its shape, then save. \"Undo\" brings back the line you drew."
 
 #: src/components/ProfileCard.tsx:245
 msgid "編集"
 msgstr "Edit"
 
-#: src/components/admin/RouteEditor.tsx:292
+#: src/components/admin/RouteEditor.tsx:295
 msgid "編集する内容"
 msgstr "What to edit"
 
@@ -2249,21 +2546,21 @@ msgstr "What to edit"
 msgid "緯度"
 msgstr "Latitude"
 
-#: src/components/admin/RouteEditor.tsx:463
+#: src/components/admin/RouteEditor.tsx:473
 msgid "緯度と経度は、両方入れるか、両方空にしてください。"
 msgstr "Enter both latitude and longitude, or leave both empty."
 
-#: src/components/map/MapScreenCanvas.tsx:310
+#: src/components/map/MapScreenCanvas.tsx:340
 #: src/components/map/TrailMap.tsx:444
 msgid "縮小"
 msgstr "Zoom out"
 
-#: src/components/admin/map-editor/MapEditor.tsx:481
+#: src/components/admin/map-editor/MapEditor.tsx:509
 msgid "置いた場所"
 msgstr "Placed stops"
 
 #. placeholder {0}: props.places.length
-#: src/components/admin/map-editor/MapEditor.tsx:482
+#: src/components/admin/map-editor/MapEditor.tsx:510
 msgid "置いた場所（{0}か所）"
 msgstr "Placed stops ({0})"
 
@@ -2285,6 +2582,10 @@ msgstr "Invert colours"
 msgid "色別標高図（緑〜茶）"
 msgstr "Elevation colours (green to brown)"
 
+#: src/components/admin/MunicipalityField.tsx:67
+msgid "英語のページには、入れた文字がそのまま表示されます。"
+msgstr "The English page shows the text exactly as you type it."
+
 #: src/components/admin/useChecklistLabels.ts:16
 msgid "英語の名前と説明"
 msgstr "English name and description"
@@ -2293,9 +2594,10 @@ msgstr "English name and description"
 msgid "英語は未入力です（日本語を表示します）"
 msgstr "English is empty (the Japanese text is shown)"
 
-#: src/app/[lang]/(public)/page.tsx:49
+#: src/app/[lang]/(public)/page.tsx:53
 #: src/app/[lang]/layout.tsx:31
-#: src/components/landing/Landing.tsx:69
+#: src/components/landing/Landing.tsx:84
+#: src/components/landing/LandingHero.tsx:36
 msgid "葛城修験"
 msgstr "Katsuragi Shugendō"
 
@@ -2303,7 +2605,7 @@ msgstr "Katsuragi Shugendō"
 msgid "葛城修験 管理"
 msgstr "Katsuragi Shugen Admin"
 
-#: src/components/landing/Landing.tsx:156
+#: src/components/landing/Landing.tsx:175
 msgid "葛城修験とは"
 msgstr "About Katsuragi Shugen"
 
@@ -2311,16 +2613,16 @@ msgstr "About Katsuragi Shugen"
 msgid "葛城修験の地図"
 msgstr "Map of Katsuragi Shugen"
 
-#: src/app/[lang]/(public)/routes/page.tsx:47
+#: src/app/[lang]/(public)/routes/page.tsx:48
 msgid "葛城修験の道"
 msgstr "The Katsuragi Shugendō Trail"
 
-#: src/components/admin/RouteEditor.tsx:282
+#: src/components/admin/RouteEditor.tsx:285
 msgid "表示の切り替え"
 msgstr "Switch view"
 
 #: src/components/admin/LivePreview.tsx:21
-#: src/components/admin/RouteEditor.tsx:285
+#: src/components/admin/RouteEditor.tsx:288
 msgid "見え方"
 msgstr "Preview"
 
@@ -2331,7 +2633,7 @@ msgstr "Point of interest"
 #: src/app/[lang]/(public)/settings/page.tsx:13
 #: src/app/[lang]/(public)/settings/page.tsx:30
 #: src/app/[lang]/(public)/sitemap/page.tsx:93
-#: src/components/SiteHeader.tsx:190
+#: src/components/SiteHeader.tsx:197
 msgid "見やすさの設定"
 msgstr "Display settings"
 
@@ -2339,7 +2641,7 @@ msgstr "Display settings"
 msgid "見やすさを、あなたに合わせましょう。大きさは、選ぶとすぐに変わります。"
 msgstr "Let us make things easy for you to see. The size changes as soon as you choose it."
 
-#: src/app/[lang]/(public)/page.tsx:69
+#: src/app/[lang]/(public)/page.tsx:73
 msgid "見やすさを設定しませんか"
 msgstr "Set up how things look?"
 
@@ -2347,12 +2649,12 @@ msgstr "Set up how things look?"
 msgid "見やすさを選びましょう"
 msgstr "Choose how it looks"
 
-#: src/components/map/MapScreenCanvas.tsx:300
+#: src/components/map/MapScreenCanvas.tsx:330
 msgid "見本の位置（目安です）"
 msgstr "Sample positions (rough)"
 
 #: src/components/LocaleSwitcher.tsx:24
-#: src/components/SiteHeader.tsx:182
+#: src/components/SiteHeader.tsx:189
 msgid "言語"
 msgstr "Language"
 
@@ -2377,16 +2679,20 @@ msgstr "Description (Japanese)"
 msgid "読み込み中"
 msgstr "Loading"
 
+#: src/components/admin/map-editor/MapEditor.tsx:442
+msgid "調べています…"
+msgstr "Searching…"
+
 #: src/components/admin/RouteTable.tsx:126
 msgid "足りないもの"
 msgstr "What is missing"
 
-#: src/components/admin/RouteEditor.tsx:335
+#: src/components/admin/RouteEditor.tsx:341
 #: src/components/RouteStats.tsx:20
 msgid "距離"
 msgstr "Distance"
 
-#: src/components/admin/RouteEditor.tsx:341
+#: src/components/admin/RouteEditor.tsx:347
 msgid "距離と登りから、目安を自動で計算しています。"
 msgstr "An estimate is calculated automatically from the distance and climb."
 
@@ -2394,11 +2700,11 @@ msgstr "An estimate is calculated automatically from the distance and climb."
 msgid "近い場所をまとめて表示する"
 msgstr "Merge places that are close together"
 
-#: src/components/admin/map-editor/MapEditor.tsx:451
+#: src/components/admin/map-editor/MapEditor.tsx:479
 msgid "追加しない"
 msgstr "Do not add"
 
-#: src/components/admin/map-editor/MapEditor.tsx:448
+#: src/components/admin/map-editor/MapEditor.tsx:476
 msgid "追加する"
 msgstr "Add"
 
@@ -2407,7 +2713,7 @@ msgid "送った内容が、読み取れませんでした。もう一度お試�
 msgstr "We could not read what was sent. Please try again."
 
 #: src/components/StampHere.tsx:93
-#: src/components/useErrorMessages.ts:47
+#: src/components/useErrorMessages.ts:57
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not connect. Please try again where the signal is better."
 
@@ -2420,23 +2726,52 @@ msgid "通行止め"
 msgstr "Closed"
 
 #: src/app/[lang]/(public)/sitemap/page.tsx:81
-#: src/app/[lang]/(public)/stamps/page.tsx:37
+#: src/app/[lang]/(public)/stamps/page.tsx:40
 msgid "遊び方"
 msgstr "How to play"
 
-#: src/components/landing/Landing.tsx:197
+#: src/components/landing/Landing.tsx:216
 msgid "道が通れないときは、無理をせず引き返してください。"
 msgstr "If the path is closed, do not push on. Turn back."
+
+#: src/components/admin/map-editor/MapEditor.tsx:442
+msgid "道に沿わせる"
+msgstr "Snap to trails"
+
+#: src/components/useErrorMessages.ts:51
+msgid "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
+msgstr "Snapping to trails is not available yet. Ask whoever manages the site to set up the route-finding service. You can still draw the line by hand."
+
+#: src/components/admin/map-editor/MapEditor.tsx:340
+msgid "道を調べています…"
+msgstr "Looking up the paths…"
+
+#: src/components/useErrorMessages.ts:53
+msgid "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
+msgstr "Could not look up the paths. Please try again in a little while."
 
 #: src/components/admin/PlacePanel.tsx:89
 msgid "道案内のための点です。スタンプは押せません。"
 msgstr "A point for finding the way. No stamp can be collected here."
 
-#: src/components/admin/map-editor/MapEditor.tsx:408
+#. placeholder {0}: r.completionCount
+#. placeholder {0}: saved.completionCount
+#: src/components/admin/RallyEditor.tsx:102
+#: src/components/admin/RallyList.tsx:66
+msgid "達成した人 {0}"
+msgstr "{0} finished"
+
+#: src/components/admin/map-editor/MapEditor.tsx:427
 msgid "選ぶ・動かす"
 msgstr "Select / move"
 
-#: src/components/admin/RouteEditor.tsx:317
+#. placeholder {0}: selected.length
+#. placeholder {1}: allIds.length
+#: src/components/admin/RallyMemberPicker.tsx:44
+msgid "選んだ数：{0} / {1}"
+msgstr "Selected: {0} / {1}"
+
+#: src/components/admin/RouteEditor.tsx:320
 #: src/components/admin/RouteTable.tsx:70
 #: src/components/admin/useChecklistLabels.ts:15
 msgid "都道府県"
@@ -2446,15 +2781,16 @@ msgstr "Prefecture"
 msgid "都道府県が未入力"
 msgstr "Prefecture not set"
 
-#: src/components/landing/Landing.tsx:168
+#: src/components/landing/Landing.tsx:187
 msgid "長さ"
 msgstr "Length"
 
+#: src/components/ExpandableText.tsx:32
 #: src/components/map/PlacesPanel.tsx:198
 #: src/components/map/TrailMap.tsx:406
 #: src/components/SampleNotice.tsx:64
-#: src/components/SiteHeader.tsx:125
-#: src/components/SiteHeader.tsx:143
+#: src/components/SiteHeader.tsx:126
+#: src/components/SiteHeader.tsx:150
 msgid "閉じる"
 msgstr "Close"
 
@@ -2462,7 +2798,7 @@ msgstr "Close"
 msgid "閉店・撤去"
 msgstr "Closed for good"
 
-#: src/app/[lang]/(public)/map/page.tsx:130
+#: src/app/[lang]/(public)/map/page.tsx:153
 #: src/app/[lang]/(public)/routes/[id]/page.tsx:49
 #: src/components/admin/LivePreview.tsx:31
 #: src/components/StatusWord.tsx:13
@@ -2473,7 +2809,7 @@ msgstr "Closed"
 msgid "開放中"
 msgstr "Open"
 
-#: src/components/SiteHeader.tsx:211
+#: src/components/SiteHeader.tsx:218
 msgid "開発用"
 msgstr "For developers"
 
@@ -2531,6 +2867,6 @@ msgstr "Station, bus, parking"
 msgid "駐車場"
 msgstr "Parking"
 
-#: src/components/map/MapSheet.tsx:94
+#: src/components/map/MapSheet.tsx:103
 msgid "高い"
 msgstr "high"

@@ -1,7 +1,23 @@
 import { describe, expect, test } from "bun:test";
 import { getTableConfig } from "drizzle-orm/pg-core";
 import { users } from "./auth";
-import { auditLog, rallies, rallySpots, routes, spotKinds, spots, stamps, trailNotices } from "./content";
+import {
+  auditLog,
+  courseCompletions,
+  rallies,
+  rallyCompletions,
+  rallyRoutes,
+  rallySpots,
+  rallyTranslations,
+  routes,
+  routeTranslations,
+  spotKinds,
+  spots,
+  spotTranslations,
+  stamps,
+  trailNotices,
+  trailNoticeTranslations,
+} from "./content";
 
 type Table = Parameters<typeof getTableConfig>[0];
 const cols = (t: Table) => getTableConfig(t).columns.map((c) => c.name);
@@ -52,10 +68,9 @@ describe("content schema", () => {
     expect(names).toContain("spots_publish_requires_verified_position");
   });
 
-  test("routes have a history, an access text (each in two languages) and a photo", () => {
-    for (const c of ["history_ja", "history_en", "access_ja", "access_en", "photo_url"]) {
-      expect(col(routes, c).notNull).toBe(false);
-    }
+  test("routes have a history and an access text (per language) and a photo", () => {
+    expect(col(routes, "photo_url").notNull).toBe(false);
+    for (const c of ["history", "access"]) expect(col(routeTranslations, c).notNull).toBe(false);
   });
 
   test("a point is a stamp place unless it says otherwise; the other kinds are the route's own points and map categories", () => {
@@ -78,29 +93,50 @@ describe("content schema", () => {
     expect(col(spots, "position_source").notNull).toBe(false);
   });
 
-  test("Japanese text is required, English is optional", () => {
-    for (const t of [routes, spots]) {
-      expect(col(t, "name_ja").notNull).toBe(true);
-      expect(col(t, "name_en").notNull).toBe(false);
+  test("words live in a translation table, one row per owner and language, never as _ja/_en columns", () => {
+    const owners = [
+      [routes, routeTranslations, "route_id"],
+      [spots, spotTranslations, "spot_id"],
+      [rallies, rallyTranslations, "rally_id"],
+      [trailNotices, trailNoticeTranslations, "trail_notice_id"],
+    ] as const;
+    for (const [owner, words, key] of owners) {
+      expect(cols(owner).filter((c) => /_(ja|en)$/.test(c))).toEqual([]);
+      const cfg = getTableConfig(words);
+      expect(cfg.primaryKeys[0]!.columns.map((c) => c.name)).toEqual([key, "locale"]);
+      expect(cfg.foreignKeys[0]!.reference().foreignTable).toBe(owner);
+      expect(cfg.foreignKeys[0]!.onDelete).toBe("cascade");
+      expect(col(words, "locale").enumValues).toEqual(["ja", "en"]);
     }
-    expect(col(trailNotices, "body_ja").notNull).toBe(true);
-    expect(col(trailNotices, "body_en").notNull).toBe(false);
   });
 
-  test("a rally with no stampsRequired means every published spot", () => {
-    expect(col(rallies, "stamps_required").notNull).toBe(false);
+  test("Japanese text is required, English is optional", () => {
+    expect(getTableConfig(routeTranslations).checks.map((c) => c.name)).toEqual(["route_translations_ja_name"]);
+    expect(getTableConfig(spotTranslations).checks.map((c) => c.name)).toEqual(["spot_translations_ja_name"]);
+    expect(getTableConfig(rallyTranslations).checks.map((c) => c.name)).toEqual(["rally_translations_ja_name"]);
+    expect(getTableConfig(trailNoticeTranslations).checks.map((c) => c.name)).toEqual(["trail_notice_translations_ja_body"]);
   });
 
-  test("there can be many rallies: only one mound rally and one rally per course", () => {
-    const idx = Object.fromEntries(getTableConfig(rallies).indexes.map((i) => [i.config.name, i.config]));
-    expect(idx.rallies_single_row_uq).toBeUndefined(); // the one-row rule is gone
-    expect(idx.rallies_one_mounds_uq?.unique).toBe(true);
-    expect(idx.rallies_route_uq?.unique).toBe(true);
-    expect(getTableConfig(rallies).checks.map((c) => c.name)).toContain("rallies_route_matches_kind");
+  test("a rally is made of places or of courses, and is a draft until published; no N-of-M rule and no dates", () => {
     expect(col(rallies, "kind").notNull).toBe(true);
-    expect(col(rallies, "name_ja").notNull).toBe(true);
-    expect(col(rallies, "name_en").notNull).toBe(false);
-    expect(col(rallies, "route_id").notNull).toBe(false);
+    expect(col(rallies, "published").notNull).toBe(true);
+    expect(cols(rallies)).not.toContain("stamps_required");
+    expect(cols(rallies)).not.toContain("route_id");
+    expect(cols(rallies)).not.toContain("starts_at");
+    expect(getTableConfig(rallies).indexes).toHaveLength(0); // any number of rallies of either kind
+  });
+
+  test("a rally of courses lists courses by foreign key, keyed by both, findable from the course", () => {
+    const cfg = getTableConfig(rallyRoutes);
+    expect(cfg.primaryKeys[0]!.columns.map((c) => c.name)).toEqual(["rally_id", "route_id"]);
+    expect(cfg.foreignKeys.map((f) => f.reference().foreignTable)).toEqual([rallies, routes]);
+    expect(cfg.indexes.map((i) => i.config.name)).toContain("rally_routes_route_idx");
+  });
+
+  test("finishes are saved once per visitor: a course, and a rally", () => {
+    expect(getTableConfig(courseCompletions).primaryKeys[0]!.columns.map((c) => c.name)).toEqual(["user_id", "route_id"]);
+    expect(getTableConfig(rallyCompletions).primaryKeys[0]!.columns.map((c) => c.name)).toEqual(["user_id", "rally_id"]);
+    expect(col(rallyCompletions, "completed_at").notNull).toBe(true);
   });
 
   test("a place can be in many rallies: the link table is keyed by both and never stores stamps", () => {

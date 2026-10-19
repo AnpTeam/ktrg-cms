@@ -133,19 +133,19 @@
  */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-ink: #f6ead2;
-    --color-muted: #d9c7aa;
-    --color-paper: #1b1411; /* warm dark brown-black */
-    --color-surface: #2a1f1a;
+    --color-ink: #eee5d3;
+    --color-muted: #bcab92;
+    --color-paper: #0b0908; /* 墨 (sumi ink): almost black, with a breath of warmth */
+    --color-surface: #181311;
     --color-brand: #cc6256; /* the same brand red */
     --color-on-brand: #ffffff;
     --color-accent: #f2a69b; /* the readable red on dark: soft coral */
     --color-moss: #8fd6a5;
     --color-shu: #e8603f;
-    --color-on-shu: #1b1411;
+    --color-on-shu: #0b0908;
     --color-caution: #fbbf24;
     --color-danger: #fca5a5;
-    --color-line: #a08670;
+    --color-line: #8a7563;
     color-scheme: dark;
   }
 }
@@ -156,19 +156,19 @@
  * same as above; contrast.test.ts fails if they ever drift apart.
  */
 :root[data-theme="dark"] {
-  --color-ink: #f6ead2;
-  --color-muted: #d9c7aa;
-  --color-paper: #1b1411; /* warm dark brown-black */
-  --color-surface: #2a1f1a;
+  --color-ink: #eee5d3;
+  --color-muted: #bcab92;
+  --color-paper: #0b0908; /* warm dark brown-black */
+  --color-surface: #181311;
   --color-brand: #cc6256; /* the same brand red */
   --color-on-brand: #ffffff;
   --color-accent: #f2a69b; /* the readable red on dark: soft coral */
   --color-moss: #8fd6a5;
   --color-shu: #e8603f;
-  --color-on-shu: #1b1411;
+  --color-on-shu: #0b0908;
   --color-caution: #fbbf24;
   --color-danger: #fca5a5;
-  --color-line: #a08670;
+  --color-line: #8a7563;
   color-scheme: dark;
 }
 
@@ -369,6 +369,34 @@ rt {
   border-radius: 0.75rem;
 }
 
+/* A group of courses: the range of numbers, and under it the name of every course inside, so none is ever hidden. */
+.map-cluster[data-named="true"] {
+  grid-auto-flow: row;
+  justify-items: start;
+  gap: 0.25rem;
+  height: auto;
+  min-height: 3rem;
+  width: max-content;
+  max-width: 11rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 1rem;
+  text-align: left;
+}
+.map-cluster-count {
+  font-size: 1.125rem;
+}
+.map-cluster-names {
+  display: grid;
+  gap: 0.1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+/* Names wrap onto a second line when they are long; they are never cut off. */
+.map-cluster-names > span {
+  overflow-wrap: anywhere;
+}
+
 /* A plain card: no line, round corners (24px), light grey fill. */
 .frame {
   border-radius: 1.5rem;
@@ -559,6 +587,10 @@ body.map-screen-active {
 body.map-screen-active .site-footer {
   display: none;
 }
+/* The map's sheet at its top resting place covers the whole page, so the site's own top bar steps aside. */
+body.map-sheet-full .site-header {
+  display: none;
+}
 
 /* A course on the map, Japanese: a name tag read top to bottom, standing on the course's point, with its number in a
    round head. Narrow enough that all 19 stand side by side even when the whole trail is in view. Fixed colours,
@@ -620,4 +652,27 @@ body.map-screen-active .site-footer {
 
 .map-tag[data-soon="true"] .map-tag-head {
   border-style: dashed;
+}
+
+/* From 1024 px the content area is wide. Text pages, settings and forms keep one readable column, centred in it. */
+@media (min-width: 1024px) {
+  .page-narrow {
+    max-width: 48rem;
+    margin-inline: auto;
+  }
+  .page-form {
+    max-width: 36rem;
+    margin-inline: auto;
+  }
+}
+
+/* On a desktop the map takes the whole area beside the sidebar (no centred column, no padding). */
+@media (min-width: 1024px) {
+  body.map-screen-active #main {
+    padding: 0;
+  }
+  body.map-screen-active #main > div:first-child {
+    max-width: none;
+    padding-inline: 0;
+  }
 }

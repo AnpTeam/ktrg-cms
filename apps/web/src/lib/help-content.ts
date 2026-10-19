@@ -75,6 +75,11 @@ const ja: Help = {
     },
     { name: "地図の表示", text: "MapLibre GL JS（BSDライセンス）。" },
     {
+      name: "道すじの作成",
+      text: "ルートの線を、歩ける道に沿わせるときに、OpenRouteServiceを使います。道のデータは、OpenStreetMapの協力者のもの（ODbLライセンス）です。",
+      url: "https://www.openstreetmap.org/copyright",
+    },
+    {
       name: "府県の紋章",
       text: "大阪府・奈良県・和歌山県の紋章の図は、ウィキメディア・コモンズの図を使っています（著作権のないものとされています）。どの府県かを示すためだけに使います。",
     },
@@ -129,6 +134,11 @@ const en: Help = {
       url: "https://maps.gsi.go.jp/development/ichiran.html",
     },
     { name: "Map display", text: "MapLibre GL JS (BSD license)." },
+    {
+      name: "Route lines",
+      text: "When a route line is made to follow walkable paths, OpenRouteService is used. The path data is from OpenStreetMap contributors (ODbL license).",
+      url: "https://www.openstreetmap.org/copyright",
+    },
     {
       name: "Prefecture emblems",
       text: "The emblems of Osaka, Nara and Wakayama are the drawings from Wikimedia Commons, which marks them as having no copyright. They are used only to show which prefecture a course is in.",

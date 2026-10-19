@@ -141,14 +141,16 @@ describe("the role is read fresh on every request", () => {
     expect((await call("GET", "/me", cookie)).status).toBe(200); // still a normal user
   });
 
-  test("promoting a participant takes effect immediately, with no new login", async () => {
+  test("promoting a participant ends their year-long session; the next login is an admin one", async () => {
     const { call, login, users } = setup();
     const cookie = await login(alice);
     expect((await call("GET", "/audit", cookie)).status).toBe(403);
 
     users.get(alice.id)!.role = "admin";
 
-    expect((await call("GET", "/audit", cookie)).status).toBe(200);
+    // Admin sessions are capped at 30 days, so the participant session cannot carry the new role.
+    expect((await call("GET", "/audit", cookie)).status).toBe(401);
+    expect((await call("GET", "/audit", await login(alice))).status).toBe(200);
   });
 });
 

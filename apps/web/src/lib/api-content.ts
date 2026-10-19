@@ -35,6 +35,7 @@ export function routeSummaryFromApi(r: PublicRoute, order: number): RouteSummary
     spotCount: r.publishedSpotCount,
     // Nobody has stamped a real place yet (stamping is not built); the viewer filter hides this when signed out.
     stampedCount: 0,
+    photoUrl: r.photoUrl,
   };
 }
 

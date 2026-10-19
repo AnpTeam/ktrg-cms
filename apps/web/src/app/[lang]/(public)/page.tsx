@@ -40,8 +40,12 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const slides = slidesToShow(bannerSlides, sampleContentEnabled());
 
   return (
-    <div className="flex flex-col gap-8">
-      {slides.length > 0 ? <BannerCarousel slides={slides} /> : null}
+    <div className="flex flex-col gap-8 lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
+      {slides.length > 0 ? (
+        <div className="lg:col-span-2">
+          <BannerCarousel slides={slides} />
+        </div>
+      ) : null}
       <section className="px-4">
         <div className="frame p-4">
           <h1 className="font-serif text-4xl font-bold leading-snug">
@@ -90,9 +94,11 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         }
       />
 
-      <Notice>
-        <Trans>出かける前に、公式の最新情報を確認してください。</Trans>
-      </Notice>
+      <div className="lg:col-span-2">
+        <Notice>
+          <Trans>出かける前に、公式の最新情報を確認してください。</Trans>
+        </Notice>
+      </div>
     </div>
   );
 }

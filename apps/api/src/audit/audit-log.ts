@@ -34,6 +34,16 @@ export const AUDIT_ACTIONS = {
   "spot.unpublish": "spot",
   "spot.status.change": "spot",
   "spot.reorder": "route",
+  /** Admin rallies: made, renamed, published or not, reordered (no single target), what is in it set, deleted. */
+  "rally.create": "rally",
+  "rally.update": "rally",
+  "rally.publish": "rally",
+  "rally.unpublish": "rally",
+  "rally.reorder": "rally",
+  "rally.members.update": "rally",
+  "rally.delete": "rally",
+  /** An admin uploaded a photo (the target is the file's UUID in storage). */
+  "upload.create": "upload",
 } as const satisfies Record<string, string>;
 
 export type AuditAction = keyof typeof AUDIT_ACTIONS;

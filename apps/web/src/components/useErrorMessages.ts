@@ -41,6 +41,16 @@ export function useErrorMessages(): Record<ErrorKey, string> {
     position_not_verified: t`位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。`,
     source_required: t`位置を確認した情報源（サイトの名前やリンク）を書いてください。`,
     permission_required: t`現地の許可がまだ確認できていません。許可を得たら「許可確認済み」にチェックを入れてください。`,
+    // Admin: rallies
+    rally_empty: t`中身のないラリーは公開できません。公開中のラリーを空にすることもできません。`,
+    invalid_rally_members: t`場所でつくったラリーにはスタンプ場所を、コースでつくったラリーにはコースを入れてください。同じものは一度だけです。`,
+    // Admin: photo uploads
+    invalid_file: t`写真は4MBまでのJPEG・PNG・WebPだけアップロードできます。`,
+    uploads_unavailable: t`写真を保存できませんでした。しばらくしてからもう一度お試しください。`,
+    // Admin: snapping a line to trails
+    routing_unavailable: t`道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。`,
+    routing_no_route: t`この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。`,
+    routing_failed: t`道を調べられませんでした。しばらくしてから、もう一度お試しください。`,
     // From the phone itself
     unsupported: t`この端末・ブラウザではパスキーを使えません。メールでお試しください。`,
     cancelled: t`パスキーの確認が中止されました。もう一度お試しください。`,

@@ -13,6 +13,7 @@ import { nextSnap, sheetHeightPx, snapAfterDrag, sheetSnaps, type SheetSnap } fr
  * (the map's height minus the tab bar), measured by the parent.
  */
 export function MapSheet({
+  panel = false,
   snap,
   onSnap,
   available,
@@ -20,12 +21,15 @@ export function MapSheet({
   header,
   children,
 }: {
+  /** A desktop: not a bottom sheet to pull, but a panel floating at the left of the map. */
+  panel?: boolean;
   snap: SheetSnap;
   onSnap: (snap: SheetSnap) => void;
   available: number;
   /** The room the floating tab bar takes at the bottom: the sheet reaches the screen's edge under it. */
   tabPx: number;
-  header: ReactNode;
+  /** Null when the content brings its own top (a course's banner), which then scrolls with the rest. */
+  header: ReactNode | null;
   children: ReactNode;
 }) {
   const { t } = useLingui();
@@ -80,9 +84,14 @@ export function MapSheet({
   return (
     <section
       aria-label={t`情報`}
-      className="absolute inset-x-0 bottom-0 z-[5] flex flex-col rounded-t-3xl bg-paper shadow-[0_-4px_24px_rgb(0_0_0/0.28)] motion-reduce:transition-none"
-      style={{ height: height + tabPx, transition: dragPx === null ? "height 240ms ease-out" : "none" }}
+      className={
+        panel
+          ? "absolute bottom-3 left-3 top-3 z-[5] flex w-[26rem] flex-col rounded-3xl bg-paper shadow-[0_4px_24px_rgb(0_0_0/0.28)]"
+          : "absolute inset-x-0 bottom-0 z-[5] flex flex-col rounded-t-3xl bg-paper shadow-[0_-4px_24px_rgb(0_0_0/0.28)] motion-reduce:transition-none"
+      }
+      style={panel ? undefined : { height: height + tabPx, transition: dragPx === null ? "height 240ms ease-out" : "none" }}
     >
+      {panel ? <div className="h-4 shrink-0" aria-hidden="true" /> : null}
       <div
         role="slider"
         tabIndex={0}
@@ -97,11 +106,11 @@ export function MapSheet({
         onPointerUp={up}
         onPointerCancel={up}
         onKeyDown={key}
-        className="flex h-8 shrink-0 cursor-grab touch-none items-center justify-center rounded-t-3xl active:cursor-grabbing"
+        className={`h-8 shrink-0 cursor-grab touch-none items-center justify-center rounded-t-3xl active:cursor-grabbing ${panel ? "hidden" : "flex"}`}
       >
         <span aria-hidden="true" className="h-1.5 w-12 rounded-full bg-line/60" />
       </div>
-      <div className="shrink-0 px-4 pb-2">{header}</div>
+      {header ? <div className="shrink-0 px-4 pb-2">{header}</div> : null}
       <div ref={body} className="min-h-0 flex-1 overflow-y-auto overscroll-contain" style={{ paddingBottom: tabPx + 24 }}>
         {children}
       </div>

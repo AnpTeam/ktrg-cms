@@ -31,9 +31,22 @@ const EnvSchema = Type.Object({
   // Secret for the scheduled clean-up (POST /internal/purge-deletions, called hourly by a GitHub Actions workflow).
   // Unset: that route does not exist.
   CRON_SECRET: Type.Optional(Type.String({ minLength: 32 })),
+  // Key for OpenRouteService (openrouteservice.org), used only by the admin's "snap to trails". Unset: that button says the
+  // service is not set up. Keep it on the server only; never put it in the web app or the repo.
+  ORS_API_KEY: Type.Optional(Type.String({ minLength: 10 })),
   // API docs at /api/v1/openapi. Always on outside production; set true to show them there too.
   API_DOCS: Type.Boolean({ default: false }),
+  // Photo uploads to Cloudflare R2: all five or none. Unset, partial or malformed: uploads are off
+  // (POST /admin/uploads answers 503) and the rest of the API still starts.
+  R2_ACCOUNT_ID: Type.Optional(Type.String({ minLength: 1 })),
+  R2_ACCESS_KEY_ID: Type.Optional(Type.String({ minLength: 1 })),
+  R2_SECRET_ACCESS_KEY: Type.Optional(Type.String({ minLength: 1 })),
+  R2_BUCKET_NAME: Type.Optional(Type.String({ minLength: 1 })),
+  // The bucket's public address (its r2.dev URL or a custom domain), https and no trailing slash.
+  R2_PUBLIC_URL: Type.Optional(Type.String({ pattern: "^https://[^/]+(/[^?#]*[^/?#])?$" })),
 });
+
+const R2_SETTINGS = ["R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET_NAME", "R2_PUBLIC_URL"] as const;
 
 export type Env = Static<typeof EnvSchema>;
 
@@ -45,8 +58,11 @@ export function databaseUrlFrom(source: Record<string, string | undefined>): str
   return source.DATABASE_URL || source.DB_POSTGRES_URL || source.POSTGRES_URL || undefined;
 }
 
-/** Validate a raw environment; throws one error listing every problem. */
-export function parseEnv(source: Record<string, string | undefined>): Env {
+/**
+ * Validate a raw environment; throws one error listing every problem. Optional features (R2) are
+ * switched off with a logged warning instead, so one wrong photo setting cannot take the API down.
+ */
+export function parseEnv(source: Record<string, string | undefined>, log: (line: string) => void = console.error): Env {
   const databaseUrl = databaseUrlFrom(source);
   const raw = { ...source, ...(databaseUrl ? { DATABASE_URL: databaseUrl } : {}) };
   const candidate = Value.Default(EnvSchema, Value.Convert(EnvSchema, raw));
@@ -59,6 +75,16 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
   if (badAdmins.length > 0 && !first.has("/ADMIN_EMAILS")) {
     first.set("/ADMIN_EMAILS", `not an email address: ${badAdmins.join(", ")}`);
   }
+  const settings = candidate as Record<string, unknown>;
+  const r2Set = R2_SETTINGS.filter((k) => settings[k] !== undefined);
+  const r2Bad = R2_SETTINGS.filter((k) => first.delete(`/${k}`));
+  const r2Missing = r2Set.length > 0 ? R2_SETTINGS.filter((k) => !r2Set.includes(k)) : [];
+  if (r2Bad.length > 0 || r2Missing.length > 0) {
+    // Names only, never values (they include the secret key).
+    const why = [r2Missing.length ? `missing ${r2Missing.join(", ")}` : "", r2Bad.length ? `invalid ${r2Bad.join(", ")}` : ""];
+    log(`[env] photo uploads are OFF: ${why.filter(Boolean).join("; ")} (all five R2_* settings are needed)`);
+    for (const k of R2_SETTINGS) delete settings[k];
+  }
   if (first.size > 0) {
     const lines = [...first].map(([path, msg]) => `  - ${path.slice(1) || "(root)"}: ${msg}`);
     throw new Error(`Invalid environment:\n${lines.join("\n")}`);
@@ -66,6 +92,10 @@ export function parseEnv(source: Record<string, string | undefined>): Env {
   const env = Value.Clean(EnvSchema, candidate) as Env;
   if (env.NODE_ENV === "production" && !env.OTP_HMAC_SECRET) {
     throw new Error("Invalid environment:\n  - OTP_HMAC_SECRET: required in production (32+ characters)");
+  }
+  if (env.NODE_ENV === "production" && !env.TRUST_PROXY) {
+    // Warn, not fail: behind Vercel the API sees no client address, so every visitor shares one rate-limit bucket.
+    log("[env] TRUST_PROXY is off in production: every visitor shares one login rate limit. Set TRUST_PROXY=true behind Vercel.");
   }
   return env;
 }

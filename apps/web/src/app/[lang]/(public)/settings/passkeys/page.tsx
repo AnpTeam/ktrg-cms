@@ -19,7 +19,7 @@ export default async function PasskeysPage({ searchParams }: { searchParams: Pro
   const viewer = await getViewer(searchParams);
 
   return (
-    <div className="flex flex-col gap-6 px-4 pt-2">
+    <div className="page-narrow flex flex-col gap-6 px-4 pt-2">
       <BackLink href={localePath(i18n.locale, "/stamps")}>
         <Trans>スタンプ</Trans>
       </BackLink>

@@ -1,25 +1,25 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Trans } from "@lingui/react/macro";
+import { Trans, useLingui } from "@lingui/react/macro";
 import { canGroupByPrefecture, pickText, type Prefecture, type RouteSummary } from "@/lib/content";
+import { municipalityName } from "@/lib/municipalities";
 import { connectorStates, nodeState, progressShare, type NodeState } from "@/lib/ribbon";
-import { ChevronIcon } from "./icons";
 import { Localized } from "./Localized";
+import { MedalRow } from "./MedalRow";
 import { PrefectureIcon } from "./PrefectureIcon";
 import { PrefectureName } from "./PrefectureName";
-import { ElevationStrip, RouteSilhouette } from "./RouteSketch";
+import { RoutePhoto } from "./RoutePhoto";
 import { RouteStats } from "./RouteStats";
-import { StampFace } from "./StampFace";
 import { TrailNode } from "./TrailNode";
 
-// The 19 routes as one continuous trail (WBS 3.2.3). The order is the order of the walk,
-// so the list is drawn as a single line with one stop per route.
+// The 19 routes as one continuous trail (WBS 3.2.3). The order is the order of the walk. Each route is a card with
+// its photo (and its name written over the photo), the numbers in one compact row, and a medal for each stamp place.
+// The numbered badge sits on the photo's corner; the progress line runs down the left edge of the cards, clear of
+// everything written on them.
 
 type Kind = "done" | "open" | "soon";
 
-// The node is 44px tall and the row has 1rem of padding above it: its centre is 2.375rem down.
-const NODE_CENTER = "2.375rem";
-const COLUMN = "3.25rem"; // the node column; the line runs through its middle
+const LINE_X = "1.25rem"; // the line's middle, from the left edge
 
 const segmentClass: Record<Kind, string> = {
   done: "border-solid border-moss",
@@ -29,11 +29,7 @@ const segmentClass: Record<Kind, string> = {
 
 function Segment({ kind, from, to }: { kind: Kind; from: string; to: string }) {
   return (
-    <span
-      aria-hidden="true"
-      className={`absolute -translate-x-1/2 border-l-4 ${segmentClass[kind]}`}
-      style={{ left: `calc(${COLUMN} / 2)`, top: from, bottom: to }}
-    />
+    <span aria-hidden="true" className={`absolute -translate-x-1/2 border-l-4 lg:hidden ${segmentClass[kind]}`} style={{ left: LINE_X, top: from, bottom: to }} />
   );
 }
 
@@ -45,12 +41,9 @@ interface Stop {
 }
 
 function buildStops(routes: RouteSummary[]): Stop[] {
-  const states = routes.map((route) =>
-    nodeState({ status: route.status, stamped: route.stampedCount, total: route.spotCount }),
-  );
+  const states = routes.map((route) => nodeState({ status: route.status, stamped: route.stampedCount, total: route.spotCount }));
   const connectors = connectorStates(states);
-  const into = (i: number): Kind | null =>
-    i === 0 ? null : states[i] === "soon" ? "soon" : connectors[i] === "done" ? "done" : "open";
+  const into = (i: number): Kind | null => (i === 0 ? null : states[i] === "soon" ? "soon" : connectors[i] === "done" ? "done" : "open");
   return routes.map((route, i) => ({
     route,
     state: states[i] as NodeState,
@@ -59,99 +52,76 @@ function buildStops(routes: RouteSummary[]): Stop[] {
   }));
 }
 
-function StopContent({ route, state, locale }: { route: RouteSummary; state: NodeState; locale: string }) {
+/** The card: photo with the number, name and place over it; under it the numbers and the medals. */
+function RouteCard({ route, state, locale }: { route: RouteSummary; state: NodeState; locale: string }) {
+  const { t } = useLingui();
   const { spotCount, stampedCount } = route;
+  const name = pickText(locale, route.nameJa, route.nameEn);
+  const place = municipalityName(locale, route.municipality);
+  const medalLabel = stampedCount === null ? t`スタンプ場所 ${spotCount}か所` : t`スタンプ ${stampedCount} / ${spotCount}`;
+
   return (
-    <>
-      <span className="flex items-start justify-between gap-3">
-        <span className="min-w-0">
-          <span className={`block text-xl font-bold leading-snug ${state === "soon" ? "text-muted" : ""}`}>
-            <Localized value={pickText(locale, route.nameJa, route.nameEn)} />
+    <span className="block overflow-hidden rounded-3xl bg-surface">
+      <span className="relative block aspect-[16/10] overflow-hidden">
+        <RoutePhoto src={route.photoUrl} alt={name?.text ?? route.nameJa} />
+        <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/5" />
+        <span className="absolute left-2 top-2 block drop-shadow-md">
+          <TrailNode state={state} order={route.order} share={progressShare(route.stampedCount, route.spotCount)} />
+        </span>
+        {state === "soon" ? (
+          <span className="absolute right-3 top-3 rounded-lg border-2 border-dashed border-white/80 bg-black/55 px-2 text-base font-bold text-white">
+            <Trans>準備中</Trans>
           </span>
-          {route.prefecture || route.municipality ? (
-            <span className="mt-1 block text-lg text-muted">
+        ) : null}
+        <span className="absolute inset-x-0 bottom-0 block px-3 pb-3 text-white [text-shadow:0_1px_6px_rgb(0_0_0/0.75)]">
+          <span className="block text-xl font-bold leading-snug text-white">
+            <Localized value={name} />
+          </span>
+          {route.prefecture || place ? (
+            <span className="mt-0.5 block text-lg leading-snug text-white/90">
               {route.prefecture ? <PrefectureName value={route.prefecture} /> : null}
-              {route.prefecture && route.municipality ? " " : null}
-              {route.municipality}
+              {route.prefecture && place ? " " : null}
+              {place}
             </span>
           ) : null}
         </span>
-        {route.sketch ? <RouteSilhouette sketch={route.sketch} /> : null}
       </span>
 
-      {state === "soon" ? (
-        <span className="mt-2 inline-block rounded-lg border-2 border-dashed border-line px-2 text-base font-bold text-muted">
-          <Trans>準備中</Trans>
-        </span>
-      ) : (
-        <>
+      {state === "soon" ? null : (
+        <span className="block px-3 pb-3 pt-2.5">
           <RouteStats route={route} compact />
-          {route.sketch?.elevations ? (
-            <span className="mt-3 block">
-              <ElevationStrip elevations={route.sketch.elevations} />
-            </span>
-          ) : null}
           {spotCount > 0 ? (
-            <span className="mt-3 block text-lg font-bold">
-              {stampedCount === null ? (
-                <Trans>スタンプ場所 {spotCount}か所</Trans>
-              ) : (
-                <>
-                  <span className="whitespace-nowrap">
-                    <Trans>
-                      スタンプ {stampedCount} / {spotCount}
-                    </Trans>
-                  </span>
-                  {spotCount <= 12 ? (
-                    <span aria-hidden="true" className="mt-1.5 flex flex-wrap gap-1">
-                      {Array.from({ length: spotCount }, (_, i) => (
-                        <StampFace key={i} state={i < stampedCount ? "stamped" : "empty"} className="h-3.5 w-3.5 rounded-full!" />
-                      ))}
-                    </span>
-                  ) : null}
-                </>
-              )}
+            <span className="mt-2.5 block">
+              <MedalRow total={spotCount} earned={stampedCount} label={medalLabel} />
             </span>
           ) : null}
-        </>
+        </span>
       )}
-    </>
+    </span>
   );
 }
 
 function StopRow({ stop, href, locale }: { stop: Stop; href: string; locale: string }) {
   const { route, state } = stop;
-  const grid = "grid items-start";
-  const columns = { gridTemplateColumns: `${COLUMN} 1fr` };
-  const node = (
-    <span className="flex justify-center pt-4">
-      <TrailNode state={state} order={route.order} share={progressShare(route.stampedCount, route.spotCount)} />
-    </span>
-  );
-  const body = (
-    <span className="block py-4 pr-2">
-      <StopContent route={route} state={state} locale={locale} />
-    </span>
-  );
+  const card = <RouteCard route={route} state={state} locale={locale} />;
 
   return (
-    <li className="relative">
-      {stop.above ? <Segment kind={stop.above} from="0" to={`calc(100% - ${NODE_CENTER})`} /> : null}
-      {stop.below ? <Segment kind={stop.below} from={NODE_CENTER} to="0" /> : null}
+    <li className="relative pb-4 pl-10 pr-4 lg:p-0">
+      {/* The progress line: down the left edge, with a small mark by the middle of the card. */}
+      {stop.above ? <Segment kind={stop.above} from="0" to="50%" /> : null}
+      {stop.below ? <Segment kind={stop.below} from="50%" to="0" /> : null}
+      <span
+        aria-hidden="true"
+        className={`absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] bg-paper lg:hidden ${
+          state === "complete" ? "border-shu bg-shu" : state === "inProgress" ? "border-moss" : state === "soon" ? "border-dashed border-line" : "border-line"
+        }`}
+        style={{ left: LINE_X, top: "calc(50% - 0.5rem)" }}
+      />
       {state === "soon" ? (
-        <div className={`${grid} relative`} style={columns}>
-          {node}
-          {body}
-        </div>
+        <div>{card}</div>
       ) : (
-        <Link href={href} className={`${grid} tap-target group relative`} style={columns}>
-          {node}
-          <span className="flex items-start justify-between gap-3 rounded-xl group-hover:bg-surface">
-            {body}
-            <span className="shrink-0 self-center pr-1 text-muted">
-              <ChevronIcon />
-            </span>
-          </span>
+        <Link href={href} className="block rounded-3xl hover:opacity-95 focus-visible:outline-offset-4">
+          {card}
         </Link>
       )}
     </li>
@@ -160,9 +130,9 @@ function StopRow({ stop, href, locale }: { stop: Stop; href: string; locale: str
 
 function GroupHeading({ prefecture, next, first }: { prefecture: Prefecture; next: Kind | null; first: boolean }) {
   return (
-    <li className="relative" role="presentation">
+    <li className="relative lg:col-span-full" role="presentation">
       {next ? <Segment kind={next} from={first ? "50%" : "0"} to="0" /> : null}
-      <h2 className="flex items-center gap-2 py-3 pl-[3.25rem] pr-4 text-lg font-bold text-muted">
+      <h2 className="flex items-center gap-2 py-3 pl-10 pr-4 text-lg font-bold text-muted lg:px-1 lg:pb-2 lg:pt-6">
         <PrefectureIcon value={prefecture} />
         <PrefectureName value={prefecture} />
       </h2>
@@ -170,20 +140,14 @@ function GroupHeading({ prefecture, next, first }: { prefecture: Prefecture; nex
   );
 }
 
-export function TrailRibbon({
-  routes,
-  hrefFor,
-  locale,
-}: {
-  routes: RouteSummary[];
-  hrefFor: (route: RouteSummary) => string;
-  locale: string;
-}) {
+export function TrailRibbon({ routes, hrefFor, locale }: { routes: RouteSummary[]; hrefFor: (route: RouteSummary) => string; locale: string }) {
   const stops = buildStops(routes);
   const grouped = canGroupByPrefecture(routes);
 
   return (
-    <ol>
+    // On a phone and a tablet one column with the progress line down its left; from 1024 px the cards sit in a grid of
+    // two (three from 1280 px) and the line gives way to the numbers on the photos.
+    <ol className="lg:grid lg:grid-cols-2 lg:gap-x-6 lg:gap-y-6 lg:px-4 xl:grid-cols-3">
       {stops.map((stop, i) => {
         const prev = stops[i - 1]?.route.prefecture;
         const heading =
