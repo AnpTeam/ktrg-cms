@@ -20,6 +20,16 @@ function Icon({ children }: { children: ReactNode }) {
   );
 }
 
+/** A camera crossed out: "no photo". */
+export const CameraOffIcon = () => (
+  <Icon>
+    <path d="M9 5h6l1.5 2H20a1 1 0 0 1 1 1v9" />
+    <path d="M3 8.5V18a1 1 0 0 0 1 1h14" />
+    <path d="M10.2 10.2a3.5 3.5 0 0 0 4.6 4.6" />
+    <path d="M3 3l18 18" />
+  </Icon>
+);
+
 export const HomeIcon = () => (
   <Icon>
     <path d="M3 11.5 12 4l9 7.5" />
