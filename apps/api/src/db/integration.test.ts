@@ -638,7 +638,7 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       const [a, b] = onCourse4 as [(typeof onCourse4)[number], (typeof onCourse4)[number]];
 
       // Publish a (coordinates and permission are required) and leave b a draft.
-      await tx.update(spots).set({ lat: 34.3, lng: 135.1, permissionConfirmed: true, published: true }).where(eq(spots.id, a.id));
+      await tx.update(spots).set({ lat: 34.3, lng: 135.1, permissionConfirmed: true, positionVerified: true, published: true }).where(eq(spots.id, a.id));
       const [me] = await tx.insert(users).values({}).returning({ id: users.id });
       const [other] = await tx.insert(users).values({}).returning({ id: users.id });
       await tx.insert(stamps).values([
@@ -663,6 +663,23 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       await tx.update(stamps).set({ revokedAt: new Date() }).where(eq(stamps.userId, me!.id));
       const after = await listRalliesWithProgress(tx, me!.id);
       expect(after.find((r) => r.kind === "mounds")).toMatchObject({ stamped: 0, complete: false });
+    });
+  });
+
+  test("a place cannot be published until its position is verified", async () => {
+    await inRollback(async (tx) => {
+      await seed(tx);
+      const [s] = await tx.select().from(spots).limit(1);
+      const publish = (verified: boolean) =>
+        tx.transaction(async (t) => {
+          await t
+            .update(spots)
+            .set({ lat: 34.3, lng: 135.1, permissionConfirmed: true, positionVerified: verified, published: true })
+            .where(eq(spots.id, s!.id));
+        });
+      await expect(publish(false)).rejects.toThrow();
+      await publish(true);
+      expect((await tx.select().from(spots).where(eq(spots.id, s!.id)))[0]).toMatchObject({ published: true, positionVerified: true });
     });
   });
 

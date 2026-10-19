@@ -49,6 +49,13 @@ describe("content schema", () => {
     expect(names).toContain("spots_coordinates_together");
     expect(names).toContain("spots_publish_requires_coordinates");
     expect(names).toContain("spots_publish_requires_permission");
+    expect(names).toContain("spots_publish_requires_verified_position");
+  });
+
+  test("a position is a draft until a person checks it against a source", () => {
+    expect(col(spots, "position_verified").notNull).toBe(true);
+    expect(col(spots, "position_verified").default).toBe(false);
+    expect(col(spots, "position_source").notNull).toBe(false);
   });
 
   test("Japanese text is required, English is optional", () => {

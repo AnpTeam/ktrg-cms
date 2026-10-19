@@ -77,6 +77,10 @@ export const spots = pgTable(
     // Entered by an admin from an official source.
     lat: doublePrecision("lat"),
     lng: doublePrecision("lng"),
+    // True once a person has checked the position against an official source (named in position_source).
+    // Until then the position is a draft: the public API does not return it and the place cannot be published.
+    positionVerified: boolean("position_verified").notNull().default(false),
+    positionSource: text("position_source"),
     // Check-in radius in metres.
     radiusM: integer("radius_m").notNull().default(50),
     status: spotStatus("status").notNull().default("open"),
@@ -106,6 +110,10 @@ export const spots = pgTable(
     check(
       "spots_publish_requires_permission",
       sql`not ${t.published} or ${t.permissionConfirmed}`,
+    ),
+    check(
+      "spots_publish_requires_verified_position",
+      sql`not ${t.published} or ${t.positionVerified}`,
     ),
   ],
 );

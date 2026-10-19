@@ -50,6 +50,13 @@
       "when": 1792204674967,
       "tag": "0006_volatile_thunderbolt_ross",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792369269346,
+      "tag": "0007_stormy_sebastian_shaw",
+      "breakpoints": true
     }
   ]
 }
