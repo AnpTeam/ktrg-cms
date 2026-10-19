@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
 import { IntroVideo } from "@/components/IntroVideo";
+import { KatsuragiLogo } from "@/components/KatsuragiLogo";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { Localized } from "@/components/Localized";
 import { Notice } from "@/components/Notice";
@@ -65,8 +66,12 @@ export function Landing({
 
       <section className="px-4">
         <div className="frame pattern-shippo p-5">
-          <h1 className="font-serif text-4xl font-bold leading-snug text-accent">
-            <Trans>葛城修験</Trans>
+          {/* The logo is the picture of the name; the heading keeps the real text for screen readers and search. */}
+          <h1>
+            <span className="sr-only">
+              <Trans>葛城修験</Trans>
+            </span>
+            <KatsuragiLogo className="h-auto w-full max-w-md" />
           </h1>
           <p className="mt-2 font-serif text-2xl font-bold leading-snug">
             <Trans>「祈り」を見つめる再発見の旅</Trans>
