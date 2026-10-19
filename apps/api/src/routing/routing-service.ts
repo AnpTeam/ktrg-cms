@@ -80,7 +80,10 @@ export function parseSnapAnswer(answer: unknown): SnapResult {
     if (!Array.isArray(c) || typeof c[0] !== "number" || typeof c[1] !== "number" || !Number.isFinite(c[0]) || !Number.isFinite(c[1])) {
       return { ok: false, reason: "routing_failed" };
     }
-    line.push(typeof c[2] === "number" && Number.isFinite(c[2]) ? [c[0], c[1], c[2]] : [c[0], c[1]]);
+    // About 10 cm is plenty, and the map editor refuses positions with more decimals than that.
+    const lng = Math.round(c[0] * 1e6) / 1e6;
+    const lat = Math.round(c[1] * 1e6) / 1e6;
+    line.push(typeof c[2] === "number" && Number.isFinite(c[2]) ? [lng, lat, Math.round(c[2] * 10) / 10] : [lng, lat]);
   }
   const distance = feature?.properties?.summary?.distance;
   return { ok: true, line, distanceM: typeof distance === "number" && Number.isFinite(distance) ? Math.round(distance) : 0 };

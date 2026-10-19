@@ -43,6 +43,9 @@ const SERVER_CODES: Record<ErrorCode, true> = {
   permission_required: true,
   invalid_file: true,
   uploads_unavailable: true,
+  routing_unavailable: true,
+  routing_no_route: true,
+  routing_failed: true,
 };
 
 export const isServerCode = (value: unknown): value is ErrorCode => typeof value === "string" && Object.hasOwn(SERVER_CODES, value);

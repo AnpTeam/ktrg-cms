@@ -18,6 +18,11 @@ describe("parseSnapAnswer", () => {
     });
   });
 
+  test("positions are rounded to 6 decimals and heights to one, so the map editor accepts them", () => {
+    const r = parseSnapAnswer(answer([[135.123456789, 34.987654321, 100.449], [135.2, 34.3]]));
+    expect(r.ok && r.line[0]).toEqual([135.123457, 34.987654, 100.4]);
+  });
+
   test("a point without a height stays without one", () => {
     const r = parseSnapAnswer(answer([[135.2, 34.25], [135.21, 34.26]]));
     expect(r.ok && r.line[0]).toEqual([135.2, 34.25]);

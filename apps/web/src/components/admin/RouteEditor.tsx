@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 import { outcome } from "@/lib/admin/admin-client";
 import { checklist, factsFromDraft, progress, type EditorTab } from "@/lib/admin/checklist";
 import { fillElevations } from "@/lib/admin/dem";
+import type { LngLatEle } from "@/lib/admin/line";
 import { loadDemTile } from "@/lib/admin/dem-client";
 import {
   draftFromServer,
@@ -404,6 +405,10 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     else dispatch({ type: "removePlace", key });
                   }}
                   onSelectPlace={setSelectedKey}
+                  onSnap={async (points) => {
+                    const res = await outcome(api.admin["route-snap"].post({ points }));
+                    return res.ok ? { ok: true, line: res.data.line as LngLatEle[] } : { ok: false, message: messages[res.key] };
+                  }}
                 />
 
                 <fieldset className="flex flex-col gap-3 rounded-xl bg-paper p-4">
