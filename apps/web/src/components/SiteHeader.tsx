@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { logOut } from "@/lib/auth-client";
 import { ChevronIcon, CloseIcon, MenuIcon, UserIcon } from "./icons";
+import { KatsuragiLogo } from "./KatsuragiLogo";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { useMenu } from "./MenuProvider";
 import { SampleNoticeButton } from "./SampleNotice";
@@ -124,6 +125,12 @@ export function SiteHeader({
           {open ? <CloseIcon /> : <MenuIcon />}
           {open ? t`閉じる` : t`メニュー`}
         </button>
+        {/* The logo is a link home. The landing page has it in its title card and the map has no room for it. */}
+        {!onLanding && !open ? (
+          <Link href={`/${i18n.locale}`} aria-label={t`ホーム`} className="rounded-lg p-1">
+            <KatsuragiLogo compact className="h-10 w-auto" />
+          </Link>
+        ) : null}
         {sample && !open ? <SampleNoticeButton /> : null}
       </div>
 
