@@ -63,10 +63,11 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       new Request(`http://localhost/api/v1${path}`, {
         method,
         headers: {
-          ...(o.body === undefined ? {} : { "content-type": "application/json" }),
+          // A FormData body (a file upload) sets its own multipart content type.
+          ...(o.body === undefined || o.body instanceof FormData ? {} : { "content-type": "application/json" }),
           ...(o.cookie ? { cookie: o.cookie } : {}),
         },
-        body: o.body === undefined ? undefined : JSON.stringify(o.body),
+        body: o.body === undefined ? undefined : o.body instanceof FormData ? o.body : JSON.stringify(o.body),
       }),
     );
 
@@ -290,6 +291,11 @@ describe("user B cannot touch user A", () => {
     "PUT /api/v1/admin/routes/:id/spots/order": () => ({ ids: [] }),
     "PATCH /api/v1/admin/spots/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/auth/reauth/verify": () => ({ code: "123456" }),
+    "POST /api/v1/admin/uploads": () => {
+      const form = new FormData();
+      form.set("file", new File([new Uint8Array([0xff, 0xd8, 0xff])], "a.jpg"));
+      return form;
+    },
     "POST /api/v1/auth/passkeys/reauth/verify": () => ({
       response: new TestAuthenticator(passkeyConfig).authenticate({ challenge: "x".repeat(43) }),
     }),

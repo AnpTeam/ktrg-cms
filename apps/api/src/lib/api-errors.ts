@@ -44,6 +44,10 @@ export const ERROR_CODES = {
   position_not_verified: "409: the position has not been checked against an official source",
   source_required: "400: name the source when the position is marked as checked",
   permission_required: "409: the site's permission is not confirmed",
+
+  // --- Uploads ---------------------------------------------------------------------------
+  invalid_file: "400: only a JPEG, PNG or WebP image of at most 4 MB",
+  uploads_unavailable: "503: photo storage is not set up here, or did not answer; try again later",
 } as const satisfies Record<string, string>;
 
 export type ErrorCode = keyof typeof ERROR_CODES;

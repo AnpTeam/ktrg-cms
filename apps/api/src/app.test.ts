@@ -73,4 +73,20 @@ describe("parseEnv", () => {
     expect(parseEnv({ ...ok, DB_POSTGRES_URL: vercel }).DATABASE_URL).toBe(ok.DATABASE_URL);
     expect(parseEnv({}).DATABASE_URL).toBeUndefined();
   });
+
+  test("R2 photo storage: all five settings or none", () => {
+    const r2 = {
+      R2_ACCOUNT_ID: "acc",
+      R2_ACCESS_KEY_ID: "key",
+      R2_SECRET_ACCESS_KEY: "secret",
+      R2_BUCKET_NAME: "ktrg-photos",
+      R2_PUBLIC_URL: "https://photos.example.com",
+    };
+    expect(parseEnv(r2).R2_BUCKET_NAME).toBe("ktrg-photos");
+    expect(parseEnv({}).R2_BUCKET_NAME).toBeUndefined();
+    const { R2_PUBLIC_URL: _url, ...noUrl } = r2;
+    expect(() => parseEnv(noUrl)).toThrow(/missing R2_PUBLIC_URL/);
+    expect(() => parseEnv({ ...r2, R2_PUBLIC_URL: "https://photos.example.com/" })).toThrow(/R2_PUBLIC_URL/);
+    expect(() => parseEnv({ ...r2, R2_PUBLIC_URL: "http://photos.example.com" })).toThrow(/R2_PUBLIC_URL/);
+  });
 });

@@ -41,6 +41,9 @@ export function useErrorMessages(): Record<ErrorKey, string> {
     position_not_verified: t`位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。`,
     source_required: t`位置を確認した情報源（サイトの名前やリンク）を書いてください。`,
     permission_required: t`現地の許可がまだ確認できていません。許可を得たら「許可確認済み」にチェックを入れてください。`,
+    // Admin: photo uploads
+    invalid_file: t`写真は4MBまでのJPEG・PNG・WebPだけアップロードできます。`,
+    uploads_unavailable: t`写真を保存できませんでした。しばらくしてからもう一度お試しください。`,
     // From the phone itself
     unsupported: t`この端末・ブラウザではパスキーを使えません。メールでお試しください。`,
     cancelled: t`パスキーの確認が中止されました。もう一度お試しください。`,
