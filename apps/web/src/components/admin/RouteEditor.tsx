@@ -1,11 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { api } from "@/lib/api";
 import { outcome } from "@/lib/admin/admin-client";
+import { checklist, factsFromDraft, progress, type EditorTab } from "@/lib/admin/checklist";
 import { fillElevations } from "@/lib/admin/dem";
 import { loadDemTile } from "@/lib/admin/dem-client";
 import {
@@ -25,7 +26,12 @@ import { BilingualField, Check, Field, inputClass, NumberInput, Section, TextInp
 import { LivePreview } from "./LivePreview";
 import { MapEditorLoader } from "./map-editor/MapEditorLoader";
 import type { ElevationStatus } from "./map-editor/MapEditor";
+import { PhotoSlot } from "./PhotoSlot";
 import { PlacePanel } from "./PlacePanel";
+import { useChecklistLabels } from "./useChecklistLabels";
+
+const TABS: EditorTab[] = ["overview", "text", "map", "places", "check"];
+const isTab = (v: string | null): v is EditorTab => v !== null && (TABS as string[]).includes(v);
 
 const isTyping = (target: EventTarget | null) => target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
 
@@ -45,7 +51,20 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
   const [message, setMessage] = useState<{ kind: "error" | "ok"; text: string } | null>(null);
   const [problems, setProblems] = useState<DraftProblem[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
-  const [tab, setTab] = useState<"edit" | "preview">("edit");
+  const [view, setView] = useState<"edit" | "preview">("edit");
+  const params = useSearchParams();
+  const [section, setSectionState] = useState<EditorTab>(() => {
+    const q = params.get("tab");
+    return isTab(q) ? q : "overview";
+  });
+  const labels = useChecklistLabels();
+  const setSection = (next: EditorTab) => {
+    setSectionState(next);
+    setView("edit");
+    const url = new URL(window.location.href);
+    url.searchParams.set("tab", next);
+    window.history.replaceState(null, "", url);
+  };
   const [elevation, setElevation] = useState<ElevationStatus>("idle");
   const attempted = useRef<string | null>(null);
 
@@ -105,6 +124,8 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     const found = draftProblems(draft);
     setProblems(found);
     if (found.length > 0) {
+      const first = found[0]!.kind;
+      setSection(first.startsWith("place_") ? "places" : "overview"); // show the tab that holds the red item
       setMessage({ kind: "error", text: t`保存できません。赤く示した項目を直してください。` });
       return;
     }
@@ -235,6 +256,8 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
   const prefName: Record<Prefecture, string> = { osaka: t`大阪府`, wakayama: t`和歌山県`, nara: t`奈良県` };
   const editorPlaces = draft.places.map((p, i) => ({ key: p.key, lat: p.lat, lng: p.lng, number: i + 1, name: p.nameJa }));
   const text = (field: TextField) => (value: string) => dispatch({ type: "text", field, value });
+  const checks = useMemo(() => checklist(factsFromDraft(draft)), [draft]);
+  const missingRequired = progress(checks).requiredTotal - progress(checks).requiredDone;
 
   return (
     <div className={`flex flex-col gap-5 ${saving ? "[&_fieldset]:pointer-events-none" : ""}`} aria-busy={saving}>
@@ -258,139 +281,219 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
       {/* Narrow screens: one thing at a time. */}
       <div className="flex gap-2 lg:hidden" role="tablist" aria-label={t`表示の切り替え`}>
         {(["edit", "preview"] as const).map((id) => (
-          <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={`tap-target flex-1 rounded-xl border-2 text-lg font-bold ${tab === id ? "border-ink bg-ink text-paper" : "border-line"}`}>
+          <button key={id} type="button" role="tab" aria-selected={view === id} onClick={() => setView(id)} className={`tap-target flex-1 rounded-xl border-2 text-lg font-bold ${view === id ? "border-ink bg-ink text-paper" : "border-line"}`}>
             {id === "edit" ? t`入力` : t`見え方`}
           </button>
         ))}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_27rem]">
-        <div className={`flex min-w-0 flex-col gap-5 ${tab === "edit" ? "" : "hidden lg:flex"}`}>
-          <Section title={t`基本`}>
-            <BilingualField id="route-name" label={t`ルートの名前`} ja={draft.nameJa} en={draft.nameEn} onJa={text("nameJa")} onEn={text("nameEn")} required invalid={problemOf("route_name")} />
-            {problemOf("route_name") ? <p role="alert" className="text-base font-bold text-danger">{t`日本語の名前を入れてください。`}</p> : null}
-            <div className="flex flex-wrap gap-4">
-              <Field label={t`都道府県`} htmlFor="route-pref">
-                <select id="route-pref" value={draft.prefecture ?? ""} onChange={(e) => dispatch({ type: "prefecture", value: (e.target.value || null) as Prefecture | null })} className={`${inputClass} min-w-48`}>
-                  <option value="">{t`未選択`}</option>
-                  {(["wakayama", "osaka", "nara"] as const).map((p) => (
-                    <option key={p} value={p}>
-                      {prefName[p]}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <Field label={t`市区町村`} htmlFor="route-muni">
-                <TextInput id="route-muni" value={draft.municipality} onChange={text("municipality")} maxLength={100} />
-              </Field>
-            </div>
-          </Section>
+        <div className={`flex min-w-0 flex-col gap-5 ${view === "edit" ? "" : "hidden lg:flex"}`}>
+          <nav aria-label={t`編集する内容`} className="flex flex-wrap gap-2" role="tablist">
+            {TABS.map((id) => (
+              <button
+                key={id}
+                type="button"
+                role="tab"
+                id={`tab-${id}`}
+                aria-selected={section === id}
+                aria-controls="editor-panel"
+                onClick={() => setSection(id)}
+                className={`tap-target rounded-xl border-2 px-4 text-lg font-bold ${section === id ? "border-ink bg-ink text-paper" : "border-line"}`}
+              >
+                {labels.tab[id]}
+                {id === "check" && missingRequired > 0 ? <span className="ml-2 rounded-full bg-danger px-2 text-base text-white">{missingRequired}</span> : null}
+              </button>
+            ))}
+          </nav>
 
-          <Section title={t`文章`}>
-            <BilingualField id="route-desc" label={t`ルートの説明`} ja={draft.descriptionJa} en={draft.descriptionEn} onJa={text("descriptionJa")} onEn={text("descriptionEn")} multiline />
-            <p className="text-base text-muted">{t`改行は、そのまま表示されます。`}</p>
-          </Section>
+          <div id="editor-panel" role="tabpanel" aria-labelledby={`tab-${section}`} className="flex flex-col gap-5">
+            {section === "overview" ? (
+              <>
+                <Section title={t`基本`}>
+                  <BilingualField id="route-name" label={t`ルートの名前`} ja={draft.nameJa} en={draft.nameEn} onJa={text("nameJa")} onEn={text("nameEn")} required invalid={problemOf("route_name")} />
+                  {problemOf("route_name") ? <p role="alert" className="text-base font-bold text-danger">{t`日本語の名前を入れてください。`}</p> : null}
+                  <div className="flex flex-wrap gap-4">
+                    <Field label={t`都道府県`} htmlFor="route-pref">
+                      <select id="route-pref" value={draft.prefecture ?? ""} onChange={(e) => dispatch({ type: "prefecture", value: (e.target.value || null) as Prefecture | null })} className={`${inputClass} min-w-48`}>
+                        <option value="">{t`未選択`}</option>
+                        {(["wakayama", "osaka", "nara"] as const).map((p) => (
+                          <option key={p} value={p}>
+                            {prefName[p]}
+                          </option>
+                        ))}
+                      </select>
+                    </Field>
+                    <Field label={t`市区町村`} htmlFor="route-muni">
+                      <TextInput id="route-muni" value={draft.municipality} onChange={text("municipality")} maxLength={100} />
+                    </Field>
+                  </div>
+                </Section>
 
-          <Section title={t`数字`}>
-            <div className="flex flex-wrap gap-6">
-              <Field label={t`距離`} htmlFor="route-distance" hint={draft.distanceManual ? t`手で入れた数字です。空にすると、線から計算します。` : t`線の長さから、自動で計算しています。`}>
-                <NumberInput id="route-distance" value={draft.distanceKm} min={0} max={2000} suffix="km" onChange={(v) => dispatch({ type: "distance", value: v })} />
-              </Field>
-              <Field label={t`登り（獲得標高）`} htmlFor="route-climb" hint={draft.climbManual ? t`手で入れた数字です。空にすると、標高から計算します。` : t`線の標高から、自動で計算します。`}>
-                <NumberInput id="route-climb" value={draft.elevationGainM} min={0} max={10000} integer suffix="m" onChange={(v) => dispatch({ type: "climb", value: v })} />
-              </Field>
-              <Field label={t`歩く時間`} htmlFor="route-time">
-                <NumberInput id="route-time" value={draft.expectedTimeMin} min={0} max={20000} integer suffix={t`分`} onChange={(v) => dispatch({ type: "time", value: v })} />
-              </Field>
-            </div>
-            <Field label={t`むずかしさ`} htmlFor="route-difficulty" hint={t`入れた文字が、そのまま表示されます。`}>
-              <TextInput id="route-difficulty" value={draft.difficulty} onChange={text("difficulty")} maxLength={100} />
-            </Field>
-          </Section>
+                <Section title={t`数字`}>
+                  <div className="flex flex-wrap gap-6">
+                    <Field label={t`距離`} htmlFor="route-distance" hint={draft.distanceManual ? t`手で入れた数字です。空にすると、線から計算します。` : t`線の長さから、自動で計算しています。`}>
+                      <NumberInput id="route-distance" value={draft.distanceKm} min={0} max={2000} suffix="km" onChange={(v) => dispatch({ type: "distance", value: v })} />
+                    </Field>
+                    <Field label={t`登り（獲得標高）`} htmlFor="route-climb" hint={draft.climbManual ? t`手で入れた数字です。空にすると、標高から計算します。` : t`線の標高から、自動で計算します。`}>
+                      <NumberInput id="route-climb" value={draft.elevationGainM} min={0} max={10000} integer suffix="m" onChange={(v) => dispatch({ type: "climb", value: v })} />
+                    </Field>
+                    <Field label={t`歩く時間`} htmlFor="route-time" hint={draft.timeManual ? t`手で入れた数字です。空にすると、距離と登りから計算します。` : t`距離と登りから、目安を自動で計算しています。`}>
+                      <NumberInput id="route-time" value={draft.expectedTimeMin} min={0} max={20000} integer suffix={t`分`} onChange={(v) => dispatch({ type: "time", value: v })} />
+                    </Field>
+                  </div>
+                  <Field label={t`むずかしさ`} htmlFor="route-difficulty" hint={t`入れた文字が、そのまま表示されます。`}>
+                    <TextInput id="route-difficulty" value={draft.difficulty} onChange={text("difficulty")} maxLength={100} />
+                  </Field>
+                </Section>
 
-          <Section title={t`動画`}>
-            <Field label={t`動画のリンク（YouTube か Vimeo）`} htmlFor="route-video" hint={t`https:// で始まるリンクを入れます。空にすると、動画は表示されません。`}>
-              <TextInput id="route-video" value={draft.videoUrl} onChange={text("videoUrl")} maxLength={500} invalid={problemOf("video_link")} />
-            </Field>
-            {problemOf("video_link") ? <p role="alert" className="text-base font-bold text-danger">{t`YouTube か Vimeo の、https:// で始まるリンクにしてください。`}</p> : null}
-          </Section>
+                <Section title={t`写真と動画`}>
+                  <Field label={t`ルートの写真のリンク`} htmlFor="route-photo" hint={t`https:// で始まるリンクを入れます。空にすると、写真は表示されません。`}>
+                    <TextInput id="route-photo" value={draft.photoUrl} onChange={text("photoUrl")} maxLength={500} invalid={problemOf("photo_link")} />
+                  </Field>
+                  {problemOf("photo_link") ? <p role="alert" className="text-base font-bold text-danger">{t`写真のリンクは、https:// で始まるものだけ使えます。`}</p> : null}
+                  <PhotoSlot url={draft.photoUrl} className="max-w-md" />
+                  <Field label={t`動画のリンク（YouTube か Vimeo）`} htmlFor="route-video" hint={t`https:// で始まるリンクを入れます。空にすると、動画は表示されません。`}>
+                    <TextInput id="route-video" value={draft.videoUrl} onChange={text("videoUrl")} maxLength={500} invalid={problemOf("video_link")} />
+                  </Field>
+                  {problemOf("video_link") ? <p role="alert" className="text-base font-bold text-danger">{t`YouTube か Vimeo の、https:// で始まるリンクにしてください。`}</p> : null}
+                </Section>
+              </>
+            ) : null}
 
-          <Section title={t`地図と場所`} id="map-section">
-            <MapEditorLoader
-              line={draft.line}
-              places={editorPlaces}
-              selectedKey={selectedKey}
-              distanceKm={draft.distanceKm}
-              climbM={draft.elevationGainM}
-              elevationStatus={heightsState}
-              canUndo={state.past.length > 0}
-              canRedo={state.future.length > 0}
-              onUndo={() => dispatch({ type: "undo" })}
-              onRedo={() => dispatch({ type: "redo" })}
-              onLine={(points) => dispatch({ type: "line", points })}
-              onAddPlace={(lat, lng) => {
-                const key = crypto.randomUUID();
-                dispatch({ type: "addPlace", key, lat, lng });
-                setSelectedKey(key);
-              }}
-              onMovePlace={(key, lat, lng) => dispatch({ type: "movePlace", key, lat, lng })}
-              onRemovePlace={(key) => {
-                const p = draft.places.find((x) => x.key === key);
-                if (p?.published) setMessage({ kind: "error", text: t`公開中の場所は消せません。先に「公開をやめる」を押してください。` });
-                else dispatch({ type: "removePlace", key });
-              }}
-              onSelectPlace={setSelectedKey}
-            />
+            {section === "text" ? (
+              <>
+                <Section title={t`ルートの説明`}>
+                  <BilingualField id="route-desc" label={t`ルートの説明`} ja={draft.descriptionJa} en={draft.descriptionEn} onJa={text("descriptionJa")} onEn={text("descriptionEn")} multiline />
+                  <p className="text-base text-muted">{t`改行は、そのまま表示されます。`}</p>
+                </Section>
+                <Section title={t`歴史・由来`}>
+                  <BilingualField id="route-history" label={t`歴史・由来`} ja={draft.historyJa} en={draft.historyEn} onJa={text("historyJa")} onEn={text("historyEn")} multiline />
+                </Section>
+                <Section title={t`アクセス・交通`}>
+                  <BilingualField id="route-access" label={t`アクセス・交通`} ja={draft.accessJa} en={draft.accessEn} onJa={text("accessJa")} onEn={text("accessEn")} multiline />
+                  <p className="text-base text-muted">{t`最寄りの駅やバス停、スタート地点とゴール地点への行き方を書きます。`}</p>
+                </Section>
+              </>
+            ) : null}
 
-            <fieldset className="flex flex-col gap-3 rounded-xl bg-paper p-4">
-              <legend className="px-1 text-base font-bold">{t`線の確認`}</legend>
-              <p className="text-base text-muted">{t`確認していない線は、利用者には表示されません。公式の地図などと見比べてから、チェックを入れてください。`}</p>
-              <Check id="route-line-verified" checked={draft.lineVerified} disabled={draft.line.length < 2} onChange={(v) => dispatch({ type: "lineVerified", value: v })}>
-                {t`線を確認した`}
-              </Check>
-              <Field label={t`確認した情報源（サイト名やリンク）`} htmlFor="route-line-source">
-                <TextInput id="route-line-source" value={draft.lineSource} onChange={text("lineSource")} maxLength={500} />
-              </Field>
-            </fieldset>
+            {section === "map" ? (
+              <Section title={t`地図と線`} id="map-section">
+                <MapEditorLoader
+                  line={draft.line}
+                  places={editorPlaces}
+                  selectedKey={selectedKey}
+                  distanceKm={draft.distanceKm}
+                  climbM={draft.elevationGainM}
+                  elevationStatus={heightsState}
+                  canUndo={state.past.length > 0}
+                  canRedo={state.future.length > 0}
+                  onUndo={() => dispatch({ type: "undo" })}
+                  onRedo={() => dispatch({ type: "redo" })}
+                  onLine={(points) => dispatch({ type: "line", points })}
+                  onAddPlace={(lat, lng) => {
+                    const key = crypto.randomUUID();
+                    dispatch({ type: "addPlace", key, lat, lng });
+                    setSelectedKey(key);
+                  }}
+                  onMovePlace={(key, lat, lng) => dispatch({ type: "movePlace", key, lat, lng })}
+                  onRemovePlace={(key) => {
+                    const p = draft.places.find((x) => x.key === key);
+                    if (p?.published) setMessage({ kind: "error", text: t`公開中の場所は消せません。先に「公開をやめる」を押してください。` });
+                    else dispatch({ type: "removePlace", key });
+                  }}
+                  onSelectPlace={setSelectedKey}
+                />
 
-            <div className="flex flex-col gap-3">
-              <h3 className="text-lg font-bold">{t`スタンプの場所（${draft.places.length}か所）`}</h3>
-              {draft.places.length === 0 ? (
-                <p className="rounded-xl bg-paper p-4 text-lg">{t`まだありません。地図の「場所を置く」を選んで、地図をクリックしてください。`}</p>
-              ) : (
-                <ol className="flex flex-col gap-3">
-                  {draft.places.map((p, i) => (
-                    <PlacePanel
-                      key={p.key}
-                      place={p}
-                      number={i + 1}
-                      selected={p.key === selectedKey}
-                      dirty={placeChanged(p, savedByKey.get(p.key))}
-                      busy={busyKey !== null || saving}
-                      canMoveUp={i > 0}
-                      canMoveDown={i < draft.places.length - 1}
-                      invalidName={problemOf("place_name", p.key)}
-                      onSelect={() => setSelectedKey(p.key === selectedKey ? null : p.key)}
-                      onChange={(patch) => dispatch({ type: "place", key: p.key, patch })}
-                      onRemove={() => {
-                        dispatch({ type: "removePlace", key: p.key });
-                        setSelectedKey(null);
-                      }}
-                      onMove={(step) => {
-                        const keys = draft.places.map((x) => x.key);
-                        const j = i + step;
-                        [keys[i], keys[j]] = [keys[j]!, keys[i]!];
-                        dispatch({ type: "reorderPlaces", keys });
-                      }}
-                      onPublish={() => setPublished(p.key, true)}
-                      onUnpublish={() => setPublished(p.key, false)}
-                    />
-                  ))}
-                </ol>
-              )}
-              {problems.some((p) => p.kind === "place_position") ? <p role="alert" className="text-base font-bold text-danger">{t`緯度と経度は、両方入れるか、両方空にしてください。`}</p> : null}
-            </div>
-          </Section>
+                <fieldset className="flex flex-col gap-3 rounded-xl bg-paper p-4">
+                  <legend className="px-1 text-base font-bold">{t`線の確認`}</legend>
+                  <p className="text-base text-muted">{t`確認していない線は、利用者には表示されません。公式の地図などと見比べてから、チェックを入れてください。`}</p>
+                  <Check id="route-line-verified" checked={draft.lineVerified} disabled={draft.line.length < 2} onChange={(v) => dispatch({ type: "lineVerified", value: v })}>
+                    {t`線を確認した`}
+                  </Check>
+                  <Field label={t`確認した情報源（サイト名やリンク）`} htmlFor="route-line-source">
+                    <TextInput id="route-line-source" value={draft.lineSource} onChange={text("lineSource")} maxLength={500} />
+                  </Field>
+                </fieldset>
+              </Section>
+            ) : null}
+
+            {section === "places" ? (
+              <Section title={t`場所（${draft.places.length}か所）`}>
+                {draft.places.length === 0 ? (
+                  <p className="rounded-xl bg-paper p-4 text-lg">
+                    {t`まだありません。`}{" "}
+                    <button type="button" onClick={() => setSection("map")} className="font-bold text-accent underline underline-offset-4">
+                      {t`「地図と線」で場所を置く`}
+                    </button>
+                  </p>
+                ) : (
+                  <ol className="flex flex-col gap-3">
+                    {draft.places.map((p, i) => (
+                      <PlacePanel
+                        key={p.key}
+                        place={p}
+                        number={i + 1}
+                        selected={p.key === selectedKey}
+                        dirty={placeChanged(p, savedByKey.get(p.key))}
+                        busy={busyKey !== null || saving}
+                        canMoveUp={i > 0}
+                        canMoveDown={i < draft.places.length - 1}
+                        invalidName={problemOf("place_name", p.key)}
+                        invalidPhoto={problemOf("place_photo_link", p.key)}
+                        onSelect={() => setSelectedKey(p.key === selectedKey ? null : p.key)}
+                        onChange={(patch) => dispatch({ type: "place", key: p.key, patch })}
+                        onRemove={() => {
+                          dispatch({ type: "removePlace", key: p.key });
+                          setSelectedKey(null);
+                        }}
+                        onMove={(step) => {
+                          const keys = draft.places.map((x) => x.key);
+                          const j = i + step;
+                          [keys[i], keys[j]] = [keys[j]!, keys[i]!];
+                          dispatch({ type: "reorderPlaces", keys });
+                        }}
+                        onPublish={() => setPublished(p.key, true)}
+                        onUnpublish={() => setPublished(p.key, false)}
+                      />
+                    ))}
+                  </ol>
+                )}
+                {problems.some((p) => p.kind === "place_position") ? <p role="alert" className="text-base font-bold text-danger">{t`緯度と経度は、両方入れるか、両方空にしてください。`}</p> : null}
+              </Section>
+            ) : null}
+
+            {section === "check" ? (
+              <Section title={t`公開前のチェック`}>
+                <p className="text-base text-muted">{t`保存していない内容も含めて調べています。`}</p>
+                {(
+                  [
+                    [true, t`必要なこと`],
+                    [false, t`あると、もっとよいこと`],
+                  ] as const
+                ).map(([required, title]) => (
+                  <div key={String(required)} className="flex flex-col gap-2">
+                    <h3 className="text-lg font-bold">{title}</h3>
+                    <ul className="flex flex-col gap-2">
+                      {checks
+                        .filter((i) => i.required === required)
+                        .map((i) => (
+                          <li key={i.id} className="flex flex-wrap items-center gap-3 rounded-xl bg-paper p-3">
+                            <span className={`w-20 shrink-0 rounded-lg px-3 py-1 text-center text-base font-bold ${i.done ? "bg-moss text-paper" : required ? "bg-danger text-white" : "bg-surface"}`}>{i.done ? t`できた` : t`まだ`}</span>
+                            <span className="min-w-0 flex-1 text-lg">{labels.item[i.id]}</span>
+                            {!i.done ? (
+                              <button type="button" onClick={() => setSection(i.tab)} className="tap-target rounded-xl border-2 border-ink px-4 text-base font-bold">
+                                {t`${labels.tab[i.tab]}を開く`}
+                              </button>
+                            ) : null}
+                          </li>
+                        ))}
+                    </ul>
+                  </div>
+                ))}
+              </Section>
+            ) : null}
+          </div>
 
           {!isNew ? (
             <div className="flex flex-col gap-2 pb-10">
@@ -402,7 +505,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
           ) : null}
         </div>
 
-        <div className={`min-w-0 ${tab === "preview" ? "" : "hidden lg:block"}`}>
+        <div className={`min-w-0 ${view === "preview" ? "" : "hidden lg:block"}`}>
           <div className="lg:sticky lg:top-24">
             <LivePreview draft={draft} order={order} locale={locale} />
           </div>
