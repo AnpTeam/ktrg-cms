@@ -1,17 +1,68 @@
 import { and, asc, count, eq, inArray, max, sql } from "drizzle-orm";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
-import { rallies, rallySpots, routes, spots, stamps } from "../db/schema";
+import { rallies, rallySpots, routes, routeTranslations, spots, spotTranslations, stamps } from "../db/schema";
+import { emptyTexts, flattenTexts, ROUTE_TEXT, SPOT_TEXT, splitTexts, type Texts } from "../db/translations";
 import type { ContentStore, RouteRow, RouteSummaryRow, SpotRow } from "./content-types";
 
 type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
+type Reader = Pick<Db, "select">;
 
-const routeFromDb = (r: typeof routes.$inferSelect): RouteRow => ({
-  ...r,
-  prefecture: r.prefecture as RouteRow["prefecture"],
-  geometry: (r.geometry ?? null) as RouteRow["geometry"],
-});
-const spotFromDb = (s: typeof spots.$inferSelect): SpotRow => ({ ...s });
+/** The rows with their words (route_translations) joined in, in the flat shape the API uses. */
+async function withRouteTexts(q: Reader, rows: (typeof routes.$inferSelect)[]): Promise<RouteRow[]> {
+  const ids = rows.map((r) => r.id);
+  const texts = ids.length ? await q.select().from(routeTranslations).where(inArray(routeTranslations.routeId, ids)) : [];
+  const byRoute = flattenTexts(ROUTE_TEXT, texts, (t) => t.routeId);
+  return rows.map((r) => {
+    const t = byRoute.get(r.id) ?? emptyTexts(ROUTE_TEXT);
+    return {
+      ...r,
+      ...t,
+      nameJa: t.nameJa ?? "",
+      prefecture: r.prefecture as RouteRow["prefecture"],
+      geometry: (r.geometry ?? null) as RouteRow["geometry"],
+    };
+  });
+}
+
+async function withSpotTexts(q: Reader, rows: (typeof spots.$inferSelect)[]): Promise<SpotRow[]> {
+  const ids = rows.map((s) => s.id);
+  const texts = ids.length ? await q.select().from(spotTranslations).where(inArray(spotTranslations.spotId, ids)) : [];
+  const bySpot = flattenTexts(SPOT_TEXT, texts, (t) => t.spotId);
+  return rows.map((s) => {
+    const t = bySpot.get(s.id) ?? emptyTexts(SPOT_TEXT);
+    return { ...s, ...t, nameJa: t.nameJa ?? "" };
+  });
+}
+const routeFromDb = async (q: Reader, r: typeof routes.$inferSelect) => (await withRouteTexts(q, [r]))[0]!;
+const spotFromDb = async (q: Reader, s: typeof spots.$inferSelect) => (await withSpotTexts(q, [s]))[0]!;
+
+/**
+ * Writes the given words, one row per language; fields left out keep their value. Update first, insert only
+ * when the language has no row yet: an upsert would check the Japanese name rule against the partial insert
+ * row (say, only a history) and fail. Callers have already locked the owner's row in the same transaction.
+ */
+async function saveRouteTexts(tx: Tx, routeId: string, texts: Texts<(typeof ROUTE_TEXT)[number]>) {
+  for (const { locale, values } of texts) {
+    const updated = await tx
+      .update(routeTranslations)
+      .set(values)
+      .where(and(eq(routeTranslations.routeId, routeId), eq(routeTranslations.locale, locale)))
+      .returning({ locale: routeTranslations.locale });
+    if (updated.length === 0) await tx.insert(routeTranslations).values({ routeId, locale, ...values });
+  }
+}
+
+async function saveSpotTexts(tx: Tx, spotId: string, texts: Texts<(typeof SPOT_TEXT)[number]>) {
+  for (const { locale, values } of texts) {
+    const updated = await tx
+      .update(spotTranslations)
+      .set(values)
+      .where(and(eq(spotTranslations.spotId, spotId), eq(spotTranslations.locale, locale)))
+      .returning({ locale: spotTranslations.locale });
+    if (updated.length === 0) await tx.insert(spotTranslations).values({ spotId, locale, ...values });
+  }
+}
 
 /**
  * The editor sends back the updatedAt it loaded. A JavaScript Date keeps milliseconds, the database keeps
@@ -46,8 +97,8 @@ export function createDrizzleContentStore(db: Db): ContentStore {
         .from(spots)
         .groupBy(spots.routeId);
       const byRoute = new Map(counts.map((c) => [c.routeId, c]));
-      return rows.map<RouteSummaryRow>((r) => ({
-        ...routeFromDb(r),
+      return (await withRouteTexts(db, rows)).map<RouteSummaryRow>((r) => ({
+        ...r,
         spotCount: byRoute.get(r.id)?.total ?? 0,
         publishedSpotCount: byRoute.get(r.id)?.published ?? 0,
         pointCount: byRoute.get(r.id)?.points ?? 0,
@@ -58,38 +109,42 @@ export function createDrizzleContentStore(db: Db): ContentStore {
       const [route] = await db.select().from(routes).where(eq(routes.id, id)).limit(1);
       if (!route) return null;
       const list = await db.select().from(spots).where(eq(spots.routeId, id)).orderBy(asc(spots.sortOrder));
-      return { route: routeFromDb(route), spots: list.map(spotFromDb) };
+      return { route: await routeFromDb(db, route), spots: await withSpotTexts(db, list) };
     },
 
     async getSpot(id) {
       const [s] = await db.select().from(spots).where(eq(spots.id, id)).limit(1);
-      return s ? spotFromDb(s) : null;
+      return s ? spotFromDb(db, s) : null;
     },
 
     async createRoute(actor, fields) {
+      const { rest, texts } = splitTexts(ROUTE_TEXT, fields);
       return db.transaction(async (tx) => {
         const [row] = await tx
           .insert(routes)
-          .values({ ...fields, sortOrder: await nextRouteOrder(tx) })
+          .values({ ...rest, sortOrder: await nextRouteOrder(tx) })
           .returning();
+        await saveRouteTexts(tx, row!.id, texts);
         await writeAudit(tx, { actorUserId: actor, action: "route.create", targetId: row!.id });
-        return routeFromDb(row!);
+        return routeFromDb(tx, row!);
       });
     },
 
     async updateRoute(actor, id, expected, changes) {
+      const { rest, texts } = splitTexts(ROUTE_TEXT, changes);
       return db.transaction(async (tx) => {
         const [row] = await tx
           .update(routes)
-          .set({ ...changes, updatedAt: sql`clock_timestamp()` })
+          .set({ ...rest, updatedAt: sql`clock_timestamp()` })
           .where(and(eq(routes.id, id), sameInstant(routes.updatedAt, expected)))
           .returning();
         if (!row) {
           const [exists] = await tx.select({ id: routes.id }).from(routes).where(eq(routes.id, id)).limit(1);
           return exists ? "conflict" : null;
         }
+        await saveRouteTexts(tx, id, texts);
         await writeAudit(tx, { actorUserId: actor, action: "route.update", targetId: id });
-        return routeFromDb(row);
+        return routeFromDb(tx, row);
       });
     },
 
@@ -118,13 +173,15 @@ export function createDrizzleContentStore(db: Db): ContentStore {
     },
 
     async createSpot(actor, routeId, fields) {
+      const { rest, texts } = splitTexts(SPOT_TEXT, fields);
       return db.transaction(async (tx) => {
         const [route] = await tx.select({ id: routes.id }).from(routes).where(eq(routes.id, routeId)).limit(1);
         if (!route) return null;
         const [row] = await tx
           .insert(spots)
-          .values({ ...fields, routeId, sortOrder: await nextSpotOrder(tx, routeId) })
+          .values({ ...rest, routeId, sortOrder: await nextSpotOrder(tx, routeId) })
           .returning();
+        await saveSpotTexts(tx, row!.id, texts);
         // Every stamp place of a course is in that course's rally; the mound rally is managed separately.
         // The route's other points (a turn, a toilet) never are.
         const rallyId = row!.kind === "stamp" ? await courseRallyOf(tx, routeId) : null;
@@ -133,11 +190,12 @@ export function createDrizzleContentStore(db: Db): ContentStore {
           await tx.insert(rallySpots).values({ rallyId, spotId: row!.id, position: (m?.m ?? 0) + 1 }).onConflictDoNothing();
         }
         await writeAudit(tx, { actorUserId: actor, action: "spot.create", targetId: row!.id });
-        return spotFromDb(row!);
+        return spotFromDb(tx, row!);
       });
     },
 
     async updateSpot(actor, id, expected, changes) {
+      const { rest, texts } = splitTexts(SPOT_TEXT, changes);
       return db.transaction(async (tx) => {
         const [before] = await tx.select({ status: spots.status, kind: spots.kind, routeId: spots.routeId }).from(spots).where(eq(spots.id, id)).limit(1);
         if (!before) return null;
@@ -150,10 +208,11 @@ export function createDrizzleContentStore(db: Db): ContentStore {
         }
         const [row] = await tx
           .update(spots)
-          .set({ ...changes, updatedAt: sql`clock_timestamp()`, ...(statusChanged ? { statusUpdatedAt: sql`clock_timestamp()` } : {}) })
+          .set({ ...rest, updatedAt: sql`clock_timestamp()`, ...(statusChanged ? { statusUpdatedAt: sql`clock_timestamp()` } : {}) })
           .where(and(eq(spots.id, id), sameInstant(spots.updatedAt, expected)))
           .returning();
         if (!row) return "conflict";
+        await saveSpotTexts(tx, id, texts);
         if (kindChanged) {
           // Keep the rallies in step: a point that is no longer a stamp place leaves them, a new stamp place joins its course's.
           await tx.delete(rallySpots).where(eq(rallySpots.spotId, id));
@@ -165,7 +224,7 @@ export function createDrizzleContentStore(db: Db): ContentStore {
         }
         await writeAudit(tx, { actorUserId: actor, action: "spot.update", targetId: id });
         if (statusChanged) await writeAudit(tx, { actorUserId: actor, action: "spot.status.change", targetId: id });
-        return spotFromDb(row);
+        return spotFromDb(tx, row);
       });
     },
 
@@ -179,10 +238,10 @@ export function createDrizzleContentStore(db: Db): ContentStore {
         if (!row) {
           // Missing, or already in that state: nothing to record.
           const [cur] = await tx.select().from(spots).where(eq(spots.id, id)).limit(1);
-          return cur ? spotFromDb(cur) : null;
+          return cur ? spotFromDb(tx, cur) : null;
         }
         await writeAudit(tx, { actorUserId: actor, action: published ? "spot.publish" : "spot.unpublish", targetId: id });
-        return spotFromDb(row);
+        return spotFromDb(tx, row);
       });
     },
 

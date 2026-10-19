@@ -1,6 +1,7 @@
 import { and, asc, eq, inArray } from "drizzle-orm";
 import type { Db } from "../db/client";
-import { rallies, rallySpots, spots, stamps } from "../db/schema";
+import { rallies, rallySpots, rallyTranslations, spots, stamps } from "../db/schema";
+import { flattenTexts, RALLY_TEXT } from "../db/translations";
 import { computeProgress, type Progress } from "./progress";
 
 /** A database or a transaction: reading is all this needs. */
@@ -22,6 +23,11 @@ export interface RallySummary extends Progress {
 export async function listRalliesWithProgress(db: Reader, userId: string): Promise<RallySummary[]> {
   const all = await db.select().from(rallies).orderBy(asc(rallies.sortOrder));
   if (all.length === 0) return [];
+  const names = flattenTexts(
+    RALLY_TEXT,
+    await db.select().from(rallyTranslations).where(inArray(rallyTranslations.rallyId, all.map((r) => r.id))),
+    (t) => t.rallyId,
+  );
 
   const links = await db
     .select({
@@ -52,8 +58,8 @@ export async function listRalliesWithProgress(db: Reader, userId: string): Promi
   return all.map((r) => ({
     id: r.id,
     kind: r.kind,
-    nameJa: r.nameJa,
-    nameEn: r.nameEn,
+    nameJa: names.get(r.id)?.nameJa ?? "",
+    nameEn: names.get(r.id)?.nameEn ?? null,
     routeId: r.routeId,
     sortOrder: r.sortOrder,
     ...computeProgress({

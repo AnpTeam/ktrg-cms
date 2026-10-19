@@ -15,7 +15,7 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
-import { users } from "./auth";
+import { userLocale, users } from "./auth";
 
 // Table definitions follow section 9.4 of the system design document.
 
@@ -47,7 +47,7 @@ const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull(
 const updatedAt = () => timestamp("updated_at", { withTimezone: true }).notNull().defaultNow();
 
 /**
- * A trail route (19 of them). Japanese is required, English falls back to it.
+ * A trail route (19 of them). Its words are in route_translations (Japanese required, English falls back to it).
  * Most fields are nullable so routes can be seeded as skeletons and filled in
  * through the CMS.
  */
@@ -55,10 +55,6 @@ export const routes = pgTable(
   "routes",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    nameJa: text("name_ja").notNull(),
-    nameEn: text("name_en"),
-    descriptionJa: text("description_ja"),
-    descriptionEn: text("description_en"),
     distanceKm: numeric("distance_km", { precision: 6, scale: 2, mode: "number" }),
     elevationGainM: integer("elevation_gain_m"),
     difficulty: text("difficulty"),
@@ -74,11 +70,6 @@ export const routes = pgTable(
     lineSource: text("line_source"),
     // YouTube / Vimeo only; the host is checked in the API.
     videoUrl: text("video_url"),
-    // The story of the route and how to get there and back, each in Japanese and English.
-    historyJa: text("history_ja"),
-    historyEn: text("history_en"),
-    accessJa: text("access_ja"),
-    accessEn: text("access_en"),
     // A picture of the route: an https address (an upload comes when a storage provider is chosen).
     photoUrl: text("photo_url"),
     sortOrder: integer("sort_order").notNull().default(0),
@@ -103,10 +94,6 @@ export const spots = pgTable(
     routeId: uuid("route_id")
       .notNull()
       .references(() => routes.id, { onDelete: "restrict" }),
-    nameJa: text("name_ja").notNull(),
-    nameEn: text("name_en"),
-    descriptionJa: text("description_ja"),
-    descriptionEn: text("description_en"),
     // Entered by an admin from an official source.
     lat: doublePrecision("lat"),
     lng: doublePrecision("lng"),
@@ -119,8 +106,6 @@ export const spots = pgTable(
     kind: spotKind("kind").notNull().default("stamp"),
     photoUrl: text("photo_url"),
     status: spotStatus("status").notNull().default("open"),
-    statusNoteJa: text("status_note_ja"),
-    statusNoteEn: text("status_note_en"),
     statusUpdatedAt: timestamp("status_updated_at", { withTimezone: true }),
     // Order within the route (the design doc does not specify one).
     sortOrder: integer("sort_order").notNull().default(0),
@@ -169,9 +154,6 @@ export const rallies = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     kind: rallyKind("kind").notNull().default("course"),
-    // Japanese is required in the admin; the column default only fills rows made before names existed.
-    nameJa: text("name_ja").notNull().default(""),
-    nameEn: text("name_en"),
     // The course of a course rally (one rally per route); null for the mound rally.
     routeId: uuid("route_id").references(() => routes.id, { onDelete: "restrict" }),
     sortOrder: integer("sort_order").notNull().default(0),
@@ -262,8 +244,6 @@ export const trailNotices = pgTable(
     routeId: uuid("route_id")
       .notNull()
       .references(() => routes.id, { onDelete: "cascade" }),
-    bodyJa: text("body_ja").notNull(),
-    bodyEn: text("body_en"),
     // Official source; required.
     sourceUrl: text("source_url").notNull(),
     // Age is always shown to participants.
@@ -294,4 +274,66 @@ export const auditLog = pgTable(
     index("audit_log_actor_idx").on(t.actorUserId),
     index("audit_log_target_idx").on(t.targetType, t.targetId),
   ],
+);
+
+/*
+ * The words of routes, places, rallies and notices, one row per language (ja / en, the user_locale enum).
+ * Japanese is required: its row always exists and has a name (body for a notice), which the checks enforce
+ * for the row. English is optional, and every English field falls back to the Japanese one when read.
+ * A row goes with its owner.
+ */
+const jaRequires = (t: { locale: unknown }, field: unknown) => sql`${t.locale} <> 'ja' or ${field} is not null`;
+
+export const routeTranslations = pgTable(
+  "route_translations",
+  {
+    routeId: uuid("route_id")
+      .notNull()
+      .references(() => routes.id, { onDelete: "cascade" }),
+    locale: userLocale("locale").notNull(),
+    name: text("name"),
+    description: text("description"),
+    // The story of the route, and how to get there and back.
+    history: text("history"),
+    access: text("access"),
+  },
+  (t) => [primaryKey({ columns: [t.routeId, t.locale] }), check("route_translations_ja_name", jaRequires(t, t.name))],
+);
+
+export const spotTranslations = pgTable(
+  "spot_translations",
+  {
+    spotId: uuid("spot_id")
+      .notNull()
+      .references(() => spots.id, { onDelete: "cascade" }),
+    locale: userLocale("locale").notNull(),
+    name: text("name"),
+    description: text("description"),
+    statusNote: text("status_note"),
+  },
+  (t) => [primaryKey({ columns: [t.spotId, t.locale] }), check("spot_translations_ja_name", jaRequires(t, t.name))],
+);
+
+export const rallyTranslations = pgTable(
+  "rally_translations",
+  {
+    rallyId: uuid("rally_id")
+      .notNull()
+      .references(() => rallies.id, { onDelete: "cascade" }),
+    locale: userLocale("locale").notNull(),
+    name: text("name"),
+  },
+  (t) => [primaryKey({ columns: [t.rallyId, t.locale] }), check("rally_translations_ja_name", jaRequires(t, t.name))],
+);
+
+export const trailNoticeTranslations = pgTable(
+  "trail_notice_translations",
+  {
+    trailNoticeId: uuid("trail_notice_id")
+      .notNull()
+      .references(() => trailNotices.id, { onDelete: "cascade" }),
+    locale: userLocale("locale").notNull(),
+    body: text("body"),
+  },
+  (t) => [primaryKey({ columns: [t.trailNoticeId, t.locale] }), check("trail_notice_translations_ja_body", jaRequires(t, t.body))],
 );
