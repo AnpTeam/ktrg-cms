@@ -302,7 +302,7 @@ msgstr "Shops and food"
 msgid "お探しのものは、見つかりませんでした。"
 msgstr "We could not find what you were looking for."
 
-#: src/components/admin/AdminNav.tsx:15
+#: src/components/admin/AdminNav.tsx:18
 #: src/components/landing/TrailNotices.tsx:30
 msgid "お知らせ"
 msgstr "Notices"
@@ -470,7 +470,7 @@ msgstr "Start with these settings"
 msgid "この説明は日本語のみです。"
 msgstr "This description is in Japanese only."
 
-#: src/components/admin/AdminNav.tsx:32
+#: src/components/admin/AdminNav.tsx:46
 msgid "これから追加します"
 msgstr "Coming later"
 
@@ -704,7 +704,7 @@ msgstr "A passkey lets you log in with your face or fingerprint. Add one for thi
 msgid "バス停"
 msgstr "Bus stop"
 
-#: src/components/admin/AdminNav.tsx:15
+#: src/components/admin/AdminNav.tsx:18
 msgid "バナー"
 msgstr "Banners"
 
@@ -746,7 +746,7 @@ msgstr "Profile and stamps"
 msgid "ページが見つかりません"
 msgstr "Page not found"
 
-#: src/components/admin/AdminNav.tsx:15
+#: src/components/admin/AdminNav.tsx:18
 msgid "ページの文章"
 msgstr "Page text"
 
@@ -792,7 +792,7 @@ msgid "まだ、この場所から遠いようです。場所の近くで、も�
 msgstr "You still seem to be far from this place. Try again when you are near it."
 
 #: src/components/admin/RouteEditor.tsx:359
-msgid "まだありません。地図の「場所を置く」で、地図を押してください。"
+msgid "まだありません。地図の「場所を置く」を選んで、地図をクリックしてください。"
 msgstr "None yet. Choose \"Place a stop\" on the map, then click the map."
 
 #: src/components/ProgressSummary.tsx:12
@@ -858,6 +858,7 @@ msgstr "Confirm with an email number"
 msgid "メインメニュー"
 msgstr "Main menu"
 
+#: src/components/admin/AdminNav.tsx:29
 #: src/components/SiteHeader.tsx:125
 #: src/components/TabBar.tsx:59
 msgid "メニュー"
@@ -896,7 +897,7 @@ msgstr "Cancel"
 msgid "やり直す"
 msgstr "Redo"
 
-#: src/components/admin/AdminNav.tsx:15
+#: src/components/admin/AdminNav.tsx:18
 msgid "ユーザーと権限"
 msgstr "Users and permissions"
 
@@ -916,7 +917,7 @@ msgstr "Licenses"
 msgid "ライト"
 msgstr "Light"
 
-#: src/components/admin/AdminNav.tsx:15
+#: src/components/admin/AdminNav.tsx:18
 msgid "ラリー"
 msgstr "Rallies"
 
@@ -931,7 +932,7 @@ msgstr "The rallies are not ready yet."
 #: src/app/[lang]/(admin)/admin/routes/page.tsx:22
 #: src/app/[lang]/(public)/routes/page.tsx:18
 #: src/app/[lang]/(public)/sitemap/page.tsx:65
-#: src/components/admin/AdminNav.tsx:14
+#: src/components/admin/AdminNav.tsx:17
 #: src/components/TabBar.tsx:21
 msgid "ルート"
 msgstr "Routes"
@@ -1344,10 +1345,6 @@ msgstr "Previous photo"
 msgid "前へ"
 msgstr "Earlier"
 
-#: src/components/admin/map-editor/MapEditor.tsx:347
-msgid "動かす"
-msgstr "Move map"
-
 #: src/components/admin/RouteEditor.tsx:311
 msgid "動画"
 msgstr "Video"
@@ -1444,17 +1441,21 @@ msgstr "Map style settings"
 msgid "地図の道具"
 msgstr "Map tools"
 
+#: src/components/admin/map-editor/MapEditor.tsx:339
+msgid "地図をクリックして、点を置いていきます。最後の点をもう一度クリックする（またはEnterキーを押す）と、線ができます。Escキーでやり直します。"
+msgstr "Click the map to add points. Click the last point again (or press Enter) to finish the line. Press Esc to start over."
+
+#: src/components/admin/map-editor/MapEditor.tsx:338
+msgid "地図をクリックすると、その位置に場所を置きます。"
+msgstr "Click the map to put a place there."
+
 #: src/components/admin/map-editor/MapEditor.tsx:337
 msgid "地図を動かします。数字の丸をドラッグすると、場所を動かせます。"
 msgstr "Move the map. Drag a numbered circle to move a place."
 
-#: src/components/admin/map-editor/MapEditor.tsx:339
-msgid "地図を押して点を置いていきます。最後の点をもう一度押す（またはEnterキー）と、線ができます。Escキーでやり直します。"
-msgstr "Click the map to add points. Click the last point again (or press Enter) to finish the line. Press Esc to start over."
-
-#: src/components/admin/map-editor/MapEditor.tsx:338
-msgid "地図を押すと、その位置に場所を置きます。"
-msgstr "Click the map to put a place there."
+#: src/components/admin/map-editor/MapEditor.tsx:347
+msgid "地図を動かす"
+msgstr "Move map"
 
 #: src/components/admin/map-editor/MapEditor.tsx:376
 #: src/components/admin/map-editor/MapEditorLoader.tsx:11
@@ -1468,6 +1469,10 @@ msgstr "Loading the map…"
 #: src/components/PrefectureFilter.tsx:29
 msgid "地域でしぼる"
 msgstr "Filter by area"
+
+#: src/components/admin/map-editor/MapEditor.tsx:370
+msgid "地形の陰影"
+msgstr "Terrain shading"
 
 #: src/components/map/TrailMap.tsx:378
 msgid "地形の陰影を消す"
@@ -1499,7 +1504,7 @@ msgstr "A route that still has places cannot be deleted."
 msgid "場所が残っているルートは消せません。先に場所を消してください。"
 msgstr "A route that still has places cannot be deleted. Delete its places first."
 
-#: src/components/admin/AdminNav.tsx:15
+#: src/components/admin/AdminNav.tsx:18
 msgid "場所の一覧"
 msgstr "All places"
 
@@ -1515,7 +1520,7 @@ msgstr "Remove place"
 msgid "場所を置く"
 msgstr "Place a stop"
 
-#: src/components/admin/AdminNav.tsx:15
+#: src/components/admin/AdminNav.tsx:18
 msgid "変更の記録"
 msgstr "Change log"
 
@@ -1807,7 +1812,7 @@ msgid "海外"
 msgstr "Overseas"
 
 #: src/components/admin/map-editor/MapEditor.tsx:341
-msgid "消したい場所の数字の丸を押してください。"
+msgid "消したい場所の数字の丸をクリックしてください。"
 msgstr "Click the numbered circle of the place you want to remove."
 
 #: src/components/settings/PasskeyManager.tsx:119
@@ -1823,7 +1828,7 @@ msgstr "After removing it, you can no longer log in with your face or fingerprin
 msgid "淡色"
 msgstr "Pale"
 
-#: src/components/admin/AdminNav.tsx:37
+#: src/components/admin/AdminNav.tsx:51
 #: src/components/admin/RouteTable.tsx:25
 #: src/components/landing/Landing.tsx:255
 #: src/components/map/MapScreen.tsx:278
@@ -1951,7 +1956,7 @@ msgstr "Prefer not to say"
 msgid "答えなくても大丈夫です。"
 msgstr "You can skip this."
 
-#: src/components/admin/AdminNav.tsx:18
+#: src/components/admin/AdminNav.tsx:21
 msgid "管理メニュー"
 msgstr "Admin menu"
 
@@ -2141,10 +2146,6 @@ msgstr "About this place"
 #: src/components/settings/PasskeyManager.tsx:93
 msgid "読み込み中"
 msgstr "Loading"
-
-#: src/components/admin/map-editor/MapEditor.tsx:370
-msgid "起伏"
-msgstr "Terrain"
 
 #: src/components/admin/RouteEditor.tsx:296
 #: src/components/RouteStats.tsx:20

@@ -240,7 +240,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     <div className={`flex flex-col gap-5 ${saving ? "[&_fieldset]:pointer-events-none" : ""}`} aria-busy={saving}>
       {/* Title bar: always in reach, with the one button that matters. */}
       <div className="sticky top-0 z-20 -mx-4 flex flex-wrap items-center gap-3 border-b border-line bg-paper px-4 py-3 lg:-mx-8 lg:px-8">
-        <h1 className="min-w-0 flex-1 truncate text-2xl font-bold">{isNew ? t`新しいルート` : draft.nameJa || t`（名前がありません）`}</h1>
+        <h1 className="min-w-0 flex-1 break-words text-2xl font-bold">{isNew ? t`新しいルート` : draft.nameJa || t`（名前がありません）`}</h1>
         <p className="text-base text-muted" aria-live="polite">
           {dirty ? t`保存していない変更があります` : isNew ? "" : t`保存済み（更新 ${formatUpdated(locale, draft.updatedAt ?? new Date().toISOString())}）`}
         </p>
@@ -356,7 +356,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
             <div className="flex flex-col gap-3">
               <h3 className="text-lg font-bold">{t`スタンプの場所（${draft.places.length}か所）`}</h3>
               {draft.places.length === 0 ? (
-                <p className="rounded-xl bg-paper p-4 text-lg">{t`まだありません。地図の「場所を置く」で、地図を押してください。`}</p>
+                <p className="rounded-xl bg-paper p-4 text-lg">{t`まだありません。地図の「場所を置く」を選んで、地図をクリックしてください。`}</p>
               ) : (
                 <ol className="flex flex-col gap-3">
                   {draft.places.map((p, i) => (

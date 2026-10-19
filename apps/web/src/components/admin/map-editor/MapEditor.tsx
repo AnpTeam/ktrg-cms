@@ -335,16 +335,16 @@ export function MapEditor(props: MapEditorProps) {
 
   const help: Record<Mode, string> = {
     pan: t`地図を動かします。数字の丸をドラッグすると、場所を動かせます。`,
-    place: t`地図を押すと、その位置に場所を置きます。`,
-    draw: t`地図を押して点を置いていきます。最後の点をもう一度押す（またはEnterキー）と、線ができます。Escキーでやり直します。`,
+    place: t`地図をクリックすると、その位置に場所を置きます。`,
+    draw: t`地図をクリックして、点を置いていきます。最後の点をもう一度クリックする（またはEnterキーを押す）と、線ができます。Escキーでやり直します。`,
     edit: t`線の点をドラッグして動かします。線の途中の小さな点を引くと、点を増やせます。点を選んでDeleteキーで消せます。`,
-    erase: t`消したい場所の数字の丸を押してください。`,
+    erase: t`消したい場所の数字の丸をクリックしてください。`,
   };
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap gap-2" role="toolbar" aria-label={t`地図の道具`}>
-        {toolButton("pan", t`動かす`)}
+        {toolButton("pan", t`地図を動かす`)}
         {toolButton("place", t`場所を置く`)}
         {toolButton("draw", t`線を描く`)}
         {toolButton("edit", t`線を直す`)}
@@ -367,7 +367,7 @@ export function MapEditor(props: MapEditorProps) {
           {t`全体を見る`}
         </button>
         <button type="button" aria-pressed={terrain} onClick={toggleTerrain} className={`${toolClass} ${terrain ? "border-ink bg-ink text-paper" : "border-line bg-paper"}`}>
-          {t`起伏`}
+          {t`地形の陰影`}
         </button>
       </div>
 

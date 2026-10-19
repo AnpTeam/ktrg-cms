@@ -302,7 +302,7 @@ msgstr "お店・食事"
 msgid "お探しのものは、見つかりませんでした。"
 msgstr "お探しのものは、見つかりませんでした。"
 
-#: src/components/admin/AdminNav.tsx:15
+#: src/components/admin/AdminNav.tsx:18
 #: src/components/landing/TrailNotices.tsx:30
 msgid "お知らせ"
 msgstr "お知らせ"
@@ -470,7 +470,7 @@ msgstr "この設定ではじめる"
 msgid "この説明は日本語のみです。"
 msgstr "この説明は日本語のみです。"
 
-#: src/components/admin/AdminNav.tsx:32
+#: src/components/admin/AdminNav.tsx:46
 msgid "これから追加します"
 msgstr "これから追加します"
 
@@ -704,7 +704,7 @@ msgstr "パスキーは、顔や指紋でログインするための鍵です。
 msgid "バス停"
 msgstr "バス停"
 
-#: src/components/admin/AdminNav.tsx:15
+#: src/components/admin/AdminNav.tsx:18
 msgid "バナー"
 msgstr "バナー"
 
@@ -746,7 +746,7 @@ msgstr "プロフィールとスタンプ"
 msgid "ページが見つかりません"
 msgstr "ページが見つかりません"
 
-#: src/components/admin/AdminNav.tsx:15
+#: src/components/admin/AdminNav.tsx:18
 msgid "ページの文章"
 msgstr "ページの文章"
 
@@ -792,8 +792,8 @@ msgid "まだ、この場所から遠いようです。場所の近くで、も�
 msgstr "まだ、この場所から遠いようです。場所の近くで、もう一度お試しください。"
 
 #: src/components/admin/RouteEditor.tsx:359
-msgid "まだありません。地図の「場所を置く」で、地図を押してください。"
-msgstr "まだありません。地図の「場所を置く」で、地図を押してください。"
+msgid "まだありません。地図の「場所を置く」を選んで、地図をクリックしてください。"
+msgstr "まだありません。地図の「場所を置く」を選んで、地図をクリックしてください。"
 
 #: src/components/ProgressSummary.tsx:12
 #: src/components/RallyViews.tsx:56
@@ -858,6 +858,7 @@ msgstr "メールの番号で確認"
 msgid "メインメニュー"
 msgstr "メインメニュー"
 
+#: src/components/admin/AdminNav.tsx:29
 #: src/components/SiteHeader.tsx:125
 #: src/components/TabBar.tsx:59
 msgid "メニュー"
@@ -896,7 +897,7 @@ msgstr "やめる"
 msgid "やり直す"
 msgstr "やり直す"
 
-#: src/components/admin/AdminNav.tsx:15
+#: src/components/admin/AdminNav.tsx:18
 msgid "ユーザーと権限"
 msgstr "ユーザーと権限"
 
@@ -916,7 +917,7 @@ msgstr "ライセンス情報"
 msgid "ライト"
 msgstr "ライト"
 
-#: src/components/admin/AdminNav.tsx:15
+#: src/components/admin/AdminNav.tsx:18
 msgid "ラリー"
 msgstr "ラリー"
 
@@ -931,7 +932,7 @@ msgstr "ラリーは、まだ準備中です。"
 #: src/app/[lang]/(admin)/admin/routes/page.tsx:22
 #: src/app/[lang]/(public)/routes/page.tsx:18
 #: src/app/[lang]/(public)/sitemap/page.tsx:65
-#: src/components/admin/AdminNav.tsx:14
+#: src/components/admin/AdminNav.tsx:17
 #: src/components/TabBar.tsx:21
 msgid "ルート"
 msgstr "ルート"
@@ -1344,10 +1345,6 @@ msgstr "前の写真"
 msgid "前へ"
 msgstr "前へ"
 
-#: src/components/admin/map-editor/MapEditor.tsx:347
-msgid "動かす"
-msgstr "動かす"
-
 #: src/components/admin/RouteEditor.tsx:311
 msgid "動画"
 msgstr "動画"
@@ -1444,17 +1441,21 @@ msgstr "地図の見た目の設定"
 msgid "地図の道具"
 msgstr "地図の道具"
 
+#: src/components/admin/map-editor/MapEditor.tsx:339
+msgid "地図をクリックして、点を置いていきます。最後の点をもう一度クリックする（またはEnterキーを押す）と、線ができます。Escキーでやり直します。"
+msgstr "地図をクリックして、点を置いていきます。最後の点をもう一度クリックする（またはEnterキーを押す）と、線ができます。Escキーでやり直します。"
+
+#: src/components/admin/map-editor/MapEditor.tsx:338
+msgid "地図をクリックすると、その位置に場所を置きます。"
+msgstr "地図をクリックすると、その位置に場所を置きます。"
+
 #: src/components/admin/map-editor/MapEditor.tsx:337
 msgid "地図を動かします。数字の丸をドラッグすると、場所を動かせます。"
 msgstr "地図を動かします。数字の丸をドラッグすると、場所を動かせます。"
 
-#: src/components/admin/map-editor/MapEditor.tsx:339
-msgid "地図を押して点を置いていきます。最後の点をもう一度押す（またはEnterキー）と、線ができます。Escキーでやり直します。"
-msgstr "地図を押して点を置いていきます。最後の点をもう一度押す（またはEnterキー）と、線ができます。Escキーでやり直します。"
-
-#: src/components/admin/map-editor/MapEditor.tsx:338
-msgid "地図を押すと、その位置に場所を置きます。"
-msgstr "地図を押すと、その位置に場所を置きます。"
+#: src/components/admin/map-editor/MapEditor.tsx:347
+msgid "地図を動かす"
+msgstr "地図を動かす"
 
 #: src/components/admin/map-editor/MapEditor.tsx:376
 #: src/components/admin/map-editor/MapEditorLoader.tsx:11
@@ -1468,6 +1469,10 @@ msgstr "地図を読み込み中…"
 #: src/components/PrefectureFilter.tsx:29
 msgid "地域でしぼる"
 msgstr "地域でしぼる"
+
+#: src/components/admin/map-editor/MapEditor.tsx:370
+msgid "地形の陰影"
+msgstr "地形の陰影"
 
 #: src/components/map/TrailMap.tsx:378
 msgid "地形の陰影を消す"
@@ -1499,7 +1504,7 @@ msgstr "場所が残っているルートは削除できません。"
 msgid "場所が残っているルートは消せません。先に場所を消してください。"
 msgstr "場所が残っているルートは消せません。先に場所を消してください。"
 
-#: src/components/admin/AdminNav.tsx:15
+#: src/components/admin/AdminNav.tsx:18
 msgid "場所の一覧"
 msgstr "場所の一覧"
 
@@ -1515,7 +1520,7 @@ msgstr "場所を消す"
 msgid "場所を置く"
 msgstr "場所を置く"
 
-#: src/components/admin/AdminNav.tsx:15
+#: src/components/admin/AdminNav.tsx:18
 msgid "変更の記録"
 msgstr "変更の記録"
 
@@ -1807,8 +1812,8 @@ msgid "海外"
 msgstr "海外"
 
 #: src/components/admin/map-editor/MapEditor.tsx:341
-msgid "消したい場所の数字の丸を押してください。"
-msgstr "消したい場所の数字の丸を押してください。"
+msgid "消したい場所の数字の丸をクリックしてください。"
+msgstr "消したい場所の数字の丸をクリックしてください。"
 
 #: src/components/settings/PasskeyManager.tsx:119
 #: src/components/settings/PasskeyManager.tsx:149
@@ -1823,7 +1828,7 @@ msgstr "消すと、その端末では、顔や指紋でログインできなく
 msgid "淡色"
 msgstr "淡色"
 
-#: src/components/admin/AdminNav.tsx:37
+#: src/components/admin/AdminNav.tsx:51
 #: src/components/admin/RouteTable.tsx:25
 #: src/components/landing/Landing.tsx:255
 #: src/components/map/MapScreen.tsx:278
@@ -1951,7 +1956,7 @@ msgstr "答えたくない"
 msgid "答えなくても大丈夫です。"
 msgstr "答えなくても大丈夫です。"
 
-#: src/components/admin/AdminNav.tsx:18
+#: src/components/admin/AdminNav.tsx:21
 msgid "管理メニュー"
 msgstr "管理メニュー"
 
@@ -2141,10 +2146,6 @@ msgstr "説明"
 #: src/components/settings/PasskeyManager.tsx:93
 msgid "読み込み中"
 msgstr "読み込み中"
-
-#: src/components/admin/map-editor/MapEditor.tsx:370
-msgid "起伏"
-msgstr "起伏"
 
 #: src/components/admin/RouteEditor.tsx:296
 #: src/components/RouteStats.tsx:20
