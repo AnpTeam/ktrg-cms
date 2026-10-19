@@ -32,9 +32,38 @@ export function sniffImage(bytes: Uint8Array): { type: string; ext: string } | n
   return found ? { type: found.type, ext: found.ext } : null;
 }
 
+/**
+ * A readable key from the uploaded file's name: `photos/<name>-<6 random letters>.<ext>`.
+ * Letters (Japanese too), digits, "-" and "_" are kept, spaces become "-", anything else is dropped,
+ * and the name is cut to 60 characters. The random ending means two files with the same name
+ * never overwrite each other. The extension comes from the bytes, not from the name.
+ */
+export function photoKey(fileName: string, ext: string, random: () => string = randomSuffix): string {
+  const stem = fileName.normalize("NFC").replace(/\.[^.]*$/, "");
+  const clean = stem
+    .replace(/\s+/g, "-")
+    .replace(/[^\p{L}\p{N}_-]/gu, "")
+    .replace(/-{2,}/g, "-")
+    .replace(/^[-_]+|[-_]+$/g, "")
+    .slice(0, 60);
+  return `photos/${clean || "photo"}-${random()}.${ext}`;
+}
+
+function randomSuffix(): string {
+  const alphabet = "abcdefghijkmnpqrstuvwxyz23456789"; // no 0/o or 1/l, easy to read back
+  return Array.from(crypto.getRandomValues(new Uint8Array(6)), (b) => alphabet[b % alphabet.length]).join("");
+}
+
+/** The public address of a key; each path part is percent-encoded (Japanese names work in every browser). */
+function publicUrl(base: string, key: string): string {
+  return `${base}/${key.split("/").map(encodeURIComponent).join("/")}`;
+}
+
 export interface Upload {
-  /** A new UUID: the file's key in storage and the audit target. */
+  /** A new UUID: the audit target (the audit log keeps ids only, never file names). */
   id: string;
+  /** Where the file is in the bucket, e.g. photos/0-Start-寺田バス停-k3f9q2.jpg */
+  key: string;
   /** The public https address to save as a route or place photo. */
   url: string;
   contentType: string;
@@ -52,8 +81,9 @@ export type UploadService = ReturnType<typeof createUploadService>;
  * `uploads_unavailable`, so the rest of the app runs without it.
  *
  * - Only JPEG, PNG and WebP, checked from the file's bytes, at most MAX_UPLOAD_BYTES.
- * - Stored under `photos/<uuid>.<ext>`: the visitor's file name is never used (it may hold
- *   a person's name or odd characters), and two uploads never overwrite each other.
+ * - Stored under a readable key from the file's name (photoKey), cleaned of odd characters,
+ *   with a random ending so two uploads never overwrite each other. Admins upload trail photos;
+ *   the name stays out of the audit log and the error log.
  */
 export function createUploadService(deps: {
   storage?: FileStorage;
@@ -71,7 +101,7 @@ export function createUploadService(deps: {
       if (!image) return { ok: false, reason: "invalid_file" };
 
       const id = randomUUID();
-      const key = `photos/${id}.${image.ext}`;
+      const key = photoKey(file instanceof File ? file.name : "", image.ext);
       try {
         await deps.storage.put(key, bytes, image.type);
       } catch (err) {
@@ -79,7 +109,10 @@ export function createUploadService(deps: {
         log(`upload to storage failed: ${err instanceof Error ? err.message : String(err)}`);
         return { ok: false, reason: "uploads_unavailable" };
       }
-      return { ok: true, upload: { id, url: `${deps.publicBaseUrl}/${key}`, contentType: image.type, size: bytes.length } };
+      return {
+        ok: true,
+        upload: { id, key, url: publicUrl(deps.publicBaseUrl, key), contentType: image.type, size: bytes.length },
+      };
     },
   };
 }

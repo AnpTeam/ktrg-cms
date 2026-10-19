@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { MAX_UPLOAD_BYTES, createUploadService, sniffImage } from "./upload-service";
+import { MAX_UPLOAD_BYTES, createUploadService, photoKey, sniffImage } from "./upload-service";
 import { createMemoryStorage } from "./upload-storage";
 
 const JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3]);
@@ -28,18 +28,40 @@ describe("sniffImage", () => {
   });
 });
 
+describe("photoKey", () => {
+  const fixed = () => "abc234";
+
+  test("keeps a readable name, Japanese included", () => {
+    expect(photoKey("0-Start-寺田バス停.jpg", "jpg", fixed)).toBe("photos/0-Start-寺田バス停-abc234.jpg");
+    expect(photoKey("葛城 山頂 view.JPG", "jpg", fixed)).toBe("photos/葛城-山頂-view-abc234.jpg");
+  });
+
+  test("drops path tricks and odd characters, and has a fallback name", () => {
+    expect(photoKey("../../etc/passwd.png", "png", fixed)).toBe("photos/etcpasswd-abc234.png");
+    expect(photoKey("a/b\\c?#%&.jpg", "jpg", fixed)).toBe("photos/abc-abc234.jpg");
+    expect(photoKey("", "webp", fixed)).toBe("photos/photo-abc234.webp");
+    expect(photoKey("...", "jpg", fixed)).toBe("photos/photo-abc234.jpg");
+  });
+
+  test("cuts long names, and the extension always comes from the real type", () => {
+    expect(photoKey(`${"長".repeat(100)}.png`, "jpg", fixed)).toBe(`photos/${"長".repeat(60)}-abc234.jpg`);
+  });
+});
+
 describe("uploadPhoto", () => {
-  test("stores the image under a new UUID key and answers its public address", async () => {
+  test("stores the image under its own name (plus a random ending) and answers its public address", async () => {
     const s = setup();
-    const result = await s.service.uploadPhoto(new File([JPEG], "山田さんの写真.png", { type: "image/png" }));
+    const result = await s.service.uploadPhoto(new File([JPEG], "0-Start-寺田バス停.png", { type: "image/png" }));
     if (!result.ok) throw new Error(result.reason);
-    const { id, url, contentType, size } = result.upload;
+    const { id, key, url, contentType, size } = result.upload;
     expect(id).toMatch(/^[0-9a-f-]{36}$/);
-    // The type comes from the bytes, and the visitor's file name is not used.
+    // The extension and type come from the bytes, not from the name or what the browser said.
+    expect(key).toMatch(/^photos\/0-Start-寺田バス停-[a-z2-9]{6}\.jpg$/);
     expect(contentType).toBe("image/jpeg");
-    expect(url).toBe(`${BASE}/photos/${id}.jpg`);
+    expect(url).toBe(`${BASE}/${key.split("/").map(encodeURIComponent).join("/")}`);
+    expect(decodeURI(url)).toBe(`${BASE}/${key}`);
     expect(size).toBe(JPEG.length);
-    expect(s.files.get(`photos/${id}.jpg`)?.contentType).toBe("image/jpeg");
+    expect(s.files.get(key)?.contentType).toBe("image/jpeg");
   });
 
   test("two uploads of the same file never overwrite each other", async () => {

@@ -45,7 +45,7 @@ describe("POST /admin/uploads", () => {
     expect(res.status).toBe(201);
     const body = (await res.json()) as { ok: true; upload: { id: string; url: string; contentType: string } };
     expect(body.ok).toBe(true);
-    expect(body.upload.url).toBe(`https://photos.example.com/photos/${body.upload.id}.jpg`);
+    expect(body.upload.url).toMatch(/^https:\/\/photos\.example\.com\/photos\/photo-[a-z2-9]{6}\.jpg$/);
     expect(s.mem.files.size).toBe(1);
     expect(s.audit.rows).toMatchObject([{ actorUserId: admin.id, action: "upload.create", targetId: body.upload.id }]);
   });
