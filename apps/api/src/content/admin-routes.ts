@@ -60,6 +60,8 @@ const routeProps = {
   municipality: nullable(t.String({ maxLength: 100 })),
   // Shape and range are checked by the service (parseLine); any JSON gets there.
   geometry: t.Unknown(),
+  lineVerified: t.Boolean(),
+  lineSource: nullable(t.String({ maxLength: 500 })),
   videoUrl: nullable(t.String({ maxLength: 500 })),
 };
 const spotProps = {

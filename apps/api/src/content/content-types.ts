@@ -18,6 +18,9 @@ export interface RouteRow {
   prefecture: Prefecture | null;
   municipality: string | null;
   geometry: LineString | null;
+  /** True once a person has checked the line against an official source (lineSource). Visitors see the line only then. */
+  lineVerified: boolean;
+  lineSource: string | null;
   videoUrl: string | null;
   sortOrder: number;
   createdAt: Date;
@@ -68,6 +71,8 @@ export interface RouteFields {
   municipality: string | null;
   /** An unchecked line from the request; the service validates it. null removes the line. */
   geometry: unknown;
+  lineVerified: boolean;
+  lineSource: string | null;
   videoUrl: string | null;
 }
 

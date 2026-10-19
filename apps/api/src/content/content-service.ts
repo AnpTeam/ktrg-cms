@@ -73,6 +73,8 @@ function boundsOf(line: LineString | null): PublicRoute["bounds"] {
 }
 
 function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolean): PublicRoute {
+  // A line nobody has checked is not shown: not the line, not its silhouette, not the box around it.
+  const shown = r.lineVerified ? r.geometry : null;
   return {
     id: r.id,
     nameJa: r.nameJa,
@@ -89,9 +91,9 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     sortOrder: r.sortOrder,
     status: publishedSpotCount > 0 ? "ready" : "soon",
     publishedSpotCount,
-    sketch: r.geometry ? sketchOf(r.geometry) : null,
-    line: withLine ? r.geometry : null,
-    bounds: boundsOf(r.geometry),
+    sketch: shown ? sketchOf(shown) : null,
+    line: withLine ? shown : null,
+    bounds: boundsOf(shown),
   };
 }
 
@@ -141,6 +143,11 @@ export function createContentService(deps: { store: ContentStore }) {
       const v = text(input.videoUrl);
       if (v && !isAllowedVideoUrl(v)) return bad("invalid_video_url");
       out.videoUrl = v;
+    }
+    if (input.lineVerified !== undefined) out.lineVerified = input.lineVerified;
+    {
+      const v = text(input.lineSource);
+      if (v !== undefined) out.lineSource = v;
     }
     if (input.geometry !== undefined) {
       if (input.geometry === null) out.geometry = null;
@@ -195,7 +202,16 @@ export function createContentService(deps: { store: ContentStore }) {
     async updateRoute(actor: string, id: string, expected: Date | string, input: Partial<RouteFields>): Promise<Result<RouteRow>> {
       const p = prepareRoute(input);
       if (!p.ok) return p;
-      const r = await store.updateRoute(actor, id, date(expected), p.value);
+      const current = await store.getRoute(id);
+      if (!current) return bad("not_found");
+      const changes = p.value;
+      // Redrawing the line cancels the check on it, unless the same save checks it again.
+      if (changes.geometry !== undefined && changes.lineVerified === undefined) changes.lineVerified = false;
+      if ((changes.lineVerified ?? current.route.lineVerified) === true) {
+        if (!(changes.lineSource !== undefined ? changes.lineSource : current.route.lineSource)) return bad("source_required");
+        if ((changes.geometry !== undefined ? changes.geometry : current.route.geometry) === null) return bad("invalid_line");
+      }
+      const r = await store.updateRoute(actor, id, date(expected), changes);
       if (r === null) return bad("not_found");
       if (r === "conflict") return bad("conflict");
       return ok(r);

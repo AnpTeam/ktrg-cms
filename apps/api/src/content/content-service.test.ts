@@ -160,8 +160,30 @@ describe("what visitors see", () => {
     const detail = await svc.publicRoute(r.id);
     expect(detail?.spots.map((s) => s.nameJa)).toEqual(["公開"]);
     expect(detail?.spots[0]?.position).toEqual({ lat: 34.3, lng: 135.1, verified: true });
-    expect(detail?.route.line).not.toBeNull();
+    expect(detail?.route.line).toBeNull(); // the line is a draft until a person has checked it
+    expect(detail?.route.sketch).toBeNull();
+    expect(detail?.route.bounds).toBeNull();
     expect(await svc.publicSpot(draft.id)).toBeNull();
+  });
+
+  test("a checked line is shown; redrawing it hides it again until it is checked again", async () => {
+    const r = await route({ geometry: LINE });
+    expect((await svc.publicRoute(r.id))?.route.line).toBeNull();
+    expect(await svc.updateRoute(ADMIN, r.id, r.updatedAt, { lineVerified: true })).toEqual({ ok: false, reason: "source_required" });
+    const checked = await svc.updateRoute(ADMIN, r.id, r.updatedAt, { lineVerified: true, lineSource: "葛城修験 公式サイト" });
+    if (!checked.ok) throw new Error(checked.reason);
+    const shown = (await svc.publicRoute(r.id))?.route;
+    expect(shown?.line?.coordinates).toHaveLength(2);
+    expect(shown?.bounds).not.toBeNull();
+    expect(shown?.sketch).not.toBeNull();
+    const redrawn = await svc.updateRoute(ADMIN, r.id, checked.value.updatedAt, { geometry: { type: "LineString", coordinates: [[135, 34], [135.02, 34.02]] } });
+    expect(redrawn.ok && redrawn.value.lineVerified).toBe(false);
+    expect((await svc.publicRoute(r.id))?.route.line).toBeNull();
+  });
+
+  test("a route with no line cannot be marked as checked", async () => {
+    const r = await route();
+    expect(await svc.updateRoute(ADMIN, r.id, r.updatedAt, { lineVerified: true, lineSource: "公式" })).toEqual({ ok: false, reason: "invalid_line" });
   });
 });
 

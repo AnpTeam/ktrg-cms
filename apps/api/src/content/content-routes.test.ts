@@ -180,6 +180,21 @@ describe("what visitors read", () => {
     expect(body.routes.map((r: Json) => [r.nameJa, r.status])).toEqual([["準備中のルート", "soon"]]);
   });
 
+  test("a drawn line is not sent until it is checked against a source", async () => {
+    const { call, login } = setup();
+    const cookie = await login(admin);
+    const route = ((await (await call("POST", "/admin/routes", { cookie, body: { nameJa: "R", geometry: LINE } })).json()) as Json).route as Json;
+    const read = async () => ((await (await call("GET", `/routes/${route.id}`)).json()) as Json).route as Json;
+    expect(route.lineVerified).toBe(false);
+    expect((await read()).line).toBeNull();
+    expect((await (await call("GET", "/routes")).json() as Json).routes[0]).toMatchObject({ sketch: null, bounds: null });
+    const noSource = await call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt: route.updatedAt, lineVerified: true } });
+    expect([noSource.status, ((await noSource.json()) as Json).error]).toEqual([400, "source_required"]);
+    const ok = await call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt: route.updatedAt, lineVerified: true, lineSource: "公式サイト" } });
+    expect(ok.status).toBe(200);
+    expect((await read()).line.coordinates).toHaveLength(2);
+  });
+
   test("an unchecked position is never sent, even for a published place", async () => {
     const { call, login, mem } = setup();
     const cookie = await login(admin);

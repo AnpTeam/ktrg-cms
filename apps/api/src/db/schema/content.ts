@@ -46,6 +46,10 @@ export const routes = pgTable(
     municipality: text("municipality"),
     // GeoJSON line drawn on the map.
     geometry: jsonb("geometry"),
+    // Like a place's position: the line stays hidden from visitors until a person has checked it against an
+    // official source (named in line_source). Changing the line cancels the check.
+    lineVerified: boolean("line_verified").notNull().default(false),
+    lineSource: text("line_source"),
     // YouTube / Vimeo only; the host is checked in the API.
     videoUrl: text("video_url"),
     sortOrder: integer("sort_order").notNull().default(0),

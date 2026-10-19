@@ -52,6 +52,12 @@ describe("content schema", () => {
     expect(names).toContain("spots_publish_requires_verified_position");
   });
 
+  test("a route line is a draft until a person checks it against a source", () => {
+    expect(col(routes, "line_verified").notNull).toBe(true);
+    expect(col(routes, "line_verified").default).toBe(false);
+    expect(col(routes, "line_source").notNull).toBe(false);
+  });
+
   test("a position is a draft until a person checks it against a source", () => {
     expect(col(spots, "position_verified").notNull).toBe(true);
     expect(col(spots, "position_verified").default).toBe(false);
