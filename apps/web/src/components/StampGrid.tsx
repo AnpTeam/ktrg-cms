@@ -34,7 +34,7 @@ export function StampGrid({
   const big = columns === 2;
 
   return (
-    <ol className={`grid ${big ? "grid-cols-2 gap-4" : "grid-cols-4 gap-2"} ${className}`}>
+    <ol className={`grid ${big ? "grid-cols-2 gap-4 lg:grid-cols-3" : "grid-cols-4 gap-2"} ${className}`}>
       {Array.from({ length: total }, (_, i) => i + 1).map((number) => {
         const state: StampState = stamped.has(number) ? "stamped" : number === next ? "next" : "empty";
         const name = names?.get(number);

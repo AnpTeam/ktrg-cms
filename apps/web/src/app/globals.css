@@ -653,3 +653,26 @@ body.map-sheet-full .site-header {
 .map-tag[data-soon="true"] .map-tag-head {
   border-style: dashed;
 }
+
+/* From 1024 px the content area is wide. Text pages, settings and forms keep one readable column, centred in it. */
+@media (min-width: 1024px) {
+  .page-narrow {
+    max-width: 48rem;
+    margin-inline: auto;
+  }
+  .page-form {
+    max-width: 36rem;
+    margin-inline: auto;
+  }
+}
+
+/* On a desktop the map takes the whole area beside the sidebar (no centred column, no padding). */
+@media (min-width: 1024px) {
+  body.map-screen-active #main {
+    padding: 0;
+  }
+  body.map-screen-active #main > div:first-child {
+    max-width: none;
+    padding-inline: 0;
+  }
+}

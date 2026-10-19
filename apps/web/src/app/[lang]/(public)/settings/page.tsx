@@ -22,7 +22,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
   const prefs = await getPrefs();
 
   return (
-    <div className="flex flex-col gap-6 px-4 pt-2">
+    <div className="page-narrow flex flex-col gap-6 px-4 pt-2">
       <BackLink href={home}>
         <Trans>ホーム</Trans>
       </BackLink>

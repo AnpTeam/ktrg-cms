@@ -40,7 +40,7 @@ export default async function MapSettingsPage() {
   const places = route ? (await listPlacesForRoute(route.order)).map((p) => toMapPlace(i18n.locale, p)) : [];
 
   return (
-    <div className="flex flex-col gap-4 px-4 pt-2">
+    <div className="page-narrow flex flex-col gap-4 px-4 pt-2">
       <h1 className="text-3xl font-bold">
         <Trans>地図の見た目</Trans>
       </h1>

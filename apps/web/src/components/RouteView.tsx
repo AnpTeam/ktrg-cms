@@ -79,121 +79,135 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
   const mapPlaces = [...places, ...pointsAsPlaces(route.points, locale)];
   const photo = route.photoUrl ? { src: route.photoUrl, alt: pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa } : null;
 
+  // One column (the phone, and the admin's narrow preview). When the box this sits in is wide (a desktop page), two
+  // columns: the photo, the name and the numbers, the story and the access on the left; the elevation, the video, the map
+  // and the stops on the right. It follows the width of its own box (a container query), not the screen's, so the preview
+  // beside the admin form stays one column. In one column the order is the usual one (each part's `order-n`); the two
+  // wrappers are `contents` there, so they take no space of their own.
+  const SIDE = "contents @4xl:flex @4xl:min-w-0 @4xl:flex-col @4xl:gap-6";
   return (
-    <>
-      {photo ? (
-        <div className="px-4">
-          <HeroPhoto photo={photo} placeholder={false} />
-        </div>
-      ) : null}
-      <header className="px-4">
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="min-w-0 text-3xl font-bold">
-            <Localized value={pickText(locale, route.nameJa, route.nameEn)} />
-          </h1>
-          {route.sketch ? <RouteSilhouette sketch={route.sketch} size={96} /> : null}
-        </div>
-        {route.prefecture || route.municipality ? (
-          <p className="mt-2 text-lg text-muted">
-            {route.prefecture ? <PrefectureName value={route.prefecture} /> : null}
-            {route.prefecture && route.municipality ? " " : null}
-            {municipalityName(locale, route.municipality)}
-          </p>
-        ) : null}
-        <RouteStats route={route} />
-        {description ? (
-          <div className="mt-4">
-            <ExpandableText text={description.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
-              <Localized value={description} tag={false} />
-            </ExpandableText>
-          </div>
-        ) : null}
-      </header>
-
-      {route.sketch?.elevations ? (
-        <section className="px-4">
-          <ElevationProfile elevations={route.sketch.elevations} distanceKm={route.distanceKm} />
-        </section>
-      ) : null}
-
-      {video ? (
-        <section className="flex flex-col gap-3 px-4">
-          <h2 className="text-xl font-bold">
-            <Trans>ルートの動画</Trans>
-          </h2>
-          <IntroVideo video={video} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
-        </section>
-      ) : null}
-
-      {stops.length > 0 ? (
-        <section className="px-4">
-          <TrailMapLoader stops={stops} line={route.line} places={mapPlaces} draft={draftPositions} settings={settings} mergeStops={mergeStops} placesFirst={placesFirst} />
-        </section>
-      ) : null}
-
-      {history ? (
-        <section className="px-4">
-          <h2 className="text-xl font-bold">
-            <Trans>歴史・由来</Trans>
-          </h2>
-          <div className="mt-2">
-            <ExpandableText text={history.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
-              <Localized value={history} tag={false} />
-            </ExpandableText>
-          </div>
-          {history.fallback ? (
-            <p className="mt-2 text-base text-muted">
-              <Trans>この文章は日本語のみです。</Trans>
-            </p>
+    <div className="@container flex flex-col gap-6">
+      <div className="flex flex-col gap-6 @4xl:grid @4xl:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] @4xl:items-start @4xl:gap-x-10">
+        <div className={SIDE}>
+          {photo ? (
+            <div className="order-1 px-4 @4xl:order-none @4xl:px-0">
+              <HeroPhoto photo={photo} placeholder={false} />
+            </div>
           ) : null}
-        </section>
-      ) : null}
-
-      {access ? (
-        <section className="px-4">
-          <h2 className="text-xl font-bold">
-            <Trans>アクセス・交通</Trans>
-          </h2>
-          <div className="mt-2">
-            <ExpandableText text={access.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
-              <Localized value={access} tag={false} />
-            </ExpandableText>
-          </div>
-          {access.fallback ? (
-            <p className="mt-2 text-base text-muted">
-              <Trans>この文章は日本語のみです。</Trans>
-            </p>
-          ) : null}
-        </section>
-      ) : null}
-
-      {route.spots.length === 0 ? (
-        <EmptyState title={<Trans>スタンプの場所は、まだ準備中です。</Trans>}>
-          <Trans>公開できるようになったら、ここに場所の一覧が表示されます。</Trans>
-        </EmptyState>
-      ) : null}
-
-      {route.spots.length > 0 ? (
-        <section>
-          <div className="flex flex-wrap items-baseline justify-between gap-x-4 px-4 pb-2">
-            <h2 className="text-xl font-bold">
-              <Trans>スタンプの場所</Trans>
-            </h2>
-            {stampedCount !== null ? (
-              <p className="text-lg font-bold tabular-nums">
-                <Trans>
-                  スタンプ {stampedCount} / {spotCount}
-                </Trans>
+          <header className="order-2 px-4 @4xl:order-none @4xl:px-0">
+            <div className="flex items-start justify-between gap-4">
+              <h1 className="min-w-0 text-3xl font-bold @4xl:text-4xl">
+                <Localized value={pickText(locale, route.nameJa, route.nameEn)} />
+              </h1>
+              {route.sketch ? <RouteSilhouette sketch={route.sketch} size={96} /> : null}
+            </div>
+            {route.prefecture || route.municipality ? (
+              <p className="mt-2 text-lg text-muted">
+                {route.prefecture ? <PrefectureName value={route.prefecture} /> : null}
+                {route.prefecture && route.municipality ? " " : null}
+                {municipalityName(locale, route.municipality)}
               </p>
             ) : null}
-          </div>
-          <StopList spots={route.spots} hrefFor={(spot) => spotHref(spot.id)} locale={locale} />
-        </section>
-      ) : null}
+            <RouteStats route={route} />
+            {description ? (
+              <div className="mt-4">
+                <ExpandableText text={description.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
+                  <Localized value={description} tag={false} />
+                </ExpandableText>
+              </div>
+            ) : null}
+          </header>
+
+          {history ? (
+            <section className="order-6 px-4 @4xl:order-none @4xl:px-0">
+              <h2 className="text-xl font-bold">
+                <Trans>歴史・由来</Trans>
+              </h2>
+              <div className="mt-2">
+                <ExpandableText text={history.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
+                  <Localized value={history} tag={false} />
+                </ExpandableText>
+              </div>
+              {history.fallback ? (
+                <p className="mt-2 text-base text-muted">
+                  <Trans>この文章は日本語のみです。</Trans>
+                </p>
+              ) : null}
+            </section>
+          ) : null}
+
+          {access ? (
+            <section className="order-7 px-4 @4xl:order-none @4xl:px-0">
+              <h2 className="text-xl font-bold">
+                <Trans>アクセス・交通</Trans>
+              </h2>
+              <div className="mt-2">
+                <ExpandableText text={access.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
+                  <Localized value={access} tag={false} />
+                </ExpandableText>
+              </div>
+              {access.fallback ? (
+                <p className="mt-2 text-base text-muted">
+                  <Trans>この文章は日本語のみです。</Trans>
+                </p>
+              ) : null}
+            </section>
+          ) : null}
+        </div>
+
+        <div className={SIDE}>
+          {route.sketch?.elevations ? (
+            <section className="order-3 px-4 @4xl:order-none @4xl:px-0">
+              <ElevationProfile elevations={route.sketch.elevations} distanceKm={route.distanceKm} />
+            </section>
+          ) : null}
+
+          {video ? (
+            <section className="order-4 flex flex-col gap-3 px-4 @4xl:order-none @4xl:px-0">
+              <h2 className="text-xl font-bold">
+                <Trans>ルートの動画</Trans>
+              </h2>
+              <IntroVideo video={video} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
+            </section>
+          ) : null}
+
+          {stops.length > 0 ? (
+            <section className="order-5 px-4 @4xl:order-none @4xl:px-0">
+              <TrailMapLoader stops={stops} line={route.line} places={mapPlaces} draft={draftPositions} settings={settings} mergeStops={mergeStops} placesFirst={placesFirst} />
+            </section>
+          ) : null}
+
+          {route.spots.length === 0 ? (
+            <div className="order-8 @4xl:order-none">
+              <EmptyState title={<Trans>スタンプの場所は、まだ準備中です。</Trans>}>
+                <Trans>公開できるようになったら、ここに場所の一覧が表示されます。</Trans>
+              </EmptyState>
+            </div>
+          ) : null}
+
+          {route.spots.length > 0 ? (
+            <section className="order-8 @4xl:order-none">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 px-4 pb-2 @4xl:px-0">
+                <h2 className="text-xl font-bold">
+                  <Trans>スタンプの場所</Trans>
+                </h2>
+                {stampedCount !== null ? (
+                  <p className="text-lg font-bold tabular-nums">
+                    <Trans>
+                      スタンプ {stampedCount} / {spotCount}
+                    </Trans>
+                  </p>
+                ) : null}
+              </div>
+              <StopList spots={route.spots} hrefFor={(spot) => spotHref(spot.id)} locale={locale} />
+            </section>
+          ) : null}
+        </div>
+      </div>
 
       <Notice>
         <Trans>出かける前に、公式の最新情報を確認してください。</Trans>
       </Notice>
-    </>
+    </div>
   );
 }
