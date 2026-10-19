@@ -31,6 +31,9 @@ const EnvSchema = Type.Object({
   // Secret for the scheduled clean-up (POST /internal/purge-deletions, called hourly by a GitHub Actions workflow).
   // Unset: that route does not exist.
   CRON_SECRET: Type.Optional(Type.String({ minLength: 32 })),
+  // Key for OpenRouteService (openrouteservice.org), used only by the admin's "snap to trails". Unset: that button says the
+  // service is not set up. Keep it on the server only; never put it in the web app or the repo.
+  ORS_API_KEY: Type.Optional(Type.String({ minLength: 10 })),
   // API docs at /api/v1/openapi. Always on outside production; set true to show them there too.
   API_DOCS: Type.Boolean({ default: false }),
   // Photo uploads to Cloudflare R2: all five or none. Unset: POST /admin/uploads answers 503.

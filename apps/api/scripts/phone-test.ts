@@ -76,6 +76,22 @@ const services = createServices({
   mailer: withMailFile(createConsoleMailer("KTRG <no-reply@localhost>")),
   secret: "phone-test-secret-phone-test-secret-0",
   passkey: passkeyConfig,
+  // A pretend route-finder, so the admin's "snap to trails" can be tried here without a key: it joins the points with a
+  // gentle sideways wobble and heights that rise and fall (this page only; the real one is src/routing).
+  routing: {
+    async snap(points) {
+      const line: [number, number, number][] = [];
+      points.forEach((p, i) => {
+        const next = points[i + 1];
+        if (!next) return line.push([p.lng, p.lat, 100]);
+        for (let k = 0; k < 10; k++) {
+          const f = k / 10;
+          line.push([p.lng + (next.lng - p.lng) * f + Math.sin((f + i) * 6) * 0.0004, p.lat + (next.lat - p.lat) * f, 100 + Math.round(Math.sin(f * 3 + i) * 40)]);
+        }
+      });
+      return { ok: true, line, distanceM: line.length * 50 };
+    },
+  },
 });
 
 const page = `<!doctype html>

@@ -44,6 +44,10 @@ export function useErrorMessages(): Record<ErrorKey, string> {
     // Admin: photo uploads
     invalid_file: t`写真は4MBまでのJPEG・PNG・WebPだけアップロードできます。`,
     uploads_unavailable: t`写真を保存できませんでした。しばらくしてからもう一度お試しください。`,
+    // Admin: snapping a line to trails
+    routing_unavailable: t`道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。`,
+    routing_no_route: t`この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。`,
+    routing_failed: t`道を調べられませんでした。しばらくしてから、もう一度お試しください。`,
     // From the phone itself
     unsupported: t`この端末・ブラウザではパスキーを使えません。メールでお試しください。`,
     cancelled: t`パスキーの確認が中止されました。もう一度お試しください。`,
