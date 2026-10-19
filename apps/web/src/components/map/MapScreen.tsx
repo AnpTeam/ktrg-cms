@@ -28,8 +28,11 @@ const linkButton = "tap-target flex min-h-12 w-full items-center justify-center 
 const primaryLink = "tap-target flex min-h-12 w-full items-center justify-center rounded-xl bg-brand px-5 text-lg font-bold text-on-brand";
 // Room kept under the sheet for the floating tab bar (a rail on wide screens).
 const TAB_ROOM_REM = 5.5;
-// From this width the free space at the right of the page holds the detail of the chosen course or stop.
-const WIDE_QUERY = "(min-width: 1280px)";
+// From this width (a desktop) the map fills the whole area beside the sidebar, and what a phone shows in a bottom sheet
+// (the courses, the chosen course or stop) is a panel floating at the left of the map.
+const WIDE_QUERY = "(min-width: 1024px)";
+const PANEL_REM = 26; // the panel's width
+const PANEL_MARGIN_REM = 0.75; // its gap to the map's edges
 
 function subscribeWide(onChange: () => void) {
   const query = window.matchMedia(WIDE_QUERY);
@@ -70,6 +73,8 @@ export function MapScreen({
   const [available, setAvailable] = useState(520);
   // The room under the sheet taken by the tab bar (none on a wide screen, where it is a rail).
   const [tabPx, setTabPx] = useState(88);
+  // On a desktop: how much of the map's left side the panel covers.
+  const [panelPx, setPanelPx] = useState(0);
   const wide = useSyncExternalStore(subscribeWide, () => window.matchMedia(WIDE_QUERY).matches, () => false);
 
   const route = routes.find((r) => r.id === routeId) ?? null;
@@ -97,6 +102,7 @@ export function MapScreen({
       const wide = window.matchMedia("(min-width: 768px)").matches;
       const tab = wide ? 0 : TAB_ROOM_REM * rem;
       setTabPx(tab);
+      setPanelPx(window.matchMedia(WIDE_QUERY).matches ? (PANEL_REM + 2 * PANEL_MARGIN_REM) * rem : 0);
       setAvailable(Math.max(240, el.clientHeight - tab));
     };
     measure();
@@ -105,8 +111,7 @@ export function MapScreen({
     return () => observer.disconnect();
   }, []);
 
-  // On a narrow screen the sheet rises to show what was chosen; on a wide one the detail has its own panel at the
-  // right and the sheet stays as it is.
+  // On a narrow screen the sheet rises to show what was chosen; on a desktop the panel just shows it.
   const chooseRoute = useCallback(
     (id: string) => {
       setRouteId(id);
@@ -188,12 +193,12 @@ export function MapScreen({
     </div>
   );
 
-  // Narrow: one sheet that shows the home content or the chosen course or stop. Wide: the sheet is always the
-  // home content, and the chosen course or stop is shown in the panel at the right.
-  const showDetailInSheet = !wide && hasDetail;
+  // The sheet (a bottom sheet on a phone, a panel at the left on a desktop) shows the home content, or the chosen course
+  // or stop.
+  const showDetailInSheet = hasDetail;
 
   return (
-    <div className="relative md:-mt-6">
+    <div className="relative md:-mt-6 lg:mt-0">
     <div
       ref={wrap}
       data-dark={settings.dark}
@@ -205,11 +210,12 @@ export function MapScreen({
         stopId={stopId}
         onSelectRoute={chooseRoute}
         onSelectStop={chooseStop}
-        coveredPx={sheetHeightPx(snap, available) + tabPx}
+        coveredPx={wide ? 0 : sheetHeightPx(snap, available) + tabPx}
+        coveredLeftPx={panelPx}
         settings={settings}
         mergeStops={mergeStops}
       />
-      <MapSheet snap={snap} onSnap={setSnap} available={available} tabPx={tabPx} header={showDetailInSheet ? null : homeHeader}>
+      <MapSheet panel={wide} snap={snap} onSnap={setSnap} available={available} tabPx={tabPx} header={showDetailInSheet ? null : homeHeader}>
         {showDetailInSheet ? (
           <div className="flex flex-col gap-4">
             {hero}
@@ -221,16 +227,6 @@ export function MapScreen({
       </MapSheet>
     </div>
 
-    {wide && hasDetail ? (
-      <aside aria-label={t`くわしい情報`} className="absolute left-full top-0 ml-10 h-dvh w-[21rem] border-l border-surface">
-        <div className="h-full overflow-y-auto overscroll-contain px-6 py-5">
-          <div className="-mx-4 flex flex-col gap-4 pb-6">
-            {hero}
-            {detailBody}
-          </div>
-        </div>
-      </aside>
-    ) : null}
     </div>
   );
 }

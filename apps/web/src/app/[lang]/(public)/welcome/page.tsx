@@ -23,7 +23,7 @@ export default async function WelcomePage({ searchParams }: { searchParams: Prom
   const prefs = await getPrefs();
 
   return (
-    <div className="flex flex-col gap-6 px-4 pt-2">
+    <div className="page-narrow flex flex-col gap-6 px-4 pt-2">
       <WelcomeFlow initial={prefs} signedIn={viewer.signedIn} next={next} askAbout={viewer.ageRange === null && viewer.gender === null} />
     </div>
   );

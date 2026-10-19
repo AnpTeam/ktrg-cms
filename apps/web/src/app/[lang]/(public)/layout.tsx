@@ -12,34 +12,36 @@ import { getViewer } from "@/lib/viewer";
 import { sampleContentEnabled } from "@/lib/content";
 import { initLingui } from "@/i18n/server";
 
-// Participant side: mobile first. A slim bar on top (menu), the page, and a tab bar at the bottom (a side rail on
-// wide screens). The bottom padding keeps content clear of the tab bar.
+// Participant side: mobile first. A slim bar on top (menu), the page, and a tab bar at the bottom.
+//   Tablet (768 px and up): a side rail on the left and one centred column.
+//   Desktop (1024 px and up): a sidebar fixed to the far left of the screen (logo, tabs, and the site's footer links
+//   at its bottom, always in view) and a wide content area; each page lays itself out in several columns there.
+// The bottom padding keeps content clear of the phone's tab bar.
 export default async function PublicLayout({ children }: { children: ReactNode }) {
   const i18n = await initLingui();
   const sample = sampleContentEnabled();
   const viewer = await getViewer();
   const prefsState = await getPrefsState();
 
-  // Phone: the page fills the width and the tab bar is at the bottom. Wider screens work like Twitter: the
-  // page is one centred column, the navigation moves to a rail on its left, and an empty space of the same
-  // width on the right keeps the column in the middle.
   return (
     <MenuProvider>
-    <StampFilters />
-    <div className="mx-auto flex w-full max-w-5xl justify-center md:gap-6 lg:gap-10">
-      <TabBar />
-      <div className="min-w-0 max-w-xl flex-1 md:border-x md:border-surface">
-        <SiteHeader signedIn={viewer.signedIn} name={viewer.name} sample={sample} devTools={process.env.NODE_ENV !== "production"} />
-        <OfflineNotice />
-        {sample ? <SampleNoticeHost /> : null}
-        <PrefsSync signedIn={viewer.signedIn} account={prefsState.account} device={prefsState.device} />
-        <main id="main" className="pb-28 md:pb-10 md:pt-6">
-          {children}
-          <SiteFooter locale={i18n.locale} />
-        </main>
+      <StampFilters />
+      <div className="mx-auto flex w-full max-w-5xl justify-center md:gap-6 lg:mx-0 lg:max-w-none lg:justify-start lg:gap-0">
+        {/* The footer lives in the sidebar on a desktop (and is hidden on the map, whose page has no room for it). */}
+        <TabBar footer={<SiteFooter locale={i18n.locale} variant="sidebar" />} />
+        <div className="min-w-0 max-w-xl flex-1 md:border-x md:border-surface lg:max-w-none lg:border-x-0">
+          <SiteHeader signedIn={viewer.signedIn} name={viewer.name} sample={sample} devTools={process.env.NODE_ENV !== "production"} />
+          <OfflineNotice />
+          {sample ? <SampleNoticeHost /> : null}
+          <PrefsSync signedIn={viewer.signedIn} account={prefsState.account} device={prefsState.device} />
+          <main id="main" className="pb-28 md:pb-10 md:pt-6 lg:pb-20 lg:pt-8">
+            <div className="lg:mx-auto lg:max-w-6xl lg:px-10">{children}</div>
+            <div className="lg:hidden">
+              <SiteFooter locale={i18n.locale} />
+            </div>
+          </main>
+        </div>
       </div>
-      <div aria-hidden="true" className="hidden w-60 shrink-0 lg:block" />
-    </div>
     </MenuProvider>
   );
 }

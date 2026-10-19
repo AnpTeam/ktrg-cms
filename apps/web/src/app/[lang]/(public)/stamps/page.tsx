@@ -24,8 +24,11 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
   const others = otherRallies(rallies, featured);
 
   return (
-    <div className="flex flex-col gap-6 pt-2">
-      <h1 className="px-4 text-3xl font-bold">
+    <div className="flex flex-col gap-6 pt-2 lg:pt-0">
+      {/* From 1024 px: you and how to play on the left, the rallies on the right. On a phone, one column in this order. */}
+      <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-start lg:gap-x-10">
+      <div className="flex flex-col gap-6">
+      <h1 className="px-4 text-3xl font-bold lg:text-4xl">
         <Trans>スタンプ</Trans>
       </h1>
 
@@ -41,6 +44,9 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
       {/* Signed out: a reason to sign in and the rallies, never a false "0 stamps". */}
       {viewer.signedIn ? <ProfileCard publicId={viewer.publicId} deletionDueAt={viewer.deletionDueAt} locale={i18n.locale} name={viewer.name} origin={viewer.origin} ageRange={viewer.ageRange} gender={viewer.gender} /> : <SignInPrompt />}
 
+      </div>
+
+      <div className="flex flex-col gap-6">
       {rallies.length === 0 ? (
         <EmptyState title={<Trans>ラリーは、まだ準備中です。</Trans>}>
           <Trans>公開できるようになったら、ここにスタンプのラリーが表示されます。</Trans>
@@ -61,6 +67,9 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
           </ul>
         </section>
       ) : null}
+
+      </div>
+      </div>
 
       <Notice>
         <Trans>出かける前に、公式の最新情報を確認してください。</Trans>

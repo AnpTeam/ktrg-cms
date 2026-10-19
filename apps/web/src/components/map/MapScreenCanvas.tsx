@@ -39,6 +39,7 @@ export function MapScreenCanvas({
   onSelectRoute,
   onSelectStop,
   coveredPx,
+  coveredLeftPx = 0,
   settings,
   mergeStops,
 }: {
@@ -49,6 +50,8 @@ export function MapScreenCanvas({
   onSelectStop: (routeId: string, stopId: string) => void;
   /** How much of the map's bottom the sheet and the tab bar cover right now: what is framed stays clear of it. */
   coveredPx: number;
+  /** On a desktop: how much of the map's left side the panel covers, so what is framed stays clear of it. */
+  coveredLeftPx?: number;
   settings: MapSettings;
   mergeStops: boolean;
 }) {
@@ -57,6 +60,7 @@ export function MapScreenCanvas({
   const mapRef = useRef<MapLibreMap | null>(null);
   const mlRef = useRef<typeof import("maplibre-gl") | null>(null);
   const coveredRef = useRef(coveredPx);
+  const leftRef = useRef(coveredLeftPx);
   const routesRef = useRef(routes);
   const selectRouteRef = useRef(onSelectRoute);
   const [mapGen, setMapGen] = useState(0);
@@ -67,6 +71,7 @@ export function MapScreenCanvas({
 
   useEffect(() => {
     coveredRef.current = coveredPx;
+    leftRef.current = coveredLeftPx;
     routesRef.current = routes;
     selectRouteRef.current = onSelectRoute;
   });
@@ -77,7 +82,7 @@ export function MapScreenCanvas({
   const draftShown = focus ? focus.draft || focus.area?.verified === false : routes.some((r) => r.area && !r.area.verified);
 
   // Keep what is framed above the sheet and clear of the buttons (menu on the left, zoom on the right).
-  const padding = () => ({ top: 96, left: 36, right: 72, bottom: coveredRef.current + 28 });
+  const padding = () => ({ top: 96, left: 36 + leftRef.current, right: 72, bottom: coveredRef.current + 28 });
 
   // Create the map once for these settings; remove it again on unmount (CLAUDE.md: map.remove()).
   useEffect(() => {
@@ -235,7 +240,7 @@ export function MapScreenCanvas({
       const size = containerRef.current;
       const spread = spreadLabels(
         merged.map((m) => m.box),
-        { left: 8, top: 100, right: (size?.clientWidth ?? 360) - 8, bottom: (size?.clientHeight ?? 700) - coveredRef.current - 8 },
+        { left: 8 + leftRef.current, top: 100, right: (size?.clientWidth ?? 360) - 8, bottom: (size?.clientHeight ?? 700) - coveredRef.current - 8 },
       );
       merged.forEach((m, i) => {
         const at = map.unproject([spread[i]!.x, spread[i]!.y]);
@@ -318,7 +323,7 @@ export function MapScreenCanvas({
       {ready ? null : <p className="pointer-events-none absolute inset-0 flex items-center justify-center bg-surface text-lg">{t`地図を読み込み中…`}</p>}
 
       {draftShown ? (
-        <p className="absolute left-3 top-16 z-[4] flex max-w-[calc(100%-6rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">
+        <p style={{ marginLeft: coveredLeftPx }} className="absolute left-3 top-16 z-[4] flex max-w-[calc(100%-6rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">
           <span className="text-caution">
             <WarningIcon />
           </span>

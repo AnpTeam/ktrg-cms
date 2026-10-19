@@ -42,7 +42,7 @@ export default async function SitemapPage() {
   const routes = [...(await listRoutes())].sort((a, b) => a.order - b.order);
 
   return (
-    <div className="flex flex-col gap-8 pt-2">
+    <div className="page-narrow flex flex-col gap-8 pt-2">
       <div className="flex flex-col gap-6 px-4">
         <BackLink href={to("")}>
           <Trans>ホーム</Trans>

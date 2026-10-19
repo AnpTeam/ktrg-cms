@@ -24,7 +24,7 @@ export default async function RegisterPage({ searchParams }: Props) {
   if ((await getViewer(searchParams)).signedIn) redirect(next);
 
   return (
-    <div className="flex flex-col gap-6 px-4">
+    <div className="page-form flex flex-col gap-6 px-4">
       <BackLink href={home}>
         <Trans>ホーム</Trans>
       </BackLink>

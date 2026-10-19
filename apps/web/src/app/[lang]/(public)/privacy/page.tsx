@@ -19,7 +19,7 @@ export default async function PrivacyPage() {
   const policy = privacyPolicy(i18n.locale);
 
   return (
-    <div className="flex flex-col gap-8 pt-2">
+    <div className="page-narrow flex flex-col gap-8 pt-2">
       <div className="flex flex-col gap-6 px-4">
         <BackLink href={localePath(i18n.locale)}>
           <Trans>ホーム</Trans>
