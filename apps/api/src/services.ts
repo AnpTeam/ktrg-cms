@@ -7,10 +7,13 @@ import type { AuthServices } from "./auth/routes";
 import { createSessionService, type SessionStore } from "./auth/session-service";
 import type { Mailer } from "./lib/mailer";
 import type { MeServices } from "./me/me-routes";
+import type { ContentServices } from "./content/admin-routes";
+import { createContentService } from "./content/content-service";
+import type { ContentStore } from "./content/content-types";
 import { createMeService, type MeStore } from "./me/me-service";
 
 /** Everything the routes use. */
-export type Services = AuthServices & PasskeyServices & MeServices;
+export type Services = AuthServices & PasskeyServices & MeServices & ContentServices;
 
 /** What the services are built from: the storage (database or in-memory) and the outside world. */
 export interface ServiceDeps {
@@ -20,6 +23,7 @@ export interface ServiceDeps {
     rateLimit: RateLimitStore;
     passkeys: PasskeyStore;
     me: MeStore;
+    content: ContentStore;
   };
   audit: AuditWriter;
   /** Sends login codes and the passkey / deletion alerts. */
@@ -48,5 +52,7 @@ export function createServices(deps: ServiceDeps): Services {
     passkeys: createPasskeyService({ store: stores.passkeys, mailer, config: deps.passkey, now }),
     // Profile, language, display name and deletion requests (emails the owner).
     me: createMeService({ store: stores.me, mailer, now }),
+    // Routes and places: what the admin edits and visitors read.
+    content: createContentService({ store: stores.content }),
   };
 }

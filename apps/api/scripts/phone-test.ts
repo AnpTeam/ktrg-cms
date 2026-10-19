@@ -17,6 +17,7 @@ import { createMemoryRateLimitStore } from "../src/auth/rate-limit-memory-store"
 import { createMemorySessionStore } from "../src/auth/session-memory-store";
 import { createConsoleMailer } from "../src/lib/mailer";
 import { createMemoryMeStore } from "../src/me/me-memory-store";
+import { createMemoryContentStore } from "../src/content/content-memory-store";
 import { createServices } from "../src/services";
 
 const port = Number(process.env.PORT ?? 3001);
@@ -51,6 +52,13 @@ function withMailFile<T extends { send(message: { text: string }): Promise<unkno
 }
 
 const { store, users } = createMemoryOtpStore(profiles);
+// Audit entries are checked like the real writer and printed in this terminal.
+const audit = {
+  async record(entry: Parameters<typeof auditRow>[0]) {
+    const row = auditRow(entry);
+    console.log(`[audit] ${row.action} actor=${row.actorUserId} ${row.targetType}=${row.targetId}`);
+  },
+};
 // Same wiring as the app (src/services.ts), with in-memory stores and the console mailer.
 const services = createServices({
   stores: {
@@ -59,14 +67,11 @@ const services = createServices({
     rateLimit: createMemoryRateLimitStore().store,
     passkeys: createMemoryPasskeyStore(users, profiles).store,
     me: createMemoryMeStore(users, profiles).store,
+    content: createMemoryContentStore(audit).store,
   },
-  // Audit entries are checked like the real writer and printed in this terminal.
-  audit: {
-    async record(entry) {
-      const row = auditRow(entry);
-      console.log(`[audit] ${row.action} actor=${row.actorUserId} ${row.targetType}=${row.targetId}`);
-    },
-  },
+  audit,
+  // This address becomes an admin on an email-code login, so the admin screens can be tried (this page only).
+  adminEmails: new Set(["admin@example.com"]),
   // Codes and alert emails are printed in this terminal.
   mailer: withMailFile(createConsoleMailer("KTRG <no-reply@localhost>")),
   secret: "phone-test-secret-phone-test-secret-0",

@@ -2,6 +2,9 @@ import { Elysia } from "elysia";
 import { createDrizzleAuditWriter } from "./audit/audit-store";
 import { parseAdminEmails } from "./auth/admin-emails";
 import { createDrizzleOtpStore } from "./auth/otp-store";
+import { adminContentRoutes } from "./content/admin-routes";
+import { createDrizzleContentStore } from "./content/content-store";
+import { publicContentRoutes } from "./content/public-routes";
 import { passkeyRoutes } from "./auth/passkey-routes";
 import { createDrizzlePasskeyStore } from "./auth/passkey-store";
 import { createDrizzleRateLimitStore } from "./auth/rate-limit-store";
@@ -30,6 +33,7 @@ function getServices(): Services {
         rateLimit: createDrizzleRateLimitStore(db),
         passkeys: createDrizzlePasskeyStore(db),
         me: createDrizzleMeStore(db),
+        content: createDrizzleContentStore(db),
       },
       audit: createDrizzleAuditWriter(db),
       mailer: createMailer(env),
@@ -65,6 +69,8 @@ export function createApp(getServices: () => Services, opts: RouteOptions & { do
     .use(authRoutes(getServices, opts))
     .use(passkeyRoutes(getServices, opts))
     .use(meRoutes(getServices, opts))
+    .use(adminContentRoutes(getServices, opts))
+    .use(publicContentRoutes(() => getServices().content))
     .use(purgeRoutes(getServices, opts.cronSecret));
 }
 

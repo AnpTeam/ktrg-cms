@@ -35,6 +35,8 @@ export function apiDocs(opts: { enabled: boolean }) {
         { name: "Auth", description: "Email-code login, session, logout and the fresh-login re-check." },
         { name: "Passkeys", description: "Add, list and remove passkeys; log in or sign up with one." },
         { name: "Me", description: "The logged-in account's own profile and deletion request." },
+        { name: "Content", description: "What visitors read: routes and published places." },
+        { name: "Admin content", description: "Admins edit routes and places: lists, saves with a conflict check, reordering, publishing." },
       ],
       components: {
         securitySchemes: {
