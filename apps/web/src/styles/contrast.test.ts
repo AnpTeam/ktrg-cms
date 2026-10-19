@@ -58,7 +58,7 @@ function ratio(a: string, b: string) {
   return (light + 0.05) / (dark + 0.05);
 }
 
-const names = ["accent", "caution", "danger", "ink", "line", "moss", "muted", "paper", "shu", "surface"];
+const names = ["accent", "brand", "caution", "danger", "ink", "line", "moss", "muted", "on-brand", "on-shu", "paper", "shu", "surface"];
 
 // Text must reach WCAG AAA (7:1).
 const text: [string, string][] = [
@@ -70,7 +70,6 @@ const text: [string, string][] = [
   ["accent", "surface"],
   ["danger", "paper"],
   ["danger", "surface"],
-  ["paper", "accent"], // button label on an accent button
   ["paper", "ink"], // selected state
   ["moss", "paper"],
   ["moss", "surface"],
@@ -91,7 +90,19 @@ const parts: [string, string][] = [
 ];
 
 // The numeral inside a stamped seal: large bold text, held to 4.5:1.
-const seal: [string, string][] = [["paper", "shu"]];
+const seal: [string, string][] = [["on-shu", "shu"]];
+
+// Words on the brand red (#CC6256, chosen by the team): buttons, banners and the active tab. Only
+// large bold text may sit on it (WCAG large text needs 3:1; white on this red is about 3.85:1), so
+// every such label must be text-lg bold or bigger. Small text uses the deep "accent" red instead.
+const onBrand: [string, string][] = [["on-brand", "brand"]];
+
+// The brand red as a plain fill against the page (banners, buttons): the words on it name the
+// control, so the fill is decoration and is held to 2.5:1 only (on white it is 3.85:1). Borders and inputs use "line".
+const brandFill: [string, string][] = [
+  ["brand", "paper"],
+  ["brand", "surface"],
+];
 
 for (const [scheme, colors] of Object.entries(palettes)) {
   describe(`${scheme} palette`, () => {
@@ -115,6 +126,18 @@ for (const [scheme, colors] of Object.entries(palettes)) {
     for (const [foreground, background] of parts) {
       test(`${foreground} against ${background} is at least 3:1`, () => {
         expect(pair(foreground, background)).toBeGreaterThanOrEqual(3);
+      });
+    }
+
+    for (const [foreground, background] of onBrand) {
+      test(`${foreground} on ${background} (large bold label) is at least 3.5:1`, () => {
+        expect(pair(foreground, background)).toBeGreaterThanOrEqual(3.5);
+      });
+    }
+
+    for (const [foreground, background] of brandFill) {
+      test(`${foreground} fill against ${background} is at least 2.5:1`, () => {
+        expect(pair(foreground, background)).toBeGreaterThanOrEqual(2.5);
       });
     }
 

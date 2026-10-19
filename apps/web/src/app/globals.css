@@ -10,22 +10,33 @@
  * src/styles/contrast.test.ts fails if a color pair below drops under its ratio.
  */
 @theme {
-  --color-ink: #10201a; /* body text: deep green-black */
-  --color-muted: #33413b; /* secondary text */
-  --color-paper: #fbfbf8; /* page background: near-white (strong tints glare outdoors) */
-  --color-surface: #e9efea; /* rows and empty slots: misty green-grey */
-  --color-accent: #764000; /* links, primary button, active tab, focus ring: lantern brown-amber (灯) */
-  --color-moss: #1a4f33; /* done, open, trail progress: moss (苔) */
+  --color-ink: #1f1b1a; /* body text */
+  --color-muted: #57504d; /* secondary text */
+  --color-paper: #ffffff; /* page background: plain white */
+  --color-surface: #f5f5f4; /* panels, rows, empty slots: light grey */
+  --color-brand: #cc6256; /* the brand red: buttons, the active tab, icons, the bar beside headings. Not for text on white */
+  --color-on-brand: #ffffff; /* the words on the brand red (large bold text only) */
+  --color-accent: #8e2a21; /* red you can READ: links, headings, focus ring (deep red) */
+  --color-moss: #14532d; /* done, open, trail progress: moss (苔) */
   --color-shu: #b3321b; /* the stamp seal only: vermilion (朱). Never text, never a warning */
+  --color-on-shu: #ffffff; /* the numeral inside a seal */
   --color-caution: #b45309; /* warnings: caution status, graphic only (amber 琥珀) */
   --color-danger: #991b1b; /* errors */
-  --color-line: #66756c; /* borders of inputs and buttons, the trail line */
+  --color-line: #8a7f7a; /* borders of inputs and buttons, the trail line */
 
   /* System fonts only: nothing to download on a weak mountain connection.
      UD (universal design) fonts first: BIZ UDPGothic ships with Windows 10+. */
   --font-sans:
     "BIZ UDPGothic", "BIZ UDGothic", "Hiragino Kaku Gothic ProN", "Hiragino Sans",
     "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
+  /* No serif any more: font-serif is the same clean sans, so older classes need no edit. */
+  --font-serif: var(--font-sans);
+
+  /* A little rounder than Tailwind's defaults (12px was the largest in common use): 12, 16, 20, 24 px. */
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.5rem;
 }
 
 
@@ -38,9 +49,35 @@
 @layer base {
   html {
     /* A percentage, not px, so the visitor's browser font setting still scales it. */
-    font-size: 112.5%;
+    font-size: 100%;
     -webkit-text-size-adjust: 100%;
     color-scheme: light;
+    /* A thin, quiet scrollbar in the page's own colours (the grey system bar looked heavy). It is still there
+       and still visible: hiding scrollbars would hurt people who rely on them. */
+    scrollbar-width: thin;
+    /* Keep room for the scrollbar even on pages that do not scroll, so the layout does not jump sideways when
+       one appears (and when the open menu locks the page). */
+    scrollbar-gutter: stable;
+    scrollbar-color: color-mix(in srgb, var(--color-line) 55%, transparent) transparent;
+  }
+
+  /* Chrome, Edge and Safari that do not read scrollbar-color/width yet. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--color-line) 55%, transparent);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-line);
+    background-clip: content-box;
   }
 
   body {
@@ -58,6 +95,8 @@
   h2,
   h3 {
     text-wrap: balance;
+    /* Headings are the readable deep red (a banner sets its own white). */
+    color: var(--color-accent);
   }
 
   p,
@@ -94,17 +133,19 @@
  */
 @media (prefers-color-scheme: dark) {
   :root {
-    /* The primary look: deep cedar night, lantern amber, vermilion seals that glow. */
-    --color-ink: #f3efe6;
-    --color-muted: #c9d0c8;
-    --color-paper: #0c1311;
-    --color-surface: #17221d;
-    --color-accent: #f2b24a;
-    --color-moss: #86d0a1;
+    --color-ink: #f6ead2;
+    --color-muted: #d9c7aa;
+    --color-paper: #1b1411; /* warm dark brown-black */
+    --color-surface: #2a1f1a;
+    --color-brand: #cc6256; /* the same brand red */
+    --color-on-brand: #ffffff;
+    --color-accent: #f2a69b; /* the readable red on dark: soft coral */
+    --color-moss: #8fd6a5;
     --color-shu: #e8603f;
+    --color-on-shu: #1b1411;
     --color-caution: #fbbf24;
     --color-danger: #fca5a5;
-    --color-line: #8fa095;
+    --color-line: #a08670;
     color-scheme: dark;
   }
 }
@@ -115,31 +156,36 @@
  * same as above; contrast.test.ts fails if they ever drift apart.
  */
 :root[data-theme="dark"] {
-  /* The primary look: deep cedar night, lantern amber, vermilion seals that glow. */
-  --color-ink: #f3efe6;
-  --color-muted: #c9d0c8;
-  --color-paper: #0c1311;
-  --color-surface: #17221d;
-  --color-accent: #f2b24a;
-  --color-moss: #86d0a1;
+  --color-ink: #f6ead2;
+  --color-muted: #d9c7aa;
+  --color-paper: #1b1411; /* warm dark brown-black */
+  --color-surface: #2a1f1a;
+  --color-brand: #cc6256; /* the same brand red */
+  --color-on-brand: #ffffff;
+  --color-accent: #f2a69b; /* the readable red on dark: soft coral */
+  --color-moss: #8fd6a5;
   --color-shu: #e8603f;
+  --color-on-shu: #1b1411;
   --color-caution: #fbbf24;
   --color-danger: #fca5a5;
-  --color-line: #8fa095;
+  --color-line: #a08670;
   color-scheme: dark;
 }
 
 :root[data-theme="light"] {
-  --color-ink: #10201a; /* body text: deep green-black */
-  --color-muted: #33413b; /* secondary text */
-  --color-paper: #fbfbf8; /* page background: near-white (strong tints glare outdoors) */
-  --color-surface: #e9efea; /* rows and empty slots: misty green-grey */
-  --color-accent: #764000; /* links, primary button, active tab, focus ring: lantern brown-amber (灯) */
-  --color-moss: #1a4f33; /* done, open, trail progress: moss (苔) */
+  --color-ink: #1f1b1a; /* body text */
+  --color-muted: #57504d; /* secondary text */
+  --color-paper: #ffffff; /* page background: plain white */
+  --color-surface: #f5f5f4; /* panels, rows, empty slots: light grey */
+  --color-brand: #cc6256; /* the brand red: buttons, the active tab, icons, the bar beside headings. Not for text on white */
+  --color-on-brand: #ffffff; /* the words on the brand red (large bold text only) */
+  --color-accent: #8e2a21; /* red you can READ: links, headings, focus ring (deep red) */
+  --color-moss: #14532d; /* done, open, trail progress: moss (苔) */
   --color-shu: #b3321b; /* the stamp seal only: vermilion (朱). Never text, never a warning */
+  --color-on-shu: #ffffff; /* the numeral inside a seal */
   --color-caution: #b45309; /* warnings: caution status, graphic only (amber 琥珀) */
   --color-danger: #991b1b; /* errors */
-  --color-line: #66756c; /* borders of inputs and buttons, the trail line */
+  --color-line: #8a7f7a; /* borders of inputs and buttons, the trail line */
   color-scheme: light;
 }
 
@@ -205,8 +251,8 @@ rt {
 
 .map-marker[data-kind="stamped"] {
   background: var(--color-shu);
-  border-color: var(--color-paper);
-  color: var(--color-paper);
+  border-color: var(--color-on-shu);
+  color: var(--color-on-shu);
 }
 
 .map-marker[data-status="caution"] {
@@ -255,4 +301,323 @@ rt {
   :root:not([data-theme="light"]) .trail-map[data-dark="invert"] .trail-map-canvas canvas {
     filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.95);
   }
+}
+
+/* The header menu drops down from the top. Reduced motion: it just appears. */
+@media (prefers-reduced-motion: no-preference) {
+  .menu-drop {
+    animation: menu-drop 160ms ease-out;
+  }
+}
+@keyframes menu-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-0.75rem);
+  }
+}
+
+/*
+ * Places along the course (toilets, shops ...) and merged groups. A place is a rounded square with a
+ * picture, so it never looks like a numbered stop (a circle); closed places carry a diagonal bar.
+ */
+.place-marker {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.75rem;
+  border: 3px solid var(--color-ink);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.45);
+  cursor: pointer;
+}
+
+.place-marker[data-closed="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background: linear-gradient(135deg, transparent 46%, var(--color-ink) 46% 54%, transparent 54%);
+}
+
+.place-marker[aria-pressed="true"] {
+  transform: scale(1.18);
+  outline: 4px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.map-cluster {
+  display: grid;
+  place-items: center;
+  min-width: 3rem;
+  height: 3rem;
+  padding: 0 0.5rem;
+  border-radius: 9999px;
+  border: 3px solid var(--color-ink);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.45), 0 0 0 4px var(--color-paper);
+  cursor: pointer;
+}
+
+.map-cluster[data-kind="places"] {
+  border-radius: 0.75rem;
+}
+
+/* A plain card: no line, round corners (24px), light grey fill. */
+.frame {
+  border-radius: 1.5rem;
+  background: var(--color-surface);
+}
+
+/*
+ * The visitor's size choice (settings, first-time set-up). Everything is in rem, so the root size
+ * scales text and components (buttons, tap targets, icons) together. Outside any @layer on purpose,
+ * so it beats the base 100%.
+ */
+html[data-size="large"] {
+  font-size: 112.5%;
+}
+
+html[data-size="xlarge"] {
+  font-size: 125%;
+}
+
+/*
+ * 七宝 (shippo, "seven treasures"): overlapping circles, a traditional Japanese pattern. A very faint tint of the
+ * brand red behind a panel (the home page's title card, the stamp card). It is drawn on a layer behind the
+ * content (a mask filled with the brand colour at about 8%), so it follows the light and dark palettes and never
+ * carries information.
+ */
+.pattern-shippo {
+  position: relative;
+  isolation: isolate;
+}
+.pattern-shippo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background-color: var(--color-brand);
+  opacity: 0.09;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='black' stroke-width='1.6'%3E%3Ccircle cx='0' cy='0' r='20'/%3E%3Ccircle cx='40' cy='0' r='20'/%3E%3Ccircle cx='0' cy='40' r='20'/%3E%3Ccircle cx='40' cy='40' r='20'/%3E%3Ccircle cx='20' cy='20' r='20'/%3E%3C/g%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='black' stroke-width='1.6'%3E%3Ccircle cx='0' cy='0' r='20'/%3E%3Ccircle cx='40' cy='0' r='20'/%3E%3Ccircle cx='0' cy='40' r='20'/%3E%3Ccircle cx='40' cy='40' r='20'/%3E%3Ccircle cx='20' cy='20' r='20'/%3E%3C/g%3E%3C/svg%3E");
+  -webkit-mask-size: 40px 40px;
+  mask-size: 40px 40px;
+}
+
+/*
+ * The loading screen: a seal that is pressed down again and again, with a ring that spreads like ink. It shows
+ * only after a short wait (a quick page change never flashes it). Reduced motion: the seal just sits there.
+ */
+.loading-fade {
+  animation: loading-fade 200ms ease-out 300ms both;
+}
+@keyframes loading-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .loading-seal {
+    animation: seal-press 1400ms ease-in-out infinite;
+  }
+  .loading-ring {
+    animation: seal-ring 1400ms ease-out infinite;
+  }
+}
+@keyframes seal-press {
+  0%,
+  100% {
+    transform: scale(1.18) rotate(-4deg);
+    opacity: 0.55;
+  }
+  40% {
+    transform: scale(1) rotate(-2deg);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1) rotate(-2deg);
+    opacity: 1;
+  }
+}
+@keyframes seal-ring {
+  0%,
+  35% {
+    transform: scale(1);
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+/* A stamp that has just been given lands on the page: it starts a little large and light, and presses down once. */
+@media (prefers-reduced-motion: no-preference) {
+  .stamp-land {
+    animation: stamp-land 450ms ease-out both;
+  }
+}
+@keyframes stamp-land {
+  from {
+    transform: scale(1.5) rotate(-6deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(-2deg);
+    opacity: 1;
+  }
+}
+
+/* The home map (WBS 3.2.10): the number of a course's area, and the page furniture that gives way to the map. */
+.map-pin {
+  position: relative;
+  display: block;
+  width: 2.75rem;
+  height: 3.5rem;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+/* The pin: a round head with the number, and a point (the triangle) at the middle of the course. */
+.map-pin-head {
+  position: absolute;
+  inset: 0 0 0.75rem 0;
+  display: grid;
+  place-items: center;
+  border-radius: 9999px;
+  border: 3px solid var(--color-brand);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.45);
+}
+
+.map-pin::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  transform: translateX(-50%);
+  border: 0.55rem solid transparent;
+  border-top: 0.9rem solid var(--color-brand);
+  border-bottom: 0;
+}
+
+.map-pin[data-soon="true"] .map-pin-head {
+  border-style: dashed;
+}
+
+/* The name beside the pin. Fixed colours, like the route line: the map tiles do not change with the theme. */
+.map-pin-name {
+  position: absolute;
+  left: calc(100% + 0.25rem);
+  top: 0;
+  padding: 0.3rem 0.4rem;
+  border-radius: 0.5rem;
+  background: #8e2a21;
+  color: #ffffff;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: left;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.45);
+}
+
+/* Other languages: a few short lines. */
+.map-pin-name {
+  width: max-content;
+  max-width: 7.5rem;
+  text-wrap: balance;
+}
+
+/* On the home map the map is the screen: the page behind it does not scroll, and the footer lives in the sheet. */
+body.map-screen-active {
+  overflow: hidden;
+}
+body.map-screen-active .site-footer {
+  display: none;
+}
+
+/* A course on the map, Japanese: a name tag read top to bottom, standing on the course's point, with its number in a
+   round head. Narrow enough that all 19 stand side by side even when the whole trail is in view. Fixed colours,
+   like the route line: the map tiles do not change with the theme. */
+.map-tag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0.375rem;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.map-tag-head {
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-bottom: -0.3rem;
+  border-radius: 9999px;
+  border: 3px solid var(--color-brand);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.45);
+}
+
+.map-tag-name {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  max-block-size: 11rem;
+  padding: 0.55rem 0.25rem 0.4rem;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border-radius: 0.5rem;
+  background: #8e2a21;
+  color: #ffffff;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.06em;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.45);
+}
+
+.map-tag::after {
+  content: "";
+  width: 0;
+  height: 0;
+  border: 0.45rem solid transparent;
+  border-top: 0.7rem solid #8e2a21;
+  border-bottom: 0;
+}
+
+.map-tag[data-soon="true"] .map-tag-head {
+  border-style: dashed;
 }

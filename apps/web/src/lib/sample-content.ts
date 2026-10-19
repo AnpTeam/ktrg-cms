@@ -1,3 +1,5 @@
+import type { RouteArea } from "./map-screen";
+import { distanceMeters } from "./places";
 import type { RouteDetail, SpotDetail, SpotListItem } from "./content";
 import { route02Draft } from "./sample-route-02";
 import type { Sketch } from "./sketch";
@@ -51,6 +53,7 @@ const spot = (s: Partial<SpotDetail> & Pick<SpotDetail, "id" | "routeId" | "rout
   statusNoteJa: null,
   statusNoteEn: null,
   statusUpdatedAt: null,
+  photoUrl: null,
   ...s,
 });
 
@@ -124,10 +127,84 @@ const R4 = { id: "sample-r4", name: "（見本）大福山から雲山峰" };
 const r3Spots = plainSpots(R3.id, R3.name, 6, 6); // complete
 const r4Spots = plainSpots(R4.id, R4.name, 9, 3); // in progress
 
-export const sampleSpots: SpotDetail[] = [...handSpots, ...r2Spots, ...r3Spots, ...r4Spots];
+// Route 16 (葛城の道, Gose in Nara): a DEV placeholder so the Nara filter and the Nara emblem can be tried. Only the
+// course name, its place (Gose city) and the plain names of its eight stops, in walking order, are kept; every text
+// that describes the course or a stop was removed (it came from the foundation's other app and our right to reuse it
+// is not settled), and there are no English names or coordinates yet. Descriptions are to be written by us from
+// official sources, and coordinates entered from an authoritative source (CLAUDE.md). Shown only when sample content
+// is on. The walk starts at a bus stop and ends at a station; those are transit points, not stamp places.
+const R16 = { id: "sample-r16", nameJa: "葛城の道", nameEn: "Katsuragi no Michi Route" };
+const r16Names = [
+  "葛木水分神社（葛城第二十二経塚）",
+  "中村家住宅（重要文化財）",
+  "郵便名柄館",
+  "葛城一言主神社",
+  "九品寺（御所市）",
+  "六地蔵石仏",
+  "第二十三経塚",
+  "吉祥草寺",
+];
+const r16Spots: SpotDetail[] = r16Names.map((nameJa, i) =>
+  spot({
+    id: `${R16.id}-s${i + 1}`,
+    routeId: R16.id,
+    routeNameJa: R16.nameJa,
+    routeNameEn: R16.nameEn,
+    nameJa,
+    stamped: i < 3, // invented progress, for the signed-in preview only
+  }),
+);
+
+export const sampleSpots: SpotDetail[] = [...handSpots, ...r2Spots, ...r3Spots, ...r4Spots, ...r16Spots];
 
 function listItem(s: SpotDetail): SpotListItem {
   return { id: s.id, nameJa: s.nameJa, nameEn: s.nameEn, status: s.status, stamped: s.stamped, position: s.position };
+}
+
+// ROUGH, INVENTED PLACEMENT for the home map's areas (sample data only, shown with the note 見本の位置（目安です）).
+// The 19 courses are spread evenly along a hand-drawn line from Tomogashima in the west, across the Izumi range,
+// to the Kongo and Nijo mountains and Kamenose in the east. The real area of each course must be entered in the
+// CMS from an authoritative source (CLAUDE.md: positions are never guessed); course 2 uses its draft path.
+const TRAIL_AXIS: readonly { lat: number; lng: number }[] = [
+  { lat: 34.275, lng: 135.06 },
+  { lat: 34.262, lng: 135.125 },
+  { lat: 34.3, lng: 135.22 },
+  { lat: 34.35, lng: 135.35 },
+  { lat: 34.39, lng: 135.48 },
+  { lat: 34.43, lng: 135.58 },
+  { lat: 34.43, lng: 135.67 },
+  { lat: 34.46, lng: 135.72 },
+  { lat: 34.5, lng: 135.7 },
+  { lat: 34.53, lng: 135.67 },
+  { lat: 34.58, lng: 135.69 },
+];
+
+function sampleArea(order: number): RouteArea {
+  const lengths = TRAIL_AXIS.slice(1).map((p, i) => distanceMeters(TRAIL_AXIS[i] as RouteArea, p));
+  const total = lengths.reduce((a, b) => a + b, 0);
+  let left = (total * (order - 1)) / 18;
+  for (let i = 0; i < lengths.length; i++) {
+    const segment = lengths[i] as number;
+    if (left <= segment || i === lengths.length - 1) {
+      const t = Math.min(1, left / segment);
+      const a = TRAIL_AXIS[i] as RouteArea;
+      const b = TRAIL_AXIS[i + 1] as RouteArea;
+      return { lat: a.lat + (b.lat - a.lat) * t, lng: a.lng + (b.lng - a.lng) * t, widthM: 9000, heightM: 6000, verified: false };
+    }
+    left -= segment;
+  }
+  return { ...(TRAIL_AXIS[0] as RouteArea), widthM: 9000, heightM: 6000, verified: false };
+}
+
+/** Course 2's area follows its own draft path: a box around all of it, with a margin. */
+function route02Area(): RouteArea {
+  const points = route02Draft.line.map(([lat, lng]) => ({ lat: lat as number, lng: lng as number }));
+  const lats = points.map((p) => p.lat);
+  const lngs = points.map((p) => p.lng);
+  const center = { lat: (Math.min(...lats) + Math.max(...lats)) / 2, lng: (Math.min(...lngs) + Math.max(...lngs)) / 2 };
+  const widthM = distanceMeters({ lat: center.lat, lng: Math.min(...lngs) }, { lat: center.lat, lng: Math.max(...lngs) });
+  const heightM = distanceMeters({ lat: Math.min(...lats), lng: center.lng }, { lat: Math.max(...lats), lng: center.lng });
+  return { ...center, widthM: Math.round(widthM * 1.25), heightM: Math.round(heightM * 1.25), verified: false };
 }
 
 const skeleton = (order: number, ja: string, en: string): RouteDetail => ({
@@ -143,12 +220,15 @@ const skeleton = (order: number, ja: string, en: string): RouteDetail => ({
   difficulty: null,
   expectedTimeMin: null,
   sketch: null,
+  area: sampleArea(order),
   spotCount: 0,
   stampedCount: null,
   descriptionJa: null,
   descriptionEn: null,
   spots: [],
   line: null,
+  videoUrl: null,
+  photoUrl: null,
 });
 
 /** Filled-in routes replace their skeleton: same id, name prefixed （見本）. */
@@ -178,10 +258,21 @@ const rich: Record<number, Partial<RouteDetail>> = {
     distanceKm: route02Draft.distanceKm,
     elevationGainM: route02Draft.elevationGainM,
     sketch: { points: [...route02Draft.sketch], elevations: [...route02Draft.elevations] },
+    area: route02Area(),
     line: route02Draft.line.map(([lat, lng]) => ({ lat, lng })),
     spotCount: r2Spots.length,
     stampedCount: 2,
     spots: r2Spots.map(listItem),
+  },
+  16: {
+    status: "ready",
+    nameJa: R16.nameJa,
+    nameEn: R16.nameEn,
+    prefecture: "nara",
+    municipality: "御所市",
+    spotCount: r16Spots.length,
+    stampedCount: 3,
+    spots: r16Spots.map(listItem),
   },
   3: {
     status: "ready",

@@ -5,6 +5,7 @@ import { canGroupByPrefecture, pickText, type Prefecture, type RouteSummary } fr
 import { connectorStates, nodeState, progressShare, type NodeState } from "@/lib/ribbon";
 import { ChevronIcon } from "./icons";
 import { Localized } from "./Localized";
+import { PrefectureIcon } from "./PrefectureIcon";
 import { PrefectureName } from "./PrefectureName";
 import { ElevationStrip, RouteSilhouette } from "./RouteSketch";
 import { RouteStats } from "./RouteStats";
@@ -161,7 +162,8 @@ function GroupHeading({ prefecture, next, first }: { prefecture: Prefecture; nex
   return (
     <li className="relative" role="presentation">
       {next ? <Segment kind={next} from={first ? "50%" : "0"} to="0" /> : null}
-      <h2 className="py-3 pl-[3.25rem] pr-4 text-lg font-bold text-muted">
+      <h2 className="flex items-center gap-2 py-3 pl-[3.25rem] pr-4 text-lg font-bold text-muted">
+        <PrefectureIcon value={prefecture} />
         <PrefectureName value={prefecture} />
       </h2>
     </li>

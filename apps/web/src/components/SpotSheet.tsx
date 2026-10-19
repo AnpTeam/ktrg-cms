@@ -1,16 +1,31 @@
+import Link from "next/link";
 import { Trans } from "@lingui/react/macro";
 import { pickText, type SpotDetail } from "@/lib/content";
 import { Localized } from "./Localized";
 import { Notice } from "./Notice";
 import { StampFace } from "./StampFace";
+import { StampHere } from "./StampHere";
 import { StatusBanner } from "./StatusBanner";
+import type { StampMock } from "@/lib/stamp-flow";
 
 /**
  * The spot detail sheet (WBS 3.2.5). Presentational on purpose: today it is the
  * body of /spots/[id]; the map's bottom sheet (3.2.10) will render the same thing.
- * The "Stamp here" button is not here: it arrives with stamping (3.3.1).
+ * The big stamp button at the bottom stays in view while the page scrolls (`StampHere`, WBS 3.3.1): it reads the
+ * phone's position once and asks the server, which decides. A signed-out visitor gets a real link to log in.
  */
-export function SpotSheet({ spot, locale }: { spot: SpotDetail; locale: string }) {
+export function SpotSheet({
+  spot,
+  locale,
+  loginHref,
+  stampMock,
+}: {
+  spot: SpotDetail;
+  locale: string;
+  loginHref: string;
+  /** Development only: pretend answers for the stamp button. */
+  stampMock?: StampMock;
+}) {
   const description = pickText(locale, spot.descriptionJa, spot.descriptionEn);
 
   return (
@@ -32,9 +47,21 @@ export function SpotSheet({ spot, locale }: { spot: SpotDetail; locale: string }
         locale={locale}
       />
 
+      <section className="mx-4 flex items-center gap-4 rounded-3xl bg-surface p-4">
+        <StampFace state="empty" className="h-14 w-14 shrink-0 rounded-full!" />
+        <div>
+          <p className="text-xl font-bold">
+            <Trans>スタンプの場所</Trans>
+          </p>
+          <p className="text-lg text-muted">
+            <Trans>押し方: 場所の近くで、ボタンを押します（位置情報）</Trans>
+          </p>
+        </div>
+      </section>
+
       {spot.stamped !== null ? (
         <section className="flex items-center gap-4 px-4">
-          <StampFace state={spot.stamped ? "stamped" : "empty"} className="h-14 w-14 shrink-0" />
+          <StampFace state={spot.stamped ? "stamped" : "empty"} rough className="h-14 w-14 shrink-0" />
           <p className="text-xl font-bold">
             {spot.stamped ? <Trans>スタンプを押しました</Trans> : <Trans>まだスタンプを押していません</Trans>}
           </p>
@@ -61,6 +88,16 @@ export function SpotSheet({ spot, locale }: { spot: SpotDetail; locale: string }
       <Notice>
         <Trans>出かける前に、公式の最新情報を確認してください。</Trans>
       </Notice>
+
+      {spot.stamped === null ? (
+        <div className="sticky bottom-24 z-10 flex flex-col gap-2 px-4 md:bottom-6">
+          <Link href={loginHref} className="tap-target flex min-h-14 items-center justify-center rounded-xl bg-brand px-6 text-xl font-bold text-on-brand shadow-lg">
+            <Trans>ログインしてスタンプを押す</Trans>
+          </Link>
+        </div>
+      ) : (
+        <StampHere spotId={spot.id} status={spot.status} alreadyStamped={spot.stamped} loginHref={loginHref} mock={stampMock} />
+      )}
     </article>
   );
 }

@@ -18,9 +18,11 @@ export const ERROR_CODES = {
   // --- Login and permissions -------------------------------------------------------------
   unauthenticated: "401: not logged in, or the session ended",
   forbidden: "403: logged in, but not allowed",
-  reauth_required: "403: allowed, but needs a fresh login first (POST /auth/reauth/request + verify)",
+  reauth_required: "403: allowed, but needs a fresh login first (a passkey check at /auth/passkeys/reauth, or POST /auth/reauth/request + verify)",
   invalid_code: "401 at login, 400 at the fresh-login re-check: wrong, expired, used or locked code",
   no_email: "409: this account has no email to send a code to",
+  no_passkey: "409: this account has no passkey to confirm with (use the emailed code)",
+  reauth_failed: "400: the passkey check for a fresh login did not pass",
 
   // --- Passkeys --------------------------------------------------------------------------
   login_failed: "401: passkey login failed",
@@ -30,6 +32,17 @@ export const ERROR_CODES = {
 
   // --- Profile ---------------------------------------------------------------------------
   invalid_display_name: "400: too long, or contains hidden characters",
+
+  // --- Admin content (routes and places) ---------------------------------------------------
+  conflict: "409: someone saved this first; reload it and try again",
+  invalid_video_url: "400: only https links on YouTube or Vimeo are accepted",
+  invalid_line: "400: the route line is not a line inside Japan with 2 to 50,000 points",
+  route_has_places: "409: a route that still has places cannot be deleted",
+  spot_has_stamps: "409: a place that visitors have stamped cannot be deleted; unpublish it instead",
+  no_coordinates: "409: the place has no position yet",
+  position_not_verified: "409: the position has not been checked against an official source",
+  source_required: "400: name the source when the position is marked as checked",
+  permission_required: "409: the site's permission is not confirmed",
 } as const satisfies Record<string, string>;
 
 export type ErrorCode = keyof typeof ERROR_CODES;

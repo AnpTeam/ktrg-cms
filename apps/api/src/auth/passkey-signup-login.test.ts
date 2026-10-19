@@ -4,6 +4,8 @@ import { createMemoryPasskeyStore } from "./passkey-memory-store";
 import { CHALLENGE_TTL_MS, createPasskeyService } from "./passkey-service";
 import { TestAuthenticator } from "./webauthn-test-authenticator";
 
+const testProfile = { displayName: "Hiker", origin: null, locale: "ja" } as const;
+
 const config = { rpName: "KTRG", rpId: "example.com", origin: "https://example.com" };
 const alice: AuthUser = { id: "11111111-1111-1111-1111-111111111111", email: "alice@example.com", role: "participant", locale: "en" };
 
@@ -18,7 +20,7 @@ function setup() {
   async function signUp() {
     const p = phone();
     const options = await service.signupOptions();
-    const result = await service.verifySignup(p.register(options), "My iPhone");
+    const result = await service.verifySignup(p.register(options), "My iPhone", testProfile);
     if (!result.ok) throw new Error("sign-up failed");
     return { phone: p, user: result.user, options };
   }
@@ -73,8 +75,8 @@ describe("sign up with a passkey alone (no email)", () => {
     const { service, phone, users, passkeys } = setup();
     const response = phone().register(await service.signupOptions());
 
-    expect((await service.verifySignup(response, null)).ok).toBe(true);
-    expect((await service.verifySignup(response, null)).ok).toBe(false);
+    expect((await service.verifySignup(response, null, testProfile)).ok).toBe(true);
+    expect((await service.verifySignup(response, null, testProfile)).ok).toBe(false);
     expect(users.size).toBe(2);
     expect(passkeys).toHaveLength(1);
   });
@@ -82,14 +84,14 @@ describe("sign up with a passkey alone (no email)", () => {
   test("a wrong website creates no account", async () => {
     const { service, phone, users } = setup();
     const response = phone().register(await service.signupOptions(), { origin: "https://evil.example.net" });
-    expect((await service.verifySignup(response, null)).ok).toBe(false);
+    expect((await service.verifySignup(response, null, testProfile)).ok).toBe(false);
     expect(users.size).toBe(1);
   });
 
   test("no biometric check creates no account", async () => {
     const { service, phone, users } = setup();
     const response = phone().register(await service.signupOptions(), { userVerified: false });
-    expect((await service.verifySignup(response, null)).ok).toBe(false);
+    expect((await service.verifySignup(response, null, testProfile)).ok).toBe(false);
     expect(users.size).toBe(1);
   });
 
@@ -97,7 +99,7 @@ describe("sign up with a passkey alone (no email)", () => {
     const { service, phone, users, advance } = setup();
     const response = phone().register(await service.signupOptions());
     advance(CHALLENGE_TTL_MS + 1000);
-    expect((await service.verifySignup(response, null)).ok).toBe(false);
+    expect((await service.verifySignup(response, null, testProfile)).ok).toBe(false);
     expect(users.size).toBe(1);
   });
 
@@ -105,7 +107,7 @@ describe("sign up with a passkey alone (no email)", () => {
     const { service, phone, users } = setup();
     const options = await service.signupOptions();
     const forged = phone().register(options, { challenge: Buffer.from("made-up-challenge-value-0123456789").toString("base64url") });
-    expect((await service.verifySignup(forged, null)).ok).toBe(false);
+    expect((await service.verifySignup(forged, null, testProfile)).ok).toBe(false);
     expect(users.size).toBe(1);
   });
 
@@ -114,7 +116,7 @@ describe("sign up with a passkey alone (no email)", () => {
     const added = await service.registrationOptions(alice);
     if (!added.ok) throw new Error("options refused");
 
-    expect((await service.verifySignup(phone().register(added.options), null)).ok).toBe(false);
+    expect((await service.verifySignup(phone().register(added.options), null, testProfile)).ok).toBe(false);
     expect(users.size).toBe(1);
   });
 
@@ -131,7 +133,7 @@ describe("sign up with a passkey alone (no email)", () => {
     const { phone } = await signUp();
     const before = users.size;
 
-    const again = await service.verifySignup(phone.register(await service.signupOptions()), null);
+    const again = await service.verifySignup(phone.register(await service.signupOptions()), null, testProfile);
     expect(again.ok).toBe(false);
     expect(users.size).toBe(before);
   });
@@ -245,5 +247,19 @@ describe("passkey login", () => {
 
     expect((await service.verifyLogin(phone.authenticate(await service.loginOptions(), { counter: 5 }))).ok).toBe(true);
     expect((await service.verifyLogin(phone.authenticate(await service.loginOptions(), { counter: 3 }))).ok).toBe(false);
+  });
+});
+
+describe("sign-up profile", () => {
+  test("the name, origin and language given are kept on the new account", async () => {
+    const { service, phone, profiles } = setup();
+    const result = await service.verifySignup(phone().register(await service.signupOptions()), null, {
+      displayName: "Hana",
+      origin: "overseas",
+      locale: "en",
+    });
+    if (!result.ok) throw new Error("sign-up failed");
+    expect(result.user.locale).toBe("en");
+    expect(profiles.get(result.user.id)).toEqual({ displayName: "Hana", origin: "overseas" });
   });
 });

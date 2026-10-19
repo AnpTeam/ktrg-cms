@@ -6,6 +6,7 @@ import { Trans } from "@lingui/react/macro";
 import { LinguiClientProvider } from "@/i18n/LinguiClientProvider";
 import { locales } from "@/i18n/locales";
 import { initLingui } from "@/i18n/server";
+import { getPrefs } from "@/lib/server-prefs";
 import { themeCookie, themeFromValue } from "@/lib/theme";
 import "../globals.css";
 
@@ -15,8 +16,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   colorScheme: "light dark",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fbfbf8" },
-    { media: "(prefers-color-scheme: dark)", color: "#0c1311" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#1b1411" },
   ],
 };
 
@@ -38,9 +39,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // The visitor's Light or Dark choice, written into the HTML so the first paint is already right.
   // Reading the cookie makes pages render per request; that is the price of no flash and no script.
   const theme = themeFromValue((await cookies()).get(themeCookie)?.value);
+  // The text and component size the visitor chose, written the same way.
+  const { size } = await getPrefs();
 
   return (
-    <html lang={i18n.locale} data-theme={theme === "auto" ? undefined : theme}>
+    <html lang={i18n.locale} data-theme={theme === "auto" ? undefined : theme} data-size={size}>
       <body>
         <LinguiClientProvider initialLocale={i18n.locale} initialMessages={i18n.messages}>
           <a

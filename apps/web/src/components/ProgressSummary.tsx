@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { TOTAL_STAMPS } from "@/lib/rally";
+import { SectionBanner } from "./SectionBanner";
 
 /** Big count, one plain sentence, and a bar. The bar is a bonus: the numbers say it all. */
 export function ProgressSummary({ stamped, total = TOTAL_STAMPS, children }: { stamped: number; total?: number; children?: ReactNode }) {
@@ -15,8 +16,8 @@ export function ProgressSummary({ stamped, total = TOTAL_STAMPS, children }: { s
 
   return (
     <section className="px-4">
-      <h2 className="text-xl font-bold">{t`スタンプ`}</h2>
-      <p className="mt-1 text-6xl font-bold leading-none tabular-nums">
+      <SectionBanner>{t`スタンプ`}</SectionBanner>
+      <p className="mt-4 text-6xl font-bold leading-none tabular-nums text-accent">
         {stamped}
         <span className="ml-2 text-3xl text-muted">/ {total}</span>
       </p>

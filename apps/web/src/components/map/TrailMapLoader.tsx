@@ -8,7 +8,7 @@ import { Trans } from "@lingui/react/macro";
 export const TrailMapLoader = dynamic(() => import("./TrailMap").then((m) => m.TrailMap), {
   ssr: false,
   loading: () => (
-    <div className="flex h-[28rem] items-center justify-center rounded-xl border-2 border-line bg-surface text-lg">
+    <div className="flex h-[28rem] items-center justify-center rounded-2xl bg-surface text-lg">
       <Trans>地図を読み込み中…</Trans>
     </div>
   ),

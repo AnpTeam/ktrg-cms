@@ -19,6 +19,21 @@ export const AUDIT_ACTIONS = {
   "user.deletion_request": "user",
   /** The owner cancelled a pending deletion request. */
   "user.deletion_cancel": "user",
+  /** The grace period ended and the account and its data were deleted (done by the purge script, so no actor). */
+  "user.deleted": "user",
+  /** Admin content: routes (an order change has no single target). */
+  "route.create": "route",
+  "route.update": "route",
+  "route.delete": "route",
+  "route.reorder": "route",
+  /** Admin content: stamp places. A reorder is recorded against the route it happened in. */
+  "spot.create": "spot",
+  "spot.update": "spot",
+  "spot.delete": "spot",
+  "spot.publish": "spot",
+  "spot.unpublish": "spot",
+  "spot.status.change": "spot",
+  "spot.reorder": "route",
 } as const satisfies Record<string, string>;
 
 export type AuditAction = keyof typeof AUDIT_ACTIONS;

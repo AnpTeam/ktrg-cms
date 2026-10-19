@@ -7,6 +7,7 @@
 // http://localhost:3001/ (Windows Hello), or on a phone through any HTTPS forwarded address
 // (VS Code port forwarding with Public visibility, cloudflared, ngrok). No setup needed:
 // the page tells the server which address it is on.
+import { appendFileSync } from "node:fs";
 import { Elysia } from "elysia";
 import { createApp } from "../src/app";
 import { auditRow } from "../src/audit/audit-log";
@@ -16,6 +17,7 @@ import { createMemoryRateLimitStore } from "../src/auth/rate-limit-memory-store"
 import { createMemorySessionStore } from "../src/auth/session-memory-store";
 import { createConsoleMailer } from "../src/lib/mailer";
 import { createMemoryMeStore } from "../src/me/me-memory-store";
+import { createMemoryContentStore } from "../src/content/content-memory-store";
 import { createServices } from "../src/services";
 
 const port = Number(process.env.PORT ?? 3001);
@@ -34,25 +36,44 @@ const passkeyConfig = {
   },
 };
 
-const { store, users } = createMemoryOtpStore();
+const profiles = new Map<string, { displayName: string | null; origin: string | null }>();
+// Browser tests (not a person) can set MAIL_LOG to a file: every mail body is also appended there,
+// because stdout redirected to a file is buffered and the code would not show up in time.
+function withMailFile<T extends { send(message: { text: string }): Promise<unknown> }>(mailer: T): T {
+  const file = process.env.MAIL_LOG;
+  if (!file) return mailer;
+  return {
+    ...mailer,
+    async send(message: { text: string }) {
+      appendFileSync(file, `${message.text}\n----\n`);
+      return mailer.send(message);
+    },
+  };
+}
+
+const { store, users } = createMemoryOtpStore(profiles);
+// Audit entries are checked like the real writer and printed in this terminal.
+const audit = {
+  async record(entry: Parameters<typeof auditRow>[0]) {
+    const row = auditRow(entry);
+    console.log(`[audit] ${row.action} actor=${row.actorUserId} ${row.targetType}=${row.targetId}`);
+  },
+};
 // Same wiring as the app (src/services.ts), with in-memory stores and the console mailer.
 const services = createServices({
   stores: {
     otp: store,
     session: createMemorySessionStore(users).store,
     rateLimit: createMemoryRateLimitStore().store,
-    passkeys: createMemoryPasskeyStore(users).store,
-    me: createMemoryMeStore(users).store,
+    passkeys: createMemoryPasskeyStore(users, profiles).store,
+    me: createMemoryMeStore(users, profiles).store,
+    content: createMemoryContentStore(audit).store,
   },
-  // Audit entries are checked like the real writer and printed in this terminal.
-  audit: {
-    async record(entry) {
-      const row = auditRow(entry);
-      console.log(`[audit] ${row.action} actor=${row.actorUserId} ${row.targetType}=${row.targetId}`);
-    },
-  },
+  audit,
+  // This address becomes an admin on an email-code login, so the admin screens can be tried (this page only).
+  adminEmails: new Set(["admin@example.com"]),
   // Codes and alert emails are printed in this terminal.
-  mailer: createConsoleMailer("KTRG <no-reply@localhost>"),
+  mailer: withMailFile(createConsoleMailer("KTRG <no-reply@localhost>")),
   secret: "phone-test-secret-phone-test-secret-0",
   passkey: passkeyConfig,
 });

@@ -16,10 +16,13 @@
     "@ktrg/api": "workspace:*",
     "@lingui/core": "^6.9.1",
     "@lingui/react": "^6.9.1",
+    "@simplewebauthn/browser": "14.0.0",
     "maplibre-gl": "^6.14.0",
     "next": "^16.4.0",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0"
+    "react-dom": "^19.3.0",
+    "terra-draw": "1.36.0",
+    "terra-draw-maplibre-gl-adapter": "1.5.0"
   },
   "devDependencies": {
     "@lingui/cli": "^6.9.1",

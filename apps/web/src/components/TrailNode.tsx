@@ -18,7 +18,7 @@ export function TrailNode({ state, order, share }: { state: NodeState; order: nu
       {state === "complete" ? (
         <>
           <circle cx={SIZE / 2} cy={SIZE / 2} r={SIZE / 2 - 1} className="fill-shu" />
-          <circle cx={SIZE / 2} cy={SIZE / 2} r={SIZE / 2 - 5} fill="none" className="stroke-paper" strokeWidth="1.5" opacity="0.7" />
+          <circle cx={SIZE / 2} cy={SIZE / 2} r={SIZE / 2 - 5} fill="none" className="stroke-on-shu" strokeWidth="1.5" opacity="0.7" />
         </>
       ) : (
         <>
@@ -54,7 +54,7 @@ export function TrailNode({ state, order, share }: { state: NodeState; order: nu
         dominantBaseline="central"
         fontSize="17"
         fontWeight="700"
-        className={state === "complete" ? "fill-paper" : state === "soon" ? "fill-muted" : "fill-ink"}
+        className={state === "complete" ? "fill-on-shu" : state === "soon" ? "fill-muted" : "fill-ink"}
       >
         {order}
       </text>

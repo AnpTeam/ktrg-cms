@@ -2,6 +2,9 @@ import { Elysia } from "elysia";
 import { createDrizzleAuditWriter } from "./audit/audit-store";
 import { parseAdminEmails } from "./auth/admin-emails";
 import { createDrizzleOtpStore } from "./auth/otp-store";
+import { adminContentRoutes } from "./content/admin-routes";
+import { createDrizzleContentStore } from "./content/content-store";
+import { publicContentRoutes } from "./content/public-routes";
 import { passkeyRoutes } from "./auth/passkey-routes";
 import { createDrizzlePasskeyStore } from "./auth/passkey-store";
 import { createDrizzleRateLimitStore } from "./auth/rate-limit-store";
@@ -12,6 +15,7 @@ import { createDb } from "./db/client";
 import { env } from "./env";
 import { apiBase } from "./lib/api-errors";
 import { createMailer } from "./lib/mailer";
+import { purgeRoutes } from "./internal/purge-routes";
 import { meRoutes } from "./me/me-routes";
 import { createDrizzleMeStore } from "./me/me-store";
 import { apiDocs } from "./openapi";
@@ -29,6 +33,7 @@ function getServices(): Services {
         rateLimit: createDrizzleRateLimitStore(db),
         passkeys: createDrizzlePasskeyStore(db),
         me: createDrizzleMeStore(db),
+        content: createDrizzleContentStore(db),
       },
       audit: createDrizzleAuditWriter(db),
       mailer: createMailer(env),
@@ -50,7 +55,7 @@ function getServices(): Services {
  * The whole API: every route file, mounted under /api/v1. The services come from outside, so
  * the tests and the dev page (scripts/phone-test.ts) run exactly this route tree on memory stores.
  */
-export function createApp(getServices: () => Services, opts: RouteOptions & { docs: boolean }) {
+export function createApp(getServices: () => Services, opts: RouteOptions & { docs: boolean; cronSecret?: string }) {
   return new Elysia({ prefix: "/api/v1" })
     .use(apiBase()) // first: request ids and the one error shape, for everything below
     .use(apiDocs({ enabled: opts.docs }))
@@ -63,14 +68,23 @@ export function createApp(getServices: () => Services, opts: RouteOptions & { do
     )
     .use(authRoutes(getServices, opts))
     .use(passkeyRoutes(getServices, opts))
-    .use(meRoutes(getServices, opts));
+    .use(meRoutes(getServices, opts))
+    .use(adminContentRoutes(getServices, opts))
+    .use(publicContentRoutes(() => getServices().content))
+    .use(purgeRoutes(getServices, opts.cronSecret));
 }
 
 export const app = createApp(getServices, {
   secureCookies: env.NODE_ENV === "production",
   trustProxy: env.TRUST_PROXY,
   docs: env.NODE_ENV !== "production" || env.API_DOCS,
+  cronSecret: env.CRON_SECRET,
 });
+
+// Vercel's entry: its Elysia preset picks the first of app.ts, index.ts, server.ts, src/app.ts,
+// src/index.ts, src/server.ts that exists, and needs the app as the default export (no listen()).
+// This file comes first, so it is the one. Importing ./env above still fails fast on a bad environment.
+export default app;
 
 export type App = typeof app;
 /** The `{ ok: false, error }` body of every failure, for the web app's error handling. */

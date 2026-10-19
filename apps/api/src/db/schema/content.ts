@@ -9,6 +9,7 @@ import {
   numeric,
   pgEnum,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uniqueIndex,
@@ -22,33 +23,6 @@ export const spotStatus = pgEnum("spot_status", ["open", "caution", "closed"]);
 
 const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
 const updatedAt = () => timestamp("updated_at", { withTimezone: true }).notNull().defaultNow();
-
-/**
- * The permanent rally: one row only (the unique index on a constant enforces it).
- * The accuracy limit (default 100 m) is app configuration, not stored here.
- */
-export const rallies = pgTable(
-  "rallies",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    // How a stamp is verified. Only GPS for now.
-    verification: text("verification", { enum: ["gps"] }).notNull().default("gps"),
-    // Null means every published spot is required.
-    stampsRequired: integer("stamps_required"),
-    startsAt: timestamp("starts_at", { withTimezone: true }),
-    endsAt: timestamp("ends_at", { withTimezone: true }),
-    createdAt: createdAt(),
-    updatedAt: updatedAt(),
-  },
-  (t) => [
-    uniqueIndex("rallies_single_row_uq").on(sql`(true)`),
-    check("rallies_stamps_required_positive", sql`${t.stampsRequired} is null or ${t.stampsRequired} > 0`),
-    check(
-      "rallies_dates_ordered",
-      sql`${t.endsAt} is null or ${t.startsAt} is null or ${t.endsAt} > ${t.startsAt}`,
-    ),
-  ],
-);
 
 /**
  * A trail route (19 of them). Japanese is required, English falls back to it.
@@ -72,6 +46,10 @@ export const routes = pgTable(
     municipality: text("municipality"),
     // GeoJSON line drawn on the map.
     geometry: jsonb("geometry"),
+    // Like a place's position: the line stays hidden from visitors until a person has checked it against an
+    // official source (named in line_source). Changing the line cancels the check.
+    lineVerified: boolean("line_verified").notNull().default(false),
+    lineSource: text("line_source"),
     // YouTube / Vimeo only; the host is checked in the API.
     videoUrl: text("video_url"),
     sortOrder: integer("sort_order").notNull().default(0),
@@ -85,7 +63,7 @@ export const routes = pgTable(
 );
 
 /**
- * A sutra mound (28 of them), the place a stamp is collected. Each belongs to
+ * A sutra mound (31 places: 28 numbers, three of them with two places), the place a stamp is collected. Each belongs to
  * one route (an assumption in the design doc; a join table if that changes).
  * Seeded as drafts without coordinates: coordinates are never guessed.
  */
@@ -103,6 +81,10 @@ export const spots = pgTable(
     // Entered by an admin from an official source.
     lat: doublePrecision("lat"),
     lng: doublePrecision("lng"),
+    // True once a person has checked the position against an official source (named in position_source).
+    // Until then the position is a draft: the public API does not return it and the place cannot be published.
+    positionVerified: boolean("position_verified").notNull().default(false),
+    positionSource: text("position_source"),
     // Check-in radius in metres.
     radiusM: integer("radius_m").notNull().default(50),
     status: spotStatus("status").notNull().default("open"),
@@ -133,7 +115,79 @@ export const spots = pgTable(
       "spots_publish_requires_permission",
       sql`not ${t.published} or ${t.permissionConfirmed}`,
     ),
+    check(
+      "spots_publish_requires_verified_position",
+      sql`not ${t.published} or ${t.positionVerified}`,
+    ),
   ],
+);
+
+export const rallyKind = pgEnum("rally_kind", ["mounds", "course"]);
+
+/**
+ * A stamp rally. There are many: one for the 31 sutra mound places (kind "mounds", only one of them)
+ * and one for each course (kind "course", linked to its route, one per route). Which places belong to a
+ * rally is the `rally_spots` table; a place may be in several rallies (a mound is in the mound rally AND in
+ * its course's rally), and the one stamp a visitor holds for a place counts in all of them: progress is
+ * always computed from stamps (rallies/progress.ts), never stored per rally.
+ * The accuracy limit (default 100 m) is app configuration, not stored here.
+ */
+export const rallies = pgTable(
+  "rallies",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    kind: rallyKind("kind").notNull().default("course"),
+    // Japanese is required in the admin; the column default only fills rows made before names existed.
+    nameJa: text("name_ja").notNull().default(""),
+    nameEn: text("name_en"),
+    // The course of a course rally (one rally per route); null for the mound rally.
+    routeId: uuid("route_id").references(() => routes.id, { onDelete: "restrict" }),
+    sortOrder: integer("sort_order").notNull().default(0),
+    // How a stamp is verified. Only GPS for now.
+    verification: text("verification", { enum: ["gps"] }).notNull().default("gps"),
+    // Null means every published spot is required.
+    stampsRequired: integer("stamps_required"),
+    startsAt: timestamp("starts_at", { withTimezone: true }),
+    endsAt: timestamp("ends_at", { withTimezone: true }),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [
+    // Only one mound rally, and only one rally per course.
+    uniqueIndex("rallies_one_mounds_uq")
+      .on(t.kind)
+      .where(sql`${t.kind} = 'mounds'`),
+    uniqueIndex("rallies_route_uq").on(t.routeId),
+    check(
+      "rallies_route_matches_kind",
+      sql`(${t.kind} = 'mounds' and ${t.routeId} is null) or (${t.kind} = 'course' and ${t.routeId} is not null)`,
+    ),
+    check("rallies_stamps_required_positive", sql`${t.stampsRequired} is null or ${t.stampsRequired} > 0`),
+    check(
+      "rallies_dates_ordered",
+      sql`${t.endsAt} is null or ${t.startsAt} is null or ${t.endsAt} > ${t.startsAt}`,
+    ),
+  ],
+);
+
+/**
+ * Which places belong to which rally, in what order. A place can be in many rallies. Deleting a rally
+ * or a place removes its links (the stamps stay, they belong to the visitor and the place).
+ */
+export const rallySpots = pgTable(
+  "rally_spots",
+  {
+    rallyId: uuid("rally_id")
+      .notNull()
+      .references(() => rallies.id, { onDelete: "cascade" }),
+    spotId: uuid("spot_id")
+      .notNull()
+      .references(() => spots.id, { onDelete: "cascade" }),
+    // The place's number within this rally (1, 2, 3 ...).
+    position: integer("position").notNull().default(0),
+    createdAt: createdAt(),
+  },
+  (t) => [primaryKey({ columns: [t.rallyId, t.spotId] }), index("rally_spots_spot_idx").on(t.spotId)],
 );
 
 /**

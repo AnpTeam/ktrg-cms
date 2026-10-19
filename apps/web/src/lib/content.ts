@@ -1,3 +1,10 @@
+import { fetchPublicRoute, fetchPublicRoutes, fetchPublicSpot, isEmptyRoute, routeDetailFromApi, routeSummaryFromApi, spotDetailFromApi } from "./api-content";
+import type { RouteArea } from "./map-screen";
+import { pickText } from "./pick-text";
+import type { MapPlace, PlaceCategory, PlaceStatus } from "./places";
+import type { RallyItem } from "./rally-model";
+import { sampleLastStamped, sampleMounds, sampleMoundsStamped } from "./sample-mounds";
+import { samplePlaces } from "./sample-places";
 import { sampleRoutes, sampleSpots } from "./sample-content";
 import type { Sketch } from "./sketch";
 import type { Viewer } from "./viewer";
@@ -7,11 +14,10 @@ import type { Viewer } from "./viewer";
 // in the admin (3.4.x) is exactly what appears here. Japanese is required; English is
 // optional and falls back to Japanese.
 //
-// TODO(WBS 2.2.1, 2.2.2): replace the bodies of the three functions below with Eden
-// calls to GET /routes, /routes/{id} and /spots/{id}, and take these types from the
-// API response instead of declaring them here. The API should send `sketch` already
-// simplified (at most about 40 points), never the full GeoJSON line, and should say
-// whether routes without published spots are listed as "soon" (decide with 2.2.1).
+// The three functions at the bottom read GET /routes, /routes/{id} and /spots/{id} (api-content.ts). A course
+// that is still empty in the database (no line, no published place, no text) is stood in for by the sample
+// course of the same number when sample content is on, so the screens can be reviewed while the admin fills
+// the real ones in; the moment a course has real content, the real one wins.
 
 export const prefectures = ["osaka", "wakayama", "nara"] as const;
 export type Prefecture = (typeof prefectures)[number];
@@ -34,6 +40,8 @@ export interface RouteSummary {
   expectedTimeMin: number | null;
   /** A simplified route line for the list silhouette, when the CMS has geometry. */
   sketch: Sketch | null;
+  /** Where the course is, as one round area on the home map; null until the CMS has it. */
+  area: RouteArea | null;
   spotCount: number;
   /** Stamps this visitor holds on the route; null when not signed in. */
   stampedCount: number | null;
@@ -63,6 +71,10 @@ export interface RouteDetail extends RouteSummary {
   spots: SpotListItem[];
   /** The path to draw on the map, in order; null until the CMS has the track (then the map joins the stops). */
   line: { lat: number; lng: number }[] | null;
+  /** The guidance video's address (the CMS `video_url`); only YouTube and Vimeo links are shown (`parseVideoUrl`). */
+  videoUrl: string | null;
+  /** A photo of the course (a path inside the site, or an address), shown at the top of its card; null when none. */
+  photoUrl: string | null;
 }
 
 export interface SpotDetail extends SpotListItem {
@@ -75,21 +87,11 @@ export interface SpotDetail extends SpotListItem {
   statusNoteEn: string | null;
   /** ISO timestamp of the last status change. */
   statusUpdatedAt: string | null;
+  /** A photo of the place, shown at the top of its card; null when none. */
+  photoUrl: string | null;
 }
 
-export interface Picked {
-  text: string;
-  lang: "ja" | "en";
-  /** English was requested but only Japanese exists. */
-  fallback: boolean;
-}
-
-/** The text for a locale: English if asked and entered, otherwise Japanese. */
-export function pickText(locale: string, ja: string | null, en: string | null): Picked | null {
-  if (locale === "en" && en) return { text: en, lang: "en", fallback: false };
-  if (ja) return { text: ja, lang: "ja", fallback: locale === "en" };
-  return null;
-}
+export { pickText, type Picked } from "./pick-text";
 
 export function isPrefecture(value: string | undefined): value is Prefecture {
   return prefectures.some((p) => p === value);
@@ -147,19 +149,128 @@ function toSummary(r: RouteDetail): RouteSummary {
     difficulty: r.difficulty,
     expectedTimeMin: r.expectedTimeMin,
     sketch: r.sketch,
+    area: r.area,
     spotCount: r.spotCount,
     stampedCount: r.stampedCount,
   };
 }
 
+/** A place along the courses as the CMS holds it (Japanese required, English optional). */
+export interface PlaceItem {
+  id: string;
+  category: PlaceCategory;
+  nameJa: string;
+  nameEn: string | null;
+  /** The course numbers (1 to 19) this place serves. */
+  routes: number[];
+  position: { lat: number; lng: number; verified: boolean };
+  hoursJa: string | null;
+  hoursEn: string | null;
+  closedDaysJa: string | null;
+  closedDaysEn: string | null;
+  descriptionJa: string | null;
+  descriptionEn: string | null;
+  status: PlaceStatus;
+  /** YYYY-MM-DD of the last check by a person; null when never. */
+  lastVerified: string | null;
+}
+
+/** The places that serve a course. Only sample data for now (the places API does not exist yet). */
+export async function listPlacesForRoute(order: number): Promise<PlaceItem[]> {
+  return sampleContentEnabled() ? samplePlaces.filter((p) => p.routes.includes(order)) : [];
+}
+
+/** A place with its text chosen for the visitor's language (English falls back to Japanese). */
+export function toMapPlace(locale: string, p: PlaceItem): MapPlace {
+  const name = pickText(locale, p.nameJa, p.nameEn);
+  return {
+    id: p.id,
+    category: p.category,
+    name: name?.text ?? p.nameJa,
+    nameLang: name?.lang ?? "ja",
+    hours: pickText(locale, p.hoursJa, p.hoursEn)?.text ?? null,
+    closedDays: pickText(locale, p.closedDaysJa, p.closedDaysEn)?.text ?? null,
+    description: pickText(locale, p.descriptionJa, p.descriptionEn)?.text ?? null,
+    status: p.status,
+    position: { lat: p.position.lat, lng: p.position.lng },
+    verified: p.position.verified,
+    lastVerified: p.lastVerified,
+  };
+}
+
+/**
+ * Every stamp rally: the 31 sutra mound places as one rally, then one rally per course (a course
+ * with no published places has none to show and is 準備中). Only sample data for now (the
+ * rallies API does not exist yet); the personal parts are removed for a signed-out visitor by
+ * forRallyViewer.
+ */
+export async function listRallies(): Promise<RallyItem[]> {
+  if (!sampleContentEnabled()) return [];
+  const moundSlots = sampleMounds.map((m) => ({
+    id: `sample-m${m.number}`,
+    number: m.number,
+    nameJa: m.nameJa,
+    nameEn: m.nameEn,
+    stamped: sampleMoundsStamped.has(m.number),
+  }));
+  const mounds: RallyItem = {
+    id: "mounds",
+    kind: "mounds",
+    order: 0,
+    nameJa: "経塚スタンプラリー",
+    nameEn: "Sutra mound stamp rally",
+    routeId: null,
+    total: moundSlots.length,
+    stamped: moundSlots.filter((s) => s.stamped).length,
+    lastStampedAt: sampleLastStamped.mounds ?? null,
+    slots: moundSlots,
+  };
+  const courses = sampleRoutes.map((r): RallyItem => {
+    const slots = r.spots.map((s, i) => ({ id: s.id, number: i + 1, nameJa: s.nameJa, nameEn: s.nameEn, stamped: s.stamped === true }));
+    return {
+      id: `course-${r.order}`,
+      kind: "course",
+      order: r.order,
+      nameJa: r.nameJa,
+      nameEn: r.nameEn,
+      routeId: r.id,
+      total: slots.length,
+      stamped: slots.filter((s) => s.stamped).length,
+      lastStampedAt: sampleLastStamped[r.id] ?? null,
+      slots,
+    };
+  });
+  return [mounds, ...courses];
+}
+
 export async function listRoutes(): Promise<RouteSummary[]> {
-  return sampleContentEnabled() ? sampleRoutes.map(toSummary) : [];
+  const sample = sampleContentEnabled();
+  const real = await fetchPublicRoutes();
+  if (!real) return sample ? sampleRoutes.map(toSummary) : [];
+  const out = real.map((r, i) => {
+    const order = i + 1;
+    const stand = sample && isEmptyRoute(r) ? sampleRoutes.find((x) => x.order === order) : undefined;
+    return stand ? toSummary(stand) : routeSummaryFromApi(r, order);
+  });
+  if (sample) for (const s of sampleRoutes) if (s.order > real.length) out.push(toSummary(s));
+  return out;
 }
 
 export async function getRoute(id: string): Promise<RouteDetail | undefined> {
-  return sampleContentEnabled() ? sampleRoutes.find((r) => r.id === id) : undefined;
+  const sample = sampleContentEnabled();
+  const fromSample = sample ? sampleRoutes.find((r) => r.id === id) : undefined;
+  if (fromSample) return fromSample;
+  const [found, all] = await Promise.all([fetchPublicRoute(id), fetchPublicRoutes()]);
+  if (!found || !all) return undefined;
+  const order = all.findIndex((r) => r.id === id) + 1;
+  return routeDetailFromApi(found.route, found.spots, order);
 }
 
 export async function getSpot(id: string): Promise<SpotDetail | undefined> {
-  return sampleContentEnabled() ? sampleSpots.find((s) => s.id === id) : undefined;
+  const fromSample = sampleContentEnabled() ? sampleSpots.find((s) => s.id === id) : undefined;
+  if (fromSample) return fromSample;
+  const spot = await fetchPublicSpot(id);
+  if (!spot) return undefined;
+  const route = await fetchPublicRoute(spot.routeId);
+  return route ? spotDetailFromApi(spot, route.route) : undefined;
 }

@@ -1,7 +1,9 @@
 import { Elysia, t } from "elysia";
-import { emailSchema, localeSchema, otpCodeSchema } from "../lib/schemas";
+import { normalizeDisplayName } from "../me/me-service";
+import { emailSchema, localeSchema, otpCodeSchema, signupProfileSchema } from "../lib/schemas";
 import { SESSION_SECURITY } from "../openapi";
 import { fail } from "./http";
+import type { NewAccountProfile } from "./user";
 import type { OtpService } from "./otp-service";
 import { routeKit, type KitServices, type RouteOptions } from "./route-kit";
 
@@ -34,14 +36,21 @@ export function authRoutes(getServices: () => AuthServices, opts: RouteOptions) 
     .post(
       "/otp/verify",
       async ({ body, set }) => {
-        const result = await getServices().otp.verify(body.email, body.code);
+        // Name and origin are only used if this code creates the account (register); login just omits them.
+        let profile: NewAccountProfile | undefined;
+        if (body.profile) {
+          const displayName = normalizeDisplayName(body.profile.displayName);
+          if (displayName === undefined) return fail(set, 400, "invalid_display_name");
+          profile = { displayName, origin: body.profile.origin ?? null, locale: body.profile.locale ?? "ja" };
+        }
+        const result = await getServices().otp.verify(body.email, body.code, profile);
         // One answer for wrong, expired, used, locked or unknown.
         if (!result.ok) return fail(set, 401, "invalid_code");
         await http.startSession(set, result.user);
         return { ok: true as const, user: result.user };
       },
       {
-        body: t.Object({ email: emailSchema, code: otpCodeSchema }),
+        body: t.Object({ email: emailSchema, code: otpCodeSchema, profile: t.Optional(signupProfileSchema) }),
         rateLimit: { otpVerifyEmail: "body.email", otpVerifyIp: "ip" },
       },
     )

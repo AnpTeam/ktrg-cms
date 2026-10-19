@@ -1,45 +1,67 @@
+import Link from "next/link";
 import { Trans } from "@lingui/react/macro";
+import { ChevronIcon } from "@/components/icons";
+import { EmptyState } from "@/components/EmptyState";
 import { Notice } from "@/components/Notice";
-import { ProgressSummary } from "@/components/ProgressSummary";
+import { ProfileCard } from "@/components/ProfileCard";
+import { FeaturedRally, RallyCard } from "@/components/RallyViews";
+import { SectionBanner } from "@/components/SectionBanner";
 import { SignInPrompt } from "@/components/SignInPrompt";
-import { StampGrid } from "@/components/StampGrid";
-import { StampLegend } from "@/components/StampLegend";
+import { listRallies } from "@/lib/content";
+import { forRallyViewer, otherRallies, pickFeatured } from "@/lib/rally-model";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
-import { TOTAL_STAMPS } from "@/lib/rally";
+import { localePath } from "@/lib/rally";
 
-// Until accounts and the stamp API exist, nobody has stamps. In development only,
-// `?demo=1,2,3,7` fills those slots so the stamped look can be reviewed (signed in only).
-// The production branch returns before searchParams is read, so the page stays static.
-async function stampedNumbers(searchParams: Promise<{ demo?: string }>) {
-  if (process.env.NODE_ENV === "production") return new Set<number>();
-  const { demo } = await searchParams;
-  const numbers = (demo ?? "")
-    .split(",")
-    .map(Number)
-    .filter((n) => Number.isInteger(n) && n >= 1 && n <= TOTAL_STAMPS);
-  return new Set(numbers);
-}
-
-// TODO(N-08): the card becomes one per rally and data-driven; 28 slots is the old single-rally layout.
-export default async function StampsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ demo?: string; as?: string }>;
-}) {
-  await initLingui();
+// The stamp page: who you are, the rally you stamped in most recently (with how many are left), and
+// below it every other rally: the 31 sutra mound places as one rally and one rally for each course.
+// Until accounts and the stamp API exist the rallies come from sample content (development only).
+export default async function StampsPage({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
+  const i18n = await initLingui();
   const viewer = await getViewer(searchParams);
-  const stamped = viewer.signedIn ? await stampedNumbers(searchParams) : new Set<number>();
+  const rallies = (await listRallies()).map((r) => forRallyViewer(r, viewer.signedIn));
+  const featured = pickFeatured(rallies);
+  const others = otherRallies(rallies, featured);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 pt-2">
       <h1 className="px-4 text-3xl font-bold">
-        <Trans>スタンプカード</Trans>
+        <Trans>スタンプ</Trans>
       </h1>
-      {/* Signed out: a preview of the card and a reason to sign in, never a false "0 stamps". */}
-      {viewer.signedIn ? <ProgressSummary stamped={stamped.size} /> : <SignInPrompt />}
-      <StampLegend />
-      <StampGrid stamped={stamped} showNext={viewer.signedIn} />
+
+      {/* How to play lives here, with the stamps, and nowhere else. */}
+      <Link
+        href={localePath(i18n.locale, "/guide")}
+        className="tap-target mx-4 flex items-center justify-between rounded-2xl bg-surface px-5 text-xl font-bold text-accent"
+      >
+        <Trans>遊び方</Trans>
+        <ChevronIcon />
+      </Link>
+
+      {/* Signed out: a reason to sign in and the rallies, never a false "0 stamps". */}
+      {viewer.signedIn ? <ProfileCard publicId={viewer.publicId} deletionDueAt={viewer.deletionDueAt} locale={i18n.locale} name={viewer.name} origin={viewer.origin} ageRange={viewer.ageRange} gender={viewer.gender} /> : <SignInPrompt />}
+
+      {rallies.length === 0 ? (
+        <EmptyState title={<Trans>ラリーは、まだ準備中です。</Trans>}>
+          <Trans>公開できるようになったら、ここにスタンプのラリーが表示されます。</Trans>
+        </EmptyState>
+      ) : null}
+
+      {featured ? <FeaturedRally rally={featured} locale={i18n.locale} signedIn={viewer.signedIn} /> : null}
+
+      {others.length > 0 ? (
+        <section className="flex flex-col gap-3 px-4">
+          <SectionBanner>
+            <Trans>ラリーの一覧</Trans>
+          </SectionBanner>
+          <ul className="flex flex-col gap-3">
+            {others.map((rally) => (
+              <RallyCard key={rally.id} rally={rally} locale={i18n.locale} signedIn={viewer.signedIn} />
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       <Notice>
         <Trans>出かける前に、公式の最新情報を確認してください。</Trans>
       </Notice>

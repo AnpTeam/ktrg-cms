@@ -1,31 +1,45 @@
 import type { ReactNode } from "react";
-import { LocaleSwitcher } from "@/components/LocaleSwitcher";
-import { SampleNoticeButton, SampleNoticeHost } from "@/components/SampleNotice";
+import { MenuProvider } from "@/components/MenuProvider";
+import { OfflineNotice } from "@/components/OfflineNotice";
+import { SampleNoticeHost } from "@/components/SampleNotice";
+import { SiteFooter } from "@/components/SiteFooter";
+import { StampFilters } from "@/components/StampFilters";
+import { SiteHeader } from "@/components/SiteHeader";
 import { TabBar } from "@/components/TabBar";
-import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { PrefsSync } from "@/components/settings/PrefsSync";
+import { getPrefsState } from "@/lib/server-prefs";
+import { getViewer } from "@/lib/viewer";
 import { sampleContentEnabled } from "@/lib/content";
 import { initLingui } from "@/i18n/server";
 
-// Participant side: mobile first. A slim bar on top (theme and language), the page, and a
-// tab bar at the bottom. The bottom padding keeps content clear of the tab bar.
+// Participant side: mobile first. A slim bar on top (menu), the page, and a tab bar at the bottom (a side rail on
+// wide screens). The bottom padding keeps content clear of the tab bar.
 export default async function PublicLayout({ children }: { children: ReactNode }) {
-  await initLingui();
+  const i18n = await initLingui();
   const sample = sampleContentEnabled();
+  const viewer = await getViewer();
+  const prefsState = await getPrefsState();
 
+  // Phone: the page fills the width and the tab bar is at the bottom. Wider screens work like Twitter: the
+  // page is one centred column, the navigation moves to a rail on its left, and an empty space of the same
+  // width on the right keeps the column in the middle.
   return (
-    <>
-      <header className="mx-auto flex max-w-xl items-center justify-between gap-1.5 px-3 py-2">
-        <div className="flex items-center gap-1.5">
-          <ThemeSwitcher />
-          {sample ? <SampleNoticeButton /> : null}
-        </div>
-        <LocaleSwitcher />
-      </header>
-      {sample ? <SampleNoticeHost /> : null}
-      <main id="main" className="mx-auto max-w-xl pb-32">
-        {children}
-      </main>
+    <MenuProvider>
+    <StampFilters />
+    <div className="mx-auto flex w-full max-w-5xl justify-center md:gap-6 lg:gap-10">
       <TabBar />
-    </>
+      <div className="min-w-0 max-w-xl flex-1 md:border-x md:border-surface">
+        <SiteHeader signedIn={viewer.signedIn} name={viewer.name} sample={sample} devTools={process.env.NODE_ENV !== "production"} />
+        <OfflineNotice />
+        {sample ? <SampleNoticeHost /> : null}
+        <PrefsSync signedIn={viewer.signedIn} account={prefsState.account} device={prefsState.device} />
+        <main id="main" className="pb-28 md:pb-10 md:pt-6">
+          {children}
+          <SiteFooter locale={i18n.locale} />
+        </main>
+      </div>
+      <div aria-hidden="true" className="hidden w-60 shrink-0 lg:block" />
+    </div>
+    </MenuProvider>
   );
 }

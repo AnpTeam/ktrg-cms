@@ -3,7 +3,10 @@ import type { AuthUser } from "./user";
 import type { OtpRow, OtpStore } from "./otp-service";
 
 /** In-memory store for tests and manual checks. Mirrors the Drizzle store's rules. */
-export function createMemoryOtpStore() {
+export function createMemoryOtpStore(
+  /** Name and origin given at sign-up, by user id. Pass the same map to the other memory stores to share it. */
+  profiles: Map<string, { displayName: string | null; origin: string | null }> = new Map(),
+) {
   const rows: (OtpRow & { email: string })[] = [];
   const users = new Map<string, AuthUser>();
   /** Ids promoted by promoteToAdmin, in order: stands in for the audit log. */
@@ -31,11 +34,12 @@ export function createMemoryOtpStore() {
       row.usedAt = at;
       return true;
     },
-    async findOrCreateUser(email) {
+    async findOrCreateUser(email, profile) {
       let user = users.get(email);
       if (!user) {
-        user = { id: randomUUID(), email, role: "participant", locale: "ja" };
+        user = { id: randomUUID(), email, role: "participant", locale: profile?.locale ?? "ja" };
         users.set(email, user);
+        profiles.set(user.id, { displayName: profile?.displayName ?? null, origin: profile?.origin ?? null });
       }
       return user;
     },
@@ -48,5 +52,5 @@ export function createMemoryOtpStore() {
     },
   };
 
-  return { store, rows, users, promotions };
+  return { store, rows, users, promotions, profiles };
 }

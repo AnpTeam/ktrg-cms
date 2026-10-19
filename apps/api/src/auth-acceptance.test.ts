@@ -16,6 +16,7 @@ import { SESSION_POLICY } from "./auth/session";
 import { createMemorySessionStore } from "./auth/session-memory-store";
 import { TestAuthenticator } from "./auth/webauthn-test-authenticator";
 import type { MailMessage } from "./lib/mailer";
+import { createMemoryContentStore } from "./content/content-memory-store";
 import { createMemoryMeStore } from "./me/me-memory-store";
 import { createServices } from "./services";
 
@@ -33,6 +34,7 @@ function setup(opts: { adminEmails?: string[] } = {}) {
   const sessions = createMemorySessionStore(users);
   const passkeys = createMemoryPasskeyStore(users);
   const profiles = createMemoryMeStore(users);
+  const audit = createMemoryAuditWriter();
   const mail: MailMessage[] = [];
   const services = createServices({
     stores: {
@@ -41,8 +43,9 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       rateLimit: createMemoryRateLimitStore().store,
       passkeys: passkeys.store,
       me: profiles.store,
+      content: createMemoryContentStore(audit.writer).store,
     },
-    audit: createMemoryAuditWriter().writer,
+    audit: audit.writer,
     mailer: {
       async send(m) {
         mail.push(m);
@@ -263,6 +266,10 @@ describe("user B cannot touch user A", () => {
   /** Routes anyone may call: health and the login and sign-up steps. */
   const PUBLIC = new Set([
     "GET /api/v1/health",
+    // What visitors read: routes and published places (see content/content-routes.test.ts).
+    "GET /api/v1/routes",
+    "GET /api/v1/routes/:id",
+    "GET /api/v1/spots/:id",
     "POST /api/v1/auth/otp/request",
     "POST /api/v1/auth/otp/verify",
     "POST /api/v1/auth/logout",
@@ -270,11 +277,22 @@ describe("user B cannot touch user A", () => {
     "POST /api/v1/auth/passkeys/signup/verify",
     "POST /api/v1/auth/passkeys/login/options",
     "POST /api/v1/auth/passkeys/login/verify",
+    // Not for people: a scheduler calls it with a bearer secret (404 without one configured); see internal/purge-routes.test.ts.
+    "POST /api/v1/internal/purge-deletions",
   ]);
   /** A well-formed body for each logged-in route that needs one (validation runs before the guard). */
   const BODIES: Record<string, () => unknown> = {
     "PATCH /api/v1/me": () => ({ locale: "en" }),
+    "POST /api/v1/admin/routes": () => ({ nameJa: "x" }),
+    "PUT /api/v1/admin/routes/order": () => ({ ids: [] }),
+    "PATCH /api/v1/admin/routes/:id": () => ({ updatedAt: new Date().toISOString() }),
+    "POST /api/v1/admin/routes/:id/spots": () => ({ nameJa: "x" }),
+    "PUT /api/v1/admin/routes/:id/spots/order": () => ({ ids: [] }),
+    "PATCH /api/v1/admin/spots/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/auth/reauth/verify": () => ({ code: "123456" }),
+    "POST /api/v1/auth/passkeys/reauth/verify": () => ({
+      response: new TestAuthenticator(passkeyConfig).authenticate({ challenge: "x".repeat(43) }),
+    }),
     "POST /api/v1/auth/passkeys/register/verify": () => ({
       response: new TestAuthenticator(passkeyConfig).register({ challenge: "x".repeat(43) }),
     }),

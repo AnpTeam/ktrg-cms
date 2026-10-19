@@ -15,9 +15,10 @@ export function proxy(request: NextRequest) {
     // screens can be reviewed while browsing. Production never reads or sets it.
     if (process.env.NODE_ENV === "production") return;
     const as = request.nextUrl.searchParams.get("as");
-    if (as !== "in" && as !== "out") return;
+    if (as !== "in" && as !== "out" && as !== "auto") return;
     const response = NextResponse.next();
-    response.cookies.set(devViewerCookie, as, { path: "/" });
+    if (as === "auto") response.cookies.delete(devViewerCookie);
+    else response.cookies.set(devViewerCookie, as, { path: "/" });
     return response;
   }
 

@@ -1,11 +1,12 @@
 "use client";
 
 import "maplibre-gl/dist/maplibre-gl.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { Map as MapLibreMap } from "maplibre-gl";
-import { WarningIcon } from "@/components/icons";
+import { ExpandIcon, WarningIcon } from "@/components/icons";
 import { SampleNoticeButton } from "@/components/SampleNotice";
+import { clusterByPixels } from "@/lib/cluster";
 import type { SpotStatus } from "@/lib/content";
 import {
   boundsOf,
@@ -19,7 +20,9 @@ import {
   type Position,
 } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
-import { createMarkerElement } from "./MapMarker";
+import { groupCounts, groupOf, sortByDistance, type Coord, type MapPlace, type PlaceGroup } from "@/lib/places";
+import { createClusterElement, createMarkerElement, createPlaceMarkerElement } from "./MapMarker";
+import { PlaceCard, PlaceChips, PlaceList, useGroupNames } from "./PlacesPanel";
 import { StopCard } from "./StopCard";
 
 export interface MapStop {
@@ -38,53 +41,88 @@ export interface MapStop {
   href: string;
 }
 
+type Selection = { kind: "stop" | "place"; id: string } | null;
+
 const LINE_SOURCE = "route";
 // Keep every stop clear of the buttons: zoom buttons at the top right, the chip at the top left,
-// the terrain button and the credit line along the bottom.
-const FIT = { padding: { top: 76, bottom: 112, left: 56, right: 72 }, maxZoom: 16, animate: false } as const;
+// the "bigger" button and the credit line along the bottom.
+const FIT = { padding: { top: 76, bottom: 112, left: 56, right: 92 }, maxZoom: 16, animate: false } as const;
+// Markers closer than this on screen are shown as one numbered group (a stop is 3rem = 48 px wide).
+const CLUSTER_PX = 52;
 const buttonClass =
   "tap-target inline-flex items-center justify-center gap-2 rounded-lg border-2 border-ink bg-paper px-3 text-lg font-bold text-ink hover:bg-surface";
 
+const centerOf = (points: readonly Coord[]): Coord => ({
+  lat: points.reduce((n, p) => n + p.lat, 0) / points.length,
+  lng: points.reduce((n, p) => n + p.lng, 0) / points.length,
+});
+
 /**
- * The trail map (WBS 3.2.1, 3.2.2): GSI tiles, the route line and one numbered button per stop.
- * Embedded, it does not capture one-finger drags, so the page keeps scrolling; the visible
- * "bigger map" button expands it to the full screen with full pan and zoom.
- * `line` is the real path when the CMS has it; without it the stops are joined by dashed straight lines.
+ * The trail map (WBS 3.2.1, 3.2.2): GSI tiles, the route line, one numbered button per stop and, on
+ * request, the places around (toilets, shops ...).
+ * - Embedded, a finger on the map still scrolls the page (two fingers move the map; the zoom
+ *   buttons always work); "bigger" opens it full screen with full pan and zoom.
+ * - Markers that would overlap are merged into one group button; tapping it zooms in.
+ * - `line` is the real path when the CMS has it; without it the stops are joined by dashed lines.
  */
 export function TrailMap({
   stops,
   line,
+  places,
   draft,
   settings,
+  mergeStops,
+  placesFirst,
 }: {
   stops: MapStop[];
   line: Position[] | null;
+  places: MapPlace[];
   draft: boolean;
   settings: MapSettings;
+  /** The visitor's choice: merge stops that are close together (off = every stop is its own button). */
+  mergeStops: boolean;
+  /** The visitor's choice: show the nearby places from the start. */
+  placesFirst: boolean;
 }) {
   const { t } = useLingui();
+  const groupNames = useGroupNames();
+  const sectionRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
-  const markerEls = useRef(new Map<string, HTMLButtonElement>());
+  const mlRef = useRef<typeof import("maplibre-gl") | null>(null);
+  const buttonByKey = useRef(new Map<string, HTMLElement>());
   const expandRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const [mapGen, setMapGen] = useState(0); // bumped each time a map is created
+  const [view, setView] = useState(0); // bumped each time the map stops moving
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [terrain, setTerrain] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Selection>(null);
+  // Every kind of place that exists on this course is on from the start when the visitor chose that.
+  const [active, setActive] = useState<ReadonlySet<PlaceGroup>>(
+    () => new Set(placesFirst ? (Object.keys(groupCounts(places)) as PlaceGroup[]) : []),
+  );
+
+  const counts = useMemo(() => groupCounts(places), [places]);
+  const visiblePlaces = useMemo(() => places.filter((p) => active.has(groupOf(p.category))), [places, active]);
+  const selectedStop = selected?.kind === "stop" ? stops.find((s) => s.id === selected.id) : undefined;
+  const selectedPlace = selected?.kind === "place" ? places.find((p) => p.id === selected.id) : undefined;
+  // Distances are measured from the chosen stop, or else from the start of the course.
+  const origin: Coord | undefined = selectedStop?.position ?? stops[0]?.position;
 
   // Create the map once for these inputs; remove it again on unmount (CLAUDE.md: map.remove()).
   useEffect(() => {
     let cancelled = false;
     let map: MapLibreMap | undefined;
-    const elements = markerEls.current;
-    const markers: { remove: () => void }[] = [];
 
     (async () => {
       try {
         const ml = await import("maplibre-gl");
         if (cancelled || !containerRef.current) return;
+        // A rebuilt map (the style settings changed) has not loaded its style yet, whatever the old one did.
+        setLoaded(false);
         // MapLibre 6 runs its tile work in a separate worker file. Under Next.js the bundler must
         // emit that file, which this new URL(..., import.meta.url) pattern (from MapLibre's own
         // docs for Next.js 15 and later) does. Without it: "Worker failed to load".
@@ -101,15 +139,21 @@ export function TrailMap({
           maxZoom: zoomLimits.max,
           dragRotate: false,
           pitchWithRotate: false,
+          // One finger scrolls the page, two fingers move the map: no trap on a long page.
+          cooperativeGestures: true,
+          locale: {
+            "CooperativeGesturesHandler.MobileHelpText": t`2本の指で地図を動かします`,
+            "CooperativeGesturesHandler.WindowsHelpText": t`Ctrlキーを押しながら地図を動かします`,
+            "CooperativeGesturesHandler.MacHelpText": t`⌘キーを押しながら地図を動かします`,
+          },
           attributionControl: { compact: false },
         });
         map.touchZoomRotate.disableRotation();
-        setInteractive(map, false);
         // A tile that cannot be fetched (weak signal) is normal, not an error to shout about: the
         // background shows and the tile is retried when the map moves.
         map.on("error", () => {});
+        map.on("moveend", () => setView((v) => v + 1));
 
-        const next = nextStopId(stops);
         // Ready as soon as the style is: MapLibre's own "load" waits for every visible tile, which
         // on a weak mountain signal can take very long. The line, markers and buttons must not
         // wait for that; tiles simply fill in as they arrive. A single event can be missed, so
@@ -126,18 +170,9 @@ export function TrailMap({
         map.on("load", start);
         start();
 
-        for (const stop of stops) {
-          const el = createMarkerElement({
-            order: stop.order,
-            label: stop.label,
-            kind: markerKind(stop.stamped, stop.id === next),
-            status: stop.status,
-            onSelect: () => setSelectedId(stop.id),
-          });
-          elements.set(stop.id, el);
-          markers.push(new ml.Marker({ element: el, anchor: "center" }).setLngLat([stop.position.lng, stop.position.lat]).addTo(map));
-        }
         mapRef.current = map;
+        mlRef.current = ml;
+        setMapGen((g) => g + 1);
       } catch {
         // No WebGL, or the library failed to load: the list on the page still works.
         if (!cancelled) setFailed(true);
@@ -146,36 +181,134 @@ export function TrailMap({
 
     return () => {
       cancelled = true;
-      markers.forEach((m) => m.remove());
-      elements.clear();
       map?.remove();
       mapRef.current = null;
     };
+    // `t` changes only with the language, which reloads the page.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stops, line, settings]);
 
-  // Embedded: no one-finger capture. Expanded: full interaction. Either way the map is resized.
+  // Zoom in on a group of markers (or on one spot when they all sit on the same point).
+  const zoomTo = (points: readonly Coord[]) => {
+    const map = mapRef.current;
+    const bounds = boundsOf(points);
+    if (!map || !bounds) return;
+    const [[w, s], [e, n]] = bounds;
+    if (w === e && s === n) map.easeTo({ center: [w, s], zoom: Math.min(map.getZoom() + 2, 17) });
+    else map.fitBounds(bounds, { padding: 90, maxZoom: 17 });
+  };
+
+  // Draw the markers. Merged groups depend on the zoom, so this runs again whenever the map settles.
+  useEffect(() => {
+    const map = mapRef.current;
+    const ml = mlRef.current;
+    if (!map || !ml) return;
+    const live: { remove: () => void }[] = [];
+    const buttons = buttonByKey.current;
+    buttons.clear();
+    const put = (el: HTMLElement, at: Coord) =>
+      live.push(new ml.Marker({ element: el, anchor: "center" }).setLngLat([at.lng, at.lat]).addTo(map));
+    const pixel = (id: string, at: Coord) => {
+      const p = map.project([at.lng, at.lat]);
+      return { id, x: p.x, y: p.y };
+    };
+
+    // Places first, so the numbered stops sit on top of them.
+    const placeById = new Map(visiblePlaces.map((p) => [p.id, p]));
+    const group = (points: { id: string; x: number; y: number }[]) =>
+      mergeStops ? clusterByPixels(points, CLUSTER_PX) : points.map((p) => [p.id]);
+    for (const ids of group(visiblePlaces.map((p) => pixel(p.id, p.position)))) {
+      const members = ids.map((id) => placeById.get(id)!);
+      if (members.length === 1) {
+        const place = members[0]!;
+        const el = createPlaceMarkerElement({
+          group: groupOf(place.category),
+          label: place.name,
+          closed: place.status === "closed" || place.status === "gone",
+          onSelect: () => setSelected({ kind: "place", id: place.id }),
+        });
+        buttons.set(`place:${place.id}`, el);
+        put(el, place.position);
+      } else {
+        const count = members.length;
+        const el = createClusterElement({
+          text: String(count),
+          label: t`${count}か所の場所がここに集まっています。押すと拡大します`,
+          kind: "places",
+          onSelect: () => zoomTo(members.map((m) => m.position)),
+        });
+        put(el, centerOf(members.map((m) => m.position)));
+      }
+    }
+
+    const next = nextStopId(stops);
+    const stopById = new Map(stops.map((s) => [s.id, s]));
+    for (const ids of group(stops.map((s) => pixel(s.id, s.position)))) {
+      const members = ids.map((id) => stopById.get(id)!);
+      if (members.length === 1) {
+        const stop = members[0]!;
+        const el = createMarkerElement({
+          order: stop.order,
+          label: stop.label,
+          kind: markerKind(stop.stamped, stop.id === next),
+          status: stop.status,
+          onSelect: () => setSelected({ kind: "stop", id: stop.id }),
+        });
+        buttons.set(`stop:${stop.id}`, el);
+        put(el, stop.position);
+      } else {
+        const orders = members.map((m) => m.order);
+        const text = `${Math.min(...orders)}–${Math.max(...orders)}`;
+        const el = createClusterElement({
+          text,
+          label: t`スタンプの場所 ${text} がここに集まっています。押すと拡大します`,
+          kind: "stops",
+          onSelect: () => zoomTo(members.map((m) => m.position)),
+        });
+        put(el, centerOf(members.map((m) => m.position)));
+      }
+    }
+
+    return () => {
+      live.forEach((m) => m.remove());
+      buttons.clear();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapGen, view, stops, visiblePlaces, mergeStops]);
+
+  // Mark the selected marker for screen readers and for the highlighted look.
+  useEffect(() => {
+    buttonByKey.current.forEach((el, key) =>
+      el.setAttribute("aria-pressed", String(selected !== null && key === `${selected.kind}:${selected.id}`)),
+    );
+  }, [selected, mapGen, view, visiblePlaces]);
+
+  // Embedded: a finger scrolls the page. Expanded: the whole screen is the map, so one finger moves it.
+  // Either way the map is resized and fitted again once the layout has settled.
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    setInteractive(map, expanded);
-    // Wait for the layout change to settle so the map measures its new size before it fits.
-    const frame = window.setTimeout(() => {
+    if (expanded) map.cooperativeGestures.disable();
+    else map.cooperativeGestures.enable();
+    const timer = window.setTimeout(() => {
       map.resize();
-      const bounds = boundsOf([...stops.map((s) => s.position), ...(line ?? [])]);
+      const bounds = boundsOf([
+        ...stops.map((s) => s.position),
+        ...(line ?? []),
+        ...visiblePlaces.map((p) => p.position),
+      ]);
       if (bounds) map.fitBounds(bounds, FIT);
     }, 150);
-    return () => window.clearTimeout(frame);
-  }, [expanded, loaded, stops, line]);
+    return () => window.clearTimeout(timer);
+  }, [expanded, loaded, mapGen, stops, line, visiblePlaces]);
 
   useEffect(() => {
     const map = mapRef.current;
-    if (map && loaded) map.setLayoutProperty(terrainLayerId, "visibility", terrain ? "visible" : "none");
-  }, [terrain, loaded]);
-
-  // Mark the selected stop for screen readers and for the highlighted look.
-  useEffect(() => {
-    markerEls.current.forEach((el, id) => el.setAttribute("aria-pressed", String(id === selectedId)));
-  }, [selectedId, loaded]);
+    // Only on a map whose style has finished loading, and only if it has the overlay.
+    if (map && loaded && map.isStyleLoaded() && map.getLayer(terrainLayerId)) {
+      map.setLayoutProperty(terrainLayerId, "visibility", terrain ? "visible" : "none");
+    }
+  }, [terrain, loaded, mapGen]);
 
   // Expanded view: keep the page still behind it, close on Escape, and move focus sensibly.
   useEffect(() => {
@@ -201,15 +334,55 @@ export function TrailMap({
     else map.zoomOut(options);
   };
 
-  const selected = stops.find((s) => s.id === selectedId);
+  // The plain map's stop-by-stop control: previous and next move the map to one stop at a time, so a
+  // visitor never has to tap a stop in a crowd of markers.
+  const stopIndex = selectedStop ? stops.findIndex((s) => s.id === selectedStop.id) : -1;
+  const goToStop = (delta: 1 | -1) => {
+    const index = Math.min(stops.length - 1, Math.max(0, stopIndex === -1 ? (delta > 0 ? 0 : stops.length - 1) : stopIndex + delta));
+    const stop = stops[index];
+    const map = mapRef.current;
+    if (!stop) return;
+    setSelected({ kind: "stop", id: stop.id });
+    map?.easeTo({ center: [stop.position.lng, stop.position.lat], zoom: Math.max(map.getZoom(), 15.5) });
+  };
+
+  const toggleGroup = (group: PlaceGroup) =>
+    setActive((current) => {
+      const next = new Set(current);
+      if (!next.delete(group)) next.add(group);
+      return next;
+    });
+
+  // Picking a place in the list: show it on the map and bring the map into view.
+  const showPlace = (id: string) => {
+    const place = places.find((p) => p.id === id);
+    const map = mapRef.current;
+    setSelected({ kind: "place", id });
+    if (!place || !map) return;
+    map.easeTo({ center: [place.position.lng, place.position.lat], zoom: Math.max(map.getZoom(), 15.5) });
+    const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    sectionRef.current?.scrollIntoView({ block: "start", behavior: calm ? "auto" : "smooth" });
+  };
+
+  const sortedPlaces = useMemo(
+    () => (origin ? sortByDistance(visiblePlaces, origin) : visiblePlaces.map((p) => ({ ...p, meters: 0 }))),
+    [visiblePlaces, origin],
+  );
+  const stopName = selectedStop?.name ?? "";
+  const fromLabel = selectedStop
+    ? t`「${stopName}」から近い順`
+    : t`コースの出発地点から近い順（まっすぐ測った距離です）`;
   const terrainLabel =
     settings.terrain === "relief"
       ? terrain ? t`標高の色を消す` : t`標高の色を見る`
       : terrain ? t`地形の陰影を消す` : t`地形の陰影を見る`;
+  const anyPlaces = places.length > 0;
+  const restName = groupNames.rest;
+  const shopsName = groupNames.shops;
 
   if (failed) {
     return (
-      <p className="rounded-xl border-2 border-line bg-surface p-4 text-lg">
+      <p className="rounded-2xl bg-surface p-4 text-lg">
         {t`この端末では地図を表示できません。下の一覧から場所を選べます。`}
       </p>
     );
@@ -217,16 +390,22 @@ export function TrailMap({
 
   return (
     <section
+      ref={sectionRef}
       aria-label={t`地図`}
       data-dark={settings.dark}
-      className={expanded ? "trail-map fixed inset-0 z-30 flex flex-col gap-3 bg-paper p-3" : "trail-map flex flex-col gap-3"}
+      className={expanded ? "trail-map fixed inset-0 z-30 flex flex-col gap-3 bg-paper p-3" : "trail-map flex scroll-mt-2 flex-col gap-3"}
     >
       {expanded ? (
         <div className="flex items-center justify-between gap-2">
           {draft ? <SampleNoticeButton /> : <span />}
-          <button ref={closeRef} type="button" onClick={() => setExpanded(false)} className={buttonClass}>
-            {t`閉じる`}
-          </button>
+          <div className="flex items-center gap-2">
+            <button type="button" onClick={() => setTerrain((on) => !on)} aria-pressed={terrain} className={buttonClass}>
+              {terrainLabel}
+            </button>
+            <button ref={closeRef} type="button" onClick={() => setExpanded(false)} className={buttonClass}>
+              {t`閉じる`}
+            </button>
+          </div>
         </div>
       ) : null}
 
@@ -234,7 +413,7 @@ export function TrailMap({
         className={
           expanded
             ? "relative min-h-0 flex-1 overflow-hidden rounded-xl border-2 border-line"
-            : "relative h-[28rem] overflow-hidden rounded-xl border-2 border-line"
+            : "relative h-[min(72svh,36rem)] min-h-[22rem] overflow-hidden rounded-xl border-2 border-line"
         }
       >
         {/* MapLibre's own CSS makes its container position: relative, which would cancel an
@@ -267,39 +446,68 @@ export function TrailMap({
           </button>
         </div>
 
-        <div className="absolute bottom-9 left-2 z-10">
-          <button type="button" onClick={() => setTerrain((on) => !on)} aria-pressed={terrain} className={buttonClass}>
-            {terrainLabel}
-          </button>
-        </div>
+        {expanded ? null : (
+          <div className="absolute bottom-9 left-2 z-10">
+            <button ref={expandRef} type="button" onClick={() => setExpanded(true)} className={buttonClass}>
+              <ExpandIcon />
+              {t`大きく表示`}
+            </button>
+          </div>
+        )}
       </div>
 
-      {expanded ? null : (
-        <button ref={expandRef} type="button" onClick={() => setExpanded(true)} className={`${buttonClass} w-full`}>
-          {t`大きな地図で見る`}
-        </button>
-      )}
+      {anyPlaces ? (
+        <div className="flex flex-col gap-2">
+          {expanded ? null : <p className="text-lg font-bold">{t`まわりの場所を地図に出す`}</p>}
+          <PlaceChips counts={counts} active={active} onToggle={toggleGroup} />
+        </div>
+      ) : null}
 
-      {selected ? (
+      {!mergeStops && stops.length > 1 ? (
+        <div role="group" aria-label={t`スタンプの場所を順に見る`} className="flex items-stretch gap-2">
+          <button type="button" onClick={() => goToStop(-1)} disabled={stopIndex === 0} className={`${buttonClass} flex-1`}>
+            {t`＜ 前へ`}
+          </button>
+          <p aria-live="polite" className="flex min-w-[5.5rem] items-center justify-center text-xl font-bold tabular-nums">
+            {stopIndex === -1 ? "－" : stopIndex + 1} / {stops.length}
+          </p>
+          <button
+            type="button"
+            onClick={() => goToStop(1)}
+            disabled={stopIndex === stops.length - 1}
+            className={`${buttonClass} flex-1`}
+          >
+            {t`次へ ＞`}
+          </button>
+        </div>
+      ) : null}
+
+      {selectedStop ? (
         <StopCard
-          order={selected.order}
-          name={selected.name}
-          nameLang={selected.nameLang}
-          status={selected.status}
-          href={selected.href}
+          order={selectedStop.order}
+          name={selectedStop.name}
+          nameLang={selectedStop.nameLang}
+          status={selectedStop.status}
+          href={selectedStop.href}
           draft={draft}
         />
       ) : null}
+      {selectedPlace ? (
+        <PlaceCard
+          place={selectedPlace}
+          meters={origin ? sortByDistance([selectedPlace], origin)[0]!.meters : null}
+          onClose={() => setSelected(null)}
+        />
+      ) : null}
+
+      {!expanded && sortedPlaces.length > 0 ? (
+        <PlaceList items={sortedPlaces} fromLabel={fromLabel} selectedId={selectedPlace?.id ?? null} onSelect={showPlace} />
+      ) : null}
+      {!expanded && anyPlaces && sortedPlaces.length === 0 ? (
+        <p className="text-lg text-muted">
+          {t`上のボタンを押すと、${restName}や${shopsName}などが地図と一覧に出ます。`}
+        </p>
+      ) : null}
     </section>
   );
-}
-
-/** One-finger drag, wheel and keyboard are for the expanded map only; buttons and markers always work. */
-function setInteractive(map: MapLibreMap, on: boolean) {
-  const handlers = [map.dragPan, map.scrollZoom, map.touchZoomRotate, map.doubleClickZoom, map.boxZoom, map.keyboard];
-  for (const handler of handlers) {
-    if (on) handler.enable();
-    else handler.disable();
-  }
-  if (on) map.touchZoomRotate.disableRotation();
 }

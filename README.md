@@ -2,15 +2,15 @@
 
 A bilingual (Japanese / English) installable web app (PWA) with a built-in CMS for pilgrims and tourists walking the Katsuragi Shugen (葛城修験) trails across Osaka, Wakayama and Nara.
 
-Participants follow a map of 19 trail routes, tap **Stamp here** at each of the 28 sutra mounds (経塚), and track their progress on a personal stamp card. The server checks that the phone is really near the spot. Admins manage routes, spots, videos, spot status and trail notices from the same app.
+Participants follow a map of 19 trail routes, tap **Stamp here** at each of the 31 sutra mound places (経塚), and track their progress on a personal stamp card. The server checks that the phone is really near the spot. Admins manage routes, spots, videos, spot status and trail notices from the same app.
 
 > **Status:** design phase. See the system design document for the full plan.
 
 ## Features
 
-- Trail map with 19 routes and 28 mounds, route guides and embedded videos
+- Trail map with 19 routes and 31 mound places, route guides and embedded videos
 - GPS stamp check-in with server-side distance and accuracy checks
-- Stamp card and one permanent rally across all 28 spots
+- Stamp card and one permanent rally across all 31 spots
 - Live spot status (`open` / `caution` / `closed`) and dated trail notices
 - Passwordless login with email code and passkeys
 - Japanese and English UI, designed for older users (large text, high contrast)

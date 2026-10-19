@@ -10,5 +10,8 @@
     "lint": "bun run --filter '*' --if-present lint",
     "typecheck": "bun run --filter '*' typecheck",
     "test": "bun run --filter '*' test"
+  },
+  "devDependencies": {
+    "bun-plugin-lingui-macro": "^1.1.3"
   }
 }

@@ -9,10 +9,18 @@ import {
   uniqueIndex,
   uuid,
   customType,
+  jsonb,
 } from "drizzle-orm/pg-core";
+import type { Preferences } from "../../me/preferences";
 
 export const userRole = pgEnum("user_role", ["participant", "admin"]);
 export const userLocale = pgEnum("user_locale", ["ja", "en"]);
+/** Where a visitor says they come from (asked at sign-up; optional, for knowing who the app serves). */
+export const userOrigin = pgEnum("user_origin", ["osaka", "wakayama", "nara", "other_japan", "overseas"]);
+/** An age band the visitor picks after registering (optional, for knowing who the app serves). */
+export const userAgeRange = pgEnum("user_age_range", ["under20", "20s", "30s", "40s", "50s", "60s", "70plus"]);
+/** Optional. "unspecified" is an answer ("I'd rather not say"); null means the question was never answered. */
+export const userGender = pgEnum("user_gender", ["female", "male", "other", "unspecified"]);
 export const webauthnChallengeType = pgEnum("webauthn_challenge_type", [
   "registration",
   "authentication",
@@ -33,19 +41,31 @@ export const users = pgTable(
   "users",
   {
     id: uuid("id").primaryKey().defaultRandom(),
+    // The ID the person sees and quotes to support: 8 digits, unique (see lib/public-id.ts). The default needs
+    // the sequence user_public_id_seq, which migration 0006 creates; keep the expression in step with publicIdFor.
+    publicId: text("public_id")
+      .notNull()
+      .default(sql`lpad(((nextval('user_public_id_seq') * 48271) % 99999989)::text, 8, '0')`),
     // Null for an account made with a passkey alone. Stored lowercase by the app;
     // the unique index below also enforces it (Postgres allows many nulls).
     email: text("email"),
     role: userRole("role").notNull().default("participant"),
     locale: userLocale("locale").notNull().default("ja"),
     displayName: text("display_name"),
+    // Where the person says they come from; null when they did not say.
+    origin: userOrigin("origin"),
+    // Asked once after registering; both optional and changeable on the profile.
+    ageRange: userAgeRange("age_range"),
+    gender: userGender("gender"),
+    // Accessibility and map choices (see me/preferences.ts); null until the person sets them.
+    preferences: jsonb("preferences").$type<Preferences>(),
     // Set by DELETE /me: the owner asked for the account to be deleted. Nothing is deleted
     // yet; cleared again if they cancel. Null when no deletion is pending.
     deletionRequestedAt: timestamp("deletion_requested_at", { withTimezone: true }),
     createdAt: createdAt(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [uniqueIndex("users_email_lower_uq").on(sql`lower(${t.email})`)],
+  (t) => [uniqueIndex("users_email_lower_uq").on(sql`lower(${t.email})`), uniqueIndex("users_public_id_uq").on(t.publicId)],
 );
 
 /** Cookie sessions. Only the SHA-256 hash of the token is stored, never the token. */

@@ -22,7 +22,13 @@ type MeBody = {
     role: string;
     locale: string;
     displayName: string | null;
+    origin: string | null;
+    ageRange: string | null;
+    gender: string | null;
+    preferences: { size: string; mergeStops: boolean; placesOnMap: boolean; setupDone: boolean; updatedAt: number } | null;
     deletionRequestedAt: string | null;
+    deletionDueAt: string | null;
+    publicId: string;
     createdAt: string;
   };
 };
@@ -146,6 +152,112 @@ describe("PATCH /me", () => {
   });
 });
 
+describe("PATCH /me: where you come from", () => {
+  test("can be set, changed and cleared, and only for yourself", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    const set = await t.call("PATCH", "", cookie, { origin: "nara" });
+    expect(((await set.json()) as MeBody).me.origin).toBe("nara");
+    expect(((await (await t.call("PATCH", "", cookie, { origin: "overseas", displayName: "Hana" })).json()) as MeBody).me).toMatchObject({ origin: "overseas", displayName: "Hana" });
+    expect(((await (await t.call("PATCH", "", cookie, { origin: null })).json()) as MeBody).me.origin).toBeNull();
+
+    await t.call("PATCH", "", cookie, { origin: "osaka" });
+    expect(((await (await t.call("GET", "", await t.login(bob))).json()) as MeBody).me.origin).toBeNull();
+  });
+
+  test("an unknown place is rejected (422) and changes nothing", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    expect((await t.call("PATCH", "", cookie, { origin: "mars" })).status).toBe(422);
+    expect(((await (await t.call("GET", "", cookie)).json()) as MeBody).me.origin).toBeNull();
+  });
+});
+
+describe("PATCH /me: age range and gender", () => {
+  test("can be set, changed (including the answer 'unspecified') and cleared, only for yourself", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    const first = (await (await t.call("GET", "", cookie)).json()) as MeBody;
+    expect(first.me).toMatchObject({ ageRange: null, gender: null });
+    const set = (await (await t.call("PATCH", "", cookie, { ageRange: "60s", gender: "unspecified" })).json()) as MeBody;
+    expect(set.me).toMatchObject({ ageRange: "60s", gender: "unspecified" });
+    expect(((await (await t.call("PATCH", "", cookie, { gender: "female" })).json()) as MeBody).me).toMatchObject({ ageRange: "60s", gender: "female" });
+    expect(((await (await t.call("PATCH", "", cookie, { ageRange: null, gender: null })).json()) as MeBody).me).toMatchObject({ ageRange: null, gender: null });
+
+    await t.call("PATCH", "", cookie, { ageRange: "20s" });
+    expect(((await (await t.call("GET", "", await t.login(bob))).json()) as MeBody).me.ageRange).toBeNull();
+  });
+
+  test("values outside the lists are rejected (422) and change nothing", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    expect((await t.call("PATCH", "", cookie, { ageRange: "teens" })).status).toBe(422);
+    expect((await t.call("PATCH", "", cookie, { gender: "robot" })).status).toBe(422);
+    expect(((await (await t.call("GET", "", cookie)).json()) as MeBody).me).toMatchObject({ ageRange: null, gender: null });
+  });
+});
+
+describe("preferences", () => {
+  const prefs = { size: "large", mergeStops: false, placesOnMap: true, setupDone: true, updatedAt: 1760000000000 };
+
+  test("none until set, then saved as a whole and returned", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    expect(((await (await t.call("GET", "", cookie)).json()) as MeBody).me.preferences).toBeNull();
+
+    const saved = await t.call("PATCH", "", cookie, { preferences: prefs });
+    expect(saved.status).toBe(200);
+    expect(((await saved.json()) as MeBody).me.preferences).toEqual(prefs);
+    expect(((await (await t.call("GET", "", cookie)).json()) as MeBody).me.preferences).toEqual(prefs);
+
+    // Saved again, they are replaced, not merged.
+    const again = { size: "xlarge", mergeStops: true, placesOnMap: false, setupDone: true, updatedAt: 1760000100000 };
+    await t.call("PATCH", "", cookie, { preferences: again });
+    expect(((await (await t.call("GET", "", cookie)).json()) as MeBody).me.preferences).toEqual(again);
+  });
+
+  test("they are the caller's own: another account does not see them", async () => {
+    const t = setup();
+    await t.call("PATCH", "", await t.login(alice), { preferences: prefs });
+    expect(((await (await t.call("GET", "", await t.login(bob))).json()) as MeBody).me.preferences).toBeNull();
+  });
+
+  test("unknown sizes, missing fields and wrong types are rejected (422) and change nothing", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    for (const bad of [
+      { ...prefs, size: "huge" },
+      { size: "large", mergeStops: false },
+      { ...prefs, mergeStops: "yes" },
+      { size: "large", mergeStops: false, placesOnMap: true, setupDone: true }, // no updatedAt
+      { ...prefs, updatedAt: -1 },
+      { ...prefs, updatedAt: 1.5 },
+      { ...prefs, updatedAt: "2026-10-16" },
+      { ...prefs, updatedAt: 9999999999999999 },
+    ]) {
+      expect((await t.call("PATCH", "", cookie, { preferences: bad })).status).toBe(422);
+    }
+    expect(((await (await t.call("GET", "", cookie)).json()) as MeBody).me.preferences).toBeNull();
+  });
+
+  test("a field that is not a preference is dropped, never stored", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    const res = await t.call("PATCH", "", cookie, { preferences: { ...prefs, role: "admin" } });
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as MeBody).me.preferences).toEqual(prefs);
+  });
+
+  test("they can be saved together with the language", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    const res = await t.call("PATCH", "", cookie, { locale: "en", preferences: prefs });
+    const me = ((await res.json()) as MeBody).me;
+    expect(me.locale).toBe("en");
+    expect(me.preferences).toEqual(prefs);
+  });
+});
+
 describe("DELETE /me (deletion request) and POST /me/deletion/cancel", () => {
   test("DELETE records a request (202), emails the owner and audits it; nothing is deleted", async () => {
     const { call, login, users, sent, audit } = setup();
@@ -155,6 +267,7 @@ describe("DELETE /me (deletion request) and POST /me/deletion/cancel", () => {
     expect(res.status).toBe(202);
     const { me } = (await res.json()) as MeBody;
     expect(me.deletionRequestedAt).not.toBeNull();
+    expect(me.deletionDueAt).not.toBeNull();
     expect(users.has(alice.id)).toBe(true);
     expect((await call("GET", "", cookie)).status).toBe(200); // still logged in, still there
     expect(sent.map((m) => m.subject)).toEqual(["【KTRG】アカウント削除のリクエストを受け付けました"]);

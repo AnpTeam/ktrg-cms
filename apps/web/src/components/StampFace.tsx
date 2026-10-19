@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 export type StampState = "stamped" | "next" | "empty";
 
@@ -8,7 +8,7 @@ export type StampState = "stamped" | "next" | "empty";
 //  empty:   a dashed outline
 const faces: Record<StampState, string> = {
   stamped:
-    "bg-shu text-paper shadow-[inset_0_0_0_3px_var(--color-shu),inset_0_0_0_5px_var(--color-paper)]",
+    "bg-shu text-on-shu shadow-[inset_0_0_0_3px_var(--color-shu),inset_0_0_0_5px_var(--color-on-shu)]",
   next: "border-4 border-accent bg-surface text-accent",
   empty: "border-2 border-dashed border-line bg-paper text-muted",
 };
@@ -22,16 +22,22 @@ export function StampFace({
   state,
   number,
   className = "",
+  rough = false,
   children,
 }: {
   state: StampState;
   number?: number;
   className?: string;
+  /** Make a stamped seal look pressed by hand (a wobbly edge, gaps in the ink). For big seals only: at a few pixels it is just noise. */
+  rough?: boolean;
   children?: ReactNode;
 }) {
-  const style =
-    state === "stamped" && number !== undefined
-      ? { transform: `rotate(${tilt(number)}deg)` }
+  const style: CSSProperties | undefined =
+    state === "stamped"
+      ? {
+          ...(number !== undefined ? { transform: `rotate(${tilt(number)}deg)` } : null),
+          ...(rough ? { filter: `url(#stamp-ink-${((number ?? 0) % 3) + 1})` } : null),
+        }
       : undefined;
   return (
     <div
