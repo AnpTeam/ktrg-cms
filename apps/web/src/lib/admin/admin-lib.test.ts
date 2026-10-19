@@ -47,7 +47,25 @@ describe("parseGpx", () => {
   const gpx = (pts: string, extra = "") => `<?xml version="1.0"?>${extra}<gpx version="1.1"><trk><trkseg>${pts}</trkseg></trk></gpx>`;
   test("reads track points with and without elevation, in either attribute order", () => {
     const r = parseGpx(gpx(`<trkpt lat="34.1" lon="135.2"><ele>120.5</ele></trkpt><trkpt lon="135.3" lat="34.2"/>`));
-    expect(r).toEqual({ ok: true, points: [[135.2, 34.1, 120.5], [135.3, 34.2]] });
+    expect(r).toEqual({ ok: true, points: [[135.2, 34.1, 120.5], [135.3, 34.2]], waypoints: [] });
+  });
+  test("reads named waypoints, decoding the name; a point out of range is skipped", () => {
+    const r = parseGpx(
+      `<gpx><wpt lat="34.1" lon="135.2"><name>神福寺跡 &amp; 経塚</name></wpt><wpt lat="34.3" lon="135.4"><name><![CDATA[慈眼院]]></name></wpt><wpt lat="99" lon="135"><name>bad</name></wpt><wpt lat="34.5" lon="135.5"/></gpx>`,
+    );
+    expect(r).toEqual({
+      ok: true,
+      points: [],
+      waypoints: [
+        { lat: 34.1, lng: 135.2, name: "神福寺跡 & 経塚" },
+        { lat: 34.3, lng: 135.4, name: "慈眼院" },
+        { lat: 34.5, lng: 135.5, name: "" },
+      ],
+    });
+  });
+  test("a file with a path and waypoints gives both", () => {
+    const r = parseGpx(`<gpx><wpt lat="34.1" lon="135.2"><name>A</name></wpt><trk><trkseg><trkpt lat="34.1" lon="135.2"/><trkpt lat="34.2" lon="135.3"/></trkseg></trk></gpx>`);
+    expect(r.ok && r.points.length === 2 && r.waypoints.length === 1).toBe(true);
   });
   test("a planned route (rtept) works when there is no track", () => {
     const r = parseGpx(`<gpx><rte><rtept lat="34.1" lon="135.2"/><rtept lat="34.2" lon="135.3"/></rte></gpx>`);

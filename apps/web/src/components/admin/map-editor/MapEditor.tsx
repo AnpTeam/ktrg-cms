@@ -1,12 +1,12 @@
 "use client";
 
 import "maplibre-gl/dist/maplibre-gl.css";
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import { TerraDraw, TerraDrawLineStringMode, TerraDrawSelectMode } from "terra-draw";
 import { TerraDrawMapLibreGLAdapter } from "terra-draw-maplibre-gl-adapter";
-import { parseGpx } from "@/lib/admin/gpx";
+import { parseGpx, type GpxWaypoint } from "@/lib/admin/gpx";
 import { keepElevations, sameLine, simplify, type LngLatEle } from "@/lib/admin/line";
 import { boundsOf, lineFeature, mapStyle, routeLineLayers, terrainLayerId, zoomLimits } from "@/lib/map";
 import { defaultMapSettings } from "@/lib/map-settings";
@@ -35,12 +35,16 @@ export interface MapEditorProps {
   onRedo: () => void;
   onLine: (points: LngLatEle[]) => void;
   onAddPlace: (lat: number, lng: number) => void;
+  /** Several places at once (the named points of a GPX file). */
+  onAddPlaces: (places: { key: string; name: string; lat: number; lng: number }[]) => void;
   onMovePlace: (key: string, lat: number, lng: number) => void;
   onRemovePlace: (key: string) => void;
   onSelectPlace: (key: string | null) => void;
 }
 
-type Mode = "pan" | "place" | "draw" | "edit" | "erase";
+// Three tools for the person: select (move the map, move stops, reshape the line), add a stop, draw the path.
+// "pan" and "edit" are the two faces of select: reshaping needs a line to reshape.
+type Mode = "pan" | "place" | "draw" | "edit";
 
 const MAX_POINTS = 2000;
 // The saved line is drawn by this layer whenever Terra Draw is not editing it (drawing and editing show Terra Draw's own).
@@ -61,6 +65,8 @@ export function MapEditor(props: MapEditorProps) {
   const [ready, setReady] = useState(false);
   const [note, setNote] = useState<string | null>(null);
   const [terrain, setTerrain] = useState(false);
+  const [waypoints, setWaypoints] = useState<GpxWaypoint[] | null>(null);
+  const [dropping, setDropping] = useState(false);
 
   const container = useRef<HTMLDivElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -269,8 +275,7 @@ export function MapEditor(props: MapEditorProps) {
         el.className = markerClass;
         el.addEventListener("click", (event) => {
           event.stopPropagation();
-          if (modeRef.current === "erase") latest.current.onRemovePlace(p.key);
-          else latest.current.onSelectPlace(p.key);
+          latest.current.onSelectPlace(p.key);
         });
         const marker = new ml.Marker({ element: el, draggable: modeRef.current === "pan" || modeRef.current === "place" }).setLngLat([p.lng!, p.lat!]).addTo(map);
         marker.on("dragend", () => {
@@ -304,62 +309,116 @@ export function MapEditor(props: MapEditorProps) {
     setTerrain(next);
   }
 
-  async function onFile(e: ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    e.target.value = ""; // the same file can be chosen again
+  async function readGpx(file: File | undefined) {
     if (!file) return;
     setNote(null);
+    setWaypoints(null);
     if (file.size > 20_000_000) return setNote(t`ファイルが大きすぎます（20MBまで）。`);
     const parsed = parseGpx(await file.text());
-    if (!parsed.ok) return setNote(t`GPXファイルを読み込めませんでした。道すじ（トラック）が入ったファイルを選んでください。`);
-    props.onLine(simplify(parsed.points, MAX_POINTS));
-    setMode("edit");
-    setNote(t`GPXファイルを読み込みました。形を確かめてから、保存してください。`);
-    setTimeout(fit, 100);
+    if (!parsed.ok) return setNote(t`GPXファイルを読み込めませんでした。道すじ（トラック）か、名前のついた地点が入ったファイルを選んでください。`);
+    if (parsed.points.length >= 2) {
+      props.onLine(simplify(parsed.points, MAX_POINTS));
+      setMode("edit");
+      setTimeout(fit, 100);
+      setNote(t`GPXファイルを読み込みました。形を確かめてから、保存してください。`);
+    }
+    if (parsed.waypoints.length > 0) {
+      setWaypoints(parsed.waypoints);
+      if (parsed.points.length < 2) setNote(t`GPXファイルに道すじはありませんでした。名前のついた地点だけ見つかりました。`);
+    }
   }
 
-  const toolButton = (id: Mode, label: string) => (
-    <button
-      key={id}
-      type="button"
-      aria-pressed={mode === id}
-      onClick={() => {
-        setNote(null);
-        setMode(id);
-      }}
-      className={`${toolClass} ${mode === id ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"}`}
-    >
-      {label}
-    </button>
-  );
+  function onFile(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // the same file can be chosen again
+    void readGpx(file);
+  }
 
-  const help: Record<Mode, string> = {
-    pan: t`地図を動かします。数字の丸をドラッグすると、場所を動かせます。`,
-    place: t`地図をクリックすると、その位置に場所を置きます。`,
-    draw: t`地図をクリックして、点を置いていきます。最後の点をもう一度クリックする（またはEnterキーを押す）と、線ができます。Escキーでやり直します。`,
-    edit: t`線の点をドラッグして動かします。線の途中の小さな点を引くと、点を増やせます。点を選んでDeleteキーで消せます。`,
-    erase: t`消したい場所の数字の丸をクリックしてください。`,
+  function onDrop(e: DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    setDropping(false);
+    void readGpx(e.dataTransfer.files[0]);
+  }
+
+  function addWaypoints() {
+    if (!waypoints) return;
+    props.onAddPlaces(waypoints.map((w) => ({ key: crypto.randomUUID(), name: w.name, lat: w.lat, lng: w.lng })));
+    setNote(t`${waypoints.length}か所を、場所として追加しました。名前や種類は「スタンプ場所」で直せます。`);
+    setWaypoints(null);
+  }
+
+  // Keys: V, P and L pick the tool; Delete removes the chosen stop (not while reshaping the line, where it removes a point).
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const el = e.target;
+      if (el instanceof HTMLElement && (el.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName))) return;
+      const key = e.key.toLowerCase();
+      if (key === "v") chooseTool("select");
+      else if (key === "p") chooseTool("place");
+      else if (key === "l") chooseTool("draw");
+      else if ((e.key === "Delete" || e.key === "Backspace") && modeRef.current !== "edit" && latest.current.selectedKey) {
+        e.preventDefault();
+        latest.current.onRemovePlace(latest.current.selectedKey);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
+  function chooseTool(tool: "select" | "place" | "draw") {
+    setNote(null);
+    setMode(tool === "select" ? (latest.current.line.length >= 2 ? "edit" : "pan") : tool);
+  }
+
+  const toolButton = (tool: "select" | "place" | "draw", label: string, shortcut: string) => {
+    const pressed = tool === "select" ? mode === "pan" || mode === "edit" : mode === tool;
+    return (
+      <button
+        key={tool}
+        type="button"
+        aria-pressed={pressed}
+        aria-keyshortcuts={shortcut}
+        onClick={() => chooseTool(tool)}
+        className={`${toolClass} ${pressed ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"}`}
+      >
+        {label}
+        <kbd className="ml-2 rounded border border-current px-1.5 text-sm font-normal">{shortcut}</kbd>
+      </button>
+    );
   };
+
+  // What to do next, depending on the tool and on what is already on the map.
+  const hasLine = props.line.length >= 2;
+  const hasPlaces = props.places.length > 0;
+  const hint =
+    mode === "place"
+      ? t`地図をクリックすると、その位置にスタンプの場所を置きます。`
+      : mode === "draw"
+        ? t`地図をクリックして、点を置いていきます。最後の点をもう一度クリックする（またはEnterキーを押す）と、線ができます。Escキーでやり直します。`
+        : hasLine
+          ? t`線の点をドラッグして動かします。線の途中の小さな点を引くと、点を増やせます。点を選んでDeleteキーで消せます。数字の丸をドラッグすると、場所を動かせます。`
+          : hasPlaces
+            ? t`数字の丸をドラッグすると、場所を動かせます。道すじは「線を描く」か、GPXファイルで入れます。`
+            : t`まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「線を描く」で道すじを、「場所を置く」でスタンプの場所を入れます。`;
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap gap-2" role="toolbar" aria-label={t`地図の道具`}>
-        {toolButton("pan", t`地図を動かす`)}
-        {toolButton("place", t`場所を置く`)}
-        {toolButton("draw", t`線を描く`)}
-        {toolButton("edit", t`線を直す`)}
-        {toolButton("erase", t`場所を消す`)}
+      <div className="flex flex-wrap items-center gap-2" role="toolbar" aria-label={t`地図の道具`}>
+        {toolButton("select", t`選ぶ・動かす`, "V")}
+        {toolButton("place", t`場所を置く`, "P")}
+        {toolButton("draw", t`線を描く`, "L")}
         <span className="mx-1 w-px self-stretch bg-line" aria-hidden="true" />
+        <button type="button" onClick={() => fileInput.current?.click()} className={`${toolClass} border-ink bg-brand text-on-brand`}>
+          {t`GPXファイルから読み込む`}
+        </button>
+        <input ref={fileInput} type="file" accept=".gpx,application/gpx+xml,text/xml,application/xml" onChange={onFile} className="sr-only" tabIndex={-1} aria-hidden="true" />
         <button type="button" disabled={!props.canUndo} onClick={props.onUndo} className={`${toolClass} border-line bg-paper`}>
           {t`元に戻す`}
         </button>
         <button type="button" disabled={!props.canRedo} onClick={props.onRedo} className={`${toolClass} border-line bg-paper`}>
           {t`やり直す`}
         </button>
-        <button type="button" onClick={() => fileInput.current?.click()} className={`${toolClass} border-line bg-paper`}>
-          {t`GPXファイルから読み込む`}
-        </button>
-        <input ref={fileInput} type="file" accept=".gpx,application/gpx+xml,text/xml,application/xml" onChange={onFile} className="sr-only" tabIndex={-1} aria-hidden="true" />
         <button type="button" disabled={props.line.length === 0} onClick={() => props.onLine([])} className={`${toolClass} border-line bg-paper`}>
           {t`線を消す`}
         </button>
@@ -371,20 +430,74 @@ export function MapEditor(props: MapEditorProps) {
         </button>
       </div>
 
-      <div className="relative h-[34rem] overflow-hidden rounded-2xl bg-surface">
+      <p className="rounded-xl bg-paper px-4 py-3 text-base" aria-live="polite">
+        {note ?? hint}
+      </p>
+
+      {waypoints ? (
+        <div role="group" aria-label={t`GPXの地点`} className="flex flex-col gap-3 rounded-xl border-2 border-ink bg-paper p-4">
+          <p className="text-lg font-bold">{t`名前のついた地点が${waypoints.length}か所ありました。場所として追加しますか？`}</p>
+          <ul className="max-h-40 list-disc overflow-auto pl-6 text-base">
+            {waypoints.map((w, i) => (
+              <li key={i}>{w.name || t`（名前なし）`}</li>
+            ))}
+          </ul>
+          <p className="text-base text-muted">{t`位置は「確認していない」状態で入ります。公開する前に、公式の情報で確かめてください。`}</p>
+          <div className="flex gap-2">
+            <button type="button" onClick={addWaypoints} className="tap-target rounded-xl bg-brand px-6 text-lg font-bold text-on-brand">
+              {t`追加する`}
+            </button>
+            <button type="button" onClick={() => setWaypoints(null)} className="tap-target rounded-xl border-2 border-line px-6 text-lg font-bold">
+              {t`追加しない`}
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      <div
+        className="relative h-[34rem] overflow-hidden rounded-2xl bg-surface"
+        onDragOver={(e) => {
+          if (e.dataTransfer.types.includes("Files")) {
+            e.preventDefault();
+            setDropping(true);
+          }
+        }}
+        onDragLeave={() => setDropping(false)}
+        onDrop={onDrop}
+      >
         <div ref={container} className="h-full w-full" />
+        {dropping ? <p className="absolute inset-0 flex items-center justify-center bg-paper/80 text-xl font-bold">{t`GPXファイルをここで離すと、読み込みます`}</p> : null}
         {!ready ? <p className="absolute inset-0 flex items-center justify-center text-lg">{t`地図を読み込み中…`}</p> : null}
       </div>
 
-      <p className="text-base text-muted" aria-live="polite">
-        {note ?? help[mode]}
-      </p>
       <p className="text-lg font-bold tabular-nums">
         {props.line.length >= 2 ? t`線の長さ ${props.distanceKm ?? 0} km` : t`線は、まだありません。`}
         {props.climbM !== null && props.line.length >= 2 ? <span className="ml-4">{t`登り ${props.climbM} m`}</span> : null}
         {props.elevationStatus === "loading" ? <span className="ml-4 text-base font-normal text-muted">{t`標高を調べています…`}</span> : null}
         {props.elevationStatus === "partial" ? <span className="ml-4 text-base font-normal text-muted">{t`標高が調べられない場所があります。`}</span> : null}
       </p>
+
+      {props.places.length > 0 ? (
+        <section aria-label={t`置いた場所`} className="flex flex-col gap-2">
+          <h3 className="text-lg font-bold">{t`置いた場所（${props.places.length}か所）`}</h3>
+          <ol className="flex max-h-64 flex-col gap-1 overflow-auto">
+            {props.places.map((p) => (
+              <li key={p.key} className={`flex items-center gap-3 rounded-xl p-2 ${p.key === props.selectedKey ? "bg-paper ring-2 ring-ink" : ""}`}>
+                <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand text-base font-bold text-on-brand">
+                  {p.number}
+                </span>
+                <button type="button" onClick={() => props.onSelectPlace(p.key === props.selectedKey ? null : p.key)} className="min-w-0 flex-1 truncate text-left text-lg text-accent underline underline-offset-4">
+                  {p.name || t`（名前がありません）`}
+                </button>
+                <span className="text-base text-muted">{p.lat === null ? t`位置なし` : t`位置あり`}</span>
+                <button type="button" onClick={() => props.onRemovePlace(p.key)} aria-label={t`${p.name || p.number}を消す`} className="tap-target rounded-xl border-2 border-danger px-3 text-base font-bold text-danger">
+                  {t`消す`}
+                </button>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ) : null}
     </div>
   );
 }

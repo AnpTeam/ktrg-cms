@@ -396,6 +396,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     dispatch({ type: "addPlace", key, lat, lng });
                     setSelectedKey(key);
                   }}
+                  onAddPlaces={(list) => dispatch({ type: "addPlaces", places: list })}
                   onMovePlace={(key, lat, lng) => dispatch({ type: "movePlace", key, lat, lng })}
                   onRemovePlace={(key) => {
                     const p = draft.places.find((x) => x.key === key);
