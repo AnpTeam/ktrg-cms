@@ -36,12 +36,13 @@ export function RouteStats({ route, compact = false }: { route: Stats; compact?:
   if (items.length === 0) return null;
 
   if (compact) {
+    // One row of small label-over-value pairs; on a narrow phone it wraps to a second row instead of being squeezed.
     return (
-      <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-2">
+      <dl className="flex flex-wrap gap-x-4 gap-y-1.5">
         {items.map(({ label, value }) => (
           <div key={label}>
             <dt className="text-base leading-tight text-muted">{label}</dt>
-            <dd className="text-lg font-bold leading-snug tabular-nums">{value}</dd>
+            <dd className="text-base font-bold leading-snug tabular-nums">{value}</dd>
           </div>
         ))}
       </dl>

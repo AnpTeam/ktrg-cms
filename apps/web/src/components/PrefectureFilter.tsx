@@ -20,14 +20,16 @@ export function PrefectureFilter({
   const { t } = useLingui();
   if (available.length < 2) return null;
 
+  // A softer chip: a thin line, fully rounded, never squeezed (it keeps its width and the row scrolls instead).
   const chip = (selected: boolean) =>
-    `tap-target inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-ink px-4 text-lg font-bold ${
-      selected ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"
+    `tap-target inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border px-3 text-lg font-bold md:gap-1 md:px-1.5 md:text-base ${
+      selected ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"
     }`;
 
   return (
-    <nav aria-label={t`地域でしぼる`} className="px-4">
-      <ul className="flex flex-wrap gap-2">
+    <nav aria-label={t`地域でしぼる`}>
+      {/* One line. On a phone it scrolls sideways (the edges bleed to the screen's edge); from a tablet up it simply fits. */}
+      <ul className="flex flex-nowrap gap-1.5 overflow-x-auto md:gap-1 px-4 pb-1 [scrollbar-width:none] md:flex-wrap md:overflow-visible [&::-webkit-scrollbar]:hidden">
         <li>
           <Link href={base} aria-current={active ? undefined : "true"} className={chip(!active)}>
             <PrefectureIcon value="all" />

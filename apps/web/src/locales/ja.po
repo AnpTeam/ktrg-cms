@@ -586,7 +586,7 @@ msgstr "スタンプ"
 
 #: src/components/map/MapScreen.tsx:350
 #: src/components/RouteView.tsx:184
-#: src/components/TrailRibbon.tsx:102
+#: src/components/TrailRibbon.tsx:61
 msgid "スタンプ {stampedCount} / {spotCount}"
 msgstr "スタンプ {stampedCount} / {spotCount}"
 
@@ -671,7 +671,7 @@ msgstr "スタンプを押せる範囲（メートル）"
 msgid "スタンプ場所"
 msgstr "スタンプ場所"
 
-#: src/components/TrailRibbon.tsx:98
+#: src/components/TrailRibbon.tsx:61
 msgid "スタンプ場所 {spotCount}か所"
 msgstr "スタンプ場所 {spotCount}か所"
 
@@ -682,7 +682,7 @@ msgid "スタンプ済み"
 msgstr "スタンプ済み"
 
 #: src/components/admin/RouteTable.tsx:76
-#: src/components/PrefectureFilter.tsx:34
+#: src/components/PrefectureFilter.tsx:36
 msgid "すべて"
 msgstr "すべて"
 
@@ -1475,6 +1475,10 @@ msgstr "写真のリンク"
 msgid "写真のリンクは、https:// で始まるものだけ使えます。"
 msgstr "写真のリンクは、https:// で始まるものだけ使えます。"
 
+#: src/components/RoutePhoto.tsx:22
+msgid "写真は、まだありません"
+msgstr "写真は、まだありません"
+
 #: src/components/useErrorMessages.ts:45
 msgid "写真は4MBまでのJPEG・PNG・WebPだけアップロードできます。"
 msgstr "写真は4MBまでのJPEG・PNG・WebPだけアップロードできます。"
@@ -1666,7 +1670,7 @@ msgstr "地図をクリックすると、その位置にスタンプの場所を
 msgid "地図を読み込み中…"
 msgstr "地図を読み込み中…"
 
-#: src/components/PrefectureFilter.tsx:29
+#: src/components/PrefectureFilter.tsx:30
 msgid "地域でしぼる"
 msgstr "地域でしぼる"
 
@@ -2078,7 +2082,7 @@ msgstr "淡色"
 #: src/components/landing/Landing.tsx:261
 #: src/components/map/MapScreen.tsx:296
 #: src/components/RallyViews.tsx:105
-#: src/components/TrailRibbon.tsx:85
+#: src/components/TrailRibbon.tsx:73
 msgid "準備中"
 msgstr "準備中"
 

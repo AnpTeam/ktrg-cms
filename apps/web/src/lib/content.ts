@@ -46,6 +46,8 @@ export interface RouteSummary {
   spotCount: number;
   /** Stamps this visitor holds on the route; null when not signed in. */
   stampedCount: number | null;
+  /** A photo of the course (an address, or a path inside the site): the top of its card in the list; null when none. */
+  photoUrl: string | null;
 }
 
 /** Where a stop is. `verified` is false for draft positions (for example clicked on Navivi's map). */
@@ -92,8 +94,6 @@ export interface RouteDetail extends RouteSummary {
   line: { lat: number; lng: number }[] | null;
   /** The guidance video's address (the CMS `video_url`); only YouTube and Vimeo links are shown (`parseVideoUrl`). */
   videoUrl: string | null;
-  /** A photo of the course (a path inside the site, or an address), shown at the top of its card; null when none. */
-  photoUrl: string | null;
 }
 
 export interface SpotDetail extends SpotListItem {
@@ -171,6 +171,7 @@ function toSummary(r: RouteDetail): RouteSummary {
     area: r.area,
     spotCount: r.spotCount,
     stampedCount: r.stampedCount,
+    photoUrl: r.photoUrl,
   };
 }
 
