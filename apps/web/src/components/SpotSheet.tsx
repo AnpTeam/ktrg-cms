@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Trans } from "@lingui/react/macro";
 import { pickText, type SpotDetail } from "@/lib/content";
+import { localePath } from "@/lib/rally";
+import { HeroPhoto } from "./map/HeroPhoto";
 import { Localized } from "./Localized";
 import { Notice } from "./Notice";
 import { StampFace } from "./StampFace";
@@ -38,6 +40,24 @@ export function SpotSheet({
           <Localized value={pickText(locale, spot.routeNameJa, spot.routeNameEn)} />
         </p>
       </header>
+
+      {spot.photoUrl ? (
+        <div className="px-4">
+          <HeroPhoto photo={{ src: spot.photoUrl, alt: pickText(locale, spot.nameJa, spot.nameEn)?.text ?? spot.nameJa }} placeholder={false} />
+        </div>
+      ) : null}
+
+      {/* Only a place with a (checked) position can be shown on the map; the map opens on this course and this stop. */}
+      {spot.position ? (
+        <div className="px-4">
+          <Link
+            href={`${localePath(locale, "/map")}?route=${encodeURIComponent(spot.routeId)}&stop=${encodeURIComponent(spot.id)}`}
+            className="tap-target inline-flex items-center gap-2 rounded-xl border-2 border-ink px-5 text-lg font-bold"
+          >
+            <Trans>地図で見る</Trans>
+          </Link>
+        </div>
+      ) : null}
 
       <StatusBanner
         status={spot.status}

@@ -16,7 +16,8 @@ export function HeroPhoto({ photo, placeholder }: { photo: MapPhoto | null; plac
   return (
     <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-surface">
       {photo ? (
-        <Image src={photo.src} alt={photo.alt} fill sizes="(min-width: 1280px) 21rem, 100vw" className="object-cover" />
+        // An address typed in the admin can be on any host, which next/image would refuse; those are shown as they are.
+        <Image src={photo.src} alt={photo.alt} fill sizes="(min-width: 1280px) 21rem, 100vw" className="object-cover" unoptimized={photo.src.startsWith("https://")} />
       ) : (
         <p className="absolute inset-0 grid place-items-center text-lg text-muted">{t`写真（準備中）`}</p>
       )}
