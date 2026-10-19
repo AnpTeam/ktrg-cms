@@ -139,54 +139,32 @@ export const spots = pgTable(
   ],
 );
 
-export const rallyKind = pgEnum("rally_kind", ["mounds", "course"]);
-
 /**
- * A stamp rally. There are many: one for the 31 sutra mound places (kind "mounds", only one of them)
- * and one for each course (kind "course", linked to its route, one per route). Which places belong to a
- * rally is the `rally_spots` table; a place may be in several rallies (a mound is in the mound rally AND in
- * its course's rally), and the one stamp a visitor holds for a place counts in all of them: progress is
- * always computed from stamps (rallies/progress.ts), never stored per rally.
- * The accuracy limit (default 100 m) is app configuration, not stored here.
+ * How a rally is made, chosen when it is created and fixed afterwards: "places" = a list of stamp places
+ * (rally_spots; the sutra-mound rally is one), "course" = a list of courses (rally_routes).
  */
-export const rallies = pgTable(
-  "rallies",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    kind: rallyKind("kind").notNull().default("course"),
-    // The course of a course rally (one rally per route); null for the mound rally.
-    routeId: uuid("route_id").references(() => routes.id, { onDelete: "restrict" }),
-    sortOrder: integer("sort_order").notNull().default(0),
-    // How a stamp is verified. Only GPS for now.
-    verification: text("verification", { enum: ["gps"] }).notNull().default("gps"),
-    // Null means every published spot is required.
-    stampsRequired: integer("stamps_required"),
-    startsAt: timestamp("starts_at", { withTimezone: true }),
-    endsAt: timestamp("ends_at", { withTimezone: true }),
-    createdAt: createdAt(),
-    updatedAt: updatedAt(),
-  },
-  (t) => [
-    // Only one mound rally, and only one rally per course.
-    uniqueIndex("rallies_one_mounds_uq")
-      .on(t.kind)
-      .where(sql`${t.kind} = 'mounds'`),
-    uniqueIndex("rallies_route_uq").on(t.routeId),
-    check(
-      "rallies_route_matches_kind",
-      sql`(${t.kind} = 'mounds' and ${t.routeId} is null) or (${t.kind} = 'course' and ${t.routeId} is not null)`,
-    ),
-    check("rallies_stamps_required_positive", sql`${t.stampsRequired} is null or ${t.stampsRequired} > 0`),
-    check(
-      "rallies_dates_ordered",
-      sql`${t.endsAt} is null or ${t.startsAt} is null or ${t.endsAt} > ${t.startsAt}`,
-    ),
-  ],
-);
+export const rallyKind = pgEnum("rally_kind", ["places", "course"]);
 
 /**
- * Which places belong to which rally, in what order. A place can be in many rallies. Deleting a rally
- * or a place removes its links (the stamps stay, they belong to the visitor and the place).
+ * A stamp rally (the user's model, 2026-10-19): one place gives one stamp; a course is finished when every
+ * published stamp place on it is stamped. A rally of places is finished when all its places are stamped; a rally
+ * of courses when every course in it is finished. Finishing is saved (course_completions, rally_completions);
+ * progress before that is computed from stamps (rallies/progress.ts).
+ */
+export const rallies = pgTable("rallies", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  kind: rallyKind("kind").notNull().default("course"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  // Visitors see a rally only once an admin publishes it.
+  published: boolean("published").notNull().default(false),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
+/**
+ * The places of a rally of places (kind "places", such as the sutra-mound rally), in order; rallies of courses list
+ * courses in rally_routes instead. Deleting the rally or a place removes the link; the stamps stay, they belong to
+ * the visitor and the place.
  */
 export const rallySpots = pgTable(
   "rally_spots",
@@ -202,6 +180,62 @@ export const rallySpots = pgTable(
     createdAt: createdAt(),
   },
   (t) => [primaryKey({ columns: [t.rallyId, t.spotId] }), index("rally_spots_spot_idx").on(t.spotId)],
+);
+
+/**
+ * The courses of a rally of courses, in order. A course may be in several rallies. Deleting a rally or an (empty)
+ * route removes the link; stamps and completions of the course stay.
+ */
+export const rallyRoutes = pgTable(
+  "rally_routes",
+  {
+    rallyId: uuid("rally_id")
+      .notNull()
+      .references(() => rallies.id, { onDelete: "cascade" }),
+    routeId: uuid("route_id")
+      .notNull()
+      .references(() => routes.id, { onDelete: "cascade" }),
+    // The course's number within this rally (1, 2, 3 ...).
+    position: integer("position").notNull().default(0),
+    createdAt: createdAt(),
+  },
+  (t) => [primaryKey({ columns: [t.rallyId, t.routeId] }), index("rally_routes_route_idx").on(t.routeId)],
+);
+
+/**
+ * A visitor finished a course: every published stamp place on it was stamped (a closed place counts as done).
+ * Saved once, when it happens, and kept even if a place is added to the course later.
+ */
+export const courseCompletions = pgTable(
+  "course_completions",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    routeId: uuid("route_id")
+      .notNull()
+      .references(() => routes.id, { onDelete: "cascade" }),
+    completedAt: timestamp("completed_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.routeId] }), index("course_completions_route_idx").on(t.routeId)],
+);
+
+/**
+ * A visitor finished a rally: every course in it (or, for the sutra-mound rally, every mound place) was finished.
+ * Saved once, when it happens, and kept even if the rally gets more courses later.
+ */
+export const rallyCompletions = pgTable(
+  "rally_completions",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    rallyId: uuid("rally_id")
+      .notNull()
+      .references(() => rallies.id, { onDelete: "cascade" }),
+    completedAt: timestamp("completed_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.userId, t.rallyId] }), index("rally_completions_rally_idx").on(t.rallyId)],
 );
 
 /**

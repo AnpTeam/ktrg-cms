@@ -26,6 +26,7 @@ export function uploadRoutes(getServices: () => UploadServices, opts: RouteOptio
     },
     {
       auth: "upload.create",
+      rateLimit: { adminWriteUser: "user.id" },
       audit: { action: "upload.create", target: "response:upload.id" },
       // The type and size are checked again from the bytes in the service; this only stops
       // something that is plainly not a file early.

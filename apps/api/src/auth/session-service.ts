@@ -72,7 +72,10 @@ export function createSessionService({
       const { session, user } = found;
       const freshEnd = freshUntil(session.lastLoginAt);
       const base = { user, sessionId: session.id, freshUntil: freshEnd, fresh: at < freshEnd.getTime() };
-      if (at >= session.expiresAt.getTime() || at >= session.absoluteExpiresAt.getTime()) {
+      // A cap further away than the role allows means the session began under a longer policy
+      // (a participant since promoted): end it, so the new role's limit applies.
+      const capTooFar = session.absoluteExpiresAt.getTime() - at > SESSION_POLICY[user.role].absoluteMs;
+      if (at >= session.expiresAt.getTime() || at >= session.absoluteExpiresAt.getTime() || capTooFar) {
         await store.remove(tokenHash);
         return null;
       }

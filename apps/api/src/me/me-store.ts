@@ -1,7 +1,7 @@
 import { and, eq, isNotNull, isNull, lte, sql } from "drizzle-orm";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
-import { users } from "../db/schema";
+import { otpCodes, users } from "../db/schema";
 import type { MeStore, StoredProfile } from "./me-service";
 
 const profileColumns = {
@@ -60,17 +60,19 @@ export function createDrizzleMeStore(db: Db): MeStore {
     async purgeDue(cutoff) {
       return db.transaction(async (tx) => {
         const due = await tx
-          .select({ id: users.id })
+          .select({ id: users.id, email: users.email })
           .from(users)
           .where(and(isNotNull(users.deletionRequestedAt), lte(users.deletionRequestedAt, cutoff)));
         let deleted = 0;
-        for (const { id } of due) {
+        for (const { id, email } of due) {
           // The conditions are repeated so a request cancelled a moment ago is not deleted.
           const [gone] = await tx
             .delete(users)
             .where(and(eq(users.id, id), isNotNull(users.deletionRequestedAt), lte(users.deletionRequestedAt, cutoff)))
             .returning({ id: users.id });
           if (!gone) continue;
+          // Login codes are kept by email, not user id, so no foreign key removes them.
+          if (email) await tx.delete(otpCodes).where(eq(otpCodes.email, email.toLowerCase()));
           // Ids only: the audit log keeps rows for good and holds no personal data.
           await writeAudit(tx, { actorUserId: null, action: "user.deleted", targetId: id });
           deleted++;

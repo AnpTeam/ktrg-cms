@@ -16,7 +16,7 @@ function setup() {
   const { store, rows } = createMemorySessionStore(users);
   let clock = new Date("2026-10-15T00:00:00Z");
   const service = createSessionService({ store, now: () => clock });
-  return { service, rows, advance: (ms: number) => (clock = new Date(clock.getTime() + ms)) };
+  return { service, rows, users, advance: (ms: number) => (clock = new Date(clock.getTime() + ms)) };
 }
 
 describe("create", () => {
@@ -121,6 +121,19 @@ describe("authenticate", () => {
     expect(await service.authenticate(token)).not.toBeNull();
     advance(2 * DAY);
     expect(await service.authenticate(token)).toBeNull();
+  });
+
+  test("a participant promoted to admin loses the year-long session; a new admin login works", async () => {
+    const { service, users, advance } = setup();
+    const promoted = { ...participant, id: "u3" };
+    users.set(promoted.id, promoted);
+    const { token } = await service.create(promoted);
+    promoted.role = "admin";
+    expect(await service.authenticate(token)).toBeNull();
+
+    const fresh = await service.create(promoted);
+    advance(DAY);
+    expect(await service.authenticate(fresh.token)).not.toBeNull();
   });
 });
 

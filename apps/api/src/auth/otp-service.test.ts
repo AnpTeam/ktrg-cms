@@ -66,6 +66,14 @@ describe("otp request", () => {
     expect(sent).toHaveLength(2);
   });
 
+  test("a new request deletes codes that expired over a day ago, for any email", async () => {
+    const { service, rows, advance } = setup();
+    await service.request("old@example.com");
+    advance(OTP_TTL_MS + 24 * 60 * 60 * 1000 + 1000);
+    await service.request("new@example.com");
+    expect(rows.map((r) => r.email)).toEqual(["new@example.com"]);
+  });
+
   test("the cooldown is per email", async () => {
     const { service, sent } = setup();
     await service.request("a@example.com");

@@ -1,7 +1,7 @@
 import { and, asc, count, eq, inArray, max, sql } from "drizzle-orm";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
-import { rallies, rallySpots, routes, routeTranslations, spots, spotTranslations, stamps } from "../db/schema";
+import { rallySpots, routes, routeTranslations, spots, spotTranslations, stamps } from "../db/schema";
 import { emptyTexts, flattenTexts, ROUTE_TEXT, SPOT_TEXT, splitTexts, type Texts } from "../db/translations";
 import type { ContentStore, RouteRow, RouteSummaryRow, SpotRow } from "./content-types";
 
@@ -80,8 +80,6 @@ export function createDrizzleContentStore(db: Db): ContentStore {
     const [row] = await tx.select({ m: max(spots.sortOrder) }).from(spots).where(eq(spots.routeId, routeId));
     return (row?.m ?? 0) + 1;
   }
-  const courseRallyOf = async (tx: Tx, routeId: string) =>
-    (await tx.select({ id: rallies.id }).from(rallies).where(and(eq(rallies.kind, "course"), eq(rallies.routeId, routeId))).limit(1))[0]?.id ?? null;
 
   return {
     async listRoutes() {
@@ -164,8 +162,7 @@ export function createDrizzleContentStore(db: Db): ContentStore {
         if (!exists) return "not_found";
         const [n] = await tx.select({ n: count() }).from(spots).where(eq(spots.routeId, id));
         if ((n?.n ?? 0) > 0) return "has_places";
-        // The route's own course rally goes with it (its links go by cascade).
-        await tx.delete(rallies).where(and(eq(rallies.kind, "course"), eq(rallies.routeId, id)));
+        // Its place in rallies of courses (rally_routes) goes by cascade; the rallies themselves stay.
         await tx.delete(routes).where(eq(routes.id, id));
         await writeAudit(tx, { actorUserId: actor, action: "route.delete", targetId: id });
         return "ok";
@@ -182,13 +179,8 @@ export function createDrizzleContentStore(db: Db): ContentStore {
           .values({ ...rest, routeId, sortOrder: await nextSpotOrder(tx, routeId) })
           .returning();
         await saveSpotTexts(tx, row!.id, texts);
-        // Every stamp place of a course is in that course's rally; the mound rally is managed separately.
-        // The route's other points (a turn, a toilet) never are.
-        const rallyId = row!.kind === "stamp" ? await courseRallyOf(tx, routeId) : null;
-        if (rallyId) {
-          const [m] = await tx.select({ m: max(rallySpots.position) }).from(rallySpots).where(eq(rallySpots.rallyId, rallyId));
-          await tx.insert(rallySpots).values({ rallyId, spotId: row!.id, position: (m?.m ?? 0) + 1 }).onConflictDoNothing();
-        }
+        // A stamp place counts in its course (spots.route_id) and so in every rally of courses holding it; a rally of
+        // places gets it only when an admin adds it there.
         await writeAudit(tx, { actorUserId: actor, action: "spot.create", targetId: row!.id });
         return spotFromDb(tx, row!);
       });
@@ -213,15 +205,8 @@ export function createDrizzleContentStore(db: Db): ContentStore {
           .returning();
         if (!row) return "conflict";
         await saveSpotTexts(tx, id, texts);
-        if (kindChanged) {
-          // Keep the rallies in step: a point that is no longer a stamp place leaves them, a new stamp place joins its course's.
-          await tx.delete(rallySpots).where(eq(rallySpots.spotId, id));
-          const rallyId = row.kind === "stamp" ? await courseRallyOf(tx, before.routeId) : null;
-          if (rallyId) {
-            const [m] = await tx.select({ m: max(rallySpots.position) }).from(rallySpots).where(eq(rallySpots.rallyId, rallyId));
-            await tx.insert(rallySpots).values({ rallyId, spotId: id, position: (m?.m ?? 0) + 1 }).onConflictDoNothing();
-          }
-        }
+        // A point that is no longer a stamp place leaves every rally of places (its course stops counting it by itself).
+        if (kindChanged && row.kind !== "stamp") await tx.delete(rallySpots).where(eq(rallySpots.spotId, id));
         await writeAudit(tx, { actorUserId: actor, action: "spot.update", targetId: id });
         if (statusChanged) await writeAudit(tx, { actorUserId: actor, action: "spot.status.change", targetId: id });
         return spotFromDb(tx, row);
@@ -261,11 +246,7 @@ export function createDrizzleContentStore(db: Db): ContentStore {
       return db.transaction(async (tx) => {
         const cur = await tx.select({ id: spots.id }).from(spots).where(eq(spots.routeId, routeId));
         if (ids.length !== cur.length || new Set(ids).size !== ids.length || !cur.every((s) => ids.includes(s.id))) return false;
-        const rallyId = await courseRallyOf(tx, routeId);
-        for (const [i, id] of ids.entries()) {
-          await tx.update(spots).set({ sortOrder: i + 1 }).where(eq(spots.id, id));
-          if (rallyId) await tx.update(rallySpots).set({ position: i + 1 }).where(and(eq(rallySpots.rallyId, rallyId), inArray(rallySpots.spotId, [id])));
-        }
+        for (const [i, id] of ids.entries()) await tx.update(spots).set({ sortOrder: i + 1 }).where(eq(spots.id, id));
         await writeAudit(tx, { actorUserId: actor, action: "spot.reorder", targetId: routeId });
         return true;
       });

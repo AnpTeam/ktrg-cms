@@ -2,7 +2,7 @@
 // Safe to run again: it only adds what is missing and never overwrites CMS edits.
 import { asc, count } from "drizzle-orm";
 import { createDb, type Db } from "./client";
-import { rallies, rallySpots, rallyTranslations, routes, routeTranslations, spots, spotTranslations } from "./schema";
+import { rallies, rallyRoutes, rallySpots, rallyTranslations, routes, routeTranslations, spots, spotTranslations } from "./schema";
 import { flattenTexts, ROUTE_TEXT } from "./translations";
 import { MOUND_RALLY, SEED_ROUTES, seedSpots } from "./seed-data";
 
@@ -10,11 +10,11 @@ import { MOUND_RALLY, SEED_ROUTES, seedSpots } from "./seed-data";
 export type Executor = Pick<Db, "select" | "insert">;
 
 export interface SeedResult {
-  /** Rallies created: the mound rally and one per course. */
+  /** Rallies created (only into an empty table): the sutra-mound rally of places and one rally of courses per course. */
   rallies: number;
   routes: number;
   spots: number;
-  /** Place-in-rally links created. */
+  /** Links created: places of the mound rally (rally_spots) and courses of the course rallies (rally_routes). */
   links: number;
 }
 
@@ -77,49 +77,42 @@ export async function seed(db: Executor): Promise<SeedResult> {
     spotsCreated = made.length;
   }
 
-  // Rallies: the mound rally and one per course, each only if it is missing.
-  const existing = await db.select({ kind: rallies.kind, routeId: rallies.routeId }).from(rallies);
-  const missing = [
-    ...(existing.some((r) => r.kind === "mounds")
-      ? []
-      : [{ kind: "mounds" as const, nameJa: MOUND_RALLY.nameJa, nameEn: MOUND_RALLY.nameEn, sortOrder: 0 }]),
-    ...courses.flatMap((c, i) =>
-      existing.some((r) => r.routeId === c.id)
-        ? []
-        : [{ kind: "course" as const, routeId: c.id, nameJa: c.nameJa, nameEn: c.nameEn, sortOrder: i + 1 }],
-    ),
-  ];
+  // Rallies, only into an empty table (never undoes an admin's rallies): the sutra-mound rally as a rally of PLACES
+  // (every mound place in trail order) and one rally of COURSES per course, all published. The admin can then
+  // regroup courses into bigger rallies and delete these.
   let ralliesCreated = 0;
-  for (const { nameJa, nameEn, ...rally } of missing) {
-    const [made] = await db.insert(rallies).values(rally).returning({ id: rallies.id });
-    await db.insert(rallyTranslations).values([
-      { rallyId: made!.id, locale: "ja", name: nameJa },
-      { rallyId: made!.id, locale: "en", name: nameEn },
-    ]);
-    ralliesCreated++;
+  let links = 0;
+  const rallyCount = (await db.select({ n: count() }).from(rallies))[0]?.n ?? 0;
+  if (rallyCount === 0) {
+    const allSpots = await db.select({ id: spots.id, routeId: spots.routeId, sortOrder: spots.sortOrder }).from(spots);
+    const courseOrder = new Map(courses.map((c, i) => [c.id, i]));
+    const inTrailOrder = [...allSpots].sort(
+      (a, b) => (courseOrder.get(a.routeId) ?? 0) - (courseOrder.get(b.routeId) ?? 0) || a.sortOrder - b.sortOrder,
+    );
+
+    const named = async (values: typeof rallies.$inferInsert, nameJa: string, nameEn: string | null) => {
+      const [made] = await db.insert(rallies).values({ ...values, published: true }).returning({ id: rallies.id });
+      await db.insert(rallyTranslations).values([
+        { rallyId: made!.id, locale: "ja", name: nameJa },
+        { rallyId: made!.id, locale: "en", name: nameEn },
+      ]);
+      ralliesCreated++;
+      return made!.id;
+    };
+
+    const mounds = await named({ kind: "places", sortOrder: 0 }, MOUND_RALLY.nameJa, MOUND_RALLY.nameEn);
+    if (inTrailOrder.length > 0) {
+      await db.insert(rallySpots).values(inTrailOrder.map((s, i) => ({ rallyId: mounds, spotId: s.id, position: i + 1 })));
+      links += inTrailOrder.length;
+    }
+    for (const [i, c] of courses.entries()) {
+      const id = await named({ kind: "course", sortOrder: i + 1 }, c.nameJa, c.nameEn);
+      await db.insert(rallyRoutes).values({ rallyId: id, routeId: c.id, position: 1 });
+      links++;
+    }
   }
 
-  // Which places are in which rally: only for a rally that has none yet (never undoes an admin's changes).
-  const allRallies = await db
-    .select({ id: rallies.id, kind: rallies.kind, routeId: rallies.routeId })
-    .from(rallies);
-  const linked = new Set((await db.select({ id: rallySpots.rallyId }).from(rallySpots)).map((r) => r.id));
-  const allSpots = await db.select({ id: spots.id, routeId: spots.routeId, sortOrder: spots.sortOrder }).from(spots);
-  const courseOrder = new Map(courses.map((c, i) => [c.id, i]));
-  const inTrailOrder = [...allSpots].sort(
-    (a, b) => (courseOrder.get(a.routeId) ?? 0) - (courseOrder.get(b.routeId) ?? 0) || a.sortOrder - b.sortOrder,
-  );
-
-  const links: { rallyId: string; spotId: string; position: number }[] = [];
-  for (const rally of allRallies) {
-    if (linked.has(rally.id)) continue;
-    // The mound rally holds every mound place in trail order; a course rally the places on its course.
-    const members = rally.kind === "mounds" ? inTrailOrder : inTrailOrder.filter((s) => s.routeId === rally.routeId);
-    members.forEach((s, i) => links.push({ rallyId: rally.id, spotId: s.id, position: i + 1 }));
-  }
-  if (links.length > 0) await db.insert(rallySpots).values(links);
-
-  return { rallies: ralliesCreated, routes: routesCreated, spots: spotsCreated, links: links.length };
+  return { rallies: ralliesCreated, routes: routesCreated, spots: spotsCreated, links };
 }
 
 if (import.meta.main) {
