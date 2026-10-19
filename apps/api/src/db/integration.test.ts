@@ -239,8 +239,13 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       const never = await newUser("purge-never");
       await me.requestDeletion(old.id, new Date("2026-01-01T00:00:00Z"));
       await me.requestDeletion(fresh.id, new Date("2026-06-01T00:00:00Z"));
+      await otp.insert({ email: old.email!, codeHash: "e".repeat(64), expiresAt: future() });
+      await otp.insert({ email: fresh.email!, codeHash: "f".repeat(64), expiresAt: future() });
       try {
         expect(await me.purgeDue(new Date("2026-03-01T00:00:00Z"))).toBe(1);
+        // Their login codes go with them (kept by email, so no foreign key reaches them).
+        expect(await otp.latest(old.email!)).toBeNull();
+        expect(await otp.latest(fresh.email!)).not.toBeNull();
         expect(await me.get(old.id)).toBeNull();
         expect(await me.get(fresh.id)).not.toBeNull();
         expect(await me.get(never.id)).not.toBeNull();

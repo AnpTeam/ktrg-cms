@@ -72,9 +72,12 @@ function getServices(): Services {
  * The whole API: every route file, mounted under /api/v1. The services come from outside, so
  * the tests and the dev page (scripts/phone-test.ts) run exactly this route tree on memory stores.
  */
-export function createApp(getServices: () => Services, opts: RouteOptions & { docs: boolean; cronSecret?: string }) {
+export function createApp(
+  getServices: () => Services,
+  opts: RouteOptions & { docs: boolean; cronSecret?: string; appOrigin?: () => string },
+) {
   return new Elysia({ prefix: "/api/v1" })
-    .use(apiBase()) // first: request ids and the one error shape, for everything below
+    .use(apiBase({ allowedOrigin: opts.appOrigin })) // first: request ids, the Origin check and the one error shape
     .use(apiDocs({ enabled: opts.docs }))
     .get(
       "/health",
@@ -98,6 +101,7 @@ export const app = createApp(getServices, {
   trustProxy: env.TRUST_PROXY,
   docs: env.NODE_ENV !== "production" || env.API_DOCS,
   cronSecret: env.CRON_SECRET,
+  appOrigin: () => env.APP_ORIGIN,
 });
 
 // Vercel's entry: its Elysia preset picks the first of app.ts, index.ts, server.ts, src/app.ts,

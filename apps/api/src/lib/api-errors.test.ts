@@ -33,6 +33,27 @@ function setup() {
   return { call, logs };
 }
 
+describe("Origin check (CSRF)", () => {
+  const app = new Elysia({ prefix: "/api/v1" })
+    .use(apiBase({ allowedOrigin: () => "https://app.example" }))
+    .get("/read", () => ({ ok: true as const }))
+    .post("/write", () => ({ ok: true as const }));
+  const call = (method: string, path: string, origin?: string) =>
+    app.handle(new Request(`http://localhost/api/v1${path}`, { method, headers: origin ? { origin } : {} }));
+
+  test("a write from another site is refused before the route runs", async () => {
+    const res = await call("POST", "/write", "https://blog.app.example");
+    expect(res.status).toBe(403);
+    expect(await res.json()).toEqual({ ok: false, error: "forbidden" });
+  });
+
+  test("our own origin, no Origin (cron, curl) and reads from anywhere pass", async () => {
+    expect((await call("POST", "/write", "https://app.example")).status).toBe(200);
+    expect((await call("POST", "/write")).status).toBe(200);
+    expect((await call("GET", "/read", "https://elsewhere.example")).status).toBe(200);
+  });
+});
+
 describe("request ids", () => {
   test("every answer carries a new x-request-id: success, a route's own error, a guard's 401", async () => {
     const { call } = setup();

@@ -267,7 +267,7 @@ new Elysia()
     return page;
   })
   // The app's own route tree (with /api/v1/openapi docs), on the in-memory services.
-  .use(createApp(() => services, { ...routeOpts, docs: true }))
+  .use(createApp(() => services, { ...routeOpts, docs: true, appOrigin: () => current.origin }))
   .listen({ port, hostname: "0.0.0.0" });
 
 console.log(`Test server on port ${port} (cookies ${secure ? "Secure/__Host-" : "plain http"}).`);

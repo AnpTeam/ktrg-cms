@@ -91,13 +91,22 @@ export function requestIdFrom(incoming: string | null): string {
  *   unknown route 404 `not_found`, anything thrown 500 `internal_error`.
  * - A 500 tells the caller nothing; the server log gets the request id, method, path (no query
  *   string, which could carry a token) and the error. Never put personal data in error messages.
+ * - CSRF: with `allowedOrigin`, a request that changes data and carries a foreign `Origin` header
+ *   gets 403 `forbidden` before any route runs. No `Origin` passes (the scheduled purge, curl);
+ *   browsers always send it on such requests.
  */
-export function apiBase(opts: { log?: (line: string) => void } = {}) {
+const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+
+export function apiBase(opts: { log?: (line: string) => void; allowedOrigin?: () => string } = {}) {
   const log = opts.log ?? console.error;
 
   return new Elysia({ name: "api-base" })
-    .onRequest(({ request, set }) => {
+    .onRequest(({ request, set, status }) => {
       set.headers[REQUEST_ID_HEADER] = requestIdFrom(request.headers.get(REQUEST_ID_HEADER));
+      const origin = request.headers.get("origin");
+      if (opts.allowedOrigin && origin && !SAFE_METHODS.has(request.method) && origin !== opts.allowedOrigin()) {
+        return status(403, { ok: false, error: "forbidden" } satisfies ApiError);
+      }
     })
     .onError({ as: "global" }, ({ code, error, set, request, status }) => {
       // status(), not a bare object: the answer is filed under its status code, so the typed client

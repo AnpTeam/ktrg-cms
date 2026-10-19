@@ -12,6 +12,8 @@ import {
   normalizeEmail,
 } from "./otp";
 
+const OTP_PRUNE_AFTER_MS = 24 * 60 * 60 * 1000;
+
 export interface OtpRow {
   id: string;
   codeHash: string;
@@ -26,6 +28,8 @@ export interface OtpStore {
   /** The newest code issued to this email, or null if none. */
   latest(email: string): Promise<OtpRow | null>;
   insert(row: { email: string; codeHash: string; expiresAt: Date }): Promise<void>;
+  /** Delete every code that expired before this time (they hold an email address). */
+  pruneExpired(before: Date): Promise<void>;
   /**
    * Atomically count one guess against an unused code. Returns false when the
    * code is already used or has no attempts left.
@@ -116,6 +120,8 @@ export function createOtpService({
         codeHash: hashOtpCode(secret, email, code),
         expiresAt: new Date(issuedAt.getTime() + OTP_TTL_MS),
       });
+      // Tidy up codes that expired over a day ago: nobody needs them, and they hold an email.
+      await store.pruneExpired(new Date(issuedAt.getTime() - OTP_PRUNE_AFTER_MS)).catch(() => {});
 
       try {
         const build = purpose === "reauth" ? buildReauthEmail : buildOtpEmail;
