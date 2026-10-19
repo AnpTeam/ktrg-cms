@@ -64,4 +64,13 @@ describe("parseEnv", () => {
   test("rejects a non-postgres DATABASE_URL", () => {
     expect(() => parseEnv({ DATABASE_URL: "mysql://x" })).toThrow(/DATABASE_URL/);
   });
+
+  test("falls back to the URL names Vercel's Postgres integrations set", () => {
+    const vercel = "postgres://u:p@ep-x-pooler.neon.tech/db?sslmode=require";
+    expect(parseEnv({ DB_POSTGRES_URL: vercel }).DATABASE_URL).toBe(vercel);
+    expect(parseEnv({ POSTGRES_URL: vercel }).DATABASE_URL).toBe(vercel);
+    // An explicit DATABASE_URL wins.
+    expect(parseEnv({ ...ok, DB_POSTGRES_URL: vercel }).DATABASE_URL).toBe(ok.DATABASE_URL);
+    expect(parseEnv({}).DATABASE_URL).toBeUndefined();
+  });
 });
