@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { app } from "./app";
+import { readdirSync } from "node:fs";
+import { join } from "node:path";
+import vercelEntry, { app } from "./app";
 import { parseEnv } from "./parse-env";
 
 describe("GET /api/v1/health", () => {
@@ -7,6 +9,26 @@ describe("GET /api/v1/health", () => {
     const res = await app.handle(new Request("http://localhost/api/v1/health"));
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ status: "ok" });
+  });
+});
+
+describe("Vercel entry", () => {
+  // Vercel's Elysia preset takes the first of these that exists; it must default-export the app.
+  const candidates = ["app", "index", "server", "src/app", "src/index", "src/server"];
+  const root = join(import.meta.dir, "..");
+  const exists = (p: string) => {
+    const dir = join(root, p, "..");
+    const base = p.split("/").pop()!;
+    try {
+      return readdirSync(dir).some((f) => /^(.+)\.(js|cjs|mjs|ts|cts|mts)$/.exec(f)?.[1] === base);
+    } catch {
+      return false;
+    }
+  };
+
+  test("the file Vercel picks is src/app.ts, and it default-exports the app", () => {
+    expect(candidates.find(exists)).toBe("src/app");
+    expect(vercelEntry).toBe(app);
   });
 });
 
