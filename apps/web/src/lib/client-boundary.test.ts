@@ -7,7 +7,7 @@ import { dirname, join } from "node:path";
 // descriptions, draft coordinates), so no browser-side file may reach it, directly or through
 // other files. `import type` is erased and is fine. This follows imports all the way down.
 const src = join(import.meta.dir, "..");
-const forbidden = new Set(["lib/content.ts", "lib/api-content.ts", "lib/sample-content.ts", "lib/sample-route-02.ts", "lib/sample-places.ts", "lib/sample-mounds.ts", "lib/sample-notices.ts"]);
+const forbidden = new Set(["lib/content.ts", "lib/api-content.ts", "lib/admin/admin-fetch.ts", "lib/sample-content.ts", "lib/sample-route-02.ts", "lib/sample-places.ts", "lib/sample-mounds.ts", "lib/sample-notices.ts"]);
 
 function files(dir: string): string[] {
   return readdirSync(dir).flatMap((name) => {

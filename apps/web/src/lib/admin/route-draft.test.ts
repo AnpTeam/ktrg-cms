@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { draftFromServer, draftReducer, emptyDraft, initialState, isDirty, placeFromServer, previewRoute, publishBlockers, type DraftAction, type DraftState } from "./route-draft";
-import { draftProblems, planSave, placeBody, routeBody, videoLinkLooksValid } from "./save-plan";
+import { draftProblems, placeChanged, planSave, placeBody, routeBody, videoLinkLooksValid } from "./save-plan";
 import type { AdminRoute, AdminSpot } from "./types";
 
 const run = (state: DraftState, ...actions: DraftAction[]) => actions.reduce(draftReducer, state);
@@ -29,6 +29,17 @@ describe("drawing", () => {
     s = run(s, { type: "distance", value: 9.3 }, { type: "line", points: [[135, 34], [135, 34.03]] });
     expect(s.present.distanceKm).toBe(9.3);
   });
+  test("emptying a typed distance or climb hands the number back to the line", () => {
+    let s = run(fresh(), { type: "line", points: [[135, 34, 100], [135, 34.01, 400]] });
+    s = run(s, { type: "distance", value: 9.3 }, { type: "climb", value: 5 });
+    expect([s.present.distanceKm, s.present.elevationGainM]).toEqual([9.3, 5]);
+    s = run(s, { type: "distance", value: null }, { type: "climb", value: null });
+    expect(s.present.distanceKm).toBe(1.11);
+    expect(s.present.elevationGainM).toBeGreaterThan(200);
+    expect([s.present.distanceManual, s.present.climbManual]).toEqual([false, false]);
+    const none = run(fresh(), { type: "distance", value: null });
+    expect(none.present.distanceKm).toBeNull();
+  });
   test("the climb follows the elevations unless typed", () => {
     const s = run(fresh(), { type: "line", points: [[135, 34, 100], [135, 34.01, 200], [135, 34.02, 300]] });
     expect(s.present.elevationGainM).toBeGreaterThan(150);
@@ -48,6 +59,16 @@ describe("drawing", () => {
     s = run(s, { type: "addPlace", key: "b", lat: 34, lng: 135 });
     expect(s.future).toHaveLength(0);
     expect(run(fresh(), { type: "undo" }).present).toEqual(emptyDraft());
+  });
+  test("elevations from the map tiles fill in without an undo step, and are dropped if the line has moved on", () => {
+    let s = run(fresh(), { type: "line", points: [[135, 34], [135, 34.01], [135, 34.02]] });
+    const before = s.past.length;
+    s = run(s, { type: "elevations", points: [[135, 34, 100], [135, 34.01, 200], [135, 34.02, 300]] });
+    expect(s.past).toHaveLength(before);
+    expect(s.present.line.map((p) => p[2])).toEqual([100, 200, 300]);
+    expect(s.present.elevationGainM).toBeGreaterThan(150);
+    const moved = run(s, { type: "line", points: [[135, 34], [135, 34.5]] });
+    expect(run(moved, { type: "elevations", points: [[135, 34, 1], [135, 34.01, 2], [135, 34.02, 3]] })).toBe(moved);
   });
   test("typing is not an undo step", () => {
     const s = run(fresh(), { type: "text", field: "nameJa", value: "甲山" });
@@ -172,12 +193,29 @@ describe("save plan", () => {
   });
 });
 
+describe("unsaved places", () => {
+  test("a place is unsaved when it is new or differs from its saved copy", () => {
+    const saved = placeFromServer(serverSpot("s1"));
+    expect(placeChanged(saved, saved)).toBe(false);
+    expect(placeChanged({ ...saved, nameJa: "改名" }, saved)).toBe(true);
+    expect(placeChanged({ ...saved, id: null }, saved)).toBe(true);
+    expect(placeChanged(saved, undefined)).toBe(true);
+    // a change in the published flag alone comes from the server, not from typing: not an unsaved edit
+    expect(placeChanged({ ...saved, published: true }, saved)).toBe(false);
+  });
+});
+
 describe("checks before saving", () => {
   test("a blank route or place name, and a video link that is not YouTube or Vimeo", () => {
     let s = run(fresh(), { type: "addPlace", key: "a", lat: 1, lng: 1 }, { type: "place", key: "a", patch: { nameJa: "  " } });
     expect(draftProblems(s.present)).toEqual([{ kind: "route_name" }, { kind: "place_name", key: "a" }]);
     s = run(s, { type: "text", field: "videoUrl", value: "https://example.com/x" });
     expect(draftProblems(s.present).map((p) => p.kind)).toContain("video_link");
+  });
+  test("a position with only one of its two numbers is a problem the person must fix", () => {
+    let s = run(fresh(), { type: "text", field: "nameJa", value: "甲山" }, { type: "addPlace", key: "a", lat: 34, lng: 135 });
+    s = run(s, { type: "place", key: "a", patch: { lng: null } });
+    expect(draftProblems(s.present)).toEqual([{ kind: "place_position", key: "a" }]);
   });
   test("video links", () => {
     expect(videoLinkLooksValid("")).toBe(true);

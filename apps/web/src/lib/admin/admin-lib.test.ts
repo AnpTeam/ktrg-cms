@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { decodeDem, demAt, fillElevations, tileFor } from "./dem";
 import { parseGpx } from "./gpx";
-import { climbM, elevationsOf, lengthKm, simplify, type LngLatEle } from "./line";
+import { climbM, elevationsOf, keepElevations, lengthKm, sameLine, simplify, type LngLatEle } from "./line";
 
 describe("line", () => {
   test("length matches the API: 0.01 degrees of latitude is 1.11 km, and the diagonal 1.44 km", () => {
@@ -27,6 +27,19 @@ describe("line", () => {
     expect(elevationsOf([[135, 34, 1], [135, 34.1, 2]])).toEqual([1, 2]);
     expect(elevationsOf([[135, 34, 1], [135, 34.1]])).toBeNull();
     expect(elevationsOf([])).toBeNull();
+  });
+});
+
+describe("editing keeps what it can", () => {
+  test("elevations stay with points that did not move; a moved or new point has none", () => {
+    const before: LngLatEle[] = [[135, 34, 10], [135, 34.01, 20], [135, 34.02, 30]];
+    const after = keepElevations(before, [[135, 34], [135.001, 34.01], [135, 34.02], [135, 34.03]]);
+    expect(after).toEqual([[135, 34, 10], [135.001, 34.01], [135, 34.02, 30], [135, 34.03]]);
+  });
+  test("sameLine compares positions and heights", () => {
+    expect(sameLine([[1, 2, 3]], [[1, 2, 3]])).toBe(true);
+    expect(sameLine([[1, 2, 3]], [[1, 2]])).toBe(false);
+    expect(sameLine([[1, 2]], [[1, 2], [3, 4]])).toBe(false);
   });
 });
 

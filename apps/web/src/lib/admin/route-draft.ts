@@ -103,7 +103,7 @@ export interface DraftState {
 
 export const initialState = (draft: RouteDraft): DraftState => ({ present: draft, past: [], future: [] });
 
-type TextField = "nameJa" | "nameEn" | "descriptionJa" | "descriptionEn" | "municipality" | "difficulty" | "videoUrl" | "lineSource";
+export type TextField = "nameJa" | "nameEn" | "descriptionJa" | "descriptionEn" | "municipality" | "difficulty" | "videoUrl" | "lineSource";
 
 export type DraftAction =
   | { type: "text"; field: TextField; value: string }
@@ -113,6 +113,8 @@ export type DraftAction =
   | { type: "time"; value: number | null }
   | { type: "lineVerified"; value: boolean }
   | { type: "line"; points: LngLatEle[] }
+  /** The same points with elevations filled in (from the map tiles): not an undo step, and the line stays as drawn. */
+  | { type: "elevations"; points: LngLatEle[] }
   | { type: "addPlace"; key: string; lat: number; lng: number }
   | { type: "movePlace"; key: string; lat: number; lng: number }
   | { type: "place"; key: string; patch: Partial<PlaceDraft> }
@@ -146,15 +148,29 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
     case "prefecture":
       return { ...d, prefecture: a.value };
     case "distance":
-      return { ...d, distanceKm: a.value, distanceManual: a.value !== null };
-    case "climb":
-      return { ...d, elevationGainM: a.value, climbManual: a.value !== null };
+      // Emptying the field hands the number back to the line.
+      return a.value === null
+        ? { ...d, distanceKm: d.line.length >= 2 ? lengthKm(d.line) : null, distanceManual: false }
+        : { ...d, distanceKm: a.value, distanceManual: true };
+    case "climb": {
+      if (a.value !== null) return { ...d, elevationGainM: a.value, climbManual: true };
+      const eles = elevationsOf(d.line);
+      return { ...d, elevationGainM: eles ? climbM(eles) : null, climbManual: false };
+    }
     case "time":
       return { ...d, expectedTimeMin: a.value };
     case "lineVerified":
       return { ...d, lineVerified: a.value };
     case "line":
       return withLine(d, a.points);
+    case "elevations": {
+      const same = a.points.length === d.line.length && a.points.every((p, i) => p[0] === d.line[i]![0] && p[1] === d.line[i]![1]);
+      if (!same) return d; // the line moved on while the heights were being fetched: drop them
+      const next: RouteDraft = { ...d, line: a.points };
+      const eles = elevationsOf(a.points);
+      if (!d.climbManual && eles) next.elevationGainM = climbM(eles);
+      return next;
+    }
     case "addPlace":
       return { ...d, places: [...d.places, newPlace(a.key, a.lat, a.lng, d.places.length + 1)] };
     case "movePlace":

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Trans } from "@lingui/react/macro";
-import { pickText, type SpotListItem } from "@/lib/content";
+import type { SpotListItem } from "@/lib/content";
+import { pickText } from "@/lib/pick-text";
 import type { NodeState } from "@/lib/ribbon";
 import { ChevronIcon } from "./icons";
 import { Localized } from "./Localized";

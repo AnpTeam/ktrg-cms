@@ -1,0 +1,144 @@
+"use client";
+
+import { useLingui } from "@lingui/react/macro";
+import { publishBlockers, type PlaceDraft, type PublishBlocker } from "@/lib/admin/route-draft";
+import type { SpotStatus } from "@/lib/admin/types";
+import { BilingualField, Check, Field, inputClass, NumberInput, TextInput } from "./fields";
+
+export interface PlacePanelProps {
+  place: PlaceDraft;
+  number: number;
+  selected: boolean;
+  /** True when this place has changes that are not saved yet. */
+  dirty: boolean;
+  busy: boolean;
+  canMoveUp: boolean;
+  canMoveDown: boolean;
+  invalidName: boolean;
+  onSelect: () => void;
+  onChange: (patch: Partial<PlaceDraft>) => void;
+  onRemove: () => void;
+  onMove: (step: -1 | 1) => void;
+  onPublish: () => void;
+  onUnpublish: () => void;
+}
+
+/** One stamp place: its text, its position and where that came from, its status, the site's permission, and publishing. */
+export function PlacePanel(p: PlacePanelProps) {
+  const { t } = useLingui();
+  const { place } = p;
+  const blockers = publishBlockers(place, p.dirty);
+  const blockerText: Record<PublishBlocker, string> = {
+    unsaved: t`先に「保存」してください。`,
+    no_coordinates: t`位置を決めてください（地図に置くか、緯度と経度を入れます）。`,
+    position_not_verified: t`位置を公式の情報で確認し、「位置を確認した」にチェックを入れて情報源を書いてください。`,
+    permission_required: t`現地の許可を確認し、「許可確認済み」にチェックを入れてください。`,
+  };
+  const statusName: Record<SpotStatus, string> = { open: t`通常`, caution: t`注意`, closed: t`通行止め` };
+  const id = `place-${place.key}`;
+
+  return (
+    <li className={`rounded-2xl border-2 ${p.selected ? "border-ink" : "border-line"} bg-paper`}>
+      <div className="flex flex-wrap items-center gap-3 p-3">
+        <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand text-lg font-bold text-on-brand">
+          {p.number}
+        </span>
+        <button type="button" onClick={p.onSelect} aria-expanded={p.selected} className="min-w-0 flex-1 text-left text-xl font-bold text-accent underline underline-offset-4">
+          {place.nameJa || t`（名前がありません）`}
+        </button>
+        <span className={`rounded-lg px-3 py-1 text-base font-bold ${place.published ? "bg-moss text-paper" : "bg-surface text-ink"}`}>{place.published ? t`公開中` : t`下書き`}</span>
+        <span className="text-base text-muted">{statusName[place.status]}</span>
+        {p.dirty ? <span className="text-base font-bold text-accent">{t`未保存`}</span> : null}
+      </div>
+
+      {p.selected ? (
+        <div className="flex flex-col gap-5 border-t border-line p-4">
+          <BilingualField id={`${id}-name`} label={t`場所の名前`} ja={place.nameJa} en={place.nameEn} onJa={(v) => p.onChange({ nameJa: v })} onEn={(v) => p.onChange({ nameEn: v })} required invalid={p.invalidName} />
+          <BilingualField id={`${id}-desc`} label={t`説明`} ja={place.descriptionJa} en={place.descriptionEn} onJa={(v) => p.onChange({ descriptionJa: v })} onEn={(v) => p.onChange({ descriptionEn: v })} multiline />
+
+          <fieldset className="flex flex-col gap-3">
+            <legend className="text-base font-bold">{t`位置`}</legend>
+            <div className="flex flex-wrap gap-4">
+              <Field label={t`緯度`} htmlFor={`${id}-lat`}>
+                <NumberInput id={`${id}-lat`} value={place.lat} min={-90} max={90} onChange={(v) => p.onChange({ lat: v })} />
+              </Field>
+              <Field label={t`経度`} htmlFor={`${id}-lng`}>
+                <NumberInput id={`${id}-lng`} value={place.lng} min={-180} max={180} onChange={(v) => p.onChange({ lng: v })} />
+              </Field>
+            </div>
+            <p className="text-base text-muted">{t`位置は、公式の情報から入れて、地図で確かめます。推測では入れません。`}</p>
+            <Check id={`${id}-verified`} checked={place.positionVerified} disabled={place.lat === null} onChange={(v) => p.onChange({ positionVerified: v })}>
+              {t`位置を確認した`}
+            </Check>
+            <Field label={t`確認した情報源（サイト名やリンク）`} htmlFor={`${id}-source`}>
+              <TextInput id={`${id}-source`} value={place.positionSource} onChange={(v) => p.onChange({ positionSource: v })} maxLength={500} />
+            </Field>
+            <Field label={t`スタンプを押せる範囲（メートル）`} htmlFor={`${id}-radius`} hint={t`この場所から、この距離の中にいるとスタンプを押せます。`}>
+              <div className="flex items-center gap-3">
+                <input id={`${id}-radius`} type="range" min={10} max={500} step={5} value={place.radiusM} onChange={(e) => p.onChange({ radiusM: Number(e.target.value) })} className="h-10 w-full max-w-sm accent-[var(--color-brand)]" />
+                <span className="w-20 text-lg font-bold tabular-nums">{place.radiusM} m</span>
+              </div>
+            </Field>
+          </fieldset>
+
+          <fieldset className="flex flex-col gap-3">
+            <legend className="text-base font-bold">{t`いまの状態`}</legend>
+            <select aria-label={t`いまの状態`} value={place.status} onChange={(e) => p.onChange({ status: e.target.value as SpotStatus })} className={`${inputClass} max-w-xs`}>
+              <option value="open">{statusName.open}</option>
+              <option value="caution">{statusName.caution}</option>
+              <option value="closed">{statusName.closed}</option>
+            </select>
+            <BilingualField id={`${id}-note`} label={t`状態のひとこと`} ja={place.statusNoteJa} en={place.statusNoteEn} onJa={(v) => p.onChange({ statusNoteJa: v })} onEn={(v) => p.onChange({ statusNoteEn: v })} />
+          </fieldset>
+
+          <fieldset className="flex flex-col gap-3">
+            <legend className="text-base font-bold">{t`現地の許可`}</legend>
+            <Check id={`${id}-permission`} checked={place.permissionConfirmed} onChange={(v) => p.onChange({ permissionConfirmed: v })}>
+              {t`許可確認済み`}
+            </Check>
+            <Field label={t`許可してくれた人`} htmlFor={`${id}-permnote`}>
+              <TextInput id={`${id}-permnote`} value={place.permissionNote} onChange={(v) => p.onChange({ permissionNote: v })} maxLength={500} />
+            </Field>
+          </fieldset>
+
+          <div className="flex flex-col gap-3 rounded-xl bg-surface p-4">
+            {place.published ? (
+              <div className="flex flex-wrap items-center gap-3">
+                <p className="text-lg font-bold">{t`この場所は公開されています。`}</p>
+                <button type="button" disabled={p.busy} onClick={p.onUnpublish} className="tap-target rounded-xl border-2 border-ink px-5 text-lg font-bold disabled:opacity-40">
+                  {t`公開をやめる`}
+                </button>
+              </div>
+            ) : (
+              <>
+                <button type="button" disabled={p.busy || blockers.length > 0} onClick={p.onPublish} className="tap-target w-fit rounded-xl bg-brand px-6 text-lg font-bold text-on-brand disabled:opacity-40">
+                  {t`公開する`}
+                </button>
+                {blockers.length > 0 ? (
+                  <ul className="list-disc pl-6 text-base text-muted">
+                    {blockers.map((b) => (
+                      <li key={b}>{blockerText[b]}</li>
+                    ))}
+                  </ul>
+                ) : null}
+              </>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <button type="button" disabled={!p.canMoveUp} onClick={() => p.onMove(-1)} className="tap-target rounded-xl border-2 border-line px-4 text-base font-bold disabled:opacity-40">
+              {t`順番を前へ`}
+            </button>
+            <button type="button" disabled={!p.canMoveDown} onClick={() => p.onMove(1)} className="tap-target rounded-xl border-2 border-line px-4 text-base font-bold disabled:opacity-40">
+              {t`順番を後ろへ`}
+            </button>
+            <button type="button" disabled={place.published} onClick={p.onRemove} className="tap-target ml-auto rounded-xl border-2 border-danger px-4 text-base font-bold text-danger disabled:opacity-40">
+              {t`この場所を削除`}
+            </button>
+          </div>
+          {place.published ? <p className="text-base text-muted">{t`公開中の場所は、先に「公開をやめる」と、削除できます。`}</p> : null}
+        </div>
+      ) : null}
+    </li>
+  );
+}

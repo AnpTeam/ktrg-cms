@@ -79,6 +79,10 @@ export function placeBody(p: PlaceDraft): PlaceBody {
   };
 }
 
+/** Whether a place has changes that are not saved (or was never saved). */
+export const placeChanged = (p: PlaceDraft, saved: PlaceDraft | undefined): boolean =>
+  !saved || p.id === null || JSON.stringify(placeBody(p)) !== JSON.stringify(placeBody(saved));
+
 /** The keys whose value differs, by value. */
 function changed<T extends object>(next: T, saved: T | null): Partial<T> {
   const out: Partial<T> = {};
@@ -149,7 +153,7 @@ export function planSave(draft: RouteDraft, saved: RouteDraft | null): SaveStep[
 
 // ---- checks before saving ------------------------------------------------------------------------------------
 
-export type DraftProblem = { kind: "route_name" } | { kind: "place_name"; key: string } | { kind: "video_link" };
+export type DraftProblem = { kind: "route_name" } | { kind: "place_name"; key: string } | { kind: "place_position"; key: string } | { kind: "video_link" };
 
 const VIDEO_HOSTS = ["youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be", "vimeo.com", "www.vimeo.com", "player.vimeo.com"];
 
@@ -169,6 +173,10 @@ export function draftProblems(d: RouteDraft): DraftProblem[] {
   const out: DraftProblem[] = [];
   if (d.nameJa.trim() === "") out.push({ kind: "route_name" });
   if (!videoLinkLooksValid(d.videoUrl)) out.push({ kind: "video_link" });
-  for (const p of d.places) if (p.nameJa.trim() === "") out.push({ kind: "place_name", key: p.key });
+  for (const p of d.places) {
+    if (p.nameJa.trim() === "") out.push({ kind: "place_name", key: p.key });
+    // A position is both numbers or neither; the app never fills in the missing one.
+    if ((p.lat === null) !== (p.lng === null)) out.push({ kind: "place_position", key: p.key });
+  }
   return out;
 }
