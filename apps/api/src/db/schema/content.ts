@@ -21,6 +21,28 @@ import { users } from "./auth";
 
 export const spotStatus = pgEnum("spot_status", ["open", "caution", "closed"]);
 
+/**
+ * What a point on a route is. "stamp" is a stamp place (it joins rallies and needs the site's permission).
+ * The others are navigation points along the way: turn, danger and view belong to the route only; the rest use the
+ * same names as the map's place categories (lib/places.ts in the web app), so toilets and rest areas show up in
+ * "places nearby" on the map. They never count in a rally.
+ */
+export const spotKinds = [
+  "stamp",
+  "turn",
+  "danger",
+  "view",
+  "toilet",
+  "rest_area",
+  "drinking_water",
+  "vending_machine",
+  "bus_stop",
+  "station",
+  "parking",
+  "other",
+] as const;
+export const spotKind = pgEnum("spot_kind", spotKinds);
+
 const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
 const updatedAt = () => timestamp("updated_at", { withTimezone: true }).notNull().defaultNow();
 
@@ -52,6 +74,13 @@ export const routes = pgTable(
     lineSource: text("line_source"),
     // YouTube / Vimeo only; the host is checked in the API.
     videoUrl: text("video_url"),
+    // The story of the route and how to get there and back, each in Japanese and English.
+    historyJa: text("history_ja"),
+    historyEn: text("history_en"),
+    accessJa: text("access_ja"),
+    accessEn: text("access_en"),
+    // A picture of the route: an https address (an upload comes when a storage provider is chosen).
+    photoUrl: text("photo_url"),
     sortOrder: integer("sort_order").notNull().default(0),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
@@ -87,6 +116,8 @@ export const spots = pgTable(
     positionSource: text("position_source"),
     // Check-in radius in metres.
     radiusM: integer("radius_m").notNull().default(50),
+    kind: spotKind("kind").notNull().default("stamp"),
+    photoUrl: text("photo_url"),
     status: spotStatus("status").notNull().default("open"),
     statusNoteJa: text("status_note_ja"),
     statusNoteEn: text("status_note_en"),
@@ -113,7 +144,8 @@ export const spots = pgTable(
     ),
     check(
       "spots_publish_requires_permission",
-      sql`not ${t.published} or ${t.permissionConfirmed}`,
+      // Only a stamp place needs the site's permission; a toilet or a turn on the path does not.
+      sql`not ${t.published} or ${t.permissionConfirmed} or ${t.kind} <> 'stamp'`,
     ),
     check(
       "spots_publish_requires_verified_position",

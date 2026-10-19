@@ -26,6 +26,8 @@ export interface PublicSpot {
   descriptionEn: string | null;
   position: { lat: number; lng: number; verified: true } | null;
   radiusM: number;
+  kind: SpotRow["kind"];
+  photoUrl: string | null;
   status: SpotRow["status"];
   statusNoteJa: string | null;
   statusNoteEn: string | null;
@@ -46,6 +48,11 @@ export interface PublicRoute {
   prefecture: Prefecture | null;
   municipality: string | null;
   videoUrl: string | null;
+  historyJa: string | null;
+  historyEn: string | null;
+  accessJa: string | null;
+  accessEn: string | null;
+  photoUrl: string | null;
   sortOrder: number;
   /** "soon" until at least one place is published. */
   status: "ready" | "soon";
@@ -88,6 +95,11 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     prefecture: r.prefecture,
     municipality: r.municipality,
     videoUrl: r.videoUrl,
+    historyJa: r.historyJa,
+    historyEn: r.historyEn,
+    accessJa: r.accessJa,
+    accessEn: r.accessEn,
+    photoUrl: r.photoUrl,
     sortOrder: r.sortOrder,
     status: publishedSpotCount > 0 ? "ready" : "soon",
     publishedSpotCount,
@@ -108,6 +120,8 @@ function toPublicSpot(s: SpotRow): PublicSpot {
     descriptionEn: s.descriptionEn,
     position: showPosition ? { lat: s.lat!, lng: s.lng!, verified: true } : null,
     radiusM: s.radiusM,
+    kind: s.kind,
+    photoUrl: s.photoUrl,
     status: s.status,
     statusNoteJa: s.statusNoteJa,
     statusNoteEn: s.statusNoteEn,
@@ -115,6 +129,16 @@ function toPublicSpot(s: SpotRow): PublicSpot {
     sortOrder: s.sortOrder,
   };
 }
+
+/** A photo address: an https link, not absurdly long. */
+const isHttpsUrl = (v: string): boolean => {
+  if (v.length > 500) return false;
+  try {
+    return new URL(v).protocol === "https:";
+  } catch {
+    return false;
+  }
+};
 
 /** Blank text becomes null (an optional field left empty). */
 const text = (v: string | null | undefined): string | null | undefined =>
@@ -131,7 +155,7 @@ export function createContentService(deps: { store: ContentStore }) {
       if (!n) return bad("validation_failed");
       out.nameJa = n;
     }
-    for (const k of ["nameEn", "descriptionJa", "descriptionEn", "difficulty", "municipality"] as const) {
+    for (const k of ["nameEn", "descriptionJa", "descriptionEn", "difficulty", "municipality", "historyJa", "historyEn", "accessJa", "accessEn"] as const) {
       const v = text(input[k]);
       if (v !== undefined) out[k] = v;
     }
@@ -143,6 +167,11 @@ export function createContentService(deps: { store: ContentStore }) {
       const v = text(input.videoUrl);
       if (v && !isAllowedVideoUrl(v)) return bad("invalid_video_url");
       out.videoUrl = v;
+    }
+    if (input.photoUrl !== undefined) {
+      const v = text(input.photoUrl);
+      if (v && !isHttpsUrl(v)) return bad("invalid_photo_url");
+      out.photoUrl = v;
     }
     if (input.lineVerified !== undefined) out.lineVerified = input.lineVerified;
     {
@@ -178,6 +207,12 @@ export function createContentService(deps: { store: ContentStore }) {
     if (input.lng !== undefined) out.lng = input.lng;
     if (input.radiusM !== undefined) out.radiusM = input.radiusM;
     if (input.status !== undefined) out.status = input.status;
+    if (input.kind !== undefined) out.kind = input.kind;
+    if (input.photoUrl !== undefined) {
+      const v = text(input.photoUrl);
+      if (v && !isHttpsUrl(v)) return bad("invalid_photo_url");
+      out.photoUrl = v;
+    }
     if (input.permissionConfirmed !== undefined) out.permissionConfirmed = input.permissionConfirmed;
     if (input.positionVerified !== undefined) out.positionVerified = input.positionVerified;
     // A position is both numbers or neither.
@@ -255,12 +290,15 @@ export function createContentService(deps: { store: ContentStore }) {
       if (current.published) {
         // A published place must keep passing every publish rule.
         if (!verifiedNow) return bad("position_not_verified");
-        if (changes.permissionConfirmed === false) return bad("permission_required");
+        // Only a stamp place needs the site's permission (a toilet or a turn on the path does not).
+        const kindNow = changes.kind ?? current.kind;
+        if (kindNow === "stamp" && !(changes.permissionConfirmed ?? current.permissionConfirmed)) return bad("permission_required");
         if (changes.lat === null) return bad("no_coordinates");
       }
       const r = await store.updateSpot(actor, id, date(expected), changes);
       if (r === null) return bad("not_found");
       if (r === "conflict") return bad("conflict");
+      if (r === "has_stamps") return bad("spot_has_stamps");
       return ok(r);
     },
 
@@ -269,7 +307,7 @@ export function createContentService(deps: { store: ContentStore }) {
       if (!s) return bad("not_found");
       if (s.lat === null || s.lng === null) return bad("no_coordinates");
       if (!s.positionVerified) return bad("position_not_verified");
-      if (!s.permissionConfirmed) return bad("permission_required");
+      if (s.kind === "stamp" && !s.permissionConfirmed) return bad("permission_required");
       const r = await store.setPublished(actor, id, true);
       return r ? ok(r) : bad("not_found");
     },
@@ -294,11 +332,14 @@ export function createContentService(deps: { store: ContentStore }) {
       return (await store.listRoutes()).map((r) => toPublicRoute(r, r.publishedSpotCount, false));
     },
 
-    async publicRoute(id: string): Promise<{ route: PublicRoute; spots: PublicSpot[] } | null> {
+    /** The route, its published stamp places, and its published navigation points (turns, toilets, danger ...). */
+    async publicRoute(id: string): Promise<{ route: PublicRoute; spots: PublicSpot[]; points: PublicSpot[] } | null> {
       const found = await store.getRoute(id);
       if (!found) return null;
       const published = found.spots.filter((s) => s.published).sort((a, b) => a.sortOrder - b.sortOrder);
-      return { route: toPublicRoute(found.route, published.length, true), spots: published.map(toPublicSpot) };
+      const stamps = published.filter((s) => s.kind === "stamp");
+      const points = published.filter((s) => s.kind !== "stamp");
+      return { route: toPublicRoute(found.route, stamps.length, true), spots: stamps.map(toPublicSpot), points: points.map(toPublicSpot) };
     },
 
     /** A draft place looks like a missing one. */

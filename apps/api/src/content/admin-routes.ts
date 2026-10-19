@@ -33,6 +33,7 @@ function statusOf(reason: ErrorCode): 400 | 404 | 409 | 422 {
       return 422;
     case "invalid_video_url":
     case "invalid_line":
+    case "invalid_photo_url":
     case "source_required":
       return 400;
     default:
@@ -43,6 +44,21 @@ function statusOf(reason: ErrorCode): 400 | 404 | 409 | 422 {
 const nullable = <T extends ReturnType<typeof t.String> | ReturnType<typeof t.Number> | ReturnType<typeof t.Integer>>(s: T) => t.Union([s, t.Null()]);
 
 const prefecture = t.Union([t.Literal("osaka"), t.Literal("wakayama"), t.Literal("nara")]);
+// Written out as literals: a union built by mapping over a list loses its literal types for the typed web client.
+const kind = t.Union([
+  t.Literal("stamp"),
+  t.Literal("turn"),
+  t.Literal("danger"),
+  t.Literal("view"),
+  t.Literal("toilet"),
+  t.Literal("rest_area"),
+  t.Literal("drinking_water"),
+  t.Literal("vending_machine"),
+  t.Literal("bus_stop"),
+  t.Literal("station"),
+  t.Literal("parking"),
+  t.Literal("other"),
+]);
 const status = t.Union([t.Literal("open"), t.Literal("caution"), t.Literal("closed")]);
 const uuid = t.String({ format: "uuid" });
 const idParams = t.Object({ id: uuid });
@@ -63,6 +79,11 @@ const routeProps = {
   lineVerified: t.Boolean(),
   lineSource: nullable(t.String({ maxLength: 500 })),
   videoUrl: nullable(t.String({ maxLength: 500 })),
+  historyJa: nullable(t.String({ maxLength: 20000 })),
+  historyEn: nullable(t.String({ maxLength: 20000 })),
+  accessJa: nullable(t.String({ maxLength: 20000 })),
+  accessEn: nullable(t.String({ maxLength: 20000 })),
+  photoUrl: nullable(t.String({ maxLength: 500 })),
 };
 const spotProps = {
   nameJa: t.String({ minLength: 1, maxLength: 200 }),
@@ -74,6 +95,8 @@ const spotProps = {
   positionVerified: t.Boolean(),
   positionSource: nullable(t.String({ maxLength: 500 })),
   radiusM: t.Integer({ minimum: 5, maximum: 1000 }),
+  kind,
+  photoUrl: nullable(t.String({ maxLength: 500 })),
   status,
   statusNoteJa: nullable(t.String({ maxLength: 1000 })),
   statusNoteEn: nullable(t.String({ maxLength: 1000 })),
