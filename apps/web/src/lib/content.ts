@@ -1,3 +1,4 @@
+import { fetchPublicRoute, fetchPublicRoutes, fetchPublicSpot, isEmptyRoute, routeDetailFromApi, routeSummaryFromApi, spotDetailFromApi } from "./api-content";
 import type { RouteArea } from "./map-screen";
 import type { MapPlace, PlaceCategory, PlaceStatus } from "./places";
 import type { RallyItem } from "./rally-model";
@@ -12,11 +13,10 @@ import type { Viewer } from "./viewer";
 // in the admin (3.4.x) is exactly what appears here. Japanese is required; English is
 // optional and falls back to Japanese.
 //
-// TODO(WBS 2.2.1, 2.2.2): replace the bodies of the three functions below with Eden
-// calls to GET /routes, /routes/{id} and /spots/{id}, and take these types from the
-// API response instead of declaring them here. The API should send `sketch` already
-// simplified (at most about 40 points), never the full GeoJSON line, and should say
-// whether routes without published spots are listed as "soon" (decide with 2.2.1).
+// The three functions at the bottom read GET /routes, /routes/{id} and /spots/{id} (api-content.ts). A course
+// that is still empty in the database (no line, no published place, no text) is stood in for by the sample
+// course of the same number when sample content is on, so the screens can be reviewed while the admin fills
+// the real ones in; the moment a course has real content, the real one wins.
 
 export const prefectures = ["osaka", "wakayama", "nara"] as const;
 export type Prefecture = (typeof prefectures)[number];
@@ -255,13 +255,33 @@ export async function listRallies(): Promise<RallyItem[]> {
 }
 
 export async function listRoutes(): Promise<RouteSummary[]> {
-  return sampleContentEnabled() ? sampleRoutes.map(toSummary) : [];
+  const sample = sampleContentEnabled();
+  const real = await fetchPublicRoutes();
+  if (!real) return sample ? sampleRoutes.map(toSummary) : [];
+  const out = real.map((r, i) => {
+    const order = i + 1;
+    const stand = sample && isEmptyRoute(r) ? sampleRoutes.find((x) => x.order === order) : undefined;
+    return stand ? toSummary(stand) : routeSummaryFromApi(r, order);
+  });
+  if (sample) for (const s of sampleRoutes) if (s.order > real.length) out.push(toSummary(s));
+  return out;
 }
 
 export async function getRoute(id: string): Promise<RouteDetail | undefined> {
-  return sampleContentEnabled() ? sampleRoutes.find((r) => r.id === id) : undefined;
+  const sample = sampleContentEnabled();
+  const fromSample = sample ? sampleRoutes.find((r) => r.id === id) : undefined;
+  if (fromSample) return fromSample;
+  const [found, all] = await Promise.all([fetchPublicRoute(id), fetchPublicRoutes()]);
+  if (!found || !all) return undefined;
+  const order = all.findIndex((r) => r.id === id) + 1;
+  return routeDetailFromApi(found.route, found.spots, order);
 }
 
 export async function getSpot(id: string): Promise<SpotDetail | undefined> {
-  return sampleContentEnabled() ? sampleSpots.find((s) => s.id === id) : undefined;
+  const fromSample = sampleContentEnabled() ? sampleSpots.find((s) => s.id === id) : undefined;
+  if (fromSample) return fromSample;
+  const spot = await fetchPublicSpot(id);
+  if (!spot) return undefined;
+  const route = await fetchPublicRoute(spot.routeId);
+  return route ? spotDetailFromApi(spot, route.route) : undefined;
 }
