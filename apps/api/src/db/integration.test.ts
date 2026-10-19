@@ -4,7 +4,7 @@
 // removed afterwards, and it refuses to run against anything but localhost or a "test" database.
 import { afterAll, describe, expect, test } from "bun:test";
 import { randomBytes, randomUUID } from "node:crypto";
-import { asc, eq, inArray, like, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, like, sql } from "drizzle-orm";
 import { createDrizzleAuditWriter, writeAudit } from "../audit/audit-store";
 import { createDrizzleOtpStore } from "../auth/otp-store";
 import { createDrizzleContentStore } from "../content/content-store";
@@ -14,7 +14,21 @@ import { createDrizzleRateLimitStore } from "../auth/rate-limit-store";
 import { createDrizzleSessionStore } from "../auth/session-store";
 import { createDb } from "./client";
 import { listRalliesWithProgress } from "../rallies/rally-store";
-import { auditLog, otpCodes, rallies, rallySpots, rateLimits, routes, spots, stamps, users, webauthnChallenges } from "./schema";
+import {
+  auditLog,
+  otpCodes,
+  rallies,
+  rallySpots,
+  rallyTranslations,
+  rateLimits,
+  routes,
+  routeTranslations,
+  spots,
+  spotTranslations,
+  stamps,
+  users,
+  webauthnChallenges,
+} from "./schema";
 import { seed } from "./seed";
 import { SEED_ROUTES, SEED_SPOTS } from "./seed-data";
 
@@ -515,24 +529,38 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
     if (failure) throw failure;
   }
 
+  /** Every name in a translation table, keyed "ownerId:locale". */
+  async function nameOf<T extends typeof routeTranslations | typeof spotTranslations | typeof rallyTranslations>(
+    tx: Tx,
+    table: T,
+    ownerOf: (row: T["$inferSelect"]) => string,
+  ) {
+    const rows = (await tx.select().from(table as typeof routeTranslations)) as T["$inferSelect"][];
+    return new Map(rows.map((r) => [`${ownerOf(r)}:${r.locale}`, r.name]));
+  }
+
   test("fills an empty database: 20 rallies, 19 routes in order, 31 draft spots on their courses, 62 links", async () => {
     await inRollback(async (tx) => {
       expect(await seed(tx)).toEqual({ rallies: 20, routes: 19, spots: 31, links: 62 });
 
       expect(await tx.select().from(rallies)).toHaveLength(20);
       const rs = await tx.select().from(routes).orderBy(asc(routes.sortOrder));
-      expect(rs.map((r) => r.nameJa)).toEqual(SEED_ROUTES.map((r) => r.nameJa));
+      const routeNames = await nameOf(tx, routeTranslations, (t) => t.routeId);
+      expect(rs.map((r) => routeNames.get(`${r.id}:ja`))).toEqual(SEED_ROUTES.map((r) => r.nameJa));
+      expect(rs.map((r) => routeNames.get(`${r.id}:en`))).toEqual(SEED_ROUTES.map((r) => r.nameEn));
       expect(rs.map((r) => r.sortOrder)).toEqual(Array.from({ length: 19 }, (_, i) => i + 1));
 
       const ss = await tx.select().from(spots);
       expect(ss).toHaveLength(31);
+      const spotNames = await nameOf(tx, spotTranslations, (t) => t.spotId);
       const idOfCourse = (n: number) => rs[n - 1]!.id;
       for (const s of ss) {
         expect(s.lat).toBeNull(); // coordinates are never guessed
         expect(s.lng).toBeNull();
         expect(s.published).toBe(false);
         expect(s.permissionConfirmed).toBe(false);
-        const wanted = SEED_SPOTS.find((x) => x.nameJa === s.nameJa)!;
+        const wanted = SEED_SPOTS.find((x) => x.nameJa === spotNames.get(`${s.id}:ja`))!;
+        expect(spotNames.get(`${s.id}:en`)).toBe(wanted.nameEn);
         expect(s.routeId).toBe(idOfCourse(wanted.routeNumber));
         expect(s.sortOrder).toBe(wanted.sortOrder);
       }
@@ -554,12 +582,18 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
   test("it never overwrites what was edited in the CMS", async () => {
     await inRollback(async (tx) => {
       await seed(tx);
-      await tx.update(routes).set({ nameJa: "編集済み", videoUrl: "https://youtu.be/x" }).where(eq(routes.sortOrder, 1));
+      await tx.update(routes).set({ videoUrl: "https://youtu.be/x" }).where(eq(routes.sortOrder, 1));
+      const [edited] = await tx.select().from(routes).where(eq(routes.sortOrder, 1));
+      await tx
+        .update(routeTranslations)
+        .set({ name: "編集済み" })
+        .where(and(eq(routeTranslations.routeId, edited!.id), eq(routeTranslations.locale, "ja")));
 
       await seed(tx);
 
       const [first] = await tx.select().from(routes).where(eq(routes.sortOrder, 1));
-      expect(first).toMatchObject({ nameJa: "編集済み", videoUrl: "https://youtu.be/x" });
+      expect(first).toMatchObject({ videoUrl: "https://youtu.be/x" });
+      expect((await nameOf(tx, routeTranslations, (t) => t.routeId)).get(`${first!.id}:ja`)).toBe("編集済み");
     });
   });
 
@@ -570,7 +604,8 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       const rl = await tx.select().from(rallies);
       const mounds = rl.filter((r) => r.kind === "mounds");
       expect(mounds).toHaveLength(1);
-      expect(mounds[0]).toMatchObject({ nameJa: "経塚スタンプラリー", routeId: null });
+      expect(mounds[0]).toMatchObject({ routeId: null });
+      expect((await nameOf(tx, rallyTranslations, (t) => t.rallyId)).get(`${mounds[0]!.id}:ja`)).toBe("経塚スタンプラリー");
       const links = await tx.select().from(rallySpots);
       expect(links.filter((l) => l.rallyId === mounds[0]!.id)).toHaveLength(31);
 
@@ -605,10 +640,10 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
           })(),
         ).rejects.toThrow();
       };
-      await attempt({ kind: "mounds", nameJa: "もう一つ" });
-      await attempt({ kind: "course", routeId: first!.id, nameJa: "同じコース" });
-      await attempt({ kind: "course", nameJa: "コースなし" });
-      await attempt({ kind: "mounds", routeId: first!.id, nameJa: "経塚なのにコース" });
+      await attempt({ kind: "mounds" });
+      await attempt({ kind: "course", routeId: first!.id });
+      await attempt({ kind: "course" });
+      await attempt({ kind: "mounds", routeId: first!.id });
       // a link cannot be made twice
       const [link] = await tx.select().from(rallySpots).limit(1);
       await expect(
@@ -844,6 +879,42 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
           const [r] = await store.listRoutes();
           const saved = await store.updateRoute(actor, r!.id, r!.updatedAt, { historyJa: "歴史", accessEn: "By train", photoUrl: "https://example.com/a.jpg" });
           expect(saved).toMatchObject({ historyJa: "歴史", historyEn: null, accessEn: "By train", photoUrl: "https://example.com/a.jpg" });
+        });
+      });
+    });
+
+    test("words live in one row per language: changing English leaves Japanese alone, and a place's words go with it", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const [r] = await store.listRoutes();
+          expect(r).toMatchObject({ nameJa: SEED_ROUTES[0]!.nameJa, nameEn: SEED_ROUTES[0]!.nameEn, historyJa: null });
+          const saved = await store.updateRoute(actor, r!.id, r!.updatedAt, { nameEn: "Renamed", descriptionEn: null });
+          expect(saved).toMatchObject({ nameJa: SEED_ROUTES[0]!.nameJa, nameEn: "Renamed", descriptionEn: null });
+          const rows = await tx.select().from(routeTranslations).where(eq(routeTranslations.routeId, r!.id));
+          expect(rows.map((t) => t.locale).sort()).toEqual(["en", "ja"]);
+
+          const s = await store.createSpot(actor, r!.id, { nameJa: "新しい場所", statusNoteEn: "Closed for repairs" });
+          expect(s).toMatchObject({ nameJa: "新しい場所", nameEn: null, statusNoteEn: "Closed for repairs", statusNoteJa: null });
+          expect(await store.getSpot(s!.id)).toMatchObject({ statusNoteEn: "Closed for repairs" });
+          await store.deleteSpot(actor, s!.id);
+          expect(await tx.select().from(spotTranslations).where(eq(spotTranslations.spotId, s!.id))).toHaveLength(0);
+        });
+      });
+    });
+
+    test("the database refuses a Japanese row without a name; an English one may lack it", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const route = await store.createRoute(actor, { nameJa: "新しいコース" });
+          await expect(
+            (async () => {
+              await tx.transaction(async (t) => {
+                await t.update(routeTranslations).set({ name: null }).where(eq(routeTranslations.routeId, route.id));
+              });
+            })(),
+          ).rejects.toThrow();
+          await tx.insert(routeTranslations).values({ routeId: route.id, locale: "en", history: "Only a history" });
+          expect((await store.getRoute(route.id))!.route).toMatchObject({ nameJa: "新しいコース", nameEn: null, historyEn: "Only a history" });
         });
       });
     });

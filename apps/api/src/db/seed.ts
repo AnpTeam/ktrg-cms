@@ -2,7 +2,8 @@
 // Safe to run again: it only adds what is missing and never overwrites CMS edits.
 import { asc, count } from "drizzle-orm";
 import { createDb, type Db } from "./client";
-import { rallies, rallySpots, routes, spots } from "./schema";
+import { rallies, rallySpots, rallyTranslations, routes, routeTranslations, spots, spotTranslations } from "./schema";
+import { flattenTexts, ROUTE_TEXT } from "./translations";
 import { MOUND_RALLY, SEED_ROUTES, seedSpots } from "./seed-data";
 
 /** A database or a transaction: all the seed needs is select and insert. */
@@ -23,16 +24,27 @@ export async function seed(db: Executor): Promise<SeedResult> {
   if (routeCount === 0) {
     const made = await db
       .insert(routes)
-      .values(SEED_ROUTES.map((r, i) => ({ nameJa: r.nameJa, nameEn: r.nameEn, sortOrder: i + 1 })))
-      .returning({ id: routes.id });
+      .values(SEED_ROUTES.map((_, i) => ({ sortOrder: i + 1 })))
+      .returning({ id: routes.id, sortOrder: routes.sortOrder });
+    await db.insert(routeTranslations).values(
+      made.flatMap(({ id, sortOrder }) => {
+        const r = SEED_ROUTES[sortOrder - 1]!;
+        return [
+          { routeId: id, locale: "ja" as const, name: r.nameJa },
+          { routeId: id, locale: "en" as const, name: r.nameEn },
+        ];
+      }),
+    );
     routesCreated = made.length;
   }
 
   // The courses in trail order: course N is the Nth row. A mound whose course is missing is skipped.
-  const courses = await db
-    .select({ id: routes.id, nameJa: routes.nameJa, nameEn: routes.nameEn })
-    .from(routes)
-    .orderBy(asc(routes.sortOrder));
+  const names = flattenTexts(ROUTE_TEXT, await db.select().from(routeTranslations), (t) => t.routeId);
+  const courses = (await db.select({ id: routes.id }).from(routes).orderBy(asc(routes.sortOrder))).map((c) => ({
+    id: c.id,
+    nameJa: names.get(c.id)?.nameJa ?? "",
+    nameEn: names.get(c.id)?.nameEn ?? null,
+  }));
 
   let spotsCreated = 0;
   const spotCount = (await db.select({ n: count() }).from(spots))[0]?.n ?? 0;
@@ -42,7 +54,26 @@ export async function seed(db: Executor): Promise<SeedResult> {
       const course = courses[routeNumber - 1];
       return course ? [{ ...s, routeId: course.id }] : [];
     });
-    const made = values.length > 0 ? await db.insert(spots).values(values).returning({ id: spots.id }) : [];
+    const made =
+      values.length > 0
+        ? await db
+            .insert(spots)
+            .values(values.map(({ routeId, sortOrder }) => ({ routeId, sortOrder })))
+            .returning({ id: spots.id, routeId: spots.routeId, sortOrder: spots.sortOrder })
+        : [];
+    // A seed place is known by its course and its order there.
+    const words = new Map(values.map((v) => [`${v.routeId}:${v.sortOrder}`, v]));
+    if (made.length > 0) {
+      await db.insert(spotTranslations).values(
+        made.flatMap(({ id, routeId, sortOrder }) => {
+          const s = words.get(`${routeId}:${sortOrder}`)!;
+          return [
+            { spotId: id, locale: "ja" as const, name: s.nameJa },
+            { spotId: id, locale: "en" as const, name: s.nameEn },
+          ];
+        }),
+      );
+    }
     spotsCreated = made.length;
   }
 
@@ -58,7 +89,15 @@ export async function seed(db: Executor): Promise<SeedResult> {
         : [{ kind: "course" as const, routeId: c.id, nameJa: c.nameJa, nameEn: c.nameEn, sortOrder: i + 1 }],
     ),
   ];
-  const ralliesCreated = missing.length > 0 ? (await db.insert(rallies).values(missing).returning({ id: rallies.id })).length : 0;
+  let ralliesCreated = 0;
+  for (const { nameJa, nameEn, ...rally } of missing) {
+    const [made] = await db.insert(rallies).values(rally).returning({ id: rallies.id });
+    await db.insert(rallyTranslations).values([
+      { rallyId: made!.id, locale: "ja", name: nameJa },
+      { rallyId: made!.id, locale: "en", name: nameEn },
+    ]);
+    ralliesCreated++;
+  }
 
   // Which places are in which rally: only for a rally that has none yet (never undoes an admin's changes).
   const allRallies = await db
