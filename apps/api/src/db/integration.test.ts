@@ -7,6 +7,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { asc, eq, inArray, like, sql } from "drizzle-orm";
 import { createDrizzleAuditWriter, writeAudit } from "../audit/audit-store";
 import { createDrizzleOtpStore } from "../auth/otp-store";
+import { createDrizzleContentStore } from "../content/content-store";
 import { createDrizzleMeStore } from "../me/me-store";
 import { createDrizzlePasskeyStore } from "../auth/passkey-store";
 import { createDrizzleRateLimitStore } from "../auth/rate-limit-store";
@@ -694,6 +695,116 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
         })(),
       ).rejects.toThrow(); // no coordinates
       expect((await tx.select().from(spots).where(eq(spots.published, true))).length).toBe(0);
+    });
+  });
+
+  describe("content store (admin routes and places)", () => {
+    // Audit rows point at users; make one for the actor inside the rolled-back transaction.
+    async function withAdmin(tx: Tx, body: (store: ReturnType<typeof createDrizzleContentStore>, actor: string) => Promise<void>) {
+      await seed(tx);
+      const [u] = await tx.insert(users).values({ role: "admin" }).returning({ id: users.id });
+      await body(createDrizzleContentStore(tx as unknown as typeof db), u!.id);
+    }
+
+    test("a save with the loaded updatedAt works once; the same stale value is a conflict (microseconds do not break it)", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const [first] = await store.listRoutes();
+          const a = await store.updateRoute(actor, first!.id, first!.updatedAt, { nameEn: "One" });
+          expect(a).toMatchObject({ nameEn: "One" });
+          expect(await store.updateRoute(actor, first!.id, first!.updatedAt, { nameEn: "Two" })).toBe("conflict");
+          expect(await store.updateRoute(actor, "00000000-0000-4000-8000-000000000000", new Date(), {})).toBeNull();
+          const fresh = a as { updatedAt: Date };
+          expect(await store.updateRoute(actor, first!.id, fresh.updatedAt, { nameEn: "Three" })).toMatchObject({ nameEn: "Three" });
+        });
+      });
+    });
+
+    test("creating a place adds it to the route's course rally (not the mound rally) and audits it", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const list = await store.listRoutes();
+          const course3 = list[2]!; // the seed gives course 3 no mounds
+          const s = await store.createSpot(actor, course3.id, { nameJa: "新しい場所" });
+          expect(s).toMatchObject({ published: false, positionVerified: false, sortOrder: 1 });
+          const [rally] = await tx.select().from(rallies).where(eq(rallies.routeId, course3.id));
+          const links = await tx.select().from(rallySpots).where(eq(rallySpots.spotId, s!.id));
+          expect(links.map((l) => l.rallyId)).toEqual([rally!.id]);
+          expect(links[0]!.position).toBe(1);
+          const rows = await tx.select().from(auditLog).where(eq(auditLog.targetId, s!.id));
+          expect(rows.map((r) => r.action)).toEqual(["spot.create"]);
+          expect(rows[0]!.actorUserId).toBe(actor);
+        });
+      });
+    });
+
+    test("deleting: a route with places is refused; its empty course rally goes with it; a stamped place is refused", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const list = await store.listRoutes();
+          expect(await store.deleteRoute(actor, list[3]!.id)).toBe("has_places");
+          expect(await store.deleteRoute(actor, list[2]!.id)).toBe("ok");
+          expect(await tx.select().from(rallies).where(eq(rallies.routeId, list[2]!.id))).toHaveLength(0);
+
+          const [placeOnCourse4] = await tx.select().from(spots).where(eq(spots.routeId, list[3]!.id)).limit(1);
+          const [visitor] = await tx.insert(users).values({}).returning({ id: users.id });
+          await tx.insert(stamps).values({ userId: visitor!.id, spotId: placeOnCourse4!.id });
+          expect(await store.deleteSpot(actor, placeOnCourse4!.id)).toBe("has_stamps");
+          expect(await store.deleteSpot(actor, "00000000-0000-4000-8000-000000000000")).toBe("not_found");
+        });
+      });
+    });
+
+    test("publishing writes one audit row, a second publish writes none, and the database still guards the rules", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const list = await store.listRoutes();
+          const [s] = await tx.select().from(spots).where(eq(spots.routeId, list[3]!.id)).limit(1);
+          const before = await store.getSpot(s!.id);
+          const ready = await store.updateSpot(actor, s!.id, before!.updatedAt, {
+            lat: 34.3, lng: 135.1, positionVerified: true, positionSource: "公式", permissionConfirmed: true,
+          });
+          expect(ready).toMatchObject({ lat: 34.3 });
+          expect(await store.setPublished(actor, s!.id, true)).toMatchObject({ published: true });
+          await store.setPublished(actor, s!.id, true);
+          const rows = await tx.select().from(auditLog).where(eq(auditLog.targetId, s!.id));
+          expect(rows.filter((r) => r.action === "spot.publish")).toHaveLength(1);
+          const summary = (await store.listRoutes()).find((r) => r.id === list[3]!.id)!;
+          expect(summary.publishedSpotCount).toBe(1);
+          expect(summary.spotCount).toBeGreaterThan(1);
+        });
+      });
+    });
+
+    test("reordering places renumbers them and the course rally together; wrong id sets are refused", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const list = await store.listRoutes();
+          const found = await store.getRoute(list[3]!.id);
+          const ids = found!.spots.map((s) => s.id);
+          const reversed = [...ids].reverse();
+          expect(await store.reorderSpots(actor, list[3]!.id, reversed)).toBe(true);
+          const after = await store.getRoute(list[3]!.id);
+          expect(after!.spots.map((s) => s.id)).toEqual(reversed);
+          expect(await store.reorderSpots(actor, list[3]!.id, ids.slice(1))).toBe(false);
+          const routeIds = list.map((r) => r.id);
+          expect(await store.reorderRoutes(actor, [...routeIds].reverse())).toBe(true);
+          expect((await store.listRoutes())[0]!.id).toBe(routeIds.at(-1)!);
+          expect(await store.reorderRoutes(actor, routeIds.slice(1))).toBe(false);
+        });
+      });
+    });
+
+    test("a route line round-trips as GeoJSON", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const [r] = await store.listRoutes();
+          const line = { type: "LineString" as const, coordinates: [[135, 34], [135.01, 34.01, 120]] as [number, number, number?][] };
+          const saved = await store.updateRoute(actor, r!.id, r!.updatedAt, { geometry: line, distanceKm: 1.5 });
+          expect(saved).toMatchObject({ geometry: line, distanceKm: 1.5 });
+          expect((await store.getRoute(r!.id))!.route.geometry).toEqual(line);
+        });
+      });
     });
   });
 });
