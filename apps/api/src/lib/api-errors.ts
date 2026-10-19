@@ -32,6 +32,17 @@ export const ERROR_CODES = {
 
   // --- Profile ---------------------------------------------------------------------------
   invalid_display_name: "400: too long, or contains hidden characters",
+
+  // --- Admin content (routes and places) ---------------------------------------------------
+  conflict: "409: someone saved this first; reload it and try again",
+  invalid_video_url: "400: only https links on YouTube or Vimeo are accepted",
+  invalid_line: "400: the route line is not a line inside Japan with 2 to 50,000 points",
+  route_has_places: "409: a route that still has places cannot be deleted",
+  spot_has_stamps: "409: a place that visitors have stamped cannot be deleted; unpublish it instead",
+  no_coordinates: "409: the place has no position yet",
+  position_not_verified: "409: the position has not been checked against an official source",
+  source_required: "400: name the source when the position is marked as checked",
+  permission_required: "409: the site's permission is not confirmed",
 } as const satisfies Record<string, string>;
 
 export type ErrorCode = keyof typeof ERROR_CODES;

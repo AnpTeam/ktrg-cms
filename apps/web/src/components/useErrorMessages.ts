@@ -30,6 +30,16 @@ export function useErrorMessages(): Record<ErrorKey, string> {
     last_login_method: t`ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。`,
     // Profile
     invalid_display_name: t`お名前に使えない文字が含まれているか、長すぎます（40文字まで）。`,
+    // Admin: routes and places
+    conflict: t`別の人が先に保存しました。読み込み直してから、もう一度お試しください。`,
+    invalid_video_url: t`動画のリンクは、https:// で始まるYouTubeかVimeoのものだけ使えます。`,
+    invalid_line: t`ルートの線が正しくありません。日本の中に、2点以上の線を描いてください。`,
+    route_has_places: t`場所が残っているルートは消せません。先に場所を消してください。`,
+    spot_has_stamps: t`スタンプが押されたことのある場所は消せません。「公開をやめる」をお使いください。`,
+    no_coordinates: t`この場所の位置がまだ決まっていません。地図で位置を決めてください。`,
+    position_not_verified: t`位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。`,
+    source_required: t`位置を確認した情報源（サイトの名前やリンク）を書いてください。`,
+    permission_required: t`現地の許可がまだ確認できていません。許可を得たら「許可確認済み」にチェックを入れてください。`,
     // From the phone itself
     unsupported: t`この端末・ブラウザではパスキーを使えません。メールでお試しください。`,
     cancelled: t`パスキーの確認が中止されました。もう一度お試しください。`,

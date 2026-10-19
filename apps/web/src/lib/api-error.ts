@@ -31,6 +31,15 @@ const SERVER_CODES: Record<ErrorCode, true> = {
   too_many_passkeys: true,
   last_login_method: true,
   invalid_display_name: true,
+  conflict: true,
+  invalid_video_url: true,
+  invalid_line: true,
+  route_has_places: true,
+  spot_has_stamps: true,
+  no_coordinates: true,
+  position_not_verified: true,
+  source_required: true,
+  permission_required: true,
 };
 
 export const isServerCode = (value: unknown): value is ErrorCode => typeof value === "string" && Object.hasOwn(SERVER_CODES, value);

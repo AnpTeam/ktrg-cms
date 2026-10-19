@@ -28,7 +28,7 @@ export function parseLine(input: unknown): { ok: true; line: LineString } | { ok
 }
 
 // Distance from p to the segment a-b, in degrees (planar). Good enough for choosing which points to drop.
-function perpendicular(p: number[], a: number[], b: number[]): number {
+function perpendicular(p: readonly (number | undefined)[], a: readonly (number | undefined)[], b: readonly (number | undefined)[]): number {
   const dx = b[0]! - a[0]!;
   const dy = b[1]! - a[1]!;
   const len2 = dx * dx + dy * dy;

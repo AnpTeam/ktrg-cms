@@ -1,0 +1,117 @@
+import type { ErrorCode } from "../lib/api-errors";
+import type { LineString } from "./line";
+
+export type Prefecture = "osaka" | "wakayama" | "nara";
+export type SpotStatus = "open" | "caution" | "closed";
+
+/** A route as the admin sees it. */
+export interface RouteRow {
+  id: string;
+  nameJa: string;
+  nameEn: string | null;
+  descriptionJa: string | null;
+  descriptionEn: string | null;
+  distanceKm: number | null;
+  elevationGainM: number | null;
+  difficulty: string | null;
+  expectedTimeMin: number | null;
+  prefecture: Prefecture | null;
+  municipality: string | null;
+  geometry: LineString | null;
+  videoUrl: string | null;
+  sortOrder: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface RouteSummaryRow extends RouteRow {
+  spotCount: number;
+  publishedSpotCount: number;
+}
+
+/** A stamp place as the admin sees it. */
+export interface SpotRow {
+  id: string;
+  routeId: string;
+  nameJa: string;
+  nameEn: string | null;
+  descriptionJa: string | null;
+  descriptionEn: string | null;
+  lat: number | null;
+  lng: number | null;
+  positionVerified: boolean;
+  positionSource: string | null;
+  radiusM: number;
+  status: SpotStatus;
+  statusNoteJa: string | null;
+  statusNoteEn: string | null;
+  statusUpdatedAt: Date | null;
+  sortOrder: number;
+  published: boolean;
+  permissionConfirmed: boolean;
+  permissionNote: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+/** What can be set when a route is made or changed. Every field is optional on change. */
+export interface RouteFields {
+  nameJa: string;
+  nameEn: string | null;
+  descriptionJa: string | null;
+  descriptionEn: string | null;
+  distanceKm: number | null;
+  elevationGainM: number | null;
+  difficulty: string | null;
+  expectedTimeMin: number | null;
+  prefecture: Prefecture | null;
+  municipality: string | null;
+  /** An unchecked line from the request; the service validates it. null removes the line. */
+  geometry: unknown;
+  videoUrl: string | null;
+}
+
+export interface SpotFields {
+  nameJa: string;
+  nameEn: string | null;
+  descriptionJa: string | null;
+  descriptionEn: string | null;
+  lat: number | null;
+  lng: number | null;
+  positionVerified: boolean;
+  positionSource: string | null;
+  radiusM: number;
+  status: SpotStatus;
+  statusNoteJa: string | null;
+  statusNoteEn: string | null;
+  permissionConfirmed: boolean;
+  permissionNote: string | null;
+}
+
+/** What the store keeps: the route line is already checked and simplified. */
+export type StoredRouteFields = Omit<RouteFields, "geometry"> & { geometry: LineString | null };
+
+export type Result<T> = { ok: true; value: T } | { ok: false; reason: ErrorCode };
+
+/**
+ * Storage for routes and places. Every change takes the acting admin and writes its audit row
+ * itself (in the same transaction for the database), so a change and its record cannot part.
+ */
+export interface ContentStore {
+  listRoutes(): Promise<RouteSummaryRow[]>;
+  getRoute(id: string): Promise<{ route: RouteRow; spots: SpotRow[] } | null>;
+  getSpot(id: string): Promise<SpotRow | null>;
+
+  createRoute(actor: string, fields: Partial<StoredRouteFields> & { nameJa: string }): Promise<RouteRow>;
+  /** `expected` is the updatedAt the editor loaded: a different value means someone saved first. */
+  updateRoute(actor: string, id: string, expected: Date, changes: Partial<StoredRouteFields>): Promise<RouteRow | "conflict" | null>;
+  reorderRoutes(actor: string, ids: string[]): Promise<boolean>;
+  deleteRoute(actor: string, id: string): Promise<"ok" | "has_places" | "not_found">;
+
+  /** Also adds the place to its route's course rally (never to the mound rally). */
+  createSpot(actor: string, routeId: string, fields: Partial<SpotFields> & { nameJa: string }): Promise<SpotRow | null>;
+  updateSpot(actor: string, id: string, expected: Date, changes: Partial<SpotFields>): Promise<SpotRow | "conflict" | null>;
+  setPublished(actor: string, id: string, published: boolean): Promise<SpotRow | null>;
+  deleteSpot(actor: string, id: string): Promise<"ok" | "has_stamps" | "not_found">;
+  reorderSpots(actor: string, routeId: string, ids: string[]): Promise<boolean>;
+}
