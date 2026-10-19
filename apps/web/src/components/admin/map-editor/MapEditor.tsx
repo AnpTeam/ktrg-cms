@@ -8,6 +8,7 @@ import { TerraDraw, TerraDrawLineStringMode, TerraDrawSelectMode } from "terra-d
 import { TerraDrawMapLibreGLAdapter } from "terra-draw-maplibre-gl-adapter";
 import { parseGpx, type GpxWaypoint } from "@/lib/admin/gpx";
 import { keepElevations, sameLine, simplify, type LngLatEle } from "@/lib/admin/line";
+import { roundLine, snapPoints, type SnapPoint } from "@/lib/admin/snap";
 import { boundsOf, lineFeature, mapStyle, routeLineLayers, terrainLayerId, zoomLimits } from "@/lib/map";
 import { defaultMapSettings } from "@/lib/map-settings";
 
@@ -40,6 +41,8 @@ export interface MapEditorProps {
   onMovePlace: (key: string, lat: number, lng: number) => void;
   onRemovePlace: (key: string) => void;
   onSelectPlace: (key: string | null) => void;
+  /** Asks the route-finding service for a walking line through these points (the editor says what went wrong). */
+  onSnap: (points: SnapPoint[]) => Promise<{ ok: true; line: LngLatEle[] } | { ok: false; message: string }>;
 }
 
 // Three tools for the person: select (move the map, move stops, reshape the line), add a stop, draw the path.
@@ -67,6 +70,7 @@ export function MapEditor(props: MapEditorProps) {
   const [terrain, setTerrain] = useState(false);
   const [waypoints, setWaypoints] = useState<GpxWaypoint[] | null>(null);
   const [dropping, setDropping] = useState(false);
+  const [snapping, setSnapping] = useState(false);
 
   const container = useRef<HTMLDivElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -328,6 +332,21 @@ export function MapEditor(props: MapEditorProps) {
     }
   }
 
+  // Joins the drawn line (or the stops) along real walking trails; the result replaces the line and can be undone.
+  async function snapToTrails() {
+    const points = snapPoints(props.line, props.places);
+    if (!points) return setNote(t`先に、線を描くか、場所を2つ以上置いてください。`);
+    setSnapping(true);
+    setNote(t`道を調べています…`);
+    const result = await props.onSnap(points);
+    setSnapping(false);
+    if (!result.ok) return setNote(result.message);
+    props.onLine(simplify(roundLine(result.line), MAX_POINTS));
+    setMode("edit");
+    setTimeout(fit, 100);
+    setNote(t`線を道に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。`);
+  }
+
   function onFile(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = ""; // the same file can be chosen again
@@ -413,6 +432,15 @@ export function MapEditor(props: MapEditorProps) {
           {t`GPXファイルから読み込む`}
         </button>
         <input ref={fileInput} type="file" accept=".gpx,application/gpx+xml,text/xml,application/xml" onChange={onFile} className="sr-only" tabIndex={-1} aria-hidden="true" />
+        <button
+          type="button"
+          disabled={snapping || snapPoints(props.line, props.places) === null}
+          onClick={snapToTrails}
+          className={`${toolClass} border-line bg-paper`}
+          title={t`描いた線を、地図の道に沿わせます`}
+        >
+          {snapping ? t`調べています…` : t`道に沿わせる`}
+        </button>
         <button type="button" disabled={!props.canUndo} onClick={props.onUndo} className={`${toolClass} border-line bg-paper`}>
           {t`元に戻す`}
         </button>
