@@ -72,6 +72,11 @@ export const app = createApp(getServices, {
   docs: env.NODE_ENV !== "production" || env.API_DOCS,
 });
 
+// Vercel's entry: its Elysia preset picks the first of app.ts, index.ts, server.ts, src/app.ts,
+// src/index.ts, src/server.ts that exists, and needs the app as the default export (no listen()).
+// This file comes first, so it is the one. Importing ./env above still fails fast on a bad environment.
+export default app;
+
 export type App = typeof app;
 /** The `{ ok: false, error }` body of every failure, for the web app's error handling. */
 export type { ApiError, ErrorCode, ValidationIssue } from "./lib/api-errors";
