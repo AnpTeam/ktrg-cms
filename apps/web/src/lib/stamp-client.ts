@@ -1,4 +1,4 @@
-import { geoFailureFromCode, parseStampResponse, readingFrom, type GeoFailure, type Reading, type StampMock, type StampResult } from "./stamp-flow";
+import { geoFailureFromCode, parseMyStamps, parseStampResponse, readingFrom, type GeoFailure, type Reading, type StampMock, type StampResult } from "./stamp-flow";
 
 // The browser side of stamping. It asks the phone for ONE position (high accuracy, never a cached one) and sends it
 // with the request; it never keeps it and never decides anything: the server does (CLAUDE.md, hard rule 5).
@@ -32,11 +32,11 @@ export async function locationAlreadyAllowed(): Promise<boolean> {
 /** Ask the server for the stamp (contract in stamp-flow.ts). Never throws. */
 export async function requestStamp(spotId: string, reading: Reading): Promise<StampResult> {
   try {
-    const res = await fetch(`/api/v1/spots/${encodeURIComponent(spotId)}/stamp`, {
+    const res = await fetch("/api/v1/stamps", {
       method: "POST",
       credentials: "same-origin",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ lat: reading.lat, lng: reading.lng, accuracyM: reading.accuracyM }),
+      body: JSON.stringify({ spotId, lat: reading.lat, lng: reading.lng, accuracyM: reading.accuracyM }),
     });
     let body: unknown = null;
     try {
@@ -47,6 +47,22 @@ export async function requestStamp(spotId: string, reading: Reading): Promise<St
     return parseStampResponse(res.status, body);
   } catch {
     return { ok: false, failure: "network" };
+  }
+}
+
+/** The ids of the places this visitor has stamped, or null if they could not be read (signed out, offline). Never throws. */
+export async function fetchMyStamps(): Promise<Set<string> | null> {
+  try {
+    const res = await fetch("/api/v1/stamps", { credentials: "same-origin" });
+    let body: unknown = null;
+    try {
+      body = await res.json();
+    } catch {
+      // no readable body: the status alone decides
+    }
+    return parseMyStamps(res.status, body);
+  } catch {
+    return null;
   }
 }
 

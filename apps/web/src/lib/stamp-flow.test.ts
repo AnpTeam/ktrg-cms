@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { distanceParts, geoFailureFromCode, isStampMock, parseStampResponse, readingFrom, roundedDistance } from "./stamp-flow";
+import { distanceParts, geoFailureFromCode, isStampMock, parseMyStamps, parseStampResponse, readingFrom, roundedDistance } from "./stamp-flow";
 
 describe("geoFailureFromCode", () => {
   test("maps the browser's three error codes", () => {
@@ -20,8 +20,19 @@ test("readingFrom keeps only what the server needs", () => {
 
 describe("parseStampResponse", () => {
   test("a stamp, and a stamp that was already there", () => {
-    expect(parseStampResponse(200, { ok: true, status: "stamped" })).toEqual({ ok: true, already: false });
-    expect(parseStampResponse(200, { ok: true, status: "already_stamped" })).toEqual({ ok: true, already: true });
+    expect(parseStampResponse(200, { ok: true, stamp: { alreadyStamped: false } })).toEqual({ ok: true, already: false });
+    expect(parseStampResponse(200, { ok: true, stamp: { alreadyStamped: true } })).toEqual({ ok: true, already: true });
+  });
+
+  test("what the stamp finished is passed on, and a malformed list is dropped", () => {
+    const finished = { routeIds: ["r1"], rallyIds: ["y1", "y2"] };
+    expect(parseStampResponse(200, { ok: true, stamp: { alreadyStamped: false, finished } })).toEqual({ ok: true, already: false, finished });
+    expect(parseStampResponse(200, { ok: true, stamp: { finished: { routeIds: [1], rallyIds: [] } } })).toEqual({ ok: true, already: false });
+  });
+
+  test("an ok answer without a stamp is not a stamp", () => {
+    expect(parseStampResponse(200, { ok: true })).toEqual({ ok: false, failure: "failed" });
+    expect(parseStampResponse(200, { ok: true, stamp: null })).toEqual({ ok: false, failure: "failed" });
   });
 
   test("a 200 without ok:true is never a stamp", () => {
@@ -31,8 +42,10 @@ describe("parseStampResponse", () => {
   });
 
   test("each refusal has its own failure", () => {
+    expect(parseStampResponse(409, { ok: false, error: "too_far" })).toEqual({ ok: false, failure: "too_far" });
     expect(parseStampResponse(409, { ok: false, error: "too_far", distanceM: 240 })).toEqual({ ok: false, failure: "too_far", distanceM: 240 });
-    expect(parseStampResponse(409, { ok: false, error: "accuracy_too_low" })).toEqual({ ok: false, failure: "low_accuracy" });
+    expect(parseStampResponse(422, { ok: false, error: "gps_accuracy_poor" })).toEqual({ ok: false, failure: "low_accuracy" });
+    expect(parseStampResponse(409, { ok: false, error: "stamp_revoked" })).toEqual({ ok: false, failure: "failed" });
     expect(parseStampResponse(409, { ok: false, error: "spot_closed" })).toEqual({ ok: false, failure: "spot_closed" });
     expect(parseStampResponse(409, { ok: false, error: "rally_not_active" })).toEqual({ ok: false, failure: "rally_not_active" });
   });
@@ -49,6 +62,25 @@ describe("parseStampResponse", () => {
     expect(parseStampResponse(404, undefined)).toEqual({ ok: false, failure: "not_ready" });
     expect(parseStampResponse(501, undefined)).toEqual({ ok: false, failure: "not_ready" });
     expect(parseStampResponse(500, undefined)).toEqual({ ok: false, failure: "failed" });
+  });
+});
+
+describe("parseMyStamps", () => {
+  test("the place ids of the caller's stamps", () => {
+    const body = { ok: true, stamps: [{ spotId: "a", createdAt: "x" }, { spotId: "b", createdAt: "y" }] };
+    expect(parseMyStamps(200, body)).toEqual(new Set(["a", "b"]));
+    expect(parseMyStamps(200, { ok: true, stamps: [] })).toEqual(new Set());
+  });
+
+  test("anything unusable is null, never an empty set that would look like 'no stamps'", () => {
+    expect(parseMyStamps(401, { ok: false, error: "unauthenticated" })).toBeNull();
+    expect(parseMyStamps(200, { ok: true })).toBeNull();
+    expect(parseMyStamps(200, null)).toBeNull();
+    expect(parseMyStamps(500, undefined)).toBeNull();
+  });
+
+  test("entries without a place id are skipped", () => {
+    expect(parseMyStamps(200, { ok: true, stamps: [null, {}, { spotId: 5 }, { spotId: "a" }] })).toEqual(new Set(["a"]));
   });
 });
 
