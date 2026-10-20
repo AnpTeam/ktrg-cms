@@ -9,7 +9,7 @@ import { ElevationProfile } from "@/components/ElevationProfile";
 import { PrefectureName } from "@/components/PrefectureName";
 import { RouteStats } from "@/components/RouteStats";
 import { StampHere } from "@/components/StampHere";
-import { NavigationHud, NavigationStart } from "@/components/navigation/NavigationHud";
+import { NavigationStart } from "@/components/navigation/NavigationHud";
 import { useNavigation } from "@/components/navigation/NavigationProvider";
 import { StampFace } from "@/components/StampFace";
 import { StatusWord } from "@/components/StatusWord";
@@ -80,6 +80,14 @@ export function MapScreen({
   // On a desktop: how much of the map's left side the panel covers.
   const [panelPx, setPanelPx] = useState(0);
   const wide = useSyncExternalStore(subscribeWide, () => window.matchMedia(WIDE_QUERY).matches, () => false);
+  // When a navigation starts, the sheet steps down on a phone so the map and the navigation toast are in view.
+  // Adjusted while rendering (the pattern React recommends for state that follows another value).
+  const navRouteId = nav.session?.routeId ?? null;
+  const [seenNavRouteId, setSeenNavRouteId] = useState(navRouteId);
+  if (seenNavRouteId !== navRouteId) {
+    setSeenNavRouteId(navRouteId);
+    if (navRouteId && !wide) setSnap("peek");
+  }
 
   const route = routes.find((r) => r.id === routeId) ?? null;
   const stop = route?.stops?.find((s) => s.id === stopId) ?? null;
@@ -222,11 +230,6 @@ export function MapScreen({
         guide={nav.session?.snapshot.pathLine ?? null}
       />
       <MapSheet panel={wide} snap={snap} onSnap={setSnap} available={available} tabPx={tabPx} header={showDetailInSheet ? null : homeHeader}>
-        {nav.session ? (
-          <div className="px-4 pb-4">
-            <NavigationHud loginHref={loginHref} />
-          </div>
-        ) : null}
         {showDetailInSheet ? (
           <div className="flex flex-col gap-4">
             {hero}

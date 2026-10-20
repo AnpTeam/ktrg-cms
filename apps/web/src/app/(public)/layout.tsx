@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { MenuProvider } from "@/components/MenuProvider";
 import { NavigationProvider } from "@/components/navigation/NavigationProvider";
+import { NavigationToast } from "@/components/navigation/NavigationHud";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { SampleNoticeHost } from "@/components/SampleNotice";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -44,6 +45,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           </main>
         </div>
       </div>
+      <NavigationToast />
       </NavigationProvider>
     </MenuProvider>
   );
