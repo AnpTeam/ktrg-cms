@@ -30,7 +30,9 @@ export default async function RegisterPage({ searchParams }: Props) {
       <h1 className="text-3xl font-bold">
         <Trans>新規登録</Trans>
       </h1>
-      <RegisterFlow next={next} loginHref={`/login?next=${encodeURIComponent(next)}`} />
+      <div className="frame pattern-shippo p-5">
+        <RegisterFlow next={next} loginHref={`/login?next=${encodeURIComponent(next)}`} />
+      </div>
     </div>
   );
 }
