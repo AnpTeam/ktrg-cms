@@ -332,6 +332,7 @@ describe("user B cannot touch user A", () => {
     "PATCH /api/v1/admin/spots/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/rallies": () => ({ kind: "course", nameJa: "x" }),
     "PATCH /api/v1/admin/lists/stamps/:id": () => ({ updatedAt: new Date().toISOString(), revoked: true }),
+    "POST /api/v1/navigation/path": () => ({ spotId: crypto.randomUUID(), lat: 34, lng: 135 }),
     "POST /api/v1/stamps": () => ({ spotId: crypto.randomUUID(), lat: 34, lng: 135, accuracyM: 10 }),
     "PUT /api/v1/admin/rallies/order": () => ({ ids: [] }),
     "PATCH /api/v1/admin/rallies/:id": () => ({ updatedAt: new Date().toISOString() }),

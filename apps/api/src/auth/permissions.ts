@@ -22,6 +22,8 @@ export const PERMISSIONS = {
   "me.sensitive": ["participant", "admin"],
   /** Collect a stamp at a spot. */
   "stamp.create": ["participant", "admin"],
+  /** Ask for a walking path to a stamp place while off the course line (navigation; the server calls OpenRouteService). */
+  "navigation.path": ["participant", "admin"],
 
   // --- Admin CMS only --------------------------------------------------------------------
   "route.manage": ["admin"],

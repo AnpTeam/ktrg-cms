@@ -1,6 +1,6 @@
 import type { Result } from "../content/content-types";
 import { distanceMeters } from "../lib/geo";
-import type { Finished, StampStore } from "./stamp-types";
+import type { Finished, StampSpot, StampStore } from "./stamp-types";
 
 /** A reading worse than this is refused; from FLAG_ACCURACY_M up it is accepted but flagged for review. */
 export const MAX_ACCURACY_M = 100;
@@ -25,14 +25,24 @@ export interface Collected {
  * The stamping rules. The server decides: the phone only reports where it is. The reading is used for the checks
  * and then dropped (a stamp stores no coordinates, and nothing here logs them).
  */
+/** A place a visitor can head for and stamp: published, a stamp place, with a checked position. */
+type StampPlace = StampSpot & { lat: number; lng: number };
+
+// A draft, a navigation point and a place without a checked position all look like a place that is not there.
+const isStampPlace = (spot: StampSpot | null): spot is StampPlace =>
+  !!spot && spot.published && spot.stampable && spot.positionVerified && spot.lat !== null && spot.lng !== null;
+
 export function createStampService({ store }: { store: StampStore }) {
   return {
+    /** The place, if visitors may head for it and stamp it (also used by navigation); null otherwise. */
+    async stampPlace(spotId: string): Promise<StampPlace | null> {
+      const spot = await store.findSpot(spotId);
+      return isStampPlace(spot) ? spot : null;
+    },
+
     async collect(userId: string, r: Reading): Promise<Result<Collected>> {
       const spot = await store.findSpot(r.spotId);
-      // A draft, a navigation point and a place without a checked position all look like a place that is not there.
-      if (!spot || !spot.published || !spot.stampable || !spot.positionVerified || spot.lat === null || spot.lng === null) {
-        return { ok: false, reason: "not_found" };
-      }
+      if (!isStampPlace(spot)) return { ok: false, reason: "not_found" };
       if (spot.status === "closed") return { ok: false, reason: "spot_closed" };
       if (r.accuracyM > MAX_ACCURACY_M) return { ok: false, reason: "gps_accuracy_poor" };
       if (distanceMeters({ lat: r.lat, lng: r.lng }, { lat: spot.lat, lng: spot.lng }) > spot.radiusM) {
