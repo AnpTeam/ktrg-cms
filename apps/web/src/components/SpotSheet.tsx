@@ -51,7 +51,7 @@ export function SpotSheet({
         <div className="px-4">
           <Link
             href={`${"/map"}?route=${encodeURIComponent(spot.routeId)}&stop=${encodeURIComponent(spot.id)}`}
-            className="tap-target inline-flex items-center gap-2 rounded-xl border-2 border-ink px-5 text-lg font-bold"
+            className="tap-target inline-flex items-center gap-2 rounded-xl border border-ink px-5 text-lg font-bold"
           >
             <Trans>地図で見る</Trans>
           </Link>
@@ -110,7 +110,7 @@ export function SpotSheet({
 
       {spot.stamped === null ? (
         <div className="sticky bottom-24 z-10 flex flex-col gap-2 px-4 md:bottom-6">
-          <Link href={loginHref} className="tap-target flex min-h-14 items-center justify-center rounded-xl bg-brand px-6 text-xl font-bold text-on-brand shadow-lg">
+          <Link href={loginHref} className="tap-target flex min-h-14 items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper shadow-lg">
             <Trans>ログインしてスタンプを押す</Trans>
           </Link>
         </div>

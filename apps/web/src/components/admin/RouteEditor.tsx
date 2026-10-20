@@ -273,7 +273,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
         <p className="text-base text-muted" aria-live="polite">
           {dirty ? t`保存していない変更があります` : isNew ? "" : t`保存済み（更新 ${formatUpdated(locale, draft.updatedAt ?? new Date().toISOString())}）`}
         </p>
-        <button type="button" disabled={!dirty || saving} onClick={save} className="tap-target rounded-xl bg-brand px-8 text-xl font-bold text-on-brand disabled:opacity-40">
+        <button type="button" disabled={!dirty || saving} onClick={save} className="tap-target rounded-xl bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
           {saving ? t`保存中…` : t`保存する`}
         </button>
       </div>
@@ -518,7 +518,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                             <span className={`w-20 shrink-0 rounded-lg px-3 py-1 text-center text-base font-bold ${i.done ? "bg-moss text-paper" : required ? "bg-danger text-white" : "bg-surface"}`}>{i.done ? t`できた` : t`まだ`}</span>
                             <span className="min-w-0 flex-1 text-lg">{labels.item[i.id]}</span>
                             {!i.done ? (
-                              <button type="button" onClick={() => setSection(i.tab)} className="tap-target rounded-xl border-2 border-ink px-4 text-base font-bold">
+                              <button type="button" onClick={() => setSection(i.tab)} className="tap-target rounded-xl border border-ink px-4 text-base font-bold">
                                 {t`${labels.tab[i.tab]}を開く`}
                               </button>
                             ) : null}

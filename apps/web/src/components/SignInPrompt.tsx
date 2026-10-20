@@ -25,13 +25,13 @@ export async function SignInPrompt() {
       <div className="flex flex-col gap-3">
         <Link
           href="/register"
-          className="tap-target flex min-h-14 items-center justify-center rounded-xl bg-brand px-6 text-xl font-bold text-on-brand"
+          className="tap-target flex min-h-14 items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper"
         >
           <Trans>新規登録</Trans>
         </Link>
         <Link
           href="/login"
-          className="tap-target flex min-h-14 items-center justify-center rounded-xl border-2 border-ink px-6 text-xl font-bold text-ink hover:bg-surface"
+          className="tap-target flex min-h-14 items-center justify-center rounded-xl border border-ink px-6 text-xl font-bold text-ink hover:bg-surface"
         >
           <Trans>ログイン</Trans>
         </Link>

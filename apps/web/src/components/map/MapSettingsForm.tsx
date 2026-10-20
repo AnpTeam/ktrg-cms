@@ -17,7 +17,7 @@ import { TrailMapLoader } from "./TrailMapLoader";
 import type { MapStop } from "./TrailMap";
 
 const choiceClass = (on: boolean) =>
-  `tap-target inline-flex items-center justify-center rounded-lg border-2 border-ink px-3 text-base font-bold ${
+  `tap-target inline-flex items-center justify-center rounded-lg border border-ink px-3 text-base font-bold ${
     on ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"
   }`;
 

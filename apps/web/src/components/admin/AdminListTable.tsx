@@ -34,7 +34,7 @@ export function AdminListTable({ meta: config, initial, locale, routeNames }: { 
   return (
     <div className="flex flex-col gap-4">
       {config.ops.create && config.newLabel ? (
-        <Link href={`${base}/new`} className="tap-target inline-flex w-fit items-center rounded-xl bg-brand px-5 text-lg font-bold text-on-brand">
+        <Link href={`${base}/new`} className="tap-target inline-flex w-fit items-center rounded-xl bg-ink px-5 text-lg font-bold text-paper">
           {pick(config.newLabel, locale)}
         </Link>
       ) : null}

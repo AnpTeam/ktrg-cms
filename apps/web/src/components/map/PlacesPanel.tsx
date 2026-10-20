@@ -90,7 +90,7 @@ export function PlaceChips({
             type="button"
             aria-pressed={on}
             onClick={() => onToggle(group)}
-            className={`tap-target flex items-center gap-2 rounded-xl border-2 border-ink px-3 py-1 text-left text-lg font-bold leading-tight ${
+            className={`tap-target flex items-center gap-2 rounded-xl border border-ink px-3 py-1 text-left text-lg font-bold leading-tight ${
               on ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"
             }`}
           >
@@ -157,7 +157,7 @@ export function PlaceList({
           type="button"
           onClick={() => setAll((v) => !v)}
           aria-expanded={all}
-          className="tap-target mt-2 inline-flex items-center rounded-lg border-2 border-ink px-4 text-lg font-bold hover:bg-surface"
+          className="tap-target mt-2 inline-flex items-center rounded-lg border border-ink px-4 text-lg font-bold hover:bg-surface"
         >
           {all ? t`少なく表示` : t`もっと見る（あと${hidden}か所）`}
         </button>
@@ -193,7 +193,7 @@ export function PlaceCard({
         <button
           type="button"
           onClick={onClose}
-          className="tap-target shrink-0 rounded-lg border-2 border-ink px-3 text-base font-bold hover:bg-surface"
+          className="tap-target shrink-0 rounded-lg border border-ink px-3 text-base font-bold hover:bg-surface"
         >
           {t`閉じる`}
         </button>

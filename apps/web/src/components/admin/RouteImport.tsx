@@ -220,7 +220,7 @@ export function RouteImport({ routes, onImported }: { routes: AdminRoute[]; onIm
                 type="button"
                 disabled={tooMany || progress !== null || preview.routes.length + preview.places.length === 0}
                 onClick={run}
-                className="tap-target inline-flex items-center self-start rounded-xl bg-brand px-5 text-lg font-bold text-on-brand disabled:opacity-40"
+                className="tap-target inline-flex items-center self-start rounded-xl bg-ink px-5 text-lg font-bold text-paper disabled:opacity-40"
               >
                 {t`この内容で取り込む`}
               </button>

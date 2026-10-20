@@ -186,7 +186,7 @@ export function ProfileCard({
           <div className="flex flex-col gap-3 border-t border-line/30 pt-5">
             <Link
               href="/settings/passkeys"
-              className="tap-target flex w-full items-center justify-center rounded-xl border-2 border-ink px-4 text-lg font-bold hover:bg-paper"
+              className="tap-target flex w-full items-center justify-center rounded-xl border border-ink px-4 text-lg font-bold hover:bg-paper"
             >
               {t`ログインの方法（パスキー）`}
             </Link>
@@ -240,7 +240,7 @@ export function ProfileCard({
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="tap-target shrink-0 rounded-lg border-2 border-ink px-4 text-lg font-bold hover:bg-paper"
+          className="tap-target shrink-0 rounded-lg border border-ink px-4 text-lg font-bold hover:bg-paper"
         >
           {t`編集`}
         </button>

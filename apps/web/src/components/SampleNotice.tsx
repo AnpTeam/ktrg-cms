@@ -59,7 +59,7 @@ export function SampleNoticeHost() {
       <form method="dialog" className="mt-5">
         <button
           type="submit"
-          className="tap-target inline-flex w-full items-center justify-center rounded-lg bg-brand px-5 text-lg font-bold text-on-brand"
+          className="tap-target inline-flex w-full items-center justify-center rounded-lg bg-ink px-5 text-lg font-bold text-paper"
         >
           <Trans>閉じる</Trans>
         </button>
@@ -76,7 +76,7 @@ export function SampleNoticeButton({ className = "" }: { className?: string }) {
       type="button"
       onClick={openSampleNotice}
       aria-label={t`このデータについて`}
-      className={`inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border-2 border-ink bg-paper text-ink hover:bg-surface [&_svg]:size-5 ${className}`}
+      className={`inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-ink bg-paper text-ink hover:bg-surface [&_svg]:size-5 ${className}`}
     >
       <InfoIcon />
     </button>

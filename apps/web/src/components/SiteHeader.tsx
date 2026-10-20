@@ -13,7 +13,7 @@ import { SampleNoticeButton } from "./SampleNotice";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 
 const barButton =
-  "inline-flex min-h-10 items-center gap-1.5 rounded-lg border-2 border-ink bg-paper px-2.5 text-base font-bold text-ink hover:bg-surface [&>svg]:size-5";
+  "inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-ink bg-paper px-2.5 text-base font-bold text-ink hover:bg-surface [&>svg]:size-5";
 // How far the signed-out home page is scrolled (in px) before its menu button appears.
 const SHOW_MENU_AFTER = 240;
 const wideButton =
@@ -144,7 +144,7 @@ export function SiteHeader({
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="tap-target hidden items-center gap-2 self-end rounded-lg border-2 border-ink px-3 text-lg font-bold md:inline-flex"
+              className="tap-target hidden items-center gap-2 self-end rounded-lg border border-ink px-3 text-lg font-bold md:inline-flex"
             >
               <CloseIcon />
               {t`閉じる`}
@@ -153,7 +153,7 @@ export function SiteHeader({
               <div className="flex flex-col gap-3">
                 <Link
                   href="/stamps"
-                  className="tap-target flex items-center gap-3 rounded-xl border-2 border-brand bg-paper px-4 text-xl font-bold hover:bg-surface"
+                  className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface"
                 >
                   <UserIcon />
                   <span className="min-w-0 flex-1 break-words">{name ?? t`ログイン中`}</span>
@@ -163,17 +163,17 @@ export function SiteHeader({
                   type="button"
                   onClick={signOut}
                   disabled={leaving}
-                  className={`${wideButton} border-2 border-ink bg-paper text-ink hover:bg-surface disabled:opacity-60`}
+                  className={`${wideButton} border border-ink bg-paper text-ink hover:bg-surface disabled:opacity-60`}
                 >
                   {t`ログアウト`}
                 </button>
               </div>
             ) : (
               <div className="flex flex-col gap-3">
-                <Link href={loginHref} className={`${wideButton} bg-brand text-on-brand`}>
+                <Link href={loginHref} className={`${wideButton} bg-ink text-paper`}>
                   {t`ログイン`}
                 </Link>
-                <Link href={registerHref} className={`${wideButton} border-2 border-ink text-ink hover:bg-surface`}>
+                <Link href={registerHref} className={`${wideButton} border border-ink text-ink hover:bg-surface`}>
                   {t`新規登録`}
                 </Link>
               </div>
@@ -192,7 +192,7 @@ export function SiteHeader({
             <div className="flex flex-col gap-2 border-t-2 border-line pt-4">
               <Link
                 href="/settings"
-                className="tap-target flex items-center rounded-xl border-2 border-ink px-4 text-lg font-bold text-ink hover:bg-paper"
+                className="tap-target flex items-center rounded-xl border border-ink px-4 text-lg font-bold text-ink hover:bg-paper"
               >
                 {t`見やすさの設定`}
               </Link>
@@ -218,7 +218,7 @@ export function SiteHeader({
                 <p className="text-lg font-bold">{t`開発用`}</p>
                 <Link
                   href="/settings/map"
-                  className="tap-target flex items-center rounded-xl border-2 border-ink px-4 text-lg font-bold text-ink hover:bg-paper"
+                  className="tap-target flex items-center rounded-xl border border-ink px-4 text-lg font-bold text-ink hover:bg-paper"
                 >
                   {t`地図の見た目の設定`}
                 </Link>

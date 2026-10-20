@@ -36,7 +36,7 @@ export function SheetHero({
       <button
         type="button"
         onClick={onBack}
-        className="tap-target absolute left-2 top-2 inline-flex max-w-[calc(100%-1rem)] items-center gap-1 rounded-full bg-black/60 py-1 pl-2 pr-4 text-lg font-bold text-white"
+        className="tap-target absolute left-2 top-2 inline-flex max-w-[calc(100%-1rem)] items-center gap-1 rounded-lg bg-black/60 py-1 pl-2 pr-4 text-lg font-bold text-white"
       >
         <ChevronLeftIcon />
         <span lang={backLang} className="truncate">

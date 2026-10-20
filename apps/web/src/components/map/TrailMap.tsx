@@ -50,7 +50,7 @@ const FIT = { padding: { top: 76, bottom: 112, left: 56, right: 92 }, maxZoom: 1
 // Markers closer than this on screen are shown as one numbered group (a stop is 3rem = 48 px wide).
 const CLUSTER_PX = 52;
 const buttonClass =
-  "tap-target inline-flex items-center justify-center gap-2 rounded-lg border-2 border-ink bg-paper px-3 text-lg font-bold text-ink hover:bg-surface";
+  "tap-target inline-flex items-center justify-center gap-2 rounded-lg border border-ink bg-paper px-3 text-lg font-bold text-ink hover:bg-surface";
 
 const centerOf = (points: readonly Coord[]): Coord => ({
   lat: points.reduce((n, p) => n + p.lat, 0) / points.length,

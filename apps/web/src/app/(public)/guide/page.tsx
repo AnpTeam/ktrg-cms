@@ -42,7 +42,7 @@ export default async function GuidePage() {
       <div className="px-4">
         <Link
           href="/faq"
-          className="tap-target flex min-h-14 items-center justify-center rounded-xl border-2 border-brand bg-surface px-6 text-xl font-bold text-accent hover:bg-paper"
+          className="tap-target flex min-h-14 items-center justify-center rounded-xl border border-ink bg-surface px-6 text-xl font-bold text-accent hover:bg-paper"
         >
           {helpContent(i18n.locale).faqTitle}
         </Link>

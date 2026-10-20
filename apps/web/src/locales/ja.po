@@ -212,7 +212,7 @@ msgid "「書き方」シートにある種類の名前で書いてください"
 msgstr "「書き方」シートにある種類の名前で書いてください"
 
 #: src/components/landing/Landing.tsx:86
-#: src/components/landing/LandingHero.tsx:41
+#: src/components/landing/LandingHero.tsx:40
 msgid "「祈り」を見つめる再発見の旅"
 msgstr "「祈り」を見つめる再発見の旅"
 
@@ -1371,7 +1371,7 @@ msgstr "ルートや場所は、ログインしなくても見られます。"
 #: src/components/admin/RouteTable.tsx:61
 #: src/components/landing/Landing.tsx:94
 #: src/components/landing/Landing.tsx:230
-#: src/components/landing/LandingHero.tsx:48
+#: src/components/landing/LandingHero.tsx:47
 msgid "ルートをさがす"
 msgstr "ルートをさがす"
 
@@ -1407,7 +1407,7 @@ msgstr "ログアウト"
 #: src/components/auth/LoginFlow.tsx:55
 #: src/components/auth/RegisterFlow.tsx:141
 #: src/components/landing/Landing.tsx:99
-#: src/components/landing/LandingHero.tsx:54
+#: src/components/landing/LandingHero.tsx:53
 #: src/components/map/MapScreen.tsx:312
 #: src/components/SignInPrompt.tsx:36
 #: src/components/SiteHeader.tsx:174
@@ -2340,7 +2340,7 @@ msgstr "新しく作るには、名前（日本語）が必要です"
 #: src/components/auth/LoginFlow.tsx:104
 #: src/components/landing/Landing.tsx:91
 #: src/components/landing/Landing.tsx:227
-#: src/components/landing/LandingHero.tsx:45
+#: src/components/landing/LandingHero.tsx:44
 #: src/components/map/MapScreen.tsx:309
 #: src/components/SignInPrompt.tsx:30
 #: src/components/SiteHeader.tsx:177
@@ -2595,7 +2595,7 @@ msgstr "登録できませんでした。もう一度お試しください。"
 
 #: src/components/auth/RegisterFlow.tsx:139
 #: src/components/landing/Landing.tsx:97
-#: src/components/landing/LandingHero.tsx:52
+#: src/components/landing/LandingHero.tsx:51
 msgid "登録済みの方は"
 msgstr "登録済みの方は"
 
@@ -2857,7 +2857,7 @@ msgstr "英語は未入力です（日本語を表示します）"
 #: src/app/(public)/page.tsx:52
 #: src/app/layout.tsx:30
 #: src/components/landing/Landing.tsx:81
-#: src/components/landing/LandingHero.tsx:36
+#: src/components/landing/LandingHero.tsx:35
 msgid "葛城修験"
 msgstr "葛城修験"
 

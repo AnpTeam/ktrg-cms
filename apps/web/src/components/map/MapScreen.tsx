@@ -24,8 +24,8 @@ import { Gallery, SheetHero } from "./SheetHero";
 // sheet) and the other areas fold away while its path and stops appear; choose a stop and the sheet shows it, with
 // the stamp button for someone who is signed in. Anyone may look around; navigation and stamps are for accounts.
 
-const linkButton = "tap-target flex min-h-12 w-full items-center justify-center rounded-xl border-2 border-ink px-5 text-lg font-bold text-ink hover:bg-surface";
-const primaryLink = "tap-target flex min-h-12 w-full items-center justify-center rounded-xl bg-brand px-5 text-lg font-bold text-on-brand";
+const linkButton = "tap-target flex min-h-12 w-full items-center justify-center rounded-xl border border-ink px-5 text-lg font-bold text-ink hover:bg-surface";
+const primaryLink = "tap-target flex min-h-12 w-full items-center justify-center rounded-xl bg-ink px-5 text-lg font-bold text-paper";
 // Room kept under the sheet for the floating tab bar (a rail on wide screens).
 const TAB_ROOM_REM = 5.5;
 // From this width (a desktop) the map fills the whole area beside the sidebar, and what a phone shows in a bottom sheet

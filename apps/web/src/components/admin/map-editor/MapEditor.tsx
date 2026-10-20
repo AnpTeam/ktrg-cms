@@ -428,7 +428,7 @@ export function MapEditor(props: MapEditorProps) {
         {toolButton("place", t`経由地を置く`, "P")}
         {toolButton("draw", t`線を描く`, "L")}
         <span className="mx-1 w-px self-stretch bg-line" aria-hidden="true" />
-        <button type="button" onClick={() => fileInput.current?.click()} className={`${toolClass} border-ink bg-brand text-on-brand`}>
+        <button type="button" onClick={() => fileInput.current?.click()} className={`${toolClass} border-ink bg-ink text-paper`}>
           {t`GPXファイルから読み込む`}
         </button>
         <input ref={fileInput} type="file" accept=".gpx,application/gpx+xml,text/xml,application/xml" onChange={onFile} className="sr-only" tabIndex={-1} aria-hidden="true" />
@@ -463,7 +463,7 @@ export function MapEditor(props: MapEditorProps) {
       </p>
 
       {waypoints ? (
-        <div role="group" aria-label={t`GPXの地点`} className="flex flex-col gap-3 rounded-xl border-2 border-ink bg-paper p-4">
+        <div role="group" aria-label={t`GPXの地点`} className="flex flex-col gap-3 rounded-xl border border-ink bg-paper p-4">
           <p className="text-lg font-bold">{t`名前のついた地点が${waypoints.length}か所ありました。経由地として追加しますか？`}</p>
           <ul className="max-h-40 list-disc overflow-auto pl-6 text-base">
             {waypoints.map((w, i) => (
@@ -472,7 +472,7 @@ export function MapEditor(props: MapEditorProps) {
           </ul>
           <p className="text-base text-muted">{t`位置は「確認していない」状態で入ります。公開する前に、公式の情報で確かめてください。`}</p>
           <div className="flex gap-2">
-            <button type="button" onClick={addWaypoints} className="tap-target rounded-xl bg-brand px-6 text-lg font-bold text-on-brand">
+            <button type="button" onClick={addWaypoints} className="tap-target rounded-xl bg-ink px-6 text-lg font-bold text-paper">
               {t`追加する`}
             </button>
             <button type="button" onClick={() => setWaypoints(null)} className="tap-target rounded-xl border-2 border-line px-6 text-lg font-bold">
