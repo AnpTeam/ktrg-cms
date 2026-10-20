@@ -122,10 +122,13 @@ export function spotDetailFromApi(s: PublicSpot, route: Pick<PublicRoute, "id" |
     routeNameEn: route.nameEn,
     descriptionJa: s.descriptionJa,
     descriptionEn: s.descriptionEn,
+    historyJa: s.historyJa ?? null,
+    historyEn: s.historyEn ?? null,
     statusNoteJa: s.statusNoteJa,
     statusNoteEn: s.statusNoteEn,
     statusUpdatedAt: s.statusUpdatedAt,
     photoUrl: s.photoUrl,
+    gallery: s.photos ?? [],
   };
 }
 

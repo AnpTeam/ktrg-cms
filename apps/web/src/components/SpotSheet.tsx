@@ -3,7 +3,9 @@ import { Trans } from "@lingui/react/macro";
 import { pickText, type SpotDetail } from "@/lib/content";
 import { HeroPhoto } from "./map/HeroPhoto";
 import { Localized } from "./Localized";
+import { NearbyPlaces, type Nearby } from "./NearbyPlaces";
 import { Notice } from "./Notice";
+import { SpotGallery } from "./SpotGallery";
 import { StampFace } from "./StampFace";
 import { StampHere } from "./StampHere";
 import { StatusBanner } from "./StatusBanner";
@@ -20,14 +22,19 @@ export function SpotSheet({
   locale,
   loginHref,
   stampMock,
+  nearby = [],
 }: {
   spot: SpotDetail;
   locale: string;
   loginHref: string;
+  /** What is around the place (toilets, shops ...), nearest first. */
+  nearby?: Nearby[];
   /** Development only: pretend answers for the stamp button. */
   stampMock?: StampMock;
 }) {
   const description = pickText(locale, spot.descriptionJa, spot.descriptionEn);
+  const history = pickText(locale, spot.historyJa ?? null, spot.historyEn ?? null);
+  const gallery = spot.gallery ?? [];
 
   return (
     <article className="flex flex-col gap-6">
@@ -101,6 +108,40 @@ export function SpotSheet({
               <Trans>この説明は日本語のみです。</Trans>
             </p>
           ) : null}
+        </section>
+      ) : null}
+
+      {history ? (
+        <section className="px-4">
+          <h2 className="text-xl font-bold">
+            <Trans>歴史・由来</Trans>
+          </h2>
+          <p className="mt-2 max-w-prose whitespace-pre-line text-lg leading-8">
+            <Localized value={history} tag={false} />
+          </p>
+          {history.fallback ? (
+            <p className="mt-2 text-base text-muted">
+              <Trans>この説明は日本語のみです。</Trans>
+            </p>
+          ) : null}
+        </section>
+      ) : null}
+
+      {gallery.length > 0 ? (
+        <section className="px-4">
+          <h2 className="mb-2 text-xl font-bold">
+            <Trans>写真</Trans>
+          </h2>
+          <SpotGallery photos={gallery} alt={pickText(locale, spot.nameJa, spot.nameEn)?.text ?? spot.nameJa} />
+        </section>
+      ) : null}
+
+      {nearby.length > 0 ? (
+        <section className="mx-4 rounded-3xl bg-surface p-4">
+          <h2 className="mb-1 text-xl font-bold">
+            <Trans>まわりにあるもの</Trans>
+          </h2>
+          <NearbyPlaces places={nearby} />
         </section>
       ) : null}
 

@@ -1,7 +1,7 @@
 import type { ErrorCode } from "../lib/api-errors";
 import { stampableByDefault } from "../db/schema/content";
 import { cleanTranslations } from "../db/translations";
-import { isPhotoUrl } from "../lib/https-url";
+import { isHttpsUrl, isPhotoUrl } from "../lib/https-url";
 import { isAllowedVideoUrl } from "./video-url";
 import { lineLengthKm, parseLine, simplifyLine, sketchOf, type LineString } from "./line";
 import type {
@@ -27,12 +27,17 @@ export interface PublicSpot {
   nameEn: string | null;
   descriptionJa: string | null;
   descriptionEn: string | null;
+  /** Its story: where the name comes from, what happened there. */
+  historyJa: string | null;
+  historyEn: string | null;
   position: { lat: number; lng: number; verified: true } | null;
   radiusM: number;
   kind: SpotRow["kind"];
   /** A stamp can be collected here (only then does the place have a page of its own). */
   stampable: boolean;
   photoUrl: string | null;
+  /** More photos of the place, in order, each with who took it when that is known. */
+  photos: SpotRow["photos"];
   status: SpotRow["status"];
   statusNoteJa: string | null;
   statusNoteEn: string | null;
@@ -123,11 +128,14 @@ function toPublicSpot(s: SpotRow): PublicSpot {
     nameEn: s.nameEn,
     descriptionJa: s.descriptionJa,
     descriptionEn: s.descriptionEn,
+    historyJa: s.historyJa,
+    historyEn: s.historyEn,
     position: showPosition ? { lat: s.lat!, lng: s.lng!, verified: true } : null,
     radiusM: s.radiusM,
     kind: s.kind,
     stampable: s.stampable,
     photoUrl: s.photoUrl,
+    photos: s.photos,
     status: s.status,
     statusNoteJa: s.statusNoteJa,
     statusNoteEn: s.statusNoteEn,
@@ -199,7 +207,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (!n) return bad("validation_failed");
       out.nameJa = n;
     }
-    for (const k of ["nameEn", "descriptionJa", "descriptionEn", "statusNoteJa", "statusNoteEn", "permissionNote", "positionSource"] as const) {
+    for (const k of ["nameEn", "descriptionJa", "descriptionEn", "historyJa", "historyEn", "statusNoteJa", "statusNoteEn", "permissionNote", "positionSource"] as const) {
       const v = text(input[k]);
       if (v !== undefined) out[k] = v;
     }
@@ -214,6 +222,18 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       const v = text(input.photoUrl);
       if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");
       out.photoUrl = v;
+    }
+    if (input.photos !== undefined) {
+      // Wikimedia Commons is always allowed for the gallery (the photo finder in the editor uses it), as well as the photo hosts.
+      const hosts = photoHosts.length > 0 ? [...photoHosts, "upload.wikimedia.org"] : [];
+      const photos: NonNullable<SpotFields["photos"]> = [];
+      for (const p of input.photos) {
+        const url = p.url.trim();
+        const sourceUrl = text(p.sourceUrl) ?? null;
+        if (!isPhotoUrl(url, hosts) || (sourceUrl !== null && !isHttpsUrl(sourceUrl))) return bad("invalid_photo_url");
+        photos.push({ url, credit: text(p.credit) ?? null, sourceUrl });
+      }
+      out.photos = photos;
     }
     if (input.permissionConfirmed !== undefined) out.permissionConfirmed = input.permissionConfirmed;
     if (input.positionVerified !== undefined) out.positionVerified = input.positionVerified;

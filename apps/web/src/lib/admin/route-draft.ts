@@ -1,4 +1,4 @@
-import type { RouteDetail, RoutePoint } from "../content";
+import type { GalleryPhoto, RouteDetail, RoutePoint } from "../content";
 import { stampableByDefault, type PointKind } from "../point-kinds";
 import { areaFromBounds, sketchFromPoints } from "../route-geometry";
 import { climbM, elevationsOf, lengthKm, type LngLatEle } from "./line";
@@ -26,9 +26,14 @@ export interface PlaceDraft {
   nameEn: string;
   descriptionJa: string;
   descriptionEn: string;
+  /** Its story: where the name comes from, what happened there. */
+  historyJa: string;
+  historyEn: string;
   /** The other content languages ({ de: { name } }). */
   translations: Translations;
   photoUrl: string;
+  /** More photos of the place, in order. */
+  photos: GalleryPhoto[];
   lat: number | null;
   lng: number | null;
   positionVerified: boolean;
@@ -85,7 +90,7 @@ const s = (v: string | null) => v ?? "";
 export function placeFromServer(p: AdminSpot): PlaceDraft {
   return {
     key: p.id, id: p.id, updatedAt: p.updatedAt, published: p.published, kind: p.kind, stampable: p.stampable,
-    nameJa: p.nameJa, nameEn: s(p.nameEn), descriptionJa: s(p.descriptionJa), descriptionEn: s(p.descriptionEn), translations: p.translations ?? {}, photoUrl: s(p.photoUrl),
+    nameJa: p.nameJa, nameEn: s(p.nameEn), descriptionJa: s(p.descriptionJa), descriptionEn: s(p.descriptionEn), historyJa: s(p.historyJa), historyEn: s(p.historyEn), translations: p.translations ?? {}, photoUrl: s(p.photoUrl), photos: p.photos ?? [],
     lat: p.lat, lng: p.lng, positionVerified: p.positionVerified, positionSource: s(p.positionSource), radiusM: p.radiusM,
     status: p.status, statusNoteJa: s(p.statusNoteJa), statusNoteEn: s(p.statusNoteEn),
     permissionConfirmed: p.permissionConfirmed, permissionNote: s(p.permissionNote),
@@ -116,8 +121,8 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
 
 export const newPlace = (key: string, lat: number | null, lng: number | null, n: number, kind: PointKind = "other"): PlaceDraft => ({
   key, id: null, updatedAt: null, published: false, kind, stampable: stampableByDefault(kind),
-  nameJa: stampableByDefault(kind) ? `経由地${n}` : "", nameEn: "", descriptionJa: "", descriptionEn: "",
-  translations: {}, photoUrl: "", lat, lng, positionVerified: false, positionSource: "", radiusM: 50, status: "open", statusNoteJa: "", statusNoteEn: "",
+  nameJa: stampableByDefault(kind) ? `経由地${n}` : "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
+  translations: {}, photoUrl: "", photos: [], lat, lng, positionVerified: false, positionSource: "", radiusM: 50, status: "open", statusNoteJa: "", statusNoteEn: "",
   permissionConfirmed: false, permissionNote: "",
 });
 

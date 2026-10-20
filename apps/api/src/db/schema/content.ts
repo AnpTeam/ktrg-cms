@@ -52,6 +52,13 @@ export const spotKinds = [
 ] as const;
 export const spotKind = pgEnum("spot_kind", spotKinds);
 
+/** A photo in a waypoint's gallery: an https link, who took it (when the license asks for a credit), and the page it came from. */
+export interface SpotPhoto {
+  url: string;
+  credit: string | null;
+  sourceUrl: string | null;
+}
+
 /** The switch a new waypoint starts with: on for a temple, a sutra mound, a viewpoint or "other"; off for the practical ones. */
 export const stampableByDefault = (kind: (typeof spotKinds)[number]): boolean =>
   kind === "temple" || kind === "mound" || kind === "view" || kind === "other";
@@ -120,6 +127,8 @@ export const spots = pgTable(
     // Visitors can collect a stamp here: it joins rallies, has a check-in radius and needs the site's permission to publish.
     stampable: boolean("stampable").notNull().default(false),
     photoUrl: text("photo_url"),
+    // More photos of the place, in order (the first photo above is its main one).
+    photos: jsonb("photos").$type<SpotPhoto[]>().notNull().default(sql`'[]'::jsonb`),
     status: spotStatus("status").notNull().default("open"),
     statusUpdatedAt: timestamp("status_updated_at", { withTimezone: true }),
     // Order within the route (the design doc does not specify one).
@@ -373,6 +382,8 @@ export const spotTranslations = pgTable(
     locale: contentLocale("locale").notNull(),
     name: text("name"),
     description: text("description"),
+    // Its story: where the name comes from, what happened there.
+    history: text("history"),
     statusNote: text("status_note"),
   },
   (t) => [primaryKey({ columns: [t.spotId, t.locale] }), check("spot_translations_ja_name", jaRequires(t, t.name))],

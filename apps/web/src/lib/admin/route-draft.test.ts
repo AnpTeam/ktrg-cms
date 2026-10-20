@@ -12,8 +12,8 @@ const serverRoute = (over: Partial<AdminRoute> = {}): AdminRoute => ({
   videoUrl: null, historyJa: null, historyEn: null, accessJa: null, accessEn: null, photoUrl: null, sortOrder: 2, createdAt: "2026-10-19T00:00:00.000Z", updatedAt: "2026-10-19T00:00:00.000Z", ...over,
 });
 const serverSpot = (id: string, over: Partial<AdminSpot> = {}): AdminSpot => ({
-  id, routeId: "r1", nameJa: "虎島の経塚", nameEn: null, translations: {}, descriptionJa: null, descriptionEn: null, lat: null, lng: null, positionVerified: false,
-  positionSource: null, radiusM: 50, kind: "mound", stampable: true, photoUrl: null, status: "open", statusNoteJa: null, statusNoteEn: null, statusUpdatedAt: null, sortOrder: 1, published: false,
+  id, routeId: "r1", nameJa: "虎島の経塚", nameEn: null, translations: {}, descriptionJa: null, descriptionEn: null, historyJa: null, historyEn: null, lat: null, lng: null, positionVerified: false,
+  positionSource: null, radiusM: 50, kind: "mound", stampable: true, photoUrl: null, photos: [], status: "open", statusNoteJa: null, statusNoteEn: null, statusUpdatedAt: null, sortOrder: 1, published: false,
   permissionConfirmed: false, permissionNote: null, createdAt: "2026-10-19T00:00:00.000Z", updatedAt: "2026-10-19T00:00:00.000Z", ...over,
 });
 

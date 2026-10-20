@@ -5,6 +5,7 @@ import { pointKinds, stampableByDefault, type PointKind } from "@/lib/point-kind
 import { publishBlockers, type PlaceDraft, type PublishBlocker } from "@/lib/admin/route-draft";
 import type { SpotStatus } from "@/lib/admin/types";
 import { Check, Field, inputClass, MultilingualField, NumberInput, TextInput } from "./fields";
+import { GalleryEditor } from "./GalleryEditor";
 import { PhotoSlot } from "./PhotoSlot";
 
 export interface PlacePanelProps {
@@ -86,6 +87,7 @@ export function PlacePanel(p: PlacePanelProps) {
         <div className="flex flex-col gap-5 border-t border-line p-4">
           <MultilingualField id={`${id}-name`} label={t`経由地の名前`} field="name" ja={place.nameJa} en={place.nameEn} translations={place.translations} onJa={(v) => p.onChange({ nameJa: v })} onEn={(v) => p.onChange({ nameEn: v })} onTranslations={(v) => p.onChange({ translations: v })} required invalid={p.invalidName} />
           <MultilingualField id={`${id}-desc`} label={t`説明`} field="description" ja={place.descriptionJa} en={place.descriptionEn} translations={place.translations} onJa={(v) => p.onChange({ descriptionJa: v })} onEn={(v) => p.onChange({ descriptionEn: v })} onTranslations={(v) => p.onChange({ translations: v })} multiline />
+          <MultilingualField id={`${id}-history`} label={t`歴史・由来`} field="history" ja={place.historyJa} en={place.historyEn} translations={place.translations} onJa={(v) => p.onChange({ historyJa: v })} onEn={(v) => p.onChange({ historyEn: v })} onTranslations={(v) => p.onChange({ translations: v })} multiline />
 
           <Field label={t`種類`} htmlFor={`${id}-kind`}>
             <select
@@ -122,6 +124,8 @@ export function PlacePanel(p: PlacePanelProps) {
             {p.invalidPhoto ? <p role="alert" className="text-base font-bold text-danger">{t`写真のリンクは、https:// で始まるものだけ使えます。`}</p> : null}
             <PhotoSlot url={place.photoUrl} className="max-w-md" />
           </div>
+
+          <GalleryEditor photos={place.photos} onChange={(photos) => p.onChange({ photos })} name={place.nameJa} lat={place.lat} lng={place.lng} />
 
           <fieldset className="flex flex-col gap-3">
             <legend className="text-base font-bold">{t`位置`}</legend>
