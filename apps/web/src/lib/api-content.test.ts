@@ -3,6 +3,7 @@ import {
   areaFromBounds,
   fetchPublicRoutes,
   isEmptyRoute,
+  placeItemFromApi,
   routeDetailFromApi,
   routeSummaryFromApi,
   sketchFromPoints,
@@ -92,5 +93,16 @@ describe("fetching never throws", () => {
     expect(await fetchPublicRoutes()).toBeNull();
     globalThis.fetch = (async () => new Response(JSON.stringify({ ok: true, routes: [route()] }), { status: 200 })) as unknown as typeof fetch;
     expect((await fetchPublicRoutes())?.[0]?.id).toBe("r1");
+  });
+});
+
+describe("placeItemFromApi", () => {
+  const place = { id: "p1", category: "toilet", routeId: "r1", nameJa: "トイレ", nameEn: null, descriptionJa: null, descriptionEn: null, hoursJa: null, hoursEn: null, closedDaysJa: null, closedDaysEn: null, lat: 34.2, lng: 135.1, address: null, phone: null, website: null, photoUrl: null, status: "open", lastVerified: "2026-10-17" };
+  test("carries the course number and the checked position", () => {
+    expect(placeItemFromApi(place, 3)).toMatchObject({ category: "toilet", routes: [3], position: { lat: 34.2, lng: 135.1, verified: true }, status: "open" });
+    expect(placeItemFromApi(place, null).routes).toEqual([]);
+  });
+  test("a category or status this app does not know is read as other / unknown", () => {
+    expect(placeItemFromApi({ ...place, category: "hot_spring", status: "weird" }, 1)).toMatchObject({ category: "other", status: "unknown" });
   });
 });
