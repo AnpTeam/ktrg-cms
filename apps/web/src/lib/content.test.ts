@@ -56,8 +56,10 @@ describe("formatUpdated", () => {
 });
 
 describe("sampleContentEnabled", () => {
-  test("on by default in development, off in production and previews", () => {
+  test("on by default in development and Vercel previews, off in production", () => {
     expect(sampleContentEnabled({ NODE_ENV: "development" })).toBe(true);
+    expect(sampleContentEnabled({ NODE_ENV: "production", VERCEL_ENV: "preview" })).toBe(true);
+    expect(sampleContentEnabled({ NODE_ENV: "production", VERCEL_ENV: "production" })).toBe(false);
     expect(sampleContentEnabled({ NODE_ENV: "production" })).toBe(false);
     expect(sampleContentEnabled({})).toBe(false);
   });

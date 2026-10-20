@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 import { outcome } from "@/lib/admin/admin-client";
 import { checklist, factsFromSummary, progress } from "@/lib/admin/checklist";
 import { filterRoutes, moveId, routeState, type RouteState } from "@/lib/admin/route-list";
+import { RouteImport } from "./RouteImport";
 import { useChecklistLabels } from "./useChecklistLabels";
 import type { AdminRouteSummary, Prefecture } from "@/lib/admin/types";
 import { formatUpdated } from "@/lib/format";
@@ -89,6 +90,8 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
           {t`新しいルート`}
         </Link>
       </div>
+
+      <RouteImport routes={routes} onImported={setRoutes} />
 
       {error ? (
         <p role="alert" className="rounded-xl bg-surface p-4 text-lg font-bold text-danger">
