@@ -311,16 +311,27 @@ rt {
   }
 }
 
-/* The header menu drops down from the top. Reduced motion: it just appears. */
+/* The header menu drops down from the top on a phone, and grows out of the rail's button from 768 px. Reduced motion: it just appears. */
 @media (prefers-reduced-motion: no-preference) {
   .menu-drop {
     animation: menu-drop 160ms ease-out;
+  }
+  @media (min-width: 768px) {
+    .menu-drop {
+      animation: menu-pop 140ms ease-out;
+    }
   }
 }
 @keyframes menu-drop {
   from {
     opacity: 0;
     transform: translateY(-0.75rem);
+  }
+}
+@keyframes menu-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateX(-0.5rem);
   }
 }
 

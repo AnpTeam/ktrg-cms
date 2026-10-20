@@ -16,7 +16,7 @@ import { useMenu } from "./MenuProvider";
 export function TabBar({ footer }: { footer?: ReactNode }) {
   const { t } = useLingui();
   const pathname = usePathname() ?? "";
-  const { open, setOpen } = useMenu();
+  const { open, setOpen, railButton } = useMenu();
 
   const tabs = [
     { path: "/", label: t`ホーム`, icon: <HomeIcon /> },
@@ -56,6 +56,7 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
         })}
         <li className="hidden md:block">
           <button
+            ref={railButton}
             type="button"
             onClick={() => setOpen(!open)}
             aria-expanded={open}

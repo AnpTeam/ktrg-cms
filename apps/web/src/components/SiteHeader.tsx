@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { logOut } from "@/lib/auth-client";
 import { ChevronIcon, CloseIcon, MenuIcon, UserIcon } from "./icons";
@@ -21,8 +21,9 @@ const wideButton =
 
 /**
  * The top bar: one menu button on the left, the data-notice button on the right. The menu holds
- * everything that used to crowd the bar (theme, language, sign in or the profile) and opens as a
- * panel dropping down from the top. While it is open the notice button is hidden.
+ * everything that used to crowd the bar (theme, language, sign in or the profile). On a phone it opens as a
+ * panel dropping down from the top; from 768 px it is a popover beside the rail's menu button. While it is open
+ * the notice button is hidden.
  *
  * On the home page for someone who is signed out the bar takes no room and stays out of sight at first, so the
  * banner and the title get the whole top of the screen (the register and login buttons are right there). It
@@ -44,7 +45,7 @@ export function SiteHeader({
   const { t } = useLingui();
   const router = useRouter();
   const pathname = usePathname() ?? "/";
-  const { open, setOpen } = useMenu();
+  const { open, setOpen, railButton } = useMenu();
   const [leaving, setLeaving] = useState(false);
   const onMap = /^\/map\/?$/.test(pathname);
   const onLanding = onMap || (!signedIn && pathname === "/");
@@ -60,9 +61,28 @@ export function SiteHeader({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // While the menu is open the page behind it must not scroll: only the menu does.
+  // 768 px and up: the menu is a popover beside the rail button, and the page behind it may scroll.
+  const wide = () => window.matchMedia("(min-width: 768px)").matches;
+
+  // The popover sits to the right of the rail button that opened it, as high as the button allows while staying fully
+  // on screen, and grows out of the button. A resize would leave it in the wrong place, so it closes instead.
+  useLayoutEffect(() => {
+    const panel = panelRef.current;
+    const anchor = railButton.current;
+    if (!open || !panel || !anchor || !wide()) return;
+    const r = anchor.getBoundingClientRect();
+    const top = Math.max(12, Math.min(r.top - 8, window.innerHeight - panel.offsetHeight - 12));
+    panel.style.left = `${r.right + 12}px`;
+    panel.style.top = `${top}px`;
+    panel.style.transformOrigin = `left ${r.top + r.height / 2 - top}px`;
+    const close = () => setOpen(false);
+    window.addEventListener("resize", close);
+    return () => window.removeEventListener("resize", close);
+  }, [open, railButton, setOpen]);
+
+  // While the menu is open on a phone the page behind it must not scroll: only the menu does.
   useEffect(() => {
-    if (!open) return;
+    if (!open || wide()) return;
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
@@ -77,11 +97,11 @@ export function SiteHeader({
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
       setOpen(false);
-      buttonRef.current?.focus();
+      (wide() ? railButton.current : buttonRef.current)?.focus();
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [open, setOpen]);
+  }, [open, setOpen, railButton]);
 
   // After signing in the visitor comes back to where they were (login and register pages excepted).
   const here = /\/(login|register)(\/|$)/.test(pathname) ? "" : `?next=${encodeURIComponent(pathname)}`;
@@ -100,7 +120,7 @@ export function SiteHeader({
     <header className={`site-header ${onLanding ? "sticky top-0 z-30 h-0" : "relative z-30 md:sticky md:top-0 md:h-0"}`}>
       {open ? (
         // Tapping outside the panel closes it. (Escape and the button do the same for the keyboard.)
-        <div aria-hidden="true" onClick={() => setOpen(false)} className="fixed inset-0 bg-black/50" />
+        <div aria-hidden="true" onClick={() => setOpen(false)} className="fixed inset-0 bg-black/50 md:bg-transparent" />
       ) : null}
       <div
         inert={hidden}
@@ -138,7 +158,7 @@ export function SiteHeader({
         <div
           ref={panelRef}
           id="site-menu"
-          className={`menu-drop absolute inset-x-0 overflow-y-auto overscroll-contain border-b-2 border-brand bg-surface shadow-lg md:top-0 md:max-h-dvh md:rounded-b-3xl ${onLanding ? "top-14 max-h-[calc(100dvh-3.5rem)]" : "top-full max-h-[calc(100dvh-3.5rem)]"}`}
+          className={`menu-drop absolute inset-x-0 overflow-y-auto overscroll-contain border-b-2 border-brand bg-surface shadow-lg md:fixed md:right-auto md:w-[26rem] md:max-h-[calc(100dvh-1.5rem)] md:rounded-2xl md:border-2 md:shadow-xl ${onLanding ? "top-14 max-h-[calc(100dvh-3.5rem)]" : "top-full max-h-[calc(100dvh-3.5rem)]"}`}
         >
           <div className="mx-auto flex max-w-xl flex-col gap-5 px-4 py-5">
             <button
@@ -198,7 +218,8 @@ export function SiteHeader({
               </Link>
               <p className="text-base text-muted">{t`文字やボタンの大きさ、地図の見せ方`}</p>
             </div>
-            <ul className="flex flex-col border-t-2 border-line pt-2">
+            {/* From 1024 px these links are always in the sidebar's footer, so the menu leaves them out. */}
+            <ul className="flex flex-col border-t-2 border-line pt-2 lg:hidden">
               {[
                 { path: "/faq", label: t`よくあるご質問` },
                 { path: "/terms", label: t`利用規約` },
