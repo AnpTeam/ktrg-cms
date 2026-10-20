@@ -23,7 +23,7 @@ export function LoginFlow({ next, registerHref }: { next?: string; registerHref:
   const [error, setError] = useState<AuthFailure | null>(null);
 
   const finish = () => {
-    router.replace(safeNextPath(next, `/${locale}`));
+    router.replace(safeNextPath(next, "/"));
     router.refresh(); // the header and pages now see the session
   };
 

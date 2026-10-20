@@ -31,7 +31,6 @@
     "apps/web": {
       "name": "@ktrg/web",
       "dependencies": {
-        "@aws-sdk/client-s3": "^3.1152.0",
         "@elysiajs/eden": "^1.4.9",
         "@ktrg/api": "workspace:*",
         "@lingui/core": "^6.9.1",

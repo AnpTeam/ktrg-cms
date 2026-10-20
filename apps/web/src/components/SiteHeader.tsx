@@ -41,13 +41,13 @@ export function SiteHeader({
   /** Development only: shows the developer links (the map style page). */
   devTools: boolean;
 }) {
-  const { t, i18n } = useLingui();
+  const { t } = useLingui();
   const router = useRouter();
   const pathname = usePathname() ?? "/";
   const { open, setOpen } = useMenu();
   const [leaving, setLeaving] = useState(false);
-  const onMap = /^\/(ja|en)\/map\/?$/.test(pathname);
-  const onLanding = onMap || (!signedIn && /^\/(ja|en)\/?$/.test(pathname));
+  const onMap = /^\/map\/?$/.test(pathname);
+  const onLanding = onMap || (!signedIn && pathname === "/");
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
     if (!onLanding || onMap) return;
@@ -85,8 +85,8 @@ export function SiteHeader({
 
   // After signing in the visitor comes back to where they were (login and register pages excepted).
   const here = /\/(login|register)(\/|$)/.test(pathname) ? "" : `?next=${encodeURIComponent(pathname)}`;
-  const loginHref = `/${i18n.locale}/login${here}`;
-  const registerHref = `/${i18n.locale}/register${here}`;
+  const loginHref = `/login${here}`;
+  const registerHref = `/register${here}`;
 
   async function signOut() {
     setLeaving(true);
@@ -127,7 +127,7 @@ export function SiteHeader({
         </button>
         {/* The logo is a link home. The landing page has it in its title card and the map has no room for it. */}
         {!onLanding && !open ? (
-          <Link href={`/${i18n.locale}`} aria-label={t`ホーム`} className="rounded-lg p-1">
+          <Link href="/" aria-label={t`ホーム`} className="rounded-lg p-1">
             <KatsuragiLogo compact className="h-10 w-auto" />
           </Link>
         ) : null}
@@ -152,7 +152,7 @@ export function SiteHeader({
             {signedIn ? (
               <div className="flex flex-col gap-3">
                 <Link
-                  href={`/${i18n.locale}/stamps`}
+                  href="/stamps"
                   className="tap-target flex items-center gap-3 rounded-xl border-2 border-brand bg-paper px-4 text-xl font-bold hover:bg-surface"
                 >
                   <UserIcon />
@@ -191,7 +191,7 @@ export function SiteHeader({
             </div>
             <div className="flex flex-col gap-2 border-t-2 border-line pt-4">
               <Link
-                href={`/${i18n.locale}/settings`}
+                href="/settings"
                 className="tap-target flex items-center rounded-xl border-2 border-ink px-4 text-lg font-bold text-ink hover:bg-paper"
               >
                 {t`見やすさの設定`}
@@ -206,7 +206,7 @@ export function SiteHeader({
                 { path: "/licenses", label: t`ライセンス情報` },
               ].map(({ path, label }) => (
                 <li key={path}>
-                  <Link href={`/${i18n.locale}${path}`} className="tap-target flex items-center justify-between py-1 text-lg font-bold">
+                  <Link href={path} className="tap-target flex items-center justify-between py-1 text-lg font-bold">
                     {label}
                     <ChevronIcon />
                   </Link>
@@ -217,7 +217,7 @@ export function SiteHeader({
               <div className="flex flex-col gap-2 border-t-2 border-line pt-4">
                 <p className="text-lg font-bold">{t`開発用`}</p>
                 <Link
-                  href={`/${i18n.locale}/settings/map`}
+                  href="/settings/map"
                   className="tap-target flex items-center rounded-xl border-2 border-ink px-4 text-lg font-bold text-ink hover:bg-paper"
                 >
                   {t`地図の見た目の設定`}

@@ -226,7 +226,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     setMessage({ kind: "ok", text: t`保存しました。` });
     setProblems([]);
     setSaving(false);
-    if (snapshot.id === null) router.replace(`/${locale}/admin/routes/${routeId}`);
+    if (snapshot.id === null) router.replace(`/admin/routes/${routeId}`);
   }
 
   async function setPublished(key: string, publish: boolean) {
@@ -249,7 +249,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     if (!draft.id || saving) return;
     if (!window.confirm(t`このルートを削除します。元に戻せません。よろしいですか？`)) return;
     const res = await outcome(api.admin.routes({ id: draft.id }).delete());
-    if (res.ok) router.replace(`/${locale}/admin/routes`);
+    if (res.ok) router.replace(`/admin/routes`);
     else setMessage({ kind: "error", text: messages[res.key] });
   }
 

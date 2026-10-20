@@ -34,8 +34,8 @@ export function RegisterFlow({ next, loginHref }: { next?: string; loginHref: st
   const profile = (): SignupProfile => ({ displayName: name.trim(), origin, locale });
   // A new account meets the set-up screen first (how big, how the map looks), then goes where it was going.
   const finish = () => {
-    const after = safeNextPath(next, `/${locale}`);
-    router.replace(`/${locale}/welcome?next=${encodeURIComponent(after)}`);
+    const after = safeNextPath(next, "/");
+    router.replace(`/welcome?next=${encodeURIComponent(after)}`);
     router.refresh();
   };
   const choose = (m: Method) => {

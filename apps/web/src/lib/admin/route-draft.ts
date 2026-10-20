@@ -1,5 +1,5 @@
 import type { RouteDetail, RoutePoint } from "../content";
-import { navigationKinds, type PointKind } from "../point-kinds";
+import type { PointKind } from "../point-kinds";
 import { areaFromBounds, sketchFromPoints } from "../route-geometry";
 import { climbM, elevationsOf, lengthKm, type LngLatEle } from "./line";
 import type { AdminRoute, AdminSpot, Prefecture, SpotStatus } from "./types";
@@ -352,6 +352,3 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
     photoUrl: nz(d.photoUrl),
   };
 }
-
-/** Whether a kind is one of the route's navigation points (handy for forms). */
-export const isNavigationKind = (kind: PointKind): boolean => (navigationKinds as readonly string[]).includes(kind);

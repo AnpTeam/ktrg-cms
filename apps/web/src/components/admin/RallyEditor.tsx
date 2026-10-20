@@ -88,7 +88,7 @@ export function RallyEditor({
     const res = await outcome(one().delete());
     setBusy(false);
     if (!res.ok) return setNotice({ kind: "error", text: messages[res.key] });
-    router.push(`/${locale}/admin/rallies`);
+    router.push(`/admin/rallies`);
   }
 
   return (

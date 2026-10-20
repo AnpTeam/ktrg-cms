@@ -85,7 +85,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
           <input type="checkbox" checked={needsWorkOnly} onChange={(e) => setNeedsWorkOnly(e.target.checked)} className="size-6" />
           {t`手直しが必要なルートだけ（${needsWorkCount}）`}
         </label>
-        <Link href={`/${locale}/admin/routes/new`} className="tap-target inline-flex items-center rounded-xl bg-brand px-5 text-lg font-bold text-on-brand">
+        <Link href="/admin/routes/new" className="tap-target inline-flex items-center rounded-xl bg-brand px-5 text-lg font-bold text-on-brand">
           {t`新しいルート`}
         </Link>
       </div>
@@ -111,7 +111,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
                   {index + 1}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <Link href={`/${locale}/admin/routes/${r.id}`} className="text-xl font-bold text-accent underline underline-offset-4">
+                  <Link href={`/admin/routes/${r.id}`} className="text-xl font-bold text-accent underline underline-offset-4">
                     {name}
                   </Link>
                   <p className="text-base text-muted">
@@ -129,7 +129,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
                       .map((i) => (
                         <li key={i.id}>
                           <Link
-                            href={`/${locale}/admin/routes/${r.id}?tab=${i.tab}`}
+                            href={`/admin/routes/${r.id}?tab=${i.tab}`}
                             className={`inline-flex items-center rounded-full px-3 py-1 text-base ${i.required ? "bg-danger font-bold text-white" : "bg-surface text-ink"}`}
                           >
                             {i.required ? t`必要：${labels.item[i.id]}` : t`あるとよい：${labels.item[i.id]}`}

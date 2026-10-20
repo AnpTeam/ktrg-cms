@@ -41,7 +41,7 @@ export function RallyCreate({
     const res = await outcome(api.admin.rallies.post({ kind, nameJa, nameEn: nameEn.trim() || null, ...members }));
     setBusy(false);
     if (!res.ok) return setError(messages[res.key]);
-    router.push(`/${locale}/admin/rallies/${res.data.rally.id}`);
+    router.push(`/admin/rallies/${res.data.rally.id}`);
   }
 
   const choice = (value: AdminRallyKind, title: string, text: string) => (

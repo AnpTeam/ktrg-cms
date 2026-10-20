@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Trans, useLingui } from "@lingui/react/macro";
-import { localePath } from "@/lib/rally";
 import { foundationEn, foundationJa } from "@/lib/terms-content";
 
 /**
@@ -15,19 +14,19 @@ export function SiteFooter({ locale, variant = "page" }: { locale: string; varia
   return (
     <footer className={sidebar ? "site-footer border-t border-line/30 px-2 pt-3" : "site-footer mt-10 border-t border-line/30 px-4 pt-4"}>
       <nav aria-label={t`フッター`} className={sidebar ? "flex flex-col" : "flex flex-wrap gap-x-6 gap-y-1"}>
-        <Link href={localePath(locale, "/faq")} className={link}>
+        <Link href="/faq" className={link}>
           <Trans>よくあるご質問</Trans>
         </Link>
-        <Link href={localePath(locale, "/licenses")} className={link}>
+        <Link href="/licenses" className={link}>
           <Trans>ライセンス情報</Trans>
         </Link>
-        <Link href={localePath(locale, "/sitemap")} className={link}>
+        <Link href="/sitemap" className={link}>
           <Trans>サイトマップ</Trans>
         </Link>
-        <Link href={localePath(locale, "/terms")} className={link}>
+        <Link href="/terms" className={link}>
           <Trans>利用規約</Trans>
         </Link>
-        <Link href={localePath(locale, "/privacy")} className={link}>
+        <Link href="/privacy" className={link}>
           <Trans>プライバシーポリシー</Trans>
         </Link>
       </nav>

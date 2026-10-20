@@ -4,7 +4,6 @@ import { Trans, useLingui } from "@lingui/react/macro";
 import { pickText } from "@/lib/content";
 import { formatUpdated } from "@/lib/format";
 import { isSoon, nextSlot, sealName, stampedNumbers, type RallyItem } from "@/lib/rally-model";
-import { localePath } from "@/lib/rally";
 import { ChevronIcon } from "./icons";
 import { SectionBanner } from "./SectionBanner";
 import { StampGrid } from "./StampGrid";
@@ -156,7 +155,7 @@ export function RallyCard({ rally, locale, signedIn }: { rally: RallyItem; local
         {rally.routeId ? (
           <div className="border-t-2 border-line p-4">
             <Link
-              href={localePath(locale, `/routes/${rally.routeId}`)}
+              href={`/routes/${rally.routeId}`}
               className="tap-target inline-flex items-center rounded-lg border-2 border-brand px-4 text-lg font-bold text-accent hover:bg-paper"
             >
               <Trans>コースを見る</Trans>
