@@ -138,3 +138,8 @@ export async function fetchPublicSpot(id: string): Promise<PublicSpot | null> {
 export async function fetchPublicNotices(): Promise<TrailNotice[] | null> {
   return okBody<{ notices: TrailNotice[] }>(await getJson("/notices"))?.notices ?? null;
 }
+
+/** Published home page banners, in order. */
+export async function fetchPublicBanners(): Promise<{ id: string; imageUrl: string; altJa: string; altEn: string | null }[] | null> {
+  return okBody<{ banners: { id: string; imageUrl: string; altJa: string; altEn: string | null }[] }>(await getJson("/banners"))?.banners ?? null;
+}

@@ -21,6 +21,8 @@ import { ADMIN_LISTS } from "./admin-lists/lists";
 import { listMetaRoutes, listReadRoutes, listWriteRoutes } from "./admin-lists/list-routes";
 import { purgeRoutes } from "./internal/purge-routes";
 import { auditLogList, createDrizzleAuditListStore } from "./audit/audit-list";
+import { bannerList, publicBannerRoutes } from "./banners/banner-list";
+import { createDrizzleBannerStore } from "./banners/banner-store";
 import { createDrizzlePlaceListStore, placeList } from "./content/place-list";
 import { createDrizzleUserListStore, userList } from "./users/user-list";
 import { userRoleRoutes } from "./users/user-routes";
@@ -49,6 +51,7 @@ function getServices(): Services {
         content: createDrizzleContentStore(db),
         rallyAdmin: createDrizzleRallyAdminStore(db),
         notices: createDrizzleNoticeStore(db),
+        banners: createDrizzleBannerStore(db),
         auditList: createDrizzleAuditListStore(db),
         placeList: createDrizzlePlaceListStore(db),
         userList: createDrizzleUserListStore(db),
@@ -112,6 +115,9 @@ export function createApp(
     .use(listReadRoutes(noticeList, getServices, opts))
     .use(listWriteRoutes(noticeList, getServices, opts))
     .use(publicNoticeRoutes(() => getServices().notices))
+    .use(listReadRoutes(bannerList, getServices, opts))
+    .use(listWriteRoutes(bannerList, getServices, opts))
+    .use(publicBannerRoutes(() => getServices().banners))
     .use(listReadRoutes(auditLogList, getServices, opts))
     .use(listReadRoutes(placeList, getServices, opts))
     .use(listReadRoutes(userList, getServices, opts))

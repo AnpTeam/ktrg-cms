@@ -32,6 +32,8 @@ export const PERMISSIONS = {
   /** Dated trail notices and spot status. */
   "notice.manage": ["admin"],
   "upload.create": ["admin"],
+  /** The photos in the home page carousel. */
+  "banner.manage": ["admin"],
   /** Review flagged stamps and revoke them. */
   "stamp.review": ["admin"],
   "audit.read": ["admin"],

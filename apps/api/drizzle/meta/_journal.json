@@ -99,6 +99,13 @@
       "when": 1792454432456,
       "tag": "0013_trail_notices_admin",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1792456858136,
+      "tag": "0014_banners",
+      "breakpoints": true
     }
   ]
 }

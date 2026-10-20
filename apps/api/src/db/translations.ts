@@ -18,6 +18,7 @@ export const ROUTE_TEXT = ["name", "description", "history", "access"] as const;
 export const SPOT_TEXT = ["name", "description", "statusNote"] as const;
 export const RALLY_TEXT = ["name"] as const;
 export const NOTICE_TEXT = ["title", "body", "sourceName"] as const;
+export const BANNER_TEXT = ["alt"] as const;
 
 /** Every field null: an owner with no translation rows. */
 export function emptyTexts<F extends string>(fields: readonly F[]): Flat<F> {

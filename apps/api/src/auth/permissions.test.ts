@@ -29,6 +29,7 @@ describe("permission table", () => {
     expect(forAdmin).toEqual(
       [
         "audit.read",
+        "banner.manage",
         "me.manage",
         "me.sensitive",
         "notice.manage",

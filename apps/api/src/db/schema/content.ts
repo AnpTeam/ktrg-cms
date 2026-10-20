@@ -294,6 +294,18 @@ export const trailNotices = pgTable(
   (t) => [index("trail_notices_route_idx").on(t.routeId, t.expiresOn)],
 );
 
+/** A photo in the carousel at the top of the home page, in `sort_order`. A draft until published. Its words (the
+ * description read out by screen readers) are in banner_translations. */
+export const banners = pgTable("banners", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  // An https link to the photo (uploaded to R2, or pasted).
+  imageUrl: text("image_url").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  published: boolean("published").notNull().default(false),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
 /** Append-only record of admin actions. User ids only: no names or emails. */
 export const auditLog = pgTable(
   "audit_log",
@@ -380,4 +392,16 @@ export const trailNoticeTranslations = pgTable(
     check("trail_notice_translations_ja_body", jaRequires(t, t.body)),
     check("trail_notice_translations_ja_title", jaRequires(t, t.title)),
   ],
+);
+
+export const bannerTranslations = pgTable(
+  "banner_translations",
+  {
+    bannerId: uuid("banner_id")
+      .notNull()
+      .references(() => banners.id, { onDelete: "cascade" }),
+    locale: userLocale("locale").notNull(),
+    alt: text("alt"),
+  },
+  (t) => [primaryKey({ columns: [t.bannerId, t.locale] }), check("banner_translations_ja_alt", jaRequires(t, t.alt))],
 );

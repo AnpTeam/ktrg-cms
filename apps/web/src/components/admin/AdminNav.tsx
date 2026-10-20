@@ -20,7 +20,7 @@ export function AdminNav({ locale, lists }: { locale: string; lists: { key: stri
     { href: `${base}/rallies`, label: t`ラリー` },
     ...lists.map((l) => ({ href: `${base}/${l.key}`, label: l.title })),
   ];
-  const later = [t`バナー`, t`ページの文章`];
+  const later = [t`ページの文章`];
 
   return (
     <nav aria-label={t`管理メニュー`} className="flex flex-col gap-1">

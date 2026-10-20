@@ -7,7 +7,7 @@ import { ProgressSummary } from "@/components/ProgressSummary";
 import { RowLink } from "@/components/RowLink";
 import { Ruby } from "@/components/Ruby";
 import Link from "next/link";
-import { bannerSlides, slidesToShow } from "@/lib/banners";
+import { listBanners, slidesToShow } from "@/lib/banners";
 import { forViewer, listRoutes, sampleContentEnabled } from "@/lib/content";
 import { listNotices } from "@/lib/notices";
 import { parseVideoUrl } from "@/lib/video";
@@ -23,10 +23,10 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   // Not signed in: the landing page for a first-time visitor. No progress is shown at all.
   if (!viewer.signedIn) {
-    const [routes, notices] = await Promise.all([listRoutes(), listNotices()]);
+    const [routes, notices, banners] = await Promise.all([listRoutes(), listNotices(), listBanners()]);
     // The intro video is set by the deployment (a YouTube or Vimeo link); with none, the section is left out.
     const introVideo = parseVideoUrl(process.env.INTRO_VIDEO_URL);
-    const slides = slidesToShow(bannerSlides, sampleContentEnabled());
+    const slides = slidesToShow(banners, sampleContentEnabled());
     const blogUrl = process.env.BLOG_URL ?? null;
     return <Landing to={to} locale={i18n.locale} routes={routes} notices={notices} introVideo={introVideo} slides={slides} blogUrl={blogUrl} />;
   }
@@ -37,7 +37,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const total = routes.reduce((n, r) => n + r.spotCount, 0) || TOTAL_STAMPS;
   const name = viewer.name;
   const prefs = await getPrefs();
-  const slides = slidesToShow(bannerSlides, sampleContentEnabled());
+  const slides = slidesToShow(await listBanners(), sampleContentEnabled());
 
   return (
     <div className="flex flex-col gap-8 lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
