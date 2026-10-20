@@ -46,3 +46,26 @@ export interface PublicSpot {
   statusUpdatedAt: string | null;
   sortOrder: number;
 }
+
+/** One place of the directory as GET /places sends it (only published ones with a checked position). */
+export interface PublicPlace {
+  id: string;
+  category: string;
+  routeId: string | null;
+  nameJa: string;
+  nameEn: string | null;
+  descriptionJa: string | null;
+  descriptionEn: string | null;
+  hoursJa: string | null;
+  hoursEn: string | null;
+  closedDaysJa: string | null;
+  closedDaysEn: string | null;
+  lat: number;
+  lng: number;
+  address: string | null;
+  phone: string | null;
+  website: string | null;
+  photoUrl: string | null;
+  status: string;
+  lastVerified: string | null;
+}
