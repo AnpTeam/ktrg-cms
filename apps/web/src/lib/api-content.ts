@@ -1,4 +1,5 @@
 import type { PublicRoute, PublicSpot } from "./api-content-types";
+import type { TrailNotice } from "./notices";
 import type { Prefecture, RouteDetail, RoutePoint, RouteSummary, SpotDetail, SpotListItem } from "./content";
 import { isPointKind } from "./point-kinds";
 import { areaFromBounds, sketchFromPoints } from "./route-geometry";
@@ -131,4 +132,14 @@ export async function fetchPublicRoute(id: string): Promise<{ route: PublicRoute
 
 export async function fetchPublicSpot(id: string): Promise<PublicSpot | null> {
   return okBody<{ spot: PublicSpot }>(await getJson(`/spots/${encodeURIComponent(id)}`))?.spot ?? null;
+}
+
+/** Published trail notices that have not expired (the API decides, in Japan time). */
+export async function fetchPublicNotices(): Promise<TrailNotice[] | null> {
+  return okBody<{ notices: TrailNotice[] }>(await getJson("/notices"))?.notices ?? null;
+}
+
+/** Published home page banners, in order. */
+export async function fetchPublicBanners(): Promise<{ id: string; imageUrl: string; altJa: string; altEn: string | null }[] | null> {
+  return okBody<{ banners: { id: string; imageUrl: string; altJa: string; altEn: string | null }[] }>(await getJson("/banners"))?.banners ?? null;
 }

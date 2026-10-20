@@ -111,7 +111,7 @@ describe("content schema", () => {
       expect(cfg.primaryKeys[0]!.columns.map((c) => c.name)).toEqual([key, "locale"]);
       expect(cfg.foreignKeys[0]!.reference().foreignTable).toBe(owner);
       expect(cfg.foreignKeys[0]!.onDelete).toBe("cascade");
-      expect(col(words, "locale").enumValues).toEqual(["ja", "en"]);
+      expect(col(words, "locale").enumValues).toEqual(["ja", "en", "de", "fr", "th", "es"]);
     }
   });
 
@@ -119,7 +119,7 @@ describe("content schema", () => {
     expect(getTableConfig(routeTranslations).checks.map((c) => c.name)).toEqual(["route_translations_ja_name"]);
     expect(getTableConfig(spotTranslations).checks.map((c) => c.name)).toEqual(["spot_translations_ja_name"]);
     expect(getTableConfig(rallyTranslations).checks.map((c) => c.name)).toEqual(["rally_translations_ja_name"]);
-    expect(getTableConfig(trailNoticeTranslations).checks.map((c) => c.name)).toEqual(["trail_notice_translations_ja_body"]);
+    expect(getTableConfig(trailNoticeTranslations).checks.map((c) => c.name)).toEqual(["trail_notice_translations_ja_body", "trail_notice_translations_ja_title"]);
   });
 
   test("a rally is made of places or of courses, and is a draft until published; no N-of-M rule and no dates", () => {

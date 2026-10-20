@@ -18,8 +18,27 @@ import { TestAuthenticator } from "./auth/webauthn-test-authenticator";
 import type { MailMessage } from "./lib/mailer";
 import { createMemoryContentStore } from "./content/content-memory-store";
 import { createMemoryRallyAdminStore } from "./rallies/rally-admin-memory-store";
+import { createMemoryNoticeStore } from "./notices/notice-memory-store";
+import { createMemoryBannerStore } from "./banners/banner-list";
+import { memoryReader } from "./admin-lists/list-memory-store";
+import { createMemoryUserListStore } from "./users/user-list";
 import { createMemoryMeStore } from "./me/me-memory-store";
 import { createServices } from "./services";
+
+/** A well-formed trail notice body (the admin list's create needs every field). */
+const sampleNotice = () => ({
+  routeId: null,
+  titleJa: "x",
+  titleEn: null,
+  bodyJa: "x",
+  bodyEn: null,
+  sourceUrl: "https://example.com/",
+  sourceNameJa: "x",
+  sourceNameEn: null,
+  verifiedOn: "2026-10-20",
+  expiresOn: null,
+  published: false,
+});
 
 const DAY = 24 * 60 * 60 * 1000;
 const passkeyConfig = { rpName: "KTRG", rpId: "example.com", origin: "https://example.com" };
@@ -46,6 +65,11 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       me: profiles.store,
       content: createMemoryContentStore(audit.writer).store,
       rallyAdmin: createMemoryRallyAdminStore(audit.writer).store,
+      notices: createMemoryNoticeStore(audit.writer).store,
+      banners: createMemoryBannerStore(audit.writer).store,
+      auditList: memoryReader(new Map()),
+      placeList: memoryReader(new Map()),
+      userList: createMemoryUserListStore(audit.writer).store,
     },
     audit: audit.writer,
     mailer: {
@@ -273,6 +297,10 @@ describe("user B cannot touch user A", () => {
     "GET /api/v1/routes",
     "GET /api/v1/routes/:id",
     "GET /api/v1/spots/:id",
+    // Published trail notices (see notices/notice-routes.test.ts).
+    "GET /api/v1/notices",
+    // Published home page banners (see banners/banner-list.test.ts).
+    "GET /api/v1/banners",
     "POST /api/v1/auth/otp/request",
     "POST /api/v1/auth/otp/verify",
     "POST /api/v1/auth/logout",
@@ -298,6 +326,11 @@ describe("user B cannot touch user A", () => {
     "PATCH /api/v1/admin/rallies/:id": () => ({ updatedAt: new Date().toISOString() }),
     "PUT /api/v1/admin/rallies/:id/places": () => ({ updatedAt: new Date().toISOString(), spotIds: [] }),
     "PUT /api/v1/admin/rallies/:id/courses": () => ({ updatedAt: new Date().toISOString(), routeIds: [] }),
+    "POST /api/v1/admin/lists/notices": () => sampleNotice(),
+    "PATCH /api/v1/admin/lists/notices/:id": () => ({ updatedAt: new Date().toISOString() }),
+    "POST /api/v1/admin/lists/banners": () => ({ imageUrl: "https://example.com/a.jpg", altJa: "x", altEn: null, sortOrder: 0, published: false }),
+    "PATCH /api/v1/admin/lists/banners/:id": () => ({ updatedAt: new Date().toISOString() }),
+    "PATCH /api/v1/admin/lists/users/:id": () => ({ updatedAt: new Date().toISOString(), role: "admin" }),
     "POST /api/v1/auth/reauth/verify": () => ({ code: "123456" }),
     "POST /api/v1/admin/uploads": () => {
       const form = new FormData();

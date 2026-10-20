@@ -6,6 +6,8 @@ import { Trans } from "@lingui/react/macro";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { initLingui } from "@/i18n/server";
 import { adminAccess } from "@/lib/admin/access";
+import { pick } from "@/lib/admin/lists/config";
+import { adminLists } from "@/lib/admin/lists/server";
 import { getViewer } from "@/lib/viewer";
 
 // Search engines have no business here (robots.txt says so too).
@@ -16,7 +18,7 @@ export const metadata: Metadata = { robots: { index: false, follow: false } };
  * so, with a way home. This only decides what is shown: the API checks the role again on every call.
  */
 export default async function AdminLayout({ children }: { children: ReactNode }) {
-  await initLingui();
+  const i18n = await initLingui();
   const viewer = await getViewer();
   const access = adminAccess(viewer);
 
@@ -40,8 +42,10 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     );
   }
 
+  // The generic lists (described by the API) join the menu by themselves.
+  const lists = ((await adminLists()) ?? []).map((l) => ({ key: l.key, title: pick(l.title, i18n.locale) }));
   return (
-    <AdminShell name={viewer.name}>
+    <AdminShell name={viewer.name} lists={lists}>
       {children}
     </AdminShell>
   );

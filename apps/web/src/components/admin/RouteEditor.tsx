@@ -23,7 +23,7 @@ import {
 import { draftProblems, placeChanged, planSave, type DraftProblem } from "@/lib/admin/save-plan";
 import type { Prefecture } from "@/lib/admin/types";
 import { formatUpdated } from "@/lib/format";
-import { BilingualField, Check, Field, inputClass, NumberInput, Section, TextInput } from "./fields";
+import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
 import { LivePreview } from "./LivePreview";
 import { MapEditorLoader } from "./map-editor/MapEditorLoader";
 import type { ElevationStatus } from "./map-editor/MapEditor";
@@ -31,6 +31,7 @@ import { isListedMunicipality } from "@/lib/municipalities";
 import { MunicipalityField } from "./MunicipalityField";
 import { PhotoSlot } from "./PhotoSlot";
 import { PlacePanel } from "./PlacePanel";
+import { PlaceTable } from "./PlaceTable";
 import { useChecklistLabels } from "./useChecklistLabels";
 
 const TABS: EditorTab[] = ["overview", "text", "map", "places", "check"];
@@ -55,6 +56,8 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
   const [problems, setProblems] = useState<DraftProblem[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [view, setView] = useState<"edit" | "preview">("edit");
+  // The places tab: a table to type many at once (where a new route starts), or the detailed panel per place.
+  const [placesView, setPlacesView] = useState<"table" | "detail">(() => (initial.id === null ? "table" : "detail"));
   const params = useSearchParams();
   const [section, setSectionState] = useState<EditorTab>(() => {
     const q = params.get("tab");
@@ -314,7 +317,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
             {section === "overview" ? (
               <>
                 <Section title={t`基本`}>
-                  <BilingualField id="route-name" label={t`ルートの名前`} ja={draft.nameJa} en={draft.nameEn} onJa={text("nameJa")} onEn={text("nameEn")} required invalid={problemOf("route_name")} />
+                  <MultilingualField id="route-name" field="name" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`ルートの名前`} ja={draft.nameJa} en={draft.nameEn} onJa={text("nameJa")} onEn={text("nameEn")} required invalid={problemOf("route_name")} />
                   {problemOf("route_name") ? <p role="alert" className="text-base font-bold text-danger">{t`日本語の名前を入れてください。`}</p> : null}
                   <div className="flex flex-wrap gap-4">
                     <Field label={t`都道府県`} htmlFor="route-pref">
@@ -370,14 +373,14 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
             {section === "text" ? (
               <>
                 <Section title={t`ルートの説明`}>
-                  <BilingualField id="route-desc" label={t`ルートの説明`} ja={draft.descriptionJa} en={draft.descriptionEn} onJa={text("descriptionJa")} onEn={text("descriptionEn")} multiline />
+                  <MultilingualField id="route-desc" field="description" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`ルートの説明`} ja={draft.descriptionJa} en={draft.descriptionEn} onJa={text("descriptionJa")} onEn={text("descriptionEn")} multiline />
                   <p className="text-base text-muted">{t`改行は、そのまま表示されます。`}</p>
                 </Section>
                 <Section title={t`歴史・由来`}>
-                  <BilingualField id="route-history" label={t`歴史・由来`} ja={draft.historyJa} en={draft.historyEn} onJa={text("historyJa")} onEn={text("historyEn")} multiline />
+                  <MultilingualField id="route-history" field="history" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`歴史・由来`} ja={draft.historyJa} en={draft.historyEn} onJa={text("historyJa")} onEn={text("historyEn")} multiline />
                 </Section>
                 <Section title={t`アクセス・交通`}>
-                  <BilingualField id="route-access" label={t`アクセス・交通`} ja={draft.accessJa} en={draft.accessEn} onJa={text("accessJa")} onEn={text("accessEn")} multiline />
+                  <MultilingualField id="route-access" field="access" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`アクセス・交通`} ja={draft.accessJa} en={draft.accessEn} onJa={text("accessJa")} onEn={text("accessEn")} multiline />
                   <p className="text-base text-muted">{t`最寄りの駅やバス停、スタート地点とゴール地点への行き方を書きます。`}</p>
                 </Section>
               </>
@@ -431,7 +434,29 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
 
             {section === "places" ? (
               <Section title={t`経由地（${draft.places.length}か所）`}>
-                {draft.places.length === 0 ? (
+                <div role="group" aria-label={t`場所の見せ方`} className="flex flex-wrap gap-2">
+                  {(["table", "detail"] as const).map((v) => (
+                    <button
+                      key={v}
+                      type="button"
+                      aria-pressed={placesView === v}
+                      onClick={() => setPlacesView(v)}
+                      className={`tap-target rounded-xl border-2 px-5 text-lg font-bold ${placesView === v ? "border-ink bg-ink text-paper" : "border-line"}`}
+                    >
+                      {v === "table" ? t`表でまとめて入力` : t`1か所ずつ詳しく`}
+                    </button>
+                  ))}
+                </div>
+                {placesView === "table" ? (
+                  <PlaceTable
+                    places={draft.places}
+                    busy={busyKey !== null || saving}
+                    invalidName={(key) => problemOf("place_name", key)}
+                    onChange={(key, patch) => dispatch({ type: "place", key, patch })}
+                    onRemove={(key) => dispatch({ type: "removePlace", key })}
+                    onAdd={() => dispatch({ type: "addRow", key: crypto.randomUUID() })}
+                  />
+                ) : draft.places.length === 0 ? (
                   <p className="rounded-xl bg-paper p-4 text-lg">
                     {t`まだありません。`}{" "}
                     <button type="button" onClick={() => setSection("map")} className="font-bold text-accent underline underline-offset-4">

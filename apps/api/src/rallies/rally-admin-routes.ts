@@ -2,6 +2,7 @@ import { Elysia, t } from "elysia";
 import { fail } from "../auth/http";
 import { routeKit, type KitServices, type RouteOptions } from "../auth/route-kit";
 import type { ErrorCode } from "../lib/api-errors";
+import { translationsSchema } from "../lib/schemas";
 import type { RallyAdminService } from "./rally-admin-service";
 import type { RallyRow } from "./rally-admin-types";
 
@@ -30,6 +31,7 @@ const idParams = t.Object({ id: uuid });
 const updatedAt = t.String({ format: "date-time" });
 const nameJa = t.String({ minLength: 1, maxLength: 200 });
 const nameEn = t.Union([t.String({ maxLength: 200 }), t.Null()]);
+const translations = translationsSchema({ name: 200 });
 const kindSchema = t.Union([t.Literal("places"), t.Literal("course")]);
 
 /**
@@ -82,6 +84,7 @@ export function rallyAdminRoutes(getServices: () => RallyAdminServices, opts: Ro
           kind: kindSchema,
           nameJa,
           nameEn: t.Optional(nameEn),
+          translations: t.Optional(translations),
           spotIds: t.Optional(t.Array(uuid, { maxItems: 2000 })),
           routeIds: t.Optional(t.Array(uuid, { maxItems: 1000 })),
         }),
@@ -107,7 +110,7 @@ export function rallyAdminRoutes(getServices: () => RallyAdminServices, opts: Ro
         auth: "rally.manage",
         rateLimit: { adminWriteUser: "user.id" },
         params: idParams,
-        body: t.Composite([t.Object({ updatedAt }), t.Partial(t.Object({ nameJa, nameEn, published: t.Boolean() }))]),
+        body: t.Composite([t.Object({ updatedAt }), t.Partial(t.Object({ nameJa, nameEn, translations, published: t.Boolean() }))]),
       },
     )
     .put(

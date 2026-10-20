@@ -32,9 +32,13 @@ export const PERMISSIONS = {
   /** Dated trail notices and spot status. */
   "notice.manage": ["admin"],
   "upload.create": ["admin"],
+  /** The photos in the home page carousel. */
+  "banner.manage": ["admin"],
   /** Review flagged stamps and revoke them. */
   "stamp.review": ["admin"],
   "audit.read": ["admin"],
+  /** See the list of accounts (the users screen). No fresh login: only changing a role needs one. */
+  "user.read": ["admin"],
   /** Change another account's role. Also needs a fresh login (below). */
   "user.manage_roles": ["admin"],
 } as const satisfies Record<string, readonly Role[]>;

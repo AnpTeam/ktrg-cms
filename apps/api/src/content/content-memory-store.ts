@@ -1,3 +1,4 @@
+import { mergeTranslations } from "../db/translations";
 import type { AuditWriter } from "../audit/audit-log";
 import type { ContentStore, RouteRow, RouteSummaryRow, SpotFields, SpotRow, StoredRouteFields } from "./content-types";
 
@@ -46,6 +47,7 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
         id: uuid(), nameEn: null, descriptionJa: null, descriptionEn: null, distanceKm: null,
         elevationGainM: null, difficulty: null, expectedTimeMin: null, prefecture: null, municipality: null, geometry: null, lineVerified: false, lineSource: null,
         videoUrl: null, historyJa: null, historyEn: null, accessJa: null, accessEn: null, photoUrl: null, sortOrder: routes.size + 1, createdAt: at, updatedAt: at, ...fields,
+        translations: mergeTranslations({}, fields.translations),
       };
       routes.set(row.id, row);
       await audit.record({ actorUserId: actor, action: "route.create", targetId: row.id });
@@ -55,7 +57,7 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       const cur = routes.get(id);
       if (!cur) return null;
       if (cur.updatedAt.getTime() !== expected.getTime()) return "conflict";
-      const next: RouteRow = { ...cur, ...changes, updatedAt: stampTime() };
+      const next: RouteRow = { ...cur, ...changes, translations: mergeTranslations(cur.translations, changes.translations), updatedAt: stampTime() };
       routes.set(id, next);
       await audit.record({ actorUserId: actor, action: "route.update", targetId: id });
       return next;
@@ -82,6 +84,7 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
         positionVerified: false, positionSource: null, radiusM: 50, kind: "other", stampable: false, photoUrl: null, status: "open", statusNoteJa: null, statusNoteEn: null,
         statusUpdatedAt: null, sortOrder: sortedSpots(routeId).length + 1, published: false, permissionConfirmed: false,
         permissionNote: null, createdAt: at, updatedAt: at, ...fields,
+        translations: mergeTranslations({}, fields.translations),
       };
       spots.set(row.id, row);
       await audit.record({ actorUserId: actor, action: "spot.create", targetId: row.id });
@@ -95,7 +98,7 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       if (switchedOff && stamped.has(id)) return "has_stamps";
       if (switchedOff) placeRallies.delete(id);
       const statusChanged = changes.status !== undefined && changes.status !== cur.status;
-      const next: SpotRow = { ...cur, ...changes, updatedAt: stampTime(), statusUpdatedAt: statusChanged ? now() : cur.statusUpdatedAt };
+      const next: SpotRow = { ...cur, ...changes, translations: mergeTranslations(cur.translations, changes.translations), updatedAt: stampTime(), statusUpdatedAt: statusChanged ? now() : cur.statusUpdatedAt };
       spots.set(id, next);
       await audit.record({ actorUserId: actor, action: "spot.update", targetId: id });
       if (statusChanged) await audit.record({ actorUserId: actor, action: "spot.status.change", targetId: id });

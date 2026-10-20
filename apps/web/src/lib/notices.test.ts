@@ -12,7 +12,7 @@ const make = (id: string, verifiedOn: string, expiresOn: string | null): TrailNo
   sourceNameEn: null,
   verifiedOn,
   expiresOn,
-  routeOrder: null,
+  routeId: null,
 });
 
 describe("activeNotices", () => {

@@ -56,6 +56,8 @@ export function BannerCarousel({ slides }: { slides: BannerSlide[] }) {
                   fill
                   sizes="(min-width: 36rem) 36rem, 100vw"
                   priority={i === 0}
+                  // Banners are https links (R2 or pasted), on hosts next/image is not configured for: shown as they are.
+                  unoptimized
                   className="object-cover"
                 />
               ) : (

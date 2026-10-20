@@ -7,12 +7,12 @@ const run = (state: DraftState, ...actions: DraftAction[]) => actions.reduce(dra
 const fresh = () => initialState(emptyDraft());
 
 const serverRoute = (over: Partial<AdminRoute> = {}): AdminRoute => ({
-  id: "r1", nameJa: "甲山から孝子越え", nameEn: null, descriptionJa: null, descriptionEn: null, distanceKm: null, elevationGainM: null,
+  id: "r1", nameJa: "甲山から孝子越え", nameEn: null, translations: {}, descriptionJa: null, descriptionEn: null, distanceKm: null, elevationGainM: null,
   difficulty: null, expectedTimeMin: null, prefecture: "wakayama", municipality: null, geometry: null, lineVerified: false, lineSource: null,
   videoUrl: null, historyJa: null, historyEn: null, accessJa: null, accessEn: null, photoUrl: null, sortOrder: 2, createdAt: "2026-10-19T00:00:00.000Z", updatedAt: "2026-10-19T00:00:00.000Z", ...over,
 });
 const serverSpot = (id: string, over: Partial<AdminSpot> = {}): AdminSpot => ({
-  id, routeId: "r1", nameJa: "虎島の経塚", nameEn: null, descriptionJa: null, descriptionEn: null, lat: null, lng: null, positionVerified: false,
+  id, routeId: "r1", nameJa: "虎島の経塚", nameEn: null, translations: {}, descriptionJa: null, descriptionEn: null, lat: null, lng: null, positionVerified: false,
   positionSource: null, radiusM: 50, kind: "mound", stampable: true, photoUrl: null, status: "open", statusNoteJa: null, statusNoteEn: null, statusUpdatedAt: null, sortOrder: 1, published: false,
   permissionConfirmed: false, permissionNote: null, createdAt: "2026-10-19T00:00:00.000Z", updatedAt: "2026-10-19T00:00:00.000Z", ...over,
 });
@@ -227,5 +227,19 @@ describe("checks before saving", () => {
     expect(videoLinkLooksValid("https://youtu.be/dQw4w9WgXcQ")).toBe(true);
     expect(videoLinkLooksValid("http://youtu.be/dQw4w9WgXcQ")).toBe(false);
     expect(videoLinkLooksValid("not a url")).toBe(false);
+  });
+});
+
+describe("the places table", () => {
+  test("each new row is an unnamed waypoint with the stamp switch on and no position (the name is required before saving); a new route saves the route, then every row", () => {
+    const s = run(fresh(), { type: "text", field: "nameJa", value: "新しいルート" }, { type: "addRow", key: "a" }, { type: "addRow", key: "b" });
+    expect(s.present.places.map((p) => [p.key, p.kind, p.stampable, p.nameJa, p.lat, p.lng])).toEqual([
+      ["a", "other", true, "", null, null],
+      ["b", "other", true, "", null, null],
+    ]);
+    expect(draftProblems(s.present).filter((p) => p.kind === "place_name")).toHaveLength(2);
+    const typed = run(s, { type: "place", key: "a", patch: { nameJa: "一" } }, { type: "place", key: "b", patch: { nameJa: "虎島の経塚", lat: 34.27, lng: 135.0 } });
+    expect(planSave(typed.present, null).map((step) => step.op)).toEqual(["createRoute", "createSpot", "createSpot"]);
+    expect(typed.present.places[1]).toMatchObject({ nameJa: "虎島の経塚", lat: 34.27, positionVerified: false });
   });
 });
