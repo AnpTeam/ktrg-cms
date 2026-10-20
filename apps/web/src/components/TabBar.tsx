@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
-import { localePath } from "@/lib/rally";
 import { HomeIcon, MapIcon, MenuIcon, RouteIcon, StampIcon } from "./icons";
 import { KatsuragiLogo } from "./KatsuragiLogo";
 import { useMenu } from "./MenuProvider";
@@ -15,12 +14,12 @@ import { useMenu } from "./MenuProvider";
 // From 1024 px it is a sidebar fixed to the far left: the logo (a link home), the tabs and, at the bottom, `footer`
 // (the site's footer links), so they are always in view. On a phone and a tablet only the tabs are shown.
 export function TabBar({ footer }: { footer?: ReactNode }) {
-  const { t, i18n } = useLingui();
+  const { t } = useLingui();
   const pathname = usePathname() ?? "";
   const { open, setOpen } = useMenu();
 
   const tabs = [
-    { path: "", label: t`ホーム`, icon: <HomeIcon /> },
+    { path: "/", label: t`ホーム`, icon: <HomeIcon /> },
     { path: "/map", label: t`マップ`, icon: <MapIcon /> },
     { path: "/routes", label: t`ルート`, icon: <RouteIcon /> },
     { path: "/stamps", label: t`スタンプ`, icon: <StampIcon /> },
@@ -32,7 +31,7 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
   return (
     // Below 1024 px this wrapper adds nothing (the nav is placed by its own classes); from 1024 px it is the sidebar.
     <div className="md:contents lg:sticky lg:top-0 lg:flex lg:h-dvh lg:w-64 lg:shrink-0 lg:flex-col lg:self-start lg:overflow-y-auto lg:border-r lg:border-surface">
-    <Link href={localePath(i18n.locale, "")} aria-label={t`ホーム`} className="hidden px-6 pb-2 pt-8 lg:block">
+    <Link href={"/"} aria-label={t`ホーム`} className="hidden px-6 pb-2 pt-8 lg:block">
       <KatsuragiLogo compact className="h-16 w-auto" />
     </Link>
     <nav
@@ -41,12 +40,11 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
     >
       <ul className="mx-auto grid max-w-xl grid-cols-4 gap-1 md:flex md:max-w-none md:flex-col md:gap-2">
         {tabs.map(({ path, label, icon }) => {
-          const href = localePath(i18n.locale, path);
-          const active = path === "" ? pathname === href : pathname.startsWith(href);
+          const active = path === "/" ? pathname === "/" : pathname.startsWith(path);
           return (
             <li key={path}>
               <Link
-                href={href}
+                href={path}
                 aria-current={active ? "page" : undefined}
                 className={`${item} ${active ? "bg-brand text-on-brand" : "text-ink hover:bg-paper"}`}
               >

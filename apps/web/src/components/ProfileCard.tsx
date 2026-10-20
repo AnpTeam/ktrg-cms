@@ -185,7 +185,7 @@ export function ProfileCard({
           {/* Deleting the account is one tap away from editing, but needs a confirmation. */}
           <div className="flex flex-col gap-3 border-t border-line/30 pt-5">
             <Link
-              href={`/${locale}/settings/passkeys`}
+              href={`/settings/passkeys`}
               className="tap-target flex w-full items-center justify-center rounded-xl border-2 border-ink px-4 text-lg font-bold hover:bg-paper"
             >
               {t`ログインの方法（パスキー）`}

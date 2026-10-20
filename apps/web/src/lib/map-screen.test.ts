@@ -25,7 +25,7 @@ const route = (id: string, order: number, over: Partial<MapScreenRoute> = {}): M
   points: [],
   photo: null,
   spots: [],
-  href: `/ja/routes/${id}`,
+  href: `/routes/${id}`,
   stops: null,
   line: null,
   draft: false,

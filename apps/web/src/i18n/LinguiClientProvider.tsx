@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 import { setupI18n, type Messages } from "@lingui/core";
 import { I18nProvider } from "@lingui/react";
 
@@ -15,8 +15,10 @@ export function LinguiClientProvider({
   initialLocale: string;
   initialMessages: Messages;
 }) {
-  const [i18n] = useState(() =>
-    setupI18n({ locale: initialLocale, messages: { [initialLocale]: initialMessages } }),
+  // Rebuilt when the language changes (the switcher refreshes the page in place).
+  const i18n = useMemo(
+    () => setupI18n({ locale: initialLocale, messages: { [initialLocale]: initialMessages } }),
+    [initialLocale, initialMessages],
   );
   return <I18nProvider i18n={i18n}>{children}</I18nProvider>;
 }

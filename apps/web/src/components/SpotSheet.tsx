@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Trans } from "@lingui/react/macro";
 import { pickText, type SpotDetail } from "@/lib/content";
-import { localePath } from "@/lib/rally";
 import { HeroPhoto } from "./map/HeroPhoto";
 import { Localized } from "./Localized";
 import { Notice } from "./Notice";
@@ -51,7 +50,7 @@ export function SpotSheet({
       {spot.position ? (
         <div className="px-4">
           <Link
-            href={`${localePath(locale, "/map")}?route=${encodeURIComponent(spot.routeId)}&stop=${encodeURIComponent(spot.id)}`}
+            href={`${"/map"}?route=${encodeURIComponent(spot.routeId)}&stop=${encodeURIComponent(spot.id)}`}
             className="tap-target inline-flex items-center gap-2 rounded-xl border-2 border-ink px-5 text-lg font-bold"
           >
             <Trans>地図で見る</Trans>

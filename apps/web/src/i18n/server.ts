@@ -1,8 +1,8 @@
-import { notFound } from "next/navigation";
-import { lang } from "next/root-params";
+import { cookies, headers } from "next/headers";
 import { setupI18n, type I18n, type Messages } from "@lingui/core";
 import { setI18n } from "@lingui/react/server";
-import { isLocale, locales } from "./locales";
+import { localeCookie, locales, type Locale } from "./locales";
+import { pickLocale } from "./negotiate";
 
 async function loadCatalog(locale: string): Promise<[string, Messages]> {
   const { messages } = await import(`../locales/${locale}.po`);
@@ -23,19 +23,28 @@ const instances: Record<string, I18n> = Object.fromEntries(
   ]),
 );
 
-export function getI18nInstance(locale: string | undefined): I18n {
-  const i18n = isLocale(locale) ? instances[locale] : undefined;
-  if (!i18n) notFound(); // the proxy only lets known locales through
-  return i18n;
+export function getI18nInstance(locale: Locale): I18n {
+  return instances[locale] as I18n;
 }
 
 /**
- * Makes the i18n instance for the `[lang]` segment available to Server
- * Components for this request. Call it first in every page, layout and
- * generateMetadata.
+ * The visitor's language: the saved choice (cookie), then Accept-Language,
+ * then Japanese. The URL carries no language, so one address serves everyone
+ * (and an installed phone app never leaves its own scope when the language changes).
+ */
+export async function requestLocale(): Promise<Locale> {
+  return pickLocale({
+    cookie: (await cookies()).get(localeCookie)?.value,
+    acceptLanguage: (await headers()).get("accept-language"),
+  });
+}
+
+/**
+ * Makes the i18n instance for this request's language available to Server
+ * Components. Call it first in every page, layout and generateMetadata.
  */
 export async function initLingui() {
-  const i18n = getI18nInstance(await lang());
+  const i18n = getI18nInstance(await requestLocale());
   setI18n(i18n);
   return i18n;
 }
