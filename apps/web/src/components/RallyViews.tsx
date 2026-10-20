@@ -79,6 +79,7 @@ export function FeaturedRally({ rally, locale, signedIn }: { rally: RallyItem; l
             total={rally.total}
             stamped={stampedNumbers(rally)}
             showNext={signedIn}
+            art={rally.kind === "mounds"}
             names={rally.kind === "mounds" ? new Map(rally.slots.map((slot) => [slot.number, sealName(slot.nameJa)])) : undefined}
           />
         </div>
@@ -132,6 +133,17 @@ export function RallyCard({ rally, locale, signedIn }: { rally: RallyItem; local
             </span>
           </span>
         </summary>
+        {rally.kind === "mounds" ? (
+          <div className="border-t-2 border-line p-4">
+            <StampGrid
+              total={rally.total}
+              stamped={stampedNumbers(rally)}
+              showNext={signedIn}
+              art
+              names={new Map(rally.slots.map((slot) => [slot.number, sealName(slot.nameJa)]))}
+            />
+          </div>
+        ) : null}
         <ol className="border-t-2 border-line">
           {rally.slots.map((slot) => (
             <li key={slot.id} className="flex items-center gap-3 border-b-2 border-line px-4 py-3 last:border-b-0">
