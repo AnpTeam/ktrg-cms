@@ -36,6 +36,20 @@ export interface FacilityRow {
   lng: number | null;
   /** The sheet's own words for where the position came from. */
   coordSource: string;
+  address: string | null;
+  phone: string | null;
+  website: string | null;
+  descriptionJa: string | null;
+  descriptionEn: string | null;
+  hoursJa: string | null;
+  hoursEn: string | null;
+  closedDaysJa: string | null;
+  closedDaysEn: string | null;
+  statusJa: string;
+  /** YYYY/MM/DD as the sheet writes it. */
+  lastVerified: string;
+  /** The sheet's "listing permission" answer, such as 不要（公共施設） or 未確認. */
+  listing: string;
 }
 export interface MoundPoint {
   name: string;
@@ -93,11 +107,13 @@ export function parseStops(text: string): { routes: RouteName[]; stops: StopRow[
 }
 
 /** The places sheet (the friend's copy of our places template): the first row has the field names, the second their Japanese labels. */
-export function parseFacilities(text: string): FacilityRow[] {
-  const [head, , ...rows] = parseCsv(text);
+export function parseFacilities(csv: string): FacilityRow[] {
+  const [head, , ...rows] = parseCsv(csv);
   if (!head) return [];
   const at = (name: string) => head.indexOf(name);
   const [cName, cEn, cCat, cLat, cLng, cSrc] = ["name_ja", "name_en", "category", "lat", "lng", "coord_source"].map(at);
+  const cell = (r: string[], name: string) => (r[at(name)] ?? "").trim();
+  const maybe = (r: string[], name: string) => cell(r, name) || null;
   // The course number and the nearby stop have no field names in the template's first row: they are columns 6 and 7.
   const cRoute = at("ｚ") >= 0 ? at("ｚ") : 5;
   return rows.flatMap((r) => {
@@ -114,6 +130,18 @@ export function parseFacilities(text: string): FacilityRow[] {
         lat: num(r[cLat!]),
         lng: num(r[cLng!]),
         coordSource: (r[cSrc!] ?? "").trim(),
+        address: maybe(r, "address_ja"),
+        phone: maybe(r, "phone"),
+        website: maybe(r, "website"),
+        descriptionJa: maybe(r, "description_ja"),
+        descriptionEn: maybe(r, "description_en"),
+        hoursJa: maybe(r, "opening_hours_ja"),
+        hoursEn: maybe(r, "opening_hours_en"),
+        closedDaysJa: maybe(r, "closed_days_ja"),
+        closedDaysEn: maybe(r, "closed_days_en"),
+        statusJa: cell(r, "status"),
+        lastVerified: cell(r, "last_verified"),
+        listing: cell(r, "listing_permission"),
       },
     ];
   });
@@ -137,9 +165,6 @@ export function kindOfStop(s: Pick<StopRow, "nameJa" | "placeType">): SpotKindNa
   if (p === "行") return "temple";
   return "other";
 }
-
-/** The kinds the app has for the places along a course; the others (shops, cafes ...) wait for the places directory. */
-const FACILITY_KINDS: Record<string, SpotKindName> = { トイレ: "toilet", 自動販売機: "vending_machine", "休憩所・東屋": "rest_area" };
 
 export interface Existing {
   id: string;
@@ -166,8 +191,6 @@ export interface Plan {
   spots: PlannedSpot[];
   /** Why rows were left out or changed, for the report. */
   notes: string[];
-  /** Places not loaded because the app has no kind for them yet, by category. */
-  waiting: Record<string, number>;
 }
 
 const SOURCE_STOP = "友人のシート（Navivi）の位置・未確認";
@@ -176,9 +199,8 @@ const near = (a: number | null, b: number | null) => a !== null && b !== null &&
 /** The part after the middle dot: the sutra chapter, such as 序品. */
 const chapterOf = (name: string) => name.split("・").pop() ?? name;
 
-export function planLoad(input: { stops: StopRow[]; facilities: FacilityRow[]; mounds: MoundPoint[]; existing: Existing[] }): Plan {
+export function planLoad(input: { stops: StopRow[]; mounds: MoundPoint[]; existing: Existing[] }): Plan {
   const notes: string[] = [];
-  const waiting: Record<string, number> = {};
   const used = new Set<string>();
   const find = (route: number, pred: (e: Existing) => boolean) => input.existing.find((e) => e.route === route && !used.has(e.id) && pred(e));
 
@@ -188,7 +210,6 @@ export function planLoad(input: { stops: StopRow[]; facilities: FacilityRow[]; m
   const copied = (s: StopRow) => (sharers.get(`${s.route}|${s.lat}|${s.lng}`)?.size ?? 0) > 1;
 
   const spots: PlannedSpot[] = [];
-  const anchors = new Map<string, number>(); // `${route}|${label}` -> index in `spots` of the first stop with that label
   for (const s of input.stops) {
     if (s.type === "return") {
       notes.push(`${s.code} ${s.nameJa}: 復帰（戻り）の行は、同じ場所の繰り返しなので入れません`);
@@ -221,7 +242,6 @@ export function planLoad(input: { stops: StopRow[]; facilities: FacilityRow[]; m
         planned.existing = again;
       }
     }
-    if (s.label && !anchors.has(`${s.route}|${s.label}`)) anchors.set(`${s.route}|${s.label}`, spots.length);
     spots.push(planned);
   }
 
@@ -240,38 +260,92 @@ export function planLoad(input: { stops: StopRow[]; facilities: FacilityRow[]; m
     else spots.push({ route: target.route, nameJa: target.nameJa, nameEn: null, kind: "mound", stampable: true, lat: m.lat, lng: m.lng, source: SOURCE_MOUND, existing: target });
   }
 
-  // Places along the course go right after the stop they are near.
-  const after = new Map<number, PlannedSpot[]>();
-  for (const f of input.facilities) {
-    const kind = FACILITY_KINDS[f.categoryJa];
-    if (!kind) {
-      waiting[f.categoryJa] = (waiting[f.categoryJa] ?? 0) + 1;
+  return { spots, notes };
+}
+
+// ---- the places along the courses (the places directory) -----------------------------------------
+
+const CATEGORIES: Record<string, string> = {
+  トイレ: "toilet",
+  自動販売機: "vending_machine",
+  "休憩所・東屋": "rest_area",
+  飲食店: "restaurant",
+  "カフェ・喫茶": "cafe",
+  お土産店: "souvenir_shop",
+  "コンビニ・商店": "convenience_store",
+};
+const STATUSES: Record<string, string> = { "営業中・利用可": "open", 休業中: "closed", 季節営業: "seasonal", "閉店・撤去": "gone" };
+
+export interface ExistingPlace {
+  id: string;
+  route: number | null;
+  category: string;
+  nameJa: string;
+  lat: number | null;
+  lng: number | null;
+}
+export interface PlannedPlace {
+  route: number;
+  category: string;
+  nameJa: string;
+  nameEn: string | null;
+  descriptionJa: string | null;
+  descriptionEn: string | null;
+  hoursJa: string | null;
+  hoursEn: string | null;
+  closedDaysJa: string | null;
+  closedDaysEn: string | null;
+  lat: number | null;
+  lng: number | null;
+  positionSource: string | null;
+  address: string | null;
+  phone: string | null;
+  website: string | null;
+  status: string;
+  lastVerified: string | null;
+  listingConfirmed: boolean;
+  listingNote: string | null;
+}
+
+/**
+ * The directory entries for the places sheet. Everything is a draft: the position stays "not checked" even where the
+ * sheet says it was (the sheet's claim goes in the source note), and a place already in the directory (same course,
+ * category, name and position) is not added again.
+ */
+export function planPlaces(rows: FacilityRow[], existing: ExistingPlace[]): { places: PlannedPlace[]; skipped: number } {
+  const places: PlannedPlace[] = [];
+  let skipped = 0;
+  for (const f of rows) {
+    // Pharmacies, lodging and the like have no category of their own yet: "other".
+    const category = CATEGORIES[f.categoryJa] ?? "other";
+    if (existing.some((e) => e.route === f.route && e.category === category && e.nameJa === f.nameJa && near(e.lat, f.lat) && near(e.lng, f.lng))) {
+      skipped++;
       continue;
     }
-    const at = anchors.get(`${f.route}|${f.near}`);
-    if (at === undefined) {
-      notes.push(`${f.nameJa}: 近くの場所「${f.near}」が見つからないため、${f.route} 番のコースの最後に入れます`);
-    }
-    const planned: PlannedSpot = {
+    const day = /^(\d{4})[/-](\d{1,2})[/-](\d{1,2})$/.exec(f.lastVerified);
+    const free = f.listing.startsWith("不要");
+    places.push({
       route: f.route,
+      category,
       nameJa: f.nameJa,
       nameEn: f.nameEn,
-      kind,
-      stampable: false,
+      descriptionJa: f.descriptionJa,
+      descriptionEn: f.descriptionEn,
+      hoursJa: f.hoursJa,
+      hoursEn: f.hoursEn,
+      closedDaysJa: f.closedDaysJa,
+      closedDaysEn: f.closedDaysEn,
       lat: f.lat,
       lng: f.lng,
-      source: f.lat === null ? null : `${f.coordSource || "地図アプリで確認"}（友人のシート）・未確認`,
-    };
-    const again = input.existing.find((e) => !used.has(e.id) && e.route === f.route && e.kind === kind && e.nameJa === f.nameJa && near(e.lat, f.lat) && near(e.lng, f.lng));
-    if (again) {
-      used.add(again.id);
-      planned.existing = again;
-    }
-    const key = at ?? spots.length;
-    after.set(key, [...(after.get(key) ?? []), planned]);
+      positionSource: f.lat === null ? null : `${f.coordSource || "地図アプリで確認"}（友人のシートでは確認済み）・未確認`,
+      address: f.address,
+      phone: f.phone,
+      website: f.website,
+      status: STATUSES[f.statusJa] ?? "unknown",
+      lastVerified: day ? `${day[1]}-${day[2]!.padStart(2, "0")}-${day[3]!.padStart(2, "0")}` : null,
+      listingConfirmed: free,
+      listingNote: free ? f.listing : null,
+    });
   }
-  const ordered = spots.flatMap((p, i) => [p, ...(after.get(i) ?? [])]);
-  const tail = after.get(spots.length);
-  if (tail) ordered.push(...tail);
-  return { spots: ordered, notes, waiting };
+  return { places, skipped };
 }

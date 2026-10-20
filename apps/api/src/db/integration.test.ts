@@ -17,6 +17,7 @@ import { listRalliesWithProgress, ralliesForPlace, recordFinished } from "../ral
 import { createDrizzleRallyAdminStore } from "../rallies/rally-admin-store";
 import { createDrizzleNoticeStore } from "../notices/notice-store";
 import { createDrizzleBannerStore } from "../banners/banner-store";
+import { createDrizzlePlaceStore } from "../places/place-store";
 import { createDrizzleUserListStore } from "../users/user-list";
 import {
   auditLog,
@@ -24,6 +25,8 @@ import {
   bannerTranslations,
   courseCompletions,
   otpCodes,
+  places,
+  placeTranslations,
   rallies,
   rallyCompletions,
   rallyRoutes,
@@ -1247,5 +1250,51 @@ describe.skipIf(!url)("banners and role changes on real PostgreSQL", () => {
     const audits = await db.select().from(auditLog).where(eq(auditLog.targetId, target.id));
     expect(audits.map((a) => [a.action, a.actorUserId])).toEqual([["user.role.change", admin.id]]);
     expect(await userStore.setRole(admin.id, target.id, before.updatedAt, "participant")).toBe("conflict");
+  });
+});
+
+describe.skipIf(!url)("places directory on real PostgreSQL", () => {
+  const { db, client } = connect();
+  const otp = createDrizzleOtpStore(db);
+  const store = createDrizzlePlaceStore(db);
+  const tag = `pl${randomUUID().slice(0, 8)}`;
+  const made: string[] = [];
+
+  afterAll(async () => {
+    if (made.length) {
+      await db.delete(auditLog).where(inArray(auditLog.targetId, made));
+      await db.delete(places).where(inArray(places.id, made));
+    }
+    const ids = (await db.select({ id: users.id }).from(users).where(like(users.email, `${tag}-%`))).map((u) => u.id);
+    if (ids.length) await db.delete(auditLog).where(inArray(auditLog.targetId, ids));
+    await db.delete(users).where(like(users.email, `${tag}-%`));
+    await client.end();
+  });
+
+  const blank = {
+    category: "cafe" as const, routeId: null, nameJa: "", nameEn: null, descriptionJa: null, descriptionEn: null, hoursJa: null, hoursEn: null, closedDaysJa: null, closedDaysEn: null,
+    lat: null, lng: null, positionVerified: false, positionSource: null, address: null, phone: null, website: null, photoUrl: null, status: "unknown" as const,
+    lastVerified: null, listingConfirmed: false, listingNote: null, published: false,
+  };
+
+  test("words saved per language, a change checks for a newer save, visitors get only published places, delete takes the words", async () => {
+    const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
+    const add = async (nameJa: string, over: Record<string, unknown> = {}) => {
+      const row = await store.create(actor, { ...blank, nameJa, hoursJa: "9時～17時", hoursEn: "9:00 - 17:00", ...over });
+      made.push(row.id);
+      return row;
+    };
+    const live = await add(`${tag} 公開`, { lat: 34.2, lng: 135.1, positionVerified: true, positionSource: "地図アプリ", listingConfirmed: true, published: true, lastVerified: "2026-10-17" });
+    await add(`${tag} 下書き`);
+    expect(live).toMatchObject({ nameJa: `${tag} 公開`, nameEn: null, hoursEn: "9:00 - 17:00", lastVerified: "2026-10-17" });
+    expect((await store.listPublic()).map((p) => p.nameJa).filter((n) => n.startsWith(tag))).toEqual([`${tag} 公開`]);
+
+    const changed = await store.update(actor, live.id, live.updatedAt, { nameEn: "Open", closedDaysJa: "月" });
+    expect(changed).toMatchObject({ nameEn: "Open", closedDaysJa: "月", hoursJa: "9時～17時" });
+    expect(await store.update(actor, live.id, live.updatedAt, { nameEn: "late" })).toBe("conflict");
+    // The database itself refuses to publish a place that was never checked.
+    await expect((async () => db.update(places).set({ published: true, positionVerified: false }).where(eq(places.id, live.id)))()).rejects.toThrow();
+    expect(await store.remove(actor, live.id)).toBe(true);
+    expect(await db.select().from(placeTranslations).where(eq(placeTranslations.placeId, live.id))).toHaveLength(0);
   });
 });

@@ -50,6 +50,10 @@ export const AUDIT_ACTIONS = {
   "banner.create": "banner",
   "banner.update": "banner",
   "banner.delete": "banner",
+  /** The places directory (admin-lists): made, changed (including published or not), deleted. */
+  "place.create": "place",
+  "place.update": "place",
+  "place.delete": "place",
   /** An admin changed another account's role (that account's sessions are ended in the same step). */
   "user.role.change": "user",
   /** An admin uploaded a photo (the target is the file's UUID in storage). */

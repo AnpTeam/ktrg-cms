@@ -419,3 +419,75 @@ export const bannerTranslations = pgTable(
   },
   (t) => [primaryKey({ columns: [t.bannerId, t.locale] }), check("banner_translations_ja_alt", jaRequires(t, t.alt))],
 );
+
+/** What a place in the directory is. The same names as the waypoint kinds and the map's place categories (lib/places.ts in the web app). */
+export const placeCategories = [
+  "souvenir_shop",
+  "restaurant",
+  "cafe",
+  "convenience_store",
+  "toilet",
+  "rest_area",
+  "drinking_water",
+  "vending_machine",
+  "station",
+  "bus_stop",
+  "parking",
+  "other",
+] as const;
+export const placeCategory = pgEnum("place_category", placeCategories);
+export const placeStatus = pgEnum("place_status", ["open", "closed", "seasonal", "gone", "unknown"]);
+
+/**
+ * A place along the courses that is not a waypoint of one: a shop, a cafe, a toilet, a vending machine. Its words
+ * (name, description, opening hours, closed days) are in place_translations. Like a waypoint it is a draft until a
+ * person has checked its position and its owner's agreement to be listed (a public facility needs none: say so in the note).
+ */
+export const places = pgTable(
+  "places",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    category: placeCategory("category").notNull().default("other"),
+    // The course it is on or near; a place may be on none.
+    routeId: uuid("route_id").references(() => routes.id, { onDelete: "set null" }),
+    lat: doublePrecision("lat"),
+    lng: doublePrecision("lng"),
+    positionVerified: boolean("position_verified").notNull().default(false),
+    positionSource: text("position_source"),
+    address: text("address"),
+    phone: text("phone"),
+    website: text("website"),
+    photoUrl: text("photo_url"),
+    status: placeStatus("status").notNull().default("unknown"),
+    // The day a person last checked the details (opening hours go stale).
+    lastVerified: date("last_verified", { mode: "string" }),
+    listingConfirmed: boolean("listing_confirmed").notNull().default(false),
+    listingNote: text("listing_note"),
+    published: boolean("published").notNull().default(false),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [
+    index("places_route_idx").on(t.routeId),
+    check("places_lat_range", sql`${t.lat} is null or ${t.lat} between -90 and 90`),
+    check("places_lng_range", sql`${t.lng} is null or ${t.lng} between -180 and 180`),
+    check("places_coordinates_together", sql`(${t.lat} is null) = (${t.lng} is null)`),
+    check("places_publish_requires_position", sql`not ${t.published} or (${t.lat} is not null and ${t.positionVerified})`),
+    check("places_publish_requires_listing", sql`not ${t.published} or ${t.listingConfirmed}`),
+  ],
+);
+
+export const placeTranslations = pgTable(
+  "place_translations",
+  {
+    placeId: uuid("place_id")
+      .notNull()
+      .references(() => places.id, { onDelete: "cascade" }),
+    locale: contentLocale("locale").notNull(),
+    name: text("name"),
+    description: text("description"),
+    hours: text("hours"),
+    closedDays: text("closed_days"),
+  },
+  (t) => [primaryKey({ columns: [t.placeId, t.locale] }), check("place_translations_ja_name", jaRequires(t, t.name))],
+);

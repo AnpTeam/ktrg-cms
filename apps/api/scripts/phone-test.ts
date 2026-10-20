@@ -20,6 +20,7 @@ import { createMemoryMeStore } from "../src/me/me-memory-store";
 import { createMemoryContentStore } from "../src/content/content-memory-store";
 import { createMemoryRallyAdminStore } from "../src/rallies/rally-admin-memory-store";
 import { createMemoryNoticeStore } from "../src/notices/notice-memory-store";
+import { createMemoryPlaceStore } from "../src/places/place-directory";
 import { createMemoryBannerStore } from "../src/banners/banner-list";
 import { memoryReader } from "../src/admin-lists/list-memory-store";
 import { createMemoryUserListStore } from "../src/users/user-list";
@@ -76,6 +77,7 @@ const services = createServices({
     rallyAdmin: createMemoryRallyAdminStore(audit).store,
     notices: createMemoryNoticeStore(audit).store,
     banners: createMemoryBannerStore(audit).store,
+    places: createMemoryPlaceStore(audit).store,
     auditList: memoryReader(new Map()),
     placeList: memoryReader(new Map()),
     userList: createMemoryUserListStore(audit).store,

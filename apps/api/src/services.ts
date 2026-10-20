@@ -12,6 +12,7 @@ import type { ListReadStore } from "./admin-lists/list-types";
 import type { AuditListRow, AuditListServices } from "./audit/audit-list";
 import { createBannerService, type BannerServices, type BannerStore } from "./banners/banner-list";
 import type { PlaceListRow, PlaceListServices } from "./content/place-list";
+import { createPlaceService, type PlaceServices, type PlaceStore } from "./places/place-directory";
 import { createUserListService, type UserListServices, type UserListStore } from "./users/user-list";
 import type { NoticeServices } from "./notices/notice-routes";
 import { createNoticeService } from "./notices/notice-service";
@@ -29,7 +30,7 @@ import { createUploadService } from "./uploads/upload-service";
 import type { FileStorage } from "./uploads/upload-storage";
 
 /** Everything the routes use. */
-export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & NoticeServices & BannerServices & AuditListServices & PlaceListServices & UserListServices;
+export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & NoticeServices & BannerServices & PlaceServices & AuditListServices & PlaceListServices & UserListServices;
 
 /** What the services are built from: the storage (database or in-memory) and the outside world. */
 export interface ServiceDeps {
@@ -43,6 +44,7 @@ export interface ServiceDeps {
     rallyAdmin: RallyAdminStore;
     notices: NoticeStore;
     banners: BannerStore;
+    places: PlaceStore;
     auditList: ListReadStore<AuditListRow>;
     placeList: ListReadStore<PlaceListRow>;
     userList: UserListStore;
@@ -88,6 +90,7 @@ export function createServices(deps: ServiceDeps): Services {
     notices: createNoticeService({ store: stores.notices, now }),
     // The other generated admin lists: home banners, the audit log, every place, accounts and their roles.
     banners: createBannerService({ store: stores.banners, photoHosts: deps.photoHosts }),
+    places: createPlaceService({ store: stores.places, photoHosts: deps.photoHosts }),
     auditList: createListReader({ store: stores.auditList }),
     placeList: createListReader({ store: stores.placeList }),
     userList: createUserListService({ store: stores.userList }),

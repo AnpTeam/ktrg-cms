@@ -1,13 +1,14 @@
-// Loads the field team's CSV sheets into the database as DRAFT waypoints (nothing is published, no position is marked
-// as checked). Without --apply it only prints what it would do.
+// Loads the field team's CSV sheets into the database as DRAFTS (nothing is published, no position is marked as
+// checked): the stops of the courses become waypoints, the places along them go into the places directory.
+// Without --apply it only prints what it would do.
 //   bun --env-file=../../.env src/import/field-sheets-cli.ts --stops <stops.csv> --places <places.csv> [--mounds <points.geojson>] [--apply]
-// Safe to run again: places already loaded are found by course, kind, name and position and are not added twice.
+// Safe to run again: what is already there is found by course, kind or category, name and position, and not added twice.
 // Refuses a database that is not on this computer unless --allow-remote is given (a person's decision, not a default).
 import { readFileSync } from "node:fs";
 import { asc, eq } from "drizzle-orm";
 import { createDb } from "../db/client";
-import { routes, spots, spotTranslations } from "../db/schema";
-import { parseFacilities, parseMoundPoints, parseStops, planLoad, type Existing, type SpotKindName } from "./field-sheets";
+import { places, placeTranslations, routes, spots, spotTranslations } from "../db/schema";
+import { parseFacilities, parseMoundPoints, parseStops, planLoad, planPlaces, type Existing, type ExistingPlace, type SpotKindName } from "./field-sheets";
 
 const args = process.argv.slice(2);
 const flag = (name: string) => args.includes(`--${name}`);
@@ -37,16 +38,22 @@ const rows = await db
   .from(spots)
   .leftJoin(spotTranslations, eq(spotTranslations.spotId, spots.id));
 const existing: Existing[] = rows.flatMap((r) => (r.name !== null && routeNumber.has(r.routeId) ? [{ id: r.id, route: routeNumber.get(r.routeId)!, nameJa: r.name, kind: r.kind as SpotKindName, lat: r.lat, lng: r.lng, sortOrder: r.sortOrder }] : []));
+const placeRows = await db
+  .select({ id: places.id, routeId: places.routeId, category: places.category, lat: places.lat, lng: places.lng, name: placeTranslations.name })
+  .from(places)
+  .leftJoin(placeTranslations, eq(placeTranslations.placeId, places.id));
+const existingPlaces: ExistingPlace[] = placeRows.flatMap((r) => (r.name === null ? [] : [{ id: r.id, route: r.routeId ? (routeNumber.get(r.routeId) ?? null) : null, category: r.category, nameJa: r.name, lat: r.lat, lng: r.lng }]));
 
-const plan = planLoad({ stops: parsedStops.stops, facilities, mounds, existing });
+const plan = planLoad({ stops: parsedStops.stops, mounds, existing });
+const directory = planPlaces(facilities, existingPlaces);
 const created = plan.spots.filter((s) => !s.existing);
 const byRoute = new Map<number, typeof plan.spots>();
 for (const s of plan.spots) byRoute.set(s.route, [...(byRoute.get(s.route) ?? []), s]);
 
 console.log(`Database: ${host}`);
 console.log(`Stops read: ${parsedStops.stops.length} (course headings: ${parsedStops.routes.length}, caution notes left out: ${parsedStops.skippedNotes})`);
-console.log(`Places read: ${facilities.length}; waiting for the places directory: ${JSON.stringify(plan.waiting)}`);
-console.log(`Plan: ${created.length} new waypoints, ${plan.spots.length - created.length} already there (re-ordered), on courses ${[...byRoute.keys()].join(", ")}`);
+console.log(`Waypoints: ${created.length} new, ${plan.spots.length - created.length} already there (re-ordered), on courses ${[...byRoute.keys()].join(", ")}`);
+console.log(`Places directory: ${directory.places.length} new, ${directory.skipped} already there (of ${facilities.length} read)`);
 for (const n of plan.notes) console.log(`  note: ${n}`);
 
 if (!flag("apply")) {
@@ -80,6 +87,32 @@ await db.transaction(async (tx) => {
       }
     }
   }
+  for (const p of directory.places) {
+    const [made] = await tx
+      .insert(places)
+      .values({
+        category: p.category as (typeof places.$inferInsert)["category"],
+        routeId: courses[p.route - 1]?.id ?? null,
+        lat: p.lat,
+        lng: p.lng,
+        positionVerified: false,
+        positionSource: p.positionSource,
+        address: p.address,
+        phone: p.phone,
+        website: p.website,
+        status: p.status as (typeof places.$inferInsert)["status"],
+        lastVerified: p.lastVerified,
+        listingConfirmed: p.listingConfirmed,
+        listingNote: p.listingNote,
+      })
+      .returning({ id: places.id });
+    await tx.insert(placeTranslations).values([
+      { placeId: made!.id, locale: "ja", name: p.nameJa, description: p.descriptionJa, hours: p.hoursJa, closedDays: p.closedDaysJa },
+      ...(p.nameEn || p.descriptionEn || p.hoursEn || p.closedDaysEn
+        ? [{ placeId: made!.id, locale: "en" as const, name: p.nameEn, description: p.descriptionEn, hours: p.hoursEn, closedDays: p.closedDaysEn }]
+        : []),
+    ]);
+  }
 });
-console.log("Written. Everything is a draft: open each place in the admin, check its position, and publish when ready.");
+console.log("Written. Everything is a draft: open each one in the admin, check its position, and publish when ready.");
 await client.end();

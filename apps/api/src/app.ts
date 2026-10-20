@@ -23,6 +23,8 @@ import { purgeRoutes } from "./internal/purge-routes";
 import { auditLogList, createDrizzleAuditListStore } from "./audit/audit-list";
 import { bannerList, publicBannerRoutes } from "./banners/banner-list";
 import { createDrizzleBannerStore } from "./banners/banner-store";
+import { placeDirectoryList, publicPlaceRoutes } from "./places/place-directory";
+import { createDrizzlePlaceStore } from "./places/place-store";
 import { createDrizzlePlaceListStore, placeList } from "./content/place-list";
 import { createDrizzleUserListStore, userList } from "./users/user-list";
 import { userRoleRoutes } from "./users/user-routes";
@@ -52,6 +54,7 @@ function getServices(): Services {
         rallyAdmin: createDrizzleRallyAdminStore(db),
         notices: createDrizzleNoticeStore(db),
         banners: createDrizzleBannerStore(db),
+        places: createDrizzlePlaceStore(db),
         auditList: createDrizzleAuditListStore(db),
         placeList: createDrizzlePlaceListStore(db),
         userList: createDrizzleUserListStore(db),
@@ -119,6 +122,9 @@ export function createApp(
     .use(listReadRoutes(bannerList, getServices, opts))
     .use(listWriteRoutes(bannerList, getServices, opts))
     .use(publicBannerRoutes(() => getServices().banners))
+    .use(listReadRoutes(placeDirectoryList, getServices, opts))
+    .use(listWriteRoutes(placeDirectoryList, getServices, opts))
+    .use(publicPlaceRoutes(() => getServices().places))
     .use(listReadRoutes(auditLogList, getServices, opts))
     .use(listReadRoutes(placeList, getServices, opts))
     .use(listReadRoutes(userList, getServices, opts))
