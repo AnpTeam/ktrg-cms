@@ -86,7 +86,7 @@ export function MapScreen({
   const [seenNavRouteId, setSeenNavRouteId] = useState(navRouteId);
   if (seenNavRouteId !== navRouteId) {
     setSeenNavRouteId(navRouteId);
-    if (navRouteId && !wide) setSnap("peek");
+    if (navRouteId && !wide) setSnap("hidden");
   }
 
   // Below the sheet: the tab bar, and the navigation toast while one runs (on a desktop the toast is beside the panel).
@@ -139,7 +139,7 @@ export function MapScreen({
     (routeId: string, id: string) => {
       setRouteId(routeId);
       setStopId(id);
-      if (!wide) setSnap((s) => (s === "peek" ? "half" : s));
+      if (!wide) setSnap((s) => (s === "peek" || s === "hidden" ? "half" : s));
     },
     [wide],
   );
@@ -232,6 +232,17 @@ export function MapScreen({
         user={nav.session?.snapshot.position ?? null}
         guide={nav.session?.snapshot.pathLine ?? null}
       />
+      {!wide && snap === "hidden" ? (
+        <button
+          type="button"
+          onClick={() => setSnap(route ? "half" : "peek")}
+          style={{ bottom: bottomPx + 8 }}
+          className="tap-target absolute left-3 z-[6] flex items-center gap-2 rounded-full bg-paper px-4 text-lg font-bold text-ink shadow-[0_4px_16px_rgb(0_0_0/0.28)]"
+        >
+          <span aria-hidden="true">▲</span>
+          {route ? t`区間の情報を見る` : t`区間の一覧を見る`}
+        </button>
+      ) : null}
       <MapSheet panel={wide} snap={snap} onSnap={setSnap} available={available} tabPx={bottomPx} header={showDetailInSheet ? null : homeHeader}>
         {showDetailInSheet ? (
           <div className="flex flex-col gap-4">

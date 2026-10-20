@@ -128,7 +128,7 @@ msgstr "No. {number}, next stamp"
 msgid "{number}番 まだ押していません"
 msgstr "No. {number}, not stamped yet"
 
-#: src/components/map/MapScreen.tsx:260
+#: src/components/map/MapScreen.tsx:271
 #: src/components/map/MapScreenCanvas.tsx:271
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
@@ -186,7 +186,7 @@ msgstr "{title} could not be loaded. Please reload the page in a little while."
 msgid "{TOTAL_STAMPS}か所"
 msgstr "{TOTAL_STAMPS} places"
 
-#: src/components/map/MapScreen.tsx:481
+#: src/components/map/MapScreen.tsx:492
 msgid "{updated} 更新"
 msgstr "Updated {updated}"
 
@@ -361,7 +361,7 @@ msgstr "Delete account"
 #: src/components/admin/RouteEditor.tsx:382
 #: src/components/admin/RouteEditor.tsx:383
 #: src/components/admin/useChecklistLabels.ts:18
-#: src/components/map/MapScreen.tsx:434
+#: src/components/map/MapScreen.tsx:445
 #: src/components/RouteView.tsx:142
 msgid "アクセス・交通"
 msgstr "Access and transport"
@@ -626,15 +626,15 @@ msgstr "Every stamp on this course is collected."
 msgid "この区間のナビに切り替える"
 msgstr "Navigate this course instead"
 
-#: src/components/map/MapScreen.tsx:370
+#: src/components/map/MapScreen.tsx:381
 msgid "この区間のページを開く"
 msgstr "Open this course's page"
 
-#: src/components/map/MapScreen.tsx:444
+#: src/components/map/MapScreen.tsx:455
 msgid "この区間の写真"
 msgstr "Photos of this course"
 
-#: src/components/map/MapScreen.tsx:352
+#: src/components/map/MapScreen.tsx:363
 msgid "この区間は、準備中です。"
 msgstr "This course isn't ready yet."
 
@@ -650,11 +650,11 @@ msgstr "There are no routes in this area yet."
 msgid "この場所のスタンプは、確認のため取り消されています。お困りの場合は運営にお問い合わせください。"
 msgstr "The stamp for this place was revoked after a check. If this looks wrong, please contact the team."
 
-#: src/components/map/MapScreen.tsx:510
+#: src/components/map/MapScreen.tsx:521
 msgid "この場所のページを開く"
 msgstr "Open this place's page"
 
-#: src/components/map/MapScreen.tsx:490
+#: src/components/map/MapScreen.tsx:501
 #: src/components/map/PlacesPanel.tsx:227
 #: src/components/map/StopCard.tsx:38
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
@@ -768,7 +768,7 @@ msgstr "Let's get started"
 msgid "サイトマップ"
 msgstr "Site map"
 
-#: src/components/map/MapSheet.tsx:98
+#: src/components/map/MapSheet.tsx:101
 msgid "シートの高さ（上下の矢印キーで変えられます）"
 msgstr "Height of the sheet (change it with the up and down arrow keys)"
 
@@ -782,7 +782,7 @@ msgstr "Height of the sheet (change it with the up and down arrow keys)"
 msgid "スタンプ"
 msgstr "Stamps"
 
-#: src/components/map/MapScreen.tsx:365
+#: src/components/map/MapScreen.tsx:376
 #: src/components/RouteView.tsx:196
 #: src/components/TrailRibbon.tsx:61
 msgid "スタンプ {stampedCount} / {spotCount}"
@@ -804,7 +804,7 @@ msgstr "See your stamp card"
 msgid "スタンプが押されたことのある経由地は消せません。「公開をやめる」をお使いください。"
 msgstr "A waypoint that has been stamped cannot be deleted. Use \"Unpublish\" instead."
 
-#: src/components/map/MapScreen.tsx:378
+#: src/components/map/MapScreen.tsx:389
 #: src/components/RouteView.tsx:192
 #: src/components/SpotSheet.tsx:73
 msgid "スタンプの場所"
@@ -819,7 +819,7 @@ msgstr "Stamp places {text} are gathered here. Tap to zoom in."
 msgid "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 msgstr "To check that you are near the stamp place, we look at your phone's location once."
 
-#: src/components/map/MapScreen.tsx:420
+#: src/components/map/MapScreen.tsx:431
 #: src/components/RouteView.tsx:182
 msgid "スタンプの場所は、まだ準備中です。"
 msgstr "The stamp places are not ready yet."
@@ -853,7 +853,7 @@ msgstr "Stamp progress"
 msgid "スタンプを押しています…"
 msgstr "Collecting the stamp…"
 
-#: src/components/map/MapScreen.tsx:499
+#: src/components/map/MapScreen.tsx:510
 #: src/components/SpotSheet.tsx:85
 msgid "スタンプを押しました"
 msgstr "You collected this stamp"
@@ -1464,7 +1464,7 @@ msgstr "Log out"
 #: src/components/auth/LoginFlow.tsx:55
 #: src/components/auth/RegisterFlow.tsx:141
 #: src/components/landing/LandingHero.tsx:55
-#: src/components/map/MapScreen.tsx:329
+#: src/components/map/MapScreen.tsx:340
 #: src/components/SignInPrompt.tsx:36
 #: src/components/SiteHeader.tsx:197
 msgid "ログイン"
@@ -1487,7 +1487,7 @@ msgstr "Log in"
 msgid "ログインすると、スタンプを記録できます。"
 msgstr "Sign in to record your stamps."
 
-#: src/components/map/MapScreen.tsx:324
+#: src/components/map/MapScreen.tsx:335
 msgid "ログインすると、ルート案内とスタンプが使えます。見るだけなら、このままどうぞ。"
 msgstr "Log in to use route guidance and stamps. If you only want to look around, carry on as you are."
 
@@ -1634,7 +1634,7 @@ msgstr "Location isn't allowed. In your browser settings, allow location for thi
 msgid "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてください。"
 msgstr "Location is not allowed. Please allow location for this site in your browser settings."
 
-#: src/components/map/MapSheet.tsx:103
+#: src/components/map/MapSheet.tsx:106
 msgid "低い"
 msgstr "low"
 
@@ -1862,7 +1862,7 @@ msgstr "Highest {highest}m"
 
 #: src/components/admin/useChecklistLabels.ts:19
 #: src/components/landing/BannerCarousel.tsx:37
-#: src/components/map/MapScreen.tsx:443
+#: src/components/map/MapScreen.tsx:454
 msgid "写真"
 msgstr "Photos"
 
@@ -2038,7 +2038,15 @@ msgstr "northwest"
 msgid "区間 {text} がここに集まっています。押すと拡大します"
 msgstr "Courses {text} are gathered here. Press to zoom in"
 
-#: src/components/map/MapScreen.tsx:256
+#: src/components/map/MapScreen.tsx:243
+msgid "区間の一覧を見る"
+msgstr "Show the courses"
+
+#: src/components/map/MapScreen.tsx:243
+msgid "区間の情報を見る"
+msgstr "Show the course"
+
+#: src/components/map/MapScreen.tsx:267
 msgid "区間をえらぶ"
 msgstr "Choose a course"
 
@@ -2046,7 +2054,7 @@ msgstr "Choose a course"
 msgid "区間を選ぶと、道とスタンプの場所が見えます。"
 msgstr "Choose a course to see its path and its stamp places."
 
-#: src/components/map/MapSheet.tsx:103
+#: src/components/map/MapSheet.tsx:106
 msgid "半分"
 msgstr "half"
 
@@ -2150,7 +2158,7 @@ msgstr "Show on the map"
 msgid "地図のルートと場所は仮のものです。実際の公開情報ではありません。"
 msgstr "The route and places on the map are provisional. They are not published information."
 
-#: src/components/map/MapScreen.tsx:417
+#: src/components/map/MapScreen.tsx:428
 msgid "地図の上の場所は、準備中です。"
 msgstr "The places on the map are not ready yet."
 
@@ -2317,7 +2325,7 @@ msgstr "Required"
 msgid "性別"
 msgstr "Gender"
 
-#: src/components/map/MapSheet.tsx:86
+#: src/components/map/MapSheet.tsx:89
 msgid "情報"
 msgstr "Information"
 
@@ -2342,7 +2350,7 @@ msgstr "Entered by hand. Leave it empty to calculate it from the distance and cl
 msgid "手直しが必要なルートだけ（{needsWorkCount}）"
 msgstr "Only routes that need work ({needsWorkCount})"
 
-#: src/components/map/MapScreen.tsx:395
+#: src/components/map/MapScreen.tsx:406
 #: src/components/RallyViews.tsx:167
 #: src/components/StampLegend.tsx:8
 #: src/components/StopList.tsx:59
@@ -2442,7 +2450,7 @@ msgstr "A Japanese name is needed to create a new one"
 #: src/components/auth/LoginFlow.tsx:104
 #: src/components/landing/Landing.tsx:199
 #: src/components/landing/LandingHero.tsx:46
-#: src/components/map/MapScreen.tsx:326
+#: src/components/map/MapScreen.tsx:337
 #: src/components/SignInPrompt.tsx:30
 #: src/components/SiteHeader.tsx:200
 msgid "新規登録"
@@ -2582,7 +2590,7 @@ msgstr "Routes are in walking order. Select a name to edit its text and map."
 #: src/components/admin/RouteEditor.tsx:379
 #: src/components/admin/RouteEditor.tsx:380
 #: src/components/admin/useChecklistLabels.ts:17
-#: src/components/map/MapScreen.tsx:425
+#: src/components/map/MapScreen.tsx:436
 #: src/components/RouteView.tsx:124
 msgid "歴史・由来"
 msgstr "History and background"
@@ -2622,7 +2630,7 @@ msgstr "Pale"
 #: src/components/admin/AdminNav.tsx:55
 #: src/components/admin/RouteTable.tsx:30
 #: src/components/landing/Landing.tsx:243
-#: src/components/map/MapScreen.tsx:309
+#: src/components/map/MapScreen.tsx:320
 #: src/components/RallyViews.tsx:106
 #: src/components/TrailRibbon.tsx:73
 msgid "準備中"
@@ -3259,6 +3267,10 @@ msgstr "Developer setting. Not shown in the public version."
 msgid "陰影（やわらかい影）"
 msgstr "Shading (soft shadow)"
 
+#: src/components/map/MapSheet.tsx:106
+msgid "隠す"
+msgstr "hidden"
+
 #: src/components/RouteStats.tsx:34
 msgid "難しさ"
 msgstr "Difficulty"
@@ -3305,6 +3317,6 @@ msgstr "Station, bus, parking"
 msgid "駐車場"
 msgstr "Parking"
 
-#: src/components/map/MapSheet.tsx:103
+#: src/components/map/MapSheet.tsx:106
 msgid "高い"
 msgstr "high"
