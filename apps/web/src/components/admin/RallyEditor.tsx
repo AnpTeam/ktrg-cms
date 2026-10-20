@@ -123,7 +123,7 @@ export function RallyEditor({
           invalid={names.nameJa.trim() === ""}
         />
         <div className="flex flex-wrap gap-3">
-          <button type="button" onClick={saveNames} disabled={busy || !namesChanged || names.nameJa.trim() === ""} className="tap-target rounded-xl bg-brand px-6 text-lg font-bold text-on-brand disabled:opacity-50">
+          <button type="button" onClick={saveNames} disabled={busy || !namesChanged || names.nameJa.trim() === ""} className="tap-target rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50">
             {t`名前を保存`}
           </button>
           <button
@@ -140,7 +140,7 @@ export function RallyEditor({
 
       <Section title={saved.kind === "places" ? t`ラリーに入る経由地` : t`ラリーに入るコース`}>
         <RallyMemberPicker candidates={candidates} selected={ids} onChange={setIds} routeNames={routeNames} locale={locale} disabled={busy} />
-        <button type="button" onClick={saveMembers} disabled={busy || !membersChanged} className="tap-target w-fit rounded-xl bg-brand px-6 text-lg font-bold text-on-brand disabled:opacity-50">
+        <button type="button" onClick={saveMembers} disabled={busy || !membersChanged} className="tap-target w-fit rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50">
           {t`ラリーの中身を保存`}
         </button>
         <p className="text-base text-muted">{t`下書きの経由地は、公開されるまで数に入りません。スタンプの記録は変わりません。`}</p>

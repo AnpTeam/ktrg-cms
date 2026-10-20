@@ -168,7 +168,7 @@ export function RallyCard({ rally, locale, signedIn }: { rally: RallyItem; local
           <div className="border-t-2 border-line p-4">
             <Link
               href={`/routes/${rally.routeId}`}
-              className="tap-target inline-flex items-center rounded-lg border-2 border-brand px-4 text-lg font-bold text-accent hover:bg-paper"
+              className="tap-target inline-flex items-center rounded-lg border border-ink px-4 text-lg font-bold text-accent hover:bg-paper"
             >
               <Trans>コースを見る</Trans>
             </Link>

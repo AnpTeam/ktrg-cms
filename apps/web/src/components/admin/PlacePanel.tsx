@@ -182,13 +182,13 @@ export function PlacePanel(p: PlacePanelProps) {
             {place.published ? (
               <div className="flex flex-wrap items-center gap-3">
                 <p className="text-lg font-bold">{t`この経由地は公開されています。`}</p>
-                <button type="button" disabled={p.busy} onClick={p.onUnpublish} className="tap-target rounded-xl border-2 border-ink px-5 text-lg font-bold disabled:opacity-40">
+                <button type="button" disabled={p.busy} onClick={p.onUnpublish} className="tap-target rounded-xl border border-ink px-5 text-lg font-bold disabled:opacity-40">
                   {t`公開をやめる`}
                 </button>
               </div>
             ) : (
               <>
-                <button type="button" disabled={p.busy || blockers.length > 0} onClick={p.onPublish} className="tap-target w-fit rounded-xl bg-brand px-6 text-lg font-bold text-on-brand disabled:opacity-40">
+                <button type="button" disabled={p.busy || blockers.length > 0} onClick={p.onPublish} className="tap-target w-fit rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-40">
                   {t`公開する`}
                 </button>
                 {blockers.length > 0 ? (

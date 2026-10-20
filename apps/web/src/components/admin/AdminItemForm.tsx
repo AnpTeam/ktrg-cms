@@ -194,7 +194,7 @@ export function AdminItemForm({ meta: config, initial, locale, routes }: { meta:
       <Section title={t`内容`}>
         {config.fields.map(input)}
         {editable ? (
-          <button type="button" onClick={save} disabled={!canSave} className="tap-target w-fit rounded-xl bg-brand px-6 text-lg font-bold text-on-brand disabled:opacity-50">
+          <button type="button" onClick={save} disabled={!canSave} className="tap-target w-fit rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50">
             {saved ? t`保存` : t`作成`}
           </button>
         ) : null}

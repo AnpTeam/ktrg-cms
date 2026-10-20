@@ -86,7 +86,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
           <input type="checkbox" checked={needsWorkOnly} onChange={(e) => setNeedsWorkOnly(e.target.checked)} className="size-6" />
           {t`手直しが必要なルートだけ（${needsWorkCount}）`}
         </label>
-        <Link href="/admin/routes/new" className="tap-target inline-flex items-center rounded-xl bg-brand px-5 text-lg font-bold text-on-brand">
+        <Link href="/admin/routes/new" className="tap-target inline-flex items-center rounded-xl bg-ink px-5 text-lg font-bold text-paper">
           {t`新しいルート`}
         </Link>
       </div>
@@ -133,7 +133,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
                         <li key={i.id}>
                           <Link
                             href={`/admin/routes/${r.id}?tab=${i.tab}`}
-                            className={`inline-flex items-center rounded-full px-3 py-1 text-base ${i.required ? "bg-danger font-bold text-white" : "bg-surface text-ink"}`}
+                            className={`inline-flex items-center rounded-md px-3 py-1 text-base ${i.required ? "bg-danger font-bold text-white" : "bg-surface text-ink"}`}
                           >
                             {i.required ? t`必要：${labels.item[i.id]}` : t`あるとよい：${labels.item[i.id]}`}
                           </Link>

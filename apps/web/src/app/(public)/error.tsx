@@ -23,13 +23,13 @@ export default function PublicError({ error, reset }: { error: Error & { digest?
         <button
           type="button"
           onClick={() => reset()}
-          className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-brand px-6 text-xl font-bold text-on-brand"
+          className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper"
         >
           {t`もう一度ひらく`}
         </button>
         <Link
           href="/"
-          className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl border-2 border-ink px-6 text-xl font-bold text-ink hover:bg-surface"
+          className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl border border-ink px-6 text-xl font-bold text-ink hover:bg-surface"
         >
           {t`ホームにもどる`}
         </Link>

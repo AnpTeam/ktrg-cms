@@ -340,7 +340,7 @@ export function MapScreenCanvas({
             type="button"
             onClick={() => zoom(sign === "＋" ? 1 : -1)}
             aria-label={sign === "＋" ? t`拡大` : t`縮小`}
-            className="tap-target inline-flex items-center justify-center rounded-lg border-2 border-ink bg-paper px-3 text-2xl font-bold text-ink hover:bg-surface"
+            className="tap-target inline-flex items-center justify-center rounded-lg border border-ink bg-paper px-3 text-2xl font-bold text-ink hover:bg-surface"
           >
             {sign}
           </button>

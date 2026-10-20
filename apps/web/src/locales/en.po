@@ -212,7 +212,7 @@ msgid "「書き方」シートにある種類の名前で書いてください"
 msgstr "Write one of the kind names listed on the 書き方 sheet"
 
 #: src/components/landing/Landing.tsx:86
-#: src/components/landing/LandingHero.tsx:41
+#: src/components/landing/LandingHero.tsx:40
 msgid "「祈り」を見つめる再発見の旅"
 msgstr "A journey of rediscovery, looking at \"prayer\""
 
@@ -1371,7 +1371,7 @@ msgstr "You can browse routes and places without signing in."
 #: src/components/admin/RouteTable.tsx:61
 #: src/components/landing/Landing.tsx:94
 #: src/components/landing/Landing.tsx:230
-#: src/components/landing/LandingHero.tsx:48
+#: src/components/landing/LandingHero.tsx:47
 msgid "ルートをさがす"
 msgstr "Find a route"
 
@@ -1407,7 +1407,7 @@ msgstr "Log out"
 #: src/components/auth/LoginFlow.tsx:55
 #: src/components/auth/RegisterFlow.tsx:141
 #: src/components/landing/Landing.tsx:99
-#: src/components/landing/LandingHero.tsx:54
+#: src/components/landing/LandingHero.tsx:53
 #: src/components/map/MapScreen.tsx:312
 #: src/components/SignInPrompt.tsx:36
 #: src/components/SiteHeader.tsx:174
@@ -2340,7 +2340,7 @@ msgstr "A Japanese name is needed to create a new one"
 #: src/components/auth/LoginFlow.tsx:104
 #: src/components/landing/Landing.tsx:91
 #: src/components/landing/Landing.tsx:227
-#: src/components/landing/LandingHero.tsx:45
+#: src/components/landing/LandingHero.tsx:44
 #: src/components/map/MapScreen.tsx:309
 #: src/components/SignInPrompt.tsx:30
 #: src/components/SiteHeader.tsx:177
@@ -2595,7 +2595,7 @@ msgstr "Could not register. Please try again."
 
 #: src/components/auth/RegisterFlow.tsx:139
 #: src/components/landing/Landing.tsx:97
-#: src/components/landing/LandingHero.tsx:52
+#: src/components/landing/LandingHero.tsx:51
 msgid "登録済みの方は"
 msgstr "Already registered?"
 
@@ -2857,7 +2857,7 @@ msgstr "English is empty (the Japanese text is shown)"
 #: src/app/(public)/page.tsx:52
 #: src/app/layout.tsx:30
 #: src/components/landing/Landing.tsx:81
-#: src/components/landing/LandingHero.tsx:36
+#: src/components/landing/LandingHero.tsx:35
 msgid "葛城修験"
 msgstr "Katsuragi Shugen"
 

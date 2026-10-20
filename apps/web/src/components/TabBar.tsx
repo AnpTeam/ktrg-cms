@@ -26,7 +26,7 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
   ];
 
   const item =
-    "flex min-h-[3.25rem] min-w-0 flex-col items-center justify-center gap-0.5 rounded-full text-sm font-bold leading-tight [&_svg]:size-6 md:min-h-14 md:flex-row md:justify-start md:gap-4 md:rounded-2xl md:px-5 md:text-xl";
+    "flex min-h-[3.25rem] min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg text-sm font-bold leading-tight [&_svg]:size-6 md:min-h-14 md:flex-row md:justify-start md:gap-4 md:rounded-2xl md:px-5 md:text-xl";
 
   return (
     // Below 1024 px this wrapper adds nothing (the nav is placed by its own classes); from 1024 px it is the sidebar.
@@ -36,7 +36,7 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
     </Link>
     <nav
       aria-label={t`メインメニュー`}
-      className="fixed inset-x-3 bottom-3 z-10 mb-[env(safe-area-inset-bottom)] rounded-full bg-surface p-1.5 shadow-lg md:sticky md:inset-x-auto md:bottom-auto md:top-0 md:mb-0 md:h-dvh md:w-44 md:shrink-0 md:self-start md:rounded-none md:bg-transparent md:p-0 md:px-2 md:pt-6 md:shadow-none lg:static lg:h-auto lg:w-full lg:flex-1 lg:self-auto lg:px-4 lg:pt-4"
+      className="fixed inset-x-3 bottom-3 z-10 mb-[env(safe-area-inset-bottom)] rounded-xl bg-surface p-1.5 shadow-lg md:sticky md:inset-x-auto md:bottom-auto md:top-0 md:mb-0 md:h-dvh md:w-44 md:shrink-0 md:self-start md:rounded-none md:bg-transparent md:p-0 md:px-2 md:pt-6 md:shadow-none lg:static lg:h-auto lg:w-full lg:flex-1 lg:self-auto lg:px-4 lg:pt-4"
     >
       <ul className="mx-auto grid max-w-xl grid-cols-4 gap-1 md:flex md:max-w-none md:flex-col md:gap-2">
         {tabs.map(({ path, label, icon }) => {

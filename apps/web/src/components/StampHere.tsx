@@ -20,8 +20,8 @@ type Phase =
   | { name: "done"; already: boolean }
   | { name: "problem"; problem: Problem; distanceM?: number };
 
-const button = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-brand px-6 text-xl font-bold text-on-brand shadow-lg disabled:opacity-60";
-const quietButton = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl border-2 border-ink bg-paper px-6 text-xl font-bold text-ink hover:bg-surface disabled:opacity-60";
+const button = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper shadow-lg disabled:opacity-60";
+const quietButton = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl border border-ink bg-paper px-6 text-xl font-bold text-ink hover:bg-surface disabled:opacity-60";
 
 export function StampHere({
   spotId,

@@ -31,7 +31,7 @@ export function LocaleSwitcher() {
               rememberLocale(locale);
               router.refresh();
             }}
-            className={`inline-flex min-h-10 min-w-16 items-center justify-center rounded-lg border-2 border-ink px-2.5 text-base font-bold ${
+            className={`inline-flex min-h-10 min-w-16 items-center justify-center rounded-lg border border-ink px-2.5 text-base font-bold ${
               active ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"
             }`}
           >

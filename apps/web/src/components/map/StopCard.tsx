@@ -40,7 +40,7 @@ export function StopCard({
       ) : null}
       <Link
         href={href}
-        className="tap-target inline-flex items-center justify-center self-start rounded-lg bg-brand px-5 text-lg font-bold text-on-brand"
+        className="tap-target inline-flex items-center justify-center self-start rounded-lg bg-ink px-5 text-lg font-bold text-paper"
       >
         <Trans>この場所を見る</Trans>
       </Link>
