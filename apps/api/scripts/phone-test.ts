@@ -19,6 +19,7 @@ import { createConsoleMailer } from "../src/lib/mailer";
 import { createMemoryMeStore } from "../src/me/me-memory-store";
 import { createMemoryContentStore } from "../src/content/content-memory-store";
 import { createMemoryRallyAdminStore } from "../src/rallies/rally-admin-memory-store";
+import { createMemoryStampStore } from "../src/stamps/stamp-memory-store";
 import { createMemoryNoticeStore } from "../src/notices/notice-memory-store";
 import { createMemoryPlaceStore } from "../src/places/place-directory";
 import { createMemoryBannerStore } from "../src/banners/banner-list";
@@ -75,6 +76,7 @@ const services = createServices({
     me: createMemoryMeStore(users, profiles).store,
     content: createMemoryContentStore(audit).store,
     rallyAdmin: createMemoryRallyAdminStore(audit).store,
+    stamps: createMemoryStampStore(audit).store,
     notices: createMemoryNoticeStore(audit).store,
     banners: createMemoryBannerStore(audit).store,
     places: createMemoryPlaceStore(audit).store,

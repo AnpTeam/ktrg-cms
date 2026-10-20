@@ -54,6 +54,9 @@ export const AUDIT_ACTIONS = {
   "place.create": "place",
   "place.update": "place",
   "place.delete": "place",
+  /** An admin revoked a stamp (kept as a record, hidden from progress) or took the revoke back. */
+  "stamp.revoke": "stamp",
+  "stamp.restore": "stamp",
   /** An admin changed another account's role (that account's sessions are ended in the same step). */
   "user.role.change": "user",
   /** An admin uploaded a photo (the target is the file's UUID in storage). */

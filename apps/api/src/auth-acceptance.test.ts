@@ -18,6 +18,7 @@ import { TestAuthenticator } from "./auth/webauthn-test-authenticator";
 import type { MailMessage } from "./lib/mailer";
 import { createMemoryContentStore } from "./content/content-memory-store";
 import { createMemoryRallyAdminStore } from "./rallies/rally-admin-memory-store";
+import { createMemoryStampStore } from "./stamps/stamp-memory-store";
 import { createMemoryNoticeStore } from "./notices/notice-memory-store";
 import { createMemoryPlaceStore } from "./places/place-directory";
 import { createMemoryBannerStore } from "./banners/banner-list";
@@ -66,6 +67,7 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       me: profiles.store,
       content: createMemoryContentStore(audit.writer).store,
       rallyAdmin: createMemoryRallyAdminStore(audit.writer).store,
+      stamps: createMemoryStampStore(audit.writer).store,
       notices: createMemoryNoticeStore(audit.writer).store,
       banners: createMemoryBannerStore(audit.writer).store,
       places: createMemoryPlaceStore(audit.writer).store,
@@ -298,6 +300,7 @@ describe("user B cannot touch user A", () => {
     // What visitors read: routes and published places (see content/content-routes.test.ts).
     "GET /api/v1/routes",
     "GET /api/v1/routes/:id",
+    "GET /api/v1/spots/status",
     "GET /api/v1/spots/:id",
     // Published trail notices (see notices/notice-routes.test.ts).
     "GET /api/v1/notices",
@@ -326,6 +329,7 @@ describe("user B cannot touch user A", () => {
     "PUT /api/v1/admin/routes/:id/spots/order": () => ({ ids: [] }),
     "PATCH /api/v1/admin/spots/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/rallies": () => ({ kind: "course", nameJa: "x" }),
+    "POST /api/v1/stamps": () => ({ spotId: crypto.randomUUID(), lat: 34, lng: 135, accuracyM: 10 }),
     "PUT /api/v1/admin/rallies/order": () => ({ ids: [] }),
     "PATCH /api/v1/admin/rallies/:id": () => ({ updatedAt: new Date().toISOString() }),
     "PUT /api/v1/admin/rallies/:id/places": () => ({ updatedAt: new Date().toISOString(), spotIds: [] }),

@@ -46,6 +46,7 @@ export function spotListItemFromApi(s: PublicSpot): SpotListItem {
     nameJa: s.nameJa,
     nameEn: s.nameEn,
     status: s.status,
+    ...(isPointKind(s.kind) ? { kind: s.kind } : {}),
     stamped: false,
     position: s.position ? { lat: s.position.lat, lng: s.position.lng, verified: true } : null,
   };
