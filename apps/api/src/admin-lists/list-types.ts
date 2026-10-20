@@ -57,13 +57,14 @@ export type Label = { ja: string; en: string };
  * - url: an https link
  * - image: an https link to a photo, with an upload button and a preview
  * - number: a whole number
+ * - decimal: a number with a fraction (a latitude), or empty (null)
  * - date: a day (YYYY-MM-DD); with `optional`, empty is sent as null
  * - datetime: a moment (ISO text), shown in Japan time; read only
  * - boolean: a tick box
  * - select: one of `options`
  * - route: one of the routes, or none (null)
  */
-export type FieldKind = "bilingual" | "bilingual-long" | "text" | "url" | "image" | "number" | "date" | "datetime" | "boolean" | "select" | "route";
+export type FieldKind = "bilingual" | "bilingual-long" | "text" | "url" | "image" | "number" | "decimal" | "date" | "datetime" | "boolean" | "select" | "route";
 
 export interface FieldUi {
   /** The API field; for a bilingual field the stem ("title" → titleJa / titleEn). */

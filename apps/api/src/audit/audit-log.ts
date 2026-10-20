@@ -50,6 +50,10 @@ export const AUDIT_ACTIONS = {
   "banner.create": "banner",
   "banner.update": "banner",
   "banner.delete": "banner",
+  /** The places directory (admin-lists): made, changed (including published or not), deleted. */
+  "place.create": "place",
+  "place.update": "place",
+  "place.delete": "place",
   /** An admin revoked a stamp (kept as a record, hidden from progress) or took the revoke back. */
   "stamp.revoke": "stamp",
   "stamp.restore": "stamp",

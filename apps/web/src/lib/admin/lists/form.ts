@@ -43,6 +43,7 @@ export function toPayload(config: ListMeta, values: FormValues): Record<string, 
         out[f.name] = values[f.name] === true;
         break;
       case "number":
+      case "decimal":
         out[f.name] = text(f.name) === "" ? null : Number(text(f.name));
         break;
       default:

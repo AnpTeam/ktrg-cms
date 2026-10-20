@@ -20,6 +20,7 @@ import { createMemoryContentStore } from "./content/content-memory-store";
 import { createMemoryRallyAdminStore } from "./rallies/rally-admin-memory-store";
 import { createMemoryStampStore } from "./stamps/stamp-memory-store";
 import { createMemoryNoticeStore } from "./notices/notice-memory-store";
+import { createMemoryPlaceStore } from "./places/place-directory";
 import { createMemoryBannerStore } from "./banners/banner-list";
 import { memoryReader } from "./admin-lists/list-memory-store";
 import { createMemoryUserListStore } from "./users/user-list";
@@ -71,6 +72,7 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       stampList: stampMem.listStore,
       notices: createMemoryNoticeStore(audit.writer).store,
       banners: createMemoryBannerStore(audit.writer).store,
+      places: createMemoryPlaceStore(audit.writer).store,
       auditList: memoryReader(new Map()),
       placeList: memoryReader(new Map()),
       userList: createMemoryUserListStore(audit.writer).store,
@@ -306,6 +308,8 @@ describe("user B cannot touch user A", () => {
     "GET /api/v1/notices",
     // Published home page banners (see banners/banner-list.test.ts).
     "GET /api/v1/banners",
+    // Published places with a checked position (see places/place-directory.test.ts).
+    "GET /api/v1/places",
     "POST /api/v1/auth/otp/request",
     "POST /api/v1/auth/otp/verify",
     "POST /api/v1/auth/logout",
@@ -337,6 +341,12 @@ describe("user B cannot touch user A", () => {
     "PATCH /api/v1/admin/lists/notices/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/lists/banners": () => ({ imageUrl: "https://example.com/a.jpg", altJa: "x", altEn: null, sortOrder: 0, published: false }),
     "PATCH /api/v1/admin/lists/banners/:id": () => ({ updatedAt: new Date().toISOString() }),
+    "POST /api/v1/admin/lists/directory": () => ({
+      category: "cafe", routeId: null, nameJa: "x", nameEn: null, descriptionJa: null, descriptionEn: null, hoursJa: null, hoursEn: null, closedDaysJa: null, closedDaysEn: null,
+      lat: null, lng: null, positionVerified: false, positionSource: null, address: null, phone: null, website: null, photoUrl: null, status: "unknown", lastVerified: null,
+      listingConfirmed: false, listingNote: null, published: false,
+    }),
+    "PATCH /api/v1/admin/lists/directory/:id": () => ({ updatedAt: new Date().toISOString() }),
     "PATCH /api/v1/admin/lists/users/:id": () => ({ updatedAt: new Date().toISOString(), role: "admin" }),
     "POST /api/v1/auth/reauth/verify": () => ({ code: "123456" }),
     "POST /api/v1/admin/uploads": () => {
