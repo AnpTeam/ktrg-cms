@@ -39,6 +39,8 @@ export const AUTH_LIMITS = {
   // Keyed by user id: deletion requests and cancels. Each request emails the owner, so a
   // request/cancel loop must not be able to flood their inbox.
   meDeletionUser: { name: "me-deletion-user", limit: 5, windowMs: 15 * MINUTE },
+  // Keyed by user id: collecting stamps. Walkers stamp a handful of places an hour; this stops a script.
+  stampUser: { name: "stamp-user", limit: 30, windowMs: 15 * MINUTE },
   // Keyed by user id: an admin saving routes and places. Generous, because the editor saves often.
   adminWriteUser: { name: "admin-write-user", limit: 300, windowMs: 15 * MINUTE },
   // Keyed by user id: asking the route-finding service to snap a line to trails. The service has a daily allowance

@@ -138,6 +138,8 @@ export interface ContentStore {
   listRoutes(): Promise<RouteSummaryRow[]>;
   getRoute(id: string): Promise<{ route: RouteRow; spots: SpotRow[] } | null>;
   getSpot(id: string): Promise<SpotRow | null>;
+  /** Every published place of every route (for the status poll). */
+  listPublishedSpots(): Promise<SpotRow[]>;
 
   createRoute(actor: string, fields: Partial<StoredRouteFields> & { nameJa: string }): Promise<RouteRow>;
   /** `expected` is the updatedAt the editor loaded: a different value means someone saved first. */

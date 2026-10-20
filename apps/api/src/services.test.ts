@@ -10,6 +10,7 @@ import { createMemoryContentStore } from "./content/content-memory-store";
 import { createMemoryMeStore } from "./me/me-memory-store";
 import { createMemoryNoticeStore } from "./notices/notice-memory-store";
 import { createMemoryRallyAdminStore } from "./rallies/rally-admin-memory-store";
+import { createMemoryStampStore } from "./stamps/stamp-memory-store";
 import { createServices } from "./services";
 import { createMemoryUserListStore } from "./users/user-list";
 
@@ -25,6 +26,7 @@ function build(photoHosts?: string[]) {
       me: createMemoryMeStore(users).store,
       content: createMemoryContentStore(audit.writer).store,
       rallyAdmin: createMemoryRallyAdminStore(audit.writer).store,
+      stamps: createMemoryStampStore(audit.writer).store,
       notices: createMemoryNoticeStore(audit.writer).store,
       banners: createMemoryBannerStore(audit.writer).store,
       auditList: memoryReader(new Map()),

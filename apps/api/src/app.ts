@@ -6,6 +6,9 @@ import { adminContentRoutes } from "./content/admin-routes";
 import { createDrizzleContentStore } from "./content/content-store";
 import { createDrizzleRallyAdminStore } from "./rallies/rally-admin-store";
 import { rallyAdminRoutes } from "./rallies/rally-admin-routes";
+import { stampAdminRoutes } from "./stamps/stamp-admin-routes";
+import { stampRoutes } from "./stamps/stamp-routes";
+import { createDrizzleStampStore } from "./stamps/stamp-store";
 import { publicContentRoutes } from "./content/public-routes";
 import { passkeyRoutes } from "./auth/passkey-routes";
 import { createDrizzlePasskeyStore } from "./auth/passkey-store";
@@ -50,6 +53,7 @@ function getServices(): Services {
         me: createDrizzleMeStore(db),
         content: createDrizzleContentStore(db),
         rallyAdmin: createDrizzleRallyAdminStore(db),
+        stamps: createDrizzleStampStore(db),
         notices: createDrizzleNoticeStore(db),
         banners: createDrizzleBannerStore(db),
         auditList: createDrizzleAuditListStore(db),
@@ -111,6 +115,8 @@ export function createApp(
     .use(publicContentRoutes(() => getServices().content))
     .use(uploadRoutes(getServices, opts))
     .use(rallyAdminRoutes(getServices, opts))
+    .use(stampRoutes(getServices, opts))
+    .use(stampAdminRoutes(getServices, opts))
     // Admin lists (admin-lists/): each table described once, the same endpoints under /admin/lists/<key>.
     .use(listMetaRoutes(ADMIN_LISTS, getServices, opts))
     .use(listReadRoutes(noticeList, getServices, opts))

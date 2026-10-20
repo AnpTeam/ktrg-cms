@@ -347,6 +347,17 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       return { route: toPublicRoute(found.route, stamps.length, true), spots: stamps.map(toPublicSpot), points: points.map(toPublicSpot) };
     },
 
+    /** Status of every published place, nothing else: small enough to poll every minute. */
+    async publicSpotStatuses() {
+      return (await store.listPublishedSpots()).map((s) => ({
+        id: s.id,
+        status: s.status,
+        statusNoteJa: s.statusNoteJa,
+        statusNoteEn: s.statusNoteEn,
+        statusUpdatedAt: s.statusUpdatedAt,
+      }));
+    },
+
     /** A draft place looks like a missing one. */
     async publicSpot(id: string): Promise<PublicSpot | null> {
       const s = await store.getSpot(id);

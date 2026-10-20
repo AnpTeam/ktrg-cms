@@ -40,6 +40,9 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
     async getSpot(id) {
       return spots.get(id) ?? null;
     },
+    async listPublishedSpots() {
+      return [...spots.values()].filter((s) => s.published);
+    },
 
     async createRoute(actor, fields) {
       const at = stampTime();

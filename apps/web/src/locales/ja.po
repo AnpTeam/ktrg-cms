@@ -284,6 +284,10 @@ msgstr "Ctrlキーを押しながら地図を動かします"
 msgid "GPSの電波が弱いようです。空の開けた場所に動いて、もう一度お試しください。"
 msgstr "GPSの電波が弱いようです。空の開けた場所に動いて、もう一度お試しください。"
 
+#: src/components/useErrorMessages.ts:43
+msgid "GPSの電波が弱いようです。空の開けた場所に移動して、もう一度お試しください。"
+msgstr "GPSの電波が弱いようです。空の開けた場所に移動して、もう一度お試しください。"
+
 #: src/components/admin/map-editor/MapEditor.tsx:466
 msgid "GPXの地点"
 msgstr "GPXの地点"
@@ -614,6 +618,10 @@ msgstr "この区間は、準備中です。"
 msgid "この地域のルートはまだありません。"
 msgstr "この地域のルートはまだありません。"
 
+#: src/components/useErrorMessages.ts:42
+msgid "この場所のスタンプは、確認のため取り消されています。お困りの場合は運営にお問い合わせください。"
+msgstr "この場所のスタンプは、確認のため取り消されています。お困りの場合は運営にお問い合わせください。"
+
 #: src/components/map/MapScreen.tsx:491
 msgid "この場所のページを開く"
 msgstr "この場所のページを開く"
@@ -631,6 +639,10 @@ msgstr "この場所は、いまは閉鎖中です。"
 #: src/components/StampHere.tsx:88
 msgid "この場所は、いまは閉鎖中です。スタンプは押せません。"
 msgstr "この場所は、いまは閉鎖中です。スタンプは押せません。"
+
+#: src/components/useErrorMessages.ts:40
+msgid "この場所は今、通行止めなどで閉まっているため、スタンプを押せません。"
+msgstr "この場所は今、通行止めなどで閉まっているため、スタンプを押せません。"
 
 #: src/components/map/StopCard.tsx:45
 msgid "この場所を見る"
@@ -653,7 +665,7 @@ msgstr "この端末・ブラウザでは、位置情報を使えません。"
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "この端末・ブラウザではパスキーを使えません。"
 
-#: src/components/useErrorMessages.ts:58
+#: src/components/useErrorMessages.ts:63
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 
@@ -677,7 +689,7 @@ msgstr "この端末のパスキーを追加する"
 msgid "この経由地から、この距離の中にいるとスタンプを押せます。"
 msgstr "この経由地から、この距離の中にいるとスタンプを押せます。"
 
-#: src/components/useErrorMessages.ts:40
+#: src/components/useErrorMessages.ts:45
 msgid "この経由地の位置がまだ決まっていません。地図で位置を決めてください。"
 msgstr "この経由地の位置がまだ決まっていません。地図で位置を決めてください。"
 
@@ -697,7 +709,7 @@ msgstr "この設定ではじめる"
 msgid "この説明は日本語のみです。"
 msgstr "この説明は日本語のみです。"
 
-#: src/components/useErrorMessages.ts:55
+#: src/components/useErrorMessages.ts:60
 msgid "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 msgstr "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 
@@ -759,7 +771,7 @@ msgstr "スタンプカード"
 msgid "スタンプカードを見る"
 msgstr "スタンプカードを見る"
 
-#: src/components/useErrorMessages.ts:39
+#: src/components/useErrorMessages.ts:44
 msgid "スタンプが押されたことのある経由地は消せません。「公開をやめる」をお使いください。"
 msgstr "スタンプが押されたことのある経由地は消せません。「公開をやめる」をお使いください。"
 
@@ -970,7 +982,7 @@ msgstr "はじめのラリー"
 msgid "パスキー {number}"
 msgstr "パスキー {number}"
 
-#: src/components/useErrorMessages.ts:59
+#: src/components/useErrorMessages.ts:64
 msgid "パスキーの確認が中止されました。もう一度お試しください。"
 msgstr "パスキーの確認が中止されました。もう一度お試しください。"
 
@@ -1489,7 +1501,7 @@ msgstr "下書きの経由地は、公開されるまで数に入りません。
 msgid "並べ替えは、検索や絞り込みを外してからできます。"
 msgstr "並べ替えは、検索や絞り込みを外してからできます。"
 
-#: src/components/useErrorMessages.ts:45
+#: src/components/useErrorMessages.ts:50
 msgid "中身のないラリーは公開できません。公開中のラリーを空にすることもできません。"
 msgstr "中身のないラリーは公開できません。公開中のラリーを空にすることもできません。"
 
@@ -1541,7 +1553,7 @@ msgstr "位置は「確認していない」状態で入ります。公開する
 msgid "位置を公式の情報で確認し、「位置を確認した」にチェックを入れて情報源を書いてください。"
 msgstr "位置を公式の情報で確認し、「位置を確認した」にチェックを入れて情報源を書いてください。"
 
-#: src/components/useErrorMessages.ts:41
+#: src/components/useErrorMessages.ts:46
 msgid "位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。"
 msgstr "位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。"
 
@@ -1557,7 +1569,7 @@ msgstr "位置を決めてください（地図に置くか、緯度と経度を
 msgid "位置を確認した"
 msgstr "位置を確認した"
 
-#: src/components/useErrorMessages.ts:42
+#: src/components/useErrorMessages.ts:47
 msgid "位置を確認した情報源（サイトの名前やリンク）を書いてください。"
 msgstr "位置を確認した情報源（サイトの名前やリンク）を書いてください。"
 
@@ -1843,7 +1855,7 @@ msgstr "写真のリンクは、https:// で始まるものだけ使えます。
 msgid "写真は、まだありません"
 msgstr "写真は、まだありません"
 
-#: src/components/useErrorMessages.ts:51
+#: src/components/useErrorMessages.ts:56
 msgid "写真は4MBまでのJPEG・PNG・WebPだけアップロードできます。"
 msgstr "写真は4MBまでのJPEG・PNG・WebPだけアップロードできます。"
 
@@ -1855,7 +1867,7 @@ msgstr "写真はまだありません"
 msgid "写真をアップロード"
 msgstr "写真をアップロード"
 
-#: src/components/useErrorMessages.ts:52
+#: src/components/useErrorMessages.ts:57
 msgid "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 msgstr "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 
@@ -1877,7 +1889,7 @@ msgstr "出かける前に、公式の最新情報を確認してください。
 msgid "出典: {0}"
 msgstr "出典: {0}"
 
-#: src/components/useErrorMessages.ts:49
+#: src/components/useErrorMessages.ts:54
 msgid "出典のリンクは https:// で始まるアドレスを入れてください。"
 msgstr "出典のリンクは https:// で始まるアドレスを入れてください。"
 
@@ -2035,7 +2047,7 @@ msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境に�
 msgstr "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 
 #: src/components/StampHere.tsx:94
-#: src/components/useErrorMessages.ts:61
+#: src/components/useErrorMessages.ts:66
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "問題が発生しました。しばらくしてからもう一度お試しください。"
 
@@ -2124,6 +2136,10 @@ msgstr "地形ボタンで重ねるもの"
 #: src/components/admin/RouteEditor.tsx:319
 msgid "基本"
 msgstr "基本"
+
+#: src/components/useErrorMessages.ts:41
+msgid "場所から少し離れています。近くまで行って、もう一度お試しください。"
+msgstr "場所から少し離れています。近くまで行って、もう一度お試しください。"
 
 #: src/components/admin/RouteEditor.tsx:437
 msgid "場所の見せ方"
@@ -2550,7 +2566,7 @@ msgstr "状態は未確認"
 msgid "現地の許可"
 msgstr "現地の許可"
 
-#: src/components/useErrorMessages.ts:43
+#: src/components/useErrorMessages.ts:48
 msgid "現地の許可がまだ確認できていません。許可を得たら「許可確認済み」にチェックを入れてください。"
 msgstr "現地の許可がまだ確認できていません。許可を得たら「許可確認済み」にチェックを入れてください。"
 
@@ -2743,7 +2759,7 @@ msgstr "経由地が残っているルートは消せません。先に経由地
 msgid "経由地でつくったラリー：えらんだ経由地のスタンプを全部押すと達成。"
 msgstr "経由地でつくったラリー：えらんだ経由地のスタンプを全部押すと達成。"
 
-#: src/components/useErrorMessages.ts:46
+#: src/components/useErrorMessages.ts:51
 msgid "経由地でつくったラリーにはスタンプを押せる経由地を、コースでつくったラリーにはコースを入れてください。同じものは一度だけです。"
 msgstr "経由地でつくったラリーにはスタンプを押せる経由地を、コースでつくったラリーにはコースを入れてください。同じものは一度だけです。"
 
@@ -2843,7 +2859,7 @@ msgstr "置いた経由地"
 msgid "置いた経由地（{0}か所）"
 msgstr "置いた経由地（{0}か所）"
 
-#: src/components/useErrorMessages.ts:48
+#: src/components/useErrorMessages.ts:53
 msgid "自分の権限は変えられません。ほかの管理者に頼んでください。"
 msgstr "自分の権限は変えられません。ほかの管理者に頼んでください。"
 
@@ -3013,7 +3029,7 @@ msgid "送った内容が、読み取れませんでした。もう一度お試�
 msgstr "送った内容が、読み取れませんでした。もう一度お試しください。"
 
 #: src/components/StampHere.tsx:93
-#: src/components/useErrorMessages.ts:60
+#: src/components/useErrorMessages.ts:65
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "通信できませんでした。電波の良い場所でもう一度お試しください。"
 
@@ -3038,7 +3054,7 @@ msgstr "道が通れないときは、無理をせず引き返してください
 msgid "道に沿わせる"
 msgstr "道に沿わせる"
 
-#: src/components/useErrorMessages.ts:54
+#: src/components/useErrorMessages.ts:59
 msgid "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 msgstr "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 
@@ -3046,7 +3062,7 @@ msgstr "道に沿わせる機能が、まだ使えません。管理する人に
 msgid "道を調べています…"
 msgstr "道を調べています…"
 
-#: src/components/useErrorMessages.ts:56
+#: src/components/useErrorMessages.ts:61
 msgid "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 msgstr "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 

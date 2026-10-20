@@ -31,11 +31,15 @@ function setup(routing: RoutingService = NO_ROUTING) {
     .use(apiBase())
     .use(adminContentRoutes(() => services, { secureCookies: false }))
     .use(publicContentRoutes(() => content));
-  const call = (method: string, path: string, opts: { cookie?: string; body?: unknown } = {}) =>
+  const call = (method: string, path: string, opts: { cookie?: string; body?: unknown; ifNoneMatch?: string } = {}) =>
     app.handle(
       new Request(`http://localhost/api/v1${path}`, {
         method,
-        headers: { ...(opts.body === undefined ? {} : { "content-type": "application/json" }), ...(opts.cookie ? { cookie: opts.cookie } : {}) },
+        headers: {
+          ...(opts.body === undefined ? {} : { "content-type": "application/json" }),
+          ...(opts.cookie ? { cookie: opts.cookie } : {}),
+          ...(opts.ifNoneMatch ? { "if-none-match": opts.ifNoneMatch } : {}),
+        },
         body: opts.body === undefined ? undefined : JSON.stringify(opts.body),
       }),
     );
@@ -165,6 +169,34 @@ describe("an admin edits a route and its places", () => {
     expect(detail.route.status).toBe("ready");
     expect((await call("POST", `/admin/spots/${spot.id}/unpublish`, { cookie })).status).toBe(200);
     expect((await call("GET", `/spots/${spot.id}`)).status).toBe(404);
+  });
+
+  test("GET /spots/status: published places only, 304 on the same ETag, new ETag after a status change", async () => {
+    const { call, cookie, route } = await created();
+    const made = await call("POST", `/admin/routes/${route.id}/spots`, { cookie, body: { nameJa: "虎島の経塚", lat: 34.3, lng: 135.1 } });
+    let spot = ((await made.json()) as Json).spot as Json;
+    const patch = async (body: object) => {
+      spot = ((await (await call("PATCH", `/admin/spots/${spot.id}`, { cookie, body: { updatedAt: spot.updatedAt, ...body } })).json()) as Json).spot as Json;
+    };
+    await patch({ positionVerified: true, positionSource: "公式サイト", permissionConfirmed: true });
+
+    const draft = (await (await call("GET", "/spots/status")).json()) as Json;
+    expect(draft.spots).toEqual([]);
+
+    spot = ((await (await call("POST", `/admin/spots/${spot.id}/publish`, { cookie })).json()) as Json).spot as Json; // publishing moves updatedAt
+    const first = await call("GET", "/spots/status");
+    const etag = first.headers.get("etag")!;
+    expect(((await first.json()) as Json).spots).toEqual([
+      { id: spot.id, status: "open", statusNoteJa: null, statusNoteEn: null, statusUpdatedAt: null },
+    ]);
+
+    const same = await call("GET", "/spots/status", { ifNoneMatch: etag });
+    expect([same.status, await same.text()]).toEqual([304, ""]);
+
+    await patch({ status: "closed", statusNoteJa: "落石のため通行止め" });
+    const changed = await call("GET", "/spots/status", { ifNoneMatch: etag });
+    expect([changed.status, changed.headers.get("etag") === etag]).toEqual([200, false]);
+    expect(((await changed.json()) as Json).spots[0]).toMatchObject({ status: "closed", statusNoteJa: "落石のため通行止め" });
   });
 
   test("deleting a route that still has a place is 409 route_has_places", async () => {
