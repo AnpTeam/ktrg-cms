@@ -135,7 +135,8 @@ export function RallyCard({ rally, locale, signedIn }: { rally: RallyItem; local
           </span>
         </summary>
         {rally.kind === "mounds" ? (
-          <div className="border-t border-line p-4">
+          // The list below says the same in words, so a screen reader skips the book pages.
+          <div aria-hidden="true" className="border-t border-line p-4">
             <p aria-hidden="true" className="mb-3 font-serif text-xl font-bold tracking-[0.4em] text-accent">
               {t`納経帳`}
             </p>
