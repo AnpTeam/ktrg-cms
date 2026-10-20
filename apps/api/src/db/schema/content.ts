@@ -119,6 +119,8 @@ export const spots = pgTable(
     kind: spotKind("kind").notNull().default("other"),
     // Visitors can collect a stamp here: it joins rallies, has a check-in radius and needs the site's permission to publish.
     stampable: boolean("stampable").notNull().default(false),
+    // An optional visit beside the way (寄り道): the line of the route does not have to pass through it.
+    stopBy: boolean("stop_by").notNull().default(false),
     photoUrl: text("photo_url"),
     status: spotStatus("status").notNull().default("open"),
     statusUpdatedAt: timestamp("status_updated_at", { withTimezone: true }),

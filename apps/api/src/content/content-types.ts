@@ -65,6 +65,8 @@ export interface SpotRow {
   kind: SpotKind;
   /** Visitors can collect a stamp here. */
   stampable: boolean;
+  /** An optional visit beside the way (寄り道). */
+  stopBy: boolean;
   photoUrl: string | null;
   status: SpotStatus;
   statusNoteJa: string | null;
@@ -116,6 +118,8 @@ export interface SpotFields {
   radiusM: number;
   kind: SpotKind;
   stampable: boolean;
+  /** An optional visit beside the way (寄り道). */
+  stopBy: boolean;
   photoUrl: string | null;
   status: SpotStatus;
   statusNoteJa: string | null;

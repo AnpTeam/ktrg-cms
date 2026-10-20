@@ -63,6 +63,8 @@ export interface AdminSpot {
   kind: PointKind;
   /** Visitors can collect a stamp here. */
   stampable: boolean;
+  /** An optional visit beside the way (寄り道): the route's line need not pass through it. */
+  stopBy: boolean;
   photoUrl: string | null;
   status: SpotStatus;
   statusNoteJa: string | null;

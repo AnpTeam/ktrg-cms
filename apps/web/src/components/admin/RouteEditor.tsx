@@ -260,7 +260,11 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
   const savedByKey = useMemo(() => new Map(saved.places.map((p) => [p.key, p])), [saved.places]);
   const problemOf = (kind: DraftProblem["kind"], key?: string) => problems.some((p) => p.kind === kind && (!("key" in p) || p.key === key));
   const prefName: Record<Prefecture, string> = { osaka: t`大阪府`, wakayama: t`和歌山県`, nara: t`奈良県` };
-  const editorPlaces = draft.places.map((p, i) => ({ key: p.key, lat: p.lat, lng: p.lng, number: i + 1, name: p.nameJa }));
+  // The numbers on the map are the stamp numbers visitors see; a waypoint without a stamp has none.
+  const editorPlaces = (() => {
+    let stamp = 0;
+    return draft.places.map((p) => ({ key: p.key, lat: p.lat, lng: p.lng, number: p.stampable ? ++stamp : null, name: p.nameJa, stampable: p.stampable, stopBy: p.stopBy }));
+  })();
   const text = (field: TextField) => (value: string) => dispatch({ type: "text", field, value });
   const checks = useMemo(() => checklist(factsFromDraft(draft)), [draft]);
   const missingRequired = progress(checks).requiredTotal - progress(checks).requiredDone;
@@ -413,6 +417,10 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     else dispatch({ type: "removePlace", key });
                   }}
                   onSelectPlace={setSelectedKey}
+                  onTogglePlace={(key, field) => {
+                    const p = draft.places.find((x) => x.key === key);
+                    if (p) dispatch({ type: "place", key, patch: { [field]: !p[field] } });
+                  }}
                   onSnap={async (points) => {
                     const res = await outcome(api.admin["route-snap"].post({ points }));
                     return res.ok ? { ok: true, line: res.data.line as LngLatEle[] } : { ok: false, message: messages[res.key] };

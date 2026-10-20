@@ -78,7 +78,7 @@ await db.transaction(async (tx) => {
       } else {
         const [made] = await tx
           .insert(spots)
-          .values({ routeId, sortOrder, kind: p.kind, stampable: p.stampable, lat: p.lat, lng: p.lng, positionVerified: false, positionSource: p.source })
+          .values({ routeId, sortOrder, kind: p.kind, stampable: p.stampable, stopBy: p.stopBy, lat: p.lat, lng: p.lng, positionVerified: false, positionSource: p.source })
           .returning({ id: spots.id });
         await tx.insert(spotTranslations).values([
           { spotId: made!.id, locale: "ja", name: p.nameJa },
