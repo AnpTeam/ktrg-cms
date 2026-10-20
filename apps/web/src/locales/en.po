@@ -59,7 +59,7 @@ msgstr "Checked on {checked}"
 msgid "{count}か所の場所がここに集まっています。押すと拡大します"
 msgstr "{count} places are gathered here. Tap to zoom in."
 
-#: src/components/navigation/NavigationHud.tsx:132
+#: src/components/navigation/NavigationHud.tsx:154
 msgid "{direction}へ {distText}"
 msgstr "{distText} {direction}"
 
@@ -186,6 +186,10 @@ msgstr "{title} could not be loaded. Please reload the page in a little while."
 msgid "{TOTAL_STAMPS}か所"
 msgstr "{TOTAL_STAMPS} places"
 
+#: src/components/navigation/NavigationHud.tsx:142
+msgid "{turnIn}先で{turnWord}"
+msgstr "In {turnIn}, {turnWord}"
+
 #: src/components/map/MapScreen.tsx:492
 msgid "{updated} 更新"
 msgstr "Updated {updated}"
@@ -288,7 +292,7 @@ msgstr "Hold the Ctrl key to move the map"
 msgid "GPSの電波が弱いようです。空の開けた場所に動いて、もう一度お試しください。"
 msgstr "The GPS signal looks weak. Move to open sky and try again."
 
-#: src/components/navigation/NavigationHud.tsx:117
+#: src/components/navigation/NavigationHud.tsx:131
 msgid "GPSの電波が弱いようです。空の開けた場所に動いてください。"
 msgstr "The GPS signal is weak. Please move to open sky."
 
@@ -408,7 +412,7 @@ msgstr "We use what you tell us only to understand who uses this app, and we put
 msgid "いま、通信がつながっていません。つながると、また使えます。"
 msgstr "You are offline right now. It will work again when the signal returns."
 
-#: src/components/navigation/NavigationHud.tsx:36
+#: src/components/navigation/NavigationHud.tsx:41
 msgid "いまいる場所から、いちばん近いスタンプの場所まで案内します。位置は、この端末の中だけで使います。"
 msgstr "Guides you from where you are to the nearest stamp place. Your position is used on this device only."
 
@@ -416,7 +420,7 @@ msgstr "Guides you from where you are to the nearest stamp place. Your position 
 msgid "いまのラリー"
 msgstr "Current rally"
 
-#: src/components/navigation/NavigationHud.tsx:99
+#: src/components/navigation/NavigationHud.tsx:113
 msgid "いまの位置が、わかりません。空の開けた場所で、しばらくお待ちください。"
 msgstr "Your position is not known yet. Please wait a moment in open sky."
 
@@ -532,6 +536,10 @@ msgstr "Nearest first from the start of the course (straight-line distance)"
 msgid "コースを見る"
 msgstr "See the courses"
 
+#: src/components/navigation/NavigationHud.tsx:142
+msgid "ここで{turnWord}"
+msgstr "Now {turnWord}"
+
 #: src/components/admin/PlacePanel.tsx:114
 msgid "ここに着いた人が、スタンプを押せます。公開するには、現地の許可の確認が必要です。"
 msgstr "Visitors who arrive here can collect a stamp. Publishing needs the site’s permission."
@@ -618,11 +626,11 @@ msgstr "This route will be deleted and cannot be restored. Continue?"
 msgid "この内容で取り込む"
 msgstr "Import this"
 
-#: src/components/navigation/NavigationHud.tsx:119
+#: src/components/navigation/NavigationHud.tsx:133
 msgid "この区間のスタンプは、すべて押しました。"
 msgstr "Every stamp on this course is collected."
 
-#: src/components/navigation/NavigationHud.tsx:38
+#: src/components/navigation/NavigationHud.tsx:43
 msgid "この区間のナビに切り替える"
 msgstr "Navigate this course instead"
 
@@ -638,7 +646,7 @@ msgstr "Photos of this course"
 msgid "この区間は、準備中です。"
 msgstr "This course isn't ready yet."
 
-#: src/components/navigation/NavigationHud.tsx:38
+#: src/components/navigation/NavigationHud.tsx:43
 msgid "この区間をナビする"
 msgstr "Navigate this course"
 
@@ -685,7 +693,7 @@ msgstr "You can't do this."
 msgid "この文章は日本語のみです。"
 msgstr "This text is only available in Japanese."
 
-#: src/components/navigation/NavigationHud.tsx:97
+#: src/components/navigation/NavigationHud.tsx:111
 #: src/components/StampHere.tsx:86
 msgid "この端末・ブラウザでは、位置情報を使えません。"
 msgstr "This device or browser can't use location."
@@ -839,7 +847,7 @@ msgstr "{0} stamp waypoints"
 msgid "スタンプの経由地 {0} / {1}"
 msgstr "Stamp waypoints {0} / {1}"
 
-#: src/components/navigation/NavigationHud.tsx:110
+#: src/components/navigation/NavigationHud.tsx:124
 msgid "スタンプの記録を読めませんでした。"
 msgstr "Your stamps could not be read."
 
@@ -991,11 +999,11 @@ msgstr "Place not set"
 msgid "とても大きい"
 msgstr "Extra large"
 
-#: src/components/navigation/NavigationHud.tsx:157
+#: src/components/navigation/NavigationHud.tsx:179
 msgid "ナビを終える"
 msgstr "End navigation"
 
-#: src/components/navigation/NavigationHud.tsx:147
+#: src/components/navigation/NavigationHud.tsx:169
 msgid "ナビ中：{routeName}"
 msgstr "Navigating: {routeName}"
 
@@ -1586,7 +1594,7 @@ msgstr "We don't save your location. We only save the stamp."
 msgid "位置は、公式の情報から入れて、地図で確かめます。推測では入れません。"
 msgstr "Enter the position from official information and check it on the map. Never guess it."
 
-#: src/components/navigation/NavigationHud.tsx:108
+#: src/components/navigation/NavigationHud.tsx:122
 msgid "位置は{ageS}秒前のものです。"
 msgstr "Position from {ageS} seconds ago."
 
@@ -1630,7 +1638,7 @@ msgstr "Checking your location is taking a while. Try again in an open place."
 msgid "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてから、もう一度お試しください。"
 msgstr "Location isn't allowed. In your browser settings, allow location for this site, then try again."
 
-#: src/components/navigation/NavigationHud.tsx:95
+#: src/components/navigation/NavigationHud.tsx:109
 msgid "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてください。"
 msgstr "Location is not allowed. Please allow location for this site in your browser settings."
 
@@ -2022,15 +2030,15 @@ msgstr "Only YouTube or Vimeo links that start with https:// can be used for vid
 msgid "動画を見る"
 msgstr "Play the video"
 
-#: src/components/navigation/NavigationHud.tsx:85
+#: src/components/navigation/NavigationHud.tsx:99
 msgid "北"
 msgstr "north"
 
-#: src/components/navigation/NavigationHud.tsx:85
+#: src/components/navigation/NavigationHud.tsx:99
 msgid "北東"
 msgstr "northeast"
 
-#: src/components/navigation/NavigationHud.tsx:85
+#: src/components/navigation/NavigationHud.tsx:99
 msgid "北西"
 msgstr "northwest"
 
@@ -2058,15 +2066,15 @@ msgstr "Choose a course to see its path and its stamp places."
 msgid "半分"
 msgstr "half"
 
-#: src/components/navigation/NavigationHud.tsx:85
+#: src/components/navigation/NavigationHud.tsx:99
 msgid "南"
 msgstr "south"
 
-#: src/components/navigation/NavigationHud.tsx:85
+#: src/components/navigation/NavigationHud.tsx:99
 msgid "南東"
 msgstr "southeast"
 
-#: src/components/navigation/NavigationHud.tsx:85
+#: src/components/navigation/NavigationHud.tsx:99
 msgid "南西"
 msgstr "southwest"
 
@@ -2086,6 +2094,10 @@ msgstr "Imported: {0} created, {1} updated, {2} rows not imported"
 #: src/components/admin/RouteImport.tsx:232
 msgid "取り込み中… {0} / {1}"
 msgstr "Importing… {0} / {1}"
+
+#: src/components/navigation/NavigationHud.tsx:94
+msgid "右に曲がる"
+msgstr "turn right"
 
 #: src/components/admin/RouteImport.tsx:84
 msgid "同じ番号の行が、前にもあります"
@@ -2137,7 +2149,7 @@ msgid "営業中・利用可"
 msgstr "Open / available"
 
 #: src/components/map/TrailMap.tsx:394
-#: src/components/navigation/NavigationHud.tsx:154
+#: src/components/navigation/NavigationHud.tsx:176
 msgid "地図"
 msgstr "Map"
 
@@ -2231,6 +2243,14 @@ msgstr "How places are shown"
 msgid "大きい"
 msgstr "Large"
 
+#: src/components/navigation/NavigationHud.tsx:95
+msgid "大きく右に曲がる"
+msgstr "turn sharp right"
+
+#: src/components/navigation/NavigationHud.tsx:92
+msgid "大きく左に曲がる"
+msgstr "turn sharp left"
+
 #: src/components/map/TrailMap.tsx:453
 msgid "大きく表示"
 msgstr "Bigger map"
@@ -2273,6 +2293,14 @@ msgstr "Seasonal"
 msgid "寺社"
 msgstr "Temple or shrine"
 
+#: src/components/navigation/NavigationHud.tsx:93
+msgid "少し右へ"
+msgstr "bear right"
+
+#: src/components/navigation/NavigationHud.tsx:90
+msgid "少し左へ"
+msgstr "bear left"
+
 #: src/components/map/MapSettingsForm.tsx:51
 msgid "少し暗く"
 msgstr "Slightly darker"
@@ -2289,6 +2317,10 @@ msgstr "Mobile signal can be weak in the mountains."
 msgid "山道です。天気と、水や食べ物、歩きやすい靴を用意してください。"
 msgstr "These are mountain paths. Check the weather and bring water, food and sturdy shoes."
 
+#: src/components/navigation/NavigationHud.tsx:91
+msgid "左に曲がる"
+msgstr "turn left"
+
 #: src/components/admin/MunicipalityField.tsx:39
 msgid "市の名前を選びます。町や村は「その他」を選んで入力します。"
 msgstr "Choose a city. For a town or village, choose \"Other\" and type its name."
@@ -2300,6 +2332,10 @@ msgstr "City or town"
 #: src/components/auth/AboutYou.tsx:76
 msgid "年代"
 msgstr "Age"
+
+#: src/components/navigation/NavigationHud.tsx:96
+msgid "引き返す"
+msgstr "turn back"
 
 #: src/components/admin/RallyList.tsx:74
 #: src/components/admin/RallyMemberPicker.tsx:113
@@ -2515,7 +2551,7 @@ msgstr "Skip to main content"
 msgid "条件に合うルートがありません。"
 msgstr "No routes match."
 
-#: src/components/navigation/NavigationHud.tsx:85
+#: src/components/navigation/NavigationHud.tsx:99
 msgid "東"
 msgstr "east"
 
@@ -2551,7 +2587,7 @@ msgstr "Elevation from {lowest}m to {highest}m"
 msgid "標高を調べています…"
 msgstr "Looking up elevation…"
 
-#: src/components/navigation/NavigationHud.tsx:134
+#: src/components/navigation/NavigationHud.tsx:156
 msgid "次のスタンプの場所"
 msgstr "Next stamp place"
 
@@ -2652,7 +2688,7 @@ msgstr "Status settings"
 msgid "状態は未確認"
 msgstr "Status not checked"
 
-#: src/components/navigation/NavigationHud.tsx:117
+#: src/components/navigation/NavigationHud.tsx:131
 msgid "現在地を調べています…"
 msgstr "Finding your position…"
 
@@ -2676,7 +2712,7 @@ msgstr "Male"
 msgid "町や村の名前"
 msgstr "Name of the town or village"
 
-#: src/components/navigation/NavigationHud.tsx:104
+#: src/components/navigation/NavigationHud.tsx:118
 msgid "画面が見えない間は、位置を止めています。"
 msgstr "Location is paused while the screen is hidden."
 
@@ -2800,13 +2836,21 @@ msgstr "About {amount} km"
 msgid "約{amount}m"
 msgstr "About {amount} m"
 
-#: src/components/navigation/NavigationHud.tsx:90
+#: src/components/navigation/NavigationHud.tsx:104
 msgid "約{n}km"
 msgstr "about {n} km"
 
-#: src/components/navigation/NavigationHud.tsx:90
+#: src/components/navigation/NavigationHud.tsx:104
 msgid "約{n}m"
 msgstr "about {n} m"
+
+#: src/components/navigation/NavigationHud.tsx:139
+msgid "約{tn}km"
+msgstr "about {tn} km"
+
+#: src/components/navigation/NavigationHud.tsx:139
+msgid "約{tn}m"
+msgstr "about {tn} m"
 
 #: src/components/landing/Landing.tsx:95
 msgid "約{TRAIL_KM}km"
@@ -2816,7 +2860,7 @@ msgstr "About {TRAIL_KM} km"
 msgid "納経帳"
 msgstr "Pilgrim’s stamp book"
 
-#: src/components/navigation/NavigationHud.tsx:158
+#: src/components/navigation/NavigationHud.tsx:180
 msgid "終了"
 msgstr "End"
 
@@ -3038,7 +3082,7 @@ msgstr "Enter many in a table"
 msgid "表示の切り替え"
 msgstr "Switch view"
 
-#: src/components/navigation/NavigationHud.tsx:85
+#: src/components/navigation/NavigationHud.tsx:99
 msgid "西"
 msgstr "west"
 
@@ -3164,7 +3208,7 @@ msgstr "How to play"
 msgid "道が通れないときは、無理をせず引き返してください。"
 msgstr "If the path is closed, do not push on. Turn back."
 
-#: src/components/navigation/NavigationHud.tsx:122
+#: src/components/navigation/NavigationHud.tsx:143
 msgid "道なり"
 msgstr "On the path"
 
@@ -3176,11 +3220,11 @@ msgstr "Snap to trails"
 msgid "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 msgstr "Snapping to trails is not available yet. Ask whoever manages the site to set up the route-finding service. You can still draw the line by hand."
 
-#: src/components/navigation/NavigationHud.tsx:122
+#: src/components/navigation/NavigationHud.tsx:143
 msgid "道の外・まっすぐの方向"
 msgstr "Off the path · straight direction"
 
-#: src/components/navigation/NavigationHud.tsx:122
+#: src/components/navigation/NavigationHud.tsx:143
 msgid "道の外・歩ける道で案内"
 msgstr "Off the path · walkable way"
 

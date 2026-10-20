@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { StampHere } from "@/components/StampHere";
-import { compassPoint, type CompassPoint } from "@/lib/navigation/geometry";
+import { compassPoint, type CompassPoint, type TurnKind } from "@/lib/navigation/geometry";
 import { modelFromMapRoute } from "@/lib/navigation/input";
 import type { MapScreenRoute } from "@/lib/map-screen";
 import { distanceParts } from "@/lib/stamp-flow";
@@ -22,6 +22,11 @@ const quiet = "tap-target flex shrink-0 items-center justify-center whitespace-n
 
 /** A fix older than this is said to be old, with its age. */
 const STALE_MS = 30_000;
+/** A turn is announced from this far away ("in 120 m, turn left"); further off, the toast gives the direction. */
+const TURN_ANNOUNCE_M = 300;
+/** How the turn arrow is drawn: straight up is "ahead", so a left turn leans 90 degrees to the left. */
+const TURN_ARROW_DEG: Record<TurnKind, number> = { "slight-left": -45, left: -90, "sharp-left": -135, "slight-right": 45, right: 90, "sharp-right": 135, "u-turn": 180 };
+
 /** Space kept between the toast and what is above it. */
 const GAP_PX = 8;
 
@@ -81,6 +86,15 @@ export function NavigationToast() {
   const { snapshot: snap, routeName } = session;
   const st = snap.state;
   const target = st.targetId ? session.stops[st.targetId] : undefined;
+  const turnWords: Record<TurnKind, string> = {
+    "slight-left": t`少し左へ`,
+    left: t`左に曲がる`,
+    "sharp-left": t`大きく左に曲がる`,
+    "slight-right": t`少し右へ`,
+    right: t`右に曲がる`,
+    "sharp-right": t`大きく右に曲がる`,
+    "u-turn": t`引き返す`,
+  };
   const compass: Record<CompassPoint, string> = {
     N: t`北`, NE: t`北東`, E: t`東`, SE: t`南東`, S: t`南`, SW: t`南西`, W: t`西`, NW: t`北西`,
   };
@@ -119,21 +133,29 @@ export function NavigationToast() {
     main = <p className="text-base font-bold leading-snug">{t`この区間のスタンプは、すべて押しました。`}</p>;
   } else {
     const direction = st.bearingDeg !== null ? compass[compassPoint(st.bearingDeg)] : "";
+    const turn = st.turn && st.turn.inM <= TURN_ANNOUNCE_M ? st.turn : null;
+    const turnDist = turn ? distanceParts(turn.inM) : null;
+    const tn = turnDist ? fmt.format(turnDist.value) : "";
+    const turnIn = turnDist ? (turnDist.unit === "km" ? t`約${tn}km` : t`約${tn}m`) : "";
+    const turnWord = turn ? turnWords[turn.kind] : "";
+    // Within a few metres the turn is "now".
+    const turnText = turn ? (turn.inM < 15 ? t`ここで${turnWord}` : t`${turnIn}先で${turnWord}`) : "";
     const mode = st.mode === "line" ? t`道なり` : st.mode === "path" ? t`道の外・歩ける道で案内` : t`道の外・まっすぐの方向`;
     main = (
       <div className="flex min-w-0 items-center gap-3">
-        {st.bearingDeg !== null ? (
-          <svg viewBox="0 0 48 48" aria-hidden="true" className="size-11 shrink-0 text-brand" style={{ transform: `rotate(${st.bearingDeg}deg)` }}>
+        {turn || st.bearingDeg !== null ? (
+          // A turn: the arrow leans the way to turn (ahead is up). Otherwise: the way on the north-up map.
+          <svg viewBox="0 0 48 48" aria-hidden="true" className="size-11 shrink-0 text-brand" style={{ transform: `rotate(${turn ? TURN_ARROW_DEG[turn.kind] : st.bearingDeg}deg)` }}>
             <circle cx="24" cy="24" r="23" className="fill-surface" />
             <path d="M24 6 L36 38 L24 31 L12 38 Z" fill="currentColor" />
           </svg>
         ) : null}
         <div className="min-w-0">
-          <p className="truncate text-xl font-bold leading-tight tabular-nums">{direction ? t`${direction}へ ${distText}` : distText}</p>
+          <p className="truncate text-xl font-bold leading-tight tabular-nums">{turn ? turnText : direction ? t`${direction}へ ${distText}` : distText}</p>
           <p className="truncate text-base leading-snug text-muted">
             <span className="sr-only">{t`次のスタンプの場所`} </span>
             <span lang={target.nameLang}>{target.name}</span>
-            {` · ${mode}`}
+            {` · ${turn ? distText : mode}`}
           </p>
         </div>
       </div>

@@ -162,3 +162,19 @@ describe("a trail that doubles back", () => {
     close(s.bearingDeg!, 90, 2); // keep walking east
   });
 });
+
+describe("turns in the state", () => {
+  test("on an L-shaped course the state says a left turn is coming, and how far", () => {
+    const el: LinePoint[] = [[135, LAT], [135.002, LAT], [135.004, LAT], [135.004, LAT + 0.002], [135.004, LAT + 0.004]];
+    const m = buildModel(el, [{ id: "top", lng: 135.004, lat: LAT + 0.004, radiusM: 30 }]);
+    const s = applyFix(m, initialState(), at(135.0035), none);
+    expect(s.mode).toBe("line");
+    expect(s.turn!.kind).toBe("left");
+    close(s.turn!.inM, 46, 15); // ~46 m to the corner
+  });
+
+  test("no turn on the straight course, and none when pointing straight off the line", () => {
+    expect(walk([at(135.001)]).turn).toBeNull();
+    expect(walk([at(135.005, LAT + 0.005)]).turn).toBeNull();
+  });
+});

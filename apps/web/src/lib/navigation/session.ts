@@ -13,12 +13,14 @@ import {
   cutLegs,
   distanceM,
   nearestTarget,
+  nextTurn,
   offRouteStep,
   pointAlong,
   projectOnLine,
   type LatLng,
   type LinePoint,
   type Stop,
+  type TurnKind,
 } from "./geometry";
 
 /** A fix whose own error radius is worse than this is ignored (CLAUDE.md: drop poor-accuracy readings). */
@@ -79,6 +81,8 @@ export interface NavState {
   distanceM: number | null;
   /** Which way to walk now, in degrees clockwise from north. */
   bearingDeg: number | null;
+  /** The next turn on the line or path being followed ("in 50 m, turn left"); null when straight on, or guided straight. */
+  turn: { kind: TurnKind; inM: number } | null;
   mode: NavMode | null;
   /** Straight-line metres to the target (the stamp check uses this, on the server). */
   straightM: number | null;
@@ -100,6 +104,7 @@ export function initialState(): NavState {
     targetId: null,
     distanceM: null,
     bearingDeg: null,
+    turn: null,
     mode: null,
     straightM: null,
     alongM: null,
@@ -146,14 +151,14 @@ export function applyFix(model: NavModel, prev: NavState, reading: NavReading, s
 
   const stopAlong = model.stopAlongM[i] ?? null;
   if (proj && !off.offRoute && proj.offM <= OFF_LINE_RECHECK_M && stopAlong !== null) {
-    return { ...common, mode: "line", alongM: proj.alongM, ...alongTrack(model, proj.alongM, stopAlong, reading, stop) };
+    return { ...common, mode: "line", alongM: proj.alongM, turn: nextTurn(model.line, model.cum, proj.alongM, stopAlong), ...alongTrack(model, proj.alongM, stopAlong, reading, stop) };
   }
 
   if (path && path.stopId === stop.id && path.line.length >= 2) {
     const onPath = projectOnLine(path.line, path.cum, reading);
     if (onPath) {
       const end = path.cum[path.cum.length - 1]!;
-      return { ...common, mode: "path", ...alongTrack(path, onPath.alongM, end, reading, stop) };
+      return { ...common, mode: "path", turn: nextTurn(path.line, path.cum, onPath.alongM, end), ...alongTrack(path, onPath.alongM, end, reading, stop) };
     }
   }
 

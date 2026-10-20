@@ -183,3 +183,69 @@ export function pointAlong(line: readonly LinePoint[], cum: readonly number[], a
   // Straight between two points of the line: they are metres apart, so a flat in-between is exact enough.
   return { lng: a[0] + t * (b[0] - a[0]), lat: a[1] + t * (b[1] - a[1]) };
 }
+
+// ---- Turns ahead (like "in 50 m, turn left") ---------------------------------------------------------------------
+// Worked out from the line itself, so it works on the course line and on a walking path alike. The direction is read
+// over TURN_ARM_M before and after each point, so the small zigzags of a hand-drawn trail do not count as turns.
+
+export type TurnKind = "slight-left" | "left" | "sharp-left" | "slight-right" | "right" | "sharp-right" | "u-turn";
+
+/** A change of direction smaller than this is "keep going". */
+export const TURN_MIN_DEG = 35;
+/** How far ahead turns are looked for. */
+export const TURN_SCAN_M = 1000;
+const TURN_STEP_M = 10;
+const TURN_ARM_M = 20;
+
+/** The change of direction from `inDeg` to `outDeg`, between -180 and 180; positive is to the right. */
+export function turnDelta(inDeg: number, outDeg: number): number {
+  const d = (((outDeg - inDeg) % 360) + 540) % 360 - 180;
+  return d === -180 ? 180 : d;
+}
+
+/** What a change of direction is called; null when it is too small to mention. */
+export function turnKind(delta: number): TurnKind | null {
+  const a = Math.abs(delta);
+  if (a < TURN_MIN_DEG) return null;
+  if (a >= 165) return "u-turn";
+  const side = delta > 0 ? "right" : "left";
+  if (a < 60) return `slight-${side}`;
+  if (a < 135) return side;
+  return `sharp-${side}`;
+}
+
+/**
+ * The next turn when walking along the line from `alongM` toward `targetAlongM` (either direction), within
+ * TURN_SCAN_M and before the target. Null when the way is straight until then.
+ */
+export function nextTurn(
+  line: readonly LinePoint[],
+  cum: readonly number[],
+  alongM: number,
+  targetAlongM: number,
+): { kind: TurnKind; inM: number } | null {
+  if (line.length < 3) return null;
+  const dir = Math.sign(targetAlongM - alongM);
+  if (dir === 0) return null;
+  const deltaAt = (s: number): number | null => {
+    const p0 = pointAlong(line, cum, s - dir * TURN_ARM_M);
+    const p = pointAlong(line, cum, s);
+    const p1 = pointAlong(line, cum, s + dir * TURN_ARM_M);
+    if (!p0 || !p || !p1 || distanceM(p0, p) < 5 || distanceM(p, p1) < 5) return null;
+    return turnDelta(bearingDeg(p0, p), bearingDeg(p, p1));
+  };
+  for (let s = alongM + dir * TURN_STEP_M; dir * (targetAlongM - s) > 0 && Math.abs(s - alongM) <= TURN_SCAN_M; s += dir * TURN_STEP_M) {
+    const d = deltaAt(s);
+    if (d === null || Math.abs(d) < TURN_MIN_DEG) continue;
+    // The bend shows over a few samples: take the sharpest one nearby as the turn itself.
+    let best = { s, d };
+    for (let k = 1; k <= 3; k++) {
+      const s2 = s + dir * k * TURN_STEP_M;
+      if (dir * (targetAlongM - s2) <= 0) break;
+      const d2 = deltaAt(s2);
+      if (d2 !== null && Math.abs(d2) > Math.abs(best.d)) best = { s: s2, d: d2 };
+    }
+    return { kind: turnKind(best.d)!, inM: Math.abs(best.s - alongM) };
+  }
+  return null;
+}

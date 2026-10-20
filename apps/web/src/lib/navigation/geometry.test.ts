@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { bearingDeg, compassPoint, cumulativeDistances, cutLegs, distanceM, nearestTarget, offRouteStep, pointAlong, projectOnLine, vectorTo, type LinePoint, type Stop } from "./geometry";
+import { bearingDeg, compassPoint, cumulativeDistances, cutLegs, distanceM, nearestTarget, nextTurn, offRouteStep, pointAlong, projectOnLine, turnDelta, turnKind, vectorTo, type LinePoint, type Stop } from "./geometry";
 
 // 0.001 degrees of longitude at latitude 34.5 is about 91.7 m, 0.001 of latitude about 111.2 m.
 const LAT = 34.5;
@@ -213,5 +213,66 @@ describe("pointAlong", () => {
   test("an empty line is null; a one-point line is that point", () => {
     expect(pointAlong([], [0], 10)).toBeNull();
     expect(pointAlong([[135, LAT]], [0], 10)).toEqual({ lng: 135, lat: LAT });
+  });
+});
+
+describe("turns ahead", () => {
+  // East along LAT for ~367 m, then a corner.
+  const corner = (north: boolean): LinePoint[] => [[135, LAT], [135.002, LAT], [135.004, LAT], [135.004, LAT + (north ? 0.002 : -0.002)], [135.004, LAT + (north ? 0.004 : -0.004)]];
+
+  test("turnDelta wraps around north and says left or right", () => {
+    expect(turnDelta(90, 0)).toBe(-90); // east to north: left
+    expect(turnDelta(90, 180)).toBe(90); // east to south: right
+    expect(turnDelta(350, 10)).toBe(20);
+    expect(turnDelta(10, 350)).toBe(-20);
+    expect(turnDelta(0, 180)).toBe(180);
+  });
+
+  test("turnKind names the size of the turn", () => {
+    expect(turnKind(20)).toBeNull();
+    expect(turnKind(-45)).toBe("slight-left");
+    expect(turnKind(90)).toBe("right");
+    expect(turnKind(-150)).toBe("sharp-left");
+    expect(turnKind(175)).toBe("u-turn");
+  });
+
+  test("an L to the north is a left turn, to the south a right turn, at the corner", () => {
+    for (const [north, kind] of [[true, "left"], [false, "right"]] as const) {
+      const line = corner(north);
+      const cum = cumulativeDistances(line);
+      const turn = nextTurn(line, cum, 0, cum[cum.length - 1]!)!;
+      expect(turn.kind).toBe(kind);
+      close(turn.inM, cum[2]!, 15); // ~367 m ahead, at the corner
+    }
+  });
+
+  test("walking the L backwards: coming south and turning west is a right turn", () => {
+    const line = corner(true);
+    const cum = cumulativeDistances(line);
+    const end = cum[cum.length - 1]!;
+    const turn = nextTurn(line, cum, end, 0)!;
+    expect(turn.kind).toBe("right");
+    close(turn.inM, end - cum[2]!, 15);
+  });
+
+  test("no turn on a straight line, none past the target, none beyond the scan", () => {
+    const cum = cumulativeDistances(straight);
+    expect(nextTurn(straight, cum, 0, cum[10]!)).toBeNull();
+    const line = corner(true);
+    const c = cumulativeDistances(line);
+    expect(nextTurn(line, c, 0, c[2]! - 30)).toBeNull(); // the stop is before the corner
+    expect(nextTurn(line, c, 0, 0)).toBeNull();
+  });
+
+  test("small zigzags of a hand-drawn trail are not turns", () => {
+    const zig: LinePoint[] = Array.from({ length: 41 }, (_, i) => [135 + i * 0.0001, LAT + (i % 2 ? 0.00003 : 0)] as LinePoint); // ±3 m wiggle every 9 m
+    const cum = cumulativeDistances(zig);
+    expect(nextTurn(zig, cum, 0, cum[cum.length - 1]!)).toBeNull();
+  });
+
+  test("a hairpin bend (going back the way you came, 11 m over) is a sharp turn", () => {
+    const pin: LinePoint[] = [[135, LAT], [135.002, LAT], [135.0021, LAT + 0.00005], [135.0021, LAT + 0.0001], [135, LAT + 0.0001]];
+    const cum = cumulativeDistances(pin);
+    expect(nextTurn(pin, cum, 0, cum[cum.length - 1]!)!.kind).toBe("sharp-left");
   });
 });
