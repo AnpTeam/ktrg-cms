@@ -2,6 +2,7 @@ import type { RouteDetail, RoutePoint } from "../content";
 import { navigationKinds, type PointKind } from "../point-kinds";
 import { areaFromBounds, sketchFromPoints } from "../route-geometry";
 import { climbM, elevationsOf, lengthKm, type LngLatEle } from "./line";
+import type { Translations } from "./content-locales";
 import type { AdminRoute, AdminSpot, Prefecture, SpotStatus } from "./types";
 import { estimateWalkMinutes } from "./walk-time";
 
@@ -23,6 +24,8 @@ export interface PlaceDraft {
   nameEn: string;
   descriptionJa: string;
   descriptionEn: string;
+  /** The other content languages ({ de: { name } }). */
+  translations: Translations;
   photoUrl: string;
   lat: number | null;
   lng: number | null;
@@ -47,6 +50,8 @@ export interface RouteDraft {
   historyEn: string;
   accessJa: string;
   accessEn: string;
+  /** The other content languages ({ de: { name } }). */
+  translations: Translations;
   photoUrl: string;
   prefecture: Prefecture | null;
   municipality: string;
@@ -68,7 +73,7 @@ export interface RouteDraft {
 
 export const emptyDraft = (): RouteDraft => ({
   id: null, updatedAt: null, nameJa: "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
-  accessJa: "", accessEn: "", photoUrl: "", prefecture: null, municipality: "",
+  accessJa: "", accessEn: "", translations: {}, photoUrl: "", prefecture: null, municipality: "",
   distanceKm: null, distanceManual: false, elevationGainM: null, climbManual: false, expectedTimeMin: null, timeManual: false,
   difficulty: "", videoUrl: "", line: [], lineVerified: false, lineSource: "", places: [],
 });
@@ -78,7 +83,7 @@ const s = (v: string | null) => v ?? "";
 export function placeFromServer(p: AdminSpot): PlaceDraft {
   return {
     key: p.id, id: p.id, updatedAt: p.updatedAt, published: p.published, kind: p.kind,
-    nameJa: p.nameJa, nameEn: s(p.nameEn), descriptionJa: s(p.descriptionJa), descriptionEn: s(p.descriptionEn), photoUrl: s(p.photoUrl),
+    nameJa: p.nameJa, nameEn: s(p.nameEn), descriptionJa: s(p.descriptionJa), descriptionEn: s(p.descriptionEn), translations: p.translations ?? {}, photoUrl: s(p.photoUrl),
     lat: p.lat, lng: p.lng, positionVerified: p.positionVerified, positionSource: s(p.positionSource), radiusM: p.radiusM,
     status: p.status, statusNoteJa: s(p.statusNoteJa), statusNoteEn: s(p.statusNoteEn),
     permissionConfirmed: p.permissionConfirmed, permissionNote: s(p.permissionNote),
@@ -91,7 +96,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
   return {
     id: route.id, updatedAt: route.updatedAt, nameJa: route.nameJa, nameEn: s(route.nameEn), descriptionJa: s(route.descriptionJa),
     descriptionEn: s(route.descriptionEn), historyJa: s(route.historyJa), historyEn: s(route.historyEn),
-    accessJa: s(route.accessJa), accessEn: s(route.accessEn), photoUrl: s(route.photoUrl),
+    accessJa: s(route.accessJa), accessEn: s(route.accessEn), translations: route.translations ?? {}, photoUrl: s(route.photoUrl),
     prefecture: route.prefecture, municipality: s(route.municipality),
     distanceKm: route.distanceKm,
     // A saved distance that is not the line's own length was typed by hand: keep it when the line changes.
@@ -109,7 +114,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
 
 export const newPlace = (key: string, lat: number, lng: number, n: number, kind: PointKind = "stamp"): PlaceDraft => ({
   key, id: null, updatedAt: null, published: false, kind, nameJa: kind === "stamp" ? `場所${n}` : "", nameEn: "", descriptionJa: "", descriptionEn: "",
-  photoUrl: "", lat, lng, positionVerified: false, positionSource: "", radiusM: 50, status: "open", statusNoteJa: "", statusNoteEn: "",
+  translations: {}, photoUrl: "", lat, lng, positionVerified: false, positionSource: "", radiusM: 50, status: "open", statusNoteJa: "", statusNoteEn: "",
   permissionConfirmed: false, permissionNote: "",
 });
 
@@ -145,6 +150,8 @@ export type TextField =
 
 export type DraftAction =
   | { type: "text"; field: TextField; value: string }
+  /** The route's words in the other content languages. */
+  | { type: "translations"; value: Translations }
   | { type: "prefecture"; value: Prefecture | null }
   | { type: "distance"; value: number | null }
   | { type: "climb"; value: number | null }
@@ -195,6 +202,8 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
   switch (a.type) {
     case "text":
       return { ...d, [a.field]: a.value };
+    case "translations":
+      return { ...d, translations: a.value };
     case "prefecture":
       return { ...d, prefecture: a.value };
     case "distance":

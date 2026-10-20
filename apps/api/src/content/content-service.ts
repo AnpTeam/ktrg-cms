@@ -1,5 +1,6 @@
 import type { ErrorCode } from "../lib/api-errors";
 import { isHttpsUrl } from "../lib/https-url";
+import { cleanTranslations } from "../db/translations";
 import { isAllowedVideoUrl } from "./video-url";
 import { lineLengthKm, parseLine, simplifyLine, sketchOf, type LineString } from "./line";
 import type {
@@ -151,6 +152,7 @@ export function createContentService(deps: { store: ContentStore }) {
       const v = text(input[k]);
       if (v !== undefined) out[k] = v;
     }
+    if (input.translations !== undefined) out.translations = cleanTranslations(input.translations);
     if (input.distanceKm !== undefined) out.distanceKm = input.distanceKm;
     if (input.elevationGainM !== undefined) out.elevationGainM = input.elevationGainM;
     if (input.expectedTimeMin !== undefined) out.expectedTimeMin = input.expectedTimeMin;
@@ -195,6 +197,7 @@ export function createContentService(deps: { store: ContentStore }) {
       const v = text(input[k]);
       if (v !== undefined) out[k] = v;
     }
+    if (input.translations !== undefined) out.translations = cleanTranslations(input.translations);
     if (input.lat !== undefined) out.lat = input.lat;
     if (input.lng !== undefined) out.lng = input.lng;
     if (input.radiusM !== undefined) out.radiusM = input.radiusM;

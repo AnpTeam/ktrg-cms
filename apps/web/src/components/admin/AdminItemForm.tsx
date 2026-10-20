@@ -9,7 +9,8 @@ import { errorKeyFromApi, isServerCode, type ErrorKey } from "@/lib/api-error";
 import { displayValue, pick, type FieldUi, type ListItem, type ListMeta } from "@/lib/admin/lists/config";
 import { changedFields, formValues, missingRequired, toPayload, type FormValues } from "@/lib/admin/lists/form";
 import { listRequest, type ListAnswer, type OneItem } from "@/lib/admin/lists/list-client";
-import { BilingualField, Check, Field, inputClass, NumberInput, Section, TextInput } from "./fields";
+import { translationsChange, type Translations } from "@/lib/admin/content-locales";
+import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
 import { PhotoSlot } from "./PhotoSlot";
 
 type Notice = { kind: "saved" | "error"; text: string } | null;
@@ -39,11 +40,14 @@ export function AdminItemForm({ meta: config, initial, locale, routes }: { meta:
   const { guard, dialog } = useReauth();
   const [saved, setSaved] = useState(initial);
   const [values, setValues] = useState<FormValues>(() => formValues(config, initial));
+  // The other content languages of the bilingual fields ({ de: { title } }), kept beside the plain values.
+  const [words, setWords] = useState<Translations>(() => (initial?.translations ?? {}) as Translations);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
 
   const missing = missingRequired(config, values);
-  const changes = saved ? changedFields(config, values, saved) : null;
+  const wordChange = saved ? translationsChange((saved.translations ?? {}) as Translations, words) : null;
+  const changes = saved ? { ...changedFields(config, values, saved), ...(wordChange ? { translations: wordChange } : {}) } : null;
   const editable = config.fields.some((f) => !f.readOnly) && (saved ? config.ops.edit : config.ops.create);
   const canSave = !busy && editable && missing.length === 0 && (changes === null || Object.keys(changes).length > 0);
   const set = (name: string) => (v: string | boolean) => setValues((now) => ({ ...now, [name]: v }));
@@ -57,7 +61,7 @@ export function AdminItemForm({ meta: config, initial, locale, routes }: { meta:
     const send = async () => {
       const res: ListAnswer<OneItem> = saved
         ? await listRequest<OneItem>("PATCH", `${config.key}/${saved.id}`, { updatedAt: saved.updatedAt, ...changes })
-        : await listRequest<OneItem>("POST", config.key, toPayload(config, values));
+        : await listRequest<OneItem>("POST", config.key, { ...toPayload(config, values), ...(Object.keys(words).length ? { translations: words } : {}) });
       if (!res.ok) return { ok: false as const, code: res.key };
       got.item = res.data.item;
       return { ok: true as const };
@@ -69,6 +73,7 @@ export function AdminItemForm({ meta: config, initial, locale, routes }: { meta:
     if (!saved) return router.push(`/${locale}/admin/${config.key}/${item.id}`);
     setSaved(item);
     setValues(formValues(config, item));
+    setWords((item.translations ?? {}) as Translations);
     setNotice({ kind: "saved", text: t`保存しました。` });
   }
 
@@ -109,13 +114,16 @@ export function AdminItemForm({ meta: config, initial, locale, routes }: { meta:
       case "bilingual-long":
         return (
           <div key={f.name} className="flex flex-col gap-1">
-            <BilingualField
+            <MultilingualField
               id={id}
               label={label}
+              field={f.name}
               ja={text(`${f.name}Ja`)}
               en={text(`${f.name}En`)}
+              translations={words}
               onJa={set(`${f.name}Ja`)}
               onEn={set(`${f.name}En`)}
+              onTranslations={setWords}
               multiline={f.kind === "bilingual-long"}
               required={f.required}
               invalid={missing.includes(f.name)}

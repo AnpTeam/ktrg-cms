@@ -17,7 +17,9 @@ describe("every admin list describes its screens completely", () => {
     test(`${def.key}: the form sends exactly the API's writable fields, and the list is named by a shown field`, () => {
       const sent = def.ui.fields.filter((f) => !f.readOnly).flatMap((f) => (BILINGUAL.has(f.kind) ? [`${f.name}Ja`, `${f.name}En`] : [f.name]));
       // Create needs every field, so the form must offer each one, and nothing the API would refuse.
-      expect(sent.sort()).toEqual(Object.keys("fields" in def ? def.fields : {}).sort());
+      // A list with words in two languages also takes the other languages (`translations`, not a form field of its own).
+      const accepts = Object.keys("fields" in def ? def.fields : {}).filter((k) => k !== "translations");
+      expect(sent.sort()).toEqual(accepts.sort());
       expect(new Set(def.ui.fields.map((f) => f.name)).size).toBe(def.ui.fields.length);
       // Only a list with something to send can be created or changed.
       if (sent.length === 0) expect(def.ops.create || def.ops.edit).toBe(false);

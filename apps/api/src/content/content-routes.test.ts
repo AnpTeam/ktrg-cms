@@ -93,6 +93,22 @@ describe("an admin edits a route and its places", () => {
     return { ...s, cookie, route };
   }
 
+  test("other languages: saved per field, trimmed, cleared with null, English untouched, never shown to visitors", async () => {
+    const { call, cookie, route } = await created();
+    const patch = async (updatedAt: unknown, translations: unknown) =>
+      ((await (await call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt, translations } })).json()) as Json).route as Json;
+    const first = await patch(route.updatedAt, { de: { name: "  Koyama-Weg ", description: "Text" }, th: { name: "   " } });
+    expect(first.translations).toEqual({ de: { name: "Koyama-Weg", description: "Text" } });
+    expect(first.nameEn).toBeNull();
+    const second = await patch(first.updatedAt, { de: { name: null }, fr: { name: "Chemin" } });
+    expect(second.translations).toEqual({ de: { description: "Text" }, fr: { name: "Chemin" } });
+    // A language the site does not offer is dropped, like any unknown field.
+    const unknown = await patch(second.updatedAt, { xx: { name: "?" } });
+    expect(unknown.translations).toEqual(second.translations);
+    const visitor = (await (await call("GET", `/routes/${route.id}`)).json()) as Json;
+    expect(Object.keys(visitor.route as Json)).not.toContain("translations");
+  });
+
   test("create, read back, save with updatedAt, and a stale save is 409 conflict", async () => {
     const { call, cookie, route } = await created();
     expect(route).toMatchObject({ nameJa: "甲山から孝子越え", prefecture: "wakayama" });

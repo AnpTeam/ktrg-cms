@@ -1,5 +1,7 @@
 import { t, type Static } from "elysia";
 import { userAgeRange, userGender, userLocale, userOrigin } from "../db/schema";
+import type { TNull, TObject, TOptional, TString, TUnion } from "@sinclair/typebox";
+import { EXTRA_LOCALES, type ExtraLocale } from "../db/translations";
 
 /** Request-body pieces shared by several routes, so each rule lives in one place. */
 
@@ -70,3 +72,16 @@ export const signupProfileSchema = t.Object(
 
 /** A `:id` path parameter that must be a UUID. */
 export const uuidParams = t.Object({ id: t.String({ pattern: "^[0-9a-fA-F-]{36}$" }) });
+
+type Words<F extends string> = TObject<{ [K in F]: TOptional<TUnion<[TString, TNull]>> }>;
+
+/**
+ * `translations`: the item's words in the other content languages ({ de: { name: "…" } }), each field up to its
+ * length; null clears a field. Every language and field is optional (a change sends only what changed).
+ */
+export function translationsSchema<const F extends string>(maxLengths: Record<F, number>) {
+  const words = t.Object(
+    Object.fromEntries(Object.entries<number>(maxLengths).map(([f, max]) => [f, t.Optional(t.Union([t.String({ maxLength: max }), t.Null()]))])),
+  ) as unknown as Words<F>;
+  return t.Partial(t.Object(Object.fromEntries(EXTRA_LOCALES.map((l) => [l, words])) as Record<ExtraLocale, Words<F>>));
+}

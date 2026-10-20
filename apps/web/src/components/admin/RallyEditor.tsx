@@ -8,7 +8,7 @@ import { api } from "@/lib/api";
 import { outcome } from "@/lib/admin/admin-client";
 import { nameChanges, sameOrder } from "@/lib/admin/rally-edit";
 import type { AdminRally } from "@/lib/admin/types";
-import { BilingualField, Section } from "./fields";
+import { MultilingualField, Section } from "./fields";
 import { RallyMemberPicker, type RallyCandidates } from "./RallyMemberPicker";
 
 type Notice = { kind: "saved" | "error"; text: string } | null;
@@ -32,7 +32,7 @@ export function RallyEditor({
   const messages = useErrorMessages();
   const router = useRouter();
   const [saved, setSaved] = useState(initial);
-  const [names, setNames] = useState({ nameJa: initial.nameJa, nameEn: initial.nameEn ?? "" });
+  const [names, setNames] = useState({ nameJa: initial.nameJa, nameEn: initial.nameEn ?? "", translations: initial.translations ?? {} });
   const [savedIds, setSavedIds] = useState(memberIds);
   const [ids, setIds] = useState(memberIds);
   const [busy, setBusy] = useState(false);
@@ -64,7 +64,7 @@ export function RallyEditor({
   async function saveNames() {
     start();
     const rally = finish(asResult(await outcome(one().patch({ updatedAt: saved.updatedAt, ...changes }))), t`保存しました。`);
-    if (rally) setNames({ nameJa: rally.nameJa, nameEn: rally.nameEn ?? "" });
+    if (rally) setNames({ nameJa: rally.nameJa, nameEn: rally.nameEn ?? "", translations: rally.translations ?? {} });
   }
 
   async function setPublished(published: boolean) {
@@ -109,13 +109,16 @@ export function RallyEditor({
       ) : null}
 
       <Section title={t`名前と公開`}>
-        <BilingualField
+        <MultilingualField
           id="rally-name"
           label={t`ラリーの名前`}
+          field="name"
           ja={names.nameJa}
           en={names.nameEn}
+          translations={names.translations}
           onJa={(v) => setNames((n) => ({ ...n, nameJa: v }))}
           onEn={(v) => setNames((n) => ({ ...n, nameEn: v }))}
+          onTranslations={(v) => setNames((n) => ({ ...n, translations: v }))}
           required
           invalid={names.nameJa.trim() === ""}
         />

@@ -1,5 +1,6 @@
 import { createListService } from "../admin-lists/list-service";
 import { bad, ok, type ListRules } from "../admin-lists/list-types";
+import { cleanTranslations } from "../db/translations";
 import { isHttpsUrl } from "../lib/https-url";
 import type { NoticeFields, NoticeStore } from "./notice-types";
 
@@ -22,6 +23,7 @@ export function noticeRules(store: Pick<NoticeStore, "routeExists">): ListRules<
       if (out[k] === "") return bad("validation_failed");
     }
     for (const k of OPTIONAL) if (out[k] !== undefined) out[k] = out[k]?.trim() || null;
+    if (out.translations !== undefined) out.translations = cleanTranslations(out.translations);
     if (out.sourceUrl !== undefined) {
       out.sourceUrl = out.sourceUrl.trim();
       if (!isHttpsUrl(out.sourceUrl)) return bad("invalid_source_url");

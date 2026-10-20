@@ -1,3 +1,4 @@
+import { cleanTranslations } from "../db/translations";
 import type { ErrorCode } from "../lib/api-errors";
 import type { RallyAdminStore, RallyCourse, RallyDetail, RallyFields, RallyKind, RallyPlace, RallyRow } from "./rally-admin-types";
 
@@ -48,7 +49,7 @@ export function createRallyAdminService(deps: { store: RallyAdminStore }) {
      */
     async createRally(
       actor: string,
-      input: { kind: RallyKind; nameJa: string; nameEn?: string | null; spotIds?: string[]; routeIds?: string[] },
+      input: { kind: RallyKind; nameJa: string; nameEn?: string | null; translations?: RallyFields["translations"]; spotIds?: string[]; routeIds?: string[] },
     ): Promise<Result<RallyRow>> {
       const nameJa = input.nameJa.trim();
       if (nameJa === "") return bad("validation_failed");
@@ -58,7 +59,7 @@ export function createRallyAdminService(deps: { store: RallyAdminStore }) {
       if ((input.kind === "places" ? routeIds : spotIds).length > 0) return bad("invalid_rally_members");
       const checked = await allowedMembers(input.kind, memberIds);
       if (!checked) return bad("invalid_rally_members");
-      return ok(await store.createRally(actor, { kind: input.kind, nameJa, nameEn: trimmedEn(input.nameEn) ?? null, memberIds }));
+      return ok(await store.createRally(actor, { kind: input.kind, nameJa, nameEn: trimmedEn(input.nameEn) ?? null, translations: cleanTranslations(input.translations) ?? {}, memberIds }));
     },
 
     async updateRally(actor: string, id: string, expected: Date | string, input: Partial<RallyFields>): Promise<Result<RallyRow>> {
@@ -70,6 +71,7 @@ export function createRallyAdminService(deps: { store: RallyAdminStore }) {
         changes.nameJa = input.nameJa.trim();
       }
       if (input.nameEn !== undefined) changes.nameEn = trimmedEn(input.nameEn) ?? null;
+      if (input.translations !== undefined) changes.translations = cleanTranslations(input.translations);
       if (input.published !== undefined) {
         if (input.published && current.rally.memberCount === 0) return bad("rally_empty");
         changes.published = input.published;

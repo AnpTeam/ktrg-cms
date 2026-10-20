@@ -16,9 +16,16 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
-import { userLocale, users } from "./auth";
+import { users } from "./auth";
 
 // Table definitions follow section 9.4 of the system design document.
+
+/**
+ * The languages content can be written in (admin entry; the visitor site still speaks ja and en only). Kept apart
+ * from user_locale, the website language a visitor picks, so a content language never becomes a website choice.
+ */
+export const contentLocales = ["ja", "en", "de", "fr", "th", "es"] as const;
+export const contentLocale = pgEnum("content_locale", contentLocales);
 
 export const spotStatus = pgEnum("spot_status", ["open", "caution", "closed"]);
 
@@ -340,7 +347,7 @@ export const routeTranslations = pgTable(
     routeId: uuid("route_id")
       .notNull()
       .references(() => routes.id, { onDelete: "cascade" }),
-    locale: userLocale("locale").notNull(),
+    locale: contentLocale("locale").notNull(),
     name: text("name"),
     description: text("description"),
     // The story of the route, and how to get there and back.
@@ -356,7 +363,7 @@ export const spotTranslations = pgTable(
     spotId: uuid("spot_id")
       .notNull()
       .references(() => spots.id, { onDelete: "cascade" }),
-    locale: userLocale("locale").notNull(),
+    locale: contentLocale("locale").notNull(),
     name: text("name"),
     description: text("description"),
     statusNote: text("status_note"),
@@ -370,7 +377,7 @@ export const rallyTranslations = pgTable(
     rallyId: uuid("rally_id")
       .notNull()
       .references(() => rallies.id, { onDelete: "cascade" }),
-    locale: userLocale("locale").notNull(),
+    locale: contentLocale("locale").notNull(),
     name: text("name"),
   },
   (t) => [primaryKey({ columns: [t.rallyId, t.locale] }), check("rally_translations_ja_name", jaRequires(t, t.name))],
@@ -382,7 +389,7 @@ export const trailNoticeTranslations = pgTable(
     trailNoticeId: uuid("trail_notice_id")
       .notNull()
       .references(() => trailNotices.id, { onDelete: "cascade" }),
-    locale: userLocale("locale").notNull(),
+    locale: contentLocale("locale").notNull(),
     title: text("title"),
     body: text("body"),
     sourceName: text("source_name"),
@@ -400,7 +407,7 @@ export const bannerTranslations = pgTable(
     bannerId: uuid("banner_id")
       .notNull()
       .references(() => banners.id, { onDelete: "cascade" }),
-    locale: userLocale("locale").notNull(),
+    locale: contentLocale("locale").notNull(),
     alt: text("alt"),
   },
   (t) => [primaryKey({ columns: [t.bannerId, t.locale] }), check("banner_translations_ja_alt", jaRequires(t, t.alt))],

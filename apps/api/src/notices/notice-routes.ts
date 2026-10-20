@@ -77,8 +77,8 @@ export const noticeList: ListDef<"notices", typeof NOTICE_FIELDS, NoticeRow, Not
   },
 };
 
-/** What a visitor sees of a notice: no draft flag, no edit times. */
-const publicOut = ({ published: _p, createdAt: _c, updatedAt: _u, ...n }: NoticeRow) => n;
+/** What a visitor sees of a notice: no draft flag, no edit times, no other languages (the site speaks ja / en). */
+const publicOut = ({ published: _p, createdAt: _c, updatedAt: _u, translations: _t, ...n }: NoticeRow) => n;
 
 /** What visitors read, no login: published notices that have not expired (Japan time), the most recently checked first. */
 export function publicNoticeRoutes(getNotices: () => NoticeService) {

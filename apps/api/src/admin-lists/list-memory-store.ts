@@ -1,4 +1,5 @@
 import type { AuditWriter } from "../audit/audit-log";
+import { mergeTranslations } from "../db/translations";
 import type { ListAudit, ListReadStore, ListRow, ListStore } from "./list-types";
 
 /** Newest first, with the id breaking ties, as the Drizzle stores page (list-sql.ts). */
@@ -34,7 +35,9 @@ export function createMemoryListStore<F extends object>(audit: AuditWriter, acti
     ...memoryReader(rows),
     async create(actor, fields) {
       const at = stamp();
-      const row = { ...fields, id: crypto.randomUUID(), createdAt: at, updatedAt: at } as R;
+      const words = (fields as { translations?: Record<string, never> }).translations;
+      // Other languages are saved as the database would: blank fields dropped.
+      const row = { ...fields, ...(words ? { translations: mergeTranslations({}, words) } : {}), id: crypto.randomUUID(), createdAt: at, updatedAt: at } as R;
       rows.set(row.id, row);
       await audit.record({ actorUserId: actor, action: actions.create, targetId: row.id });
       return row;
@@ -44,7 +47,9 @@ export function createMemoryListStore<F extends object>(audit: AuditWriter, acti
       if (!cur) return null;
       if (cur.updatedAt.getTime() !== expected.getTime()) return "conflict";
       const defined = Object.fromEntries(Object.entries(changes).filter(([, v]) => v !== undefined));
-      const row = { ...cur, ...defined, updatedAt: stamp() } as R;
+      const words = (defined as { translations?: Record<string, never> }).translations;
+      const saved = (cur as { translations?: Record<string, never> }).translations;
+      const row = { ...cur, ...defined, ...(words ? { translations: mergeTranslations(saved, words) } : {}), updatedAt: stamp() } as R;
       rows.set(id, row);
       await audit.record({ actorUserId: actor, action: actions.update, targetId: id });
       return row;

@@ -5,7 +5,9 @@ import { createListService } from "../admin-lists/list-service";
 import { bad, ok, type ListRow, type ListRules, type ListStore } from "../admin-lists/list-types";
 import type { AuditWriter } from "../audit/audit-log";
 import type { KitServices } from "../auth/route-kit";
+import { cleanTranslations } from "../db/translations";
 import { isHttpsUrl } from "../lib/https-url";
+import { translationsSchema } from "../lib/schemas";
 
 /**
  * A photo in the carousel at the top of the home page: an https link (uploaded with POST /admin/uploads, or pasted),
@@ -15,6 +17,8 @@ export const BANNER_FIELDS = {
   imageUrl: t.String({ minLength: 1, maxLength: 500 }),
   altJa: t.String({ minLength: 1, maxLength: 200 }),
   altEn: t.Union([t.String({ maxLength: 200 }), t.Null()]),
+  /** The other content languages (admin entry; visitors see ja / en). */
+  translations: t.Optional(translationsSchema({ alt: 200 })),
   sortOrder: t.Integer({ minimum: 0, maximum: 999 }),
   published: t.Boolean(),
 };
@@ -42,6 +46,7 @@ export const bannerRules: ListRules<BannerFields> = async (fields) => {
     if (out.altJa === "") return bad("validation_failed");
   }
   if (out.altEn !== undefined) out.altEn = out.altEn?.trim() || null;
+  if (out.translations !== undefined) out.translations = cleanTranslations(out.translations);
   return ok(out);
 };
 

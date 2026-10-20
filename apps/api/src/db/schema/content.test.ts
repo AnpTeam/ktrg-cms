@@ -106,7 +106,7 @@ describe("content schema", () => {
       expect(cfg.primaryKeys[0]!.columns.map((c) => c.name)).toEqual([key, "locale"]);
       expect(cfg.foreignKeys[0]!.reference().foreignTable).toBe(owner);
       expect(cfg.foreignKeys[0]!.onDelete).toBe("cascade");
-      expect(col(words, "locale").enumValues).toEqual(["ja", "en"]);
+      expect(col(words, "locale").enumValues).toEqual(["ja", "en", "de", "fr", "th", "es"]);
     }
   });
 

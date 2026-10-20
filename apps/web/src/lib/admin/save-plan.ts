@@ -1,3 +1,4 @@
+import { translationsChange, type Translations } from "./content-locales";
 import type { PlaceDraft, RouteDraft } from "./route-draft";
 import type { PointKind } from "../point-kinds";
 import type { Prefecture, SpotStatus } from "./types";
@@ -28,6 +29,7 @@ export interface RouteBody {
   geometry: { type: "LineString"; coordinates: [number, number, number?][] } | null;
   lineVerified: boolean;
   lineSource: string | null;
+  translations: Translations;
 }
 
 export interface PlaceBody {
@@ -47,6 +49,7 @@ export interface PlaceBody {
   statusNoteEn: string | null;
   permissionConfirmed: boolean;
   permissionNote: string | null;
+  translations: Translations;
 }
 
 export function routeBody(d: RouteDraft): RouteBody {
@@ -70,6 +73,7 @@ export function routeBody(d: RouteDraft): RouteBody {
     geometry: d.line.length >= 2 ? { type: "LineString", coordinates: d.line.map((p) => (p[2] === undefined ? [p[0], p[1]] : [p[0], p[1], p[2]])) } : null,
     lineVerified: d.lineVerified,
     lineSource: nullIfEmpty(d.lineSource),
+    translations: d.translations,
   };
 }
 
@@ -91,19 +95,26 @@ export function placeBody(p: PlaceDraft): PlaceBody {
     statusNoteEn: nullIfEmpty(p.statusNoteEn),
     permissionConfirmed: p.permissionConfirmed,
     permissionNote: nullIfEmpty(p.permissionNote),
+    translations: p.translations,
   };
 }
 
 /** Whether a place has changes that are not saved (or was never saved). */
 export const placeChanged = (p: PlaceDraft, saved: PlaceDraft | undefined): boolean =>
-  !saved || p.id === null || JSON.stringify(placeBody(p)) !== JSON.stringify(placeBody(saved));
+  !saved || p.id === null || Object.keys(changed(placeBody(p), placeBody(saved))).length > 0;
 
-/** The keys whose value differs, by value. */
-function changed<T extends object>(next: T, saved: T | null): Partial<T> {
+/**
+ * The keys whose value differs, by value. The other languages are compared by meaning (blank = none) and only
+ * what changed in them is sent (null clears).
+ */
+function changed<T extends { translations: Translations }>(next: T, saved: T | null): Partial<T> {
   const out: Partial<T> = {};
   for (const k of Object.keys(next) as (keyof T)[]) {
+    if (k === "translations") continue;
     if (saved === null || JSON.stringify(next[k]) !== JSON.stringify(saved[k])) out[k] = next[k];
   }
+  const words = saved === null ? next.translations : translationsChange(saved.translations, next.translations);
+  if (words && Object.keys(words).length > 0) out.translations = words;
   return out;
 }
 

@@ -14,7 +14,7 @@ async function withTexts(q: Reader, rows: (typeof banners.$inferSelect)[]): Prom
   const words = flattenTexts(BANNER_TEXT, await q.select().from(bannerTranslations).where(inArray(bannerTranslations.bannerId, rows.map((r) => r.id))), (t) => t.bannerId);
   return rows.map((r) => {
     const w = words.get(r.id) ?? emptyTexts(BANNER_TEXT);
-    return { ...r, altJa: w.altJa ?? "", altEn: w.altEn };
+    return { ...r, altJa: w.altJa ?? "", altEn: w.altEn, translations: w.translations };
   });
 }
 

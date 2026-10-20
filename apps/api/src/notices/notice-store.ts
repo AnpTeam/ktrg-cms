@@ -31,6 +31,7 @@ async function withTexts(q: Reader, rows: (typeof trailNotices.$inferSelect)[]):
       sourceUrl: r.sourceUrl,
       sourceNameJa: w.sourceNameJa ?? "",
       sourceNameEn: w.sourceNameEn,
+      translations: w.translations,
       verifiedOn: r.verifiedOn,
       expiresOn: r.expiresOn,
       published: r.published,

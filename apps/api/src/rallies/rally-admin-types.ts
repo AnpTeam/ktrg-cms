@@ -3,7 +3,12 @@
 // COURSES (a list of courses; a course is finished when all its stamp places are stamped). Visitors' stamps and
 // finishes are never touched here.
 
+import type { RALLY_TEXT, Translations } from "../db/translations";
+
 export type RallyKind = "places" | "course";
+
+/** A rally's name in the other content languages (admin entry; visitors see ja / en). */
+export type RallyTranslations = Translations<(typeof RALLY_TEXT)[number]>;
 
 /** A rally as the admin sees it. */
 export interface RallyRow {
@@ -11,6 +16,7 @@ export interface RallyRow {
   kind: RallyKind;
   nameJa: string;
   nameEn: string | null;
+  translations: RallyTranslations;
   sortOrder: number;
   published: boolean;
   /** Places (a rally of places) or courses (a rally of courses) in it. */
@@ -48,6 +54,7 @@ export type RallyDetail =
 export interface RallyFields {
   nameJa: string;
   nameEn: string | null;
+  translations: RallyTranslations;
   published: boolean;
 }
 
@@ -66,7 +73,7 @@ export interface RallyAdminStore {
    * A new rally, as a draft at the end of the order, with its first members (place ids for a rally of places, course
    * ids for a rally of courses) inserted together in one statement. The caller has checked they are allowed.
    */
-  createRally(actor: string, fields: { kind: RallyKind; nameJa: string; nameEn: string | null; memberIds: string[] }): Promise<RallyRow>;
+  createRally(actor: string, fields: { kind: RallyKind; nameJa: string; nameEn: string | null; translations?: RallyTranslations; memberIds: string[] }): Promise<RallyRow>;
   updateRally(actor: string, id: string, expected: Date, changes: Partial<RallyFields>): Promise<RallyRow | "conflict" | null>;
   /** All rally ids, in the new order. */
   reorderRallies(actor: string, ids: string[]): Promise<boolean>;

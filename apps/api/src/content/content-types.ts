@@ -1,6 +1,11 @@
 import type { ErrorCode } from "../lib/api-errors";
 import type { spotKinds } from "../db/schema/content";
+import type { ROUTE_TEXT, SPOT_TEXT, Translations } from "../db/translations";
 import type { LineString } from "./line";
+
+/** A route's and a place's words in the other content languages (admin entry; visitors see ja / en). */
+export type RouteTranslations = Translations<(typeof ROUTE_TEXT)[number]>;
+export type SpotTranslations = Translations<(typeof SPOT_TEXT)[number]>;
 
 export type SpotKind = (typeof spotKinds)[number];
 
@@ -29,6 +34,7 @@ export interface RouteRow {
   historyEn: string | null;
   accessJa: string | null;
   accessEn: string | null;
+  translations: RouteTranslations;
   photoUrl: string | null;
   sortOrder: number;
   createdAt: Date;
@@ -61,6 +67,7 @@ export interface SpotRow {
   status: SpotStatus;
   statusNoteJa: string | null;
   statusNoteEn: string | null;
+  translations: SpotTranslations;
   statusUpdatedAt: Date | null;
   sortOrder: number;
   published: boolean;
@@ -91,6 +98,7 @@ export interface RouteFields {
   historyEn: string | null;
   accessJa: string | null;
   accessEn: string | null;
+  translations: RouteTranslations;
   photoUrl: string | null;
 }
 
@@ -109,6 +117,7 @@ export interface SpotFields {
   status: SpotStatus;
   statusNoteJa: string | null;
   statusNoteEn: string | null;
+  translations: SpotTranslations;
   permissionConfirmed: boolean;
   permissionNote: string | null;
 }

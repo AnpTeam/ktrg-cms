@@ -1147,6 +1147,17 @@ describe.skipIf(!url)("trail notices on real PostgreSQL", () => {
     expect((await db.select().from(auditLog).where(eq(auditLog.targetId, row.id))).map((a) => a.action)).toEqual(["notice.create", "notice.update", "notice.delete"]);
   });
 
+  test("another language is saved as its own row (content_locale) and read back into translations", async () => {
+    const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
+    const row = await store.create(actor, { ...fields(), translations: { de: { title: "Gesperrt" } } });
+    made.push(row.id);
+    expect(row.translations).toEqual({ de: { title: "Gesperrt" } });
+    const words = await db.select().from(trailNoticeTranslations).where(eq(trailNoticeTranslations.trailNoticeId, row.id));
+    expect(words.map((w) => w.locale).sort()).toEqual(["de", "en", "ja"]);
+    const changed = await store.update(actor, row.id, row.updatedAt, { translations: { de: { title: null }, th: { body: "ปิด" } } });
+    expect(changed !== "conflict" && changed?.translations).toEqual({ th: { body: "ปิด" } });
+  });
+
   test("the Japanese title is required by the database too", async () => {
     const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
     await expect(store.create(actor, fields({ titleJa: null as unknown as string }))).rejects.toThrow();

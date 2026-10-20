@@ -23,7 +23,7 @@ import {
 import { draftProblems, placeChanged, planSave, type DraftProblem } from "@/lib/admin/save-plan";
 import type { Prefecture } from "@/lib/admin/types";
 import { formatUpdated } from "@/lib/format";
-import { BilingualField, Check, Field, inputClass, NumberInput, Section, TextInput } from "./fields";
+import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
 import { LivePreview } from "./LivePreview";
 import { MapEditorLoader } from "./map-editor/MapEditorLoader";
 import type { ElevationStatus } from "./map-editor/MapEditor";
@@ -314,7 +314,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
             {section === "overview" ? (
               <>
                 <Section title={t`基本`}>
-                  <BilingualField id="route-name" label={t`ルートの名前`} ja={draft.nameJa} en={draft.nameEn} onJa={text("nameJa")} onEn={text("nameEn")} required invalid={problemOf("route_name")} />
+                  <MultilingualField id="route-name" field="name" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`ルートの名前`} ja={draft.nameJa} en={draft.nameEn} onJa={text("nameJa")} onEn={text("nameEn")} required invalid={problemOf("route_name")} />
                   {problemOf("route_name") ? <p role="alert" className="text-base font-bold text-danger">{t`日本語の名前を入れてください。`}</p> : null}
                   <div className="flex flex-wrap gap-4">
                     <Field label={t`都道府県`} htmlFor="route-pref">
@@ -370,14 +370,14 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
             {section === "text" ? (
               <>
                 <Section title={t`ルートの説明`}>
-                  <BilingualField id="route-desc" label={t`ルートの説明`} ja={draft.descriptionJa} en={draft.descriptionEn} onJa={text("descriptionJa")} onEn={text("descriptionEn")} multiline />
+                  <MultilingualField id="route-desc" field="description" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`ルートの説明`} ja={draft.descriptionJa} en={draft.descriptionEn} onJa={text("descriptionJa")} onEn={text("descriptionEn")} multiline />
                   <p className="text-base text-muted">{t`改行は、そのまま表示されます。`}</p>
                 </Section>
                 <Section title={t`歴史・由来`}>
-                  <BilingualField id="route-history" label={t`歴史・由来`} ja={draft.historyJa} en={draft.historyEn} onJa={text("historyJa")} onEn={text("historyEn")} multiline />
+                  <MultilingualField id="route-history" field="history" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`歴史・由来`} ja={draft.historyJa} en={draft.historyEn} onJa={text("historyJa")} onEn={text("historyEn")} multiline />
                 </Section>
                 <Section title={t`アクセス・交通`}>
-                  <BilingualField id="route-access" label={t`アクセス・交通`} ja={draft.accessJa} en={draft.accessEn} onJa={text("accessJa")} onEn={text("accessEn")} multiline />
+                  <MultilingualField id="route-access" field="access" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`アクセス・交通`} ja={draft.accessJa} en={draft.accessEn} onJa={text("accessJa")} onEn={text("accessEn")} multiline />
                   <p className="text-base text-muted">{t`最寄りの駅やバス停、スタート地点とゴール地点への行き方を書きます。`}</p>
                 </Section>
               </>

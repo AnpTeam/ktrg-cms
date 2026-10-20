@@ -1,5 +1,6 @@
 import { t, type Static } from "elysia";
 import type { ListRow, ListStore } from "../admin-lists/list-types";
+import { translationsSchema } from "../lib/schemas";
 
 const nullable = (max: number) => t.Union([t.String({ maxLength: max }), t.Null()]);
 
@@ -17,6 +18,8 @@ export const NOTICE_FIELDS = {
   sourceUrl: t.String({ minLength: 1, maxLength: 500 }),
   sourceNameJa: t.String({ minLength: 1, maxLength: 200 }),
   sourceNameEn: nullable(200),
+  /** The other content languages (admin entry; visitors see ja / en). */
+  translations: t.Optional(translationsSchema({ title: 200, body: 5000, sourceName: 200 })),
   /** YYYY-MM-DD, Japan time. */
   verifiedOn: t.String({ format: "date" }),
   /** YYYY-MM-DD; hidden from visitors after this day. null = until someone removes it. */
