@@ -13,7 +13,7 @@ export default async function NotFound() {
       <p className="text-xl">
         <Trans>アドレスがちがうか、ページが公開されていません。</Trans>
       </p>
-      <ButtonLink href={"/"}>
+      <ButtonLink href="/">
         <Trans>ホームにもどる</Trans>
       </ButtonLink>
     </div>

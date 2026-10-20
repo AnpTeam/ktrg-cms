@@ -17,7 +17,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: i18n._(msg`マップ`) };
 }
 
-type Translate = (path: string) => string;
 
 /** The gallery of a course: its own photo first, then the photos of its places, each address once. */
 function galleryOf(photo: MapPhoto | null, stops: MapScreenStop[] | null): MapPhoto[] {
@@ -30,7 +29,7 @@ function galleryOf(photo: MapPhoto | null, stops: MapScreenStop[] | null): MapPh
  * only for courses whose stops have positions, which today is the one draft course; the rest show their area.
  * TODO(WBS 2.2.1): when the API exists, load a course's detail when it is chosen instead of for all of them.
  */
-async function mapRoutes(routes: RouteSummary[], viewer: Viewer, locale: string, to: Translate, words: { stamped: string; closed: string }): Promise<MapScreenRoute[]> {
+async function mapRoutes(routes: RouteSummary[], viewer: Viewer, locale: string, words: { stamped: string; closed: string }): Promise<MapScreenRoute[]> {
   return Promise.all(
     [...routes]
       .sort((a, b) => a.order - b.order)
@@ -64,7 +63,7 @@ async function mapRoutes(routes: RouteSummary[], viewer: Viewer, locale: string,
             spots = detail.spots.flatMap((s, index): MapScreenSpot[] => {
               const spotName = pickText(locale, s.nameJa, s.nameEn);
               return spotName
-                ? [{ id: s.id, order: index + 1, name: spotName.text, nameLang: spotName.lang, status: s.status, stamped: s.stamped, href: to(`/spots/${s.id}`) }]
+                ? [{ id: s.id, order: index + 1, name: spotName.text, nameLang: spotName.lang, status: s.status, stamped: s.stamped, href: `/spots/${s.id}` }]
                 : [];
             });
           }
@@ -92,7 +91,7 @@ async function mapRoutes(routes: RouteSummary[], viewer: Viewer, locale: string,
                     position: { lat: s.position.lat, lng: s.position.lng },
                     stamped: spot.stamped,
                     status: s.status,
-                    href: to(`/spots/${s.id}`),
+                    href: `/spots/${s.id}`,
                     description: full ? (pickText(locale, full.descriptionJa, full.descriptionEn)?.text ?? null) : null,
                     statusNote: note?.text ?? null,
                     statusUpdatedAt: full?.statusUpdatedAt ?? null,
@@ -127,7 +126,7 @@ async function mapRoutes(routes: RouteSummary[], viewer: Viewer, locale: string,
           gallery: galleryOf(photo, stops),
           points,
           spots,
-          href: to(`/routes/${r.id}`),
+          href: `/routes/${r.id}`,
           stops,
           line,
           draft,
@@ -141,7 +140,6 @@ async function mapRoutes(routes: RouteSummary[], viewer: Viewer, locale: string,
 export default async function MapPage({ searchParams }: { searchParams: Promise<{ as?: string; stamp?: string; route?: string; stop?: string }> }) {
   const i18n = await initLingui();
   const viewer = await getViewer(searchParams);
-  const to: Translate = (path) => path;
   const { stamp, route: wantedRoute, stop: wantedStop } = await searchParams;
   // Development only: `?stamp=far` and so on pretends the answers of the stamping API, which does not exist yet.
   const stampMock = process.env.NODE_ENV !== "production" && isStampMock(stamp) ? stamp : undefined;
@@ -149,8 +147,8 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
   const prefs = await getPrefs();
   const settings = parseMapSettings((await cookies()).get(mapSettingsCookie)?.value);
   const summaries = (await listRoutes()).map((r) => forViewer(r, viewer));
-  const routes = await mapRoutes(summaries, viewer, i18n.locale, to, { stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`) });
-  const next = `?next=${encodeURIComponent(to("/map"))}`;
+  const routes = await mapRoutes(summaries, viewer, i18n.locale, { stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`) });
+  const next = `?next=${encodeURIComponent("/map")}`;
   // "Show in the map" from a place page: only an existing course (and a stop of it) is taken over from the address.
   const initialRoute = routes.find((r) => r.id === wantedRoute) ?? null;
   const initialStop = initialRoute?.stops?.find((s) => s.id === wantedStop) ?? null;
@@ -164,8 +162,8 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
       mergeStops={prefs.mergeStops}
       signedIn={viewer.signedIn}
       locale={i18n.locale}
-      loginHref={`${to("/login")}${next}`}
-      registerHref={`${to("/register")}${next}`}
+      loginHref={`/login${next}`}
+      registerHref={`/register${next}`}
       stampMock={stampMock}
     />
   );

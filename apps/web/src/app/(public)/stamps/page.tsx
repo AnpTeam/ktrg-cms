@@ -33,7 +33,7 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
 
       {/* How to play lives here, with the stamps, and nowhere else. */}
       <Link
-        href={"/guide"}
+        href="/guide"
         className="tap-target mx-4 flex items-center justify-between rounded-2xl bg-surface px-5 text-xl font-bold text-accent"
       >
         <Trans>遊び方</Trans>

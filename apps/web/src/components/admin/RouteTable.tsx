@@ -85,7 +85,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
           <input type="checkbox" checked={needsWorkOnly} onChange={(e) => setNeedsWorkOnly(e.target.checked)} className="size-6" />
           {t`手直しが必要なルートだけ（${needsWorkCount}）`}
         </label>
-        <Link href={`/admin/routes/new`} className="tap-target inline-flex items-center rounded-xl bg-brand px-5 text-lg font-bold text-on-brand">
+        <Link href="/admin/routes/new" className="tap-target inline-flex items-center rounded-xl bg-brand px-5 text-lg font-bold text-on-brand">
           {t`新しいルート`}
         </Link>
       </div>

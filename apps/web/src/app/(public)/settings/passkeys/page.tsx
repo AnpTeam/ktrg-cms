@@ -19,7 +19,7 @@ export default async function PasskeysPage({ searchParams }: { searchParams: Pro
 
   return (
     <div className="page-narrow flex flex-col gap-6 px-4 pt-2">
-      <BackLink href={"/stamps"}>
+      <BackLink href="/stamps">
         <Trans>スタンプ</Trans>
       </BackLink>
       <h1 className="text-3xl font-bold">

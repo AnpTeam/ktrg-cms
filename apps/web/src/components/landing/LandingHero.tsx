@@ -11,7 +11,7 @@ import { KatsuragiLogo } from "@/components/KatsuragiLogo";
 const primary = "tap-target inline-flex min-h-14 items-center justify-center rounded-2xl bg-brand px-8 text-xl font-bold text-on-brand";
 const secondary = "tap-target inline-flex min-h-14 items-center justify-center rounded-2xl border-2 border-brand bg-paper/70 px-8 text-xl font-bold text-accent hover:bg-paper";
 
-export function LandingHero({ to }: { to: (path: string) => string }) {
+export function LandingHero() {
   return (
     <section aria-labelledby="hero-title" className="relative hidden min-h-[30rem] overflow-hidden rounded-[2rem] bg-surface lg:block">
       <div aria-hidden="true" className="pattern-shippo absolute inset-0" />
@@ -41,16 +41,16 @@ export function LandingHero({ to }: { to: (path: string) => string }) {
           <Trans>「祈り」を見つめる再発見の旅</Trans>
         </p>
         <div className="flex flex-wrap items-center gap-3">
-          <Link href={to("/register")} className={primary}>
+          <Link href="/register" className={primary}>
             <Trans>新規登録</Trans>
           </Link>
-          <Link href={to("/routes")} className={secondary}>
+          <Link href="/routes" className={secondary}>
             <Trans>ルートをさがす</Trans>
           </Link>
         </div>
         <p className="text-lg opacity-80">
           <Trans>登録済みの方は</Trans>{" "}
-          <Link href={to("/login")} className="font-bold underline">
+          <Link href="/login" className="font-bold underline">
             <Trans>ログイン</Trans>
           </Link>
         </p>

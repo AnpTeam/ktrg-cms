@@ -152,7 +152,7 @@ export function SiteHeader({
             {signedIn ? (
               <div className="flex flex-col gap-3">
                 <Link
-                  href={`/stamps`}
+                  href="/stamps"
                   className="tap-target flex items-center gap-3 rounded-xl border-2 border-brand bg-paper px-4 text-xl font-bold hover:bg-surface"
                 >
                   <UserIcon />
@@ -191,7 +191,7 @@ export function SiteHeader({
             </div>
             <div className="flex flex-col gap-2 border-t-2 border-line pt-4">
               <Link
-                href={`/settings`}
+                href="/settings"
                 className="tap-target flex items-center rounded-xl border-2 border-ink px-4 text-lg font-bold text-ink hover:bg-paper"
               >
                 {t`見やすさの設定`}
@@ -217,7 +217,7 @@ export function SiteHeader({
               <div className="flex flex-col gap-2 border-t-2 border-line pt-4">
                 <p className="text-lg font-bold">{t`開発用`}</p>
                 <Link
-                  href={`/settings/map`}
+                  href="/settings/map"
                   className="tap-target flex items-center rounded-xl border-2 border-ink px-4 text-lg font-bold text-ink hover:bg-paper"
                 >
                   {t`地図の見た目の設定`}

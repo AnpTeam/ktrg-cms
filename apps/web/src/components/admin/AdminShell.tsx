@@ -10,7 +10,7 @@ export function AdminShell({ name, children }: { name: string | null; children: 
   return (
     <div className="min-h-screen bg-paper text-ink lg:grid lg:grid-cols-[16rem_1fr]">
       <aside className="border-b border-line p-4 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-b-0 lg:border-r">
-        <Link href={`/admin/routes`} className="tap-target mb-3 flex items-center px-2 text-xl font-bold text-accent">
+        <Link href="/admin/routes" className="tap-target mb-3 flex items-center px-2 text-xl font-bold text-accent">
           <Trans>葛城修験 管理</Trans>
         </Link>
         <AdminNav />

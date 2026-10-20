@@ -40,11 +40,9 @@ const PREVIEW_ROUTES = 3;
  * one is set), what Katsuragi Shugen is (the official text), and a footer with the source.
  *
  * No photos (none are cleared for use yet) and no invented facts: the numbers come from `lib/rally`, the
- * course names from the course list, the Katsuragi text from the official Japan Heritage site. `to` adds the
- * language prefix to a path.
+ * course names from the course list, the Katsuragi text from the official Japan Heritage site.
  */
 export function Landing({
-  to,
   locale,
   routes,
   notices,
@@ -52,7 +50,6 @@ export function Landing({
   slides,
   blogUrl,
 }: {
-  to: (path: string) => string;
   locale: string;
   routes: RouteSummary[];
   notices: TrailNotice[];
@@ -67,7 +64,7 @@ export function Landing({
     // sections (notices, video, the start buttons, the footer) span both.
     <div className="grid grid-cols-1 gap-10 pt-4 lg:grid-cols-2 lg:gap-x-8 lg:pt-0">
       <div className="hidden lg:col-span-2 lg:block">
-        <LandingHero to={to} />
+        <LandingHero />
       </div>
 
       {slides.length > 0 ? (
@@ -90,15 +87,15 @@ export function Landing({
           </p>
 
           <div className="mt-6 flex flex-col gap-3">
-            <Link href={to("/register")} className={primary}>
+            <Link href="/register" className={primary}>
               <Trans>新規登録</Trans>
             </Link>
-            <Link href={to("/routes")} className={secondary}>
+            <Link href="/routes" className={secondary}>
               <Trans>ルートをさがす</Trans>
             </Link>
             <p className="text-lg opacity-80">
               <Trans>登録済みの方は</Trans>{" "}
-              <Link href={to("/login")} className="font-bold">
+              <Link href="/login" className="font-bold">
                 <Trans>ログイン</Trans>
               </Link>
             </p>
@@ -145,11 +142,11 @@ export function Landing({
                   route={route}
                   locale={locale}
                   last={i === firstRoutes.length - 1}
-                  href={to(`/routes/${route.id}`)}
+                  href={`/routes/${route.id}`}
                 />
               ))}
             </ol>
-            <Link href={to("/routes")} className={`${secondary} mt-4`}>
+            <Link href="/routes" className={`${secondary} mt-4`}>
               <Trans>全{TOTAL_ROUTES}区間を見る</Trans>
             </Link>
           </div>
@@ -226,10 +223,10 @@ export function Landing({
           <Trans>さあ、はじめましょう</Trans>
         </SectionBanner>
         <div className="flex flex-col gap-3">
-          <Link href={to("/register")} className={primary}>
+          <Link href="/register" className={primary}>
             <Trans>新規登録</Trans>
           </Link>
-          <Link href={to("/routes")} className={secondary}>
+          <Link href="/routes" className={secondary}>
             <Trans>ルートをさがす</Trans>
           </Link>
         </div>

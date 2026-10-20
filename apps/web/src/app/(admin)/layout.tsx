@@ -33,7 +33,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         <p className="text-lg">
           <Trans>管理画面は、管理者だけが使えます。権限が必要な場合は、管理者にお知らせください。</Trans>
         </p>
-        <Link href={"/"} className="tap-target inline-flex items-center text-lg font-bold text-accent underline underline-offset-4">
+        <Link href="/" className="tap-target inline-flex items-center text-lg font-bold text-accent underline underline-offset-4">
           <Trans>ホームへ戻る</Trans>
         </Link>
       </main>

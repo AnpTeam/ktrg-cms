@@ -20,7 +20,7 @@ export default async function NewRoutePage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Link href={`/admin/routes`} className="tap-target inline-flex w-fit items-center text-lg font-bold text-accent underline underline-offset-4">
+      <Link href="/admin/routes" className="tap-target inline-flex w-fit items-center text-lg font-bold text-accent underline underline-offset-4">
         <Trans>ルート一覧にもどる</Trans>
       </Link>
       <RouteEditor initial={emptyDraft()} order={order} locale={i18n.locale} />

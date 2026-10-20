@@ -26,7 +26,6 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
   const found = await getRoute((await params).id);
   if (!found) notFound();
   const route = forViewer(found, viewer);
-  const to = (path: string) => path;
   const prefs = await getPrefs();
   const settings = parseMapSettings((await cookies()).get(mapSettingsCookie)?.value);
   const places = (await listPlacesForRoute(route.order)).map((p) => toMapPlace(i18n.locale, p));
@@ -34,7 +33,7 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
   return (
     <div className="flex flex-col gap-6">
       <div className="px-4">
-        <BackLink href={to("/routes")}>
+        <BackLink href="/routes">
           <Trans>ルート一覧</Trans>
         </BackLink>
       </div>
@@ -46,7 +45,7 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
         mergeStops={prefs.mergeStops}
         placesFirst={prefs.placesOnMap}
         labels={{ stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`) }}
-        spotHref={(id) => to(`/spots/${id}`)}
+        spotHref={(id) => `/spots/${id}`}
       />
     </div>
   );

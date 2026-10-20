@@ -23,16 +23,12 @@ const instances: Record<string, I18n> = Object.fromEntries(
   ]),
 );
 
-export function getI18nInstance(locale: Locale): I18n {
-  return instances[locale] as I18n;
-}
-
 /**
  * The visitor's language: the saved choice (cookie), then Accept-Language,
  * then Japanese. The URL carries no language, so one address serves everyone
  * (and an installed phone app never leaves its own scope when the language changes).
  */
-export async function requestLocale(): Promise<Locale> {
+async function requestLocale(): Promise<Locale> {
   return pickLocale({
     cookie: (await cookies()).get(localeCookie)?.value,
     acceptLanguage: (await headers()).get("accept-language"),
@@ -44,7 +40,7 @@ export async function requestLocale(): Promise<Locale> {
  * Components. Call it first in every page, layout and generateMetadata.
  */
 export async function initLingui() {
-  const i18n = getI18nInstance(await requestLocale());
+  const i18n = instances[await requestLocale()]!;
   setI18n(i18n);
   return i18n;
 }

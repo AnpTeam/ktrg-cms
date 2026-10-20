@@ -19,7 +19,7 @@ export default async function GuidePage() {
   return (
     <div className="page-narrow flex flex-col gap-6 pt-2">
       <div className="flex flex-col gap-6 px-4">
-        <BackLink href={"/"}>
+        <BackLink href="/">
           <Trans>ホーム</Trans>
         </BackLink>
         <h1 className="text-3xl font-bold">{help.guideTitle}</h1>
@@ -41,7 +41,7 @@ export default async function GuidePage() {
       <Notice>{help.guideNote}</Notice>
       <div className="px-4">
         <Link
-          href={"/faq"}
+          href="/faq"
           className="tap-target flex min-h-14 items-center justify-center rounded-xl border-2 border-brand bg-surface px-6 text-xl font-bold text-accent hover:bg-paper"
         >
           {helpContent(i18n.locale).faqTitle}

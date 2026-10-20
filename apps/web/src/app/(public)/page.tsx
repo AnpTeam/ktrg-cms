@@ -19,7 +19,6 @@ import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
   const i18n = await initLingui();
   const viewer = await getViewer(searchParams);
-  const to = (path: string) => path;
 
   // Not signed in: the landing page for a first-time visitor. No progress is shown at all.
   if (!viewer.signedIn) {
@@ -28,7 +27,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     const introVideo = parseVideoUrl(process.env.INTRO_VIDEO_URL);
     const slides = slidesToShow(bannerSlides, sampleContentEnabled());
     const blogUrl = process.env.BLOG_URL ?? null;
-    return <Landing to={to} locale={i18n.locale} routes={routes} notices={notices} introVideo={introVideo} slides={slides} blogUrl={blogUrl} />;
+    return <Landing locale={i18n.locale} routes={routes} notices={notices} introVideo={introVideo} slides={slides} blogUrl={blogUrl} />;
   }
 
   // Signed in: progress across everything that has published spots.
@@ -66,7 +65,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
       {prefs.setupDone ? null : (
         <Link
-          href={to("/welcome")}
+          href="/welcome"
           className="tap-target mx-4 flex flex-col rounded-3xl bg-surface p-5"
         >
           <span className="text-xl font-bold text-accent">
@@ -79,13 +78,13 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       )}
 
       <ProgressSummary stamped={stamped} total={total}>
-        <ButtonLink href={to("/stamps")}>
+        <ButtonLink href="/stamps">
           <Trans>スタンプカードを見る</Trans>
         </ButtonLink>
       </ProgressSummary>
 
       <RowLink
-        href={to("/routes")}
+        href="/routes"
         title={<Trans>ルートをさがす</Trans>}
         detail={
           <Trans>
