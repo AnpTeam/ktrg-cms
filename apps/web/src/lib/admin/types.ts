@@ -70,3 +70,40 @@ export interface AdminSpot {
   createdAt: string;
   updatedAt: string;
 }
+
+/** How a rally is made, chosen when it is created: a list of stamp places, or a list of courses. */
+export type AdminRallyKind = "places" | "course";
+
+/** A rally as the admin API sends it (apps/api/src/rallies/rally-admin-routes.ts). */
+export interface AdminRally {
+  id: string;
+  kind: AdminRallyKind;
+  nameJa: string;
+  nameEn: string | null;
+  sortOrder: number;
+  published: boolean;
+  /** Places (a rally of places) or courses (a rally of courses) in it. */
+  memberCount: number;
+  /** Visitors who have finished it. */
+  completionCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** A stamp place that is, or could be, in a rally of places. */
+export interface AdminRallyPlace {
+  spotId: string;
+  routeId: string;
+  nameJa: string;
+  nameEn: string | null;
+  published: boolean;
+}
+
+/** A course that is, or could be, in a rally of courses. */
+export interface AdminRallyCourse {
+  routeId: string;
+  nameJa: string;
+  nameEn: string | null;
+  stampPlaceCount: number;
+  publishedStampPlaceCount: number;
+}

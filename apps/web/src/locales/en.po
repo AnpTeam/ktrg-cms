@@ -17,6 +17,16 @@ msgstr "(no name)"
 msgid "（名前なし）"
 msgstr "(no name)"
 
+#. placeholder {0}: name(r)
+#: src/components/admin/RallyList.tsx:70
+msgid "{0} を1つ前へ"
+msgstr "Move {0} up"
+
+#. placeholder {0}: name(r)
+#: src/components/admin/RallyList.tsx:73
+msgid "{0} を1つ後ろへ"
+msgstr "Move {0} down"
+
 #. placeholder {0}: waypoints.length
 #: src/components/admin/map-editor/MapEditor.tsx:365
 msgid "{0}か所を、場所として追加しました。名前や種類は「スタンプ場所」で直せます。"
@@ -105,6 +115,14 @@ msgstr "No. {number}, not stamped yet"
 #: src/components/map/MapScreenCanvas.tsx:214
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
+
+#: src/components/admin/RallyMemberPicker.tsx:109
+msgid "{text} を1つ前へ"
+msgstr "Move {text} up"
+
+#: src/components/admin/RallyMemberPicker.tsx:112
+msgid "{text} を1つ後ろへ"
+msgstr "Move {text} down"
 
 #: src/components/landing/Landing.tsx:185
 msgid "{TOTAL_STAMPS}か所"
@@ -332,6 +350,14 @@ msgstr "What you see now is sample and draft data. It includes information that 
 msgid "うまく表示できませんでした"
 msgstr "This page could not be shown"
 
+#: src/components/admin/RallyCreate.tsx:68
+msgid "えらんだコースを全部歩き終えると達成。コースはスタンプ場所を全部押すと完了。"
+msgstr "Complete when every chosen course is finished. A course is finished when all its stamp places are stamped."
+
+#: src/components/admin/RallyCreate.tsx:69
+msgid "えらんだスタンプ場所を全部押すと達成（経塚のラリーなど）。"
+msgstr "Complete when every chosen stamp place is stamped (like the sutra mound rally)."
+
 #: src/components/settings/PrefsForm.tsx:129
 msgid "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 msgstr "When off, every stamp place is shown on its own (recommended). When on, places close together are merged into a group such as \"3-5\"."
@@ -361,7 +387,7 @@ msgstr "Shops and food"
 msgid "お探しのものは、見つかりませんでした。"
 msgstr "We could not find what you were looking for."
 
-#: src/components/admin/AdminNav.tsx:18
+#: src/components/admin/AdminNav.tsx:21
 #: src/components/landing/TrailNotices.tsx:30
 msgid "お知らせ"
 msgstr "Notices"
@@ -374,9 +400,22 @@ msgstr "Cafe"
 msgid "コース"
 msgstr "Courses"
 
+#. placeholder {0}: r.memberCount
+#: src/components/admin/RallyList.tsx:62
+msgid "コース {0}"
+msgstr "{0} courses"
+
 #: src/components/RallyViews.tsx:96
 msgid "コース{order}"
 msgstr "Course {order}"
+
+#: src/components/admin/RallyEditor.tsx:98
+msgid "コースでつくったラリー：えらんだコースを全部終えると達成。"
+msgstr "A rally of courses: complete when every chosen course is finished."
+
+#: src/components/admin/RallyCreate.tsx:68
+msgid "コースでつくる"
+msgstr "Make it from courses"
 
 #: src/components/map/TrailMap.tsx:374
 msgid "コースの出発地点から近い順（まっすぐ測った距離です）"
@@ -427,9 +466,26 @@ msgstr "You do not have permission to view this page"
 msgid "このラリーは、いまは行われていません。"
 msgstr "This rally is not running right now."
 
+#: src/components/admin/RallyEditor.tsx:149
+msgid "このラリーを削除"
+msgstr "Delete this rally"
+
+#: src/components/admin/RallyEditor.tsx:85
+msgid "このラリーを削除します。よろしいですか？"
+msgstr "This rally will be deleted. Are you sure?"
+
+#. placeholder {0}: saved.completionCount
+#: src/components/admin/RallyEditor.tsx:85
+msgid "このラリーを削除します。達成した {0} 人の達成記録も消えます（スタンプは残ります）。よろしいですか？"
+msgstr "This rally will be deleted, and so will the completion records of the {0} visitors who finished it (their stamps stay). Are you sure?"
+
 #: src/components/admin/PhotoSlot.tsx:17
 msgid "このリンクは使えません"
 msgstr "This link cannot be used"
+
+#: src/components/admin/RallyMemberPicker.tsx:65
+msgid "このルートの場所をすべて"
+msgstr "All places on this route"
 
 #: src/components/admin/RouteEditor.tsx:512
 msgid "このルートを削除"
@@ -510,7 +566,7 @@ msgstr "This device or browser can't use location."
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "This device or browser can't use passkeys."
 
-#: src/components/useErrorMessages.ts:52
+#: src/components/useErrorMessages.ts:55
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "Passkeys cannot be used on this device or browser. Please try email instead."
 
@@ -538,11 +594,11 @@ msgstr "Start with these settings"
 msgid "この説明は日本語のみです。"
 msgstr "This description is in Japanese only."
 
-#: src/components/useErrorMessages.ts:49
+#: src/components/useErrorMessages.ts:52
 msgid "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 msgstr "No walkable path was found near here. Move the points of the line closer to a path and try again."
 
-#: src/components/admin/AdminNav.tsx:46
+#: src/components/admin/AdminNav.tsx:49
 msgid "これから追加します"
 msgstr "Coming later"
 
@@ -668,9 +724,18 @@ msgstr "Stamp range (metres)"
 msgid "スタンプ場所"
 msgstr "Stamp place"
 
+#. placeholder {0}: c.publishedStampPlaceCount
+#: src/components/admin/RallyMemberPicker.tsx:88
+msgid "スタンプ場所 {0}"
+msgstr "{0} stamp places"
+
 #: src/components/TrailRibbon.tsx:61
 msgid "スタンプ場所 {spotCount}か所"
 msgstr "{spotCount} stamp locations"
+
+#: src/components/admin/RallyMemberPicker.tsx:48
+msgid "スタンプ場所がまだありません。ルートの画面で場所を作ってください。"
+msgstr "There are no stamp places yet. Create places on a route first."
 
 #: src/app/(public)/map/page.tsx:150
 #: src/app/(public)/routes/[id]/page.tsx:47
@@ -691,6 +756,14 @@ msgstr "You have all the stamps."
 #: src/app/(public)/routes/page.tsx:78
 msgid "すべてのルートを見る"
 msgstr "See all routes"
+
+#: src/components/admin/RallyMemberPicker.tsx:42
+msgid "すべて外す"
+msgstr "Clear all"
+
+#: src/components/admin/RallyMemberPicker.tsx:39
+msgid "すべて選ぶ"
+msgstr "Select all"
 
 #: src/components/map/MapSettingsForm.tsx:51
 msgid "そのまま"
@@ -728,6 +801,14 @@ msgstr "Next"
 #: src/components/settings/WelcomeFlow.tsx:73
 msgid "つぎへ"
 msgstr "Next"
+
+#: src/components/admin/RallyCreate.tsx:66
+msgid "つくり方"
+msgstr "How it is made"
+
+#: src/components/admin/RallyCreate.tsx:71
+msgid "つくり方は、あとから変えられません。"
+msgstr "This cannot be changed later."
 
 #: src/components/admin/RouteEditor.tsx:493
 msgid "できた"
@@ -782,7 +863,7 @@ msgstr "First rally"
 msgid "パスキー {number}"
 msgstr "Passkey {number}"
 
-#: src/components/useErrorMessages.ts:53
+#: src/components/useErrorMessages.ts:56
 msgid "パスキーの確認が中止されました。もう一度お試しください。"
 msgstr "The passkey check was cancelled. Please try again."
 
@@ -799,7 +880,7 @@ msgstr "A passkey lets you log in with your face or fingerprint. Add one for thi
 msgid "バス停"
 msgstr "Bus stop"
 
-#: src/components/admin/AdminNav.tsx:18
+#: src/components/admin/AdminNav.tsx:21
 msgid "バナー"
 msgstr "Banners"
 
@@ -841,7 +922,7 @@ msgstr "Profile and stamps"
 msgid "ページが見つかりません"
 msgstr "Page not found"
 
-#: src/components/admin/AdminNav.tsx:18
+#: src/components/admin/AdminNav.tsx:21
 msgid "ページの文章"
 msgstr "Page text"
 
@@ -964,7 +1045,7 @@ msgstr "Confirm with an email number"
 msgid "メインメニュー"
 msgstr "Main menu"
 
-#: src/components/admin/AdminNav.tsx:29
+#: src/components/admin/AdminNav.tsx:32
 #: src/components/SiteHeader.tsx:126
 #: src/components/TabBar.tsx:66
 msgid "メニュー"
@@ -1003,7 +1084,7 @@ msgstr "Cancel"
 msgid "やり直す"
 msgstr "Redo"
 
-#: src/components/admin/AdminNav.tsx:18
+#: src/components/admin/AdminNav.tsx:21
 msgid "ユーザーと権限"
 msgstr "Users and permissions"
 
@@ -1023,22 +1104,87 @@ msgstr "Licenses"
 msgid "ライト"
 msgstr "Light"
 
-#: src/components/admin/AdminNav.tsx:18
+#: src/app/(admin)/admin/rallies/page.tsx:22
+#: src/components/admin/AdminNav.tsx:19
 msgid "ラリー"
 msgstr "Rallies"
+
+#: src/app/(admin)/admin/rallies/page.tsx:11
+msgid "ラリー（管理）"
+msgstr "Rallies (admin)"
+
+#: src/components/admin/RallyList.tsx:49
+msgid "ラリーがまだありません。「新しいラリー」から作ってください。"
+msgstr "There are no rallies yet. Create one with \"New rally\"."
+
+#: src/components/admin/RallyEditor.tsx:138
+msgid "ラリーに入るコース"
+msgstr "Courses in this rally"
+
+#: src/components/admin/RallyEditor.tsx:138
+msgid "ラリーに入るスタンプ場所"
+msgstr "Stamp places in this rally"
+
+#: src/components/admin/RallyCreate.tsx:78
+msgid "ラリーに入れるコース"
+msgstr "Courses to put in the rally"
+
+#: src/components/admin/RallyCreate.tsx:78
+msgid "ラリーに入れるスタンプ場所"
+msgstr "Stamp places to put in the rally"
 
 #: src/app/(public)/stamps/page.tsx:60
 msgid "ラリーの一覧"
 msgstr "All rallies"
 
+#: src/components/admin/RallyMemberPicker.tsx:98
+msgid "ラリーの中の順番"
+msgstr "Order in the rally"
+
+#: src/components/admin/RallyEditor.tsx:141
+msgid "ラリーの中身を保存"
+msgstr "Save what is in the rally"
+
+#: src/components/admin/RallyEditor.tsx:81
+msgid "ラリーの中身を保存しました。"
+msgstr "What is in the rally was saved."
+
+#: src/components/admin/RallyCreate.tsx:75
+#: src/components/admin/RallyEditor.tsx:114
+msgid "ラリーの名前"
+msgstr "Rally name"
+
+#: src/app/(admin)/admin/rallies/page.tsx:25
+msgid "ラリーは、コースを集めてつくるか、スタンプ場所を集めてつくります。名前を押すと、名前・公開・中身を直せます。"
+msgstr "A rally is made from courses or from stamp places. Open one to change its name, whether it is public, and what is in it."
+
 #: src/app/(public)/stamps/page.tsx:50
 msgid "ラリーは、まだ準備中です。"
 msgstr "The rallies are not ready yet."
 
+#: src/components/admin/RallyEditor.tsx:147
+msgid "ラリーを削除しても、スタンプやコースの達成は消えません。このラリーの達成記録だけが消えます。"
+msgstr "Deleting a rally keeps visitors' stamps and finished courses. Only the completion records of this rally are removed."
+
+#: src/app/(admin)/admin/rallies/[id]/page.tsx:13
+msgid "ラリーを直す（管理）"
+msgstr "Edit rally (admin)"
+
+#: src/app/(admin)/admin/rallies/[id]/page.tsx:32
+#: src/app/(admin)/admin/rallies/new/page.tsx:27
+#: src/app/(admin)/admin/rallies/page.tsx:31
+msgid "ラリーを読み込めませんでした。しばらくしてから、ページを開き直してください。"
+msgstr "The rallies could not be loaded. Please open the page again in a moment."
+
+#: src/app/(admin)/admin/rallies/[id]/page.tsx:46
+#: src/app/(admin)/admin/rallies/new/page.tsx:36
+msgid "ラリー一覧にもどる"
+msgstr "Back to the rallies"
+
 #: src/app/(admin)/admin/routes/page.tsx:22
 #: src/app/(public)/routes/page.tsx:18
 #: src/app/(public)/sitemap/page.tsx:63
-#: src/components/admin/AdminNav.tsx:17
+#: src/components/admin/AdminNav.tsx:18
 #: src/components/TabBar.tsx:24
 msgid "ルート"
 msgstr "Routes"
@@ -1046,6 +1192,10 @@ msgstr "Routes"
 #: src/app/(admin)/admin/routes/page.tsx:11
 msgid "ルート（管理）"
 msgstr "Routes (admin)"
+
+#: src/components/admin/RallyMemberPicker.tsx:48
+msgid "ルートがまだありません。"
+msgstr "There are no routes yet."
 
 #: src/components/admin/RouteTable.tsx:100
 msgid "ルートがまだありません。「新しいルート」から作ってください。"
@@ -1183,13 +1333,28 @@ msgid "上のボタンを押すと、{restName}や{shopsName}などが地図と�
 msgstr "Tap a button above to show {restName}, {shopsName} and more on the map and in the list."
 
 #: src/components/admin/PlacePanel.tsx:77
+#: src/components/admin/RallyEditor.tsx:100
+#: src/components/admin/RallyList.tsx:64
+#: src/components/admin/RallyMemberPicker.tsx:72
 #: src/components/admin/RouteTable.tsx:29
 msgid "下書き"
 msgstr "Draft"
 
+#: src/components/admin/RallyCreate.tsx:96
+msgid "下書きとして作る"
+msgstr "Create as a draft"
+
+#: src/components/admin/RallyEditor.tsx:143
+msgid "下書きの場所は、公開されるまで数に入りません。スタンプの記録は変わりません。"
+msgstr "Draft places do not count until they are published. Visitors' stamps are not changed."
+
 #: src/components/admin/RouteTable.tsx:166
 msgid "並べ替えは、検索や絞り込みを外してからできます。"
 msgstr "You can reorder once the search and filter are cleared."
+
+#: src/components/useErrorMessages.ts:45
+msgid "中身のないラリーは公開できません。公開中のラリーを空にすることもできません。"
+msgstr "An empty rally cannot be published, and a published rally cannot be emptied."
 
 #: src/components/map/TrailMap.tsx:436
 msgid "仮のルート・位置（未確認）"
@@ -1271,6 +1436,10 @@ msgstr "Location isn't allowed. In your browser settings, allow location for thi
 msgid "低い"
 msgstr "low"
 
+#: src/components/admin/RallyCreate.tsx:96
+msgid "作っています…"
+msgstr "Creating…"
+
 #: src/components/map/MapSettingsForm.tsx:107
 msgid "保存"
 msgstr "Save"
@@ -1283,10 +1452,15 @@ msgstr "This includes changes you have not saved yet."
 msgid "保存していない変更があります"
 msgstr "You have unsaved changes"
 
+#: src/components/admin/RallyEditor.tsx:135
+msgid "保存していない変更があります。先に保存してから公開を切りかえてください。"
+msgstr "There are unsaved changes. Save them before publishing or unpublishing."
+
 #: src/components/map/MapSettingsForm.tsx:120
 msgid "保存しました"
 msgstr "Saved"
 
+#: src/components/admin/RallyEditor.tsx:66
 #: src/components/admin/RouteEditor.tsx:226
 #: src/components/settings/PrefsForm.tsx:74
 msgid "保存しました。"
@@ -1373,11 +1547,13 @@ msgstr "Open the official site"
 msgid "公開サイトを見る"
 msgstr "View the public site"
 
+#: src/components/admin/RallyEditor.tsx:72
 #: src/components/admin/RouteEditor.tsx:243
 msgid "公開しました。"
 msgstr "Published."
 
 #: src/components/admin/PlacePanel.tsx:173
+#: src/components/admin/RallyEditor.tsx:132
 msgid "公開する"
 msgstr "Publish"
 
@@ -1393,20 +1569,28 @@ msgstr "Routes will appear here once they are published."
 msgid "公開できるようになったら、ここに場所の一覧が表示されます。"
 msgstr "When they are ready to publish, the list of places will appear here."
 
+#: src/components/admin/RallyCreate.tsx:98
+msgid "公開は、作ったあとのラリーの画面からできます。"
+msgstr "You can publish it from the rally's page once it is created."
+
 #. placeholder {0}: blockers.filter((b) => b !== "unsaved").length
 #: src/components/admin/PlacePanel.tsx:80
 msgid "公開まで、あと{0}つ"
 msgstr "{0} more to do before it can be published"
 
+#: src/components/admin/RallyEditor.tsx:72
 #: src/components/admin/RouteEditor.tsx:243
 msgid "公開をやめました。"
 msgstr "Unpublished."
 
 #: src/components/admin/PlacePanel.tsx:167
+#: src/components/admin/RallyEditor.tsx:132
 msgid "公開をやめる"
 msgstr "Unpublish"
 
 #: src/components/admin/PlacePanel.tsx:77
+#: src/components/admin/RallyEditor.tsx:100
+#: src/components/admin/RallyList.tsx:64
 #: src/components/admin/RouteTable.tsx:29
 msgid "公開中"
 msgstr "Published"
@@ -1414,6 +1598,10 @@ msgstr "Published"
 #: src/components/admin/useChecklistLabels.ts:14
 msgid "公開中のスタンプ場所"
 msgstr "Published stamp places"
+
+#: src/components/admin/RallyMemberPicker.tsx:88
+msgid "公開中のスタンプ場所なし（達成できません）"
+msgstr "No published stamp places (cannot be finished)"
 
 #: src/components/admin/PlacePanel.tsx:197
 msgid "公開中の場所は、先に「公開をやめる」と、削除できます。"
@@ -1479,7 +1667,7 @@ msgstr "Photo links must start with https://."
 msgid "写真は、まだありません"
 msgstr "No photo yet"
 
-#: src/components/useErrorMessages.ts:45
+#: src/components/useErrorMessages.ts:48
 msgid "写真は4MBまでのJPEG・PNG・WebPだけアップロードできます。"
 msgstr "Photos must be JPEG, PNG or WebP, up to 4 MB."
 
@@ -1487,7 +1675,7 @@ msgstr "Photos must be JPEG, PNG or WebP, up to 4 MB."
 msgid "写真はまだありません"
 msgstr "No photo yet"
 
-#: src/components/useErrorMessages.ts:46
+#: src/components/useErrorMessages.ts:49
 msgid "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 msgstr "The photo could not be saved. Please try again in a moment."
 
@@ -1527,6 +1715,10 @@ msgstr "Someone else saved first. Reload the page and try again."
 msgid "利用規約"
 msgstr "Terms of use"
 
+#: src/components/admin/RallyEditor.tsx:146
+msgid "削除"
+msgstr "Delete"
+
 #: src/components/ProfileCard.tsx:136
 msgid "削除を依頼する"
 msgstr "Ask to delete"
@@ -1539,6 +1731,8 @@ msgstr "Cancel deletion"
 msgid "前の写真"
 msgstr "Previous photo"
 
+#: src/components/admin/RallyList.tsx:71
+#: src/components/admin/RallyMemberPicker.tsx:110
 #: src/components/admin/RouteTable.tsx:149
 msgid "前へ"
 msgstr "Earlier"
@@ -1587,6 +1781,14 @@ msgstr "half"
 msgid "危険な所"
 msgstr "Danger spot"
 
+#: src/components/admin/RallyCreate.tsx:74
+msgid "名前"
+msgstr "Name"
+
+#: src/components/admin/RallyEditor.tsx:111
+msgid "名前と公開"
+msgstr "Name and publishing"
+
 #. placeholder {0}: waypoints.length
 #: src/components/admin/map-editor/MapEditor.tsx:467
 msgid "名前のついた地点が{0}か所ありました。場所として追加しますか？"
@@ -1595,6 +1797,10 @@ msgstr "Found {0} named points. Add them as places?"
 #: src/components/admin/RouteTable.tsx:65
 msgid "名前の一部を入力"
 msgstr "Part of the name"
+
+#: src/components/admin/RallyEditor.tsx:124
+msgid "名前を保存"
+msgstr "Save the name"
 
 #: src/components/admin/RouteEditor.tsx:259
 #: src/components/admin/RouteTable.tsx:30
@@ -1608,7 +1814,7 @@ msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境に�
 msgstr "From the Izumi range to the Kongo mountains, these ridges run along the borders of Osaka, Wakayama and Nara. They have long been called Katsuragi and revered as mountains where the gods dwell. It is said that En no Gyoja, who is believed to have founded Shugendo, the path of training in the mountains, first practised here."
 
 #: src/components/StampHere.tsx:94
-#: src/components/useErrorMessages.ts:55
+#: src/components/useErrorMessages.ts:58
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "Something went wrong. Please try again in a little while."
 
@@ -1694,6 +1900,11 @@ msgstr "What the terrain button adds"
 msgid "基本"
 msgstr "Basics"
 
+#. placeholder {0}: r.memberCount
+#: src/components/admin/RallyList.tsx:62
+msgid "場所 {0}"
+msgstr "{0} places"
+
 #. placeholder {0}: r.publishedSpotCount
 #. placeholder {1}: r.spotCount
 #: src/components/admin/RouteTable.tsx:122
@@ -1713,7 +1924,19 @@ msgstr "A route that still has places cannot be deleted."
 msgid "場所が残っているルートは消せません。先に場所を消してください。"
 msgstr "A route that still has places cannot be deleted. Delete its places first."
 
-#: src/components/admin/AdminNav.tsx:18
+#: src/components/admin/RallyEditor.tsx:98
+msgid "場所でつくったラリー：えらんだスタンプ場所を全部押すと達成。"
+msgstr "A rally of places: complete when every chosen stamp place is stamped."
+
+#: src/components/useErrorMessages.ts:46
+msgid "場所でつくったラリーにはスタンプ場所を、コースでつくったラリーにはコースを入れてください。同じものは一度だけです。"
+msgstr "A rally of places takes stamp places and a rally of courses takes courses, each once."
+
+#: src/components/admin/RallyCreate.tsx:69
+msgid "場所でつくる"
+msgstr "Make it from places"
+
+#: src/components/admin/AdminNav.tsx:21
 msgid "場所の一覧"
 msgstr "All places"
 
@@ -1725,7 +1948,7 @@ msgstr "Place name"
 msgid "場所を置く"
 msgstr "Place a stop"
 
-#: src/components/admin/AdminNav.tsx:18
+#: src/components/admin/AdminNav.tsx:21
 msgid "変更の記録"
 msgstr "Change log"
 
@@ -1791,6 +2014,8 @@ msgstr "City or town"
 msgid "年代"
 msgstr "Age"
 
+#: src/components/admin/RallyList.tsx:74
+#: src/components/admin/RallyMemberPicker.tsx:113
 #: src/components/admin/RouteTable.tsx:158
 msgid "後ろへ"
 msgstr "Later"
@@ -1900,6 +2125,15 @@ msgstr "Choose the size of text and buttons and how the map is shown. The size c
 #: src/components/admin/useChecklistLabels.ts:22
 msgid "文章"
 msgstr "Text"
+
+#: src/components/admin/RallyCreate.tsx:59
+#: src/components/admin/RallyList.tsx:41
+msgid "新しいラリー"
+msgstr "New rally"
+
+#: src/app/(admin)/admin/rallies/new/page.tsx:12
+msgid "新しいラリー（管理）"
+msgstr "New rally (admin)"
 
 #: src/components/admin/RouteEditor.tsx:269
 #: src/components/admin/RouteTable.tsx:89
@@ -2078,7 +2312,7 @@ msgstr "After removing it, you can no longer log in with your face or fingerprin
 msgid "淡色"
 msgstr "Pale"
 
-#: src/components/admin/AdminNav.tsx:51
+#: src/components/admin/AdminNav.tsx:54
 #: src/components/admin/RouteTable.tsx:29
 #: src/components/landing/Landing.tsx:271
 #: src/components/map/MapScreen.tsx:292
@@ -2219,7 +2453,7 @@ msgstr "Prefer not to say"
 msgid "答えなくても大丈夫です。"
 msgstr "You can skip this."
 
-#: src/components/admin/AdminNav.tsx:21
+#: src/components/admin/AdminNav.tsx:24
 msgid "管理メニュー"
 msgstr "Admin menu"
 
@@ -2479,7 +2713,7 @@ msgid "送った内容が、読み取れませんでした。もう一度お試�
 msgstr "We could not read what was sent. Please try again."
 
 #: src/components/StampHere.tsx:93
-#: src/components/useErrorMessages.ts:54
+#: src/components/useErrorMessages.ts:57
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not connect. Please try again where the signal is better."
 
@@ -2504,7 +2738,7 @@ msgstr "If the path is closed, do not push on. Turn back."
 msgid "道に沿わせる"
 msgstr "Snap to trails"
 
-#: src/components/useErrorMessages.ts:48
+#: src/components/useErrorMessages.ts:51
 msgid "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 msgstr "Snapping to trails is not available yet. Ask whoever manages the site to set up the route-finding service. You can still draw the line by hand."
 
@@ -2512,7 +2746,7 @@ msgstr "Snapping to trails is not available yet. Ask whoever manages the site to
 msgid "道を調べています…"
 msgstr "Looking up the paths…"
 
-#: src/components/useErrorMessages.ts:50
+#: src/components/useErrorMessages.ts:53
 msgid "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 msgstr "Could not look up the paths. Please try again in a little while."
 
@@ -2520,9 +2754,22 @@ msgstr "Could not look up the paths. Please try again in a little while."
 msgid "道案内のための点です。スタンプは押せません。"
 msgstr "A point for finding the way. No stamp can be collected here."
 
+#. placeholder {0}: r.completionCount
+#. placeholder {0}: saved.completionCount
+#: src/components/admin/RallyEditor.tsx:102
+#: src/components/admin/RallyList.tsx:66
+msgid "達成した人 {0}"
+msgstr "{0} finished"
+
 #: src/components/admin/map-editor/MapEditor.tsx:427
 msgid "選ぶ・動かす"
 msgstr "Select / move"
+
+#. placeholder {0}: selected.length
+#. placeholder {1}: allIds.length
+#: src/components/admin/RallyMemberPicker.tsx:44
+msgid "選んだ数：{0} / {1}"
+msgstr "Selected: {0} / {1}"
 
 #: src/components/admin/RouteEditor.tsx:320
 #: src/components/admin/RouteTable.tsx:70

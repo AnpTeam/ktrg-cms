@@ -18,6 +18,7 @@ import { createMemorySessionStore } from "../src/auth/session-memory-store";
 import { createConsoleMailer } from "../src/lib/mailer";
 import { createMemoryMeStore } from "../src/me/me-memory-store";
 import { createMemoryContentStore } from "../src/content/content-memory-store";
+import { createMemoryRallyAdminStore } from "../src/rallies/rally-admin-memory-store";
 import { createServices } from "../src/services";
 
 const port = Number(process.env.PORT ?? 3001);
@@ -68,6 +69,7 @@ const services = createServices({
     passkeys: createMemoryPasskeyStore(users, profiles).store,
     me: createMemoryMeStore(users, profiles).store,
     content: createMemoryContentStore(audit).store,
+    rallyAdmin: createMemoryRallyAdminStore(audit).store,
   },
   audit,
   // This address becomes an admin on an email-code login, so the admin screens can be tried (this page only).
@@ -281,7 +283,7 @@ new Elysia()
     return page;
   })
   // The app's own route tree (with /api/v1/openapi docs), on the in-memory services.
-  .use(createApp(() => services, { ...routeOpts, docs: true }))
+  .use(createApp(() => services, { ...routeOpts, docs: true, appOrigin: () => current.origin }))
   .listen({ port, hostname: "0.0.0.0" });
 
 console.log(`Test server on port ${port} (cookies ${secure ? "Secure/__Host-" : "plain http"}).`);

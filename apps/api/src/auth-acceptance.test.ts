@@ -17,6 +17,7 @@ import { createMemorySessionStore } from "./auth/session-memory-store";
 import { TestAuthenticator } from "./auth/webauthn-test-authenticator";
 import type { MailMessage } from "./lib/mailer";
 import { createMemoryContentStore } from "./content/content-memory-store";
+import { createMemoryRallyAdminStore } from "./rallies/rally-admin-memory-store";
 import { createMemoryMeStore } from "./me/me-memory-store";
 import { createServices } from "./services";
 
@@ -44,6 +45,7 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       passkeys: passkeys.store,
       me: profiles.store,
       content: createMemoryContentStore(audit.writer).store,
+      rallyAdmin: createMemoryRallyAdminStore(audit.writer).store,
     },
     audit: audit.writer,
     mailer: {
@@ -291,6 +293,11 @@ describe("user B cannot touch user A", () => {
     "POST /api/v1/admin/routes/:id/spots": () => ({ nameJa: "x" }),
     "PUT /api/v1/admin/routes/:id/spots/order": () => ({ ids: [] }),
     "PATCH /api/v1/admin/spots/:id": () => ({ updatedAt: new Date().toISOString() }),
+    "POST /api/v1/admin/rallies": () => ({ kind: "course", nameJa: "x" }),
+    "PUT /api/v1/admin/rallies/order": () => ({ ids: [] }),
+    "PATCH /api/v1/admin/rallies/:id": () => ({ updatedAt: new Date().toISOString() }),
+    "PUT /api/v1/admin/rallies/:id/places": () => ({ updatedAt: new Date().toISOString(), spotIds: [] }),
+    "PUT /api/v1/admin/rallies/:id/courses": () => ({ updatedAt: new Date().toISOString(), routeIds: [] }),
     "POST /api/v1/auth/reauth/verify": () => ({ code: "123456" }),
     "POST /api/v1/admin/uploads": () => {
       const form = new FormData();

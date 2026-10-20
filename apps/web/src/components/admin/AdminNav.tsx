@@ -5,17 +5,20 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 
-// The side menu of the admin area. Only "ルート" exists in this first version; the other entries are listed so
-// the editors can see what is coming, and are not links yet. On a narrow screen the list folds behind a button, so
-// it does not push the page down.
+// The side menu of the admin area. The screens that exist are links; the others are listed so the editors can see
+// what is coming, and are not links yet. On a narrow screen the list folds behind a button, so it does not push the
+// page down.
 export function AdminNav() {
   const { t } = useLingui();
   const pathname = usePathname() ?? "";
   const base = `/admin`;
   const [open, setOpen] = useState(false);
 
-  const ready = [{ href: `${base}/routes`, label: t`ルート` }];
-  const later = [t`ラリー`, t`場所の一覧`, t`お知らせ`, t`バナー`, t`ページの文章`, t`ユーザーと権限`, t`変更の記録`];
+  const ready = [
+    { href: `${base}/routes`, label: t`ルート` },
+    { href: `${base}/rallies`, label: t`ラリー` },
+  ];
+  const later = [t`場所の一覧`, t`お知らせ`, t`バナー`, t`ページの文章`, t`ユーザーと権限`, t`変更の記録`];
 
   return (
     <nav aria-label={t`管理メニュー`} className="flex flex-col gap-1">

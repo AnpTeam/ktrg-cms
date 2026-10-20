@@ -22,6 +22,9 @@ export function createMemoryOtpStore(
     async insert(row) {
       rows.push({ id: String(nextId++), attempts: 0, usedAt: null, ...row });
     },
+    async pruneExpired(before) {
+      for (let i = rows.length - 1; i >= 0; i--) if (rows[i]!.expiresAt < before) rows.splice(i, 1);
+    },
     async consumeAttempt(id, max) {
       const row = rows.find((r) => r.id === id);
       if (!row || row.usedAt || row.attempts >= max) return false;

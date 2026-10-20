@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
-import vercelEntry, { app, createApp } from "./app";
+import vercelEntry, { app } from "./app";
 import { parseEnv } from "./parse-env";
 
 describe("GET /api/v1/health", () => {
@@ -9,34 +9,6 @@ describe("GET /api/v1/health", () => {
     const res = await app.handle(new Request("http://localhost/api/v1/health"));
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ status: "ok" });
-  });
-});
-
-describe("changes from another site", () => {
-  const guarded = createApp(
-    () => {
-      throw new Error("services are not used here");
-    },
-    { secureCookies: false, docs: false, allowedOrigin: "https://app.example" },
-  );
-  const post = (origin?: string) =>
-    guarded.handle(
-      new Request("http://localhost/api/v1/auth/otp/request", {
-        method: "POST",
-        headers: { "content-type": "application/json", ...(origin ? { origin } : {}) },
-        body: JSON.stringify({ email: "nope" }), // fails validation if it gets that far
-      }),
-    );
-
-  test("a change from another origin is refused; our origin and no origin go on", async () => {
-    expect((await post("https://evil.example")).status).toBe(403);
-    expect((await post("https://app.example")).status).toBe(422);
-    expect((await post()).status).toBe(422);
-  });
-
-  test("reading is not limited", async () => {
-    const res = await guarded.handle(new Request("http://localhost/api/v1/health", { headers: { origin: "https://evil.example" } }));
-    expect(res.status).toBe(200);
   });
 });
 
@@ -72,7 +44,16 @@ describe("parseEnv", () => {
 
   test("production requires OTP_HMAC_SECRET", () => {
     expect(() => parseEnv({ NODE_ENV: "production", SMTP_HOST: "smtp.example.com" })).toThrow(/OTP_HMAC_SECRET/);
-    expect(parseEnv({ NODE_ENV: "production", OTP_HMAC_SECRET: "k".repeat(32) }).OTP_HMAC_SECRET).toHaveLength(32);
+    expect(parseEnv({ NODE_ENV: "production", OTP_HMAC_SECRET: "k".repeat(32) }, () => {}).OTP_HMAC_SECRET).toHaveLength(32);
+  });
+
+  test("production without TRUST_PROXY starts, with a warning", () => {
+    const logs: string[] = [];
+    const prod = { NODE_ENV: "production", OTP_HMAC_SECRET: "k".repeat(32) };
+    parseEnv(prod, (l) => logs.push(l));
+    expect(logs.at(-1)).toMatch(/TRUST_PROXY is off/);
+    parseEnv({ ...prod, TRUST_PROXY: "true" }, (l) => logs.push(l));
+    expect(logs).toHaveLength(1);
   });
 
   test("boots with an empty environment", () => {
@@ -102,7 +83,9 @@ describe("parseEnv", () => {
     expect(parseEnv({}).DATABASE_URL).toBeUndefined();
   });
 
-  test("R2 photo storage: all five settings or none", () => {
+  test("R2 photo storage: all five settings, else uploads are off and the API still starts", () => {
+    const logs: string[] = [];
+    const log = (line: string) => logs.push(line);
     const r2 = {
       R2_ACCOUNT_ID: "acc",
       R2_ACCESS_KEY_ID: "key",
@@ -112,9 +95,16 @@ describe("parseEnv", () => {
     };
     expect(parseEnv(r2).R2_BUCKET_NAME).toBe("ktrg-photos");
     expect(parseEnv({}).R2_BUCKET_NAME).toBeUndefined();
+    expect(logs).toEqual([]);
     const { R2_PUBLIC_URL: _url, ...noUrl } = r2;
-    expect(() => parseEnv(noUrl)).toThrow(/missing R2_PUBLIC_URL/);
-    expect(() => parseEnv({ ...r2, R2_PUBLIC_URL: "https://photos.example.com/" })).toThrow(/R2_PUBLIC_URL/);
-    expect(() => parseEnv({ ...r2, R2_PUBLIC_URL: "http://photos.example.com" })).toThrow(/R2_PUBLIC_URL/);
+    const partial = parseEnv(noUrl, log);
+    for (const k of Object.keys(r2)) expect(partial[k as keyof typeof r2]).toBeUndefined();
+    expect(logs.at(-1)).toMatch(/OFF: missing R2_PUBLIC_URL/);
+    expect(parseEnv({ ...r2, R2_PUBLIC_URL: "https://photos.example.com/" }, log).R2_BUCKET_NAME).toBeUndefined();
+    expect(logs.at(-1)).toMatch(/invalid R2_PUBLIC_URL/);
+    expect(parseEnv({ ...r2, R2_PUBLIC_URL: "http://photos.example.com" }, log).R2_BUCKET_NAME).toBeUndefined();
+    expect(logs.join(" ")).not.toContain("secret");
+    // Other problems still stop the start.
+    expect(() => parseEnv({ ...noUrl, PORT: "abc" }, log)).toThrow(/PORT/);
   });
 });

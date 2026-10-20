@@ -27,6 +27,10 @@ export function createDrizzleOtpStore(db: Db): OtpStore {
       await db.insert(otpCodes).values(row);
     },
 
+    async pruneExpired(before) {
+      await db.delete(otpCodes).where(lt(otpCodes.expiresAt, before));
+    },
+
     async consumeAttempt(id, max) {
       const rows = await db
         .update(otpCodes)
