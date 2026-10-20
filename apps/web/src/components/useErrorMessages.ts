@@ -36,6 +36,11 @@ export function useErrorMessages(): Record<ErrorKey, string> {
     invalid_line: t`ルートの線が正しくありません。日本の中に、2点以上の線を描いてください。`,
     invalid_photo_url: t`写真のリンクは、https:// で始まるものだけ使えます。`,
     route_has_places: t`経由地が残っているルートは消せません。先に経由地を消してください。`,
+    // Stamping
+    spot_closed: t`この場所は今、通行止めなどで閉まっているため、スタンプを押せません。`,
+    too_far: t`場所から少し離れています。近くまで行って、もう一度お試しください。`,
+    stamp_revoked: t`この場所のスタンプは、確認のため取り消されています。お困りの場合は運営にお問い合わせください。`,
+    gps_accuracy_poor: t`GPSの電波が弱いようです。空の開けた場所に移動して、もう一度お試しください。`,
     spot_has_stamps: t`スタンプが押されたことのある経由地は消せません。「公開をやめる」をお使いください。`,
     no_coordinates: t`この経由地の位置がまだ決まっていません。地図で位置を決めてください。`,
     position_not_verified: t`位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。`,
