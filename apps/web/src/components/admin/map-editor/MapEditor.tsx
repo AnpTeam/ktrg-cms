@@ -106,7 +106,7 @@ export function MapEditor(props: MapEditorProps) {
       const bounds = boundsOf([...line.map((p) => ({ lng: p[0], lat: p[1] })), ...places.flatMap((p) => (p.lat === null || p.lng === null ? [] : [{ lat: p.lat, lng: p.lng }]))]);
       map = new ml.Map({
         container: container.current,
-        style: mapStyle(defaultMapSettings),
+        style: mapStyle({ ...defaultMapSettings, base: "std" }), // mapping needs the detailed map; visitors see the one chosen in the site settings
         center: START.center,
         zoom: START.zoom,
         bounds: bounds ?? undefined,

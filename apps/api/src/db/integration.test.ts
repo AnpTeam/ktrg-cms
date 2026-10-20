@@ -20,6 +20,7 @@ import { createDrizzleStampStore } from "../stamps/stamp-store";
 import { createDrizzleNoticeStore } from "../notices/notice-store";
 import { createDrizzleBannerStore } from "../banners/banner-store";
 import { createDrizzlePlaceStore } from "../places/place-store";
+import { createDrizzleSiteSettingsStore } from "../site-settings/site-settings-store";
 import { createDrizzleUserListStore } from "../users/user-list";
 import {
   auditLog,
@@ -38,6 +39,7 @@ import {
   routes,
   routeTranslations,
   sessions,
+  siteSettings,
   spots,
   spotTranslations,
   stamps,
@@ -1355,5 +1357,32 @@ describe.skipIf(!url)("places directory on real PostgreSQL", () => {
     await expect((async () => db.update(places).set({ published: true, positionVerified: false }).where(eq(places.id, live.id)))()).rejects.toThrow();
     expect(await store.remove(actor, live.id)).toBe(true);
     expect(await db.select().from(placeTranslations).where(eq(placeTranslations.placeId, live.id))).toHaveLength(0);
+  });
+});
+
+describe.skipIf(!url)("site settings on real PostgreSQL", () => {
+  const { db, client } = connect();
+  const otp = createDrizzleOtpStore(db);
+  const store = createDrizzleSiteSettingsStore(db);
+  const tag = `ss${randomUUID().slice(0, 8)}`;
+
+  afterAll(async () => {
+    await db.delete(siteSettings).where(eq(siteSettings.key, "map_style"));
+    const ids = (await db.select({ id: users.id }).from(users).where(like(users.email, `${tag}-%`))).map((u) => u.id);
+    if (ids.length) await db.delete(auditLog).where(inArray(auditLog.actorUserId, ids));
+    await db.delete(users).where(like(users.email, `${tag}-%`));
+    await client.end();
+  });
+
+  test("a value is saved, then replaced (one row), and each change is audited", async () => {
+    const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
+    await db.delete(siteSettings).where(eq(siteSettings.key, "map_style"));
+    expect(await store.get("map_style")).toBeNull();
+    await store.set(actor, "map_style", { base: "pale" });
+    await store.set(actor, "map_style", { base: "photo" });
+    expect(await store.get("map_style")).toEqual({ base: "photo" });
+    expect(await db.select().from(siteSettings).where(eq(siteSettings.key, "map_style"))).toHaveLength(1);
+    const audits = await db.select().from(auditLog).where(eq(auditLog.actorUserId, actor));
+    expect(audits.map((a) => a.action)).toEqual(["site_setting.update", "site_setting.update"]);
   });
 });

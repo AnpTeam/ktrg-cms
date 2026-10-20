@@ -34,6 +34,8 @@ export const PERMISSIONS = {
   "upload.create": ["admin"],
   /** The photos in the home page carousel. */
   "banner.manage": ["admin"],
+  /** Settings for the whole site (the map style): they change the live site at once. */
+  "site.manage": ["admin"],
   /** Review flagged stamps and revoke them. */
   "stamp.review": ["admin"],
   "audit.read": ["admin"],

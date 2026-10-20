@@ -54,6 +54,8 @@ export const AUDIT_ACTIONS = {
   "place.create": "place",
   "place.update": "place",
   "place.delete": "place",
+  /** A site-wide setting was changed (the target is the setting's key, never its value). */
+  "site_setting.update": "site_setting",
   /** An admin revoked a stamp (kept as a record, hidden from progress) or took the revoke back. */
   "stamp.revoke": "stamp",
   "stamp.restore": "stamp",

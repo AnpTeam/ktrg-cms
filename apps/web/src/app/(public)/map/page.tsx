@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { msg } from "@lingui/core/macro";
 import { MapScreen } from "@/components/map/MapScreen";
 import { forViewer, getRoute, getSpot, listPlaces, listRoutes, pickText, type PlaceItem, type RouteSummary } from "@/lib/content";
 import type { MapPhoto, MapScreenPoint, MapScreenRoute, MapScreenSpot, MapScreenStop } from "@/lib/map-screen";
 import { categoryOfKind } from "@/lib/point-kinds";
-import { mapSettingsCookie, parseMapSettings } from "@/lib/map-settings";
+import { getMapSettings } from "@/lib/site-settings";
 import { municipalityName } from "@/lib/municipalities";
 import { isStampMock } from "@/lib/stamp-flow";
 import { getPrefs } from "@/lib/server-prefs";
@@ -157,7 +156,7 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
   const stampMock = process.env.NODE_ENV !== "production" && isStampMock(stamp) ? stamp : undefined;
 
   const prefs = await getPrefs();
-  const settings = parseMapSettings((await cookies()).get(mapSettingsCookie)?.value);
+  const settings = await getMapSettings();
   const summaries = (await listRoutes()).map((r) => forViewer(r, viewer));
   const routes = await mapRoutes(summaries, await listPlaces(), viewer, i18n.locale, { stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`) });
   const next = `?next=${encodeURIComponent("/map")}`;
