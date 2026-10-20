@@ -75,6 +75,10 @@ msgstr "{hours}時間{minutes}分"
 msgid "{km}km"
 msgstr "{km}km"
 
+#: src/app/[lang]/(admin)/admin/[list]/new/page.tsx:15
+msgid "{label}（管理）"
+msgstr "{label}（管理）"
+
 #: src/components/RouteStats.tsx:24
 msgid "{meters}m"
 msgstr "{meters}m"
@@ -124,6 +128,23 @@ msgstr "{text} を1つ前へ"
 msgid "{text} を1つ後ろへ"
 msgstr "{text} を1つ後ろへ"
 
+#: src/app/[lang]/(admin)/admin/[list]/page.tsx:14
+msgid "{title}（管理）"
+msgstr "{title}（管理）"
+
+#: src/components/admin/AdminListTable.tsx:47
+msgid "{title}はまだありません。"
+msgstr "{title}はまだありません。"
+
+#: src/app/[lang]/(admin)/admin/[list]/[id]/page.tsx:16
+msgid "{title}を直す（管理）"
+msgstr "{title}を直す（管理）"
+
+#: src/app/[lang]/(admin)/admin/[list]/[id]/page.tsx:41
+#: src/app/[lang]/(admin)/admin/[list]/page.tsx:33
+msgid "{title}を読み込めませんでした。しばらくしてから、ページを開き直してください。"
+msgstr "{title}を読み込めませんでした。しばらくしてから、ページを開き直してください。"
+
 #: src/components/landing/Landing.tsx:188
 msgid "{TOTAL_STAMPS}か所"
 msgstr "{TOTAL_STAMPS}か所"
@@ -139,6 +160,10 @@ msgstr "「{stopName}」から近い順"
 #: src/components/admin/RouteEditor.tsx:438
 msgid "「地図と線」で場所を置く"
 msgstr "「地図と線」で場所を置く"
+
+#: src/components/admin/AdminItemForm.tsx:193
+msgid "「必須」の欄をすべて入れると保存できます。"
+msgstr "「必須」の欄をすべて入れると保存できます。"
 
 #: src/components/landing/Landing.tsx:89
 #: src/components/landing/LandingHero.tsx:41
@@ -387,7 +412,6 @@ msgstr "お店・食事"
 msgid "お探しのものは、見つかりませんでした。"
 msgstr "お探しのものは、見つかりませんでした。"
 
-#: src/components/admin/AdminNav.tsx:21
 #: src/components/landing/TrailNotices.tsx:30
 msgid "お知らせ"
 msgstr "お知らせ"
@@ -458,7 +482,7 @@ msgstr "このデータについて"
 msgid "このパスキーを消しますか？"
 msgstr "このパスキーを消しますか？"
 
-#: src/app/[lang]/(admin)/layout.tsx:32
+#: src/app/[lang]/(admin)/layout.tsx:34
 msgid "このページを見る権限がありません"
 msgstr "このページを見る権限がありません"
 
@@ -566,7 +590,7 @@ msgstr "この端末・ブラウザでは、位置情報を使えません。"
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "この端末・ブラウザではパスキーを使えません。"
 
-#: src/components/useErrorMessages.ts:55
+#: src/components/useErrorMessages.ts:58
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 
@@ -594,11 +618,11 @@ msgstr "この設定ではじめる"
 msgid "この説明は日本語のみです。"
 msgstr "この説明は日本語のみです。"
 
-#: src/components/useErrorMessages.ts:52
+#: src/components/useErrorMessages.ts:55
 msgid "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 msgstr "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 
-#: src/components/admin/AdminNav.tsx:49
+#: src/components/admin/AdminNav.tsx:51
 msgid "これから追加します"
 msgstr "これから追加します"
 
@@ -863,7 +887,7 @@ msgstr "はじめのラリー"
 msgid "パスキー {number}"
 msgstr "パスキー {number}"
 
-#: src/components/useErrorMessages.ts:56
+#: src/components/useErrorMessages.ts:59
 msgid "パスキーの確認が中止されました。もう一度お試しください。"
 msgstr "パスキーの確認が中止されました。もう一度お試しください。"
 
@@ -879,10 +903,6 @@ msgstr "パスキーは、顔や指紋でログインするための鍵です。
 #: src/components/map/PlacesPanel.tsx:43
 msgid "バス停"
 msgstr "バス停"
-
-#: src/components/admin/AdminNav.tsx:21
-msgid "バナー"
-msgstr "バナー"
 
 #: src/components/admin/map-editor/MapEditor.tsx:320
 msgid "ファイルが大きすぎます（20MBまで）。"
@@ -922,7 +942,7 @@ msgstr "プロフィールとスタンプ"
 msgid "ページが見つかりません"
 msgstr "ページが見つかりません"
 
-#: src/components/admin/AdminNav.tsx:21
+#: src/components/admin/AdminNav.tsx:23
 msgid "ページの文章"
 msgstr "ページの文章"
 
@@ -952,7 +972,7 @@ msgstr "ホーム"
 msgid "ホームにもどる"
 msgstr "ホームにもどる"
 
-#: src/app/[lang]/(admin)/layout.tsx:38
+#: src/app/[lang]/(admin)/layout.tsx:40
 msgid "ホームへ戻る"
 msgstr "ホームへ戻る"
 
@@ -1045,7 +1065,7 @@ msgstr "メールの番号で確認"
 msgid "メインメニュー"
 msgstr "メインメニュー"
 
-#: src/components/admin/AdminNav.tsx:32
+#: src/components/admin/AdminNav.tsx:34
 #: src/components/SiteHeader.tsx:126
 #: src/components/TabBar.tsx:68
 msgid "メニュー"
@@ -1067,6 +1087,10 @@ msgstr "もう一度試す"
 msgid "もう一度送りました。届かないときは、1分ほど待ってからお試しください。"
 msgstr "もう一度送りました。届かないときは、1分ほど待ってからお試しください。"
 
+#: src/components/admin/AdminListTable.tsx:69
+msgid "もっと見る"
+msgstr "もっと見る"
+
 #: src/components/map/PlacesPanel.tsx:162
 msgid "もっと見る（あと{hidden}か所）"
 msgstr "もっと見る（あと{hidden}か所）"
@@ -1083,10 +1107,6 @@ msgstr "やめる"
 #: src/components/admin/map-editor/MapEditor.tsx:448
 msgid "やり直す"
 msgstr "やり直す"
-
-#: src/components/admin/AdminNav.tsx:21
-msgid "ユーザーと権限"
-msgstr "ユーザーと権限"
 
 #: src/app/[lang]/(public)/sitemap/page.tsx:102
 #: src/components/SiteFooter.tsx:19
@@ -1105,7 +1125,7 @@ msgid "ライト"
 msgstr "ライト"
 
 #: src/app/[lang]/(admin)/admin/rallies/page.tsx:22
-#: src/components/admin/AdminNav.tsx:19
+#: src/components/admin/AdminNav.tsx:20
 msgid "ラリー"
 msgstr "ラリー"
 
@@ -1184,7 +1204,7 @@ msgstr "ラリー一覧にもどる"
 #: src/app/[lang]/(admin)/admin/routes/page.tsx:22
 #: src/app/[lang]/(public)/routes/page.tsx:18
 #: src/app/[lang]/(public)/sitemap/page.tsx:65
-#: src/components/admin/AdminNav.tsx:18
+#: src/components/admin/AdminNav.tsx:19
 #: src/components/TabBar.tsx:25
 msgid "ルート"
 msgstr "ルート"
@@ -1328,6 +1348,11 @@ msgstr "ログインの方法（パスキー）"
 msgid "ログイン中"
 msgstr "ログイン中"
 
+#: src/app/[lang]/(admin)/admin/[list]/[id]/page.tsx:32
+#: src/app/[lang]/(admin)/admin/[list]/new/page.tsx:27
+msgid "一覧へ戻る"
+msgstr "一覧へ戻る"
+
 #: src/components/map/TrailMap.tsx:508
 msgid "上のボタンを押すと、{restName}や{shopsName}などが地図と一覧に出ます。"
 msgstr "上のボタンを押すと、{restName}や{shopsName}などが地図と一覧に出ます。"
@@ -1440,6 +1465,11 @@ msgstr "低い"
 msgid "作っています…"
 msgstr "作っています…"
 
+#: src/components/admin/AdminItemForm.tsx:190
+msgid "作成"
+msgstr "作成"
+
+#: src/components/admin/AdminItemForm.tsx:190
 #: src/components/map/MapSettingsForm.tsx:107
 msgid "保存"
 msgstr "保存"
@@ -1460,6 +1490,7 @@ msgstr "保存していない変更があります。先に保存してから公
 msgid "保存しました"
 msgstr "保存しました"
 
+#: src/components/admin/AdminItemForm.tsx:72
 #: src/components/admin/RallyEditor.tsx:66
 #: src/components/admin/RouteEditor.tsx:226
 #: src/components/settings/PrefsForm.tsx:74
@@ -1619,6 +1650,10 @@ msgstr "公開前のチェック"
 msgid "公開前の場所も、ここには表示されます。"
 msgstr "公開前の場所も、ここには表示されます。"
 
+#: src/components/admin/AdminItemForm.tsx:186
+msgid "内容"
+msgstr "内容"
+
 #: src/components/ElevationProfile.tsx:35
 msgid "最低 {lowest}m"
 msgstr "最低 {lowest}m"
@@ -1667,7 +1702,7 @@ msgstr "写真のリンクは、https:// で始まるものだけ使えます。
 msgid "写真は、まだありません"
 msgstr "写真は、まだありません"
 
-#: src/components/useErrorMessages.ts:48
+#: src/components/useErrorMessages.ts:51
 msgid "写真は4MBまでのJPEG・PNG・WebPだけアップロードできます。"
 msgstr "写真は4MBまでのJPEG・PNG・WebPだけアップロードできます。"
 
@@ -1675,7 +1710,11 @@ msgstr "写真は4MBまでのJPEG・PNG・WebPだけアップロードできま�
 msgid "写真はまだありません"
 msgstr "写真はまだありません"
 
-#: src/components/useErrorMessages.ts:49
+#: src/components/admin/AdminItemForm.tsx:163
+msgid "写真をアップロード"
+msgstr "写真をアップロード"
+
+#: src/components/useErrorMessages.ts:52
 msgid "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 msgstr "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 
@@ -1697,6 +1736,10 @@ msgstr "出かける前に、公式の最新情報を確認してください。
 msgid "出典: {0}"
 msgstr "出典: {0}"
 
+#: src/components/useErrorMessages.ts:49
+msgid "出典のリンクは https:// で始まるアドレスを入れてください。"
+msgstr "出典のリンクは https:// で始まるアドレスを入れてください。"
+
 #: src/components/admin/RouteEditor.tsx:348
 msgid "分"
 msgstr "分"
@@ -1715,9 +1758,14 @@ msgstr "別の人が先に保存しました。読み込み直してから、も
 msgid "利用規約"
 msgstr "利用規約"
 
+#: src/components/admin/AdminItemForm.tsx:197
 #: src/components/admin/RallyEditor.tsx:146
 msgid "削除"
 msgstr "削除"
+
+#: src/components/admin/AdminItemForm.tsx:199
+msgid "削除する"
+msgstr "削除する"
 
 #: src/components/ProfileCard.tsx:136
 msgid "削除を依頼する"
@@ -1727,7 +1775,7 @@ msgstr "削除を依頼する"
 msgid "削除を取り消す"
 msgstr "削除を取り消す"
 
-#: src/components/landing/BannerCarousel.tsx:71
+#: src/components/landing/BannerCarousel.tsx:73
 msgid "前の写真"
 msgstr "前の写真"
 
@@ -1814,7 +1862,7 @@ msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境に�
 msgstr "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 
 #: src/components/StampHere.tsx:94
-#: src/components/useErrorMessages.ts:58
+#: src/components/useErrorMessages.ts:61
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "問題が発生しました。しばらくしてからもう一度お試しください。"
 
@@ -1936,10 +1984,6 @@ msgstr "場所でつくったラリーにはスタンプ場所を、コースで
 msgid "場所でつくる"
 msgstr "場所でつくる"
 
-#: src/components/admin/AdminNav.tsx:21
-msgid "場所の一覧"
-msgstr "場所の一覧"
-
 #: src/components/admin/PlacePanel.tsx:86
 msgid "場所の名前"
 msgstr "場所の名前"
@@ -1947,10 +1991,6 @@ msgstr "場所の名前"
 #: src/components/admin/map-editor/MapEditor.tsx:428
 msgid "場所を置く"
 msgstr "場所を置く"
-
-#: src/components/admin/AdminNav.tsx:21
-msgid "変更の記録"
-msgstr "変更の記録"
 
 #: src/components/settings/PrefsForm.tsx:40
 msgid "大きい"
@@ -2029,7 +2069,8 @@ msgstr "必要：{0}"
 msgid "必要なこと"
 msgstr "必要なこと"
 
-#: src/components/admin/fields.tsx:72
+#: src/components/admin/fields.tsx:16
+#: src/components/admin/fields.tsx:74
 msgid "必須"
 msgstr "必須"
 
@@ -2161,7 +2202,7 @@ msgstr "新規登録"
 msgid "日本のほかの地域"
 msgstr "日本のほかの地域"
 
-#: src/components/admin/fields.tsx:77
+#: src/components/admin/fields.tsx:79
 msgid "日本語"
 msgstr "日本語"
 
@@ -2244,7 +2285,7 @@ msgstr "標高は{lowest}mから{highest}mまで"
 msgid "標高を調べています…"
 msgstr "標高を調べています…"
 
-#: src/components/landing/BannerCarousel.tsx:76
+#: src/components/landing/BannerCarousel.tsx:78
 msgid "次の写真"
 msgstr "次の写真"
 
@@ -2312,7 +2353,7 @@ msgstr "消すと、その端末では、顔や指紋でログインできなく
 msgid "淡色"
 msgstr "淡色"
 
-#: src/components/admin/AdminNav.tsx:54
+#: src/components/admin/AdminNav.tsx:56
 #: src/components/admin/RouteTable.tsx:29
 #: src/components/landing/Landing.tsx:274
 #: src/components/map/MapScreen.tsx:292
@@ -2453,11 +2494,11 @@ msgstr "答えたくない"
 msgid "答えなくても大丈夫です。"
 msgstr "答えなくても大丈夫です。"
 
-#: src/components/admin/AdminNav.tsx:24
+#: src/components/admin/AdminNav.tsx:26
 msgid "管理メニュー"
 msgstr "管理メニュー"
 
-#: src/app/[lang]/(admin)/layout.tsx:35
+#: src/app/[lang]/(admin)/layout.tsx:37
 msgid "管理画面は、管理者だけが使えます。権限が必要な場合は、管理者にお知らせください。"
 msgstr "管理画面は、管理者だけが使えます。権限が必要な場合は、管理者にお知らせください。"
 
@@ -2564,6 +2605,10 @@ msgstr "置いた場所"
 msgid "置いた場所（{0}か所）"
 msgstr "置いた場所（{0}か所）"
 
+#: src/components/useErrorMessages.ts:48
+msgid "自分の権限は変えられません。ほかの管理者に頼んでください。"
+msgstr "自分の権限は変えられません。ほかの管理者に頼んでください。"
+
 #: src/components/ThemeSwitcher.tsx:30
 msgid "自動"
 msgstr "自動"
@@ -2590,7 +2635,7 @@ msgstr "英語のページには、入れた文字がそのまま表示されま
 msgid "英語の名前と説明"
 msgstr "英語の名前と説明"
 
-#: src/components/admin/fields.tsx:86
+#: src/components/admin/fields.tsx:88
 msgid "英語は未入力です（日本語を表示します）"
 msgstr "英語は未入力です（日本語を表示します）"
 
@@ -2713,7 +2758,7 @@ msgid "送った内容が、読み取れませんでした。もう一度お試�
 msgstr "送った内容が、読み取れませんでした。もう一度お試しください。"
 
 #: src/components/StampHere.tsx:93
-#: src/components/useErrorMessages.ts:57
+#: src/components/useErrorMessages.ts:60
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "通信できませんでした。電波の良い場所でもう一度お試しください。"
 
@@ -2738,7 +2783,7 @@ msgstr "道が通れないときは、無理をせず引き返してください
 msgid "道に沿わせる"
 msgstr "道に沿わせる"
 
-#: src/components/useErrorMessages.ts:51
+#: src/components/useErrorMessages.ts:54
 msgid "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 msgstr "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 
@@ -2746,7 +2791,7 @@ msgstr "道に沿わせる機能が、まだ使えません。管理する人に
 msgid "道を調べています…"
 msgstr "道を調べています…"
 
-#: src/components/useErrorMessages.ts:53
+#: src/components/useErrorMessages.ts:56
 msgid "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 msgstr "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 

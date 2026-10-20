@@ -1,4 +1,5 @@
 import type { ErrorCode } from "../lib/api-errors";
+import { isHttpsUrl } from "../lib/https-url";
 import { isAllowedVideoUrl } from "./video-url";
 import { lineLengthKm, parseLine, simplifyLine, sketchOf, type LineString } from "./line";
 import type {
@@ -130,15 +131,6 @@ function toPublicSpot(s: SpotRow): PublicSpot {
   };
 }
 
-/** A photo address: an https link, not absurdly long. */
-const isHttpsUrl = (v: string): boolean => {
-  if (v.length > 500) return false;
-  try {
-    return new URL(v).protocol === "https:";
-  } catch {
-    return false;
-  }
-};
 
 /** Blank text becomes null (an optional field left empty). */
 const text = (v: string | null | undefined): string | null | undefined =>

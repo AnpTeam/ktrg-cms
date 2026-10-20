@@ -44,6 +44,8 @@ export function useErrorMessages(): Record<ErrorKey, string> {
     // Admin: rallies
     rally_empty: t`中身のないラリーは公開できません。公開中のラリーを空にすることもできません。`,
     invalid_rally_members: t`場所でつくったラリーにはスタンプ場所を、コースでつくったラリーにはコースを入れてください。同じものは一度だけです。`,
+    // Admin: lists (trail notices, ...)
+    invalid_source_url: t`出典のリンクは https:// で始まるアドレスを入れてください。`,
     // Admin: photo uploads
     invalid_file: t`写真は4MBまでのJPEG・PNG・WebPだけアップロードできます。`,
     uploads_unavailable: t`写真を保存できませんでした。しばらくしてからもう一度お試しください。`,

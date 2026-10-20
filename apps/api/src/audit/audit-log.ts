@@ -42,6 +42,10 @@ export const AUDIT_ACTIONS = {
   "rally.reorder": "rally",
   "rally.members.update": "rally",
   "rally.delete": "rally",
+  /** Admin trail notices (admin-lists): made, changed (including published or not), deleted. */
+  "notice.create": "notice",
+  "notice.update": "notice",
+  "notice.delete": "notice",
   /** An admin uploaded a photo (the target is the file's UUID in storage). */
   "upload.create": "upload",
 } as const satisfies Record<string, string>;

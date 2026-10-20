@@ -15,6 +15,7 @@ import { createDrizzleSessionStore } from "../auth/session-store";
 import { createDb } from "./client";
 import { listRalliesWithProgress, ralliesForPlace, recordFinished } from "../rallies/rally-store";
 import { createDrizzleRallyAdminStore } from "../rallies/rally-admin-store";
+import { createDrizzleNoticeStore } from "../notices/notice-store";
 import {
   auditLog,
   courseCompletions,
@@ -30,6 +31,8 @@ import {
   spots,
   spotTranslations,
   stamps,
+  trailNotices,
+  trailNoticeTranslations,
   users,
   webauthnChallenges,
 } from "./schema";
@@ -1088,5 +1091,82 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
         });
       });
     });
+  });
+});
+
+describe.skipIf(!url)("trail notices on real PostgreSQL", () => {
+  const { db, client } = connect();
+  const store = createDrizzleNoticeStore(db);
+  const otp = createDrizzleOtpStore(db);
+  const tag = `nt${randomUUID().slice(0, 8)}`;
+  const made: string[] = [];
+  const fields = (over: Record<string, unknown> = {}) => ({
+    routeId: null,
+    titleJa: `${tag} 通行止め`,
+    titleEn: null,
+    bodyJa: "本文",
+    bodyEn: "Text",
+    sourceUrl: "https://example.com/",
+    sourceNameJa: "出典",
+    sourceNameEn: null,
+    verifiedOn: "2026-10-20",
+    expiresOn: null,
+    published: false,
+    ...over,
+  });
+
+  afterAll(async () => {
+    if (made.length) {
+      await db.delete(auditLog).where(inArray(auditLog.targetId, made));
+      await db.delete(trailNotices).where(inArray(trailNotices.id, made));
+    }
+    await db.delete(users).where(like(users.email, `${tag}-%`));
+    await client.end();
+  });
+
+  test("words go to the translation table and come back flat; a stale save is a conflict; delete takes the words", async () => {
+    const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
+    const row = await store.create(actor, fields());
+    made.push(row.id);
+    expect(row).toMatchObject({ titleJa: `${tag} 通行止め`, bodyEn: "Text", verifiedOn: "2026-10-20", expiresOn: null, published: false });
+    const words = await db.select().from(trailNoticeTranslations).where(eq(trailNoticeTranslations.trailNoticeId, row.id));
+    expect(words.map((w) => w.locale).sort()).toEqual(["en", "ja"]);
+
+    const changed = await store.update(actor, row.id, row.updatedAt, { titleEn: "Closed", published: true, expiresOn: "2026-10-31" });
+    expect(changed).toMatchObject({ titleEn: "Closed", titleJa: `${tag} 通行止め`, published: true, expiresOn: "2026-10-31" });
+    expect(await store.update(actor, row.id, row.updatedAt, { titleJa: "late" })).toBe("conflict");
+    expect(await store.update(actor, randomUUID(), row.updatedAt, { titleJa: "x" })).toBeNull();
+
+    expect(await store.remove(actor, row.id)).toBe(true);
+    expect(await db.select().from(trailNoticeTranslations).where(eq(trailNoticeTranslations.trailNoticeId, row.id))).toHaveLength(0);
+    expect((await db.select().from(auditLog).where(eq(auditLog.targetId, row.id))).map((a) => a.action)).toEqual(["notice.create", "notice.update", "notice.delete"]);
+  });
+
+  test("the Japanese title is required by the database too", async () => {
+    const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
+    await expect(store.create(actor, fields({ titleJa: null as unknown as string }))).rejects.toThrow();
+  });
+
+  test("pages newest first without gaps, and visitors see only published notices still in date", async () => {
+    const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
+    for (const [i, over] of [
+      { published: true, expiresOn: "2026-10-19" },
+      { published: true, expiresOn: "2026-10-20" },
+      { published: false },
+      { published: true, expiresOn: null },
+    ].entries()) {
+      made.push((await store.create(actor, fields({ titleJa: `${tag} ${i}`, ...over }))).id);
+    }
+    const mine = (rows: { titleJa: string }[]) => rows.map((r) => r.titleJa).filter((t) => t.startsWith(tag));
+    const all: string[] = [];
+    let after = null as { createdAt: Date; id: string } | null;
+    for (;;) {
+      const page = await store.list(after, 2);
+      all.push(...mine(page));
+      if (page.length < 2) break;
+      after = { createdAt: page[1]!.createdAt, id: page[1]!.id };
+    }
+    expect(all.slice(0, 4)).toEqual([`${tag} 3`, `${tag} 2`, `${tag} 1`, `${tag} 0`]);
+    expect(mine(await store.listPublic("2026-10-20")).sort()).toEqual([`${tag} 1`, `${tag} 3`]);
   });
 });

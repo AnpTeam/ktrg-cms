@@ -17,7 +17,11 @@ import { createDb } from "./db/client";
 import { env } from "./env";
 import { apiBase } from "./lib/api-errors";
 import { createMailer } from "./lib/mailer";
+import { ADMIN_LISTS } from "./admin-lists/lists";
+import { listMetaRoutes, listReadRoutes, listWriteRoutes } from "./admin-lists/list-routes";
 import { purgeRoutes } from "./internal/purge-routes";
+import { noticeList, publicNoticeRoutes } from "./notices/notice-routes";
+import { createDrizzleNoticeStore } from "./notices/notice-store";
 import { meRoutes } from "./me/me-routes";
 import { createDrizzleMeStore } from "./me/me-store";
 import { apiDocs } from "./openapi";
@@ -40,6 +44,7 @@ function getServices(): Services {
         me: createDrizzleMeStore(db),
         content: createDrizzleContentStore(db),
         rallyAdmin: createDrizzleRallyAdminStore(db),
+        notices: createDrizzleNoticeStore(db),
       },
       audit: createDrizzleAuditWriter(db),
       mailer: createMailer(env),
@@ -95,6 +100,11 @@ export function createApp(
     .use(publicContentRoutes(() => getServices().content))
     .use(uploadRoutes(getServices, opts))
     .use(rallyAdminRoutes(getServices, opts))
+    // Admin lists (admin-lists/): each table described once, the same endpoints under /admin/lists/<key>.
+    .use(listMetaRoutes(ADMIN_LISTS, getServices, opts))
+    .use(listReadRoutes(noticeList, getServices, opts))
+    .use(listWriteRoutes(noticeList, getServices, opts))
+    .use(publicNoticeRoutes(() => getServices().notices))
     .use(purgeRoutes(getServices, opts.cronSecret));
 }
 
@@ -114,3 +124,5 @@ export default app;
 export type App = typeof app;
 /** The `{ ok: false, error }` body of every failure, for the web app's error handling. */
 export type { ApiError, ErrorCode, ValidationIssue } from "./lib/api-errors";
+/** How the admin screens draw each list (GET /admin/lists). */
+export type { FieldUi, Label, ListMeta } from "./admin-lists/list-types";

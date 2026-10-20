@@ -5,10 +5,11 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 
-// The side menu of the admin area. The screens that exist are links; the others are listed so the editors can see
+// The side menu of the admin area. The screens that exist are links (the generic lists come from the API, see
+// lib/admin/lists); the others are listed so the editors can see
 // what is coming, and are not links yet. On a narrow screen the list folds behind a button, so it does not push the
 // page down.
-export function AdminNav({ locale }: { locale: string }) {
+export function AdminNav({ locale, lists }: { locale: string; lists: { key: string; title: string }[] }) {
   const { t } = useLingui();
   const pathname = usePathname() ?? "";
   const base = `/${locale}/admin`;
@@ -17,8 +18,9 @@ export function AdminNav({ locale }: { locale: string }) {
   const ready = [
     { href: `${base}/routes`, label: t`ルート` },
     { href: `${base}/rallies`, label: t`ラリー` },
+    ...lists.map((l) => ({ href: `${base}/${l.key}`, label: l.title })),
   ];
-  const later = [t`場所の一覧`, t`お知らせ`, t`バナー`, t`ページの文章`, t`ユーザーと権限`, t`変更の記録`];
+  const later = [t`場所の一覧`, t`バナー`, t`ページの文章`, t`ユーザーと権限`, t`変更の記録`];
 
   return (
     <nav aria-label={t`管理メニュー`} className="flex flex-col gap-1">

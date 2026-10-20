@@ -7,6 +7,9 @@ import type { AuthServices } from "./auth/routes";
 import { createSessionService, type SessionStore } from "./auth/session-service";
 import type { Mailer } from "./lib/mailer";
 import type { MeServices } from "./me/me-routes";
+import type { NoticeServices } from "./notices/notice-routes";
+import { createNoticeService } from "./notices/notice-service";
+import type { NoticeStore } from "./notices/notice-types";
 import type { ContentServices } from "./content/admin-routes";
 import { createContentService } from "./content/content-service";
 import { createRoutingService, type RoutingService } from "./routing/routing-service";
@@ -20,7 +23,7 @@ import { createUploadService } from "./uploads/upload-service";
 import type { FileStorage } from "./uploads/upload-storage";
 
 /** Everything the routes use. */
-export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices;
+export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & NoticeServices;
 
 /** What the services are built from: the storage (database or in-memory) and the outside world. */
 export interface ServiceDeps {
@@ -32,6 +35,7 @@ export interface ServiceDeps {
     me: MeStore;
     content: ContentStore;
     rallyAdmin: RallyAdminStore;
+    notices: NoticeStore;
   };
   audit: AuditWriter;
   /** Sends login codes and the passkey / deletion alerts. */
@@ -68,6 +72,8 @@ export function createServices(deps: ServiceDeps): Services {
     content: createContentService({ store: stores.content }),
     // Rallies: names, dates, required count and which places they hold.
     rallyAdmin: createRallyAdminService({ store: stores.rallyAdmin }),
+    // Trail notices: the admin list and what visitors read.
+    notices: createNoticeService({ store: stores.notices, now }),
     // Admin photo uploads.
     uploads: createUploadService({ ...deps.uploads }),
     // The route-finding service behind the map editor's "snap to trails" (no key: it answers "not set up").

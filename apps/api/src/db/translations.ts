@@ -1,4 +1,4 @@
-// The words of a route, place or rally live in a *_translations table, one row per language. The rest of
+// The words of a route, place, rally or notice live in a *_translations table, one row per language. The rest of
 // the API sees them flat (nameJa, nameEn ...): these turn rows into that shape and back.
 import type { Locale } from "../auth/user";
 
@@ -17,6 +17,7 @@ export type Texts<F extends string> = { locale: Locale; values: Partial<Record<F
 export const ROUTE_TEXT = ["name", "description", "history", "access"] as const;
 export const SPOT_TEXT = ["name", "description", "statusNote"] as const;
 export const RALLY_TEXT = ["name"] as const;
+export const NOTICE_TEXT = ["title", "body", "sourceName"] as const;
 
 /** Every field null: an owner with no translation rows. */
 export function emptyTexts<F extends string>(fields: readonly F[]): Flat<F> {

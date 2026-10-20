@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import {
   boolean,
   check,
+  date,
   doublePrecision,
   index,
   integer,
@@ -270,24 +271,27 @@ export const stamps = pgTable(
   ],
 );
 
-/** A dated route-level notice with an official source and an expiry. */
+/**
+ * A dated trail notice (a closure, a hazard, a seasonal condition) with an official source and an expiry, entered by
+ * an admin after checking that source. A draft until published. No route means the whole trail.
+ */
 export const trailNotices = pgTable(
   "trail_notices",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    routeId: uuid("route_id")
-      .notNull()
-      .references(() => routes.id, { onDelete: "cascade" }),
+    routeId: uuid("route_id").references(() => routes.id, { onDelete: "cascade" }),
     // Official source; required.
     sourceUrl: text("source_url").notNull(),
-    // Age is always shown to participants.
-    verifiedAt: timestamp("verified_at", { withTimezone: true }).notNull(),
-    // Expired notices are hidden; null means no expiry.
-    expiresAt: timestamp("expires_at", { withTimezone: true }),
+    // Days (YYYY-MM-DD, Japan time); the column names are older than the switch from timestamps to days.
+    // The day a person last checked the source; its age is always shown to visitors.
+    verifiedOn: date("verified_at", { mode: "string" }).notNull(),
+    // Hidden after this day; null means no expiry.
+    expiresOn: date("expires_at", { mode: "string" }),
+    published: boolean("published").notNull().default(false),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },
-  (t) => [index("trail_notices_route_idx").on(t.routeId, t.expiresAt)],
+  (t) => [index("trail_notices_route_idx").on(t.routeId, t.expiresOn)],
 );
 
 /** Append-only record of admin actions. User ids only: no names or emails. */
@@ -367,7 +371,13 @@ export const trailNoticeTranslations = pgTable(
       .notNull()
       .references(() => trailNotices.id, { onDelete: "cascade" }),
     locale: userLocale("locale").notNull(),
+    title: text("title"),
     body: text("body"),
+    sourceName: text("source_name"),
   },
-  (t) => [primaryKey({ columns: [t.trailNoticeId, t.locale] }), check("trail_notice_translations_ja_body", jaRequires(t, t.body))],
+  (t) => [
+    primaryKey({ columns: [t.trailNoticeId, t.locale] }),
+    check("trail_notice_translations_ja_body", jaRequires(t, t.body)),
+    check("trail_notice_translations_ja_title", jaRequires(t, t.title)),
+  ],
 );

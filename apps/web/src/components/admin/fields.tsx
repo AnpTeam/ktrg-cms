@@ -7,11 +7,13 @@ import { useLingui } from "@lingui/react/macro";
 
 export const inputClass = "tap-target w-full rounded-xl border-2 border-line bg-paper px-4 text-lg text-ink disabled:opacity-60";
 
-export function Field({ label, hint, children, htmlFor }: { label: string; hint?: ReactNode; children: ReactNode; htmlFor?: string }) {
+export function Field({ label, hint, children, htmlFor, required = false }: { label: string; hint?: ReactNode; children: ReactNode; htmlFor?: string; required?: boolean }) {
+  const { t } = useLingui();
   return (
     <div className="flex flex-col gap-1">
       <label htmlFor={htmlFor} className="text-base font-bold">
         {label}
+        {required ? <span className="ml-2 rounded-md bg-surface px-2 py-0.5 text-sm font-bold text-accent">{t`必須`}</span> : null}
       </label>
       {children}
       {hint ? <p className="text-base text-muted">{hint}</p> : null}

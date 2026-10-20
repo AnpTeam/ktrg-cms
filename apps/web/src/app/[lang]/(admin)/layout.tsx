@@ -6,6 +6,8 @@ import { Trans } from "@lingui/react/macro";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { initLingui } from "@/i18n/server";
 import { adminAccess } from "@/lib/admin/access";
+import { pick } from "@/lib/admin/lists/config";
+import { adminLists } from "@/lib/admin/lists/server";
 import { localePath } from "@/lib/rally";
 import { getViewer } from "@/lib/viewer";
 
@@ -41,8 +43,10 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     );
   }
 
+  // The generic lists (described by the API) join the menu by themselves.
+  const lists = ((await adminLists()) ?? []).map((l) => ({ key: l.key, title: pick(l.title, i18n.locale) }));
   return (
-    <AdminShell locale={i18n.locale} name={viewer.name}>
+    <AdminShell locale={i18n.locale} name={viewer.name} lists={lists}>
       {children}
     </AdminShell>
   );
