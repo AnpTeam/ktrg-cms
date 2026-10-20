@@ -11,9 +11,9 @@
  */
 @theme {
   --color-ink: #1f1b1a; /* body text */
-  --color-muted: #57504d; /* secondary text */
-  --color-paper: #ffffff; /* page background: plain white */
-  --color-surface: #f5f5f4; /* panels, rows, empty slots: light grey */
+  --color-muted: #4f4845; /* secondary text */
+  --color-paper: #f8f4ea; /* page background: warm washi paper (和紙) */
+  --color-surface: #f3eee3; /* panels, rows, empty slots: a deeper paper tone */
   --color-brand: #cc6256; /* the brand red: buttons, the active tab, icons, the bar beside headings. Not for text on white */
   --color-on-brand: #ffffff; /* the words on the brand red (large bold text only) */
   --color-accent: #8e2a21; /* red you can READ: links, headings, focus ring (deep red) */
@@ -21,7 +21,7 @@
   --color-shu: #b3321b; /* the stamp seal only: vermilion (朱). Never text, never a warning */
   --color-on-shu: #ffffff; /* the numeral inside a seal */
   --color-caution: #b45309; /* warnings: caution status, graphic only (amber 琥珀) */
-  --color-danger: #991b1b; /* errors */
+  --color-danger: #8f1818; /* errors */
   --color-line: #8a7f7a; /* borders of inputs and buttons, the trail line */
 
   /* System fonts only: nothing to download on a weak mountain connection.
@@ -29,14 +29,21 @@
   --font-sans:
     "BIZ UDPGothic", "BIZ UDGothic", "Hiragino Kaku Gothic ProN", "Hiragino Sans",
     "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
-  /* No serif any more: font-serif is the same clean sans, so older classes need no edit. */
-  --font-serif: var(--font-sans);
+  /* Headings use a Mincho (serif) face from the system, for the quiet feel of a temple book. BIZ UDPMincho ships with
+     Windows 10+, like the gothic above; the body text stays gothic. */
+  --font-serif:
+    "BIZ UDPMincho", "Hiragino Mincho ProN", "Yu Mincho", YuMincho, "Noto Serif JP", "MS PMincho", serif;
 
-  /* A little rounder than Tailwind's defaults (12px was the largest in common use): 12, 16, 20, 24 px. */
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
-  --radius-2xl: 1.25rem;
-  --radius-3xl: 1.5rem;
+  /* Nearly square, like paper and wood: 4, 6, 8, 8 px (it was 12 to 24). */
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.375rem;
+  --radius-2xl: 0.5rem;
+  --radius-3xl: 0.5rem;
+
+  /* Flat: a shadow is a hairline ring instead. */
+  --shadow-md: 0 0 0 1px color-mix(in srgb, var(--color-ink) 14%, transparent);
+  --shadow-lg: 0 0 0 1px color-mix(in srgb, var(--color-ink) 14%, transparent);
+  --shadow-xl: 0 0 0 1px color-mix(in srgb, var(--color-ink) 18%, transparent);
 }
 
 
@@ -95,8 +102,9 @@
   h2,
   h3 {
     text-wrap: balance;
-    /* Headings are the readable deep red (a banner sets its own white). */
+    /* Headings are the readable deep red (a banner sets its own white), in the Mincho face. */
     color: var(--color-accent);
+    font-family: var(--font-serif);
   }
 
   p,
@@ -174,9 +182,9 @@
 
 :root[data-theme="light"] {
   --color-ink: #1f1b1a; /* body text */
-  --color-muted: #57504d; /* secondary text */
-  --color-paper: #ffffff; /* page background: plain white */
-  --color-surface: #f5f5f4; /* panels, rows, empty slots: light grey */
+  --color-muted: #4f4845; /* secondary text */
+  --color-paper: #f8f4ea; /* page background: warm washi paper (和紙) */
+  --color-surface: #f3eee3; /* panels, rows, empty slots: a deeper paper tone */
   --color-brand: #cc6256; /* the brand red: buttons, the active tab, icons, the bar beside headings. Not for text on white */
   --color-on-brand: #ffffff; /* the words on the brand red (large bold text only) */
   --color-accent: #8e2a21; /* red you can READ: links, headings, focus ring (deep red) */
@@ -184,7 +192,7 @@
   --color-shu: #b3321b; /* the stamp seal only: vermilion (朱). Never text, never a warning */
   --color-on-shu: #ffffff; /* the numeral inside a seal */
   --color-caution: #b45309; /* warnings: caution status, graphic only (amber 琥珀) */
-  --color-danger: #991b1b; /* errors */
+  --color-danger: #8f1818; /* errors */
   --color-line: #8a7f7a; /* borders of inputs and buttons, the trail line */
   color-scheme: light;
 }
@@ -399,7 +407,7 @@ rt {
 
 /* A plain card: no line, round corners (24px), light grey fill. */
 .frame {
-  border-radius: 1.5rem;
+  border-radius: 0.5rem;
   background: var(--color-surface);
 }
 

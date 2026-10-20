@@ -22,9 +22,9 @@ import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
 import type { EmbedVideo } from "@/lib/video";
 
 const primary =
-  "tap-target flex min-h-14 items-center justify-center rounded-xl bg-brand px-6 text-xl font-bold text-on-brand";
+  "tap-target flex min-h-14 items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper";
 const secondary =
-  "tap-target flex min-h-14 items-center justify-center rounded-xl border-2 border-brand bg-surface px-6 text-xl font-bold text-accent hover:bg-paper";
+  "tap-target flex min-h-14 items-center justify-center rounded-xl border border-ink bg-surface px-6 text-xl font-bold text-ink hover:bg-paper";
 // Panels have no outline: a light grey fill with round corners, and room around them.
 const panel = "mx-4 rounded-3xl bg-surface p-5";
 const patternPanel = `${panel} pattern-shippo`;

@@ -15,7 +15,7 @@ export function SectionBanner({
   className?: string;
 }) {
   return (
-    <Tag className={`border-l-4 border-brand pl-3 text-left text-xl font-bold leading-snug text-accent ${className}`}>
+    <Tag className={`border-l-2 border-brand pl-3 text-left text-xl font-bold leading-snug text-accent ${className}`}>
       {children}
     </Tag>
   );

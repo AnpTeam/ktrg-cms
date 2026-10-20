@@ -8,9 +8,9 @@ import { useErrorMessages } from "../useErrorMessages";
 // Pieces shared by the login, register and profile screens. Big targets, few words, one action per step.
 
 export const primaryButton =
-  "tap-target flex min-h-14 w-full items-center justify-center gap-3 rounded-xl bg-brand px-6 text-xl font-bold text-on-brand disabled:opacity-60";
+  "tap-target flex min-h-14 w-full items-center justify-center gap-3 rounded-xl bg-ink px-6 text-xl font-bold text-paper disabled:opacity-60";
 export const secondaryButton =
-  "tap-target flex min-h-14 w-full items-center justify-center gap-3 rounded-xl border-2 border-ink bg-paper px-6 text-xl font-bold text-ink hover:bg-surface disabled:opacity-60";
+  "tap-target flex min-h-14 w-full items-center justify-center gap-3 rounded-xl border border-ink bg-paper px-6 text-xl font-bold text-ink hover:bg-surface disabled:opacity-60";
 export const inputClass =
   "tap-target w-full rounded-xl border-2 border-ink bg-paper px-4 text-xl text-ink placeholder:text-muted";
 
@@ -40,12 +40,12 @@ export function ChoiceCard({
       onClick={onClick}
       disabled={disabled}
       className={`tap-target flex min-h-[5rem] w-full items-center gap-4 rounded-2xl p-4 text-left disabled:opacity-60 ${
-        primary ? "bg-brand text-on-brand" : "border-2 border-brand bg-surface text-ink hover:bg-paper"
+        primary ? "bg-ink text-paper" : "border border-ink bg-surface text-ink hover:bg-paper"
       }`}
     >
       <span
         className={`flex size-14 shrink-0 items-center justify-center rounded-full ${
-          primary ? "bg-on-brand text-brand" : "bg-brand text-on-brand"
+          primary ? "bg-paper text-ink" : "bg-ink text-paper"
         } [&_svg]:size-7`}
       >
         {icon}
