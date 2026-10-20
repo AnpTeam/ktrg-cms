@@ -20,6 +20,7 @@ export function StampGrid({
   names,
   columns = 2,
   art = false,
+  book = false,
   className = "",
 }: {
   total: number;
@@ -30,6 +31,8 @@ export function StampGrid({
   columns?: 2 | 4;
   /** Draw the sutra mound artwork (public/stamps) instead of the plain seal, with the number under it (and the name, in the big grid). */
   art?: boolean;
+  /** With `art` in the big grid: each slot is a page of a pilgrim's stamp book (納経帳), the seal on paper with the name written down the side. */
+  book?: boolean;
   className?: string;
 }) {
   const { t } = useLingui();
@@ -48,6 +51,33 @@ export function StampGrid({
             : state === "next"
               ? t`${number}番 つぎのスタンプ`
               : t`${number}番 まだ押していません`;
+        if (art && book && big) {
+          // A page of the book: the pressed seal, and the name written down the side. The state is still the shape: pressed
+          // art, a thicker frame with つぎ, or the dashed outline art on a plain page.
+          return (
+            <li key={number} className={`flex gap-2 rounded-lg bg-paper p-2 ${state === "next" ? "border-2 border-accent" : "border border-line/60"}`}>
+              <div aria-hidden="true" className="flex min-w-0 flex-1 items-center">
+                {/* eslint-disable-next-line @next/next/no-img-element -- fixed artwork from /public, already the right size */}
+                <img
+                  src={state === "stamped" ? "/stamps/stamp-earned.svg" : "/stamps/stamp-not-earned.svg"}
+                  alt=""
+                  className="aspect-square w-full"
+                  style={state === "stamped" ? { transform: `rotate(${tilt(number)}deg)` } : undefined}
+                />
+              </div>
+              <p aria-hidden="true" className="flex shrink-0 flex-col items-center gap-1 border-l border-line/40 pl-2">
+                <span className="text-base font-bold tabular-nums text-muted">{number}</span>
+                {name ? (
+                  <span className={`font-serif text-xl leading-tight tracking-widest [text-orientation:upright] [writing-mode:vertical-rl] ${state === "empty" ? "font-normal" : "font-bold"}`}>
+                    {name}
+                  </span>
+                ) : null}
+                {state === "next" ? <span className="text-sm font-bold text-accent">{t`つぎ`}</span> : null}
+              </p>
+              <span className="sr-only">{name ? `${status} ${name}` : status}</span>
+            </li>
+          );
+        }
         if (art) {
           // The state is still the shape, never the colour alone: pressed art, a thick ring with つぎ, or the dashed outline.
           return (

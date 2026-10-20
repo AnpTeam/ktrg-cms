@@ -80,6 +80,7 @@ export function FeaturedRally({ rally, locale, signedIn }: { rally: RallyItem; l
             stamped={stampedNumbers(rally)}
             showNext={signedIn}
             art={rally.kind === "mounds"}
+            book={rally.kind === "mounds"}
             names={rally.kind === "mounds" ? new Map(rally.slots.map((slot) => [slot.number, sealName(slot.nameJa)])) : undefined}
           />
         </div>
@@ -134,12 +135,16 @@ export function RallyCard({ rally, locale, signedIn }: { rally: RallyItem; local
           </span>
         </summary>
         {rally.kind === "mounds" ? (
-          <div className="border-t-2 border-line p-4">
+          <div className="border-t border-line p-4">
+            <p aria-hidden="true" className="mb-3 font-serif text-xl font-bold tracking-[0.4em] text-accent">
+              {t`納経帳`}
+            </p>
             <StampGrid
               total={rally.total}
               stamped={stampedNumbers(rally)}
               showNext={signedIn}
               art
+              book
               names={new Map(rally.slots.map((slot) => [slot.number, sealName(slot.nameJa)]))}
             />
           </div>

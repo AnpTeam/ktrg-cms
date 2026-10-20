@@ -112,15 +112,15 @@ msgstr "{name} を1つ後ろへ"
 msgid "{name}さん、こんにちは。"
 msgstr "{name}さん、こんにちは。"
 
-#: src/components/StampGrid.tsx:47
+#: src/components/StampGrid.tsx:50
 msgid "{number}番 スタンプ済み"
 msgstr "{number}番 スタンプ済み"
 
-#: src/components/StampGrid.tsx:49
+#: src/components/StampGrid.tsx:52
 msgid "{number}番 つぎのスタンプ"
 msgstr "{number}番 つぎのスタンプ"
 
-#: src/components/StampGrid.tsx:50
+#: src/components/StampGrid.tsx:53
 msgid "{number}番 まだ押していません"
 msgstr "{number}番 まだ押していません"
 
@@ -492,7 +492,7 @@ msgstr "コース"
 msgid "コース {0}"
 msgstr "コース {0}"
 
-#: src/components/RallyViews.tsx:97
+#: src/components/RallyViews.tsx:98
 msgid "コース{order}"
 msgstr "コース{order}"
 
@@ -508,7 +508,7 @@ msgstr "コースでつくる"
 msgid "コースの出発地点から近い順（まっすぐ測った距離です）"
 msgstr "コースの出発地点から近い順（まっすぐ測った距離です）"
 
-#: src/components/RallyViews.tsx:173
+#: src/components/RallyViews.tsx:178
 msgid "コースを見る"
 msgstr "コースを見る"
 
@@ -800,7 +800,7 @@ msgstr "スタンプの経由地 {0} / {1}"
 
 #: src/components/ProgressSummary.tsx:27
 #: src/components/RallyViews.tsx:58
-#: src/components/RallyViews.tsx:125
+#: src/components/RallyViews.tsx:126
 msgid "スタンプの進み具合"
 msgstr "スタンプの進み具合"
 
@@ -898,8 +898,9 @@ msgid "チェック"
 msgstr "チェック"
 
 #: src/components/RallyViews.tsx:62
-#: src/components/StampGrid.tsx:67
-#: src/components/StampGrid.tsx:78
+#: src/components/StampGrid.tsx:75
+#: src/components/StampGrid.tsx:97
+#: src/components/StampGrid.tsx:108
 #: src/components/StampLegend.tsx:10
 msgid "つぎ"
 msgstr "つぎ"
@@ -1084,7 +1085,7 @@ msgid "まず、GPXファイルをここにドラッグするか「GPXファイ�
 msgstr "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「線を描く」で道すじを、「経由地を置く」で経由地を入れます。"
 
 #: src/components/admin/RouteEditor.tsx:518
-#: src/components/RallyViews.tsx:161
+#: src/components/RallyViews.tsx:166
 #: src/components/StampLegend.tsx:9
 msgid "まだ"
 msgstr "まだ"
@@ -1671,7 +1672,7 @@ msgid "全{TOTAL_ROUTES}区間を見る"
 msgstr "全{TOTAL_ROUTES}区間を見る"
 
 #: src/components/RallyViews.tsx:70
-#: src/components/RallyViews.tsx:129
+#: src/components/RallyViews.tsx:130
 msgid "全{total}か所"
 msgstr "全{total}か所"
 
@@ -2241,7 +2242,7 @@ msgid "手直しが必要なルートだけ（{needsWorkCount}）"
 msgstr "手直しが必要なルートだけ（{needsWorkCount}）"
 
 #: src/components/map/MapScreen.tsx:376
-#: src/components/RallyViews.tsx:161
+#: src/components/RallyViews.tsx:166
 #: src/components/StampLegend.tsx:8
 #: src/components/StopList.tsx:59
 msgid "押した"
@@ -2514,7 +2515,7 @@ msgstr "淡色"
 #: src/components/admin/RouteTable.tsx:30
 #: src/components/landing/Landing.tsx:271
 #: src/components/map/MapScreen.tsx:292
-#: src/components/RallyViews.tsx:105
+#: src/components/RallyViews.tsx:106
 #: src/components/TrailRibbon.tsx:73
 msgid "準備中"
 msgstr "準備中"
@@ -2680,12 +2681,16 @@ msgstr "約{amount}m"
 msgid "約{TRAIL_KM}km"
 msgstr "約{TRAIL_KM}km"
 
+#: src/components/RallyViews.tsx:140
+msgid "納経帳"
+msgstr "納経帳"
+
 #: src/components/admin/PlacePanel.tsx:34
 #: src/components/landing/Landing.tsx:185
 msgid "経塚"
 msgstr "経塚"
 
-#: src/components/RallyViews.tsx:97
+#: src/components/RallyViews.tsx:98
 msgid "経塚ラリー"
 msgstr "経塚ラリー"
 
