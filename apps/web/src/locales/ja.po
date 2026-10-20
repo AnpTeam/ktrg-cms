@@ -2129,6 +2129,10 @@ msgstr "大きく表示"
 msgid "大切な操作なので、もう一度、確認します。"
 msgstr "大切な操作なので、もう一度、確認します。"
 
+#: src/app/layout.tsx:35
+msgid "大阪・和歌山・奈良にまたがる、葛城修験の山の古道を歩くための道案内とスタンプラリーです。"
+msgstr "大阪・和歌山・奈良にまたがる、葛城修験の山の古道を歩くための道案内とスタンプラリーです。"
+
 #: src/components/admin/RouteEditor.tsx:262
 #: src/components/admin/RouteTable.tsx:31
 #: src/components/auth/authUi.tsx:77
@@ -2394,7 +2398,7 @@ msgstr "未選択"
 msgid "本人かどうか、確認します"
 msgstr "本人かどうか、確認します"
 
-#: src/app/layout.tsx:52
+#: src/app/layout.tsx:61
 msgid "本文へ移動"
 msgstr "本文へ移動"
 
@@ -2854,6 +2858,11 @@ msgstr "英語は未入力です（日本語を表示します）"
 #: src/app/layout.tsx:30
 #: src/components/landing/Landing.tsx:81
 #: src/components/landing/LandingHero.tsx:36
+msgid "葛城修験"
+msgstr "葛城修験"
+
+#: src/app/layout.tsx:33
+msgctxt "tab title"
 msgid "葛城修験"
 msgstr "葛城修験"
 
