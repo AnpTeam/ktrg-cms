@@ -20,6 +20,7 @@ import { createMemoryContentStore } from "./content/content-memory-store";
 import { createMemoryRallyAdminStore } from "./rallies/rally-admin-memory-store";
 import { createMemoryNoticeStore } from "./notices/notice-memory-store";
 import { memoryReader } from "./admin-lists/list-memory-store";
+import { createMemoryUserListStore } from "./users/user-list";
 import { createMemoryMeStore } from "./me/me-memory-store";
 import { createServices } from "./services";
 
@@ -66,6 +67,7 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       notices: createMemoryNoticeStore(audit.writer).store,
       auditList: memoryReader(new Map()),
       placeList: memoryReader(new Map()),
+      userList: createMemoryUserListStore(audit.writer).store,
     },
     audit: audit.writer,
     mailer: {
@@ -322,6 +324,7 @@ describe("user B cannot touch user A", () => {
     "PUT /api/v1/admin/rallies/:id/courses": () => ({ updatedAt: new Date().toISOString(), routeIds: [] }),
     "POST /api/v1/admin/lists/notices": () => sampleNotice(),
     "PATCH /api/v1/admin/lists/notices/:id": () => ({ updatedAt: new Date().toISOString() }),
+    "PATCH /api/v1/admin/lists/users/:id": () => ({ updatedAt: new Date().toISOString(), role: "admin" }),
     "POST /api/v1/auth/reauth/verify": () => ({ code: "123456" }),
     "POST /api/v1/admin/uploads": () => {
       const form = new FormData();

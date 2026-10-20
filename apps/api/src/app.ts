@@ -22,6 +22,8 @@ import { listMetaRoutes, listReadRoutes, listWriteRoutes } from "./admin-lists/l
 import { purgeRoutes } from "./internal/purge-routes";
 import { auditLogList, createDrizzleAuditListStore } from "./audit/audit-list";
 import { createDrizzlePlaceListStore, placeList } from "./content/place-list";
+import { createDrizzleUserListStore, userList } from "./users/user-list";
+import { userRoleRoutes } from "./users/user-routes";
 import { noticeList, publicNoticeRoutes } from "./notices/notice-routes";
 import { createDrizzleNoticeStore } from "./notices/notice-store";
 import { meRoutes } from "./me/me-routes";
@@ -49,6 +51,7 @@ function getServices(): Services {
         notices: createDrizzleNoticeStore(db),
         auditList: createDrizzleAuditListStore(db),
         placeList: createDrizzlePlaceListStore(db),
+        userList: createDrizzleUserListStore(db),
       },
       audit: createDrizzleAuditWriter(db),
       mailer: createMailer(env),
@@ -111,6 +114,8 @@ export function createApp(
     .use(publicNoticeRoutes(() => getServices().notices))
     .use(listReadRoutes(auditLogList, getServices, opts))
     .use(listReadRoutes(placeList, getServices, opts))
+    .use(listReadRoutes(userList, getServices, opts))
+    .use(userRoleRoutes(getServices, opts))
     .use(purgeRoutes(getServices, opts.cronSecret));
 }
 

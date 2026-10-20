@@ -11,6 +11,7 @@ import { createListReader } from "./admin-lists/list-service";
 import type { ListReadStore } from "./admin-lists/list-types";
 import type { AuditListRow, AuditListServices } from "./audit/audit-list";
 import type { PlaceListRow, PlaceListServices } from "./content/place-list";
+import { createUserListService, type UserListServices, type UserListStore } from "./users/user-list";
 import type { NoticeServices } from "./notices/notice-routes";
 import { createNoticeService } from "./notices/notice-service";
 import type { NoticeStore } from "./notices/notice-types";
@@ -27,7 +28,7 @@ import { createUploadService } from "./uploads/upload-service";
 import type { FileStorage } from "./uploads/upload-storage";
 
 /** Everything the routes use. */
-export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & NoticeServices & AuditListServices & PlaceListServices;
+export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & NoticeServices & AuditListServices & PlaceListServices & UserListServices;
 
 /** What the services are built from: the storage (database or in-memory) and the outside world. */
 export interface ServiceDeps {
@@ -42,6 +43,7 @@ export interface ServiceDeps {
     notices: NoticeStore;
     auditList: ListReadStore<AuditListRow>;
     placeList: ListReadStore<PlaceListRow>;
+    userList: UserListStore;
   };
   audit: AuditWriter;
   /** Sends login codes and the passkey / deletion alerts. */
@@ -83,6 +85,7 @@ export function createServices(deps: ServiceDeps): Services {
     // The other generated admin lists: home banners, the audit log, every place, accounts and their roles.
     auditList: createListReader({ store: stores.auditList }),
     placeList: createListReader({ store: stores.placeList }),
+    userList: createUserListService({ store: stores.userList }),
     // Admin photo uploads.
     uploads: createUploadService({ ...deps.uploads }),
     // The route-finding service behind the map editor's "snap to trails" (no key: it answers "not set up").

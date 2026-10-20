@@ -1,6 +1,7 @@
 import { auditLogList } from "../audit/audit-list";
 import { placeList } from "../content/place-list";
 import { noticeList } from "../notices/notice-routes";
+import { userList } from "../users/user-list";
 
 /** Every admin list, in menu order. A new table: its definition here, and its two route factories in createApp. */
-export const ADMIN_LISTS = [placeList, noticeList, auditLogList] as const;
+export const ADMIN_LISTS = [placeList, noticeList, userList, auditLogList] as const;

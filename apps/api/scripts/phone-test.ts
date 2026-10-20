@@ -21,6 +21,7 @@ import { createMemoryContentStore } from "../src/content/content-memory-store";
 import { createMemoryRallyAdminStore } from "../src/rallies/rally-admin-memory-store";
 import { createMemoryNoticeStore } from "../src/notices/notice-memory-store";
 import { memoryReader } from "../src/admin-lists/list-memory-store";
+import { createMemoryUserListStore } from "../src/users/user-list";
 import { createServices } from "../src/services";
 
 const port = Number(process.env.PORT ?? 3001);
@@ -75,6 +76,7 @@ const services = createServices({
     notices: createMemoryNoticeStore(audit).store,
     auditList: memoryReader(new Map()),
     placeList: memoryReader(new Map()),
+    userList: createMemoryUserListStore(audit).store,
   },
   audit,
   // This address becomes an admin on an email-code login, so the admin screens can be tried (this page only).

@@ -39,6 +39,7 @@ describe("permission table", () => {
         "stamp.create",
         "stamp.review",
         "upload.create",
+        "user.read",
         "user.manage_roles",
       ].sort(),
     );
