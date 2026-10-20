@@ -166,7 +166,7 @@ export const sampleSpots: SpotDetail[] = [...handSpots, ...r2Spots, ...r3Spots, 
 
 function listItem(s: SpotDetail): SpotListItem {
   // The samples carry no kind of their own; the ones named as a sutra mound stand in for mounds on the map.
-  return { id: s.id, nameJa: s.nameJa, nameEn: s.nameEn, status: s.status, kind: s.nameJa.includes("経塚") ? "mound" : undefined, stamped: s.stamped, position: s.position };
+  return { id: s.id, nameJa: s.nameJa, nameEn: s.nameEn, status: s.status, descriptionJa: s.descriptionJa, descriptionEn: s.descriptionEn, statusNoteJa: s.statusNoteJa, statusNoteEn: s.statusNoteEn, statusUpdatedAt: s.statusUpdatedAt, photoUrl: s.photoUrl, kind: s.nameJa.includes("経塚") ? "mound" : undefined, stamped: s.stamped, position: s.position };
 }
 
 // ROUGH, INVENTED PLACEMENT for the home map's areas (sample data only, shown with the note 見本の位置（目安です）).
