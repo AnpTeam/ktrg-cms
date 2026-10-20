@@ -37,7 +37,7 @@ export function RallyList({ initial, locale }: { initial: AdminRally[]; locale: 
 
   return (
     <div className="flex flex-col gap-4">
-      <Link href={`/${locale}/admin/rallies/new`} className="tap-target inline-flex w-fit items-center rounded-xl bg-brand px-5 text-lg font-bold text-on-brand">
+      <Link href="/admin/rallies/new" className="tap-target inline-flex w-fit items-center rounded-xl bg-brand px-5 text-lg font-bold text-on-brand">
         {t`新しいラリー`}
       </Link>
       {error ? (
@@ -55,11 +55,11 @@ export function RallyList({ initial, locale }: { initial: AdminRally[]; locale: 
                 {i + 1}
               </span>
               <div className="min-w-0 flex-1">
-                <Link href={`/${locale}/admin/rallies/${r.id}`} className="text-xl font-bold text-accent underline underline-offset-4">
+                <Link href={`/admin/rallies/${r.id}`} className="text-xl font-bold text-accent underline underline-offset-4">
                   {name(r)}
                 </Link>
                 <p className="text-base text-muted">
-                  {r.kind === "places" ? t`場所 ${r.memberCount}` : t`コース ${r.memberCount}`}
+                  {r.kind === "places" ? t`経由地 ${r.memberCount}` : t`コース ${r.memberCount}`}
                   {" ・ "}
                   {r.published ? t`公開中` : t`下書き`}
                   {" ・ "}

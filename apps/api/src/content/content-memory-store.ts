@@ -29,7 +29,7 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
         .sort((a, b) => a.sortOrder - b.sortOrder)
         .map<RouteSummaryRow>((r) => {
           const ss = sortedSpots(r.id);
-          const stamps = ss.filter((s) => s.kind === "stamp");
+          const stamps = ss.filter((s) => s.stampable);
           return { ...r, spotCount: stamps.length, publishedSpotCount: stamps.filter((s) => s.published).length, pointCount: ss.length - stamps.length };
         });
     },
@@ -81,7 +81,7 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       const at = stampTime();
       const row: SpotRow = {
         id: uuid(), routeId, nameEn: null, descriptionJa: null, descriptionEn: null, lat: null, lng: null,
-        positionVerified: false, positionSource: null, radiusM: 50, kind: "stamp", photoUrl: null, status: "open", statusNoteJa: null, statusNoteEn: null,
+        positionVerified: false, positionSource: null, radiusM: 50, kind: "other", stampable: false, photoUrl: null, status: "open", statusNoteJa: null, statusNoteEn: null,
         statusUpdatedAt: null, sortOrder: sortedSpots(routeId).length + 1, published: false, permissionConfirmed: false,
         permissionNote: null, createdAt: at, updatedAt: at, ...fields,
         translations: mergeTranslations({}, fields.translations),
@@ -94,9 +94,9 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       const cur = spots.get(id);
       if (!cur) return null;
       if (cur.updatedAt.getTime() !== expected.getTime()) return "conflict";
-      const kindChanged = changes.kind !== undefined && changes.kind !== cur.kind;
-      if (kindChanged && cur.kind === "stamp" && stamped.has(id)) return "has_stamps";
-      if (kindChanged && changes.kind !== "stamp") placeRallies.delete(id);
+      const switchedOff = changes.stampable === false && cur.stampable;
+      if (switchedOff && stamped.has(id)) return "has_stamps";
+      if (switchedOff) placeRallies.delete(id);
       const statusChanged = changes.status !== undefined && changes.status !== cur.status;
       const next: SpotRow = { ...cur, ...changes, translations: mergeTranslations(cur.translations, changes.translations), updatedAt: stampTime(), statusUpdatedAt: statusChanged ? now() : cur.statusUpdatedAt };
       spots.set(id, next);

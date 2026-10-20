@@ -59,6 +59,7 @@ function getServices(): Services {
       audit: createDrizzleAuditWriter(db),
       mailer: createMailer(env),
       routing: createRoutingService({ apiKey: env.ORS_API_KEY }),
+      photoHosts: env.PHOTO_HOSTS?.split(",").map((h) => h.trim().toLowerCase()).filter(Boolean),
       // Production requires the secret (parse-env); this dev fallback never ships.
       secret: env.OTP_HMAC_SECRET ?? "dev-only-otp-secret-change-me-0000000",
       adminEmails: parseAdminEmails(env.ADMIN_EMAILS).emails, // checked at boot (parse-env)

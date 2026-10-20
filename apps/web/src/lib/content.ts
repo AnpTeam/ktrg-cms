@@ -68,10 +68,10 @@ export interface SpotListItem {
   position: SpotPosition | null;
 }
 
-/** One of a route's navigation points (a turn, a toilet, a danger ...): not a stamp place. */
+/** One of a route's waypoints without a stamp (a turn, a toilet, a danger ...). */
 export interface RoutePoint {
   id: string;
-  kind: Exclude<PointKind, "stamp">;
+  kind: PointKind;
   nameJa: string;
   nameEn: string | null;
   descriptionJa: string | null;
@@ -142,15 +142,15 @@ export function forViewer<T extends { stampedCount?: number | null; stamped?: bo
 }
 
 /**
- * Sample content is for design review only. It is on by default in development (set
- * SHOW_SAMPLE_CONTENT=0 to see the real empty state) and off everywhere else unless
- * SHOW_SAMPLE_CONTENT=1 (for example a preview deployment),
- * and every screen that shows it says so (see SampleNotice).
+ * Sample content is for design review only. It is on by default in development and in Vercel preview
+ * deployments (so all 19 courses can be looked at without touching any setting), and off in production
+ * unless SHOW_SAMPLE_CONTENT=1. SHOW_SAMPLE_CONTENT=0 turns it off anywhere (to see the real empty state).
+ * Every screen that shows it says so (see SampleNotice).
  */
-export function sampleContentEnabled(env: { NODE_ENV?: string; SHOW_SAMPLE_CONTENT?: string } = process.env) {
+export function sampleContentEnabled(env: { NODE_ENV?: string; VERCEL_ENV?: string; SHOW_SAMPLE_CONTENT?: string } = process.env) {
   if (env.SHOW_SAMPLE_CONTENT === "1") return true;
   if (env.SHOW_SAMPLE_CONTENT === "0") return false;
-  return env.NODE_ENV === "development"; // on by default only while developing
+  return env.NODE_ENV === "development" || env.VERCEL_ENV === "preview";
 }
 
 // What GET /routes will return per route: no description, no spot list.
@@ -290,8 +290,8 @@ export async function getSpot(id: string): Promise<SpotDetail | undefined> {
   const fromSample = sampleContentEnabled() ? sampleSpots.find((s) => s.id === id) : undefined;
   if (fromSample) return fromSample;
   const spot = await fetchPublicSpot(id);
-  // A navigation point (a turn, a toilet) has no page of its own: only stamp places do.
-  if (!spot || spot.kind !== "stamp") return undefined;
+  // A waypoint without a stamp (a turn, a toilet) has no page of its own: only the ones with a stamp do.
+  if (!spot || !spot.stampable) return undefined;
   const route = await fetchPublicRoute(spot.routeId);
   return route ? spotDetailFromApi(spot, route.route) : undefined;
 }

@@ -11,7 +11,7 @@ export function useChecklistLabels(): { item: Record<ChecklistId, string>; tab: 
       name_ja: t`ルート名（日本語）`,
       description_ja: t`説明文（日本語）`,
       line_checked: t`ルートの線を確認済み`,
-      places_published: t`公開中のスタンプ場所`,
+      places_published: t`公開中のスタンプの経由地`,
       prefecture: t`都道府県`,
       english: t`英語の名前と説明`,
       history: t`歴史・由来`,
@@ -19,6 +19,6 @@ export function useChecklistLabels(): { item: Record<ChecklistId, string>; tab: 
       photo: t`写真`,
       video: t`動画`,
     },
-    tab: { overview: t`概要`, text: t`文章`, map: t`地図と線`, places: t`スタンプ場所`, check: t`チェック` },
+    tab: { overview: t`概要`, text: t`文章`, map: t`地図と線`, places: t`経由地`, check: t`チェック` },
   };
 }

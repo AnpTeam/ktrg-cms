@@ -51,9 +51,9 @@ export function spotListItemFromApi(s: PublicSpot): SpotListItem {
   };
 }
 
-/** A navigation point; null for a stamp place or a kind this app does not know. */
+/** A waypoint without a stamp (a turn, a toilet ...); null for one with a stamp or a kind this app does not know. */
 export function routePointFromApi(s: PublicSpot): RoutePoint | null {
-  if (!isPointKind(s.kind) || s.kind === "stamp") return null;
+  if (!isPointKind(s.kind) || s.stampable) return null;
   return {
     id: s.id,
     kind: s.kind,

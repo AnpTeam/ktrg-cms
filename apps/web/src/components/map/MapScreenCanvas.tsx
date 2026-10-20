@@ -200,10 +200,12 @@ export function MapScreenCanvas({
     // with no stops of its own to show keeps its pin, so there is still something to read and press.
     const pinned = route ? [] : focus ? (focus.stops?.length ? [] : [focus]) : routes.filter((r) => r.area);
     const byId = new Map(pinned.map((r) => [r.id, r]));
-    // The map's own rule, whatever the settings: pins closer than their size merge into one group. Every course keeps
-    // its name: a pin carries its own name, and a group lists the names of the courses inside it.
+    // Pins merge only when the visitor chose 「近い場所をまとめて表示する」: by default every course shows its own
+    // name, even where pins overlap. When merging, a group lists the names of the courses inside it.
     const sideways = pinned.some((r) => r.nameLang !== "ja");
-    const groups = clusterByPixels(pinned.map((r) => pixel(r.id, r.area as Position)), sideways ? MERGE_PX.namedPin : MERGE_PX.tag);
+    const groups = mergeStops
+      ? clusterByPixels(pinned.map((r) => pixel(r.id, r.area as Position)), sideways ? MERGE_PX.namedPin : MERGE_PX.tag)
+      : pinned.map((r) => [r.id]);
     const merged: { box: LabelBox; node: HTMLElement }[] = [];
     for (const ids of groups) {
       const members = ids.map((id) => byId.get(id)!);

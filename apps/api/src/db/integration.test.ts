@@ -561,6 +561,8 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       expect(await seed(tx)).toEqual({ rallies: 20, routes: 19, spots: 31, links: 50 });
 
       expect(await tx.select().from(rallies)).toHaveLength(20);
+      // The seeded places are the sutra mounds: waypoints with a stamp.
+      expect((await tx.select({ k: spots.kind, s: spots.stampable }).from(spots)).every((x) => x.k === "mound" && x.s)).toBe(true);
       const rs = await tx.select().from(routes).orderBy(asc(routes.sortOrder));
       const routeNames = await nameOf(tx, routeTranslations, (t) => t.routeId);
       expect(rs.map((r) => routeNames.get(`${r.id}:ja`))).toEqual(SEED_ROUTES.map((r) => r.nameJa));
@@ -879,33 +881,33 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       });
     });
 
-    test("a point that stops being a stamp place leaves every rally of places; a stamped place cannot stop being one", async () => {
+    test("a waypoint whose stamp switch goes off leaves every rally of places; a stamped one cannot switch off", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {
           const list = await store.listRoutes();
           const course3 = list[2]!; // no mounds yet
-          const place = await store.createSpot(actor, course3.id, { nameJa: "経塚かもしれない場所" });
+          const place = await store.createSpot(actor, course3.id, { nameJa: "経塚かもしれない場所", stampable: true });
           const [mounds] = await tx.select({ id: rallies.id }).from(rallies).where(eq(rallies.kind, "places"));
           await tx.insert(rallySpots).values({ rallyId: mounds!.id, spotId: place!.id, position: 99 });
 
-          const asToilet = await store.updateSpot(actor, place!.id, place!.updatedAt, { kind: "toilet" });
-          expect(asToilet).toMatchObject({ kind: "toilet" });
+          const asToilet = await store.updateSpot(actor, place!.id, place!.updatedAt, { kind: "toilet", stampable: false });
+          expect(asToilet).toMatchObject({ kind: "toilet", stampable: false });
           expect(await tx.select().from(rallySpots).where(eq(rallySpots.spotId, place!.id))).toHaveLength(0);
 
-          // Back to a stamp place: it counts in its course again (no link needed), but does not rejoin the rally of places.
-          const asStamp = await store.updateSpot(actor, place!.id, (asToilet as { updatedAt: Date }).updatedAt, { kind: "stamp" });
-          expect(asStamp).toMatchObject({ kind: "stamp" });
+          // Switched on again: it counts in its course again (no link needed), but does not rejoin the rally of places.
+          const asStamp = await store.updateSpot(actor, place!.id, (asToilet as { updatedAt: Date }).updatedAt, { stampable: true });
+          expect(asStamp).toMatchObject({ stampable: true });
           expect(await tx.select().from(rallySpots).where(eq(rallySpots.spotId, place!.id))).toHaveLength(0);
 
           const stamped = asStamp as { updatedAt: Date };
           const visitor = (await tx.insert(users).values({}).returning({ id: users.id }))[0]!;
           await tx.insert(stamps).values({ userId: visitor.id, spotId: place!.id });
-          expect(await store.updateSpot(actor, place!.id, stamped.updatedAt, { kind: "turn" })).toBe("has_stamps");
+          expect(await store.updateSpot(actor, place!.id, stamped.updatedAt, { stampable: false })).toBe("has_stamps");
         });
       });
     });
 
-    test("the lists count stamp places and other points apart; a point other than a stamp place can be published without permission, a stamp place cannot", async () => {
+    test("the lists count waypoints with and without a stamp apart; one without a stamp can be published without permission, one with a stamp cannot", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {
           const list = await store.listRoutes();
@@ -913,14 +915,17 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
           const verified = { lat: 34.3, lng: 135.1, positionVerified: true, positionSource: "公式" };
           const turn = await store.createSpot(actor, route.id, { nameJa: "分かれ道", kind: "turn", ...verified });
           expect(await store.setPublished(actor, turn!.id, true)).toMatchObject({ published: true });
-          const stamp = await store.createSpot(actor, route.id, { nameJa: "経塚", kind: "stamp", ...verified });
+          const stamp = await store.createSpot(actor, route.id, { nameJa: "経塚", kind: "mound", stampable: true, ...verified });
+          // The write itself refuses a stamp place without permission: it stays a draft (no error, nothing recorded).
+          expect(await store.setPublished(actor, stamp!.id, true)).toMatchObject({ published: false });
+          // The database constraint is the backstop if that condition were ever dropped.
           await expect(
             (async () => {
               await tx.transaction(async (t) => {
-                await createDrizzleContentStore(t as unknown as typeof db).setPublished(actor, stamp!.id, true);
+                await t.update(spots).set({ published: true }).where(eq(spots.id, stamp!.id));
               });
             })(),
-          ).rejects.toThrow(); // the database still demands permission for a stamp place
+          ).rejects.toThrow();
           const row = (await store.listRoutes()).find((r) => r.id === route.id)!;
           expect([row.spotCount, row.publishedSpotCount, row.pointCount]).toEqual([1, 0, 1]);
         });

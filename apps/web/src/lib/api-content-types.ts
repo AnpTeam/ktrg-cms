@@ -37,6 +37,8 @@ export interface PublicSpot {
   position: { lat: number; lng: number; verified: true } | null;
   radiusM: number;
   kind: string;
+  /** A stamp can be collected here. */
+  stampable: boolean;
   photoUrl: string | null;
   status: "open" | "caution" | "closed";
   statusNoteJa: string | null;

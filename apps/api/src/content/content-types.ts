@@ -42,13 +42,13 @@ export interface RouteRow {
 }
 
 export interface RouteSummaryRow extends RouteRow {
-  /** Stamp places (the route's own navigation points are counted apart). */
+  /** Waypoints with a stamp (the others are counted apart in pointCount). */
   spotCount: number;
   publishedSpotCount: number;
   pointCount: number;
 }
 
-/** A stamp place as the admin sees it. */
+/** A waypoint of a route as the admin sees it (a stamp can be collected there when `stampable`). */
 export interface SpotRow {
   id: string;
   routeId: string;
@@ -61,8 +61,10 @@ export interface SpotRow {
   positionVerified: boolean;
   positionSource: string | null;
   radiusM: number;
-  /** A stamp place, or one of the route's navigation points (see spotKinds). */
+  /** What the waypoint is (see spotKinds). */
   kind: SpotKind;
+  /** Visitors can collect a stamp here. */
+  stampable: boolean;
   photoUrl: string | null;
   status: SpotStatus;
   statusNoteJa: string | null;
@@ -113,6 +115,7 @@ export interface SpotFields {
   positionSource: string | null;
   radiusM: number;
   kind: SpotKind;
+  stampable: boolean;
   photoUrl: string | null;
   status: SpotStatus;
   statusNoteJa: string | null;

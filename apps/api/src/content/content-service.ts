@@ -1,6 +1,7 @@
 import type { ErrorCode } from "../lib/api-errors";
-import { isHttpsUrl } from "../lib/https-url";
+import { stampableByDefault } from "../db/schema/content";
 import { cleanTranslations } from "../db/translations";
+import { isPhotoUrl } from "../lib/https-url";
 import { isAllowedVideoUrl } from "./video-url";
 import { lineLengthKm, parseLine, simplifyLine, sketchOf, type LineString } from "./line";
 import type {
@@ -29,6 +30,8 @@ export interface PublicSpot {
   position: { lat: number; lng: number; verified: true } | null;
   radiusM: number;
   kind: SpotRow["kind"];
+  /** A stamp can be collected here (only then does the place have a page of its own). */
+  stampable: boolean;
   photoUrl: string | null;
   status: SpotRow["status"];
   statusNoteJa: string | null;
@@ -123,6 +126,7 @@ function toPublicSpot(s: SpotRow): PublicSpot {
     position: showPosition ? { lat: s.lat!, lng: s.lng!, verified: true } : null,
     radiusM: s.radiusM,
     kind: s.kind,
+    stampable: s.stampable,
     photoUrl: s.photoUrl,
     status: s.status,
     statusNoteJa: s.statusNoteJa,
@@ -137,8 +141,10 @@ function toPublicSpot(s: SpotRow): PublicSpot {
 const text = (v: string | null | undefined): string | null | undefined =>
   v === undefined ? undefined : v === null ? null : v.trim() === "" ? null : v.trim();
 
-export function createContentService(deps: { store: ContentStore }) {
+/** `photoHosts` (PHOTO_HOSTS): when not empty, photos may only come from these host names. */
+export function createContentService(deps: { store: ContentStore; photoHosts?: readonly string[] }) {
   const { store } = deps;
+  const photoHosts = deps.photoHosts ?? [];
 
   /** Turn a request's route fields into what the store keeps, or say what is wrong. */
   function prepareRoute(input: Partial<RouteFields>): Result<Partial<StoredRouteFields>> {
@@ -164,7 +170,7 @@ export function createContentService(deps: { store: ContentStore }) {
     }
     if (input.photoUrl !== undefined) {
       const v = text(input.photoUrl);
-      if (v && !isHttpsUrl(v)) return bad("invalid_photo_url");
+      if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");
       out.photoUrl = v;
     }
     if (input.lineVerified !== undefined) out.lineVerified = input.lineVerified;
@@ -177,10 +183,10 @@ export function createContentService(deps: { store: ContentStore }) {
       else {
         const parsed = parseLine(input.geometry);
         if (!parsed.ok) return bad("invalid_line");
-        const line = simplifyLine(parsed.line, 2000);
-        out.geometry = line;
-        // The distance follows the line unless the admin typed one in the same save.
-        if (input.distanceKm === undefined) out.distanceKm = lineLengthKm(line);
+        out.geometry = simplifyLine(parsed.line, 2000);
+        // The distance follows the line unless the admin typed one in the same save. Measured before the line is
+        // simplified: cutting corners would make a winding route read shorter than it is.
+        if (input.distanceKm === undefined) out.distanceKm = lineLengthKm(parsed.line);
       }
     }
     return ok(out);
@@ -203,9 +209,10 @@ export function createContentService(deps: { store: ContentStore }) {
     if (input.radiusM !== undefined) out.radiusM = input.radiusM;
     if (input.status !== undefined) out.status = input.status;
     if (input.kind !== undefined) out.kind = input.kind;
+    if (input.stampable !== undefined) out.stampable = input.stampable;
     if (input.photoUrl !== undefined) {
       const v = text(input.photoUrl);
-      if (v && !isHttpsUrl(v)) return bad("invalid_photo_url");
+      if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");
       out.photoUrl = v;
     }
     if (input.permissionConfirmed !== undefined) out.permissionConfirmed = input.permissionConfirmed;
@@ -264,7 +271,9 @@ export function createContentService(deps: { store: ContentStore }) {
         if (!p.value.positionSource) return bad("source_required");
         if (p.value.lat === undefined || p.value.lat === null) return bad("no_coordinates");
       }
-      const s = await store.createSpot(actor, routeId, { ...p.value, nameJa: p.value.nameJa! });
+      // The stamp switch starts from the kind unless the request sets it.
+      const stampable = p.value.stampable ?? stampableByDefault(p.value.kind ?? "other");
+      const s = await store.createSpot(actor, routeId, { ...p.value, stampable, nameJa: p.value.nameJa! });
       return s ? ok(s) : bad("not_found");
     },
 
@@ -285,9 +294,8 @@ export function createContentService(deps: { store: ContentStore }) {
       if (current.published) {
         // A published place must keep passing every publish rule.
         if (!verifiedNow) return bad("position_not_verified");
-        // Only a stamp place needs the site's permission (a toilet or a turn on the path does not).
-        const kindNow = changes.kind ?? current.kind;
-        if (kindNow === "stamp" && !(changes.permissionConfirmed ?? current.permissionConfirmed)) return bad("permission_required");
+        // Only a waypoint with a stamp needs the site's permission (a toilet or a turn on the path does not).
+        if ((changes.stampable ?? current.stampable) && !(changes.permissionConfirmed ?? current.permissionConfirmed)) return bad("permission_required");
         if (changes.lat === null) return bad("no_coordinates");
       }
       const r = await store.updateSpot(actor, id, date(expected), changes);
@@ -302,9 +310,11 @@ export function createContentService(deps: { store: ContentStore }) {
       if (!s) return bad("not_found");
       if (s.lat === null || s.lng === null) return bad("no_coordinates");
       if (!s.positionVerified) return bad("position_not_verified");
-      if (s.kind === "stamp" && !s.permissionConfirmed) return bad("permission_required");
+      if (s.stampable && !s.permissionConfirmed) return bad("permission_required");
       const r = await store.setPublished(actor, id, true);
-      return r ? ok(r) : bad("not_found");
+      if (!r) return bad("not_found");
+      // The store re-checks the same rules inside the write; a place changed in between stays unpublished.
+      return r.published ? ok(r) : bad("position_not_verified");
     },
 
     async unpublishSpot(actor: string, id: string): Promise<Result<SpotRow>> {
@@ -332,8 +342,8 @@ export function createContentService(deps: { store: ContentStore }) {
       const found = await store.getRoute(id);
       if (!found) return null;
       const published = found.spots.filter((s) => s.published).sort((a, b) => a.sortOrder - b.sortOrder);
-      const stamps = published.filter((s) => s.kind === "stamp");
-      const points = published.filter((s) => s.kind !== "stamp");
+      const stamps = published.filter((s) => s.stampable);
+      const points = published.filter((s) => !s.stampable);
       return { route: toPublicRoute(found.route, stamps.length, true), spots: stamps.map(toPublicSpot), points: points.map(toPublicSpot) };
     },
 

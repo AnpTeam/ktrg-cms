@@ -34,6 +34,7 @@ export interface RouteBody {
 
 export interface PlaceBody {
   kind: PointKind;
+  stampable: boolean;
   photoUrl: string | null;
   nameJa: string;
   nameEn: string | null;
@@ -80,6 +81,7 @@ export function routeBody(d: RouteDraft): RouteBody {
 export function placeBody(p: PlaceDraft): PlaceBody {
   return {
     kind: p.kind,
+    stampable: p.stampable,
     photoUrl: nullIfEmpty(p.photoUrl),
     nameJa: p.nameJa.trim(),
     nameEn: nullIfEmpty(p.nameEn),

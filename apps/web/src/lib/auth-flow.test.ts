@@ -23,13 +23,13 @@ describe("failureFromApi", () => {
 
 describe("safeNextPath", () => {
   test("keeps a path on this site", () => {
-    expect(safeNextPath("/ja/routes/2", "/ja")).toBe("/ja/routes/2");
-    expect(safeNextPath("/en/stamps?x=1", "/en")).toBe("/en/stamps?x=1");
+    expect(safeNextPath("/routes/2", "/")).toBe("/routes/2");
+    expect(safeNextPath("/stamps?x=1", "/")).toBe("/stamps?x=1");
   });
 
   test("anything that could leave the site falls back", () => {
     for (const bad of ["https://evil.example", "//evil.example", "/\\evil.example", "javascript:alert(1)", "", null, undefined]) {
-      expect(safeNextPath(bad, "/ja")).toBe("/ja");
+      expect(safeNextPath(bad, "/")).toBe("/");
     }
   });
 });

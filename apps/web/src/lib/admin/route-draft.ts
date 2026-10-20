@@ -1,5 +1,5 @@
 import type { RouteDetail, RoutePoint } from "../content";
-import { navigationKinds, type PointKind } from "../point-kinds";
+import { stampableByDefault, type PointKind } from "../point-kinds";
 import { areaFromBounds, sketchFromPoints } from "../route-geometry";
 import { climbM, elevationsOf, lengthKm, type LngLatEle } from "./line";
 import type { Translations } from "./content-locales";
@@ -9,8 +9,8 @@ import { estimateWalkMinutes } from "./walk-time";
 // What the route editor holds while someone is typing and drawing: every field as the form shows it (text is "" when
 // empty), the line as points, and the points of the route in order. Pure, so the rules are tested without a browser.
 //
-// A "place" here is any point of the route: a stamp place (kind "stamp") or one of its navigation points (a turn, a
-// toilet, a danger ...). They share one list, because they share the map and the same checks for a position.
+// A "place" here is a waypoint of the route (a temple, a turn, a toilet, a danger ...). One list holds them all, because
+// they share the map and the same checks for a position; the `stampable` switch says whether visitors can stamp there.
 
 export interface PlaceDraft {
   /** A client-side id, stable while the place is not saved yet (and equal to `id` once it is). */
@@ -20,6 +20,8 @@ export interface PlaceDraft {
   updatedAt: string | null;
   published: boolean;
   kind: PointKind;
+  /** Visitors can collect a stamp here: it needs the site's permission to publish and counts in rallies. */
+  stampable: boolean;
   nameJa: string;
   nameEn: string;
   descriptionJa: string;
@@ -82,7 +84,7 @@ const s = (v: string | null) => v ?? "";
 
 export function placeFromServer(p: AdminSpot): PlaceDraft {
   return {
-    key: p.id, id: p.id, updatedAt: p.updatedAt, published: p.published, kind: p.kind,
+    key: p.id, id: p.id, updatedAt: p.updatedAt, published: p.published, kind: p.kind, stampable: p.stampable,
     nameJa: p.nameJa, nameEn: s(p.nameEn), descriptionJa: s(p.descriptionJa), descriptionEn: s(p.descriptionEn), translations: p.translations ?? {}, photoUrl: s(p.photoUrl),
     lat: p.lat, lng: p.lng, positionVerified: p.positionVerified, positionSource: s(p.positionSource), radiusM: p.radiusM,
     status: p.status, statusNoteJa: s(p.statusNoteJa), statusNoteEn: s(p.statusNoteEn),
@@ -112,16 +114,17 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
   };
 }
 
-export const newPlace = (key: string, lat: number | null, lng: number | null, n: number, kind: PointKind = "stamp"): PlaceDraft => ({
-  key, id: null, updatedAt: null, published: false, kind, nameJa: kind === "stamp" ? `場所${n}` : "", nameEn: "", descriptionJa: "", descriptionEn: "",
+export const newPlace = (key: string, lat: number | null, lng: number | null, n: number, kind: PointKind = "other"): PlaceDraft => ({
+  key, id: null, updatedAt: null, published: false, kind, stampable: stampableByDefault(kind),
+  nameJa: stampableByDefault(kind) ? `経由地${n}` : "", nameEn: "", descriptionJa: "", descriptionEn: "",
   translations: {}, photoUrl: "", lat, lng, positionVerified: false, positionSource: "", radiusM: 50, status: "open", statusNoteJa: "", statusNoteEn: "",
   permissionConfirmed: false, permissionNote: "",
 });
 
-/** The stamp places of a draft, in order (the numbers on the map and in the public list). */
-export const stampPlaces = (d: Pick<RouteDraft, "places">): PlaceDraft[] => d.places.filter((p) => p.kind === "stamp");
-/** The route's other points, in order. */
-export const navigationPoints = (d: Pick<RouteDraft, "places">): PlaceDraft[] => d.places.filter((p) => p.kind !== "stamp");
+/** The waypoints with a stamp, in order (the numbers on the map and in the public list). */
+export const stampPlaces = (d: Pick<RouteDraft, "places">): PlaceDraft[] => d.places.filter((p) => p.stampable);
+/** The waypoints without a stamp (turns, toilets ...), in order. */
+export const navigationPoints = (d: Pick<RouteDraft, "places">): PlaceDraft[] => d.places.filter((p) => !p.stampable);
 
 // ---- the state and its actions -------------------------------------------------------------------------------
 
@@ -234,14 +237,14 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       return next;
     }
     case "addPlace": {
-      const kind = a.kind ?? "stamp";
-      const n = d.places.filter((p) => p.kind === kind).length + 1;
+      const kind = a.kind ?? "other";
+      const n = d.places.filter((p) => p.stampable).length + 1;
       return { ...d, places: [...d.places, newPlace(a.key, a.lat, a.lng, n, kind)] };
     }
     case "addPlaces": {
       if (a.places.length === 0) return d;
-      const start = d.places.filter((p) => p.kind === "stamp").length;
-      const added = a.places.map((p, i) => ({ ...newPlace(p.key, p.lat, p.lng, start + i + 1), nameJa: p.name.trim() || `場所${start + i + 1}` }));
+      const start = d.places.filter((p) => p.stampable).length;
+      const added = a.places.map((p, i) => ({ ...newPlace(p.key, p.lat, p.lng, start + i + 1), nameJa: p.name.trim() || `経由地${start + i + 1}` }));
       return { ...d, places: [...d.places, ...added] };
     }
     case "addRow":
@@ -298,14 +301,14 @@ export type PublishBlocker = "no_coordinates" | "position_not_verified" | "permi
 
 /**
  * What still stops a place from being published, in the order the API checks it (the API decides in the end).
- * Only a stamp place needs the site's permission; a toilet or a turn on the path does not.
+ * Only a waypoint with a stamp needs the site's permission; a toilet or a turn on the path does not.
  */
 export function publishBlockers(p: PlaceDraft, dirty = false): PublishBlocker[] {
   const out: PublishBlocker[] = [];
   if (p.id === null || dirty) out.push("unsaved");
   if (p.lat === null || p.lng === null) out.push("no_coordinates");
   else if (!p.positionVerified || !p.positionSource.trim()) out.push("position_not_verified");
-  if (p.kind === "stamp" && !p.permissionConfirmed) out.push("permission_required");
+  if (p.stampable && !p.permissionConfirmed) out.push("permission_required");
   return out;
 }
 
@@ -315,7 +318,7 @@ const nz = (v: string) => (v.trim() === "" ? null : v);
 
 const pointOf = (p: PlaceDraft): RoutePoint => ({
   id: p.id ?? p.key,
-  kind: p.kind === "stamp" ? "other" : p.kind,
+  kind: p.kind,
   nameJa: p.nameJa,
   nameEn: nz(p.nameEn),
   descriptionJa: nz(p.descriptionJa),
@@ -365,6 +368,3 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
     photoUrl: nz(d.photoUrl),
   };
 }
-
-/** Whether a kind is one of the route's navigation points (handy for forms). */
-export const isNavigationKind = (kind: PointKind): boolean => (navigationKinds as readonly string[]).includes(kind);

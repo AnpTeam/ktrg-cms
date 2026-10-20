@@ -1,0 +1,103 @@
+import { Trans } from "@lingui/react/macro";
+import { ButtonLink } from "@/components/ButtonLink";
+import { Landing } from "@/components/landing/Landing";
+import { BannerCarousel } from "@/components/landing/BannerCarousel";
+import { Notice } from "@/components/Notice";
+import { ProgressSummary } from "@/components/ProgressSummary";
+import { RowLink } from "@/components/RowLink";
+import { Ruby } from "@/components/Ruby";
+import Link from "next/link";
+import { listBanners, slidesToShow } from "@/lib/banners";
+import { forViewer, listRoutes, sampleContentEnabled } from "@/lib/content";
+import { listNotices } from "@/lib/notices";
+import { parseVideoUrl } from "@/lib/video";
+import { getPrefs } from "@/lib/server-prefs";
+import { getViewer } from "@/lib/viewer";
+import { initLingui } from "@/i18n/server";
+import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
+
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
+  const i18n = await initLingui();
+  const viewer = await getViewer(searchParams);
+
+  // Not signed in: the landing page for a first-time visitor. No progress is shown at all.
+  if (!viewer.signedIn) {
+    const [routes, notices, banners] = await Promise.all([listRoutes(), listNotices(), listBanners()]);
+    // The intro video is set by the deployment (a YouTube or Vimeo link); with none, the section is left out.
+    const introVideo = parseVideoUrl(process.env.INTRO_VIDEO_URL);
+    const slides = slidesToShow(banners, sampleContentEnabled());
+    const blogUrl = process.env.BLOG_URL ?? null;
+    return <Landing locale={i18n.locale} routes={routes} notices={notices} introVideo={introVideo} slides={slides} blogUrl={blogUrl} />;
+  }
+
+  // Signed in: progress across everything that has published spots.
+  const routes = (await listRoutes()).map((r) => forViewer(r, viewer));
+  const stamped = routes.reduce((n, r) => n + (r.stampedCount ?? 0), 0);
+  const total = routes.reduce((n, r) => n + r.spotCount, 0) || TOTAL_STAMPS;
+  const name = viewer.name;
+  const prefs = await getPrefs();
+  const slides = slidesToShow(await listBanners(), sampleContentEnabled());
+
+  return (
+    <div className="flex flex-col gap-8 lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
+      {slides.length > 0 ? (
+        <div className="lg:col-span-2">
+          <BannerCarousel slides={slides} />
+        </div>
+      ) : null}
+      <section className="px-4">
+        <div className="frame p-4">
+          <h1 className="font-serif text-4xl font-bold leading-snug">
+            <Ruby reading="かつらぎしゅげん">
+              <Trans>葛城修験</Trans>
+            </Ruby>
+          </h1>
+          {name ? (
+            <p className="mt-2 text-xl font-bold">
+              <Trans>{name}さん、こんにちは。</Trans>
+            </p>
+          ) : null}
+          <p className="mt-3 font-serif text-xl font-bold">
+            <Trans>歩いた場所で、スタンプを押そう。</Trans>
+          </p>
+        </div>
+      </section>
+
+      {prefs.setupDone ? null : (
+        <Link
+          href="/welcome"
+          className="tap-target mx-4 flex flex-col rounded-3xl bg-surface p-5"
+        >
+          <span className="text-xl font-bold text-accent">
+            <Trans>見やすさを設定しませんか</Trans>
+          </span>
+          <span className="mt-1 text-lg">
+            <Trans>文字やボタンの大きさ、地図の見せ方を選べます。</Trans>
+          </span>
+        </Link>
+      )}
+
+      <ProgressSummary stamped={stamped} total={total}>
+        <ButtonLink href="/stamps">
+          <Trans>スタンプカードを見る</Trans>
+        </ButtonLink>
+      </ProgressSummary>
+
+      <RowLink
+        href="/routes"
+        title={<Trans>ルートをさがす</Trans>}
+        detail={
+          <Trans>
+            全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）
+          </Trans>
+        }
+      />
+
+      <div className="lg:col-span-2">
+        <Notice>
+          <Trans>出かける前に、公式の最新情報を確認してください。</Trans>
+        </Notice>
+      </div>
+    </div>
+  );
+}

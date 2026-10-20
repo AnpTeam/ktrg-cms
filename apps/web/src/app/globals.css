@@ -580,6 +580,15 @@ html[data-size="xlarge"] {
   text-wrap: balance;
 }
 
+/* Phone widths: no pinch zoom of the page (the text size setting replaces it). Scrolling still works, and the map
+   handles its own two-finger zoom with script. The viewport tag says the same; this covers browsers that ignore it. */
+@media (max-width: 767px) {
+  html,
+  body {
+    touch-action: pan-x pan-y;
+  }
+}
+
 /* On the home map the map is the screen: the page behind it does not scroll, and the footer lives in the sheet. */
 body.map-screen-active {
   overflow: hidden;

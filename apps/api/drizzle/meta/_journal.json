@@ -96,22 +96,8 @@
     {
       "idx": 13,
       "version": "7",
-      "when": 1792454432456,
-      "tag": "0013_trail_notices_admin",
-      "breakpoints": true
-    },
-    {
-      "idx": 14,
-      "version": "7",
-      "when": 1792456858136,
-      "tag": "0014_banners",
-      "breakpoints": true
-    },
-    {
-      "idx": 15,
-      "version": "7",
-      "when": 1792458399371,
-      "tag": "0015_content_languages",
+      "when": 1792461583133,
+      "tag": "0013_waypoints",
       "breakpoints": true
     }
   ]

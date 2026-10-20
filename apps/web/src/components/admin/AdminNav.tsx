@@ -6,13 +6,12 @@ import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 
 // The side menu of the admin area. The screens that exist are links (the generic lists come from the API, see
-// lib/admin/lists); the others are listed so the editors can see
-// what is coming, and are not links yet. On a narrow screen the list folds behind a button, so it does not push the
-// page down.
-export function AdminNav({ locale, lists }: { locale: string; lists: { key: string; title: string }[] }) {
+// lib/admin/lists); the others are listed so the editors can see what is coming, and are not links yet. On a narrow
+// screen the list folds behind a button, so it does not push the page down.
+export function AdminNav({ lists }: { lists: { key: string; title: string }[] }) {
   const { t } = useLingui();
   const pathname = usePathname() ?? "";
-  const base = `/${locale}/admin`;
+  const base = "/admin";
   const [open, setOpen] = useState(false);
 
   const ready = [

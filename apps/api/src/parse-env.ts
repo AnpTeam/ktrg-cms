@@ -44,6 +44,10 @@ const EnvSchema = Type.Object({
   R2_BUCKET_NAME: Type.Optional(Type.String({ minLength: 1 })),
   // The bucket's public address (its r2.dev URL or a custom domain), https and no trailing slash.
   R2_PUBLIC_URL: Type.Optional(Type.String({ pattern: "^https://[^/]+(/[^?#]*[^/?#])?$" })),
+  // Comma-separated host names a route or place photo may come from (for example photos.example.com). Unset: any
+  // https address is accepted. Set it once photos live in the bucket, so an editor cannot point visitors' browsers
+  // at a stranger's server.
+  PHOTO_HOSTS: Type.Optional(Type.String()),
 });
 
 const R2_SETTINGS = ["R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET_NAME", "R2_PUBLIC_URL"] as const;

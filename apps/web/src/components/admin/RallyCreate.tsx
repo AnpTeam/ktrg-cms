@@ -43,7 +43,7 @@ export function RallyCreate({
     const res = await outcome(api.admin.rallies.post({ kind, nameJa, nameEn: nameEn.trim() || null, translations, ...members }));
     setBusy(false);
     if (!res.ok) return setError(messages[res.key]);
-    router.push(`/${locale}/admin/rallies/${res.data.rally.id}`);
+    router.push(`/admin/rallies/${res.data.rally.id}`);
   }
 
   const choice = (value: AdminRallyKind, title: string, text: string) => (
@@ -67,8 +67,8 @@ export function RallyCreate({
 
       <Section title={t`つくり方`}>
         <div className="flex flex-col gap-3 sm:flex-row">
-          {choice("course", t`コースでつくる`, t`えらんだコースを全部歩き終えると達成。コースはスタンプ場所を全部押すと完了。`)}
-          {choice("places", t`場所でつくる`, t`えらんだスタンプ場所を全部押すと達成（経塚のラリーなど）。`)}
+          {choice("course", t`コースでつくる`, t`えらんだコースを全部歩き終えると達成。コースはスタンプの経由地を全部押すと完了。`)}
+          {choice("places", t`経由地でつくる`, t`えらんだ経由地のスタンプを全部押すと達成（経塚のラリーなど）。`)}
         </div>
         <p className="text-base text-muted">{t`つくり方は、あとから変えられません。`}</p>
       </Section>
@@ -77,7 +77,7 @@ export function RallyCreate({
         <MultilingualField id="new-rally-name" label={t`ラリーの名前`} field="name" ja={nameJa} en={nameEn} translations={translations} onJa={setNameJa} onEn={setNameEn} onTranslations={setTranslations} required invalid={nameJa.trim() === ""} />
       </Section>
 
-      <Section title={kind === "course" ? t`ラリーに入れるコース` : t`ラリーに入れるスタンプ場所`}>
+      <Section title={kind === "course" ? t`ラリーに入れるコース` : t`ラリーに入れる経由地`}>
         <RallyMemberPicker
           candidates={kind === "course" ? { kind: "course", items: courses } : { kind: "places", items: places }}
           selected={picked[kind]}

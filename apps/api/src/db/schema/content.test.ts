@@ -12,6 +12,7 @@ import {
   routes,
   routeTranslations,
   spotKinds,
+  stampableByDefault,
   spots,
   spotTranslations,
   stamps,
@@ -73,10 +74,14 @@ describe("content schema", () => {
     for (const c of ["history", "access"]) expect(col(routeTranslations, c).notNull).toBe(false);
   });
 
-  test("a point is a stamp place unless it says otherwise; the other kinds are the route's own points and map categories", () => {
-    expect(col(spots, "kind").default).toBe("stamp");
+  test("a waypoint is kind other with no stamp unless it says otherwise; the kinds are what it is, the switch is whether it stamps", () => {
+    expect(col(spots, "kind").default).toBe("other");
     expect(col(spots, "kind").notNull).toBe(true);
-    expect(spotKinds[0]).toBe("stamp");
+    expect(col(spots, "stampable").default).toBe(false);
+    expect(col(spots, "stampable").notNull).toBe(true);
+    expect(spotKinds as readonly string[]).not.toContain("stamp");
+    for (const k of ["temple", "mound", "view", "other"]) expect(stampableByDefault(k as (typeof spotKinds)[number])).toBe(true);
+    for (const k of ["turn", "danger", "toilet", "rest_area", "drinking_water", "vending_machine", "bus_stop", "station", "parking"]) expect(stampableByDefault(k as (typeof spotKinds)[number])).toBe(false);
     for (const k of ["turn", "danger", "toilet", "rest_area", "drinking_water", "bus_stop"]) expect(spotKinds as readonly string[]).toContain(k);
     expect(col(spots, "photo_url").notNull).toBe(false);
   });

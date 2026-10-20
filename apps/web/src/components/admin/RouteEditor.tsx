@@ -229,7 +229,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     setMessage({ kind: "ok", text: t`保存しました。` });
     setProblems([]);
     setSaving(false);
-    if (snapshot.id === null) router.replace(`/${locale}/admin/routes/${routeId}`);
+    if (snapshot.id === null) router.replace(`/admin/routes/${routeId}`);
   }
 
   async function setPublished(key: string, publish: boolean) {
@@ -252,7 +252,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     if (!draft.id || saving) return;
     if (!window.confirm(t`このルートを削除します。元に戻せません。よろしいですか？`)) return;
     const res = await outcome(api.admin.routes({ id: draft.id }).delete());
-    if (res.ok) router.replace(`/${locale}/admin/routes`);
+    if (res.ok) router.replace(`/admin/routes`);
     else setMessage({ kind: "error", text: messages[res.key] });
   }
 
@@ -409,7 +409,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   onMovePlace={(key, lat, lng) => dispatch({ type: "movePlace", key, lat, lng })}
                   onRemovePlace={(key) => {
                     const p = draft.places.find((x) => x.key === key);
-                    if (p?.published) setMessage({ kind: "error", text: t`公開中の場所は消せません。先に「公開をやめる」を押してください。` });
+                    if (p?.published) setMessage({ kind: "error", text: t`公開中の経由地は消せません。先に「公開をやめる」を押してください。` });
                     else dispatch({ type: "removePlace", key });
                   }}
                   onSelectPlace={setSelectedKey}
@@ -433,7 +433,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
             ) : null}
 
             {section === "places" ? (
-              <Section title={t`場所（${draft.places.length}か所）`}>
+              <Section title={t`経由地（${draft.places.length}か所）`}>
                 <div role="group" aria-label={t`場所の見せ方`} className="flex flex-wrap gap-2">
                   {(["table", "detail"] as const).map((v) => (
                     <button
@@ -460,7 +460,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   <p className="rounded-xl bg-paper p-4 text-lg">
                     {t`まだありません。`}{" "}
                     <button type="button" onClick={() => setSection("map")} className="font-bold text-accent underline underline-offset-4">
-                      {t`「地図と線」で場所を置く`}
+                      {t`「地図と線」で経由地を置く`}
                     </button>
                   </p>
                 ) : (
@@ -536,7 +536,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
               <button type="button" onClick={deleteRoute} disabled={draft.places.length > 0 || saving} className="tap-target w-fit rounded-xl border-2 border-danger px-5 text-lg font-bold text-danger disabled:opacity-40">
                 {t`このルートを削除`}
               </button>
-              {draft.places.length > 0 ? <p className="text-base text-muted">{t`場所が残っているルートは削除できません。`}</p> : null}
+              {draft.places.length > 0 ? <p className="text-base text-muted">{t`経由地が残っているルートは削除できません。`}</p> : null}
             </div>
           ) : null}
         </div>

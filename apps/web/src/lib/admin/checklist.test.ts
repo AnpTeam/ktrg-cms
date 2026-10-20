@@ -56,10 +56,10 @@ describe("checklist", () => {
 });
 
 describe("factsFromDraft", () => {
-  test("counts only published stamp places, not navigation points", () => {
+  test("counts only published waypoints with a stamp, not the others", () => {
     const d = emptyDraft();
-    const stamp = { ...newPlace("a", 34, 135, 1, "stamp"), published: true };
-    const draftStamp = newPlace("b", 34, 135, 2, "stamp");
+    const stamp = { ...newPlace("a", 34, 135, 1), published: true };
+    const draftStamp = newPlace("b", 34, 135, 2);
     const point = { ...newPlace("c", 34, 135, 3, "toilet"), published: true };
     d.places = [stamp, draftStamp, point];
     expect(factsFromDraft(d).publishedStampPlaces).toBe(1);

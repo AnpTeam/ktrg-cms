@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Trans } from "@lingui/react/macro";
 import { initLingui } from "@/i18n/server";
-import { localePath } from "@/lib/rally";
 import { StampFace } from "./StampFace";
 
 /**
@@ -9,7 +8,7 @@ import { StampFace } from "./StampFace";
  * for, reassures that browsing needs none, and offers the two ways in.
  */
 export async function SignInPrompt() {
-  const { locale } = await initLingui();
+  await initLingui();
   return (
     <section className="mx-4 flex flex-col gap-4 rounded-3xl bg-surface p-5">
       <div className="flex items-start gap-4">
@@ -25,13 +24,13 @@ export async function SignInPrompt() {
       </div>
       <div className="flex flex-col gap-3">
         <Link
-          href={localePath(locale, "/register")}
+          href="/register"
           className="tap-target flex min-h-14 items-center justify-center rounded-xl bg-brand px-6 text-xl font-bold text-on-brand"
         >
           <Trans>新規登録</Trans>
         </Link>
         <Link
-          href={localePath(locale, "/login")}
+          href="/login"
           className="tap-target flex min-h-14 items-center justify-center rounded-xl border-2 border-ink px-6 text-xl font-bold text-ink hover:bg-surface"
         >
           <Trans>ログイン</Trans>

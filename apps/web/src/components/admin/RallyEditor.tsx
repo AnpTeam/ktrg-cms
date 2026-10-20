@@ -88,14 +88,14 @@ export function RallyEditor({
     const res = await outcome(one().delete());
     setBusy(false);
     if (!res.ok) return setNotice({ kind: "error", text: messages[res.key] });
-    router.push(`/${locale}/admin/rallies`);
+    router.push(`/admin/rallies`);
   }
 
   return (
     <div className="flex flex-col gap-5">
       <h1 className="text-3xl font-bold">{title}</h1>
       <p className="text-lg text-muted">
-        {saved.kind === "places" ? t`場所でつくったラリー：えらんだスタンプ場所を全部押すと達成。` : t`コースでつくったラリー：えらんだコースを全部終えると達成。`}
+        {saved.kind === "places" ? t`経由地でつくったラリー：えらんだ経由地のスタンプを全部押すと達成。` : t`コースでつくったラリー：えらんだコースを全部終えると達成。`}
         {" "}
         {saved.published ? t`公開中` : t`下書き`}
         {" ・ "}
@@ -138,12 +138,12 @@ export function RallyEditor({
         {namesChanged || membersChanged ? <p className="text-base text-muted">{t`保存していない変更があります。先に保存してから公開を切りかえてください。`}</p> : null}
       </Section>
 
-      <Section title={saved.kind === "places" ? t`ラリーに入るスタンプ場所` : t`ラリーに入るコース`}>
+      <Section title={saved.kind === "places" ? t`ラリーに入る経由地` : t`ラリーに入るコース`}>
         <RallyMemberPicker candidates={candidates} selected={ids} onChange={setIds} routeNames={routeNames} locale={locale} disabled={busy} />
         <button type="button" onClick={saveMembers} disabled={busy || !membersChanged} className="tap-target w-fit rounded-xl bg-brand px-6 text-lg font-bold text-on-brand disabled:opacity-50">
           {t`ラリーの中身を保存`}
         </button>
-        <p className="text-base text-muted">{t`下書きの場所は、公開されるまで数に入りません。スタンプの記録は変わりません。`}</p>
+        <p className="text-base text-muted">{t`下書きの経由地は、公開されるまで数に入りません。スタンプの記録は変わりません。`}</p>
       </Section>
 
       <Section title={t`削除`}>
