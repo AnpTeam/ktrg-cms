@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { Elysia, t } from "elysia";
 import { fail } from "../auth/http";
 import type { ContentService, PublicSpot } from "./content-service";
@@ -21,6 +22,16 @@ export function publicContentRoutes(getContent: () => ContentService) {
       },
       { params: idParams },
     )
+    .get("/spots/status", async ({ headers }) => {
+      const spots = (await getContent().publicSpotStatuses())
+        .sort((a, b) => (a.id < b.id ? -1 : 1)) // same data, same ETag
+        .map((s) => ({ ...s, statusUpdatedAt: s.statusUpdatedAt ? s.statusUpdatedAt.toISOString() : null }));
+      const body = JSON.stringify({ ok: true, spots });
+      const etag = `"${createHash("sha1").update(body).digest("base64url")}"`;
+      // no-cache: the browser keeps the copy but asks again every time, and gets a 304 when nothing changed.
+      const h = { etag, "cache-control": "no-cache", "content-type": "application/json" };
+      return headers["if-none-match"] === etag ? new Response(null, { status: 304, headers: h }) : new Response(body, { headers: h });
+    })
     .get(
       "/spots/:id",
       async ({ params, set }) => {

@@ -115,6 +115,10 @@ export function createDrizzleContentStore(db: Db): ContentStore {
       return s ? spotFromDb(db, s) : null;
     },
 
+    async listPublishedSpots() {
+      return withSpotTexts(db, await db.select().from(spots).where(eq(spots.published, true)));
+    },
+
     async createRoute(actor, fields) {
       const { rest, texts } = splitTexts(ROUTE_TEXT, fields);
       return db.transaction(async (tx) => {
