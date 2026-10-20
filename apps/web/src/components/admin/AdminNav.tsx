@@ -18,6 +18,7 @@ export function AdminNav({ lists }: { lists: { key: string; title: string }[] })
     { href: `${base}/routes`, label: t`ルート` },
     { href: `${base}/rallies`, label: t`ラリー` },
     ...lists.map((l) => ({ href: `${base}/${l.key}`, label: l.title })),
+    { href: `${base}/settings`, label: t`サイト全体の設定` },
   ];
   const later = [t`ページの文章`];
 

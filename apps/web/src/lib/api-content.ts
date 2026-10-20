@@ -19,7 +19,7 @@ function sketchFromList(sketch: [number, number][] | null): Sketch | null {
 
 const prefectureOf = (p: string | null): Prefecture | null => (p === "osaka" || p === "wakayama" || p === "nara" ? p : null);
 
-export function routeSummaryFromApi(r: PublicRoute, order: number): RouteSummary {
+export function routeSummaryFromApi(r: PublicRoute, order: number, stampedCount = 0): RouteSummary {
   return {
     id: r.id,
     order,
@@ -35,20 +35,20 @@ export function routeSummaryFromApi(r: PublicRoute, order: number): RouteSummary
     sketch: sketchFromList(r.sketch),
     area: areaFromBounds(r.bounds),
     spotCount: r.publishedSpotCount,
-    // Nobody has stamped a real place yet (stamping is not built); the viewer filter hides this when signed out.
-    stampedCount: 0,
+    // How many of this course's places the visitor has stamped (0 when signed out; the viewer filter hides it then).
+    stampedCount,
     photoUrl: r.photoUrl,
   };
 }
 
-export function spotListItemFromApi(s: PublicSpot): SpotListItem {
+export function spotListItemFromApi(s: PublicSpot, stamped = false): SpotListItem {
   return {
     id: s.id,
     nameJa: s.nameJa,
     nameEn: s.nameEn,
     status: s.status,
     ...(isPointKind(s.kind) ? { kind: s.kind } : {}),
-    stamped: false,
+    stamped,
     position: s.position ? { lat: s.position.lat, lng: s.position.lng, verified: true } : null,
   };
 }
@@ -87,10 +87,17 @@ export function routePointFromApi(s: PublicSpot): RoutePoint | null {
   };
 }
 
-export function routeDetailFromApi(r: PublicRoute, spots: PublicSpot[], order: number, points: PublicSpot[] = []): RouteDetail {
+export function routeDetailFromApi(
+  r: PublicRoute,
+  spots: PublicSpot[],
+  order: number,
+  points: PublicSpot[] = [],
+  /** The ids of the places the visitor has stamped. */
+  mine: ReadonlySet<string> = new Set(),
+): RouteDetail {
   const line = r.line?.coordinates ?? null;
   return {
-    ...routeSummaryFromApi(r, order),
+    ...routeSummaryFromApi(r, order, spots.filter((s) => mine.has(s.id)).length),
     // The detail has the whole line, so its silhouette and elevation come from that.
     sketch: line ? sketchFromPoints(line) : null,
     descriptionJa: r.descriptionJa,
@@ -99,7 +106,7 @@ export function routeDetailFromApi(r: PublicRoute, spots: PublicSpot[], order: n
     historyEn: r.historyEn,
     accessJa: r.accessJa,
     accessEn: r.accessEn,
-    spots: spots.map(spotListItemFromApi),
+    spots: spots.map((s) => spotListItemFromApi(s, mine.has(s.id))),
     points: points.flatMap((p) => routePointFromApi(p) ?? []),
     line: line ? line.map(([lng, lat]) => ({ lat, lng })) : null,
     videoUrl: r.videoUrl,
@@ -107,9 +114,9 @@ export function routeDetailFromApi(r: PublicRoute, spots: PublicSpot[], order: n
   };
 }
 
-export function spotDetailFromApi(s: PublicSpot, route: Pick<PublicRoute, "id" | "nameJa" | "nameEn">): SpotDetail {
+export function spotDetailFromApi(s: PublicSpot, route: Pick<PublicRoute, "id" | "nameJa" | "nameEn">, stamped = false): SpotDetail {
   return {
-    ...spotListItemFromApi(s),
+    ...spotListItemFromApi(s, stamped),
     routeId: route.id,
     routeNameJa: route.nameJa,
     routeNameEn: route.nameEn,

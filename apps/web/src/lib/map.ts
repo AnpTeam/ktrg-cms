@@ -13,8 +13,16 @@ export const gsiAttribution = `<a href="${gsiTileListUrl}" target="_blank" rel="
 /** Real tile ranges (checked on the GSI tile list): base map 5 to 18, relief 5 to 15, hillshade 2 to 16. */
 export const zoomLimits = { min: 5, max: 18, reliefMax: 15, hillshadeMax: 16 } as const;
 
-export const gsiTileUrl = (layer: "std" | "pale" | "relief" | "hillshademap") =>
-  `https://cyberjapandata.gsi.go.jp/xyz/${layer}/{z}/{x}/{y}.png`;
+export const gsiTileUrl = (layer: "std" | "pale" | "blank" | "seamlessphoto" | "relief" | "hillshademap") =>
+  `https://cyberjapandata.gsi.go.jp/xyz/${layer}/{z}/{x}/{y}.${layer === "seamlessphoto" ? "jpg" : "png"}`;
+
+/** The GSI layer behind each base map choice, and the last zoom it has tiles for (beyond it the tiles are stretched). */
+const baseTiles = {
+  std: { layer: "std", maxzoom: 18 },
+  pale: { layer: "pale", maxzoom: 18 },
+  blank: { layer: "blank", maxzoom: 14 },
+  photo: { layer: "seamlessphoto", maxzoom: 18 },
+} as const;
 
 export interface Position {
   lat: number;
@@ -51,7 +59,7 @@ export function lineFeature(points: readonly Position[]): LineFeature {
 export const terrainLayerId = "gsi-terrain";
 
 /**
- * The base map: GSI tiles (standard or pale), plus the terrain overlay (hidden until the visitor
+ * The base map: GSI tiles (standard, pale, blank or photo), plus the terrain overlay (hidden until the visitor
  * turns it on). Raster tiles only. The overlay's tiles stop at their own maximum zoom, so they
  * are stretched beyond it.
  */
@@ -63,10 +71,10 @@ export function mapStyle(settings: MapSettings = defaultMapSettings): StyleSpeci
     sources: {
       "gsi-base": {
         type: "raster",
-        tiles: [gsiTileUrl(settings.base)],
+        tiles: [gsiTileUrl(baseTiles[settings.base].layer)],
         tileSize: 256,
         minzoom: zoomLimits.min,
-        maxzoom: zoomLimits.max,
+        maxzoom: baseTiles[settings.base].maxzoom,
         attribution: gsiAttribution,
       },
       "gsi-terrain": {
@@ -81,7 +89,13 @@ export function mapStyle(settings: MapSettings = defaultMapSettings): StyleSpeci
     layers: [
       // A calm colour shows where tiles have not arrived yet (weak signal), instead of a hole.
       { id: "background", type: "background", paint: { "background-color": "#dfe7e1" } },
-      { id: "gsi-base", type: "raster", source: "gsi-base" },
+      {
+        id: "gsi-base",
+        type: "raster",
+        source: "gsi-base",
+        // Calming the tiles: less colour and less contrast make the same map easier on the eyes (0 leaves them as drawn).
+        paint: { ...(settings.saturation !== 0 ? { "raster-saturation": settings.saturation } : {}), ...(settings.contrast !== 0 ? { "raster-contrast": settings.contrast } : {}) },
+      },
       {
         id: terrainLayerId,
         type: "raster",

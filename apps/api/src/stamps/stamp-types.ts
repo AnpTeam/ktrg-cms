@@ -5,6 +5,7 @@ export type SpotStatus = "open" | "caution" | "closed";
 /** What the stamping rules need to know about a place. */
 export interface StampSpot {
   id: string;
+  routeId: string;
   published: boolean;
   stampable: boolean;
   positionVerified: boolean;
@@ -48,7 +49,7 @@ export interface StampStore {
   /** Saves the stamp (one per visitor and place) and, in the same transaction, the courses and rallies it finishes. */
   award(userId: string, spotId: string, flag: { flagged: boolean; flagReason: string | null }): Promise<Awarded>;
   /** The visitor's own stamps that are not revoked. */
-  listMine(userId: string): Promise<{ spotId: string; createdAt: Date }[]>;
+  listMine(userId: string): Promise<{ spotId: string; routeId: string; createdAt: Date }[]>;
   /** Revokes or restores; the audit row commits with it. Doing it again changes nothing and writes no audit row. */
   setRevoked(actor: string, id: string, revoked: boolean): Promise<"ok" | "not_found">;
 }

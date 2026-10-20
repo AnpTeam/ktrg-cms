@@ -1,5 +1,5 @@
 {
-  "id": "7b5232b1-92d2-44c3-b951-695ae2916cf7",
+  "id": "bd875dcc-2773-4dd2-97a1-dfc705b9cecf",
   "prevId": "cb236c31-5e09-4e07-b057-df9b63e4e714",
   "version": "7",
   "dialect": "postgresql",
@@ -1642,6 +1642,38 @@
       },
       "isRLSEnabled": false
     },
+    "public.site_settings": {
+      "name": "site_settings",
+      "schema": "",
+      "columns": {
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.spot_translations": {
       "name": "spot_translations",
       "schema": "",
@@ -1772,13 +1804,6 @@
         },
         "stampable": {
           "name": "stampable",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
-        },
-        "stop_by": {
-          "name": "stop_by",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,

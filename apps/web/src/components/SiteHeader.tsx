@@ -34,13 +34,10 @@ export function SiteHeader({
   signedIn,
   name,
   sample,
-  devTools,
 }: {
   signedIn: boolean;
   name: string | null;
   sample: boolean;
-  /** Development only: shows the developer links (the map style page). */
-  devTools: boolean;
 }) {
   const { t } = useLingui();
   const router = useRouter();
@@ -237,17 +234,6 @@ export function SiteHeader({
                 </li>
               ))}
             </ul>
-            {devTools ? (
-              <div className="flex flex-col gap-2 border-t-2 border-line pt-4">
-                <p className="text-lg font-bold">{t`開発用`}</p>
-                <Link
-                  href="/settings/map"
-                  className="tap-target flex items-center rounded-xl border border-ink px-4 text-lg font-bold text-ink hover:bg-paper"
-                >
-                  {t`地図の見た目の設定`}
-                </Link>
-              </div>
-            ) : null}
           </div>
         </div>
       ) : null}
