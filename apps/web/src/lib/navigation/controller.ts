@@ -1,10 +1,12 @@
 // One navigation session, wired together without any screen: the stops the visitor has already stamped, the phone's
-// position, and the state step. A screen subscribes with `onChange`. Nothing here sends or keeps coordinates: the last
-// fix is held in memory only to recompute right after a stamp, and is dropped on stop.
+// position, the state step, and (signed in, off the course line) walking paths from our API. A screen subscribes with
+// `onChange`. Coordinates are kept in memory only (the last fix, where the last path was asked from) and dropped on stop;
+// the only one sent anywhere is the path request's starting point.
 
 import type { GeoFailure } from "../stamp-flow";
 import { createPositionWatcher, type GeoApi, type VisibilityApi } from "./position-watcher";
-import { applyFix, initialState, type NavModel, type NavPath, type NavReading, type NavState } from "./session";
+import { PATH_BACKOFF_MS, shouldAskForPath, type LastAsk, type PathAnswer } from "./path-client";
+import { applyFix, initialState, trackOf, wantsPath, type NavModel, type NavPath, type NavReading, type NavState } from "./session";
 
 export interface NavSnapshot {
   state: NavState;
@@ -27,6 +29,8 @@ export interface ControllerDeps {
   now: () => number;
   /** The visitor's stamps from the server; null when they cannot be read. */
   loadStamps: () => Promise<Set<string> | null>;
+  /** Asks for a walking path; leave it out for a signed-out visitor (then off the line it is straight to the stop). */
+  fetchPath?: (spotId: string, from: { lat: number; lng: number }) => Promise<PathAnswer>;
   onChange: (snapshot: NavSnapshot) => void;
 }
 
@@ -37,6 +41,10 @@ export function createNavigationController(deps: ControllerDeps) {
   let stampsKnown = false;
   let last: NavReading | null = null;
   let path: NavPath | null = null;
+  let lastAsk: LastAsk | null = null;
+  let asking = false;
+  // Bumped on stop, so an answer for an earlier session is dropped.
+  let generation = 0;
   let snap: NavSnapshot = { state: initialState(), stamped, stampsKnown, paused: false, problem: null, lastFixAtMs: null };
 
   const emit = (patch: Partial<NavSnapshot>) => {
@@ -45,9 +53,31 @@ export function createNavigationController(deps: ControllerDeps) {
     deps.onChange(snap);
   };
 
+  const askForPath = (stopId: string, from: NavReading) => {
+    const fetchPath = deps.fetchPath;
+    if (!fetchPath) return;
+    asking = true;
+    const gen = generation;
+    const atMs = deps.now();
+    lastAsk = { stopId, atMs, from: { lat: from.lat, lng: from.lng } };
+    void fetchPath(stopId, { lat: from.lat, lng: from.lng }).then((answer) => {
+      if (gen !== generation) return;
+      asking = false;
+      if (!alive) return;
+      if (answer.ok) {
+        path = { stopId, ...trackOf(answer.line) };
+        if (last) emit({ state: applyFix(model, snap.state, last, stamped, path) });
+      } else if (answer.backOff && lastAsk) {
+        lastAsk = { ...lastAsk, backOffUntilMs: atMs + PATH_BACKOFF_MS };
+      }
+    });
+  };
+
   const apply = (reading: NavReading) => {
     last = reading;
-    emit({ state: applyFix(model, snap.state, reading, stamped, path), stamped, lastFixAtMs: deps.now(), problem: null });
+    const state = applyFix(model, snap.state, reading, stamped, path);
+    emit({ state, stamped, lastFixAtMs: deps.now(), problem: null });
+    if (deps.fetchPath && !asking && shouldAskForPath(wantsPath(state), state.targetId, reading, deps.now(), lastAsk)) askForPath(state.targetId!, reading);
   };
 
   const watcher = createPositionWatcher({
@@ -88,6 +118,9 @@ export function createNavigationController(deps: ControllerDeps) {
       alive = false;
       last = null;
       path = null;
+      lastAsk = null;
+      asking = false;
+      generation++;
     },
     /** After a successful stamp: move on at once, without waiting for the server's list. */
     markStamped(id: string) {

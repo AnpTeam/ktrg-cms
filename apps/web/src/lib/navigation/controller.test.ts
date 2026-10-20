@@ -11,7 +11,7 @@ const spot = (id: string, lng: number, over: Partial<PublicSpot> = {}): PublicSp
   ({ id, routeId: "r", stampable: true, position: { lat: LAT, lng, verified: true }, radiusM: 50, status: "open", sortOrder: 1, ...over }) as PublicSpot;
 const spots = [spot("a", 135.003, { sortOrder: 1 }), spot("b", 135.006, { sortOrder: 2 }), spot("c", 135.01, { sortOrder: 3 })];
 
-function setup(stampsOnServer: Set<string> | null = new Set()) {
+function setup(stampsOnServer: Set<string> | null = new Set(), fetchPath?: Parameters<typeof createNavigationController>[0]["fetchPath"]) {
   let deliver: ((p: { coords: { latitude: number; longitude: number; accuracy: number } }) => void) | null = null;
   const watching = new Set<number>();
   const geo: GeoApi = {
@@ -31,6 +31,7 @@ function setup(stampsOnServer: Set<string> | null = new Set()) {
     doc,
     now: () => t,
     loadStamps: async () => stampsOnServer,
+    fetchPath,
     onChange: (s) => seen.push(s),
   });
   return {
@@ -110,6 +111,41 @@ describe("a navigation session", () => {
     expect(s.c.snapshot.state.mode).toBe("path");
     s.c.setPath(null);
     expect(s.c.snapshot.state.mode).toBe("straight");
+  });
+
+  test("signed in and off the line: asks for a path once, follows it, and does not ask again while standing still", async () => {
+    const asks: string[] = [];
+    const s = setup(new Set(), async (spotId) => {
+      asks.push(spotId);
+      return { ok: true, line: [[135.003, LAT + 0.004], [135.003, LAT]] };
+    });
+    await s.c.start();
+    for (let i = 0; i < 3; i++) s.walkAt(135.003, LAT + 0.004); // far north of the line
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(asks).toEqual(["a"]);
+    expect(s.c.snapshot.state.mode).toBe("path");
+    s.walkAt(135.003, LAT + 0.004);
+    expect(asks).toEqual(["a"]);
+  });
+
+  test("signed out (no fetchPath): off the line stays straight, nothing is asked", async () => {
+    const s = setup();
+    await s.c.start();
+    for (let i = 0; i < 3; i++) s.walkAt(135.003, LAT + 0.004);
+    expect(s.c.snapshot.state.mode).toBe("straight");
+  });
+
+  test("a path answer that arrives after stop is dropped", async () => {
+    let release!: (v: { ok: true; line: [number, number][] }) => void;
+    const s = setup(new Set(), () => new Promise((r) => (release = r)));
+    await s.c.start();
+    for (let i = 0; i < 3; i++) s.walkAt(135.003, LAT + 0.004);
+    s.c.stop();
+    const count = s.seen.length;
+    release({ ok: true, line: [[135.003, LAT + 0.004], [135.003, LAT]] });
+    await Promise.resolve();
+    expect(s.seen.length).toBe(count);
   });
 
   test("stop clears the watch, forgets the position, and later events change nothing", async () => {
