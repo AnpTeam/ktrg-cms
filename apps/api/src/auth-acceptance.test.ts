@@ -58,6 +58,7 @@ function setup(opts: { adminEmails?: string[] } = {}) {
   const profiles = createMemoryMeStore(users);
   const audit = createMemoryAuditWriter();
   const mail: MailMessage[] = [];
+  const stampMem = createMemoryStampStore(audit.writer);
   const services = createServices({
     stores: {
       otp: otpStore,
@@ -67,7 +68,8 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       me: profiles.store,
       content: createMemoryContentStore(audit.writer).store,
       rallyAdmin: createMemoryRallyAdminStore(audit.writer).store,
-      stamps: createMemoryStampStore(audit.writer).store,
+      stamps: stampMem.store,
+      stampList: stampMem.listStore,
       notices: createMemoryNoticeStore(audit.writer).store,
       banners: createMemoryBannerStore(audit.writer).store,
       places: createMemoryPlaceStore(audit.writer).store,
@@ -329,6 +331,7 @@ describe("user B cannot touch user A", () => {
     "PUT /api/v1/admin/routes/:id/spots/order": () => ({ ids: [] }),
     "PATCH /api/v1/admin/spots/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/rallies": () => ({ kind: "course", nameJa: "x" }),
+    "PATCH /api/v1/admin/lists/stamps/:id": () => ({ updatedAt: new Date().toISOString(), revoked: true }),
     "POST /api/v1/stamps": () => ({ spotId: crypto.randomUUID(), lat: 34, lng: 135, accuracyM: 10 }),
     "PUT /api/v1/admin/rallies/order": () => ({ ids: [] }),
     "PATCH /api/v1/admin/rallies/:id": () => ({ updatedAt: new Date().toISOString() }),

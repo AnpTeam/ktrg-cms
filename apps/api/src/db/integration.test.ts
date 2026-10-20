@@ -15,6 +15,7 @@ import { createDrizzleSessionStore } from "../auth/session-store";
 import { createDb } from "./client";
 import { listRalliesWithProgress, ralliesForPlace, recordFinished } from "../rallies/rally-store";
 import { createDrizzleRallyAdminStore } from "../rallies/rally-admin-store";
+import { createDrizzleStampListStore } from "../stamps/stamp-list";
 import { createDrizzleStampStore } from "../stamps/stamp-store";
 import { createDrizzleNoticeStore } from "../notices/notice-store";
 import { createDrizzleBannerStore } from "../banners/banner-store";
@@ -766,13 +767,17 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       expect(await tx.select().from(courseCompletions).where(eq(courseCompletions.userId, me!.id))).toHaveLength(1);
 
       expect((await store.listMine(me!.id)).map((s) => s.spotId).sort()).toEqual([a!.id, b!.id].sort());
-      const [queued] = await store.listFlagged(false);
-      expect(queued).toMatchObject({ userId: me!.id, spotId: a!.id, flagReason: "low_accuracy", revokedAt: null });
+      // The admin list: newest first, member number and place name, no user id or email.
+      const rows = await createDrizzleStampListStore(tx as unknown as typeof db).list(null, 10);
+      const queued = rows.find((r) => r.flagged)!;
+      expect(rows).toHaveLength(2);
+      expect(queued).toMatchObject({ flagReason: "low_accuracy", revoked: false, memberId: expect.any(String), spotName: expect.any(String) });
+      expect(queued.spotName).not.toBe(""); // the place's Japanese name, joined in
+      expect(JSON.stringify(rows)).not.toContain(me!.id);
 
       expect(await store.setRevoked(admin!.id, queued!.id, true)).toBe("ok");
       expect((await store.listMine(me!.id)).map((s) => s.spotId)).toEqual([b!.id]);
-      expect(await store.listFlagged(false)).toEqual([]);
-      expect(await store.listFlagged(true)).toHaveLength(1);
+      expect((await createDrizzleStampListStore(tx as unknown as typeof db).get(queued.id))!.revoked).toBe(true);
       expect(await store.setRevoked(admin!.id, queued!.id, false)).toBe("ok");
       expect(await store.listMine(me!.id)).toHaveLength(2);
       expect(await store.setRevoked(admin!.id, randomUUID(), true)).toBe("not_found");

@@ -3,7 +3,7 @@ import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
 import { spots, stamps } from "../db/schema";
 import { recordFinished } from "../rallies/rally-store";
-import { REVIEW_PAGE, type StampStore } from "./stamp-types";
+import type { StampStore } from "./stamp-types";
 
 export function createDrizzleStampStore(db: Db): StampStore {
   return {
@@ -51,15 +51,6 @@ export function createDrizzleStampStore(db: Db): StampStore {
         .from(stamps)
         .where(and(eq(stamps.userId, userId), isNull(stamps.revokedAt)))
         .orderBy(desc(stamps.createdAt));
-    },
-
-    listFlagged(revoked) {
-      return db
-        .select({ id: stamps.id, userId: stamps.userId, spotId: stamps.spotId, flagReason: stamps.flagReason, createdAt: stamps.createdAt, revokedAt: stamps.revokedAt })
-        .from(stamps)
-        .where(and(eq(stamps.flagged, true), revoked ? isNotNull(stamps.revokedAt) : isNull(stamps.revokedAt)))
-        .orderBy(desc(stamps.createdAt))
-        .limit(REVIEW_PAGE);
     },
 
     async setRevoked(actor, id, revoked) {

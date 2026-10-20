@@ -203,7 +203,7 @@ msgstr "Row {0} of the “ルート” sheet"
 msgid "「地図と線」で経由地を置く"
 msgstr "Place waypoints in “Map & line”"
 
-#: src/components/admin/AdminItemForm.tsx:201
+#: src/components/admin/AdminItemForm.tsx:202
 msgid "「必須」の欄をすべて入れると保存できます。"
 msgstr "Fill in every field marked “Required” to save."
 
@@ -1593,11 +1593,11 @@ msgstr "low"
 msgid "作っています…"
 msgstr "Creating…"
 
-#: src/components/admin/AdminItemForm.tsx:198
+#: src/components/admin/AdminItemForm.tsx:199
 msgid "作成"
 msgstr "Create"
 
-#: src/components/admin/AdminItemForm.tsx:198
+#: src/components/admin/AdminItemForm.tsx:199
 #: src/components/map/MapSettingsForm.tsx:107
 msgid "保存"
 msgstr "Save"
@@ -1783,7 +1783,7 @@ msgstr "Check before publishing"
 msgid "公開前の経由地も、ここには表示されます。"
 msgstr "Waypoints that are not published yet are shown here too."
 
-#: src/components/admin/AdminItemForm.tsx:194
+#: src/components/admin/AdminItemForm.tsx:195
 msgid "内容"
 msgstr "Content"
 
@@ -1863,7 +1863,7 @@ msgstr "Photos must be JPEG, PNG or WebP, up to 4 MB."
 msgid "写真はまだありません"
 msgstr "No photo yet"
 
-#: src/components/admin/AdminItemForm.tsx:171
+#: src/components/admin/AdminItemForm.tsx:172
 msgid "写真をアップロード"
 msgstr "Upload a photo"
 
@@ -1911,7 +1911,7 @@ msgstr "Someone else saved first. Reload the page and try again."
 msgid "利用規約"
 msgstr "Terms of use"
 
-#: src/components/admin/AdminItemForm.tsx:205
+#: src/components/admin/AdminItemForm.tsx:206
 #: src/components/admin/fields.tsx:151
 #: src/components/admin/PlaceTable.tsx:58
 #: src/components/admin/PlaceTable.tsx:124
@@ -1919,7 +1919,7 @@ msgstr "Terms of use"
 msgid "削除"
 msgstr "Delete"
 
-#: src/components/admin/AdminItemForm.tsx:207
+#: src/components/admin/AdminItemForm.tsx:208
 msgid "削除する"
 msgstr "Delete"
 

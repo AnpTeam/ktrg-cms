@@ -24,16 +24,17 @@ import type { ContentStore } from "./content/content-types";
 import type { RallyAdminServices } from "./rallies/rally-admin-routes";
 import { createRallyAdminService } from "./rallies/rally-admin-service";
 import type { RallyAdminStore } from "./rallies/rally-admin-types";
+import type { StampListServices } from "./stamps/stamp-list";
 import type { StampServices } from "./stamps/stamp-routes";
 import { createStampService } from "./stamps/stamp-service";
-import type { StampStore } from "./stamps/stamp-types";
+import type { StampListRow, StampStore } from "./stamps/stamp-types";
 import { createMeService, type MeStore } from "./me/me-service";
 import type { UploadServices } from "./uploads/upload-routes";
 import { createUploadService } from "./uploads/upload-service";
 import type { FileStorage } from "./uploads/upload-storage";
 
 /** Everything the routes use. */
-export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & NoticeServices & BannerServices & PlaceServices & AuditListServices & PlaceListServices & UserListServices;
+export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & BannerServices & PlaceServices & AuditListServices & PlaceListServices & UserListServices;
 
 /** What the services are built from: the storage (database or in-memory) and the outside world. */
 export interface ServiceDeps {
@@ -46,6 +47,7 @@ export interface ServiceDeps {
     content: ContentStore;
     rallyAdmin: RallyAdminStore;
     stamps: StampStore;
+    stampList: ListReadStore<StampListRow>;
     notices: NoticeStore;
     banners: BannerStore;
     places: PlaceStore;
@@ -92,6 +94,7 @@ export function createServices(deps: ServiceDeps): Services {
     rallyAdmin: createRallyAdminService({ store: stores.rallyAdmin }),
     // Collecting stamps near a place, reading your own, and the admin review of flagged ones.
     stamps: createStampService({ store: stores.stamps }),
+    stampList: createListReader({ store: stores.stampList }),
     // Trail notices: the admin list and what visitors read.
     notices: createNoticeService({ store: stores.notices, now }),
     // The other generated admin lists: home banners, the audit log, every place, accounts and their roles.
