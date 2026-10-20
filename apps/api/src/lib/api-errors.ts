@@ -45,6 +45,12 @@ export const ERROR_CODES = {
   source_required: "400: name the source when the position is marked as checked",
   permission_required: "409: the site's permission is not confirmed",
 
+  // --- Stamping (GPS check-in) --------------------------------------------------------------
+  spot_closed: "409: the place is closed, so no stamp can be collected there",
+  too_far: "409: the phone is not close enough to the place",
+  stamp_revoked: "409: an admin revoked the stamp this account held at the place, so a new one cannot be collected",
+  gps_accuracy_poor: "422: the GPS reading is too rough (worse than 100 m); move to open sky and try again",
+
   // --- Admin rallies ---------------------------------------------------------------------
   rally_empty: "409: a rally with nothing in it cannot be published, and a published rally cannot be emptied",
   invalid_rally_members: "400: a rally of places takes stamp places, a rally of courses takes courses, each once",

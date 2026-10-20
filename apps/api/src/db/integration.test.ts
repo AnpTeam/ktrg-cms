@@ -15,6 +15,7 @@ import { createDrizzleSessionStore } from "../auth/session-store";
 import { createDb } from "./client";
 import { listRalliesWithProgress, ralliesForPlace, recordFinished } from "../rallies/rally-store";
 import { createDrizzleRallyAdminStore } from "../rallies/rally-admin-store";
+import { createDrizzleStampStore } from "../stamps/stamp-store";
 import { createDrizzleNoticeStore } from "../notices/notice-store";
 import { createDrizzleBannerStore } from "../banners/banner-store";
 import { createDrizzleUserListStore } from "../users/user-list";
@@ -728,6 +729,59 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       expect(mine.find((r) => r.id === mounds!.id)!.completedAt).toBeInstanceOf(Date);
       // The other visitor's stamp is theirs only.
       expect((await listRalliesWithProgress(tx, other!.id)).find((r) => r.id === mounds!.id)).toMatchObject({ progress: { stamped: 1 }, completedAt: null });
+    });
+  });
+
+  test("stamp store: one stamp per visitor and place, finishes saved in the same step, revoke hides it and is audited", async () => {
+    await inRollback(async (tx) => {
+      await seed(tx);
+      const store = createDrizzleStampStore(tx as unknown as typeof db);
+      const [route] = await tx.select().from(routes).orderBy(asc(routes.sortOrder)).offset(3).limit(1);
+      const [a, b] = await tx.select().from(spots).where(eq(spots.routeId, route!.id)).orderBy(asc(spots.sortOrder));
+      await tx.update(spots).set({ lat: 34.3, lng: 135.1, permissionConfirmed: true, positionVerified: true, published: true }).where(inArray(spots.id, [a!.id, b!.id]));
+      const [me] = await tx.insert(users).values({}).returning({ id: users.id });
+      const [admin] = await tx.insert(users).values({ role: "admin" }).returning({ id: users.id });
+      const clean = { flagged: false, flagReason: null };
+
+      expect(await store.findSpot(a!.id)).toMatchObject({ id: a!.id, published: true, stampable: true, positionVerified: true, lat: 34.3, lng: 135.1, status: "open" });
+      expect(await store.findSpot(randomUUID())).toBeNull();
+
+      const first = await store.award(me!.id, a!.id, { flagged: true, flagReason: "low_accuracy" });
+      expect(first).toMatchObject({ created: true, flagged: true });
+      expect(first.finished.routeIds).toEqual([]); // one of the course's two mounds
+
+      // The same place again changes nothing, and does not turn the first stamp's flag off.
+      const again = await store.award(me!.id, a!.id, clean);
+      expect(again).toMatchObject({ created: false, flagged: true, finished: { routeIds: [], rallyIds: [] } });
+      expect(again.createdAt).toEqual(first.createdAt);
+      expect(await tx.select().from(stamps).where(eq(stamps.userId, me!.id))).toHaveLength(1);
+
+      // The second mound finishes the course (and the rallies that need it) in the same step.
+      const second = await store.award(me!.id, b!.id, clean);
+      expect(second.finished.routeIds).toEqual([route!.id]);
+      expect(second.finished.rallyIds.length).toBeGreaterThanOrEqual(2);
+      expect(await tx.select().from(courseCompletions).where(eq(courseCompletions.userId, me!.id))).toHaveLength(1);
+
+      expect((await store.listMine(me!.id)).map((s) => s.spotId).sort()).toEqual([a!.id, b!.id].sort());
+      const [queued] = await store.listFlagged(false);
+      expect(queued).toMatchObject({ userId: me!.id, spotId: a!.id, flagReason: "low_accuracy", revokedAt: null });
+
+      expect(await store.setRevoked(admin!.id, queued!.id, true)).toBe("ok");
+      expect((await store.listMine(me!.id)).map((s) => s.spotId)).toEqual([b!.id]);
+      expect(await store.listFlagged(false)).toEqual([]);
+      expect(await store.listFlagged(true)).toHaveLength(1);
+      expect(await store.setRevoked(admin!.id, queued!.id, false)).toBe("ok");
+      expect(await store.listMine(me!.id)).toHaveLength(2);
+      expect(await store.setRevoked(admin!.id, randomUUID(), true)).toBe("not_found");
+      // Revoked, a stamp blocks a new one and says so; revoking twice keeps the first time and writes one audit row.
+      expect(await store.setRevoked(admin!.id, queued!.id, true)).toBe("ok");
+      const [firstRevoke] = await tx.select({ at: stamps.revokedAt }).from(stamps).where(eq(stamps.id, queued!.id));
+      expect(await store.award(me!.id, a!.id, clean)).toMatchObject({ created: false, revoked: true });
+      expect(await store.setRevoked(admin!.id, queued!.id, true)).toBe("ok");
+      expect((await tx.select({ at: stamps.revokedAt }).from(stamps).where(eq(stamps.id, queued!.id)))[0]!.at).toEqual(firstRevoke!.at);
+      expect(await store.setRevoked(admin!.id, queued!.id, false)).toBe("ok");
+      const audits = await tx.select().from(auditLog).where(eq(auditLog.actorUserId, admin!.id));
+      expect(audits.map((r) => [r.action, r.targetId])).toEqual([["stamp.revoke", queued!.id], ["stamp.restore", queued!.id], ["stamp.revoke", queued!.id], ["stamp.restore", queued!.id]]);
     });
   });
 
