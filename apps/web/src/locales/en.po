@@ -2129,6 +2129,10 @@ msgstr "Bigger map"
 msgid "大切な操作なので、もう一度、確認します。"
 msgstr "This is an important action, so we confirm it is you once more."
 
+#: src/app/layout.tsx:35
+msgid "大阪・和歌山・奈良にまたがる、葛城修験の山の古道を歩くための道案内とスタンプラリーです。"
+msgstr "A trail guide and stamp rally for the ancient mountain paths of Katsuragi Shugen, across Osaka, Wakayama and Nara."
+
 #: src/components/admin/RouteEditor.tsx:262
 #: src/components/admin/RouteTable.tsx:31
 #: src/components/auth/authUi.tsx:77
@@ -2394,7 +2398,7 @@ msgstr "Not chosen"
 msgid "本人かどうか、確認します"
 msgstr "Confirming it is you"
 
-#: src/app/layout.tsx:52
+#: src/app/layout.tsx:61
 msgid "本文へ移動"
 msgstr "Skip to main content"
 
@@ -2855,7 +2859,12 @@ msgstr "English is empty (the Japanese text is shown)"
 #: src/components/landing/Landing.tsx:81
 #: src/components/landing/LandingHero.tsx:36
 msgid "葛城修験"
-msgstr "Katsuragi Shugendō"
+msgstr "Katsuragi Shugen"
+
+#: src/app/layout.tsx:33
+msgctxt "tab title"
+msgid "葛城修験"
+msgstr "Katsuragi Shugen | Ancient Mountain Trails & Stamp Rally"
 
 #: src/components/admin/AdminShell.tsx:14
 msgid "葛城修験 管理"
@@ -2871,7 +2880,7 @@ msgstr "Map of Katsuragi Shugen"
 
 #: src/app/(public)/routes/page.tsx:48
 msgid "葛城修験の道"
-msgstr "The Katsuragi Shugendō Trail"
+msgstr "The Katsuragi Shugen Trail"
 
 #: src/components/admin/RouteEditor.tsx:446
 msgid "表でまとめて入力"

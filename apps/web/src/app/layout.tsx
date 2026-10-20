@@ -28,7 +28,16 @@ export const viewport: Viewport = {
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
   const site = i18n._(msg`葛城修験`);
-  return { title: { default: site, template: `%s | ${site}` } };
+  // The tab title of a page with none of its own: the name plus what the site is. The Japanese stays just the name
+  // (the context keeps it a separate message from the plain name above).
+  const home = i18n._(msg({ message: "葛城修験", context: "tab title" }));
+  // What search results and link previews show. No numbers here: counts live in the content, not in code.
+  const description = i18n._(msg`大阪・和歌山・奈良にまたがる、葛城修験の山の古道を歩くための道案内とスタンプラリーです。`);
+  return {
+    title: { default: home, template: `%s | ${site}` },
+    description,
+    openGraph: { type: "website", siteName: site, title: home, description },
+  };
 }
 
 // The document shell only. Each route group ((public), later (staff) and

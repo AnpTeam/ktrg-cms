@@ -119,7 +119,7 @@ export function Landing({
           </p>
           {/* An illustration: hidden from screen readers so it is not read out as someone's progress. */}
           <div aria-hidden="true" className="mt-4">
-            <StampGrid total={EXAMPLE_SLOTS} stamped={EXAMPLE_STAMPED} showNext={false} columns={4} />
+            <StampGrid total={EXAMPLE_SLOTS} stamped={EXAMPLE_STAMPED} showNext={false} columns={4} art />
           </div>
           <p className="mt-3 text-lg text-muted">
             <Trans>これは見本です。経塚のスタンプは全{TOTAL_STAMPS}か所。</Trans>

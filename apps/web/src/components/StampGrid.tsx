@@ -28,7 +28,7 @@ export function StampGrid({
   /** The place name for each number; left out, the seal shows only the number. */
   names?: ReadonlyMap<number, string>;
   columns?: 2 | 4;
-  /** Draw the sutra mound artwork (public/stamps) instead of the plain seal, with the number and name under it. Big grids only. */
+  /** Draw the sutra mound artwork (public/stamps) instead of the plain seal, with the number under it (and the name, in the big grid). */
   art?: boolean;
   className?: string;
 }) {
@@ -48,10 +48,10 @@ export function StampGrid({
             : state === "next"
               ? t`${number}番 つぎのスタンプ`
               : t`${number}番 まだ押していません`;
-        if (art && big) {
+        if (art) {
           // The state is still the shape, never the colour alone: pressed art, a thick ring with つぎ, or the dashed outline.
           return (
-            <li key={number} className="flex flex-col items-center gap-2">
+            <li key={number} className={`flex flex-col items-center ${big ? "gap-2" : "gap-1"}`}>
               <div aria-hidden="true" className={`aspect-square w-full ${state === "next" ? "rounded-full border-4 border-accent p-1" : ""}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element -- fixed artwork from /public, already the right size */}
                 <img
@@ -62,8 +62,8 @@ export function StampGrid({
                 />
               </div>
               <p aria-hidden="true" className="text-center leading-snug">
-                <span className="text-2xl font-bold tabular-nums">{number}</span>
-                {name ? <span className="mt-1 line-clamp-2 break-all text-lg font-bold [text-wrap:balance]">{name}</span> : null}
+                <span className={`${big ? "text-2xl" : "text-xl"} font-bold tabular-nums`}>{number}</span>
+                {big && name ? <span className="mt-1 line-clamp-2 break-all text-lg font-bold [text-wrap:balance]">{name}</span> : null}
                 {state === "next" ? <span className="block text-base font-bold text-accent">{t`つぎ`}</span> : null}
               </p>
               <span className="sr-only">{name ? `${status} ${name}` : status}</span>
