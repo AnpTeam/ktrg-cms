@@ -71,9 +71,18 @@ function getServices(): Services {
  * The whole API: every route file, mounted under /api/v1. The services come from outside, so
  * the tests and the dev page (scripts/phone-test.ts) run exactly this route tree on memory stores.
  */
-export function createApp(getServices: () => Services, opts: RouteOptions & { docs: boolean; cronSecret?: string }) {
+export function createApp(getServices: () => Services, opts: RouteOptions & { docs: boolean; cronSecret?: string; allowedOrigin?: string }) {
   return new Elysia({ prefix: "/api/v1" })
     .use(apiBase()) // first: request ids and the one error shape, for everything below
+    // A browser always names the page a change comes from; one from another site is refused (SameSite=Lax alone is
+    // not enough). No Origin header (a script, the hourly purge job) passes: it carries no browser cookie to abuse.
+    .onRequest(({ request, set }) => {
+      const origin = request.headers.get("origin");
+      if (opts.allowedOrigin && origin && origin !== opts.allowedOrigin && !["GET", "HEAD", "OPTIONS"].includes(request.method)) {
+        set.status = 403;
+        return { ok: false, error: "forbidden" };
+      }
+    })
     .use(apiDocs({ enabled: opts.docs }))
     .get(
       "/health",
@@ -96,6 +105,7 @@ export const app = createApp(getServices, {
   trustProxy: env.TRUST_PROXY,
   docs: env.NODE_ENV !== "production" || env.API_DOCS,
   cronSecret: env.CRON_SECRET,
+  allowedOrigin: env.APP_ORIGIN,
 });
 
 // Vercel's entry: its Elysia preset picks the first of app.ts, index.ts, server.ts, src/app.ts,

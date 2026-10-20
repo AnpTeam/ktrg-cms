@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readdirSync } from "node:fs";
 import { join } from "node:path";
-import vercelEntry, { app } from "./app";
+import vercelEntry, { app, createApp } from "./app";
 import { parseEnv } from "./parse-env";
 
 describe("GET /api/v1/health", () => {
@@ -9,6 +9,34 @@ describe("GET /api/v1/health", () => {
     const res = await app.handle(new Request("http://localhost/api/v1/health"));
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ status: "ok" });
+  });
+});
+
+describe("changes from another site", () => {
+  const guarded = createApp(
+    () => {
+      throw new Error("services are not used here");
+    },
+    { secureCookies: false, docs: false, allowedOrigin: "https://app.example" },
+  );
+  const post = (origin?: string) =>
+    guarded.handle(
+      new Request("http://localhost/api/v1/auth/otp/request", {
+        method: "POST",
+        headers: { "content-type": "application/json", ...(origin ? { origin } : {}) },
+        body: JSON.stringify({ email: "nope" }), // fails validation if it gets that far
+      }),
+    );
+
+  test("a change from another origin is refused; our origin and no origin go on", async () => {
+    expect((await post("https://evil.example")).status).toBe(403);
+    expect((await post("https://app.example")).status).toBe(422);
+    expect((await post()).status).toBe(422);
+  });
+
+  test("reading is not limited", async () => {
+    const res = await guarded.handle(new Request("http://localhost/api/v1/health", { headers: { origin: "https://evil.example" } }));
+    expect(res.status).toBe(200);
   });
 });
 
