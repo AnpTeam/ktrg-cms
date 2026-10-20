@@ -16,8 +16,12 @@ import { createDb } from "./client";
 import { listRalliesWithProgress, ralliesForPlace, recordFinished } from "../rallies/rally-store";
 import { createDrizzleRallyAdminStore } from "../rallies/rally-admin-store";
 import { createDrizzleNoticeStore } from "../notices/notice-store";
+import { createDrizzleBannerStore } from "../banners/banner-store";
+import { createDrizzleUserListStore } from "../users/user-list";
 import {
   auditLog,
+  banners,
+  bannerTranslations,
   courseCompletions,
   otpCodes,
   rallies,
@@ -28,6 +32,7 @@ import {
   rateLimits,
   routes,
   routeTranslations,
+  sessions,
   spots,
   spotTranslations,
   stamps,
@@ -1168,5 +1173,63 @@ describe.skipIf(!url)("trail notices on real PostgreSQL", () => {
     }
     expect(all.slice(0, 4)).toEqual([`${tag} 3`, `${tag} 2`, `${tag} 1`, `${tag} 0`]);
     expect(mine(await store.listPublic("2026-10-20")).sort()).toEqual([`${tag} 1`, `${tag} 3`]);
+  });
+});
+
+describe.skipIf(!url)("banners and role changes on real PostgreSQL", () => {
+  const { db, client } = connect();
+  const otp = createDrizzleOtpStore(db);
+  const sessionStore = createDrizzleSessionStore(db);
+  const bannerStore = createDrizzleBannerStore(db);
+  const userStore = createDrizzleUserListStore(db);
+  const tag = `bu${randomUUID().slice(0, 8)}`;
+  const made: string[] = [];
+
+  afterAll(async () => {
+    if (made.length) {
+      await db.delete(auditLog).where(inArray(auditLog.targetId, made));
+      await db.delete(banners).where(inArray(banners.id, made));
+    }
+    const ids = (await db.select({ id: users.id }).from(users).where(like(users.email, `${tag}-%`))).map((u) => u.id);
+    if (ids.length) await db.delete(auditLog).where(inArray(auditLog.targetId, ids));
+    await db.delete(users).where(like(users.email, `${tag}-%`));
+    await client.end();
+  });
+
+  test("banners: words saved per language, visitors get published ones in order, delete takes the words", async () => {
+    const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
+    const add = async (altJa: string, sortOrder: number, published: boolean) => {
+      const row = await bannerStore.create(actor, { imageUrl: "https://example.com/a.jpg", altJa, altEn: null, sortOrder, published });
+      made.push(row.id);
+      return row;
+    };
+    const late = await add(`${tag} 二`, 2, true);
+    await add(`${tag} 下書き`, 0, false);
+    const first = await add(`${tag} 一`, 1, true);
+    expect(first).toMatchObject({ altJa: `${tag} 一`, altEn: null });
+    expect((await bannerStore.listPublic()).map((b) => b.altJa).filter((a) => a.startsWith(tag))).toEqual([`${tag} 一`, `${tag} 二`]);
+
+    const changed = await bannerStore.update(actor, late.id, late.updatedAt, { altEn: "Two" });
+    expect(changed).toMatchObject({ altJa: `${tag} 二`, altEn: "Two" });
+    expect(await bannerStore.update(actor, late.id, late.updatedAt, { altEn: "late" })).toBe("conflict");
+    expect(await bannerStore.remove(actor, late.id)).toBe(true);
+    expect(await db.select().from(bannerTranslations).where(eq(bannerTranslations.bannerId, late.id))).toHaveLength(0);
+  });
+
+  test("a role change sets the role, ends that account's sessions (not others'), and writes one audit row", async () => {
+    const admin = await otp.findOrCreateUser(`${tag}-admin@example.test`);
+    const target = await otp.findOrCreateUser(`${tag}-target@example.test`);
+    const at = new Date();
+    for (const userId of [admin.id, target.id]) {
+      await sessionStore.create({ userId, tokenHash: randomUUID(), expiresAt: new Date(at.getTime() + 60_000), absoluteExpiresAt: new Date(at.getTime() + 60_000), now: at });
+    }
+    const before = (await userStore.get(target.id))!;
+    const changed = await userStore.setRole(admin.id, target.id, before.updatedAt, "admin");
+    expect(changed).toMatchObject({ id: target.id, role: "admin" });
+    expect(await db.select().from(sessions).where(eq(sessions.userId, target.id))).toHaveLength(0);
+    expect(await db.select().from(sessions).where(eq(sessions.userId, admin.id))).toHaveLength(1);
+    const audits = await db.select().from(auditLog).where(eq(auditLog.targetId, target.id));
+    expect(audits.map((a) => [a.action, a.actorUserId])).toEqual([["user.role.change", admin.id]]);
+    expect(await userStore.setRole(admin.id, target.id, before.updatedAt, "participant")).toBe("conflict");
   });
 });
