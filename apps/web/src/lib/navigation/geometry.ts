@@ -150,3 +150,44 @@ export function offRouteStep(prevCount: number, offM: number): { count: number; 
   const count = offM > OFF_ROUTE_M ? prevCount + 1 : 0;
   return { count, offRoute: count >= OFF_ROUTE_FIXES };
 }
+
+// ---- The "vector" to a point: how far, and which way -----------------------------------------------------------
+
+/** The direction to walk from `from` to reach `to`, in degrees clockwise from north (0 to 360; 0 when they are equal). */
+export function bearingDeg(from: LatLng, to: LatLng): number {
+  const f1 = toRad(from.lat);
+  const f2 = toRad(to.lat);
+  const dL = toRad(to.lng - from.lng);
+  const y = Math.sin(dL) * Math.cos(f2);
+  const x = Math.cos(f1) * Math.sin(f2) - Math.sin(f1) * Math.cos(f2) * Math.cos(dL);
+  return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+}
+
+/** Distance (haversine) and direction from one point to another. */
+export function vectorTo(from: LatLng, to: LatLng): { distanceM: number; bearingDeg: number } {
+  return { distanceM: distanceM(from, to), bearingDeg: bearingDeg(from, to) };
+}
+
+export const COMPASS_POINTS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"] as const;
+export type CompassPoint = (typeof COMPASS_POINTS)[number];
+
+/** The nearest of the eight compass points to a bearing (any number of degrees, also negative). */
+export function compassPoint(deg: number): CompassPoint {
+  return COMPASS_POINTS[(((Math.round(deg / 45) % 8) + 8) % 8)]!;
+}
+
+/** The point `alongM` metres from the start of the line (clamped to its ends); null for an empty line. */
+export function pointAlong(line: readonly LinePoint[], cum: readonly number[], alongM: number): LatLng | null {
+  if (line.length === 0) return null;
+  if (line.length === 1 || alongM <= 0) return at(line[0]!);
+  const end = cum[cum.length - 1]!;
+  if (alongM >= end) return at(line[line.length - 1]!);
+  let i = 0;
+  while (i + 2 < line.length && cum[i + 1]! < alongM) i++;
+  const segM = cum[i + 1]! - cum[i]!;
+  const t = segM === 0 ? 0 : (alongM - cum[i]!) / segM;
+  const a = line[i]!;
+  const b = line[i + 1]!;
+  // Straight between two points of the line: they are metres apart, so a flat in-between is exact enough.
+  return { lng: a[0] + t * (b[0] - a[0]), lat: a[1] + t * (b[1] - a[1]) };
+}

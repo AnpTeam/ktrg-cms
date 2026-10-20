@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cumulativeDistances, cutLegs, distanceM, legProgress, nextTarget, offRouteStep, projectOnLine, type LinePoint, type Stop } from "./geometry";
+import { bearingDeg, compassPoint, cumulativeDistances, cutLegs, distanceM, legProgress, nextTarget, offRouteStep, pointAlong, projectOnLine, vectorTo, type LinePoint, type Stop } from "./geometry";
 
 // 0.001 degrees of longitude at latitude 34.5 is about 91.7 m, 0.001 of latitude about 111.2 m.
 const LAT = 34.5;
@@ -165,5 +165,69 @@ describe("offRouteStep", () => {
 describe("distanceM", () => {
   test("matches the known length of a degree", () => {
     close(distanceM({ lat: 0, lng: 0 }, { lat: 1, lng: 0 }), 111_195, 10);
+  });
+});
+
+describe("the vector to a point (haversine distance + bearing)", () => {
+  const o = { lat: 0, lng: 0 };
+
+  test("due north, east, south and west", () => {
+    expect(bearingDeg(o, { lat: 1, lng: 0 })).toBeCloseTo(0, 6);
+    expect(bearingDeg(o, { lat: 0, lng: 1 })).toBeCloseTo(90, 6);
+    expect(bearingDeg(o, { lat: -1, lng: 0 })).toBeCloseTo(180, 6);
+    expect(bearingDeg(o, { lat: 0, lng: -1 })).toBeCloseTo(270, 6);
+  });
+
+  test("a known diagonal: from (0,0) to (1,1) is 44.9956 degrees", () => {
+    expect(bearingDeg(o, { lat: 1, lng: 1 })).toBeCloseTo(44.9956, 3);
+  });
+
+  test("in Katsuragi: due east along latitude 34.5 is a hair under 90 (a great circle bends north first)", () => {
+    const b = bearingDeg({ lat: LAT, lng: 135 }, { lat: LAT, lng: 135.01 });
+    expect(b).toBeLessThan(90);
+    expect(b).toBeGreaterThan(89.99);
+  });
+
+  test("the same point: no distance, bearing 0", () => {
+    expect(vectorTo({ lat: LAT, lng: 135 }, { lat: LAT, lng: 135 })).toEqual({ distanceM: 0, bearingDeg: 0 });
+  });
+
+  test("vectorTo gives the haversine distance and the bearing together", () => {
+    const v = vectorTo({ lat: LAT, lng: 135 }, { lat: LAT + 0.001, lng: 135 });
+    close(v.distanceM, 111.2, 0.5);
+    expect(v.bearingDeg).toBeCloseTo(0, 6);
+  });
+});
+
+describe("compassPoint", () => {
+  test("eight points, rounding to the nearest, wrapping around north", () => {
+    expect([0, 44, 46, 90, 135, 180, 225, 270, 315].map(compassPoint)).toEqual(["N", "NE", "NE", "E", "SE", "S", "SW", "W", "NW"]);
+    expect(compassPoint(359)).toBe("N");
+    expect(compassPoint(337.4)).toBe("NW");
+    expect(compassPoint(337.6)).toBe("N");
+    expect(compassPoint(-90)).toBe("W");
+    expect(compassPoint(720 + 90)).toBe("E");
+  });
+});
+
+describe("pointAlong", () => {
+  const cum = cumulativeDistances(straight);
+
+  test("start, end and beyond are clamped; in between is on the line", () => {
+    expect(pointAlong(straight, cum, -5)).toEqual({ lng: 135, lat: LAT });
+    expect(pointAlong(straight, cum, 99_999)).toEqual({ lng: 135.01, lat: LAT });
+    const mid = pointAlong(straight, cum, cum[5]! / 2)!;
+    close(mid.lng, 135.0025, 0.00001);
+    expect(mid.lat).toBeCloseTo(LAT, 9);
+  });
+
+  test("going a distance along and measuring back agrees", () => {
+    const p = pointAlong(straight, cum, 300)!;
+    close(projectOnLine(straight, cum, p)!.alongM, 300, 0.5);
+  });
+
+  test("an empty line is null; a one-point line is that point", () => {
+    expect(pointAlong([], [0], 10)).toBeNull();
+    expect(pointAlong([[135, LAT]], [0], 10)).toEqual({ lng: 135, lat: LAT });
   });
 });
