@@ -233,9 +233,9 @@ export function namesThatFit(pins: readonly { id: string; x: number; y: number; 
 // ---- Pins that are too close ---------------------------------------------------------------------------------------
 
 /**
- * How far apart, in screen pixels, two pins must be to stay separate; closer ones merge into one group. This is a rule
- * of the map, not a setting: pins never sit on top of each other. (A Japanese tag is narrow; a pin with its name beside
- * it is wide, and every name stays readable, so it needs the most room.)
+ * How far apart, in screen pixels, two course pins must be to stay separate when the visitor chose to merge near places;
+ * closer ones merge into one group. (A Japanese tag is narrow; a pin with its name beside it is wide, so it needs the
+ * most room.)
  */
 export const MERGE_PX = { tag: 40, pin: 50, namedPin: 120 } as const;
 

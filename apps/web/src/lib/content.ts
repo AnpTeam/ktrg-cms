@@ -142,15 +142,15 @@ export function forViewer<T extends { stampedCount?: number | null; stamped?: bo
 }
 
 /**
- * Sample content is for design review only. It is on by default in development (set
- * SHOW_SAMPLE_CONTENT=0 to see the real empty state) and off everywhere else unless
- * SHOW_SAMPLE_CONTENT=1 (for example a preview deployment),
- * and every screen that shows it says so (see SampleNotice).
+ * Sample content is for design review only. It is on by default in development and in Vercel preview
+ * deployments (so all 19 courses can be looked at without touching any setting), and off in production
+ * unless SHOW_SAMPLE_CONTENT=1. SHOW_SAMPLE_CONTENT=0 turns it off anywhere (to see the real empty state).
+ * Every screen that shows it says so (see SampleNotice).
  */
-export function sampleContentEnabled(env: { NODE_ENV?: string; SHOW_SAMPLE_CONTENT?: string } = process.env) {
+export function sampleContentEnabled(env: { NODE_ENV?: string; VERCEL_ENV?: string; SHOW_SAMPLE_CONTENT?: string } = process.env) {
   if (env.SHOW_SAMPLE_CONTENT === "1") return true;
   if (env.SHOW_SAMPLE_CONTENT === "0") return false;
-  return env.NODE_ENV === "development"; // on by default only while developing
+  return env.NODE_ENV === "development" || env.VERCEL_ENV === "preview";
 }
 
 // What GET /routes will return per route: no description, no spot list.
