@@ -1,14 +1,17 @@
+import { memoryReader } from "../admin-lists/list-memory-store";
 import type { AuditWriter } from "../audit/audit-log";
-import { REVIEW_PAGE, type ReviewStamp, type StampSpot, type StampStore } from "./stamp-types";
+import type { ListReadStore } from "../admin-lists/list-types";
+import type { StampListRow, StampSpot, StampStore } from "./stamp-types";
 
 /**
  * In-memory twin for tests: one stamp per visitor and place, revoked ones hidden from the visitor's list.
  * It does not finish courses or rallies (that SQL is covered by db/integration.test.ts), so `finished` is empty.
+ * `listStore` is the twin of the admin stamps list over the same rows.
  */
 export function createMemoryStampStore(audit: AuditWriter, opts: { now?: () => Date } = {}) {
   const now = opts.now ?? (() => new Date());
   const spots = new Map<string, StampSpot>();
-  const stamps = new Map<string, ReviewStamp & { flagged: boolean }>();
+  const stamps = new Map<string, StampListRow & { userId: string; spotId: string }>();
   let n = 0;
   // Valid UUIDs, because the routes validate ids as such.
   const uuid = () => `00000000-0000-4000-8000-${String(++n).padStart(12, "0")}`;
@@ -20,28 +23,33 @@ export function createMemoryStampStore(audit: AuditWriter, opts: { now?: () => D
     },
     async award(userId, spotId, flag) {
       const have = [...stamps.values()].find((s) => s.userId === userId && s.spotId === spotId);
-      if (have) return { created: false, createdAt: have.createdAt, flagged: have.flagged, revoked: !!have.revokedAt, finished: nothing() };
-      const row = { id: uuid(), userId, spotId, flagReason: flag.flagReason, flagged: flag.flagged, createdAt: now(), revokedAt: null };
+      if (have) return { created: false, createdAt: have.createdAt, flagged: have.flagged, revoked: have.revoked, finished: nothing() };
+      const at = now();
+      const row = { id: uuid(), createdAt: at, updatedAt: at, userId, spotId, memberId: userId.slice(0, 8), spotName: "", flagged: flag.flagged, flagReason: flag.flagReason, revoked: false };
       stamps.set(row.id, row);
-      return { created: true, createdAt: row.createdAt, flagged: row.flagged, revoked: false, finished: nothing() };
+      return { created: true, createdAt: at, flagged: row.flagged, revoked: false, finished: nothing() };
     },
     async listMine(userId) {
-      return [...stamps.values()].filter((s) => s.userId === userId && !s.revokedAt).map((s) => ({ spotId: s.spotId, createdAt: s.createdAt }));
-    },
-    async listFlagged(revoked) {
-      return [...stamps.values()]
-        .filter((s) => s.flagged && !!s.revokedAt === revoked)
-        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-        .slice(0, REVIEW_PAGE);
+      return [...stamps.values()].filter((s) => s.userId === userId && !s.revoked).map((s) => ({ spotId: s.spotId, createdAt: s.createdAt }));
     },
     async setRevoked(actor, id, revoked) {
       const s = stamps.get(id);
       if (!s) return "not_found";
-      if (!!s.revokedAt === revoked) return "ok"; // nothing changes: no new time, no audit row
-      s.revokedAt = revoked ? now() : null;
+      if (s.revoked === revoked) return "ok"; // nothing changes: no audit row
+      s.revoked = revoked;
       await audit.record({ actorUserId: actor, action: revoked ? "stamp.revoke" : "stamp.restore", targetId: id });
       return "ok";
     },
   };
-  return { store, spots, stamps };
+  // The list shows what the database list shows: no user id, no place id.
+  const reader = memoryReader(stamps);
+  const strip = ({ userId: _u, spotId: _s, ...row }: (typeof stamps extends Map<string, infer R> ? R : never)) => row;
+  const listStore: ListReadStore<StampListRow> = {
+    list: async (after, limit) => (await reader.list(after, limit)).map(strip),
+    get: async (id) => {
+      const r = await reader.get(id);
+      return r ? strip(r) : null;
+    },
+  };
+  return { store, listStore, spots, stamps };
 }

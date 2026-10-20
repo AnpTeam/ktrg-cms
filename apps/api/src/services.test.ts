@@ -17,6 +17,7 @@ import { createMemoryUserListStore } from "./users/user-list";
 function build(photoHosts?: string[]) {
   const { store: otp, users } = createMemoryOtpStore();
   const audit = createMemoryAuditWriter();
+  const stampMem = createMemoryStampStore(audit.writer);
   return createServices({
     stores: {
       otp,
@@ -26,7 +27,8 @@ function build(photoHosts?: string[]) {
       me: createMemoryMeStore(users).store,
       content: createMemoryContentStore(audit.writer).store,
       rallyAdmin: createMemoryRallyAdminStore(audit.writer).store,
-      stamps: createMemoryStampStore(audit.writer).store,
+      stamps: stampMem.store,
+      stampList: stampMem.listStore,
       notices: createMemoryNoticeStore(audit.writer).store,
       banners: createMemoryBannerStore(audit.writer).store,
       auditList: memoryReader(new Map()),

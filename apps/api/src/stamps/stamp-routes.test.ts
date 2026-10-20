@@ -7,9 +7,12 @@ import { createMemorySessionStore } from "../auth/session-memory-store";
 import { createSessionService } from "../auth/session-service";
 import type { AuthUser } from "../auth/user";
 import { apiBase } from "../lib/api-errors";
+import { listReadRoutes } from "../admin-lists/list-routes";
 import { stampAdminRoutes } from "./stamp-admin-routes";
+import { stampList } from "./stamp-list";
 import { createMemoryStampStore } from "./stamp-memory-store";
 import { stampRoutes } from "./stamp-routes";
+import { createListReader } from "../admin-lists/list-service";
 import { createStampService } from "./stamp-service";
 import type { StampSpot } from "./stamp-types";
 
@@ -32,11 +35,12 @@ async function setup() {
   const mem = createMemoryStampStore(audit.writer);
   mem.spots.set(SPOT_ID, spot());
   const rateLimit = createRateLimiter({ store: createMemoryRateLimitStore().store, secret: "m".repeat(32) });
-  const services = { session, rateLimit, audit: audit.writer, stamps: createStampService({ store: mem.store }) };
+  const services = { session, rateLimit, audit: audit.writer, stamps: createStampService({ store: mem.store }), stampList: createListReader({ store: mem.listStore }) };
   const app = new Elysia({ prefix: "/api/v1" })
     .use(apiBase())
     .use(stampRoutes(() => services, { secureCookies: false }))
-    .use(stampAdminRoutes(() => services, { secureCookies: false }));
+    .use(stampAdminRoutes(() => services, { secureCookies: false }))
+    .use(listReadRoutes(stampList, () => services, { secureCookies: false }));
   const call = (method: string, path: string, opts: { cookie?: string; body?: unknown } = {}) =>
     app.handle(
       new Request(`http://localhost/api/v1${path}`, {
@@ -98,9 +102,11 @@ describe("collecting a stamp", () => {
     const { stamp, cookies, call } = await setup();
     const res = (await (await stamp(cookies.alice, { accuracyM: 60 })).json()) as Json;
     expect(res.stamp.flagged).toBe(true);
-    const queue = (await (await call("GET", "/admin/stamps", { cookie: cookies.admin })).json()) as Json;
-    expect(queue.stamps).toHaveLength(1);
-    expect(queue.stamps[0]).toMatchObject({ spotId: SPOT_ID, userId: alice.id, flagReason: "low_accuracy", revokedAt: null });
+    const list = (await (await call("GET", "/admin/lists/stamps", { cookie: cookies.admin })).json()) as Json;
+    expect(list.items).toHaveLength(1);
+    expect(list.items[0]).toMatchObject({ flagged: true, flagReason: "low_accuracy", revoked: false });
+    // Ids and the member number only: no user id, no email.
+    expect(JSON.stringify(list)).not.toContain(alice.id);
   });
 
   test("the limits: 49 m is clean, 50 m is flagged, 100 m is accepted, 101 m is refused; exactly on the radius is near enough", async () => {
@@ -145,29 +151,33 @@ describe("collecting a stamp", () => {
   });
 });
 
-describe("reviewing flagged stamps", () => {
-  test("a participant cannot reach the review routes", async () => {
+describe("the admin stamps list", () => {
+  const patch = (call: Awaited<ReturnType<typeof setup>>["call"], id: string, cookie: string | undefined, revoked: boolean) =>
+    call("PATCH", `/admin/lists/stamps/${id}`, { cookie, body: { updatedAt: new Date().toISOString(), revoked } });
+
+  test("a participant cannot read or change it", async () => {
     const { call, cookies } = await setup();
     const id = crypto.randomUUID();
-    for (const [method, path] of [["GET", "/admin/stamps"], ["POST", `/admin/stamps/${id}/revoke`], ["POST", `/admin/stamps/${id}/restore`]] as const) {
-      expect((await call(method, path, { cookie: cookies.alice })).status).toBe(403);
-      expect((await call(method, path)).status).toBe(401);
-    }
+    expect((await call("GET", "/admin/lists/stamps", { cookie: cookies.alice })).status).toBe(403);
+    expect((await patch(call, id, cookies.alice, true)).status).toBe(403);
+    expect((await call("GET", "/admin/lists/stamps")).status).toBe(401);
+    expect((await patch(call, id, undefined, true)).status).toBe(401);
   });
 
-  test("revoking hides the stamp from its owner and is audited; restoring brings it back", async () => {
+  test("stamps appear on their own; revoking hides one from its owner and is audited; restoring brings it back", async () => {
     const { stamp, call, cookies, audit, answer } = await setup();
     await stamp(cookies.alice, { accuracyM: 60 });
-    const id = (((await (await call("GET", "/admin/stamps", { cookie: cookies.admin })).json()) as Json).stamps[0] as Json).id as string;
+    const item = (((await (await call("GET", "/admin/lists/stamps", { cookie: cookies.admin })).json()) as Json).items[0] as Json);
+    const id = item.id as string;
 
-    expect((await call("POST", `/admin/stamps/${id}/revoke`, { cookie: cookies.admin })).status).toBe(200);
+    const revoked = await patch(call, id, cookies.admin, true);
+    expect(revoked.status).toBe(200);
+    expect(((await revoked.json()) as Json).item).toMatchObject({ id, revoked: true });
     expect(((await (await call("GET", "/stamps", { cookie: cookies.alice })).json()) as Json).stamps).toEqual([]);
-    expect(((await (await call("GET", "/admin/stamps", { cookie: cookies.admin })).json()) as Json).stamps).toEqual([]);
-    expect(((await (await call("GET", "/admin/stamps?revoked=true", { cookie: cookies.admin })).json()) as Json).stamps).toHaveLength(1);
     // The record stays: stamping again is refused with its own code, not "already stamped" with nothing to show.
     expect(await answer(await stamp(cookies.alice))).toEqual([409, "stamp_revoked"]);
 
-    expect((await call("POST", `/admin/stamps/${id}/restore`, { cookie: cookies.admin })).status).toBe(200);
+    expect(((await (await patch(call, id, cookies.admin, false)).json()) as Json).item).toMatchObject({ revoked: false });
     expect(((await (await call("GET", "/stamps", { cookie: cookies.alice })).json()) as Json).stamps).toHaveLength(1);
     expect(audit.rows.map((r) => [r.action, r.targetId, r.actorUserId])).toEqual([
       ["stamp.revoke", id, admin.id],
@@ -175,19 +185,17 @@ describe("reviewing flagged stamps", () => {
     ]);
   });
 
-  test("revoking twice changes nothing the second time: same time, no second audit row", async () => {
+  test("revoking twice changes nothing the second time: no second audit row", async () => {
     const { stamp, call, cookies, audit, mem } = await setup();
     await stamp(cookies.alice, { accuracyM: 60 });
     const id = [...mem.stamps.keys()][0]!;
-    await call("POST", `/admin/stamps/${id}/revoke`, { cookie: cookies.admin });
-    const at = mem.stamps.get(id)!.revokedAt;
-    expect((await call("POST", `/admin/stamps/${id}/revoke`, { cookie: cookies.admin })).status).toBe(200);
-    expect(mem.stamps.get(id)!.revokedAt).toBe(at);
+    await patch(call, id, cookies.admin, true);
+    expect((await patch(call, id, cookies.admin, true)).status).toBe(200);
     expect(audit.rows).toHaveLength(1);
   });
 
   test("an unknown stamp is 404", async () => {
     const { call, cookies, answer } = await setup();
-    expect(await answer(await call("POST", `/admin/stamps/${crypto.randomUUID()}/revoke`, { cookie: cookies.admin }))).toEqual([404, "not_found"]);
+    expect(await answer(await patch(call, crypto.randomUUID(), cookies.admin, true))).toEqual([404, "not_found"]);
   });
 });

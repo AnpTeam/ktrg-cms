@@ -1,40 +1,30 @@
 import { Elysia, t } from "elysia";
+import { rowOut } from "../admin-lists/list-routes";
 import { fail } from "../auth/http";
 import { routeKit, type RouteOptions } from "../auth/route-kit";
+import { STAMP_FIELDS, type StampListServices } from "./stamp-list";
 import type { StampServices } from "./stamp-routes";
 
-const idParams = t.Object({ id: t.String({ format: "uuid" }) });
-
 /**
- * Reviewing flagged stamps (`stamp.review`, admin only). A revoked stamp is kept as a record and ignored by progress;
- * it can be restored. A course or rally the visitor already finished stays finished (finishes are saved once).
+ * The one write of the stamps list: PATCH /admin/lists/stamps/:id with `{ updatedAt, revoked }`, the same shape as
+ * every generic list's change, so the generated form saves here unchanged (`updatedAt` is not checked: revoking is
+ * idempotent). A revoked stamp is kept and ignored by progress; it can be restored. A course or rally the visitor
+ * already finished stays finished (finishes are saved once).
  */
-export function stampAdminRoutes(getServices: () => StampServices, opts: RouteOptions) {
+export function stampAdminRoutes(getServices: () => StampServices & StampListServices, opts: RouteOptions) {
   const { plugins } = routeKit(getServices, opts);
-  const svc = () => getServices().stamps;
-
-  return new Elysia({ prefix: "/admin/stamps", detail: { tags: ["Admin stamps"] } })
-    .use(plugins)
-    .get(
-      "/",
-      async ({ query }) => ({
-        ok: true as const,
-        stamps: (await svc().listFlagged(query.revoked === "true")).map((s) => ({
-          ...s,
-          createdAt: s.createdAt.toISOString(),
-          revokedAt: s.revokedAt ? s.revokedAt.toISOString() : null,
-        })),
-      }),
-      { auth: "stamp.review", query: t.Object({ revoked: t.Optional(t.Literal("true")) }) },
-    )
-    .post(
-      "/:id/revoke",
-      async ({ user, params, set }) => ((await svc().setRevoked(user.id, params.id, true)).ok ? { ok: true as const } : fail(set, 404, "not_found")),
-      { auth: "stamp.review", rateLimit: { adminWriteUser: "user.id" }, params: idParams },
-    )
-    .post(
-      "/:id/restore",
-      async ({ user, params, set }) => ((await svc().setRevoked(user.id, params.id, false)).ok ? { ok: true as const } : fail(set, 404, "not_found")),
-      { auth: "stamp.review", rateLimit: { adminWriteUser: "user.id" }, params: idParams },
-    );
+  return new Elysia({ prefix: "/admin/lists/stamps", detail: { tags: ["Admin lists"] } }).use(plugins).patch(
+    "/:id",
+    async ({ user, params, body, set }) => {
+      const r = await getServices().stamps.setRevoked(user.id, params.id, body.revoked);
+      const item = r.ok ? await getServices().stampList.get(params.id) : null;
+      return item ? { ok: true as const, item: rowOut(item) } : fail(set, 404, "not_found");
+    },
+    {
+      auth: "stamp.review",
+      rateLimit: { adminWriteUser: "user.id" },
+      params: t.Object({ id: t.String({ format: "uuid" }) }),
+      body: t.Object({ updatedAt: t.String({ format: "date-time" }), ...STAMP_FIELDS }),
+    },
+  );
 }

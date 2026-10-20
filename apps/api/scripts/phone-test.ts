@@ -65,6 +65,7 @@ const audit = {
     console.log(`[audit] ${row.action} actor=${row.actorUserId} ${row.targetType}=${row.targetId}`);
   },
 };
+const stampMem = createMemoryStampStore(audit);
 // Same wiring as the app (src/services.ts), with in-memory stores and the console mailer.
 const services = createServices({
   stores: {
@@ -75,7 +76,8 @@ const services = createServices({
     me: createMemoryMeStore(users, profiles).store,
     content: createMemoryContentStore(audit).store,
     rallyAdmin: createMemoryRallyAdminStore(audit).store,
-    stamps: createMemoryStampStore(audit).store,
+    stamps: stampMem.store,
+    stampList: stampMem.listStore,
     notices: createMemoryNoticeStore(audit).store,
     banners: createMemoryBannerStore(audit).store,
     auditList: memoryReader(new Map()),

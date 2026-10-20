@@ -49,7 +49,6 @@ export function createStampService({ store }: { store: StampStore }) {
     },
 
     listMine: (userId: string) => store.listMine(userId),
-    listFlagged: (revoked: boolean) => store.listFlagged(revoked),
     async setRevoked(actor: string, id: string, revoked: boolean): Promise<Result<true>> {
       return (await store.setRevoked(actor, id, revoked)) === "ok" ? { ok: true, value: true } : { ok: false, reason: "not_found" };
     },

@@ -1,3 +1,5 @@
+import type { ListRow } from "../admin-lists/list-types";
+
 export type SpotStatus = "open" | "caution" | "closed";
 
 /** What the stamping rules need to know about a place. */
@@ -28,14 +30,17 @@ export interface Awarded {
   finished: Finished;
 }
 
-/** A stamp in the admin review list: ids and the reason only, nothing personal. */
-export interface ReviewStamp {
-  id: string;
-  userId: string;
-  spotId: string;
+/**
+ * A stamp as the admin list shows it. Stamps are never typed in by hand: they appear when a visitor stamps near a
+ * place, so the admin only reads them and revokes or restores one. Member ID and place name, no email or user id.
+ * A stamp never changes except by revoking, so `updatedAt` is its creation time.
+ */
+export interface StampListRow extends ListRow {
+  memberId: string;
+  spotName: string;
+  flagged: boolean;
   flagReason: string | null;
-  createdAt: Date;
-  revokedAt: Date | null;
+  revoked: boolean;
 }
 
 export interface StampStore {
@@ -44,11 +49,6 @@ export interface StampStore {
   award(userId: string, spotId: string, flag: { flagged: boolean; flagReason: string | null }): Promise<Awarded>;
   /** The visitor's own stamps that are not revoked. */
   listMine(userId: string): Promise<{ spotId: string; createdAt: Date }[]>;
-  /** Flagged stamps, newest first: waiting for review, or (`revoked`) already revoked. At most `REVIEW_PAGE`. */
-  listFlagged(revoked: boolean): Promise<ReviewStamp[]>;
-  /** Revokes or restores; the audit row commits with it. Doing it twice is fine. */
+  /** Revokes or restores; the audit row commits with it. Doing it again changes nothing and writes no audit row. */
   setRevoked(actor: string, id: string, revoked: boolean): Promise<"ok" | "not_found">;
 }
-
-// shortcut: the review list is one page of 50 with no cursor, upgrade when more than 50 stamps wait for review.
-export const REVIEW_PAGE = 50;
