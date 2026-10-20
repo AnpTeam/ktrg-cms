@@ -906,13 +906,16 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
           const turn = await store.createSpot(actor, route.id, { nameJa: "分かれ道", kind: "turn", ...verified });
           expect(await store.setPublished(actor, turn!.id, true)).toMatchObject({ published: true });
           const stamp = await store.createSpot(actor, route.id, { nameJa: "経塚", kind: "stamp", ...verified });
+          // The write itself refuses a stamp place without permission: it stays a draft (no error, nothing recorded).
+          expect(await store.setPublished(actor, stamp!.id, true)).toMatchObject({ published: false });
+          // The database constraint is the backstop if that condition were ever dropped.
           await expect(
             (async () => {
               await tx.transaction(async (t) => {
-                await createDrizzleContentStore(t as unknown as typeof db).setPublished(actor, stamp!.id, true);
+                await t.update(spots).set({ published: true }).where(eq(spots.id, stamp!.id));
               });
             })(),
-          ).rejects.toThrow(); // the database still demands permission for a stamp place
+          ).rejects.toThrow();
           const row = (await store.listRoutes()).find((r) => r.id === route.id)!;
           expect([row.spotCount, row.publishedSpotCount, row.pointCount]).toEqual([1, 0, 1]);
         });
