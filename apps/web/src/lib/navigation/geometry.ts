@@ -22,8 +22,6 @@ export const STOP_MAX_OFF_LINE_M = 60;
 /** A fix this far from the current leg counts as off route (three in a row, see `offRouteStep`). */
 export const OFF_ROUTE_M = 40;
 export const OFF_ROUTE_FIXES = 3;
-/** How far outside a leg a fix may still be matched to it (GPS jitter at the ends of the leg). */
-const LEG_SLACK_M = 50;
 
 /** Great-circle distance in metres (same formula as apps/api/src/lib/geo.ts). */
 export function distanceM(a: LatLng, b: LatLng): number {
@@ -117,32 +115,26 @@ export function cutLegs(line: readonly LinePoint[], cum: readonly number[], stop
   return legs;
 }
 
-export interface LegProgress {
-  /** Metres walked along this leg (0 at its start). */
-  alongLegM: number;
-  /** Metres left to the end of the leg (0 once the stop is reached or passed). */
-  remainingM: number;
-  lengthM: number;
-  /** Metres away from the leg's line. */
-  offM: number;
-}
-
-/** Where a fix is on one leg. Null when the line is unusable. */
-export function legProgress(line: readonly LinePoint[], cum: readonly number[], leg: Leg, fix: LatLng): LegProgress | null {
-  const proj = projectOnLine(line, cum, fix, { fromM: leg.startM - LEG_SLACK_M, toM: leg.endM + LEG_SLACK_M });
-  if (!proj) return null;
-  const lengthM = leg.endM - leg.startM;
-  const alongLegM = Math.max(0, Math.min(lengthM, proj.alongM - leg.startM));
-  return { alongLegM, remainingM: lengthM - alongLegM, lengthM, offM: proj.offM };
-}
-
-/** Index of the stop to head for: the first one not yet stamped and not closed. Null when none are left. */
-export function nextTarget(
-  stops: readonly { id: string; status?: "open" | "caution" | "closed" }[],
+/**
+ * Index of the stop to head for: the NEAREST one (straight line) not yet stamped and not closed, so a visitor can join
+ * the course anywhere and walk it either way (the user's rule, 2026-10-20). Null when none are left.
+ */
+export function nearestTarget(
+  stops: readonly (Stop & { status?: "open" | "caution" | "closed" })[],
   stamped: ReadonlySet<string>,
+  from: LatLng,
 ): number | null {
-  const i = stops.findIndex((s) => !stamped.has(s.id) && s.status !== "closed");
-  return i === -1 ? null : i;
+  let best: number | null = null;
+  let bestM = Number.POSITIVE_INFINITY;
+  stops.forEach((s, i) => {
+    if (stamped.has(s.id) || s.status === "closed") return;
+    const d = distanceM(from, s);
+    if (d < bestM) {
+      bestM = d;
+      best = i;
+    }
+  });
+  return best;
 }
 
 /** Off-route needs OFF_ROUTE_FIXES fixes in a row beyond OFF_ROUTE_M, so one bad fix does not flash the warning. */

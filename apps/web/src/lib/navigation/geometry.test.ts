@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { bearingDeg, compassPoint, cumulativeDistances, cutLegs, distanceM, legProgress, nextTarget, offRouteStep, pointAlong, projectOnLine, vectorTo, type LinePoint, type Stop } from "./geometry";
+import { bearingDeg, compassPoint, cumulativeDistances, cutLegs, distanceM, nearestTarget, offRouteStep, pointAlong, projectOnLine, vectorTo, type LinePoint, type Stop } from "./geometry";
 
 // 0.001 degrees of longitude at latitude 34.5 is about 91.7 m, 0.001 of latitude about 111.2 m.
 const LAT = 34.5;
@@ -105,44 +105,28 @@ describe("cutLegs", () => {
   });
 });
 
-describe("legProgress", () => {
-  const cum = cumulativeDistances(straight);
-  const legs = cutLegs(straight, cum, [stop("a", 135.003), stop("b", 135.006)]);
+describe("nearestTarget", () => {
+  const stops = [
+    { id: "a", lng: 135.001, lat: LAT },
+    { id: "b", lng: 135.005, lat: LAT, status: "closed" as const },
+    { id: "c", lng: 135.006, lat: LAT, status: "caution" as const },
+    { id: "d", lng: 135.009, lat: LAT },
+  ];
 
-  test("halfway along the second leg", () => {
-    const p = legProgress(straight, cum, legs[1]!, { lat: LAT, lng: 135.0045 })!;
-    close(p.lengthM, 275, 3);
-    close(p.alongLegM, 137.5, 3);
-    close(p.remainingM, 137.5, 3);
-    close(p.offM, 0, 0.5);
+  test("the closest stop, wherever the visitor is; caution is still a target, closed is not", () => {
+    expect(nearestTarget(stops, new Set(), { lat: LAT, lng: 135.0 })).toBe(0);
+    expect(nearestTarget(stops, new Set(), { lat: LAT, lng: 135.0049 })).toBe(2); // b is nearer but closed
+    expect(nearestTarget(stops, new Set(), { lat: LAT, lng: 135.0095 })).toBe(3);
   });
 
-  test("before the leg starts it reads 0 walked; past the stop it reads 0 left", () => {
-    expect(legProgress(straight, cum, legs[1]!, { lat: LAT, lng: 135.001 })!.alongLegM).toBe(0);
-    expect(legProgress(straight, cum, legs[1]!, { lat: LAT, lng: 135.009 })!.remainingM).toBe(0);
+  test("stamped stops are skipped, so the next nearest is chosen (either direction)", () => {
+    expect(nearestTarget(stops, new Set(["c"]), { lat: LAT, lng: 135.006 })).toBe(3);
+    expect(nearestTarget(stops, new Set(["c", "d"]), { lat: LAT, lng: 135.006 })).toBe(0);
   });
 
-  test("off the line is reported in metres", () => {
-    close(legProgress(straight, cum, legs[0]!, { lat: LAT + 0.0005, lng: 135.001 })!.offM, 55.6, 1.5);
-  });
-
-  test("a line that cannot be used gives null", () => {
-    expect(legProgress([], [0], { toStopId: "a", startM: 0, endM: 0, reliable: false }, { lat: LAT, lng: 135 })).toBeNull();
-  });
-});
-
-describe("nextTarget", () => {
-  const stops = [{ id: "a" }, { id: "b", status: "closed" as const }, { id: "c", status: "caution" as const }, { id: "d" }];
-
-  test("the first stop not stamped and not closed; caution is still a target", () => {
-    expect(nextTarget(stops, new Set())).toBe(0);
-    expect(nextTarget(stops, new Set(["a"]))).toBe(2);
-    expect(nextTarget(stops, new Set(["a", "c"]))).toBe(3);
-  });
-
-  test("null when everything is stamped or closed", () => {
-    expect(nextTarget(stops, new Set(["a", "c", "d"]))).toBeNull();
-    expect(nextTarget([], new Set())).toBeNull();
+  test("null when everything is stamped or closed, or there are no stops", () => {
+    expect(nearestTarget(stops, new Set(["a", "c", "d"]), { lat: LAT, lng: 135 })).toBeNull();
+    expect(nearestTarget([], new Set(), { lat: LAT, lng: 135 })).toBeNull();
   });
 });
 

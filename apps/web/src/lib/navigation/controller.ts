@@ -4,7 +4,7 @@
 
 import type { GeoFailure } from "../stamp-flow";
 import { createPositionWatcher, type GeoApi, type VisibilityApi } from "./position-watcher";
-import { applyFix, initialState, type NavModel, type NavReading, type NavState } from "./session";
+import { applyFix, initialState, type NavModel, type NavPath, type NavReading, type NavState } from "./session";
 
 export interface NavSnapshot {
   state: NavState;
@@ -36,7 +36,8 @@ export function createNavigationController(deps: ControllerDeps) {
   let stamped: ReadonlySet<string> = new Set();
   let stampsKnown = false;
   let last: NavReading | null = null;
-  let snap: NavSnapshot = { state: initialState(model, stamped), stamped, stampsKnown, paused: false, problem: null, lastFixAtMs: null };
+  let path: NavPath | null = null;
+  let snap: NavSnapshot = { state: initialState(), stamped, stampsKnown, paused: false, problem: null, lastFixAtMs: null };
 
   const emit = (patch: Partial<NavSnapshot>) => {
     if (!alive) return;
@@ -46,7 +47,7 @@ export function createNavigationController(deps: ControllerDeps) {
 
   const apply = (reading: NavReading) => {
     last = reading;
-    emit({ state: applyFix(model, snap.state, reading, stamped), stamped, lastFixAtMs: deps.now(), problem: null });
+    emit({ state: applyFix(model, snap.state, reading, stamped, path), stamped, lastFixAtMs: deps.now(), problem: null });
   };
 
   const watcher = createPositionWatcher({
@@ -69,7 +70,7 @@ export function createNavigationController(deps: ControllerDeps) {
     emit({
       stamped,
       stampsKnown,
-      state: last ? applyFix(model, snap.state, last, stamped) : initialState(model, stamped),
+      state: last ? applyFix(model, snap.state, last, stamped, path) : snap.state,
     });
   }
 
@@ -86,13 +87,19 @@ export function createNavigationController(deps: ControllerDeps) {
       watcher.stop();
       alive = false;
       last = null;
+      path = null;
     },
     /** After a successful stamp: move on at once, without waiting for the server's list. */
     markStamped(id: string) {
       stamped = new Set([...stamped, id]);
-      emit({ stamped, state: last ? applyFix(model, snap.state, last, stamped) : initialState(model, stamped) });
+      emit({ stamped, state: last ? applyFix(model, snap.state, last, stamped, path) : snap.state });
     },
     refreshStamps,
+    /** A walking path from OpenRouteService (or null to drop it); used from the fix already held. */
+    setPath(next: NavPath | null) {
+      path = next;
+      if (last) emit({ state: applyFix(model, snap.state, last, stamped, path) });
+    },
     get snapshot() {
       return snap;
     },

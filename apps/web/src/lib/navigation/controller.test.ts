@@ -39,6 +39,10 @@ function setup(stampsOnServer: Set<string> | null = new Set()) {
       t += 5000; // past the throttle every time
       deliver!({ coords: { latitude: LAT, longitude: lng, accuracy } });
     },
+    walkAt: (lng: number, lat: number) => {
+      t += 5000;
+      deliver!({ coords: { latitude: lat, longitude: lng, accuracy: 10 } });
+    },
   };
 }
 
@@ -50,7 +54,7 @@ describe("modelFromRoute", () => {
     );
     expect(m.stops.map((s) => s.id)).toEqual(["a", "z"]);
     expect(m.line).toEqual([]);
-    expect(m.legs.every((l) => !l.reliable)).toBe(true);
+    expect(m.stopAlongM).toEqual([null, null]); // no line: no stop can be placed on it
   });
 });
 
@@ -59,10 +63,11 @@ describe("a navigation session", () => {
     const s = setup(new Set(["a"]));
     await s.c.start();
     expect(s.c.snapshot.stampsKnown).toBe(true);
-    expect(s.c.snapshot.state.targetId).toBe("b"); // a is already stamped
-    s.walk(135.004);
-    expect(s.c.snapshot.state.targetId).toBe("b");
-    expect(s.c.snapshot.state.leg!.remainingM).toBeGreaterThan(150);
+    expect(s.c.snapshot.state.targetId).toBeNull(); // no fix yet: nearest is not known
+    s.walk(135.0035);
+    expect(s.c.snapshot.state.targetId).toBe("b"); // a is nearer but already stamped
+    expect(s.c.snapshot.state.mode).toBe("line");
+    expect(s.c.snapshot.state.distanceM!).toBeGreaterThan(200);
     expect(s.c.snapshot.lastFixAtMs).not.toBeNull();
   });
 
@@ -74,7 +79,7 @@ describe("a navigation session", () => {
     s.c.markStamped("a");
     expect(s.c.snapshot.state.targetId).toBe("b");
     expect(s.c.snapshot.state.inRadius).toBe(false);
-    expect(s.c.snapshot.state.distanceToTargetM).toBeGreaterThan(250);
+    expect(s.c.snapshot.state.distanceM!).toBeGreaterThan(250);
   });
 
   test("stamps that cannot be read are said so, and the session still runs", async () => {
@@ -89,10 +94,22 @@ describe("a navigation session", () => {
     const s = setup();
     await s.c.start();
     s.walk(135.001);
-    const before = s.c.snapshot.state.distanceToTargetM;
+    const before = s.c.snapshot.state.distanceM;
     s.walk(135.009, 300);
-    expect(s.c.snapshot.state.distanceToTargetM).toBe(before);
+    expect(s.c.snapshot.state.distanceM).toBe(before);
     expect(s.c.snapshot.state.ignoredFixes).toBe(1);
+  });
+
+  test("a path for the target switches an off-route visitor from 'straight' to 'path'", async () => {
+    const s = setup();
+    await s.c.start();
+    s.walk(135.0025, 300); // ignored (weak), then a real fix far north of the line:
+    for (let i = 0; i < 3; i++) s.walkAt(135.003, LAT + 0.004);
+    expect(s.c.snapshot.state.mode).toBe("straight");
+    s.c.setPath({ stopId: "a", line: [[135.003, LAT + 0.004], [135.003, LAT]], cum: [0, 444.8] });
+    expect(s.c.snapshot.state.mode).toBe("path");
+    s.c.setPath(null);
+    expect(s.c.snapshot.state.mode).toBe("straight");
   });
 
   test("stop clears the watch, forgets the position, and later events change nothing", async () => {
