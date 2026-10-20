@@ -30,6 +30,7 @@ export function StampHere({
   loginHref,
   mock,
   inSheet = false,
+  onStamped,
 }: {
   spotId: string;
   status: "open" | "caution" | "closed";
@@ -40,6 +41,8 @@ export function StampHere({
   mock?: StampMock;
   /** Shown inside the home map's bottom sheet: it sticks to the bottom of the sheet, not above the tab bar. */
   inSheet?: boolean;
+  /** Called once the server has given (or already had) the stamp; navigation moves on to the next stop. */
+  onStamped?: () => void;
 }) {
   const { t, i18n } = useLingui();
   const router = useRouter();
@@ -66,6 +69,7 @@ export function StampHere({
     const result = mock ? await mockStamp(mock) : await requestStamp(spotId, position.reading);
     if (result.ok) {
       setPhase({ name: "done", already: result.already });
+      onStamped?.();
       router.refresh();
     } else {
       setPhase({ name: "problem", problem: result.failure, distanceM: result.distanceM });

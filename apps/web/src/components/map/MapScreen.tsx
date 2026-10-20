@@ -9,6 +9,8 @@ import { ElevationProfile } from "@/components/ElevationProfile";
 import { PrefectureName } from "@/components/PrefectureName";
 import { RouteStats } from "@/components/RouteStats";
 import { StampHere } from "@/components/StampHere";
+import { NavigationHud, NavigationStart } from "@/components/navigation/NavigationHud";
+import { useNavigation } from "@/components/navigation/NavigationProvider";
 import { StampFace } from "@/components/StampFace";
 import { StatusWord } from "@/components/StatusWord";
 import { formatUpdated } from "@/lib/format";
@@ -67,9 +69,11 @@ export function MapScreen({
 }) {
   const { t } = useLingui();
   const wrap = useRef<HTMLDivElement>(null);
-  const [routeId, setRouteId] = useState<string | null>(initialRouteId);
+  const nav = useNavigation();
+  // Coming back to the map during a navigation opens its course again.
+  const [routeId, setRouteId] = useState<string | null>(initialRouteId ?? nav.session?.routeId ?? null);
   const [stopId, setStopId] = useState<string | null>(initialRouteId ? initialStopId : null);
-  const [snap, setSnap] = useState<SheetSnap>(initialRouteId ? "half" : "peek");
+  const [snap, setSnap] = useState<SheetSnap>(initialRouteId || nav.session ? "half" : "peek");
   const [available, setAvailable] = useState(520);
   // The room under the sheet taken by the tab bar (none on a wide screen, where it is a rail).
   const [tabPx, setTabPx] = useState(88);
@@ -214,8 +218,15 @@ export function MapScreen({
         coveredLeftPx={panelPx}
         settings={settings}
         mergeStops={mergeStops}
+        user={nav.session?.snapshot.position ?? null}
+        guide={nav.session?.snapshot.pathLine ?? null}
       />
       <MapSheet panel={wide} snap={snap} onSnap={setSnap} available={available} tabPx={tabPx} header={showDetailInSheet ? null : homeHeader}>
+        {nav.session ? (
+          <div className="px-4 pb-4">
+            <NavigationHud loginHref={loginHref} />
+          </div>
+        ) : null}
         {showDetailInSheet ? (
           <div className="flex flex-col gap-4">
             {hero}
@@ -341,6 +352,8 @@ function RoutePanel({
       ) : null}
 
       <RouteStats route={route} />
+
+      {signedIn && route.status === "ready" ? <NavigationStart route={route} /> : null}
 
       {stampedCount !== null && spotCount > 0 ? (
         <p className="text-xl font-bold tabular-nums">{t`スタンプ ${stampedCount} / ${spotCount}`}</p>

@@ -4,6 +4,7 @@
 // the only one sent anywhere is the path request's starting point.
 
 import type { GeoFailure } from "../stamp-flow";
+import type { LinePoint } from "./geometry";
 import { createPositionWatcher, type GeoApi, type VisibilityApi } from "./position-watcher";
 import { PATH_BACKOFF_MS, shouldAskForPath, type LastAsk, type PathAnswer } from "./path-client";
 import { applyFix, initialState, trackOf, wantsPath, type NavModel, type NavPath, type NavReading, type NavState } from "./session";
@@ -20,6 +21,10 @@ export interface NavSnapshot {
   problem: GeoFailure | null;
   /** The time of the last used fix, so the screen can say how old the position is. Null before the first. */
   lastFixAtMs: number | null;
+  /** The last used fix, for the position dot on the map. On this phone only: never sent, dropped on stop. */
+  position: NavReading | null;
+  /** The walking path being followed off the course line, for the map; null when there is none. */
+  pathLine: readonly LinePoint[] | null;
 }
 
 export interface ControllerDeps {
@@ -45,7 +50,7 @@ export function createNavigationController(deps: ControllerDeps) {
   let asking = false;
   // Bumped on stop, so an answer for an earlier session is dropped.
   let generation = 0;
-  let snap: NavSnapshot = { state: initialState(), stamped, stampsKnown, paused: false, problem: null, lastFixAtMs: null };
+  let snap: NavSnapshot = { state: initialState(), stamped, stampsKnown, paused: false, problem: null, lastFixAtMs: null, position: null, pathLine: null };
 
   const emit = (patch: Partial<NavSnapshot>) => {
     if (!alive) return;
@@ -66,7 +71,7 @@ export function createNavigationController(deps: ControllerDeps) {
       if (!alive) return;
       if (answer.ok) {
         path = { stopId, ...trackOf(answer.line) };
-        if (last) emit({ state: applyFix(model, snap.state, last, stamped, path) });
+        emit({ pathLine: path.line, ...(last ? { state: applyFix(model, snap.state, last, stamped, path) } : {}) });
       } else if (answer.backOff && lastAsk) {
         lastAsk = { ...lastAsk, backOffUntilMs: atMs + PATH_BACKOFF_MS };
       }
@@ -76,7 +81,8 @@ export function createNavigationController(deps: ControllerDeps) {
   const apply = (reading: NavReading) => {
     last = reading;
     const state = applyFix(model, snap.state, reading, stamped, path);
-    emit({ state, stamped, lastFixAtMs: deps.now(), problem: null });
+    // A path for another stop (the target moved on) is no longer drawn.
+    emit({ state, stamped, lastFixAtMs: deps.now(), problem: null, position: reading, pathLine: path && path.stopId === state.targetId ? path.line : null });
     if (deps.fetchPath && !asking && shouldAskForPath(wantsPath(state), state.targetId, reading, deps.now(), lastAsk)) askForPath(state.targetId!, reading);
   };
 
@@ -131,7 +137,7 @@ export function createNavigationController(deps: ControllerDeps) {
     /** A walking path from OpenRouteService (or null to drop it); used from the fix already held. */
     setPath(next: NavPath | null) {
       path = next;
-      if (last) emit({ state: applyFix(model, snap.state, last, stamped, path) });
+      emit({ pathLine: next ? next.line : null, ...(last ? { state: applyFix(model, snap.state, last, stamped, path) } : {}) });
     },
     get snapshot() {
       return snap;

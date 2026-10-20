@@ -3,7 +3,7 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
-import type { GeoJSONSource, Map as MapLibreMap } from "maplibre-gl";
+import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import { WarningIcon } from "@/components/icons";
 import { clusterByPixels } from "@/lib/cluster";
 import { areaCollection, estimateGroupBox, framePoints, groupLabelLines, MERGE_PX, revealedRouteId, spreadLabels, stopMergePx, type LabelBox, type MapScreenRoute } from "@/lib/map-screen";
@@ -22,6 +22,8 @@ import { createClusterElement, createMarkerElement, createPinElement, createPlac
 
 const AREAS = "areas";
 const DETAIL = "route-detail";
+/** The walking path from OpenRouteService while navigating off the course line. */
+const GUIDE = "nav-guide";
 /** A course's navigation points (toilets, turns ...) show from this zoom on, once the course is open. */
 const POINTS_ZOOM = 13;
 /** From this zoom on, being "inside" a course opens it: its stops appear without anyone choosing it. */
@@ -45,6 +47,8 @@ export function MapScreenCanvas({
   coveredLeftPx = 0,
   settings,
   mergeStops,
+  user = null,
+  guide = null,
 }: {
   routes: MapScreenRoute[];
   routeId: string | null;
@@ -57,7 +61,12 @@ export function MapScreenCanvas({
   coveredLeftPx?: number;
   settings: MapSettings;
   mergeStops: boolean;
+  /** While navigating: where the phone is (on this phone only), drawn as a dot. */
+  user?: { lat: number; lng: number } | null;
+  /** While navigating off the course line: the walking path being followed, as [lng, lat] points. */
+  guide?: readonly (readonly [number, number, number?])[] | null;
 }) {
+  const userMarker = useRef<Marker | null>(null);
   const { t, i18n } = useLingui();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -136,6 +145,8 @@ export function MapScreenCanvas({
           map.addLayer({ id: `${AREAS}-line`, type: "line", source: AREAS, paint: { "line-color": "#a8362b", "line-width": ["case", ["get", "selected"], 3, 2.2], "line-opacity": 0.95 } });
           map.addSource(DETAIL, { type: "geojson", data: EMPTY });
           for (const layer of routeLineLayers(DETAIL, false)) map.addLayer(layer);
+          map.addSource(GUIDE, { type: "geojson", data: EMPTY });
+          map.addLayer({ id: `${GUIDE}-line`, type: "line", source: GUIDE, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#1d4ed8", "line-width": 4, "line-dasharray": [1.5, 1.5] } });
           map.on("click", `${AREAS}-fill`, (e) => {
             const id = e.features?.[0]?.properties?.id;
             if (typeof id === "string") selectRouteRef.current(id);
@@ -172,6 +183,38 @@ export function MapScreenCanvas({
     const points = focus?.line ?? focus?.stops?.map((s) => s.position) ?? null;
     (map.getSource(DETAIL) as GeoJSONSource | undefined)?.setData(points && points.length > 1 ? lineFeature(points) : EMPTY);
   }, [ready, routes, routeId, focus, mapGen, layers]);
+
+  // Navigation: the walking path off the course line, and the visitor's position.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    (map.getSource(GUIDE) as GeoJSONSource | undefined)?.setData(guide && guide.length > 1 ? lineFeature(guide.map(([lng, lat]) => ({ lat, lng }))) : EMPTY);
+  }, [ready, guide, mapGen]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const ml = mlRef.current;
+    if (!map || !ml || !ready) return;
+    if (!user) {
+      userMarker.current?.remove();
+      userMarker.current = null;
+      return;
+    }
+    if (!userMarker.current) {
+      const el = document.createElement("div");
+      el.className = "size-5 rounded-full border-[3px] border-paper bg-ink shadow-lg";
+      el.setAttribute("aria-hidden", "true");
+      userMarker.current = new ml.Marker({ element: el }).setLngLat([user.lng, user.lat]).addTo(map);
+    } else userMarker.current.setLngLat([user.lng, user.lat]);
+  }, [ready, user, mapGen]);
+
+  useEffect(
+    () => () => {
+      userMarker.current?.remove();
+      userMarker.current = null;
+    },
+    [mapGen],
+  );
 
   // Where the camera goes: all the areas at first, a chosen course when there is one.
   useEffect(() => {

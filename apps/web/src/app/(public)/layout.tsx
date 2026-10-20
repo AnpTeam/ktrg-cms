@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { MenuProvider } from "@/components/MenuProvider";
+import { NavigationProvider } from "@/components/navigation/NavigationProvider";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { SampleNoticeHost } from "@/components/SampleNotice";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -25,6 +26,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
 
   return (
     <MenuProvider>
+      <NavigationProvider signedIn={viewer.signedIn}>
       <StampFilters />
       <div className="mx-auto flex w-full max-w-5xl justify-center md:gap-6 lg:mx-0 lg:max-w-none lg:justify-start lg:gap-0">
         {/* The footer lives in the sidebar on a desktop (and is hidden on the map, whose page has no room for it). */}
@@ -42,6 +44,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           </main>
         </div>
       </div>
+      </NavigationProvider>
     </MenuProvider>
   );
 }
