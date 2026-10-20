@@ -89,6 +89,9 @@ export function MapScreen({
     if (navRouteId && !wide) setSnap("peek");
   }
 
+  // Below the sheet: the tab bar, and the navigation toast while one runs (on a desktop the toast is beside the panel).
+  const bottomPx = tabPx + (wide ? 0 : nav.toastPx);
+
   const route = routes.find((r) => r.id === routeId) ?? null;
   const stop = route?.stops?.find((s) => s.id === stopId) ?? null;
 
@@ -222,14 +225,14 @@ export function MapScreen({
         stopId={stopId}
         onSelectRoute={chooseRoute}
         onSelectStop={chooseStop}
-        coveredPx={wide ? 0 : sheetHeightPx(snap, available) + tabPx}
+        coveredPx={wide ? 0 : sheetHeightPx(snap, available) + bottomPx}
         coveredLeftPx={panelPx}
         settings={settings}
         mergeStops={mergeStops}
         user={nav.session?.snapshot.position ?? null}
         guide={nav.session?.snapshot.pathLine ?? null}
       />
-      <MapSheet panel={wide} snap={snap} onSnap={setSnap} available={available} tabPx={tabPx} header={showDetailInSheet ? null : homeHeader}>
+      <MapSheet panel={wide} snap={snap} onSnap={setSnap} available={available} tabPx={bottomPx} header={showDetailInSheet ? null : homeHeader}>
         {showDetailInSheet ? (
           <div className="flex flex-col gap-4">
             {hero}

@@ -30,13 +30,17 @@ interface NavigationApi {
   stop(): void;
   /** After a successful stamp: head for the next nearest stop at once. */
   markStamped(stopId: string): void;
+  /** How tall the navigation toast is (0 when hidden), so a page can keep that room free at the bottom. */
+  toastPx: number;
+  setToastPx(px: number): void;
 }
 
-const NavigationContext = createContext<NavigationApi>({ session: null, start: () => {}, stop: () => {}, markStamped: () => {} });
+const NavigationContext = createContext<NavigationApi>({ session: null, start: () => {}, stop: () => {}, markStamped: () => {}, toastPx: 0, setToastPx: () => {} });
 
 export function NavigationProvider({ children, signedIn }: { children: ReactNode; signedIn: boolean }) {
   const controller = useRef<NavigationController | null>(null);
   const [session, setSession] = useState<NavSession | null>(null);
+  const [toastPx, setToastPx] = useState(0);
   // Read when a path is wanted, so signing in or out during a session takes effect without restarting it.
   const signedInRef = useRef(signedIn);
   useEffect(() => {
@@ -71,7 +75,7 @@ export function NavigationProvider({ children, signedIn }: { children: ReactNode
   // Leaving the site (or a full reload) ends the session; nothing is kept.
   useEffect(() => () => controller.current?.stop(), []);
 
-  const api = useMemo(() => ({ session, start, stop, markStamped }), [session, start, stop, markStamped]);
+  const api = useMemo(() => ({ session, start, stop, markStamped, toastPx, setToastPx }), [session, start, stop, markStamped, toastPx]);
   return <NavigationContext.Provider value={api}>{children}</NavigationContext.Provider>;
 }
 

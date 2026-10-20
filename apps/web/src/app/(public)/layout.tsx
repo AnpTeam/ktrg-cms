@@ -37,7 +37,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           <OfflineNotice />
           {sample ? <SampleNoticeHost /> : null}
           <PrefsSync signedIn={viewer.signedIn} account={prefsState.account} device={prefsState.device} />
-          <main id="main" className="pb-28 md:pb-10 md:pt-6 lg:pb-20 lg:pt-8">
+          <main id="main" className="pb-[calc(7rem+var(--nav-toast,0px))] md:pb-[calc(2.5rem+var(--nav-toast,0px))] md:pt-6 lg:pb-[calc(5rem+var(--nav-toast,0px))] lg:pt-8">
             <div className="lg:mx-auto lg:max-w-6xl lg:px-10">{children}</div>
             <div className="lg:hidden">
               <SiteFooter locale={i18n.locale} />
