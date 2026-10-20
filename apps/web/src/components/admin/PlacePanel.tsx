@@ -4,7 +4,7 @@ import { useLingui } from "@lingui/react/macro";
 import { pointKinds, stampableByDefault, type PointKind } from "@/lib/point-kinds";
 import { publishBlockers, type PlaceDraft, type PublishBlocker } from "@/lib/admin/route-draft";
 import type { SpotStatus } from "@/lib/admin/types";
-import { BilingualField, Check, Field, inputClass, NumberInput, TextInput } from "./fields";
+import { Check, Field, inputClass, MultilingualField, NumberInput, TextInput } from "./fields";
 import { PhotoSlot } from "./PhotoSlot";
 
 export interface PlacePanelProps {
@@ -84,8 +84,8 @@ export function PlacePanel(p: PlacePanelProps) {
 
       {p.selected ? (
         <div className="flex flex-col gap-5 border-t border-line p-4">
-          <BilingualField id={`${id}-name`} label={t`経由地の名前`} ja={place.nameJa} en={place.nameEn} onJa={(v) => p.onChange({ nameJa: v })} onEn={(v) => p.onChange({ nameEn: v })} required invalid={p.invalidName} />
-          <BilingualField id={`${id}-desc`} label={t`説明`} ja={place.descriptionJa} en={place.descriptionEn} onJa={(v) => p.onChange({ descriptionJa: v })} onEn={(v) => p.onChange({ descriptionEn: v })} multiline />
+          <MultilingualField id={`${id}-name`} label={t`経由地の名前`} field="name" ja={place.nameJa} en={place.nameEn} translations={place.translations} onJa={(v) => p.onChange({ nameJa: v })} onEn={(v) => p.onChange({ nameEn: v })} onTranslations={(v) => p.onChange({ translations: v })} required invalid={p.invalidName} />
+          <MultilingualField id={`${id}-desc`} label={t`説明`} field="description" ja={place.descriptionJa} en={place.descriptionEn} translations={place.translations} onJa={(v) => p.onChange({ descriptionJa: v })} onEn={(v) => p.onChange({ descriptionEn: v })} onTranslations={(v) => p.onChange({ translations: v })} multiline />
 
           <Field label={t`種類`} htmlFor={`${id}-kind`}>
             <select
@@ -161,7 +161,7 @@ export function PlacePanel(p: PlacePanelProps) {
                   <option value="caution">{statusName.caution}</option>
                   <option value="closed">{statusName.closed}</option>
                 </select>
-                <BilingualField id={`${id}-note`} label={t`状態のひとこと`} ja={place.statusNoteJa} en={place.statusNoteEn} onJa={(v) => p.onChange({ statusNoteJa: v })} onEn={(v) => p.onChange({ statusNoteEn: v })} />
+                <MultilingualField id={`${id}-note`} label={t`状態のひとこと`} field="statusNote" ja={place.statusNoteJa} en={place.statusNoteEn} translations={place.translations} onJa={(v) => p.onChange({ statusNoteJa: v })} onEn={(v) => p.onChange({ statusNoteEn: v })} onTranslations={(v) => p.onChange({ translations: v })} />
               </fieldset>
 
               {isStamp ? (

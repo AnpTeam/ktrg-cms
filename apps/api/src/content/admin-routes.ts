@@ -2,6 +2,7 @@ import { Elysia, t } from "elysia";
 import { fail } from "../auth/http";
 import { routeKit, type KitServices, type RouteOptions } from "../auth/route-kit";
 import type { ErrorCode } from "../lib/api-errors";
+import { translationsSchema } from "../lib/schemas";
 import type { RoutingService } from "../routing/routing-service";
 import type { ContentService } from "./content-service";
 import type { Result, RouteRow, RouteSummaryRow, SpotRow } from "./content-types";
@@ -87,6 +88,7 @@ const routeProps = {
   historyEn: nullable(t.String({ maxLength: 20000 })),
   accessJa: nullable(t.String({ maxLength: 20000 })),
   accessEn: nullable(t.String({ maxLength: 20000 })),
+  translations: translationsSchema({ name: 200, description: 20000, history: 20000, access: 20000 }),
   photoUrl: nullable(t.String({ maxLength: 500 })),
 };
 const spotProps = {
@@ -106,6 +108,7 @@ const spotProps = {
   status,
   statusNoteJa: nullable(t.String({ maxLength: 1000 })),
   statusNoteEn: nullable(t.String({ maxLength: 1000 })),
+  translations: translationsSchema({ name: 200, description: 20000, statusNote: 1000 }),
   permissionConfirmed: t.Boolean(),
   permissionNote: nullable(t.String({ maxLength: 500 })),
 };

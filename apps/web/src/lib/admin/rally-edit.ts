@@ -1,6 +1,7 @@
 // The rules of the rally screens with no React, so they are unit-tested. A rally is made of places or of courses
 // (chosen when it is created); the screens show every candidate with a tick box and send the ticked ids in one save.
 
+import { translationsChange, type Translations } from "./content-locales";
 import type { AdminRally } from "./types";
 
 /** Tick or untick one: a newly ticked one goes to the end, so the order the admin builds is kept. */
@@ -27,12 +28,18 @@ export function groupBy<T>(items: readonly T[], keyOf: (item: T) => string): { k
 export interface NameDraft {
   nameJa: string;
   nameEn: string;
+  translations: Translations;
 }
 
-/** Only the names that changed, ready for PATCH; an empty English name clears it. */
-export function nameChanges(saved: Pick<AdminRally, "nameJa" | "nameEn">, draft: NameDraft): { nameJa?: string; nameEn?: string | null } {
-  const out: { nameJa?: string; nameEn?: string | null } = {};
+/** Only the names that changed, ready for PATCH; an empty English (or other language) name clears it. */
+export function nameChanges(
+  saved: Pick<AdminRally, "nameJa" | "nameEn" | "translations">,
+  draft: NameDraft,
+): { nameJa?: string; nameEn?: string | null; translations?: Translations } {
+  const out: { nameJa?: string; nameEn?: string | null; translations?: Translations } = {};
   if (draft.nameJa.trim() !== saved.nameJa) out.nameJa = draft.nameJa.trim();
   if (draft.nameEn.trim() !== (saved.nameEn ?? "")) out.nameEn = draft.nameEn.trim() || null;
+  const words = translationsChange(saved.translations, draft.translations);
+  if (words) out.translations = words;
   return out;
 }

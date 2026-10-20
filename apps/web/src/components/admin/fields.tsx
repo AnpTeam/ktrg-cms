@@ -2,16 +2,19 @@
 
 import { useState, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { ADDED_LOCALES, LOCALE_NAMES, MAX_LANGUAGES, moveLanguage, nextLanguage, startLanguages, withTranslation, type AddedLocale, type Translations } from "@/lib/admin/content-locales";
 
 // The small pieces every admin form is made of. Big controls, a visible label, and a hint line when it helps.
 
 export const inputClass = "tap-target w-full rounded-xl border-2 border-line bg-paper px-4 text-lg text-ink disabled:opacity-60";
 
-export function Field({ label, hint, children, htmlFor }: { label: string; hint?: ReactNode; children: ReactNode; htmlFor?: string }) {
+export function Field({ label, hint, children, htmlFor, required = false }: { label: string; hint?: ReactNode; children: ReactNode; htmlFor?: string; required?: boolean }) {
+  const { t } = useLingui();
   return (
     <div className="flex flex-col gap-1">
       <label htmlFor={htmlFor} className="text-base font-bold">
         {label}
+        {required ? <span className="ml-2 rounded-md bg-surface px-2 py-0.5 text-sm font-bold text-accent">{t`必須`}</span> : null}
       </label>
       {children}
       {hint ? <p className="text-base text-muted">{hint}</p> : null}
@@ -19,7 +22,7 @@ export function Field({ label, hint, children, htmlFor }: { label: string; hint?
   );
 }
 
-export function TextInput({ id, value, onChange, lang, maxLength, placeholder, invalid }: { id: string; value: string; onChange: (v: string) => void; lang?: "ja" | "en"; maxLength?: number; placeholder?: string; invalid?: boolean }) {
+export function TextInput({ id, value, onChange, lang, maxLength, placeholder, invalid, ariaLabel }: { id: string; value: string; onChange: (v: string) => void; lang?: string; maxLength?: number; placeholder?: string; invalid?: boolean; ariaLabel?: string }) {
   return (
     <input
       id={id}
@@ -29,63 +32,130 @@ export function TextInput({ id, value, onChange, lang, maxLength, placeholder, i
       maxLength={maxLength}
       placeholder={placeholder}
       aria-invalid={invalid || undefined}
+      aria-label={ariaLabel}
       onChange={(e) => onChange(e.target.value)}
       className={`${inputClass} ${invalid ? "border-danger" : ""}`}
     />
   );
 }
 
-export function TextArea({ id, value, onChange, lang, rows = 6, maxLength = 20000 }: { id: string; value: string; onChange: (v: string) => void; lang?: "ja" | "en"; rows?: number; maxLength?: number }) {
-  return <textarea id={id} lang={lang} rows={rows} maxLength={maxLength} value={value} onChange={(e) => onChange(e.target.value)} className={`${inputClass} py-3 leading-7`} />;
+export function TextArea({ id, value, onChange, lang, rows = 6, maxLength = 20000, ariaLabel }: { id: string; value: string; onChange: (v: string) => void; lang?: string; rows?: number; maxLength?: number; ariaLabel?: string }) {
+  return <textarea id={id} lang={lang} rows={rows} maxLength={maxLength} value={value} aria-label={ariaLabel} onChange={(e) => onChange(e.target.value)} className={`${inputClass} py-3 leading-7`} />;
 }
 
 /**
- * Japanese and English side by side. Japanese is the language of the site, English is optional: while it is empty
- * the public page shows the Japanese text, and this says so.
+ * A text in several languages. Japanese is the language of the site and comes first; "＋ 言語を追加" beside it adds
+ * a row below with a language picker (English, Deutsch, Français, ไทย, Español), up to MAX_LANGUAGES boxes in all.
+ * English is stored in its own fields (`en` / `onEn`), the others in the item's `translations` map under `field`.
+ * Removing a row clears its text. Visitors see Japanese where English is empty; the other languages are not shown
+ * to visitors yet.
  */
-export function BilingualField({
+export function MultilingualField({
   id,
   label,
+  field,
   ja,
   en,
+  translations,
   onJa,
   onEn,
+  onTranslations,
   multiline = false,
   required = false,
   invalid = false,
 }: {
   id: string;
   label: string;
+  /** The field's name in `translations` ("name", "description", ...). */
+  field: string;
   ja: string;
   en: string;
+  translations: Translations | undefined;
   onJa: (v: string) => void;
   onEn: (v: string) => void;
+  onTranslations: (next: Translations) => void;
   multiline?: boolean;
   required?: boolean;
   invalid?: boolean;
 }) {
   const { t } = useLingui();
+  const [shown, setShown] = useState<AddedLocale[]>(() => startLanguages(en, translations, field));
+  const next = nextLanguage(shown);
+  const valueOf = (l: AddedLocale) => (l === "en" ? en : (translations?.[l]?.[field] ?? ""));
+
+  // Moving text from one language to another (or clearing it): the parent gets one update per place that changed.
+  function move(from: AddedLocale, to: AddedLocale | null) {
+    const before = { en, translations: translations ?? {} };
+    const after = moveLanguage(before, field, from, to);
+    if (after.en !== before.en) onEn(after.en);
+    if (after.translations !== before.translations) onTranslations(after.translations);
+  }
+  const box = (boxId: string, lang: string, value: string, onChange: (v: string) => void, ariaLabel?: string) =>
+    multiline ? (
+      <TextArea id={boxId} lang={lang} value={value} onChange={onChange} ariaLabel={ariaLabel} />
+    ) : (
+      <TextInput id={boxId} lang={lang} value={value} onChange={onChange} maxLength={200} invalid={lang === "ja" && invalid} ariaLabel={ariaLabel} />
+    );
+
   return (
-    <fieldset className="flex flex-col gap-2">
+    <fieldset className="flex flex-col gap-3">
       <legend className="text-base font-bold">
         {label}
         {required ? <span className="ml-2 rounded-md bg-surface px-2 py-0.5 text-sm font-bold text-accent">{t`必須`}</span> : null}
       </legend>
-      <div className="grid gap-3 md:grid-cols-2">
-        <div className="flex flex-col gap-1">
-          <label htmlFor={`${id}-ja`} className="text-sm text-muted">
-            {t`日本語`}
-          </label>
-          {multiline ? <TextArea id={`${id}-ja`} lang="ja" value={ja} onChange={onJa} /> : <TextInput id={`${id}-ja`} lang="ja" value={ja} onChange={onJa} invalid={invalid} maxLength={200} />}
-        </div>
-        <div className="flex flex-col gap-1">
-          <label htmlFor={`${id}-en`} className="text-sm text-muted">
-            English
-          </label>
-          {multiline ? <TextArea id={`${id}-en`} lang="en" value={en} onChange={onEn} /> : <TextInput id={`${id}-en`} lang="en" value={en} onChange={onEn} maxLength={200} />}
-          {en.trim() === "" ? <p className="text-sm text-muted">{t`英語は未入力です（日本語を表示します）`}</p> : null}
-        </div>
+      <div className="mt-2 flex flex-wrap items-start gap-2 sm:flex-nowrap">
+        {/* Japanese is always there, so it is a fixed label in the place the other rows have their picker. */}
+        <label htmlFor={`${id}-ja`} className={`${inputClass} flex basis-full items-center sm:w-40 sm:basis-auto`}>
+          {LOCALE_NAMES.ja}
+        </label>
+        <div className="min-w-0 flex-1 basis-full sm:basis-auto">{box(`${id}-ja`, "ja", ja, onJa)}</div>
+          <button
+            type="button"
+            disabled={next === null}
+            onClick={() => next && setShown([...shown, next])}
+            className="tap-target shrink-0 rounded-xl border-2 border-line px-4 text-base font-bold disabled:opacity-50"
+          >
+            {t`＋ 言語を追加`}
+          </button>
       </div>
+      {shown.map((l) => (
+        <div key={l} className="flex flex-wrap items-start gap-2 sm:flex-nowrap">
+          <select
+            aria-label={t`${label}の言語`}
+            value={l}
+            onChange={(e) => {
+              const to = e.target.value as AddedLocale;
+              move(l, to);
+              setShown(shown.map((x) => (x === l ? to : x)));
+            }}
+            className={`${inputClass} basis-full sm:w-40 sm:basis-auto`}
+          >
+            {ADDED_LOCALES.filter((o) => o === l || !shown.includes(o)).map((o) => (
+              <option key={o} value={o}>
+                {LOCALE_NAMES[o]}
+              </option>
+            ))}
+          </select>
+          <div className="min-w-0 flex-1 basis-full sm:basis-auto">
+            {box(`${id}-${l}`, l, valueOf(l), (v) => (l === "en" ? onEn(v) : onTranslations(withTranslation(translations, l, field, v))), `${label}（${LOCALE_NAMES[l]}）`)}
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              move(l, null);
+              setShown(shown.filter((x) => x !== l));
+            }}
+            aria-label={t`${LOCALE_NAMES[l]}を削除`}
+            className="tap-target shrink-0 rounded-xl border-2 border-line px-4 text-base font-bold"
+          >
+            {t`削除`}
+          </button>
+        </div>
+      ))}
+      <p className="text-sm text-muted">
+        {shown.includes("en") ? null : `${t`英語は未入力です（日本語を表示します）`} `}
+        {t`言語は${MAX_LANGUAGES}つまで（日本語を含む）。英語以外は、まだ訪れる人には表示されません。`}
+      </p>
     </fieldset>
   );
 }
@@ -103,6 +173,7 @@ export function NumberInput({
   step,
   suffix,
   integer = false,
+  ariaLabel,
 }: {
   id: string;
   value: number | null;
@@ -112,6 +183,8 @@ export function NumberInput({
   step?: number;
   suffix?: string;
   integer?: boolean;
+  /** For a box with no visible label of its own (a table cell). */
+  ariaLabel?: string;
 }) {
   const [typing, setTyping] = useState<string | null>(null);
   const shown = typing ?? (value === null ? "" : String(value));
@@ -121,6 +194,7 @@ export function NumberInput({
         id={id}
         type="number"
         inputMode={integer ? "numeric" : "decimal"}
+        aria-label={ariaLabel}
         min={min}
         max={max}
         step={step ?? (integer ? 1 : "any")}

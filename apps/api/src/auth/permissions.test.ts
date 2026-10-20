@@ -29,6 +29,7 @@ describe("permission table", () => {
     expect(forAdmin).toEqual(
       [
         "audit.read",
+        "banner.manage",
         "me.manage",
         "me.sensitive",
         "notice.manage",
@@ -39,6 +40,7 @@ describe("permission table", () => {
         "stamp.create",
         "stamp.review",
         "upload.create",
+        "user.read",
         "user.manage_roles",
       ].sort(),
     );

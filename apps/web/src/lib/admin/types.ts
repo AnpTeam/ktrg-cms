@@ -1,3 +1,4 @@
+import type { Translations } from "./content-locales";
 // What the admin API sends (apps/api/src/content/admin-routes.ts). Times are ISO text; `updatedAt` goes back with
 // every save so the API can tell when someone else saved first.
 
@@ -36,6 +37,8 @@ export interface AdminRoute {
   sortOrder: number;
   createdAt: string;
   updatedAt: string;
+  /** The other content languages ({ de: { name } }). */
+  translations: Translations;
 }
 
 export interface AdminRouteSummary extends AdminRoute {
@@ -71,6 +74,8 @@ export interface AdminSpot {
   permissionNote: string | null;
   createdAt: string;
   updatedAt: string;
+  /** The other content languages ({ de: { name } }). */
+  translations: Translations;
 }
 
 /** How a rally is made, chosen when it is created: a list of stamp places, or a list of courses. */
@@ -82,6 +87,8 @@ export interface AdminRally {
   kind: AdminRallyKind;
   nameJa: string;
   nameEn: string | null;
+  /** The name in the other content languages ({ de: { name } }). */
+  translations: Translations;
   sortOrder: number;
   published: boolean;
   /** Places (a rally of places) or courses (a rally of courses) in it. */

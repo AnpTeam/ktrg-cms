@@ -15,8 +15,13 @@ import { createDrizzleSessionStore } from "../auth/session-store";
 import { createDb } from "./client";
 import { listRalliesWithProgress, ralliesForPlace, recordFinished } from "../rallies/rally-store";
 import { createDrizzleRallyAdminStore } from "../rallies/rally-admin-store";
+import { createDrizzleNoticeStore } from "../notices/notice-store";
+import { createDrizzleBannerStore } from "../banners/banner-store";
+import { createDrizzleUserListStore } from "../users/user-list";
 import {
   auditLog,
+  banners,
+  bannerTranslations,
   courseCompletions,
   otpCodes,
   rallies,
@@ -27,9 +32,12 @@ import {
   rateLimits,
   routes,
   routeTranslations,
+  sessions,
   spots,
   spotTranslations,
   stamps,
+  trailNotices,
+  trailNoticeTranslations,
   users,
   webauthnChallenges,
 } from "./schema";
@@ -1093,5 +1101,151 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
         });
       });
     });
+  });
+});
+
+describe.skipIf(!url)("trail notices on real PostgreSQL", () => {
+  const { db, client } = connect();
+  const store = createDrizzleNoticeStore(db);
+  const otp = createDrizzleOtpStore(db);
+  const tag = `nt${randomUUID().slice(0, 8)}`;
+  const made: string[] = [];
+  const fields = (over: Record<string, unknown> = {}) => ({
+    routeId: null,
+    titleJa: `${tag} 通行止め`,
+    titleEn: null,
+    bodyJa: "本文",
+    bodyEn: "Text",
+    sourceUrl: "https://example.com/",
+    sourceNameJa: "出典",
+    sourceNameEn: null,
+    verifiedOn: "2026-10-20",
+    expiresOn: null,
+    published: false,
+    ...over,
+  });
+
+  afterAll(async () => {
+    if (made.length) {
+      await db.delete(auditLog).where(inArray(auditLog.targetId, made));
+      await db.delete(trailNotices).where(inArray(trailNotices.id, made));
+    }
+    await db.delete(users).where(like(users.email, `${tag}-%`));
+    await client.end();
+  });
+
+  test("words go to the translation table and come back flat; a stale save is a conflict; delete takes the words", async () => {
+    const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
+    const row = await store.create(actor, fields());
+    made.push(row.id);
+    expect(row).toMatchObject({ titleJa: `${tag} 通行止め`, bodyEn: "Text", verifiedOn: "2026-10-20", expiresOn: null, published: false });
+    const words = await db.select().from(trailNoticeTranslations).where(eq(trailNoticeTranslations.trailNoticeId, row.id));
+    expect(words.map((w) => w.locale).sort()).toEqual(["en", "ja"]);
+
+    const changed = await store.update(actor, row.id, row.updatedAt, { titleEn: "Closed", published: true, expiresOn: "2026-10-31" });
+    expect(changed).toMatchObject({ titleEn: "Closed", titleJa: `${tag} 通行止め`, published: true, expiresOn: "2026-10-31" });
+    expect(await store.update(actor, row.id, row.updatedAt, { titleJa: "late" })).toBe("conflict");
+    expect(await store.update(actor, randomUUID(), row.updatedAt, { titleJa: "x" })).toBeNull();
+
+    expect(await store.remove(actor, row.id)).toBe(true);
+    expect(await db.select().from(trailNoticeTranslations).where(eq(trailNoticeTranslations.trailNoticeId, row.id))).toHaveLength(0);
+    expect((await db.select().from(auditLog).where(eq(auditLog.targetId, row.id))).map((a) => a.action)).toEqual(["notice.create", "notice.update", "notice.delete"]);
+  });
+
+  test("another language is saved as its own row (content_locale) and read back into translations", async () => {
+    const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
+    const row = await store.create(actor, { ...fields(), translations: { de: { title: "Gesperrt" } } });
+    made.push(row.id);
+    expect(row.translations).toEqual({ de: { title: "Gesperrt" } });
+    const words = await db.select().from(trailNoticeTranslations).where(eq(trailNoticeTranslations.trailNoticeId, row.id));
+    expect(words.map((w) => w.locale).sort()).toEqual(["de", "en", "ja"]);
+    const changed = await store.update(actor, row.id, row.updatedAt, { translations: { de: { title: null }, th: { body: "ปิด" } } });
+    expect(changed !== "conflict" && changed?.translations).toEqual({ th: { body: "ปิด" } });
+  });
+
+  test("the Japanese title is required by the database too", async () => {
+    const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
+    await expect(store.create(actor, fields({ titleJa: null as unknown as string }))).rejects.toThrow();
+  });
+
+  test("pages newest first without gaps, and visitors see only published notices still in date", async () => {
+    const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
+    for (const [i, over] of [
+      { published: true, expiresOn: "2026-10-19" },
+      { published: true, expiresOn: "2026-10-20" },
+      { published: false },
+      { published: true, expiresOn: null },
+    ].entries()) {
+      made.push((await store.create(actor, fields({ titleJa: `${tag} ${i}`, ...over }))).id);
+    }
+    const mine = (rows: { titleJa: string }[]) => rows.map((r) => r.titleJa).filter((t) => t.startsWith(tag));
+    const all: string[] = [];
+    let after = null as { createdAt: Date; id: string } | null;
+    for (;;) {
+      const page = await store.list(after, 2);
+      all.push(...mine(page));
+      if (page.length < 2) break;
+      after = { createdAt: page[1]!.createdAt, id: page[1]!.id };
+    }
+    expect(all.slice(0, 4)).toEqual([`${tag} 3`, `${tag} 2`, `${tag} 1`, `${tag} 0`]);
+    expect(mine(await store.listPublic("2026-10-20")).sort()).toEqual([`${tag} 1`, `${tag} 3`]);
+  });
+});
+
+describe.skipIf(!url)("banners and role changes on real PostgreSQL", () => {
+  const { db, client } = connect();
+  const otp = createDrizzleOtpStore(db);
+  const sessionStore = createDrizzleSessionStore(db);
+  const bannerStore = createDrizzleBannerStore(db);
+  const userStore = createDrizzleUserListStore(db);
+  const tag = `bu${randomUUID().slice(0, 8)}`;
+  const made: string[] = [];
+
+  afterAll(async () => {
+    if (made.length) {
+      await db.delete(auditLog).where(inArray(auditLog.targetId, made));
+      await db.delete(banners).where(inArray(banners.id, made));
+    }
+    const ids = (await db.select({ id: users.id }).from(users).where(like(users.email, `${tag}-%`))).map((u) => u.id);
+    if (ids.length) await db.delete(auditLog).where(inArray(auditLog.targetId, ids));
+    await db.delete(users).where(like(users.email, `${tag}-%`));
+    await client.end();
+  });
+
+  test("banners: words saved per language, visitors get published ones in order, delete takes the words", async () => {
+    const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
+    const add = async (altJa: string, sortOrder: number, published: boolean) => {
+      const row = await bannerStore.create(actor, { imageUrl: "https://example.com/a.jpg", altJa, altEn: null, sortOrder, published });
+      made.push(row.id);
+      return row;
+    };
+    const late = await add(`${tag} 二`, 2, true);
+    await add(`${tag} 下書き`, 0, false);
+    const first = await add(`${tag} 一`, 1, true);
+    expect(first).toMatchObject({ altJa: `${tag} 一`, altEn: null });
+    expect((await bannerStore.listPublic()).map((b) => b.altJa).filter((a) => a.startsWith(tag))).toEqual([`${tag} 一`, `${tag} 二`]);
+
+    const changed = await bannerStore.update(actor, late.id, late.updatedAt, { altEn: "Two" });
+    expect(changed).toMatchObject({ altJa: `${tag} 二`, altEn: "Two" });
+    expect(await bannerStore.update(actor, late.id, late.updatedAt, { altEn: "late" })).toBe("conflict");
+    expect(await bannerStore.remove(actor, late.id)).toBe(true);
+    expect(await db.select().from(bannerTranslations).where(eq(bannerTranslations.bannerId, late.id))).toHaveLength(0);
+  });
+
+  test("a role change sets the role, ends that account's sessions (not others'), and writes one audit row", async () => {
+    const admin = await otp.findOrCreateUser(`${tag}-admin@example.test`);
+    const target = await otp.findOrCreateUser(`${tag}-target@example.test`);
+    const at = new Date();
+    for (const userId of [admin.id, target.id]) {
+      await sessionStore.create({ userId, tokenHash: randomUUID(), expiresAt: new Date(at.getTime() + 60_000), absoluteExpiresAt: new Date(at.getTime() + 60_000), now: at });
+    }
+    const before = (await userStore.get(target.id))!;
+    const changed = await userStore.setRole(admin.id, target.id, before.updatedAt, "admin");
+    expect(changed).toMatchObject({ id: target.id, role: "admin" });
+    expect(await db.select().from(sessions).where(eq(sessions.userId, target.id))).toHaveLength(0);
+    expect(await db.select().from(sessions).where(eq(sessions.userId, admin.id))).toHaveLength(1);
+    const audits = await db.select().from(auditLog).where(eq(auditLog.targetId, target.id));
+    expect(audits.map((a) => [a.action, a.actorUserId])).toEqual([["user.role.change", admin.id]]);
+    expect(await userStore.setRole(admin.id, target.id, before.updatedAt, "participant")).toBe("conflict");
   });
 });

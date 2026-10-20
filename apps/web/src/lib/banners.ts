@@ -1,15 +1,20 @@
-// The photos for the banner carousel at the top of the signed-out home page. To add one: put the image in
-// apps/web/public/banners/ (about 1600 x 1000, under 300 KB, a photo the project has permission to use) and add a
-// row here with a short description in Japanese and English (read out by screen readers).
-// With no rows the carousel is left out (in development it shows grey placeholders so the layout can be seen).
+import { fetchPublicBanners } from "./api-content";
+
+// The photos for the banner carousel at the top of the home page. They are added in the admin (/admin/banners):
+// a photo the project may use (about 1600 x 1000) and a short description in Japanese and English, read out by
+// screen readers. With none the carousel is left out (in development it shows grey placeholders so the layout can
+// be seen). Server code only (it fetches from the API).
 export interface BannerSlide {
-  /** A path under /banners, for example "/banners/01.jpg"; null draws a placeholder. */
+  /** An https link to the photo; null draws a placeholder. */
   src: string | null;
   altJa: string;
   altEn: string;
 }
 
-export const bannerSlides: BannerSlide[] = [];
+/** The published banners, in order; none when the API does not answer (the carousel is then left out). */
+export async function listBanners(): Promise<BannerSlide[]> {
+  return ((await fetchPublicBanners()) ?? []).map((b) => ({ src: b.imageUrl, altJa: b.altJa, altEn: b.altEn ?? b.altJa }));
+}
 
 /** What the carousel shows: the real slides, or three placeholders while developing with sample content. */
 export function slidesToShow(slides: readonly BannerSlide[], sample: boolean): BannerSlide[] {

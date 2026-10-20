@@ -1,4 +1,5 @@
 import type { AuditWriter } from "../audit/audit-log";
+import { mergeTranslations } from "../db/translations";
 import type { RallyAdminStore, RallyCourse, RallyPlace, RallyRow } from "./rally-admin-types";
 
 /** A place the memory store knows: a waypoint with a stamp (stampable) or without. */
@@ -65,7 +66,7 @@ export function createMemoryRallyAdminStore(audit: AuditWriter, opts: { now?: ()
       const at = stampTime();
       const id = uuid();
       const last = Math.max(0, ...[...rallies.values()].map((r) => r.sortOrder));
-      rallies.set(id, { id, kind: fields.kind, nameJa: fields.nameJa, nameEn: fields.nameEn, sortOrder: last + 1, published: false, createdAt: at, updatedAt: at });
+      rallies.set(id, { id, kind: fields.kind, nameJa: fields.nameJa, nameEn: fields.nameEn, translations: mergeTranslations({}, fields.translations), sortOrder: last + 1, published: false, createdAt: at, updatedAt: at });
       members.set(id, [...fields.memberIds]);
       await audit.record({ actorUserId: actor, action: "rally.create", targetId: id });
       return row(id);
@@ -74,7 +75,8 @@ export function createMemoryRallyAdminStore(audit: AuditWriter, opts: { now?: ()
       const wasPublished = rallies.get(id)?.published;
       const c = claim(id, expected);
       if (c !== true) return c;
-      rallies.set(id, { ...rallies.get(id)!, ...changes });
+      const cur = rallies.get(id)!;
+      rallies.set(id, { ...cur, ...changes, translations: mergeTranslations(cur.translations, changes.translations) });
       await audit.record({ actorUserId: actor, action: "rally.update", targetId: id });
       if (changes.published !== undefined && changes.published !== wasPublished) {
         await audit.record({ actorUserId: actor, action: changes.published ? "rally.publish" : "rally.unpublish", targetId: id });
@@ -122,7 +124,7 @@ export function createMemoryRallyAdminStore(audit: AuditWriter, opts: { now?: ()
     addRally(rally: Partial<RallyRow> & Pick<RallyRow, "kind" | "nameJa">, memberIds: string[] = []): RallyRow {
       const at = stampTime();
       const id = uuid();
-      const { memberCount: _m, completionCount: _c, ...rest } = { id, nameEn: null, sortOrder: rallies.size, published: false, createdAt: at, updatedAt: at, memberCount: 0, completionCount: 0, ...rally };
+      const { memberCount: _m, completionCount: _c, ...rest } = { id, nameEn: null, translations: {}, sortOrder: rallies.size, published: false, createdAt: at, updatedAt: at, memberCount: 0, completionCount: 0, ...rally };
       rallies.set(id, { ...rest, id });
       members.set(id, [...memberIds]);
       return row(id);

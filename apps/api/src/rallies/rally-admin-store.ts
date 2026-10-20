@@ -2,7 +2,7 @@ import { and, asc, count, eq, inArray, max, sql } from "drizzle-orm";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
 import { rallies, rallyCompletions, rallyRoutes, rallySpots, rallyTranslations, routes, routeTranslations, spots, spotTranslations } from "../db/schema";
-import { emptyTexts, flattenTexts, RALLY_TEXT, ROUTE_TEXT, SPOT_TEXT, splitTexts, type Texts } from "../db/translations";
+import { emptyTexts, extraToTexts, flattenTexts, RALLY_TEXT, ROUTE_TEXT, SPOT_TEXT, splitTexts, type Texts } from "../db/translations";
 import type { RallyAdminStore, RallyCourse, RallyPlace, RallyRow } from "./rally-admin-types";
 
 type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
@@ -25,6 +25,7 @@ async function withRallyDetails(q: Reader, rows: (typeof rallies.$inferSelect)[]
       kind: r.kind,
       nameJa: t.nameJa ?? "",
       nameEn: t.nameEn,
+      translations: t.translations,
       sortOrder: r.sortOrder,
       published: r.published,
       memberCount: (r.kind === "places" ? places : courses).get(r.id) ?? 0,
@@ -142,6 +143,7 @@ export function createDrizzleRallyAdminStore(db: Db): RallyAdminStore {
         await saveRallyTexts(tx, made!.id, [
           { locale: "ja", values: { name: fields.nameJa } },
           ...(fields.nameEn ? [{ locale: "en" as const, values: { name: fields.nameEn } }] : []),
+          ...extraToTexts(fields.translations),
         ]);
         // All the members picked in the form, in one statement.
         const rallyId = made!.id;

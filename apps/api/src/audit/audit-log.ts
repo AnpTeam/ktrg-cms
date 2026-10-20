@@ -42,6 +42,16 @@ export const AUDIT_ACTIONS = {
   "rally.reorder": "rally",
   "rally.members.update": "rally",
   "rally.delete": "rally",
+  /** Admin trail notices (admin-lists): made, changed (including published or not), deleted. */
+  "notice.create": "notice",
+  "notice.update": "notice",
+  "notice.delete": "notice",
+  /** Admin banners (admin-lists): made, changed (including published or not), deleted. */
+  "banner.create": "banner",
+  "banner.update": "banner",
+  "banner.delete": "banner",
+  /** An admin changed another account's role (that account's sessions are ended in the same step). */
+  "user.role.change": "user",
   /** An admin uploaded a photo (the target is the file's UUID in storage). */
   "upload.create": "upload",
 } as const satisfies Record<string, string>;

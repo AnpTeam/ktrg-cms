@@ -7,7 +7,8 @@ import { useErrorMessages } from "@/components/useErrorMessages";
 import { api } from "@/lib/api";
 import { outcome } from "@/lib/admin/admin-client";
 import type { AdminRallyCourse, AdminRallyKind, AdminRallyPlace } from "@/lib/admin/types";
-import { BilingualField, Section } from "./fields";
+import type { Translations } from "@/lib/admin/content-locales";
+import { MultilingualField, Section } from "./fields";
 import { RallyMemberPicker } from "./RallyMemberPicker";
 
 // A new rally: choose how it is made (places or courses: fixed afterwards), name it, tick what is in it, save once.
@@ -29,6 +30,7 @@ export function RallyCreate({
   const [kind, setKind] = useState<AdminRallyKind>("course");
   const [nameJa, setNameJa] = useState("");
   const [nameEn, setNameEn] = useState("");
+  const [translations, setTranslations] = useState<Translations>({});
   const [picked, setPicked] = useState<Record<AdminRallyKind, string[]>>({ places: [], course: [] });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +40,7 @@ export function RallyCreate({
     setBusy(true);
     setError(null);
     const members = kind === "places" ? { spotIds: picked.places } : { routeIds: picked.course };
-    const res = await outcome(api.admin.rallies.post({ kind, nameJa, nameEn: nameEn.trim() || null, ...members }));
+    const res = await outcome(api.admin.rallies.post({ kind, nameJa, nameEn: nameEn.trim() || null, translations, ...members }));
     setBusy(false);
     if (!res.ok) return setError(messages[res.key]);
     router.push(`/admin/rallies/${res.data.rally.id}`);
@@ -72,7 +74,7 @@ export function RallyCreate({
       </Section>
 
       <Section title={t`名前`}>
-        <BilingualField id="new-rally-name" label={t`ラリーの名前`} ja={nameJa} en={nameEn} onJa={setNameJa} onEn={setNameEn} required invalid={nameJa.trim() === ""} />
+        <MultilingualField id="new-rally-name" label={t`ラリーの名前`} field="name" ja={nameJa} en={nameEn} translations={translations} onJa={setNameJa} onEn={setNameEn} onTranslations={setTranslations} required invalid={nameJa.trim() === ""} />
       </Section>
 
       <Section title={kind === "course" ? t`ラリーに入れるコース` : t`ラリーに入れる経由地`}>

@@ -19,6 +19,10 @@ import { createConsoleMailer } from "../src/lib/mailer";
 import { createMemoryMeStore } from "../src/me/me-memory-store";
 import { createMemoryContentStore } from "../src/content/content-memory-store";
 import { createMemoryRallyAdminStore } from "../src/rallies/rally-admin-memory-store";
+import { createMemoryNoticeStore } from "../src/notices/notice-memory-store";
+import { createMemoryBannerStore } from "../src/banners/banner-list";
+import { memoryReader } from "../src/admin-lists/list-memory-store";
+import { createMemoryUserListStore } from "../src/users/user-list";
 import { createServices } from "../src/services";
 
 const port = Number(process.env.PORT ?? 3001);
@@ -70,6 +74,11 @@ const services = createServices({
     me: createMemoryMeStore(users, profiles).store,
     content: createMemoryContentStore(audit).store,
     rallyAdmin: createMemoryRallyAdminStore(audit).store,
+    notices: createMemoryNoticeStore(audit).store,
+    banners: createMemoryBannerStore(audit).store,
+    auditList: memoryReader(new Map()),
+    placeList: memoryReader(new Map()),
+    userList: createMemoryUserListStore(audit).store,
   },
   audit,
   // This address becomes an admin on an email-code login, so the admin screens can be tried (this page only).

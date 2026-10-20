@@ -31,10 +31,17 @@ describe("grouping places by course", () => {
 
 describe("what names changed", () => {
   test("nothing changed: nothing to send", () => {
-    expect(nameChanges({ nameJa: "経塚", nameEn: null }, { nameJa: "経塚", nameEn: "" })).toEqual({});
+    expect(nameChanges({ nameJa: "経塚", nameEn: null, translations: {} }, { nameJa: "経塚", nameEn: "", translations: {} })).toEqual({});
   });
 
   test("trimmed, and an empty English name clears it", () => {
-    expect(nameChanges({ nameJa: "経塚", nameEn: "Mounds" }, { nameJa: " 新しい ", nameEn: "  " })).toEqual({ nameJa: "新しい", nameEn: null });
+    expect(nameChanges({ nameJa: "経塚", nameEn: "Mounds", translations: {} }, { nameJa: " 新しい ", nameEn: "  ", translations: {} })).toEqual({ nameJa: "新しい", nameEn: null });
+  });
+
+  test("another language: only what changed is sent; a removed one is cleared", () => {
+    const saved = { nameJa: "経塚", nameEn: null, translations: { de: { name: "Hügel" } } };
+    expect(nameChanges(saved, { nameJa: "経塚", nameEn: "", translations: { de: { name: null }, th: { name: "เนิน" } } })).toEqual({
+      translations: { de: { name: null }, th: { name: "เนิน" } },
+    });
   });
 });

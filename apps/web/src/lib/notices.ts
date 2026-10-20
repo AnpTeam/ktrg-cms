@@ -1,3 +1,4 @@
+import { fetchPublicNotices } from "./api-content";
 import { sampleContentEnabled } from "./content";
 import { sampleNotices } from "./sample-notices";
 
@@ -20,8 +21,8 @@ export interface TrailNotice {
   verifiedOn: string;
   /** YYYY-MM-DD; the notice disappears after this day. null = until someone removes it. */
   expiresOn: string | null;
-  /** The course it is about (1 to 19), or null for the whole trail. */
-  routeOrder: number | null;
+  /** The route it is about, or null for the whole trail. */
+  routeId: string | null;
 }
 
 /** Notices that have not expired as of `today` (YYYY-MM-DD, Japan time), the most recently checked first. */
@@ -39,8 +40,10 @@ export function todayInJapan(now = new Date()): string {
 /** Only http(s) links are ever rendered from CMS text. */
 export const isWebUrl = (value: string) => /^https?:\/\//i.test(value);
 
-// The notices API does not exist yet, so production has none (and the page shows nothing, rather than
-// inventing a notice). Sample notices are for design review only and say 見本 in their text.
+// Published notices from the API (written in the admin: /admin/notices). With none, and only while sample content
+// is on, the sample notices stand in for design review (they say 見本 in their text); production never invents one.
+// The API already hides expired ones; filtering again here keeps a cached answer from showing one past its day.
 export async function listNotices(): Promise<TrailNotice[]> {
-  return activeNotices(sampleContentEnabled() ? sampleNotices : [], todayInJapan());
+  const real = (await fetchPublicNotices()) ?? [];
+  return activeNotices(real.length === 0 && sampleContentEnabled() ? sampleNotices : real, todayInJapan());
 }

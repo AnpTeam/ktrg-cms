@@ -49,6 +49,10 @@ export const ERROR_CODES = {
   rally_empty: "409: a rally with nothing in it cannot be published, and a published rally cannot be emptied",
   invalid_rally_members: "400: a rally of places takes stamp places, a rally of courses takes courses, each once",
 
+  // --- Admin lists (trail notices, ...) ---------------------------------------------------
+  invalid_source_url: "400: the source must be a link that starts with https://",
+  cannot_change_own_role: "409: an admin cannot change their own role (so the last admin cannot lock everyone out)",
+
   // --- Uploads ---------------------------------------------------------------------------
   invalid_file: "400: only a JPEG, PNG or WebP image of at most 4 MB",
   uploads_unavailable: "503: photo storage is not set up here, or did not answer; try again later",
