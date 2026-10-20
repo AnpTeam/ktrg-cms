@@ -181,6 +181,8 @@ export interface PlannedSpot {
   nameEn: string | null;
   kind: SpotKindName;
   stampable: boolean;
+  /** An optional visit beside the way: the sheet's 任意 rows. */
+  stopBy: boolean;
   lat: number | null;
   lng: number | null;
   source: string | null;
@@ -222,7 +224,7 @@ export function planLoad(input: { stops: StopRow[]; mounds: MoundPoint[]; existi
       notes.push(`${s.code} ${s.nameJa}: 同じ位置が別の場所にも書かれているため、位置は入れません`);
       lat = lng = null;
     }
-    const planned: PlannedSpot = { route: s.route, nameJa: s.nameJa, nameEn: s.nameEn, kind, stampable: s.type === "stamp", lat, lng, source: lat === null ? null : SOURCE_STOP };
+    const planned: PlannedSpot = { route: s.route, nameJa: s.nameJa, nameEn: s.nameEn, kind, stampable: s.type === "stamp", stopBy: s.type === "optional", lat, lng, source: lat === null ? null : SOURCE_STOP };
     if (kind === "mound") {
       // The mound is already in the database (seeded): keep it, with its stamp and its place in the rally.
       const mound = find(s.route, (e) => e.kind === "mound" && s.nameJa.includes(chapterOf(e.nameJa)));
@@ -231,6 +233,7 @@ export function planLoad(input: { stops: StopRow[]; mounds: MoundPoint[]; existi
         planned.existing = mound;
         planned.nameJa = mound.nameJa;
         planned.stampable = true;
+        planned.stopBy = false; // an existing place keeps its own flags
         planned.lat = mound.lat;
         planned.lng = mound.lng;
         planned.source = null;
@@ -257,7 +260,7 @@ export function planLoad(input: { stops: StopRow[]; mounds: MoundPoint[]; existi
     if (target.lat !== null) continue;
     const inPlan = same ?? spots.find((p) => p.existing?.id === target.id);
     if (inPlan) Object.assign(inPlan, { lat: m.lat, lng: m.lng, source: SOURCE_MOUND });
-    else spots.push({ route: target.route, nameJa: target.nameJa, nameEn: null, kind: "mound", stampable: true, lat: m.lat, lng: m.lng, source: SOURCE_MOUND, existing: target });
+    else spots.push({ route: target.route, nameJa: target.nameJa, nameEn: null, kind: "mound", stampable: true, stopBy: false, lat: m.lat, lng: m.lng, source: SOURCE_MOUND, existing: target });
   }
 
   return { spots, notes };

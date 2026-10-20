@@ -106,6 +106,8 @@ const spotProps = {
   kind,
   // A stamp can be collected here; when a new waypoint leaves it out, it starts from the kind (stampableByDefault).
   stampable: t.Boolean(),
+  // An optional visit beside the way (寄り道): the route's line need not pass through it.
+  stopBy: t.Boolean(),
   photoUrl: nullable(t.String({ maxLength: 500 })),
   // The gallery: up to 12 photos; the credit says who took one that is not ours.
   photos: t.Array(t.Object({ url: t.String({ maxLength: 500 }), credit: nullable(t.String({ maxLength: 300 })), sourceUrl: nullable(t.String({ maxLength: 500 })) }), { maxItems: 12 }),

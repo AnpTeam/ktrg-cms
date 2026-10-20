@@ -35,6 +35,8 @@ export interface PublicSpot {
   kind: SpotRow["kind"];
   /** A stamp can be collected here (only then does the place have a page of its own). */
   stampable: boolean;
+  /** An optional visit beside the way (寄り道). */
+  stopBy: boolean;
   photoUrl: string | null;
   /** More photos of the place, in order, each with who took it when that is known. */
   photos: SpotRow["photos"];
@@ -134,6 +136,7 @@ function toPublicSpot(s: SpotRow): PublicSpot {
     radiusM: s.radiusM,
     kind: s.kind,
     stampable: s.stampable,
+    stopBy: s.stopBy,
     photoUrl: s.photoUrl,
     photos: s.photos,
     status: s.status,
@@ -218,6 +221,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
     if (input.status !== undefined) out.status = input.status;
     if (input.kind !== undefined) out.kind = input.kind;
     if (input.stampable !== undefined) out.stampable = input.stampable;
+    if (input.stopBy !== undefined) out.stopBy = input.stopBy;
     if (input.photoUrl !== undefined) {
       const v = text(input.photoUrl);
       if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");

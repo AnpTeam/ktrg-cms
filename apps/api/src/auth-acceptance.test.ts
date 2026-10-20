@@ -20,6 +20,7 @@ import { createMemoryContentStore } from "./content/content-memory-store";
 import { createMemoryRallyAdminStore } from "./rallies/rally-admin-memory-store";
 import { createMemoryStampStore } from "./stamps/stamp-memory-store";
 import { createMemoryNoticeStore } from "./notices/notice-memory-store";
+import { createMemorySiteSettingsStore } from "./site-settings/site-settings";
 import { createMemoryPlaceStore } from "./places/place-directory";
 import { createMemoryBannerStore } from "./banners/banner-list";
 import { memoryReader } from "./admin-lists/list-memory-store";
@@ -73,6 +74,7 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       notices: createMemoryNoticeStore(audit.writer).store,
       banners: createMemoryBannerStore(audit.writer).store,
       places: createMemoryPlaceStore(audit.writer).store,
+      siteSettings: createMemorySiteSettingsStore(audit.writer),
       auditList: memoryReader(new Map()),
       placeList: memoryReader(new Map()),
       userList: createMemoryUserListStore(audit.writer).store,
@@ -310,6 +312,8 @@ describe("user B cannot touch user A", () => {
     "GET /api/v1/banners",
     // Published places with a checked position (see places/place-directory.test.ts).
     "GET /api/v1/places",
+    // The site-wide settings visitors read: the map style (see site-settings/site-settings.test.ts).
+    "GET /api/v1/settings",
     "POST /api/v1/auth/otp/request",
     "POST /api/v1/auth/otp/verify",
     "POST /api/v1/auth/logout",
@@ -346,6 +350,7 @@ describe("user B cannot touch user A", () => {
       lat: null, lng: null, positionVerified: false, positionSource: null, address: null, phone: null, website: null, photoUrl: null, status: "unknown", lastVerified: null,
       listingConfirmed: false, listingNote: null, published: false,
     }),
+    "PUT /api/v1/admin/settings/map-style": () => ({ base: "pale", terrain: "hillshade", terrainOpacity: 0.5, saturation: 0, contrast: 0 }),
     "PATCH /api/v1/admin/lists/directory/:id": () => ({ updatedAt: new Date().toISOString() }),
     "PATCH /api/v1/admin/lists/users/:id": () => ({ updatedAt: new Date().toISOString(), role: "admin" }),
     "POST /api/v1/auth/reauth/verify": () => ({ code: "123456" }),

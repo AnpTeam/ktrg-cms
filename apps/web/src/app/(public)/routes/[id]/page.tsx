@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { msg } from "@lingui/core/macro";
@@ -8,7 +7,7 @@ import { RouteView } from "@/components/RouteView";
 import { forViewer, getRoute, listPlacesForRoute, pickText, toMapPlace } from "@/lib/content";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
-import { mapSettingsCookie, parseMapSettings } from "@/lib/map-settings";
+import { getMapSettings } from "@/lib/site-settings";
 import { getPrefs } from "@/lib/server-prefs";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ as?: string }> };
@@ -27,7 +26,7 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
   if (!found) notFound();
   const route = forViewer(found, viewer);
   const prefs = await getPrefs();
-  const settings = parseMapSettings((await cookies()).get(mapSettingsCookie)?.value);
+  const settings = await getMapSettings();
   const places = (await listPlacesForRoute(route.order)).map((p) => toMapPlace(i18n.locale, p));
 
   return (

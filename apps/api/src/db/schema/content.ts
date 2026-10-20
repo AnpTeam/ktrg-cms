@@ -126,6 +126,8 @@ export const spots = pgTable(
     kind: spotKind("kind").notNull().default("other"),
     // Visitors can collect a stamp here: it joins rallies, has a check-in radius and needs the site's permission to publish.
     stampable: boolean("stampable").notNull().default(false),
+    // An optional visit beside the way (寄り道): the line of the route does not have to pass through it.
+    stopBy: boolean("stop_by").notNull().default(false),
     photoUrl: text("photo_url"),
     // More photos of the place, in order (the first photo above is its main one).
     photos: jsonb("photos").$type<SpotPhoto[]>().notNull().default(sql`'[]'::jsonb`),
@@ -430,6 +432,13 @@ export const bannerTranslations = pgTable(
   },
   (t) => [primaryKey({ columns: [t.bannerId, t.locale] }), check("banner_translations_ja_alt", jaRequires(t, t.alt))],
 );
+
+/** Settings for the whole site, one named value each (see site-settings/): the map style visitors see, and later others. */
+export const siteSettings = pgTable("site_settings", {
+  key: text("key").primaryKey(),
+  value: jsonb("value").notNull(),
+  updatedAt: updatedAt(),
+});
 
 /** What a place in the directory is. The same names as the waypoint kinds and the map's place categories (lib/places.ts in the web app). */
 export const placeCategories = [
