@@ -87,24 +87,24 @@ export function NavigationToast() {
   const st = snap.state;
   const target = st.targetId ? session.stops[st.targetId] : undefined;
   const turnWords: Record<TurnKind, string> = {
-    "slight-left": t`少し左へ`,
-    left: t`左に曲がる`,
-    "sharp-left": t`大きく左に曲がる`,
-    "slight-right": t`少し右へ`,
-    right: t`右に曲がる`,
-    "sharp-right": t`大きく右に曲がる`,
-    "u-turn": t`引き返す`,
+    "slight-left": t`やや左`,
+    left: t`左折`,
+    "sharp-left": t`大きく左`,
+    "slight-right": t`やや右`,
+    right: t`右折`,
+    "sharp-right": t`大きく右`,
+    "u-turn": t`Uターン`,
   };
   // Which way, relative to where the visitor walks (no line to follow).
   const steerWords: Record<TurnKind | "straight", string> = {
     straight: t`まっすぐ`,
-    "slight-left": t`少し左の方へ`,
-    left: t`左の方へ`,
-    "sharp-left": t`左うしろの方へ`,
-    "slight-right": t`少し右の方へ`,
-    right: t`右の方へ`,
-    "sharp-right": t`右うしろの方へ`,
-    "u-turn": t`うしろの方へ`,
+    "slight-left": t`やや左`,
+    left: t`左`,
+    "sharp-left": t`左うしろ`,
+    "slight-right": t`やや右`,
+    right: t`右`,
+    "sharp-right": t`右うしろ`,
+    "u-turn": t`うしろ`,
   };
   const compass: Record<CompassPoint, string> = {
     N: t`北`, NE: t`北東`, E: t`東`, SE: t`南東`, S: t`南`, SW: t`南西`, W: t`西`, NW: t`北西`,
@@ -112,7 +112,7 @@ export function NavigationToast() {
   const fmt = new Intl.NumberFormat(i18n.locale === "ja" ? "ja-JP" : "en-US", { maximumFractionDigits: 1 });
   const dist = st.distanceM !== null ? distanceParts(st.distanceM) : null;
   const n = dist ? fmt.format(dist.value) : "";
-  const distText = dist ? (dist.unit === "km" ? t`約${n}km` : t`約${n}m`) : "";
+  const distText = dist ? (dist.unit === "km" ? t`${n}km` : t`${n}m`) : "";
   const ageS = snap.lastFixAtMs !== null ? Math.round((now - snap.lastFixAtMs) / 1000) : null;
 
   const problem =
@@ -147,10 +147,10 @@ export function NavigationToast() {
     const turn = st.turn && st.turn.inM <= TURN_ANNOUNCE_M ? st.turn : null;
     const turnDist = turn ? distanceParts(turn.inM) : null;
     const tn = turnDist ? fmt.format(turnDist.value) : "";
-    const turnIn = turnDist ? (turnDist.unit === "km" ? t`約${tn}km` : t`約${tn}m`) : "";
+    const turnIn = turnDist ? (turnDist.unit === "km" ? t`${tn}km` : t`${tn}m`) : "";
     const turnWord = turn ? turnWords[turn.kind] : "";
     // Within a few metres the turn is "now".
-    const turnText = turn ? (turn.inM < 15 ? t`ここで${turnWord}` : t`${turnIn}先で${turnWord}`) : "";
+    const turnText = turn ? (turn.inM < 15 ? t`すぐ${turnWord}` : t`${turnIn}先 ${turnWord}`) : "";
     const steer = !turn && st.mode === "straight" ? st.steer : null;
     const steerWord = steer ? steerWords[steer] : "";
     // The arrow: a turn leans the way to turn; once the walking direction is known it is relative to it (ahead is up,
@@ -160,8 +160,8 @@ export function NavigationToast() {
       : st.bearingDeg !== null && st.headingDeg !== null
         ? turnDelta(st.headingDeg, st.bearingDeg)
         : (st.bearingDeg ?? 0);
-    const line1 = turn ? turnText : steer ? t`${steerWord} ${distText}` : direction ? t`${direction}へ ${distText}` : distText;
-    const mode = st.mode === "line" ? t`道なり` : st.mode === "path" ? t`道の外・歩ける道で案内` : t`道の外・まっすぐの方向`;
+    const line1 = turn ? turnText : steer ? t`${steerWord} ${distText}` : direction ? t`${direction} ${distText}` : distText;
+    const mode = st.mode === "line" ? t`道なり` : st.mode === "path" ? t`道の外・歩ける道` : t`道の外・直線`;
     main = (
       <div className="flex min-w-0 items-center gap-3">
         {turn || st.bearingDeg !== null ? (
