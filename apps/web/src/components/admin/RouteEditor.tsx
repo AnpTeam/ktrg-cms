@@ -31,6 +31,7 @@ import { isListedMunicipality } from "@/lib/municipalities";
 import { MunicipalityField } from "./MunicipalityField";
 import { PhotoSlot } from "./PhotoSlot";
 import { PlacePanel } from "./PlacePanel";
+import { PlaceTable } from "./PlaceTable";
 import { useChecklistLabels } from "./useChecklistLabels";
 
 const TABS: EditorTab[] = ["overview", "text", "map", "places", "check"];
@@ -55,6 +56,8 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
   const [problems, setProblems] = useState<DraftProblem[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [view, setView] = useState<"edit" | "preview">("edit");
+  // The places tab: a table to type many at once (where a new route starts), or the detailed panel per place.
+  const [placesView, setPlacesView] = useState<"table" | "detail">(() => (initial.id === null ? "table" : "detail"));
   const params = useSearchParams();
   const [section, setSectionState] = useState<EditorTab>(() => {
     const q = params.get("tab");
@@ -431,7 +434,29 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
 
             {section === "places" ? (
               <Section title={t`場所（${draft.places.length}か所）`}>
-                {draft.places.length === 0 ? (
+                <div role="group" aria-label={t`場所の見せ方`} className="flex flex-wrap gap-2">
+                  {(["table", "detail"] as const).map((v) => (
+                    <button
+                      key={v}
+                      type="button"
+                      aria-pressed={placesView === v}
+                      onClick={() => setPlacesView(v)}
+                      className={`tap-target rounded-xl border-2 px-5 text-lg font-bold ${placesView === v ? "border-ink bg-ink text-paper" : "border-line"}`}
+                    >
+                      {v === "table" ? t`表でまとめて入力` : t`1か所ずつ詳しく`}
+                    </button>
+                  ))}
+                </div>
+                {placesView === "table" ? (
+                  <PlaceTable
+                    places={draft.places}
+                    busy={busyKey !== null || saving}
+                    invalidName={(key) => problemOf("place_name", key)}
+                    onChange={(key, patch) => dispatch({ type: "place", key, patch })}
+                    onRemove={(key) => dispatch({ type: "removePlace", key })}
+                    onAdd={() => dispatch({ type: "addRow", key: crypto.randomUUID() })}
+                  />
+                ) : draft.places.length === 0 ? (
                   <p className="rounded-xl bg-paper p-4 text-lg">
                     {t`まだありません。`}{" "}
                     <button type="button" onClick={() => setSection("map")} className="font-bold text-accent underline underline-offset-4">

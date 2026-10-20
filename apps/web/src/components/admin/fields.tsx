@@ -173,6 +173,7 @@ export function NumberInput({
   step,
   suffix,
   integer = false,
+  ariaLabel,
 }: {
   id: string;
   value: number | null;
@@ -182,6 +183,8 @@ export function NumberInput({
   step?: number;
   suffix?: string;
   integer?: boolean;
+  /** For a box with no visible label of its own (a table cell). */
+  ariaLabel?: string;
 }) {
   const [typing, setTyping] = useState<string | null>(null);
   const shown = typing ?? (value === null ? "" : String(value));
@@ -191,6 +194,7 @@ export function NumberInput({
         id={id}
         type="number"
         inputMode={integer ? "numeric" : "decimal"}
+        aria-label={ariaLabel}
         min={min}
         max={max}
         step={step ?? (integer ? 1 : "any")}

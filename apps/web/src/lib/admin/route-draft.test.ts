@@ -224,3 +224,17 @@ describe("checks before saving", () => {
     expect(videoLinkLooksValid("not a url")).toBe(false);
   });
 });
+
+describe("the places table", () => {
+  test("each new row is an unnamed stamp place with no position (the name is required before saving); a new route saves the route, then every row", () => {
+    const s = run(fresh(), { type: "text", field: "nameJa", value: "新しいルート" }, { type: "addRow", key: "a" }, { type: "addRow", key: "b" });
+    expect(s.present.places.map((p) => [p.key, p.kind, p.nameJa, p.lat, p.lng])).toEqual([
+      ["a", "stamp", "", null, null],
+      ["b", "stamp", "", null, null],
+    ]);
+    expect(draftProblems(s.present).filter((p) => p.kind === "place_name")).toHaveLength(2);
+    const typed = run(s, { type: "place", key: "a", patch: { nameJa: "一" } }, { type: "place", key: "b", patch: { nameJa: "虎島の経塚", lat: 34.27, lng: 135.0 } });
+    expect(planSave(typed.present, null).map((step) => step.op)).toEqual(["createRoute", "createSpot", "createSpot"]);
+    expect(typed.present.places[1]).toMatchObject({ nameJa: "虎島の経塚", lat: 34.27, positionVerified: false });
+  });
+});

@@ -112,7 +112,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
   };
 }
 
-export const newPlace = (key: string, lat: number, lng: number, n: number, kind: PointKind = "stamp"): PlaceDraft => ({
+export const newPlace = (key: string, lat: number | null, lng: number | null, n: number, kind: PointKind = "stamp"): PlaceDraft => ({
   key, id: null, updatedAt: null, published: false, kind, nameJa: kind === "stamp" ? `場所${n}` : "", nameEn: "", descriptionJa: "", descriptionEn: "",
   translations: {}, photoUrl: "", lat, lng, positionVerified: false, positionSource: "", radiusM: 50, status: "open", statusNoteJa: "", statusNoteEn: "",
   permissionConfirmed: false, permissionNote: "",
@@ -163,6 +163,8 @@ export type DraftAction =
   | { type: "addPlace"; key: string; lat: number; lng: number; kind?: PointKind }
   /** Several places at once (named points of a GPX file): one undo step, all drafts. */
   | { type: "addPlaces"; places: { key: string; name: string; lat: number; lng: number }[] }
+  /** An empty row in the places table: a stamp place with no name and no position yet (typed in the row). */
+  | { type: "addRow"; key: string }
   | { type: "movePlace"; key: string; lat: number; lng: number }
   | { type: "place"; key: string; patch: Partial<PlaceDraft> }
   | { type: "removePlace"; key: string }
@@ -186,7 +188,7 @@ function withLine(d: RouteDraft, points: LngLatEle[]): RouteDraft {
 }
 
 /** The actions that change the map or the order of places can be undone; typing is left to the browser's own undo. */
-const undoable = new Set<DraftAction["type"]>(["line", "addPlace", "addPlaces", "movePlace", "removePlace", "reorderPlaces"]);
+const undoable = new Set<DraftAction["type"]>(["line", "addPlace", "addPlaces", "addRow", "movePlace", "removePlace", "reorderPlaces"]);
 
 /** The walking time follows the distance and the climb until someone types one. */
 const withAutoTime = (d: RouteDraft): RouteDraft => {
@@ -242,6 +244,8 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       const added = a.places.map((p, i) => ({ ...newPlace(p.key, p.lat, p.lng, start + i + 1), nameJa: p.name.trim() || `場所${start + i + 1}` }));
       return { ...d, places: [...d.places, ...added] };
     }
+    case "addRow":
+      return { ...d, places: [...d.places, { ...newPlace(a.key, null, null, 0), nameJa: "" }] };
     case "movePlace":
       return { ...d, places: d.places.map((p) => (p.key === a.key ? { ...p, lat: a.lat, lng: a.lng, positionVerified: false } : p)) };
     case "place":
