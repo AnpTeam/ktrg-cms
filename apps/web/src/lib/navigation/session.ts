@@ -4,8 +4,9 @@
 // The rules (agreed 2026-10-20):
 // - head for the NEAREST stop not yet stamped and not closed (the visitor may join anywhere, walk either way);
 // - ON the course line (within OFF_ROUTE_M) and the stop sits on it: guide along that line ("line");
-// - OFF it: follow a walking path from OpenRouteService when the screen has one for this stop ("path"),
-//   otherwise point straight at the stop ("straight").
+// - OFF it: follow a walking path from OpenRouteService when the screen has one for this stop and the visitor is
+//   within OFF_ROUTE_M of it ("path"), otherwise point straight at the stop ("straight").
+// - A new path is asked for only while guided straight, so walking along a path costs no requests.
 
 import {
   bearingDeg,
@@ -14,6 +15,7 @@ import {
   distanceM,
   nearestTarget,
   nextTurn,
+  OFF_ROUTE_M,
   offRouteStep,
   turnDelta,
   turnKind,
@@ -175,7 +177,8 @@ export function applyFix(model: NavModel, prev: NavState, reading: NavReading, s
 
   if (path && path.stopId === stop.id && path.line.length >= 2) {
     const onPath = projectOnLine(path.line, path.cum, reading);
-    if (onPath) {
+    // Strayed from the path too: guided straight, which asks for a new path (wantsPath).
+    if (onPath && onPath.offM <= OFF_ROUTE_M) {
       const end = path.cum[path.cum.length - 1]!;
       return { ...common, mode: "path", turn: nextTurn(path.line, path.cum, onPath.alongM, end), ...alongTrack(path, onPath.alongM, end, reading, stop) };
     }
@@ -189,5 +192,5 @@ export function applyFix(model: NavModel, prev: NavState, reading: NavReading, s
 
 /** True when the screen should ask OpenRouteService for a path to the current target. */
 export function wantsPath(state: NavState): boolean {
-  return state.targetId !== null && state.mode !== null && state.mode !== "line" && !state.inRadius;
+  return state.targetId !== null && state.mode === "straight" && !state.inRadius;
 }

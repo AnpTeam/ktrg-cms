@@ -57,7 +57,7 @@ export interface LastAsk {
 }
 
 /**
- * Whether to ask for a path now. `wanted`: the visitor is off the course line and heading for `stopId`
+ * Whether to ask for a path now. `wanted`: the visitor is off the course line and off any path for `stopId`
  * (session.wantsPath). The first time at once; then for a new stop, or for the same stop after moving
  * PATH_REASK_MOVED_M, but never more often than PATH_MIN_INTERVAL_MS, and not at all while backing off.
  */

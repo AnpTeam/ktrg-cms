@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { StampHere } from "@/components/StampHere";
-import { compassPoint, turnDelta, type CompassPoint, type TurnKind } from "@/lib/navigation/geometry";
+import { compassPoint, type CompassPoint, type TurnKind } from "@/lib/navigation/geometry";
 import { modelFromMapRoute } from "@/lib/navigation/input";
 import type { MapScreenRoute } from "@/lib/map-screen";
 import { distanceParts } from "@/lib/stamp-flow";
@@ -14,8 +14,8 @@ import { useNavigation, type NavStopInfo } from "./NavigationProvider";
 // The navigation toast: a small card floating at the bottom of the screen while a navigation runs, on every tab (on a
 // phone just above the tab bar and the phone's own bar, on a wider screen at the bottom right). Two lines: which way and
 // how far, then the stop and a short word on how it is guiding. The page makes room for it (its height is reported to
-// the provider and as the CSS variable --nav-toast), so it covers nothing. The map is north-up, so the arrow points the
-// way on the map (there is no phone compass).
+// the provider and as the CSS variable --nav-toast), so it covers nothing. The sign on the left is the next turn
+// (straight when none is near); the way to the stop is an arrow on the visitor's dot on the map.
 
 const primary = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-ink px-5 text-xl font-bold text-paper";
 const quiet = "tap-target flex shrink-0 items-center justify-center whitespace-nowrap rounded-xl border border-ink bg-paper px-3 text-base font-bold text-ink hover:bg-surface";
@@ -26,6 +26,22 @@ const STALE_MS = 30_000;
 const TURN_ANNOUNCE_M = 300;
 /** How the turn arrow is drawn: straight up is "ahead", so a left turn leans 90 degrees to the left. */
 const TURN_ARROW_DEG: Record<TurnKind, number> = { "slight-left": -45, left: -90, "sharp-left": -135, "slight-right": 45, right: 90, "sharp-right": 135, "u-turn": 180 };
+
+/** The turn sign, like a road sign: the arrow goes up and bends the way to turn; straight up when no turn is near. */
+function TurnSign({ kind }: { kind: TurnKind | null }) {
+  const deg = kind ? TURN_ARROW_DEG[kind] : 0;
+  const rad = (deg * Math.PI) / 180;
+  // A U-turn goes up, round and back down; every other sign bends once at the middle.
+  const [x, y] = kind === "u-turn" ? [17, 31] : [24 + 13 * Math.sin(rad), 22 - 13 * Math.cos(rad)];
+  const stem = kind === "u-turn" ? "M31 41 V21 a7 7 0 0 0 -14 0 V31" : `M24 41 V22 L${x} ${y}`;
+  return (
+    <svg viewBox="0 0 48 48" aria-hidden="true" className="size-11 shrink-0 text-brand">
+      <rect width="48" height="48" rx="12" className="fill-surface" />
+      <path d={stem} fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M0 -8 L8 3 L-8 3 Z" fill="currentColor" transform={`translate(${x} ${y}) rotate(${deg})`} />
+    </svg>
+  );
+}
 
 /** Space kept between the toast and what is above it. */
 const GAP_PX = 8;
@@ -110,9 +126,12 @@ export function NavigationToast() {
     N: t`北`, NE: t`北東`, E: t`東`, SE: t`南東`, S: t`南`, SW: t`南西`, W: t`西`, NW: t`北西`,
   };
   const fmt = new Intl.NumberFormat(i18n.locale === "ja" ? "ja-JP" : "en-US", { maximumFractionDigits: 1 });
-  const dist = st.distanceM !== null ? distanceParts(st.distanceM) : null;
-  const n = dist ? fmt.format(dist.value) : "";
-  const distText = dist ? (dist.unit === "km" ? t`${n}km` : t`${n}m`) : "";
+  const meters = (m: number) => {
+    const d = distanceParts(m);
+    const v = fmt.format(d.value);
+    return d.unit === "km" ? t`${v}km` : t`${v}m`;
+  };
+  const distText = st.distanceM !== null ? meters(st.distanceM) : "";
   const ageS = snap.lastFixAtMs !== null ? Math.round((now - snap.lastFixAtMs) / 1000) : null;
 
   const problem =
@@ -145,32 +164,17 @@ export function NavigationToast() {
   } else {
     const direction = st.bearingDeg !== null ? compass[compassPoint(st.bearingDeg)] : "";
     const turn = st.turn && st.turn.inM <= TURN_ANNOUNCE_M ? st.turn : null;
-    const turnDist = turn ? distanceParts(turn.inM) : null;
-    const tn = turnDist ? fmt.format(turnDist.value) : "";
-    const turnIn = turnDist ? (turnDist.unit === "km" ? t`${tn}km` : t`${tn}m`) : "";
+    const turnIn = turn ? meters(turn.inM) : "";
     const turnWord = turn ? turnWords[turn.kind] : "";
     // Within a few metres the turn is "now".
     const turnText = turn ? (turn.inM < 15 ? t`すぐ${turnWord}` : t`${turnIn}先 ${turnWord}`) : "";
     const steer = !turn && st.mode === "straight" ? st.steer : null;
     const steerWord = steer ? steerWords[steer] : "";
-    // The arrow: a turn leans the way to turn; once the walking direction is known it is relative to it (ahead is up,
-    // which also matches the map when it is turned to the walking direction); before that, the way on the north-up map.
-    const arrowDeg = turn
-      ? TURN_ARROW_DEG[turn.kind]
-      : st.bearingDeg !== null && st.headingDeg !== null
-        ? turnDelta(st.headingDeg, st.bearingDeg)
-        : (st.bearingDeg ?? 0);
     const line1 = turn ? turnText : steer ? t`${steerWord} ${distText}` : direction ? t`${direction} ${distText}` : distText;
     const mode = st.mode === "line" ? t`道なり` : st.mode === "path" ? t`道の外・歩ける道` : t`道の外・直線`;
     main = (
       <div className="flex min-w-0 items-center gap-3">
-        {turn || st.bearingDeg !== null ? (
-          // A turn: the arrow leans the way to turn (ahead is up). Otherwise: the way on the north-up map.
-          <svg viewBox="0 0 48 48" aria-hidden="true" className="size-11 shrink-0 text-brand" style={{ transform: `rotate(${arrowDeg}deg)` }}>
-            <circle cx="24" cy="24" r="23" className="fill-surface" />
-            <path d="M24 6 L36 38 L24 31 L12 38 Z" fill="currentColor" />
-          </svg>
-        ) : null}
+        <TurnSign kind={turn?.kind ?? null} />
         <div className="min-w-0">
           <p className="truncate text-xl font-bold leading-tight tabular-nums">{line1}</p>
           <p className="truncate text-base leading-snug text-muted">

@@ -48,6 +48,7 @@ export function MapScreenCanvas({
   settings,
   mergeStops,
   user = null,
+  towardsDeg = null,
   guide = null,
 }: {
   routes: MapScreenRoute[];
@@ -63,6 +64,8 @@ export function MapScreenCanvas({
   mergeStops: boolean;
   /** While navigating: where the phone is (on this phone only), drawn as a dot, and which way the visitor walks. */
   user?: { lat: number; lng: number; headingDeg?: number } | null;
+  /** While navigating: the way to the next stop (degrees from north), drawn as an arrow on the visitor's dot. */
+  towardsDeg?: number | null;
   /** While navigating off the course line: the walking path being followed, as [lng, lat] points. */
   guide?: readonly (readonly [number, number, number?])[] | null;
 }) {
@@ -216,12 +219,17 @@ export function MapScreenCanvas({
       return;
     }
     if (!userMarker.current) {
+      // The dot, with an arrow on its edge pointing to the next stop. Turned with the map, so it stays true when the
+      // map is turned to the walking direction.
       const el = document.createElement("div");
-      el.className = "size-5 rounded-full border-[3px] border-paper bg-ink shadow-lg";
       el.setAttribute("aria-hidden", "true");
-      userMarker.current = new ml.Marker({ element: el }).setLngLat([user.lng, user.lat]).addTo(map);
+      el.innerHTML =
+        '<svg viewBox="0 0 44 44" class="size-11 text-brand drop-shadow"><path d="M22 1 L30 13 L14 13 Z" fill="currentColor" /><circle cx="22" cy="22" r="8.5" class="fill-ink stroke-paper" stroke-width="3" /></svg>';
+      userMarker.current = new ml.Marker({ element: el, rotationAlignment: "map" }).setLngLat([user.lng, user.lat]).addTo(map);
     } else userMarker.current.setLngLat([user.lng, user.lat]);
-  }, [ready, user, mapGen]);
+    userMarker.current.setRotation(towardsDeg ?? 0);
+    userMarker.current.getElement().querySelector("path")?.setAttribute("visibility", towardsDeg === null ? "hidden" : "visible");
+  }, [ready, user, towardsDeg, mapGen]);
 
   useEffect(
     () => () => {

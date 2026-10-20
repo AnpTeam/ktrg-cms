@@ -230,6 +230,7 @@ export function MapScreen({
         settings={settings}
         mergeStops={mergeStops}
         user={nav.session?.snapshot.position ?? null}
+        towardsDeg={nav.session?.snapshot.state.bearingDeg ?? null}
         guide={nav.session?.snapshot.pathLine ?? null}
       />
       {!wide && snap === "hidden" ? (

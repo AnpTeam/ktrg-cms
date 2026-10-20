@@ -103,6 +103,17 @@ describe("off the course line", () => {
     expect(s.mode).toBe("path");
     close(s.bearingDeg!, 180, 2); // due south along the path's first stretch
     expect(s.distanceM!).toBeGreaterThan(s.straightM!); // a path is never shorter than the straight line
+    expect(wantsPath(s)).toBe(false); // on the path: no new request
+  });
+
+  test("strayed more than 40 m from the path: straight again, and wants a new path", () => {
+    const pathLine: LinePoint[] = [[135.005, LAT + 0.005], [135.005, LAT + 0.0025], [135.006, LAT]];
+    const path = { stopId: "b", ...trackOf(pathLine) };
+    const near = applyFix(model, initialState(), at(135.0053, LAT + 0.004), none, path); // ~27 m east of it
+    expect(near.mode).toBe("path");
+    const strayed = applyFix(model, initialState(), at(135.0056, LAT + 0.004), none, path); // ~55 m east of it
+    expect(strayed.mode).toBe("straight");
+    expect(wantsPath(strayed)).toBe(true);
   });
 
   test("a path for a different stop is ignored", () => {
