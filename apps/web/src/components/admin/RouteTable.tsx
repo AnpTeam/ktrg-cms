@@ -91,7 +91,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
         </Link>
       </div>
 
-      <RouteImport routes={routes} />
+      <RouteImport routes={routes} onImported={setRoutes} />
 
       {error ? (
         <p role="alert" className="rounded-xl bg-surface p-4 text-lg font-bold text-danger">

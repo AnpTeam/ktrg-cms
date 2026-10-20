@@ -35,6 +35,15 @@ describe("readRouteRows", () => {
   });
 });
 
+describe("a wrong number is reported once, with the right reason", () => {
+  test("text in the number cell: one problem (not also 'nothing is written'); 0 is not a number of a route", () => {
+    const r = readRouteRows([row(2, { ルート番号: "abc" }), row(3, { ルート番号: "0" }), row(4, { "名前（日本語）": "x" })]);
+    expect(r.problems.map((p) => [p.line, p.problem])).toEqual([[2, "whole"], [3, "whole"], [4, "missing"]]);
+    const p = readPlaceRows([row(2, { ルート番号: "1", 場所の番号: "abc" })]);
+    expect(p.problems.map((x) => [x.column, x.problem])).toEqual([["場所の番号", "whole"]]);
+  });
+});
+
 describe("readPlaceRows", () => {
   test("a position needs both latitude and longitude, within range", () => {
     const r = readPlaceRows([
@@ -119,6 +128,24 @@ describe("runImport", () => {
       [5, "skipped", "name_required"], // number 3 is next but has no Japanese name to create it with
       [4, "skipped", "route_gap"],
     ]);
+  });
+
+  test("a photo is uploaded only for a row that is going to be saved", async () => {
+    const { api, calls } = fakeApi();
+    const photos = new Map([["a.jpg", new File(["x"], "a.jpg")], ["b.jpg", new File(["x"], "b.jpg")], ["c.jpg", new File(["x"], "c.jpg")]]);
+    await runImport(
+      {
+        routes: [
+          { line: 2, number: 3, photo: "a.jpg", changes: { nameJa: "とんだ" } }, // number 3 jumps ahead: skipped
+          { line: 3, number: 1, photo: "b.jpg", changes: { nameEn: "x" } },
+        ],
+        places: [{ line: 2, routeNumber: 1, number: 1, photo: "c.jpg", changes: {} }], // a new place needs a name: skipped
+        existing: [route("r1", 1)],
+        photos,
+      },
+      { ...api, getRoute: async () => ({ ok: true, value: { spots: [] } }) },
+    );
+    expect(calls.filter((c) => c.startsWith("upload"))).toEqual(["upload b.jpg"]);
   });
 
   test("a photo that is not among the chosen files is reported but the row still saves", async () => {

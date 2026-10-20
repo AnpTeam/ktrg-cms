@@ -20,7 +20,7 @@ import {
   type RowProblem,
 } from "@/lib/admin/sheet";
 import { readSheets, templateBlob } from "@/lib/admin/sheet-file";
-import type { AdminRoute, AdminSpot } from "@/lib/admin/types";
+import type { AdminRoute, AdminRouteSummary, AdminSpot } from "@/lib/admin/types";
 
 // The import on the routes page: download the template, fill it in, choose it (and the photos it names), look at
 // what would change, then import. See lib/admin/sheet.ts for the rules.
@@ -60,7 +60,7 @@ const adapter: ImportApi = {
   },
 };
 
-export function RouteImport({ routes }: { routes: AdminRoute[] }) {
+export function RouteImport({ routes, onImported }: { routes: AdminRoute[]; onImported: (routes: AdminRouteSummary[]) => void }) {
   const { t } = useLingui();
   const messages = useErrorMessages();
   const [open, setOpen] = useState(false);
@@ -118,6 +118,11 @@ export function RouteImport({ routes }: { routes: AdminRoute[] }) {
     if (!preview) return;
     setProgress([0, preview.routes.length + preview.places.length]);
     const done = await runImport({ routes: preview.routes, places: preview.places, existing: routes, photos: files }, adapter, (d, n) => setProgress([d, n]));
+    // The list on the page is out of date now (new routes, new saved times): load it again, so another check
+    // or import starts from what is really saved and does not create the same routes twice.
+    const fresh = await outcome(api.admin.routes.get());
+    if (fresh.ok) onImported(fresh.data.routes as unknown as AdminRouteSummary[]);
+    else setNotice(messages[fresh.key]);
     setProgress(null);
     setPreview(null);
     setReport(done);
@@ -248,9 +253,6 @@ export function RouteImport({ routes }: { routes: AdminRoute[] }) {
                 </ul>
               ) : null}
               <p className="text-base">{t`位置を取り込んだ場所は「位置を確認していない」状態です。出どころを調べて、編集画面で確認してください。`}</p>
-              <button type="button" onClick={() => window.location.reload()} className={`${button} self-start`}>
-                {t`一覧を読み込み直す`}
-              </button>
             </div>
           ) : null}
         </section>

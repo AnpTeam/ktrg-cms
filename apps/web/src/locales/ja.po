@@ -513,7 +513,7 @@ msgstr "このルートを削除"
 msgid "このルートを削除します。元に戻せません。よろしいですか？"
 msgstr "このルートを削除します。元に戻せません。よろしいですか？"
 
-#: src/components/admin/RouteImport.tsx:218
+#: src/components/admin/RouteImport.tsx:223
 msgid "この内容で取り込む"
 msgstr "この内容で取り込む"
 
@@ -906,16 +906,16 @@ msgstr "バス停"
 msgid "バナー"
 msgstr "バナー"
 
-#: src/components/admin/RouteImport.tsx:149
+#: src/components/admin/RouteImport.tsx:154
 msgid "ひな形（.xlsx）に書いて、ここで選びます。空のセルは「今のまま」です。取り込んだだけでは、公開されません。"
 msgstr "ひな形（.xlsx）に書いて、ここで選びます。空のセルは「今のまま」です。取り込んだだけでは、公開されません。"
 
-#: src/components/admin/RouteImport.tsx:139
+#: src/components/admin/RouteImport.tsx:144
 msgid "ひな形をダウンロード"
 msgstr "ひな形をダウンロード"
 
-#: src/components/admin/RouteImport.tsx:142
 #: src/components/admin/RouteImport.tsx:147
+#: src/components/admin/RouteImport.tsx:152
 msgid "ファイルから取り込む"
 msgstr "ファイルから取り込む"
 
@@ -1226,7 +1226,7 @@ msgstr "ルート"
 
 #. placeholder {0}: preview.routes.length
 #. placeholder {1}: preview.places.length
-#: src/components/admin/RouteImport.tsx:187
+#: src/components/admin/RouteImport.tsx:192
 msgid "ルート {0} 行（今あるものを更新 {updating}、新しく作る {creating}）、場所 {1} 行"
 msgstr "ルート {0} 行（今あるものを更新 {updating}、新しく作る {creating}）、場所 {1} 行"
 
@@ -1369,13 +1369,9 @@ msgstr "ログインの方法（パスキー）"
 msgid "ログイン中"
 msgstr "ログイン中"
 
-#: src/components/admin/RouteImport.tsx:209
+#: src/components/admin/RouteImport.tsx:214
 msgid "一度に取り込める数をこえています（{writes} 回の保存が必要で、上限は {IMPORT_WRITE_LIMIT} 回です）。ファイルを分けて、時間をおいて取り込んでください。"
 msgstr "一度に取り込める数をこえています（{writes} 回の保存が必要で、上限は {IMPORT_WRITE_LIMIT} 回です）。ファイルを分けて、時間をおいて取り込んでください。"
-
-#: src/components/admin/RouteImport.tsx:252
-msgid "一覧を読み込み直す"
-msgstr "一覧を読み込み直す"
 
 #: src/components/map/TrailMap.tsx:508
 msgid "上のボタンを押すと、{restName}や{shopsName}などが地図と一覧に出ます。"
@@ -1457,7 +1453,7 @@ msgstr "位置を公式の情報で確認し、「位置を確認した」にチ
 msgid "位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。"
 msgstr "位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。"
 
-#: src/components/admin/RouteImport.tsx:250
+#: src/components/admin/RouteImport.tsx:255
 msgid "位置を取り込んだ場所は「位置を確認していない」状態です。出どころを調べて、編集画面で確認してください。"
 msgstr "位置を取り込んだ場所は「位置を確認していない」状態です。出どころを調べて、編集画面で確認してください。"
 
@@ -1672,7 +1668,7 @@ msgstr "公開前のチェック"
 msgid "公開前の場所も、ここには表示されます。"
 msgstr "公開前の場所も、ここには表示されます。"
 
-#: src/components/admin/RouteImport.tsx:175
+#: src/components/admin/RouteImport.tsx:180
 msgid "内容を確認する"
 msgstr "内容を確認する"
 
@@ -1704,11 +1700,11 @@ msgstr "写真"
 
 #. placeholder {0}: preview.photoNames.length - missingPhotos.length
 #. placeholder {1}: preview.photoNames.length
-#: src/components/admin/RouteImport.tsx:190
+#: src/components/admin/RouteImport.tsx:195
 msgid "写真 {0} / {1} 枚が、選んだファイルの中にありました。"
 msgstr "写真 {0} / {1} 枚が、選んだファイルの中にありました。"
 
-#: src/components/admin/RouteImport.tsx:165
+#: src/components/admin/RouteImport.tsx:170
 msgid "写真（シートに書いたファイル名と同じ名前のもの。まとめて選べます）"
 msgstr "写真（シートに書いたファイル名と同じ名前のもの。まとめて選べます）"
 
@@ -1718,7 +1714,7 @@ msgstr "写真（準備中）"
 
 #. placeholder {0}: r.photo.name
 #. placeholder {1}: r.photo.reason === "photo_missing" ? t`選んだファイルの中にありません` : messages[r.photo.reason]
-#: src/components/admin/RouteImport.tsx:244
+#: src/components/admin/RouteImport.tsx:249
 msgid "写真「{0}」は入りませんでした（{1}）"
 msgstr "写真「{0}」は入りませんでした（{1}）"
 
@@ -1865,13 +1861,13 @@ msgstr "危険な所"
 #. placeholder {0}: report.filter((r) => r.status === "created").length
 #. placeholder {1}: report.filter((r) => r.status === "updated").length
 #. placeholder {2}: report.filter((r) => r.status === "skipped").length
-#: src/components/admin/RouteImport.tsx:232
+#: src/components/admin/RouteImport.tsx:237
 msgid "取り込みました：作成 {0}、更新 {1}、取り込めなかった行 {2}"
 msgstr "取り込みました：作成 {0}、更新 {1}、取り込めなかった行 {2}"
 
 #. placeholder {0}: progress[0]
 #. placeholder {1}: progress[1]
-#: src/components/admin/RouteImport.tsx:225
+#: src/components/admin/RouteImport.tsx:230
 msgid "取り込み中… {0} / {1}"
 msgstr "取り込み中… {0} / {1}"
 
@@ -2305,7 +2301,7 @@ msgstr "更新 {0}"
 msgid "更新 {updated}（日本時間）"
 msgstr "更新 {updated}（日本時間）"
 
-#: src/components/admin/RouteImport.tsx:152
+#: src/components/admin/RouteImport.tsx:157
 msgid "書いたファイル（.xlsx）"
 msgstr "書いたファイル（.xlsx）"
 
@@ -2370,7 +2366,7 @@ msgstr "標高を調べています…"
 msgid "次の写真"
 msgstr "次の写真"
 
-#: src/components/admin/RouteImport.tsx:197
+#: src/components/admin/RouteImport.tsx:202
 msgid "次の行は、まちがいがあるので取り込みません："
 msgstr "次の行は、まちがいがあるので取り込みません："
 
@@ -2761,7 +2757,7 @@ msgid "見え方"
 msgstr "見え方"
 
 #. placeholder {0}: missingPhotos.join("、")
-#: src/components/admin/RouteImport.tsx:193
+#: src/components/admin/RouteImport.tsx:198
 msgid "見つからない写真（その写真だけ入りません）：{0}"
 msgstr "見つからない写真（その写真だけ入りません）：{0}"
 
@@ -2904,7 +2900,7 @@ msgstr "達成した人 {0}"
 msgid "選ぶ・動かす"
 msgstr "選ぶ・動かす"
 
-#: src/components/admin/RouteImport.tsx:244
+#: src/components/admin/RouteImport.tsx:249
 msgid "選んだファイルの中にありません"
 msgstr "選んだファイルの中にありません"
 

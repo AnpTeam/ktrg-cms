@@ -136,6 +136,13 @@ function readCells(columns: readonly Column[], row: SheetRow, sheet: "route" | "
 
 const blank = (row: SheetRow) => Object.values(row.cells).every((v) => v.trim() === "");
 
+/** A route or place number must be 1 or more. Text that is not a number was already reported by readCells; this adds the blank and the 0. */
+function needNumber(v: Value, row: SheetRow, header: string, sheet: "route" | "place", problems: RowProblem[]) {
+  if (typeof v === "number" && v >= 1) return;
+  const empty = (row.cells[header] ?? "").trim() === "";
+  if (empty || v === 0) problems.push({ sheet, line: row.line, column: header, problem: empty ? "missing" : "whole" });
+}
+
 /** `changes` without the keys that are not set (a blank cell must not reach the API as "empty it"). */
 function pick(values: Record<string, Value>, skip: string[]) {
   return Object.fromEntries(Object.entries(values).filter(([k, v]) => v !== undefined && !skip.includes(k)));
@@ -149,16 +156,13 @@ export function readRouteRows(rows: readonly SheetRow[]): { rows: RouteRow[]; pr
     if (blank(row)) continue;
     const before = problems.length;
     const v = readCells(ROUTE_COLUMNS, row, "route", problems);
-    const number = v.number;
-    if (typeof number !== "number" || number < 1) {
-      problems.push({ sheet: "route", line: row.line, column: "ルート番号", problem: number === undefined ? "missing" : "whole" });
-      continue;
-    }
+    needNumber(v.number, row, "ルート番号", "route", problems);
+    if (problems.length > before) continue; // a row with a wrong cell is left out whole, so nothing half-filled comes in
+    const number = v.number as number;
     if (seen.has(number)) {
       problems.push({ sheet: "route", line: row.line, column: "ルート番号", problem: "duplicate" });
       continue;
     }
-    if (problems.length > before) continue; // a row with a wrong cell is left out whole, so nothing half-filled comes in
     seen.add(number);
     out.push({ line: row.line, number, photo: typeof v.photo === "string" ? v.photo : undefined, changes: pick(v, ["number", "photo"]) as RouteChanges });
   }
@@ -173,10 +177,8 @@ export function readPlaceRows(rows: readonly SheetRow[]): { rows: PlaceRow[]; pr
     if (blank(row)) continue;
     const before = problems.length;
     const v = readCells(PLACE_COLUMNS, row, "place", problems);
-    for (const [key, header] of [["routeNumber", "ルート番号"], ["number", "場所の番号"]] as const) {
-      const n = v[key];
-      if (typeof n !== "number" || n < 1) problems.push({ sheet: "place", line: row.line, column: header, problem: n === undefined ? "missing" : "whole" });
-    }
+    needNumber(v.routeNumber, row, "ルート番号", "place", problems);
+    needNumber(v.number, row, "場所の番号", "place", problems);
     const noLat = (row.cells["緯度"] ?? "").trim() === "";
     if (noLat !== ((row.cells["経度"] ?? "").trim() === "")) problems.push({ sheet: "place", line: row.line, column: noLat ? "緯度" : "経度", problem: "pair" });
     if (problems.length > before) continue;
@@ -263,14 +265,14 @@ export async function runImport(
     return r.ok ? { url: r.value } : { lost: { name, reason: r.key } };
   }
 
+  const urlOf = (p: { url?: string }) => (p.url ? { photoUrl: p.url } : {});
   const routes = input.existing.map((r) => ({ id: r.id, updatedAt: r.updatedAt })); // by walking order
   for (const row of input.routes) {
-    const photo = await photoOf(row.photo);
     const skip = (reason: Skip) => report.push({ sheet: "route", line: row.line, status: "skipped", reason });
-    const photoUrl = photo.url ? { photoUrl: photo.url } : {};
     const current = routes[row.number - 1];
     if (current) {
-      const r = await api.updateRoute(current.id, current.updatedAt, { ...row.changes, ...photoUrl });
+      const photo = await photoOf(row.photo);
+      const r = await api.updateRoute(current.id, current.updatedAt, { ...row.changes, ...urlOf(photo) });
       if (r.ok) {
         routes[row.number - 1] = { id: r.value.id, updatedAt: r.value.updatedAt };
         report.push({ sheet: "route", line: row.line, status: "updated", photo: photo.lost });
@@ -278,7 +280,8 @@ export async function runImport(
     } else if (row.number !== routes.length + 1) skip("route_gap");
     else if (!row.changes.nameJa) skip("name_required");
     else {
-      const r = await api.createRoute({ ...row.changes, nameJa: row.changes.nameJa, ...photoUrl });
+      const photo = await photoOf(row.photo);
+      const r = await api.createRoute({ ...row.changes, nameJa: row.changes.nameJa, ...urlOf(photo) });
       if (r.ok) {
         routes.push({ id: r.value.id, updatedAt: r.value.updatedAt });
         report.push({ sheet: "route", line: row.line, status: "created", photo: photo.lost });
@@ -306,14 +309,13 @@ export async function runImport(
       step();
       continue;
     }
-    const photo = await photoOf(row.photo);
-    const photoUrl = photo.url ? { photoUrl: photo.url } : {};
     const current = list[row.number - 1];
     if (current) {
+      const photo = await photoOf(row.photo);
       const { lat, lng, ...rest } = row.changes;
       // Send a position only when it differs, so a published place whose position is unchanged still saves.
       const moved = lat !== undefined && (lat !== current.lat || lng !== current.lng);
-      const r = await api.updateSpot(current.id, current.updatedAt, { ...rest, ...(moved ? { lat, lng } : {}), ...photoUrl });
+      const r = await api.updateSpot(current.id, current.updatedAt, { ...rest, ...(moved ? { lat, lng } : {}), ...urlOf(photo) });
       if (r.ok) {
         list[row.number - 1] = r.value;
         report.push({ sheet: "place", line: row.line, status: "updated", photo: photo.lost });
@@ -321,7 +323,8 @@ export async function runImport(
     } else if (row.number !== list.length + 1) skip("place_gap");
     else if (!row.changes.nameJa) skip("name_required");
     else {
-      const r = await api.createSpot(route.id, { ...row.changes, nameJa: row.changes.nameJa, kind: "stamp", ...photoUrl });
+      const photo = await photoOf(row.photo);
+      const r = await api.createSpot(route.id, { ...row.changes, nameJa: row.changes.nameJa, kind: "stamp", ...urlOf(photo) });
       if (r.ok) {
         list.push(r.value);
         report.push({ sheet: "place", line: row.line, status: "created", photo: photo.lost });
