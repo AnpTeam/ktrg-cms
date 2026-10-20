@@ -112,15 +112,15 @@ msgstr "Move {name} one step later"
 msgid "{name}さん、こんにちは。"
 msgstr "Hello, {name}."
 
-#: src/components/StampGrid.tsx:44
+#: src/components/StampGrid.tsx:47
 msgid "{number}番 スタンプ済み"
 msgstr "No. {number}, stamped"
 
-#: src/components/StampGrid.tsx:46
+#: src/components/StampGrid.tsx:49
 msgid "{number}番 つぎのスタンプ"
 msgstr "No. {number}, next stamp"
 
-#: src/components/StampGrid.tsx:47
+#: src/components/StampGrid.tsx:50
 msgid "{number}番 まだ押していません"
 msgstr "No. {number}, not stamped yet"
 
@@ -492,7 +492,7 @@ msgstr "Courses"
 msgid "コース {0}"
 msgstr "{0} courses"
 
-#: src/components/RallyViews.tsx:96
+#: src/components/RallyViews.tsx:97
 msgid "コース{order}"
 msgstr "Course {order}"
 
@@ -508,7 +508,7 @@ msgstr "Make it from courses"
 msgid "コースの出発地点から近い順（まっすぐ測った距離です）"
 msgstr "Nearest first from the start of the course (straight-line distance)"
 
-#: src/components/RallyViews.tsx:161
+#: src/components/RallyViews.tsx:173
 msgid "コースを見る"
 msgstr "See the courses"
 
@@ -800,7 +800,7 @@ msgstr "Stamp waypoints {0} / {1}"
 
 #: src/components/ProgressSummary.tsx:27
 #: src/components/RallyViews.tsx:58
-#: src/components/RallyViews.tsx:124
+#: src/components/RallyViews.tsx:125
 msgid "スタンプの進み具合"
 msgstr "Stamp progress"
 
@@ -898,7 +898,8 @@ msgid "チェック"
 msgstr "Check"
 
 #: src/components/RallyViews.tsx:62
-#: src/components/StampGrid.tsx:53
+#: src/components/StampGrid.tsx:67
+#: src/components/StampGrid.tsx:78
 #: src/components/StampLegend.tsx:10
 msgid "つぎ"
 msgstr "Next"
@@ -1083,7 +1084,7 @@ msgid "まず、GPXファイルをここにドラッグするか「GPXファイ�
 msgstr "First, drag a GPX file here or press “Import from a GPX file”. To enter by hand, use “Draw line” for the path and “Place a waypoint” to add waypoints."
 
 #: src/components/admin/RouteEditor.tsx:518
-#: src/components/RallyViews.tsx:149
+#: src/components/RallyViews.tsx:161
 #: src/components/StampLegend.tsx:9
 msgid "まだ"
 msgstr "Not yet"
@@ -1670,7 +1671,7 @@ msgid "全{TOTAL_ROUTES}区間を見る"
 msgstr "See all {TOTAL_ROUTES} sections"
 
 #: src/components/RallyViews.tsx:70
-#: src/components/RallyViews.tsx:128
+#: src/components/RallyViews.tsx:129
 msgid "全{total}か所"
 msgstr "{total} places"
 
@@ -2236,7 +2237,7 @@ msgid "手直しが必要なルートだけ（{needsWorkCount}）"
 msgstr "Only routes that need work ({needsWorkCount})"
 
 #: src/components/map/MapScreen.tsx:376
-#: src/components/RallyViews.tsx:149
+#: src/components/RallyViews.tsx:161
 #: src/components/StampLegend.tsx:8
 #: src/components/StopList.tsx:59
 msgid "押した"
@@ -2509,7 +2510,7 @@ msgstr "Pale"
 #: src/components/admin/RouteTable.tsx:30
 #: src/components/landing/Landing.tsx:271
 #: src/components/map/MapScreen.tsx:292
-#: src/components/RallyViews.tsx:104
+#: src/components/RallyViews.tsx:105
 #: src/components/TrailRibbon.tsx:73
 msgid "準備中"
 msgstr "Coming soon"
@@ -2680,7 +2681,7 @@ msgstr "About {TRAIL_KM} km"
 msgid "経塚"
 msgstr "Sutra mounds"
 
-#: src/components/RallyViews.tsx:96
+#: src/components/RallyViews.tsx:97
 msgid "経塚ラリー"
 msgstr "Sutra mound rally"
 
