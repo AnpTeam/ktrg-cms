@@ -152,9 +152,10 @@ export function AdminItemForm({ meta: config, initial, locale, routes }: { meta:
           </Field>
         );
       case "number":
+      case "decimal":
         return (
           <Field key={f.name} label={label} hint={hint} htmlFor={id} required={f.required}>
-            <NumberInput id={id} integer value={text(f.name) === "" ? null : Number(text(f.name))} onChange={(v) => set(f.name)(v === null ? "" : String(v))} />
+            <NumberInput id={id} integer={f.kind === "number"} value={text(f.name) === "" ? null : Number(text(f.name))} onChange={(v) => set(f.name)(v === null ? "" : String(v))} />
           </Field>
         );
       case "date":
