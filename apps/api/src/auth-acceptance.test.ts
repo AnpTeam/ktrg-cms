@@ -296,6 +296,7 @@ describe("user B cannot touch user A", () => {
     // What visitors read: routes and published places (see content/content-routes.test.ts).
     "GET /api/v1/routes",
     "GET /api/v1/routes/:id",
+    "GET /api/v1/spots/status",
     "GET /api/v1/spots/:id",
     // Published trail notices (see notices/notice-routes.test.ts).
     "GET /api/v1/notices",
