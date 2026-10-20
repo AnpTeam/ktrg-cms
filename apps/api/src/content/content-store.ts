@@ -1,4 +1,4 @@
-import { and, asc, count, eq, inArray, max, sql } from "drizzle-orm";
+import { and, asc, count, eq, inArray, isNotNull, max, ne, or, sql } from "drizzle-orm";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
 import { rallySpots, routes, routeTranslations, spots, spotTranslations, stamps } from "../db/schema";
@@ -218,7 +218,14 @@ export function createDrizzleContentStore(db: Db): ContentStore {
         const [row] = await tx
           .update(spots)
           .set({ published, updatedAt: sql`clock_timestamp()` })
-          .where(and(eq(spots.id, id), eq(spots.published, !published)))
+          .where(
+            and(
+              eq(spots.id, id),
+              eq(spots.published, !published),
+              // Publishing re-checks the rules in the same statement, so a place another admin moved a moment ago is not published.
+              published ? and(isNotNull(spots.lat), isNotNull(spots.lng), eq(spots.positionVerified, true), or(ne(spots.kind, "stamp"), eq(spots.permissionConfirmed, true))) : undefined,
+            ),
+          )
           .returning();
         if (!row) {
           // Missing, or already in that state: nothing to record.
