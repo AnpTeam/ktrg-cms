@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { LinePoint } from "./geometry";
-import { applyFix, buildModel, initialState, MAX_ACCURACY_M, trackOf, wantsPath, type NavReading, type NavState, type NavStop } from "./session";
+import { applyFix, buildModel, initialState, MAX_ACCURACY_M, movementHeading, trackOf, wantsPath, type NavReading, type NavState, type NavStop } from "./session";
 
 // A straight east-west line at latitude 34.5 from 135.000 to 135.010 (about 917 m); 0.001 degrees of longitude is ~91.7 m.
 const LAT = 34.5;
@@ -176,5 +176,35 @@ describe("turns in the state", () => {
   test("no turn on the straight course, and none when pointing straight off the line", () => {
     expect(walk([at(135.001)]).turn).toBeNull();
     expect(walk([at(135.005, LAT + 0.005)]).turn).toBeNull();
+  });
+});
+
+describe("which way relative to the walking direction (no line to follow)", () => {
+  const free = buildModel([], [{ id: "x", lng: 135.005, lat: LAT, radiusM: 20 }]); // a stop due east, no line
+
+  test("before the direction of travel is known: no steer, just the compass direction", () => {
+    const s = applyFix(free, initialState(), at(135.0), none);
+    expect(s.steer).toBeNull();
+    close(s.bearingDeg!, 90, 1);
+  });
+
+  test("walking east toward it: straight on; walking north: turn right; walking south: turn left; walking west: turn back", () => {
+    const step = (headingDeg: number) => applyFix(free, initialState(), { ...at(135.0), headingDeg }, none).steer;
+    expect(step(90)).toBe("straight");
+    expect(step(0)).toBe("right");
+    expect(step(180)).toBe("left");
+    expect(step(270)).toBe("u-turn");
+    expect(step(45)).toBe("slight-right");
+  });
+
+  test("the direction of travel is kept while the visitor stands still", () => {
+    const moving = applyFix(free, initialState(), { ...at(135.0), headingDeg: 0 }, none);
+    expect(applyFix(free, moving, at(135.0), none).steer).toBe("right");
+  });
+
+  test("movementHeading reads a direction only after moving 8 m", () => {
+    expect(movementHeading(null, at(135))).toBeNull();
+    expect(movementHeading(at(135), at(135.00005))).toBeNull(); // ~4.6 m
+    close(movementHeading(at(135), at(135.0002))!, 90, 1); // ~18 m east
   });
 });

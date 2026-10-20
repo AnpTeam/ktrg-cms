@@ -9,7 +9,7 @@ import { geoFailureFromCode, type GeoFailure } from "../stamp-flow";
 /** The part of navigator.geolocation that is used. */
 export interface GeoApi {
   watchPosition(
-    ok: (pos: { coords: { latitude: number; longitude: number; accuracy: number } }) => void,
+    ok: (pos: { coords: { latitude: number; longitude: number; accuracy: number; heading?: number | null; speed?: number | null } }) => void,
     fail: (err: { code: number }) => void,
     options: { enableHighAccuracy: boolean; maximumAge: number; timeout: number },
   ): number;
@@ -28,7 +28,7 @@ export interface WatcherOptions {
   geo: GeoApi | undefined;
   doc: VisibilityApi;
   now: () => number;
-  onFix: (reading: { lat: number; lng: number; accuracyM: number }) => void;
+  onFix: (reading: { lat: number; lng: number; accuracyM: number; headingDeg?: number }) => void;
   onProblem: (problem: GeoFailure) => void;
   /** True when the page was hidden and watching stopped; false when it resumed. */
   onPaused: (paused: boolean) => void;
@@ -58,7 +58,10 @@ export function createPositionWatcher(opts: WatcherOptions) {
         const t = opts.now();
         if (t - lastFixAt < minInterval) return; // throttle: the phone may report far more often than a walker needs
         lastFixAt = t;
-        opts.onFix({ lat: pos.coords.latitude, lng: pos.coords.longitude, accuracyM: pos.coords.accuracy });
+        // The phone's own direction of travel, when it gives one (only while moving: walking pace is about 1 m/s).
+        const { heading, speed } = pos.coords;
+        const moving = typeof heading === "number" && Number.isFinite(heading) && typeof speed === "number" && speed >= 0.5;
+        opts.onFix({ lat: pos.coords.latitude, lng: pos.coords.longitude, accuracyM: pos.coords.accuracy, ...(moving ? { headingDeg: heading } : {}) });
       },
       (err) => {
         const problem = geoFailureFromCode(err.code);

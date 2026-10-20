@@ -7,7 +7,7 @@ import type { GeoFailure } from "../stamp-flow";
 import type { LinePoint } from "./geometry";
 import { createPositionWatcher, type GeoApi, type VisibilityApi } from "./position-watcher";
 import { PATH_BACKOFF_MS, shouldAskForPath, type LastAsk, type PathAnswer } from "./path-client";
-import { applyFix, initialState, trackOf, wantsPath, type NavModel, type NavPath, type NavReading, type NavState } from "./session";
+import { applyFix, initialState, movementHeading, trackOf, wantsPath, type NavModel, type NavPath, type NavReading, type NavState } from "./session";
 
 export interface NavSnapshot {
   state: NavState;
@@ -45,6 +45,8 @@ export function createNavigationController(deps: ControllerDeps) {
   let stamped: ReadonlySet<string> = new Set();
   let stampsKnown = false;
   let last: NavReading | null = null;
+  // Where the direction of travel was last read from (in memory only, dropped on stop).
+  let headingFrom: NavReading | null = null;
   let path: NavPath | null = null;
   let lastAsk: LastAsk | null = null;
   let asking = false;
@@ -78,7 +80,14 @@ export function createNavigationController(deps: ControllerDeps) {
     });
   };
 
-  const apply = (reading: NavReading) => {
+  const apply = (fix: NavReading) => {
+    // The phone's heading when it has one; otherwise read it from the movement since the last one.
+    let reading = fix;
+    if (fix.headingDeg === undefined) {
+      const moved = movementHeading(headingFrom, fix);
+      if (moved !== null) reading = { ...fix, headingDeg: moved };
+    }
+    if (reading.headingDeg !== undefined || !headingFrom) headingFrom = fix;
     last = reading;
     const state = applyFix(model, snap.state, reading, stamped, path);
     // A path for another stop (the target moved on) is no longer drawn.
@@ -123,6 +132,7 @@ export function createNavigationController(deps: ControllerDeps) {
       watcher.stop();
       alive = false;
       last = null;
+      headingFrom = null;
       path = null;
       lastAsk = null;
       asking = false;

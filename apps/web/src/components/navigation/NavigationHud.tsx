@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { StampHere } from "@/components/StampHere";
-import { compassPoint, type CompassPoint, type TurnKind } from "@/lib/navigation/geometry";
+import { compassPoint, turnDelta, type CompassPoint, type TurnKind } from "@/lib/navigation/geometry";
 import { modelFromMapRoute } from "@/lib/navigation/input";
 import type { MapScreenRoute } from "@/lib/map-screen";
 import { distanceParts } from "@/lib/stamp-flow";
@@ -95,6 +95,17 @@ export function NavigationToast() {
     "sharp-right": t`大きく右に曲がる`,
     "u-turn": t`引き返す`,
   };
+  // Which way, relative to where the visitor walks (no line to follow).
+  const steerWords: Record<TurnKind | "straight", string> = {
+    straight: t`まっすぐ`,
+    "slight-left": t`少し左の方へ`,
+    left: t`左の方へ`,
+    "sharp-left": t`左うしろの方へ`,
+    "slight-right": t`少し右の方へ`,
+    right: t`右の方へ`,
+    "sharp-right": t`右うしろの方へ`,
+    "u-turn": t`うしろの方へ`,
+  };
   const compass: Record<CompassPoint, string> = {
     N: t`北`, NE: t`北東`, E: t`東`, SE: t`南東`, S: t`南`, SW: t`南西`, W: t`西`, NW: t`北西`,
   };
@@ -140,18 +151,28 @@ export function NavigationToast() {
     const turnWord = turn ? turnWords[turn.kind] : "";
     // Within a few metres the turn is "now".
     const turnText = turn ? (turn.inM < 15 ? t`ここで${turnWord}` : t`${turnIn}先で${turnWord}`) : "";
+    const steer = !turn && st.mode === "straight" ? st.steer : null;
+    const steerWord = steer ? steerWords[steer] : "";
+    // The arrow: a turn leans the way to turn; once the walking direction is known it is relative to it (ahead is up,
+    // which also matches the map when it is turned to the walking direction); before that, the way on the north-up map.
+    const arrowDeg = turn
+      ? TURN_ARROW_DEG[turn.kind]
+      : st.bearingDeg !== null && st.headingDeg !== null
+        ? turnDelta(st.headingDeg, st.bearingDeg)
+        : (st.bearingDeg ?? 0);
+    const line1 = turn ? turnText : steer ? t`${steerWord} ${distText}` : direction ? t`${direction}へ ${distText}` : distText;
     const mode = st.mode === "line" ? t`道なり` : st.mode === "path" ? t`道の外・歩ける道で案内` : t`道の外・まっすぐの方向`;
     main = (
       <div className="flex min-w-0 items-center gap-3">
         {turn || st.bearingDeg !== null ? (
           // A turn: the arrow leans the way to turn (ahead is up). Otherwise: the way on the north-up map.
-          <svg viewBox="0 0 48 48" aria-hidden="true" className="size-11 shrink-0 text-brand" style={{ transform: `rotate(${turn ? TURN_ARROW_DEG[turn.kind] : st.bearingDeg}deg)` }}>
+          <svg viewBox="0 0 48 48" aria-hidden="true" className="size-11 shrink-0 text-brand" style={{ transform: `rotate(${arrowDeg}deg)` }}>
             <circle cx="24" cy="24" r="23" className="fill-surface" />
             <path d="M24 6 L36 38 L24 31 L12 38 Z" fill="currentColor" />
           </svg>
         ) : null}
         <div className="min-w-0">
-          <p className="truncate text-xl font-bold leading-tight tabular-nums">{turn ? turnText : direction ? t`${direction}へ ${distText}` : distText}</p>
+          <p className="truncate text-xl font-bold leading-tight tabular-nums">{line1}</p>
           <p className="truncate text-base leading-snug text-muted">
             <span className="sr-only">{t`次のスタンプの場所`} </span>
             <span lang={target.nameLang}>{target.name}</span>

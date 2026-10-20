@@ -15,6 +15,8 @@ import {
   nearestTarget,
   nextTurn,
   offRouteStep,
+  turnDelta,
+  turnKind,
   pointAlong,
   projectOnLine,
   type LatLng,
@@ -42,6 +44,17 @@ export interface NavReading {
   lat: number;
   lng: number;
   accuracyM: number;
+  /** The direction the visitor is walking, when known (from the phone, or from how they moved). */
+  headingDeg?: number;
+}
+
+/** Moved at least this far since the last heading: a new direction of travel can be read from the two fixes. */
+export const HEADING_MIN_MOVE_M = 8;
+
+/** The direction of travel from one fix to the next, or null when the visitor has hardly moved. */
+export function movementHeading(from: LatLng | null, to: LatLng): number | null {
+  if (!from || distanceM(from, to) < HEADING_MIN_MOVE_M) return null;
+  return bearingDeg(from, to);
 }
 
 /** A line to follow with its cumulative distances (the course line, or a path from OpenRouteService). */
@@ -83,6 +96,10 @@ export interface NavState {
   bearingDeg: number | null;
   /** The next turn on the line or path being followed ("in 50 m, turn left"); null when straight on, or guided straight. */
   turn: { kind: TurnKind; inM: number } | null;
+  /** The direction the visitor is walking; null until it is known. Kept while they stand still. */
+  headingDeg: number | null;
+  /** The way to the target relative to the walking direction ("straight", or a turn), when walking and guided straight. */
+  steer: TurnKind | "straight" | null;
   mode: NavMode | null;
   /** Straight-line metres to the target (the stamp check uses this, on the server). */
   straightM: number | null;
@@ -105,6 +122,8 @@ export function initialState(): NavState {
     distanceM: null,
     bearingDeg: null,
     turn: null,
+    headingDeg: null,
+    steer: null,
     mode: null,
     straightM: null,
     alongM: null,
@@ -133,7 +152,7 @@ function alongTrack(track: Track, alongM: number, targetAlongM: number, fix: Lat
 export function applyFix(model: NavModel, prev: NavState, reading: NavReading, stamped: ReadonlySet<string>, path: NavPath | null = null): NavState {
   if (!(reading.accuracyM <= MAX_ACCURACY_M)) return { ...prev, ignoredFixes: prev.ignoredFixes + 1 }; // also catches NaN
 
-  const base = { ...initialState(), ignoredFixes: prev.ignoredFixes };
+  const base = { ...initialState(), ignoredFixes: prev.ignoredFixes, headingDeg: reading.headingDeg ?? prev.headingDeg };
   const i = nearestTarget(model.stops, stamped, reading);
   if (i === null) return base;
   const stop = model.stops[i]!;
@@ -162,7 +181,10 @@ export function applyFix(model: NavModel, prev: NavState, reading: NavReading, s
     }
   }
 
-  return { ...common, mode: "straight", distanceM: straightM, bearingDeg: bearingDeg(reading, stop) };
+  const towards = bearingDeg(reading, stop);
+  // No line to follow: say which way relative to where the visitor is walking, once that is known.
+  const steer = base.headingDeg === null ? null : (turnKind(turnDelta(base.headingDeg, towards)) ?? "straight");
+  return { ...common, mode: "straight", distanceM: straightM, bearingDeg: towards, steer };
 }
 
 /** True when the screen should ask OpenRouteService for a path to the current target. */
