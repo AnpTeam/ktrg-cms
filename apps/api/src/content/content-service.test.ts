@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, test } from "bun:test";
 import { createMemoryAuditWriter } from "../audit/audit-log";
 import { createMemoryContentStore } from "./content-memory-store";
 import { createContentService } from "./content-service";
+import { lineLengthKm } from "./line";
 import type { RouteRow, SpotRow } from "./content-types";
 
 const ADMIN = "11111111-1111-4111-8111-111111111111";
@@ -27,6 +28,23 @@ async function spot(routeId: string, fields: Record<string, unknown> = {}): Prom
   if (!r.ok) throw new Error(r.reason);
   return r.value;
 }
+
+describe("photo hosts and distance", () => {
+  test("with PHOTO_HOSTS set, a photo from another host is refused; without it any https address passes", async () => {
+    const limited = createContentService({ store: mem.store, photoHosts: ["photos.example.com"] });
+    const made = await limited.createRoute(ADMIN, { nameJa: "甲山", photoUrl: "https://photos.example.com/a.jpg" });
+    expect(made.ok).toBe(true);
+    const other = await limited.createRoute(ADMIN, { nameJa: "甲山", photoUrl: "https://elsewhere.example/a.jpg" });
+    expect(other).toEqual({ ok: false, reason: "invalid_photo_url" });
+    expect((await svc.createRoute(ADMIN, { nameJa: "甲山", photoUrl: "https://elsewhere.example/a.jpg" })).ok).toBe(true);
+  });
+
+  test("the distance is measured on the line as drawn, before it is simplified", async () => {
+    const zigzag = { type: "LineString", coordinates: Array.from({ length: 3000 }, (_, i): [number, number] => [135 + (i % 2) * 0.001, 34 + i * 0.0001]) };
+    const r = await route({ geometry: zigzag });
+    expect(r.distanceKm).toBe(lineLengthKm(zigzag as never));
+  });
+});
 
 describe("routes", () => {
   test("a stale updatedAt is a conflict and changes nothing; a fresh one saves", async () => {

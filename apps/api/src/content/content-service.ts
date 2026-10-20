@@ -130,11 +130,12 @@ function toPublicSpot(s: SpotRow): PublicSpot {
   };
 }
 
-/** A photo address: an https link, not absurdly long. */
-const isHttpsUrl = (v: string): boolean => {
+/** A photo address: an https link, not absurdly long, and (when `hosts` is set) on one of those hosts. */
+const isPhotoUrl = (v: string, hosts: readonly string[]): boolean => {
   if (v.length > 500) return false;
   try {
-    return new URL(v).protocol === "https:";
+    const url = new URL(v);
+    return url.protocol === "https:" && (hosts.length === 0 || hosts.includes(url.hostname));
   } catch {
     return false;
   }
@@ -144,8 +145,10 @@ const isHttpsUrl = (v: string): boolean => {
 const text = (v: string | null | undefined): string | null | undefined =>
   v === undefined ? undefined : v === null ? null : v.trim() === "" ? null : v.trim();
 
-export function createContentService(deps: { store: ContentStore }) {
+/** `photoHosts` (PHOTO_HOSTS): when not empty, photos may only come from these host names. */
+export function createContentService(deps: { store: ContentStore; photoHosts?: readonly string[] }) {
   const { store } = deps;
+  const photoHosts = deps.photoHosts ?? [];
 
   /** Turn a request's route fields into what the store keeps, or say what is wrong. */
   function prepareRoute(input: Partial<RouteFields>): Result<Partial<StoredRouteFields>> {
@@ -170,7 +173,7 @@ export function createContentService(deps: { store: ContentStore }) {
     }
     if (input.photoUrl !== undefined) {
       const v = text(input.photoUrl);
-      if (v && !isHttpsUrl(v)) return bad("invalid_photo_url");
+      if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");
       out.photoUrl = v;
     }
     if (input.lineVerified !== undefined) out.lineVerified = input.lineVerified;
@@ -183,10 +186,10 @@ export function createContentService(deps: { store: ContentStore }) {
       else {
         const parsed = parseLine(input.geometry);
         if (!parsed.ok) return bad("invalid_line");
-        const line = simplifyLine(parsed.line, 2000);
-        out.geometry = line;
-        // The distance follows the line unless the admin typed one in the same save.
-        if (input.distanceKm === undefined) out.distanceKm = lineLengthKm(line);
+        out.geometry = simplifyLine(parsed.line, 2000);
+        // The distance follows the line unless the admin typed one in the same save. Measured before the line is
+        // simplified: cutting corners would make a winding route read shorter than it is.
+        if (input.distanceKm === undefined) out.distanceKm = lineLengthKm(parsed.line);
       }
     }
     return ok(out);
@@ -210,7 +213,7 @@ export function createContentService(deps: { store: ContentStore }) {
     if (input.kind !== undefined) out.kind = input.kind;
     if (input.photoUrl !== undefined) {
       const v = text(input.photoUrl);
-      if (v && !isHttpsUrl(v)) return bad("invalid_photo_url");
+      if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");
       out.photoUrl = v;
     }
     if (input.permissionConfirmed !== undefined) out.permissionConfirmed = input.permissionConfirmed;
@@ -309,7 +312,9 @@ export function createContentService(deps: { store: ContentStore }) {
       if (!s.positionVerified) return bad("position_not_verified");
       if (s.kind === "stamp" && !s.permissionConfirmed) return bad("permission_required");
       const r = await store.setPublished(actor, id, true);
-      return r ? ok(r) : bad("not_found");
+      if (!r) return bad("not_found");
+      // The store re-checks the same rules inside the write; a place changed in between stays unpublished.
+      return r.published ? ok(r) : bad("position_not_verified");
     },
 
     async unpublishSpot(actor: string, id: string): Promise<Result<SpotRow>> {

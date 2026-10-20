@@ -43,6 +43,8 @@ export interface ServiceDeps {
   passkey: PasskeyConfig;
   /** Photo storage (Cloudflare R2) and its public address. Without them uploads answer 503. */
   uploads?: { storage: FileStorage; publicBaseUrl: string };
+  /** Host names a photo address may use (PHOTO_HOSTS). Empty or missing: any https address. */
+  photoHosts?: readonly string[];
   /** Snaps a drawn line to trails. Without one, the admin is told the service is not set up. */
   routing?: RoutingService;
   /** The clock every service reads. Tests move it; the app uses real time. */
@@ -65,7 +67,7 @@ export function createServices(deps: ServiceDeps): Services {
     // Profile, language, display name and deletion requests (emails the owner).
     me: createMeService({ store: stores.me, mailer, now }),
     // Routes and places: what the admin edits and visitors read.
-    content: createContentService({ store: stores.content }),
+    content: createContentService({ store: stores.content, photoHosts: deps.photoHosts }),
     // Rallies: names, dates, required count and which places they hold.
     rallyAdmin: createRallyAdminService({ store: stores.rallyAdmin }),
     // Admin photo uploads.
