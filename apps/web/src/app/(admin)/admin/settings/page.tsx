@@ -12,6 +12,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Settings that change the live site for everyone. The API checks the admin role again on every save. */
 export default async function SiteSettingsPage() {
+  // Every server page sets up its own translations: pages render in parallel with the layout and with metadata, and `Trans` fails without them.
+  await initLingui();
   const settings = await getMapSettings();
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-5">
