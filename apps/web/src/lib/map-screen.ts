@@ -1,6 +1,7 @@
 import type { SpotStatus } from "./content";
 import type { Position } from "./map";
 import type { PlaceCategory } from "./places";
+import type { PointKind } from "./point-kinds";
 
 // The pure parts of the home map (WBS 3.2.10): the area drawn for each course, and the heights the bottom sheet
 // can rest at. No React and no map library, so they are unit-tested.
@@ -45,6 +46,8 @@ export interface MapScreenStop {
   /** The spoken name of the marker, for example "3. 猿坂峠, stamped". */
   label: string;
   position: Position;
+  /** What the place is; the map can show the sutra mounds on their own. */
+  kind?: PointKind;
   /** null when signed out. */
   stamped: boolean | null;
   status: SpotStatus;

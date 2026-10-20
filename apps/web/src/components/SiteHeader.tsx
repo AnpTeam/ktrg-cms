@@ -13,7 +13,7 @@ import { SampleNoticeButton } from "./SampleNotice";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 
 const barButton =
-  "inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-ink bg-paper px-2.5 text-base font-bold text-ink hover:bg-surface [&>svg]:size-5";
+  "inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-ink bg-paper px-2.5 text-base font-bold text-ink hover:bg-surface [&>svg]:size-6";
 // How far the signed-out home page is scrolled (in px) before its menu button appears.
 const SHOW_MENU_AFTER = 240;
 const wideButton =
@@ -124,41 +124,44 @@ export function SiteHeader({
       ) : null}
       <div
         inert={hidden}
+        // The bar is as wide as the tab bar at the bottom (same side gaps), with the logo in the middle.
         className={
           onMap
-            ? "pointer-events-none absolute inset-x-0 top-0 mx-auto flex max-w-xl items-center justify-between gap-2 px-3 py-3 md:hidden [&>*]:pointer-events-auto"
+            ? "pointer-events-none absolute inset-x-3 top-3 md:hidden [&>*]:pointer-events-auto"
             : onLanding
-              ? `absolute inset-x-0 top-0 mx-auto flex max-w-xl md:hidden items-center justify-between gap-2 bg-paper/95 px-3 py-2 transition-opacity motion-reduce:transition-none ${
-                  hidden ? "pointer-events-none opacity-0" : ""
-                }`
-              : "relative mx-auto flex max-w-xl items-center justify-between gap-2 px-3 pb-5 pt-3 md:hidden"
+              ? `absolute inset-x-3 top-3 transition-opacity md:hidden motion-reduce:transition-none ${hidden ? "pointer-events-none opacity-0" : ""}`
+              : "relative px-3 pb-5 pt-3 md:hidden"
         }
       >
-        <button
-          ref={buttonRef}
-          type="button"
-          onClick={() => setOpen(!open)}
-          aria-expanded={open}
-          aria-controls="site-menu"
-          className={barButton}
-        >
-          {open ? <CloseIcon /> : <MenuIcon />}
-          {open ? t`閉じる` : t`メニュー`}
-        </button>
-        {/* The logo is a link home. The landing page has it in its title card and the map has no room for it. */}
-        {!onLanding && !open ? (
-          <Link href="/" aria-label={t`ホーム`} className="rounded-lg p-1">
-            <KatsuragiLogo compact className="h-10 w-auto" />
-          </Link>
-        ) : null}
-        {sample && !open ? <SampleNoticeButton /> : null}
+        <div className="mx-auto grid max-w-xl grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-xl bg-surface p-1.5 shadow-lg">
+          <button
+            ref={buttonRef}
+            type="button"
+            onClick={() => setOpen(!open)}
+            aria-expanded={open}
+            aria-controls="site-menu"
+            aria-label={open ? t`閉じる` : t`メニュー`}
+            className={`${barButton} min-w-12 justify-center justify-self-start`}
+          >
+            {open ? <CloseIcon /> : <MenuIcon />}
+          </button>
+          {/* The logo is a link home. The map has no room for it. */}
+          {!onMap && !open ? (
+            <Link href="/" aria-label={t`ホーム`} className="rounded-lg p-1">
+              <KatsuragiLogo compact className="h-9 w-auto" />
+            </Link>
+          ) : (
+            <span />
+          )}
+          <span className="justify-self-end">{sample && !open ? <SampleNoticeButton /> : null}</span>
+        </div>
       </div>
 
       {open ? (
         <div
           ref={panelRef}
           id="site-menu"
-          className={`menu-drop absolute inset-x-0 overflow-y-auto overscroll-contain border-b-2 border-brand bg-surface shadow-lg md:fixed md:right-auto md:w-[26rem] md:max-h-[calc(100dvh-1.5rem)] md:rounded-2xl md:border-2 md:shadow-xl ${onLanding ? "top-14 max-h-[calc(100dvh-3.5rem)]" : "top-full max-h-[calc(100dvh-3.5rem)]"}`}
+          className={`menu-drop absolute inset-x-0 overflow-y-auto overscroll-contain border-b-2 border-brand bg-surface shadow-lg md:fixed md:right-auto md:w-[26rem] md:max-h-[calc(100dvh-1.5rem)] md:rounded-2xl md:border-2 md:shadow-xl ${onLanding ? "top-[4.75rem] max-h-[calc(100dvh-4.75rem)]" : "top-full max-h-[calc(100dvh-3.5rem)]"}`}
         >
           <div className="mx-auto flex max-w-xl flex-col gap-5 px-4 py-5">
             <button

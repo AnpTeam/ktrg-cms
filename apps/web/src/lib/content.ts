@@ -62,6 +62,8 @@ export interface SpotListItem {
   nameJa: string;
   nameEn: string | null;
   status: SpotStatus;
+  /** What the place is (a sutra mound, a temple ...); left out when unknown. */
+  kind?: PointKind;
   /** null when not signed in. */
   stamped: boolean | null;
   /** null when the CMS has no coordinates yet; the API returns them only for published spots. */
