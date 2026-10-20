@@ -1,6 +1,7 @@
-import type { PublicRoute, PublicSpot } from "./api-content-types";
+import type { PublicPlace, PublicRoute, PublicSpot } from "./api-content-types";
 import type { TrailNotice } from "./notices";
-import type { Prefecture, RouteDetail, RoutePoint, RouteSummary, SpotDetail, SpotListItem } from "./content";
+import type { PlaceItem, Prefecture, RouteDetail, RoutePoint, RouteSummary, SpotDetail, SpotListItem } from "./content";
+import { placeCategories, placeStatuses } from "./places";
 import { isPointKind } from "./point-kinds";
 import { areaFromBounds, sketchFromPoints } from "./route-geometry";
 import type { Sketch } from "./sketch";
@@ -49,6 +50,26 @@ export function spotListItemFromApi(s: PublicSpot, stamped = false): SpotListIte
     ...(isPointKind(s.kind) ? { kind: s.kind } : {}),
     stamped,
     position: s.position ? { lat: s.position.lat, lng: s.position.lng, verified: true } : null,
+  };
+}
+
+/** A directory place as the screens use it; `order` is its course's number (1 to 19), or null when it is on none. A category or status this app does not know is read as "other" / "unknown". */
+export function placeItemFromApi(p: PublicPlace, order: number | null): PlaceItem {
+  return {
+    id: p.id,
+    category: placeCategories.find((c) => c === p.category) ?? "other",
+    nameJa: p.nameJa,
+    nameEn: p.nameEn,
+    routes: order === null ? [] : [order],
+    position: { lat: p.lat, lng: p.lng, verified: true },
+    hoursJa: p.hoursJa,
+    hoursEn: p.hoursEn,
+    closedDaysJa: p.closedDaysJa,
+    closedDaysEn: p.closedDaysEn,
+    descriptionJa: p.descriptionJa,
+    descriptionEn: p.descriptionEn,
+    status: placeStatuses.find((s) => s === p.status) ?? "unknown",
+    lastVerified: p.lastVerified,
   };
 }
 
@@ -140,6 +161,11 @@ export async function fetchPublicRoute(id: string): Promise<{ route: PublicRoute
 
 export async function fetchPublicSpot(id: string): Promise<PublicSpot | null> {
   return okBody<{ spot: PublicSpot }>(await getJson(`/spots/${encodeURIComponent(id)}`))?.spot ?? null;
+}
+
+/** Published places of the directory (the API keeps back the ones without a checked position). */
+export async function fetchPublicPlaces(): Promise<PublicPlace[] | null> {
+  return okBody<{ places: PublicPlace[] }>(await getJson("/places"))?.places ?? null;
 }
 
 /** Published trail notices that have not expired (the API decides, in Japan time). */

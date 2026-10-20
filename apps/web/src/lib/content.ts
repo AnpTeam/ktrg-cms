@@ -1,4 +1,4 @@
-import { fetchPublicRoute, fetchPublicRoutes, fetchPublicSpot, isEmptyRoute, routeDetailFromApi, routeSummaryFromApi, spotDetailFromApi } from "./api-content";
+import { fetchPublicPlaces, fetchPublicRoute, fetchPublicRoutes, fetchPublicSpot, placeItemFromApi, isEmptyRoute, routeDetailFromApi, routeSummaryFromApi, spotDetailFromApi } from "./api-content";
 import type { RouteArea } from "./map-screen";
 import type { PointKind } from "./point-kinds";
 import { pickText } from "./pick-text";
@@ -198,9 +198,19 @@ export interface PlaceItem {
   lastVerified: string | null;
 }
 
-/** The places that serve a course. Only sample data for now (the places API does not exist yet). */
+/** Every place of the directory a visitor may see (plus the samples when sample content is on). */
+export async function listPlaces(): Promise<PlaceItem[]> {
+  const sample = sampleContentEnabled() ? samplePlaces : [];
+  const [real, routes] = await Promise.all([fetchPublicPlaces(), fetchPublicRoutes()]);
+  if (!real) return sample;
+  // A course's number is its place in the list, as everywhere else.
+  const order = new Map((routes ?? []).map((r, i) => [r.id, i + 1]));
+  return [...sample, ...real.map((p) => placeItemFromApi(p, p.routeId ? (order.get(p.routeId) ?? null) : null))];
+}
+
+/** The places that serve a course. */
 export async function listPlacesForRoute(order: number): Promise<PlaceItem[]> {
-  return sampleContentEnabled() ? samplePlaces.filter((p) => p.routes.includes(order)) : [];
+  return (await listPlaces()).filter((p) => p.routes.includes(order));
 }
 
 /** A place with its text chosen for the visitor's language (English falls back to Japanese). */

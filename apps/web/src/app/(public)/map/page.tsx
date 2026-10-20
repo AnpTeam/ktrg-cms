@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import { msg } from "@lingui/core/macro";
 import { MapScreen } from "@/components/map/MapScreen";
-import { forViewer, getRoute, getSpot, listRoutes, pickText, type RouteSummary } from "@/lib/content";
+import { forViewer, getRoute, getSpot, listPlaces, listRoutes, pickText, type PlaceItem, type RouteSummary } from "@/lib/content";
 import type { MapPhoto, MapScreenPoint, MapScreenRoute, MapScreenSpot, MapScreenStop } from "@/lib/map-screen";
 import { categoryOfKind } from "@/lib/point-kinds";
 import { mapSettingsCookie, parseMapSettings } from "@/lib/map-settings";
@@ -29,7 +29,7 @@ function galleryOf(photo: MapPhoto | null, stops: MapScreenStop[] | null): MapPh
  * only for courses whose stops have positions, which today is the one draft course; the rest show their area.
  * TODO(WBS 2.2.1): when the API exists, load a course's detail when it is chosen instead of for all of them.
  */
-async function mapRoutes(routes: RouteSummary[], viewer: Viewer, locale: string, words: { stamped: string; closed: string }): Promise<MapScreenRoute[]> {
+async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Viewer, locale: string, words: { stamped: string; closed: string }): Promise<MapScreenRoute[]> {
   return Promise.all(
     [...routes]
       .sort((a, b) => a.order - b.order)
@@ -104,6 +104,17 @@ async function mapRoutes(routes: RouteSummary[], viewer: Viewer, locale: string,
           }
         }
 
+        // The directory's places on this course (shops, toilets ...) join its navigation points.
+        points = [
+          ...points,
+          ...places
+            .filter((p) => p.routes.includes(r.order))
+            .map((p): MapScreenPoint => {
+              const placeName = pickText(locale, p.nameJa, p.nameEn);
+              return { id: p.id, category: p.category, name: placeName?.text ?? p.nameJa, nameLang: placeName?.lang ?? "ja", position: { lat: p.position.lat, lng: p.position.lng } };
+            }),
+        ];
+
         return {
           id: r.id,
           order: r.order,
@@ -148,7 +159,7 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
   const prefs = await getPrefs();
   const settings = parseMapSettings((await cookies()).get(mapSettingsCookie)?.value);
   const summaries = (await listRoutes()).map((r) => forViewer(r, viewer));
-  const routes = await mapRoutes(summaries, viewer, i18n.locale, { stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`) });
+  const routes = await mapRoutes(summaries, await listPlaces(), viewer, i18n.locale, { stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`) });
   const next = `?next=${encodeURIComponent("/map")}`;
   // "Show in the map" from a place page: only an existing course (and a stop of it) is taken over from the address.
   const initialRoute = routes.find((r) => r.id === wantedRoute) ?? null;

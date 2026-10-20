@@ -3,6 +3,7 @@ import {
   areaFromBounds,
   fetchPublicRoutes,
   isEmptyRoute,
+  placeItemFromApi,
   routeDetailFromApi,
   routeSummaryFromApi,
   sketchFromPoints,
