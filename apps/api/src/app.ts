@@ -20,6 +20,8 @@ import { createMailer } from "./lib/mailer";
 import { ADMIN_LISTS } from "./admin-lists/lists";
 import { listMetaRoutes, listReadRoutes, listWriteRoutes } from "./admin-lists/list-routes";
 import { purgeRoutes } from "./internal/purge-routes";
+import { auditLogList, createDrizzleAuditListStore } from "./audit/audit-list";
+import { createDrizzlePlaceListStore, placeList } from "./content/place-list";
 import { noticeList, publicNoticeRoutes } from "./notices/notice-routes";
 import { createDrizzleNoticeStore } from "./notices/notice-store";
 import { meRoutes } from "./me/me-routes";
@@ -45,6 +47,8 @@ function getServices(): Services {
         content: createDrizzleContentStore(db),
         rallyAdmin: createDrizzleRallyAdminStore(db),
         notices: createDrizzleNoticeStore(db),
+        auditList: createDrizzleAuditListStore(db),
+        placeList: createDrizzlePlaceListStore(db),
       },
       audit: createDrizzleAuditWriter(db),
       mailer: createMailer(env),
@@ -105,6 +109,8 @@ export function createApp(
     .use(listReadRoutes(noticeList, getServices, opts))
     .use(listWriteRoutes(noticeList, getServices, opts))
     .use(publicNoticeRoutes(() => getServices().notices))
+    .use(listReadRoutes(auditLogList, getServices, opts))
+    .use(listReadRoutes(placeList, getServices, opts))
     .use(purgeRoutes(getServices, opts.cronSecret));
 }
 

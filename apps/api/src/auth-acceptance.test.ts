@@ -19,6 +19,7 @@ import type { MailMessage } from "./lib/mailer";
 import { createMemoryContentStore } from "./content/content-memory-store";
 import { createMemoryRallyAdminStore } from "./rallies/rally-admin-memory-store";
 import { createMemoryNoticeStore } from "./notices/notice-memory-store";
+import { memoryReader } from "./admin-lists/list-memory-store";
 import { createMemoryMeStore } from "./me/me-memory-store";
 import { createServices } from "./services";
 
@@ -63,6 +64,8 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       content: createMemoryContentStore(audit.writer).store,
       rallyAdmin: createMemoryRallyAdminStore(audit.writer).store,
       notices: createMemoryNoticeStore(audit.writer).store,
+      auditList: memoryReader(new Map()),
+      placeList: memoryReader(new Map()),
     },
     audit: audit.writer,
     mailer: {
