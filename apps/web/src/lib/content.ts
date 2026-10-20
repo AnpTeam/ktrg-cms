@@ -63,6 +63,13 @@ export interface SpotListItem {
   nameJa: string;
   nameEn: string | null;
   status: SpotStatus;
+  /** What the map's sheet shows for a place, so the map needs no request per place (left out when not known). */
+  descriptionJa?: string | null;
+  descriptionEn?: string | null;
+  statusNoteJa?: string | null;
+  statusNoteEn?: string | null;
+  statusUpdatedAt?: string | null;
+  photoUrl?: string | null;
   /** What the place is (a sutra mound, a temple ...); left out when unknown. */
   kind?: PointKind;
   /** null when not signed in. */

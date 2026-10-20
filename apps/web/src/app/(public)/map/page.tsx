@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { msg } from "@lingui/core/macro";
 import { MapScreen } from "@/components/map/MapScreen";
-import { forViewer, getRoute, getSpot, listPlaces, listRoutes, pickText, type PlaceItem, type RouteSummary } from "@/lib/content";
+import { forViewer, getRoute, listPlaces, listRoutes, pickText, type PlaceItem, type RouteSummary } from "@/lib/content";
 import type { MapPhoto, MapScreenPoint, MapScreenRoute, MapScreenSpot, MapScreenStop } from "@/lib/map-screen";
 import { categoryOfKind } from "@/lib/point-kinds";
 import { getMapSettings } from "@/lib/site-settings";
@@ -69,37 +69,34 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
           if (detail && positioned.length > 0) {
             line = detail.line;
             draft = positioned.some((s) => !s.position?.verified);
-            stops = (
-              await Promise.all(
-                detail.spots.map(async (s, index): Promise<MapScreenStop | null> => {
-                  if (!s.position) return null;
-                  const full = await getSpot(s.id);
-                  const spot = full ? forViewer(full, viewer) : s;
-                  const spotName = pickText(locale, s.nameJa, s.nameEn);
-                  if (!spotName) return null;
-                  const parts = [`${index + 1}. ${spotName.text}`];
-                  if (spot.stamped) parts.push(words.stamped);
-                  if (s.status === "closed") parts.push(words.closed);
-                  const note = full ? pickText(locale, full.statusNoteJa, full.statusNoteEn) : null;
-                  return {
-                    id: s.id,
-                    order: index + 1,
-                    name: spotName.text,
-                    nameLang: spotName.lang,
-                    label: parts.join(", "),
-                    position: { lat: s.position.lat, lng: s.position.lng },
-                    kind: s.kind,
-                    stamped: spot.stamped,
-                    status: s.status,
-                    href: `/spots/${s.id}`,
-                    description: full ? (pickText(locale, full.descriptionJa, full.descriptionEn)?.text ?? null) : null,
-                    statusNote: note?.text ?? null,
-                    statusUpdatedAt: full?.statusUpdatedAt ?? null,
-                    photo: full?.photoUrl ? { src: full.photoUrl, alt: spotName.text } : null,
-                  };
-                }),
-              )
-            ).filter((s): s is MapScreenStop => s !== null);
+            // Each place of the course already carries what its sheet shows: no request per place.
+            stops = detail.spots
+              .map((s, index): MapScreenStop | null => {
+                if (!s.position) return null;
+                const spotName = pickText(locale, s.nameJa, s.nameEn);
+                if (!spotName) return null;
+                const parts = [`${index + 1}. ${spotName.text}`];
+                if (s.stamped) parts.push(words.stamped);
+                if (s.status === "closed") parts.push(words.closed);
+                const note = pickText(locale, s.statusNoteJa ?? null, s.statusNoteEn ?? null);
+                return {
+                  id: s.id,
+                  order: index + 1,
+                  name: spotName.text,
+                  nameLang: spotName.lang,
+                  label: parts.join(", "),
+                  position: { lat: s.position.lat, lng: s.position.lng },
+                  kind: s.kind,
+                  stamped: s.stamped,
+                  status: s.status,
+                  href: `/spots/${s.id}`,
+                  description: pickText(locale, s.descriptionJa ?? null, s.descriptionEn ?? null)?.text ?? null,
+                  statusNote: note?.text ?? null,
+                  statusUpdatedAt: s.statusUpdatedAt ?? null,
+                  photo: s.photoUrl ? { src: s.photoUrl, alt: spotName.text } : null,
+                };
+              })
+              .filter((s): s is MapScreenStop => s !== null);
           }
         }
 
