@@ -1,7 +1,7 @@
 "use client";
 
 import { useLingui } from "@lingui/react/macro";
-import { pointKinds, type PointKind } from "@/lib/point-kinds";
+import { pointKinds, stampableByDefault, type PointKind } from "@/lib/point-kinds";
 import { publishBlockers, type PlaceDraft, type PublishBlocker } from "@/lib/admin/route-draft";
 import type { SpotStatus } from "@/lib/admin/types";
 import { BilingualField, Check, Field, inputClass, NumberInput, TextInput } from "./fields";
@@ -26,11 +26,12 @@ export interface PlacePanelProps {
   onUnpublish: () => void;
 }
 
-/** The words for what a point on a route can be. */
+/** The words for what a waypoint can be. */
 export function useKindLabels(): Record<PointKind, string> {
   const { t } = useLingui();
   return {
-    stamp: t`スタンプ場所`,
+    temple: t`寺社`,
+    mound: t`経塚`,
     turn: t`曲がり角`,
     danger: t`危険な所`,
     view: t`見どころ`,
@@ -54,7 +55,7 @@ export function PlacePanel(p: PlacePanelProps) {
   const { place } = p;
   const blockers = publishBlockers(place, p.dirty);
   const kindName = useKindLabels();
-  const isStamp = place.kind === "stamp";
+  const isStamp = place.stampable;
   const blockerText: Record<PublishBlocker, string> = {
     unsaved: t`先に「保存」してください。`,
     no_coordinates: t`位置を決めてください（地図に置くか、緯度と経度を入れます）。`,
@@ -83,11 +84,20 @@ export function PlacePanel(p: PlacePanelProps) {
 
       {p.selected ? (
         <div className="flex flex-col gap-5 border-t border-line p-4">
-          <BilingualField id={`${id}-name`} label={t`場所の名前`} ja={place.nameJa} en={place.nameEn} onJa={(v) => p.onChange({ nameJa: v })} onEn={(v) => p.onChange({ nameEn: v })} required invalid={p.invalidName} />
+          <BilingualField id={`${id}-name`} label={t`経由地の名前`} ja={place.nameJa} en={place.nameEn} onJa={(v) => p.onChange({ nameJa: v })} onEn={(v) => p.onChange({ nameEn: v })} required invalid={p.invalidName} />
           <BilingualField id={`${id}-desc`} label={t`説明`} ja={place.descriptionJa} en={place.descriptionEn} onJa={(v) => p.onChange({ descriptionJa: v })} onEn={(v) => p.onChange({ descriptionEn: v })} multiline />
 
-          <Field label={t`種類`} htmlFor={`${id}-kind`} hint={isStamp ? t`スタンプを押せる場所です。` : t`道案内のための点です。スタンプは押せません。`}>
-            <select id={`${id}-kind`} value={place.kind} onChange={(e) => p.onChange({ kind: e.target.value as PointKind })} className={`${inputClass} max-w-xs`}>
+          <Field label={t`種類`} htmlFor={`${id}-kind`}>
+            <select
+              id={`${id}-kind`}
+              value={place.kind}
+              // A new waypoint's switch follows the kind; a saved one keeps what was chosen for it.
+              onChange={(e) => {
+                const kind = e.target.value as PointKind;
+                p.onChange(place.id === null ? { kind, stampable: stampableByDefault(kind) } : { kind });
+              }}
+              className={`${inputClass} max-w-xs`}
+            >
               {pointKinds.map((k) => (
                 <option key={k} value={k}>
                   {kindName[k]}
@@ -95,6 +105,15 @@ export function PlacePanel(p: PlacePanelProps) {
               ))}
             </select>
           </Field>
+
+          <div className="flex flex-col gap-1">
+            <Check id={`${id}-stampable`} checked={place.stampable} onChange={(v) => p.onChange({ stampable: v })}>
+              {t`スタンプを押せる`}
+            </Check>
+            <p className="pl-9 text-base text-muted">
+              {isStamp ? t`ここに着いた人が、スタンプを押せます。公開するには、現地の許可の確認が必要です。` : t`道案内のための点です。スタンプは押せません。`}
+            </p>
+          </div>
 
           <div className="flex flex-col gap-2">
             <Field label={t`写真のリンク`} htmlFor={`${id}-photo`} hint={t`https:// で始まるリンクを入れます。空にすると、写真は表示されません。`}>
@@ -127,7 +146,7 @@ export function PlacePanel(p: PlacePanelProps) {
             <summary className="tap-target flex cursor-pointer items-center text-lg font-bold">{isStamp ? t`スタンプ・状態・許可の設定` : t`状態の設定`}</summary>
             <div className="mt-3 flex flex-col gap-5">
               {isStamp ? (
-                <Field label={t`スタンプを押せる範囲（メートル）`} htmlFor={`${id}-radius`} hint={t`この場所から、この距離の中にいるとスタンプを押せます。`}>
+                <Field label={t`スタンプを押せる範囲（メートル）`} htmlFor={`${id}-radius`} hint={t`この経由地から、この距離の中にいるとスタンプを押せます。`}>
                   <div className="flex items-center gap-3">
                     <input id={`${id}-radius`} type="range" min={10} max={500} step={5} value={place.radiusM} onChange={(e) => p.onChange({ radiusM: Number(e.target.value) })} className="h-10 w-full max-w-sm accent-[var(--color-brand)]" />
                     <span className="w-20 text-lg font-bold tabular-nums">{place.radiusM} m</span>
@@ -162,7 +181,7 @@ export function PlacePanel(p: PlacePanelProps) {
           <div className="flex flex-col gap-3 rounded-xl bg-surface p-4">
             {place.published ? (
               <div className="flex flex-wrap items-center gap-3">
-                <p className="text-lg font-bold">{t`この場所は公開されています。`}</p>
+                <p className="text-lg font-bold">{t`この経由地は公開されています。`}</p>
                 <button type="button" disabled={p.busy} onClick={p.onUnpublish} className="tap-target rounded-xl border-2 border-ink px-5 text-lg font-bold disabled:opacity-40">
                   {t`公開をやめる`}
                 </button>
@@ -191,10 +210,10 @@ export function PlacePanel(p: PlacePanelProps) {
               {t`順番を後ろへ`}
             </button>
             <button type="button" disabled={place.published} onClick={p.onRemove} className="tap-target ml-auto rounded-xl border-2 border-danger px-4 text-base font-bold text-danger disabled:opacity-40">
-              {t`この場所を削除`}
+              {t`この経由地を削除`}
             </button>
           </div>
-          {place.published ? <p className="text-base text-muted">{t`公開中の場所は、先に「公開をやめる」と、削除できます。`}</p> : null}
+          {place.published ? <p className="text-base text-muted">{t`公開中の経由地は、先に「公開をやめる」と、削除できます。`}</p> : null}
         </div>
       ) : null}
     </li>

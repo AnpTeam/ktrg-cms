@@ -87,10 +87,10 @@ export function createDrizzleContentStore(db: Db): ContentStore {
       const counts = await db
         .select({
           routeId: spots.routeId,
-          // Stamp places and the route's other points are counted apart.
-          total: sql<number>`count(*) filter (where ${spots.kind} = 'stamp')`.mapWith(Number),
-          published: sql<number>`count(*) filter (where ${spots.published} and ${spots.kind} = 'stamp')`.mapWith(Number),
-          points: sql<number>`count(*) filter (where ${spots.kind} <> 'stamp')`.mapWith(Number),
+          // Waypoints with a stamp and the route's other waypoints are counted apart.
+          total: sql<number>`count(*) filter (where ${spots.stampable})`.mapWith(Number),
+          published: sql<number>`count(*) filter (where ${spots.published} and ${spots.stampable})`.mapWith(Number),
+          points: sql<number>`count(*) filter (where not ${spots.stampable})`.mapWith(Number),
         })
         .from(spots)
         .groupBy(spots.routeId);
@@ -189,11 +189,11 @@ export function createDrizzleContentStore(db: Db): ContentStore {
     async updateSpot(actor, id, expected, changes) {
       const { rest, texts } = splitTexts(SPOT_TEXT, changes);
       return db.transaction(async (tx) => {
-        const [before] = await tx.select({ status: spots.status, kind: spots.kind, routeId: spots.routeId }).from(spots).where(eq(spots.id, id)).limit(1);
+        const [before] = await tx.select({ status: spots.status, stampable: spots.stampable, routeId: spots.routeId }).from(spots).where(eq(spots.id, id)).limit(1);
         if (!before) return null;
         const statusChanged = changes.status !== undefined && changes.status !== before.status;
-        const kindChanged = changes.kind !== undefined && changes.kind !== before.kind;
-        if (kindChanged && before.kind === "stamp") {
+        const switchedOff = changes.stampable === false && before.stampable;
+        if (switchedOff) {
           // A place visitors have stamped stays a stamp place.
           const [n] = await tx.select({ n: count() }).from(stamps).where(eq(stamps.spotId, id));
           if ((n?.n ?? 0) > 0) return "has_stamps";
@@ -205,8 +205,8 @@ export function createDrizzleContentStore(db: Db): ContentStore {
           .returning();
         if (!row) return "conflict";
         await saveSpotTexts(tx, id, texts);
-        // A point that is no longer a stamp place leaves every rally of places (its course stops counting it by itself).
-        if (kindChanged && row.kind !== "stamp") await tx.delete(rallySpots).where(eq(rallySpots.spotId, id));
+        // A waypoint without a stamp leaves every rally of places (its course stops counting it by itself).
+        if (switchedOff) await tx.delete(rallySpots).where(eq(rallySpots.spotId, id));
         await writeAudit(tx, { actorUserId: actor, action: "spot.update", targetId: id });
         if (statusChanged) await writeAudit(tx, { actorUserId: actor, action: "spot.status.change", targetId: id });
         return spotFromDb(tx, row);
@@ -223,7 +223,7 @@ export function createDrizzleContentStore(db: Db): ContentStore {
               eq(spots.id, id),
               eq(spots.published, !published),
               // Publishing re-checks the rules in the same statement, so a place another admin moved a moment ago is not published.
-              published ? and(isNotNull(spots.lat), isNotNull(spots.lng), eq(spots.positionVerified, true), or(ne(spots.kind, "stamp"), eq(spots.permissionConfirmed, true))) : undefined,
+              published ? and(isNotNull(spots.lat), isNotNull(spots.lng), eq(spots.positionVerified, true), or(eq(spots.stampable, false), eq(spots.permissionConfirmed, true))) : undefined,
             ),
           )
           .returning();

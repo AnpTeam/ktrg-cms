@@ -22,16 +22,17 @@ import { userLocale, users } from "./auth";
 export const spotStatus = pgEnum("spot_status", ["open", "caution", "closed"]);
 
 /**
- * What a point on a route is. "stamp" is a stamp place (it joins rallies and needs the site's permission).
- * The others are navigation points along the way: turn, danger and view belong to the route only; the rest use the
+ * What a waypoint (a point on a route) is. Whether visitors can stamp there is a separate switch (`spots.stampable`),
+ * not a kind: a temple or a viewpoint can be either. turn, danger and view belong to the route only; the rest use the
  * same names as the map's place categories (lib/places.ts in the web app), so toilets and rest areas show up in
- * "places nearby" on the map. They never count in a rally.
+ * "places nearby" on the map.
  */
 export const spotKinds = [
-  "stamp",
+  "temple",
+  "mound",
+  "view",
   "turn",
   "danger",
-  "view",
   "toilet",
   "rest_area",
   "drinking_water",
@@ -42,6 +43,10 @@ export const spotKinds = [
   "other",
 ] as const;
 export const spotKind = pgEnum("spot_kind", spotKinds);
+
+/** The switch a new waypoint starts with: on for a temple, a sutra mound, a viewpoint or "other"; off for the practical ones. */
+export const stampableByDefault = (kind: (typeof spotKinds)[number]): boolean =>
+  kind === "temple" || kind === "mound" || kind === "view" || kind === "other";
 
 const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
 const updatedAt = () => timestamp("updated_at", { withTimezone: true }).notNull().defaultNow();
@@ -103,7 +108,9 @@ export const spots = pgTable(
     positionSource: text("position_source"),
     // Check-in radius in metres.
     radiusM: integer("radius_m").notNull().default(50),
-    kind: spotKind("kind").notNull().default("stamp"),
+    kind: spotKind("kind").notNull().default("other"),
+    // Visitors can collect a stamp here: it joins rallies, has a check-in radius and needs the site's permission to publish.
+    stampable: boolean("stampable").notNull().default(false),
     photoUrl: text("photo_url"),
     status: spotStatus("status").notNull().default("open"),
     statusUpdatedAt: timestamp("status_updated_at", { withTimezone: true }),
@@ -129,8 +136,8 @@ export const spots = pgTable(
     ),
     check(
       "spots_publish_requires_permission",
-      // Only a stamp place needs the site's permission; a toilet or a turn on the path does not.
-      sql`not ${t.published} or ${t.permissionConfirmed} or ${t.kind} <> 'stamp'`,
+      // Only a waypoint with a stamp needs the site's permission; a toilet or a turn on the path does not.
+      sql`not ${t.published} or ${t.permissionConfirmed} or not ${t.stampable}`,
     ),
     check(
       "spots_publish_requires_verified_position",

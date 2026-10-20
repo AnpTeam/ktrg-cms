@@ -122,7 +122,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
                     {" ・ "}
                     {stateLabel[routeState(r)]}
                     {" ・ "}
-                    {t`場所 ${r.publishedSpotCount} / ${r.spotCount}`}
+                    {t`スタンプの経由地 ${r.publishedSpotCount} / ${r.spotCount}`}
                     {" ・ "}
                     {t`更新 ${formatUpdated(locale, r.updatedAt)}`}
                   </p>

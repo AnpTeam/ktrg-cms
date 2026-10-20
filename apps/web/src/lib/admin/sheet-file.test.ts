@@ -25,14 +25,14 @@ describe("readSheets", () => {
     routes.addRow([1, "友ヶ島", "Tomogashima", "和歌山県", "和歌山市", 12.5, 300, "ふつう", 180, "", "", "", "", "", "", "", "a.jpg"]);
     const places = wb.addWorksheet(PLACE_SHEET);
     places.addRow(PLACE_COLUMNS.map((c) => c.header));
-    places.addRow([1, 1, "虎島", "", "", "", 34.28, 135.02, "公式サイト", ""]);
+    places.addRow([1, 1, "虎島", "", "経塚", "はい", "", "", 34.28, 135.02, "公式サイト", ""]);
     const read = await readSheets(fileOf(await wb.xlsx.writeBuffer()));
     expect(readRouteRows(read!.routes).rows[0]).toMatchObject({
       number: 1,
       photo: "a.jpg",
       changes: { nameJa: "友ヶ島", nameEn: "Tomogashima", prefecture: "wakayama", distanceKm: 12.5, elevationGainM: 300, expectedTimeMin: 180 },
     });
-    expect(readPlaceRows(read!.places).rows[0]!.changes).toEqual({ nameJa: "虎島", lat: 34.28, lng: 135.02, positionSource: "公式サイト" });
+    expect(readPlaceRows(read!.places).rows[0]!.changes).toEqual({ nameJa: "虎島", kind: "mound", stampable: true, lat: 34.28, lng: 135.02, positionSource: "公式サイト" });
   });
 
   test("a file that is not made from the template is refused", async () => {

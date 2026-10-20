@@ -33,7 +33,7 @@ export function LivePreview({ draft, order, locale }: { draft: RouteDraft; order
           />
         </div>
       </div>
-      <p className="text-base text-muted">{t`公開前の場所も、ここには表示されます。`}</p>
+      <p className="text-base text-muted">{t`公開前の経由地も、ここには表示されます。`}</p>
     </div>
   );
 }

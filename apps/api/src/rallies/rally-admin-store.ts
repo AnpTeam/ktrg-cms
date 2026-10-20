@@ -42,7 +42,7 @@ async function stampPlaces(q: Reader, onlyIds?: string[]): Promise<RallyPlace[]>
     .select({ id: spots.id, routeId: spots.routeId, published: spots.published })
     .from(spots)
     .innerJoin(routes, eq(routes.id, spots.routeId))
-    .where(and(eq(spots.kind, "stamp"), onlyIds ? inArray(spots.id, onlyIds) : undefined))
+    .where(and(eq(spots.stampable, true), onlyIds ? inArray(spots.id, onlyIds) : undefined))
     .orderBy(asc(routes.sortOrder), asc(spots.sortOrder));
   const ids = rows.map((s) => s.id);
   const names = ids.length ? flattenTexts(SPOT_TEXT, await q.select().from(spotTranslations).where(inArray(spotTranslations.spotId, ids)), (t) => t.spotId) : new Map();
@@ -66,7 +66,7 @@ async function courseList(q: Reader, onlyIds?: string[]): Promise<RallyCourse[]>
       published: sql<number>`count(*) filter (where ${spots.published})`.mapWith(Number),
     })
     .from(spots)
-    .where(and(inArray(spots.routeId, ids), eq(spots.kind, "stamp")))
+    .where(and(inArray(spots.routeId, ids), eq(spots.stampable, true)))
     .groupBy(spots.routeId);
   const byRoute = new Map(counts.map((c) => [c.routeId, c]));
   return rows.map((r) => {

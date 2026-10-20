@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { categoryOfKind, isPointKind, navigationKinds, pointKinds } from "../point-kinds";
+import { categoryOfKind, isPointKind, pointKinds, stampableByDefault } from "../point-kinds";
 import { estimateWalkMinutes } from "./walk-time";
 
 describe("estimateWalkMinutes", () => {
@@ -18,10 +18,10 @@ describe("estimateWalkMinutes", () => {
 });
 
 describe("point kinds", () => {
-  test("a stamp place plus the navigation kinds, and the map's own categories where they exist", () => {
-    expect(pointKinds[0]).toBe("stamp");
-    expect(navigationKinds).not.toContain("stamp");
-    expect(navigationKinds).toHaveLength(pointKinds.length - 1);
+  test("kinds say what a waypoint is (stamping is a separate switch), and the map's own categories where they exist", () => {
+    expect(pointKinds as readonly string[]).not.toContain("stamp");
+    for (const k of ["temple", "mound", "view", "other"] as const) expect(stampableByDefault(k)).toBe(true);
+    for (const k of ["turn", "danger", "toilet", "rest_area", "drinking_water", "vending_machine", "bus_stop", "station", "parking"] as const) expect(stampableByDefault(k)).toBe(false);
     expect(categoryOfKind("toilet")).toBe("toilet");
     expect(categoryOfKind("drinking_water")).toBe("drinking_water");
     expect(categoryOfKind("bus_stop")).toBe("bus_stop");

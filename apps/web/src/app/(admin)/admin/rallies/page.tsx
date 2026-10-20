@@ -22,7 +22,7 @@ export default async function AdminRalliesPage() {
         <Trans>ラリー</Trans>
       </h1>
       <p className="text-lg text-muted">
-        <Trans>ラリーは、コースを集めてつくるか、スタンプ場所を集めてつくります。名前を押すと、名前・公開・中身を直せます。</Trans>
+        <Trans>ラリーは、コースを集めてつくるか、経由地を集めてつくります。名前を押すと、名前・公開・中身を直せます。</Trans>
       </p>
       {rallies ? (
         <RallyList initial={rallies} locale={i18n.locale} />

@@ -58,7 +58,8 @@ export async function seed(db: Executor): Promise<SeedResult> {
       values.length > 0
         ? await db
             .insert(spots)
-            .values(values.map(({ routeId, sortOrder }) => ({ routeId, sortOrder })))
+            // The seeded places are the sutra mounds: waypoints you can stamp.
+            .values(values.map(({ routeId, sortOrder }) => ({ routeId, sortOrder, kind: "mound" as const, stampable: true })))
             .returning({ id: spots.id, routeId: spots.routeId, sortOrder: spots.sortOrder })
         : [];
     // A seed place is known by its course and its order there.

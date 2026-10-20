@@ -1,9 +1,9 @@
 import type { AuditWriter } from "../audit/audit-log";
 import type { RallyAdminStore, RallyCourse, RallyPlace, RallyRow } from "./rally-admin-types";
 
-/** A place the memory store knows: a stamp place or one of a route's other points. */
+/** A place the memory store knows: a waypoint with a stamp (stampable) or without. */
 export interface MemoryPlace extends RallyPlace {
-  kind: "stamp" | "other";
+  stampable: boolean;
   sortOrder: number;
 }
 
@@ -26,14 +26,14 @@ export function createMemoryRallyAdminStore(audit: AuditWriter, opts: { now?: ()
 
   const row = (id: string): RallyRow => ({ ...rallies.get(id)!, memberCount: (members.get(id) ?? []).length, completionCount: finishes.get(id) ?? 0 });
   const routeOrder = (id: string) => routes.get(id)?.sortOrder ?? 0;
-  const asPlace = ({ kind: _k, sortOrder: _s, ...p }: MemoryPlace): RallyPlace => p;
+  const asPlace = ({ stampable: _k, sortOrder: _s, ...p }: MemoryPlace): RallyPlace => p;
   const asCourse = (routeId: string): RallyCourse => {
-    const stamps = [...places.values()].filter((p) => p.routeId === routeId && p.kind === "stamp");
+    const stamps = [...places.values()].filter((p) => p.routeId === routeId && p.stampable);
     const r = routes.get(routeId)!;
     return { routeId, nameJa: r.nameJa, nameEn: r.nameEn, stampPlaceCount: stamps.length, publishedStampPlaceCount: stamps.filter((p) => p.published).length };
   };
   const stampPlaces = () =>
-    [...places.values()].filter((p) => p.kind === "stamp").sort((a, b) => routeOrder(a.routeId) - routeOrder(b.routeId) || a.sortOrder - b.sortOrder);
+    [...places.values()].filter((p) => p.stampable).sort((a, b) => routeOrder(a.routeId) - routeOrder(b.routeId) || a.sortOrder - b.sortOrder);
 
   function claim(id: string, expected: Date): "conflict" | null | true {
     const cur = rallies.get(id);

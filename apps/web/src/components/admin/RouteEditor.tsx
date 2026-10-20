@@ -406,7 +406,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   onMovePlace={(key, lat, lng) => dispatch({ type: "movePlace", key, lat, lng })}
                   onRemovePlace={(key) => {
                     const p = draft.places.find((x) => x.key === key);
-                    if (p?.published) setMessage({ kind: "error", text: t`公開中の場所は消せません。先に「公開をやめる」を押してください。` });
+                    if (p?.published) setMessage({ kind: "error", text: t`公開中の経由地は消せません。先に「公開をやめる」を押してください。` });
                     else dispatch({ type: "removePlace", key });
                   }}
                   onSelectPlace={setSelectedKey}
@@ -430,12 +430,12 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
             ) : null}
 
             {section === "places" ? (
-              <Section title={t`場所（${draft.places.length}か所）`}>
+              <Section title={t`経由地（${draft.places.length}か所）`}>
                 {draft.places.length === 0 ? (
                   <p className="rounded-xl bg-paper p-4 text-lg">
                     {t`まだありません。`}{" "}
                     <button type="button" onClick={() => setSection("map")} className="font-bold text-accent underline underline-offset-4">
-                      {t`「地図と線」で場所を置く`}
+                      {t`「地図と線」で経由地を置く`}
                     </button>
                   </p>
                 ) : (
@@ -511,7 +511,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
               <button type="button" onClick={deleteRoute} disabled={draft.places.length > 0 || saving} className="tap-target w-fit rounded-xl border-2 border-danger px-5 text-lg font-bold text-danger disabled:opacity-40">
                 {t`このルートを削除`}
               </button>
-              {draft.places.length > 0 ? <p className="text-base text-muted">{t`場所が残っているルートは削除できません。`}</p> : null}
+              {draft.places.length > 0 ? <p className="text-base text-muted">{t`経由地が残っているルートは削除できません。`}</p> : null}
             </div>
           ) : null}
         </div>
