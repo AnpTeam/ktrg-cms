@@ -133,19 +133,19 @@
  */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-ink: #eee5d3;
-    --color-muted: #bcab92;
-    --color-paper: #0b0908; /* 墨 (sumi ink): almost black, with a breath of warmth */
-    --color-surface: #181311;
+    --color-ink: #e7e9ea;
+    --color-muted: #a4a9ae;
+    --color-paper: #000000; /* pure black, like Lights out: the red and the white do the work */
+    --color-surface: #16181c;
     --color-brand: #cc6256; /* the same brand red */
     --color-on-brand: #ffffff;
     --color-accent: #f2a69b; /* the readable red on dark: soft coral */
     --color-moss: #8fd6a5;
     --color-shu: #e8603f;
-    --color-on-shu: #0b0908;
+    --color-on-shu: #000000;
     --color-caution: #fbbf24;
     --color-danger: #fca5a5;
-    --color-line: #8a7563;
+    --color-line: #71767b;
     color-scheme: dark;
   }
 }
@@ -156,19 +156,19 @@
  * same as above; contrast.test.ts fails if they ever drift apart.
  */
 :root[data-theme="dark"] {
-  --color-ink: #eee5d3;
-  --color-muted: #bcab92;
-  --color-paper: #0b0908; /* warm dark brown-black */
-  --color-surface: #181311;
+  --color-ink: #e7e9ea;
+  --color-muted: #a4a9ae;
+  --color-paper: #000000; /* pure black */
+  --color-surface: #16181c;
   --color-brand: #cc6256; /* the same brand red */
   --color-on-brand: #ffffff;
   --color-accent: #f2a69b; /* the readable red on dark: soft coral */
   --color-moss: #8fd6a5;
   --color-shu: #e8603f;
-  --color-on-shu: #0b0908;
+  --color-on-shu: #000000;
   --color-caution: #fbbf24;
   --color-danger: #fca5a5;
-  --color-line: #8a7563;
+  --color-line: #71767b;
   color-scheme: dark;
 }
 
