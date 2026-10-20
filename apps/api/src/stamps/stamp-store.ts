@@ -11,6 +11,7 @@ export function createDrizzleStampStore(db: Db): StampStore {
       const [s] = await db
         .select({
           id: spots.id,
+          routeId: spots.routeId,
           published: spots.published,
           stampable: spots.stampable,
           positionVerified: spots.positionVerified,
@@ -47,8 +48,9 @@ export function createDrizzleStampStore(db: Db): StampStore {
 
     listMine(userId) {
       return db
-        .select({ spotId: stamps.spotId, createdAt: stamps.createdAt })
+        .select({ spotId: stamps.spotId, routeId: spots.routeId, createdAt: stamps.createdAt })
         .from(stamps)
+        .innerJoin(spots, eq(spots.id, stamps.spotId))
         .where(and(eq(stamps.userId, userId), isNull(stamps.revokedAt)))
         .orderBy(desc(stamps.createdAt));
     },

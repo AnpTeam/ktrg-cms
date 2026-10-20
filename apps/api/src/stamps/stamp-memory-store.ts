@@ -30,7 +30,7 @@ export function createMemoryStampStore(audit: AuditWriter, opts: { now?: () => D
       return { created: true, createdAt: at, flagged: row.flagged, revoked: false, finished: nothing() };
     },
     async listMine(userId) {
-      return [...stamps.values()].filter((s) => s.userId === userId && !s.revoked).map((s) => ({ spotId: s.spotId, createdAt: s.createdAt }));
+      return [...stamps.values()].filter((s) => s.userId === userId && !s.revoked).map((s) => ({ spotId: s.spotId, routeId: spots.get(s.spotId)?.routeId ?? "", createdAt: s.createdAt }));
     },
     async setRevoked(actor, id, revoked) {
       const s = stamps.get(id);

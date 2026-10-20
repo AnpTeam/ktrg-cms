@@ -2,6 +2,7 @@ import { fetchPublicPlaces, fetchPublicRoute, fetchPublicRoutes, fetchPublicSpot
 import type { RouteArea } from "./map-screen";
 import type { PointKind } from "./point-kinds";
 import { pickText } from "./pick-text";
+import { getMyStamps } from "./my-stamps";
 import type { MapPlace, PlaceCategory, PlaceStatus } from "./places";
 import type { RallyItem } from "./rally-model";
 import { sampleLastStamped, sampleMounds, sampleMoundsStamped } from "./sample-mounds";
@@ -277,12 +278,12 @@ export async function listRallies(): Promise<RallyItem[]> {
 
 export async function listRoutes(): Promise<RouteSummary[]> {
   const sample = sampleContentEnabled();
-  const real = await fetchPublicRoutes();
+  const [real, mine] = await Promise.all([fetchPublicRoutes(), getMyStamps()]);
   if (!real) return sample ? sampleRoutes.map(toSummary) : [];
   const out = real.map((r, i) => {
     const order = i + 1;
     const stand = sample && isEmptyRoute(r) ? sampleRoutes.find((x) => x.order === order) : undefined;
-    return stand ? toSummary(stand) : routeSummaryFromApi(r, order);
+    return stand ? toSummary(stand) : routeSummaryFromApi(r, order, mine.byRoute.get(r.id) ?? 0);
   });
   if (sample) for (const s of sampleRoutes) if (s.order > real.length) out.push(toSummary(s));
   return out;
@@ -292,10 +293,10 @@ export async function getRoute(id: string): Promise<RouteDetail | undefined> {
   const sample = sampleContentEnabled();
   const fromSample = sample ? sampleRoutes.find((r) => r.id === id) : undefined;
   if (fromSample) return fromSample;
-  const [found, all] = await Promise.all([fetchPublicRoute(id), fetchPublicRoutes()]);
+  const [found, all, mine] = await Promise.all([fetchPublicRoute(id), fetchPublicRoutes(), getMyStamps()]);
   if (!found || !all) return undefined;
   const order = all.findIndex((r) => r.id === id) + 1;
-  return routeDetailFromApi(found.route, found.spots, order, found.points);
+  return routeDetailFromApi(found.route, found.spots, order, found.points, mine.ids);
 }
 
 export async function getSpot(id: string): Promise<SpotDetail | undefined> {
@@ -304,6 +305,6 @@ export async function getSpot(id: string): Promise<SpotDetail | undefined> {
   const spot = await fetchPublicSpot(id);
   // A waypoint without a stamp (a turn, a toilet) has no page of its own: only the ones with a stamp do.
   if (!spot || !spot.stampable) return undefined;
-  const route = await fetchPublicRoute(spot.routeId);
-  return route ? spotDetailFromApi(spot, route.route) : undefined;
+  const [route, mine] = await Promise.all([fetchPublicRoute(spot.routeId), getMyStamps()]);
+  return route ? spotDetailFromApi(spot, route.route, mine.ids.has(spot.id)) : undefined;
 }

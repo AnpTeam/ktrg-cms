@@ -96,13 +96,23 @@ describe("fetching never throws", () => {
   });
 });
 
-describe("placeItemFromApi", () => {
-  const place = { id: "p1", category: "toilet", routeId: "r1", nameJa: "トイレ", nameEn: null, descriptionJa: null, descriptionEn: null, hoursJa: null, hoursEn: null, closedDaysJa: null, closedDaysEn: null, lat: 34.2, lng: 135.1, address: null, phone: null, website: null, photoUrl: null, status: "open", lastVerified: "2026-10-17" };
-  test("carries the course number and the checked position", () => {
-    expect(placeItemFromApi(place, 3)).toMatchObject({ category: "toilet", routes: [3], position: { lat: 34.2, lng: 135.1, verified: true }, status: "open" });
-    expect(placeItemFromApi(place, null).routes).toEqual([]);
+describe("the visitor's stamps in the view-models", () => {
+  const spots = [spot({ id: "s1", sortOrder: 1 }), spot({ id: "s2", sortOrder: 2 }), spot({ id: "s3", sortOrder: 3 })];
+
+  test("a course detail marks the stamped places and counts them; nothing is stamped by default", () => {
+    const d = routeDetailFromApi(route(), spots, 2, [], new Set(["s1", "s3", "other-course"]));
+    expect(d.spots.map((s) => s.stamped)).toEqual([true, false, true]);
+    expect(d.stampedCount).toBe(2);
+    const none = routeDetailFromApi(route(), spots, 2);
+    expect(none.spots.every((s) => s.stamped === false)).toBe(true);
+    expect(none.stampedCount).toBe(0);
   });
-  test("a category or status this app does not know is read as other / unknown", () => {
-    expect(placeItemFromApi({ ...place, category: "hot_spring", status: "weird" }, 1)).toMatchObject({ category: "other", status: "unknown" });
+
+  test("a course summary takes its stamped count; a place detail takes its own flag", () => {
+    expect(routeSummaryFromApi(route(), 2, 4).stampedCount).toBe(4);
+    expect(routeSummaryFromApi(route(), 2).stampedCount).toBe(0);
+    const r = { id: "r1", nameJa: "甲山", nameEn: null };
+    expect(spotDetailFromApi(spot(), r, true).stamped).toBe(true);
+    expect(spotDetailFromApi(spot(), r).stamped).toBe(false);
   });
 });

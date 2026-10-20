@@ -23,9 +23,10 @@ const alice: AuthUser = { id: "22222222-2222-4222-8222-222222222222", email: "al
 const bob: AuthUser = { id: "33333333-3333-4333-8333-333333333333", email: "bob@example.com", role: "participant", locale: "ja" };
 
 const SPOT_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+const ROUTE_ID = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
 const HERE = { lat: 34.3, lng: 135.1 };
 const spot = (over: Partial<StampSpot> = {}): StampSpot => ({
-  id: SPOT_ID, published: true, stampable: true, positionVerified: true, ...HERE, radiusM: 50, status: "open", ...over,
+  id: SPOT_ID, routeId: ROUTE_ID, published: true, stampable: true, positionVerified: true, ...HERE, radiusM: 50, status: "open", ...over,
 });
 
 async function setup() {
@@ -70,6 +71,7 @@ describe("collecting a stamp", () => {
 
     const mine = (await (await call("GET", "/stamps", { cookie: cookies.alice })).json()) as Json;
     expect(mine.stamps).toHaveLength(1);
+    expect(mine.stamps[0]).toMatchObject({ spotId: SPOT_ID, routeId: ROUTE_ID });
   });
 
   test("user B never sees user A's stamps, and stamps for themselves only", async () => {
