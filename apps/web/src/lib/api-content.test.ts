@@ -94,3 +94,24 @@ describe("fetching never throws", () => {
     expect((await fetchPublicRoutes())?.[0]?.id).toBe("r1");
   });
 });
+
+describe("the visitor's stamps in the view-models", () => {
+  const spots = [spot({ id: "s1", sortOrder: 1 }), spot({ id: "s2", sortOrder: 2 }), spot({ id: "s3", sortOrder: 3 })];
+
+  test("a course detail marks the stamped places and counts them; nothing is stamped by default", () => {
+    const d = routeDetailFromApi(route(), spots, 2, [], new Set(["s1", "s3", "other-course"]));
+    expect(d.spots.map((s) => s.stamped)).toEqual([true, false, true]);
+    expect(d.stampedCount).toBe(2);
+    const none = routeDetailFromApi(route(), spots, 2);
+    expect(none.spots.every((s) => s.stamped === false)).toBe(true);
+    expect(none.stampedCount).toBe(0);
+  });
+
+  test("a course summary takes its stamped count; a place detail takes its own flag", () => {
+    expect(routeSummaryFromApi(route(), 2, 4).stampedCount).toBe(4);
+    expect(routeSummaryFromApi(route(), 2).stampedCount).toBe(0);
+    const r = { id: "r1", nameJa: "甲山", nameEn: null };
+    expect(spotDetailFromApi(spot(), r, true).stamped).toBe(true);
+    expect(spotDetailFromApi(spot(), r).stamped).toBe(false);
+  });
+});

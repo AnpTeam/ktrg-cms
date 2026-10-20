@@ -95,16 +95,28 @@ function finishedFrom(v: unknown): Finished | null {
   return isIds(f.routeIds) && isIds(f.rallyIds) ? { routeIds: f.routeIds, rallyIds: f.rallyIds } : null;
 }
 
-/** The caller's own stamps from GET /api/v1/stamps as a set of place ids; null when the answer is not usable. */
-export function parseMyStamps(status: number, body: unknown): Set<string> | null {
+/** One stamp of the caller's from GET /api/v1/stamps: the place and the course it belongs to. */
+export interface MyStampRow {
+  spotId: string;
+  routeId: string | null;
+}
+
+/** The caller's own stamps from GET /api/v1/stamps; null when the answer is not usable (never an empty list by mistake). */
+export function parseMyStampRows(status: number, body: unknown): MyStampRow[] | null {
   const b = (typeof body === "object" && body !== null ? body : {}) as { ok?: unknown; stamps?: unknown };
   if (status !== 200 || b.ok !== true || !Array.isArray(b.stamps)) return null;
-  const ids = new Set<string>();
+  const rows: MyStampRow[] = [];
   for (const s of b.stamps) {
-    const id = (s as { spotId?: unknown } | null)?.spotId;
-    if (typeof id === "string") ids.add(id);
+    const r = (s ?? {}) as { spotId?: unknown; routeId?: unknown };
+    if (typeof r.spotId === "string") rows.push({ spotId: r.spotId, routeId: typeof r.routeId === "string" && r.routeId ? r.routeId : null });
   }
-  return ids;
+  return rows;
+}
+
+/** The same as a set of place ids. */
+export function parseMyStamps(status: number, body: unknown): Set<string> | null {
+  const rows = parseMyStampRows(status, body);
+  return rows ? new Set(rows.map((r) => r.spotId)) : null;
 }
 
 /** A distance people can read: to the nearest 10 m under a kilometre (at least 10), otherwise to the nearest 100 m. */
