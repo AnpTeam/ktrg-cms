@@ -68,10 +68,10 @@ export interface SpotListItem {
   position: SpotPosition | null;
 }
 
-/** One of a route's navigation points (a turn, a toilet, a danger ...): not a stamp place. */
+/** One of a route's waypoints without a stamp (a turn, a toilet, a danger ...). */
 export interface RoutePoint {
   id: string;
-  kind: Exclude<PointKind, "stamp">;
+  kind: PointKind;
   nameJa: string;
   nameEn: string | null;
   descriptionJa: string | null;
@@ -290,8 +290,8 @@ export async function getSpot(id: string): Promise<SpotDetail | undefined> {
   const fromSample = sampleContentEnabled() ? sampleSpots.find((s) => s.id === id) : undefined;
   if (fromSample) return fromSample;
   const spot = await fetchPublicSpot(id);
-  // A navigation point (a turn, a toilet) has no page of its own: only stamp places do.
-  if (!spot || spot.kind !== "stamp") return undefined;
+  // A waypoint without a stamp (a turn, a toilet) has no page of its own: only the ones with a stamp do.
+  if (!spot || !spot.stampable) return undefined;
   const route = await fetchPublicRoute(spot.routeId);
   return route ? spotDetailFromApi(spot, route.route) : undefined;
 }

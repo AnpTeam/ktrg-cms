@@ -1,4 +1,5 @@
 import type { ErrorKey } from "../api-error";
+import { pointKinds, type PointKind } from "../point-kinds";
 import type { AdminRoute, AdminSpot, Prefecture } from "./types";
 
 // The spreadsheet import (admin routes page): the columns of the template, reading its rows, and running the
@@ -8,13 +9,13 @@ import type { AdminRoute, AdminSpot, Prefecture } from "./types";
 // that come in are never marked as checked.
 
 export const ROUTE_SHEET = "ルート";
-export const PLACE_SHEET = "場所";
+export const PLACE_SHEET = "経由地";
 export const HELP_SHEET = "書き方";
 
 /** The API allows 300 writes per 15 minutes per admin; one import stays well under it. */
 export const IMPORT_WRITE_LIMIT = 250;
 
-type Kind = "text" | "whole" | "number" | "prefecture" | "lat" | "lng";
+type Kind = "text" | "whole" | "number" | "prefecture" | "lat" | "lng" | "kind" | "yesno";
 interface Column {
   key: string;
   header: string;
@@ -43,9 +44,11 @@ export const ROUTE_COLUMNS: readonly Column[] = [
 
 export const PLACE_COLUMNS: readonly Column[] = [
   { key: "routeNumber", header: "ルート番号", kind: "whole" },
-  { key: "number", header: "場所の番号", kind: "whole" },
+  { key: "number", header: "経由地の番号", kind: "whole" },
   { key: "nameJa", header: "名前（日本語）", kind: "text" },
   { key: "nameEn", header: "名前（英語）", kind: "text" },
+  { key: "kind", header: "種類", kind: "kind" },
+  { key: "stampable", header: "スタンプを押せる", kind: "yesno" },
   { key: "descriptionJa", header: "説明（日本語）", kind: "text" },
   { key: "descriptionEn", header: "説明（英語）", kind: "text" },
   { key: "lat", header: "緯度", kind: "lat" },
@@ -56,13 +59,42 @@ export const PLACE_COLUMNS: readonly Column[] = [
 
 export const PREFECTURE_NAMES: Record<Prefecture, string> = { osaka: "大阪府", wakayama: "和歌山県", nara: "奈良県" };
 
+/** The words for a waypoint's kind in the sheet (the same as in the editor). */
+export const KIND_NAMES: Record<PointKind, string> = {
+  temple: "寺社",
+  mound: "経塚",
+  view: "見どころ",
+  turn: "曲がり角",
+  danger: "危険な所",
+  toilet: "トイレ",
+  rest_area: "休憩所",
+  drinking_water: "水場",
+  vending_machine: "自動販売機",
+  bus_stop: "バス停",
+  station: "駅",
+  parking: "駐車場",
+  other: "その他",
+};
+
+function kindOf(s: string): PointKind | null {
+  const v = s.normalize("NFKC").trim();
+  return pointKinds.find((k) => k === v || KIND_NAMES[k] === v) ?? null;
+}
+
+const YES = new Set(["はい", "あり", "○", "◯", "yes", "true", "1", "y"]);
+const NO = new Set(["いいえ", "なし", "×", "no", "false", "0", "n"]);
+function yesNo(s: string): boolean | null {
+  const v = s.normalize("NFKC").trim().toLowerCase();
+  return YES.has(v) ? true : NO.has(v) ? false : null;
+}
+
 /** One row as read from the file: the cell text under each header, and the row's number in the sheet. */
 export interface SheetRow {
   line: number;
   cells: Record<string, string>;
 }
 
-export type ProblemKind = "whole" | "number" | "prefecture" | "range" | "pair" | "duplicate" | "missing";
+export type ProblemKind = "whole" | "number" | "prefecture" | "kind" | "yesno" | "range" | "pair" | "duplicate" | "missing";
 export interface RowProblem {
   sheet: "route" | "place";
   line: number;
@@ -77,7 +109,7 @@ export type RouteChanges = Partial<
     | "descriptionJa" | "descriptionEn" | "historyJa" | "historyEn" | "accessJa" | "accessEn" | "videoUrl"
   >
 >;
-export type PlaceChanges = Partial<Pick<AdminSpot, "nameJa" | "nameEn" | "descriptionJa" | "descriptionEn" | "lat" | "lng" | "positionSource">>;
+export type PlaceChanges = Partial<Pick<AdminSpot, "nameJa" | "nameEn" | "kind" | "stampable" | "descriptionJa" | "descriptionEn" | "lat" | "lng" | "positionSource">>;
 
 export interface RouteRow {
   line: number;
@@ -107,7 +139,7 @@ function prefectureOf(s: string): Prefecture | null {
   return null;
 }
 
-type Value = string | number | undefined;
+type Value = string | number | boolean | undefined;
 
 /** The typed values of a row's cells (blank = undefined), plus what was wrong with the others. */
 function readCells(columns: readonly Column[], row: SheetRow, sheet: "route" | "place", problems: RowProblem[]): Record<string, Value> {
@@ -121,6 +153,14 @@ function readCells(columns: readonly Column[], row: SheetRow, sheet: "route" | "
       const p = prefectureOf(raw);
       if (p) out[c.key] = p;
       else bad("prefecture");
+    } else if (c.kind === "kind") {
+      const k = kindOf(raw);
+      if (k) out[c.key] = k;
+      else bad("kind");
+    } else if (c.kind === "yesno") {
+      const y = yesNo(raw);
+      if (y === null) bad("yesno");
+      else out[c.key] = y;
     } else {
       const n = plainNumber(raw);
       if (!Number.isFinite(n)) bad(c.kind === "whole" ? "whole" : "number");
@@ -178,13 +218,13 @@ export function readPlaceRows(rows: readonly SheetRow[]): { rows: PlaceRow[]; pr
     const before = problems.length;
     const v = readCells(PLACE_COLUMNS, row, "place", problems);
     needNumber(v.routeNumber, row, "ルート番号", "place", problems);
-    needNumber(v.number, row, "場所の番号", "place", problems);
+    needNumber(v.number, row, "経由地の番号", "place", problems);
     const noLat = (row.cells["緯度"] ?? "").trim() === "";
     if (noLat !== ((row.cells["経度"] ?? "").trim() === "")) problems.push({ sheet: "place", line: row.line, column: noLat ? "緯度" : "経度", problem: "pair" });
     if (problems.length > before) continue;
     const key = `${v.routeNumber}-${v.number}`;
     if (seen.has(key)) {
-      problems.push({ sheet: "place", line: row.line, column: "場所の番号", problem: "duplicate" });
+      problems.push({ sheet: "place", line: row.line, column: "経由地の番号", problem: "duplicate" });
       continue;
     }
     seen.add(key);
@@ -221,7 +261,7 @@ export interface ImportApi {
   createRoute(body: RouteChanges & { nameJa: string; photoUrl?: string }): Promise<Res<AdminRoute>>;
   updateRoute(id: string, updatedAt: string, changes: RouteChanges & { photoUrl?: string }): Promise<Res<AdminRoute>>;
   getRoute(id: string): Promise<Res<{ spots: AdminSpot[] }>>;
-  createSpot(routeId: string, body: PlaceChanges & { nameJa: string; kind: "stamp"; photoUrl?: string }): Promise<Res<AdminSpot>>;
+  createSpot(routeId: string, body: PlaceChanges & { nameJa: string; photoUrl?: string }): Promise<Res<AdminSpot>>;
   updateSpot(id: string, updatedAt: string, changes: PlaceChanges & { photoUrl?: string }): Promise<Res<AdminSpot>>;
   uploadPhoto(file: File): Promise<Res<string>>;
 }
@@ -290,7 +330,7 @@ export async function runImport(
     step();
   }
 
-  const stamps = new Map<number, AdminSpot[] | null>(); // a route's stamp places, loaded once; null = could not load
+  const stamps = new Map<number, AdminSpot[] | null>(); // a route's waypoints in walking order, loaded once; null = could not load
   for (const row of input.places) {
     const skip = (reason: Skip) => report.push({ sheet: "place", line: row.line, status: "skipped", reason });
     const route = routes[row.routeNumber - 1];
@@ -301,7 +341,7 @@ export async function runImport(
     }
     if (!stamps.has(row.routeNumber)) {
       const found = await api.getRoute(route.id);
-      stamps.set(row.routeNumber, found.ok ? found.value.spots.filter((s) => s.kind === "stamp").sort((a, b) => a.sortOrder - b.sortOrder) : null);
+      stamps.set(row.routeNumber, found.ok ? [...found.value.spots].sort((a, b) => a.sortOrder - b.sortOrder) : null);
     }
     const list = stamps.get(row.routeNumber);
     if (!list) {
@@ -324,7 +364,7 @@ export async function runImport(
     else if (!row.changes.nameJa) skip("name_required");
     else {
       const photo = await photoOf(row.photo);
-      const r = await api.createSpot(route.id, { ...row.changes, nameJa: row.changes.nameJa, kind: "stamp", ...urlOf(photo) });
+      const r = await api.createSpot(route.id, { ...row.changes, nameJa: row.changes.nameJa, ...urlOf(photo) });
       if (r.ok) {
         list.push(r.value);
         report.push({ sheet: "place", line: row.line, status: "created", photo: photo.lost });

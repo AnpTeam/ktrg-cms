@@ -39,17 +39,17 @@ describe("a wrong number is reported once, with the right reason", () => {
   test("text in the number cell: one problem (not also 'nothing is written'); 0 is not a number of a route", () => {
     const r = readRouteRows([row(2, { ルート番号: "abc" }), row(3, { ルート番号: "0" }), row(4, { "名前（日本語）": "x" })]);
     expect(r.problems.map((p) => [p.line, p.problem])).toEqual([[2, "whole"], [3, "whole"], [4, "missing"]]);
-    const p = readPlaceRows([row(2, { ルート番号: "1", 場所の番号: "abc" })]);
-    expect(p.problems.map((x) => [x.column, x.problem])).toEqual([["場所の番号", "whole"]]);
+    const p = readPlaceRows([row(2, { ルート番号: "1", 経由地の番号: "abc" })]);
+    expect(p.problems.map((x) => [x.column, x.problem])).toEqual([["経由地の番号", "whole"]]);
   });
 });
 
 describe("readPlaceRows", () => {
   test("a position needs both latitude and longitude, within range", () => {
     const r = readPlaceRows([
-      row(2, { ルート番号: "1", 場所の番号: "1", 緯度: "34.3" }),
-      row(3, { ルート番号: "1", 場所の番号: "2", 緯度: "134", 経度: "135" }),
-      row(4, { ルート番号: "1", 場所の番号: "3", 緯度: "34.3", 経度: "135.1", 位置の出どころ: "公式サイト" }),
+      row(2, { ルート番号: "1", 経由地の番号: "1", 緯度: "34.3" }),
+      row(3, { ルート番号: "1", 経由地の番号: "2", 緯度: "134", 経度: "135" }),
+      row(4, { ルート番号: "1", 経由地の番号: "3", 緯度: "34.3", 経度: "135.1", 位置の出どころ: "公式サイト" }),
     ]);
     expect(r.problems.map((p) => [p.line, p.column, p.problem])).toEqual([
       [2, "経度", "pair"],
@@ -57,6 +57,19 @@ describe("readPlaceRows", () => {
     ]);
     expect(r.rows).toHaveLength(1);
     expect(r.rows[0]!.changes).toEqual({ lat: 34.3, lng: 135.1, positionSource: "公式サイト" });
+  });
+});
+
+describe("kind and the stamp switch", () => {
+  test("read from words (Japanese or the code); a blank cell is left to the default; a wrong word names its column", () => {
+    const r = readPlaceRows([
+      row(2, { ルート番号: "1", 経由地の番号: "1", 種類: "トイレ", スタンプを押せる: "いいえ" }),
+      row(3, { ルート番号: "1", 経由地の番号: "2", 種類: "temple", スタンプを押せる: "あり" }),
+      row(4, { ルート番号: "1", 経由地の番号: "3", 種類: "お城", スタンプを押せる: "たぶん" }),
+      row(5, { ルート番号: "1", 経由地の番号: "4", "名前（日本語）": "だけ" }),
+    ]);
+    expect(r.rows.map((x) => x.changes)).toEqual([{ kind: "toilet", stampable: false }, { kind: "temple", stampable: true }, { nameJa: "だけ" }]);
+    expect(r.problems.map((p) => [p.line, p.column, p.problem])).toEqual([[4, "種類", "kind"], [4, "スタンプを押せる", "yesno"]]);
   });
 });
 
@@ -71,8 +84,8 @@ describe("photo names", () => {
 
 // ---- runImport with a fake API -------------------------------------------------------------------
 const route = (id: string, order: number): AdminRoute => ({ id, nameJa: `r${order}`, updatedAt: "t0" }) as AdminRoute;
-const stamp = (id: string, sortOrder: number, lat: number | null, lng: number | null): AdminSpot =>
-  ({ id, sortOrder, kind: "stamp", lat, lng, updatedAt: "s0" }) as AdminSpot;
+const waypoint = (id: string, sortOrder: number, lat: number | null, lng: number | null, over: Partial<AdminSpot> = {}): AdminSpot =>
+  ({ id, sortOrder, kind: "other", stampable: true, lat, lng, updatedAt: "s0", ...over }) as AdminSpot;
 
 function fakeApi(spots: AdminSpot[] = []) {
   const calls: string[] = [];
@@ -90,11 +103,11 @@ function fakeApi(spots: AdminSpot[] = []) {
     },
     async createSpot(rid, b) {
       calls.push(`createSpot ${rid} ${JSON.stringify(b)}`);
-      return { ok: true, value: stamp("ns", 9, null, null) };
+      return { ok: true, value: waypoint("ns", 9, null, null) };
     },
     async updateSpot(id, _u, c) {
       calls.push(`updateSpot ${id} ${JSON.stringify(c)}`);
-      return { ok: true, value: stamp(id, 1, null, null) };
+      return { ok: true, value: waypoint(id, 1, null, null) };
     },
     async uploadPhoto(f) {
       calls.push(`upload ${f.name}`);
@@ -154,16 +167,17 @@ describe("runImport", () => {
     expect(report[0]).toMatchObject({ status: "updated", photo: { name: "gone.jpg", reason: "photo_missing" } });
   });
 
-  test("places: update by number among stamp places, send a position only when it moved, create the next", async () => {
-    const { api, calls } = fakeApi([stamp("p1", 1, 34.1, 135.1), { ...stamp("t1", 2, null, null), kind: "toilet" }, stamp("p2", 3, null, null)]);
+  test("waypoints: update by number among all of the route's waypoints, send a position only when it moved, create the next", async () => {
+    const { api, calls } = fakeApi([waypoint("p1", 1, 34.1, 135.1), waypoint("t1", 2, null, null, { kind: "toilet", stampable: false }), waypoint("p2", 3, null, null)]);
     const report = await runImport(
       {
         routes: [],
         places: [
           { line: 2, routeNumber: 1, number: 1, changes: { nameEn: "same", lat: 34.1, lng: 135.1 } },
           { line: 3, routeNumber: 1, number: 2, changes: { lat: 34.2, lng: 135.2 } },
-          { line: 4, routeNumber: 1, number: 3, changes: { nameJa: "新しい", lat: 34.3, lng: 135.3 } },
-          { line: 5, routeNumber: 1, number: 5, changes: { nameJa: "とんだ" } },
+          { line: 4, routeNumber: 1, number: 3, changes: { nameEn: "third" } },
+          { line: 5, routeNumber: 1, number: 4, changes: { nameJa: "新しい", kind: "toilet", stampable: false, lat: 34.3, lng: 135.3 } },
+          { line: 7, routeNumber: 1, number: 6, changes: { nameJa: "とんだ" } },
           { line: 6, routeNumber: 2, number: 1, changes: { nameJa: "ルートがない" } },
         ],
         existing: [route("r1", 1)],
@@ -173,14 +187,15 @@ describe("runImport", () => {
     );
     expect(calls).toEqual([
       'updateSpot p1 {"nameEn":"same"}',
-      'updateSpot p2 {"lat":34.2,"lng":135.2}',
-      'createSpot r1 {"nameJa":"新しい","lat":34.3,"lng":135.3,"kind":"stamp"}',
+      'updateSpot t1 {"lat":34.2,"lng":135.2}',
+      'updateSpot p2 {"nameEn":"third"}',
+      'createSpot r1 {"nameJa":"新しい","kind":"toilet","stampable":false,"lat":34.3,"lng":135.3}',
     ]);
-    expect(report.map((r) => r.status + (r.reason ? `:${r.reason}` : ""))).toEqual(["updated", "updated", "created", "skipped:place_gap", "skipped:route_missing"]);
+    expect(report.map((r) => r.status + (r.reason ? `:${r.reason}` : ""))).toEqual(["updated", "updated", "updated", "created", "skipped:place_gap", "skipped:route_missing"]);
   });
 
   test("a refusal from the API leaves only that row out", async () => {
-    const { api } = fakeApi([stamp("p1", 1, null, null)]);
+    const { api } = fakeApi([waypoint("p1", 1, null, null)]);
     api.updateSpot = async () => ({ ok: false, key: "position_not_verified" });
     const report = await runImport(
       { routes: [], places: [{ line: 2, routeNumber: 1, number: 1, changes: { lat: 1, lng: 1 } }, { line: 3, routeNumber: 1, number: 2, changes: { nameJa: "次" } }], existing: [route("r1", 1)], photos: new Map() },

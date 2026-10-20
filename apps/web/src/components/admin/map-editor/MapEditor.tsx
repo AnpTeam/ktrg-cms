@@ -335,7 +335,7 @@ export function MapEditor(props: MapEditorProps) {
   // Joins the drawn line (or the stops) along real walking trails; the result replaces the line and can be undone.
   async function snapToTrails() {
     const points = snapPoints(props.line, props.places);
-    if (!points) return setNote(t`先に、線を描くか、場所を2つ以上置いてください。`);
+    if (!points) return setNote(t`先に、線を描くか、経由地を2つ以上置いてください。`);
     setSnapping(true);
     setNote(t`道を調べています…`);
     const result = await props.onSnap(points);
@@ -362,7 +362,7 @@ export function MapEditor(props: MapEditorProps) {
   function addWaypoints() {
     if (!waypoints) return;
     props.onAddPlaces(waypoints.map((w) => ({ key: crypto.randomUUID(), name: w.name, lat: w.lat, lng: w.lng })));
-    setNote(t`${waypoints.length}か所を、場所として追加しました。名前や種類は「スタンプ場所」で直せます。`);
+    setNote(t`${waypoints.length}か所を、経由地として追加しました。名前や種類は「経由地」で直せます。`);
     setWaypoints(null);
   }
 
@@ -412,20 +412,20 @@ export function MapEditor(props: MapEditorProps) {
   const hasPlaces = props.places.length > 0;
   const hint =
     mode === "place"
-      ? t`地図をクリックすると、その位置にスタンプの場所を置きます。`
+      ? t`地図をクリックすると、その位置に経由地を置きます。`
       : mode === "draw"
         ? t`地図をクリックして、点を置いていきます。最後の点をもう一度クリックする（またはEnterキーを押す）と、線ができます。Escキーでやり直します。`
         : hasLine
-          ? t`線の点をドラッグして動かします。線の途中の小さな点を引くと、点を増やせます。点を選んでDeleteキーで消せます。数字の丸をドラッグすると、場所を動かせます。`
+          ? t`線の点をドラッグして動かします。線の途中の小さな点を引くと、点を増やせます。点を選んでDeleteキーで消せます。数字の丸をドラッグすると、経由地を動かせます。`
           : hasPlaces
-            ? t`数字の丸をドラッグすると、場所を動かせます。道すじは「線を描く」か、GPXファイルで入れます。`
-            : t`まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「線を描く」で道すじを、「場所を置く」でスタンプの場所を入れます。`;
+            ? t`数字の丸をドラッグすると、経由地を動かせます。道すじは「線を描く」か、GPXファイルで入れます。`
+            : t`まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「線を描く」で道すじを、「経由地を置く」で経由地を入れます。`;
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2" role="toolbar" aria-label={t`地図の道具`}>
         {toolButton("select", t`選ぶ・動かす`, "V")}
-        {toolButton("place", t`場所を置く`, "P")}
+        {toolButton("place", t`経由地を置く`, "P")}
         {toolButton("draw", t`線を描く`, "L")}
         <span className="mx-1 w-px self-stretch bg-line" aria-hidden="true" />
         <button type="button" onClick={() => fileInput.current?.click()} className={`${toolClass} border-ink bg-brand text-on-brand`}>
@@ -464,7 +464,7 @@ export function MapEditor(props: MapEditorProps) {
 
       {waypoints ? (
         <div role="group" aria-label={t`GPXの地点`} className="flex flex-col gap-3 rounded-xl border-2 border-ink bg-paper p-4">
-          <p className="text-lg font-bold">{t`名前のついた地点が${waypoints.length}か所ありました。場所として追加しますか？`}</p>
+          <p className="text-lg font-bold">{t`名前のついた地点が${waypoints.length}か所ありました。経由地として追加しますか？`}</p>
           <ul className="max-h-40 list-disc overflow-auto pl-6 text-base">
             {waypoints.map((w, i) => (
               <li key={i}>{w.name || t`（名前なし）`}</li>
@@ -506,8 +506,8 @@ export function MapEditor(props: MapEditorProps) {
       </p>
 
       {props.places.length > 0 ? (
-        <section aria-label={t`置いた場所`} className="flex flex-col gap-2">
-          <h3 className="text-lg font-bold">{t`置いた場所（${props.places.length}か所）`}</h3>
+        <section aria-label={t`置いた経由地`} className="flex flex-col gap-2">
+          <h3 className="text-lg font-bold">{t`置いた経由地（${props.places.length}か所）`}</h3>
           <ol className="flex max-h-64 flex-col gap-1 overflow-auto">
             {props.places.map((p) => (
               <li key={p.key} className={`flex items-center gap-3 rounded-xl p-2 ${p.key === props.selectedKey ? "bg-paper ring-2 ring-ink" : ""}`}>
