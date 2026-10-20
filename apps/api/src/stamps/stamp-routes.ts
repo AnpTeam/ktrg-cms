@@ -53,7 +53,7 @@ export function stampRoutes(getServices: () => StampServices, opts: RouteOptions
       "/",
       async ({ user }) => ({
         ok: true as const,
-        stamps: (await svc().listMine(user.id)).map((s) => ({ spotId: s.spotId, createdAt: s.createdAt.toISOString() })),
+        stamps: (await svc().listMine(user.id)).map((s) => ({ spotId: s.spotId, routeId: s.routeId, createdAt: s.createdAt.toISOString() })),
       }),
       { auth: "stamp.create" },
     );

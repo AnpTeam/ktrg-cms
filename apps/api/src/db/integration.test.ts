@@ -767,6 +767,7 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       expect(await tx.select().from(courseCompletions).where(eq(courseCompletions.userId, me!.id))).toHaveLength(1);
 
       expect((await store.listMine(me!.id)).map((s) => s.spotId).sort()).toEqual([a!.id, b!.id].sort());
+      expect((await store.listMine(me!.id)).every((s) => s.routeId === route!.id)).toBe(true); // the course each stamp belongs to
       // The admin list: newest first, member number and place name, no user id or email.
       const rows = await createDrizzleStampListStore(tx as unknown as typeof db).list(null, 10);
       const queued = rows.find((r) => r.flagged)!;
