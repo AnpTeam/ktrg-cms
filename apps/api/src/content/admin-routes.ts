@@ -96,6 +96,8 @@ const spotProps = {
   nameEn: nullable(t.String({ maxLength: 200 })),
   descriptionJa: nullable(t.String({ maxLength: 20000 })),
   descriptionEn: nullable(t.String({ maxLength: 20000 })),
+  historyJa: nullable(t.String({ maxLength: 20000 })),
+  historyEn: nullable(t.String({ maxLength: 20000 })),
   lat: nullable(t.Number({ minimum: -90, maximum: 90 })),
   lng: nullable(t.Number({ minimum: -180, maximum: 180 })),
   positionVerified: t.Boolean(),
@@ -107,10 +109,12 @@ const spotProps = {
   // An optional visit beside the way (寄り道): the route's line need not pass through it.
   stopBy: t.Boolean(),
   photoUrl: nullable(t.String({ maxLength: 500 })),
+  // The gallery: up to 12 photos; the credit says who took one that is not ours.
+  photos: t.Array(t.Object({ url: t.String({ maxLength: 500 }), credit: nullable(t.String({ maxLength: 300 })), sourceUrl: nullable(t.String({ maxLength: 500 })) }), { maxItems: 12 }),
   status,
   statusNoteJa: nullable(t.String({ maxLength: 1000 })),
   statusNoteEn: nullable(t.String({ maxLength: 1000 })),
-  translations: translationsSchema({ name: 200, description: 20000, statusNote: 1000 }),
+  translations: translationsSchema({ name: 200, description: 20000, history: 20000, statusNote: 1000 }),
   permissionConfirmed: t.Boolean(),
   permissionNote: nullable(t.String({ maxLength: 500 })),
 };

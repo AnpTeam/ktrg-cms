@@ -99,18 +99,30 @@ export interface RouteDetail extends RouteSummary {
   videoUrl: string | null;
 }
 
+/** One photo in a place's gallery: who took it (for a photo that is not ours) and the page it came from. */
+export interface GalleryPhoto {
+  url: string;
+  credit: string | null;
+  sourceUrl: string | null;
+}
+
 export interface SpotDetail extends SpotListItem {
   routeId: string;
   routeNameJa: string;
   routeNameEn: string | null;
   descriptionJa: string | null;
   descriptionEn: string | null;
+  /** Its story: where the name comes from, what happened there. */
+  historyJa?: string | null;
+  historyEn?: string | null;
   statusNoteJa: string | null;
   statusNoteEn: string | null;
   /** ISO timestamp of the last status change. */
   statusUpdatedAt: string | null;
   /** A photo of the place, shown at the top of its card; null when none. */
   photoUrl: string | null;
+  /** More photos, in order. */
+  gallery?: GalleryPhoto[];
 }
 
 export { pickText, type Picked } from "./pick-text";

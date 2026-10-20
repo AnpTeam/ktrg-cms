@@ -295,3 +295,35 @@ describe("audit", () => {
     expect(audit.rows[0]?.targetId).toBe(r.id);
   });
 });
+
+describe("a place's story and gallery", () => {
+  const photos = [
+    { url: " https://upload.wikimedia.org/a.jpg ", credit: " Taro Yamada, CC BY-SA 4.0 ", sourceUrl: "https://commons.wikimedia.org/wiki/File:A.jpg" },
+    { url: "https://photos.example.com/b.jpg", credit: "  ", sourceUrl: null },
+  ];
+
+  test("the history and the photos are saved cleaned, and visitors get them", async () => {
+    const r = await route();
+    const s = await spot(r.id, { historyJa: " 役行者が開いたと伝わる。 ", historyEn: "  ", photos });
+    expect(s).toMatchObject({ historyJa: "役行者が開いたと伝わる。", historyEn: null });
+    expect(s.photos).toEqual([
+      { url: "https://upload.wikimedia.org/a.jpg", credit: "Taro Yamada, CC BY-SA 4.0", sourceUrl: "https://commons.wikimedia.org/wiki/File:A.jpg" },
+      { url: "https://photos.example.com/b.jpg", credit: null, sourceUrl: null },
+    ]);
+  });
+
+  test("a photo that is not an https link, or a source that is not, is refused", async () => {
+    const r = await route();
+    expect(await svc.createSpot(ADMIN, r.id, { nameJa: "x", photos: [{ url: "http://a.example/p.jpg", credit: null, sourceUrl: null }] })).toEqual({ ok: false, reason: "invalid_photo_url" });
+    expect(await svc.createSpot(ADMIN, r.id, { nameJa: "x", photos: [{ url: "https://a.example/p.jpg", credit: null, sourceUrl: "javascript:alert(1)" }] })).toEqual({ ok: false, reason: "invalid_photo_url" });
+  });
+
+  test("with PHOTO_HOSTS set, the gallery takes those hosts and Wikimedia, nothing else", async () => {
+    const limited = createContentService({ store: mem.store, photoHosts: ["photos.example.com"] });
+    const r = await route();
+    const add = (url: string) => limited.createSpot(ADMIN, r.id, { nameJa: "x", photos: [{ url, credit: null, sourceUrl: null }] });
+    expect((await add("https://photos.example.com/a.jpg")).ok).toBe(true);
+    expect((await add("https://upload.wikimedia.org/a.jpg")).ok).toBe(true);
+    expect(await add("https://elsewhere.example/a.jpg")).toEqual({ ok: false, reason: "invalid_photo_url" });
+  });
+});

@@ -127,6 +127,13 @@
       "when": 1792484905205,
       "tag": "0017_stop_by",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1792485393545,
+      "tag": "0018_waypoint_details",
+      "breakpoints": true
     }
   ]
 }

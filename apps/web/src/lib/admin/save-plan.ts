@@ -1,5 +1,6 @@
 import { translationsChange, type Translations } from "./content-locales";
 import type { PlaceDraft, RouteDraft } from "./route-draft";
+import type { GalleryPhoto } from "../content";
 import type { PointKind } from "../point-kinds";
 import type { Prefecture, SpotStatus } from "./types";
 
@@ -37,10 +38,13 @@ export interface PlaceBody {
   stampable: boolean;
   stopBy: boolean;
   photoUrl: string | null;
+  photos: GalleryPhoto[];
   nameJa: string;
   nameEn: string | null;
   descriptionJa: string | null;
   descriptionEn: string | null;
+  historyJa: string | null;
+  historyEn: string | null;
   lat: number | null;
   lng: number | null;
   positionVerified: boolean;
@@ -85,10 +89,13 @@ export function placeBody(p: PlaceDraft): PlaceBody {
     stampable: p.stampable,
     stopBy: p.stopBy,
     photoUrl: nullIfEmpty(p.photoUrl),
+    photos: p.photos.filter((x) => x.url.trim() !== ""),
     nameJa: p.nameJa.trim(),
     nameEn: nullIfEmpty(p.nameEn),
     descriptionJa: nullIfEmpty(p.descriptionJa),
     descriptionEn: nullIfEmpty(p.descriptionEn),
+    historyJa: nullIfEmpty(p.historyJa),
+    historyEn: nullIfEmpty(p.historyEn),
     lat: p.lat,
     lng: p.lng,
     positionVerified: p.positionVerified,
