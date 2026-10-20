@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
 import { IntroVideo } from "@/components/IntroVideo";
-import { KatsuragiLogo } from "@/components/KatsuragiLogo";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { Localized } from "@/components/Localized";
 import { Notice } from "@/components/Notice";
@@ -13,6 +12,7 @@ import { StampGrid } from "@/components/StampGrid";
 import { TrailNode } from "@/components/TrailNode";
 import { BannerCarousel } from "@/components/landing/BannerCarousel";
 import { LandingHero } from "@/components/landing/LandingHero";
+import { LandingMap } from "@/components/landing/LandingMap";
 import { TrailNotices } from "@/components/landing/TrailNotices";
 import type { BannerSlide } from "@/lib/banners";
 import { municipalityName } from "@/lib/municipalities";
@@ -35,9 +35,9 @@ const EXAMPLE_STAMPED: ReadonlySet<number> = new Set([1, 2, 3]);
 const PREVIEW_ROUTES = 3;
 
 /**
- * The first screen for someone who is not signed in. From the top: what this is and the way west to east,
- * dated trail notices (only when there are any), the stamp card, the first courses, an intro video (only when
- * one is set), what Katsuragi Shugen is (the official text), and a footer with the source.
+ * The first screen for someone who is not signed in. From the top: the drawn hero, dated trail notices (only when
+ * there are any), what Katsuragi Shugen is, the first courses, the stamp card, a small map of every course, an intro
+ * video (only when one is set), what to know before leaving, and a footer with the source.
  *
  * No photos (none are cleared for use yet) and no invented facts: the numbers come from `lib/rally`, the
  * course names from the course list, the Katsuragi text from the official Japan Heritage site.
@@ -60,10 +60,10 @@ export function Landing({
   const firstRoutes = [...routes].sort((a, b) => a.order - b.order).slice(0, PREVIEW_ROUTES);
 
   return (
-    // One column on a phone and a tablet; two columns from 1024 px, where the big drawn hero comes first and the wide
-    // sections (notices, video, the start buttons, the footer) span both.
+    // One column on a phone and a tablet; two columns from 1024 px. The drawn hero comes first and the wide sections
+    // (notices, video, the start buttons, the footer) span both.
     <div className="grid grid-cols-1 gap-10 pt-4 lg:grid-cols-2 lg:gap-x-8 lg:pt-0">
-      <div className="hidden lg:col-span-2 lg:block">
+      <div className="px-4 lg:col-span-2 lg:px-0">
         <LandingHero />
       </div>
 
@@ -73,36 +73,6 @@ export function Landing({
         </div>
       ) : null}
 
-      <section className="px-4 lg:hidden">
-        <div className="frame pattern-shippo p-5">
-          {/* The logo is the picture of the name; the heading keeps the real text for screen readers and search. */}
-          <h1>
-            <span className="sr-only">
-              <Trans>葛城修験</Trans>
-            </span>
-            <KatsuragiLogo className="h-auto w-full max-w-md" />
-          </h1>
-          <p className="mt-2 font-serif text-2xl font-bold leading-snug">
-            <Trans>「祈り」を見つめる再発見の旅</Trans>
-          </p>
-
-          <div className="mt-6 flex flex-col gap-3">
-            <Link href="/register" className={primary}>
-              <Trans>新規登録</Trans>
-            </Link>
-            <Link href="/routes" className={secondary}>
-              <Trans>ルートをさがす</Trans>
-            </Link>
-            <p className="text-lg opacity-80">
-              <Trans>登録済みの方は</Trans>{" "}
-              <Link href="/login" className="font-bold">
-                <Trans>ログイン</Trans>
-              </Link>
-            </p>
-          </div>
-        </div>
-      </section>
-
       <div className="lg:col-span-2">
         <TrailNotices notices={notices} locale={locale} blogUrl={blogUrl} />
       </div>
@@ -110,20 +80,21 @@ export function Landing({
       <section className="flex flex-col gap-3">
         <div className="px-4">
           <SectionBanner>
-            <Trans>スタンプカード</Trans>
+            <Trans>葛城修験とは</Trans>
           </SectionBanner>
         </div>
-        <div className={patternPanel}>
-          <p className="text-xl font-bold leading-snug">
-            <Trans>着いたらボタンを押すだけ。場所を確かめて、スタンプがたまります。</Trans>
+        <div className={panel}>
+          {/* Our own wording of well-known facts (the official site's text is protected; see CLAUDE.md, 2026-10-17). */}
+          <p className="max-w-prose text-lg leading-8">
+            <Trans>
+              和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。
+            </Trans>
           </p>
-          {/* An illustration: hidden from screen readers so it is not read out as someone's progress. */}
-          <div aria-hidden="true" className="mt-4">
-            <StampGrid total={EXAMPLE_SLOTS} stamped={EXAMPLE_STAMPED} showNext={false} columns={4} art />
-          </div>
-          <p className="mt-3 text-lg text-muted">
-            <Trans>これは見本です。経塚のスタンプは全{TOTAL_STAMPS}か所。</Trans>
-          </p>
+          <dl className="mt-4">
+            <Fact term={<Trans>コース</Trans>} value={<Trans>全{TOTAL_ROUTES}区間</Trans>} />
+            <Fact term={<Trans>長さ</Trans>} value={<Trans>約{TRAIL_KM}km</Trans>} />
+            <Fact term={<Trans>経塚</Trans>} value={<Trans>{TOTAL_STAMPS}か所</Trans>} />
+          </dl>
         </div>
       </section>
 
@@ -153,6 +124,28 @@ export function Landing({
         </section>
       ) : null}
 
+      <section className="flex flex-col gap-3">
+        <div className="px-4">
+          <SectionBanner>
+            <Trans>スタンプカード</Trans>
+          </SectionBanner>
+        </div>
+        <div className={patternPanel}>
+          <p className="text-xl font-bold leading-snug">
+            <Trans>着いたらボタンを押すだけ。場所を確かめて、スタンプがたまります。</Trans>
+          </p>
+          {/* An illustration: hidden from screen readers so it is not read out as someone's progress. */}
+          <div aria-hidden="true" className="mt-4">
+            <StampGrid total={EXAMPLE_SLOTS} stamped={EXAMPLE_STAMPED} showNext={false} columns={4} art />
+          </div>
+          <p className="mt-3 text-lg text-muted">
+            <Trans>これは見本です。経塚のスタンプは全{TOTAL_STAMPS}か所。</Trans>
+          </p>
+        </div>
+      </section>
+
+      <LandingMap routes={routes} />
+
       {introVideo ? (
         <section className="flex flex-col gap-3 lg:col-span-2">
           <div className="px-4">
@@ -166,28 +159,7 @@ export function Landing({
         </section>
       ) : null}
 
-      <section className="flex flex-col gap-3">
-        <div className="px-4">
-          <SectionBanner>
-            <Trans>葛城修験とは</Trans>
-          </SectionBanner>
-        </div>
-        <div className={panel}>
-          {/* Our own wording of well-known facts (the official site's text is protected; see CLAUDE.md, 2026-10-17). */}
-          <p className="max-w-prose text-lg leading-8">
-            <Trans>
-              和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。
-            </Trans>
-          </p>
-          <dl className="mt-4">
-            <Fact term={<Trans>コース</Trans>} value={<Trans>全{TOTAL_ROUTES}区間</Trans>} />
-            <Fact term={<Trans>長さ</Trans>} value={<Trans>約{TRAIL_KM}km</Trans>} />
-            <Fact term={<Trans>経塚</Trans>} value={<Trans>{TOTAL_STAMPS}か所</Trans>} />
-          </dl>
-        </div>
-      </section>
-
-      <section className="flex flex-col gap-3">
+      <section className="flex flex-col gap-3 lg:col-span-2">
         <div className="px-4">
           <SectionBanner>
             <Trans>出かける前に</Trans>

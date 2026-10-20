@@ -7,7 +7,10 @@ import type { GeoJSONSource, Map as MapLibreMap } from "maplibre-gl";
 import { WarningIcon } from "@/components/icons";
 import { clusterByPixels } from "@/lib/cluster";
 import { areaCollection, estimateGroupBox, framePoints, groupLabelLines, MERGE_PX, revealedRouteId, spreadLabels, stopMergePx, type LabelBox, type MapScreenRoute } from "@/lib/map-screen";
+import { defaultLayers, moundStops, offeredLayers, type MapLayer } from "@/lib/map-layers";
 import { groupOf } from "@/lib/places";
+import { PlaceGroupIcon } from "@/components/icons";
+import { useGroupNames } from "./PlacesPanel";
 import { boundsOf, lineFeature, mapStyle, markerKind, nextStopId, routeLineLayers, zoomLimits, type Position } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
 import { createClusterElement, createMarkerElement, createPinElement, createPlaceMarkerElement, createTagElement } from "./MapMarker";
@@ -68,6 +71,15 @@ export function MapScreenCanvas({
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
   const [autoId, setAutoId] = useState<string | null>(null);
+  // What is switched on along the top: the courses, the sutra mounds, the kinds of places.
+  const [layers, setLayers] = useState<ReadonlySet<MapLayer>>(defaultLayers);
+  const groupNames = useGroupNames();
+  const toggleLayer = (layer: MapLayer) =>
+    setLayers((now) => {
+      const next = new Set(now);
+      if (!next.delete(layer)) next.add(layer);
+      return next;
+    });
 
   useEffect(() => {
     coveredRef.current = coveredPx;
@@ -82,7 +94,7 @@ export function MapScreenCanvas({
   const draftShown = focus ? focus.draft || focus.area?.verified === false : routes.some((r) => r.area && !r.area.verified);
 
   // Keep what is framed above the sheet and clear of the buttons (menu on the left, zoom on the right).
-  const padding = () => ({ top: 96, left: 36 + leftRef.current, right: 72, bottom: coveredRef.current + 28 });
+  const padding = () => ({ top: 144, left: 36 + leftRef.current, right: 72, bottom: coveredRef.current + 28 });
 
   // Create the map once for these settings; remove it again on unmount (CLAUDE.md: map.remove()).
   useEffect(() => {
@@ -156,10 +168,10 @@ export function MapScreenCanvas({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
-    (map.getSource(AREAS) as GeoJSONSource | undefined)?.setData(areaCollection(routes, focus?.id ?? null));
+    (map.getSource(AREAS) as GeoJSONSource | undefined)?.setData(layers.has("courses") || focus ? areaCollection(routes, focus?.id ?? null) : EMPTY);
     const points = focus?.line ?? focus?.stops?.map((s) => s.position) ?? null;
     (map.getSource(DETAIL) as GeoJSONSource | undefined)?.setData(points && points.length > 1 ? lineFeature(points) : EMPTY);
-  }, [ready, routes, routeId, focus, mapGen]);
+  }, [ready, routes, routeId, focus, mapGen, layers]);
 
   // Where the camera goes: all the areas at first, a chosen course when there is one.
   useEffect(() => {
@@ -198,7 +210,7 @@ export function MapScreenCanvas({
 
     // Pins: all of them while nothing is open. Once a course is open the others fold away; an opened course
     // with no stops of its own to show keeps its pin, so there is still something to read and press.
-    const pinned = route ? [] : focus ? (focus.stops?.length ? [] : [focus]) : routes.filter((r) => r.area);
+    const pinned = route ? [] : focus ? (focus.stops?.length ? [] : [focus]) : layers.has("courses") ? routes.filter((r) => r.area) : [];
     const byId = new Map(pinned.map((r) => [r.id, r]));
     // Pins merge only when the visitor chose 「近い場所をまとめて表示する」: by default every course shows its own
     // name, even where pins overlap. When merging, a group lists the names of the courses inside it.
@@ -284,25 +296,56 @@ export function MapScreenCanvas({
       }
     }
 
-    // The course's other points (toilets, turns, viewpoints), once zoomed in on it.
-    if (focus && focus.points.length > 0 && map.getZoom() >= POINTS_ZOOM) {
-      for (const p of focus.points) {
-        put(
-          createPlaceMarkerElement({
-            group: groupOf(p.category),
-            label: p.name,
-            closed: false,
-            onSelect: () => map.easeTo({ center: [p.position.lng, p.position.lat], zoom: Math.max(map.getZoom(), 16), duration: 400 }),
-          }),
-          p.position,
-        );
+    // The sutra mounds of every course, while no course is open (an open course shows its own stops).
+    if (!focus && layers.has("mounds")) {
+      const mounds = moundStops(routes);
+      const byMound = new Map(mounds.map((m) => [m.stop.id, m]));
+      const groups = mergeStops ? clusterByPixels(mounds.map((m) => pixel(m.stop.id, m.stop.position)), MERGE_PX.namedPin) : mounds.map((m) => [m.stop.id]);
+      for (const ids of groups) {
+        const members = ids.map((id) => byMound.get(id)!);
+        if (members.length === 1) {
+          const { route: owner, stop } = members[0]!;
+          const name = stop.name;
+          put(createTagElement({ number: "経", name, label: t`経塚 ${name}`, soon: false, onSelect: () => onSelectStop(owner.id, stop.id) }), stop.position, "bottom");
+        } else {
+          const count = members.length;
+          put(
+            createClusterElement({
+              text: String(count),
+              label: t`経塚 ${count} か所がここに集まっています。押すと拡大します`,
+              kind: "stops",
+              onSelect: () => zoomTo(members.map((m) => m.stop.position)),
+            }),
+            centerOf(members.map((m) => m.stop.position)),
+          );
+        }
+      }
+    }
+
+    // Toilets, shops and the like, once zoomed in: on the course that is open, or else on every course in view.
+    if (map.getZoom() >= POINTS_ZOOM) {
+      const seen = map.getBounds();
+      for (const r of focus ? [focus] : routes) {
+        for (const p of r.points) {
+          const group = groupOf(p.category);
+          if (!layers.has(group) || !seen.contains([p.position.lng, p.position.lat])) continue;
+          put(
+            createPlaceMarkerElement({
+              group,
+              label: p.name,
+              closed: false,
+              onSelect: () => map.easeTo({ center: [p.position.lng, p.position.lat], zoom: Math.max(map.getZoom(), 16), duration: 400 }),
+            }),
+            p.position,
+          );
+        }
       }
     }
 
     return () => live.forEach((m) => m.remove());
     // `t` changes only with the language, which reloads the page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, mapGen, view, routes, routeId, autoId, stopId, mergeStops]);
+  }, [ready, mapGen, view, routes, routeId, autoId, stopId, mergeStops, layers]);
 
   const zoom = (delta: 1 | -1) => {
     const map = mapRef.current;
@@ -324,8 +367,27 @@ export function MapScreenCanvas({
 
       {ready ? null : <p className="pointer-events-none absolute inset-0 flex items-center justify-center bg-surface text-lg">{t`地図を読み込み中…`}</p>}
 
+      <div role="group" aria-label={t`地図に出すもの`} style={{ marginLeft: coveredLeftPx }} className="absolute inset-x-3 top-[5rem] z-[4] flex gap-2 md:top-16 overflow-x-auto pb-1">
+        {offeredLayers(routes).map((layer) => {
+          const on = layers.has(layer);
+          const name = layer === "courses" ? t`コース` : layer === "mounds" ? t`経塚` : groupNames[layer];
+          return (
+            <button
+              key={layer}
+              type="button"
+              aria-pressed={on}
+              onClick={() => toggleLayer(layer)}
+              className={`tap-target flex shrink-0 items-center gap-2 rounded-full border border-ink px-4 text-lg font-bold ${on ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"}`}
+            >
+              {layer === "courses" || layer === "mounds" ? null : <PlaceGroupIcon group={layer} />}
+              {name}
+            </button>
+          );
+        })}
+      </div>
+
       {draftShown ? (
-        <p style={{ marginLeft: coveredLeftPx }} className="absolute left-3 top-16 z-[4] flex max-w-[calc(100%-6rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">
+        <p style={{ marginLeft: coveredLeftPx }} className="absolute left-3 top-[9.5rem] z-[4] md:top-[8.25rem] flex max-w-[calc(100%-6rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">
           <span className="text-caution">
             <WarningIcon />
           </span>
@@ -333,7 +395,7 @@ export function MapScreenCanvas({
         </p>
       ) : null}
 
-      <div className="absolute right-3 top-16 z-[4] flex flex-col gap-2">
+      <div className="absolute right-3 top-[9.5rem] z-[4] md:top-[8.25rem] flex flex-col gap-2">
         {(["＋", "－"] as const).map((sign) => (
           <button
             key={sign}
