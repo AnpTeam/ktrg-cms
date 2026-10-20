@@ -39,6 +39,7 @@ const groupByCategory: Record<PlaceCategory, PlaceGroup> = {
 
 export const groupOf = (category: PlaceCategory): PlaceGroup => groupByCategory[category];
 
+export const placeStatuses = ["open", "closed", "seasonal", "gone", "unknown"] as const;
 export type PlaceStatus = "open" | "closed" | "seasonal" | "gone" | "unknown";
 
 export interface Coord {
