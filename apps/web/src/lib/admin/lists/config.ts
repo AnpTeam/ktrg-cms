@@ -24,9 +24,9 @@ export function itemName(meta: ListMeta, item: ListItem, locale: string): string
 }
 
 /** Where a row leads: its own form, the page named by `linkTo`, or nowhere (a read-only list). */
-export function itemHref(meta: ListMeta, item: ListItem, locale: string): string | null {
-  if (meta.linkTo) return `/${locale}/admin/${meta.linkTo.replace(/\{(\w+)\}/g, (_, name: string) => encodeURIComponent(String(item[name] ?? "")))}`;
-  return meta.ops.edit ? `/${locale}/admin/${meta.key}/${item.id}` : null;
+export function itemHref(meta: ListMeta, item: ListItem): string | null {
+  if (meta.linkTo) return `/admin/${meta.linkTo.replace(/\{(\w+)\}/g, (_, name: string) => encodeURIComponent(String(item[name] ?? "")))}`;
+  return meta.ops.edit ? `/admin/${meta.key}/${item.id}` : null;
 }
 
 /** A moment in Japan time, as the admin reads it. */

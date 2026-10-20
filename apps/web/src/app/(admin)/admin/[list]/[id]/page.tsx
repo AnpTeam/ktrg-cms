@@ -28,7 +28,7 @@ export default async function EditListItemPage({ params }: { params: Promise<{ l
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4">
-      <Link href={`/${i18n.locale}/admin/${meta.key}`} className="tap-target inline-flex w-fit items-center text-lg font-bold text-accent underline underline-offset-4">
+      <Link href={`/admin/${meta.key}`} className="tap-target inline-flex w-fit items-center text-lg font-bold text-accent underline underline-offset-4">
         <Trans>一覧へ戻る</Trans>
       </Link>
       {item ? (

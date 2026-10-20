@@ -6,7 +6,7 @@ import { bad, ok, type ListRow, type ListRules, type ListStore } from "../admin-
 import type { AuditWriter } from "../audit/audit-log";
 import type { KitServices } from "../auth/route-kit";
 import { cleanTranslations } from "../db/translations";
-import { isHttpsUrl } from "../lib/https-url";
+import { isPhotoUrl } from "../lib/https-url";
 import { translationsSchema } from "../lib/schemas";
 
 /**
@@ -34,12 +34,15 @@ export interface BannerStore extends ListStore<BannerRow, BannerFields> {
 
 export const BANNER_AUDIT = { create: "banner.create", update: "banner.update", delete: "banner.delete" } as const;
 
-/** The photo is an https link; the Japanese description is not just spaces; a blank English one is cleared. */
-export const bannerRules: ListRules<BannerFields> = async (fields) => {
+/**
+ * The photo is an https link (on one of `photoHosts`, PHOTO_HOSTS, when that is set); the Japanese description is not
+ * just spaces; a blank English one is cleared.
+ */
+export const bannerRules = (photoHosts: readonly string[] = []): ListRules<BannerFields> => async (fields) => {
   const out = { ...fields };
   if (out.imageUrl !== undefined) {
     out.imageUrl = out.imageUrl.trim();
-    if (!isHttpsUrl(out.imageUrl)) return bad("invalid_photo_url");
+    if (!isPhotoUrl(out.imageUrl, photoHosts)) return bad("invalid_photo_url");
   }
   if (out.altJa !== undefined) {
     out.altJa = out.altJa.trim();
@@ -52,8 +55,8 @@ export const bannerRules: ListRules<BannerFields> = async (fields) => {
 
 export type BannerService = ReturnType<typeof createBannerService>;
 
-export function createBannerService(deps: { store: BannerStore }) {
-  return { ...createListService({ store: deps.store, rules: bannerRules }), publicBanners: () => deps.store.listPublic() };
+export function createBannerService(deps: { store: BannerStore; photoHosts?: readonly string[] }) {
+  return { ...createListService({ store: deps.store, rules: bannerRules(deps.photoHosts) }), publicBanners: () => deps.store.listPublic() };
 }
 
 /** In-memory banners for tests and the dev page. */

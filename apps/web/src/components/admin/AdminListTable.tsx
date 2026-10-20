@@ -16,7 +16,7 @@ export function AdminListTable({ meta: config, initial, locale, routeNames }: { 
   const [next, setNext] = useState(initial.next);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const base = `/${locale}/admin/${config.key}`;
+  const base = `/admin/${config.key}`;
   const name = (item: (typeof items)[number]) => itemName(config, item, locale);
   const title = pick(config.title, locale);
 
@@ -48,7 +48,7 @@ export function AdminListTable({ meta: config, initial, locale, routeNames }: { 
       ) : (
         <ul className="flex flex-col divide-y divide-line rounded-2xl border border-line">
           {items.map((item) => {
-            const href = itemHref(config, item, locale);
+            const href = itemHref(config, item);
             return (
             <li key={item.id} className="p-3">
               {href ? (

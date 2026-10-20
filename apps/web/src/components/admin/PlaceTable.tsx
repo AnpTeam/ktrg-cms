@@ -1,13 +1,13 @@
 "use client";
 
 import { useLingui } from "@lingui/react/macro";
-import { pointKinds, type PointKind } from "@/lib/point-kinds";
+import { pointKinds, stampableByDefault, type PointKind } from "@/lib/point-kinds";
 import type { PlaceDraft } from "@/lib/admin/route-draft";
 import { inputClass, NumberInput } from "./fields";
 import { useKindLabels } from "./PlacePanel";
 
-// The places of a route as one table, to type many in one go (a new route, or a list copied from a sheet): name,
-// kind, latitude and longitude per row. It edits the same draft as the map and the detailed panels, and the
+// The waypoints of a route as one table, to type many in one go (a new route, or a list copied from a sheet): name,
+// kind, stamp switch, latitude and longitude per row. It edits the same draft as the map and the detailed panels, and the
 // editor's 保存する saves the route and every row together. A typed position is not checked yet (位置を確認した is
 // ticked per place afterwards, against an official source), so it stays hidden from visitors until then.
 export function PlaceTable({
@@ -33,7 +33,7 @@ export function PlaceTable({
       {places.length > 0 ? (
         // The table may be wider than a phone: it scrolls on its own, the page does not.
         <div className="overflow-x-auto rounded-2xl border border-line">
-          <table className="w-full min-w-[44rem] border-collapse text-left">
+          <table className="w-full min-w-[52rem] border-collapse text-left">
             <thead className="bg-paper text-base">
               <tr>
                 <th scope="col" className="w-12 p-2 font-bold">
@@ -44,6 +44,9 @@ export function PlaceTable({
                 </th>
                 <th scope="col" className="w-44 p-2 font-bold">
                   {t`種類`}
+                </th>
+                <th scope="col" className="w-28 p-2 font-bold">
+                  {t`スタンプ`}
                 </th>
                 <th scope="col" className="w-40 p-2 font-bold">
                   {t`緯度`}
@@ -80,7 +83,11 @@ export function PlaceTable({
                         value={p.kind}
                         aria-label={t`${row}行目の種類`}
                         disabled={busy}
-                        onChange={(e) => onChange(p.key, { kind: e.target.value as PointKind })}
+                        // A new waypoint's stamp switch follows its kind, as in the detail panel; a saved one keeps its own.
+                        onChange={(e) => {
+                          const kind = e.target.value as PointKind;
+                          onChange(p.key, p.id === null ? { kind, stampable: stampableByDefault(kind) } : { kind });
+                        }}
                         className={inputClass}
                       >
                         {pointKinds.map((k) => (
@@ -89,6 +96,16 @@ export function PlaceTable({
                           </option>
                         ))}
                       </select>
+                    </td>
+                    <td className="p-2">
+                      <input
+                        type="checkbox"
+                        checked={p.stampable}
+                        disabled={busy}
+                        aria-label={t`${row}行目：スタンプを押せる`}
+                        onChange={(e) => onChange(p.key, { stampable: e.target.checked })}
+                        className="size-6 accent-[var(--color-brand)]"
+                      />
                     </td>
                     <td className="p-2">
                       <NumberInput id={`${p.key}-lat`} value={p.lat} min={-90} max={90} onChange={(v) => onChange(p.key, { lat: v })} ariaLabel={t`${row}行目の緯度`} />
@@ -114,7 +131,7 @@ export function PlaceTable({
           </table>
         </div>
       ) : (
-        <p className="rounded-xl bg-paper p-4 text-lg">{t`まだありません。「＋ 行を追加」で、場所を表に入れてください。`}</p>
+        <p className="rounded-xl bg-paper p-4 text-lg">{t`まだありません。「＋ 行を追加」で、経由地を表に入れてください。`}</p>
       )}
       <button type="button" disabled={busy} onClick={onAdd} className="tap-target w-fit rounded-xl border-2 border-line px-5 text-lg font-bold disabled:opacity-50">
         {t`＋ 行を追加`}

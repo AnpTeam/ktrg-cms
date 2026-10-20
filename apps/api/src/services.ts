@@ -87,7 +87,7 @@ export function createServices(deps: ServiceDeps): Services {
     // Trail notices: the admin list and what visitors read.
     notices: createNoticeService({ store: stores.notices, now }),
     // The other generated admin lists: home banners, the audit log, every place, accounts and their roles.
-    banners: createBannerService({ store: stores.banners }),
+    banners: createBannerService({ store: stores.banners, photoHosts: deps.photoHosts }),
     auditList: createListReader({ store: stores.auditList }),
     placeList: createListReader({ store: stores.placeList }),
     userList: createUserListService({ store: stores.userList }),

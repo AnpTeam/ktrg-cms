@@ -70,7 +70,7 @@ export function AdminItemForm({ meta: config, initial, locale, routes }: { meta:
     setBusy(false);
     const item = got.item;
     if (!outcome.ok || !item) return outcome.ok || outcome.code === "cancelled" ? undefined : setNotice({ kind: "error", text: messages[outcome.code] });
-    if (!saved) return router.push(`/${locale}/admin/${config.key}/${item.id}`);
+    if (!saved) return router.push(`/admin/${config.key}/${item.id}`);
     setSaved(item);
     setValues(formValues(config, item));
     setWords((item.translations ?? {}) as Translations);
@@ -83,7 +83,7 @@ export function AdminItemForm({ meta: config, initial, locale, routes }: { meta:
     const res = await listRequest("DELETE", `${config.key}/${saved.id}`);
     setBusy(false);
     if (!res.ok) return setNotice({ kind: "error", text: messages[res.key] });
-    router.push(`/${locale}/admin/${config.key}`);
+    router.push(`/admin/${config.key}`);
   }
 
   async function upload(name: string, file: File | undefined) {

@@ -8,7 +8,7 @@ import type { Db } from "../db/client";
 import { spots, spotTranslations, type spotKinds } from "../db/schema";
 import { emptyTexts, flattenTexts, SPOT_TEXT } from "../db/translations";
 
-/** A place in the all-places list: enough to find it and see what still blocks publishing. */
+/** A waypoint in the all-waypoints list: enough to find it and see what still blocks publishing. */
 export interface PlaceListRow extends ListRow {
   routeId: string;
   nameJa: string;
@@ -16,6 +16,8 @@ export interface PlaceListRow extends ListRow {
   kind: (typeof spotKinds)[number];
   status: "open" | "caution" | "closed";
   published: boolean;
+  /** Visitors can stamp here (the switch on a waypoint). */
+  stampable: boolean;
   positionVerified: boolean;
   permissionConfirmed: boolean;
 }
@@ -34,6 +36,7 @@ export function createDrizzlePlaceListStore(db: Db): ListReadStore<PlaceListRow>
         kind: r.kind,
         status: r.status,
         published: r.published,
+        stampable: r.stampable,
         positionVerified: r.positionVerified,
         permissionConfirmed: r.permissionConfirmed,
         createdAt: r.createdAt,
@@ -59,10 +62,11 @@ export interface PlaceListServices extends KitServices {
 }
 
 const KIND_LABELS: Record<PlaceListRow["kind"], Label> = {
-  stamp: { ja: "スタンプ場所", en: "Stamp place" },
+  temple: { ja: "寺社", en: "Temple or shrine" },
+  mound: { ja: "経塚", en: "Sutra mound" },
+  view: { ja: "見どころ", en: "Point of interest" },
   turn: { ja: "曲がり角", en: "Turn" },
   danger: { ja: "危険な所", en: "Danger spot" },
-  view: { ja: "見どころ", en: "Point of interest" },
   toilet: { ja: "トイレ", en: "Toilet" },
   rest_area: { ja: "休憩所", en: "Rest area" },
   drinking_water: { ja: "水場", en: "Drinking water" },
@@ -74,8 +78,8 @@ const KIND_LABELS: Record<PlaceListRow["kind"], Label> = {
 };
 
 /**
- * Every place on every route in one list (`spot.manage`), newest first. Read only: a place is edited in its route's
- * map editor, so a row opens there. The ticks show what still keeps a place from being published.
+ * Every waypoint on every route in one list (`spot.manage`), newest first. Read only: a waypoint is edited in its
+ * route's map editor, so a row opens there. The ticks show what still keeps it from being published.
  */
 export const placeList: ReadDef<"places", PlaceListRow, PlaceListServices> = {
   key: "places",
@@ -83,10 +87,10 @@ export const placeList: ReadDef<"places", PlaceListRow, PlaceListServices> = {
   service: (s) => s.placeList,
   ops: { create: false, edit: false, delete: false },
   ui: {
-    title: { ja: "場所の一覧", en: "All places" },
+    title: { ja: "経由地の一覧", en: "All waypoints" },
     intro: {
-      ja: "すべてのルートの場所です。名前を押すと、そのルートの地図の画面で直せます。公開するには、位置の確認（スタンプ場所は現地の許可も）が必要です。",
-      en: "Every place on every route. Select a name to edit it in that route's map editor. To publish a place its position must be checked (and, for a stamp place, the site's permission confirmed).",
+      ja: "すべてのルートの経由地です。名前を押すと、そのルートの地図の画面で直せます。公開するには、位置の確認（スタンプを押せる経由地は現地の許可も）が必要です。",
+      en: "Every waypoint on every route. Select a name to edit it in that route's map editor. To publish a waypoint its position must be checked (and, if visitors can stamp there, the site's permission confirmed).",
     },
     titleField: "name",
     linkTo: "routes/{routeId}",
@@ -108,6 +112,13 @@ export const placeList: ReadDef<"places", PlaceListRow, PlaceListServices> = {
         label: { ja: "位置を確認した", en: "Position checked" },
         readOnly: true,
         inList: { yes: { ja: "位置を確認した", en: "Position checked" }, no: { ja: "位置は未確認", en: "Position not checked" } },
+      },
+      {
+        name: "stampable",
+        kind: "boolean",
+        label: { ja: "スタンプを押せる", en: "Stamp here" },
+        readOnly: true,
+        inList: { yes: { ja: "スタンプを押せる", en: "Stamp here" } },
       },
       {
         name: "permissionConfirmed",

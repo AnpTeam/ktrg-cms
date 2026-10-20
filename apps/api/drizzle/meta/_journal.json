@@ -99,6 +99,13 @@
       "when": 1792461583133,
       "tag": "0013_waypoints",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1792461600000,
+      "tag": "0014_admin_lists_and_languages",
+      "breakpoints": true
     }
   ]
 }

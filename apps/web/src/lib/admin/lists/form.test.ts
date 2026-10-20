@@ -90,8 +90,8 @@ describe("the generic admin form", () => {
 
   test("a row opens its own form, the page its list names, or nothing for a read-only list", () => {
     const row = { id: "p1", createdAt: "x", updatedAt: "x", routeId: "r 1" };
-    expect(itemHref(noticesList, row, "ja")).toBe("/ja/admin/notices/p1");
-    expect(itemHref({ ...noticesList, linkTo: "routes/{routeId}" }, row, "en")).toBe("/en/admin/routes/r%201");
-    expect(itemHref({ ...noticesList, ops: { create: false, edit: false, delete: false } }, row, "ja")).toBeNull();
+    expect(itemHref(noticesList, row)).toBe("/admin/notices/p1");
+    expect(itemHref({ ...noticesList, linkTo: "routes/{routeId}" }, row)).toBe("/admin/routes/r%201");
+    expect(itemHref({ ...noticesList, ops: { create: false, edit: false, delete: false } }, row)).toBeNull();
   });
 });
