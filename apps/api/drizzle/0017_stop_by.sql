@@ -1,0 +1,1 @@
+ALTER TABLE "spots" ADD COLUMN "stop_by" boolean DEFAULT false NOT NULL;

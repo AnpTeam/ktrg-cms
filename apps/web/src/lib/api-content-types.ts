@@ -39,6 +39,8 @@ export interface PublicSpot {
   kind: string;
   /** A stamp can be collected here. */
   stampable: boolean;
+  /** An optional visit beside the way (寄り道). */
+  stopBy?: boolean;
   photoUrl: string | null;
   status: "open" | "caution" | "closed";
   statusNoteJa: string | null;

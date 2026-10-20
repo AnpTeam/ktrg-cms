@@ -115,6 +115,13 @@ export function PlacePanel(p: PlacePanelProps) {
             </p>
           </div>
 
+          <div className="flex flex-col gap-1">
+            <Check id={`${id}-stopby`} checked={place.stopBy} onChange={(v) => p.onChange({ stopBy: v })}>
+              {t`寄り道（道すじから少しはずれた、任意の立ち寄り先）`}
+            </Check>
+            <p className="pl-9 text-base text-muted">{t`チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。`}</p>
+          </div>
+
           <div className="flex flex-col gap-2">
             <Field label={t`写真のリンク`} htmlFor={`${id}-photo`} hint={t`https:// で始まるリンクを入れます。空にすると、写真は表示されません。`}>
               <TextInput id={`${id}-photo`} value={place.photoUrl} onChange={(v) => p.onChange({ photoUrl: v })} maxLength={500} invalid={p.invalidPhoto} />
