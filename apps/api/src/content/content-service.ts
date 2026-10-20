@@ -1,4 +1,5 @@
 import type { ErrorCode } from "../lib/api-errors";
+import { stampableByDefault } from "../db/schema/content";
 import { isAllowedVideoUrl } from "./video-url";
 import { lineLengthKm, parseLine, simplifyLine, sketchOf, type LineString } from "./line";
 import type {
@@ -27,6 +28,8 @@ export interface PublicSpot {
   position: { lat: number; lng: number; verified: true } | null;
   radiusM: number;
   kind: SpotRow["kind"];
+  /** A stamp can be collected here (only then does the place have a page of its own). */
+  stampable: boolean;
   photoUrl: string | null;
   status: SpotRow["status"];
   statusNoteJa: string | null;
@@ -121,6 +124,7 @@ function toPublicSpot(s: SpotRow): PublicSpot {
     position: showPosition ? { lat: s.lat!, lng: s.lng!, verified: true } : null,
     radiusM: s.radiusM,
     kind: s.kind,
+    stampable: s.stampable,
     photoUrl: s.photoUrl,
     status: s.status,
     statusNoteJa: s.statusNoteJa,
@@ -211,6 +215,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
     if (input.radiusM !== undefined) out.radiusM = input.radiusM;
     if (input.status !== undefined) out.status = input.status;
     if (input.kind !== undefined) out.kind = input.kind;
+    if (input.stampable !== undefined) out.stampable = input.stampable;
     if (input.photoUrl !== undefined) {
       const v = text(input.photoUrl);
       if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");
@@ -272,7 +277,9 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
         if (!p.value.positionSource) return bad("source_required");
         if (p.value.lat === undefined || p.value.lat === null) return bad("no_coordinates");
       }
-      const s = await store.createSpot(actor, routeId, { ...p.value, nameJa: p.value.nameJa! });
+      // The stamp switch starts from the kind unless the request sets it.
+      const stampable = p.value.stampable ?? stampableByDefault(p.value.kind ?? "other");
+      const s = await store.createSpot(actor, routeId, { ...p.value, stampable, nameJa: p.value.nameJa! });
       return s ? ok(s) : bad("not_found");
     },
 
@@ -293,9 +300,8 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (current.published) {
         // A published place must keep passing every publish rule.
         if (!verifiedNow) return bad("position_not_verified");
-        // Only a stamp place needs the site's permission (a toilet or a turn on the path does not).
-        const kindNow = changes.kind ?? current.kind;
-        if (kindNow === "stamp" && !(changes.permissionConfirmed ?? current.permissionConfirmed)) return bad("permission_required");
+        // Only a waypoint with a stamp needs the site's permission (a toilet or a turn on the path does not).
+        if ((changes.stampable ?? current.stampable) && !(changes.permissionConfirmed ?? current.permissionConfirmed)) return bad("permission_required");
         if (changes.lat === null) return bad("no_coordinates");
       }
       const r = await store.updateSpot(actor, id, date(expected), changes);
@@ -310,7 +316,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (!s) return bad("not_found");
       if (s.lat === null || s.lng === null) return bad("no_coordinates");
       if (!s.positionVerified) return bad("position_not_verified");
-      if (s.kind === "stamp" && !s.permissionConfirmed) return bad("permission_required");
+      if (s.stampable && !s.permissionConfirmed) return bad("permission_required");
       const r = await store.setPublished(actor, id, true);
       if (!r) return bad("not_found");
       // The store re-checks the same rules inside the write; a place changed in between stays unpublished.
@@ -342,8 +348,8 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       const found = await store.getRoute(id);
       if (!found) return null;
       const published = found.spots.filter((s) => s.published).sort((a, b) => a.sortOrder - b.sortOrder);
-      const stamps = published.filter((s) => s.kind === "stamp");
-      const points = published.filter((s) => s.kind !== "stamp");
+      const stamps = published.filter((s) => s.stampable);
+      const points = published.filter((s) => !s.stampable);
       return { route: toPublicRoute(found.route, stamps.length, true), spots: stamps.map(toPublicSpot), points: points.map(toPublicSpot) };
     },
 

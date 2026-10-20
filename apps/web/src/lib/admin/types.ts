@@ -58,6 +58,8 @@ export interface AdminSpot {
   positionSource: string | null;
   radiusM: number;
   kind: PointKind;
+  /** Visitors can collect a stamp here. */
+  stampable: boolean;
   photoUrl: string | null;
   status: SpotStatus;
   statusNoteJa: string | null;

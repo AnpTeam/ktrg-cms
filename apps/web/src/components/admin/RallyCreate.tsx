@@ -65,8 +65,8 @@ export function RallyCreate({
 
       <Section title={t`つくり方`}>
         <div className="flex flex-col gap-3 sm:flex-row">
-          {choice("course", t`コースでつくる`, t`えらんだコースを全部歩き終えると達成。コースはスタンプ場所を全部押すと完了。`)}
-          {choice("places", t`場所でつくる`, t`えらんだスタンプ場所を全部押すと達成（経塚のラリーなど）。`)}
+          {choice("course", t`コースでつくる`, t`えらんだコースを全部歩き終えると達成。コースはスタンプの経由地を全部押すと完了。`)}
+          {choice("places", t`経由地でつくる`, t`えらんだ経由地のスタンプを全部押すと達成（経塚のラリーなど）。`)}
         </div>
         <p className="text-base text-muted">{t`つくり方は、あとから変えられません。`}</p>
       </Section>
@@ -75,7 +75,7 @@ export function RallyCreate({
         <BilingualField id="new-rally-name" label={t`ラリーの名前`} ja={nameJa} en={nameEn} onJa={setNameJa} onEn={setNameEn} required invalid={nameJa.trim() === ""} />
       </Section>
 
-      <Section title={kind === "course" ? t`ラリーに入れるコース` : t`ラリーに入れるスタンプ場所`}>
+      <Section title={kind === "course" ? t`ラリーに入れるコース` : t`ラリーに入れる経由地`}>
         <RallyMemberPicker
           candidates={kind === "course" ? { kind: "course", items: courses } : { kind: "places", items: places }}
           selected={picked[kind]}

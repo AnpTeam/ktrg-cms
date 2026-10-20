@@ -59,7 +59,7 @@ export function RallyList({ initial, locale }: { initial: AdminRally[]; locale: 
                   {name(r)}
                 </Link>
                 <p className="text-base text-muted">
-                  {r.kind === "places" ? t`場所 ${r.memberCount}` : t`コース ${r.memberCount}`}
+                  {r.kind === "places" ? t`経由地 ${r.memberCount}` : t`コース ${r.memberCount}`}
                   {" ・ "}
                   {r.published ? t`公開中` : t`下書き`}
                   {" ・ "}

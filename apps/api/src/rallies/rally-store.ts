@@ -42,7 +42,7 @@ async function courseMembers(q: Reader, routeIds: readonly string[]): Promise<Ma
   const rows = await q
     .select({ routeId: spots.routeId, spotId: spots.id, published: spots.published, status: spots.status })
     .from(spots)
-    .where(and(inArray(spots.routeId, [...routeIds]), eq(spots.kind, "stamp")));
+    .where(and(inArray(spots.routeId, [...routeIds]), eq(spots.stampable, true)));
   for (const r of rows) out.get(r.routeId)!.push({ spotId: r.spotId, published: r.published, status: r.status });
   return out;
 }
@@ -55,7 +55,7 @@ async function placeMembers(q: Reader, rallyIds: readonly string[]): Promise<Map
     .select({ rallyId: rallySpots.rallyId, spotId: spots.id, published: spots.published, status: spots.status })
     .from(rallySpots)
     .innerJoin(spots, eq(spots.id, rallySpots.spotId))
-    .where(and(inArray(rallySpots.rallyId, [...rallyIds]), eq(spots.kind, "stamp")))
+    .where(and(inArray(rallySpots.rallyId, [...rallyIds]), eq(spots.stampable, true)))
     .orderBy(asc(rallySpots.position));
   for (const r of rows) out.get(r.rallyId)!.push({ spotId: r.spotId, published: r.published, status: r.status });
   return out;
@@ -99,7 +99,7 @@ export async function recordFinished(
       ? await q.select({ id: rallies.id, kind: rallies.kind }).from(rallies).where(and(inArray(rallies.id, touched.rallyIds), eq(rallies.published, true)))
       : [];
   } else {
-    routeIds = [...new Set((await q.select({ routeId: spots.routeId }).from(spots).where(eq(spots.kind, "stamp"))).map((r) => r.routeId))];
+    routeIds = [...new Set((await q.select({ routeId: spots.routeId }).from(spots).where(eq(spots.stampable, true))).map((r) => r.routeId))];
     rallyRows = await q.select({ id: rallies.id, kind: rallies.kind }).from(rallies).where(eq(rallies.published, true));
   }
 

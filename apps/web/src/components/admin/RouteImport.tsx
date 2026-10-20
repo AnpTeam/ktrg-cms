@@ -72,11 +72,13 @@ export function RouteImport({ routes, onImported }: { routes: AdminRoute[]; onIm
   const [report, setReport] = useState<ReportItem[] | null>(null);
 
   const files = useMemo(() => new Map(photos.map((f) => [f.name.toLowerCase(), f])), [photos]);
-  const where = (p: { sheet: "route" | "place"; line: number }) => (p.sheet === "route" ? t`「ルート」シート ${p.line} 行目` : t`「場所」シート ${p.line} 行目`);
+  const where = (p: { sheet: "route" | "place"; line: number }) => (p.sheet === "route" ? t`「ルート」シート ${p.line} 行目` : t`「経由地」シート ${p.line} 行目`);
   const problemText: Record<ProblemKind, string> = {
     whole: t`整数で書いてください`,
     number: t`数字で書いてください`,
     prefecture: t`大阪府・和歌山県・奈良県のどれかで書いてください`,
+    kind: t`「書き方」シートにある種類の名前で書いてください`,
+    yesno: t`「はい」か「いいえ」で書いてください`,
     range: t`範囲をこえています`,
     pair: t`緯度と経度は、両方書いてください`,
     duplicate: t`同じ番号の行が、前にもあります`,
@@ -90,7 +92,7 @@ export function RouteImport({ routes, onImported }: { routes: AdminRoute[]; onIm
         : r === "route_missing"
           ? t`このルートがまだありません`
           : r === "place_gap"
-            ? t`前の番号の場所がまだないので、作れません`
+            ? t`前の番号の経由地がまだないので、作れません`
             : messages[r];
 
   async function download() {
@@ -189,7 +191,7 @@ export function RouteImport({ routes, onImported }: { routes: AdminRoute[]; onIm
           {preview ? (
             <div className="flex flex-col gap-3" aria-live="polite">
               <p className="text-lg font-bold">
-                {t`ルート ${preview.routes.length} 行（今あるものを更新 ${updating}、新しく作る ${creating}）、場所 ${preview.places.length} 行`}
+                {t`ルート ${preview.routes.length} 行（今あるものを更新 ${updating}、新しく作る ${creating}）、経由地 ${preview.places.length} 行`}
               </p>
               {preview.photoNames.length > 0 ? (
                 <p className="text-base">{t`写真 ${preview.photoNames.length - missingPhotos.length} / ${preview.photoNames.length} 枚が、選んだファイルの中にありました。`}</p>
@@ -252,7 +254,7 @@ export function RouteImport({ routes, onImported }: { routes: AdminRoute[]; onIm
                   ])}
                 </ul>
               ) : null}
-              <p className="text-base">{t`位置を取り込んだ場所は「位置を確認していない」状態です。出どころを調べて、編集画面で確認してください。`}</p>
+              <p className="text-base">{t`位置を取り込んだ経由地は「位置を確認していない」状態です。出どころを調べて、編集画面で確認してください。`}</p>
             </div>
           ) : null}
         </section>

@@ -27,10 +27,10 @@ function setup() {
   const mem = createMemoryRallyAdminStore(audit.writer);
   mem.addRoute(ROUTE_A, { nameJa: "ルートA", nameEn: "Route A", sortOrder: 1 });
   mem.addRoute(ROUTE_B, { nameJa: "ルートB", sortOrder: 2 });
-  mem.addPlace({ spotId: A1, routeId: ROUTE_A, nameJa: "A一", kind: "stamp", sortOrder: 1, published: true });
-  mem.addPlace({ spotId: A2, routeId: ROUTE_A, nameJa: "A二", kind: "stamp", sortOrder: 2 });
-  mem.addPlace({ spotId: A_TURN, routeId: ROUTE_A, nameJa: "分かれ道", kind: "other", sortOrder: 3 });
-  mem.addPlace({ spotId: B1, routeId: ROUTE_B, nameJa: "B一", kind: "stamp", sortOrder: 1 });
+  mem.addPlace({ spotId: A1, routeId: ROUTE_A, nameJa: "A一", stampable: true, sortOrder: 1, published: true });
+  mem.addPlace({ spotId: A2, routeId: ROUTE_A, nameJa: "A二", stampable: true, sortOrder: 2 });
+  mem.addPlace({ spotId: A_TURN, routeId: ROUTE_A, nameJa: "分かれ道", stampable: false, sortOrder: 3 });
+  mem.addPlace({ spotId: B1, routeId: ROUTE_B, nameJa: "B一", stampable: true, sortOrder: 1 });
   const mounds = mem.addRally({ kind: "places", nameJa: "経塚ラリー", sortOrder: 1, published: true }, [A1, B1]);
   const courses = mem.addRally({ kind: "course", nameJa: "全コース", sortOrder: 2, published: true }, [ROUTE_A]);
 

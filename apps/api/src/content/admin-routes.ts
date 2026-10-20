@@ -49,10 +49,11 @@ const nullable = <T extends ReturnType<typeof t.String> | ReturnType<typeof t.Nu
 const prefecture = t.Union([t.Literal("osaka"), t.Literal("wakayama"), t.Literal("nara")]);
 // Written out as literals: a union built by mapping over a list loses its literal types for the typed web client.
 const kind = t.Union([
-  t.Literal("stamp"),
+  t.Literal("temple"),
+  t.Literal("mound"),
+  t.Literal("view"),
   t.Literal("turn"),
   t.Literal("danger"),
-  t.Literal("view"),
   t.Literal("toilet"),
   t.Literal("rest_area"),
   t.Literal("drinking_water"),
@@ -99,6 +100,8 @@ const spotProps = {
   positionSource: nullable(t.String({ maxLength: 500 })),
   radiusM: t.Integer({ minimum: 5, maximum: 1000 }),
   kind,
+  // A stamp can be collected here; when a new waypoint leaves it out, it starts from the kind (stampableByDefault).
+  stampable: t.Boolean(),
   photoUrl: nullable(t.String({ maxLength: 500 })),
   status,
   statusNoteJa: nullable(t.String({ maxLength: 1000 })),

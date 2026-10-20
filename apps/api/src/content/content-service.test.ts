@@ -226,12 +226,16 @@ describe("history, access and photo", () => {
 describe("the route's other points (turns, toilets, danger ...)", () => {
   const verified = { lat: 34.3, lng: 135.1, positionVerified: true, positionSource: "公式" };
 
-  test("a stamp place is the default; another kind is a navigation point", async () => {
+  test("a new waypoint's stamp switch starts from its kind, unless the request sets it", async () => {
     const r = await route();
-    const stamp = await spot(r.id);
+    const other = await spot(r.id);
+    const temple = await spot(r.id, { nameJa: "寺", kind: "temple" });
     const toilet = await spot(r.id, { nameJa: "トイレ", kind: "toilet" });
-    expect(stamp.kind).toBe("stamp");
-    expect(toilet.kind).toBe("toilet");
+    const stampedToilet = await spot(r.id, { nameJa: "トイレ（スタンプあり）", kind: "toilet", stampable: true });
+    expect([other.kind, other.stampable]).toEqual(["other", true]);
+    expect(temple.stampable).toBe(true);
+    expect([toilet.kind, toilet.stampable]).toEqual(["toilet", false]);
+    expect(stampedToilet.stampable).toBe(true);
   });
 
   test("a point other than a stamp place can be published without the site's permission, but still needs a checked position", async () => {
@@ -247,20 +251,20 @@ describe("the route's other points (turns, toilets, danger ...)", () => {
     expect(await svc.publishSpot(ADMIN, stamp.id)).toEqual({ ok: false, reason: "permission_required" });
   });
 
-  test("a place that stops being a stamp place leaves every rally of places; a stamped place stays a stamp place", async () => {
+  test("a waypoint whose stamp switch goes off leaves every rally of places; a stamped one cannot switch off", async () => {
     const r = await route();
     const s = await spot(r.id);
     mem.listInRally(s.id, "rally-of-places-1");
     mem.listInRally(s.id, "rally-of-places-2");
-    const asTurn = await svc.updateSpot(ADMIN, s.id, s.updatedAt, { kind: "turn" });
+    const asTurn = await svc.updateSpot(ADMIN, s.id, s.updatedAt, { stampable: false });
     if (!asTurn.ok) throw new Error(asTurn.reason);
     expect(mem.ralliesListing(s.id)).toEqual([]);
-    // Back to a stamp place: it does not rejoin by itself (an admin adds it again).
-    const back = await svc.updateSpot(ADMIN, s.id, asTurn.value.updatedAt, { kind: "stamp" });
+    // Switched on again: it does not rejoin by itself (an admin adds it again).
+    const back = await svc.updateSpot(ADMIN, s.id, asTurn.value.updatedAt, { stampable: true });
     if (!back.ok) throw new Error(back.reason);
     expect(mem.ralliesListing(s.id)).toEqual([]);
     mem.stampPlace(s.id);
-    expect(await svc.updateSpot(ADMIN, s.id, back.value.updatedAt, { kind: "rest_area" })).toEqual({ ok: false, reason: "spot_has_stamps" });
+    expect(await svc.updateSpot(ADMIN, s.id, back.value.updatedAt, { stampable: false })).toEqual({ ok: false, reason: "spot_has_stamps" });
   });
 
   test("visitors get stamp places and the other points apart; only stamp places make a route ready; the lists count stamp places only", async () => {

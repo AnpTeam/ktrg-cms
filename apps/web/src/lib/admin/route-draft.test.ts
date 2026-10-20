@@ -13,7 +13,7 @@ const serverRoute = (over: Partial<AdminRoute> = {}): AdminRoute => ({
 });
 const serverSpot = (id: string, over: Partial<AdminSpot> = {}): AdminSpot => ({
   id, routeId: "r1", nameJa: "虎島の経塚", nameEn: null, descriptionJa: null, descriptionEn: null, lat: null, lng: null, positionVerified: false,
-  positionSource: null, radiusM: 50, kind: "stamp", photoUrl: null, status: "open", statusNoteJa: null, statusNoteEn: null, statusUpdatedAt: null, sortOrder: 1, published: false,
+  positionSource: null, radiusM: 50, kind: "mound", stampable: true, photoUrl: null, status: "open", statusNoteJa: null, statusNoteEn: null, statusUpdatedAt: null, sortOrder: 1, published: false,
   permissionConfirmed: false, permissionNote: null, createdAt: "2026-10-19T00:00:00.000Z", updatedAt: "2026-10-19T00:00:00.000Z", ...over,
 });
 
@@ -100,7 +100,12 @@ describe("places", () => {
   });
   test("the next default name counts the places", () => {
     const s = run(fresh(), { type: "addPlace", key: "a", lat: 1, lng: 1 }, { type: "addPlace", key: "b", lat: 1, lng: 1 });
-    expect(s.present.places.map((p) => p.nameJa)).toEqual(["場所1", "場所2"]);
+    expect(s.present.places.map((p) => p.nameJa)).toEqual(["経由地1", "経由地2"]);
+  });
+  test("a new waypoint's stamp switch follows its kind: on for a temple or 'other', off for a toilet", () => {
+    const s = run(fresh(), { type: "addPlace", key: "a", lat: 1, lng: 1 }, { type: "addPlace", key: "b", lat: 1, lng: 1, kind: "toilet" }, { type: "addPlace", key: "c", lat: 1, lng: 1, kind: "temple" });
+    expect(s.present.places.map((p) => [p.kind, p.stampable])).toEqual([["other", true], ["toilet", false], ["temple", true]]);
+    expect(s.present.places[1]!.nameJa).toBe("");
   });
 });
 

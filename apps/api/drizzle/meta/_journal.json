@@ -92,6 +92,13 @@
       "when": 1792396293094,
       "tag": "0012_rally_groups_cleanup",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792461583133,
+      "tag": "0013_waypoints",
+      "breakpoints": true
     }
   ]
 }

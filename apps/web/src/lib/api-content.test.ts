@@ -18,7 +18,7 @@ const route = (over: Partial<PublicRoute> = {}): PublicRoute => ({
 });
 const spot = (over: Partial<PublicSpot> = {}): PublicSpot => ({
   id: "s1", routeId: "r1", nameJa: "虎島の経塚", nameEn: null, descriptionJa: null, descriptionEn: null,
-  position: { lat: 34.3, lng: 135.1, verified: true }, radiusM: 50, kind: "stamp", photoUrl: null, status: "open", statusNoteJa: null, statusNoteEn: null,
+  position: { lat: 34.3, lng: 135.1, verified: true }, radiusM: 50, kind: "mound", stampable: true, photoUrl: null, status: "open", statusNoteJa: null, statusNoteEn: null,
   statusUpdatedAt: null, sortOrder: 1, ...over,
 });
 

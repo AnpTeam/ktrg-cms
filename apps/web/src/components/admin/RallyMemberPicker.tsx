@@ -45,7 +45,7 @@ export function RallyMemberPicker({
       </div>
 
       {candidates.items.length === 0 ? (
-        <p className="text-lg">{candidates.kind === "places" ? t`スタンプ場所がまだありません。ルートの画面で場所を作ってください。` : t`ルートがまだありません。`}</p>
+        <p className="text-lg">{candidates.kind === "places" ? t`スタンプを押せる経由地がまだありません。ルートの画面で経由地を作ってください。` : t`ルートがまだありません。`}</p>
       ) : candidates.kind === "places" ? (
         <div className="flex flex-col gap-3">
           {groupBy(candidates.items, (p) => p.routeId).map((group) => {
@@ -62,7 +62,7 @@ export function RallyMemberPicker({
                     disabled={disabled}
                     onChange={() => onChange(all ? selected.filter((id) => !ids.includes(id)) : tickAll(selected, ids, true))}
                   />
-                  {t`このルートの場所をすべて`}
+                  {t`このルートの経由地をすべて`}
                 </label>
                 {group.items.map((p) => (
                   <label key={p.spotId} className="tap-target flex items-center gap-3 text-lg">
@@ -85,7 +85,7 @@ export function RallyMemberPicker({
               <span>
                 {name(c)}
                 <span className="ml-2 text-base text-muted">
-                  {c.publishedStampPlaceCount === 0 ? t`公開中のスタンプ場所なし（達成できません）` : t`スタンプ場所 ${c.publishedStampPlaceCount}`}
+                  {c.publishedStampPlaceCount === 0 ? t`公開中のスタンプの経由地なし（達成できません）` : t`スタンプの経由地 ${c.publishedStampPlaceCount}`}
                 </span>
               </span>
             </label>
