@@ -184,6 +184,15 @@ describe("save plan", () => {
     const renamed = run(initialState(saved), { type: "place", key: "s2", patch: { nameJa: "改名" } }).present;
     expect(planSave(renamed, saved)).toEqual([{ op: "updateSpot", key: "s2", id: "s2", body: { nameJa: "改名" } }]);
   });
+  test("editing a published place turns it back into a draft; a draft stays one", () => {
+    const saved = { ...savedDraft(), places: savedDraft().places.map((p, i) => ({ ...p, published: i === 0 })) };
+    const [first, second] = saved.places.map((p) => p.key);
+    expect(run(initialState(saved), { type: "place", key: first!, patch: { nameJa: "改名" } }).present.places[0]!.published).toBe(false);
+    expect(run(initialState(saved), { type: "movePlace", key: first!, lat: 34.2, lng: 135.3 }).present.places[0]!.published).toBe(false);
+    // the publish switch itself and other places are not edits
+    expect(run(initialState(saved), { type: "place", key: first!, patch: { published: true } }).present.places[0]!.published).toBe(true);
+    expect(run(initialState(saved), { type: "place", key: second!, patch: { nameJa: "改名" } }).present.places[0]!.published).toBe(true);
+  });
   test("deleted places go first; reordering is one step at the end", () => {
     const saved = savedDraft();
     const removed = run(initialState(saved), { type: "removePlace", key: "s1" }).present;

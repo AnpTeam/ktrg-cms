@@ -16,6 +16,7 @@ import {
   initialState,
   isDirty,
   placeFromServer,
+  type DraftAction,
   type PlaceDraft,
   type TextField,
   type RouteDraft,
@@ -29,6 +30,7 @@ import { MapEditorLoader } from "./map-editor/MapEditorLoader";
 import type { ElevationStatus } from "./map-editor/MapEditor";
 import { isListedMunicipality } from "@/lib/municipalities";
 import { stampableByDefault } from "@/lib/point-kinds";
+import { PublishedEditDialog, skipsPublishedWarning } from "./PublishedEditDialog";
 import { MunicipalityField } from "./MunicipalityField";
 import { PhotoSlot } from "./PhotoSlot";
 import { PlacePanel } from "./PlacePanel";
@@ -74,6 +76,14 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
   };
   const [elevation, setElevation] = useState<ElevationStatus>("idle");
   const attempted = useRef<string | null>(null);
+
+  // Editing a published waypoint turns it back into a draft: ask once first (unless the person said not to).
+  const [pendingEdit, setPendingEdit] = useState<{ key: string; action: DraftAction } | null>(null);
+  function guarded(key: string, action: DraftAction) {
+    const p = draft.places.find((x) => x.key === key);
+    if (p?.published && p.id !== null && !skipsPublishedWarning()) setPendingEdit({ key, action });
+    else dispatch(action);
+  }
 
   const dirty = isDirty(draft, saved);
   const isNew = draft.id === null;
@@ -143,6 +153,22 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     let routeUpdatedAt = snapshot.updatedAt;
     let base = savedRef.current;
     const ids = new Map(snapshot.places.map((p) => [p.key, p.id]));
+    // A published waypoint that was edited (so it is a draft here) is unpublished first; its new update time is the one to save against.
+    const freshUpdatedAt = new Map<string, string>();
+    for (const p of snapshot.places) {
+      const was = base.places.find((x) => x.key === p.key);
+      if (!was?.published || p.published || p.id === null) continue;
+      const res = await outcome(api.admin.spots({ id: p.id }).unpublish.post());
+      if (!res.ok) {
+        setMessage({ kind: "error", text: messages[res.key] });
+        setSaving(false);
+        return;
+      }
+      const next: PlaceDraft = { ...placeFromServer(res.data.spot), key: p.key };
+      freshUpdatedAt.set(p.key, next.updatedAt!);
+      base = { ...base, places: base.places.map((x) => (x.key === p.key ? next : x)) };
+      setSavedCopy(base);
+    }
     const steps = planSave(snapshot, snapshot.id === null ? null : base);
     let failure: string | null = null;
 
@@ -189,7 +215,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
         setSavedCopy(base);
       } else if (step.op === "updateSpot") {
         const current = snapshot.places.find((p) => p.key === step.key)!;
-        const res = await outcome(api.admin.spots({ id: step.id }).patch({ updatedAt: current.updatedAt!, ...step.body }));
+        const res = await outcome(api.admin.spots({ id: step.id }).patch({ updatedAt: freshUpdatedAt.get(step.key) ?? current.updatedAt!, ...step.body }));
         if (!res.ok) {
           failure = messages[res.key];
           break;
@@ -264,7 +290,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
   // The numbers on the map are the stamp numbers visitors see; a waypoint without a stamp has none.
   const editorPlaces = (() => {
     let stamp = 0;
-    return draft.places.map((p) => ({ key: p.key, lat: p.lat, lng: p.lng, number: p.stampable ? ++stamp : null, name: p.nameJa, stampable: p.stampable, stopBy: p.stopBy, kind: p.kind }));
+    return draft.places.map((p) => ({ key: p.key, lat: p.lat, lng: p.lng, number: p.stampable ? ++stamp : null, name: p.nameJa, stampable: p.stampable, stopBy: p.stopBy, kind: p.kind, published: p.published }));
   })();
   const text = (field: TextField) => (value: string) => dispatch({ type: "text", field, value });
   const checks = useMemo(() => checklist(factsFromDraft(draft)), [draft]);
@@ -272,6 +298,14 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
 
   return (
     <div className={`flex flex-col gap-5 ${saving ? "[&_fieldset]:pointer-events-none" : ""}`} aria-busy={saving}>
+      <PublishedEditDialog
+        name={pendingEdit ? (draft.places.find((p) => p.key === pendingEdit.key)?.nameJa || t`名前のない経由地`) : null}
+        onProceed={() => {
+          if (pendingEdit) dispatch(pendingEdit.action);
+          setPendingEdit(null);
+        }}
+        onCancel={() => setPendingEdit(null)}
+      />
       {/* Title bar: always in reach, with the one button that matters. */}
       <div className="sticky top-0 z-20 -mx-4 flex flex-wrap items-center gap-3 border-b border-line bg-paper px-4 py-3 lg:-mx-8 lg:px-8">
         <h1 className="min-w-0 flex-1 break-words text-2xl font-bold">{isNew ? t`新しいルート` : draft.nameJa || t`（名前がありません）`}</h1>
@@ -412,7 +446,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     setSelectedKey(key);
                   }}
                   onAddPlaces={(list) => dispatch({ type: "addPlaces", places: list })}
-                  onMovePlace={(key, lat, lng) => dispatch({ type: "movePlace", key, lat, lng })}
+                  onMovePlace={(key, lat, lng) => guarded(key, { type: "movePlace", key, lat, lng })}
                   onRemovePlace={(key) => {
                     const p = draft.places.find((x) => x.key === key);
                     if (p?.published) setMessage({ kind: "error", text: t`公開中の経由地は消せません。先に「公開をやめる」を押してください。` });
@@ -422,7 +456,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   onPatchPlace={(key, patch) => {
                     const p = draft.places.find((x) => x.key === key);
                     // A new waypoint's stamp switch follows its kind; a saved one keeps what was chosen for it.
-                    if (p) dispatch({ type: "place", key, patch: patch.kind && p.id === null ? { ...patch, stampable: stampableByDefault(patch.kind) } : patch });
+                    if (p) guarded(key, { type: "place", key, patch: patch.kind && p.id === null ? { ...patch, stampable: stampableByDefault(patch.kind) } : patch });
                   }}
                   onSnap={async (points) => {
                     const res = await outcome(api.admin["route-snap"].post({ points }));
@@ -463,7 +497,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     places={draft.places}
                     busy={busyKey !== null || saving}
                     invalidName={(key) => problemOf("place_name", key)}
-                    onChange={(key, patch) => dispatch({ type: "place", key, patch })}
+                    onChange={(key, patch) => guarded(key, { type: "place", key, patch })}
                     onRemove={(key) => dispatch({ type: "removePlace", key })}
                     onAdd={() => dispatch({ type: "addRow", key: crypto.randomUUID() })}
                   />
@@ -489,7 +523,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                         invalidName={problemOf("place_name", p.key)}
                         invalidPhoto={problemOf("place_photo_link", p.key)}
                         onSelect={() => setSelectedKey(p.key === selectedKey ? null : p.key)}
-                        onChange={(patch) => dispatch({ type: "place", key: p.key, patch })}
+                        onChange={(patch) => guarded(p.key, { type: "place", key: p.key, patch })}
                         onRemove={() => {
                           dispatch({ type: "removePlace", key: p.key });
                           setSelectedKey(null);

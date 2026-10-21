@@ -257,14 +257,16 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
     case "addRow":
       return { ...d, places: [...d.places, { ...newPlace(a.key, null, null, 0), nameJa: "" }] };
     case "movePlace":
-      return { ...d, places: d.places.map((p) => (p.key === a.key ? { ...p, lat: a.lat, lng: a.lng, positionVerified: false } : p)) };
+      return { ...d, places: d.places.map((p) => (p.key === a.key ? { ...p, lat: a.lat, lng: a.lng, positionVerified: false, published: false } : p)) };
     case "place":
       return {
         ...d,
         places: d.places.map((p) => {
           if (p.key !== a.key) return p;
           const moved = (a.patch.lat !== undefined && a.patch.lat !== p.lat) || (a.patch.lng !== undefined && a.patch.lng !== p.lng);
-          return { ...p, ...a.patch, ...(moved && a.patch.positionVerified === undefined ? { positionVerified: false } : {}) };
+          // Any edit turns a published waypoint back into a draft (the editor asks first, and the save unpublishes it before changing it).
+          const edited = Object.keys(a.patch).some((k) => k !== "published");
+          return { ...p, ...a.patch, ...(moved && a.patch.positionVerified === undefined ? { positionVerified: false } : {}), ...(edited ? { published: false } : {}) };
         }),
       };
     case "removePlace":
