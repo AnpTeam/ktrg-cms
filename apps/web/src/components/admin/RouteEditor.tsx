@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { api } from "@/lib/api";
@@ -21,6 +21,7 @@ import {
   type TextField,
   type RouteDraft,
 } from "@/lib/admin/route-draft";
+import { backupKey, parseBackup, worthRestoring, writeBackup } from "@/lib/admin/draft-backup";
 import { draftProblems, placeChanged, planSave, restoreHeld, withLegIds, type DraftProblem } from "@/lib/admin/save-plan";
 import type { Prefecture } from "@/lib/admin/types";
 import { formatUpdated } from "@/lib/format";
@@ -93,6 +94,32 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     savedRef.current = next;
     setSaved(next);
   };
+
+  // ---- a copy of unsaved work, kept in this browser -------------------------------------------------------------
+  // The stored copy is read in the browser only (the server render has none), as text so the snapshot stays the same between renders.
+  const storedCopy = useSyncExternalStore(
+    () => () => {},
+    () => {
+      try {
+        return localStorage.getItem(backupKey(initial.id));
+      } catch {
+        return null;
+      }
+    },
+    () => null,
+  );
+  const offered = useMemo(() => {
+    const b = parseBackup(storedCopy);
+    return worthRestoring(b, initial) ? b : null;
+  }, [storedCopy, initial]);
+  const [offerClosed, setOfferClosed] = useState(false);
+  const offerOpen = offered !== null && !offerClosed;
+  const offeredAt = offered ? formatUpdated(locale, offered.at) : "";
+  useEffect(() => {
+    if (offerOpen) return; // the old copy is not overwritten (or dropped) before the person has chosen
+    const timer = setTimeout(() => writeBackup(localStorage, draft, savedRef.current.updatedAt, dirty), 1000);
+    return () => clearTimeout(timer);
+  }, [draft, dirty, offerOpen]);
 
   // ---- leaving with unsaved work ---------------------------------------------------------------------------
   useEffect(() => {
@@ -356,6 +383,33 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
           </div>
         ) : null}
       </div>
+
+      {offerOpen ? (
+        <div role="alert" className="flex flex-wrap items-center gap-3 rounded-xl border-2 border-caution bg-surface p-4">
+          <p className="min-w-0 flex-1 text-lg font-bold">{t`保存していない編集が、このブラウザに残っています（${offeredAt}）。戻しますか？`}</p>
+          <button
+            type="button"
+            onClick={() => {
+              dispatch({ type: "loaded", draft: offered.draft });
+              setOfferClosed(true);
+              setMessage({ kind: "ok", text: t`編集を戻しました。内容を確かめて、「保存する」を押してください。` });
+            }}
+            className="tap-target rounded-xl bg-ink px-5 text-lg font-bold text-paper"
+          >
+            {t`編集を戻す`}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              writeBackup(localStorage, initial, initial.updatedAt, false);
+              setOfferClosed(true);
+            }}
+            className="tap-target rounded-xl border-2 border-line px-5 text-lg font-bold"
+          >
+            {t`捨てる`}
+          </button>
+        </div>
+      ) : null}
 
       {/* Narrow screens: one thing at a time. */}
       <div className="flex gap-2 lg:hidden" role="tablist" aria-label={t`表示の切り替え`}>
