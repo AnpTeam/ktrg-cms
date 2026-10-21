@@ -231,6 +231,25 @@ export function planSave(draft: RouteDraft, saved: RouteDraft | null): SaveStep[
   return steps;
 }
 
+/**
+ * After a save that held some waypoints back: what the server now holds, with the held waypoints put back where they were in the
+ * edited draft, as typed (a saved one with the server's update time, so its next save is not refused). The server's waypoints
+ * come in the order they were sent, which is the draft's order without the held new ones.
+ */
+export function restoreHeld(fromServer: RouteDraft, edited: RouteDraft, held: ReadonlySet<string>): RouteDraft {
+  if (held.size === 0) return fromServer;
+  let at = 0;
+  return {
+    ...fromServer,
+    places: edited.places.flatMap((p) => {
+      if (!held.has(p.key)) return fromServer.places[at] ? [fromServer.places[at++]!] : [];
+      if (p.id === null) return [p];
+      const own = fromServer.places[at++];
+      return [{ ...p, updatedAt: own?.updatedAt ?? p.updatedAt }];
+    }),
+  };
+}
+
 // ---- checks before saving ------------------------------------------------------------------------------------
 
 export type DraftProblem =
