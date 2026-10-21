@@ -47,6 +47,11 @@ export interface OtpStore {
    * already were one (nothing is written then).
    */
   promoteToAdmin(userId: string): Promise<boolean>;
+  /**
+   * Give a passkey-only account its first email, and write the audit row. Returns false when
+   * the account already has one or another account owns this address (nothing is written then).
+   */
+  setUserEmail(userId: string, email: string): Promise<boolean>;
 }
 
 export interface OtpServiceDeps {
@@ -139,6 +144,13 @@ export function createOtpService({
      */
     async checkCode(rawEmail: string, code: string): Promise<boolean> {
       return checkCode(normalizeEmail(rawEmail), code);
+    },
+
+    /** Add an email to a passkey-only account: the code proves the new mailbox is theirs. */
+    async attachEmail(userId: string, rawEmail: string, code: string): Promise<"ok" | "bad_code" | "taken"> {
+      const email = normalizeEmail(rawEmail);
+      if (!(await checkCode(email, code))) return "bad_code";
+      return (await store.setUserEmail(userId, email)) ? "ok" : "taken";
     },
 
     /** Log in with a code: the account is created on first success (with `profile`, if given). */

@@ -14,7 +14,10 @@ import {
   mapStyle,
   markerKind,
   nextStopId,
+  pinScale,
   routeLineLayers,
+  sideLineCollection,
+  sideLineLayers,
   terrainLayerId,
   zoomLimits,
   type Position,
@@ -39,11 +42,16 @@ export interface MapStop {
   status: SpotStatus;
   /** The spot page, already with the locale. */
   href: string;
+  /** An optional visit beside the way (寄り道): its pin is drawn smaller, and its line thin, dashed and blue. */
+  sideTrip?: boolean;
 }
 
 type Selection = { kind: "stop" | "place"; id: string } | null;
 
 const LINE_SOURCE = "route";
+const SIDE_SOURCE = "route-side";
+// A constant, not `[]` in the parameter list: a new array each render would rebuild the map each render.
+const NO_SIDE_LINES: Position[][] = [];
 // Keep every stop clear of the buttons: zoom buttons at the top right, the chip at the top left,
 // the "bigger" button and the credit line along the bottom.
 const FIT = { padding: { top: 76, bottom: 112, left: 56, right: 92 }, maxZoom: 16, animate: false } as const;
@@ -68,6 +76,7 @@ const centerOf = (points: readonly Coord[]): Coord => ({
 export function TrailMap({
   stops,
   line,
+  sideLines = NO_SIDE_LINES,
   places,
   draft,
   settings,
@@ -76,6 +85,8 @@ export function TrailMap({
 }: {
   stops: MapStop[];
   line: Position[] | null;
+  /** Side trips (寄り道): thin dashed blue lines out to stop-by places. */
+  sideLines?: Position[][];
   places: MapPlace[];
   draft: boolean;
   settings: MapSettings;
@@ -153,6 +164,10 @@ export function TrailMap({
         // background shows and the tile is retried when the map moves.
         map.on("error", () => {});
         map.on("moveend", () => setView((v) => v + 1));
+        // The pins are smaller when zoomed out (the markers read this size from the map's own element).
+        const sizePins = () => containerRef.current?.style.setProperty("--pin", String(pinScale(map!.getZoom())));
+        map.on("zoom", sizePins);
+        sizePins();
 
         // Ready as soon as the style is: MapLibre's own "load" waits for every visible tile, which
         // on a weak mountain signal can take very long. The line, markers and buttons must not
@@ -162,6 +177,9 @@ export function TrailMap({
         const start = () => {
           if (started || cancelled || !map || !map.isStyleLoaded()) return;
           started = true;
+          // Side trips first, so the route's own line is drawn over them.
+          map.addSource(SIDE_SOURCE, { type: "geojson", data: sideLineCollection(sideLines) });
+          for (const layer of sideLineLayers(SIDE_SOURCE)) map.addLayer(layer);
           map.addSource(LINE_SOURCE, { type: "geojson", data: lineFeature(linePoints) });
           for (const layer of routeLineLayers(LINE_SOURCE, line === null)) map.addLayer(layer);
           setLoaded(true);
@@ -186,7 +204,7 @@ export function TrailMap({
     };
     // `t` changes only with the language, which reloads the page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stops, line, settings]);
+  }, [stops, line, sideLines, settings]);
 
   // Zoom in on a group of markers (or on one spot when they all sit on the same point).
   const zoomTo = (points: readonly Coord[]) => {
@@ -252,6 +270,7 @@ export function TrailMap({
           label: stop.label,
           kind: markerKind(stop.stamped, stop.id === next),
           status: stop.status,
+          sideTrip: stop.sideTrip,
           onSelect: () => setSelected({ kind: "stop", id: stop.id }),
         });
         buttons.set(`stop:${stop.id}`, el);

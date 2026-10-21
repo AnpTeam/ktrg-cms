@@ -25,6 +25,8 @@ export interface Leg {
   /** Only while it is being edited: the hand-drawn anchors between the stops, and how each bends the path (Navivi's anchors). */
   anchors?: LatLng[];
   curves?: AnchorCurve[];
+  /** A side trip (寄り道): out from a stop of the route to a stop-by place. It is not part of the joined line. */
+  side?: true;
 }
 
 /** The most points the whole line may have (the API keeps the line at this size too). */
@@ -43,6 +45,23 @@ export const pathStops = (places: readonly { key: string; lat: number | null; ln
   });
 
 export const pairsOf = (stops: readonly Stop[]): { from: Stop; to: Stop }[] => stops.slice(1).map((to, i) => ({ from: stops[i]!, to }));
+
+/**
+ * The side trips: for each placed stop-by waypoint, a pair from the stop before it in the list (a junction waypoint put just
+ * before it in the list is how the branch point is chosen) to the stop-by place. One before the first stop has none.
+ */
+export function sidePairs(places: readonly { key: string; lat: number | null; lng: number | null; stopBy: boolean }[]): { from: Stop; to: Stop }[] {
+  const out: { from: Stop; to: Stop }[] = [];
+  let last: Stop | null = null;
+  for (const p of places) {
+    if (p.lat === null || p.lng === null) continue;
+    const here = { key: p.key, lat: p.lat, lng: p.lng };
+    if (p.stopBy) {
+      if (last) out.push({ from: last, to: here });
+    } else last = here;
+  }
+  return out;
+}
 
 const at = (s: Stop): LngLatEle => [s.lng, s.lat];
 const sameSpot = (a: readonly (number | undefined)[], b: readonly (number | undefined)[]) => a[0] === b[0] && a[1] === b[1];
@@ -117,18 +136,27 @@ function refit(leg: Leg, from: Stop, to: Stop): Leg {
  * The legs that still fit the stops: a leg stays while both its stops are neighbours, with its ends on the stops. When a stop
  * was taken out between two neighbours, their two legs are joined into one.
  */
-export function reconcileLegs(stops: readonly Stop[], legs: readonly Leg[]): Leg[] {
+export function reconcileLegs(stops: readonly Stop[], legs: readonly Leg[], sides: readonly { from: Stop; to: Stop }[] = []): Leg[] {
   const keys = new Set(stops.map((s) => s.key));
   const out: Leg[] = [];
   for (const { from, to } of pairsOf(stops)) {
     const own = legOf(legs, from.key, to.key);
     if (own) {
-      out.push(refit(own, from, to));
+      // A place that stopped being a stop-by keeps its stretch, now as part of the route.
+      const fitted = refit(own, from, to);
+      out.push(fitted.side ? { from: fitted.from, to: fitted.to, points: fitted.points, anchors: fitted.anchors, curves: fitted.curves } : fitted);
       continue;
     }
-    const first = legs.find((l) => l.from === from.key && !keys.has(l.to));
+    const first = legs.find((l) => l.from === from.key && !l.side && !keys.has(l.to));
     const second = first && legs.find((l) => l.from === first.to && l.to === to.key);
     if (first && second) out.push({ from: from.key, to: to.key, points: capPoints([...first.points, ...second.points.slice(1)]) });
+  }
+  // Side trips keep their own stretch while their pair stands; one whose pair is gone is dropped.
+  for (const { from, to } of sides) {
+    const own = legOf(legs, from.key, to.key);
+    if (!own) continue;
+    const fitted = refit(own, from, to);
+    out.push(fitted.side ? fitted : { ...fitted, side: true });
   }
   return out.length === legs.length && out.every((l, i) => l === legs[i]) ? (legs as Leg[]) : out;
 }

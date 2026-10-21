@@ -122,7 +122,7 @@ export function PlacePanel(p: PlacePanelProps) {
             <Check id={`${id}-stopby`} checked={place.stopBy} onChange={(v) => p.onChange({ stopBy: v })}>
               {t`寄り道（道すじから少しはずれた、任意の立ち寄り先）`}
             </Check>
-            <p className="pl-9 text-base text-muted">{t`チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。`}</p>
+            <p className="pl-9 text-base text-muted">{t`チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。代わりに、一つ前の経由地から、この場所までの寄り道の線（青い細い点線）を、地図で描けます。分かれ道に経由地を置き、その次にこの場所を並べてください。`}</p>
           </div>
 
           <div className="flex flex-col gap-2">

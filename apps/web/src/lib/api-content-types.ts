@@ -24,6 +24,8 @@ export interface PublicRoute {
   publishedSpotCount: number;
   sketch: [number, number][] | null;
   line: { type: "LineString"; coordinates: [number, number, number?][] } | null;
+  /** Side trips (寄り道) to published places; in the detail only. */
+  sideLines?: { spotId: string; coordinates: [number, number, number?][] }[];
   bounds: { west: number; south: number; east: number; north: number } | null;
 }
 

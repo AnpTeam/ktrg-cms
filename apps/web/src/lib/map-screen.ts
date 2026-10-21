@@ -48,6 +48,8 @@ export interface MapScreenStop {
   position: Position;
   /** What the place is; the map can show the sutra mounds on their own. */
   kind?: PointKind;
+  /** An optional visit beside the way (寄り道): its pin is smaller. */
+  sideTrip?: boolean;
   /** null when signed out. */
   stamped: boolean | null;
   status: SpotStatus;
@@ -109,6 +111,8 @@ export interface MapScreenRoute {
   line: Position[] | null;
   /** The course has a path to fetch. */
   hasLine: boolean;
+  /** Side trips (寄り道): short stretches out to stop-by places, sent with the page (they are small). */
+  sideLines?: Position[][];
   /** Some position on this course is a rough draft, not a verified one. */
   draft: boolean;
 }

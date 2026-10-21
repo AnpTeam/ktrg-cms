@@ -11,7 +11,7 @@ import { defaultLayers, moundStops, offeredLayers, type MapLayer } from "@/lib/m
 import { groupOf } from "@/lib/places";
 import { PlaceGroupIcon } from "@/components/icons";
 import { useGroupNames } from "./PlacesPanel";
-import { boundsOf, lineFeature, mapStyle, markerKind, nextStopId, routeLineLayers, zoomLimits, type Position } from "@/lib/map";
+import { boundsOf, lineFeature, mapStyle, markerKind, nextStopId, pinScale, routeLineLayers, sideLineCollection, sideLineLayers, zoomLimits, type Position } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
 import { createClusterElement, createMarkerElement, createPinElement, createPlaceMarkerElement, createTagElement } from "./MapMarker";
 
@@ -22,6 +22,8 @@ import { createClusterElement, createMarkerElement, createPinElement, createPlac
 
 const AREAS = "areas";
 const DETAIL = "route-detail";
+/** Side trips (寄り道) of the shown course: thin dashed blue lines under its path. */
+const SIDE = "route-side";
 /** The walking path from OpenRouteService while navigating off the course line. */
 const GUIDE = "nav-guide";
 /** A course's navigation points (toilets, turns ...) show from this zoom on, once the course is open. */
@@ -166,6 +168,10 @@ export function MapScreenCanvas({
           map?.easeTo({ bearing: 0, duration: 400 });
         });
         map.on("error", () => {});
+        // The numbered pins are smaller when zoomed out (the markers read this size from the map's own element).
+        const sizePins = () => containerRef.current?.style.setProperty("--pin", String(pinScale(map!.getZoom())));
+        map.on("zoom", sizePins);
+        sizePins();
         map.on("moveend", () => {
           if (!map) return;
           const c = map.getCenter();
@@ -180,6 +186,8 @@ export function MapScreenCanvas({
           map.addSource(AREAS, { type: "geojson", data: EMPTY });
           map.addLayer({ id: `${AREAS}-fill`, type: "fill", source: AREAS, paint: { "fill-color": "#cc6256", "fill-opacity": ["case", ["get", "selected"], 0.06, 0.16] } });
           map.addLayer({ id: `${AREAS}-line`, type: "line", source: AREAS, paint: { "line-color": "#a8362b", "line-width": ["case", ["get", "selected"], 3, 2.2], "line-opacity": 0.95 } });
+          map.addSource(SIDE, { type: "geojson", data: EMPTY });
+          for (const layer of sideLineLayers(SIDE)) map.addLayer(layer);
           map.addSource(DETAIL, { type: "geojson", data: EMPTY });
           for (const layer of routeLineLayers(DETAIL, false)) map.addLayer(layer);
           map.addSource(GUIDE, { type: "geojson", data: EMPTY });
@@ -219,6 +227,7 @@ export function MapScreenCanvas({
     (map.getSource(AREAS) as GeoJSONSource | undefined)?.setData(layers.has("courses") || focus ? areaCollection(routes, focus?.id ?? null) : EMPTY);
     const points = focus?.line ?? focus?.stops?.map((s) => s.position) ?? null;
     (map.getSource(DETAIL) as GeoJSONSource | undefined)?.setData(points && points.length > 1 ? lineFeature(points) : EMPTY);
+    (map.getSource(SIDE) as GeoJSONSource | undefined)?.setData(focus?.sideLines?.length ? sideLineCollection(focus.sideLines) : EMPTY);
   }, [ready, routes, routeId, focus, mapGen, layers]);
 
   // Navigation: the walking path off the course line, and the visitor's position.
@@ -393,6 +402,7 @@ export function MapScreenCanvas({
             label: s.label,
             kind: markerKind(s.stamped, s.id === next),
             status: s.status,
+            sideTrip: s.sideTrip,
             onSelect: () => onSelectStop(focus.id, s.id),
           });
           el.setAttribute("aria-pressed", String(s.id === stopId));

@@ -30,6 +30,8 @@ export const ERROR_CODES = {
   too_many_passkeys: "409: the account already has the most passkeys allowed",
   last_login_method: "409: cannot remove the only way to log in",
 
+  email_in_use: "409: this account already has an email, or the address belongs to another account",
+
   // --- Profile ---------------------------------------------------------------------------
   invalid_display_name: "400: too long, or contains hidden characters",
 

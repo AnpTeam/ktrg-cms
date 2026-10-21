@@ -100,6 +100,26 @@ export async function requestEmailCode(email: string, locale: "ja" | "en"): Prom
   }
 }
 
+/** Signed in without an email: mail a code to the address to add (needs the "confirm it is you" step first). */
+export async function requestAddEmail(email: string): Promise<AuthResult> {
+  try {
+    const res = await api.auth.email.request.post({ email });
+    return res.error ? fail(apiFailure(res.error)) : done;
+  } catch {
+    return fail("network");
+  }
+}
+
+/** Check the code from the new mailbox; on success the account has that email. */
+export async function verifyAddEmail(email: string, code: string): Promise<AuthResult> {
+  try {
+    const res = await api.auth.email.verify.post({ email, code });
+    return res.error ? fail(apiFailure(res.error)) : done;
+  } catch {
+    return fail("network");
+  }
+}
+
 /** Check the code. `profile` is used only when this creates the account (register); login omits it. */
 export async function verifyEmailCode(email: string, code: string, profile?: SignupProfile): Promise<AuthResult> {
   try {
