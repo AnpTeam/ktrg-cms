@@ -4,7 +4,7 @@ import { useLingui } from "@lingui/react/macro";
 import { photoLinkLooksValid } from "@/lib/admin/save-plan";
 
 // A 16:9 frame for a photo link: the picture when the link is a usable https address, else a plain "no photo" frame.
-// Photos are links for now (uploading files needs a storage provider that is not chosen yet).
+// The box beside it holds the photo's https link: typed, or filled in by uploading a file (PhotoUpload).
 export function PhotoSlot({ url, className = "" }: { url: string; className?: string }) {
   const { t } = useLingui();
   const ok = url.trim() !== "" && photoLinkLooksValid(url);

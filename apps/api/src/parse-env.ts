@@ -38,7 +38,11 @@ const EnvSchema = Type.Object({
   API_DOCS: Type.Boolean({ default: false }),
   // Photo uploads to Cloudflare R2: all five or none. Unset, partial or malformed: uploads are off
   // (POST /admin/uploads answers 503) and the rest of the API still starts.
+  // Any other S3-compatible service works too (Supabase Storage): set S3_ENDPOINT (and S3_REGION) instead of R2_ACCOUNT_ID,
+  // and put its access key, secret and bucket in the R2_* names below.
   R2_ACCOUNT_ID: Type.Optional(Type.String({ minLength: 1 })),
+  S3_ENDPOINT: Type.Optional(Type.String({ pattern: "^https://[^/]+(/[^?#]*[^/?#])?$" })),
+  S3_REGION: Type.Optional(Type.String({ minLength: 1 })),
   R2_ACCESS_KEY_ID: Type.Optional(Type.String({ minLength: 1 })),
   R2_SECRET_ACCESS_KEY: Type.Optional(Type.String({ minLength: 1 })),
   R2_BUCKET_NAME: Type.Optional(Type.String({ minLength: 1 })),
@@ -51,6 +55,8 @@ const EnvSchema = Type.Object({
 });
 
 const R2_SETTINGS = ["R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET_NAME", "R2_PUBLIC_URL"] as const;
+/** Every photo-storage setting; S3_ENDPOINT stands in for R2_ACCOUNT_ID, S3_REGION is optional. */
+const STORAGE_SETTINGS = [...R2_SETTINGS, "S3_ENDPOINT", "S3_REGION"] as const;
 
 export type Env = Static<typeof EnvSchema>;
 
@@ -82,14 +88,16 @@ export function parseEnv(source: Record<string, string | undefined>, log: (line:
     first.set("/ADMIN_EMAILS", `not an email address: ${badAdmins.join(", ")}`);
   }
   const settings = candidate as Record<string, unknown>;
-  const r2Set = R2_SETTINGS.filter((k) => settings[k] !== undefined);
-  const r2Bad = R2_SETTINGS.filter((k) => first.delete(`/${k}`));
-  const r2Missing = r2Set.length > 0 ? R2_SETTINGS.filter((k) => !r2Set.includes(k)) : [];
+  const r2Set = STORAGE_SETTINGS.filter((k) => settings[k] !== undefined);
+  const r2Bad = STORAGE_SETTINGS.filter((k) => first.delete(`/${k}`));
+  // With an S3_ENDPOINT there is no Cloudflare account id to ask for.
+  const needed = r2Set.includes("S3_ENDPOINT") ? R2_SETTINGS.filter((k) => k !== "R2_ACCOUNT_ID") : R2_SETTINGS;
+  const r2Missing = r2Set.length > 0 ? needed.filter((k) => !r2Set.includes(k)) : [];
   if (r2Bad.length > 0 || r2Missing.length > 0) {
     // Names only, never values (they include the secret key).
     const why = [r2Missing.length ? `missing ${r2Missing.join(", ")}` : "", r2Bad.length ? `invalid ${r2Bad.join(", ")}` : ""];
-    log(`[env] photo uploads are OFF: ${why.filter(Boolean).join("; ")} (all five R2_* settings are needed)`);
-    for (const k of R2_SETTINGS) delete settings[k];
+    log(`[env] photo uploads are OFF: ${why.filter(Boolean).join("; ")} (all five R2_* settings are needed, or S3_ENDPOINT instead of R2_ACCOUNT_ID)`);
+    for (const k of STORAGE_SETTINGS) delete settings[k];
   }
   if (first.size > 0) {
     const lines = [...first].map(([path, msg]) => `  - ${path.slice(1) || "(root)"}: ${msg}`);

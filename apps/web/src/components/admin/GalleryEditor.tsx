@@ -6,6 +6,7 @@ import type { GalleryPhoto } from "@/lib/content";
 import { findPlacePhotos, type PhotoCandidate } from "@/lib/admin/place-photos";
 import { photoLinkLooksValid } from "@/lib/admin/save-plan";
 import { PhotoSlot } from "./PhotoSlot";
+import { PhotoUpload } from "./PhotoUpload";
 import { TextInput } from "./fields";
 
 const MAX_PHOTOS = 12;
@@ -13,7 +14,7 @@ const smallButton = "tap-target rounded-xl border-2 border-line px-4 text-base f
 
 /**
  * The gallery of one waypoint: the photos in the order visitors see them, each with the credit that goes under it.
- * Photos are added by link, or found on Wikipedia and Wikimedia Commons (free licenses only, with the photographer and
+ * Photos are added by uploading a file, by link, or found on Wikipedia and Wikimedia Commons (free licenses only, with the photographer and
  * license written into the credit). Photos are saved with the place.
  */
 export function GalleryEditor({ photos, onChange, name, lat, lng }: { photos: GalleryPhoto[]; onChange: (photos: GalleryPhoto[]) => void; name: string; lat: number | null; lng: number | null }) {
@@ -102,6 +103,7 @@ export function GalleryEditor({ photos, onChange, name, lat, lng }: { photos: Ga
           {searching ? t`探しています…` : t`WikipediaやWikimedia Commonsから探す`}
         </button>
       </div>
+      <PhotoUpload onUploaded={(url) => add({ url, credit: null, sourceUrl: null })} disabled={full} />
       {full ? <p className="text-base text-muted">{t`写真は${MAX_PHOTOS}枚までです。`}</p> : null}
       {note ? <p role="status" className="text-base font-bold">{note}</p> : null}
 

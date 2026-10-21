@@ -5,29 +5,15 @@ import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useReauth } from "@/components/auth/ReauthDialog";
 import { useErrorMessages } from "@/components/useErrorMessages";
-import { errorKeyFromApi, isServerCode, type ErrorKey } from "@/lib/api-error";
 import { displayValue, pick, type FieldUi, type ListItem, type ListMeta } from "@/lib/admin/lists/config";
 import { changedFields, formValues, missingRequired, toPayload, type FormValues } from "@/lib/admin/lists/form";
 import { listRequest, type ListAnswer, type OneItem } from "@/lib/admin/lists/list-client";
 import { translationsChange, type Translations } from "@/lib/admin/content-locales";
 import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
 import { PhotoSlot } from "./PhotoSlot";
+import { PhotoUpload } from "./PhotoUpload";
 
 type Notice = { kind: "saved" | "error"; text: string } | null;
-
-/** Send a photo to POST /admin/uploads; its public https link, or why not. */
-async function uploadPhoto(file: File): Promise<{ ok: true; url: string } | { ok: false; key: ErrorKey }> {
-  try {
-    const form = new FormData();
-    form.set("file", file);
-    const res = await fetch("/api/v1/admin/uploads", { method: "POST", credentials: "same-origin", body: form });
-    const json = (await res.json().catch(() => null)) as { ok?: unknown; error?: unknown; upload?: { url?: unknown } } | null;
-    if (res.ok && json?.ok === true && typeof json.upload?.url === "string") return { ok: true, url: json.upload.url };
-    return { ok: false, key: json?.ok === false && isServerCode(json.error) ? json.error : errorKeyFromApi(res.status, json) };
-  } catch {
-    return { ok: false, key: "network" };
-  }
-}
 
 // The form for one row of any generic admin list, drawn from its description (GET /admin/lists) like the rally
 // editor. A new row is created in one go and then opens as its own page; a change sends only what changed, with the
@@ -84,16 +70,6 @@ export function AdminItemForm({ meta: config, initial, locale, routes }: { meta:
     setBusy(false);
     if (!res.ok) return setNotice({ kind: "error", text: messages[res.key] });
     router.push(`/admin/${config.key}`);
-  }
-
-  async function upload(name: string, file: File | undefined) {
-    if (!file) return;
-    setBusy(true);
-    setNotice(null);
-    const res = await uploadPhoto(file);
-    setBusy(false);
-    if (!res.ok) return setNotice({ kind: "error", text: messages[res.key] });
-    set(name)(res.url);
   }
 
   function input(f: FieldUi) {
@@ -168,10 +144,9 @@ export function AdminItemForm({ meta: config, initial, locale, routes }: { meta:
         return (
           <Field key={f.name} label={label} hint={hint} htmlFor={id} required={f.required}>
             <TextInput id={id} value={text(f.name)} onChange={set(f.name)} maxLength={500} placeholder="https://" invalid={missing.includes(f.name)} />
-            <label className="tap-target mt-2 inline-flex w-fit cursor-pointer items-center rounded-xl border-2 border-line px-5 text-lg font-bold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-accent">
-              {t`写真をアップロード`}
-              <input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={(e) => void upload(f.name, e.target.files?.[0])} className="sr-only" />
-            </label>
+            <div className="mt-2">
+              <PhotoUpload onUploaded={set(f.name)} disabled={busy} />
+            </div>
             <PhotoSlot url={text(f.name)} className="mt-2 max-w-md" />
           </Field>
         );

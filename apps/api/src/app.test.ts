@@ -106,4 +106,24 @@ describe("parseEnv", () => {
     // Other problems still stop the start.
     expect(() => parseEnv({ ...noUrl, PORT: "abc" }, log)).toThrow(/PORT/);
   });
+
+  test("an S3-compatible service (Supabase Storage) takes the place of the Cloudflare account id", () => {
+    const logs: string[] = [];
+    const log = (line: string) => logs.push(line);
+    const supabase = {
+      S3_ENDPOINT: "https://abc.storage.supabase.co/storage/v1/s3",
+      S3_REGION: "ap-northeast-1",
+      R2_ACCESS_KEY_ID: "key",
+      R2_SECRET_ACCESS_KEY: "secret",
+      R2_BUCKET_NAME: "photos",
+      R2_PUBLIC_URL: "https://abc.supabase.co/storage/v1/object/public/photos",
+    };
+    const env = parseEnv(supabase, log);
+    expect([env.R2_BUCKET_NAME, env.S3_ENDPOINT, env.S3_REGION]).toEqual(["photos", supabase.S3_ENDPOINT, "ap-northeast-1"]);
+    expect(logs).toEqual([]);
+    // A bad endpoint switches uploads off like any other bad storage setting.
+    const bad = parseEnv({ ...supabase, S3_ENDPOINT: "http://abc.example.com" }, log);
+    expect(bad.R2_BUCKET_NAME).toBeUndefined();
+    expect(logs.at(-1)).toMatch(/invalid S3_ENDPOINT/);
+  });
 });

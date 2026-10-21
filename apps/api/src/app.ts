@@ -83,14 +83,16 @@ function getServices(): Services {
         rpId: env.PASSKEY_RP_ID ?? new URL(env.APP_ORIGIN).hostname,
         origin: env.APP_ORIGIN,
       },
-      // All five R2 settings or none (parse-env checks): without them uploads answer 503.
+      // All the storage settings or none (parse-env checks): without them uploads answer 503.
       uploads: env.R2_BUCKET_NAME
         ? {
             storage: createR2Storage({
-              accountId: env.R2_ACCOUNT_ID!,
+              accountId: env.R2_ACCOUNT_ID,
               accessKeyId: env.R2_ACCESS_KEY_ID!,
               secretAccessKey: env.R2_SECRET_ACCESS_KEY!,
               bucket: env.R2_BUCKET_NAME,
+              endpoint: env.S3_ENDPOINT,
+              region: env.S3_REGION,
             }),
             publicBaseUrl: env.R2_PUBLIC_URL!,
           }

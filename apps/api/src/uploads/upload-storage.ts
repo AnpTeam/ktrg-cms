@@ -6,20 +6,27 @@ export interface FileStorage {
 }
 
 export interface R2Config {
-  accountId: string;
+  /** Cloudflare's account id; not needed when `endpoint` names another S3-compatible service. */
+  accountId?: string;
   accessKeyId: string;
   secretAccessKey: string;
   bucket: string;
+  /** Another S3-compatible service (Supabase Storage: https://<project>.storage.supabase.co/storage/v1/s3). */
+  endpoint?: string;
+  /** The service's region; "auto" for R2. */
+  region?: string;
 }
 
 /**
- * Cloudflare R2 through its S3-compatible API. The AWS SDK, not Bun's own S3 client, so it also
- * runs on Vercel's Node runtime. Nothing connects until the first upload.
+ * Cloudflare R2, or any S3-compatible service such as Supabase Storage, through the S3 API. The AWS SDK, not Bun's own
+ * S3 client, so it also runs on Vercel's Node runtime. Nothing connects until the first upload.
  */
 export function createR2Storage(config: R2Config): FileStorage {
   const client = new S3Client({
-    region: "auto",
-    endpoint: `https://${config.accountId}.r2.cloudflarestorage.com`,
+    region: config.region ?? "auto",
+    endpoint: config.endpoint ?? `https://${config.accountId}.r2.cloudflarestorage.com`,
+    // Supabase (and most other services) address a bucket in the path, not as a sub-domain.
+    forcePathStyle: config.endpoint !== undefined,
     credentials: { accessKeyId: config.accessKeyId, secretAccessKey: config.secretAccessKey },
   });
   return {
