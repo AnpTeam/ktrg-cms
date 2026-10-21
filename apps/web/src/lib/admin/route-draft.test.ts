@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { draftFromServer, draftReducer, emptyDraft, initialState, isDirty, placeFromServer, previewRoute, publishBlockers, type DraftAction, type DraftState } from "./route-draft";
-import { draftProblems, placeChanged, planSave, placeBody, routeBody, videoLinkLooksValid, withLegIds } from "./save-plan";
+import { draftProblems, placeChanged, planSave, placeBody, restoreHeld, routeBody, videoLinkLooksValid, withLegIds } from "./save-plan";
 import type { AdminRoute, AdminSpot } from "./types";
 
 const run = (state: DraftState, ...actions: DraftAction[]) => actions.reduce(draftReducer, state);
@@ -91,6 +91,32 @@ describe("legs", () => {
     const drawn = draftFromServer(serverRoute({ geometry: { type: "LineString", coordinates: [[135, 34], [135.01, 34.01]], legs: [{ from: "s1", to: "s2", coordinates: [[135, 34], [135.003, 34.007], [135.01, 34.01]] }] } }), spots);
     expect(drawn.legs[0]!.points).toHaveLength(3);
     expect(drawn.line).toHaveLength(3); // the line is what the legs make
+  });
+});
+
+describe("a save that holds unfinished waypoints back", () => {
+  const spots = [serverSpot("s1"), serverSpot("s2"), serverSpot("s3")];
+
+  test("they go back where they were as typed, and the finished ones are the server's", () => {
+    // s2 was edited into a half position (held), a blank new row sits between s2 and s3 (held), s1 and s3 are finished.
+    const edited = run(
+      initialState(draftFromServer(serverRoute(), spots)),
+      { type: "place", key: "s1", patch: { nameJa: "一番" } },
+      { type: "place", key: "s2", patch: { lat: 34.1 } },
+      { type: "addRow", key: "blank" },
+    ).present;
+    const problems = draftProblems(edited);
+    const held = new Set(problems.flatMap((p) => ("key" in p ? [p.key] : [])));
+    expect([...held].sort()).toEqual(["blank", "s2"]);
+
+    // what the server holds after saving s1 (new time) and s3 only
+    const server = draftFromServer(serverRoute(), [serverSpot("s1", { nameJa: "一番", updatedAt: "2026-10-20T00:00:00.000Z" }), serverSpot("s2"), serverSpot("s3")]);
+    const shown = restoreHeld(server, edited, held);
+    expect(shown.places.map((p) => [p.key, p.nameJa])).toEqual([["s1", "一番"], ["s2", "虎島の経塚"], ["s3", "虎島の経塚"], ["blank", ""]]);
+    expect(shown.places[0]!.updatedAt).toBe("2026-10-20T00:00:00.000Z"); // finished: the server's copy
+    expect(shown.places[1]!.lat).toBe(34.1); // held: what was typed stays
+    expect(shown.places[3]!.id).toBeNull();
+    expect(restoreHeld(server, edited, new Set())).toBe(server);
   });
 });
 
