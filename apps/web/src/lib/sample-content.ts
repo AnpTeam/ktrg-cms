@@ -65,6 +65,13 @@ const handSpots: SpotDetail[] = [
     ...R1,
     nameJa: "（見本）スポット1",
     nameEn: "(Sample) Spot 1",
+    // A sample story and two sample photos, so the page can be reviewed: the addresses are made up and show no picture.
+    historyJa: "これは見本の「歴史・由来」です。実際の説明ではありません。\n名前の由来や、そこで起きたことを書きます。",
+    historyEn: "This is a sample story, not a real one.\nIt tells where the name comes from and what happened there.",
+    gallery: [
+      { url: "https://example.com/sample-photo-1.jpg", credit: "（見本）撮影：山田 太郎、CC BY-SA 4.0", sourceUrl: "https://commons.wikimedia.org/" },
+      { url: "https://example.com/sample-photo-2.jpg", credit: null, sourceUrl: null },
+    ],
     descriptionJa:
       "これは見本の文章です。実際の説明ではありません。\n改行は、そのまま表示されます。\n\n空行で段落をわけることもできます。長い文章でも、読みやすい行の長さで表示されることをかくにんするための見本です。",
     descriptionEn:
@@ -159,7 +166,7 @@ export const sampleSpots: SpotDetail[] = [...handSpots, ...r2Spots, ...r3Spots, 
 
 function listItem(s: SpotDetail): SpotListItem {
   // The samples carry no kind of their own; the ones named as a sutra mound stand in for mounds on the map.
-  return { id: s.id, nameJa: s.nameJa, nameEn: s.nameEn, status: s.status, kind: s.nameJa.includes("経塚") ? "mound" : undefined, stamped: s.stamped, position: s.position };
+  return { id: s.id, nameJa: s.nameJa, nameEn: s.nameEn, status: s.status, descriptionJa: s.descriptionJa, descriptionEn: s.descriptionEn, statusNoteJa: s.statusNoteJa, statusNoteEn: s.statusNoteEn, statusUpdatedAt: s.statusUpdatedAt, photoUrl: s.photoUrl, kind: s.nameJa.includes("経塚") ? "mound" : undefined, stamped: s.stamped, position: s.position };
 }
 
 // ROUGH, INVENTED PLACEMENT for the home map's areas (sample data only, shown with the note 見本の位置（目安です）).

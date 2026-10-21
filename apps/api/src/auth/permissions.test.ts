@@ -30,6 +30,7 @@ describe("permission table", () => {
       [
         "audit.read",
         "banner.manage",
+        "site.manage",
         "me.manage",
         "me.sensitive",
         "navigation.path",

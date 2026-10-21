@@ -13,8 +13,16 @@ export const gsiAttribution = `<a href="${gsiTileListUrl}" target="_blank" rel="
 /** Real tile ranges (checked on the GSI tile list): base map 5 to 18, relief 5 to 15, hillshade 2 to 16. */
 export const zoomLimits = { min: 5, max: 18, reliefMax: 15, hillshadeMax: 16 } as const;
 
-export const gsiTileUrl = (layer: "std" | "pale" | "relief" | "hillshademap") =>
-  `https://cyberjapandata.gsi.go.jp/xyz/${layer}/{z}/{x}/{y}.png`;
+export const gsiTileUrl = (layer: "std" | "pale" | "blank" | "seamlessphoto" | "relief" | "hillshademap") =>
+  `https://cyberjapandata.gsi.go.jp/xyz/${layer}/{z}/{x}/{y}.${layer === "seamlessphoto" ? "jpg" : "png"}`;
+
+/** The GSI layer behind each base map choice, and the last zoom it has tiles for (beyond it the tiles are stretched). */
+const baseTiles = {
+  std: { layer: "std", maxzoom: 18 },
+  pale: { layer: "pale", maxzoom: 18 },
+  blank: { layer: "blank", maxzoom: 14 },
+  photo: { layer: "seamlessphoto", maxzoom: 18 },
+} as const;
 
 export interface Position {
   lat: number;
@@ -47,11 +55,47 @@ export function lineFeature(points: readonly Position[]): LineFeature {
   };
 }
 
+/** OpenTopoMap (outdoor map: contours, trails, huts), free, from OpenStreetMap data; zoom 0 to 17. For the editor only: light use. */
+export const topoTiles = ["a", "b", "c"].map((s) => `https://${s}.tile.opentopomap.org/{z}/{x}/{y}.png`);
+export const topoAttribution =
+  '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors, SRTM | © <a href="https://opentopomap.org" target="_blank" rel="noopener noreferrer">OpenTopoMap</a> (CC-BY-SA)';
+
+/** The base maps an editor can switch between while mapping, and the style layer behind each. */
+export const editorBases = ["std", "pale", "photo", "topo"] as const;
+export type EditorBase = (typeof editorBases)[number];
+export const editorBaseLayerIds: Record<EditorBase, string> = { std: "gsi-base", pale: "base-pale", photo: "base-photo", topo: "base-topo" };
+
+/** Which layer shows for a choice: its own, and none of the others. */
+export function editorBaseVisibility(choice: EditorBase): Record<string, "visible" | "none"> {
+  return Object.fromEntries(editorBases.map((b) => [editorBaseLayerIds[b], b === choice ? "visible" : "none"]));
+}
+
+/**
+ * The mapping style: the standard GSI map plus the other base maps as hidden layers, so switching is just showing one
+ * of them (see editorBaseVisibility). Visitors never get this style.
+ */
+export function editorStyle(): StyleSpecification {
+  const style = mapStyle({ ...defaultMapSettings, base: "std" });
+  const raster = (tiles: string[], maxzoom: number, attribution: string) => ({ type: "raster" as const, tiles, tileSize: 256, minzoom: zoomLimits.min, maxzoom, attribution });
+  const layer = (id: string, source: string): LayerSpecification => ({ id, type: "raster", source, layout: { visibility: "none" } });
+  const at = style.layers.findIndex((l) => l.id === "gsi-base") + 1;
+  style.layers.splice(at, 0, layer("base-pale", "base-pale"), layer("base-photo", "base-photo"), layer("base-topo", "base-topo"));
+  return {
+    ...style,
+    sources: {
+      ...style.sources,
+      "base-pale": raster([gsiTileUrl("pale")], 18, gsiAttribution),
+      "base-photo": raster([gsiTileUrl("seamlessphoto")], 18, gsiAttribution),
+      "base-topo": raster(topoTiles, 17, topoAttribution),
+    },
+  };
+}
+
 /** The id of the layer behind the visitor's terrain button (shown or hidden, never removed). */
 export const terrainLayerId = "gsi-terrain";
 
 /**
- * The base map: GSI tiles (standard or pale), plus the terrain overlay (hidden until the visitor
+ * The base map: GSI tiles (standard, pale, blank or photo), plus the terrain overlay (hidden until the visitor
  * turns it on). Raster tiles only. The overlay's tiles stop at their own maximum zoom, so they
  * are stretched beyond it.
  */
@@ -63,10 +107,10 @@ export function mapStyle(settings: MapSettings = defaultMapSettings): StyleSpeci
     sources: {
       "gsi-base": {
         type: "raster",
-        tiles: [gsiTileUrl(settings.base)],
+        tiles: [gsiTileUrl(baseTiles[settings.base].layer)],
         tileSize: 256,
         minzoom: zoomLimits.min,
-        maxzoom: zoomLimits.max,
+        maxzoom: baseTiles[settings.base].maxzoom,
         attribution: gsiAttribution,
       },
       "gsi-terrain": {
@@ -81,7 +125,13 @@ export function mapStyle(settings: MapSettings = defaultMapSettings): StyleSpeci
     layers: [
       // A calm colour shows where tiles have not arrived yet (weak signal), instead of a hole.
       { id: "background", type: "background", paint: { "background-color": "#dfe7e1" } },
-      { id: "gsi-base", type: "raster", source: "gsi-base" },
+      {
+        id: "gsi-base",
+        type: "raster",
+        source: "gsi-base",
+        // Calming the tiles: less colour and less contrast make the same map easier on the eyes (0 leaves them as drawn).
+        paint: { ...(settings.saturation !== 0 ? { "raster-saturation": settings.saturation } : {}), ...(settings.contrast !== 0 ? { "raster-contrast": settings.contrast } : {}) },
+      },
       {
         id: terrainLayerId,
         type: "raster",

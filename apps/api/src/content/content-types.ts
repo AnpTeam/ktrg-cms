@@ -1,5 +1,5 @@
 import type { ErrorCode } from "../lib/api-errors";
-import type { spotKinds } from "../db/schema/content";
+import type { SpotPhoto, spotKinds } from "../db/schema/content";
 import type { ROUTE_TEXT, SPOT_TEXT, Translations } from "../db/translations";
 import type { LineString } from "./line";
 
@@ -56,6 +56,9 @@ export interface SpotRow {
   nameEn: string | null;
   descriptionJa: string | null;
   descriptionEn: string | null;
+  /** Its story (where the name comes from, what happened there). */
+  historyJa: string | null;
+  historyEn: string | null;
   lat: number | null;
   lng: number | null;
   positionVerified: boolean;
@@ -65,7 +68,11 @@ export interface SpotRow {
   kind: SpotKind;
   /** Visitors can collect a stamp here. */
   stampable: boolean;
+  /** An optional visit beside the way (寄り道). */
+  stopBy: boolean;
   photoUrl: string | null;
+  /** More photos of the place, in order. */
+  photos: SpotPhoto[];
   status: SpotStatus;
   statusNoteJa: string | null;
   statusNoteEn: string | null;
@@ -109,6 +116,9 @@ export interface SpotFields {
   nameEn: string | null;
   descriptionJa: string | null;
   descriptionEn: string | null;
+  /** Its story (where the name comes from, what happened there). */
+  historyJa: string | null;
+  historyEn: string | null;
   lat: number | null;
   lng: number | null;
   positionVerified: boolean;
@@ -116,7 +126,11 @@ export interface SpotFields {
   radiusM: number;
   kind: SpotKind;
   stampable: boolean;
+  /** An optional visit beside the way (寄り道). */
+  stopBy: boolean;
   photoUrl: string | null;
+  /** More photos of the place, in order. */
+  photos: SpotPhoto[];
   status: SpotStatus;
   statusNoteJa: string | null;
   statusNoteEn: string | null;

@@ -1,7 +1,7 @@
 import type { ErrorCode } from "../lib/api-errors";
 import { stampableByDefault } from "../db/schema/content";
 import { cleanTranslations } from "../db/translations";
-import { isPhotoUrl } from "../lib/https-url";
+import { isHttpsUrl, isPhotoUrl } from "../lib/https-url";
 import { isAllowedVideoUrl } from "./video-url";
 import { lineLengthKm, parseLine, simplifyLine, sketchOf, type LineString } from "./line";
 import type {
@@ -27,12 +27,19 @@ export interface PublicSpot {
   nameEn: string | null;
   descriptionJa: string | null;
   descriptionEn: string | null;
+  /** Its story: where the name comes from, what happened there. */
+  historyJa: string | null;
+  historyEn: string | null;
   position: { lat: number; lng: number; verified: true } | null;
   radiusM: number;
   kind: SpotRow["kind"];
   /** A stamp can be collected here (only then does the place have a page of its own). */
   stampable: boolean;
+  /** An optional visit beside the way (寄り道). */
+  stopBy: boolean;
   photoUrl: string | null;
+  /** More photos of the place, in order, each with who took it when that is known. */
+  photos: SpotRow["photos"];
   status: SpotRow["status"];
   statusNoteJa: string | null;
   statusNoteEn: string | null;
@@ -123,11 +130,15 @@ function toPublicSpot(s: SpotRow): PublicSpot {
     nameEn: s.nameEn,
     descriptionJa: s.descriptionJa,
     descriptionEn: s.descriptionEn,
+    historyJa: s.historyJa,
+    historyEn: s.historyEn,
     position: showPosition ? { lat: s.lat!, lng: s.lng!, verified: true } : null,
     radiusM: s.radiusM,
     kind: s.kind,
     stampable: s.stampable,
+    stopBy: s.stopBy,
     photoUrl: s.photoUrl,
+    photos: s.photos,
     status: s.status,
     statusNoteJa: s.statusNoteJa,
     statusNoteEn: s.statusNoteEn,
@@ -142,8 +153,11 @@ const text = (v: string | null | undefined): string | null | undefined =>
   v === undefined ? undefined : v === null ? null : v.trim() === "" ? null : v.trim();
 
 /** `photoHosts` (PHOTO_HOSTS): when not empty, photos may only come from these host names. */
-export function createContentService(deps: { store: ContentStore; photoHosts?: readonly string[] }) {
+export function createContentService(deps: { store: ContentStore; photoHosts?: readonly string[]; publicRoutesTtlMs?: number }) {
   const { store } = deps;
+  // shortcut: the public route list (which reads every route's line to draw its silhouette) is kept per process for
+  // `publicRoutesTtlMs`, so a change shows up there after at most that long; precompute sketch/bounds columns if it must be instant.
+  let routesCache: { at: number; value: Promise<PublicRoute[]> } | null = null;
   const photoHosts = deps.photoHosts ?? [];
 
   /** Turn a request's route fields into what the store keeps, or say what is wrong. */
@@ -199,7 +213,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (!n) return bad("validation_failed");
       out.nameJa = n;
     }
-    for (const k of ["nameEn", "descriptionJa", "descriptionEn", "statusNoteJa", "statusNoteEn", "permissionNote", "positionSource"] as const) {
+    for (const k of ["nameEn", "descriptionJa", "descriptionEn", "historyJa", "historyEn", "statusNoteJa", "statusNoteEn", "permissionNote", "positionSource"] as const) {
       const v = text(input[k]);
       if (v !== undefined) out[k] = v;
     }
@@ -210,10 +224,23 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
     if (input.status !== undefined) out.status = input.status;
     if (input.kind !== undefined) out.kind = input.kind;
     if (input.stampable !== undefined) out.stampable = input.stampable;
+    if (input.stopBy !== undefined) out.stopBy = input.stopBy;
     if (input.photoUrl !== undefined) {
       const v = text(input.photoUrl);
       if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");
       out.photoUrl = v;
+    }
+    if (input.photos !== undefined) {
+      // Wikimedia Commons is always allowed for the gallery (the photo finder in the editor uses it), as well as the photo hosts.
+      const hosts = photoHosts.length > 0 ? [...photoHosts, "upload.wikimedia.org"] : [];
+      const photos: NonNullable<SpotFields["photos"]> = [];
+      for (const p of input.photos) {
+        const url = p.url.trim();
+        const sourceUrl = text(p.sourceUrl) ?? null;
+        if (!isPhotoUrl(url, hosts) || (sourceUrl !== null && !isHttpsUrl(sourceUrl))) return bad("invalid_photo_url");
+        photos.push({ url, credit: text(p.credit) ?? null, sourceUrl });
+      }
+      out.photos = photos;
     }
     if (input.permissionConfirmed !== undefined) out.permissionConfirmed = input.permissionConfirmed;
     if (input.positionVerified !== undefined) out.positionVerified = input.positionVerified;
@@ -333,8 +360,15 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
 
     // ---- public --------------------------------------------------------------------------
     /** All routes, ready or coming soon, in walking order. */
-    async publicRoutes(): Promise<PublicRoute[]> {
-      return (await store.listRoutes()).map((r) => toPublicRoute(r, r.publishedSpotCount, false));
+    publicRoutes(): Promise<PublicRoute[]> {
+      const ttl = deps.publicRoutesTtlMs ?? 0;
+      if (ttl > 0 && routesCache && Date.now() - routesCache.at < ttl) return routesCache.value;
+      const value = store.listRoutes().then((rows) => rows.map((r) => toPublicRoute(r, r.publishedSpotCount, false)));
+      if (ttl > 0) {
+        routesCache = { at: Date.now(), value };
+        value.catch(() => (routesCache = null)); // never keep a failure
+      }
+      return value;
     },
 
     /** The route, its published stamp places, and its published navigation points (turns, toilets, danger ...). */

@@ -619,6 +619,13 @@ body.map-screen-active .site-footer {
 body.map-sheet-full .site-header {
   display: none;
 }
+/* On a phone, a chosen course or stop takes the whole screen: the bottom tab bar steps aside (the sheet's back button
+   brings the map home, and the tabs with it). From 768 px the tabs are a side rail and stay. */
+@media (max-width: 767px) {
+  body.map-tabs-hidden [data-tabbar] {
+    display: none;
+  }
+}
 
 /* A course on the map, Japanese: a name tag read top to bottom, standing on the course's point, with its number in a
    round head. Narrow enough that all 19 stand side by side even when the whole trail is in view. Fixed colours,

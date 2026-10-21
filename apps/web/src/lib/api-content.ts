@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { PublicPlace, PublicRoute, PublicSpot } from "./api-content-types";
 import type { TrailNotice } from "./notices";
 import type { PlaceItem, Prefecture, RouteDetail, RoutePoint, RouteSummary, SpotDetail, SpotListItem } from "./content";
@@ -50,6 +51,12 @@ export function spotListItemFromApi(s: PublicSpot, stamped = false): SpotListIte
     ...(isPointKind(s.kind) ? { kind: s.kind } : {}),
     stamped,
     position: s.position ? { lat: s.position.lat, lng: s.position.lng, verified: true } : null,
+    descriptionJa: s.descriptionJa,
+    descriptionEn: s.descriptionEn,
+    statusNoteJa: s.statusNoteJa,
+    statusNoteEn: s.statusNoteEn,
+    statusUpdatedAt: s.statusUpdatedAt,
+    photoUrl: s.photoUrl,
   };
 }
 
@@ -122,10 +129,13 @@ export function spotDetailFromApi(s: PublicSpot, route: Pick<PublicRoute, "id" |
     routeNameEn: route.nameEn,
     descriptionJa: s.descriptionJa,
     descriptionEn: s.descriptionEn,
+    historyJa: s.historyJa ?? null,
+    historyEn: s.historyEn ?? null,
     statusNoteJa: s.statusNoteJa,
     statusNoteEn: s.statusNoteEn,
     statusUpdatedAt: s.statusUpdatedAt,
     photoUrl: s.photoUrl,
+    gallery: s.photos ?? [],
   };
 }
 
@@ -136,11 +146,14 @@ export function isEmptyRoute(r: Pick<PublicRoute, "bounds" | "publishedSpotCount
 
 // ---- fetching (server only) -----------------------------------------------------------------
 
+const PUBLIC_REVALIDATE_S = 30;
 const origin = () => process.env.API_ORIGIN ?? "http://localhost:3001";
 
 async function getJson(path: string): Promise<{ status: number; body: unknown } | null> {
   try {
-    const res = await fetch(`${origin()}/api/v1${path}`, { cache: "no-store", signal: AbortSignal.timeout(3000) });
+    // Public content is the same for everyone, so Next keeps the answer for a while: opening a tab or switching language
+    // then costs no trip to the API. An edit in the admin reaches visitors within this time (plus the API's own 10 s).
+    const res = await fetch(`${origin()}/api/v1${path}`, { next: { revalidate: PUBLIC_REVALIDATE_S }, signal: AbortSignal.timeout(3000) });
     return { status: res.status, body: await res.json().catch(() => null) };
   } catch {
     return null; // the API is not reachable: the caller shows an empty state, never a crash
@@ -150,23 +163,25 @@ async function getJson(path: string): Promise<{ status: number; body: unknown } 
 const okBody = <T>(r: { status: number; body: unknown } | null): T | null =>
   r && r.status === 200 && (r.body as { ok?: unknown } | null)?.ok === true ? (r.body as T) : null;
 
-export async function fetchPublicRoutes(): Promise<PublicRoute[] | null> {
+// The fetchers are wrapped in React's cache(): within one page render the same question is asked of the API once, however many
+// parts of the page ask it (the map page asks for the course list once per course, and for every place it shows).
+export const fetchPublicRoutes = cache(async (): Promise<PublicRoute[] | null> => {
   return okBody<{ routes: PublicRoute[] }>(await getJson("/routes"))?.routes ?? null;
-}
+});
 
-export async function fetchPublicRoute(id: string): Promise<{ route: PublicRoute; spots: PublicSpot[]; points: PublicSpot[] } | null> {
+export const fetchPublicRoute = cache(async (id: string): Promise<{ route: PublicRoute; spots: PublicSpot[]; points: PublicSpot[] } | null> => {
   const body = okBody<{ route: PublicRoute; spots: PublicSpot[]; points?: PublicSpot[] }>(await getJson(`/routes/${encodeURIComponent(id)}`));
   return body ? { route: body.route, spots: body.spots, points: body.points ?? [] } : null;
-}
+});
 
-export async function fetchPublicSpot(id: string): Promise<PublicSpot | null> {
+export const fetchPublicSpot = cache(async (id: string): Promise<PublicSpot | null> => {
   return okBody<{ spot: PublicSpot }>(await getJson(`/spots/${encodeURIComponent(id)}`))?.spot ?? null;
-}
+});
 
 /** Published places of the directory (the API keeps back the ones without a checked position). */
-export async function fetchPublicPlaces(): Promise<PublicPlace[] | null> {
+export const fetchPublicPlaces = cache(async (): Promise<PublicPlace[] | null> => {
   return okBody<{ places: PublicPlace[] }>(await getJson("/places"))?.places ?? null;
-}
+});
 
 /** Published trail notices that have not expired (the API decides, in Japan time). */
 export async function fetchPublicNotices(): Promise<TrailNotice[] | null> {

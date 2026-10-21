@@ -13,6 +13,7 @@ import type { AuditListRow, AuditListServices } from "./audit/audit-list";
 import { createBannerService, type BannerServices, type BannerStore } from "./banners/banner-list";
 import type { PlaceListRow, PlaceListServices } from "./content/place-list";
 import { createPlaceService, type PlaceServices, type PlaceStore } from "./places/place-directory";
+import { createSiteSettingsService, type SiteSettingsServices, type SiteSettingsStore } from "./site-settings/site-settings";
 import { createUserListService, type UserListServices, type UserListStore } from "./users/user-list";
 import type { NoticeServices } from "./notices/notice-routes";
 import { createNoticeService } from "./notices/notice-service";
@@ -34,7 +35,7 @@ import { createUploadService } from "./uploads/upload-service";
 import type { FileStorage } from "./uploads/upload-storage";
 
 /** Everything the routes use. */
-export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & BannerServices & PlaceServices & AuditListServices & PlaceListServices & UserListServices;
+export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & BannerServices & PlaceServices & SiteSettingsServices & AuditListServices & PlaceListServices & UserListServices;
 
 /** What the services are built from: the storage (database or in-memory) and the outside world. */
 export interface ServiceDeps {
@@ -51,6 +52,7 @@ export interface ServiceDeps {
     notices: NoticeStore;
     banners: BannerStore;
     places: PlaceStore;
+    siteSettings: SiteSettingsStore;
     auditList: ListReadStore<AuditListRow>;
     placeList: ListReadStore<PlaceListRow>;
     userList: UserListStore;
@@ -67,6 +69,8 @@ export interface ServiceDeps {
   uploads?: { storage: FileStorage; publicBaseUrl: string };
   /** Host names a photo address may use (PHOTO_HOSTS). Empty or missing: any https address. */
   photoHosts?: readonly string[];
+  /** How long the public route list may be reused (ms); unset: never. */
+  publicRoutesTtlMs?: number;
   /** Snaps a drawn line to trails. Without one, the admin is told the service is not set up. */
   routing?: RoutingService;
   /** The clock every service reads. Tests move it; the app uses real time. */
@@ -89,7 +93,7 @@ export function createServices(deps: ServiceDeps): Services {
     // Profile, language, display name and deletion requests (emails the owner).
     me: createMeService({ store: stores.me, mailer, now }),
     // Routes and places: what the admin edits and visitors read.
-    content: createContentService({ store: stores.content, photoHosts: deps.photoHosts }),
+    content: createContentService({ store: stores.content, photoHosts: deps.photoHosts, publicRoutesTtlMs: deps.publicRoutesTtlMs }),
     // Rallies: names, dates, required count and which places they hold.
     rallyAdmin: createRallyAdminService({ store: stores.rallyAdmin }),
     // Collecting stamps near a place, reading your own, and the admin review of flagged ones.
@@ -99,7 +103,8 @@ export function createServices(deps: ServiceDeps): Services {
     notices: createNoticeService({ store: stores.notices, now }),
     // The other generated admin lists: home banners, the audit log, every place, accounts and their roles.
     banners: createBannerService({ store: stores.banners, photoHosts: deps.photoHosts }),
-    places: createPlaceService({ store: stores.places, photoHosts: deps.photoHosts }),
+    places: createPlaceService({ store: stores.places, photoHosts: deps.photoHosts, routeExists: async (id) => (await stores.content.getRoute(id)) !== null }),
+    siteSettings: createSiteSettingsService({ store: stores.siteSettings }),
     auditList: createListReader({ store: stores.auditList }),
     placeList: createListReader({ store: stores.placeList }),
     userList: createUserListService({ store: stores.userList }),

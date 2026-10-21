@@ -27,7 +27,7 @@ export type Texts<F extends string> = { locale: ContentLocale; values: Partial<R
 
 /** Which text fields each owner has. */
 export const ROUTE_TEXT = ["name", "description", "history", "access"] as const;
-export const SPOT_TEXT = ["name", "description", "statusNote"] as const;
+export const SPOT_TEXT = ["name", "description", "history", "statusNote"] as const;
 export const RALLY_TEXT = ["name"] as const;
 export const NOTICE_TEXT = ["title", "body", "sourceName"] as const;
 export const BANNER_TEXT = ["alt"] as const;

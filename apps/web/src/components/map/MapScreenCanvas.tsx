@@ -1,7 +1,7 @@
 "use client";
 
 import "maplibre-gl/dist/maplibre-gl.css";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import { WarningIcon } from "@/components/icons";
@@ -110,7 +110,26 @@ export function MapScreenCanvas({
 
   const route = routes.find((r) => r.id === routeId) ?? null;
   // The course shown on its own: the chosen one, or else the one the visitor has zoomed into (the others fold away).
-  const focus = route ?? routes.find((r) => r.id === autoId) ?? null;
+  const shown = route ?? routes.find((r) => r.id === autoId) ?? null;
+  // Paths come on demand (see MapScreenRoute.hasLine) and are kept, so choosing a course again costs nothing.
+  const [lines, setLines] = useState<Record<string, Position[]>>({});
+  const fetched = shown ? lines[shown.id] : undefined;
+  const focus = useMemo(() => (shown && !shown.line && fetched ? { ...shown, line: fetched } : shown), [shown, fetched]);
+  const wanted = shown && shown.hasLine && !shown.line && !lines[shown.id] ? shown.id : null;
+  useEffect(() => {
+    if (!wanted) return;
+    let stale = false;
+    fetch(`/api/v1/routes/${encodeURIComponent(wanted)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((body: { route?: { line?: { coordinates: [number, number][] } | null } } | null) => {
+        const coords = body?.route?.line?.coordinates;
+        if (!stale && coords) setLines((l) => ({ ...l, [wanted]: coords.map(([lng, lat]) => ({ lat, lng })) }));
+      })
+      .catch(() => {}); // no path drawn; the stops still show
+    return () => {
+      stale = true;
+    };
+  }, [wanted]);
   const draftShown = focus ? focus.draft || focus.area?.verified === false : routes.some((r) => r.area && !r.area.verified);
 
   // Keep what is framed above the sheet and clear of the buttons (menu on the left, zoom on the right).
@@ -275,10 +294,10 @@ export function MapScreenCanvas({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !ready) return;
-    const points = route ? framePoints(route) : routes.flatMap((r) => (r.area ? framePoints(r) : []));
+    const points = route ? framePoints(route.line || !lines[route.id] ? route : { ...route, line: lines[route.id] ?? null }) : routes.flatMap((r) => (r.area ? framePoints(r) : []));
     const bounds = boundsOf(points);
     if (bounds) map.fitBounds(bounds, { padding: padding(), maxZoom: route ? 15 : 11, duration: 600 });
-  }, [ready, routeId, mapGen]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ready, routeId, mapGen, routeId ? lines[routeId] : null]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // A chosen stop is brought into view above the sheet.
   useEffect(() => {

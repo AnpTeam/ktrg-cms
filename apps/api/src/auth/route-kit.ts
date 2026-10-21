@@ -68,8 +68,7 @@ function identifier(key: LimitKey, ctx: LimitContext, http: HttpHelpers): string
  *
  * Rate limits run after validation and after `auth`, before the handler. Every listed rule
  * counts the hit (so none is skipped) and the longest wait is reported. When an identifier
- * is missing (a passkey-only account has no email) nothing is counted and the handler
- * answers the request.
+ * is missing (a passkey-only account has no email) only that rule is skipped; the others still count.
  */
 export function routeKit<S extends KitServices>(getServices: () => S, opts: RouteOptions) {
   const http = createHttpHelpers({
@@ -89,9 +88,9 @@ export function routeKit<S extends KitServices>(getServices: () => S, opts: Rout
         const hits: { rule: (typeof AUTH_LIMITS)[keyof typeof AUTH_LIMITS]; identifier: string }[] = [];
         for (const [rule, key] of Object.entries(spec) as [keyof typeof AUTH_LIMITS, LimitKey][]) {
           const id = identifier(key, c, http);
-          if (id === null) return; // see above: the handler answers
-          hits.push({ rule: AUTH_LIMITS[rule], identifier: id });
+          if (id !== null) hits.push({ rule: AUTH_LIMITS[rule], identifier: id }); // a missing one skips only its own rule
         }
+        if (hits.length === 0) return;
         const limited = http.tooMany(c.set, await getServices().rateLimit.checkAll(hits));
         // status(), not the bare body: a bare body would join the route's success type.
         if (limited) return status(429, limited);

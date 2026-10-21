@@ -1,0 +1,38 @@
+name: Keep the site warm
+
+# Vercel puts an idle function to sleep, and the first visitor then waits about 3 seconds for the web function, the
+# API function and the database connection to wake up one after the other. This asks for the three public things every
+# 10 minutes during the day in Japan (6:00 to 21:59), so they are usually awake. It only reads public pages: no secret.
+# It is best effort: GitHub may run a scheduled job late or skip one, so the first visit can still be slow.
+#
+# Setup: uses the repository VARIABLE APP_URL (the same one as purge-deletions.yml). Until it is set the job does nothing.
+# Scheduled workflows run from the default branch only, and GitHub switches them off after 60 days without
+# repository activity: re-enable it in the Actions tab if that happens.
+
+on:
+  schedule:
+    - cron: "*/10 21-23,0-12 * * *" # UTC; 6:00 to 21:59 in Japan
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: keep-warm
+  cancel-in-progress: true
+
+jobs:
+  warm:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Ask for the home page, the map and the public route list
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+        run: |
+          if [ -z "$APP_URL" ]; then
+            echo "APP_URL is not set: nothing to do yet."
+            exit 0
+          fi
+          for path in / /map /api/v1/routes; do
+            echo "$path -> $(curl --silent --output /dev/null --max-time 30 --write-out '%{http_code} in %{time_total}s' "$APP_URL$path")"
+          done

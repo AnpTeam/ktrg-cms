@@ -2,6 +2,7 @@ import type { Translations } from "./content-locales";
 // What the admin API sends (apps/api/src/content/admin-routes.ts). Times are ISO text; `updatedAt` goes back with
 // every save so the API can tell when someone else saved first.
 
+import type { GalleryPhoto } from "../content";
 import type { PointKind } from "../point-kinds";
 
 export type Prefecture = "osaka" | "wakayama" | "nara";
@@ -55,6 +56,8 @@ export interface AdminSpot {
   nameEn: string | null;
   descriptionJa: string | null;
   descriptionEn: string | null;
+  historyJa: string | null;
+  historyEn: string | null;
   lat: number | null;
   lng: number | null;
   positionVerified: boolean;
@@ -63,7 +66,11 @@ export interface AdminSpot {
   kind: PointKind;
   /** Visitors can collect a stamp here. */
   stampable: boolean;
+  /** An optional visit beside the way (寄り道): the route's line need not pass through it. */
+  stopBy: boolean;
   photoUrl: string | null;
+  /** More photos of the place, in order. */
+  photos: GalleryPhoto[];
   status: SpotStatus;
   statusNoteJa: string | null;
   statusNoteEn: string | null;

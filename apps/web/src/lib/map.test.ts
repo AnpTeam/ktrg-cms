@@ -12,6 +12,7 @@ import {
   terrainLayerId,
   zoomLimits,
 } from "./map";
+import { defaultMapSettings } from "./map-settings";
 
 describe("GSI tiles", () => {
   test("tile addresses come from the GSI host in the xyz pattern", () => {
@@ -43,7 +44,7 @@ describe("GSI tiles", () => {
   });
 
   test("the settings choose the tiles: base map, terrain kind, strength", () => {
-    const plain = mapStyle({ base: "pale", terrain: "relief", terrainOpacity: 0.3, dark: "none" });
+    const plain = mapStyle({ base: "pale", terrain: "relief", terrainOpacity: 0.3, saturation: 0, contrast: 0, dark: "none" });
     const base = plain.sources["gsi-base"];
     const terrain = plain.sources["gsi-terrain"];
     expect(base && "tiles" in base ? base.tiles?.[0] : "").toContain("/pale/");
@@ -51,10 +52,21 @@ describe("GSI tiles", () => {
     expect(terrain && "maxzoom" in terrain ? terrain.maxzoom : 0).toBe(15);
     expect(plain.layers.find((l) => l.id === terrainLayerId)?.paint).toEqual({ "raster-opacity": 0.3 });
 
-    const hill = mapStyle();
+    const hill = mapStyle({ ...defaultMapSettings, base: "std" });
     const hillTerrain = hill.sources["gsi-terrain"];
     expect(hillTerrain && "tiles" in hillTerrain ? hillTerrain.tiles?.[0] : "").toContain("/hillshademap/");
     expect(hillTerrain && "maxzoom" in hillTerrain ? hillTerrain.maxzoom : 0).toBe(16);
+  });
+
+  test("the other base maps and the calming settings reach the style", () => {
+    const photo = mapStyle({ ...defaultMapSettings, base: "photo" });
+    const photoBase = photo.sources["gsi-base"];
+    expect(photoBase && "tiles" in photoBase ? photoBase.tiles?.[0] : "").toBe("https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg");
+    const blank = mapStyle({ ...defaultMapSettings, base: "blank" }).sources["gsi-base"];
+    expect(blank && "maxzoom" in blank ? blank.maxzoom : 0).toBe(14);
+    expect(mapStyle(defaultMapSettings).layers.find((l) => l.id === "gsi-base")?.paint).toEqual({});
+    const calm = mapStyle({ ...defaultMapSettings, saturation: -0.4, contrast: -0.1 });
+    expect(calm.layers.find((l) => l.id === "gsi-base")?.paint).toEqual({ "raster-saturation": -0.4, "raster-contrast": -0.1 });
   });
 
   test("zoom limits match the real tile ranges", () => {
@@ -109,5 +121,18 @@ describe("markers", () => {
     expect(nextStopId([{ id: "a", stamped: null }, { id: "b", stamped: null }])).toBeNull();
     expect(nextStopId([{ id: "a", stamped: true }])).toBeNull();
     expect(nextStopId([])).toBeNull();
+  });
+});
+
+describe("editor base maps", () => {
+  test("every choice has a hidden layer in the style, and only the chosen one shows", async () => {
+    const { editorBaseLayerIds, editorBaseVisibility, editorBases, editorStyle } = await import("./map");
+    const ids = editorStyle().layers.map((l) => l.id);
+    for (const b of editorBases) expect(ids).toContain(editorBaseLayerIds[b]);
+    // The terrain overlay stays on top of whichever base is chosen.
+    expect(ids.indexOf("gsi-terrain")).toBeGreaterThan(ids.indexOf("base-topo"));
+    expect(Object.values(editorBaseVisibility("topo")).filter((v) => v === "visible")).toHaveLength(1);
+    expect(editorBaseVisibility("topo")["base-topo"]).toBe("visible");
+    expect(editorBaseVisibility("std")["gsi-base"]).toBe("visible");
   });
 });

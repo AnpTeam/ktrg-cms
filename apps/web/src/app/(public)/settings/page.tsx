@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // What the visitor can change for themselves: how big the text and buttons are, and how the map
-// shows places. (The developer-only map style page is /settings/map.)
+// shows places. (The map style is chosen by an admin, in the admin area.)
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
   await initLingui();
   const home = "/";

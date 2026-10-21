@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { msg } from "@lingui/core/macro";
 import { MapScreen } from "@/components/map/MapScreen";
-import { forViewer, getRoute, getSpot, listPlaces, listRoutes, pickText, type PlaceItem, type RouteSummary } from "@/lib/content";
+import { forViewer, getRoute, sampleContentEnabled, listPlaces, listRoutes, pickText, type PlaceItem, type RouteSummary } from "@/lib/content";
 import type { MapPhoto, MapScreenPoint, MapScreenRoute, MapScreenSpot, MapScreenStop } from "@/lib/map-screen";
 import { categoryOfKind } from "@/lib/point-kinds";
-import { mapSettingsCookie, parseMapSettings } from "@/lib/map-settings";
+import { getMapSettings } from "@/lib/site-settings";
 import { municipalityName } from "@/lib/municipalities";
 import { isStampMock } from "@/lib/stamp-flow";
 import { getPrefs } from "@/lib/server-prefs";
@@ -37,6 +36,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
         const name = pickText(locale, r.nameJa, r.nameEn);
         let stops: MapScreenStop[] | null = null;
         let line: MapScreenRoute["line"] = null;
+        let hasLine = false;
         let draft = false;
         let spots: MapScreenSpot[] = [];
         let photo: MapPhoto | null = null;
@@ -68,39 +68,38 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
             });
           }
           if (detail && positioned.length > 0) {
-            line = detail.line;
+            hasLine = detail.line !== null;
+            // Sample courses have no API behind them to fetch from, so theirs stays inline.
+            line = sampleContentEnabled() ? detail.line : null;
             draft = positioned.some((s) => !s.position?.verified);
-            stops = (
-              await Promise.all(
-                detail.spots.map(async (s, index): Promise<MapScreenStop | null> => {
-                  if (!s.position) return null;
-                  const full = await getSpot(s.id);
-                  const spot = full ? forViewer(full, viewer) : s;
-                  const spotName = pickText(locale, s.nameJa, s.nameEn);
-                  if (!spotName) return null;
-                  const parts = [`${index + 1}. ${spotName.text}`];
-                  if (spot.stamped) parts.push(words.stamped);
-                  if (s.status === "closed") parts.push(words.closed);
-                  const note = full ? pickText(locale, full.statusNoteJa, full.statusNoteEn) : null;
-                  return {
-                    id: s.id,
-                    order: index + 1,
-                    name: spotName.text,
-                    nameLang: spotName.lang,
-                    label: parts.join(", "),
-                    position: { lat: s.position.lat, lng: s.position.lng },
-                    kind: s.kind,
-                    stamped: spot.stamped,
-                    status: s.status,
-                    href: `/spots/${s.id}`,
-                    description: full ? (pickText(locale, full.descriptionJa, full.descriptionEn)?.text ?? null) : null,
-                    statusNote: note?.text ?? null,
-                    statusUpdatedAt: full?.statusUpdatedAt ?? null,
-                    photo: full?.photoUrl ? { src: full.photoUrl, alt: spotName.text } : null,
-                  };
-                }),
-              )
-            ).filter((s): s is MapScreenStop => s !== null);
+            // Each place of the course already carries what its sheet shows: no request per place.
+            stops = detail.spots
+              .map((s, index): MapScreenStop | null => {
+                if (!s.position) return null;
+                const spotName = pickText(locale, s.nameJa, s.nameEn);
+                if (!spotName) return null;
+                const parts = [`${index + 1}. ${spotName.text}`];
+                if (s.stamped) parts.push(words.stamped);
+                if (s.status === "closed") parts.push(words.closed);
+                const note = pickText(locale, s.statusNoteJa ?? null, s.statusNoteEn ?? null);
+                return {
+                  id: s.id,
+                  order: index + 1,
+                  name: spotName.text,
+                  nameLang: spotName.lang,
+                  label: parts.join(", "),
+                  position: { lat: s.position.lat, lng: s.position.lng },
+                  kind: s.kind,
+                  stamped: s.stamped,
+                  status: s.status,
+                  href: `/spots/${s.id}`,
+                  description: pickText(locale, s.descriptionJa ?? null, s.descriptionEn ?? null)?.text ?? null,
+                  statusNote: note?.text ?? null,
+                  statusUpdatedAt: s.statusUpdatedAt ?? null,
+                  photo: s.photoUrl ? { src: s.photoUrl, alt: spotName.text } : null,
+                };
+              })
+              .filter((s): s is MapScreenStop => s !== null);
           }
         }
 
@@ -141,6 +140,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
           href: `/routes/${r.id}`,
           stops,
           line,
+          hasLine,
           draft,
         };
       }),
@@ -150,16 +150,14 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
 // The map tab (WBS 3.2.10): all 19 courses as areas, with a bottom sheet that keeps the map in view. Anyone can look
 // around; stamps and navigation are for accounts.
 export default async function MapPage({ searchParams }: { searchParams: Promise<{ as?: string; stamp?: string; route?: string; stop?: string }> }) {
-  const i18n = await initLingui();
-  const viewer = await getViewer(searchParams);
-  const { stamp, route: wantedRoute, stop: wantedStop } = await searchParams;
+  // Everything the page needs is asked at once (each is a trip to the API): none of them waits for another.
+  const [i18n, viewer, params, prefs, settings, listed, places] = await Promise.all([initLingui(), getViewer(searchParams), searchParams, getPrefs(), getMapSettings(), listRoutes(), listPlaces()]);
+  const { stamp, route: wantedRoute, stop: wantedStop } = params;
   // Development only: `?stamp=far` and so on pretends the answers of the stamping API, which does not exist yet.
   const stampMock = process.env.NODE_ENV !== "production" && isStampMock(stamp) ? stamp : undefined;
 
-  const prefs = await getPrefs();
-  const settings = parseMapSettings((await cookies()).get(mapSettingsCookie)?.value);
-  const summaries = (await listRoutes()).map((r) => forViewer(r, viewer));
-  const routes = await mapRoutes(summaries, await listPlaces(), viewer, i18n.locale, { stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`) });
+  const summaries = listed.map((r) => forViewer(r, viewer));
+  const routes = await mapRoutes(summaries, places, viewer, i18n.locale, { stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`) });
   const next = `?next=${encodeURIComponent("/map")}`;
   // "Show in the map" from a place page: only an existing course (and a stop of it) is taken over from the address.
   const initialRoute = routes.find((r) => r.id === wantedRoute) ?? null;

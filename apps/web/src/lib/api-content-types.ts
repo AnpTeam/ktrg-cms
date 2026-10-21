@@ -34,12 +34,17 @@ export interface PublicSpot {
   nameEn: string | null;
   descriptionJa: string | null;
   descriptionEn: string | null;
+  historyJa?: string | null;
+  historyEn?: string | null;
   position: { lat: number; lng: number; verified: true } | null;
   radiusM: number;
   kind: string;
   /** A stamp can be collected here. */
   stampable: boolean;
+  /** An optional visit beside the way (寄り道). */
+  stopBy?: boolean;
   photoUrl: string | null;
+  photos?: { url: string; credit: string | null; sourceUrl: string | null }[];
   status: "open" | "caution" | "closed";
   statusNoteJa: string | null;
   statusNoteEn: string | null;

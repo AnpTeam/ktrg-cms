@@ -29,6 +29,8 @@ import { auditLogList, createDrizzleAuditListStore } from "./audit/audit-list";
 import { bannerList, publicBannerRoutes } from "./banners/banner-list";
 import { createDrizzleBannerStore } from "./banners/banner-store";
 import { placeDirectoryList, publicPlaceRoutes } from "./places/place-directory";
+import { publicSettingsRoutes, siteSettingsRoutes } from "./site-settings/site-settings";
+import { createDrizzleSiteSettingsStore } from "./site-settings/site-settings-store";
 import { createDrizzlePlaceStore } from "./places/place-store";
 import { createDrizzlePlaceListStore, placeList } from "./content/place-list";
 import { createDrizzleUserListStore, userList } from "./users/user-list";
@@ -62,6 +64,7 @@ function getServices(): Services {
         notices: createDrizzleNoticeStore(db),
         banners: createDrizzleBannerStore(db),
         places: createDrizzlePlaceStore(db),
+        siteSettings: createDrizzleSiteSettingsStore(db),
         auditList: createDrizzleAuditListStore(db),
         placeList: createDrizzlePlaceListStore(db),
         userList: createDrizzleUserListStore(db),
@@ -70,6 +73,7 @@ function getServices(): Services {
       mailer: createMailer(env),
       routing: createRoutingService({ apiKey: env.ORS_API_KEY }),
       photoHosts: env.PHOTO_HOSTS?.split(",").map((h) => h.trim().toLowerCase()).filter(Boolean),
+      publicRoutesTtlMs: env.NODE_ENV === "production" ? 10_000 : undefined,
       // Production requires the secret (parse-env); this dev fallback never ships.
       secret: env.OTP_HMAC_SECRET ?? "dev-only-otp-secret-change-me-0000000",
       adminEmails: parseAdminEmails(env.ADMIN_EMAILS).emails, // checked at boot (parse-env)
@@ -136,6 +140,8 @@ export function createApp(
     .use(listReadRoutes(placeDirectoryList, getServices, opts))
     .use(listWriteRoutes(placeDirectoryList, getServices, opts))
     .use(publicPlaceRoutes(() => getServices().places))
+    .use(siteSettingsRoutes(getServices, opts))
+    .use(publicSettingsRoutes(() => getServices().siteSettings))
     .use(listReadRoutes(auditLogList, getServices, opts))
     .use(listReadRoutes(placeList, getServices, opts))
     .use(listReadRoutes(userList, getServices, opts))

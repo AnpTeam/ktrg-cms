@@ -33,7 +33,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
         {/* The footer lives in the sidebar on a desktop (and is hidden on the map, whose page has no room for it). */}
         <TabBar footer={<SiteFooter locale={i18n.locale} variant="sidebar" />} />
         <div className="min-w-0 max-w-xl flex-1 md:border-x md:border-surface lg:max-w-none lg:border-x-0">
-          <SiteHeader signedIn={viewer.signedIn} name={viewer.name} sample={sample} devTools={process.env.NODE_ENV !== "production"} />
+          <SiteHeader signedIn={viewer.signedIn} name={viewer.name} sample={sample} />
           <OfflineNotice />
           {sample ? <SampleNoticeHost /> : null}
           <PrefsSync signedIn={viewer.signedIn} account={prefsState.account} device={prefsState.device} />

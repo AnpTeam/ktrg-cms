@@ -1,24 +1,39 @@
 "use client";
 
 import "maplibre-gl/dist/maplibre-gl.css";
-import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type DragEvent, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import { TerraDraw, TerraDrawLineStringMode, TerraDrawSelectMode } from "terra-draw";
 import { TerraDrawMapLibreGLAdapter } from "terra-draw-maplibre-gl-adapter";
 import { parseGpx, type GpxWaypoint } from "@/lib/admin/gpx";
 import { keepElevations, sameLine, simplify, type LngLatEle } from "@/lib/admin/line";
+import { searchPlaces, type PlaceHit } from "@/lib/admin/place-search";
+import { buildLine, closeLineGaps, smoothLine } from "@/lib/admin/route-builder";
 import { roundLine, snapPoints, type SnapPoint } from "@/lib/admin/snap";
-import { boundsOf, lineFeature, mapStyle, routeLineLayers, terrainLayerId, zoomLimits } from "@/lib/map";
-import { defaultMapSettings } from "@/lib/map-settings";
+import { boundsOf, editorBaseVisibility, editorBases, editorStyle, lineFeature, routeLineLayers, terrainLayerId, zoomLimits, type EditorBase } from "@/lib/map";
+import { pointKinds, type PointKind } from "@/lib/point-kinds";
+import { useKindLabels } from "../PlacePanel";
 
 export interface EditorPlace {
   key: string;
   lat: number | null;
   lng: number | null;
-  /** The number shown on the marker (its place in the list). */
-  number: number;
+  /** The number on the marker: its place among the waypoints with a stamp. A waypoint without a stamp is a small dot (null). */
+  number: number | null;
   name: string;
+  stampable: boolean;
+  /** An optional visit beside the way (寄り道): the line need not pass through it. */
+  stopBy: boolean;
+  kind: PointKind;
+}
+
+/** What the list under the map can change on a waypoint. */
+export interface PlacePatch {
+  nameJa?: string;
+  kind?: PointKind;
+  stampable?: boolean;
+  stopBy?: boolean;
 }
 
 export type ElevationStatus = "idle" | "loading" | "partial";
@@ -41,6 +56,8 @@ export interface MapEditorProps {
   onMovePlace: (key: string, lat: number, lng: number) => void;
   onRemovePlace: (key: string) => void;
   onSelectPlace: (key: string | null) => void;
+  /** Changes a waypoint's name, kind, stamp switch or side-trip switch. */
+  onPatchPlace: (key: string, patch: PlacePatch) => void;
   /** Asks the route-finding service for a walking line through these points (the editor says what went wrong). */
   onSnap: (points: SnapPoint[]) => Promise<{ ok: true; line: LngLatEle[] } | { ok: false; message: string }>;
 }
@@ -57,7 +74,12 @@ const asPositions = (line: readonly LngLatEle[]) => line.map((p) => ({ lng: p[0]
 // Where the map starts when there is nothing to show yet: the Katsuragi area.
 const START = { center: [135.45, 34.45] as [number, number], zoom: 9 };
 const markerClass =
-  "flex size-10 items-center justify-center rounded-full border-2 border-paper bg-brand text-lg font-bold text-on-brand shadow-md data-[selected=true]:ring-4 data-[selected=true]:ring-ink data-[unplaced=true]:opacity-60";
+  "flex size-10 min-h-0 min-w-0 p-0 items-center justify-center rounded-full border-2 border-paper bg-brand text-lg font-bold text-on-brand shadow-md data-[selected=true]:ring-4 data-[selected=true]:ring-ink data-[stopby=true]:border-dashed data-[unplaced=true]:opacity-60";
+const dotClass =
+  "flex size-7 min-h-0 min-w-0 p-0 items-center justify-center rounded-full border-2 border-ink bg-paper text-sm font-bold text-ink shadow-md data-[selected=true]:ring-4 data-[selected=true]:ring-ink data-[stopby=true]:border-dashed data-[unplaced=true]:opacity-60";
+const chipClass = "inline-flex h-9 min-h-0 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-line bg-paper px-3 text-sm font-bold hover:bg-surface disabled:opacity-40 disabled:hover:bg-paper";
+const floatClass = "flex items-center gap-0.5 rounded-xl border border-line bg-paper/95 p-1 shadow-md backdrop-blur-sm";
+const iconBtn = "inline-flex h-8 min-h-0 min-w-8 items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-bold [&:not([aria-pressed=true])]:hover:bg-surface disabled:opacity-40 disabled:hover:bg-transparent";
 const toolClass = "tap-target inline-flex items-center justify-center rounded-xl border-2 px-3 text-base font-bold disabled:opacity-40";
 
 const same2d = (a: readonly number[], b: readonly number[]) => a[0] === b[0] && a[1] === b[1];
@@ -68,9 +90,14 @@ export function MapEditor(props: MapEditorProps) {
   const [ready, setReady] = useState(false);
   const [note, setNote] = useState<string | null>(null);
   const [terrain, setTerrain] = useState(false);
+  const [base, setBase] = useState<EditorBase>("std");
   const [waypoints, setWaypoints] = useState<GpxWaypoint[] | null>(null);
   const [dropping, setDropping] = useState(false);
   const [snapping, setSnapping] = useState(false);
+  const [building, setBuilding] = useState(false);
+  const [query, setQuery] = useState("");
+  const [found, setFound] = useState<PlaceHit[] | null>(null);
+  const [searching, setSearching] = useState(false);
 
   const container = useRef<HTMLDivElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -106,7 +133,7 @@ export function MapEditor(props: MapEditorProps) {
       const bounds = boundsOf([...line.map((p) => ({ lng: p[0], lat: p[1] })), ...places.flatMap((p) => (p.lat === null || p.lng === null ? [] : [{ lat: p.lat, lng: p.lng }]))]);
       map = new ml.Map({
         container: container.current,
-        style: mapStyle(defaultMapSettings),
+        style: editorStyle(), // mapping needs the detailed maps; visitors see the one chosen in the site settings
         center: START.center,
         zoom: START.zoom,
         bounds: bounds ?? undefined,
@@ -290,8 +317,10 @@ export function MapEditor(props: MapEditorProps) {
         markers.current.set(p.key, entry);
       }
       entry.marker.setLngLat([p.lng!, p.lat!]);
-      entry.el.textContent = String(p.number);
-      entry.el.setAttribute("aria-label", `${p.number}. ${p.name}`);
+      entry.el.className = p.stampable ? markerClass : dotClass;
+      entry.el.textContent = p.stampable ? String(p.number) : "";
+      entry.el.dataset.stopby = String(p.stopBy);
+      entry.el.setAttribute("aria-label", p.stampable ? `${p.number}. ${p.name}` : p.name);
       entry.el.dataset.selected = String(p.key === props.selectedKey);
     }
   }, [props.places, props.selectedKey, ready]);
@@ -303,6 +332,13 @@ export function MapEditor(props: MapEditorProps) {
     const pts = [...props.line.map((p) => ({ lng: p[0], lat: p[1] })), ...props.places.flatMap((p) => (p.lat === null || p.lng === null ? [] : [{ lat: p.lat, lng: p.lng }]))];
     const b = boundsOf(pts);
     if (b) map.fitBounds(b, { padding: 60, maxZoom: 15, duration: 400 });
+  }
+
+  function chooseBase(next: EditorBase) {
+    const map = mapRef.current;
+    if (!map) return;
+    for (const [id, visibility] of Object.entries(editorBaseVisibility(next))) if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", visibility);
+    setBase(next);
   }
 
   function toggleTerrain() {
@@ -332,19 +368,82 @@ export function MapEditor(props: MapEditorProps) {
     }
   }
 
-  // Joins the drawn line (or the stops) along real walking trails; the result replaces the line and can be undone.
+  // Joins the drawn line (or the stops) along real walking trails. The route-finding service is asked first; when it is not set
+  // up or does not answer, GSI's own trail map does the same job without a key (the way Navivi falls back). The result
+  // replaces the line and can be undone.
   async function snapToTrails() {
-    const points = snapPoints(props.line, props.places);
+    const points = snapPoints(props.line, props.places.filter((p) => !p.stopBy));
     if (!points) return setNote(t`先に、線を描くか、経由地を2つ以上置いてください。`);
     setSnapping(true);
     setNote(t`道を調べています…`);
     const result = await props.onSnap(points);
+    let line: LngLatEle[];
+    let said: string;
+    if (result.ok) {
+      line = await closeLineGaps(result.line, points);
+      said = t`線を道に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。`;
+    } else {
+      setNote(t`国土地理院の道の地図から探しています…`);
+      const built = await buildLine(points, "trail");
+      if (built.straightHops === points.length - 1) {
+        setSnapping(false);
+        return setNote(result.message);
+      }
+      line = built.line;
+      const straight = built.straightHops;
+      said =
+        straight === 0
+          ? t`線を、国土地理院の道の地図に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。`
+          : t`線を、国土地理院の道の地図に沿わせました。${straight}か所は道が見つからず、まっすぐです。形を確かめてから、保存してください。`;
+    }
     setSnapping(false);
-    if (!result.ok) return setNote(result.message);
-    props.onLine(simplify(roundLine(result.line), MAX_POINTS));
+    props.onLine(simplify(roundLine(line), MAX_POINTS));
     setMode("edit");
     setTimeout(fit, 100);
-    setNote(t`線を道に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。`);
+    setNote(said);
+  }
+
+  // A line through the waypoints in order (a side trip is left out), as Navivi makes one leg for each pair of stops.
+  async function makeLine(kind: "trail" | "direct") {
+    const stops = props.places.filter((p) => !p.stopBy && p.lat !== null && p.lng !== null).map((p) => ({ lat: p.lat!, lng: p.lng! }));
+    if (stops.length < 2) return setNote(t`先に、経由地を2つ以上置いてください（寄り道は数えません）。`);
+    setBuilding(true);
+    setNote(t`道を調べています…`);
+    const { line, straightHops } = await buildLine(stops, kind);
+    setBuilding(false);
+    props.onLine(simplify(line, MAX_POINTS));
+    setMode("edit");
+    setTimeout(fit, 100);
+    setNote(
+      kind === "direct"
+        ? t`経由地を、まっすぐにつなぎました。形を確かめてから、保存してください。`
+        : straightHops === 0
+          ? t`経由地を、道に沿ってつなぎました。形を確かめてから、保存してください。「元に戻す」で、もとにもどせます。`
+          : t`経由地を、道に沿ってつなぎました。${straightHops}か所は道が見つからず、まっすぐです。形を確かめてから、保存してください。`,
+    );
+  }
+
+  // Rounds the corners of a hand-drawn line (Navivi's smooth anchors): fewer, smoother bends.
+  function smooth() {
+    if (props.line.length < 3) return setNote(t`先に、線を描いてください。`);
+    props.onLine(simplify(smoothLine(props.line), MAX_POINTS));
+    setNote(t`線の角をなめらかにしました。形を確かめてください。「元に戻す」で、もとの線にもどせます。`);
+  }
+
+  async function runSearch() {
+    if (!query.trim()) return;
+    setSearching(true);
+    setFound(null);
+    const hits = await searchPlaces(query);
+    setSearching(false);
+    if (hits === null) return setNote(t`場所を探すサービスにつながりませんでした。しばらくしてから、もう一度お試しください。`);
+    if (hits.length === 0) return setNote(t`その名前の場所は見つかりませんでした。`);
+    setNote(null);
+    setFound(hits);
+  }
+
+  function showHit(hit: PlaceHit) {
+    mapRef.current?.flyTo({ center: [hit.lng, hit.lat], zoom: 15, duration: 600 });
   }
 
   function onFile(e: ChangeEvent<HTMLInputElement>) {
@@ -390,7 +489,7 @@ export function MapEditor(props: MapEditorProps) {
     setMode(tool === "select" ? (latest.current.line.length >= 2 ? "edit" : "pan") : tool);
   }
 
-  const toolButton = (tool: "select" | "place" | "draw", label: string, shortcut: string) => {
+  const toolButton = (tool: "select" | "place" | "draw", label: string, shortcut: string, icon: ReactNode) => {
     const pressed = tool === "select" ? mode === "pan" || mode === "edit" : mode === tool;
     return (
       <button
@@ -398,11 +497,12 @@ export function MapEditor(props: MapEditorProps) {
         type="button"
         aria-pressed={pressed}
         aria-keyshortcuts={shortcut}
+        title={`${label} (${shortcut})`}
         onClick={() => chooseTool(tool)}
-        className={`${toolClass} ${pressed ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"}`}
+        className={`${iconBtn} ${pressed ? "bg-ink text-paper hover:bg-ink" : "text-ink"}`}
       >
-        {label}
-        <kbd className="ml-2 rounded border border-current px-1.5 text-sm font-normal">{shortcut}</kbd>
+        {icon}
+        <span className="hidden sm:inline">{label}</span>
       </button>
     );
   };
@@ -422,43 +522,77 @@ export function MapEditor(props: MapEditorProps) {
             : t`まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「線を描く」で道すじを、「経由地を置く」で経由地を入れます。`;
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center gap-2" role="toolbar" aria-label={t`地図の道具`}>
-        {toolButton("select", t`選ぶ・動かす`, "V")}
-        {toolButton("place", t`経由地を置く`, "P")}
-        {toolButton("draw", t`線を描く`, "L")}
-        <span className="mx-1 w-px self-stretch bg-line" aria-hidden="true" />
-        <button type="button" onClick={() => fileInput.current?.click()} className={`${toolClass} border-ink bg-ink text-paper`}>
+    // From 1280 px the waypoint list sits beside the map (and scrolls on its own); below that it is under it.
+    <div className={`flex flex-col gap-3 ${props.places.length > 0 ? "xl:grid xl:grid-cols-[minmax(0,1fr)_25rem] xl:items-start xl:gap-x-5" : ""}`}>
+      <div className="flex min-w-0 flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t`道すじ`}>
+        <button type="button" onClick={() => fileInput.current?.click()} className="inline-flex h-9 min-h-0 min-w-0 items-center justify-center rounded-lg border border-ink bg-ink px-3 text-sm font-bold text-paper">
           {t`GPXファイルから読み込む`}
         </button>
         <input ref={fileInput} type="file" accept=".gpx,application/gpx+xml,text/xml,application/xml" onChange={onFile} className="sr-only" tabIndex={-1} aria-hidden="true" />
-        <button
-          type="button"
-          disabled={snapping || snapPoints(props.line, props.places) === null}
-          onClick={snapToTrails}
-          className={`${toolClass} border-line bg-paper`}
-          title={t`描いた線を、地図の道に沿わせます`}
-        >
+        <span className="mx-1 h-6 w-px bg-line" aria-hidden="true" />
+        <span className="text-sm text-muted">{t`経由地から線を作る`}</span>
+        <button type="button" disabled={building || snapping || props.places.filter((p) => !p.stopBy && p.lat !== null).length < 2} onClick={() => void makeLine("trail")} className={chipClass} title={t`経由地を順に、地図の道でつなぎます（寄り道は通りません）`}>
+          {building ? t`調べています…` : t`道でつなぐ`}
+        </button>
+        <button type="button" disabled={building || snapping || props.places.filter((p) => !p.stopBy && p.lat !== null).length < 2} onClick={() => void makeLine("direct")} className={chipClass} title={t`経由地を順に、まっすぐな線でつなぎます`}>
+          {t`まっすぐつなぐ`}
+        </button>
+        <span className="mx-1 h-6 w-px bg-line" aria-hidden="true" />
+        <span className="text-sm text-muted">{t`線を整える`}</span>
+        <button type="button" disabled={building || snapping || snapPoints(props.line, props.places.filter((p) => !p.stopBy)) === null} onClick={snapToTrails} className={chipClass} title={t`描いた線を、地図の道に沿わせます`}>
           {snapping ? t`調べています…` : t`道に沿わせる`}
         </button>
-        <button type="button" disabled={!props.canUndo} onClick={props.onUndo} className={`${toolClass} border-line bg-paper`}>
-          {t`元に戻す`}
-        </button>
-        <button type="button" disabled={!props.canRedo} onClick={props.onRedo} className={`${toolClass} border-line bg-paper`}>
-          {t`やり直す`}
-        </button>
-        <button type="button" disabled={props.line.length === 0} onClick={() => props.onLine([])} className={`${toolClass} border-line bg-paper`}>
-          {t`線を消す`}
-        </button>
-        <button type="button" onClick={fit} className={`${toolClass} border-line bg-paper`}>
-          {t`全体を見る`}
-        </button>
-        <button type="button" aria-pressed={terrain} onClick={toggleTerrain} className={`${toolClass} ${terrain ? "border-ink bg-ink text-paper" : "border-line bg-paper"}`}>
-          {t`地形の陰影`}
+        <button type="button" disabled={props.line.length < 3} onClick={smooth} className={chipClass} title={t`線の角を、丸くなめらかにします`}>
+          {t`なめらかにする`}
         </button>
       </div>
 
-      <p className="rounded-xl bg-paper px-4 py-3 text-base" aria-live="polite">
+      <form
+        role="search"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void runSearch();
+        }}
+        className="flex flex-wrap items-center gap-2"
+      >
+        <label htmlFor="map-search" className="sr-only">
+          {t`場所の名前で探す`}
+        </label>
+        <input
+          id="map-search"
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t`場所の名前で探す（例：西念寺）`}
+          className="tap-target min-w-60 flex-1 rounded-xl border-2 border-line bg-paper px-4 text-lg"
+        />
+        <button type="submit" disabled={searching || !query.trim()} className={`${toolClass} border-line bg-paper`}>
+          {searching ? t`探しています…` : t`探す`}
+        </button>
+      </form>
+      {found ? (
+        <ul aria-label={t`見つかった場所`} className="flex flex-col gap-1 rounded-xl border border-line bg-paper p-2">
+          {found.map((h, i) => (
+            <li key={i} className="flex flex-wrap items-center gap-2 p-1">
+              <span className="min-w-0 flex-1 break-words text-base">{h.name}</span>
+              <button type="button" onClick={() => showHit(h)} className={`${toolClass} border-line bg-paper`}>
+                {t`地図を動かす`}
+              </button>
+              <button type="button" onClick={() => props.onAddPlace(h.lat, h.lng)} className={`${toolClass} border-line bg-paper`}>
+                {t`ここに経由地を置く`}
+              </button>
+            </li>
+          ))}
+          <li>
+            <button type="button" onClick={() => setFound(null)} className="tap-target px-2 text-base font-bold underline underline-offset-4">
+              {t`閉じる`}
+            </button>
+          </li>
+        </ul>
+      ) : null}
+
+      <p className="text-sm text-muted" aria-live="polite">
         {note ?? hint}
       </p>
 
@@ -483,7 +617,7 @@ export function MapEditor(props: MapEditorProps) {
       ) : null}
 
       <div
-        className="relative h-[34rem] overflow-hidden rounded-2xl bg-surface"
+        className="relative h-[34rem] overflow-hidden rounded-2xl bg-surface xl:h-[42rem]"
         onDragOver={(e) => {
           if (e.dataTransfer.types.includes("Files")) {
             e.preventDefault();
@@ -494,6 +628,41 @@ export function MapEditor(props: MapEditorProps) {
         onDrop={onDrop}
       >
         <div ref={container} className="h-full w-full" />
+        <div className="absolute left-3 top-3 flex flex-col items-start gap-2">
+          <div role="toolbar" aria-label={t`地図の道具`} className={floatClass}>
+            {toolButton("select", t`選ぶ・動かす`, "V", <CursorIcon />)}
+            {toolButton("place", t`経由地を置く`, "P", <PinIcon />)}
+            {toolButton("draw", t`線を描く`, "L", <PencilIcon />)}
+          </div>
+        </div>
+        <div className="absolute bottom-8 left-3 flex flex-wrap gap-2">
+          <div className={floatClass} role="group" aria-label={t`やり直し`}>
+            <button type="button" disabled={!props.canUndo} onClick={props.onUndo} className={iconBtn} title={t`元に戻す`} aria-label={t`元に戻す`}>
+              <UndoIcon />
+            </button>
+            <button type="button" disabled={!props.canRedo} onClick={props.onRedo} className={iconBtn} title={t`やり直す`} aria-label={t`やり直す`}>
+              <RedoIcon />
+            </button>
+            <button type="button" disabled={props.line.length === 0} onClick={() => props.onLine([])} className={`${iconBtn} text-danger`} title={t`線を消す`} aria-label={t`線を消す`}>
+              <TrashIcon />
+            </button>
+          </div>
+          <div className={floatClass} role="group" aria-label={t`地図の種類`}>
+            {editorBases.map((b) => (
+              <button key={b} type="button" aria-pressed={base === b} onClick={() => chooseBase(b)} className={`${iconBtn} ${base === b ? "bg-ink text-paper hover:bg-ink" : ""}`}>
+                {b === "std" ? t`標準` : b === "pale" ? t`淡色` : b === "photo" ? t`写真` : t`アウトドア`}
+              </button>
+            ))}
+          </div>
+          <div className={floatClass} role="group" aria-label={t`見え方`}>
+            <button type="button" onClick={fit} className={iconBtn} title={t`全体を見る`} aria-label={t`全体を見る`}>
+              <FitIcon />
+            </button>
+            <button type="button" aria-pressed={terrain} onClick={toggleTerrain} className={`${iconBtn} ${terrain ? "bg-ink text-paper hover:bg-ink" : ""}`} title={t`地形の陰影`} aria-label={t`地形の陰影`}>
+              <TerrainIcon />
+            </button>
+          </div>
+        </div>
         {dropping ? <p className="absolute inset-0 flex items-center justify-center bg-paper/80 text-xl font-bold">{t`GPXファイルをここで離すと、読み込みます`}</p> : null}
         {!ready ? <p className="absolute inset-0 flex items-center justify-center text-lg">{t`地図を読み込み中…`}</p> : null}
       </div>
@@ -505,27 +674,133 @@ export function MapEditor(props: MapEditorProps) {
         {props.elevationStatus === "partial" ? <span className="ml-4 text-base font-normal text-muted">{t`標高が調べられない場所があります。`}</span> : null}
       </p>
 
-      {props.places.length > 0 ? (
-        <section aria-label={t`置いた経由地`} className="flex flex-col gap-2">
-          <h3 className="text-lg font-bold">{t`置いた経由地（${props.places.length}か所）`}</h3>
-          <ol className="flex max-h-64 flex-col gap-1 overflow-auto">
-            {props.places.map((p) => (
-              <li key={p.key} className={`flex items-center gap-3 rounded-xl p-2 ${p.key === props.selectedKey ? "bg-paper ring-2 ring-ink" : ""}`}>
-                <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-full bg-brand text-base font-bold text-on-brand">
-                  {p.number}
-                </span>
-                <button type="button" onClick={() => props.onSelectPlace(p.key === props.selectedKey ? null : p.key)} className="min-w-0 flex-1 truncate text-left text-lg text-accent underline underline-offset-4">
-                  {p.name || t`（名前がありません）`}
-                </button>
-                <span className="text-base text-muted">{p.lat === null ? t`位置なし` : t`位置あり`}</span>
-                <button type="button" onClick={() => props.onRemovePlace(p.key)} aria-label={t`${p.name || p.number}を消す`} className="tap-target rounded-xl border-2 border-danger px-3 text-base font-bold text-danger">
-                  {t`消す`}
-                </button>
-              </li>
-            ))}
-          </ol>
-        </section>
-      ) : null}
+      </div>
+      {props.places.length > 0 ? <PlaceList {...props} /> : null}
     </div>
   );
 }
+
+const fieldClass = "h-9 min-h-0 min-w-36 rounded-lg border border-line bg-paper px-2 text-base";
+const chipToggle = (on: boolean) =>
+  `inline-flex h-8 min-h-0 min-w-0 items-center justify-center rounded-full border px-3 text-sm font-bold ${on ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"}`;
+
+/** Every waypoint of the route in one list: its name, its kind and its two switches can all be changed here. */
+function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchPlace }: Pick<MapEditorProps, "places" | "selectedKey" | "onSelectPlace" | "onRemovePlace" | "onPatchPlace">) {
+  const { t } = useLingui();
+  const kindName = useKindLabels();
+  const stamps = places.filter((p) => p.stampable).length;
+  const others = places.length - stamps;
+  return (
+    <section aria-label={t`経由地の一覧`} className="flex min-w-0 flex-col gap-2 xl:sticky xl:top-24">
+      <h3 className="text-lg font-bold">
+        {t`経由地（${places.length}か所）`}
+        <span className="ml-3 text-sm font-normal text-muted">{t`スタンプ ${stamps}・そのほか ${others}`}</span>
+      </h3>
+      <ol className="flex max-h-[28rem] flex-col gap-2 overflow-auto pr-1 xl:max-h-[calc(100dvh-12rem)]">
+        {places.map((p) => (
+          <li
+            key={p.key}
+            onClick={() => onSelectPlace(p.key)}
+            className={`grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 rounded-xl border bg-paper p-3 ${p.key === selectedKey ? "border-ink ring-2 ring-ink" : "border-line"}`}
+          >
+            <span
+              aria-hidden="true"
+              className={`flex shrink-0 items-center justify-center rounded-full text-base font-bold ${p.stampable ? "size-9 bg-brand text-on-brand" : "size-7 border-2 border-ink bg-paper"} ${p.stopBy ? "border-dashed" : ""}`}
+            >
+              {p.stampable ? p.number : ""}
+            </span>
+            <input
+              value={p.name}
+              onChange={(e) => onPatchPlace(p.key, { nameJa: e.target.value })}
+              onFocus={() => onSelectPlace(p.key)}
+              aria-label={t`名前`}
+              placeholder={t`（名前がありません）`}
+              maxLength={200}
+              className={`${fieldClass} w-full text-lg font-bold`}
+            />
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemovePlace(p.key);
+              }}
+              aria-label={t`${p.name || p.number}を消す`}
+              title={t`消す`}
+              className="inline-flex size-9 min-h-0 min-w-0 items-center justify-center rounded-lg border border-line text-danger hover:bg-surface"
+            >
+              <TrashIcon />
+            </button>
+            <div className="col-start-2 col-end-4 flex flex-wrap items-center gap-2">
+              <select value={p.kind} onChange={(e) => onPatchPlace(p.key, { kind: e.target.value as PointKind })} aria-label={t`種類`} className={fieldClass}>
+                {pointKinds.map((k) => (
+                  <option key={k} value={k}>
+                    {kindName[k]}
+                  </option>
+                ))}
+              </select>
+              <button type="button" aria-pressed={p.stampable} onClick={() => onPatchPlace(p.key, { stampable: !p.stampable })} className={chipToggle(p.stampable)}>
+                {t`スタンプ`}
+              </button>
+              <button type="button" aria-pressed={p.stopBy} onClick={() => onPatchPlace(p.key, { stopBy: !p.stopBy })} className={chipToggle(p.stopBy)}>
+                {t`寄り道`}
+              </button>
+              {p.lat === null ? <span className="text-sm font-bold text-danger">{t`位置なし`}</span> : null}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+// Small line icons for the bars on the map (each button also has a name for screen readers and a tooltip).
+function Svg({ children }: { children: ReactNode }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="size-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {children}
+    </svg>
+  );
+}
+const CursorIcon = () => (
+  <Svg>
+    <path d="M4 4l7 17 2.5-7.5L21 11z" />
+  </Svg>
+);
+const PinIcon = () => (
+  <Svg>
+    <path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z" />
+    <circle cx="12" cy="10" r="2.5" />
+  </Svg>
+);
+const PencilIcon = () => (
+  <Svg>
+    <path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19z" />
+  </Svg>
+);
+const UndoIcon = () => (
+  <Svg>
+    <path d="M9 14L4 9l5-5" />
+    <path d="M4 9h10a6 6 0 0 1 0 12h-3" />
+  </Svg>
+);
+const RedoIcon = () => (
+  <Svg>
+    <path d="M15 14l5-5-5-5" />
+    <path d="M20 9H10a6 6 0 0 0 0 12h3" />
+  </Svg>
+);
+const TrashIcon = () => (
+  <Svg>
+    <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" />
+  </Svg>
+);
+const FitIcon = () => (
+  <Svg>
+    <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+  </Svg>
+);
+const TerrainIcon = () => (
+  <Svg>
+    <path d="M3 20l6-11 4 7 3-4 5 8z" />
+  </Svg>
+);

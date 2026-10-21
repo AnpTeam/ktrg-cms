@@ -66,6 +66,8 @@ describe("planLoad", () => {
     expect(plan.spots.filter((s) => s.route === 2).map((s) => s.lat)).toEqual([null, null]);
     // Only the sheet's スポット rows (and the mound) can be stamped; places along the course never.
     expect(plan.spots.filter((s) => s.route === 1 && s.stampable).map((s) => s.nameJa)).toEqual(["行者堂", "友ヶ島・序品"]);
+    // 任意 rows are side trips; the seeded mound keeps its own flags.
+    expect(plan.spots.filter((s) => s.stopBy)).toEqual([]);
   });
 
   test("a hand-placed point fills a mound with no position, by its chapter, and never replaces one", () => {

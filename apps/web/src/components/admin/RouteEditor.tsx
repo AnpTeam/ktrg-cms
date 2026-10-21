@@ -28,6 +28,7 @@ import { LivePreview } from "./LivePreview";
 import { MapEditorLoader } from "./map-editor/MapEditorLoader";
 import type { ElevationStatus } from "./map-editor/MapEditor";
 import { isListedMunicipality } from "@/lib/municipalities";
+import { stampableByDefault } from "@/lib/point-kinds";
 import { MunicipalityField } from "./MunicipalityField";
 import { PhotoSlot } from "./PhotoSlot";
 import { PlacePanel } from "./PlacePanel";
@@ -260,7 +261,11 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
   const savedByKey = useMemo(() => new Map(saved.places.map((p) => [p.key, p])), [saved.places]);
   const problemOf = (kind: DraftProblem["kind"], key?: string) => problems.some((p) => p.kind === kind && (!("key" in p) || p.key === key));
   const prefName: Record<Prefecture, string> = { osaka: t`大阪府`, wakayama: t`和歌山県`, nara: t`奈良県` };
-  const editorPlaces = draft.places.map((p, i) => ({ key: p.key, lat: p.lat, lng: p.lng, number: i + 1, name: p.nameJa }));
+  // The numbers on the map are the stamp numbers visitors see; a waypoint without a stamp has none.
+  const editorPlaces = (() => {
+    let stamp = 0;
+    return draft.places.map((p) => ({ key: p.key, lat: p.lat, lng: p.lng, number: p.stampable ? ++stamp : null, name: p.nameJa, stampable: p.stampable, stopBy: p.stopBy, kind: p.kind }));
+  })();
   const text = (field: TextField) => (value: string) => dispatch({ type: "text", field, value });
   const checks = useMemo(() => checklist(factsFromDraft(draft)), [draft]);
   const missingRequired = progress(checks).requiredTotal - progress(checks).requiredDone;
@@ -293,7 +298,8 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_27rem]">
+      {/* The map tab uses the whole width (the map and its waypoint list); every other tab has the live preview beside it. */}
+      <div className={`grid gap-6 ${section === "map" ? "" : "lg:grid-cols-[minmax(0,1fr)_27rem]"}`}>
         <div className={`flex min-w-0 flex-col gap-5 ${view === "edit" ? "" : "hidden lg:flex"}`}>
           <nav aria-label={t`編集する内容`} className="flex flex-wrap gap-2" role="tablist">
             {TABS.map((id) => (
@@ -413,6 +419,11 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     else dispatch({ type: "removePlace", key });
                   }}
                   onSelectPlace={setSelectedKey}
+                  onPatchPlace={(key, patch) => {
+                    const p = draft.places.find((x) => x.key === key);
+                    // A new waypoint's stamp switch follows its kind; a saved one keeps what was chosen for it.
+                    if (p) dispatch({ type: "place", key, patch: patch.kind && p.id === null ? { ...patch, stampable: stampableByDefault(patch.kind) } : patch });
+                  }}
                   onSnap={async (points) => {
                     const res = await outcome(api.admin["route-snap"].post({ points }));
                     return res.ok ? { ok: true, line: res.data.line as LngLatEle[] } : { ok: false, message: messages[res.key] };
@@ -541,7 +552,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
           ) : null}
         </div>
 
-        <div className={`min-w-0 ${view === "preview" ? "" : "hidden lg:block"}`}>
+        <div className={`min-w-0 ${view === "preview" ? "" : section === "map" ? "hidden" : "hidden lg:block"}`}>
           <div className="lg:sticky lg:top-24">
             <LivePreview draft={draft} order={order} locale={locale} />
           </div>

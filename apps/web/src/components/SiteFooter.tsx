@@ -14,19 +14,19 @@ export function SiteFooter({ locale, variant = "page" }: { locale: string; varia
   return (
     <footer className={sidebar ? "site-footer border-t border-line/30 px-2 pt-3" : "site-footer mt-10 border-t border-line/30 px-4 pt-4"}>
       <nav aria-label={t`フッター`} className={sidebar ? "flex flex-col" : "flex flex-wrap gap-x-6 gap-y-1"}>
-        <Link href="/faq" className={link}>
+        <Link prefetch={false} href="/faq" className={link}>
           <Trans>よくあるご質問</Trans>
         </Link>
-        <Link href="/licenses" className={link}>
+        <Link prefetch={false} href="/licenses" className={link}>
           <Trans>ライセンス情報</Trans>
         </Link>
-        <Link href="/sitemap" className={link}>
+        <Link prefetch={false} href="/sitemap" className={link}>
           <Trans>サイトマップ</Trans>
         </Link>
-        <Link href="/terms" className={link}>
+        <Link prefetch={false} href="/terms" className={link}>
           <Trans>利用規約</Trans>
         </Link>
-        <Link href="/privacy" className={link}>
+        <Link prefetch={false} href="/privacy" className={link}>
           <Trans>プライバシーポリシー</Trans>
         </Link>
       </nav>
