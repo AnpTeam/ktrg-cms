@@ -71,4 +71,11 @@ describe("places directory", () => {
     expect((await s.svc.publicPlaces()).map((p) => p.nameJa).sort()).toEqual(["一", "二"]);
     expect((await s.svc.publicPlaces(course)).map((p) => p.nameJa)).toEqual(["一"]);
   });
+
+  test("a route that does not exist is refused instead of failing in the database", async () => {
+    const known = "22222222-2222-4222-8222-222222222222";
+    const svc = createPlaceService({ store: createMemoryPlaceStore(createMemoryAuditWriter().writer).store, routeExists: async (id) => id === known });
+    expect(await svc.create(actor, place({ routeId: "33333333-3333-4333-8333-333333333333" }))).toEqual({ ok: false, reason: "validation_failed" });
+    expect((await svc.create(actor, place({ routeId: known }))).ok).toBe(true);
+  });
 });

@@ -146,11 +146,14 @@ export function isEmptyRoute(r: Pick<PublicRoute, "bounds" | "publishedSpotCount
 
 // ---- fetching (server only) -----------------------------------------------------------------
 
+const PUBLIC_REVALIDATE_S = 30;
 const origin = () => process.env.API_ORIGIN ?? "http://localhost:3001";
 
 async function getJson(path: string): Promise<{ status: number; body: unknown } | null> {
   try {
-    const res = await fetch(`${origin()}/api/v1${path}`, { cache: "no-store", signal: AbortSignal.timeout(3000) });
+    // Public content is the same for everyone, so Next keeps the answer for a while: opening a tab or switching language
+    // then costs no trip to the API. An edit in the admin reaches visitors within this time (plus the API's own 10 s).
+    const res = await fetch(`${origin()}/api/v1${path}`, { next: { revalidate: PUBLIC_REVALIDATE_S }, signal: AbortSignal.timeout(3000) });
     return { status: res.status, body: await res.json().catch(() => null) };
   } catch {
     return null; // the API is not reachable: the caller shows an empty state, never a crash

@@ -44,16 +44,15 @@ describe("parseEnv", () => {
 
   test("production requires OTP_HMAC_SECRET", () => {
     expect(() => parseEnv({ NODE_ENV: "production", SMTP_HOST: "smtp.example.com" })).toThrow(/OTP_HMAC_SECRET/);
-    expect(parseEnv({ NODE_ENV: "production", OTP_HMAC_SECRET: "k".repeat(32) }, () => {}).OTP_HMAC_SECRET).toHaveLength(32);
+    expect(parseEnv({ NODE_ENV: "production", OTP_HMAC_SECRET: "k".repeat(32), TRUST_PROXY: "true" }, () => {}).OTP_HMAC_SECRET).toHaveLength(32);
   });
 
-  test("production without TRUST_PROXY starts, with a warning", () => {
-    const logs: string[] = [];
+  test("production needs a TRUST_PROXY decision, and Vercel makes it", () => {
     const prod = { NODE_ENV: "production", OTP_HMAC_SECRET: "k".repeat(32) };
-    parseEnv(prod, (l) => logs.push(l));
-    expect(logs.at(-1)).toMatch(/TRUST_PROXY is off/);
-    parseEnv({ ...prod, TRUST_PROXY: "true" }, (l) => logs.push(l));
-    expect(logs).toHaveLength(1);
+    expect(() => parseEnv(prod, () => {})).toThrow(/TRUST_PROXY/);
+    expect(parseEnv({ ...prod, TRUST_PROXY: "false" }, () => {}).TRUST_PROXY).toBe(false);
+    expect(parseEnv({ ...prod, VERCEL: "1" }, () => {}).TRUST_PROXY).toBe(true);
+    expect(parseEnv({ ...prod, VERCEL: "1", TRUST_PROXY: "false" }, () => {}).TRUST_PROXY).toBe(false);
   });
 
   test("boots with an empty environment", () => {
