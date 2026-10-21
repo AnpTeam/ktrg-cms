@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { moundStops, offeredLayers } from "./map-layers";
+import { defaultLayers, moundStops, offeredLayers } from "./map-layers";
 import type { MapScreenRoute, MapScreenStop } from "./map-screen";
 
 const stop = (id: string, kind?: MapScreenStop["kind"]): MapScreenStop => ({
@@ -40,5 +40,11 @@ describe("offeredLayers", () => {
     });
     // "other" has no button; toilets belong to the "rest" group.
     expect(offeredLayers([withData])).toEqual(["courses", "mounds", "rest"]);
+  });
+
+  test("side trips get a button only when a course has one, and are not on at first", () => {
+    const withSide = route({ sideLines: [[{ lat: 1, lng: 2 }, { lat: 1.1, lng: 2.1 }]] });
+    expect(offeredLayers([withSide])).toEqual(["courses", "side"]);
+    expect(defaultLayers.has("side")).toBe(false);
   });
 });
