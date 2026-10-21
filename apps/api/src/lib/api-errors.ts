@@ -118,6 +118,7 @@ export function apiBase(opts: { log?: (line: string) => void; allowedOrigin?: ()
   return new Elysia({ name: "api-base" })
     .onRequest(({ request, set, status }) => {
       set.headers[REQUEST_ID_HEADER] = requestIdFrom(request.headers.get(REQUEST_ID_HEADER));
+      set.headers["x-content-type-options"] = "nosniff"; // the API answers JSON only; never let a browser guess otherwise
       const origin = request.headers.get("origin");
       if (opts.allowedOrigin && origin && !SAFE_METHODS.has(request.method) && origin !== opts.allowedOrigin()) {
         return status(403, { ok: false, error: "forbidden" } satisfies ApiError);

@@ -153,8 +153,11 @@ const text = (v: string | null | undefined): string | null | undefined =>
   v === undefined ? undefined : v === null ? null : v.trim() === "" ? null : v.trim();
 
 /** `photoHosts` (PHOTO_HOSTS): when not empty, photos may only come from these host names. */
-export function createContentService(deps: { store: ContentStore; photoHosts?: readonly string[] }) {
+export function createContentService(deps: { store: ContentStore; photoHosts?: readonly string[]; publicRoutesTtlMs?: number }) {
   const { store } = deps;
+  // shortcut: the public route list (which reads every route's line to draw its silhouette) is kept per process for
+  // `publicRoutesTtlMs`, so a change shows up there after at most that long; precompute sketch/bounds columns if it must be instant.
+  let routesCache: { at: number; value: Promise<PublicRoute[]> } | null = null;
   const photoHosts = deps.photoHosts ?? [];
 
   /** Turn a request's route fields into what the store keeps, or say what is wrong. */
@@ -357,8 +360,15 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
 
     // ---- public --------------------------------------------------------------------------
     /** All routes, ready or coming soon, in walking order. */
-    async publicRoutes(): Promise<PublicRoute[]> {
-      return (await store.listRoutes()).map((r) => toPublicRoute(r, r.publishedSpotCount, false));
+    publicRoutes(): Promise<PublicRoute[]> {
+      const ttl = deps.publicRoutesTtlMs ?? 0;
+      if (ttl > 0 && routesCache && Date.now() - routesCache.at < ttl) return routesCache.value;
+      const value = store.listRoutes().then((rows) => rows.map((r) => toPublicRoute(r, r.publishedSpotCount, false)));
+      if (ttl > 0) {
+        routesCache = { at: Date.now(), value };
+        value.catch(() => (routesCache = null)); // never keep a failure
+      }
+      return value;
     },
 
     /** The route, its published stamp places, and its published navigation points (turns, toilets, danger ...). */

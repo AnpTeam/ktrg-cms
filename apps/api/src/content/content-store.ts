@@ -72,11 +72,15 @@ const sameInstant = (column: typeof routes.updatedAt | typeof spots.updatedAt, e
   sql`date_trunc('milliseconds', ${column}) = ${expected.toISOString()}::timestamptz`;
 
 export function createDrizzleContentStore(db: Db): ContentStore {
+  // Two admins adding at once would both read the same max: the lock makes the second wait until the first commits.
+  const lockOrder = (tx: Tx, key: string) => tx.execute(sql`select pg_advisory_xact_lock(hashtext(${key}))`);
   async function nextRouteOrder(tx: Tx): Promise<number> {
+    await lockOrder(tx, "routes.sort_order");
     const [row] = await tx.select({ m: max(routes.sortOrder) }).from(routes);
     return (row?.m ?? 0) + 1;
   }
   async function nextSpotOrder(tx: Tx, routeId: string): Promise<number> {
+    await lockOrder(tx, `spots.sort_order.${routeId}`);
     const [row] = await tx.select({ m: max(spots.sortOrder) }).from(spots).where(eq(spots.routeId, routeId));
     return (row?.m ?? 0) + 1;
   }

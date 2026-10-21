@@ -154,8 +154,9 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
 
   const prefs = await getPrefs();
   const settings = await getMapSettings();
-  const summaries = (await listRoutes()).map((r) => forViewer(r, viewer));
-  const routes = await mapRoutes(summaries, await listPlaces(), viewer, i18n.locale, { stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`) });
+  const [listed, places] = await Promise.all([listRoutes(), listPlaces()]);
+  const summaries = listed.map((r) => forViewer(r, viewer));
+  const routes = await mapRoutes(summaries, places, viewer, i18n.locale, { stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`) });
   const next = `?next=${encodeURIComponent("/map")}`;
   // "Show in the map" from a place page: only an existing course (and a stop of it) is taken over from the address.
   const initialRoute = routes.find((r) => r.id === wantedRoute) ?? null;

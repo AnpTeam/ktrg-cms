@@ -327,3 +327,14 @@ describe("a place's story and gallery", () => {
     expect(await add("https://elsewhere.example/a.jpg")).toEqual({ ok: false, reason: "invalid_photo_url" });
   });
 });
+
+describe("public route list cache", () => {
+  test("is reused within the time, and not at all when unset", async () => {
+    const cached = createContentService({ store: mem.store, publicRoutesTtlMs: 60_000 });
+    await route();
+    expect(await cached.publicRoutes()).toHaveLength(1);
+    await route({ nameJa: "もう一つ" });
+    expect(await cached.publicRoutes()).toHaveLength(1); // the copy from a moment ago
+    expect(await svc.publicRoutes()).toHaveLength(2); // no ttl: always fresh
+  });
+});

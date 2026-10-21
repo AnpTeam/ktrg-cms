@@ -68,7 +68,7 @@ const NULLABLE_TEXT = ["nameEn", "descriptionJa", "descriptionEn", "hoursJa", "h
  * Trims every text and clears a blank one; a link must be https; a position needs both numbers; "checked" needs a
  * position and the source named; publishing needs a checked position and the owner's agreement to be listed.
  */
-export const placeRules = (photoHosts: readonly string[] = []): ListRules<PlaceFields> => async (fields) => {
+export const placeRules = (photoHosts: readonly string[] = [], routeExists?: (id: string) => Promise<boolean>): ListRules<PlaceFields> => async (fields) => {
   const out: Record<string, unknown> = { ...fields };
   for (const name of NULLABLE_TEXT) if (typeof out[name] === "string") out[name] = (out[name] as string).trim() || null;
   if (typeof out.nameJa === "string") {
@@ -81,6 +81,8 @@ export const placeRules = (photoHosts: readonly string[] = []): ListRules<PlaceF
   if (typeof f.website === "string" && !isWebLink(f.website)) return bad("invalid_source_url");
   if (typeof f.photoUrl === "string" && !isPhotoUrl(f.photoUrl, photoHosts)) return bad("invalid_photo_url");
   if (f.lat !== undefined && f.lng !== undefined && (f.lat === null) !== (f.lng === null)) return bad("validation_failed");
+  // An unknown route would fail the foreign key inside the write and answer 500.
+  if (typeof f.routeId === "string" && routeExists && !(await routeExists(f.routeId))) return bad("validation_failed");
   if (f.positionVerified) {
     if (f.lat === null) return bad("no_coordinates");
     if (f.positionSource === null) return bad("source_required");
@@ -95,9 +97,9 @@ export const placeRules = (photoHosts: readonly string[] = []): ListRules<PlaceF
 
 export type PlaceService = ReturnType<typeof createPlaceService>;
 
-export function createPlaceService(deps: { store: PlaceStore; photoHosts?: readonly string[] }) {
+export function createPlaceService(deps: { store: PlaceStore; photoHosts?: readonly string[]; routeExists?: (id: string) => Promise<boolean> }) {
   return {
-    ...createListService({ store: deps.store, rules: placeRules(deps.photoHosts) }),
+    ...createListService({ store: deps.store, rules: placeRules(deps.photoHosts, deps.routeExists) }),
     /** What visitors see: published places with a checked position (the database also refuses to publish others). */
     async publicPlaces(routeId?: string): Promise<PlaceRow[]> {
       return (await deps.store.listPublic()).filter((p) => p.lat !== null && p.positionVerified && (routeId === undefined || p.routeId === routeId));

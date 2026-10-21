@@ -68,7 +68,9 @@ export function databaseUrlFrom(source: Record<string, string | undefined>): str
  */
 export function parseEnv(source: Record<string, string | undefined>, log: (line: string) => void = console.error): Env {
   const databaseUrl = databaseUrlFrom(source);
-  const raw = { ...source, ...(databaseUrl ? { DATABASE_URL: databaseUrl } : {}) };
+  const raw: Record<string, string | undefined> = { ...source, ...(databaseUrl ? { DATABASE_URL: databaseUrl } : {}) };
+  // Vercel sets VERCEL, and there the API never sees the visitor's own address: trust the proxy unless told otherwise.
+  if (raw.TRUST_PROXY === undefined && raw.VERCEL) raw.TRUST_PROXY = "true";
   const candidate = Value.Default(EnvSchema, Value.Convert(EnvSchema, raw));
   const first = new Map<string, string>();
   for (const e of Value.Errors(EnvSchema, candidate)) {
@@ -97,9 +99,9 @@ export function parseEnv(source: Record<string, string | undefined>, log: (line:
   if (env.NODE_ENV === "production" && !env.OTP_HMAC_SECRET) {
     throw new Error("Invalid environment:\n  - OTP_HMAC_SECRET: required in production (32+ characters)");
   }
-  if (env.NODE_ENV === "production" && !env.TRUST_PROXY) {
-    // Warn, not fail: behind Vercel the API sees no client address, so every visitor shares one rate-limit bucket.
-    log("[env] TRUST_PROXY is off in production: every visitor shares one login rate limit. Set TRUST_PROXY=true behind Vercel.");
+  if (env.NODE_ENV === "production" && source.TRUST_PROXY === undefined && !source.VERCEL) {
+    // Without a decision, every visitor behind a proxy would share one rate-limit bucket.
+    throw new Error("Invalid environment:\n  - TRUST_PROXY: set it in production (true behind a reverse proxy, false when the API is reached directly)");
   }
   return env;
 }

@@ -4,6 +4,9 @@ name: Migrate production database
 # Run by hand: Actions → "Migrate production database" → Run workflow. Needs the repository
 # secret PRODUCTION_DATABASE_URL (Supabase session pooler, port 5432, ?sslmode=require).
 # Use this instead of migrating from a laptop: some networks block the Postgres port.
+# ORDER: Vercel deploys main on every merge, so a merge that adds a migration is live before this runs, and pages that
+# read the new columns answer 500 until it has. Run this right after merging such a PR (check apps/api/drizzle/ in the
+# diff), or keep the deploy waiting (disable the auto-deploy for that merge) until it has finished.
 on:
   workflow_dispatch:
     inputs:
