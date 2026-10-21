@@ -78,6 +78,7 @@ export function MapScreen({
   const wide = useSyncExternalStore(subscribeWide, () => window.matchMedia(WIDE_QUERY).matches, () => false);
 
   const route = routes.find((r) => r.id === routeId) ?? null;
+  const chosen = route !== null;
   const stop = route?.stops?.find((s) => s.id === stopId) ?? null;
 
   // At its top resting place the sheet covers the whole page, so the site's own top bar steps aside.
@@ -86,6 +87,12 @@ export function MapScreen({
     document.body.classList.toggle("map-sheet-full", covered);
     return () => document.body.classList.remove("map-sheet-full");
   }, [snap, wide]);
+
+  // With a course or stop chosen, a phone's tab bar steps aside (see globals.css).
+  useEffect(() => {
+    document.body.classList.toggle("map-tabs-hidden", chosen);
+    return () => document.body.classList.remove("map-tabs-hidden");
+  }, [chosen]);
 
   // The page behind does not scroll: the map and the sheet are the screen.
   useEffect(() => {
@@ -100,7 +107,7 @@ export function MapScreen({
     const measure = () => {
       const rem = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
       const wide = window.matchMedia("(min-width: 768px)").matches;
-      const tab = wide ? 0 : TAB_ROOM_REM * rem;
+      const tab = wide || chosen ? 0 : TAB_ROOM_REM * rem;
       setTabPx(tab);
       setPanelPx(window.matchMedia(WIDE_QUERY).matches ? (PANEL_REM + 2 * PANEL_MARGIN_REM) * rem : 0);
       setAvailable(Math.max(240, el.clientHeight - tab));
@@ -109,7 +116,7 @@ export function MapScreen({
     const observer = new ResizeObserver(measure);
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [chosen]);
 
   // On a narrow screen the sheet rises to show what was chosen; on a desktop the panel just shows it.
   const chooseRoute = useCallback(
@@ -202,7 +209,7 @@ export function MapScreen({
     <div
       ref={wrap}
       data-dark={settings.dark}
-      className="trail-map relative h-dvh w-full overflow-hidden [--tab-room:5.5rem] md:[--tab-room:0rem]"
+      className={`trail-map relative h-dvh w-full overflow-hidden md:[--tab-room:0rem] ${chosen ? "[--tab-room:0rem]" : "[--tab-room:5.5rem]"}`}
     >
       <MapScreenCanvasLoader
         routes={routes}
