@@ -123,3 +123,16 @@ describe("markers", () => {
     expect(nextStopId([])).toBeNull();
   });
 });
+
+describe("editor base maps", () => {
+  test("every choice has a hidden layer in the style, and only the chosen one shows", async () => {
+    const { editorBaseLayerIds, editorBaseVisibility, editorBases, editorStyle } = await import("./map");
+    const ids = editorStyle().layers.map((l) => l.id);
+    for (const b of editorBases) expect(ids).toContain(editorBaseLayerIds[b]);
+    // The terrain overlay stays on top of whichever base is chosen.
+    expect(ids.indexOf("gsi-terrain")).toBeGreaterThan(ids.indexOf("base-topo"));
+    expect(Object.values(editorBaseVisibility("topo")).filter((v) => v === "visible")).toHaveLength(1);
+    expect(editorBaseVisibility("topo")["base-topo"]).toBe("visible");
+    expect(editorBaseVisibility("std")["gsi-base"]).toBe("visible");
+  });
+});

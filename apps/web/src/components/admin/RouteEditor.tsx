@@ -28,6 +28,7 @@ import { LivePreview } from "./LivePreview";
 import { MapEditorLoader } from "./map-editor/MapEditorLoader";
 import type { ElevationStatus } from "./map-editor/MapEditor";
 import { isListedMunicipality } from "@/lib/municipalities";
+import { stampableByDefault } from "@/lib/point-kinds";
 import { MunicipalityField } from "./MunicipalityField";
 import { PhotoSlot } from "./PhotoSlot";
 import { PlacePanel } from "./PlacePanel";
@@ -263,7 +264,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
   // The numbers on the map are the stamp numbers visitors see; a waypoint without a stamp has none.
   const editorPlaces = (() => {
     let stamp = 0;
-    return draft.places.map((p) => ({ key: p.key, lat: p.lat, lng: p.lng, number: p.stampable ? ++stamp : null, name: p.nameJa, stampable: p.stampable, stopBy: p.stopBy }));
+    return draft.places.map((p) => ({ key: p.key, lat: p.lat, lng: p.lng, number: p.stampable ? ++stamp : null, name: p.nameJa, stampable: p.stampable, stopBy: p.stopBy, kind: p.kind }));
   })();
   const text = (field: TextField) => (value: string) => dispatch({ type: "text", field, value });
   const checks = useMemo(() => checklist(factsFromDraft(draft)), [draft]);
@@ -417,9 +418,10 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     else dispatch({ type: "removePlace", key });
                   }}
                   onSelectPlace={setSelectedKey}
-                  onTogglePlace={(key, field) => {
+                  onPatchPlace={(key, patch) => {
                     const p = draft.places.find((x) => x.key === key);
-                    if (p) dispatch({ type: "place", key, patch: { [field]: !p[field] } });
+                    // A new waypoint's stamp switch follows its kind; a saved one keeps what was chosen for it.
+                    if (p) dispatch({ type: "place", key, patch: patch.kind && p.id === null ? { ...patch, stampable: stampableByDefault(patch.kind) } : patch });
                   }}
                   onSnap={async (points) => {
                     const res = await outcome(api.admin["route-snap"].post({ points }));

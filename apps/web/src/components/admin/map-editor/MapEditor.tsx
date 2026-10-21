@@ -11,8 +11,9 @@ import { keepElevations, sameLine, simplify, type LngLatEle } from "@/lib/admin/
 import { searchPlaces, type PlaceHit } from "@/lib/admin/place-search";
 import { buildLine, closeLineGaps, smoothLine } from "@/lib/admin/route-builder";
 import { roundLine, snapPoints, type SnapPoint } from "@/lib/admin/snap";
-import { boundsOf, lineFeature, mapStyle, routeLineLayers, terrainLayerId, zoomLimits } from "@/lib/map";
-import { defaultMapSettings } from "@/lib/map-settings";
+import { boundsOf, editorBaseVisibility, editorBases, editorStyle, lineFeature, routeLineLayers, terrainLayerId, zoomLimits, type EditorBase } from "@/lib/map";
+import { pointKinds, type PointKind } from "@/lib/point-kinds";
+import { useKindLabels } from "../PlacePanel";
 
 export interface EditorPlace {
   key: string;
@@ -24,6 +25,15 @@ export interface EditorPlace {
   stampable: boolean;
   /** An optional visit beside the way (寄り道): the line need not pass through it. */
   stopBy: boolean;
+  kind: PointKind;
+}
+
+/** What the list under the map can change on a waypoint. */
+export interface PlacePatch {
+  nameJa?: string;
+  kind?: PointKind;
+  stampable?: boolean;
+  stopBy?: boolean;
 }
 
 export type ElevationStatus = "idle" | "loading" | "partial";
@@ -46,8 +56,8 @@ export interface MapEditorProps {
   onMovePlace: (key: string, lat: number, lng: number) => void;
   onRemovePlace: (key: string) => void;
   onSelectPlace: (key: string | null) => void;
-  /** Switches "stamp here" or "side trip" of a waypoint on or off. */
-  onTogglePlace: (key: string, field: "stampable" | "stopBy") => void;
+  /** Changes a waypoint's name, kind, stamp switch or side-trip switch. */
+  onPatchPlace: (key: string, patch: PlacePatch) => void;
   /** Asks the route-finding service for a walking line through these points (the editor says what went wrong). */
   onSnap: (points: SnapPoint[]) => Promise<{ ok: true; line: LngLatEle[] } | { ok: false; message: string }>;
 }
@@ -69,7 +79,7 @@ const dotClass =
   "flex size-7 min-h-0 min-w-0 p-0 items-center justify-center rounded-full border-2 border-ink bg-paper text-sm font-bold text-ink shadow-md data-[selected=true]:ring-4 data-[selected=true]:ring-ink data-[stopby=true]:border-dashed data-[unplaced=true]:opacity-60";
 const chipClass = "inline-flex h-9 min-h-0 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-line bg-paper px-3 text-sm font-bold hover:bg-surface disabled:opacity-40 disabled:hover:bg-paper";
 const floatClass = "flex items-center gap-0.5 rounded-xl border border-line bg-paper/95 p-1 shadow-md backdrop-blur-sm";
-const iconBtn = "inline-flex h-8 min-h-0 min-w-8 items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-bold hover:bg-surface disabled:opacity-40 disabled:hover:bg-transparent";
+const iconBtn = "inline-flex h-8 min-h-0 min-w-8 items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-bold [&:not([aria-pressed=true])]:hover:bg-surface disabled:opacity-40 disabled:hover:bg-transparent";
 const toolClass = "tap-target inline-flex items-center justify-center rounded-xl border-2 px-3 text-base font-bold disabled:opacity-40";
 
 const same2d = (a: readonly number[], b: readonly number[]) => a[0] === b[0] && a[1] === b[1];
@@ -80,6 +90,7 @@ export function MapEditor(props: MapEditorProps) {
   const [ready, setReady] = useState(false);
   const [note, setNote] = useState<string | null>(null);
   const [terrain, setTerrain] = useState(false);
+  const [base, setBase] = useState<EditorBase>("std");
   const [waypoints, setWaypoints] = useState<GpxWaypoint[] | null>(null);
   const [dropping, setDropping] = useState(false);
   const [snapping, setSnapping] = useState(false);
@@ -122,7 +133,7 @@ export function MapEditor(props: MapEditorProps) {
       const bounds = boundsOf([...line.map((p) => ({ lng: p[0], lat: p[1] })), ...places.flatMap((p) => (p.lat === null || p.lng === null ? [] : [{ lat: p.lat, lng: p.lng }]))]);
       map = new ml.Map({
         container: container.current,
-        style: mapStyle({ ...defaultMapSettings, base: "std" }), // mapping needs the detailed map; visitors see the one chosen in the site settings
+        style: editorStyle(), // mapping needs the detailed maps; visitors see the one chosen in the site settings
         center: START.center,
         zoom: START.zoom,
         bounds: bounds ?? undefined,
@@ -321,6 +332,13 @@ export function MapEditor(props: MapEditorProps) {
     const pts = [...props.line.map((p) => ({ lng: p[0], lat: p[1] })), ...props.places.flatMap((p) => (p.lat === null || p.lng === null ? [] : [{ lat: p.lat, lng: p.lng }]))];
     const b = boundsOf(pts);
     if (b) map.fitBounds(b, { padding: 60, maxZoom: 15, duration: 400 });
+  }
+
+  function chooseBase(next: EditorBase) {
+    const map = mapRef.current;
+    if (!map) return;
+    for (const [id, visibility] of Object.entries(editorBaseVisibility(next))) if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", visibility);
+    setBase(next);
   }
 
   function toggleTerrain() {
@@ -627,6 +645,13 @@ export function MapEditor(props: MapEditorProps) {
               <TrashIcon />
             </button>
           </div>
+          <div className={floatClass} role="group" aria-label={t`地図の種類`}>
+            {editorBases.map((b) => (
+              <button key={b} type="button" aria-pressed={base === b} onClick={() => chooseBase(b)} className={`${iconBtn} ${base === b ? "bg-ink text-paper hover:bg-ink" : ""}`}>
+                {b === "std" ? t`標準` : b === "pale" ? t`淡色` : b === "photo" ? t`写真` : t`アウトドア`}
+              </button>
+            ))}
+          </div>
           <div className={floatClass} role="group" aria-label={t`見え方`}>
             <button type="button" onClick={fit} className={iconBtn} title={t`全体を見る`} aria-label={t`全体を見る`}>
               <FitIcon />
@@ -647,47 +672,77 @@ export function MapEditor(props: MapEditorProps) {
         {props.elevationStatus === "partial" ? <span className="ml-4 text-base font-normal text-muted">{t`標高が調べられない場所があります。`}</span> : null}
       </p>
 
-      {props.places.length > 0 ? (
-        <div className="flex flex-col gap-4">
-          <PlaceGroup {...props} title={t`スタンプを押せる経由地`} places={props.places.filter((p) => p.stampable)} />
-          <PlaceGroup {...props} title={t`ほかの経由地（道案内・寄り道など）`} places={props.places.filter((p) => !p.stampable)} />
-        </div>
-      ) : null}
+      {props.places.length > 0 ? <PlaceList {...props} /> : null}
     </div>
   );
 }
 
-/** One of the two lists under the map: the waypoints with a stamp, and the others. */
-function PlaceGroup({ title, places, selectedKey, onSelectPlace, onRemovePlace, onTogglePlace }: { title: string; places: EditorPlace[] } & Pick<MapEditorProps, "selectedKey" | "onSelectPlace" | "onRemovePlace" | "onTogglePlace">) {
+const fieldClass = "h-9 min-h-0 min-w-40 rounded-lg border border-line bg-paper px-2 text-base";
+const chipToggle = (on: boolean) =>
+  `inline-flex h-8 min-h-0 min-w-0 items-center justify-center rounded-full border px-3 text-sm font-bold ${on ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"}`;
+
+/** Every waypoint of the route in one list: its name, its kind and its two switches can all be changed here. */
+function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchPlace }: Pick<MapEditorProps, "places" | "selectedKey" | "onSelectPlace" | "onRemovePlace" | "onPatchPlace">) {
   const { t } = useLingui();
-  if (places.length === 0) return null;
+  const kindName = useKindLabels();
+  const stamps = places.filter((p) => p.stampable).length;
+  const others = places.length - stamps;
   return (
-    <section aria-label={title} className="flex flex-col gap-2">
-      <h3 className="text-lg font-bold">{t`${title}（${places.length}か所）`}</h3>
-      <ol className="flex max-h-64 flex-col gap-1 overflow-auto">
+    <section aria-label={t`経由地の一覧`} className="flex flex-col gap-2">
+      <h3 className="text-lg font-bold">
+        {t`経由地（${places.length}か所）`}
+        <span className="ml-3 text-sm font-normal text-muted">{t`スタンプ ${stamps}・そのほか ${others}`}</span>
+      </h3>
+      <ol className="flex max-h-[28rem] flex-col gap-2 overflow-auto pr-1">
         {places.map((p) => (
-          <li key={p.key} className={`flex flex-wrap items-center gap-3 rounded-xl p-2 ${p.key === selectedKey ? "bg-paper ring-2 ring-ink" : ""}`}>
+          <li
+            key={p.key}
+            onClick={() => onSelectPlace(p.key)}
+            className={`grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 rounded-xl border bg-paper p-3 ${p.key === selectedKey ? "border-ink ring-2 ring-ink" : "border-line"}`}
+          >
             <span
               aria-hidden="true"
-              className={`flex shrink-0 items-center justify-center rounded-full text-base font-bold ${p.stampable ? "size-8 bg-brand text-on-brand" : "size-6 border-2 border-ink bg-paper"} ${p.stopBy ? "border-dashed" : ""}`}
+              className={`flex shrink-0 items-center justify-center rounded-full text-base font-bold ${p.stampable ? "size-9 bg-brand text-on-brand" : "size-7 border-2 border-ink bg-paper"} ${p.stopBy ? "border-dashed" : ""}`}
             >
               {p.stampable ? p.number : ""}
             </span>
-            <button type="button" onClick={() => onSelectPlace(p.key === selectedKey ? null : p.key)} className="min-w-0 flex-1 truncate text-left text-lg text-accent underline underline-offset-4">
-              {p.name || t`（名前がありません）`}
+            <input
+              value={p.name}
+              onChange={(e) => onPatchPlace(p.key, { nameJa: e.target.value })}
+              onFocus={() => onSelectPlace(p.key)}
+              aria-label={t`名前`}
+              placeholder={t`（名前がありません）`}
+              maxLength={200}
+              className={`${fieldClass} w-full text-lg font-bold`}
+            />
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onRemovePlace(p.key);
+              }}
+              aria-label={t`${p.name || p.number}を消す`}
+              title={t`消す`}
+              className="inline-flex size-9 min-h-0 min-w-0 items-center justify-center rounded-lg border border-line text-danger hover:bg-surface"
+            >
+              <TrashIcon />
             </button>
-            <label className="flex items-center gap-1 text-base">
-              <input type="checkbox" checked={p.stopBy} onChange={() => onTogglePlace(p.key, "stopBy")} className="size-5" />
-              {t`寄り道`}
-            </label>
-            <label className="flex items-center gap-1 text-base">
-              <input type="checkbox" checked={p.stampable} onChange={() => onTogglePlace(p.key, "stampable")} className="size-5" />
-              {t`スタンプ`}
-            </label>
-            <span className="text-base text-muted">{p.lat === null ? t`位置なし` : t`位置あり`}</span>
-            <button type="button" onClick={() => onRemovePlace(p.key)} aria-label={t`${p.name || p.number}を消す`} className="tap-target rounded-xl border-2 border-danger px-3 text-base font-bold text-danger">
-              {t`消す`}
-            </button>
+            <div className="col-start-2 col-end-4 flex flex-wrap items-center gap-2">
+              <select value={p.kind} onChange={(e) => onPatchPlace(p.key, { kind: e.target.value as PointKind })} aria-label={t`種類`} className={fieldClass}>
+                {pointKinds.map((k) => (
+                  <option key={k} value={k}>
+                    {kindName[k]}
+                  </option>
+                ))}
+              </select>
+              <button type="button" aria-pressed={p.stampable} onClick={() => onPatchPlace(p.key, { stampable: !p.stampable })} className={chipToggle(p.stampable)}>
+                {t`スタンプ`}
+              </button>
+              <button type="button" aria-pressed={p.stopBy} onClick={() => onPatchPlace(p.key, { stopBy: !p.stopBy })} className={chipToggle(p.stopBy)}>
+                {t`寄り道`}
+              </button>
+              <span className={`text-sm ${p.lat === null ? "font-bold text-danger" : "text-muted"}`}>{p.lat === null ? t`位置なし` : t`位置あり`}</span>
+            </div>
           </li>
         ))}
       </ol>
