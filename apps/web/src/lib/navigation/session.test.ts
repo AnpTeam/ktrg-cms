@@ -116,6 +116,17 @@ describe("off the course line", () => {
     expect(wantsPath(strayed)).toBe(true);
   });
 
+  test("a jumpy fix near the edge does not flip the guidance; leaving needs more than 60 m", () => {
+    const pathLine: LinePoint[] = [[135.005, LAT + 0.005], [135.005, LAT + 0.0025], [135.006, LAT]];
+    const path = { stopId: "b", ...trackOf(pathLine) };
+    const fix = (lng: number, prev: NavState) => applyFix(model, prev, at(lng, LAT + 0.004), none, path);
+    let s = fix(135.005, initialState()); // on the path
+    for (const lng of [135.00541, 135.00549, 135.00541]) s = fix(lng, s); // ~38, ~45, ~38 m
+    expect(s.mode).toBe("path");
+    expect(fix(135.0056, fix(135.00549, s)).mode).toBe("path"); // ~55 m: still on it
+    expect(fix(135.0058, s).mode).toBe("straight"); // ~73 m: left it
+  });
+
   test("a path for a different stop is ignored", () => {
     const path = { stopId: "c", ...trackOf([[135.005, LAT + 0.005], [135.01, LAT]] as LinePoint[]) };
     expect(applyFix(model, initialState(), far, none, path).mode).toBe("straight");

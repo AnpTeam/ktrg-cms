@@ -35,6 +35,8 @@ export const LOOK_AHEAD_M = 30;
 const SEARCH_WINDOW_M = 300;
 /** Beyond this, the fix is re-matched against the whole line (the visitor may have rejoined it somewhere else). */
 const OFF_LINE_RECHECK_M = 100;
+/** Once following a walking path, the visitor leaves it only beyond this (joining needs OFF_ROUTE_M). */
+const OFF_PATH_LEAVE_M = 60;
 
 export interface NavStop extends Stop {
   /** The check-in radius of the place, in metres. */
@@ -177,8 +179,9 @@ export function applyFix(model: NavModel, prev: NavState, reading: NavReading, s
 
   if (path && path.stopId === stop.id && path.line.length >= 2) {
     const onPath = projectOnLine(path.line, path.cum, reading);
-    // Strayed from the path too: guided straight, which asks for a new path (wantsPath).
-    if (onPath && onPath.offM <= OFF_ROUTE_M) {
+    // Strayed from the path too: guided straight, which asks for a new path (wantsPath). Leaving takes further than
+    // joining, so a jumpy fix near the edge does not flip the guidance.
+    if (onPath && onPath.offM <= (prev.mode === "path" ? OFF_PATH_LEAVE_M : OFF_ROUTE_M)) {
       const end = path.cum[path.cum.length - 1]!;
       return { ...common, mode: "path", turn: nextTurn(path.line, path.cum, onPath.alongM, end), ...alongTrack(path, onPath.alongM, end, reading, stop) };
     }

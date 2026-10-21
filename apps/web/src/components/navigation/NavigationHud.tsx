@@ -174,7 +174,7 @@ export function NavigationToast() {
     const mode = st.mode === "line" ? t`道なり` : st.mode === "path" ? t`道の外・歩ける道` : t`道の外・直線`;
     main = (
       <div className="flex min-w-0 items-center gap-3">
-        <TurnSign kind={turn?.kind ?? null} />
+        <TurnSign kind={turn?.kind ?? (steer && steer !== "straight" ? steer : null)} />
         <div className="min-w-0">
           <p className="truncate text-xl font-bold leading-tight tabular-nums">{line1}</p>
           <p className="truncate text-base leading-snug text-muted">
