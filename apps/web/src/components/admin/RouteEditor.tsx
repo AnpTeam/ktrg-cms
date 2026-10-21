@@ -160,6 +160,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
       return;
     }
     const held = new Set(found.flatMap((p) => ("key" in p ? [p.key] : [])));
+    const unsourced = draft.lineVerified && draft.lineSource.trim() === "";
     setSaving(true);
     setMessage(null);
     // What is sent: without the held waypoints (a saved one is sent as it was saved, a new one is left out).
@@ -274,7 +275,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     const heldCount = held.size;
     setMessage(
       heldCount === 0
-        ? { kind: "ok", text: t`保存しました。` }
+        ? { kind: unsourced ? "error" : "ok", text: unsourced ? t`保存しました。ただし、情報源が空のため、線は「確認していない」状態で保存しました。情報源を入れて、もう一度保存してください。` : t`保存しました。` }
         : { kind: "error", text: t`保存しました。ただし、未完成の経由地が${heldCount}件あり、まだ保存していません（赤く示した項目）。` },
     );
     setProblems(heldCount === 0 ? [] : found);
@@ -534,8 +535,9 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     {t`線を確認した`}
                   </Check>
                   <Field label={t`確認した情報源（サイト名やリンク）`} htmlFor="route-line-source">
-                    <TextInput id="route-line-source" value={draft.lineSource} onChange={text("lineSource")} maxLength={500} />
+                    <TextInput id="route-line-source" value={draft.lineSource} onChange={text("lineSource")} maxLength={500} invalid={draft.lineVerified && draft.lineSource.trim() === ""} />
                   </Field>
+                  {draft.lineVerified && draft.lineSource.trim() === "" ? <p role="alert" className="text-base font-bold text-danger">{t`情報源を入れないと、「確認した」は保存されません。`}</p> : null}
                 </fieldset>
               </Section>
             ) : null}

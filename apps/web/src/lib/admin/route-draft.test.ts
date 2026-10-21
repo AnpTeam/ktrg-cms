@@ -94,6 +94,15 @@ describe("legs", () => {
   });
 });
 
+describe("a line ticked as checked without a source", () => {
+  test("is saved as not checked (the server refuses 'checked' with no source), and with a source it stays checked", () => {
+    const line = { ...emptyDraft(), nameJa: "甲山", lineVerified: true };
+    expect(routeBody({ ...line, lineSource: "" }).lineVerified).toBe(false);
+    expect(routeBody({ ...line, lineSource: "  " }).lineVerified).toBe(false);
+    expect(routeBody({ ...line, lineSource: "葛城修験 公式サイト" }).lineVerified).toBe(true);
+  });
+});
+
 describe("a save that holds unfinished waypoints back", () => {
   const spots = [serverSpot("s1"), serverSpot("s2"), serverSpot("s3")];
 
