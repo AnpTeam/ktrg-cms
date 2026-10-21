@@ -209,6 +209,8 @@ export function MapEditor(props: MapEditorProps) {
       const hit = mapRef.current?.queryRenderedFeatures(e.point, { layers: [LEG_HIT] })[0];
       const id = hit ? (hit.properties as { id?: string } | null)?.id : undefined;
       setActiveId(id ? id : null);
+      // Picking a leg (or none) lets go of the waypoint chosen before, so its ring does not stay on while another leg is worked on.
+      latest.current.onSelectPlace(null);
     },
     clickAnchor: (i) => {
       if (justDragged.current) return;
@@ -461,6 +463,7 @@ export function MapEditor(props: MapEditorProps) {
 
   function pickLeg(id: string) {
     setActiveId(id || null);
+    props.onSelectPlace(null);
     if (id) fitLeg(id);
   }
 
