@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
-import { PasskeyManager } from "@/components/settings/PasskeyManager";
+import { LoginMethods } from "@/components/settings/LoginMethods";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { initLingui } from "@/i18n/server";
 import { getViewer } from "@/lib/viewer";
@@ -30,7 +30,7 @@ export default async function PasskeysPage({ searchParams }: { searchParams: Pro
           <p className="text-lg">
             <Trans>パスキーは、顔や指紋でログインするための鍵です。この端末のものを追加すると、メールを待たずにログインできます。</Trans>
           </p>
-          <PasskeyManager locale={i18n.locale} />
+          <LoginMethods locale={i18n.locale} />
         </>
       ) : (
         <SignInPrompt />

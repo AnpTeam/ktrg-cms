@@ -46,6 +46,13 @@ export function createMemoryOtpStore(
       }
       return user;
     },
+    async setUserEmail(userId, email) {
+      const mine = [...users.entries()].find(([, u]) => u.id === userId);
+      if (!mine || mine[1].email || users.has(email)) return false;
+      users.delete(mine[0]);
+      users.set(email, { ...mine[1], email });
+      return true;
+    },
     async promoteToAdmin(userId) {
       const user = [...users.values()].find((u) => u.id === userId);
       if (!user || user.role === "admin") return false;
