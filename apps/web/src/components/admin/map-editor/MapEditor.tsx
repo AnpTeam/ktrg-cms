@@ -27,6 +27,8 @@ export interface EditorPlace {
   /** An optional visit beside the way (寄り道): the line need not pass through it. */
   stopBy: boolean;
   kind: PointKind;
+  /** Visitors can see it: it cannot be deleted, and editing it turns it back into a draft. */
+  published: boolean;
 }
 
 /** What the list under the map can change on a waypoint. */
@@ -80,9 +82,9 @@ const NO_PATH: Path = { anchors: [], curves: [] };
 // Where the map starts when there is nothing to show yet: the Katsuragi area.
 const START = { center: [135.45, 34.45] as [number, number], zoom: 9 };
 const markerClass =
-  "flex size-10 min-h-0 min-w-0 p-0 items-center justify-center rounded-full border-2 border-paper bg-brand text-lg font-bold text-on-brand shadow-md data-[selected=true]:ring-4 data-[selected=true]:ring-ink data-[stopby=true]:border-dashed data-[unplaced=true]:opacity-60";
+  "flex size-10 min-h-0 min-w-0 p-0 items-center justify-center rounded-full border-2 border-paper bg-brand text-lg font-bold text-on-brand shadow-md data-[published=true]:border-moss data-[selected=true]:ring-4 data-[selected=true]:ring-ink data-[stopby=true]:border-dashed data-[unplaced=true]:opacity-60";
 const dotClass =
-  "flex size-7 min-h-0 min-w-0 p-0 items-center justify-center rounded-full border-2 border-ink bg-paper text-sm font-bold text-ink shadow-md data-[selected=true]:ring-4 data-[selected=true]:ring-ink data-[stopby=true]:border-dashed data-[unplaced=true]:opacity-60";
+  "flex size-7 min-h-0 min-w-0 p-0 items-center justify-center rounded-full border-2 border-ink bg-paper text-sm font-bold text-ink shadow-md data-[published=true]:border-moss data-[selected=true]:ring-4 data-[selected=true]:ring-ink data-[stopby=true]:border-dashed data-[unplaced=true]:opacity-60";
 // A point of the chosen leg (Navivi's anchor): a square is a sharp corner, a circle is a smooth bend.
 const anchorClass =
   "block size-3.5 min-h-0 min-w-0 cursor-grab rounded-[3px] border-2 border-white bg-ink p-0 shadow-md active:cursor-grabbing data-[smooth=true]:size-4 data-[smooth=true]:rounded-full data-[selected=true]:bg-brand data-[selected=true]:ring-2 data-[selected=true]:ring-ink";
@@ -396,6 +398,8 @@ export function MapEditor(props: MapEditorProps) {
       entry.el.classList.add(...(p.stampable ? markerClass : dotClass).split(" "));
       entry.el.textContent = p.stampable ? String(p.number) : "";
       entry.el.dataset.stopby = String(p.stopBy);
+      entry.el.dataset.published = String(p.published);
+      entry.el.title = p.published ? `${p.name}（公開中）` : p.name;
       entry.el.setAttribute("aria-label", p.stampable ? `${p.number}. ${p.name}` : p.name);
       entry.el.dataset.selected = String(p.key === props.selectedKey);
     }
@@ -912,8 +916,9 @@ function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchP
                 onRemovePlace(p.key);
               }}
               aria-label={t`${p.name || p.number}を消す`}
-              title={t`消す`}
-              className="inline-flex size-9 min-h-0 min-w-0 items-center justify-center rounded-lg border border-line text-danger hover:bg-surface"
+              aria-disabled={p.published}
+              title={p.published ? t`公開中の経由地は削除できません。先に「経由地」タブで「公開をやめる」を押してください。` : t`消す`}
+              className={`inline-flex size-9 min-h-0 min-w-0 items-center justify-center rounded-lg border border-line ${p.published ? "cursor-not-allowed text-muted opacity-60" : "text-danger hover:bg-surface"}`}
             >
               <TrashIcon />
             </button>
@@ -931,6 +936,11 @@ function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchP
               <button type="button" aria-pressed={p.stopBy} onClick={() => onPatchPlace(p.key, { stopBy: !p.stopBy })} className={chipToggle(p.stopBy)}>
                 {t`寄り道`}
               </button>
+              {p.published ? (
+                <span title={t`公開中の経由地は削除できません。編集すると下書きに戻ります。`} className="rounded-full bg-moss px-2.5 py-0.5 text-sm font-bold text-paper">
+                  {t`公開中`}
+                </span>
+              ) : null}
               {p.lat === null ? <span className="text-sm font-bold text-danger">{t`位置なし`}</span> : null}
             </div>
           </li>
