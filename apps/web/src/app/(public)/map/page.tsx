@@ -146,15 +146,12 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
 // The map tab (WBS 3.2.10): all 19 courses as areas, with a bottom sheet that keeps the map in view. Anyone can look
 // around; stamps and navigation are for accounts.
 export default async function MapPage({ searchParams }: { searchParams: Promise<{ as?: string; stamp?: string; route?: string; stop?: string }> }) {
-  const i18n = await initLingui();
-  const viewer = await getViewer(searchParams);
-  const { stamp, route: wantedRoute, stop: wantedStop } = await searchParams;
+  // Everything the page needs is asked at once (each is a trip to the API): none of them waits for another.
+  const [i18n, viewer, params, prefs, settings, listed, places] = await Promise.all([initLingui(), getViewer(searchParams), searchParams, getPrefs(), getMapSettings(), listRoutes(), listPlaces()]);
+  const { stamp, route: wantedRoute, stop: wantedStop } = params;
   // Development only: `?stamp=far` and so on pretends the answers of the stamping API, which does not exist yet.
   const stampMock = process.env.NODE_ENV !== "production" && isStampMock(stamp) ? stamp : undefined;
 
-  const prefs = await getPrefs();
-  const settings = await getMapSettings();
-  const [listed, places] = await Promise.all([listRoutes(), listPlaces()]);
   const summaries = listed.map((r) => forViewer(r, viewer));
   const routes = await mapRoutes(summaries, places, viewer, i18n.locale, { stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`) });
   const next = `?next=${encodeURIComponent("/map")}`;

@@ -5,7 +5,7 @@ import { defaultMapSettings, sanitizeMapSettings, type MapSettings } from "./map
 
 export async function getMapSettings(): Promise<MapSettings> {
   try {
-    const res = await fetch(`${process.env.API_ORIGIN ?? "http://localhost:3001"}/api/v1/settings`, { cache: "no-store", signal: AbortSignal.timeout(3000) });
+    const res = await fetch(`${process.env.API_ORIGIN ?? "http://localhost:3001"}/api/v1/settings`, { next: { revalidate: 15 }, signal: AbortSignal.timeout(3000) });
     const body = (await res.json().catch(() => null)) as { ok?: unknown; mapStyle?: unknown } | null;
     return res.ok && body?.ok === true && body.mapStyle ? sanitizeMapSettings(body.mapStyle) : defaultMapSettings;
   } catch {
