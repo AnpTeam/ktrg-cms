@@ -25,7 +25,7 @@ const xy = (points: readonly (readonly (number | undefined)[])[]): [number, numb
 
 /**
  * The legs as map features. `preview` is a leg while one of its anchors is being dragged: it is shown instead of the saved one.
- * Without any pair of stops, `loose` (a track that has not been cut yet) is shown as one feature.
+ * With no legs, `loose` (a line that has not been cut into legs) is shown as one feature.
  */
 export function legFeatures(
   pairs: readonly { from: Stop; to: Stop }[],
@@ -34,12 +34,15 @@ export function legFeatures(
   preview: { from: string; points: readonly LngLatEle[] } | null,
   loose: readonly LngLatEle[],
 ): LegFeatures {
+  // A line that is not cut into legs (it does not follow the stops) is shown as it is, and there are no legs to pick.
+  if (legs.length === 0 && loose.length >= 2) {
+    return { type: "FeatureCollection", features: [{ type: "Feature", properties: { from: "", state: "drawn", active: false }, geometry: { type: "LineString", coordinates: xy(loose) } }] };
+  }
   const features: LegFeatures["features"] = pairs.map(({ from, to }) => {
     const leg = legOf(legs, from.key, to.key);
     const points = preview && preview.from === from.key ? preview.points : leg ? leg.points : [[from.lng, from.lat], [to.lng, to.lat]];
     return { type: "Feature", properties: { from: from.key, state: leg || preview?.from === from.key ? "drawn" : "missing", active: from.key === activeFrom }, geometry: { type: "LineString", coordinates: xy(points) } };
   });
-  if (pairs.length === 0 && loose.length >= 2) features.push({ type: "Feature", properties: { from: "", state: "drawn", active: false }, geometry: { type: "LineString", coordinates: xy(loose) } });
   return { type: "FeatureCollection", features };
 }
 

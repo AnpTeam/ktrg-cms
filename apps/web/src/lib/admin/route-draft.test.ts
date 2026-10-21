@@ -53,6 +53,18 @@ describe("legs", () => {
     expect(s.present.line[0]).toEqual([135, 34]);
     expect(s.present.line.at(-1)).toEqual([135, 34.02]);
   });
+  test("a line the stops do not follow stays one loose line, until it is cut on purpose", () => {
+    const line: [number, number][] = [[135, 34], [135.005, 34.005], [135.01, 34.01]];
+    let s = run(fresh(), { type: "line", points: line });
+    // visited in an order the line does not run (the end first)
+    s = run(s, { type: "addPlace", key: "x", lat: 34.01, lng: 135.01 }, { type: "addPlace", key: "y", lat: 34, lng: 135 });
+    expect(s.present.legs).toEqual([]);
+    expect(s.present.line).toHaveLength(3); // the saved line is kept as it was
+    s = run(s, { type: "place", key: "x", patch: { nameJa: "名前" } });
+    expect(s.present.legs).toEqual([]); // nothing else cuts it
+    s = run(s, { type: "splitLine" });
+    expect(s.present.legs.map((l) => [l.from, l.to])).toEqual([["x", "y"]]);
+  });
   test("heights go back into the legs, and one undo takes back one leg", () => {
     let s = run(withStops(), { type: "setLeg", leg: { from: "a", to: "b", points: [[135, 34], [135.01, 34.01]] } });
     const heights = s.present.line.map((p, i): [number, number, number] => [p[0], p[1], 100 * (i + 1)]);

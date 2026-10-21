@@ -136,13 +136,45 @@ export function reconcileLegs(stops: readonly Stop[], legs: readonly Leg[]): Leg
 
 // ---- cutting a whole line into legs ---------------------------------------------------------------------------------
 
+/** A stop farther than this from the line is not on it. */
+const ON_LINE_M = 300;
+/** A stop whose nearest point lies this far behind the previous stop's (along the line) is out of order. */
+const BEHIND_M = 400;
+
+/**
+ * Whether the stops follow the line: each is close to it, and they come in the order the line runs (a small step back, for a
+ * viewpoint on a spur, is fine). A list with a stop twice or in another order than the path does not.
+ */
+export function stopsFollowLine(stops: readonly Stop[], line: readonly LngLatEle[]): boolean {
+  if (stops.length < 2 || line.length < 2) return false;
+  const along = [0];
+  for (let j = 1; j < line.length; j++) along.push(along[j - 1]! + distanceM(line[j - 1]!, line[j]!));
+  let behind = -Infinity;
+  for (const s of stops) {
+    let best = 0;
+    let bestD = Infinity;
+    for (let j = 0; j < line.length; j++) {
+      const d = distanceM(line[j]!, [s.lng, s.lat]);
+      if (d < bestD) {
+        bestD = d;
+        best = j;
+      }
+    }
+    if (bestD > ON_LINE_M || behind - along[best]! > BEHIND_M) return false;
+    behind = Math.max(behind, along[best]!);
+  }
+  return true;
+}
+
 /**
  * Cuts a line (an imported track, an old route that was drawn in one piece) into one leg for each pair of stops: each stop
  * takes the nearest point of the line that is not before the previous stop's. What lies before the first stop and after
- * the last is left out. Fewer than two stops or a line with fewer than two points: no legs.
+ * the last is left out. Fewer than two stops or a line with fewer than two points: no legs. When the stops do not follow the
+ * line (see stopsFollowLine) no legs either, so a good line is never turned into straight hops; `force` cuts anyway.
  */
-export function splitLine(stops: readonly Stop[], line: readonly LngLatEle[]): Leg[] {
+export function splitLine(stops: readonly Stop[], line: readonly LngLatEle[], opts: { force?: boolean } = {}): Leg[] {
   if (stops.length < 2 || line.length < 2) return [];
+  if (!opts.force && !stopsFollowLine(stops, line)) return [];
   const index: number[] = [];
   let from = 0;
   for (const s of stops) {

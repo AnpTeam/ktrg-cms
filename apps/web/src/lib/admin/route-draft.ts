@@ -193,6 +193,8 @@ export type DraftAction =
   | { type: "clearLeg"; from: string; to: string }
   /** The whole line and every leg. */
   | { type: "clearLegs" }
+  /** Cut the loose line into legs at the stops even though the stops do not follow it. */
+  | { type: "splitLine" }
   /** The same points with elevations filled in (from the map tiles): not an undo step, and the line stays as drawn. */
   | { type: "elevations"; points: LngLatEle[] }
   | { type: "addPlace"; key: string; lat: number; lng: number; kind?: PointKind }
@@ -235,13 +237,17 @@ function withLegs(d: RouteDraft, legs: readonly Leg[]): RouteDraft {
  */
 function syncLegs(d: RouteDraft): RouteDraft {
   const stops = pathStops(d.places);
-  if (d.legs.length === 0) return d.line.length >= 2 && stops.length >= 2 ? withLegs(d, splitLine(stops, d.line)) : d;
+  if (d.legs.length === 0) {
+    if (d.line.length < 2 || stops.length < 2) return d;
+    const cut = splitLine(stops, d.line); // none when the stops do not follow the line: it stays as it is
+    return cut.length > 0 ? withLegs(d, cut) : d;
+  }
   const fitted = reconcileLegs(stops, d.legs);
   return fitted === d.legs ? d : withLegs(d, fitted);
 }
 
 /** The actions that change the map or the order of places can be undone; typing is left to the browser's own undo. */
-const undoable = new Set<DraftAction["type"]>(["line", "setLeg", "setLegs", "clearLeg", "clearLegs", "addPlace", "addPlaces", "addRow", "movePlace", "removePlace", "reorderPlaces"]);
+const undoable = new Set<DraftAction["type"]>(["line", "splitLine", "setLeg", "setLegs", "clearLeg", "clearLegs", "addPlace", "addPlaces", "addRow", "movePlace", "removePlace", "reorderPlaces"]);
 
 /** The walking time follows the distance and the climb until someone types one. */
 const withAutoTime = (d: RouteDraft): RouteDraft => {
@@ -290,6 +296,11 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       return withLegs(d, d.legs.filter((l) => !(l.from === a.from && l.to === a.to)));
     case "clearLegs":
       return { ...withLine(d, []), legs: [] };
+    case "splitLine": {
+      if (d.legs.length > 0) return d;
+      const cut = splitLine(pathStops(d.places), d.line, { force: true });
+      return cut.length > 0 ? withLegs(d, cut) : d;
+    }
     case "elevations": {
       const same = a.points.length === d.line.length && a.points.every((p, i) => p[0] === d.line[i]![0] && p[1] === d.line[i]![1]);
       if (!same) return d; // the line moved on while the heights were being fetched: drop them
