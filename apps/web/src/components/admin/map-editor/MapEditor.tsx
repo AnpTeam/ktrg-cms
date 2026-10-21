@@ -63,6 +63,8 @@ export interface MapEditorProps {
   onClearLeg: (from: string, to: string) => void;
   onClearLegs: () => void;
   onAddPlace: (lat: number, lng: number) => void;
+  /** A route that ends where it starts: adds an end point (not a stamp place) at exactly the position of this waypoint. */
+  onAddEndAt: (key: string) => void;
   /** Several places at once (the named points of a GPX file). */
   onAddPlaces: (places: { key: string; name: string; lat: number; lng: number }[]) => void;
   onMovePlace: (key: string, lat: number, lng: number) => void;
@@ -876,11 +878,13 @@ const chipToggle = (on: boolean) =>
   `inline-flex h-8 min-h-0 min-w-0 items-center justify-center rounded-full border px-3 text-sm font-bold ${on ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"}`;
 
 /** Every waypoint of the route in one list: its name, its kind and its two switches can all be changed here. */
-function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchPlace }: Pick<MapEditorProps, "places" | "selectedKey" | "onSelectPlace" | "onRemovePlace" | "onPatchPlace">) {
+function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchPlace, onAddEndAt }: Pick<MapEditorProps, "places" | "selectedKey" | "onSelectPlace" | "onRemovePlace" | "onPatchPlace" | "onAddEndAt">) {
   const { t } = useLingui();
   const kindName = useKindLabels();
   const stamps = places.filter((p) => p.stampable).length;
   const others = places.length - stamps;
+  // The first stop of the path: a round trip ends where it began, so this is where an end point can be added.
+  const firstStop = places.find((p) => !p.stopBy && p.lat !== null)?.key;
   return (
     <section aria-label={t`経由地の一覧`} className="flex min-w-0 flex-col gap-2 xl:sticky xl:top-24">
       <h3 className="text-lg font-bold">
@@ -940,6 +944,11 @@ function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchP
                 <span title={t`公開中の経由地は削除できません。編集すると下書きに戻ります。`} className="rounded-full bg-moss px-2.5 py-0.5 text-sm font-bold text-paper">
                   {t`公開中`}
                 </span>
+              ) : null}
+              {p.key === firstStop && places.length >= 2 ? (
+                <button type="button" onClick={() => onAddEndAt(p.key)} className={chipToggle(false)} title={t`一周して、ここに戻るルートのとき: 同じ位置に、スタンプのない終点を追加します`}>
+                  {t`同じ場所に終点を追加`}
+                </button>
               ) : null}
               {p.lat === null ? <span className="text-sm font-bold text-danger">{t`位置なし`}</span> : null}
             </div>

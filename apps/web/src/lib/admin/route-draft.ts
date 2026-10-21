@@ -195,7 +195,8 @@ export type DraftAction =
   | { type: "clearLegs" }
   /** The same points with elevations filled in (from the map tiles): not an undo step, and the line stays as drawn. */
   | { type: "elevations"; points: LngLatEle[] }
-  | { type: "addPlace"; key: string; lat: number; lng: number; kind?: PointKind }
+  /** `patch` is applied to the new waypoint (one undo step), for example a copy that is not a stamp place. */
+  | { type: "addPlace"; key: string; lat: number; lng: number; kind?: PointKind; patch?: Partial<PlaceDraft> }
   /** Several places at once (named points of a GPX file): one undo step, all drafts. */
   | { type: "addPlaces"; places: { key: string; name: string; lat: number; lng: number }[] }
   /** An empty row in the places table: a stamp place with no name and no position yet (typed in the row). */
@@ -304,7 +305,7 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
     case "addPlace": {
       const kind = a.kind ?? "other";
       const n = d.places.filter((p) => p.stampable).length + 1;
-      return syncLegs({ ...d, places: [...d.places, newPlace(a.key, a.lat, a.lng, n, kind)] });
+      return syncLegs({ ...d, places: [...d.places, { ...newPlace(a.key, a.lat, a.lng, n, kind), ...a.patch }] });
     }
     case "addPlaces": {
       if (a.places.length === 0) return d;
