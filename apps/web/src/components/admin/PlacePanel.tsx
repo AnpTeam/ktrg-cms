@@ -7,6 +7,7 @@ import type { SpotStatus } from "@/lib/admin/types";
 import { Check, Field, inputClass, MultilingualField, NumberInput, TextInput } from "./fields";
 import { GalleryEditor } from "./GalleryEditor";
 import { PhotoSlot } from "./PhotoSlot";
+import { PhotoUpload } from "./PhotoUpload";
 
 export interface PlacePanelProps {
   place: PlaceDraft;
@@ -128,7 +129,8 @@ export function PlacePanel(p: PlacePanelProps) {
             <Field label={t`写真のリンク`} htmlFor={`${id}-photo`} hint={t`https:// で始まるリンクを入れます。空にすると、写真は表示されません。`}>
               <TextInput id={`${id}-photo`} value={place.photoUrl} onChange={(v) => p.onChange({ photoUrl: v })} maxLength={500} invalid={p.invalidPhoto} />
             </Field>
-            {p.invalidPhoto ? <p role="alert" className="text-base font-bold text-danger">{t`写真のリンクは、https:// で始まるものだけ使えます。`}</p> : null}
+            <PhotoUpload onUploaded={(url) => p.onChange({ photoUrl: url })} />
+            {p.invalidPhoto ?<p role="alert" className="text-base font-bold text-danger">{t`写真のリンクは、https:// で始まるものだけ使えます。`}</p> : null}
             <PhotoSlot url={place.photoUrl} className="max-w-md" />
           </div>
 

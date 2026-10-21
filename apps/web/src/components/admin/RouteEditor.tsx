@@ -33,6 +33,7 @@ import { stampableByDefault } from "@/lib/point-kinds";
 import { PublishedEditDialog, skipsPublishedWarning } from "./PublishedEditDialog";
 import { MunicipalityField } from "./MunicipalityField";
 import { PhotoSlot } from "./PhotoSlot";
+import { PhotoUpload } from "./PhotoUpload";
 import { PlacePanel } from "./PlacePanel";
 import { PlaceTable } from "./PlaceTable";
 import { useChecklistLabels } from "./useChecklistLabels";
@@ -400,6 +401,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   <Field label={t`ルートの写真のリンク`} htmlFor="route-photo" hint={t`https:// で始まるリンクを入れます。空にすると、写真は表示されません。`}>
                     <TextInput id="route-photo" value={draft.photoUrl} onChange={text("photoUrl")} maxLength={500} invalid={problemOf("photo_link")} />
                   </Field>
+                  <PhotoUpload onUploaded={text("photoUrl")} />
                   {problemOf("photo_link") ? <p role="alert" className="text-base font-bold text-danger">{t`写真のリンクは、https:// で始まるものだけ使えます。`}</p> : null}
                   <PhotoSlot url={draft.photoUrl} className="max-w-md" />
                   <Field label={t`動画のリンク（YouTube か Vimeo）`} htmlFor="route-video" hint={t`https:// で始まるリンクを入れます。空にすると、動画は表示されません。`}>
