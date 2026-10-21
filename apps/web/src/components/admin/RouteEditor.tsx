@@ -445,6 +445,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   onSetLegs={(legs) => dispatch({ type: "setLegs", legs })}
                   onClearLeg={(from, to) => dispatch({ type: "clearLeg", from, to })}
                   onClearLegs={() => dispatch({ type: "clearLegs" })}
+                  onSplitLine={() => dispatch({ type: "splitLine" })}
                   onAddPlace={(lat, lng) => {
                     const key = crypto.randomUUID();
                     dispatch({ type: "addPlace", key, lat, lng });
