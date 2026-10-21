@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { msg } from "@lingui/core/macro";
 import { MapScreen } from "@/components/map/MapScreen";
-import { forViewer, getRoute, listPlaces, listRoutes, pickText, type PlaceItem, type RouteSummary } from "@/lib/content";
+import { forViewer, getRoute, sampleContentEnabled, listPlaces, listRoutes, pickText, type PlaceItem, type RouteSummary } from "@/lib/content";
 import type { MapPhoto, MapScreenPoint, MapScreenRoute, MapScreenSpot, MapScreenStop } from "@/lib/map-screen";
 import { categoryOfKind } from "@/lib/point-kinds";
 import { getMapSettings } from "@/lib/site-settings";
@@ -36,6 +36,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
         const name = pickText(locale, r.nameJa, r.nameEn);
         let stops: MapScreenStop[] | null = null;
         let line: MapScreenRoute["line"] = null;
+        let hasLine = false;
         let draft = false;
         let spots: MapScreenSpot[] = [];
         let photo: MapPhoto | null = null;
@@ -67,7 +68,9 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
             });
           }
           if (detail && positioned.length > 0) {
-            line = detail.line;
+            hasLine = detail.line !== null;
+            // Sample courses have no API behind them to fetch from, so theirs stays inline.
+            line = sampleContentEnabled() ? detail.line : null;
             draft = positioned.some((s) => !s.position?.verified);
             // Each place of the course already carries what its sheet shows: no request per place.
             stops = detail.spots
@@ -137,6 +140,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
           href: `/routes/${r.id}`,
           stops,
           line,
+          hasLine,
           draft,
         };
       }),
