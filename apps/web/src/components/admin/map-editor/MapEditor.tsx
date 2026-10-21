@@ -317,7 +317,10 @@ export function MapEditor(props: MapEditorProps) {
         markers.current.set(p.key, entry);
       }
       entry.marker.setLngLat([p.lng!, p.lat!]);
-      entry.el.className = p.stampable ? markerClass : dotClass;
+      // Add and remove only our own classes: MapLibre keeps `maplibregl-marker` (position: absolute) on the element, and
+      // replacing the whole className dropped it, so markers fell out of place and drifted when the map zoomed.
+      entry.el.classList.remove(...(p.stampable ? dotClass : markerClass).split(" "));
+      entry.el.classList.add(...(p.stampable ? markerClass : dotClass).split(" "));
       entry.el.textContent = p.stampable ? String(p.number) : "";
       entry.el.dataset.stopby = String(p.stopBy);
       entry.el.setAttribute("aria-label", p.stampable ? `${p.number}. ${p.name}` : p.name);
