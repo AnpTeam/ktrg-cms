@@ -55,6 +55,42 @@ export function lineFeature(points: readonly Position[]): LineFeature {
   };
 }
 
+/** OpenTopoMap (outdoor map: contours, trails, huts), free, from OpenStreetMap data; zoom 0 to 17. For the editor only: light use. */
+export const topoTiles = ["a", "b", "c"].map((s) => `https://${s}.tile.opentopomap.org/{z}/{x}/{y}.png`);
+export const topoAttribution =
+  '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors, SRTM | © <a href="https://opentopomap.org" target="_blank" rel="noopener noreferrer">OpenTopoMap</a> (CC-BY-SA)';
+
+/** The base maps an editor can switch between while mapping, and the style layer behind each. */
+export const editorBases = ["std", "pale", "photo", "topo"] as const;
+export type EditorBase = (typeof editorBases)[number];
+export const editorBaseLayerIds: Record<EditorBase, string> = { std: "gsi-base", pale: "base-pale", photo: "base-photo", topo: "base-topo" };
+
+/** Which layer shows for a choice: its own, and none of the others. */
+export function editorBaseVisibility(choice: EditorBase): Record<string, "visible" | "none"> {
+  return Object.fromEntries(editorBases.map((b) => [editorBaseLayerIds[b], b === choice ? "visible" : "none"]));
+}
+
+/**
+ * The mapping style: the standard GSI map plus the other base maps as hidden layers, so switching is just showing one
+ * of them (see editorBaseVisibility). Visitors never get this style.
+ */
+export function editorStyle(): StyleSpecification {
+  const style = mapStyle({ ...defaultMapSettings, base: "std" });
+  const raster = (tiles: string[], maxzoom: number, attribution: string) => ({ type: "raster" as const, tiles, tileSize: 256, minzoom: zoomLimits.min, maxzoom, attribution });
+  const layer = (id: string, source: string): LayerSpecification => ({ id, type: "raster", source, layout: { visibility: "none" } });
+  const at = style.layers.findIndex((l) => l.id === "gsi-base") + 1;
+  style.layers.splice(at, 0, layer("base-pale", "base-pale"), layer("base-photo", "base-photo"), layer("base-topo", "base-topo"));
+  return {
+    ...style,
+    sources: {
+      ...style.sources,
+      "base-pale": raster([gsiTileUrl("pale")], 18, gsiAttribution),
+      "base-photo": raster([gsiTileUrl("seamlessphoto")], 18, gsiAttribution),
+      "base-topo": raster(topoTiles, 17, topoAttribution),
+    },
+  };
+}
+
 /** The id of the layer behind the visitor's terrain button (shown or hidden, never removed). */
 export const terrainLayerId = "gsi-terrain";
 

@@ -16,7 +16,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
-  `connect-src 'self' https://cyberjapandata.gsi.go.jp https://maps.gsi.go.jp https://nominatim.openstreetmap.org https://*.wikipedia.org https://commons.wikimedia.org${isProd ? "" : " ws: http://localhost:*"}`,
+  `connect-src 'self' https://cyberjapandata.gsi.go.jp https://maps.gsi.go.jp https://nominatim.openstreetmap.org https://*.wikipedia.org https://commons.wikimedia.org https://*.tile.opentopomap.org${isProd ? "" : " ws: http://localhost:*"}`,
   "worker-src 'self' blob:",
   "frame-src https://www.youtube-nocookie.com https://www.youtube.com https://player.vimeo.com",
   "frame-ancestors 'none'",
