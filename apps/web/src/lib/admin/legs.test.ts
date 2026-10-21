@@ -12,6 +12,7 @@ import {
   reconcileLegs,
   removeAnchors,
   setAllCurves,
+  sidePairs,
   splitLine,
   stopsFollowLine,
   toggleAnchorCurve,
@@ -36,6 +37,40 @@ describe("stops", () => {
       { key: "b", lat: 34.01, lng: 135.01, stopBy: false },
     ];
     expect(pathStops(places).map((s) => s.key)).toEqual(["a", "b"]);
+  });
+});
+
+describe("side trips (寄り道)", () => {
+  const places = [
+    { key: "early", lat: 34.0, lng: 135.0, stopBy: true }, // before any stop: nothing to branch from
+    { key: "a", lat: 34.0, lng: 135.0, stopBy: false },
+    { key: "side", lat: 34.005, lng: 135.005, stopBy: true },
+    { key: "unplaced", lat: null, lng: null, stopBy: true },
+    { key: "b", lat: 34.01, lng: 135.01, stopBy: false },
+    { key: "side2", lat: 34.015, lng: 135.015, stopBy: true },
+  ];
+
+  test("a stop-by place branches off the stop before it in the list", () => {
+    expect(sidePairs(places).map((p) => [p.from.key, p.to.key])).toEqual([["a", "side"], ["b", "side2"]]);
+  });
+
+  test("a side trip keeps its stretch beside the route's own, marked as a side trip, and stays out of the joined line", () => {
+    const stops = pathStops(places);
+    const main = leg(A, B, [135.003, 34.003]);
+    const spur: Leg = { from: "a", to: "side", points: [[135.0, 34.0], [135.005, 34.005]] };
+    const kept = reconcileLegs(stops, [main, spur], sidePairs(places));
+    expect(kept.map((l) => [l.from, l.to, !!l.side])).toEqual([["a", "b", false], ["a", "side", true]]);
+    expect(joinLegs(stops, kept).line).toEqual(main.points);
+    // Nothing changed: the same legs come back, so the draft does not look edited.
+    expect(reconcileLegs(stops, kept, sidePairs(places))).toBe(kept);
+  });
+
+  test("a side trip whose place was removed or whose stop-by switch went off is dropped or becomes a stretch of the route", () => {
+    const spur: Leg = { from: "a", to: "side", points: [[135.0, 34.0], [135.005, 34.005]], side: true };
+    expect(reconcileLegs(pathStops(places.filter((p) => p.key !== "side")), [spur], sidePairs(places.filter((p) => p.key !== "side")))).toEqual([]);
+    const asStop = places.map((p) => (p.key === "side" ? { ...p, stopBy: false } : p));
+    const kept = reconcileLegs(pathStops(asStop), [spur], sidePairs(asStop));
+    expect(kept.map((l) => [l.from, l.to, !!l.side])).toEqual([["a", "side", false]]);
   });
 });
 

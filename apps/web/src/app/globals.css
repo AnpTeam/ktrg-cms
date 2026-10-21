@@ -230,13 +230,18 @@ rt {
 .map-marker {
   display: grid;
   place-items: center;
-  width: 3rem;
-  height: 3rem;
+  /* --pin (set on the map by its zoom, 0.55 to 1) makes the pins smaller when the whole course is in view. */
+  width: calc(3rem * var(--pin, 1));
+  height: calc(3rem * var(--pin, 1));
+  /* The page's own button minimum (3rem) must not stretch a smaller pin into an oval. */
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
   border-radius: 9999px;
   border: 3px solid var(--color-ink);
   background: var(--color-paper);
   color: var(--color-ink);
-  font-size: 1.125rem;
+  font-size: calc(1.125rem * var(--pin, 1));
   font-weight: 700;
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -255,6 +260,13 @@ rt {
 .map-marker[data-kind="next"] {
   border-color: var(--color-accent);
   border-width: 5px;
+}
+
+/* A side trip (寄り道): smaller, with a dashed ring (a shape, not a colour, so it reads in both themes). */
+.map-marker[data-side="true"] {
+  width: calc(2.5rem * var(--pin, 1));
+  height: calc(2.5rem * var(--pin, 1));
+  border-style: dashed;
 }
 
 .map-marker[data-kind="stamped"] {

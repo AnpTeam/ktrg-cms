@@ -2,8 +2,11 @@ import { distanceMeters } from "../lib/geo";
 
 type Coordinates = [lng: number, lat: number, ele?: number][];
 
-/** One stretch of the route between two waypoints (their ids), as the editor draws it. */
-export type RouteLeg = { from: string; to: string; coordinates: Coordinates };
+/**
+ * One stretch of the route between two waypoints (their ids), as the editor draws it. `side` marks a side trip (寄り道):
+ * a stretch from a waypoint on the route out to a stop-by place, shown to visitors apart from the main line.
+ */
+export type RouteLeg = { from: string; to: string; coordinates: Coordinates; side?: true };
 
 /**
  * A route line as GeoJSON: [lng, lat] with an optional third number, the elevation in metres. `legs` is an extra member the
@@ -46,18 +49,22 @@ export function parseLine(input: unknown): { ok: true; line: LineString } | { ok
   let points = 0;
   for (const leg of legs) {
     if (typeof leg !== "object" || leg === null) return { ok: false };
-    const { from, to, coordinates: legCoordinates } = leg as { from?: unknown; to?: unknown; coordinates?: unknown };
+    const { from, to, coordinates: legCoordinates, side } = leg as { from?: unknown; to?: unknown; coordinates?: unknown; side?: unknown };
     const c = parseCoordinates(legCoordinates);
     if (typeof from !== "string" || typeof to !== "string" || !ID.test(from) || !ID.test(to) || !c) return { ok: false };
     points += c.length;
     if (points > MAX_POINTS_ACCEPTED) return { ok: false };
-    parsedLegs.push({ from, to, coordinates: c });
+    parsedLegs.push({ from, to, coordinates: c, ...(side === true ? { side: true as const } : {}) });
   }
   return { ok: true, line: { type: "LineString", coordinates: out, ...(parsedLegs.length > 0 ? { legs: parsedLegs } : {}) } };
 }
 
 /** The line without the editor's extras: what visitors and the maps get. */
 export const plainLine = (line: LineString): LineString => ({ type: "LineString", coordinates: line.coordinates });
+
+/** The side-trip stretches of a line, each named by the place it leads to; only those whose place is in `visible`. */
+export const sideLinesOf = (line: LineString, visible: ReadonlySet<string>): { spotId: string; coordinates: Coordinates }[] =>
+  (line.legs ?? []).filter((l) => l.side && visible.has(l.to)).map((l) => ({ spotId: l.to, coordinates: l.coordinates }));
 
 // Distance from p to the segment a-b, in degrees (planar). Good enough for choosing which points to drop.
 function perpendicular(p: readonly (number | undefined)[], a: readonly (number | undefined)[], b: readonly (number | undefined)[]): number {

@@ -15,7 +15,7 @@ type Coordinates = [number, number, number?][];
 export interface RouteLine {
   type: "LineString";
   coordinates: Coordinates;
-  legs?: { from: string; to: string; coordinates: Coordinates }[];
+  legs?: { from: string; to: string; coordinates: Coordinates; side?: true }[];
 }
 
 export interface RouteBody {
@@ -101,7 +101,7 @@ export function routeBody(d: RouteDraft): RouteBody {
     accessJa: nullIfEmpty(d.accessJa),
     accessEn: nullIfEmpty(d.accessEn),
     photoUrl: nullIfEmpty(d.photoUrl),
-    geometry: d.line.length >= 2 ? { type: "LineString", coordinates: d.line.map(coordinate), ...(d.legs.length > 0 ? { legs: d.legs.map((l) => ({ from: l.from, to: l.to, coordinates: l.points.map(coordinate) })) } : {}) } : null,
+    geometry: d.line.length >= 2 ? { type: "LineString", coordinates: d.line.map(coordinate), ...(d.legs.length > 0 ? { legs: d.legs.map((l) => ({ from: l.from, to: l.to, coordinates: l.points.map(coordinate), ...(l.side ? { side: true as const } : {}) })) } : {}) } : null,
     lineVerified: d.lineVerified,
     lineSource: nullIfEmpty(d.lineSource),
     translations: d.translations,

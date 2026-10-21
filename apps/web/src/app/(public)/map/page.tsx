@@ -37,6 +37,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
         let stops: MapScreenStop[] | null = null;
         let line: MapScreenRoute["line"] = null;
         let hasLine = false;
+        let sideLines: NonNullable<MapScreenRoute["sideLines"]> = [];
         let draft = false;
         let spots: MapScreenSpot[] = [];
         let photo: MapPhoto | null = null;
@@ -71,6 +72,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
             hasLine = detail.line !== null;
             // Sample courses have no API behind them to fetch from, so theirs stays inline.
             line = sampleContentEnabled() ? detail.line : null;
+            sideLines = detail.sideLines?.map((s) => s.line) ?? [];
             draft = positioned.some((s) => !s.position?.verified);
             // Each place of the course already carries what its sheet shows: no request per place.
             stops = detail.spots
@@ -90,6 +92,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
                   label: parts.join(", "),
                   position: { lat: s.position.lat, lng: s.position.lng },
                   kind: s.kind,
+                  ...(s.stopBy ? { sideTrip: true } : {}),
                   stamped: s.stamped,
                   status: s.status,
                   href: `/spots/${s.id}`,
@@ -141,6 +144,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
           stops,
           line,
           hasLine,
+          sideLines,
           draft,
         };
       }),

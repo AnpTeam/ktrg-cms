@@ -2,7 +2,7 @@ import type { GalleryPhoto, RouteDetail, RoutePoint } from "../content";
 import { stampableByDefault, type PointKind } from "../point-kinds";
 import { areaFromBounds, sketchFromPoints } from "../route-geometry";
 import { climbM, elevationsOf, lengthKm, type LngLatEle } from "./line";
-import { capLegs, joinLegs, legsFromJoined, pathStops, reconcileLegs, splitLine, type Leg } from "./legs";
+import { capLegs, joinLegs, legsFromJoined, pathStops, reconcileLegs, sidePairs, splitLine, type Leg } from "./legs";
 import type { Translations } from "./content-locales";
 import type { AdminRoute, AdminSpot, Prefecture, SpotStatus } from "./types";
 import { estimateWalkMinutes } from "./walk-time";
@@ -110,7 +110,7 @@ export function placeFromServer(p: AdminSpot): PlaceDraft {
 function legsFromServer(route: AdminRoute, places: PlaceDraft[], line: LngLatEle[]): Leg[] {
   const stops = pathStops(places);
   const saved: Leg[] = (route.geometry?.legs ?? []).map((l) => ({ from: l.from, to: l.to, points: l.coordinates.map((c): LngLatEle => (c[2] === undefined ? [c[0], c[1]] : [c[0], c[1], c[2]])) }));
-  const kept = reconcileLegs(stops, saved);
+  const kept = reconcileLegs(stops, saved, sidePairs(places));
   return kept.length > 0 ? kept : splitLine(stops, line);
 }
 
@@ -228,7 +228,7 @@ function withLine(d: RouteDraft, points: LngLatEle[]): RouteDraft {
 /** The legs as the line: the legs are made to fit the stops, thinned to the point budget and joined. */
 function withLegs(d: RouteDraft, legs: readonly Leg[]): RouteDraft {
   const stops = pathStops(d.places);
-  const fitted = capLegs(reconcileLegs(stops, legs));
+  const fitted = capLegs(reconcileLegs(stops, legs, sidePairs(d.places)));
   return { ...withLine(d, fitted.length > 0 ? joinLegs(stops, fitted).line : []), legs: fitted };
 }
 
@@ -243,7 +243,7 @@ function syncLegs(d: RouteDraft): RouteDraft {
     const cut = splitLine(stops, d.line); // none when the stops do not follow the line: it stays as it is
     return cut.length > 0 ? withLegs(d, cut) : d;
   }
-  const fitted = reconcileLegs(stops, d.legs);
+  const fitted = reconcileLegs(stops, d.legs, sidePairs(d.places));
   return fitted === d.legs ? d : withLegs(d, fitted);
 }
 
@@ -287,7 +287,8 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       const stops = pathStops(d.places);
       if (stops.length < 2) return { ...withLine(d, a.points), legs: [] };
       const cut = splitLine(stops, a.points);
-      return cut.length > 0 ? withLegs(d, cut) : { ...withLine(d, a.points), legs: [] };
+      // A new track replaces the route's own stretches; the side trips drawn by hand stay.
+      return cut.length > 0 ? withLegs(d, [...cut, ...d.legs.filter((l) => l.side)]) : { ...withLine(d, a.points), legs: [] };
     }
     case "setLeg":
       return withLegs(d, [...d.legs.filter((l) => !(l.from === a.leg.from && l.to === a.leg.to)), a.leg]);
@@ -440,10 +441,12 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
       nameEn: nz(p.nameEn),
       status: p.status,
       stamped: null,
+      ...(p.stopBy ? { stopBy: true } : {}),
       position: p.lat !== null && p.lng !== null ? { lat: p.lat, lng: p.lng, verified: p.positionVerified } : null,
     })),
     points: navigationPoints(d).map(pointOf),
     line: d.line.length >= 2 ? d.line.map(([lng, lat]) => ({ lat, lng })) : null,
+    sideLines: d.legs.filter((l) => l.side).map((l) => ({ spotId: l.to, line: l.points.map(([lng, lat]) => ({ lat, lng })) })),
     videoUrl: nz(d.videoUrl),
     photoUrl: nz(d.photoUrl),
   };

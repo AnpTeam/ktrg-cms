@@ -7,7 +7,7 @@ import type { GeoJSONSource, Map as MapLibreMap, MapMouseEvent, Marker } from "m
 import { isAllSmooth } from "@/lib/admin/drawn-path";
 import { parseGpx, type GpxWaypoint } from "@/lib/admin/gpx";
 import { LEG_HIT, LEG_SOURCE, legFeatures, legLayers } from "@/lib/admin/leg-map";
-import { insertAnchor, legFromPath, legOf, moveAnchor, pairsOf, pathOfLeg, pathStops, pointsFromAnchors, removeAnchors, setAllCurves, toggleAnchorCurve, type Leg, type Path, type Stop } from "@/lib/admin/legs";
+import { insertAnchor, legFromPath, legOf, moveAnchor, pairsOf, pathOfLeg, pathStops, pointsFromAnchors, removeAnchors, setAllCurves, sidePairs, toggleAnchorCurve, type Leg, type Path, type Stop } from "@/lib/admin/legs";
 import { simplify, type LngLatEle } from "@/lib/admin/line";
 import { searchPlaces, type PlaceHit } from "@/lib/admin/place-search";
 import { buildLine, closeLineGaps, smoothLine } from "@/lib/admin/route-builder";
@@ -98,8 +98,8 @@ const iconBtn = "inline-flex h-8 min-h-0 min-w-8 items-center justify-center gap
 const toolClass = "tap-target inline-flex items-center justify-center rounded-xl border-2 px-3 text-base font-bold disabled:opacity-40";
 
 type Actions = {
-  collection: (preview: { from: string; points: LngLatEle[] } | null) => ReturnType<typeof legFeatures>;
-  redraw: (preview: { from: string; points: LngLatEle[] } | null) => void;
+  collection: (preview: { id: string; points: LngLatEle[] } | null) => ReturnType<typeof legFeatures>;
+  redraw: (preview: { id: string; points: LngLatEle[] } | null) => void;
   mapClick: (e: MapMouseEvent) => void;
   clickAnchor: (i: number) => void;
   toggleAnchor: (i: number) => void;
@@ -117,11 +117,17 @@ function withEnds(line: readonly LngLatEle[], from: Stop, to: Stop): LngLatEle[]
   return [[from.lng, from.lat], ...line.slice(1, -1), [to.lng, to.lat]];
 }
 
+type Pair = { from: Stop; to: Stop; side?: true };
+
+/** The leg of a chosen waypoint: the one that starts there, or the side trip that leads to it. */
+const legOfWaypoint = (pairs: readonly Pair[], key: string | null): Pair | undefined =>
+  pairs.find((p) => !p.side && p.from.key === key) ?? pairs.find((p) => p.side && p.to.key === key);
+
 /** The leg to start drawing: the one of the chosen waypoint, else the first pair without a leg, else the first pair. */
-function firstLeg(pairs: readonly { from: Stop; to: Stop }[], legs: readonly Leg[], selectedKey: string | null): string | null {
-  const own = pairs.find((p) => p.from.key === selectedKey);
+function firstLeg(pairs: readonly Pair[], legs: readonly Leg[], selectedKey: string | null): string | null {
+  const own = legOfWaypoint(pairs, selectedKey);
   const empty = pairs.find((p) => !legOf(legs, p.from.key, p.to.key));
-  return (own ?? empty ?? pairs[0])?.from.key ?? null;
+  return (own ?? empty ?? pairs[0])?.to.key ?? null;
 }
 
 export function MapEditor(props: MapEditorProps) {
@@ -138,7 +144,7 @@ export function MapEditor(props: MapEditorProps) {
   const [found, setFound] = useState<PlaceHit[] | null>(null);
   const [searching, setSearching] = useState(false);
   // The leg being worked on, named by the key of its first stop; and the point of it that is chosen (new points go after it).
-  const [chosenFrom, setActiveFrom] = useState<string | null>(null);
+  const [chosenId, setActiveId] = useState<string | null>(null);
   const [anchorAt, setAnchorAt] = useState<{ from: string | null; index: number } | null>(null);
   const [eraser, setEraser] = useState(false);
 
@@ -163,12 +169,13 @@ export function MapEditor(props: MapEditorProps) {
 
   // ---- the stops, the legs between them, and the one being worked on -----------------------------------------------
   const stops = useMemo(() => pathStops(props.places), [props.places]);
-  const pairs = useMemo(() => pairsOf(stops), [stops]);
+  // The legs of the route, then the side trips out to the stop-by places. A leg is named by the stop it runs to (unique, also for a side trip).
+  const pairs = useMemo(() => [...pairsOf(stops), ...sidePairs(props.places).map((p) => ({ ...p, side: true as const }))], [stops, props.places]);
   // The chosen leg is read as nothing once its pair of stops is gone, and the chosen point only counts on the leg it was chosen on.
-  const activePair = pairs.find((p) => p.from.key === chosenFrom) ?? null;
-  const activeFrom = activePair ? activePair.from.key : null;
-  const anchorIdx = anchorAt && anchorAt.from === activeFrom ? anchorAt.index : null;
-  const setAnchorIdx = (index: number | null) => setAnchorAt(index === null ? null : { from: activeFrom, index });
+  const activePair = pairs.find((p) => p.to.key === chosenId) ?? null;
+  const activeId = activePair ? activePair.to.key : null;
+  const anchorIdx = anchorAt && anchorAt.from === activeId ? anchorAt.index : null;
+  const setAnchorIdx = (index: number | null) => setAnchorAt(index === null ? null : { from: activeId, index });
   const activeLeg = activePair ? legOf(props.legs, activePair.from.key, activePair.to.key) : undefined;
   const activePath = useMemo(() => (activeLeg ? pathOfLeg(activeLeg) : NO_PATH), [activeLeg]);
   const nameOf = useMemo(() => new Map(props.places.map((p) => [p.key, p.name || t`（名前がありません）`])), [props.places, t]);
@@ -183,7 +190,7 @@ export function MapEditor(props: MapEditorProps) {
 
   function makeActions(): Actions {
     return {
-    collection: (preview) => legFeatures(pairs, props.legs, activeFrom, preview, props.line),
+    collection: (preview) => legFeatures(pairs, props.legs, activeId, preview, props.line),
     redraw: (preview) => {
       const source = mapRef.current?.getSource(LEG_SOURCE) as GeoJSONSource | undefined;
       source?.setData(actions.current.collection(preview));
@@ -200,8 +207,8 @@ export function MapEditor(props: MapEditorProps) {
         return;
       }
       const hit = mapRef.current?.queryRenderedFeatures(e.point, { layers: [LEG_HIT] })[0];
-      const from = hit ? (hit.properties as { from?: string } | null)?.from : undefined;
-      setActiveFrom(from ? from : null);
+      const id = hit ? (hit.properties as { id?: string } | null)?.id : undefined;
+      setActiveId(id ? id : null);
     },
     clickAnchor: (i) => {
       if (justDragged.current) return;
@@ -214,7 +221,7 @@ export function MapEditor(props: MapEditorProps) {
     previewAnchor: (i, at) => {
       if (!activePair) return;
       const moved = moveAnchor(activePath, i, [at.lat, at.lng]);
-      actions.current.redraw({ from: activePair.from.key, points: pointsFromAnchors(activePair.from, activePair.to, moved.anchors, moved.curves) });
+      actions.current.redraw({ id: activePair.to.key, points: pointsFromAnchors(activePair.from, activePair.to, moved.anchors, moved.curves) });
     },
     dropAnchor: (i, at) => {
       justDragged.current = true;
@@ -226,7 +233,7 @@ export function MapEditor(props: MapEditorProps) {
       if (tool === "select") return setMode("pan");
       if (tool === "place") return setMode("place");
       if (pairs.length === 0) return setNote(t`線を描くには、先に経由地を2つ以上置いてください（寄り道は数えません）。`);
-      if (!activePair) setActiveFrom(firstLeg(pairs, props.legs, props.selectedKey));
+      if (!activePair) setActiveId(firstLeg(pairs, props.legs, props.selectedKey));
       setMode("draw");
     },
     toggleEraser: () => setEraser((e) => !e),
@@ -252,7 +259,8 @@ export function MapEditor(props: MapEditorProps) {
   const [seenSelected, setSeenSelected] = useState(props.selectedKey);
   if (seenSelected !== props.selectedKey) {
     setSeenSelected(props.selectedKey);
-    if (props.selectedKey && pairs.some((p) => p.from.key === props.selectedKey)) setActiveFrom(props.selectedKey);
+    const own = legOfWaypoint(pairs, props.selectedKey);
+    if (own) setActiveId(own.to.key);
   }
 
   // ---- the map, created once -----------------------------------------------------------------------------------
@@ -319,7 +327,7 @@ export function MapEditor(props: MapEditorProps) {
   // ---- the legs on the map ------------------------------------------------------------------------------------
   useEffect(() => {
     if (ready) actions.current.redraw(null);
-  }, [ready, props.legs, props.line, pairs, activeFrom]);
+  }, [ready, props.legs, props.line, pairs, activeId]);
 
   // ---- the tool ----------------------------------------------------------------------------------------------
   useEffect(() => {
@@ -442,18 +450,18 @@ export function MapEditor(props: MapEditorProps) {
     if (b) map.fitBounds(b, { padding: 60, maxZoom: 15, duration: 400 });
   }
 
-  function fitLeg(from: string | null) {
+  function fitLeg(id: string | null) {
     const map = mapRef.current;
-    const pair = pairs.find((p) => p.from.key === from);
+    const pair = pairs.find((p) => p.to.key === id);
     if (!map || !pair) return;
     const leg = legOf(props.legs, pair.from.key, pair.to.key);
     const b = boundsOf([...(leg?.points ?? []).map((p) => ({ lng: p[0], lat: p[1] })), { lat: pair.from.lat, lng: pair.from.lng }, { lat: pair.to.lat, lng: pair.to.lng }]);
     if (b) map.fitBounds(b, { padding: 80, maxZoom: 16, duration: 400 });
   }
 
-  function pickLeg(from: string) {
-    setActiveFrom(from || null);
-    if (from) fitLeg(from);
+  function pickLeg(id: string) {
+    setActiveId(id || null);
+    if (id) fitLeg(id);
   }
 
   function chooseBase(next: EditorBase) {
@@ -513,7 +521,7 @@ export function MapEditor(props: MapEditorProps) {
     }
     setWorking(false);
     props.onSetLegs([...props.legs.filter((l) => !built.some((b) => b.from === l.from && b.to === l.to)), ...built]);
-    setTimeout(() => (activePair ? fitLeg(activePair.from.key) : fit()), 100);
+    setTimeout(() => (activePair ? fitLeg(activePair.to.key) : fit()), 100);
     setNote(
       kind === "direct"
         ? t`${count}つの区間を、まっすぐにつなぎました。形を確かめてから、保存してください。`
@@ -560,7 +568,7 @@ export function MapEditor(props: MapEditorProps) {
     setWorking(false);
     if (allStraight) return setNote(lastMessage || t`道が見つかりませんでした。`);
     props.onSetLegs([...props.legs.filter((l) => !made.some((b) => b.from === l.from && b.to === l.to)), ...made]);
-    setTimeout(() => (activePair ? fitLeg(activePair.from.key) : fit()), 100);
+    setTimeout(() => (activePair ? fitLeg(activePair.to.key) : fit()), 100);
     setNote(t`線を道に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。`);
   }
 
@@ -701,7 +709,7 @@ export function MapEditor(props: MapEditorProps) {
           </button>
         ) : null}
         {activePair ? (
-          <button type="button" onClick={() => setActiveFrom(null)} className={chipClass} title={t`区間の選択をやめて、全体を対象にします`}>
+          <button type="button" onClick={() => setActiveId(null)} className={chipClass} title={t`区間の選択をやめて、全体を対象にします`}>
             {t`選択をやめる`}
           </button>
         ) : null}
@@ -798,10 +806,10 @@ export function MapEditor(props: MapEditorProps) {
               <label htmlFor="leg-pick" className="sr-only">
                 {t`描く区間`}
               </label>
-              <select id="leg-pick" value={activeFrom ?? ""} onChange={(e) => pickLeg(e.target.value)} className="h-8 min-h-0 max-w-64 truncate rounded-lg border border-line bg-paper px-2 text-sm font-bold">
+              <select id="leg-pick" value={activeId ?? ""} onChange={(e) => pickLeg(e.target.value)} className="h-8 min-h-0 max-w-64 truncate rounded-lg border border-line bg-paper px-2 text-sm font-bold">
                 <option value="">{t`区間を選ぶ`}</option>
                 {pairs.map((pair) => (
-                  <option key={pair.from.key} value={pair.from.key}>
+                  <option key={pair.to.key} value={pair.to.key}>
                     {`${legOf(props.legs, pair.from.key, pair.to.key) ? "● " : "○ "}${legLabel(pair)}`}
                   </option>
                 ))}
@@ -827,7 +835,7 @@ export function MapEditor(props: MapEditorProps) {
                     {t`すべてなめらか`}
                   </button>
                   <span className="px-1 text-sm tabular-nums">{t`点 ${pointCount}`}</span>
-                  <button type="button" onClick={() => fitLeg(activeFrom)} className={iconBtn} title={t`この区間を見る`} aria-label={t`この区間を見る`}>
+                  <button type="button" onClick={() => fitLeg(activeId)} className={iconBtn} title={t`この区間を見る`} aria-label={t`この区間を見る`}>
                     <FitIcon />
                   </button>
                 </>
