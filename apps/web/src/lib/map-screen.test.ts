@@ -28,6 +28,7 @@ const route = (id: string, order: number, over: Partial<MapScreenRoute> = {}): M
   href: `/routes/${id}`,
   stops: null,
   line: null,
+  hasLine: false,
   draft: false,
   ...over,
 });

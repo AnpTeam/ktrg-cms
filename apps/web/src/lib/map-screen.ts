@@ -105,7 +105,10 @@ export interface MapScreenRoute {
   spots: MapScreenSpot[];
   /** The detailed map: only courses that have positions for their stops. */
   stops: MapScreenStop[] | null;
+  /** The path. Not sent with the page (it is the heaviest part): the map fetches it when the course is chosen, see `hasLine`. */
   line: Position[] | null;
+  /** The course has a path to fetch. */
+  hasLine: boolean;
   /** Some position on this course is a rough draft, not a verified one. */
   draft: boolean;
 }
