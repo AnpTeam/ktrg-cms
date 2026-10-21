@@ -158,27 +158,27 @@ msgstr "{number}番 まだ押していません"
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
 
-#: src/components/admin/PlaceTable.tsx:105
+#: src/components/admin/PlaceTable.tsx:186
 msgid "{row}行目：スタンプを押せる"
 msgstr "{row}行目：スタンプを押せる"
 
-#: src/components/admin/PlaceTable.tsx:74
+#: src/components/admin/PlaceTable.tsx:155
 msgid "{row}行目の名前"
 msgstr "{row}行目の名前"
 
-#: src/components/admin/PlaceTable.tsx:84
+#: src/components/admin/PlaceTable.tsx:165
 msgid "{row}行目の種類"
 msgstr "{row}行目の種類"
 
-#: src/components/admin/PlaceTable.tsx:114
+#: src/components/admin/PlaceTable.tsx:195
 msgid "{row}行目の経度"
 msgstr "{row}行目の経度"
 
-#: src/components/admin/PlaceTable.tsx:111
+#: src/components/admin/PlaceTable.tsx:192
 msgid "{row}行目の緯度"
 msgstr "{row}行目の緯度"
 
-#: src/components/admin/PlaceTable.tsx:121
+#: src/components/admin/PlaceTable.tsx:202
 msgid "{row}行目を削除"
 msgstr "{row}行目を削除"
 
@@ -281,7 +281,7 @@ msgstr "「祈り」を見つめる再発見の旅"
 msgid "「経由地」シート {0} 行目"
 msgstr "「経由地」シート {0} 行目"
 
-#: src/components/admin/PlaceTable.tsx:137
+#: src/components/admin/PlaceTable.tsx:218
 msgid "＋ 行を追加"
 msgstr "＋ 行を追加"
 
@@ -929,7 +929,7 @@ msgstr "すぐ{turnWord}"
 #: src/app/(public)/sitemap/page.tsx:76
 #: src/app/(public)/stamps/page.tsx:31
 #: src/components/admin/map-editor/MapEditor.tsx:968
-#: src/components/admin/PlaceTable.tsx:49
+#: src/components/admin/PlaceTable.tsx:137
 #: src/components/ProgressSummary.tsx:19
 #: src/components/TabBar.tsx:25
 msgid "スタンプ"
@@ -1168,6 +1168,10 @@ msgstr "どちらからかは未設定です"
 msgid "とても大きい"
 msgstr "とても大きい"
 
+#: src/components/admin/PlaceTable.tsx:91
+msgid "ドラッグで列の幅を変えます（ダブルクリックで元に戻します）"
+msgstr "ドラッグで列の幅を変えます（ダブルクリックで元に戻します）"
+
 #: src/components/admin/map-editor/MapEditor.tsx:357
 msgid "ドラッグで動かします。クリックで選び、ダブルクリックでなめらかな点と角の点を切り替えます。"
 msgstr "ドラッグで動かします。クリックで選び、ダブルクリックでなめらかな点と角の点を切り替えます。"
@@ -1336,7 +1340,7 @@ msgstr "まだ、この場所から遠いようです。場所の近くで、も
 msgid "まだありません。"
 msgstr "まだありません。"
 
-#: src/components/admin/PlaceTable.tsx:134
+#: src/components/admin/PlaceTable.tsx:215
 msgid "まだありません。「＋ 行を追加」で、経由地を表に入れてください。"
 msgstr "まだありません。「＋ 行を追加」で、経由地を表に入れてください。"
 
@@ -2254,6 +2258,10 @@ msgstr "出発点"
 msgid "分"
 msgstr "分"
 
+#: src/components/admin/PlaceTable.tsx:86
+msgid "列の幅を変える"
+msgstr "列の幅を変える"
+
 #: src/components/admin/SiteSettingsForm.tsx:115
 msgid "初期値にする"
 msgstr "初期値にする"
@@ -2270,8 +2278,8 @@ msgstr "利用規約"
 
 #: src/components/admin/AdminItemForm.tsx:181
 #: src/components/admin/fields.tsx:151
-#: src/components/admin/PlaceTable.tsx:58
-#: src/components/admin/PlaceTable.tsx:124
+#: src/components/admin/PlaceTable.tsx:140
+#: src/components/admin/PlaceTable.tsx:205
 #: src/components/admin/RallyEditor.tsx:149
 msgid "削除"
 msgstr "削除"
@@ -2441,7 +2449,7 @@ msgstr "同じ番号の行が、前にもあります"
 msgid "名前"
 msgstr "名前"
 
-#: src/components/admin/PlaceTable.tsx:43
+#: src/components/admin/PlaceTable.tsx:135
 msgid "名前（日本語）"
 msgstr "名前（日本語）"
 
@@ -3243,7 +3251,7 @@ msgstr "確認番号を送る"
 
 #: src/components/admin/map-editor/MapEditor.tsx:960
 #: src/components/admin/PlacePanel.tsx:93
-#: src/components/admin/PlaceTable.tsx:46
+#: src/components/admin/PlaceTable.tsx:136
 msgid "種類"
 msgstr "種類"
 
@@ -3314,7 +3322,7 @@ msgid "経塚ラリー"
 msgstr "経塚ラリー"
 
 #: src/components/admin/PlacePanel.tsx:145
-#: src/components/admin/PlaceTable.tsx:55
+#: src/components/admin/PlaceTable.tsx:139
 msgid "経度"
 msgstr "経度"
 
@@ -3449,11 +3457,11 @@ msgid "編集する内容"
 msgstr "編集する内容"
 
 #: src/components/admin/PlacePanel.tsx:142
-#: src/components/admin/PlaceTable.tsx:52
+#: src/components/admin/PlaceTable.tsx:138
 msgid "緯度"
 msgstr "緯度"
 
-#: src/components/admin/PlaceTable.tsx:139
+#: src/components/admin/PlaceTable.tsx:220
 msgid "緯度・経度は、公式の情報で確かめてから、場所ごとに「位置を確認した」にチェックを入れてください。それまで訪れる人には表示されません。"
 msgstr "緯度・経度は、公式の情報で確かめてから、場所ごとに「位置を確認した」にチェックを入れてください。それまで訪れる人には表示されません。"
 
