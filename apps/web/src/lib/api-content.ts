@@ -6,6 +6,7 @@ import { placeCategories, placeStatuses } from "./places";
 import { isPointKind } from "./point-kinds";
 import { areaFromBounds, sketchFromPoints } from "./route-geometry";
 import type { Sketch } from "./sketch";
+import { timesFromPrevious, type LegTime } from "./leg-times";
 
 export { areaFromBounds, sketchFromPoints };
 
@@ -104,6 +105,7 @@ export function routeDetailFromApi(
   mine: ReadonlySet<string> = new Set(),
 ): RouteDetail {
   const line = r.line?.coordinates ?? null;
+  const times = line ? timesFromPrevious(spots.map((s) => ({ id: s.id, position: s.position, stopBy: s.stopBy })), line.map(([lng, lat, ele]) => (ele === undefined ? [lng, lat] : [lng, lat, ele]))) : new Map<string, LegTime>();
   return {
     ...routeSummaryFromApi(r, order, spots.filter((s) => mine.has(s.id)).length),
     // The detail has the whole line, so its silhouette and elevation come from that.
@@ -114,7 +116,11 @@ export function routeDetailFromApi(
     historyEn: r.historyEn,
     accessJa: r.accessJa,
     accessEn: r.accessEn,
-    spots: spots.map((s) => spotListItemFromApi(s, mine.has(s.id))),
+    spots: spots.map((s) => {
+      const item = spotListItemFromApi(s, mine.has(s.id));
+      const fromPrev = times.get(s.id);
+      return fromPrev ? { ...item, fromPrev } : item;
+    }),
     points: points.flatMap((p) => routePointFromApi(p) ?? []),
     line: line ? line.map(([lng, lat]) => ({ lat, lng })) : null,
     sideLines: (r.sideLines ?? []).map((s) => ({ spotId: s.spotId, line: s.coordinates.map(([lng, lat]) => ({ lat, lng })) })),

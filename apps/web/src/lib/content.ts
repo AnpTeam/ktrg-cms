@@ -74,6 +74,8 @@ export interface SpotListItem {
   kind?: PointKind;
   /** An optional visit beside the way (寄り道): drawn apart from the route. */
   stopBy?: boolean;
+  /** The walk from the stop before this one: left out for the first stop or when the line does not fit the stops. */
+  fromPrev?: { km: number; minutes: number };
   /** null when not signed in. */
   stamped: boolean | null;
   /** null when the CMS has no coordinates yet; the API returns them only for published spots. */

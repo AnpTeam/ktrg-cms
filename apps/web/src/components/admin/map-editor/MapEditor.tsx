@@ -9,6 +9,7 @@ import { parseGpx, type GpxWaypoint } from "@/lib/admin/gpx";
 import { LEG_HIT, LEG_SOURCE, legFeatures, legLayers } from "@/lib/admin/leg-map";
 import { insertAnchor, legFromPath, legOf, moveAnchor, pairsOf, pathOfLeg, pathStops, pointsFromAnchors, removeAnchors, setAllCurves, sidePairs, toggleAnchorCurve, type Leg, type Path, type Stop } from "@/lib/admin/legs";
 import { simplify, type LngLatEle } from "@/lib/admin/line";
+import { legTime } from "@/lib/leg-times";
 import { searchPlaces, type PlaceHit } from "@/lib/admin/place-search";
 import { buildLine, closeLineGaps, smoothLine } from "@/lib/admin/route-builder";
 import { roundLine, type SnapPoint } from "@/lib/admin/snap";
@@ -650,7 +651,15 @@ export function MapEditor(props: MapEditorProps) {
   };
 
   const legLabel = (pair: { from: Stop; to: Stop }) => `${nameOf.get(pair.from.key) ?? ""} → ${nameOf.get(pair.to.key) ?? ""}`;
-  const activeName = activePair ? legLabel(activePair) : null;
+  // How long the leg takes to walk (from its line, and its climb once the heights are filled in): " · 25 min (1.2 km)".
+  const timeText = (pair: { from: Stop; to: Stop }) => {
+    const leg = legOf(props.legs, pair.from.key, pair.to.key);
+    const time = leg ? legTime(leg.points) : null;
+    if (!time) return "";
+    const [minutes, km] = [time.minutes, time.km];
+    return ` · ${t`${minutes}分（${km} km）`}`;
+  };
+  const activeName = activePair ? legLabel(activePair) + timeText(activePair) : null;
   const canWork = !working && pairs.length > 0;
   // A saved line that the waypoints do not follow (a stop twice, or in another order) is kept as it is, not cut into legs.
   const looseLine = props.legs.length === 0 && props.line.length >= 2 && pairs.length > 0;
@@ -813,7 +822,7 @@ export function MapEditor(props: MapEditorProps) {
                 <option value="">{t`区間を選ぶ`}</option>
                 {pairs.map((pair) => (
                   <option key={pair.to.key} value={pair.to.key}>
-                    {`${legOf(props.legs, pair.from.key, pair.to.key) ? "● " : "○ "}${legLabel(pair)}`}
+                    {`${legOf(props.legs, pair.from.key, pair.to.key) ? "● " : "○ "}${legLabel(pair)}${timeText(pair)}`}
                   </option>
                 ))}
               </select>
