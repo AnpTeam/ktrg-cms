@@ -95,7 +95,39 @@ export function authRoutes(getServices: () => AuthServices, opts: RouteOptions) 
         body: t.Object({ code: otpCodeSchema }),
       },
     )
-    .post("/logout", async ({ headers, set }) => {
+    // Add an email to a passkey-only account, step 1: mail a code to the new address. Needs a fresh login.
+    // The answer is the same whether or not the address belongs to someone (the check happens at step 2).
+    .post(
+      "/email/request",
+      async ({ user, body, set }) => {
+        if (user.email) return fail(set, 409, "email_in_use");
+        await getServices().otp.request(body.email, user.locale);
+        return { ok: true as const };
+      },
+      {
+        auth: "me.sensitive",
+        body: t.Object({ email: emailSchema }),
+        rateLimit: { otpRequestEmail: "body.email", otpRequestIp: "ip" },
+      },
+    )
+    // Step 2: the right code from the new mailbox becomes the account's email.
+    .post(
+      "/email/verify",
+      async ({ user, body, set }) => {
+        if (user.email) return fail(set, 409, "email_in_use");
+        const result = await getServices().otp.attachEmail(user.id, body.email, body.code);
+        if (result === "ok") return { ok: true as const };
+        // "taken" is only said after the code was right, so only the mailbox's owner can learn it.
+        return result === "taken" ? fail(set, 409, "email_in_use") : fail(set, 400, "invalid_code");
+      },
+      {
+        auth: "me.sensitive",
+        body: t.Object({ email: emailSchema, code: otpCodeSchema }),
+        rateLimit: { otpVerifyEmail: "body.email", otpVerifyIp: "ip" },
+        // The audit row is written by the store, in the same transaction as the change.
+      },
+    )
+    .post("/logout",async ({ headers, set }) => {
       const token = http.tokenFrom(headers);
       if (token) await getServices().session.destroy(token);
       set.headers["set-cookie"] = http.clearCookie();

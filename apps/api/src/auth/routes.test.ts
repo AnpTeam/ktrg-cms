@@ -425,3 +425,59 @@ describe("register with a name and origin", () => {
     expect(good.status).toBe(200);
   });
 });
+
+describe("adding an email to a passkey-only account: POST /auth/email/request and /auth/email/verify", () => {
+  async function passkeyOnly(t: ReturnType<typeof setup>) {
+    const user = { id: "pk-only", email: null, role: "participant" as const, locale: "ja" as const };
+    t.users.set("pk-only", user);
+    return `session=${(await t.session.create(user)).token}`;
+  }
+
+  test("both steps need a login", async () => {
+    const { post } = setup();
+    expect((await post("email/request", { email: "new@example.com" })).status).toBe(401);
+    expect((await post("email/verify", { email: "new@example.com", code: "123456" })).status).toBe(401);
+  });
+
+  test("the code from the new mailbox becomes the account's email", async () => {
+    const t = setup();
+    const cookie = await passkeyOnly(t);
+    expect((await t.post("email/request", { email: "New@Example.com" }, cookie)).status).toBe(200);
+
+    const res = await t.post("email/verify", { email: "new@example.com", code: t.codes.at(-1) }, cookie);
+    expect(res.status).toBe(200);
+    expect(t.users.get("new@example.com")?.id).toBe("pk-only");
+  });
+
+  test("a wrong code is invalid_code and changes nothing", async () => {
+    const t = setup();
+    const cookie = await passkeyOnly(t);
+    await t.post("email/request", { email: "new@example.com" }, cookie);
+    const wrong = t.codes.at(-1) === "000000" ? "111111" : "000000";
+
+    const res = await t.post("email/verify", { email: "new@example.com", code: wrong }, cookie);
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ ok: false, error: "invalid_code" });
+    expect(t.users.has("new@example.com")).toBe(false);
+  });
+
+  test("an address another account owns is refused, after the code was right", async () => {
+    const t = setup();
+    await t.login("taken@example.com");
+    t.advanceOtp(61_000);
+    const cookie = await passkeyOnly(t);
+    await t.post("email/request", { email: "taken@example.com" }, cookie);
+
+    const res = await t.post("email/verify", { email: "taken@example.com", code: t.codes.at(-1) }, cookie);
+    expect(res.status).toBe(409);
+    expect(await res.json()).toEqual({ ok: false, error: "email_in_use" });
+  });
+
+  test("an account that already has an email cannot add another this way", async () => {
+    const t = setup();
+    const { cookie } = await t.login("a@example.com");
+    const res = await t.post("email/request", { email: "b@example.com" }, cookie);
+    expect(res.status).toBe(409);
+    expect(await res.json()).toEqual({ ok: false, error: "email_in_use" });
+  });
+});

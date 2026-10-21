@@ -18,13 +18,15 @@ const dangerButton =
 /** The day in Japan time as YYYY-MM-DD, for `formatDay`. */
 const japanDay = (iso: string) => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tokyo" }).format(new Date(iso));
 
-export function PasskeyManager({ locale }: { locale: string }) {
+export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail: boolean }) {
   const { t } = useLingui();
   const [items, setItems] = useState<PasskeyItem[] | null>(null);
   const [error, setError] = useState<AuthFailure | null>(null);
   const [busy, setBusy] = useState(false);
   const [removing, setRemoving] = useState<PasskeyItem | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
+  // The server refuses it too; saying so before asking "are you sure" saves a confirm-it-is-you step for nothing.
+  const lastWay = !hasEmail && items !== null && items.length <= 1;
   const { guard, dialog: reauthDialog } = useReauth();
   // Known only in the browser, so it starts unknown (the server render and the first browser render must match).
   const supported = useSyncExternalStore(
@@ -140,18 +142,34 @@ export function PasskeyManager({ locale }: { locale: string }) {
         onClose={() => setRemoving(null)}
         className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-3xl bg-paper p-6 text-ink backdrop:bg-black/60"
       >
-        <h2 id="remove-passkey-title" className="text-2xl font-bold">
-          {t`このパスキーを消しますか？`}
-        </h2>
-        <p className="mt-3 text-lg leading-8">{t`消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。`}</p>
-        <div className="mt-6 flex flex-col gap-3">
-          <button type="button" disabled={busy} onClick={confirmRemove} className={dangerButton}>
-            {t`消す`}
-          </button>
-          <button type="button" disabled={busy} onClick={() => setRemoving(null)} className={secondaryButton}>
-            {t`やめる`}
-          </button>
-        </div>
+        {lastWay ? (
+          <>
+            <h2 id="remove-passkey-title" className="text-2xl font-bold">
+              {t`このパスキーは、消せません`}
+            </h2>
+            <p className="mt-3 text-lg leading-8">{t`これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。`}</p>
+            <div className="mt-6">
+              <button type="button" onClick={() => setRemoving(null)} className={primaryButton}>
+                {t`わかりました`}
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <h2 id="remove-passkey-title" className="text-2xl font-bold">
+              {t`このパスキーを消しますか？`}
+            </h2>
+            <p className="mt-3 text-lg leading-8">{t`消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。`}</p>
+            <div className="mt-6 flex flex-col gap-3">
+              <button type="button" disabled={busy} onClick={confirmRemove} className={dangerButton}>
+                {t`消す`}
+              </button>
+              <button type="button" disabled={busy} onClick={() => setRemoving(null)} className={secondaryButton}>
+                {t`やめる`}
+              </button>
+            </div>
+          </>
+        )}
       </dialog>
     </div>
   );
