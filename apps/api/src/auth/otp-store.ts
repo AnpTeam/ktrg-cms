@@ -65,6 +65,27 @@ export function createDrizzleOtpStore(db: Db): OtpStore {
       return user satisfies AuthUser;
     },
 
+    async setUserEmail(userId, email) {
+      // The unique index on lower(email) decides a race between two accounts; the loser's insert throws.
+      return db
+        .transaction(async (tx) => {
+          const changed = await tx
+            .update(users)
+            .set({ email, updatedAt: sql`now()` })
+            .where(and(eq(users.id, userId), isNull(users.email)))
+            .returning({ id: users.id });
+          if (changed.length === 0) return false;
+          await writeAudit(tx, { actorUserId: userId, action: "email.add", targetId: userId });
+          return true;
+        })
+        .catch((err: unknown) => {
+          // Postgres 23505 = unique_violation (drizzle may wrap it in `cause`).
+          const code = (err as { code?: string; cause?: { code?: string } }).code ?? (err as { cause?: { code?: string } }).cause?.code;
+          if (code === "23505") return false;
+          throw err;
+        });
+    },
+
     async promoteToAdmin(userId) {
       return db.transaction(async (tx) => {
         // Only a real change counts, so two parallel logins write one audit row, not two.

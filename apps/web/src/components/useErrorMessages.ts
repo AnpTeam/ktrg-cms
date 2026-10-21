@@ -28,6 +28,7 @@ export function useErrorMessages(): Record<ErrorKey, string> {
     registration_failed: t`登録できませんでした。もう一度お試しください。`,
     too_many_passkeys: t`パスキーは、これ以上ふやせません。使わないものを消してから、お試しください。`,
     last_login_method: t`ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。`,
+    email_in_use: t`このメールアドレスは、使えません。すでに別のアカウントで使われているか、このアカウントにはメールが入っています。`,
     // Profile
     invalid_display_name: t`お名前に使えない文字が含まれているか、長すぎます（40文字まで）。`,
     // Admin: routes and places

@@ -355,6 +355,8 @@ describe("user B cannot touch user A", () => {
     "PATCH /api/v1/admin/lists/directory/:id": () => ({ updatedAt: new Date().toISOString() }),
     "PATCH /api/v1/admin/lists/users/:id": () => ({ updatedAt: new Date().toISOString(), role: "admin" }),
     "POST /api/v1/auth/reauth/verify": () => ({ code: "123456" }),
+    "POST /api/v1/auth/email/request": () => ({ email: "new@example.com" }),
+    "POST /api/v1/auth/email/verify": () => ({ email: "new@example.com", code: "123456" }),
     "POST /api/v1/admin/uploads": () => {
       const form = new FormData();
       form.set("file", new File([new Uint8Array([0xff, 0xd8, 0xff])], "a.jpg"));

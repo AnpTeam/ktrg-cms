@@ -13,6 +13,8 @@ export const AUDIT_ACTIONS = {
   "user.role.bootstrap_admin": "user",
   /** A fresh-login re-check passed (needed before role changes). */
   "session.reauth": "user",
+  /** A passkey-only account added its first email. */
+  "email.add": "user",
   "passkey.add": "passkey",
   "passkey.remove": "passkey",
   /** DELETE /me: the owner asked for their account to be deleted. */

@@ -48,7 +48,7 @@ msgstr "{0}を消す"
 msgid "{0}を開く"
 msgstr "{0}を開く"
 
-#: src/components/settings/PasskeyManager.tsx:111
+#: src/components/settings/PasskeyManager.tsx:113
 msgid "{added} に追加"
 msgstr "{added} に追加"
 
@@ -345,7 +345,7 @@ msgstr "GPSの電波が弱いようです。空の開けた場所に動いて、
 msgid "GPSの電波が弱いようです。空の開けた場所に動いてください。"
 msgstr "GPSの電波が弱いようです。空の開けた場所に動いてください。"
 
-#: src/components/useErrorMessages.ts:43
+#: src/components/useErrorMessages.ts:44
 msgid "GPSの電波が弱いようです。空の開けた場所に移動して、もう一度お試しください。"
 msgstr "GPSの電波が弱いようです。空の開けた場所に移動して、もう一度お試しください。"
 
@@ -518,6 +518,10 @@ msgstr "いまの状態"
 msgid "いまは、ここでスタンプを押せません。"
 msgstr "いまは、ここでスタンプを押せません。"
 
+#: src/components/settings/LoginMethods.tsx:48
+msgid "いまは、パスキーだけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
+msgstr "いまは、パスキーだけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
+
 #: src/components/SampleNotice.tsx:54
 msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 msgstr "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
@@ -547,7 +551,7 @@ msgstr "オフのままだと、スタンプの場所を1つずつ表示しま�
 msgid "お名前"
 msgstr "お名前"
 
-#: src/components/useErrorMessages.ts:32
+#: src/components/useErrorMessages.ts:33
 msgid "お名前に使えない文字が含まれているか、長すぎます（40文字まで）。"
 msgstr "お名前に使えない文字が含まれているか、長すぎます（40文字まで）。"
 
@@ -637,7 +641,7 @@ msgstr "こちらの問題で、うまくいきませんでした。しばらく
 msgid "こちらの問題です。もう一度お試しください。それでも直らないときは、しばらくしてからお試しください。"
 msgstr "こちらの問題です。もう一度お試しください。それでも直らないときは、しばらくしてからお試しください。"
 
-#: src/components/settings/PasskeyManager.tsx:97
+#: src/components/settings/PasskeyManager.tsx:99
 msgid "このアカウントに、パスキーはまだありません。"
 msgstr "このアカウントに、パスキーはまだありません。"
 
@@ -658,7 +662,11 @@ msgstr "このスタンプは、もう押してあります。"
 msgid "このデータについて"
 msgstr "このデータについて"
 
-#: src/components/settings/PasskeyManager.tsx:144
+#: src/components/settings/PasskeyManager.tsx:148
+msgid "このパスキーは、消せません"
+msgstr "このパスキーは、消せません"
+
+#: src/components/settings/PasskeyManager.tsx:160
 msgid "このパスキーを消しますか？"
 msgstr "このパスキーを消しますか？"
 
@@ -669,6 +677,10 @@ msgstr "このファイルは読み取れませんでした。「ひな形」か
 #: src/app/(admin)/layout.tsx:33
 msgid "このページを見る権限がありません"
 msgstr "このページを見る権限がありません"
+
+#: src/components/useErrorMessages.ts:31
+msgid "このメールアドレスは、使えません。すでに別のアカウントで使われているか、このアカウントにはメールが入っています。"
+msgstr "このメールアドレスは、使えません。すでに別のアカウントで使われているか、このアカウントにはメールが入っています。"
 
 #: src/components/StampHere.tsx:93
 msgid "このラリーは、いまは行われていません。"
@@ -744,7 +756,7 @@ msgstr "この区間を見る"
 msgid "この地域のルートはまだありません。"
 msgstr "この地域のルートはまだありません。"
 
-#: src/components/useErrorMessages.ts:42
+#: src/components/useErrorMessages.ts:43
 msgid "この場所のスタンプは、確認のため取り消されています。お困りの場合は運営にお問い合わせください。"
 msgstr "この場所のスタンプは、確認のため取り消されています。お困りの場合は運営にお問い合わせください。"
 
@@ -766,7 +778,7 @@ msgstr "この場所は、いまは閉鎖中です。"
 msgid "この場所は、いまは閉鎖中です。スタンプは押せません。"
 msgstr "この場所は、いまは閉鎖中です。スタンプは押せません。"
 
-#: src/components/useErrorMessages.ts:40
+#: src/components/useErrorMessages.ts:41
 msgid "この場所は今、通行止めなどで閉まっているため、スタンプを押せません。"
 msgstr "この場所は今、通行止めなどで閉まっているため、スタンプを押せません。"
 
@@ -788,11 +800,11 @@ msgstr "この文章は日本語のみです。"
 msgid "この端末・ブラウザでは、位置情報を使えません。"
 msgstr "この端末・ブラウザでは、位置情報を使えません。"
 
-#: src/components/settings/PasskeyManager.tsx:134
+#: src/components/settings/PasskeyManager.tsx:136
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "この端末・ブラウザではパスキーを使えません。"
 
-#: src/components/useErrorMessages.ts:63
+#: src/components/useErrorMessages.ts:64
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 
@@ -812,7 +824,7 @@ msgstr "この端末では地図を表示できません。下の一覧から場
 msgid "この端末には保存しました。つながったときに、アカウントにも保存されます。"
 msgstr "この端末には保存しました。つながったときに、アカウントにも保存されます。"
 
-#: src/components/settings/PasskeyManager.tsx:131
+#: src/components/settings/PasskeyManager.tsx:133
 msgid "この端末のパスキーを追加する"
 msgstr "この端末のパスキーを追加する"
 
@@ -820,7 +832,7 @@ msgstr "この端末のパスキーを追加する"
 msgid "この経由地から、この距離の中にいるとスタンプを押せます。"
 msgstr "この経由地から、この距離の中にいるとスタンプを押せます。"
 
-#: src/components/useErrorMessages.ts:45
+#: src/components/useErrorMessages.ts:46
 msgid "この経由地の位置がまだ決まっていません。地図で位置を決めてください。"
 msgstr "この経由地の位置がまだ決まっていません。地図で位置を決めてください。"
 
@@ -849,9 +861,13 @@ msgstr "この設定は、本番のサイトにすぐ反映されます。すべ
 msgid "この説明は日本語のみです。"
 msgstr "この説明は日本語のみです。"
 
-#: src/components/useErrorMessages.ts:60
+#: src/components/useErrorMessages.ts:61
 msgid "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 msgstr "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
+
+#: src/components/settings/PasskeyManager.tsx:150
+msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
+msgstr "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 
 #: src/components/admin/AdminNav.tsx:51
 msgid "これから追加します"
@@ -937,7 +953,7 @@ msgstr "スタンプカード"
 msgid "スタンプカードを見る"
 msgstr "スタンプカードを見る"
 
-#: src/components/useErrorMessages.ts:44
+#: src/components/useErrorMessages.ts:45
 msgid "スタンプが押されたことのある経由地は消せません。「公開をやめる」をお使いください。"
 msgstr "スタンプが押されたことのある経由地は消せません。「公開をやめる」をお使いください。"
 
@@ -1184,11 +1200,11 @@ msgstr "はじめての設定"
 msgid "はじめのラリー"
 msgstr "はじめのラリー"
 
-#: src/components/settings/PasskeyManager.tsx:110
+#: src/components/settings/PasskeyManager.tsx:112
 msgid "パスキー {number}"
 msgstr "パスキー {number}"
 
-#: src/components/useErrorMessages.ts:64
+#: src/components/useErrorMessages.ts:65
 msgid "パスキーの確認が中止されました。もう一度お試しください。"
 msgstr "パスキーの確認が中止されました。もう一度お試しください。"
 
@@ -1377,12 +1393,18 @@ msgstr "むずかしさ"
 
 #: src/components/auth/LoginFlow.tsx:70
 #: src/components/auth/RegisterFlow.tsx:101
+#: src/components/settings/LoginMethods.tsx:27
+#: src/components/settings/LoginMethods.tsx:64
 msgid "メールアドレス"
 msgstr "メールアドレス"
 
 #: src/components/auth/EmailCodeStep.tsx:84
 msgid "メールアドレスを直す"
 msgstr "メールアドレスを直す"
+
+#: src/components/settings/LoginMethods.tsx:47
+msgid "メールアドレスを追加する"
+msgstr "メールアドレスを追加する"
 
 #: src/components/auth/LoginFlow.tsx:100
 msgid "メールでログイン"
@@ -1399,6 +1421,10 @@ msgstr "メールに、6桁の番号を送りました。"
 #: src/components/auth/ReauthDialog.tsx:59
 msgid "メールの番号で確認"
 msgstr "メールの番号で確認"
+
+#: src/components/settings/LoginMethods.tsx:53
+msgid "メールを追加する"
+msgstr "メールを追加する"
 
 #: src/components/TabBar.tsx:38
 msgid "メインメニュー"
@@ -1443,7 +1469,7 @@ msgstr "もっと見る（あと{hidden}か所）"
 #: src/components/auth/ReauthDialog.tsx:84
 #: src/components/ProfileCard.tsx:139
 #: src/components/ProfileCard.tsx:181
-#: src/components/settings/PasskeyManager.tsx:152
+#: src/components/settings/PasskeyManager.tsx:168
 #: src/components/StampHere.tsx:172
 msgid "やめる"
 msgstr "やめる"
@@ -1614,7 +1640,7 @@ msgstr "ルートの名前"
 msgid "ルートの案内は準備中です。"
 msgstr "ルートの案内は準備中です。"
 
-#: src/components/useErrorMessages.ts:36
+#: src/components/useErrorMessages.ts:37
 msgid "ルートの線が正しくありません。日本の中に、2点以上の線を描いてください。"
 msgstr "ルートの線が正しくありません。日本の中に、2点以上の線を描いてください。"
 
@@ -1715,6 +1741,10 @@ msgstr "ログインの方法（パスキー）"
 msgid "ログイン中"
 msgstr "ログイン中"
 
+#: src/components/settings/PasskeyManager.tsx:153
+msgid "わかりました"
+msgstr "わかりました"
+
 #: src/components/admin/map-editor/MapEditor.tsx:959
 msgid "一周して、ここに戻るルートのとき: 同じ位置に、スタンプのない終点を追加します"
 msgstr "一周して、ここに戻るルートのとき: 同じ位置に、スタンプのない終点を追加します"
@@ -1752,7 +1782,7 @@ msgstr "下書きの経由地は、公開されるまで数に入りません。
 msgid "並べ替えは、検索や絞り込みを外してからできます。"
 msgstr "並べ替えは、検索や絞り込みを外してからできます。"
 
-#: src/components/useErrorMessages.ts:50
+#: src/components/useErrorMessages.ts:51
 msgid "中身のないラリーは公開できません。公開中のラリーを空にすることもできません。"
 msgstr "中身のないラリーは公開できません。公開中のラリーを空にすることもできません。"
 
@@ -1812,7 +1842,7 @@ msgstr "位置は「確認していない」状態で入ります。公開する
 msgid "位置を公式の情報で確認し、「位置を確認した」にチェックを入れて情報源を書いてください。"
 msgstr "位置を公式の情報で確認し、「位置を確認した」にチェックを入れて情報源を書いてください。"
 
-#: src/components/useErrorMessages.ts:46
+#: src/components/useErrorMessages.ts:47
 msgid "位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。"
 msgstr "位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。"
 
@@ -1828,7 +1858,7 @@ msgstr "位置を決めてください（地図に置くか、緯度と経度を
 msgid "位置を確認した"
 msgstr "位置を確認した"
 
-#: src/components/useErrorMessages.ts:47
+#: src/components/useErrorMessages.ts:48
 msgid "位置を確認した情報源（サイトの名前やリンク）を書いてください。"
 msgstr "位置を確認した情報源（サイトの名前やリンク）を書いてください。"
 
@@ -2150,7 +2180,7 @@ msgstr "写真のリンク"
 
 #: src/components/admin/PlacePanel.tsx:131
 #: src/components/admin/RouteEditor.tsx:403
-#: src/components/useErrorMessages.ts:37
+#: src/components/useErrorMessages.ts:38
 msgid "写真のリンクは、https:// で始まるものだけ使えます。"
 msgstr "写真のリンクは、https:// で始まるものだけ使えます。"
 
@@ -2162,7 +2192,7 @@ msgstr "写真は、まだありません"
 msgid "写真は{MAX_PHOTOS}枚までです。"
 msgstr "写真は{MAX_PHOTOS}枚までです。"
 
-#: src/components/useErrorMessages.ts:56
+#: src/components/useErrorMessages.ts:57
 msgid "写真は4MBまでのJPEG・PNG・WebPだけアップロードできます。"
 msgstr "写真は4MBまでのJPEG・PNG・WebPだけアップロードできます。"
 
@@ -2174,7 +2204,7 @@ msgstr "写真はまだありません"
 msgid "写真をアップロード"
 msgstr "写真をアップロード"
 
-#: src/components/useErrorMessages.ts:57
+#: src/components/useErrorMessages.ts:58
 msgid "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 msgstr "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 
@@ -2204,7 +2234,7 @@ msgstr "出どころ（撮った人、使用条件）"
 msgid "出典: {0}"
 msgstr "出典: {0}"
 
-#: src/components/useErrorMessages.ts:54
+#: src/components/useErrorMessages.ts:55
 msgid "出典のリンクは https:// で始まるアドレスを入れてください。"
 msgstr "出典のリンクは https:// で始まるアドレスを入れてください。"
 
@@ -2220,7 +2250,7 @@ msgstr "分"
 msgid "初期値にする"
 msgstr "初期値にする"
 
-#: src/components/useErrorMessages.ts:34
+#: src/components/useErrorMessages.ts:35
 msgid "別の人が先に保存しました。読み込み直してから、もう一度お試しください。"
 msgstr "別の人が先に保存しました。読み込み直してから、もう一度お試しください。"
 
@@ -2285,7 +2315,7 @@ msgstr "動画のページをひらく"
 msgid "動画のリンク（YouTube か Vimeo）"
 msgstr "動画のリンク（YouTube か Vimeo）"
 
-#: src/components/useErrorMessages.ts:35
+#: src/components/useErrorMessages.ts:36
 msgid "動画のリンクは、https:// で始まるYouTubeかVimeoのものだけ使えます。"
 msgstr "動画のリンクは、https:// で始まるYouTubeかVimeoのものだけ使えます。"
 
@@ -2437,7 +2467,7 @@ msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境に�
 msgstr "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 
 #: src/components/StampHere.tsx:98
-#: src/components/useErrorMessages.ts:66
+#: src/components/useErrorMessages.ts:67
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "問題が発生しました。しばらくしてからもう一度お試しください。"
 
@@ -2541,7 +2571,7 @@ msgstr "地形の陰影を見る"
 msgid "基本"
 msgstr "基本"
 
-#: src/components/useErrorMessages.ts:41
+#: src/components/useErrorMessages.ts:42
 msgid "場所から少し離れています。近くまで行って、もう一度お試しください。"
 msgstr "場所から少し離れています。近くまで行って、もう一度お試しください。"
 
@@ -3013,12 +3043,12 @@ msgid "消したい点をクリックします。"
 msgstr "消したい点をクリックします。"
 
 #: src/components/admin/map-editor/MapEditor.tsx:934
-#: src/components/settings/PasskeyManager.tsx:119
-#: src/components/settings/PasskeyManager.tsx:149
+#: src/components/settings/PasskeyManager.tsx:121
+#: src/components/settings/PasskeyManager.tsx:165
 msgid "消す"
 msgstr "消す"
 
-#: src/components/settings/PasskeyManager.tsx:146
+#: src/components/settings/PasskeyManager.tsx:162
 msgid "消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。"
 msgstr "消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。"
 
@@ -3080,7 +3110,7 @@ msgstr "現在地を調べています…"
 msgid "現地の許可"
 msgstr "現地の許可"
 
-#: src/components/useErrorMessages.ts:48
+#: src/components/useErrorMessages.ts:49
 msgid "現地の許可がまだ確認できていません。許可を得たら「許可確認済み」にチェックを入れてください。"
 msgstr "現地の許可がまだ確認できていません。許可を得たら「許可確認済み」にチェックを入れてください。"
 
@@ -3176,6 +3206,10 @@ msgstr "確認する"
 #: src/components/useErrorMessages.ts:25
 msgid "確認できませんでした。もう一度お試しください。"
 msgstr "確認できませんでした。もう一度お試しください。"
+
+#: src/components/settings/LoginMethods.tsx:77
+msgid "確認の番号を送る"
+msgstr "確認の番号を送る"
 
 #: src/components/auth/EmailCodeStep.tsx:58
 #: src/components/auth/ReauthDialog.tsx:76
@@ -3284,7 +3318,7 @@ msgstr "経由地（{0}か所）"
 msgid "経由地が残っているルートは削除できません。"
 msgstr "経由地が残っているルートは削除できません。"
 
-#: src/components/useErrorMessages.ts:38
+#: src/components/useErrorMessages.ts:39
 msgid "経由地が残っているルートは消せません。先に経由地を消してください。"
 msgstr "経由地が残っているルートは消せません。先に経由地を消してください。"
 
@@ -3292,7 +3326,7 @@ msgstr "経由地が残っているルートは消せません。先に経由地
 msgid "経由地でつくったラリー：えらんだ経由地のスタンプを全部押すと達成。"
 msgstr "経由地でつくったラリー：えらんだ経由地のスタンプを全部押すと達成。"
 
-#: src/components/useErrorMessages.ts:51
+#: src/components/useErrorMessages.ts:52
 msgid "経由地でつくったラリーにはスタンプを押せる経由地を、コースでつくったラリーにはコースを入れてください。同じものは一度だけです。"
 msgstr "経由地でつくったラリーにはスタンプを押せる経由地を、コースでつくったラリーにはコースを入れてください。同じものは一度だけです。"
 
@@ -3416,7 +3450,7 @@ msgstr "緯度と経度は、両方書いてください"
 msgid "縮小"
 msgstr "縮小"
 
-#: src/components/useErrorMessages.ts:53
+#: src/components/useErrorMessages.ts:54
 msgid "自分の権限は変えられません。ほかの管理者に頼んでください。"
 msgstr "自分の権限は変えられません。ほかの管理者に頼んでください。"
 
@@ -3573,7 +3607,7 @@ msgstr "説明"
 msgid "説明文（日本語）"
 msgstr "説明文（日本語）"
 
-#: src/components/settings/PasskeyManager.tsx:93
+#: src/components/settings/PasskeyManager.tsx:95
 msgid "読み込み中"
 msgstr "読み込み中"
 
@@ -3616,7 +3650,7 @@ msgid "送った内容が、読み取れませんでした。もう一度お試�
 msgstr "送った内容が、読み取れませんでした。もう一度お試しください。"
 
 #: src/components/StampHere.tsx:97
-#: src/components/useErrorMessages.ts:65
+#: src/components/useErrorMessages.ts:66
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "通信できませんでした。電波の良い場所でもう一度お試しください。"
 
@@ -3657,7 +3691,7 @@ msgstr "道なり"
 msgid "道に沿わせる"
 msgstr "道に沿わせる"
 
-#: src/components/useErrorMessages.ts:59
+#: src/components/useErrorMessages.ts:60
 msgid "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 msgstr "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 
@@ -3681,7 +3715,7 @@ msgstr "道を調べています…"
 msgid "道を調べています…（{step}/{total}）"
 msgstr "道を調べています…（{step}/{total}）"
 
-#: src/components/useErrorMessages.ts:61
+#: src/components/useErrorMessages.ts:62
 msgid "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 msgstr "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 

@@ -48,7 +48,7 @@ msgstr "Delete {0}"
 msgid "{0}を開く"
 msgstr "Open {0}"
 
-#: src/components/settings/PasskeyManager.tsx:111
+#: src/components/settings/PasskeyManager.tsx:113
 msgid "{added} に追加"
 msgstr "Added {added}"
 
@@ -345,7 +345,7 @@ msgstr "The GPS signal looks weak. Move to open sky and try again."
 msgid "GPSの電波が弱いようです。空の開けた場所に動いてください。"
 msgstr "The GPS signal is weak. Please move to open sky."
 
-#: src/components/useErrorMessages.ts:43
+#: src/components/useErrorMessages.ts:44
 msgid "GPSの電波が弱いようです。空の開けた場所に移動して、もう一度お試しください。"
 msgstr "The GPS signal is weak. Move to open sky and try again."
 
@@ -518,6 +518,10 @@ msgstr "Current status"
 msgid "いまは、ここでスタンプを押せません。"
 msgstr "Stamps can't be collected here right now."
 
+#: src/components/settings/LoginMethods.tsx:48
+msgid "いまは、パスキーだけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
+msgstr "You currently sign in with a passkey only. If you add an email, you can still sign in with an emailed code if you lose your device."
+
 #: src/components/SampleNotice.tsx:54
 msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 msgstr "What you see now is sample and draft data. It includes information that has not been checked."
@@ -547,7 +551,7 @@ msgstr "When off, every stamp place is shown on its own (recommended). When on, 
 msgid "お名前"
 msgstr "Your name"
 
-#: src/components/useErrorMessages.ts:32
+#: src/components/useErrorMessages.ts:33
 msgid "お名前に使えない文字が含まれているか、長すぎます（40文字まで）。"
 msgstr "The name has characters that cannot be used, or is too long (40 characters at most)."
 
@@ -637,7 +641,7 @@ msgstr "It is a problem on our side. Please try again in a little while."
 msgid "こちらの問題です。もう一度お試しください。それでも直らないときは、しばらくしてからお試しください。"
 msgstr "It is a problem on our side. Please try again. If it still does not work, try again in a little while."
 
-#: src/components/settings/PasskeyManager.tsx:97
+#: src/components/settings/PasskeyManager.tsx:99
 msgid "このアカウントに、パスキーはまだありません。"
 msgstr "This account has no passkeys yet."
 
@@ -658,7 +662,11 @@ msgstr "You already have this stamp."
 msgid "このデータについて"
 msgstr "About this data"
 
-#: src/components/settings/PasskeyManager.tsx:144
+#: src/components/settings/PasskeyManager.tsx:148
+msgid "このパスキーは、消せません"
+msgstr "This passkey can't be removed"
+
+#: src/components/settings/PasskeyManager.tsx:160
 msgid "このパスキーを消しますか？"
 msgstr "Remove this passkey?"
 
@@ -669,6 +677,10 @@ msgstr "This file could not be read. Choose a file (.xlsx) made from the templat
 #: src/app/(admin)/layout.tsx:33
 msgid "このページを見る権限がありません"
 msgstr "You do not have permission to view this page"
+
+#: src/components/useErrorMessages.ts:31
+msgid "このメールアドレスは、使えません。すでに別のアカウントで使われているか、このアカウントにはメールが入っています。"
+msgstr "This email address can't be used. It belongs to another account, or this account already has an email."
 
 #: src/components/StampHere.tsx:93
 msgid "このラリーは、いまは行われていません。"
@@ -744,7 +756,7 @@ msgstr "Show this leg"
 msgid "この地域のルートはまだありません。"
 msgstr "There are no routes in this area yet."
 
-#: src/components/useErrorMessages.ts:42
+#: src/components/useErrorMessages.ts:43
 msgid "この場所のスタンプは、確認のため取り消されています。お困りの場合は運営にお問い合わせください。"
 msgstr "The stamp for this place was revoked after a check. If this looks wrong, please contact the team."
 
@@ -766,7 +778,7 @@ msgstr "This place is closed right now."
 msgid "この場所は、いまは閉鎖中です。スタンプは押せません。"
 msgstr "This place is closed right now. You can't collect the stamp."
 
-#: src/components/useErrorMessages.ts:40
+#: src/components/useErrorMessages.ts:41
 msgid "この場所は今、通行止めなどで閉まっているため、スタンプを押せません。"
 msgstr "This place is closed right now, so you cannot collect a stamp here."
 
@@ -788,11 +800,11 @@ msgstr "This text is only available in Japanese."
 msgid "この端末・ブラウザでは、位置情報を使えません。"
 msgstr "This device or browser can't use location."
 
-#: src/components/settings/PasskeyManager.tsx:134
+#: src/components/settings/PasskeyManager.tsx:136
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "This device or browser can't use passkeys."
 
-#: src/components/useErrorMessages.ts:63
+#: src/components/useErrorMessages.ts:64
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "Passkeys cannot be used on this device or browser. Please try email instead."
 
@@ -812,7 +824,7 @@ msgstr "This device can't show the map. You can pick a place from the list below
 msgid "この端末には保存しました。つながったときに、アカウントにも保存されます。"
 msgstr "Saved on this phone. It will be saved to your account when you are connected."
 
-#: src/components/settings/PasskeyManager.tsx:131
+#: src/components/settings/PasskeyManager.tsx:133
 msgid "この端末のパスキーを追加する"
 msgstr "Add a passkey for this device"
 
@@ -820,7 +832,7 @@ msgstr "Add a passkey for this device"
 msgid "この経由地から、この距離の中にいるとスタンプを押せます。"
 msgstr "Visitors within this distance of the waypoint can collect the stamp."
 
-#: src/components/useErrorMessages.ts:45
+#: src/components/useErrorMessages.ts:46
 msgid "この経由地の位置がまだ決まっていません。地図で位置を決めてください。"
 msgstr "This waypoint has no position yet. Set it on the map."
 
@@ -849,9 +861,13 @@ msgstr "This goes live at once and changes the map for every visitor. Save it?"
 msgid "この説明は日本語のみです。"
 msgstr "This description is in Japanese only."
 
-#: src/components/useErrorMessages.ts:60
+#: src/components/useErrorMessages.ts:61
 msgid "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 msgstr "No walkable path was found near here. Move the points of the line closer to a path and try again."
+
+#: src/components/settings/PasskeyManager.tsx:150
+msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
+msgstr "This is the only way to sign in to this account. If you remove it, you won't be able to sign in. Add an email address or another passkey first."
 
 #: src/components/admin/AdminNav.tsx:51
 msgid "これから追加します"
@@ -937,7 +953,7 @@ msgstr "Stamp card"
 msgid "スタンプカードを見る"
 msgstr "See your stamp card"
 
-#: src/components/useErrorMessages.ts:44
+#: src/components/useErrorMessages.ts:45
 msgid "スタンプが押されたことのある経由地は消せません。「公開をやめる」をお使いください。"
 msgstr "A waypoint that has been stamped cannot be deleted. Use \"Unpublish\" instead."
 
@@ -1184,11 +1200,11 @@ msgstr "First-time set-up"
 msgid "はじめのラリー"
 msgstr "First rally"
 
-#: src/components/settings/PasskeyManager.tsx:110
+#: src/components/settings/PasskeyManager.tsx:112
 msgid "パスキー {number}"
 msgstr "Passkey {number}"
 
-#: src/components/useErrorMessages.ts:64
+#: src/components/useErrorMessages.ts:65
 msgid "パスキーの確認が中止されました。もう一度お試しください。"
 msgstr "The passkey check was cancelled. Please try again."
 
@@ -1377,12 +1393,18 @@ msgstr "Difficulty"
 
 #: src/components/auth/LoginFlow.tsx:70
 #: src/components/auth/RegisterFlow.tsx:101
+#: src/components/settings/LoginMethods.tsx:27
+#: src/components/settings/LoginMethods.tsx:64
 msgid "メールアドレス"
 msgstr "Email address"
 
 #: src/components/auth/EmailCodeStep.tsx:84
 msgid "メールアドレスを直す"
 msgstr "Change the email address"
+
+#: src/components/settings/LoginMethods.tsx:47
+msgid "メールアドレスを追加する"
+msgstr "Add an email address"
 
 #: src/components/auth/LoginFlow.tsx:100
 msgid "メールでログイン"
@@ -1399,6 +1421,10 @@ msgstr "We sent a 6-digit number to your email."
 #: src/components/auth/ReauthDialog.tsx:59
 msgid "メールの番号で確認"
 msgstr "Confirm with an email number"
+
+#: src/components/settings/LoginMethods.tsx:53
+msgid "メールを追加する"
+msgstr "Add email"
 
 #: src/components/TabBar.tsx:38
 msgid "メインメニュー"
@@ -1443,7 +1469,7 @@ msgstr "Show more ({hidden} more)"
 #: src/components/auth/ReauthDialog.tsx:84
 #: src/components/ProfileCard.tsx:139
 #: src/components/ProfileCard.tsx:181
-#: src/components/settings/PasskeyManager.tsx:152
+#: src/components/settings/PasskeyManager.tsx:168
 #: src/components/StampHere.tsx:172
 msgid "やめる"
 msgstr "Cancel"
@@ -1614,7 +1640,7 @@ msgstr "Route name"
 msgid "ルートの案内は準備中です。"
 msgstr "Route guides are coming soon."
 
-#: src/components/useErrorMessages.ts:36
+#: src/components/useErrorMessages.ts:37
 msgid "ルートの線が正しくありません。日本の中に、2点以上の線を描いてください。"
 msgstr "The route line is not valid. Draw a line of at least 2 points inside Japan."
 
@@ -1715,6 +1741,10 @@ msgstr "Ways to log in (passkeys)"
 msgid "ログイン中"
 msgstr "Logged in"
 
+#: src/components/settings/PasskeyManager.tsx:153
+msgid "わかりました"
+msgstr "OK"
+
 #: src/components/admin/map-editor/MapEditor.tsx:959
 msgid "一周して、ここに戻るルートのとき: 同じ位置に、スタンプのない終点を追加します"
 msgstr "For a route that comes back here: adds an end point, not a stamp place, at the same position"
@@ -1752,7 +1782,7 @@ msgstr "Draft waypoints do not count until they are published. Visitors' stamps 
 msgid "並べ替えは、検索や絞り込みを外してからできます。"
 msgstr "You can reorder once the search and filter are cleared."
 
-#: src/components/useErrorMessages.ts:50
+#: src/components/useErrorMessages.ts:51
 msgid "中身のないラリーは公開できません。公開中のラリーを空にすることもできません。"
 msgstr "An empty rally cannot be published, and a published rally cannot be emptied."
 
@@ -1812,7 +1842,7 @@ msgstr "Positions are added as \"not checked\". Check them against official info
 msgid "位置を公式の情報で確認し、「位置を確認した」にチェックを入れて情報源を書いてください。"
 msgstr "Check the position against official information, tick \"Position checked\" and write the source."
 
-#: src/components/useErrorMessages.ts:46
+#: src/components/useErrorMessages.ts:47
 msgid "位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。"
 msgstr "The position has not been checked against an official source. Check it, then tick \"Position checked\"."
 
@@ -1828,7 +1858,7 @@ msgstr "Set the position (place it on the map, or enter latitude and longitude).
 msgid "位置を確認した"
 msgstr "Position checked"
 
-#: src/components/useErrorMessages.ts:47
+#: src/components/useErrorMessages.ts:48
 msgid "位置を確認した情報源（サイトの名前やリンク）を書いてください。"
 msgstr "Write the source you checked the position against (a site name or link)."
 
@@ -2150,7 +2180,7 @@ msgstr "Photo link"
 
 #: src/components/admin/PlacePanel.tsx:131
 #: src/components/admin/RouteEditor.tsx:403
-#: src/components/useErrorMessages.ts:37
+#: src/components/useErrorMessages.ts:38
 msgid "写真のリンクは、https:// で始まるものだけ使えます。"
 msgstr "Photo links must start with https://."
 
@@ -2162,7 +2192,7 @@ msgstr "No photo yet"
 msgid "写真は{MAX_PHOTOS}枚までです。"
 msgstr "Up to {MAX_PHOTOS} photos."
 
-#: src/components/useErrorMessages.ts:56
+#: src/components/useErrorMessages.ts:57
 msgid "写真は4MBまでのJPEG・PNG・WebPだけアップロードできます。"
 msgstr "Photos must be JPEG, PNG or WebP, up to 4 MB."
 
@@ -2174,7 +2204,7 @@ msgstr "No photo yet"
 msgid "写真をアップロード"
 msgstr "Upload a photo"
 
-#: src/components/useErrorMessages.ts:57
+#: src/components/useErrorMessages.ts:58
 msgid "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 msgstr "The photo could not be saved. Please try again in a moment."
 
@@ -2204,7 +2234,7 @@ msgstr "Credit (who took it, terms of use)"
 msgid "出典: {0}"
 msgstr "Source: {0}"
 
-#: src/components/useErrorMessages.ts:54
+#: src/components/useErrorMessages.ts:55
 msgid "出典のリンクは https:// で始まるアドレスを入れてください。"
 msgstr "The source link must be an address starting with https://."
 
@@ -2220,7 +2250,7 @@ msgstr "min"
 msgid "初期値にする"
 msgstr "Use the default"
 
-#: src/components/useErrorMessages.ts:34
+#: src/components/useErrorMessages.ts:35
 msgid "別の人が先に保存しました。読み込み直してから、もう一度お試しください。"
 msgstr "Someone else saved first. Reload the page and try again."
 
@@ -2285,7 +2315,7 @@ msgstr "Open the video page"
 msgid "動画のリンク（YouTube か Vimeo）"
 msgstr "Video link (YouTube or Vimeo)"
 
-#: src/components/useErrorMessages.ts:35
+#: src/components/useErrorMessages.ts:36
 msgid "動画のリンクは、https:// で始まるYouTubeかVimeoのものだけ使えます。"
 msgstr "Only YouTube or Vimeo links that start with https:// can be used for videos."
 
@@ -2437,7 +2467,7 @@ msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境に�
 msgstr "From the Izumi range to the Kongo mountains, these ridges run along the borders of Osaka, Wakayama and Nara. They have long been called Katsuragi and revered as mountains where the gods dwell. It is said that En no Gyoja, who is believed to have founded Shugendo, the path of training in the mountains, first practised here."
 
 #: src/components/StampHere.tsx:98
-#: src/components/useErrorMessages.ts:66
+#: src/components/useErrorMessages.ts:67
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "Something went wrong. Please try again in a little while."
 
@@ -2541,7 +2571,7 @@ msgstr "Show terrain shading"
 msgid "基本"
 msgstr "Basics"
 
-#: src/components/useErrorMessages.ts:41
+#: src/components/useErrorMessages.ts:42
 msgid "場所から少し離れています。近くまで行って、もう一度お試しください。"
 msgstr "You are a little too far from the place. Go closer and try again."
 
@@ -3013,12 +3043,12 @@ msgid "消したい点をクリックします。"
 msgstr "Click the point to remove."
 
 #: src/components/admin/map-editor/MapEditor.tsx:934
-#: src/components/settings/PasskeyManager.tsx:119
-#: src/components/settings/PasskeyManager.tsx:149
+#: src/components/settings/PasskeyManager.tsx:121
+#: src/components/settings/PasskeyManager.tsx:165
 msgid "消す"
 msgstr "Remove"
 
-#: src/components/settings/PasskeyManager.tsx:146
+#: src/components/settings/PasskeyManager.tsx:162
 msgid "消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。"
 msgstr "After removing it, you can no longer log in with your face or fingerprint on that device. It can only be removed if you have another way to log in."
 
@@ -3080,7 +3110,7 @@ msgstr ""
 msgid "現地の許可"
 msgstr "Permission from the site"
 
-#: src/components/useErrorMessages.ts:48
+#: src/components/useErrorMessages.ts:49
 msgid "現地の許可がまだ確認できていません。許可を得たら「許可確認済み」にチェックを入れてください。"
 msgstr "Permission from the site has not been confirmed yet. Once you have it, tick \"Permission confirmed\"."
 
@@ -3176,6 +3206,10 @@ msgstr "Confirm"
 #: src/components/useErrorMessages.ts:25
 msgid "確認できませんでした。もう一度お試しください。"
 msgstr "We could not confirm it. Please try again."
+
+#: src/components/settings/LoginMethods.tsx:77
+msgid "確認の番号を送る"
+msgstr "Send a confirmation code"
 
 #: src/components/auth/EmailCodeStep.tsx:58
 #: src/components/auth/ReauthDialog.tsx:76
@@ -3284,7 +3318,7 @@ msgstr "Waypoints ({0})"
 msgid "経由地が残っているルートは削除できません。"
 msgstr "A route that still has waypoints cannot be deleted."
 
-#: src/components/useErrorMessages.ts:38
+#: src/components/useErrorMessages.ts:39
 msgid "経由地が残っているルートは消せません。先に経由地を消してください。"
 msgstr "A route that still has waypoints cannot be deleted. Delete its waypoints first."
 
@@ -3292,7 +3326,7 @@ msgstr "A route that still has waypoints cannot be deleted. Delete its waypoints
 msgid "経由地でつくったラリー：えらんだ経由地のスタンプを全部押すと達成。"
 msgstr "A rally of waypoints: complete when every chosen stamp waypoint is stamped."
 
-#: src/components/useErrorMessages.ts:51
+#: src/components/useErrorMessages.ts:52
 msgid "経由地でつくったラリーにはスタンプを押せる経由地を、コースでつくったラリーにはコースを入れてください。同じものは一度だけです。"
 msgstr "A rally of waypoints takes stamp waypoints and a rally of courses takes courses, each once."
 
@@ -3416,7 +3450,7 @@ msgstr "Write both latitude and longitude"
 msgid "縮小"
 msgstr "Zoom out"
 
-#: src/components/useErrorMessages.ts:53
+#: src/components/useErrorMessages.ts:54
 msgid "自分の権限は変えられません。ほかの管理者に頼んでください。"
 msgstr "You cannot change your own permission. Ask another administrator."
 
@@ -3573,7 +3607,7 @@ msgstr "About this place"
 msgid "説明文（日本語）"
 msgstr "Description (Japanese)"
 
-#: src/components/settings/PasskeyManager.tsx:93
+#: src/components/settings/PasskeyManager.tsx:95
 msgid "読み込み中"
 msgstr "Loading"
 
@@ -3616,7 +3650,7 @@ msgid "送った内容が、読み取れませんでした。もう一度お試�
 msgstr "We could not read what was sent. Please try again."
 
 #: src/components/StampHere.tsx:97
-#: src/components/useErrorMessages.ts:65
+#: src/components/useErrorMessages.ts:66
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not connect. Please try again where the signal is better."
 
@@ -3657,7 +3691,7 @@ msgstr ""
 msgid "道に沿わせる"
 msgstr "Snap to trails"
 
-#: src/components/useErrorMessages.ts:59
+#: src/components/useErrorMessages.ts:60
 msgid "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 msgstr "Snapping to trails is not available yet. Ask whoever manages the site to set up the route-finding service. You can still draw the line by hand."
 
@@ -3681,7 +3715,7 @@ msgstr "Looking up the paths…"
 msgid "道を調べています…（{step}/{total}）"
 msgstr "Looking for trails… ({step}/{total})"
 
-#: src/components/useErrorMessages.ts:61
+#: src/components/useErrorMessages.ts:62
 msgid "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 msgstr "Could not look up the paths. Please try again in a little while."
 

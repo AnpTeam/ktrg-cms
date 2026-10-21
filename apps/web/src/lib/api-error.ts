@@ -30,6 +30,7 @@ const SERVER_CODES: Record<ErrorCode, true> = {
   registration_failed: true,
   too_many_passkeys: true,
   last_login_method: true,
+  email_in_use: true,
   invalid_display_name: true,
   conflict: true,
   invalid_video_url: true,
