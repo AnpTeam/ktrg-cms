@@ -41,6 +41,7 @@ export function StopList({ spots, hrefFor, locale }: { spots: SpotListItem[]; hr
         const done = spot.stamped === true;
         const minutes = spot.fromPrev?.minutes;
         const km = spot.fromPrev?.km;
+        const mode = spot.fromPrev?.mode;
         return (
           <li key={spot.id} className="relative">
             {previous ? <Segment done={doneAbove} from="0" to={`calc(100% - ${NODE_CENTER})`} /> : null}
@@ -56,7 +57,17 @@ export function StopList({ spots, hrefFor, locale }: { spots: SpotListItem[]; hr
                   </span>
                   {minutes !== undefined ? (
                     <span className="block text-lg text-muted">
-                      <Trans>前の場所から、歩いて約{minutes}分（{km} km）</Trans>
+                      {mode === "ferry" ? (
+                        <Trans>前の場所から、船で約{minutes}分</Trans>
+                      ) : mode === "bus" ? (
+                        <Trans>前の場所から、バスで約{minutes}分</Trans>
+                      ) : mode === "train" ? (
+                        <Trans>前の場所から、電車で約{minutes}分</Trans>
+                      ) : mode === "other" ? (
+                        <Trans>前の場所から、乗り物で約{minutes}分</Trans>
+                      ) : (
+                        <Trans>前の場所から、歩いて約{minutes}分（{km} km）</Trans>
+                      )}
                     </span>
                   ) : null}
                   <span className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-lg">

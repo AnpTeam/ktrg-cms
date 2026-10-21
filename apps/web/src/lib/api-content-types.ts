@@ -26,6 +26,8 @@ export interface PublicRoute {
   line: { type: "LineString"; coordinates: [number, number, number?][] } | null;
   /** Side trips (寄り道) to published places; in the detail only. */
   sideLines?: { spotId: string; coordinates: [number, number, number?][] }[];
+  /** Stretches that are ridden (ferry, bus ...) with their minutes, by the place they lead to; in the detail only. */
+  rides?: { spotId: string; mode: "ferry" | "bus" | "train" | "other"; minutes: number }[];
   bounds: { west: number; south: number; east: number; north: number } | null;
 }
 

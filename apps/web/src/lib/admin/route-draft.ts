@@ -127,9 +127,9 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
     prefecture: route.prefecture, municipality: s(route.municipality),
     distanceKm: route.distanceKm,
     // A saved distance that is not the line's own length was typed by hand: keep it when the line changes.
-    distanceManual: route.distanceKm !== null && (line.length < 2 || route.distanceKm !== lengthKm(line)),
+    distanceManual: route.distanceKm !== null && (line.length < 2 || route.distanceKm !== walkedStats(line, legs).km),
     elevationGainM: route.elevationGainM,
-    climbManual: route.elevationGainM !== null && (!eles || route.elevationGainM !== climbM(eles)),
+    climbManual: route.elevationGainM !== null && (!eles || route.elevationGainM !== walkedStats(line, legs).climb),
     expectedTimeMin: route.expectedTimeMin,
     // A saved time that is not what the distance and climb give was typed by hand.
     timeManual: route.expectedTimeMin !== null && route.expectedTimeMin !== estimateWalkMinutes(route.distanceKm, route.elevationGainM),
@@ -218,11 +218,26 @@ export type DraftAction =
 
 const HISTORY = 100;
 
-function withLine(d: RouteDraft, points: LngLatEle[]): RouteDraft {
+/**
+ * The distance and climb of the part that is walked. A leg that is ridden (a ferry across the water) is left out: its time is
+ * what the editor typed, not a walking estimate. Without ridden legs this is the whole line.
+ */
+export function walkedStats(line: readonly LngLatEle[], legs: readonly Leg[]): { km: number | null; climb: number | null } {
+  if (!legs.some((l) => l.ride && !l.side)) {
+    const eles = elevationsOf([...line]);
+    return { km: line.length >= 2 ? lengthKm(line) : null, climb: eles ? climbM(eles) : null };
+  }
+  const walked = legs.filter((l) => !l.ride && !l.side);
+  const km = Math.round(walked.reduce((n, l) => n + lengthKm(l.points), 0) * 100) / 100;
+  const climbs = walked.map((l) => elevationsOf(l.points));
+  return { km: km > 0 ? km : null, climb: climbs.every((c) => c !== null) ? climbs.reduce((n, c) => n + climbM(c!), 0) : null };
+}
+
+function withLine(d: RouteDraft, points: LngLatEle[], legs: readonly Leg[] = d.legs): RouteDraft {
   const next: RouteDraft = { ...d, line: points, lineVerified: false };
-  if (!d.distanceManual) next.distanceKm = points.length >= 2 ? lengthKm(points) : null;
-  const eles = elevationsOf(points);
-  if (!d.climbManual) next.elevationGainM = eles ? climbM(eles) : d.elevationGainM;
+  const walked = walkedStats(points, legs);
+  if (!d.distanceManual) next.distanceKm = walked.km;
+  if (!d.climbManual) next.elevationGainM = walked.climb ?? d.elevationGainM;
   return next;
 }
 
@@ -230,7 +245,7 @@ function withLine(d: RouteDraft, points: LngLatEle[]): RouteDraft {
 function withLegs(d: RouteDraft, legs: readonly Leg[]): RouteDraft {
   const stops = pathStops(d.places);
   const fitted = capLegs(reconcileLegs(stops, legs, sidePairs(d.places)));
-  return { ...withLine(d, fitted.length > 0 ? joinLegs(stops, fitted).line : []), legs: fitted };
+  return { ...withLine(d, fitted.length > 0 ? joinLegs(stops, fitted).line : [], fitted), legs: fitted };
 }
 
 /**
@@ -254,7 +269,10 @@ const undoable = new Set<DraftAction["type"]>(["line", "splitLine", "setLeg", "s
 /** The walking time follows the distance and the climb until someone types one. */
 const withAutoTime = (d: RouteDraft): RouteDraft => {
   if (d.timeManual) return d;
-  const t = estimateWalkMinutes(d.distanceKm, d.elevationGainM);
+  const walk = estimateWalkMinutes(d.distanceKm, d.elevationGainM);
+  // The minutes typed for the ridden legs (a ferry ...) are added to the walking estimate, not estimated.
+  const ridden = d.legs.reduce((n, l) => n + (l.ride && !l.side ? l.ride.minutes : 0), 0);
+  const t = ridden === 0 ? walk : (walk ?? 0) + ridden;
   return t === d.expectedTimeMin ? d : { ...d, expectedTimeMin: t };
 };
 
@@ -272,12 +290,11 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
     case "distance":
       // Emptying the field hands the number back to the line.
       return a.value === null
-        ? { ...d, distanceKm: d.line.length >= 2 ? lengthKm(d.line) : null, distanceManual: false }
+        ? { ...d, distanceKm: walkedStats(d.line, d.legs).km, distanceManual: false }
         : { ...d, distanceKm: a.value, distanceManual: true };
     case "climb": {
       if (a.value !== null) return { ...d, elevationGainM: a.value, climbManual: true };
-      const eles = elevationsOf(d.line);
-      return { ...d, elevationGainM: eles ? climbM(eles) : null, climbManual: false };
+      return { ...d, elevationGainM: walkedStats(d.line, d.legs).climb, climbManual: false };
     }
     case "time":
       // Emptying the field hands the number back to the estimate.
@@ -286,10 +303,10 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       return { ...d, lineVerified: a.value };
     case "line": {
       const stops = pathStops(d.places);
-      if (stops.length < 2) return { ...withLine(d, a.points), legs: [] };
+      if (stops.length < 2) return { ...withLine(d, a.points, []), legs: [] };
       const cut = splitLine(stops, a.points);
       // A new track replaces the route's own stretches; the side trips drawn by hand stay.
-      return cut.length > 0 ? withLegs(d, [...cut, ...d.legs.filter((l) => l.side)]) : { ...withLine(d, a.points), legs: [] };
+      return cut.length > 0 ? withLegs(d, [...cut, ...d.legs.filter((l) => l.side)]) : { ...withLine(d, a.points, []), legs: [] };
     }
     case "setLeg":
       return withLegs(d, [...d.legs.filter((l) => !(l.from === a.leg.from && l.to === a.leg.to)), a.leg]);
@@ -298,7 +315,7 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
     case "clearLeg":
       return withLegs(d, d.legs.filter((l) => !(l.from === a.from && l.to === a.to)));
     case "clearLegs":
-      return { ...withLine(d, []), legs: [] };
+      return { ...withLine(d, [], []), legs: [] };
     case "splitLine": {
       if (d.legs.length > 0) return d;
       const cut = splitLine(pathStops(d.places), d.line, { force: true });
@@ -311,8 +328,8 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       const legs = d.legs.length > 0 ? legsFromJoined(pathStops(d.places), d.legs, a.points) : [];
       if (!legs) return d;
       const next: RouteDraft = { ...d, line: a.points, legs };
-      const eles = elevationsOf(a.points);
-      if (!d.climbManual && eles) next.elevationGainM = climbM(eles);
+      const climb = walkedStats(a.points, legs).climb;
+      if (!d.climbManual && climb !== null) next.elevationGainM = climb;
       return next;
     }
     case "addPlace": {
@@ -414,7 +431,7 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
   const lngs = d.line.map((p) => p[0]);
   const bounds = d.line.length >= 2 ? { west: Math.min(...lngs), east: Math.max(...lngs), south: Math.min(...lats), north: Math.max(...lats) } : null;
   const stamps = stampPlaces(d);
-  const times = timesFromPrevious(stamps.map((p) => ({ id: p.id ?? p.key, position: p.lat !== null && p.lng !== null ? { lat: p.lat, lng: p.lng } : null, stopBy: p.stopBy })), d.line);
+  const times = timesFromPrevious(stamps.map((p) => ({ id: p.id ?? p.key, position: p.lat !== null && p.lng !== null ? { lat: p.lat, lng: p.lng } : null, stopBy: p.stopBy })), d.line, d.legs.flatMap((l) => (l.ride && !l.side ? [{ spotId: l.to, ...l.ride }] : [])));
   return {
     id: d.id ?? "new",
     order,

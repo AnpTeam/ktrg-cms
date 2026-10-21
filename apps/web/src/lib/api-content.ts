@@ -105,7 +105,7 @@ export function routeDetailFromApi(
   mine: ReadonlySet<string> = new Set(),
 ): RouteDetail {
   const line = r.line?.coordinates ?? null;
-  const times = line ? timesFromPrevious(spots.map((s) => ({ id: s.id, position: s.position, stopBy: s.stopBy })), line.map(([lng, lat, ele]) => (ele === undefined ? [lng, lat] : [lng, lat, ele]))) : new Map<string, LegTime>();
+  const times = line ? timesFromPrevious(spots.map((s) => ({ id: s.id, position: s.position, stopBy: s.stopBy })), line.map(([lng, lat, ele]) => (ele === undefined ? [lng, lat] : [lng, lat, ele])), r.rides ?? []) : new Map<string, LegTime>();
   return {
     ...routeSummaryFromApi(r, order, spots.filter((s) => mine.has(s.id)).length),
     // The detail has the whole line, so its silhouette and elevation come from that.

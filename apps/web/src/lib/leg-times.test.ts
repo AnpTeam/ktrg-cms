@@ -33,4 +33,15 @@ describe("timesFromPrevious", () => {
     expect([...timesFromPrevious([at("a", 34), at("side", 34.015, { stopBy: true }), at("b", 34.03)], flat).keys()]).toEqual(["b"]);
     expect(timesFromPrevious([at("a", 34), at("far", 35.5)], flat).size).toBe(0);
   });
+
+  test("the minutes typed for a ferry replace the walking estimate to that place, with the mode", () => {
+    const times = timesFromPrevious([at("a", 34), at("port", 34.01), at("island", 34.03)], flat, [{ spotId: "island", mode: "ferry", minutes: 20 }]);
+    expect(times.get("island")).toMatchObject({ minutes: 20, mode: "ferry" });
+    expect(times.get("port")?.mode).toBeUndefined();
+  });
+
+  test("a ride also applies when the stops do not follow the line (a crossing has no walkable line)", () => {
+    const times = timesFromPrevious([at("a", 34), at("island", 35.5)], flat, [{ spotId: "island", mode: "ferry", minutes: 20 }]);
+    expect(times.get("island")).toEqual({ km: 0, minutes: 20, mode: "ferry" });
+  });
 });

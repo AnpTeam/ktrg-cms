@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { draftFromServer, draftReducer, emptyDraft, initialState, isDirty, placeFromServer, previewRoute, publishBlockers, type DraftAction, type DraftState } from "./route-draft";
 import { draftProblems, placeChanged, planSave, placeBody, restoreHeld, routeBody, videoLinkLooksValid, withLegIds } from "./save-plan";
 import type { AdminRoute, AdminSpot } from "./types";
+import { estimateWalkMinutes } from "./walk-time";
 
 const run = (state: DraftState, ...actions: DraftAction[]) => actions.reduce(draftReducer, state);
 const fresh = () => initialState(emptyDraft());
@@ -91,6 +92,31 @@ describe("legs", () => {
     const drawn = draftFromServer(serverRoute({ geometry: { type: "LineString", coordinates: [[135, 34], [135.01, 34.01]], legs: [{ from: "s1", to: "s2", coordinates: [[135, 34], [135.003, 34.007], [135.01, 34.01]] }] } }), spots);
     expect(drawn.legs[0]!.points).toHaveLength(3);
     expect(drawn.line).toHaveLength(3); // the line is what the legs make
+  });
+});
+
+describe("ridden legs (a ferry) in the route's totals", () => {
+  const stops = () => run(fresh(), { type: "addPlace", key: "a", lat: 34, lng: 135 }, { type: "addPlace", key: "b", lat: 34.01, lng: 135 }, { type: "addPlace", key: "c", lat: 34.03, lng: 135 });
+  const walk = { from: "a", to: "b", points: [[135, 34], [135, 34.01]] as [number, number][] };
+  const sea = { from: "b", to: "c", points: [[135, 34.01], [135, 34.03]] as [number, number][] };
+
+  test("the distance counts the walked legs only, and the time is the walking estimate plus the typed minutes", () => {
+    const s = run(stops(), { type: "setLegs", legs: [walk, { ...sea, ride: { mode: "ferry", minutes: 20 } }] }).present;
+    expect(s.distanceKm).toBe(1.11);
+    expect(s.expectedTimeMin).toBe(estimateWalkMinutes(1.11, null)! + 20);
+  });
+
+  test("without a ridden leg nothing changes: the whole line is walked", () => {
+    const s = run(stops(), { type: "setLegs", legs: [walk, sea] }).present;
+    expect(s.distanceKm).toBe(3.34);
+    expect(s.expectedTimeMin).toBe(estimateWalkMinutes(3.34, null));
+  });
+
+  test("marking a leg as ridden afterwards, and walking it again, moves the totals both ways", () => {
+    const s0 = run(stops(), { type: "setLegs", legs: [walk, sea] });
+    const ridden = run(s0, { type: "setLeg", leg: { ...sea, ride: { mode: "ferry", minutes: 20 } } });
+    expect(ridden.present.distanceKm).toBe(1.11);
+    expect(run(ridden, { type: "setLeg", leg: sea }).present.distanceKm).toBe(3.34);
   });
 });
 
