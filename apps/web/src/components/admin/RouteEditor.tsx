@@ -298,7 +298,8 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_27rem]">
+      {/* The map tab uses the whole width (the map and its waypoint list); every other tab has the live preview beside it. */}
+      <div className={`grid gap-6 ${section === "map" ? "" : "lg:grid-cols-[minmax(0,1fr)_27rem]"}`}>
         <div className={`flex min-w-0 flex-col gap-5 ${view === "edit" ? "" : "hidden lg:flex"}`}>
           <nav aria-label={t`編集する内容`} className="flex flex-wrap gap-2" role="tablist">
             {TABS.map((id) => (
@@ -551,7 +552,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
           ) : null}
         </div>
 
-        <div className={`min-w-0 ${view === "preview" ? "" : "hidden lg:block"}`}>
+        <div className={`min-w-0 ${view === "preview" ? "" : section === "map" ? "hidden" : "hidden lg:block"}`}>
           <div className="lg:sticky lg:top-24">
             <LivePreview draft={draft} order={order} locale={locale} />
           </div>

@@ -522,7 +522,9 @@ export function MapEditor(props: MapEditorProps) {
             : t`まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「線を描く」で道すじを、「経由地を置く」で経由地を入れます。`;
 
   return (
-    <div className="flex flex-col gap-3">
+    // From 1280 px the waypoint list sits beside the map (and scrolls on its own); below that it is under it.
+    <div className={`flex flex-col gap-3 ${props.places.length > 0 ? "xl:grid xl:grid-cols-[minmax(0,1fr)_25rem] xl:items-start xl:gap-x-5" : ""}`}>
+      <div className="flex min-w-0 flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t`道すじ`}>
         <button type="button" onClick={() => fileInput.current?.click()} className="inline-flex h-9 min-h-0 min-w-0 items-center justify-center rounded-lg border border-ink bg-ink px-3 text-sm font-bold text-paper">
           {t`GPXファイルから読み込む`}
@@ -615,7 +617,7 @@ export function MapEditor(props: MapEditorProps) {
       ) : null}
 
       <div
-        className="relative h-[34rem] overflow-hidden rounded-2xl bg-surface"
+        className="relative h-[34rem] overflow-hidden rounded-2xl bg-surface xl:h-[42rem]"
         onDragOver={(e) => {
           if (e.dataTransfer.types.includes("Files")) {
             e.preventDefault();
@@ -672,12 +674,13 @@ export function MapEditor(props: MapEditorProps) {
         {props.elevationStatus === "partial" ? <span className="ml-4 text-base font-normal text-muted">{t`標高が調べられない場所があります。`}</span> : null}
       </p>
 
+      </div>
       {props.places.length > 0 ? <PlaceList {...props} /> : null}
     </div>
   );
 }
 
-const fieldClass = "h-9 min-h-0 min-w-40 rounded-lg border border-line bg-paper px-2 text-base";
+const fieldClass = "h-9 min-h-0 min-w-36 rounded-lg border border-line bg-paper px-2 text-base";
 const chipToggle = (on: boolean) =>
   `inline-flex h-8 min-h-0 min-w-0 items-center justify-center rounded-full border px-3 text-sm font-bold ${on ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"}`;
 
@@ -688,12 +691,12 @@ function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchP
   const stamps = places.filter((p) => p.stampable).length;
   const others = places.length - stamps;
   return (
-    <section aria-label={t`経由地の一覧`} className="flex flex-col gap-2">
+    <section aria-label={t`経由地の一覧`} className="flex min-w-0 flex-col gap-2 xl:sticky xl:top-24">
       <h3 className="text-lg font-bold">
         {t`経由地（${places.length}か所）`}
         <span className="ml-3 text-sm font-normal text-muted">{t`スタンプ ${stamps}・そのほか ${others}`}</span>
       </h3>
-      <ol className="flex max-h-[28rem] flex-col gap-2 overflow-auto pr-1">
+      <ol className="flex max-h-[28rem] flex-col gap-2 overflow-auto pr-1 xl:max-h-[calc(100dvh-12rem)]">
         {places.map((p) => (
           <li
             key={p.key}
@@ -741,7 +744,7 @@ function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchP
               <button type="button" aria-pressed={p.stopBy} onClick={() => onPatchPlace(p.key, { stopBy: !p.stopBy })} className={chipToggle(p.stopBy)}>
                 {t`寄り道`}
               </button>
-              <span className={`text-sm ${p.lat === null ? "font-bold text-danger" : "text-muted"}`}>{p.lat === null ? t`位置なし` : t`位置あり`}</span>
+              {p.lat === null ? <span className="text-sm font-bold text-danger">{t`位置なし`}</span> : null}
             </div>
           </li>
         ))}
