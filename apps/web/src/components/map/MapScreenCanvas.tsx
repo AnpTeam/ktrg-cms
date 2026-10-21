@@ -3,7 +3,7 @@
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
-import type { GeoJSONSource, Map as MapLibreMap } from "maplibre-gl";
+import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import { WarningIcon } from "@/components/icons";
 import { clusterByPixels } from "@/lib/cluster";
 import { areaCollection, estimateGroupBox, framePoints, groupLabelLines, MERGE_PX, revealedRouteId, spreadLabels, stopMergePx, type LabelBox, type MapScreenRoute } from "@/lib/map-screen";
@@ -22,6 +22,8 @@ import { createClusterElement, createMarkerElement, createPinElement, createPlac
 
 const AREAS = "areas";
 const DETAIL = "route-detail";
+/** The walking path from OpenRouteService while navigating off the course line. */
+const GUIDE = "nav-guide";
 /** A course's navigation points (toilets, turns ...) show from this zoom on, once the course is open. */
 const POINTS_ZOOM = 13;
 /** From this zoom on, being "inside" a course opens it: its stops appear without anyone choosing it. */
@@ -45,6 +47,9 @@ export function MapScreenCanvas({
   coveredLeftPx = 0,
   settings,
   mergeStops,
+  user = null,
+  towardsDeg = null,
+  guide = null,
 }: {
   routes: MapScreenRoute[];
   routeId: string | null;
@@ -57,7 +62,22 @@ export function MapScreenCanvas({
   coveredLeftPx?: number;
   settings: MapSettings;
   mergeStops: boolean;
+  /** While navigating: where the phone is (on this phone only), drawn as a dot, and which way the visitor walks. */
+  user?: { lat: number; lng: number; headingDeg?: number } | null;
+  /** While navigating: the way to the next stop (degrees from north), drawn as an arrow on the visitor's dot. */
+  towardsDeg?: number | null;
+  /** While navigating off the course line: the walking path being followed, as [lng, lat] points. */
+  guide?: readonly (readonly [number, number, number?])[] | null;
 }) {
+  const userMarker = useRef<Marker | null>(null);
+  // Following the visitor: the map stays centred on them, turned so the way they walk is up. Moving the map by hand
+  // stops it (and turns north back up); the button starts it again.
+  const [follow, setFollow] = useState(false);
+  const followRef = useRef(false);
+  const setFollowing = (on: boolean) => {
+    followRef.current = on;
+    setFollow(on);
+  };
   const { t, i18n } = useLingui();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -138,6 +158,13 @@ export function MapScreenCanvas({
           attributionControl: { compact: false },
         });
         map.touchZoomRotate.disableRotation();
+        // A drag by the visitor (not the camera following them) ends following, and north goes back up.
+        map.on("dragstart", () => {
+          if (!followRef.current) return;
+          followRef.current = false;
+          setFollow(false);
+          map?.easeTo({ bearing: 0, duration: 400 });
+        });
         map.on("error", () => {});
         map.on("moveend", () => {
           if (!map) return;
@@ -155,6 +182,8 @@ export function MapScreenCanvas({
           map.addLayer({ id: `${AREAS}-line`, type: "line", source: AREAS, paint: { "line-color": "#a8362b", "line-width": ["case", ["get", "selected"], 3, 2.2], "line-opacity": 0.95 } });
           map.addSource(DETAIL, { type: "geojson", data: EMPTY });
           for (const layer of routeLineLayers(DETAIL, false)) map.addLayer(layer);
+          map.addSource(GUIDE, { type: "geojson", data: EMPTY });
+          map.addLayer({ id: `${GUIDE}-line`, type: "line", source: GUIDE, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#1d4ed8", "line-width": 4, "line-dasharray": [1.5, 1.5] } });
           map.on("click", `${AREAS}-fill`, (e) => {
             const id = e.features?.[0]?.properties?.id;
             if (typeof id === "string") selectRouteRef.current(id);
@@ -191,6 +220,75 @@ export function MapScreenCanvas({
     const points = focus?.line ?? focus?.stops?.map((s) => s.position) ?? null;
     (map.getSource(DETAIL) as GeoJSONSource | undefined)?.setData(points && points.length > 1 ? lineFeature(points) : EMPTY);
   }, [ready, routes, routeId, focus, mapGen, layers]);
+
+  // Navigation: the walking path off the course line, and the visitor's position.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    (map.getSource(GUIDE) as GeoJSONSource | undefined)?.setData(guide && guide.length > 1 ? lineFeature(guide.map(([lng, lat]) => ({ lat, lng }))) : EMPTY);
+  }, [ready, guide, mapGen]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    const ml = mlRef.current;
+    if (!map || !ml || !ready) return;
+    if (!user) {
+      userMarker.current?.remove();
+      userMarker.current = null;
+      return;
+    }
+    if (!userMarker.current) {
+      // The dot, with an arrow on its edge pointing to the next stop. Turned with the map, so it stays true when the
+      // map is turned to the walking direction.
+      const el = document.createElement("div");
+      el.setAttribute("aria-hidden", "true");
+      el.innerHTML =
+        '<svg viewBox="0 0 44 44" class="size-11 text-brand drop-shadow"><path d="M22 1 L30 13 L14 13 Z" fill="currentColor" /><circle cx="22" cy="22" r="8.5" class="fill-ink stroke-paper" stroke-width="3" /></svg>';
+      userMarker.current = new ml.Marker({ element: el, rotationAlignment: "map" }).setLngLat([user.lng, user.lat]).addTo(map);
+    } else userMarker.current.setLngLat([user.lng, user.lat]);
+    userMarker.current.setRotation(towardsDeg ?? 0);
+    userMarker.current.getElement().querySelector("path")?.setAttribute("visibility", towardsDeg === null ? "hidden" : "visible");
+  }, [ready, user, towardsDeg, mapGen]);
+
+  useEffect(
+    () => () => {
+      userMarker.current?.remove();
+      userMarker.current = null;
+    },
+    [mapGen],
+  );
+
+  // Following only means something while there is a position (a navigation runs).
+  const following = follow && user !== null;
+
+  // While following: keep the visitor in the middle, the way they walk up.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || !following || !user) return;
+    map.easeTo({
+      center: [user.lng, user.lat],
+      bearing: user.headingDeg ?? map.getBearing(),
+      zoom: Math.max(map.getZoom(), 16),
+      padding: padding(),
+      duration: 600,
+    });
+  }, [ready, following, user]);
+
+  // Navigation ended: north up again (a new navigation starts without following until the button is pressed).
+  const hasUser = user !== null;
+  // Adjusted while rendering (the pattern React recommends for state that follows another value).
+  const [seenUser, setSeenUser] = useState(hasUser);
+  if (seenUser !== hasUser) {
+    setSeenUser(hasUser);
+    if (!hasUser) setFollow(false);
+  }
+  useEffect(() => {
+    if (hasUser) return;
+    followRef.current = false;
+    mapRef.current?.easeTo({ bearing: 0, duration: 400 });
+  }, [hasUser]);
+
+  const startFollowing = () => setFollowing(true);
 
   // Where the camera goes: all the areas at first, a chosen course when there is one.
   useEffect(() => {
@@ -426,6 +524,20 @@ export function MapScreenCanvas({
             {sign}
           </button>
         ))}
+        {user ? (
+          <button
+            type="button"
+            onClick={startFollowing}
+            aria-pressed={following}
+            aria-label={t`現在地を真ん中にする（進む向きが上）`}
+            className={`tap-target inline-flex items-center justify-center rounded-lg border border-ink px-3 ${following ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"}`}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.2">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" strokeLinecap="round" />
+            </svg>
+          </button>
+        ) : null}
       </div>
     </>
   );

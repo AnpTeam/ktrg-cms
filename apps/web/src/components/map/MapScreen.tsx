@@ -9,6 +9,8 @@ import { ElevationProfile } from "@/components/ElevationProfile";
 import { PrefectureName } from "@/components/PrefectureName";
 import { RouteStats } from "@/components/RouteStats";
 import { StampHere } from "@/components/StampHere";
+import { NavigationStart } from "@/components/navigation/NavigationHud";
+import { useNavigation } from "@/components/navigation/NavigationProvider";
 import { StampFace } from "@/components/StampFace";
 import { StatusWord } from "@/components/StatusWord";
 import { formatUpdated } from "@/lib/format";
@@ -67,15 +69,28 @@ export function MapScreen({
 }) {
   const { t } = useLingui();
   const wrap = useRef<HTMLDivElement>(null);
-  const [routeId, setRouteId] = useState<string | null>(initialRouteId);
+  const nav = useNavigation();
+  // Coming back to the map during a navigation opens its course again.
+  const [routeId, setRouteId] = useState<string | null>(initialRouteId ?? nav.session?.routeId ?? null);
   const [stopId, setStopId] = useState<string | null>(initialRouteId ? initialStopId : null);
-  const [snap, setSnap] = useState<SheetSnap>(initialRouteId ? "half" : "peek");
+  const [snap, setSnap] = useState<SheetSnap>(initialRouteId || nav.session ? "half" : "peek");
   const [available, setAvailable] = useState(520);
   // The room under the sheet taken by the tab bar (none on a wide screen, where it is a rail).
   const [tabPx, setTabPx] = useState(88);
   // On a desktop: how much of the map's left side the panel covers.
   const [panelPx, setPanelPx] = useState(0);
   const wide = useSyncExternalStore(subscribeWide, () => window.matchMedia(WIDE_QUERY).matches, () => false);
+  // When a navigation starts, the sheet steps down on a phone so the map and the navigation toast are in view.
+  // Adjusted while rendering (the pattern React recommends for state that follows another value).
+  const navRouteId = nav.session?.routeId ?? null;
+  const [seenNavRouteId, setSeenNavRouteId] = useState(navRouteId);
+  if (seenNavRouteId !== navRouteId) {
+    setSeenNavRouteId(navRouteId);
+    if (navRouteId && !wide) setSnap("hidden");
+  }
+
+  // Below the sheet: the tab bar, and the navigation toast while one runs (on a desktop the toast is beside the panel).
+  const bottomPx = tabPx + (wide ? 0 : nav.toastPx);
 
   const route = routes.find((r) => r.id === routeId) ?? null;
   const chosen = route !== null;
@@ -131,7 +146,7 @@ export function MapScreen({
     (routeId: string, id: string) => {
       setRouteId(routeId);
       setStopId(id);
-      if (!wide) setSnap((s) => (s === "peek" ? "half" : s));
+      if (!wide) setSnap((s) => (s === "peek" || s === "hidden" ? "half" : s));
     },
     [wide],
   );
@@ -217,12 +232,26 @@ export function MapScreen({
         stopId={stopId}
         onSelectRoute={chooseRoute}
         onSelectStop={chooseStop}
-        coveredPx={wide ? 0 : sheetHeightPx(snap, available) + tabPx}
+        coveredPx={wide ? 0 : sheetHeightPx(snap, available) + bottomPx}
         coveredLeftPx={panelPx}
         settings={settings}
         mergeStops={mergeStops}
+        user={nav.session?.snapshot.position ?? null}
+        towardsDeg={nav.session?.snapshot.state.bearingDeg ?? null}
+        guide={nav.session?.snapshot.pathLine ?? null}
       />
-      <MapSheet panel={wide} snap={snap} onSnap={setSnap} available={available} tabPx={tabPx} header={showDetailInSheet ? null : homeHeader}>
+      {!wide && snap === "hidden" ? (
+        <button
+          type="button"
+          onClick={() => setSnap(route ? "half" : "peek")}
+          style={{ bottom: bottomPx + 8 }}
+          className="tap-target absolute left-3 z-[6] flex items-center gap-2 rounded-full bg-paper px-4 text-lg font-bold text-ink shadow-[0_4px_16px_rgb(0_0_0/0.28)]"
+        >
+          <span aria-hidden="true">▲</span>
+          {route ? t`区間の情報を見る` : t`区間の一覧を見る`}
+        </button>
+      ) : null}
+      <MapSheet panel={wide} snap={snap} onSnap={setSnap} available={available} tabPx={bottomPx} header={showDetailInSheet ? null : homeHeader}>
         {showDetailInSheet ? (
           <div className="flex flex-col gap-4">
             {hero}
@@ -348,6 +377,8 @@ function RoutePanel({
       ) : null}
 
       <RouteStats route={route} />
+
+      {signedIn && route.status === "ready" ? <NavigationStart route={route} /> : null}
 
       {stampedCount !== null && spotCount > 0 ? (
         <p className="text-xl font-bold tabular-nums">{t`スタンプ ${stampedCount} / ${spotCount}`}</p>

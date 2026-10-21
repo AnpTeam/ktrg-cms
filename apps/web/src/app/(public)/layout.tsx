@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import { MenuProvider } from "@/components/MenuProvider";
+import { NavigationProvider } from "@/components/navigation/NavigationProvider";
+import { NavigationToast } from "@/components/navigation/NavigationHud";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { SampleNoticeHost } from "@/components/SampleNotice";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -25,6 +27,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
 
   return (
     <MenuProvider>
+      <NavigationProvider signedIn={viewer.signedIn}>
       <StampFilters />
       <div className="mx-auto flex w-full max-w-5xl justify-center md:gap-6 lg:mx-0 lg:max-w-none lg:justify-start lg:gap-0">
         {/* The footer lives in the sidebar on a desktop (and is hidden on the map, whose page has no room for it). */}
@@ -34,7 +37,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           <OfflineNotice />
           {sample ? <SampleNoticeHost /> : null}
           <PrefsSync signedIn={viewer.signedIn} account={prefsState.account} device={prefsState.device} />
-          <main id="main" className="pb-28 md:pb-10 md:pt-6 lg:pb-20 lg:pt-8">
+          <main id="main" className="pb-[calc(7rem+var(--nav-toast,0px))] md:pb-[calc(2.5rem+var(--nav-toast,0px))] md:pt-6 lg:pb-[calc(5rem+var(--nav-toast,0px))] lg:pt-8">
             <div className="lg:mx-auto lg:max-w-6xl lg:px-10">{children}</div>
             <div className="lg:hidden">
               <SiteFooter locale={i18n.locale} />
@@ -42,6 +45,8 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           </main>
         </div>
       </div>
+      <NavigationToast />
+      </NavigationProvider>
     </MenuProvider>
   );
 }

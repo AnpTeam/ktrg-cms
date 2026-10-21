@@ -1,4 +1,5 @@
 import type { PublicRoute, PublicSpot } from "../api-content-types";
+import type { MapScreenRoute } from "../map-screen";
 import type { LinePoint } from "./geometry";
 import { buildModel, type NavModel, type NavStop } from "./session";
 
@@ -13,5 +14,16 @@ export function modelFromRoute(route: Pick<PublicRoute, "line">, spots: readonly
     .filter((s) => s.stampable && s.position !== null)
     .sort((a, b) => a.sortOrder - b.sortOrder)
     .map((s) => ({ id: s.id, lat: s.position!.lat, lng: s.position!.lng, radiusM: s.radiusM, status: s.status }));
+  return buildModel(line, stops);
+}
+
+// shortcut: the map's stops carry no check-in radius yet, so the stamp button is offered at the usual 50 m; the server
+// still checks the place's own radius. Add radiusM to MapScreenStop when a place gets a different one.
+const MAP_STOP_RADIUS_M = 50;
+
+/** The navigation model for a course as the map page has it (MapScreenRoute): its line and its stops with positions. */
+export function modelFromMapRoute(route: Pick<MapScreenRoute, "line" | "stops">): NavModel {
+  const line: LinePoint[] = (route.line ?? []).map((p) => [p.lng, p.lat]);
+  const stops: NavStop[] = (route.stops ?? []).map((s) => ({ id: s.id, lat: s.position.lat, lng: s.position.lng, radiusM: MAP_STOP_RADIUS_M, status: s.status }));
   return buildModel(line, stops);
 }

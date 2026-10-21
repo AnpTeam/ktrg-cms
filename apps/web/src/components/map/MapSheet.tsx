@@ -57,7 +57,8 @@ export function MapSheet({
     d.lastY = e.clientY;
     d.lastT = e.timeStamp;
     const max = sheetHeightPx("full", available);
-    setDragPx(Math.min(max, Math.max(sheetHeightPx("peek", available) * 0.6, d.startHeight + (d.startY - e.clientY))));
+    // Down to nothing: let go near the bottom and the sheet hides (snapAfterDrag).
+    setDragPx(Math.min(max, Math.max(0, d.startHeight + (d.startY - e.clientY))));
   }
   function up(e: PointerEvent<HTMLElement>) {
     const d = drag.current;
@@ -80,6 +81,8 @@ export function MapSheet({
 
   // `height` is the part above the tab bar; the sheet itself is that much taller, so it runs under the bar.
   const height = dragPx ?? restingPx;
+  // Hidden (and not being pulled): nothing is drawn; the map screen shows a button to bring it back.
+  if (!panel && snap === "hidden" && dragPx === null) return null;
 
   return (
     <section
@@ -100,7 +103,7 @@ export function MapSheet({
         aria-valuemin={0}
         aria-valuemax={sheetSnaps.length - 1}
         aria-valuenow={sheetSnaps.indexOf(snap)}
-        aria-valuetext={snap === "peek" ? t`低い` : snap === "half" ? t`半分` : t`高い`}
+        aria-valuetext={snap === "hidden" ? t`隠す` : snap === "peek" ? t`低い` : snap === "half" ? t`半分` : t`高い`}
         onPointerDown={down}
         onPointerMove={move}
         onPointerUp={up}

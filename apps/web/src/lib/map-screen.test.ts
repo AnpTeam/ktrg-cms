@@ -201,6 +201,8 @@ describe("the bottom sheet", () => {
     expect(snapAfterDrag(sheetHeightPx("half", room) + 20, 0, room, "peek")).toBe("half");
     expect(snapAfterDrag(sheetHeightPx("peek", room) + 10, 100, room, "half")).toBe("peek");
     expect(snapAfterDrag(room, 0, room, "half")).toBe("full");
+    expect(snapAfterDrag(20, 0, room, "peek")).toBe("hidden"); // pulled down to the bottom
+    expect(sheetHeightPx("hidden", room)).toBe(0);
   });
 
   test("a quick flick goes one step in its direction, never past the ends", () => {
@@ -208,11 +210,13 @@ describe("the bottom sheet", () => {
     expect(snapAfterDrag(300, 900, room, "half")).toBe("full");
     expect(snapAfterDrag(300, 900, room, "full")).toBe("full");
     expect(snapAfterDrag(300, -900, room, "half")).toBe("peek");
-    expect(snapAfterDrag(300, -900, room, "peek")).toBe("peek");
+    expect(snapAfterDrag(300, -900, room, "peek")).toBe("hidden"); // a flick down from the lowest one hides the sheet
+    expect(snapAfterDrag(0, -900, room, "hidden")).toBe("hidden");
   });
 
   test("tapping the handle goes up, and back down after the top", () => {
     expect(nextSnap("peek")).toBe("half");
+    expect(nextSnap("hidden")).toBe("half");
     expect(nextSnap("half")).toBe("full");
     expect(nextSnap("full")).toBe("peek");
   });

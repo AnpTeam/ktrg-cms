@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { cumulativeDistances, cutLegs, distanceM, legProgress, nextTarget, offRouteStep, projectOnLine, type LinePoint, type Stop } from "./geometry";
+import { bearingDeg, compassPoint, cumulativeDistances, cutLegs, distanceM, nearestTarget, nextTurn, offRouteStep, pointAlong, projectOnLine, turnDelta, turnKind, vectorTo, type LinePoint, type Stop } from "./geometry";
 
 // 0.001 degrees of longitude at latitude 34.5 is about 91.7 m, 0.001 of latitude about 111.2 m.
 const LAT = 34.5;
@@ -105,44 +105,28 @@ describe("cutLegs", () => {
   });
 });
 
-describe("legProgress", () => {
-  const cum = cumulativeDistances(straight);
-  const legs = cutLegs(straight, cum, [stop("a", 135.003), stop("b", 135.006)]);
+describe("nearestTarget", () => {
+  const stops = [
+    { id: "a", lng: 135.001, lat: LAT },
+    { id: "b", lng: 135.005, lat: LAT, status: "closed" as const },
+    { id: "c", lng: 135.006, lat: LAT, status: "caution" as const },
+    { id: "d", lng: 135.009, lat: LAT },
+  ];
 
-  test("halfway along the second leg", () => {
-    const p = legProgress(straight, cum, legs[1]!, { lat: LAT, lng: 135.0045 })!;
-    close(p.lengthM, 275, 3);
-    close(p.alongLegM, 137.5, 3);
-    close(p.remainingM, 137.5, 3);
-    close(p.offM, 0, 0.5);
+  test("the closest stop, wherever the visitor is; caution is still a target, closed is not", () => {
+    expect(nearestTarget(stops, new Set(), { lat: LAT, lng: 135.0 })).toBe(0);
+    expect(nearestTarget(stops, new Set(), { lat: LAT, lng: 135.0049 })).toBe(2); // b is nearer but closed
+    expect(nearestTarget(stops, new Set(), { lat: LAT, lng: 135.0095 })).toBe(3);
   });
 
-  test("before the leg starts it reads 0 walked; past the stop it reads 0 left", () => {
-    expect(legProgress(straight, cum, legs[1]!, { lat: LAT, lng: 135.001 })!.alongLegM).toBe(0);
-    expect(legProgress(straight, cum, legs[1]!, { lat: LAT, lng: 135.009 })!.remainingM).toBe(0);
+  test("stamped stops are skipped, so the next nearest is chosen (either direction)", () => {
+    expect(nearestTarget(stops, new Set(["c"]), { lat: LAT, lng: 135.006 })).toBe(3);
+    expect(nearestTarget(stops, new Set(["c", "d"]), { lat: LAT, lng: 135.006 })).toBe(0);
   });
 
-  test("off the line is reported in metres", () => {
-    close(legProgress(straight, cum, legs[0]!, { lat: LAT + 0.0005, lng: 135.001 })!.offM, 55.6, 1.5);
-  });
-
-  test("a line that cannot be used gives null", () => {
-    expect(legProgress([], [0], { toStopId: "a", startM: 0, endM: 0, reliable: false }, { lat: LAT, lng: 135 })).toBeNull();
-  });
-});
-
-describe("nextTarget", () => {
-  const stops = [{ id: "a" }, { id: "b", status: "closed" as const }, { id: "c", status: "caution" as const }, { id: "d" }];
-
-  test("the first stop not stamped and not closed; caution is still a target", () => {
-    expect(nextTarget(stops, new Set())).toBe(0);
-    expect(nextTarget(stops, new Set(["a"]))).toBe(2);
-    expect(nextTarget(stops, new Set(["a", "c"]))).toBe(3);
-  });
-
-  test("null when everything is stamped or closed", () => {
-    expect(nextTarget(stops, new Set(["a", "c", "d"]))).toBeNull();
-    expect(nextTarget([], new Set())).toBeNull();
+  test("null when everything is stamped or closed, or there are no stops", () => {
+    expect(nearestTarget(stops, new Set(["a", "c", "d"]), { lat: LAT, lng: 135 })).toBeNull();
+    expect(nearestTarget([], new Set(), { lat: LAT, lng: 135 })).toBeNull();
   });
 });
 
@@ -165,5 +149,130 @@ describe("offRouteStep", () => {
 describe("distanceM", () => {
   test("matches the known length of a degree", () => {
     close(distanceM({ lat: 0, lng: 0 }, { lat: 1, lng: 0 }), 111_195, 10);
+  });
+});
+
+describe("the vector to a point (haversine distance + bearing)", () => {
+  const o = { lat: 0, lng: 0 };
+
+  test("due north, east, south and west", () => {
+    expect(bearingDeg(o, { lat: 1, lng: 0 })).toBeCloseTo(0, 6);
+    expect(bearingDeg(o, { lat: 0, lng: 1 })).toBeCloseTo(90, 6);
+    expect(bearingDeg(o, { lat: -1, lng: 0 })).toBeCloseTo(180, 6);
+    expect(bearingDeg(o, { lat: 0, lng: -1 })).toBeCloseTo(270, 6);
+  });
+
+  test("a known diagonal: from (0,0) to (1,1) is 44.9956 degrees", () => {
+    expect(bearingDeg(o, { lat: 1, lng: 1 })).toBeCloseTo(44.9956, 3);
+  });
+
+  test("in Katsuragi: due east along latitude 34.5 is a hair under 90 (a great circle bends north first)", () => {
+    const b = bearingDeg({ lat: LAT, lng: 135 }, { lat: LAT, lng: 135.01 });
+    expect(b).toBeLessThan(90);
+    expect(b).toBeGreaterThan(89.99);
+  });
+
+  test("the same point: no distance, bearing 0", () => {
+    expect(vectorTo({ lat: LAT, lng: 135 }, { lat: LAT, lng: 135 })).toEqual({ distanceM: 0, bearingDeg: 0 });
+  });
+
+  test("vectorTo gives the haversine distance and the bearing together", () => {
+    const v = vectorTo({ lat: LAT, lng: 135 }, { lat: LAT + 0.001, lng: 135 });
+    close(v.distanceM, 111.2, 0.5);
+    expect(v.bearingDeg).toBeCloseTo(0, 6);
+  });
+});
+
+describe("compassPoint", () => {
+  test("eight points, rounding to the nearest, wrapping around north", () => {
+    expect([0, 44, 46, 90, 135, 180, 225, 270, 315].map(compassPoint)).toEqual(["N", "NE", "NE", "E", "SE", "S", "SW", "W", "NW"]);
+    expect(compassPoint(359)).toBe("N");
+    expect(compassPoint(337.4)).toBe("NW");
+    expect(compassPoint(337.6)).toBe("N");
+    expect(compassPoint(-90)).toBe("W");
+    expect(compassPoint(720 + 90)).toBe("E");
+  });
+});
+
+describe("pointAlong", () => {
+  const cum = cumulativeDistances(straight);
+
+  test("start, end and beyond are clamped; in between is on the line", () => {
+    expect(pointAlong(straight, cum, -5)).toEqual({ lng: 135, lat: LAT });
+    expect(pointAlong(straight, cum, 99_999)).toEqual({ lng: 135.01, lat: LAT });
+    const mid = pointAlong(straight, cum, cum[5]! / 2)!;
+    close(mid.lng, 135.0025, 0.00001);
+    expect(mid.lat).toBeCloseTo(LAT, 9);
+  });
+
+  test("going a distance along and measuring back agrees", () => {
+    const p = pointAlong(straight, cum, 300)!;
+    close(projectOnLine(straight, cum, p)!.alongM, 300, 0.5);
+  });
+
+  test("an empty line is null; a one-point line is that point", () => {
+    expect(pointAlong([], [0], 10)).toBeNull();
+    expect(pointAlong([[135, LAT]], [0], 10)).toEqual({ lng: 135, lat: LAT });
+  });
+});
+
+describe("turns ahead", () => {
+  // East along LAT for ~367 m, then a corner.
+  const corner = (north: boolean): LinePoint[] => [[135, LAT], [135.002, LAT], [135.004, LAT], [135.004, LAT + (north ? 0.002 : -0.002)], [135.004, LAT + (north ? 0.004 : -0.004)]];
+
+  test("turnDelta wraps around north and says left or right", () => {
+    expect(turnDelta(90, 0)).toBe(-90); // east to north: left
+    expect(turnDelta(90, 180)).toBe(90); // east to south: right
+    expect(turnDelta(350, 10)).toBe(20);
+    expect(turnDelta(10, 350)).toBe(-20);
+    expect(turnDelta(0, 180)).toBe(180);
+  });
+
+  test("turnKind names the size of the turn", () => {
+    expect(turnKind(20)).toBeNull();
+    expect(turnKind(-45)).toBe("slight-left");
+    expect(turnKind(90)).toBe("right");
+    expect(turnKind(-150)).toBe("sharp-left");
+    expect(turnKind(175)).toBe("u-turn");
+  });
+
+  test("an L to the north is a left turn, to the south a right turn, at the corner", () => {
+    for (const [north, kind] of [[true, "left"], [false, "right"]] as const) {
+      const line = corner(north);
+      const cum = cumulativeDistances(line);
+      const turn = nextTurn(line, cum, 0, cum[cum.length - 1]!)!;
+      expect(turn.kind).toBe(kind);
+      close(turn.inM, cum[2]!, 15); // ~367 m ahead, at the corner
+    }
+  });
+
+  test("walking the L backwards: coming south and turning west is a right turn", () => {
+    const line = corner(true);
+    const cum = cumulativeDistances(line);
+    const end = cum[cum.length - 1]!;
+    const turn = nextTurn(line, cum, end, 0)!;
+    expect(turn.kind).toBe("right");
+    close(turn.inM, end - cum[2]!, 15);
+  });
+
+  test("no turn on a straight line, none past the target, none beyond the scan", () => {
+    const cum = cumulativeDistances(straight);
+    expect(nextTurn(straight, cum, 0, cum[10]!)).toBeNull();
+    const line = corner(true);
+    const c = cumulativeDistances(line);
+    expect(nextTurn(line, c, 0, c[2]! - 30)).toBeNull(); // the stop is before the corner
+    expect(nextTurn(line, c, 0, 0)).toBeNull();
+  });
+
+  test("small zigzags of a hand-drawn trail are not turns", () => {
+    const zig: LinePoint[] = Array.from({ length: 41 }, (_, i) => [135 + i * 0.0001, LAT + (i % 2 ? 0.00003 : 0)] as LinePoint); // ±3 m wiggle every 9 m
+    const cum = cumulativeDistances(zig);
+    expect(nextTurn(zig, cum, 0, cum[cum.length - 1]!)).toBeNull();
+  });
+
+  test("a hairpin bend (going back the way you came, 11 m over) is a sharp turn", () => {
+    const pin: LinePoint[] = [[135, LAT], [135.002, LAT], [135.0021, LAT + 0.00005], [135.0021, LAT + 0.0001], [135, LAT + 0.0001]];
+    const cum = cumulativeDistances(pin);
+    expect(nextTurn(pin, cum, 0, cum[cum.length - 1]!)!.kind).toBe("sharp-left");
   });
 });

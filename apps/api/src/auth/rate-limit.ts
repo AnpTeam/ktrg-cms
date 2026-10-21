@@ -41,6 +41,9 @@ export const AUTH_LIMITS = {
   meDeletionUser: { name: "me-deletion-user", limit: 5, windowMs: 15 * MINUTE },
   // Keyed by user id: collecting stamps. Walkers stamp a handful of places an hour; this stops a script.
   stampUser: { name: "stamp-user", limit: 30, windowMs: 15 * MINUTE },
+  // Keyed by user id: walking paths for navigation off the course line. OpenRouteService has a daily allowance shared by
+  // everyone; the screen asks at most every 30 s while off the line, so 20 per 15 minutes is a walker, not a script.
+  navigationPathUser: { name: "navigation-path-user", limit: 20, windowMs: 15 * MINUTE },
   // Keyed by user id: an admin saving routes and places. Generous, because the editor saves often.
   adminWriteUser: { name: "admin-write-user", limit: 300, windowMs: 15 * MINUTE },
   // Keyed by user id: asking the route-finding service to snap a line to trails. The service has a daily allowance

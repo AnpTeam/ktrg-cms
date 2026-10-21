@@ -22,8 +22,6 @@ export const STOP_MAX_OFF_LINE_M = 60;
 /** A fix this far from the current leg counts as off route (three in a row, see `offRouteStep`). */
 export const OFF_ROUTE_M = 40;
 export const OFF_ROUTE_FIXES = 3;
-/** How far outside a leg a fix may still be matched to it (GPS jitter at the ends of the leg). */
-const LEG_SLACK_M = 50;
 
 /** Great-circle distance in metres (same formula as apps/api/src/lib/geo.ts). */
 export function distanceM(a: LatLng, b: LatLng): number {
@@ -117,36 +115,137 @@ export function cutLegs(line: readonly LinePoint[], cum: readonly number[], stop
   return legs;
 }
 
-export interface LegProgress {
-  /** Metres walked along this leg (0 at its start). */
-  alongLegM: number;
-  /** Metres left to the end of the leg (0 once the stop is reached or passed). */
-  remainingM: number;
-  lengthM: number;
-  /** Metres away from the leg's line. */
-  offM: number;
-}
-
-/** Where a fix is on one leg. Null when the line is unusable. */
-export function legProgress(line: readonly LinePoint[], cum: readonly number[], leg: Leg, fix: LatLng): LegProgress | null {
-  const proj = projectOnLine(line, cum, fix, { fromM: leg.startM - LEG_SLACK_M, toM: leg.endM + LEG_SLACK_M });
-  if (!proj) return null;
-  const lengthM = leg.endM - leg.startM;
-  const alongLegM = Math.max(0, Math.min(lengthM, proj.alongM - leg.startM));
-  return { alongLegM, remainingM: lengthM - alongLegM, lengthM, offM: proj.offM };
-}
-
-/** Index of the stop to head for: the first one not yet stamped and not closed. Null when none are left. */
-export function nextTarget(
-  stops: readonly { id: string; status?: "open" | "caution" | "closed" }[],
+/**
+ * Index of the stop to head for: the NEAREST one (straight line) not yet stamped and not closed, so a visitor can join
+ * the course anywhere and walk it either way (the user's rule, 2026-10-20). Null when none are left.
+ */
+export function nearestTarget(
+  stops: readonly (Stop & { status?: "open" | "caution" | "closed" })[],
   stamped: ReadonlySet<string>,
+  from: LatLng,
 ): number | null {
-  const i = stops.findIndex((s) => !stamped.has(s.id) && s.status !== "closed");
-  return i === -1 ? null : i;
+  let best: number | null = null;
+  let bestM = Number.POSITIVE_INFINITY;
+  stops.forEach((s, i) => {
+    if (stamped.has(s.id) || s.status === "closed") return;
+    const d = distanceM(from, s);
+    if (d < bestM) {
+      bestM = d;
+      best = i;
+    }
+  });
+  return best;
 }
 
 /** Off-route needs OFF_ROUTE_FIXES fixes in a row beyond OFF_ROUTE_M, so one bad fix does not flash the warning. */
 export function offRouteStep(prevCount: number, offM: number): { count: number; offRoute: boolean } {
   const count = offM > OFF_ROUTE_M ? prevCount + 1 : 0;
   return { count, offRoute: count >= OFF_ROUTE_FIXES };
+}
+
+// ---- The "vector" to a point: how far, and which way -----------------------------------------------------------
+
+/** The direction to walk from `from` to reach `to`, in degrees clockwise from north (0 to 360; 0 when they are equal). */
+export function bearingDeg(from: LatLng, to: LatLng): number {
+  const f1 = toRad(from.lat);
+  const f2 = toRad(to.lat);
+  const dL = toRad(to.lng - from.lng);
+  const y = Math.sin(dL) * Math.cos(f2);
+  const x = Math.cos(f1) * Math.sin(f2) - Math.sin(f1) * Math.cos(f2) * Math.cos(dL);
+  return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+}
+
+/** Distance (haversine) and direction from one point to another. */
+export function vectorTo(from: LatLng, to: LatLng): { distanceM: number; bearingDeg: number } {
+  return { distanceM: distanceM(from, to), bearingDeg: bearingDeg(from, to) };
+}
+
+export const COMPASS_POINTS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"] as const;
+export type CompassPoint = (typeof COMPASS_POINTS)[number];
+
+/** The nearest of the eight compass points to a bearing (any number of degrees, also negative). */
+export function compassPoint(deg: number): CompassPoint {
+  return COMPASS_POINTS[(((Math.round(deg / 45) % 8) + 8) % 8)]!;
+}
+
+/** The point `alongM` metres from the start of the line (clamped to its ends); null for an empty line. */
+export function pointAlong(line: readonly LinePoint[], cum: readonly number[], alongM: number): LatLng | null {
+  if (line.length === 0) return null;
+  if (line.length === 1 || alongM <= 0) return at(line[0]!);
+  const end = cum[cum.length - 1]!;
+  if (alongM >= end) return at(line[line.length - 1]!);
+  let i = 0;
+  while (i + 2 < line.length && cum[i + 1]! < alongM) i++;
+  const segM = cum[i + 1]! - cum[i]!;
+  const t = segM === 0 ? 0 : (alongM - cum[i]!) / segM;
+  const a = line[i]!;
+  const b = line[i + 1]!;
+  // Straight between two points of the line: they are metres apart, so a flat in-between is exact enough.
+  return { lng: a[0] + t * (b[0] - a[0]), lat: a[1] + t * (b[1] - a[1]) };
+}
+
+// ---- Turns ahead (like "in 50 m, turn left") ---------------------------------------------------------------------
+// Worked out from the line itself, so it works on the course line and on a walking path alike. The direction is read
+// over TURN_ARM_M before and after each point, so the small zigzags of a hand-drawn trail do not count as turns.
+
+export type TurnKind = "slight-left" | "left" | "sharp-left" | "slight-right" | "right" | "sharp-right" | "u-turn";
+
+/** A change of direction smaller than this is "keep going". */
+export const TURN_MIN_DEG = 35;
+/** How far ahead turns are looked for. */
+export const TURN_SCAN_M = 1000;
+const TURN_STEP_M = 10;
+const TURN_ARM_M = 20;
+
+/** The change of direction from `inDeg` to `outDeg`, between -180 and 180; positive is to the right. */
+export function turnDelta(inDeg: number, outDeg: number): number {
+  const d = (((outDeg - inDeg) % 360) + 540) % 360 - 180;
+  return d === -180 ? 180 : d;
+}
+
+/** What a change of direction is called; null when it is too small to mention. */
+export function turnKind(delta: number): TurnKind | null {
+  const a = Math.abs(delta);
+  if (a < TURN_MIN_DEG) return null;
+  if (a >= 165) return "u-turn";
+  const side = delta > 0 ? "right" : "left";
+  if (a < 60) return `slight-${side}`;
+  if (a < 135) return side;
+  return `sharp-${side}`;
+}
+
+/**
+ * The next turn when walking along the line from `alongM` toward `targetAlongM` (either direction), within
+ * TURN_SCAN_M and before the target. Null when the way is straight until then.
+ */
+export function nextTurn(
+  line: readonly LinePoint[],
+  cum: readonly number[],
+  alongM: number,
+  targetAlongM: number,
+): { kind: TurnKind; inM: number } | null {
+  if (line.length < 3) return null;
+  const dir = Math.sign(targetAlongM - alongM);
+  if (dir === 0) return null;
+  const deltaAt = (s: number): number | null => {
+    const p0 = pointAlong(line, cum, s - dir * TURN_ARM_M);
+    const p = pointAlong(line, cum, s);
+    const p1 = pointAlong(line, cum, s + dir * TURN_ARM_M);
+    if (!p0 || !p || !p1 || distanceM(p0, p) < 5 || distanceM(p, p1) < 5) return null;
+    return turnDelta(bearingDeg(p0, p), bearingDeg(p, p1));
+  };
+  for (let s = alongM + dir * TURN_STEP_M; dir * (targetAlongM - s) > 0 && Math.abs(s - alongM) <= TURN_SCAN_M; s += dir * TURN_STEP_M) {
+    const d = deltaAt(s);
+    if (d === null || Math.abs(d) < TURN_MIN_DEG) continue;
+    // The bend shows over a few samples: take the sharpest one nearby as the turn itself.
+    let best = { s, d };
+    for (let k = 1; k <= 3; k++) {
+      const s2 = s + dir * k * TURN_STEP_M;
+      if (dir * (targetAlongM - s2) <= 0) break;
+      const d2 = deltaAt(s2);
+      if (d2 !== null && Math.abs(d2) > Math.abs(best.d)) best = { s: s2, d: d2 };
+    }
+    return { kind: turnKind(best.d)!, inM: Math.abs(best.s - alongM) };
+  }
+  return null;
 }

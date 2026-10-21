@@ -329,11 +329,12 @@ export function groupLabelLines(names: readonly string[], maxHeight = Infinity):
 
 // ---- The bottom sheet ----------------------------------------------------------------------------------------
 
-export type SheetSnap = "peek" | "half" | "full";
-export const sheetSnaps: readonly SheetSnap[] = ["peek", "half", "full"];
+/** "hidden": pulled all the way down, so only the map shows (a button brings the sheet back). */
+export type SheetSnap = "hidden" | "peek" | "half" | "full";
+export const sheetSnaps: readonly SheetSnap[] = ["hidden", "peek", "half", "full"];
 
 /** How tall each resting place is, as a share of the room above the tab bar. The top one covers the whole page. */
-export const SNAP_FRACTION: Record<SheetSnap, number> = { peek: 0.3, half: 0.56, full: 1 };
+export const SNAP_FRACTION: Record<SheetSnap, number> = { hidden: 0, peek: 0.3, half: 0.56, full: 1 };
 
 export function sheetHeightPx(snap: SheetSnap, available: number): number {
   return Math.round(SNAP_FRACTION[snap] * available);
@@ -363,7 +364,7 @@ export function snapAfterDrag(heightPx: number, velocity: number, available: num
   return best;
 }
 
-/** The next resting place when the handle is tapped: up, and back down after the top. */
+/** The next resting place when the handle is tapped: up, and back down after the top (never to hidden: that is a pull). */
 export function nextSnap(snap: SheetSnap): SheetSnap {
-  return snap === "peek" ? "half" : snap === "half" ? "full" : "peek";
+  return snap === "peek" || snap === "hidden" ? "half" : snap === "half" ? "full" : "peek";
 }

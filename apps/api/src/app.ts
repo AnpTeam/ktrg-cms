@@ -6,6 +6,7 @@ import { adminContentRoutes } from "./content/admin-routes";
 import { createDrizzleContentStore } from "./content/content-store";
 import { createDrizzleRallyAdminStore } from "./rallies/rally-admin-store";
 import { rallyAdminRoutes } from "./rallies/rally-admin-routes";
+import { navigationRoutes } from "./navigation/navigation-routes";
 import { stampAdminRoutes } from "./stamps/stamp-admin-routes";
 import { stampRoutes } from "./stamps/stamp-routes";
 import { createDrizzleStampListStore, stampList } from "./stamps/stamp-list";
@@ -125,6 +126,7 @@ export function createApp(
     .use(uploadRoutes(getServices, opts))
     .use(rallyAdminRoutes(getServices, opts))
     .use(stampRoutes(getServices, opts))
+    .use(navigationRoutes(getServices, opts))
     .use(stampAdminRoutes(getServices, opts))
     .use(listReadRoutes(stampList, getServices, opts))
     // Admin lists (admin-lists/): each table described once, the same endpoints under /admin/lists/<key>.

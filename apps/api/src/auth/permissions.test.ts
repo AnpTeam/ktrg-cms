@@ -21,7 +21,7 @@ describe("permission table", () => {
 
   test("participants can only do these things (a change here must be deliberate)", () => {
     const forParticipant: string[] = permissions.filter((p) => can("participant", p)).sort();
-    expect(forParticipant).toEqual(["me.manage", "me.sensitive", "stamp.create"]);
+    expect(forParticipant).toEqual(["me.manage", "me.sensitive", "navigation.path", "stamp.create"]);
   });
 
   test("admins can do everything participants can, plus the CMS", () => {
@@ -33,6 +33,7 @@ describe("permission table", () => {
         "site.manage",
         "me.manage",
         "me.sensitive",
+        "navigation.path",
         "notice.manage",
         "rally.manage",
         "route.manage",
@@ -48,7 +49,7 @@ describe("permission table", () => {
   });
 
   test("every CMS permission is admin-only", () => {
-    const cms = permissions.filter((p) => p !== "me.manage" && p !== "me.sensitive" && p !== "stamp.create");
+    const cms = permissions.filter((p) => p !== "me.manage" && p !== "me.sensitive" && p !== "stamp.create" && p !== "navigation.path");
     expect(cms.length).toBeGreaterThan(0);
     for (const p of cms) {
       expect(can("participant", p)).toBe(false);
