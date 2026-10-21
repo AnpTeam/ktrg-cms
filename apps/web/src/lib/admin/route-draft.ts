@@ -5,6 +5,7 @@ import { climbM, elevationsOf, lengthKm, type LngLatEle } from "./line";
 import { capLegs, joinLegs, legsFromJoined, pathStops, reconcileLegs, sidePairs, splitLine, type Leg } from "./legs";
 import type { Translations } from "./content-locales";
 import type { AdminRoute, AdminSpot, Prefecture, SpotStatus } from "./types";
+import { timesFromPrevious } from "../leg-times";
 import { estimateWalkMinutes } from "./walk-time";
 
 // What the route editor holds while someone is typing and drawing: every field as the form shows it (text is "" when
@@ -413,6 +414,7 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
   const lngs = d.line.map((p) => p[0]);
   const bounds = d.line.length >= 2 ? { west: Math.min(...lngs), east: Math.max(...lngs), south: Math.min(...lats), north: Math.max(...lats) } : null;
   const stamps = stampPlaces(d);
+  const times = timesFromPrevious(stamps.map((p) => ({ id: p.id ?? p.key, position: p.lat !== null && p.lng !== null ? { lat: p.lat, lng: p.lng } : null, stopBy: p.stopBy })), d.line);
   return {
     id: d.id ?? "new",
     order,
@@ -442,6 +444,7 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
       status: p.status,
       stamped: null,
       ...(p.stopBy ? { stopBy: true } : {}),
+      ...(times.get(p.id ?? p.key) ? { fromPrev: times.get(p.id ?? p.key) } : {}),
       position: p.lat !== null && p.lng !== null ? { lat: p.lat, lng: p.lng, verified: p.positionVerified } : null,
     })),
     points: navigationPoints(d).map(pointOf),

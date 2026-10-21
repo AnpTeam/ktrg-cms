@@ -39,6 +39,8 @@ export function StopList({ spots, hrefFor, locale }: { spots: SpotListItem[]; hr
         const hasNext = index < spots.length - 1;
         const doneAbove = previous?.stamped === true;
         const done = spot.stamped === true;
+        const minutes = spot.fromPrev?.minutes;
+        const km = spot.fromPrev?.km;
         return (
           <li key={spot.id} className="relative">
             {previous ? <Segment done={doneAbove} from="0" to={`calc(100% - ${NODE_CENTER})`} /> : null}
@@ -52,6 +54,11 @@ export function StopList({ spots, hrefFor, locale }: { spots: SpotListItem[]; hr
                   <span className="block text-xl font-bold leading-snug">
                     <Localized value={pickText(locale, spot.nameJa, spot.nameEn)} />
                   </span>
+                  {minutes !== undefined ? (
+                    <span className="block text-lg text-muted">
+                      <Trans>前の場所から、歩いて約{minutes}分（{km} km）</Trans>
+                    </span>
+                  ) : null}
                   <span className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-lg">
                     <StatusWord status={spot.status} />
                     {spot.stamped === true ? (
