@@ -20,7 +20,7 @@ import { createNoticeService } from "./notices/notice-service";
 import type { NoticeStore } from "./notices/notice-types";
 import type { ContentServices } from "./content/admin-routes";
 import { createContentService } from "./content/content-service";
-import { createRoutingService, type RoutingService } from "./routing/routing-service";
+import { createRoutingService, withDailyCap, type RoutingService } from "./routing/routing-service";
 import type { ContentStore } from "./content/content-types";
 import type { RallyAdminServices } from "./rallies/rally-admin-routes";
 import { createRallyAdminService } from "./rallies/rally-admin-service";
@@ -83,10 +83,11 @@ export interface ServiceDeps {
  */
 export function createServices(deps: ServiceDeps): Services {
   const { stores, mailer, secret, now } = deps;
+  const rateLimit = createRateLimiter({ store: stores.rateLimit, secret, now });
   return {
     otp: createOtpService({ store: stores.otp, mailer, secret, adminEmails: deps.adminEmails, now }),
     session: createSessionService({ store: stores.session, now }),
-    rateLimit: createRateLimiter({ store: stores.rateLimit, secret, now }),
+    rateLimit,
     audit: deps.audit,
     // Emails the owner when a passkey is added or removed.
     passkeys: createPasskeyService({ store: stores.passkeys, mailer, config: deps.passkey, now }),
@@ -111,6 +112,6 @@ export function createServices(deps: ServiceDeps): Services {
     // Admin photo uploads.
     uploads: createUploadService({ ...deps.uploads }),
     // The route-finding service behind the map editor's "snap to trails" (no key: it answers "not set up").
-    routing: deps.routing ?? createRoutingService({}),
+    routing: withDailyCap(deps.routing ?? createRoutingService({}), rateLimit),
   };
 }

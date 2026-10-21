@@ -156,6 +156,8 @@ function changed<T extends { translations: Translations }>(next: T, saved: T | n
 
 export type SaveStep =
   | { op: "deleteSpot"; key: string; id: string }
+  /** A published waypoint that was edited: taken off the site before its changes are saved. */
+  | { op: "unpublishSpot"; key: string; id: string }
   | { op: "createRoute"; body: RouteBody }
   | { op: "updateRoute"; body: Partial<RouteBody> }
   | { op: "createSpot"; key: string; body: PlaceBody }
@@ -171,6 +173,9 @@ export function planSave(draft: RouteDraft, saved: RouteDraft | null): SaveStep[
 
   // 1. Places taken out go first, so a deleted place never blocks anything below.
   for (const p of saved?.places ?? []) if (!draftKeys.has(p.key) && p.id) steps.push({ op: "deleteSpot", key: p.key, id: p.id });
+
+  // 1b. A published waypoint that was edited is a draft in the editor: it comes off the site before its changes are saved.
+  for (const p of draft.places) if (p.id && savedPlaces.get(p.key)?.published && !p.published) steps.push({ op: "unpublishSpot", key: p.key, id: p.id });
 
   // 2. The route itself. The legs name their waypoints by id, so when one of them is new the line is saved after the waypoints are.
   const unsaved = new Set(draft.places.filter((p) => p.id === null).map((p) => p.key));

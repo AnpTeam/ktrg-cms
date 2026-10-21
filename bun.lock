@@ -46,8 +46,6 @@
         "pbf": "5.1.2",
         "react": "^19.3.0",
         "react-dom": "^19.3.0",
-        "terra-draw": "1.36.0",
-        "terra-draw-maplibre-gl-adapter": "1.5.0",
       },
       "devDependencies": {
         "@lingui/cli": "^6.9.1",
@@ -1398,10 +1396,6 @@
     "tapable": ["tapable@2.3.3", "", {}, "sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A=="],
 
     "tar-stream": ["tar-stream@2.2.0", "", { "dependencies": { "bl": "^4.0.3", "end-of-stream": "^1.4.1", "fs-constants": "^1.0.0", "inherits": "^2.0.3", "readable-stream": "^3.1.1" } }, "sha512-ujeqbceABgwMZxEJnk2HDY2DlnUZ+9oEcb1KzTVfYHio0UE6dG71n60d8D2I4qNvleWrrXpmjpt7vZeF1LnMZQ=="],
-
-    "terra-draw": ["terra-draw@1.36.0", "", {}, "sha512-qvfMP2t8pVJectt3VL4h9VOoRaI7NEaKsvoiU+7rXzKuyDfsc+h0wsbl0d3ru7etiVSwl+ic64YCKVdVrcqJnA=="],
-
-    "terra-draw-maplibre-gl-adapter": ["terra-draw-maplibre-gl-adapter@1.5.0", "", { "peerDependencies": { "maplibre-gl": ">=4", "terra-draw": "^1.0.0" } }, "sha512-wUv7WDIKln+cWkJOJZ68cOLwFhcBXlSN3GF56Dx8GLnmTTnQEZbIyzWRHjsxhn+TOXvxBOlCDl5JmCghIW3L4g=="],
 
     "tinyglobby": ["tinyglobby@0.2.17", "", { "dependencies": { "fdir": "^6.5.0", "picomatch": "^4.0.4" } }, "sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g=="],
 

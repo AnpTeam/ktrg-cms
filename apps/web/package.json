@@ -23,9 +23,7 @@
     "next": "^16.4.0",
     "pbf": "5.1.2",
     "react": "^19.3.0",
-    "react-dom": "^19.3.0",
-    "terra-draw": "1.36.0",
-    "terra-draw-maplibre-gl-adapter": "1.5.0"
+    "react-dom": "^19.3.0"
   },
   "devDependencies": {
     "@lingui/cli": "^6.9.1",

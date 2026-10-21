@@ -1022,6 +1022,10 @@ msgstr "{spotCount} stamp locations"
 msgid "スタンプ済み"
 msgstr "stamped"
 
+#: src/components/admin/RouteEditor.tsx:241
+msgid "すでに公開をやめた経由地があります（{names}）。「経由地」タブで確かめてください。"
+msgstr "These waypoints were already unpublished: {names}. Check them in the Waypoints tab."
+
 #: src/components/admin/RouteTable.tsx:77
 #: src/components/PrefectureFilter.tsx:36
 msgid "すべて"
@@ -2388,6 +2392,7 @@ msgstr "Name and publishing"
 msgid "名前のついた地点が{0}か所ありました。経由地として追加しますか？"
 msgstr "Found {0} named points. Add them as waypoints?"
 
+#: src/components/admin/RouteEditor.tsx:171
 #: src/components/admin/RouteEditor.tsx:302
 msgid "名前のない経由地"
 msgstr "Unnamed waypoint"

@@ -1,4 +1,4 @@
-import { and, asc, count, eq, inArray, isNotNull, max, ne, or, sql } from "drizzle-orm";
+import { and, asc, count, eq, getTableColumns, inArray, isNotNull, max, ne, or, sql } from "drizzle-orm";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
 import { rallySpots, routes, routeTranslations, spots, spotTranslations, stamps } from "../db/schema";
@@ -87,7 +87,11 @@ export function createDrizzleContentStore(db: Db): ContentStore {
 
   return {
     async listRoutes() {
-      const rows = await db.select().from(routes).orderBy(asc(routes.sortOrder));
+      // Without the legs (the editor's own copy of the line): the lists only need the line, and legs would double it.
+      const rows = await db
+        .select({ ...getTableColumns(routes), geometry: sql<(typeof routes.$inferSelect)["geometry"]>`${routes.geometry} - 'legs'`.as("geometry") })
+        .from(routes)
+        .orderBy(asc(routes.sortOrder));
       const counts = await db
         .select({
           routeId: spots.routeId,

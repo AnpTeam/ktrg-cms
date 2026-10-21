@@ -108,6 +108,19 @@ describe("DELETE /auth/passkeys/:id", () => {
     expect(auditRows).toEqual([{ actorUserId: alice.id, action: "passkey.remove", targetType: "passkey", targetId: id }]);
   });
 
+  test("removing a passkey signs out the account's other devices, and this one stays in", async () => {
+    const { call, cookieFor, addPasskey } = setup();
+    await addPasskey(alice, "Lost phone");
+    const here = await cookieFor(alice);
+    const stolen = await cookieFor(alice);
+    const id = ((await (await call("GET", "/", undefined, here)).json()) as ListBody).passkeys[0]!.id;
+
+    expect((await call("DELETE", `/${id}`, undefined, here)).status).toBe(200);
+
+    expect((await call("GET", "/", undefined, stolen)).status).toBe(401);
+    expect((await call("GET", "/", undefined, here)).status).toBe(200);
+  });
+
   test("someone else's passkey is a plain 404 and stays", async () => {
     const { call, cookieFor, addPasskey, sent, auditRows } = setup();
     await addPasskey(bob, "Bob's phone");
