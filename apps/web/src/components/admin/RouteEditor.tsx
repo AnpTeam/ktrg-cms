@@ -137,14 +137,24 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
   const heightsState: ElevationStatus = needsHeights ? elevation : "idle";
 
   // ---- saving ---------------------------------------------------------------------------------------------
+  /** Brings the first red field into view and puts the cursor there (after the tab that holds it has been drawn). */
+  function showFirstProblem(kind: string) {
+    setSection(kind.startsWith("place_") ? "places" : "overview");
+    setTimeout(() => {
+      const el = document.querySelector<HTMLElement>('[aria-invalid="true"]');
+      el?.scrollIntoView({ block: "center", behavior: "smooth" });
+      el?.focus({ preventScroll: true });
+    }, 120);
+  }
+
   async function save() {
     if (saving || !dirty) return;
     const found = draftProblems(draft);
     setProblems(found);
     if (found.length > 0) {
       const first = found[0]!.kind;
-      setSection(first.startsWith("place_") ? "places" : "overview"); // show the tab that holds the red item
       setMessage({ kind: "error", text: t`保存できません。赤く示した項目を直してください。` });
+      showFirstProblem(first); // the tab that holds the red item, and the item itself
       return;
     }
     setSaving(true);
@@ -316,13 +326,23 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
         <button type="button" disabled={!dirty || saving} onClick={save} className="tap-target rounded-xl bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
           {saving ? t`保存中…` : t`保存する`}
         </button>
+        {/* In the bar, not under it: a failure must be seen wherever the page is scrolled to. */}
+        {message ? (
+          <div className="flex basis-full items-start gap-3 rounded-xl bg-surface p-3">
+            <p role={message.kind === "error" ? "alert" : "status"} className={`min-w-0 flex-1 text-lg font-bold ${message.kind === "error" ? "text-danger" : "text-moss"}`}>
+              {message.text}
+            </p>
+            {message.kind === "error" && problems.length > 0 ? (
+              <button type="button" onClick={() => showFirstProblem(problems[0]!.kind)} className="tap-target shrink-0 rounded-lg border-2 border-danger px-3 text-base font-bold text-danger">
+                {t`直す場所を見る`}
+              </button>
+            ) : null}
+            <button type="button" onClick={() => setMessage(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-lg px-3 text-xl font-bold hover:bg-paper">
+              ×
+            </button>
+          </div>
+        ) : null}
       </div>
-
-      {message ? (
-        <p role={message.kind === "error" ? "alert" : "status"} className={`rounded-xl bg-surface p-4 text-lg font-bold ${message.kind === "error" ? "text-danger" : "text-moss"}`}>
-          {message.text}
-        </p>
-      ) : null}
 
       {/* Narrow screens: one thing at a time. */}
       <div className="flex gap-2 lg:hidden" role="tablist" aria-label={t`表示の切り替え`}>
