@@ -13,6 +13,7 @@ import {
   removeAnchors,
   setAllCurves,
   splitLine,
+  stopsFollowLine,
   toggleAnchorCurve,
   type Leg,
   type Path,
@@ -98,6 +99,22 @@ describe("cutting a line into legs", () => {
     expect(legs[0]!.points.at(-1)).toEqual([135.01, 34.01]);
     expect(legs[0]!.points).toContainEqual([135.005, 34.005, 50]);
     expect(legs[1]!.points[0]).toEqual([135.01, 34.01]);
+  });
+  test("stops that do not follow the line are not cut: no straight hops are made from a good line", () => {
+    expect(stopsFollowLine([A, B, C], line)).toBe(true);
+    // the same stops in another order (a stop visited twice, or back to the start)
+    expect(splitLine([A, C, B], line)).toEqual([]);
+    expect(splitLine([A, B, A, C], line)).toEqual([]);
+    // a stop far from the line is not on it
+    expect(splitLine([A, stop("far", 34.5, 135.5), C], line)).toEqual([]);
+    // forcing cuts anyway
+    expect(splitLine([A, C, B], line, { force: true })).toHaveLength(2);
+  });
+  test("a small step back (a viewpoint on a spur) is fine", () => {
+    const spur: LngLatEle[] = [[135, 34], [135.001, 34.001], [135.002, 34.002], [135.003, 34.003], [135.004, 34.004], [135.01, 34.01]];
+    const near = stop("n", 34.0025, 135.0025);
+    const spurStop = stop("s", 34.0015, 135.0015); // nearest point is before the previous stop's, by about 150 m
+    expect(splitLine([A, near, spurStop, B], spur)).toHaveLength(3);
   });
   test("fewer than two stops or points: nothing to cut", () => {
     expect(splitLine([A], line)).toEqual([]);

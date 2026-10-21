@@ -153,27 +153,25 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     let routeUpdatedAt = snapshot.updatedAt;
     let base = savedRef.current;
     const ids = new Map(snapshot.places.map((p) => [p.key, p.id]));
-    // A published waypoint that was edited (so it is a draft here) is unpublished first; its new update time is the one to save against.
+    // After a waypoint is unpublished its update time changes: the changes are saved against the new one.
     const freshUpdatedAt = new Map<string, string>();
-    for (const p of snapshot.places) {
-      const was = base.places.find((x) => x.key === p.key);
-      if (!was?.published || p.published || p.id === null) continue;
-      const res = await outcome(api.admin.spots({ id: p.id }).unpublish.post());
-      if (!res.ok) {
-        setMessage({ kind: "error", text: messages[res.key] });
-        setSaving(false);
-        return;
-      }
-      const next: PlaceDraft = { ...placeFromServer(res.data.spot), key: p.key };
-      freshUpdatedAt.set(p.key, next.updatedAt!);
-      base = { ...base, places: base.places.map((x) => (x.key === p.key ? next : x)) };
-      setSavedCopy(base);
-    }
+    const unpublished: string[] = [];
     const steps = planSave(snapshot, snapshot.id === null ? null : base);
     let failure: string | null = null;
 
     for (const step of steps) {
-      if (step.op === "deleteSpot") {
+      if (step.op === "unpublishSpot") {
+        const res = await outcome(api.admin.spots({ id: step.id }).unpublish.post());
+        if (!res.ok) {
+          failure = messages[res.key];
+          break;
+        }
+        const next: PlaceDraft = { ...placeFromServer(res.data.spot), key: step.key };
+        freshUpdatedAt.set(step.key, next.updatedAt!);
+        unpublished.push(next.nameJa || t`名前のない経由地`);
+        base = { ...base, places: base.places.map((p) => (p.key === step.key ? next : p)) };
+        setSavedCopy(base);
+      } else if (step.op === "deleteSpot") {
         const res = await outcome(api.admin.spots({ id: step.id }).delete());
         if (!res.ok) {
           failure = messages[res.key];
@@ -238,7 +236,9 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     }
 
     if (failure) {
-      setMessage({ kind: "error", text: failure });
+      // A waypoint that was taken off the site before the failure stays off: say so.
+      const names = unpublished.join("、");
+      setMessage({ kind: "error", text: unpublished.length > 0 ? `${failure} ${t`すでに公開をやめた経由地があります（${names}）。「経由地」タブで確かめてください。`}` : failure });
       setSaving(false);
       return;
     }
@@ -445,6 +445,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   onSetLegs={(legs) => dispatch({ type: "setLegs", legs })}
                   onClearLeg={(from, to) => dispatch({ type: "clearLeg", from, to })}
                   onClearLegs={() => dispatch({ type: "clearLegs" })}
+                  onSplitLine={() => dispatch({ type: "splitLine" })}
                   onAddPlace={(lat, lng) => {
                     const key = crypto.randomUUID();
                     dispatch({ type: "addPlace", key, lat, lng });

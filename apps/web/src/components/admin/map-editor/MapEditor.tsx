@@ -62,6 +62,8 @@ export interface MapEditorProps {
   onSetLegs: (legs: Leg[]) => void;
   onClearLeg: (from: string, to: string) => void;
   onClearLegs: () => void;
+  /** Cut the loose line into legs at the stops even though they do not follow it. */
+  onSplitLine: () => void;
   onAddPlace: (lat: number, lng: number) => void;
   /** A route that ends where it starts: adds an end point (not a stamp place) at exactly the position of this waypoint. */
   onAddEndAt: (key: string) => void;
@@ -639,6 +641,8 @@ export function MapEditor(props: MapEditorProps) {
   const legLabel = (pair: { from: Stop; to: Stop }) => `${nameOf.get(pair.from.key) ?? ""} → ${nameOf.get(pair.to.key) ?? ""}`;
   const activeName = activePair ? legLabel(activePair) : null;
   const canWork = !working && pairs.length > 0;
+  // A saved line that the waypoints do not follow (a stop twice, or in another order) is kept as it is, not cut into legs.
+  const looseLine = props.legs.length === 0 && props.line.length >= 2 && pairs.length > 0;
   const legName = activeName ?? "";
   const chosenNo = (anchorIdx ?? 0) + 1;
   const pointCount = activePath.anchors.length;
@@ -646,8 +650,9 @@ export function MapEditor(props: MapEditorProps) {
   // What to do next, depending on the tool and on what is already on the map.
   const hasLine = props.line.length >= 2;
   const hasPlaces = props.places.length > 0;
-  const hint =
-    mode === "place"
+  const hint = looseLine
+    ? t`この線は、経由地の順番や位置と合わないため、区間に分けていません。経由地の順番と位置を直してから「区間に分ける」を押すか、区間を描くと、その区間から線が置き換わります（「元に戻す」で戻せます）。`
+    : mode === "place"
       ? t`地図をクリックすると、その位置に経由地を置きます。`
       : mode === "draw"
         ? !activePair
@@ -690,6 +695,11 @@ export function MapEditor(props: MapEditorProps) {
         <button type="button" disabled={!canWork || !hasLine} onClick={smooth} className={chipClass} title={t`線の角を、丸くなめらかにします`}>
           {t`なめらかにする`}
         </button>
+        {looseLine ? (
+          <button type="button" onClick={props.onSplitLine} className={chipClass} title={t`今ある線を、経由地の順に区間へ切り分けます（経由地が線と合わないと、まっすぐな部分ができます）`}>
+            {t`区間に分ける`}
+          </button>
+        ) : null}
         {activePair ? (
           <button type="button" onClick={() => setActiveFrom(null)} className={chipClass} title={t`区間の選択をやめて、全体を対象にします`}>
             {t`選択をやめる`}

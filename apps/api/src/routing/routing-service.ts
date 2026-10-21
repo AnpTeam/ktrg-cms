@@ -5,6 +5,7 @@
 // points or the answer. Without a key the service says so and the editor keeps working by hand.
 
 import type { ErrorCode } from "../lib/api-errors";
+import { AUTH_LIMITS, type RateLimiter } from "../auth/rate-limit";
 
 export interface LatLng {
   lat: number;
@@ -28,6 +29,20 @@ const ENDPOINT = "https://api.openrouteservice.org/v2/directions/foot-hiking/geo
 const SEARCH_RADIUS_M = 1000;
 /** The longest line taken from the service (the route line allows 50,000 points). */
 const MAX_LINE_POINTS = 50_000;
+
+/**
+ * The service with a cap on calls per day for the whole site. Only a call that would really go to OpenRouteService counts
+ * (the per-user limits run first, so a refused request never reaches this), and over the cap it answers like a service
+ * that is not available, which the screens already handle.
+ */
+export function withDailyCap(inner: RoutingService, limiter: Pick<RateLimiter, "check">): RoutingService {
+  return {
+    async snap(points) {
+      const r = await limiter.check(AUTH_LIMITS.routingDaily, "all");
+      return r.allowed ? inner.snap(points) : { ok: false, reason: "routing_unavailable" };
+    },
+  };
+}
 
 export function createRoutingService({
   apiKey,

@@ -165,6 +165,18 @@ describe("places", () => {
   });
 });
 
+describe("the route lists", () => {
+  test("do not carry the legs of a line, but the editor's own read of one route does", async () => {
+    const A = "11111111-1111-4111-8111-111111111111";
+    const B = "22222222-2222-4222-8222-222222222222";
+    const r = await route({ geometry: { type: "LineString", coordinates: [[135, 34], [135.01, 34.01]], legs: [{ from: A, to: B, coordinates: [[135, 34], [135.01, 34.01]] as [number, number][] }] } });
+    const listed = (await svc.listRoutes()).find((x) => x.id === r.id);
+    expect(listed?.geometry?.coordinates).toHaveLength(2);
+    expect(listed?.geometry && "legs" in listed.geometry).toBe(false);
+    expect((await svc.getRoute(r.id))?.route.geometry?.legs).toHaveLength(1);
+  });
+});
+
 describe("what visitors see", () => {
   test("all routes are listed; places only when published; coordinates only when checked", async () => {
     const r = await route({ geometry: LINE });

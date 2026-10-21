@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import type { Db } from "../db/client";
 import { sessions, users } from "../db/schema";
 import type { SessionStore } from "./session-service";
@@ -54,6 +54,10 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
 
     async markFresh(id, at) {
       await db.update(sessions).set({ lastLoginAt: at }).where(eq(sessions.id, id));
+    },
+
+    async removeOthers(userId, keepSessionId) {
+      await db.delete(sessions).where(and(eq(sessions.userId, userId), ne(sessions.id, keepSessionId)));
     },
   };
 }

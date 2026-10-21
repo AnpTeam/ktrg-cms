@@ -19,6 +19,23 @@ function setup() {
   return { service, rows, users, advance: (ms: number) => (clock = new Date(clock.getTime() + ms)) };
 }
 
+describe("endOthers", () => {
+  test("ends the account's other sessions, keeps the one named, and leaves other accounts alone", async () => {
+    const { service, rows } = setup();
+    const keep = await service.create(participant);
+    const other = await service.create(participant);
+    const admins = await service.create(admin);
+    const keptId = (await service.authenticate(keep.token))!.sessionId;
+
+    await service.endOthers(participant.id, keptId);
+
+    expect(await service.authenticate(other.token)).toBeNull();
+    expect((await service.authenticate(keep.token))?.user.id).toBe(participant.id);
+    expect((await service.authenticate(admins.token))?.user.id).toBe(admin.id);
+    expect(rows).toHaveLength(2);
+  });
+});
+
 describe("create", () => {
   test("a participant session lasts about a year", async () => {
     const { service, rows } = setup();
