@@ -66,6 +66,7 @@ export const isServerCode = (value: unknown): value is ErrorCode => typeof value
 export function errorKeyFromApi(status: number, body: unknown): ErrorKey {
   const code = typeof body === "object" && body !== null ? (body as { error?: unknown }).error : undefined;
   if (isServerCode(code)) return code;
+  if (status === 413) return "invalid_file"; // the host refused a body that is too big
   if (status === 429) return "rate_limited";
   if (status === 401) return "unauthenticated";
   if (status === 403) return "forbidden";
