@@ -21,7 +21,7 @@ import {
   type TextField,
   type RouteDraft,
 } from "@/lib/admin/route-draft";
-import { draftProblems, placeChanged, planSave, type DraftProblem } from "@/lib/admin/save-plan";
+import { draftProblems, placeChanged, planSave, withLegIds, type DraftProblem } from "@/lib/admin/save-plan";
 import type { Prefecture } from "@/lib/admin/types";
 import { formatUpdated } from "@/lib/format";
 import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
@@ -182,7 +182,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
         base = { ...base, places: base.places.filter((p) => p.key !== step.key) };
         setSavedCopy(base);
       } else if (step.op === "createRoute") {
-        const res = await outcome(api.admin.routes.post(step.body));
+        const res = await outcome(api.admin.routes.post(withLegIds(step.body, ids)));
         if (!res.ok) {
           failure = messages[res.key];
           break;
@@ -193,7 +193,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
         base = { ...snapshot, id: routeId, updatedAt: routeUpdatedAt, places: [] };
         setSavedCopy(base);
       } else if (step.op === "updateRoute") {
-        const res = await outcome(api.admin.routes({ id: routeId! }).patch({ updatedAt: routeUpdatedAt!, ...step.body }));
+        const res = await outcome(api.admin.routes({ id: routeId! }).patch({ updatedAt: routeUpdatedAt!, ...withLegIds(step.body, ids) }));
         if (!res.ok) {
           failure = messages[res.key];
           break;
@@ -430,6 +430,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
               <Section title={t`地図と線`} id="map-section">
                 <MapEditorLoader
                   line={draft.line}
+                  legs={draft.legs}
                   places={editorPlaces}
                   selectedKey={selectedKey}
                   distanceKm={draft.distanceKm}
@@ -440,6 +441,10 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   onUndo={() => dispatch({ type: "undo" })}
                   onRedo={() => dispatch({ type: "redo" })}
                   onLine={(points) => dispatch({ type: "line", points })}
+                  onSetLeg={(leg) => dispatch({ type: "setLeg", leg })}
+                  onSetLegs={(legs) => dispatch({ type: "setLegs", legs })}
+                  onClearLeg={(from, to) => dispatch({ type: "clearLeg", from, to })}
+                  onClearLegs={() => dispatch({ type: "clearLegs" })}
                   onAddPlace={(lat, lng) => {
                     const key = crypto.randomUUID();
                     dispatch({ type: "addPlace", key, lat, lng });

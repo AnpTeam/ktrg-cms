@@ -10,6 +10,14 @@ import type { Prefecture, SpotStatus } from "./types";
 
 const nullIfEmpty = (v: string): string | null => (v.trim() === "" ? null : v);
 
+type Coordinates = [number, number, number?][];
+/** The line as sent: the whole line, and the legs it is made of (their ends are waypoint keys here, ids once sent). */
+export interface RouteLine {
+  type: "LineString";
+  coordinates: Coordinates;
+  legs?: { from: string; to: string; coordinates: Coordinates }[];
+}
+
 export interface RouteBody {
   nameJa: string;
   nameEn: string | null;
@@ -27,7 +35,7 @@ export interface RouteBody {
   accessJa: string | null;
   accessEn: string | null;
   photoUrl: string | null;
-  geometry: { type: "LineString"; coordinates: [number, number, number?][] } | null;
+  geometry: RouteLine | null;
   lineVerified: boolean;
   lineSource: string | null;
   translations: Translations;
@@ -58,6 +66,23 @@ export interface PlaceBody {
   translations: Translations;
 }
 
+const coordinate = (p: readonly (number | undefined)[]): [number, number, number?] => (p[2] === undefined ? [p[0]!, p[1]!] : [p[0]!, p[1]!, p[2]]);
+
+/**
+ * The body with the legs' ends turned from waypoint keys into waypoint ids (what the API knows). A leg whose waypoint has no
+ * id yet is left out; the plan saves the line again once the waypoints exist.
+ */
+export function withLegIds<B extends { geometry?: RouteLine | null }>(body: B, ids: ReadonlyMap<string, string | null>): B {
+  const geometry = body.geometry;
+  if (!geometry?.legs) return body;
+  const legs = geometry.legs.flatMap((l) => {
+    const [from, to] = [ids.get(l.from), ids.get(l.to)];
+    return from && to ? [{ ...l, from, to }] : [];
+  });
+  const plain = { type: geometry.type, coordinates: geometry.coordinates };
+  return { ...body, geometry: legs.length > 0 ? { ...plain, legs } : plain };
+}
+
 export function routeBody(d: RouteDraft): RouteBody {
   return {
     nameJa: d.nameJa.trim(),
@@ -76,7 +101,7 @@ export function routeBody(d: RouteDraft): RouteBody {
     accessJa: nullIfEmpty(d.accessJa),
     accessEn: nullIfEmpty(d.accessEn),
     photoUrl: nullIfEmpty(d.photoUrl),
-    geometry: d.line.length >= 2 ? { type: "LineString", coordinates: d.line.map((p) => (p[2] === undefined ? [p[0], p[1]] : [p[0], p[1], p[2]])) } : null,
+    geometry: d.line.length >= 2 ? { type: "LineString", coordinates: d.line.map(coordinate), ...(d.legs.length > 0 ? { legs: d.legs.map((l) => ({ from: l.from, to: l.to, coordinates: l.points.map(coordinate) })) } : {}) } : null,
     lineVerified: d.lineVerified,
     lineSource: nullIfEmpty(d.lineSource),
     translations: d.translations,
@@ -147,14 +172,25 @@ export function planSave(draft: RouteDraft, saved: RouteDraft | null): SaveStep[
   // 1. Places taken out go first, so a deleted place never blocks anything below.
   for (const p of saved?.places ?? []) if (!draftKeys.has(p.key) && p.id) steps.push({ op: "deleteSpot", key: p.key, id: p.id });
 
-  // 2. The route itself.
-  if (draft.id === null) steps.push({ op: "createRoute", body: routeBody(draft) });
-  else {
+  // 2. The route itself. The legs name their waypoints by id, so when one of them is new the line is saved after the waypoints are.
+  const unsaved = new Set(draft.places.filter((p) => p.id === null).map((p) => p.key));
+  const lateLine = draft.legs.some((l) => unsaved.has(l.from) || unsaved.has(l.to));
+  let after: Partial<RouteBody> | null = null;
+  if (draft.id === null) {
+    steps.push({ op: "createRoute", body: routeBody(draft) });
+    if (lateLine) after = { geometry: routeBody(draft).geometry, lineVerified: draft.lineVerified, lineSource: nullIfEmpty(draft.lineSource) };
+  } else {
     const diff = changed(routeBody(draft), saved ? routeBody(saved) : null);
     // Redrawing the line cancels its check on the server; never send the line without saying what its check is.
     if ("geometry" in diff) {
       diff.lineVerified = routeBody(draft).lineVerified;
       diff.lineSource = routeBody(draft).lineSource;
+      if (lateLine) {
+        after = { geometry: diff.geometry, lineVerified: diff.lineVerified, lineSource: diff.lineSource };
+        delete diff.geometry;
+        delete diff.lineVerified;
+        delete diff.lineSource;
+      }
     }
     if (Object.keys(diff).length > 0) steps.push({ op: "updateRoute", body: diff });
   }
@@ -177,6 +213,8 @@ export function planSave(draft: RouteDraft, saved: RouteDraft | null): SaveStep[
     }
     if (Object.keys(diff).length > 0) steps.push({ op: "updateSpot", key: p.key, id: p.id, body: diff });
   }
+
+  if (after) steps.push({ op: "updateRoute", body: after });
 
   // 4. Order: what the server will hold after the steps above (kept places in their saved order, new ones after).
   const expected = [

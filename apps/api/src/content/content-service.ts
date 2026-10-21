@@ -3,7 +3,7 @@ import { stampableByDefault } from "../db/schema/content";
 import { cleanTranslations } from "../db/translations";
 import { isHttpsUrl, isPhotoUrl } from "../lib/https-url";
 import { isAllowedVideoUrl } from "./video-url";
-import { lineLengthKm, parseLine, simplifyLine, sketchOf, type LineString } from "./line";
+import { lineLengthKm, parseLine, plainLine, simplifyLine, sketchOf, type LineString } from "./line";
 import type {
   ContentStore,
   Prefecture,
@@ -116,7 +116,7 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     status: publishedSpotCount > 0 ? "ready" : "soon",
     publishedSpotCount,
     sketch: shown ? sketchOf(shown) : null,
-    line: withLine ? shown : null,
+    line: withLine && shown ? plainLine(shown) : null,
     bounds: boundsOf(shown),
   };
 }
@@ -197,7 +197,8 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       else {
         const parsed = parseLine(input.geometry);
         if (!parsed.ok) return bad("invalid_line");
-        out.geometry = simplifyLine(parsed.line, 2000);
+        // The legs are the editor's own copy and keep their detail; the line everyone else reads is cut down.
+        out.geometry = { ...simplifyLine(parsed.line, 2000), ...(parsed.line.legs ? { legs: parsed.line.legs } : {}) };
         // The distance follows the line unless the admin typed one in the same save. Measured before the line is
         // simplified: cutting corners would make a winding route read shorter than it is.
         if (input.distanceKm === undefined) out.distanceKm = lineLengthKm(parsed.line);

@@ -184,6 +184,20 @@ describe("what visitors see", () => {
     expect(await svc.publicSpot(draft.id)).toBeNull();
   });
 
+  test("the legs of a line are kept for the editor and never reach visitors", async () => {
+    const A = "11111111-1111-4111-8111-111111111111";
+    const B = "22222222-2222-4222-8222-222222222222";
+    const legs = [{ from: A, to: B, coordinates: [[135, 34], [135.005, 34.004], [135.01, 34.01]] as [number, number][] }];
+    const r = await route({ geometry: { type: "LineString", coordinates: [[135, 34], [135.005, 34.004], [135.01, 34.01]], legs } });
+    const saved = await svc.updateRoute(ADMIN, r.id, r.updatedAt, { lineVerified: true, lineSource: "公式" });
+    if (!saved.ok) throw new Error(saved.reason);
+    expect((await svc.getRoute(r.id))?.route.geometry?.legs).toEqual(legs);
+    const shown = (await svc.publicRoute(r.id))?.route.line;
+    expect(shown?.coordinates).toHaveLength(3);
+    expect(shown && "legs" in shown).toBe(false);
+    // a leg that is not a real stretch between two waypoint ids is refused
+    expect(await svc.updateRoute(ADMIN, r.id, saved.value.updatedAt, { geometry: { type: "LineString", coordinates: [[135, 34], [135.01, 34.01]], legs: [{ from: "x", to: B, coordinates: [[135, 34], [135.01, 34.01]] }] } })).toEqual({ ok: false, reason: "invalid_line" });
+  });
   test("a checked line is shown; redrawing it hides it again until it is checked again", async () => {
     const r = await route({ geometry: LINE });
     expect((await svc.publicRoute(r.id))?.route.line).toBeNull();

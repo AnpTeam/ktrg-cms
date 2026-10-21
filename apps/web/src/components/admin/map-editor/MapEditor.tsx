@@ -1,17 +1,18 @@
 "use client";
 
 import "maplibre-gl/dist/maplibre-gl.css";
-import { useEffect, useRef, useState, type ChangeEvent, type DragEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
-import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
-import { TerraDraw, TerraDrawLineStringMode, TerraDrawSelectMode } from "terra-draw";
-import { TerraDrawMapLibreGLAdapter } from "terra-draw-maplibre-gl-adapter";
+import type { GeoJSONSource, Map as MapLibreMap, MapMouseEvent, Marker } from "maplibre-gl";
+import { isAllSmooth } from "@/lib/admin/drawn-path";
 import { parseGpx, type GpxWaypoint } from "@/lib/admin/gpx";
-import { keepElevations, sameLine, simplify, type LngLatEle } from "@/lib/admin/line";
+import { LEG_HIT, LEG_SOURCE, legFeatures, legLayers } from "@/lib/admin/leg-map";
+import { insertAnchor, legFromPath, legOf, moveAnchor, pairsOf, pathOfLeg, pathStops, pointsFromAnchors, removeAnchors, setAllCurves, toggleAnchorCurve, type Leg, type Path, type Stop } from "@/lib/admin/legs";
+import { simplify, type LngLatEle } from "@/lib/admin/line";
 import { searchPlaces, type PlaceHit } from "@/lib/admin/place-search";
 import { buildLine, closeLineGaps, smoothLine } from "@/lib/admin/route-builder";
-import { roundLine, snapPoints, type SnapPoint } from "@/lib/admin/snap";
-import { boundsOf, editorBaseVisibility, editorBases, editorStyle, lineFeature, routeLineLayers, terrainLayerId, zoomLimits, type EditorBase } from "@/lib/map";
+import { roundLine, type SnapPoint } from "@/lib/admin/snap";
+import { boundsOf, editorBaseVisibility, editorBases, editorStyle, terrainLayerId, zoomLimits, type EditorBase } from "@/lib/map";
 import { pointKinds, type PointKind } from "@/lib/point-kinds";
 import { useKindLabels } from "../PlacePanel";
 
@@ -41,7 +42,10 @@ export interface PlacePatch {
 export type ElevationStatus = "idle" | "loading" | "partial";
 
 export interface MapEditorProps {
+  /** The whole line (the legs joined): for the length, for fitting the view. */
   line: LngLatEle[];
+  /** The line cut into one leg for each pair of stops. Drawing or finding a leg never touches the others. */
+  legs: Leg[];
   places: EditorPlace[];
   selectedKey: string | null;
   distanceKm: number | null;
@@ -51,7 +55,13 @@ export interface MapEditorProps {
   canRedo: boolean;
   onUndo: () => void;
   onRedo: () => void;
+  /** A whole track (a GPX file): the draft cuts it into legs at the stops. */
   onLine: (points: LngLatEle[]) => void;
+  onSetLeg: (leg: Leg) => void;
+  /** Several legs at once, as one step to undo. This is the full list of legs. */
+  onSetLegs: (legs: Leg[]) => void;
+  onClearLeg: (from: string, to: string) => void;
+  onClearLegs: () => void;
   onAddPlace: (lat: number, lng: number) => void;
   /** Several places at once (the named points of a GPX file). */
   onAddPlaces: (places: { key: string; name: string; lat: number; lng: number }[]) => void;
@@ -64,27 +74,51 @@ export interface MapEditorProps {
   onSnap: (points: SnapPoint[]) => Promise<{ ok: true; line: LngLatEle[] } | { ok: false; message: string }>;
 }
 
-// Three tools for the person: select (move the map, move stops, reshape the line), add a stop, draw the path.
-// "pan" and "edit" are the two faces of select: reshaping needs a line to reshape.
-type Mode = "pan" | "place" | "draw" | "edit";
+// Three tools for the person: select (move the map, move stops, move the points of the chosen leg), add a stop, draw a leg.
+type Mode = "pan" | "place" | "draw";
 
 const MAX_POINTS = 2000;
-// The saved line is drawn by this layer whenever Terra Draw is not editing it (drawing and editing show Terra Draw's own).
-const LINE_SOURCE = "editor-line";
-const LINE_LAYERS = routeLineLayers(LINE_SOURCE, false);
-const asPositions = (line: readonly LngLatEle[]) => line.map((p) => ({ lng: p[0], lat: p[1] }));
+const NO_PATH: Path = { anchors: [], curves: [] };
 // Where the map starts when there is nothing to show yet: the Katsuragi area.
 const START = { center: [135.45, 34.45] as [number, number], zoom: 9 };
 const markerClass =
   "flex size-10 min-h-0 min-w-0 p-0 items-center justify-center rounded-full border-2 border-paper bg-brand text-lg font-bold text-on-brand shadow-md data-[published=true]:border-moss data-[selected=true]:ring-4 data-[selected=true]:ring-ink data-[stopby=true]:border-dashed data-[unplaced=true]:opacity-60";
 const dotClass =
   "flex size-7 min-h-0 min-w-0 p-0 items-center justify-center rounded-full border-2 border-ink bg-paper text-sm font-bold text-ink shadow-md data-[published=true]:border-moss data-[selected=true]:ring-4 data-[selected=true]:ring-ink data-[stopby=true]:border-dashed data-[unplaced=true]:opacity-60";
+// A point of the chosen leg (Navivi's anchor): a square is a sharp corner, a circle is a smooth bend.
+const anchorClass =
+  "block size-3.5 min-h-0 min-w-0 cursor-grab rounded-[3px] border-2 border-white bg-ink p-0 shadow-md active:cursor-grabbing data-[smooth=true]:size-4 data-[smooth=true]:rounded-full data-[selected=true]:bg-brand data-[selected=true]:ring-2 data-[selected=true]:ring-ink";
 const chipClass = "inline-flex h-9 min-h-0 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-line bg-paper px-3 text-sm font-bold hover:bg-surface disabled:opacity-40 disabled:hover:bg-paper";
 const floatClass = "flex items-center gap-0.5 rounded-xl border border-line bg-paper/95 p-1 shadow-md backdrop-blur-sm";
 const iconBtn = "inline-flex h-8 min-h-0 min-w-8 items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-bold [&:not([aria-pressed=true])]:hover:bg-surface disabled:opacity-40 disabled:hover:bg-transparent";
 const toolClass = "tap-target inline-flex items-center justify-center rounded-xl border-2 px-3 text-base font-bold disabled:opacity-40";
 
-const same2d = (a: readonly number[], b: readonly number[]) => a[0] === b[0] && a[1] === b[1];
+type Actions = {
+  collection: (preview: { from: string; points: LngLatEle[] } | null) => ReturnType<typeof legFeatures>;
+  redraw: (preview: { from: string; points: LngLatEle[] } | null) => void;
+  mapClick: (e: MapMouseEvent) => void;
+  clickAnchor: (i: number) => void;
+  toggleAnchor: (i: number) => void;
+  previewAnchor: (i: number, at: { lat: number; lng: number }) => void;
+  dropAnchor: (i: number, at: { lat: number; lng: number }) => void;
+  chooseTool: (tool: "select" | "place" | "draw") => void;
+  toggleEraser: () => void;
+  removeChosenAnchor: () => void;
+  hasAnchor: () => boolean;
+  leaveDraw: () => void;
+};
+
+/** A leg's points with both ends exactly on its stops (a router's line is rounded, or stops short of them). */
+function withEnds(line: readonly LngLatEle[], from: Stop, to: Stop): LngLatEle[] {
+  return [[from.lng, from.lat], ...line.slice(1, -1), [to.lng, to.lat]];
+}
+
+/** The leg to start drawing: the one of the chosen waypoint, else the first pair without a leg, else the first pair. */
+function firstLeg(pairs: readonly { from: Stop; to: Stop }[], legs: readonly Leg[], selectedKey: string | null): string | null {
+  const own = pairs.find((p) => p.from.key === selectedKey);
+  const empty = pairs.find((p) => !legOf(legs, p.from.key, p.to.key));
+  return (own ?? empty ?? pairs[0])?.from.key ?? null;
+}
 
 export function MapEditor(props: MapEditorProps) {
   const { t } = useLingui();
@@ -95,22 +129,25 @@ export function MapEditor(props: MapEditorProps) {
   const [base, setBase] = useState<EditorBase>("std");
   const [waypoints, setWaypoints] = useState<GpxWaypoint[] | null>(null);
   const [dropping, setDropping] = useState(false);
-  const [snapping, setSnapping] = useState(false);
-  const [building, setBuilding] = useState(false);
+  const [working, setWorking] = useState(false);
   const [query, setQuery] = useState("");
   const [found, setFound] = useState<PlaceHit[] | null>(null);
   const [searching, setSearching] = useState(false);
+  // The leg being worked on, named by the key of its first stop; and the point of it that is chosen (new points go after it).
+  const [chosenFrom, setActiveFrom] = useState<string | null>(null);
+  const [anchorAt, setAnchorAt] = useState<{ from: string | null; index: number } | null>(null);
+  const [eraser, setEraser] = useState(false);
 
   const container = useRef<HTMLDivElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const mlRef = useRef<typeof import("maplibre-gl") | null>(null);
-  const drawRef = useRef<TerraDraw | null>(null);
-  const lineId = useRef<string | number | null>(null);
   const markers = useRef(new Map<string, { marker: Marker; el: HTMLButtonElement }>());
+  const anchorMarkers = useRef<Marker[]>([]);
+  const justDragged = useRef(false);
   const modeRef = useRef<Mode>("pan");
   const latest = useRef(props);
-  const commitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const actions = useRef<Actions>({} as Actions);
 
   // The handlers below are created once; they read the newest props and mode through these refs.
   useEffect(() => {
@@ -120,11 +157,104 @@ export function MapEditor(props: MapEditorProps) {
     modeRef.current = mode;
   }, [mode]);
 
-  // ---- the map and Terra Draw, created once ------------------------------------------------------------------
+  // ---- the stops, the legs between them, and the one being worked on -----------------------------------------------
+  const stops = useMemo(() => pathStops(props.places), [props.places]);
+  const pairs = useMemo(() => pairsOf(stops), [stops]);
+  // The chosen leg is read as nothing once its pair of stops is gone, and the chosen point only counts on the leg it was chosen on.
+  const activePair = pairs.find((p) => p.from.key === chosenFrom) ?? null;
+  const activeFrom = activePair ? activePair.from.key : null;
+  const anchorIdx = anchorAt && anchorAt.from === activeFrom ? anchorAt.index : null;
+  const setAnchorIdx = (index: number | null) => setAnchorAt(index === null ? null : { from: activeFrom, index });
+  const activeLeg = activePair ? legOf(props.legs, activePair.from.key, activePair.to.key) : undefined;
+  const activePath = useMemo(() => (activeLeg ? pathOfLeg(activeLeg) : NO_PATH), [activeLeg]);
+  const nameOf = useMemo(() => new Map(props.places.map((p) => [p.key, p.name || t`（名前がありません）`])), [props.places, t]);
+
+  // ---- what the handlers do (created each render so they see this render's state; the map calls them through `actions`) ----
+  /** Edits the path of the chosen leg (a leg that has none yet starts from no points) and saves the result as that leg. */
+  function editPath(update: (p: Path) => Path) {
+    if (!activePair) return;
+    const next = update(activePath);
+    props.onSetLeg(legFromPath(activePair.from, activePair.to, next));
+  }
+
+  function makeActions(): Actions {
+    return {
+    collection: (preview) => legFeatures(pairs, props.legs, activeFrom, preview, props.line),
+    redraw: (preview) => {
+      const source = mapRef.current?.getSource(LEG_SOURCE) as GeoJSONSource | undefined;
+      source?.setData(actions.current.collection(preview));
+    },
+    mapClick: (e) => {
+      const m = modeRef.current;
+      if (m === "place") return latest.current.onAddPlace(e.lngLat.lat, e.lngLat.lng);
+      if (m === "draw") {
+        if (!activePair) return;
+        // New points go after the chosen point, or at the end.
+        const at = anchorIdx !== null && anchorIdx < activePath.anchors.length ? anchorIdx + 1 : activePath.anchors.length;
+        editPath((p) => insertAnchor(p, at, [e.lngLat.lat, e.lngLat.lng]));
+        setAnchorIdx(at);
+        return;
+      }
+      const hit = mapRef.current?.queryRenderedFeatures(e.point, { layers: [LEG_HIT] })[0];
+      const from = hit ? (hit.properties as { from?: string } | null)?.from : undefined;
+      setActiveFrom(from ? from : null);
+    },
+    clickAnchor: (i) => {
+      if (justDragged.current) return;
+      if (eraser) {
+        editPath((p) => removeAnchors(p, new Set([i])));
+        setAnchorIdx(null);
+      } else setAnchorIdx(anchorIdx === i ? null : i);
+    },
+    toggleAnchor: (i) => editPath((p) => toggleAnchorCurve(p, i)),
+    previewAnchor: (i, at) => {
+      if (!activePair) return;
+      const moved = moveAnchor(activePath, i, [at.lat, at.lng]);
+      actions.current.redraw({ from: activePair.from.key, points: pointsFromAnchors(activePair.from, activePair.to, moved.anchors, moved.curves) });
+    },
+    dropAnchor: (i, at) => {
+      justDragged.current = true;
+      setTimeout(() => (justDragged.current = false), 250);
+      editPath((p) => moveAnchor(p, i, [at.lat, at.lng]));
+    },
+    chooseTool: (tool) => {
+      setNote(null);
+      if (tool === "select") return setMode("pan");
+      if (tool === "place") return setMode("place");
+      if (pairs.length === 0) return setNote(t`線を描くには、先に経由地を2つ以上置いてください（寄り道は数えません）。`);
+      if (!activePair) setActiveFrom(firstLeg(pairs, props.legs, props.selectedKey));
+      setMode("draw");
+    },
+    toggleEraser: () => setEraser((e) => !e),
+    hasAnchor: () => anchorIdx !== null,
+    removeChosenAnchor: () => {
+      if (anchorIdx === null) return;
+      editPath((p) => removeAnchors(p, new Set([anchorIdx])));
+      setAnchorIdx(null);
+    },
+    leaveDraw: () => {
+      setEraser(false);
+      setMode("pan");
+    },
+    };
+  }
+
+  // The handlers the map calls are put here after every render, before the effects below use them.
+  useEffect(() => {
+    actions.current = makeActions();
+  });
+
+  // Choosing a waypoint chooses the leg that starts there (adjusted while rendering, the way React recommends).
+  const [seenSelected, setSeenSelected] = useState(props.selectedKey);
+  if (seenSelected !== props.selectedKey) {
+    setSeenSelected(props.selectedKey);
+    if (props.selectedKey && pairs.some((p) => p.from.key === props.selectedKey)) setActiveFrom(props.selectedKey);
+  }
+
+  // ---- the map, created once -----------------------------------------------------------------------------------
   useEffect(() => {
     let cancelled = false;
     let map: MapLibreMap | undefined;
-    let draw: TerraDraw | undefined;
     const placeMarkers = markers.current;
 
     (async () => {
@@ -144,7 +274,7 @@ export function MapEditor(props: MapEditorProps) {
         maxZoom: zoomLimits.max,
         dragRotate: false,
         pitchWithRotate: false,
-        doubleClickZoom: false, // a double click finishes a line
+        doubleClickZoom: false, // a double click on a point makes it smooth or a corner
         attributionControl: { compact: false },
       });
       map.touchZoomRotate.disableRotation();
@@ -157,135 +287,78 @@ export function MapEditor(props: MapEditorProps) {
       const start = () => {
         if (started || cancelled || !map || !map.isStyleLoaded()) return;
         started = true;
-        draw = new TerraDraw({
-          adapter: new TerraDrawMapLibreGLAdapter({ map }),
-          modes: [
-            new TerraDrawLineStringMode({ styles: { lineStringColor: "#cc6256", lineStringWidth: 5 }, editable: false }),
-            new TerraDrawSelectMode({
-              styles: { selectedLineStringColor: "#8e2a21", selectedLineStringWidth: 5, selectionPointColor: "#ffffff", selectionPointOutlineColor: "#8e2a21", midPointColor: "#8e2a21" },
-              flags: { linestring: { feature: { draggable: false, coordinates: { midpoints: true, draggable: true, deletable: true } } } },
-            }),
-          ],
-        });
-        map.addSource(LINE_SOURCE, { type: "geojson", data: lineFeature(asPositions(latest.current.line)) });
-        for (const layer of LINE_LAYERS) map.addLayer(layer);
-        draw.start();
-        draw.setMode("static");
-        draw.on("finish", () => {
-          commit();
-          if (modeRef.current === "draw") setMode("edit");
-        });
-        draw.on("change", (_ids, type) => {
-          if (modeRef.current !== "edit" || (type !== "update" && type !== "delete")) return;
-          if (commitTimer.current) clearTimeout(commitTimer.current);
-          commitTimer.current = setTimeout(commit, 250);
-        });
-        drawRef.current = draw;
-        // Show the line that is already saved.
-        pushLineToDraw(latest.current.line);
+        map.addSource(LEG_SOURCE, { type: "geojson", data: actions.current.collection(null) });
+        for (const layer of legLayers()) map.addLayer(layer);
         setReady(true);
       };
       map.on("styledata", start);
       map.on("load", start);
       start();
 
-      // A click on the map puts a place there, but only while that tool is chosen.
-      map.on("click", (e) => {
-        if (modeRef.current === "place") latest.current.onAddPlace(e.lngLat.lat, e.lngLat.lng);
-      });
+      // A click on the map: puts a place there (place tool), adds a point to the chosen leg (draw tool), or chooses the leg
+      // under the click (select tool).
+      map.on("click", (e) => actions.current.mapClick(e));
     })();
 
     return () => {
       cancelled = true;
-      if (commitTimer.current) clearTimeout(commitTimer.current);
       for (const { marker } of placeMarkers.values()) marker.remove();
       placeMarkers.clear();
-      try {
-        draw?.stop();
-      } catch {
-        // the map may already be gone
-      }
+      for (const m of anchorMarkers.current) m.remove();
+      anchorMarkers.current = [];
       map?.remove(); // CLAUDE.md: the map is always removed on unmount
       mapRef.current = null;
-      drawRef.current = null;
-      lineId.current = null;
       setReady(false);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- created once; everything it needs is read through refs
   }, []);
 
-  /** What Terra Draw holds as lines. */
-  function drawnLines() {
-    const draw = drawRef.current;
-    if (!draw) return [];
-    return draw.getSnapshot().filter((f) => f.geometry.type === "LineString");
-  }
-
-  /** Make Terra Draw show exactly this line (no change when it already does). */
-  function pushLineToDraw(line: LngLatEle[]) {
-    const draw = drawRef.current;
-    if (!draw) return;
-    const coords = line.map((p) => [p[0], p[1]]);
-    const lines = drawnLines();
-    const current = lines.find((f) => f.id === lineId.current);
-    if (coords.length < 2) {
-      if (lines.length) draw.removeFeatures(lines.map((f) => f.id as string));
-      lineId.current = null;
-      return;
-    }
-    if (current) {
-      const have = current.geometry.coordinates as number[][];
-      if (have.length === coords.length && have.every((c, i) => same2d(c, coords[i]!))) return;
-      draw.updateFeatureGeometry(current.id as string, { type: "LineString", coordinates: coords });
-      return;
-    }
-    const added = draw.addFeatures([{ type: "Feature", geometry: { type: "LineString", coordinates: coords }, properties: { mode: "linestring" } }]);
-    lineId.current = (added.find((a) => a.valid)?.id as string | undefined) ?? null;
-  }
-
-  /** Take the line Terra Draw holds back into the editor (the newest drawn line wins; others are removed). */
-  function commit() {
-    const draw = drawRef.current;
-    if (!draw) return;
-    const lines = drawnLines();
-    const pick = lines.find((f) => f.id !== lineId.current) ?? lines[0];
-    if (lines.length > 1 && pick) draw.removeFeatures(lines.filter((f) => f.id !== pick.id).map((f) => f.id as string));
-    lineId.current = pick ? (pick.id as string) : null;
-    const next = pick ? keepElevations(latest.current.line, pick.geometry.coordinates as number[][]) : [];
-    if (!sameLine(next, latest.current.line)) latest.current.onLine(next.length >= 2 ? simplify(next, MAX_POINTS) : []);
-  }
-
-  // The line prop is the truth: when it changes (undo, import, saved copy) Terra Draw follows.
+  // ---- the legs on the map ------------------------------------------------------------------------------------
   useEffect(() => {
-    if (ready) pushLineToDraw(props.line);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- pushLineToDraw only reads refs
-  }, [props.line, ready]);
+    if (ready) actions.current.redraw(null);
+  }, [ready, props.legs, props.line, pairs, activeFrom]);
 
   // ---- the tool ----------------------------------------------------------------------------------------------
   useEffect(() => {
-    const draw = drawRef.current;
     const map = mapRef.current;
-    if (!ready || !draw || !map) return;
-    map.getCanvas().style.cursor = mode === "place" ? "crosshair" : "";
-    try {
-      if (mode === "draw") draw.setMode("linestring");
-      else if (mode === "edit") {
-        draw.setMode("select");
-        if (lineId.current !== null) draw.selectFeature(lineId.current);
-      } else draw.setMode("static");
-    } catch {
-      // A mode that cannot start (for example editing before there is a line) simply stays as it was.
-    }
+    if (!ready || !map) return;
+    map.getCanvas().style.cursor = mode === "place" || (mode === "draw" && activePair) ? "crosshair" : "";
     for (const { marker } of markers.current.values()) marker.setDraggable(mode === "pan" || mode === "place");
-    // Terra Draw shows the line while it is being drawn or edited; otherwise this layer does.
-    for (const layer of LINE_LAYERS) if (map.getLayer(layer.id)) map.setLayoutProperty(layer.id, "visibility", mode === "draw" || mode === "edit" ? "none" : "visible");
-  }, [mode, ready]);
+  }, [mode, ready, activePair]);
 
-  // The saved line, as this layer draws it.
+  // ---- the points of the chosen leg ----------------------------------------------------------------------------
   useEffect(() => {
-    const source = mapRef.current?.getSource(LINE_SOURCE) as GeoJSONSource | undefined;
-    if (ready && source) source.setData(lineFeature(asPositions(props.line)));
-  }, [props.line, ready]);
+    const map = mapRef.current;
+    const ml = mlRef.current;
+    for (const m of anchorMarkers.current) m.remove();
+    anchorMarkers.current = [];
+    if (!ready || !map || !ml || !activePair || mode === "place") return;
+    activePath.anchors.forEach((a, i) => {
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className = anchorClass;
+      el.dataset.smooth = String(!!activePath.curves[i]);
+      el.dataset.selected = String(i === anchorIdx);
+      el.setAttribute("aria-label", `${i + 1}`);
+      el.title = eraser ? t`クリックで、この点を消します` : t`ドラッグで動かします。クリックで選び、ダブルクリックでなめらかな点と角の点を切り替えます。`;
+      el.addEventListener("click", (event) => {
+        event.stopPropagation();
+        actions.current.clickAnchor(i);
+      });
+      el.addEventListener("dblclick", (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        actions.current.toggleAnchor(i);
+      });
+      const marker = new ml.Marker({ element: el, draggable: !eraser }).setLngLat([a[1], a[0]]).addTo(map);
+      marker.on("drag", () => actions.current.previewAnchor(i, marker.getLngLat()));
+      marker.on("dragend", () => actions.current.dropAnchor(i, marker.getLngLat()));
+      anchorMarkers.current.push(marker);
+    });
+    return () => {
+      for (const m of anchorMarkers.current) m.remove();
+      anchorMarkers.current = [];
+    };
+  }, [ready, activePair, activePath, mode, anchorIdx, eraser, t]);
 
   // ---- place markers ---------------------------------------------------------------------------------------
   useEffect(() => {
@@ -332,6 +405,30 @@ export function MapEditor(props: MapEditorProps) {
     }
   }, [props.places, props.selectedKey, ready]);
 
+  // Keys: V, P and L pick the tool; E toggles the eraser while drawing; Escape leaves drawing; Delete removes the chosen point
+  // while drawing and otherwise the chosen waypoint.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      const el = e.target;
+      if (el instanceof HTMLElement && (el.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName))) return;
+      const key = e.key.toLowerCase();
+      if (key === "v") actions.current.chooseTool("select");
+      else if (key === "p") actions.current.chooseTool("place");
+      else if (key === "l") actions.current.chooseTool("draw");
+      else if (key === "e" && modeRef.current === "draw") actions.current.toggleEraser();
+      else if (e.key === "Escape" && modeRef.current === "draw") actions.current.leaveDraw();
+      else if (e.key === "Delete" || e.key === "Backspace") {
+        e.preventDefault();
+        // A chosen point of the leg goes first; with none chosen, the chosen waypoint.
+        if (modeRef.current === "draw" || actions.current.hasAnchor()) actions.current.removeChosenAnchor();
+        else if (latest.current.selectedKey) latest.current.onRemovePlace(latest.current.selectedKey);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
+
   // ---- toolbar actions -------------------------------------------------------------------------------------
   function fit() {
     const map = mapRef.current;
@@ -339,6 +436,20 @@ export function MapEditor(props: MapEditorProps) {
     const pts = [...props.line.map((p) => ({ lng: p[0], lat: p[1] })), ...props.places.flatMap((p) => (p.lat === null || p.lng === null ? [] : [{ lat: p.lat, lng: p.lng }]))];
     const b = boundsOf(pts);
     if (b) map.fitBounds(b, { padding: 60, maxZoom: 15, duration: 400 });
+  }
+
+  function fitLeg(from: string | null) {
+    const map = mapRef.current;
+    const pair = pairs.find((p) => p.from.key === from);
+    if (!map || !pair) return;
+    const leg = legOf(props.legs, pair.from.key, pair.to.key);
+    const b = boundsOf([...(leg?.points ?? []).map((p) => ({ lng: p[0], lat: p[1] })), { lat: pair.from.lat, lng: pair.from.lng }, { lat: pair.to.lat, lng: pair.to.lng }]);
+    if (b) map.fitBounds(b, { padding: 80, maxZoom: 16, duration: 400 });
+  }
+
+  function pickLeg(from: string) {
+    setActiveFrom(from || null);
+    if (from) fitLeg(from);
   }
 
   function chooseBase(next: EditorBase) {
@@ -365,9 +476,12 @@ export function MapEditor(props: MapEditorProps) {
     if (!parsed.ok) return setNote(t`GPXファイルを読み込めませんでした。道すじ（トラック）か、名前のついた地点が入ったファイルを選んでください。`);
     if (parsed.points.length >= 2) {
       props.onLine(simplify(parsed.points, MAX_POINTS));
-      setMode("edit");
       setTimeout(fit, 100);
-      setNote(t`GPXファイルを読み込みました。形を確かめてから、保存してください。`);
+      setNote(
+        pairs.length >= 1
+          ? t`GPXファイルを読み込み、経由地ごとの区間に分けました（最初の経由地より前と、最後の経由地より後は入りません）。形を確かめてから、保存してください。`
+          : t`GPXファイルを読み込みました。経由地を2つ以上置くと、経由地ごとの区間に分かれます。`,
+      );
     }
     if (parsed.waypoints.length > 0) {
       setWaypoints(parsed.waypoints);
@@ -375,66 +489,96 @@ export function MapEditor(props: MapEditorProps) {
     }
   }
 
-  // Joins the drawn line (or the stops) along real walking trails. The route-finding service is asked first; when it is not set
-  // up or does not answer, GSI's own trail map does the same job without a key (the way Navivi falls back). The result
-  // replaces the line and can be undone.
-  async function snapToTrails() {
-    const points = snapPoints(props.line, props.places.filter((p) => !p.stopBy));
-    if (!points) return setNote(t`先に、線を描くか、経由地を2つ以上置いてください。`);
-    setSnapping(true);
-    setNote(t`道を調べています…`);
-    const result = await props.onSnap(points);
-    let line: LngLatEle[];
-    let said: string;
-    if (result.ok) {
-      line = await closeLineGaps(result.line, points);
-      said = t`線を道に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。`;
-    } else {
-      setNote(t`国土地理院の道の地図から探しています…`);
-      const built = await buildLine(points, "trail");
-      if (built.straightHops === points.length - 1) {
-        setSnapping(false);
-        return setNote(result.message);
-      }
-      line = built.line;
-      const straight = built.straightHops;
-      said =
-        straight === 0
-          ? t`線を、国土地理院の道の地図に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。`
-          : t`線を、国土地理院の道の地図に沿わせました。${straight}か所は道が見つからず、まっすぐです。形を確かめてから、保存してください。`;
-    }
-    setSnapping(false);
-    props.onLine(simplify(roundLine(line), MAX_POINTS));
-    setMode("edit");
-    setTimeout(fit, 100);
-    setNote(said);
-  }
+  /** The legs to work on: the chosen one; or, with none chosen, every leg that `all` accepts. */
+  const targets = (all: (pair: { from: Stop; to: Stop }) => boolean) => (activePair ? [activePair] : pairs.filter(all));
 
-  // A line through the waypoints in order (a side trip is left out), as Navivi makes one leg for each pair of stops.
-  async function makeLine(kind: "trail" | "direct") {
-    const stops = props.places.filter((p) => !p.stopBy && p.lat !== null && p.lng !== null).map((p) => ({ lat: p.lat!, lng: p.lng! }));
-    if (stops.length < 2) return setNote(t`先に、経由地を2つ以上置いてください（寄り道は数えません）。`);
-    setBuilding(true);
+  // Finds the way along trails (or a straight hop) for each leg to work on; the ends are the stops exactly.
+  async function connect(kind: "trail" | "direct") {
+    const list = targets((p) => !legOf(props.legs, p.from.key, p.to.key));
+    if (pairs.length === 0) return setNote(t`先に、経由地を2つ以上置いてください（寄り道は数えません）。`);
+    if (list.length === 0) return setNote(t`線のない区間はありません。区間を選ぶと、その区間をつくり直せます。`);
+    setWorking(true);
     setNote(t`道を調べています…`);
-    const { line, straightHops } = await buildLine(stops, kind);
-    setBuilding(false);
-    props.onLine(simplify(line, MAX_POINTS));
-    setMode("edit");
-    setTimeout(fit, 100);
+    const count = list.length;
+    const built: Leg[] = [];
+    let straight = 0;
+    for (const { from, to } of list) {
+      const r = await buildLine([{ lat: from.lat, lng: from.lng }, { lat: to.lat, lng: to.lng }], kind);
+      straight += r.straightHops;
+      built.push({ from: from.key, to: to.key, points: withEnds(r.line, from, to) });
+    }
+    setWorking(false);
+    props.onSetLegs([...props.legs.filter((l) => !built.some((b) => b.from === l.from && b.to === l.to)), ...built]);
+    setTimeout(() => (activePair ? fitLeg(activePair.from.key) : fit()), 100);
     setNote(
       kind === "direct"
-        ? t`経由地を、まっすぐにつなぎました。形を確かめてから、保存してください。`
-        : straightHops === 0
-          ? t`経由地を、道に沿ってつなぎました。形を確かめてから、保存してください。「元に戻す」で、もとにもどせます。`
-          : t`経由地を、道に沿ってつなぎました。${straightHops}か所は道が見つからず、まっすぐです。形を確かめてから、保存してください。`,
+        ? t`${count}つの区間を、まっすぐにつなぎました。形を確かめてから、保存してください。`
+        : straight === 0
+          ? t`${count}つの区間を、道に沿ってつなぎました。形を確かめてから、保存してください。「元に戻す」で、もとにもどせます。`
+          : t`${count}つの区間を、道に沿ってつなぎました。${straight}か所は道が見つからず、まっすぐです。形を確かめてから、保存してください。`,
     );
   }
 
-  // Rounds the corners of a hand-drawn line (Navivi's smooth anchors): fewer, smoother bends.
+  // Joins the drawn legs (or the stops, for a leg that has none) along real walking trails. The route-finding service is asked
+  // first; when it is not set up or does not answer, GSI's own trail map does the same job without a key (as Navivi falls back).
+  async function snapToTrails() {
+    const list = targets(() => true);
+    if (list.length === 0) return setNote(t`先に、経由地を2つ以上置いてください（寄り道は数えません）。`);
+    setWorking(true);
+    let useService = true;
+    let lastMessage = "";
+    let allStraight = true;
+    const made: Leg[] = [];
+    for (const [n, { from, to }] of list.entries()) {
+      const step = n + 1;
+      const total = list.length;
+      setNote(t`道を調べています…（${step}/${total}）`);
+      const leg = legOf(props.legs, from.key, to.key);
+      const points: SnapPoint[] = leg ? simplify(leg.points, 25).map((p) => ({ lat: p[1], lng: p[0] })) : [{ lat: from.lat, lng: from.lng }, { lat: to.lat, lng: to.lng }];
+      let line: LngLatEle[] | null = null;
+      if (useService) {
+        const result = await props.onSnap(points);
+        if (result.ok) {
+          line = await closeLineGaps(result.line, points);
+          allStraight = false;
+        } else {
+          useService = false;
+          lastMessage = result.message;
+        }
+      }
+      if (!line) {
+        const built = await buildLine(points, "trail");
+        if (built.straightHops < points.length - 1) allStraight = false;
+        line = built.line;
+      }
+      made.push({ from: from.key, to: to.key, points: withEnds(simplify(roundLine(line), MAX_POINTS), from, to) });
+    }
+    setWorking(false);
+    if (allStraight) return setNote(lastMessage || t`道が見つかりませんでした。`);
+    props.onSetLegs([...props.legs.filter((l) => !made.some((b) => b.from === l.from && b.to === l.to)), ...made]);
+    setTimeout(() => (activePair ? fitLeg(activePair.from.key) : fit()), 100);
+    setNote(t`線を道に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。`);
+  }
+
+  // Rounds the corners of a leg (Navivi's smooth anchors): fewer, smoother bends.
   function smooth() {
-    if (props.line.length < 3) return setNote(t`先に、線を描いてください。`);
-    props.onLine(simplify(smoothLine(props.line), MAX_POINTS));
+    const list = targets((p) => !!legOf(props.legs, p.from.key, p.to.key));
+    const have = list.flatMap((p) => {
+      const leg = legOf(props.legs, p.from.key, p.to.key);
+      return leg && leg.points.length >= 3 ? [{ p, leg }] : [];
+    });
+    if (have.length === 0) return setNote(t`先に、線を描いてください。`);
+    props.onSetLegs([
+      ...props.legs.filter((l) => !have.some(({ leg }) => leg === l)),
+      ...have.map(({ p, leg }): Leg => ({ from: leg.from, to: leg.to, points: withEnds(simplify(smoothLine(leg.points), MAX_POINTS), p.from, p.to) })),
+    ]);
     setNote(t`線の角をなめらかにしました。形を確かめてください。「元に戻す」で、もとの線にもどせます。`);
+  }
+
+  function clearLine() {
+    if (activePair) props.onClearLeg(activePair.from.key, activePair.to.key);
+    else props.onClearLegs();
+    setAnchorIdx(null);
   }
 
   async function runSearch() {
@@ -472,32 +616,8 @@ export function MapEditor(props: MapEditorProps) {
     setWaypoints(null);
   }
 
-  // Keys: V, P and L pick the tool; Delete removes the chosen stop (not while reshaping the line, where it removes a point).
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-      const el = e.target;
-      if (el instanceof HTMLElement && (el.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName))) return;
-      const key = e.key.toLowerCase();
-      if (key === "v") chooseTool("select");
-      else if (key === "p") chooseTool("place");
-      else if (key === "l") chooseTool("draw");
-      else if ((e.key === "Delete" || e.key === "Backspace") && modeRef.current !== "edit" && latest.current.selectedKey) {
-        e.preventDefault();
-        latest.current.onRemovePlace(latest.current.selectedKey);
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, []);
-
-  function chooseTool(tool: "select" | "place" | "draw") {
-    setNote(null);
-    setMode(tool === "select" ? (latest.current.line.length >= 2 ? "edit" : "pan") : tool);
-  }
-
   const toolButton = (tool: "select" | "place" | "draw", label: string, shortcut: string, icon: ReactNode) => {
-    const pressed = tool === "select" ? mode === "pan" || mode === "edit" : mode === tool;
+    const pressed = tool === "select" ? mode === "pan" : mode === tool;
     return (
       <button
         key={tool}
@@ -505,7 +625,7 @@ export function MapEditor(props: MapEditorProps) {
         aria-pressed={pressed}
         aria-keyshortcuts={shortcut}
         title={`${label} (${shortcut})`}
-        onClick={() => chooseTool(tool)}
+        onClick={() => actions.current.chooseTool(tool)}
         className={`${iconBtn} ${pressed ? "bg-ink text-paper hover:bg-ink" : "text-ink"}`}
       >
         {icon}
@@ -514,6 +634,13 @@ export function MapEditor(props: MapEditorProps) {
     );
   };
 
+  const legLabel = (pair: { from: Stop; to: Stop }) => `${nameOf.get(pair.from.key) ?? ""} → ${nameOf.get(pair.to.key) ?? ""}`;
+  const activeName = activePair ? legLabel(activePair) : null;
+  const canWork = !working && pairs.length > 0;
+  const legName = activeName ?? "";
+  const chosenNo = (anchorIdx ?? 0) + 1;
+  const pointCount = activePath.anchors.length;
+
   // What to do next, depending on the tool and on what is already on the map.
   const hasLine = props.line.length >= 2;
   const hasPlaces = props.places.length > 0;
@@ -521,12 +648,20 @@ export function MapEditor(props: MapEditorProps) {
     mode === "place"
       ? t`地図をクリックすると、その位置に経由地を置きます。`
       : mode === "draw"
-        ? t`地図をクリックして、点を置いていきます。最後の点をもう一度クリックする（またはEnterキーを押す）と、線ができます。Escキーでやり直します。`
-        : hasLine
-          ? t`線の点をドラッグして動かします。線の途中の小さな点を引くと、点を増やせます。点を選んでDeleteキーで消せます。数字の丸をドラッグすると、経由地を動かせます。`
-          : hasPlaces
-            ? t`数字の丸をドラッグすると、経由地を動かせます。道すじは「線を描く」か、GPXファイルで入れます。`
-            : t`まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「線を描く」で道すじを、「経由地を置く」で経由地を入れます。`;
+        ? !activePair
+          ? t`描きたい区間（経由地と経由地のあいだ）を選んでください。`
+          : eraser
+            ? t`消したい点をクリックします。`
+            : anchorIdx !== null
+              ? t`新しい点は、選んだ点（${chosenNo}番）のあとに入ります。もう一度クリックすると、選びなおせます。`
+              : t`地図をクリックして、この区間に点を置いていきます。点はドラッグで動かせます。ダブルクリックで、なめらかな点と角の点が切り替わります。`
+        : activePair
+          ? t`「${legName}」を選んでいます。この区間の点をドラッグして動かせます。地図の何もない所をクリックすると、選びなおせます。`
+          : hasLine
+            ? t`線をクリックすると、その区間を選べます。数字の丸をドラッグすると、経由地を動かせます。`
+            : hasPlaces
+              ? t`数字の丸をドラッグすると、経由地を動かせます。道すじは「線を描く」か、GPXファイルで入れます。`
+              : t`まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。`;
 
   return (
     // From 1280 px the waypoint list sits beside the map (and scrolls on its own); below that it is under it.
@@ -538,21 +673,26 @@ export function MapEditor(props: MapEditorProps) {
         </button>
         <input ref={fileInput} type="file" accept=".gpx,application/gpx+xml,text/xml,application/xml" onChange={onFile} className="sr-only" tabIndex={-1} aria-hidden="true" />
         <span className="mx-1 h-6 w-px bg-line" aria-hidden="true" />
-        <span className="text-sm text-muted">{t`経由地から線を作る`}</span>
-        <button type="button" disabled={building || snapping || props.places.filter((p) => !p.stopBy && p.lat !== null).length < 2} onClick={() => void makeLine("trail")} className={chipClass} title={t`経由地を順に、地図の道でつなぎます（寄り道は通りません）`}>
-          {building ? t`調べています…` : t`道でつなぐ`}
+        <span className="text-sm text-muted" aria-live="polite">
+          {activePair ? t`選んだ区間：${legName}` : t`すべての区間（線のない所）`}
+        </span>
+        <button type="button" disabled={!canWork} onClick={() => void connect("trail")} className={chipClass} title={t`経由地のあいだを、地図の道でつなぎます（寄り道は通りません）`}>
+          {working ? t`調べています…` : t`道でつなぐ`}
         </button>
-        <button type="button" disabled={building || snapping || props.places.filter((p) => !p.stopBy && p.lat !== null).length < 2} onClick={() => void makeLine("direct")} className={chipClass} title={t`経由地を順に、まっすぐな線でつなぎます`}>
+        <button type="button" disabled={!canWork} onClick={() => void connect("direct")} className={chipClass} title={t`経由地のあいだを、まっすぐな線でつなぎます`}>
           {t`まっすぐつなぐ`}
         </button>
-        <span className="mx-1 h-6 w-px bg-line" aria-hidden="true" />
-        <span className="text-sm text-muted">{t`線を整える`}</span>
-        <button type="button" disabled={building || snapping || snapPoints(props.line, props.places.filter((p) => !p.stopBy)) === null} onClick={snapToTrails} className={chipClass} title={t`描いた線を、地図の道に沿わせます`}>
-          {snapping ? t`調べています…` : t`道に沿わせる`}
+        <button type="button" disabled={!canWork} onClick={() => void snapToTrails()} className={chipClass} title={t`描いた線を、地図の道に沿わせます`}>
+          {t`道に沿わせる`}
         </button>
-        <button type="button" disabled={props.line.length < 3} onClick={smooth} className={chipClass} title={t`線の角を、丸くなめらかにします`}>
+        <button type="button" disabled={!canWork || !hasLine} onClick={smooth} className={chipClass} title={t`線の角を、丸くなめらかにします`}>
           {t`なめらかにする`}
         </button>
+        {activePair ? (
+          <button type="button" onClick={() => setActiveFrom(null)} className={chipClass} title={t`区間の選択をやめて、全体を対象にします`}>
+            {t`選択をやめる`}
+          </button>
+        ) : null}
       </div>
 
       <form
@@ -641,6 +781,50 @@ export function MapEditor(props: MapEditorProps) {
             {toolButton("place", t`経由地を置く`, "P", <PinIcon />)}
             {toolButton("draw", t`線を描く`, "L", <PencilIcon />)}
           </div>
+          {mode === "draw" ? (
+            <div role="group" aria-label={t`区間を描く`} className={`${floatClass} max-w-[calc(100vw-6rem)] flex-wrap`}>
+              <label htmlFor="leg-pick" className="sr-only">
+                {t`描く区間`}
+              </label>
+              <select id="leg-pick" value={activeFrom ?? ""} onChange={(e) => pickLeg(e.target.value)} className="h-8 min-h-0 max-w-64 truncate rounded-lg border border-line bg-paper px-2 text-sm font-bold">
+                <option value="">{t`区間を選ぶ`}</option>
+                {pairs.map((pair) => (
+                  <option key={pair.from.key} value={pair.from.key}>
+                    {`${legOf(props.legs, pair.from.key, pair.to.key) ? "● " : "○ "}${legLabel(pair)}`}
+                  </option>
+                ))}
+              </select>
+              {activePair ? (
+                <>
+                  <div className="flex items-center rounded-lg bg-surface p-0.5" role="group" aria-label={t`点の操作`}>
+                    <button type="button" aria-pressed={!eraser} onClick={() => setEraser(false)} className={`${iconBtn} ${!eraser ? "bg-paper shadow-sm" : "text-muted"}`}>
+                      {t`点を置く`}
+                    </button>
+                    <button type="button" aria-pressed={eraser} aria-keyshortcuts="E" title={t`点を消す (E)`} onClick={() => setEraser(true)} className={`${iconBtn} ${eraser ? "bg-paper text-danger shadow-sm" : "text-muted"}`}>
+                      {t`点を消す`}
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    aria-pressed={isAllSmooth(activePath.curves)}
+                    onClick={() => editPath((p) => setAllCurves(p, !isAllSmooth(p.curves)))}
+                    disabled={activePath.anchors.length === 0}
+                    title={t`すべての点を、なめらかな点にします（もう一度押すと、角の点に戻ります）`}
+                    className={`${iconBtn} ${isAllSmooth(activePath.curves) ? "bg-ink text-paper hover:bg-ink" : ""}`}
+                  >
+                    {t`すべてなめらか`}
+                  </button>
+                  <span className="px-1 text-sm tabular-nums">{t`点 ${pointCount}`}</span>
+                  <button type="button" onClick={() => fitLeg(activeFrom)} className={iconBtn} title={t`この区間を見る`} aria-label={t`この区間を見る`}>
+                    <FitIcon />
+                  </button>
+                </>
+              ) : null}
+              <button type="button" onClick={() => actions.current.leaveDraw()} className={`${iconBtn} bg-ink text-paper hover:bg-ink`}>
+                {t`完了`}
+              </button>
+            </div>
+          ) : null}
         </div>
         <div className="absolute bottom-8 left-3 flex flex-wrap gap-2">
           <div className={floatClass} role="group" aria-label={t`やり直し`}>
@@ -650,7 +834,7 @@ export function MapEditor(props: MapEditorProps) {
             <button type="button" disabled={!props.canRedo} onClick={props.onRedo} className={iconBtn} title={t`やり直す`} aria-label={t`やり直す`}>
               <RedoIcon />
             </button>
-            <button type="button" disabled={props.line.length === 0} onClick={() => props.onLine([])} className={`${iconBtn} text-danger`} title={t`線を消す`} aria-label={t`線を消す`}>
+            <button type="button" disabled={props.line.length === 0 && !activeLeg} onClick={clearLine} className={`${iconBtn} text-danger`} title={activePair ? t`選んだ区間の線を消す` : t`線をすべて消す`} aria-label={activePair ? t`選んだ区間の線を消す` : t`線をすべて消す`}>
               <TrashIcon />
             </button>
           </div>

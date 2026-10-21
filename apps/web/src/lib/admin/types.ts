@@ -12,6 +12,8 @@ export type SpotStatus = "open" | "caution" | "closed";
 export interface AdminLine {
   type: "LineString";
   coordinates: [number, number, number?][];
+  /** The route cut into the stretches between waypoints (ids of the waypoints), when it was drawn that way. */
+  legs?: { from: string; to: string; coordinates: [number, number, number?][] }[];
 }
 
 export interface AdminRoute {
