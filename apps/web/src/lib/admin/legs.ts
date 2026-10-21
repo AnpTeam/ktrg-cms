@@ -16,6 +16,14 @@ export interface Stop {
   lng: number;
 }
 
+/** A stretch that is ridden, not walked: how, and the minutes the editor typed. */
+export const RIDE_MODES = ["ferry", "bus", "train", "other"] as const;
+export type RideMode = (typeof RIDE_MODES)[number];
+export interface Ride {
+  mode: RideMode;
+  minutes: number;
+}
+
 export interface Leg {
   /** The keys of the two stops this leg runs between. */
   from: string;
@@ -27,6 +35,8 @@ export interface Leg {
   curves?: AnchorCurve[];
   /** A side trip (寄り道): out from a stop of the route to a stop-by place. It is not part of the joined line. */
   side?: true;
+  /** Ridden, not walked (a ferry from a port ...): visitors read this time instead of a walking estimate. */
+  ride?: Ride;
 }
 
 /** The most points the whole line may have (the API keeps the line at this size too). */

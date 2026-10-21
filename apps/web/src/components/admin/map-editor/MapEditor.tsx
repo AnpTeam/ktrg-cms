@@ -7,7 +7,7 @@ import type { GeoJSONSource, Map as MapLibreMap, MapMouseEvent, Marker } from "m
 import { isAllSmooth } from "@/lib/admin/drawn-path";
 import { parseGpx, type GpxWaypoint } from "@/lib/admin/gpx";
 import { LEG_HIT, LEG_SOURCE, legFeatures, legLayers } from "@/lib/admin/leg-map";
-import { insertAnchor, legFromPath, legOf, moveAnchor, pairsOf, pathOfLeg, pathStops, pointsFromAnchors, removeAnchors, setAllCurves, sidePairs, toggleAnchorCurve, type Leg, type Path, type Stop } from "@/lib/admin/legs";
+import { insertAnchor, legFromPath, legOf, moveAnchor, pairsOf, pathOfLeg, pathStops, pointsFromAnchors, removeAnchors, RIDE_MODES, setAllCurves, sidePairs, toggleAnchorCurve, type Leg, type Path, type RideMode, type Stop } from "@/lib/admin/legs";
 import { simplify, type LngLatEle } from "@/lib/admin/line";
 import { legTime } from "@/lib/leg-times";
 import { searchPlaces, type PlaceHit } from "@/lib/admin/place-search";
@@ -171,7 +171,7 @@ export function MapEditor(props: MapEditorProps) {
   // ---- the stops, the legs between them, and the one being worked on -----------------------------------------------
   const stops = useMemo(() => pathStops(props.places), [props.places]);
   // The legs of the route, then the side trips out to the stop-by places. A leg is named by the stop it runs to (unique, also for a side trip).
-  const pairs = useMemo(() => [...pairsOf(stops), ...sidePairs(props.places).map((p) => ({ ...p, side: true as const }))], [stops, props.places]);
+  const pairs: Pair[] = useMemo(() => [...pairsOf(stops), ...sidePairs(props.places).map((p) => ({ ...p, side: true as const }))], [stops, props.places]);
   // The chosen leg is read as nothing once its pair of stops is gone, and the chosen point only counts on the leg it was chosen on.
   const activePair = pairs.find((p) => p.to.key === chosenId) ?? null;
   const activeId = activePair ? activePair.to.key : null;
@@ -186,7 +186,7 @@ export function MapEditor(props: MapEditorProps) {
   function editPath(update: (p: Path) => Path) {
     if (!activePair) return;
     const next = update(activePath);
-    props.onSetLeg(legFromPath(activePair.from, activePair.to, next));
+    props.onSetLeg({ ...legFromPath(activePair.from, activePair.to, next), ...(activeLeg?.ride ? { ride: activeLeg.ride } : {}) });
   }
 
   function makeActions(): Actions {
@@ -567,7 +567,7 @@ export function MapEditor(props: MapEditorProps) {
         if (built.straightHops < points.length - 1) allStraight = false;
         line = built.line;
       }
-      made.push({ from: from.key, to: to.key, points: withEnds(simplify(roundLine(line), MAX_POINTS), from, to) });
+      made.push({ from: from.key, to: to.key, points: withEnds(simplify(roundLine(line), MAX_POINTS), from, to), ...(leg?.ride ? { ride: leg.ride } : {}) });
     }
     setWorking(false);
     if (allStraight) return setNote(lastMessage || t`道が見つかりませんでした。`);
@@ -586,7 +586,7 @@ export function MapEditor(props: MapEditorProps) {
     if (have.length === 0) return setNote(t`先に、線を描いてください。`);
     props.onSetLegs([
       ...props.legs.filter((l) => !have.some(({ leg }) => leg === l)),
-      ...have.map(({ p, leg }): Leg => ({ from: leg.from, to: leg.to, points: withEnds(simplify(smoothLine(leg.points), MAX_POINTS), p.from, p.to) })),
+      ...have.map(({ p, leg }): Leg => ({ from: leg.from, to: leg.to, points: withEnds(simplify(smoothLine(leg.points), MAX_POINTS), p.from, p.to), ...(leg.ride ? { ride: leg.ride } : {}), ...(leg.side ? { side: true as const } : {}) })),
     ]);
     setNote(t`線の角をなめらかにしました。形を確かめてください。「元に戻す」で、もとの線にもどせます。`);
   }
@@ -651,9 +651,21 @@ export function MapEditor(props: MapEditorProps) {
   };
 
   const legLabel = (pair: { from: Stop; to: Stop }) => `${nameOf.get(pair.from.key) ?? ""} → ${nameOf.get(pair.to.key) ?? ""}`;
+  const rideName: Record<RideMode, string> = { ferry: t`船`, bus: t`バス`, train: t`電車`, other: t`ほかの乗り物` };
+  /** Walk, or ride (a ferry from a port ...) for this long: the leg is made (straight) when it has no line yet. */
+  function setRide(mode: RideMode | "walk", minutes: number) {
+    if (!activePair) return;
+    const base: Leg = activeLeg ?? { from: activePair.from.key, to: activePair.to.key, points: [[activePair.from.lng, activePair.from.lat], [activePair.to.lng, activePair.to.lat]] };
+    const plain: Leg = { ...base, ride: undefined }; // (an undefined member is not saved)
+    props.onSetLeg(mode === "walk" ? plain : { ...plain, ride: { mode, minutes: Math.min(1440, Math.max(1, Math.round(minutes))) } });
+  }
   // How long the leg takes to walk (from its line, and its climb once the heights are filled in): " · 25 min (1.2 km)".
   const timeText = (pair: { from: Stop; to: Stop }) => {
     const leg = legOf(props.legs, pair.from.key, pair.to.key);
+    if (leg?.ride) {
+      const [mode, minutes] = [rideName[leg.ride.mode], leg.ride.minutes];
+      return ` · ${t`${mode} ${minutes}分`}`;
+    }
     const time = leg ? legTime(leg.points) : null;
     if (!time) return "";
     const [minutes, km] = [time.minutes, time.km];
@@ -703,6 +715,37 @@ export function MapEditor(props: MapEditorProps) {
         <span className="text-sm text-muted" aria-live="polite">
           {activePair ? t`選んだ区間：${legName}` : t`すべての区間（線のない所）`}
         </span>
+        {activePair && !activePair.side ? (
+          <span className="flex items-center gap-1" role="group" aria-label={t`この区間の移動`}>
+            <select
+              aria-label={t`移動の手段`}
+              value={activeLeg?.ride?.mode ?? "walk"}
+              onChange={(e) => setRide(e.target.value as RideMode | "walk", activeLeg?.ride?.minutes ?? 20)}
+              className="h-9 min-h-0 rounded-lg border border-line bg-paper px-2 text-sm font-bold"
+            >
+              <option value="walk">{t`歩く`}</option>
+              {RIDE_MODES.map((m) => (
+                <option key={m} value={m}>
+                  {rideName[m]}
+                </option>
+              ))}
+            </select>
+            {activeLeg?.ride ? (
+              <>
+                <input
+                  type="number"
+                  min={1}
+                  max={1440}
+                  aria-label={t`かかる時間（分）`}
+                  value={activeLeg.ride.minutes}
+                  onChange={(e) => setRide(activeLeg.ride!.mode, Number(e.target.value) || 1)}
+                  className="h-9 min-h-0 w-20 rounded-lg border border-line bg-paper px-2 text-sm font-bold"
+                />
+                <span className="text-sm">{t`分`}</span>
+              </>
+            ) : null}
+          </span>
+        ) : null}
         <button type="button" disabled={!canWork} onClick={() => void connect("trail")} className={chipClass} title={t`経由地のあいだを、地図の道でつなぎます（寄り道は通りません）`}>
           {working ? t`調べています…` : t`道でつなぐ`}
         </button>

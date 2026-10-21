@@ -1,4 +1,4 @@
-import { splitLine, type Stop } from "./admin/legs";
+import { splitLine, type RideMode, type Stop } from "./admin/legs";
 import { climbM, elevationsOf, lengthKm, type LngLatEle } from "./admin/line";
 import { estimateWalkMinutes } from "./admin/walk-time";
 
@@ -7,8 +7,10 @@ import { estimateWalkMinutes } from "./admin/walk-time";
 
 export interface LegTime {
   km: number;
-  /** Rounded to 5 minutes, at least 5. */
+  /** Rounded to 5 minutes, at least 5 (or exactly what the editor typed for a ridden stretch). */
   minutes: number;
+  /** Set for a stretch that is ridden, not walked. */
+  mode?: RideMode;
 }
 
 /** The time of one stretch of line; null when it has no length. */
@@ -27,6 +29,8 @@ export function legTime(points: readonly LngLatEle[]): LegTime | null {
 export function timesFromPrevious(
   places: readonly { id: string; position: { lat: number; lng: number } | null; stopBy?: boolean }[],
   line: readonly LngLatEle[],
+  /** Stretches that are ridden: their typed minutes replace the walking estimate to that place (also without a fitting line). */
+  rides: readonly { spotId: string; mode: RideMode; minutes: number }[] = [],
 ): Map<string, LegTime> {
   const stops = places.flatMap((p): (Stop & { id: string })[] => (p.position && !p.stopBy ? [{ key: p.id, id: p.id, lat: p.position.lat, lng: p.position.lng }] : []));
   const out = new Map<string, LegTime>();
@@ -34,5 +38,6 @@ export function timesFromPrevious(
     const time = legTime(leg.points);
     if (time) out.set(leg.to, time);
   });
+  for (const r of rides) out.set(r.spotId, { km: out.get(r.spotId)?.km ?? 0, minutes: r.minutes, mode: r.mode });
   return out;
 }

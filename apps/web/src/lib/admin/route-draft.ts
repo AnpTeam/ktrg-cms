@@ -414,7 +414,7 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
   const lngs = d.line.map((p) => p[0]);
   const bounds = d.line.length >= 2 ? { west: Math.min(...lngs), east: Math.max(...lngs), south: Math.min(...lats), north: Math.max(...lats) } : null;
   const stamps = stampPlaces(d);
-  const times = timesFromPrevious(stamps.map((p) => ({ id: p.id ?? p.key, position: p.lat !== null && p.lng !== null ? { lat: p.lat, lng: p.lng } : null, stopBy: p.stopBy })), d.line);
+  const times = timesFromPrevious(stamps.map((p) => ({ id: p.id ?? p.key, position: p.lat !== null && p.lng !== null ? { lat: p.lat, lng: p.lng } : null, stopBy: p.stopBy })), d.line, d.legs.flatMap((l) => (l.ride && !l.side ? [{ spotId: l.to, ...l.ride }] : [])));
   return {
     id: d.id ?? "new",
     order,

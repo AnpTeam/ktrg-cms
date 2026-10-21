@@ -3,7 +3,7 @@ import { stampableByDefault } from "../db/schema/content";
 import { cleanTranslations } from "../db/translations";
 import { isHttpsUrl, isPhotoUrl } from "../lib/https-url";
 import { isAllowedVideoUrl } from "./video-url";
-import { lineLengthKm, parseLine, plainLine, sideLinesOf, simplifyLine, sketchOf, type LineString } from "./line";
+import { lineLengthKm, parseLine, plainLine, ridesOf, sideLinesOf, simplifyLine, sketchOf, type LineString, type Ride } from "./line";
 import type {
   ContentStore,
   Prefecture,
@@ -74,6 +74,8 @@ export interface PublicRoute {
   line: LineString | null;
   /** Side trips (寄り道) to published places, each a stretch out from the route (the detail only). */
   sideLines: { spotId: string; coordinates: LineString["coordinates"] }[];
+  /** Stretches that are ridden (ferry, bus ...), with the minutes the editor gave: they replace the walking estimate to that place. */
+  rides: { spotId: string; mode: Ride["mode"]; minutes: number }[];
   /** Corners of the box around the line, for the overview map. */
   bounds: { west: number; south: number; east: number; north: number } | null;
 }
@@ -120,6 +122,7 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     sketch: shown ? sketchOf(shown) : null,
     line: withLine && shown ? plainLine(shown) : null,
     sideLines: withLine && shown ? sideLinesOf(shown, visibleSpotIds) : [],
+    rides: withLine && shown ? ridesOf(shown, visibleSpotIds) : [],
     bounds: boundsOf(shown),
   };
 }
