@@ -103,7 +103,8 @@ export function routeBody(d: RouteDraft): RouteBody {
     accessEn: nullIfEmpty(d.accessEn),
     photoUrl: nullIfEmpty(d.photoUrl),
     geometry: d.line.length >= 2 ? { type: "LineString", coordinates: d.line.map(coordinate), ...(d.legs.length > 0 ? { legs: d.legs.map((l) => ({ from: l.from, to: l.to, coordinates: l.points.map(coordinate), ...(l.side ? { side: true as const } : {}), ...(l.ride ? { ride: l.ride } : {}) })) } : {}) } : null,
-    lineVerified: d.lineVerified,
+    // "Checked" needs a named source (the server refuses it otherwise): without one the line is saved as not checked yet.
+    lineVerified: d.lineVerified && d.lineSource.trim() !== "",
     lineSource: nullIfEmpty(d.lineSource),
     translations: d.translations,
   };
@@ -184,7 +185,7 @@ export function planSave(draft: RouteDraft, saved: RouteDraft | null): SaveStep[
   let after: Partial<RouteBody> | null = null;
   if (draft.id === null) {
     steps.push({ op: "createRoute", body: routeBody(draft) });
-    if (lateLine) after = { geometry: routeBody(draft).geometry, lineVerified: draft.lineVerified, lineSource: nullIfEmpty(draft.lineSource) };
+    if (lateLine) after = { geometry: routeBody(draft).geometry, lineVerified: routeBody(draft).lineVerified, lineSource: nullIfEmpty(draft.lineSource) };
   } else {
     const diff = changed(routeBody(draft), saved ? routeBody(saved) : null);
     // Redrawing the line cancels its check on the server; never send the line without saying what its check is.

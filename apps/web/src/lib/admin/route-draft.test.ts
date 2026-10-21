@@ -95,6 +95,15 @@ describe("legs", () => {
   });
 });
 
+describe("a line ticked as checked without a source", () => {
+  test("is saved as not checked (the server refuses 'checked' with no source), and with a source it stays checked", () => {
+    const line = { ...emptyDraft(), nameJa: "甲山", lineVerified: true };
+    expect(routeBody({ ...line, lineSource: "" }).lineVerified).toBe(false);
+    expect(routeBody({ ...line, lineSource: "  " }).lineVerified).toBe(false);
+    expect(routeBody({ ...line, lineSource: "葛城修験 公式サイト" }).lineVerified).toBe(true);
+  });
+});
+
 describe("ridden legs (a ferry) in the route's totals", () => {
   const stops = () => run(fresh(), { type: "addPlace", key: "a", lat: 34, lng: 135 }, { type: "addPlace", key: "b", lat: 34.01, lng: 135 }, { type: "addPlace", key: "c", lat: 34.03, lng: 135 });
   const walk = { from: "a", to: "b", points: [[135, 34], [135, 34.01]] as [number, number][] };
