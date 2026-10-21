@@ -1,7 +1,15 @@
 import { distanceMeters } from "../lib/geo";
 
-/** A route line as GeoJSON: [lng, lat] with an optional third number, the elevation in metres. */
-export type LineString = { type: "LineString"; coordinates: [lng: number, lat: number, ele?: number][] };
+type Coordinates = [lng: number, lat: number, ele?: number][];
+
+/** One stretch of the route between two waypoints (their ids), as the editor draws it. */
+export type RouteLeg = { from: string; to: string; coordinates: Coordinates };
+
+/**
+ * A route line as GeoJSON: [lng, lat] with an optional third number, the elevation in metres. `legs` is an extra member the
+ * editor keeps: the same line cut into the stretches between waypoints, so each can be redrawn alone. Visitors never get it.
+ */
+export type LineString = { type: "LineString"; coordinates: Coordinates; legs?: RouteLeg[] };
 
 const MAX_POINTS_ACCEPTED = 50_000;
 // Japan with some margin: nothing outside this box can be a Katsuragi route.
@@ -9,23 +17,47 @@ const LNG = [122, 154] as const;
 const LAT = [20, 46] as const;
 
 const isNum = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v);
+const MAX_LEGS = 500;
+const ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** Check a line from outside (a request body): shape, finite numbers, inside Japan, not absurdly long. */
-export function parseLine(input: unknown): { ok: true; line: LineString } | { ok: false } {
-  if (typeof input !== "object" || input === null) return { ok: false };
-  const { type, coordinates } = input as { type?: unknown; coordinates?: unknown };
-  if (type !== "LineString" || !Array.isArray(coordinates)) return { ok: false };
-  if (coordinates.length < 2 || coordinates.length > MAX_POINTS_ACCEPTED) return { ok: false };
-  const out: LineString["coordinates"] = [];
+function parseCoordinates(coordinates: unknown): Coordinates | null {
+  if (!Array.isArray(coordinates) || coordinates.length < 2 || coordinates.length > MAX_POINTS_ACCEPTED) return null;
+  const out: Coordinates = [];
   for (const c of coordinates) {
-    if (!Array.isArray(c) || c.length < 2 || c.length > 3) return { ok: false };
+    if (!Array.isArray(c) || c.length < 2 || c.length > 3) return null;
     const [lng, lat, ele] = c as unknown[];
-    if (!isNum(lng) || !isNum(lat) || lng < LNG[0] || lng > LNG[1] || lat < LAT[0] || lat > LAT[1]) return { ok: false };
-    if (ele !== undefined && !isNum(ele)) return { ok: false };
+    if (!isNum(lng) || !isNum(lat) || lng < LNG[0] || lng > LNG[1] || lat < LAT[0] || lat > LAT[1]) return null;
+    if (ele !== undefined && !isNum(ele)) return null;
     out.push(ele === undefined ? [lng, lat] : [lng, lat, ele]);
   }
-  return { ok: true, line: { type: "LineString", coordinates: out } };
+  return out;
 }
+
+/** Check a line from outside (a request body): shape, finite numbers, inside Japan, not absurdly long. Its legs, when given, get the same checks. */
+export function parseLine(input: unknown): { ok: true; line: LineString } | { ok: false } {
+  if (typeof input !== "object" || input === null) return { ok: false };
+  const { type, coordinates, legs } = input as { type?: unknown; coordinates?: unknown; legs?: unknown };
+  if (type !== "LineString") return { ok: false };
+  const out = parseCoordinates(coordinates);
+  if (!out) return { ok: false };
+  if (legs === undefined || legs === null) return { ok: true, line: { type: "LineString", coordinates: out } };
+  if (!Array.isArray(legs) || legs.length > MAX_LEGS) return { ok: false };
+  const parsedLegs: RouteLeg[] = [];
+  let points = 0;
+  for (const leg of legs) {
+    if (typeof leg !== "object" || leg === null) return { ok: false };
+    const { from, to, coordinates: legCoordinates } = leg as { from?: unknown; to?: unknown; coordinates?: unknown };
+    const c = parseCoordinates(legCoordinates);
+    if (typeof from !== "string" || typeof to !== "string" || !ID.test(from) || !ID.test(to) || !c) return { ok: false };
+    points += c.length;
+    if (points > MAX_POINTS_ACCEPTED) return { ok: false };
+    parsedLegs.push({ from, to, coordinates: c });
+  }
+  return { ok: true, line: { type: "LineString", coordinates: out, ...(parsedLegs.length > 0 ? { legs: parsedLegs } : {}) } };
+}
+
+/** The line without the editor's extras: what visitors and the maps get. */
+export const plainLine = (line: LineString): LineString => ({ type: "LineString", coordinates: line.coordinates });
 
 // Distance from p to the segment a-b, in degrees (planar). Good enough for choosing which points to drop.
 function perpendicular(p: readonly (number | undefined)[], a: readonly (number | undefined)[], b: readonly (number | undefined)[]): number {

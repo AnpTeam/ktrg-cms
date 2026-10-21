@@ -30,6 +30,26 @@ describe("parseLine", () => {
   });
 });
 
+describe("parseLine legs", () => {
+  const A = "11111111-1111-4111-8111-111111111111";
+  const B = "22222222-2222-4222-8222-222222222222";
+  const coordinates: [number, number][] = [[135, 34], [135.01, 34.01]];
+  test("keeps well-formed legs, and no legs is fine", () => {
+    const r = parseLine({ type: "LineString", coordinates, legs: [{ from: A, to: B, coordinates }] });
+    expect(r.ok && r.line.legs).toEqual([{ from: A, to: B, coordinates }]);
+    const none = parseLine({ type: "LineString", coordinates, legs: [] });
+    expect(none.ok && "legs" in none.line).toBe(false);
+  });
+  test.each([
+    ["an id that is not a uuid", [{ from: "a", to: B, coordinates }]],
+    ["a leg with one point", [{ from: A, to: B, coordinates: [[135, 34]] }]],
+    ["a leg outside Japan", [{ from: A, to: B, coordinates: [[135, 34], [-30, 20]] }]],
+    ["legs that are not a list", {}],
+  ])("rejects %s", (_n, legs) => {
+    expect(parseLine({ type: "LineString", coordinates, legs }).ok).toBe(false);
+  });
+});
+
 describe("simplifyLine", () => {
   test("keeps the endpoints and stays within the cap", () => {
     const l = wiggle(10_000);

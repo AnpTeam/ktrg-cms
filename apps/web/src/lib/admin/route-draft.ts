@@ -2,6 +2,7 @@ import type { GalleryPhoto, RouteDetail, RoutePoint } from "../content";
 import { stampableByDefault, type PointKind } from "../point-kinds";
 import { areaFromBounds, sketchFromPoints } from "../route-geometry";
 import { climbM, elevationsOf, lengthKm, type LngLatEle } from "./line";
+import { capLegs, joinLegs, legsFromJoined, pathStops, reconcileLegs, splitLine, type Leg } from "./legs";
 import type { Translations } from "./content-locales";
 import type { AdminRoute, AdminSpot, Prefecture, SpotStatus } from "./types";
 import { estimateWalkMinutes } from "./walk-time";
@@ -74,7 +75,10 @@ export interface RouteDraft {
   timeManual: boolean;
   difficulty: string;
   videoUrl: string;
+  /** The whole line: the legs joined in order. Only a track imported before there are two stops to cut it at is held here alone. */
   line: LngLatEle[];
+  /** The line cut into one leg for each pair of stops; redrawing a leg leaves the others alone (see legs.ts). */
+  legs: Leg[];
   lineVerified: boolean;
   lineSource: string;
   places: PlaceDraft[];
@@ -84,7 +88,7 @@ export const emptyDraft = (): RouteDraft => ({
   id: null, updatedAt: null, nameJa: "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
   accessJa: "", accessEn: "", translations: {}, photoUrl: "", prefecture: null, municipality: "",
   distanceKm: null, distanceManual: false, elevationGainM: null, climbManual: false, expectedTimeMin: null, timeManual: false,
-  difficulty: "", videoUrl: "", line: [], lineVerified: false, lineSource: "", places: [],
+  difficulty: "", videoUrl: "", line: [], legs: [], lineVerified: false, lineSource: "", places: [],
 });
 
 const s = (v: string | null) => v ?? "";
@@ -99,8 +103,21 @@ export function placeFromServer(p: AdminSpot): PlaceDraft {
   };
 }
 
+/**
+ * The legs of a saved route: the ones it was saved with, or (a line that was drawn in one piece) the line cut at the stops.
+ * Cut here, not saved: the route is saved with legs the next time its line changes.
+ */
+function legsFromServer(route: AdminRoute, places: PlaceDraft[], line: LngLatEle[]): Leg[] {
+  const stops = pathStops(places);
+  const saved: Leg[] = (route.geometry?.legs ?? []).map((l) => ({ from: l.from, to: l.to, points: l.coordinates.map((c): LngLatEle => (c[2] === undefined ? [c[0], c[1]] : [c[0], c[1], c[2]])) }));
+  const kept = reconcileLegs(stops, saved);
+  return kept.length > 0 ? kept : splitLine(stops, line);
+}
+
 export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDraft {
+  const places = spots.map(placeFromServer);
   const line: LngLatEle[] = route.geometry ? route.geometry.coordinates.map((c) => (c[2] === undefined ? [c[0], c[1]] : [c[0], c[1], c[2]])) : [];
+  const legs = legsFromServer(route, places, line);
   const eles = elevationsOf(line);
   return {
     id: route.id, updatedAt: route.updatedAt, nameJa: route.nameJa, nameEn: s(route.nameEn), descriptionJa: s(route.descriptionJa),
@@ -116,8 +133,8 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
     // A saved time that is not what the distance and climb give was typed by hand.
     timeManual: route.expectedTimeMin !== null && route.expectedTimeMin !== estimateWalkMinutes(route.distanceKm, route.elevationGainM),
     difficulty: s(route.difficulty), videoUrl: s(route.videoUrl),
-    line, lineVerified: route.lineVerified, lineSource: s(route.lineSource),
-    places: spots.map(placeFromServer),
+    line: legs.length > 0 ? joinLegs(pathStops(places), legs).line : line, legs, lineVerified: route.lineVerified, lineSource: s(route.lineSource),
+    places,
   };
 }
 
@@ -167,7 +184,15 @@ export type DraftAction =
   | { type: "climb"; value: number | null }
   | { type: "time"; value: number | null }
   | { type: "lineVerified"; value: boolean }
+  /** A whole line (an imported track): cut into legs at the stops when there are two or more. */
   | { type: "line"; points: LngLatEle[] }
+  /** One leg drawn, found on trails or made straight; it replaces that pair's leg and no other. */
+  | { type: "setLeg"; leg: Leg }
+  /** Several legs at once (one undo step). */
+  | { type: "setLegs"; legs: Leg[] }
+  | { type: "clearLeg"; from: string; to: string }
+  /** The whole line and every leg. */
+  | { type: "clearLegs" }
   /** The same points with elevations filled in (from the map tiles): not an undo step, and the line stays as drawn. */
   | { type: "elevations"; points: LngLatEle[] }
   | { type: "addPlace"; key: string; lat: number; lng: number; kind?: PointKind }
@@ -197,8 +222,26 @@ function withLine(d: RouteDraft, points: LngLatEle[]): RouteDraft {
   return next;
 }
 
+/** The legs as the line: the legs are made to fit the stops, thinned to the point budget and joined. */
+function withLegs(d: RouteDraft, legs: readonly Leg[]): RouteDraft {
+  const stops = pathStops(d.places);
+  const fitted = capLegs(reconcileLegs(stops, legs));
+  return { ...withLine(d, fitted.length > 0 ? joinLegs(stops, fitted).line : []), legs: fitted };
+}
+
+/**
+ * After the places changed: the legs follow the stops (a moved stop drags its legs' ends, a removed one joins its neighbours'
+ * legs). A track that was imported before there were two stops is cut as soon as there are.
+ */
+function syncLegs(d: RouteDraft): RouteDraft {
+  const stops = pathStops(d.places);
+  if (d.legs.length === 0) return d.line.length >= 2 && stops.length >= 2 ? withLegs(d, splitLine(stops, d.line)) : d;
+  const fitted = reconcileLegs(stops, d.legs);
+  return fitted === d.legs ? d : withLegs(d, fitted);
+}
+
 /** The actions that change the map or the order of places can be undone; typing is left to the browser's own undo. */
-const undoable = new Set<DraftAction["type"]>(["line", "addPlace", "addPlaces", "addRow", "movePlace", "removePlace", "reorderPlaces"]);
+const undoable = new Set<DraftAction["type"]>(["line", "setLeg", "setLegs", "clearLeg", "clearLegs", "addPlace", "addPlaces", "addRow", "movePlace", "removePlace", "reorderPlaces"]);
 
 /** The walking time follows the distance and the climb until someone types one. */
 const withAutoTime = (d: RouteDraft): RouteDraft => {
@@ -208,7 +251,7 @@ const withAutoTime = (d: RouteDraft): RouteDraft => {
 };
 
 /** The kinds that change the distance or the climb, and so the estimate of the time. */
-const moves = new Set<DraftAction["type"]>(["distance", "climb", "line", "elevations", "time"]);
+const moves = new Set<DraftAction["type"]>(["distance", "climb", "line", "setLeg", "setLegs", "clearLeg", "clearLegs", "elevations", "time"]);
 
 function apply(d: RouteDraft, a: DraftAction): RouteDraft {
   switch (a.type) {
@@ -233,12 +276,27 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       return a.value === null ? { ...d, timeManual: false } : { ...d, expectedTimeMin: a.value, timeManual: true };
     case "lineVerified":
       return { ...d, lineVerified: a.value };
-    case "line":
-      return withLine(d, a.points);
+    case "line": {
+      const stops = pathStops(d.places);
+      if (stops.length < 2) return { ...withLine(d, a.points), legs: [] };
+      const cut = splitLine(stops, a.points);
+      return cut.length > 0 ? withLegs(d, cut) : { ...withLine(d, a.points), legs: [] };
+    }
+    case "setLeg":
+      return withLegs(d, [...d.legs.filter((l) => !(l.from === a.leg.from && l.to === a.leg.to)), a.leg]);
+    case "setLegs":
+      return withLegs(d, a.legs);
+    case "clearLeg":
+      return withLegs(d, d.legs.filter((l) => !(l.from === a.from && l.to === a.to)));
+    case "clearLegs":
+      return { ...withLine(d, []), legs: [] };
     case "elevations": {
       const same = a.points.length === d.line.length && a.points.every((p, i) => p[0] === d.line[i]![0] && p[1] === d.line[i]![1]);
       if (!same) return d; // the line moved on while the heights were being fetched: drop them
-      const next: RouteDraft = { ...d, line: a.points };
+      // The heights belong to the legs the line is made of (a line that is only held loose has no legs).
+      const legs = d.legs.length > 0 ? legsFromJoined(pathStops(d.places), d.legs, a.points) : [];
+      if (!legs) return d;
+      const next: RouteDraft = { ...d, line: a.points, legs };
       const eles = elevationsOf(a.points);
       if (!d.climbManual && eles) next.elevationGainM = climbM(eles);
       return next;
@@ -246,33 +304,33 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
     case "addPlace": {
       const kind = a.kind ?? "other";
       const n = d.places.filter((p) => p.stampable).length + 1;
-      return { ...d, places: [...d.places, newPlace(a.key, a.lat, a.lng, n, kind)] };
+      return syncLegs({ ...d, places: [...d.places, newPlace(a.key, a.lat, a.lng, n, kind)] });
     }
     case "addPlaces": {
       if (a.places.length === 0) return d;
       const start = d.places.filter((p) => p.stampable).length;
       const added = a.places.map((p, i) => ({ ...newPlace(p.key, p.lat, p.lng, start + i + 1), nameJa: p.name.trim() || `経由地${start + i + 1}` }));
-      return { ...d, places: [...d.places, ...added] };
+      return syncLegs({ ...d, places: [...d.places, ...added] });
     }
     case "addRow":
       return { ...d, places: [...d.places, { ...newPlace(a.key, null, null, 0), nameJa: "" }] };
     case "movePlace":
-      return { ...d, places: d.places.map((p) => (p.key === a.key ? { ...p, lat: a.lat, lng: a.lng, positionVerified: false } : p)) };
+      return syncLegs({ ...d, places: d.places.map((p) => (p.key === a.key ? { ...p, lat: a.lat, lng: a.lng, positionVerified: false } : p)) });
     case "place":
-      return {
+      return syncLegs({
         ...d,
         places: d.places.map((p) => {
           if (p.key !== a.key) return p;
           const moved = (a.patch.lat !== undefined && a.patch.lat !== p.lat) || (a.patch.lng !== undefined && a.patch.lng !== p.lng);
           return { ...p, ...a.patch, ...(moved && a.patch.positionVerified === undefined ? { positionVerified: false } : {}) };
         }),
-      };
+      });
     case "removePlace":
-      return { ...d, places: d.places.filter((p) => p.key !== a.key) };
+      return syncLegs({ ...d, places: d.places.filter((p) => p.key !== a.key) });
     case "reorderPlaces": {
       const byKey = new Map(d.places.map((p) => [p.key, p]));
       if (a.keys.length !== d.places.length || !a.keys.every((k) => byKey.has(k))) return d;
-      return { ...d, places: a.keys.map((k) => byKey.get(k)!) };
+      return syncLegs({ ...d, places: a.keys.map((k) => byKey.get(k)!) });
     }
     case "savedPlace":
       return { ...d, places: d.places.map((p) => (p.key === a.key ? a.place : p)) };
@@ -295,7 +353,8 @@ export function draftReducer(state: DraftState, a: DraftAction): DraftState {
   }
   let present = apply(state.present, a);
   if (present === state.present) return state;
-  if (moves.has(a.type)) present = withAutoTime(present);
+  // The walking time follows the distance and climb: when the line changed (also because a stop moved), not on other edits.
+  if (moves.has(a.type) || present.line !== state.present.line) present = withAutoTime(present);
   if (!undoable.has(a.type)) return { ...state, present };
   return { present, past: [...state.past, state.present].slice(-HISTORY), future: [] };
 }

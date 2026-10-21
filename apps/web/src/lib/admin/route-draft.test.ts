@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { draftFromServer, draftReducer, emptyDraft, initialState, isDirty, placeFromServer, previewRoute, publishBlockers, type DraftAction, type DraftState } from "./route-draft";
-import { draftProblems, placeChanged, planSave, placeBody, routeBody, videoLinkLooksValid } from "./save-plan";
+import { draftProblems, placeChanged, planSave, placeBody, routeBody, videoLinkLooksValid, withLegIds } from "./save-plan";
 import type { AdminRoute, AdminSpot } from "./types";
 
 const run = (state: DraftState, ...actions: DraftAction[]) => actions.reduce(draftReducer, state);
@@ -15,6 +15,96 @@ const serverSpot = (id: string, over: Partial<AdminSpot> = {}): AdminSpot => ({
   id, routeId: "r1", nameJa: "虎島の経塚", nameEn: null, translations: {}, descriptionJa: null, descriptionEn: null, historyJa: null, historyEn: null, lat: null, lng: null, positionVerified: false,
   positionSource: null, radiusM: 50, kind: "mound", stampable: true, stopBy: false, photoUrl: null, photos: [], status: "open", statusNoteJa: null, statusNoteEn: null, statusUpdatedAt: null, sortOrder: 1, published: false,
   permissionConfirmed: false, permissionNote: null, createdAt: "2026-10-19T00:00:00.000Z", updatedAt: "2026-10-19T00:00:00.000Z", ...over,
+});
+
+describe("legs", () => {
+  const withStops = () => run(fresh(), { type: "addPlace", key: "a", lat: 34, lng: 135 }, { type: "addPlace", key: "b", lat: 34.01, lng: 135.01 }, { type: "addPlace", key: "c", lat: 34.02, lng: 135 });
+  const legOf = (s: DraftState, from: string, to: string) => s.present.legs.find((l) => l.from === from && l.to === to);
+
+  test("a track drawn before the stops exist is cut as soon as there are two", () => {
+    let s = run(fresh(), { type: "line", points: [[135, 34], [135.005, 34.005], [135.01, 34.01]] });
+    expect(s.present.legs).toEqual([]);
+    expect(s.present.line).toHaveLength(3);
+    s = run(s, { type: "addPlace", key: "a", lat: 34, lng: 135 }, { type: "addPlace", key: "b", lat: 34.01, lng: 135.01 });
+    expect(s.present.legs.map((l) => [l.from, l.to])).toEqual([["a", "b"]]);
+    expect(s.present.line).toHaveLength(3);
+  });
+  test("a leg replaces only its own pair; the line is the legs joined, a pair without a leg is bridged straight", () => {
+    let s = withStops();
+    expect(s.present.line).toEqual([]); // no leg yet: no line
+    s = run(s, { type: "setLeg", leg: { from: "a", to: "b", points: [[135, 34], [135.002, 34.006], [135.01, 34.01]] } });
+    expect(s.present.line).toEqual([[135, 34], [135.002, 34.006], [135.01, 34.01], [135, 34.02]]); // b to c has no leg yet: a straight hop
+    s = run(s, { type: "setLeg", leg: { from: "b", to: "c", points: [[135.01, 34.01], [135.008, 34.016], [135, 34.02]] } });
+    const before = legOf(s, "a", "b");
+    s = run(s, { type: "setLeg", leg: { from: "b", to: "c", points: [[135.01, 34.01], [135, 34.02]] } });
+    expect(legOf(s, "a", "b")).toBe(before); // redrawing one leg leaves the other untouched
+    expect(s.present.line).toHaveLength(4);
+    expect(s.present.distanceKm).toBeGreaterThan(2);
+  });
+  test("a moved stop pulls the ends of its two legs and cancels the line check; removing it joins them", () => {
+    let s = run(withStops(), { type: "setLegs", legs: [{ from: "a", to: "b", points: [[135, 34], [135.005, 34.002], [135.01, 34.01]] }, { from: "b", to: "c", points: [[135.01, 34.01], [135.004, 34.016], [135, 34.02]] }] });
+    s = run(s, { type: "text", field: "lineSource", value: "公式" }, { type: "lineVerified", value: true });
+    s = run(s, { type: "movePlace", key: "b", lat: 34.012, lng: 135.012 });
+    expect(legOf(s, "a", "b")!.points.at(-1)).toEqual([135.012, 34.012]);
+    expect(legOf(s, "b", "c")!.points[0]).toEqual([135.012, 34.012]);
+    expect(s.present.lineVerified).toBe(false);
+    s = run(s, { type: "removePlace", key: "b" });
+    expect(s.present.legs.map((l) => [l.from, l.to])).toEqual([["a", "c"]]);
+    expect(s.present.line[0]).toEqual([135, 34]);
+    expect(s.present.line.at(-1)).toEqual([135, 34.02]);
+  });
+  test("heights go back into the legs, and one undo takes back one leg", () => {
+    let s = run(withStops(), { type: "setLeg", leg: { from: "a", to: "b", points: [[135, 34], [135.01, 34.01]] } });
+    const heights = s.present.line.map((p, i): [number, number, number] => [p[0], p[1], 100 * (i + 1)]);
+    s = run(s, { type: "elevations", points: heights });
+    expect(s.present.legs[0]!.points.map((p) => p[2])).toEqual([100, 200]);
+    s = run(s, { type: "setLeg", leg: { from: "b", to: "c", points: [[135.01, 34.01], [135, 34.02]] } }, { type: "undo" });
+    expect(s.present.legs.map((l) => l.to)).toEqual(["b"]);
+  });
+  test("a saved route cut in one piece is cut at its stops when opened, and saved legs are read back by their ids", () => {
+    const spots = [serverSpot("s1", { lat: 34, lng: 135 }), serverSpot("s2", { lat: 34.01, lng: 135.01 })];
+    const plain = draftFromServer(serverRoute({ geometry: { type: "LineString", coordinates: [[135, 34], [135.004, 34.004], [135.01, 34.01]] } }), spots);
+    expect(plain.legs.map((l) => [l.from, l.to])).toEqual([["s1", "s2"]]);
+    const drawn = draftFromServer(serverRoute({ geometry: { type: "LineString", coordinates: [[135, 34], [135.01, 34.01]], legs: [{ from: "s1", to: "s2", coordinates: [[135, 34], [135.003, 34.007], [135.01, 34.01]] }] } }), spots);
+    expect(drawn.legs[0]!.points).toHaveLength(3);
+    expect(drawn.line).toHaveLength(3); // the line is what the legs make
+  });
+});
+
+describe("saving legs", () => {
+  const spots = [serverSpot("s1", { lat: 34, lng: 135 }), serverSpot("s2", { lat: 34.01, lng: 135.01 })];
+  const legged = () => draftFromServer(serverRoute({ geometry: { type: "LineString", coordinates: [[135, 34], [135.01, 34.01]], legs: [{ from: "s1", to: "s2", coordinates: [[135, 34], [135.003, 34.007], [135.01, 34.01]] }] } }), spots);
+
+  test("the line is sent with its legs, only when it changed", () => {
+    const saved = legged();
+    expect(routeBody(saved).geometry?.legs).toHaveLength(1);
+    expect(planSave(saved, saved)).toEqual([]);
+    const redrawn = run(initialState(saved), { type: "setLeg", leg: { from: "s1", to: "s2", points: [[135, 34], [135.006, 34.003], [135.01, 34.01]] } }).present;
+    const [step] = planSave(redrawn, saved);
+    expect(step).toMatchObject({ op: "updateRoute" });
+    expect((step as { body: { geometry?: { legs?: unknown[] } } }).body.geometry?.legs).toHaveLength(1);
+  });
+  test("when a waypoint of a leg is new, the line is saved after the waypoints are, and the keys become ids", () => {
+    const saved = legged();
+    const s = run(initialState(saved), { type: "addPlace", key: "new", lat: 34.02, lng: 135 }, { type: "setLeg", leg: { from: "s2", to: "new", points: [[135.01, 34.01], [135, 34.02]] } });
+    const steps = planSave(s.present, saved);
+    // the distance and time go first; the line itself waits for the new waypoint's id
+    expect(steps.map((x) => x.op)).toEqual(["updateRoute", "createSpot", "updateRoute"]);
+    expect("geometry" in (steps[0] as { body: object }).body).toBe(false);
+    const last = steps.at(-1) as { body: { geometry?: unknown; lineVerified?: boolean } };
+    expect(last.body.geometry).toBeTruthy();
+    expect(last.body.lineVerified).toBe(false);
+    const ids = new Map<string, string | null>([["s1", "s1"], ["s2", "s2"], ["new", "id-new"]]);
+    const sent = withLegIds(last.body as { geometry: ReturnType<typeof routeBody>["geometry"] }, ids).geometry!;
+    expect(sent.legs?.map((l) => [l.from, l.to])).toEqual([["s1", "s2"], ["s2", "id-new"]]);
+    // a waypoint that has no id yet leaves its legs out instead of sending a key the API does not know
+    const early = withLegIds(last.body as { geometry: ReturnType<typeof routeBody>["geometry"] }, new Map([["s1", "s1"], ["s2", "s2"], ["new", null]])).geometry!;
+    expect(early.legs?.map((l) => l.to)).toEqual(["s2"]);
+  });
+  test("a new route is created first and gets its legs once its waypoints exist", () => {
+    const s = run(fresh(), { type: "text", field: "nameJa", value: "新しいルート" }, { type: "addPlace", key: "a", lat: 34, lng: 135 }, { type: "addPlace", key: "b", lat: 34.01, lng: 135.01 }, { type: "setLeg", leg: { from: "a", to: "b", points: [[135, 34], [135.01, 34.01]] } });
+    expect(planSave(s.present, null).map((x) => x.op)).toEqual(["createRoute", "createSpot", "createSpot", "updateRoute"]);
+  });
 });
 
 describe("drawing", () => {
