@@ -451,6 +451,29 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     dispatch({ type: "addPlace", key, lat, lng });
                     setSelectedKey(key);
                   }}
+                  onAddEndAt={(from) => {
+                    const start = draft.places.find((p) => p.key === from);
+                    if (!start || start.lat === null || start.lng === null) return;
+                    const key = crypto.randomUUID();
+                    const name = start.nameJa.trim() || t`出発点`;
+                    const nameEn = start.nameEn.trim();
+                    // Not a stamp place (the start already is one, and a stamp is once per place); the position and what checked it are the start's own.
+                    dispatch({
+                      type: "addPlace",
+                      key,
+                      lat: start.lat,
+                      lng: start.lng,
+                      kind: start.kind,
+                      patch: {
+                        stampable: false,
+                        nameJa: t`${name}（終点）`,
+                        nameEn: nameEn ? t`${nameEn} (end)` : "",
+                        positionVerified: start.positionVerified,
+                        positionSource: start.positionSource,
+                      },
+                    });
+                    setSelectedKey(key);
+                  }}
                   onAddPlaces={(list) => dispatch({ type: "addPlaces", places: list })}
                   onMovePlace={(key, lat, lng) => guarded(key, { type: "movePlace", key, lat, lng })}
                   onRemovePlace={(key) => {

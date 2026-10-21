@@ -53,6 +53,17 @@ describe("legs", () => {
     expect(s.present.line[0]).toEqual([135, 34]);
     expect(s.present.line.at(-1)).toEqual([135, 34.02]);
   });
+  test("an end point added at the start's own position is not a stamp place, and the legs come back to the start", () => {
+    let s = withStops(); // a, b, c
+    s = run(s, { type: "addPlace", key: "end", lat: 34, lng: 135, kind: "other", patch: { stampable: false, nameJa: "出発点（終点）", positionVerified: true, positionSource: "公式" } });
+    const end = s.present.places.find((p) => p.key === "end")!;
+    expect([end.stampable, end.lat, end.lng, end.positionVerified, end.positionSource, end.nameJa]).toEqual([false, 34, 135, true, "公式", "出発点（終点）"]);
+    s = run(s, { type: "setLeg", leg: { from: "c", to: "end", points: [[135, 34.02], [135, 34]] } });
+    expect(s.present.legs.map((l) => [l.from, l.to])).toEqual([["c", "end"]]);
+    expect(s.present.line.at(-1)).toEqual([135, 34]);
+    // one step to undo
+    expect(run(s, { type: "undo" }).present.legs).toEqual([]);
+  });
   test("a line the stops do not follow stays one loose line, until it is cut on purpose", () => {
     const line: [number, number][] = [[135, 34], [135.005, 34.005], [135.01, 34.01]];
     let s = run(fresh(), { type: "line", points: line });
