@@ -71,6 +71,24 @@ describe("legs", () => {
   });
 });
 
+describe("saving an edited published waypoint", () => {
+  const spots = [serverSpot("s1", { lat: 34, lng: 135, published: true, positionVerified: true, positionSource: "公式", permissionConfirmed: true }), serverSpot("s2", { lat: 34.01, lng: 135.01 })];
+  const saved = () => draftFromServer(serverRoute(), spots);
+
+  test("it comes off the site first, and only when it was edited", () => {
+    const s = saved();
+    const edited = run(initialState(s), { type: "place", key: "s1", patch: { nameJa: "改名" } }).present;
+    expect(planSave(edited, s).map((x) => [x.op, (x as { key?: string }).key])).toEqual([["unpublishSpot", "s1"], ["updateSpot", "s1"]]);
+    expect(planSave(s, s)).toEqual([]); // not edited: nothing sent
+    // a draft that is edited is not unpublished (it is not published)
+    const draftEdit = run(initialState(s), { type: "place", key: "s2", patch: { nameJa: "改名" } }).present;
+    expect(planSave(draftEdit, s).map((x) => x.op)).toEqual(["updateSpot"]);
+  });
+  test("a new route has nothing to take off the site", () => {
+    expect(planSave(saved(), null).some((x) => x.op === "unpublishSpot")).toBe(false);
+  });
+});
+
 describe("saving legs", () => {
   const spots = [serverSpot("s1", { lat: 34, lng: 135 }), serverSpot("s2", { lat: 34.01, lng: 135.01 })];
   const legged = () => draftFromServer(serverRoute({ geometry: { type: "LineString", coordinates: [[135, 34], [135.01, 34.01]], legs: [{ from: "s1", to: "s2", coordinates: [[135, 34], [135.003, 34.007], [135.01, 34.01]] }] } }), spots);

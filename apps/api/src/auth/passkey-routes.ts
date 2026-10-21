@@ -80,9 +80,13 @@ export function passkeyRoutes(getServices: () => PasskeyServices, opts: RouteOpt
       // Remove one of your own passkeys. The owner is emailed.
       .delete(
         "/:id",
-        async ({ user, set, params }) => {
+        async ({ user, authSession, set, params }) => {
           const result = await getServices().passkeys.remove(user, params.id);
-          if (result.ok) return { ok: true as const };
+          if (result.ok) {
+            // The owner may be removing a lost phone's key: no other device stays signed in.
+            await getServices().session.endOthers(user.id, authSession.id);
+            return { ok: true as const };
+          }
           // Someone else's passkey looks exactly like one that does not exist.
           return result.reason === "not_found" ? fail(set, 404, "not_found") : fail(set, 409, "last_login_method");
         },
@@ -136,13 +140,16 @@ export function passkeyRoutes(getServices: () => PasskeyServices, opts: RouteOpt
       // Add a passkey, step 3: the browser sends back what the phone signed.
       .post(
         "/register/verify",
-        async ({ user, set, body }) => {
+        async ({ user, authSession, set, body }) => {
           const result = await getServices().passkeys.verifyRegistration(
             user,
             body.response as RegistrationResponseJSON,
             body.label?.trim() || null,
           );
-          if (result.ok) return { ok: true as const, passkey: result.passkey };
+          if (result.ok) {
+            await getServices().session.endOthers(user.id, authSession.id);
+            return { ok: true as const, passkey: result.passkey };
+          }
           return result.reason === "too_many" ? fail(set, 409, "too_many_passkeys") : fail(set, 400, "registration_failed");
         },
         {

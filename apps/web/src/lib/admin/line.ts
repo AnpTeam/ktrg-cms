@@ -87,21 +87,3 @@ export function elevationsOf(points: readonly LngLatEle[]): number[] | null {
   const e = points.map((p) => p[2]);
   return e.length > 0 && e.every((v): v is number => typeof v === "number") ? e : null;
 }
-
-/**
- * Points edited on the map come back with only longitude and latitude. Keep the elevation of every point that did not
- * move (matched by position), so editing one corner does not throw away the heights of all the others.
- */
-export function keepElevations(previous: readonly LngLatEle[], next: readonly (readonly number[])[]): LngLatEle[] {
-  const known = new Map<string, number>();
-  for (const p of previous) if (typeof p[2] === "number") known.set(`${p[0]},${p[1]}`, p[2]);
-  return next.map((p) => {
-    const e = known.get(`${p[0]},${p[1]}`);
-    return e === undefined ? [p[0]!, p[1]!] : [p[0]!, p[1]!, e];
-  });
-}
-
-/** Whether two lines have the same points (position and elevation). */
-export function sameLine(a: readonly LngLatEle[], b: readonly LngLatEle[]): boolean {
-  return a.length === b.length && a.every((p, i) => p[0] === b[i]![0] && p[1] === b[i]![1] && p[2] === b[i]![2]);
-}

@@ -49,6 +49,9 @@ export const AUTH_LIMITS = {
   // Keyed by user id: asking the route-finding service to snap a line to trails. The service has a daily allowance
   // (and may bill beyond it), so a slip or a script cannot use it all up.
   adminRoutingUser: { name: "admin-routing-user", limit: 40, windowMs: 15 * MINUTE },
+  // One count for everyone (see withDailyCap): OpenRouteService's free allowance is about 2,000 calls a day, shared by every
+  // visitor's navigation and the admin's snap, so a busy day or a script making accounts cannot use it all up.
+  routingDaily: { name: "routing-daily", limit: 1500, windowMs: 24 * 60 * MINUTE },
 } as const satisfies Record<string, RateLimitRule>;
 
 export type RateLimitResult = { allowed: true } | { allowed: false; retryAfterSec: number };

@@ -38,6 +38,9 @@ export function createMemorySessionStore(users: Map<string, AuthUser>) {
       const row = rows.find((r) => r.id === id);
       if (row) row.lastLoginAt = at;
     },
+    async removeOthers(userId, keepSessionId) {
+      for (let i = rows.length - 1; i >= 0; i--) if (rows[i]!.userId === userId && rows[i]!.id !== keepSessionId) rows.splice(i, 1);
+    },
   };
 
   return { store, rows };

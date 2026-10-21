@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { createRoutingService, parseSnapAnswer } from "./routing-service";
+import { AUTH_LIMITS, createRateLimiter } from "../auth/rate-limit";
+import { createMemoryRateLimitStore } from "../auth/rate-limit-memory-store";
+import { createRoutingService, parseSnapAnswer, withDailyCap, type RoutingService } from "./routing-service";
 
 const POINTS = [
   { lat: 34.25, lng: 135.2 },
@@ -8,6 +10,20 @@ const POINTS = [
 
 const answer = (coordinates: unknown, distance: unknown = 1234.4) => ({ features: [{ geometry: { coordinates }, properties: { summary: { distance } } }] });
 const json = (body: unknown, status = 200) => Promise.resolve(new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } }));
+
+describe("withDailyCap", () => {
+  const found = { ok: true as const, line: [[135.2, 34.25] as [number, number]], distanceM: 10 };
+
+  test("calls go through until the day's cap, then the service looks unavailable, and the inner service is not called", async () => {
+    let calls = 0;
+    const inner: RoutingService = { snap: async () => (calls++, found) };
+    const limiter = createRateLimiter({ store: createMemoryRateLimitStore().store, secret: "r".repeat(32), now: () => new Date("2026-10-21T00:00:00Z") });
+    const capped = withDailyCap(inner, limiter);
+    for (let i = 0; i < AUTH_LIMITS.routingDaily.limit; i++) expect((await capped.snap(POINTS)).ok).toBe(true);
+    expect(await capped.snap(POINTS)).toEqual({ ok: false, reason: "routing_unavailable" });
+    expect(calls).toBe(AUTH_LIMITS.routingDaily.limit);
+  });
+});
 
 describe("parseSnapAnswer", () => {
   test("reads a line with heights and the distance in metres", () => {

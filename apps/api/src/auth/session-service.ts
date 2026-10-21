@@ -29,6 +29,8 @@ export interface SessionStore {
   remove(tokenHash: string): Promise<void>;
   /** Record a fresh-login re-check: sets lastLoginAt. */
   markFresh(id: string, at: Date): Promise<void>;
+  /** End every session of this account except one. */
+  removeOthers(userId: string, keepSessionId: string): Promise<void>;
 }
 
 export interface Authenticated {
@@ -95,6 +97,11 @@ export function createSessionService({
       const at = now();
       await store.markFresh(sessionId, at);
       return freshUntil(at);
+    },
+
+    /** The account's security changed (a passkey added or removed): every other device is signed out, this one stays. */
+    async endOthers(userId: string, keepSessionId: string): Promise<void> {
+      await store.removeOthers(userId, keepSessionId);
     },
 
     /** Log out: forget the session on the server. */
