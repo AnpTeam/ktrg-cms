@@ -8,7 +8,10 @@ import {
   mapStyle,
   markerKind,
   nextStopId,
+  pinScale,
   routeLineLayers,
+  sideLineCollection,
+  sideLineLayers,
   terrainLayerId,
   zoomLimits,
 } from "./map";
@@ -134,5 +137,28 @@ describe("editor base maps", () => {
     expect(Object.values(editorBaseVisibility("topo")).filter((v) => v === "visible")).toHaveLength(1);
     expect(editorBaseVisibility("topo")["base-topo"]).toBe("visible");
     expect(editorBaseVisibility("std")["gsi-base"]).toBe("visible");
+  });
+});
+
+describe("side trips and pin size", () => {
+  const width = (layer: { paint?: unknown } | undefined) => (layer!.paint as { "line-width": number })["line-width"];
+
+  test("a side trip is a thinner dashed blue line than the route's own", () => {
+    const [casing, line] = sideLineLayers("side");
+    expect(line!.paint).toMatchObject({ "line-color": "#1d4ed8", "line-dasharray": [2, 1.5] });
+    const main = routeLineLayers("route", false);
+    expect(width(line)).toBeLessThan(width(main[1]));
+    expect(width(casing)).toBeLessThan(width(main[0]));
+  });
+
+  test("a side trip with fewer than two points is not drawn", () => {
+    expect(sideLineCollection([[{ lat: 34, lng: 135 }], [{ lat: 34, lng: 135 }, { lat: 34.01, lng: 135.01 }]]).features).toHaveLength(1);
+  });
+
+  test("pins shrink as the map zooms out, never below just over half, and are full size when walking", () => {
+    expect(pinScale(17)).toBe(1);
+    expect(pinScale(15)).toBe(1);
+    expect(pinScale(13)).toBeGreaterThan(pinScale(11));
+    expect(pinScale(5)).toBe(0.55);
   });
 });

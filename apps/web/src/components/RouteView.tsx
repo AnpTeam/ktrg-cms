@@ -45,6 +45,7 @@ export function buildStops(
         stamped: spot.stamped,
         status: spot.status,
         href: spotHref(spot.id),
+        ...(spot.stopBy ? { sideTrip: true } : {}),
       },
     ];
   });
@@ -173,7 +174,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
 
           {stops.length > 0 ? (
             <section className="order-5 px-4 @4xl:order-none @4xl:px-0">
-              <TrailMapLoader stops={stops} line={route.line} places={mapPlaces} draft={draftPositions} settings={settings} mergeStops={mergeStops} placesFirst={placesFirst} />
+              <TrailMapLoader stops={stops} line={route.line} sideLines={route.sideLines?.map((s) => s.line)} places={mapPlaces} draft={draftPositions} settings={settings} mergeStops={mergeStops} placesFirst={placesFirst} />
             </section>
           ) : null}
 

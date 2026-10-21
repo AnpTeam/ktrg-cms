@@ -49,6 +49,7 @@ export function spotListItemFromApi(s: PublicSpot, stamped = false): SpotListIte
     nameEn: s.nameEn,
     status: s.status,
     ...(isPointKind(s.kind) ? { kind: s.kind } : {}),
+    ...(s.stopBy ? { stopBy: true } : {}),
     stamped,
     position: s.position ? { lat: s.position.lat, lng: s.position.lng, verified: true } : null,
     descriptionJa: s.descriptionJa,
@@ -116,6 +117,7 @@ export function routeDetailFromApi(
     spots: spots.map((s) => spotListItemFromApi(s, mine.has(s.id))),
     points: points.flatMap((p) => routePointFromApi(p) ?? []),
     line: line ? line.map(([lng, lat]) => ({ lat, lng })) : null,
+    sideLines: (r.sideLines ?? []).map((s) => ({ spotId: s.spotId, line: s.coordinates.map(([lng, lat]) => ({ lat, lng })) })),
     videoUrl: r.videoUrl,
     photoUrl: r.photoUrl,
   };

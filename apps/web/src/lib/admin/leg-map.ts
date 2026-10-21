@@ -10,10 +10,12 @@ export const LEG_SOURCE = "editor-legs";
 export const LEG_HIT = `${LEG_SOURCE}-hit`;
 
 export interface LegFeatureProps {
-  /** The key of the leg's first stop: how a leg is named. "" for a track that is not cut into legs yet. */
-  from: string;
+  /** The key of the stop the leg runs to: how a leg is named (unique, also for a side trip). "" for a track that is not cut into legs yet. */
+  id: string;
   state: "drawn" | "missing";
   active: boolean;
+  /** A side trip (寄り道) out to a stop-by place: drawn thin, blue and dashed. */
+  side: boolean;
 }
 
 export interface LegFeatures {
@@ -28,32 +30,35 @@ const xy = (points: readonly (readonly (number | undefined)[])[]): [number, numb
  * With no legs, `loose` (a line that has not been cut into legs) is shown as one feature.
  */
 export function legFeatures(
-  pairs: readonly { from: Stop; to: Stop }[],
+  pairs: readonly { from: Stop; to: Stop; side?: true }[],
   legs: readonly Leg[],
-  activeFrom: string | null,
-  preview: { from: string; points: readonly LngLatEle[] } | null,
+  activeId: string | null,
+  preview: { id: string; points: readonly LngLatEle[] } | null,
   loose: readonly LngLatEle[],
 ): LegFeatures {
   // A line that is not cut into legs (it does not follow the stops) is shown as it is, and there are no legs to pick.
   if (legs.length === 0 && loose.length >= 2) {
-    return { type: "FeatureCollection", features: [{ type: "Feature", properties: { from: "", state: "drawn", active: false }, geometry: { type: "LineString", coordinates: xy(loose) } }] };
+    return { type: "FeatureCollection", features: [{ type: "Feature", properties: { id: "", state: "drawn", active: false, side: false }, geometry: { type: "LineString", coordinates: xy(loose) } }] };
   }
-  const features: LegFeatures["features"] = pairs.map(({ from, to }) => {
+  const features: LegFeatures["features"] = pairs.map(({ from, to, side }) => {
     const leg = legOf(legs, from.key, to.key);
-    const points = preview && preview.from === from.key ? preview.points : leg ? leg.points : [[from.lng, from.lat], [to.lng, to.lat]];
-    return { type: "Feature", properties: { from: from.key, state: leg || preview?.from === from.key ? "drawn" : "missing", active: from.key === activeFrom }, geometry: { type: "LineString", coordinates: xy(points) } };
+    const points = preview && preview.id === to.key ? preview.points : leg ? leg.points : [[from.lng, from.lat], [to.lng, to.lat]];
+    return { type: "Feature", properties: { id: to.key, state: leg || preview?.id === to.key ? "drawn" : "missing", active: to.key === activeId, side: !!side }, geometry: { type: "LineString", coordinates: xy(points) } };
   });
   return { type: "FeatureCollection", features };
 }
 
 const DRAWN = ["==", ["get", "state"], "drawn"] as const;
+const MAIN_DRAWN = ["all", DRAWN, ["!", ["get", "side"]]] as const;
+const SIDE_DRAWN = ["all", DRAWN, ["get", "side"]] as const;
 
 /** The layers for the legs source, bottom to top. Fixed colours: the map tiles do not change with the app theme. */
 export function legLayers(): LayerSpecification[] {
   return [
-    { id: `${LEG_SOURCE}-casing`, type: "line", source: LEG_SOURCE, filter: DRAWN as never, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#ffffff", "line-opacity": 0.9, "line-width": ["case", ["get", "active"], 11, 9] } },
+    { id: `${LEG_SOURCE}-casing`, type: "line", source: LEG_SOURCE, filter: MAIN_DRAWN as never, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#ffffff", "line-opacity": 0.9, "line-width": ["case", ["get", "active"], 11, 9] } },
     { id: `${LEG_SOURCE}-missing`, type: "line", source: LEG_SOURCE, filter: ["==", ["get", "state"], "missing"], layout: { "line-cap": "butt", "line-join": "round" }, paint: { "line-color": "#4b4b4b", "line-width": 3, "line-dasharray": [2, 1.6] } },
-    { id: `${LEG_SOURCE}-line`, type: "line", source: LEG_SOURCE, filter: DRAWN as never, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": ["case", ["get", "active"], "#d22d1f", "#8a3b00"], "line-width": ["case", ["get", "active"], 7, 5] } },
+    { id: `${LEG_SOURCE}-line`, type: "line", source: LEG_SOURCE, filter: MAIN_DRAWN as never, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": ["case", ["get", "active"], "#d22d1f", "#8a3b00"], "line-width": ["case", ["get", "active"], 7, 5] } },
+    { id: `${LEG_SOURCE}-side`, type: "line", source: LEG_SOURCE, filter: SIDE_DRAWN as never, layout: { "line-cap": "butt", "line-join": "round" }, paint: { "line-color": ["case", ["get", "active"], "#d22d1f", "#1d4ed8"], "line-width": ["case", ["get", "active"], 4, 2.5], "line-dasharray": [2, 1.5] } },
     { id: LEG_HIT, type: "line", source: LEG_SOURCE, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#000000", "line-opacity": 0, "line-width": 18 } },
   ];
 }

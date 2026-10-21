@@ -3,7 +3,7 @@ import { stampableByDefault } from "../db/schema/content";
 import { cleanTranslations } from "../db/translations";
 import { isHttpsUrl, isPhotoUrl } from "../lib/https-url";
 import { isAllowedVideoUrl } from "./video-url";
-import { lineLengthKm, parseLine, plainLine, simplifyLine, sketchOf, type LineString } from "./line";
+import { lineLengthKm, parseLine, plainLine, sideLinesOf, simplifyLine, sketchOf, type LineString } from "./line";
 import type {
   ContentStore,
   Prefecture,
@@ -72,6 +72,8 @@ export interface PublicRoute {
   sketch: [number, number][] | null;
   /** The drawn line (the detail only). */
   line: LineString | null;
+  /** Side trips (寄り道) to published places, each a stretch out from the route (the detail only). */
+  sideLines: { spotId: string; coordinates: LineString["coordinates"] }[];
   /** Corners of the box around the line, for the overview map. */
   bounds: { west: number; south: number; east: number; north: number } | null;
 }
@@ -91,7 +93,7 @@ function boundsOf(line: LineString | null): PublicRoute["bounds"] {
   return { west, south, east, north };
 }
 
-function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolean): PublicRoute {
+function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolean, visibleSpotIds: ReadonlySet<string> = new Set()): PublicRoute {
   // A line nobody has checked is not shown: not the line, not its silhouette, not the box around it.
   const shown = r.lineVerified ? r.geometry : null;
   return {
@@ -117,6 +119,7 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     publishedSpotCount,
     sketch: shown ? sketchOf(shown) : null,
     line: withLine && shown ? plainLine(shown) : null,
+    sideLines: withLine && shown ? sideLinesOf(shown, visibleSpotIds) : [],
     bounds: boundsOf(shown),
   };
 }
@@ -379,7 +382,8 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       const published = found.spots.filter((s) => s.published).sort((a, b) => a.sortOrder - b.sortOrder);
       const stamps = published.filter((s) => s.stampable);
       const points = published.filter((s) => !s.stampable);
-      return { route: toPublicRoute(found.route, stamps.length, true), spots: stamps.map(toPublicSpot), points: points.map(toPublicSpot) };
+      // A side trip is shown only once the place it leads to is published, like the place itself.
+      return { route: toPublicRoute(found.route, stamps.length, true, new Set(published.map((s) => s.id))), spots: stamps.map(toPublicSpot), points: points.map(toPublicSpot) };
     },
 
     /** Status of every published place, nothing else: small enough to poll every minute. */

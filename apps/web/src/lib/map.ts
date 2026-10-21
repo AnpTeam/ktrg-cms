@@ -172,6 +172,27 @@ export function routeLineLayers(sourceId: string, approximate: boolean): LayerSp
   ];
 }
 
+/**
+ * Side trips (寄り道): a thin, blue, dashed line apart from the route's own, so a visitor can tell "a detour you may take"
+ * from the way itself. Its source holds one LineString feature for each side trip.
+ */
+export function sideLineLayers(sourceId: string): LayerSpecification[] {
+  return [
+    { id: `${sourceId}-casing`, type: "line", source: sourceId, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#ffffff", "line-width": 4.5, "line-opacity": 0.8 } },
+    { id: `${sourceId}-line`, type: "line", source: sourceId, layout: { "line-cap": "butt", "line-join": "round" }, paint: { "line-color": "#1d4ed8", "line-width": 2.5, "line-dasharray": [2, 1.5] } },
+  ];
+}
+
+export function sideLineCollection(lines: readonly (readonly Position[])[]): { type: "FeatureCollection"; features: LineFeature[] } {
+  return { type: "FeatureCollection", features: lines.filter((l) => l.length >= 2).map(lineFeature) };
+}
+
+/**
+ * How big the numbered pins are at a zoom, as a share of their full size: full from zoom 15 (walking), down to just over half
+ * when the whole course is in view, so they do not cover the map when zoomed out.
+ */
+export const pinScale = (zoom: number): number => Math.min(1, Math.max(0.55, 0.55 + (zoom - 11) * 0.1125));
+
 export type MarkerKind = "neutral" | "todo" | "next" | "stamped";
 
 /** Which marker shape a stop gets. Signed out (stamped === null) is always neutral. */

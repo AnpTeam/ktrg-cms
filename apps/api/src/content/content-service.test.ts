@@ -210,6 +210,22 @@ describe("what visitors see", () => {
     // a leg that is not a real stretch between two waypoint ids is refused
     expect(await svc.updateRoute(ADMIN, r.id, saved.value.updatedAt, { geometry: { type: "LineString", coordinates: [[135, 34], [135.01, 34.01]], legs: [{ from: "x", to: B, coordinates: [[135, 34], [135.01, 34.01]] }] } })).toEqual({ ok: false, reason: "invalid_line" });
   });
+  test("a side trip is shown only once the place it leads to is published, and apart from the main line", async () => {
+    const A = "11111111-1111-4111-8111-111111111111";
+    const r = await route({});
+    const out = await spot(r.id, { stopBy: true, lat: 34.3, lng: 135.1, positionVerified: true, positionSource: "公式", permissionConfirmed: true });
+    const side = [[135, 34], [135.005, 34.004]] as [number, number][];
+    const geometry = { type: "LineString" as const, coordinates: [[135, 34], [135.01, 34.01]] as [number, number][], legs: [{ from: A, to: out.id, coordinates: side, side: true as const }] };
+    const saved = await svc.updateRoute(ADMIN, r.id, r.updatedAt, { geometry, lineVerified: true, lineSource: "公式" });
+    if (!saved.ok) throw new Error(saved.reason);
+
+    expect((await svc.publicRoute(r.id))?.route.sideLines).toEqual([]);
+    await svc.publishSpot(ADMIN, out.id);
+    const shown = (await svc.publicRoute(r.id))?.route;
+    expect(shown?.sideLines).toEqual([{ spotId: out.id, coordinates: side }]);
+    expect(shown?.line?.coordinates).toHaveLength(2); // the main line does not take the side trip in
+  });
+
   test("a checked line is shown; redrawing it hides it again until it is checked again", async () => {
     const r = await route({ geometry: LINE });
     expect((await svc.publicRoute(r.id))?.route.line).toBeNull();
