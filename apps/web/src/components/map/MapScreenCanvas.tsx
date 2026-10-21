@@ -227,7 +227,7 @@ export function MapScreenCanvas({
     (map.getSource(AREAS) as GeoJSONSource | undefined)?.setData(layers.has("courses") || focus ? areaCollection(routes, focus?.id ?? null) : EMPTY);
     const points = focus?.line ?? focus?.stops?.map((s) => s.position) ?? null;
     (map.getSource(DETAIL) as GeoJSONSource | undefined)?.setData(points && points.length > 1 ? lineFeature(points) : EMPTY);
-    (map.getSource(SIDE) as GeoJSONSource | undefined)?.setData(focus?.sideLines?.length ? sideLineCollection(focus.sideLines) : EMPTY);
+    (map.getSource(SIDE) as GeoJSONSource | undefined)?.setData(layers.has("side") && focus?.sideLines?.length ? sideLineCollection(focus.sideLines) : EMPTY);
   }, [ready, routes, routeId, focus, mapGen, layers]);
 
   // Navigation: the walking path off the course line, and the visitor's position.
@@ -497,7 +497,7 @@ export function MapScreenCanvas({
       <div role="group" aria-label={t`地図に出すもの`} style={{ marginLeft: coveredLeftPx }} className="absolute inset-x-3 top-[5rem] z-[4] flex gap-2 md:top-16 overflow-x-auto pb-1">
         {offeredLayers(routes).map((layer) => {
           const on = layers.has(layer);
-          const name = layer === "courses" ? t`コース` : layer === "mounds" ? t`経塚` : groupNames[layer];
+          const name = layer === "courses" ? t`コース` : layer === "mounds" ? t`経塚` : layer === "side" ? t`寄り道の線` : groupNames[layer];
           return (
             <button
               key={layer}
@@ -506,7 +506,7 @@ export function MapScreenCanvas({
               onClick={() => toggleLayer(layer)}
               className={`tap-target flex shrink-0 items-center gap-2 rounded-full border border-ink px-4 text-lg font-bold ${on ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"}`}
             >
-              {layer === "courses" || layer === "mounds" ? null : <PlaceGroupIcon group={layer} />}
+              {layer === "courses" || layer === "mounds" || layer === "side" ? null : <PlaceGroupIcon group={layer} />}
               {name}
             </button>
           );

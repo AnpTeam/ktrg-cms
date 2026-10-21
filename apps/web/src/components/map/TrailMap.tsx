@@ -110,6 +110,9 @@ export function TrailMap({
   const [failed, setFailed] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [terrain, setTerrain] = useState(false);
+  // Side trips (寄り道) are off at first: some places are worth a mention without being a stop on the way.
+  const [showSide, setShowSide] = useState(false);
+  const hasSide = sideLines.some((l) => l.length >= 2);
   const [selected, setSelected] = useState<Selection>(null);
   // Every kind of place that exists on this course is on from the start when the visitor chose that.
   const [active, setActive] = useState<ReadonlySet<PlaceGroup>>(
@@ -323,6 +326,14 @@ export function TrailMap({
 
   useEffect(() => {
     const map = mapRef.current;
+    if (!map || !loaded) return;
+    for (const id of [`${SIDE_SOURCE}-casing`, `${SIDE_SOURCE}-line`]) {
+      if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", showSide ? "visible" : "none");
+    }
+  }, [showSide, loaded, mapGen]);
+
+  useEffect(() => {
+    const map = mapRef.current;
     // Only on a map whose style has finished loading, and only if it has the overlay.
     if (map && loaded && map.isStyleLoaded() && map.getLayer(terrainLayerId)) {
       map.setLayoutProperty(terrainLayerId, "visibility", terrain ? "visible" : "none");
@@ -474,6 +485,12 @@ export function TrailMap({
           </div>
         )}
       </div>
+
+      {hasSide ? (
+        <button type="button" aria-pressed={showSide} onClick={() => setShowSide((on) => !on)} className={`${buttonClass} w-fit`}>
+          {t`寄り道の線を見る`}
+        </button>
+      ) : null}
 
       {anyPlaces ? (
         <div className="flex flex-col gap-2">
