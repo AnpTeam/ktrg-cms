@@ -226,6 +226,23 @@ describe("what visitors see", () => {
     expect(shown?.line?.coordinates).toHaveLength(2); // the main line does not take the side trip in
   });
 
+  test("a ridden stretch (ferry ...) reaches visitors with its minutes once its place is published; a bad one is refused", async () => {
+    const A = "11111111-1111-4111-8111-111111111111";
+    const r = await route({});
+    const port = await spot(r.id, { lat: 34.3, lng: 135.1, positionVerified: true, positionSource: "公式", permissionConfirmed: true });
+    const coordinates = [[135, 34], [135.01, 34.01]] as [number, number][];
+    const line = (ride: unknown) => ({ geometry: { type: "LineString" as const, coordinates, legs: [{ from: A, to: port.id, coordinates, ride }] }, lineVerified: true, lineSource: "公式" });
+    const saved = await svc.updateRoute(ADMIN, r.id, r.updatedAt, line({ mode: "ferry", minutes: 20 }) as never);
+    if (!saved.ok) throw new Error(saved.reason);
+
+    expect((await svc.publicRoute(r.id))?.route.rides).toEqual([]);
+    await svc.publishSpot(ADMIN, port.id);
+    expect((await svc.publicRoute(r.id))?.route.rides).toEqual([{ spotId: port.id, mode: "ferry", minutes: 20 }]);
+    for (const bad of [{ mode: "rocket", minutes: 20 }, { mode: "ferry", minutes: 0 }, { mode: "ferry", minutes: 1.5 }, "ferry"]) {
+      expect(await svc.updateRoute(ADMIN, r.id, saved.value.updatedAt, line(bad) as never)).toEqual({ ok: false, reason: "invalid_line" });
+    }
+  });
+
   test("a checked line is shown; redrawing it hides it again until it is checked again", async () => {
     const r = await route({ geometry: LINE });
     expect((await svc.publicRoute(r.id))?.route.line).toBeNull();
