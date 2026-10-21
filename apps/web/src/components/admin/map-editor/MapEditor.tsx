@@ -1,7 +1,7 @@
 "use client";
 
 import "maplibre-gl/dist/maplibre-gl.css";
-import { useEffect, useRef, useState, type ChangeEvent, type DragEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type DragEvent, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import { TerraDraw, TerraDrawLineStringMode, TerraDrawSelectMode } from "terra-draw";
@@ -64,9 +64,12 @@ const asPositions = (line: readonly LngLatEle[]) => line.map((p) => ({ lng: p[0]
 // Where the map starts when there is nothing to show yet: the Katsuragi area.
 const START = { center: [135.45, 34.45] as [number, number], zoom: 9 };
 const markerClass =
-  "flex size-10 items-center justify-center rounded-full border-2 border-paper bg-brand text-lg font-bold text-on-brand shadow-md data-[selected=true]:ring-4 data-[selected=true]:ring-ink data-[stopby=true]:border-dashed data-[unplaced=true]:opacity-60";
+  "flex size-10 min-h-0 min-w-0 p-0 items-center justify-center rounded-full border-2 border-paper bg-brand text-lg font-bold text-on-brand shadow-md data-[selected=true]:ring-4 data-[selected=true]:ring-ink data-[stopby=true]:border-dashed data-[unplaced=true]:opacity-60";
 const dotClass =
-  "flex size-7 items-center justify-center rounded-full border-2 border-ink bg-paper text-sm font-bold text-ink shadow-md data-[selected=true]:ring-4 data-[selected=true]:ring-ink data-[stopby=true]:border-dashed data-[unplaced=true]:opacity-60";
+  "flex size-7 min-h-0 min-w-0 p-0 items-center justify-center rounded-full border-2 border-ink bg-paper text-sm font-bold text-ink shadow-md data-[selected=true]:ring-4 data-[selected=true]:ring-ink data-[stopby=true]:border-dashed data-[unplaced=true]:opacity-60";
+const chipClass = "inline-flex h-9 min-h-0 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-line bg-paper px-3 text-sm font-bold hover:bg-surface disabled:opacity-40 disabled:hover:bg-paper";
+const floatClass = "flex items-center gap-0.5 rounded-xl border border-line bg-paper/95 p-1 shadow-md backdrop-blur-sm";
+const iconBtn = "inline-flex h-8 min-h-0 min-w-8 items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-bold hover:bg-surface disabled:opacity-40 disabled:hover:bg-transparent";
 const toolClass = "tap-target inline-flex items-center justify-center rounded-xl border-2 px-3 text-base font-bold disabled:opacity-40";
 
 const same2d = (a: readonly number[], b: readonly number[]) => a[0] === b[0] && a[1] === b[1];
@@ -468,7 +471,7 @@ export function MapEditor(props: MapEditorProps) {
     setMode(tool === "select" ? (latest.current.line.length >= 2 ? "edit" : "pan") : tool);
   }
 
-  const toolButton = (tool: "select" | "place" | "draw", label: string, shortcut: string) => {
+  const toolButton = (tool: "select" | "place" | "draw", label: string, shortcut: string, icon: ReactNode) => {
     const pressed = tool === "select" ? mode === "pan" || mode === "edit" : mode === tool;
     return (
       <button
@@ -476,11 +479,12 @@ export function MapEditor(props: MapEditorProps) {
         type="button"
         aria-pressed={pressed}
         aria-keyshortcuts={shortcut}
+        title={`${label} (${shortcut})`}
         onClick={() => chooseTool(tool)}
-        className={`${toolClass} ${pressed ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"}`}
+        className={`${iconBtn} ${pressed ? "bg-ink text-paper hover:bg-ink" : "text-ink"}`}
       >
-        {label}
-        <kbd className="ml-2 rounded border border-current px-1.5 text-sm font-normal">{shortcut}</kbd>
+        {icon}
+        <span className="hidden sm:inline">{label}</span>
       </button>
     );
   };
@@ -501,59 +505,26 @@ export function MapEditor(props: MapEditorProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center gap-2" role="toolbar" aria-label={t`地図の道具`}>
-        {toolButton("select", t`選ぶ・動かす`, "V")}
-        {toolButton("place", t`経由地を置く`, "P")}
-        {toolButton("draw", t`線を描く`, "L")}
-        <span className="mx-1 w-px self-stretch bg-line" aria-hidden="true" />
-        <button type="button" onClick={() => fileInput.current?.click()} className={`${toolClass} border-ink bg-ink text-paper`}>
+      <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t`道すじ`}>
+        <button type="button" onClick={() => fileInput.current?.click()} className="inline-flex h-9 min-h-0 min-w-0 items-center justify-center rounded-lg border border-ink bg-ink px-3 text-sm font-bold text-paper">
           {t`GPXファイルから読み込む`}
         </button>
         <input ref={fileInput} type="file" accept=".gpx,application/gpx+xml,text/xml,application/xml" onChange={onFile} className="sr-only" tabIndex={-1} aria-hidden="true" />
-        <button
-          type="button"
-          disabled={building || snapping || props.places.filter((p) => !p.stopBy && p.lat !== null).length < 2}
-          onClick={() => void makeLine("trail")}
-          className={`${toolClass} border-line bg-paper`}
-          title={t`経由地を順に、地図の道でつなぎます（寄り道は通りません）`}
-        >
-          {building ? t`調べています…` : t`経由地をつないで道をつくる`}
+        <span className="mx-1 h-6 w-px bg-line" aria-hidden="true" />
+        <span className="text-sm text-muted">{t`経由地から線を作る`}</span>
+        <button type="button" disabled={building || snapping || props.places.filter((p) => !p.stopBy && p.lat !== null).length < 2} onClick={() => void makeLine("trail")} className={chipClass} title={t`経由地を順に、地図の道でつなぎます（寄り道は通りません）`}>
+          {building ? t`調べています…` : t`道でつなぐ`}
         </button>
-        <button
-          type="button"
-          disabled={building || snapping || props.places.filter((p) => !p.stopBy && p.lat !== null).length < 2}
-          onClick={() => void makeLine("direct")}
-          className={`${toolClass} border-line bg-paper`}
-          title={t`経由地を順に、まっすぐな線でつなぎます`}
-        >
-          {t`まっすぐにつなぐ`}
+        <button type="button" disabled={building || snapping || props.places.filter((p) => !p.stopBy && p.lat !== null).length < 2} onClick={() => void makeLine("direct")} className={chipClass} title={t`経由地を順に、まっすぐな線でつなぎます`}>
+          {t`まっすぐつなぐ`}
         </button>
-        <button
-          type="button"
-          disabled={building || snapping || snapPoints(props.line, props.places.filter((p) => !p.stopBy)) === null}
-          onClick={snapToTrails}
-          className={`${toolClass} border-line bg-paper`}
-          title={t`描いた線を、地図の道に沿わせます`}
-        >
+        <span className="mx-1 h-6 w-px bg-line" aria-hidden="true" />
+        <span className="text-sm text-muted">{t`線を整える`}</span>
+        <button type="button" disabled={building || snapping || snapPoints(props.line, props.places.filter((p) => !p.stopBy)) === null} onClick={snapToTrails} className={chipClass} title={t`描いた線を、地図の道に沿わせます`}>
           {snapping ? t`調べています…` : t`道に沿わせる`}
         </button>
-        <button type="button" disabled={props.line.length < 3} onClick={smooth} className={`${toolClass} border-line bg-paper`} title={t`線の角を、丸くなめらかにします`}>
+        <button type="button" disabled={props.line.length < 3} onClick={smooth} className={chipClass} title={t`線の角を、丸くなめらかにします`}>
           {t`なめらかにする`}
-        </button>
-        <button type="button" disabled={!props.canUndo} onClick={props.onUndo} className={`${toolClass} border-line bg-paper`}>
-          {t`元に戻す`}
-        </button>
-        <button type="button" disabled={!props.canRedo} onClick={props.onRedo} className={`${toolClass} border-line bg-paper`}>
-          {t`やり直す`}
-        </button>
-        <button type="button" disabled={props.line.length === 0} onClick={() => props.onLine([])} className={`${toolClass} border-line bg-paper`}>
-          {t`線を消す`}
-        </button>
-        <button type="button" onClick={fit} className={`${toolClass} border-line bg-paper`}>
-          {t`全体を見る`}
-        </button>
-        <button type="button" aria-pressed={terrain} onClick={toggleTerrain} className={`${toolClass} ${terrain ? "border-ink bg-ink text-paper" : "border-line bg-paper"}`}>
-          {t`地形の陰影`}
         </button>
       </div>
 
@@ -601,7 +572,7 @@ export function MapEditor(props: MapEditorProps) {
         </ul>
       ) : null}
 
-      <p className="rounded-xl bg-paper px-4 py-3 text-base" aria-live="polite">
+      <p className="text-sm text-muted" aria-live="polite">
         {note ?? hint}
       </p>
 
@@ -637,6 +608,34 @@ export function MapEditor(props: MapEditorProps) {
         onDrop={onDrop}
       >
         <div ref={container} className="h-full w-full" />
+        <div className="absolute left-3 top-3 flex flex-col items-start gap-2">
+          <div role="toolbar" aria-label={t`地図の道具`} className={floatClass}>
+            {toolButton("select", t`選ぶ・動かす`, "V", <CursorIcon />)}
+            {toolButton("place", t`経由地を置く`, "P", <PinIcon />)}
+            {toolButton("draw", t`線を描く`, "L", <PencilIcon />)}
+          </div>
+        </div>
+        <div className="absolute bottom-8 left-3 flex flex-wrap gap-2">
+          <div className={floatClass} role="group" aria-label={t`やり直し`}>
+            <button type="button" disabled={!props.canUndo} onClick={props.onUndo} className={iconBtn} title={t`元に戻す`} aria-label={t`元に戻す`}>
+              <UndoIcon />
+            </button>
+            <button type="button" disabled={!props.canRedo} onClick={props.onRedo} className={iconBtn} title={t`やり直す`} aria-label={t`やり直す`}>
+              <RedoIcon />
+            </button>
+            <button type="button" disabled={props.line.length === 0} onClick={() => props.onLine([])} className={`${iconBtn} text-danger`} title={t`線を消す`} aria-label={t`線を消す`}>
+              <TrashIcon />
+            </button>
+          </div>
+          <div className={floatClass} role="group" aria-label={t`見え方`}>
+            <button type="button" onClick={fit} className={iconBtn} title={t`全体を見る`} aria-label={t`全体を見る`}>
+              <FitIcon />
+            </button>
+            <button type="button" aria-pressed={terrain} onClick={toggleTerrain} className={`${iconBtn} ${terrain ? "bg-ink text-paper hover:bg-ink" : ""}`} title={t`地形の陰影`} aria-label={t`地形の陰影`}>
+              <TerrainIcon />
+            </button>
+          </div>
+        </div>
         {dropping ? <p className="absolute inset-0 flex items-center justify-center bg-paper/80 text-xl font-bold">{t`GPXファイルをここで離すと、読み込みます`}</p> : null}
         {!ready ? <p className="absolute inset-0 flex items-center justify-center text-lg">{t`地図を読み込み中…`}</p> : null}
       </div>
@@ -695,3 +694,55 @@ function PlaceGroup({ title, places, selectedKey, onSelectPlace, onRemovePlace, 
     </section>
   );
 }
+
+// Small line icons for the bars on the map (each button also has a name for screen readers and a tooltip).
+function Svg({ children }: { children: ReactNode }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="size-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {children}
+    </svg>
+  );
+}
+const CursorIcon = () => (
+  <Svg>
+    <path d="M4 4l7 17 2.5-7.5L21 11z" />
+  </Svg>
+);
+const PinIcon = () => (
+  <Svg>
+    <path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z" />
+    <circle cx="12" cy="10" r="2.5" />
+  </Svg>
+);
+const PencilIcon = () => (
+  <Svg>
+    <path d="M4 20l1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19z" />
+  </Svg>
+);
+const UndoIcon = () => (
+  <Svg>
+    <path d="M9 14L4 9l5-5" />
+    <path d="M4 9h10a6 6 0 0 1 0 12h-3" />
+  </Svg>
+);
+const RedoIcon = () => (
+  <Svg>
+    <path d="M15 14l5-5-5-5" />
+    <path d="M20 9H10a6 6 0 0 0 0 12h3" />
+  </Svg>
+);
+const TrashIcon = () => (
+  <Svg>
+    <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" />
+  </Svg>
+);
+const FitIcon = () => (
+  <Svg>
+    <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" />
+  </Svg>
+);
+const TerrainIcon = () => (
+  <Svg>
+    <path d="M3 20l6-11 4 7 3-4 5 8z" />
+  </Svg>
+);
