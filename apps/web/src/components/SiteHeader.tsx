@@ -171,7 +171,7 @@ export function SiteHeader({
             </button>
             {signedIn ? (
               <div className="flex flex-col gap-3">
-                <Link
+                <Link prefetch={false}
                   href="/stamps"
                   className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface"
                 >
@@ -190,10 +190,10 @@ export function SiteHeader({
               </div>
             ) : (
               <div className="flex flex-col gap-3">
-                <Link href={loginHref} className={`${wideButton} bg-ink text-paper`}>
+                <Link prefetch={false} href={loginHref} className={`${wideButton} bg-ink text-paper`}>
                   {t`ログイン`}
                 </Link>
-                <Link href={registerHref} className={`${wideButton} border border-ink text-ink hover:bg-surface`}>
+                <Link prefetch={false} href={registerHref} className={`${wideButton} border border-ink text-ink hover:bg-surface`}>
                   {t`新規登録`}
                 </Link>
               </div>
@@ -210,7 +210,7 @@ export function SiteHeader({
               <LocaleSwitcher />
             </div>
             <div className="flex flex-col gap-2 border-t-2 border-line pt-4">
-              <Link
+              <Link prefetch={false}
                 href="/settings"
                 className="tap-target flex items-center rounded-xl border border-ink px-4 text-lg font-bold text-ink hover:bg-paper"
               >
@@ -227,7 +227,7 @@ export function SiteHeader({
                 { path: "/licenses", label: t`ライセンス情報` },
               ].map(({ path, label }) => (
                 <li key={path}>
-                  <Link href={path} className="tap-target flex items-center justify-between py-1 text-lg font-bold">
+                  <Link prefetch={false} href={path} className="tap-target flex items-center justify-between py-1 text-lg font-bold">
                     {label}
                     <ChevronIcon />
                   </Link>
