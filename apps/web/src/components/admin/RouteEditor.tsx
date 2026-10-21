@@ -21,7 +21,7 @@ import {
   type TextField,
   type RouteDraft,
 } from "@/lib/admin/route-draft";
-import { draftProblems, placeChanged, planSave, withLegIds, type DraftProblem } from "@/lib/admin/save-plan";
+import { draftProblems, placeChanged, planSave, restoreHeld, withLegIds, type DraftProblem } from "@/lib/admin/save-plan";
 import type { Prefecture } from "@/lib/admin/types";
 import { formatUpdated } from "@/lib/format";
 import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
@@ -151,15 +151,22 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     if (saving || !dirty) return;
     const found = draftProblems(draft);
     setProblems(found);
-    if (found.length > 0) {
-      const first = found[0]!.kind;
+    // A problem with the route itself stops the save. An unfinished waypoint does not: it is held back (what was typed stays on
+    // screen, in red) and everything else is saved, so one blank row never costs the rest of the work.
+    const routeProblem = found.find((p) => !p.kind.startsWith("place_"));
+    if (routeProblem) {
       setMessage({ kind: "error", text: t`保存できません。赤く示した項目を直してください。` });
-      showFirstProblem(first); // the tab that holds the red item, and the item itself
+      showFirstProblem(routeProblem.kind); // the tab that holds the red item, and the item itself
       return;
     }
+    const held = new Set(found.flatMap((p) => ("key" in p ? [p.key] : [])));
     setSaving(true);
     setMessage(null);
-    const snapshot = draft;
+    // What is sent: without the held waypoints (a saved one is sent as it was saved, a new one is left out).
+    const snapshot: RouteDraft =
+      held.size === 0
+        ? draft
+        : { ...draft, places: draft.places.flatMap((p) => (!held.has(p.key) ? [p] : savedRef.current.places.filter((s) => s.key === p.key))) };
     let routeId = snapshot.id;
     let routeUpdatedAt = snapshot.updatedAt;
     let base = savedRef.current;
@@ -259,13 +266,18 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     if (fresh.ok) {
       const next = draftFromServer(fresh.data.route, fresh.data.spots);
       const index = snapshot.places.findIndex((p) => p.key === selectedKey);
-      dispatch({ type: "loaded", draft: next });
+      dispatch({ type: "loaded", draft: restoreHeld(next, draft, held) });
       setSavedCopy(next);
       setSelectedKey(index >= 0 ? (next.places[index]?.key ?? null) : null);
       attempted.current = null;
     }
-    setMessage({ kind: "ok", text: t`保存しました。` });
-    setProblems([]);
+    const heldCount = held.size;
+    setMessage(
+      heldCount === 0
+        ? { kind: "ok", text: t`保存しました。` }
+        : { kind: "error", text: t`保存しました。ただし、未完成の経由地が${heldCount}件あり、まだ保存していません（赤く示した項目）。` },
+    );
+    setProblems(heldCount === 0 ? [] : found);
     setSaving(false);
     if (snapshot.id === null) router.replace(`/admin/routes/${routeId}`);
   }
