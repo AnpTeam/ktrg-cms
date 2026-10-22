@@ -154,7 +154,7 @@ export function createMeService({
       return result ? present(result.profile) : null;
     },
 
-    /** Delete the accounts whose grace period is over. Called hourly by the purge-deletions workflow (POST /internal/purge-deletions); `bun run purge:deletions` does the same by hand. */
+    /** Delete the accounts whose grace period is over. Called hourly by the purge-deletions workflow (POST /internal/purge-deletions). */
     purgeDue(): Promise<number> {
       return store.purgeDue(new Date(now().getTime() - DELETION_GRACE_DAYS * DAY_MS));
     },

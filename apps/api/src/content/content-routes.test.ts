@@ -116,10 +116,10 @@ describe("an admin edits a route and its places", () => {
   test("create, read back, save with updatedAt, and a stale save is 409 conflict", async () => {
     const { call, cookie, route } = await created();
     expect(route).toMatchObject({ nameJa: "甲山から孝子越え", prefecture: "wakayama" });
-    const ok = await call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt: route.updatedAt, nameEn: "Koyama", geometry: LINE } });
+    const ok = await call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt: route.updatedAt, nameEn: "Koyama", geometry: LINE, walkStyle: "out_and_back" } });
     expect(ok.status).toBe(200);
     const saved = ((await ok.json()) as Json).route as Json;
-    expect(saved).toMatchObject({ nameEn: "Koyama", distanceKm: 1.44 });
+    expect(saved).toMatchObject({ nameEn: "Koyama", distanceKm: 1.44, walkStyle: "out_and_back" });
     const stale = await call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt: route.updatedAt, nameEn: "Overwritten" } });
     expect(stale.status).toBe(409);
     expect(await stale.json()).toEqual({ ok: false, error: "conflict" });
@@ -135,6 +135,7 @@ describe("an admin edits a route and its places", () => {
     const video = await patch({ videoUrl: "https://example.com/x" });
     expect([video.status, await video.json()]).toEqual([400, { ok: false, error: "invalid_video_url" }]);
     expect((await patch({ prefecture: "tokyo" })).status).toBe(422);
+    expect((await patch({ walkStyle: "zigzag" })).status).toBe(422);
     expect((await patch({ distanceKm: -1 })).status).toBe(422);
     expect((await call("PATCH", `/admin/routes/not-a-uuid`, { cookie, body: { updatedAt: route.updatedAt } })).status).toBe(422);
     expect((await call("POST", "/admin/routes", { cookie, body: { nameJa: "" } })).status).toBe(422);

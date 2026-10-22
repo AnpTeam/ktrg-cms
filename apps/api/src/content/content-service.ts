@@ -8,6 +8,7 @@ import type {
   ContentStore,
   Prefecture,
   Result,
+  WalkStyle,
   RouteFields,
   RouteRow,
   RouteSummaryRow,
@@ -58,6 +59,7 @@ export interface PublicRoute {
   difficulty: string | null;
   expectedTimeMin: number | null;
   prefecture: Prefecture | null;
+  walkStyle: WalkStyle | null;
   municipality: string | null;
   videoUrl: string | null;
   historyJa: string | null;
@@ -109,6 +111,7 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     difficulty: r.difficulty,
     expectedTimeMin: r.expectedTimeMin,
     prefecture: r.prefecture,
+    walkStyle: r.walkStyle,
     municipality: r.municipality,
     videoUrl: r.videoUrl,
     historyJa: r.historyJa,
@@ -164,6 +167,12 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
   // shortcut: the public route list (which reads every route's line to draw its silhouette) is kept per process for
   // `publicRoutesTtlMs`, so a change shows up there after at most that long; precompute sketch/bounds columns if it must be instant.
   let routesCache: { at: number; value: Promise<PublicRoute[]> } | null = null;
+  // The status poll reads every published place, so it shares the same short per-process cache.
+  const listStatuses = () =>
+    store.listPublishedSpots().then((rows) =>
+      rows.map((s) => ({ id: s.id, status: s.status, statusNoteJa: s.statusNoteJa, statusNoteEn: s.statusNoteEn, statusUpdatedAt: s.statusUpdatedAt })),
+    );
+  let statusCache: { at: number; value: ReturnType<typeof listStatuses> } | null = null;
   const photoHosts = deps.photoHosts ?? [];
 
   /** Turn a request's route fields into what the store keeps, or say what is wrong. */
@@ -183,6 +192,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
     if (input.elevationGainM !== undefined) out.elevationGainM = input.elevationGainM;
     if (input.expectedTimeMin !== undefined) out.expectedTimeMin = input.expectedTimeMin;
     if (input.prefecture !== undefined) out.prefecture = input.prefecture;
+    if (input.walkStyle !== undefined) out.walkStyle = input.walkStyle;
     if (input.videoUrl !== undefined) {
       const v = text(input.videoUrl);
       if (v && !isAllowedVideoUrl(v)) return bad("invalid_video_url");
@@ -391,13 +401,14 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
 
     /** Status of every published place, nothing else: small enough to poll every minute. */
     async publicSpotStatuses() {
-      return (await store.listPublishedSpots()).map((s) => ({
-        id: s.id,
-        status: s.status,
-        statusNoteJa: s.statusNoteJa,
-        statusNoteEn: s.statusNoteEn,
-        statusUpdatedAt: s.statusUpdatedAt,
-      }));
+      const ttl = deps.publicRoutesTtlMs ?? 0;
+      if (ttl > 0 && statusCache && Date.now() - statusCache.at < ttl) return statusCache.value;
+      const value = listStatuses();
+      if (ttl > 0) {
+        statusCache = { at: Date.now(), value };
+        value.catch(() => (statusCache = null)); // never keep a failure
+      }
+      return value;
     },
 
     /** A draft place looks like a missing one. */

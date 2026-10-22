@@ -12,6 +12,7 @@ export interface PublicRoute {
   difficulty: string | null;
   expectedTimeMin: number | null;
   prefecture: string | null;
+  walkStyle?: string | null;
   municipality: string | null;
   videoUrl: string | null;
   historyJa: string | null;

@@ -1,7 +1,7 @@
-import { and, eq, isNotNull, isNull, lte, sql } from "drizzle-orm";
+import { and, eq, isNotNull, isNull, lt, lte, sql } from "drizzle-orm";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
-import { otpCodes, users } from "../db/schema";
+import { otpCodes, sessions, users } from "../db/schema";
 import type { MeStore, StoredProfile } from "./me-service";
 
 const profileColumns = {
@@ -77,6 +77,8 @@ export function createDrizzleMeStore(db: Db): MeStore {
           await writeAudit(tx, { actorUserId: null, action: "user.deleted", targetId: id });
           deleted++;
         }
+        // Sessions nobody came back with stay in the table until they are swept here.
+        await tx.delete(sessions).where(lt(sessions.expiresAt, new Date()));
         return deleted;
       });
     },

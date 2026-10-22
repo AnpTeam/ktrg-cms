@@ -9,7 +9,7 @@ const fresh = () => initialState(emptyDraft());
 
 const serverRoute = (over: Partial<AdminRoute> = {}): AdminRoute => ({
   id: "r1", nameJa: "甲山から孝子越え", nameEn: null, translations: {}, descriptionJa: null, descriptionEn: null, distanceKm: null, elevationGainM: null,
-  difficulty: null, expectedTimeMin: null, prefecture: "wakayama", municipality: null, geometry: null, lineVerified: false, lineSource: null,
+  difficulty: null, expectedTimeMin: null, prefecture: "wakayama", walkStyle: null, municipality: null, geometry: null, lineVerified: false, lineSource: null,
   videoUrl: null, historyJa: null, historyEn: null, accessJa: null, accessEn: null, photoUrl: null, sortOrder: 2, createdAt: "2026-10-19T00:00:00.000Z", updatedAt: "2026-10-19T00:00:00.000Z", ...over,
 });
 const serverSpot = (id: string, over: Partial<AdminSpot> = {}): AdminSpot => ({
@@ -442,5 +442,15 @@ describe("the places table", () => {
     const typed = run(s, { type: "place", key: "a", patch: { nameJa: "一" } }, { type: "place", key: "b", patch: { nameJa: "虎島の経塚", lat: 34.27, lng: 135.0 } });
     expect(planSave(typed.present, null).map((step) => step.op)).toEqual(["createRoute", "createSpot", "createSpot"]);
     expect(typed.present.places[1]).toMatchObject({ nameJa: "虎島の経塚", lat: 34.27, positionVerified: false });
+  });
+});
+
+describe("how the route is walked", () => {
+  test("the editor sets it, it goes to the API and to the preview, and it comes back from the server", () => {
+    const edited = run(fresh(), { type: "walkStyle", value: "out_and_back" });
+    expect(edited.present.walkStyle).toBe("out_and_back");
+    expect(routeBody(edited.present).walkStyle).toBe("out_and_back");
+    expect(previewRoute(edited.present, 1).walkStyle).toBe("out_and_back");
+    expect(draftFromServer(serverRoute({ walkStyle: "loop" }), []).walkStyle).toBe("loop");
   });
 });
