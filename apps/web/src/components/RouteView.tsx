@@ -30,17 +30,20 @@ export function buildStops(
   spotHref: (id: string) => string,
   labels: { stamped: string; closed: string },
 ): MapStop[] {
-  return route.spots.flatMap((spot, index) => {
+  // The numbers are the places' index along the walk, the ones without a stamp counted too; a side trip has none.
+  const numbers = new Map(trailStops(route).flatMap((s) => (s.type === "stamp" ? [[s.spot.id, s.number] as const] : [])));
+  return route.spots.flatMap((spot) => {
     if (!spot.position) return [];
     const name = pickText(locale, spot.nameJa, spot.nameEn);
     if (!name) return [];
-    const parts = [`${index + 1}. ${name.text}`];
+    const number = numbers.get(spot.id) ?? null;
+    const parts = [number === null ? name.text : `${number}. ${name.text}`];
     if (spot.stamped) parts.push(labels.stamped);
     if (spot.status === "closed") parts.push(labels.closed);
     return [
       {
         id: spot.id,
-        order: index + 1,
+        order: number,
         name: name.text,
         label: parts.join(", "),
         nameLang: name.lang,
@@ -216,7 +219,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
                 ) : null}
               </div>
               <div className="px-4 @4xl:px-0">
-                <StopList stops={trail} hrefFor={(spot) => spotHref(spot.id)} locale={locale} />
+                <StopList stops={trail} hrefFor={spotHref} locale={locale} />
               </div>
             </section>
           )}

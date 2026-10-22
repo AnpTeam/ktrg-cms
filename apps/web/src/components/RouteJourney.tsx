@@ -24,10 +24,11 @@ export function WalkStyleChip({ style, className = "" }: { style: WalkStyle; cla
   );
 }
 
-function Row({ badge, stop, locale }: { badge: ReactNode; stop: TrailStop; locale: string }) {
+/** One badge and the name of the place it marks: blue for the start, orange for the goal and the turnaround. */
+function Row({ badge, stop, locale, tone = "start" }: { badge: ReactNode; stop: TrailStop; locale: string; tone?: "start" | "goal" }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="badge-ruri min-w-[8.5rem] justify-center">{badge}</span>
+      <span className={`badge-ruri ${tone === "goal" ? "badge-goal" : ""} min-w-[8.5rem] justify-center`}>{badge}</span>
       <span className="min-w-0 text-xl font-bold leading-snug">
         <Localized value={stopName(stop, locale)} />
       </span>
@@ -66,7 +67,7 @@ export function RouteJourney({ journey, locale }: { journey: Journey; locale: st
               <Connector>
                 <Trans>行き</Trans> ↓ ↑ <Trans>帰り</Trans>
               </Connector>
-              <Row badge={<Trans>折り返し</Trans>} stop={turnaround} locale={locale} />
+              <Row badge={<Trans>折り返し</Trans>} stop={turnaround} locale={locale} tone="goal" />
             </>
           ) : null}
           <p className={note}>
@@ -80,7 +81,7 @@ export function RouteJourney({ journey, locale }: { journey: Journey; locale: st
           {goal ? (
             <>
               <Connector />
-              <Row badge={<Trans>ゴール</Trans>} stop={goal} locale={locale} />
+              <Row badge={<Trans>ゴール</Trans>} stop={goal} locale={locale} tone="goal" />
             </>
           ) : null}
           {style === "one_way" ? (

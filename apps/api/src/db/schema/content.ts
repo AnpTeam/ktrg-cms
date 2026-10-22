@@ -158,8 +158,8 @@ export const spots = pgTable(
     ),
     check(
       "spots_publish_requires_permission",
-      // Only a waypoint with a stamp needs the site's permission; a toilet or a turn on the path does not.
-      sql`not ${t.published} or ${t.permissionConfirmed} or not ${t.stampable}`,
+      // Every place that visitors can open needs the site's permission, with a stamp or without (a place has its own page).
+      sql`not ${t.published} or ${t.permissionConfirmed}`,
     ),
     check(
       "spots_publish_requires_verified_position",

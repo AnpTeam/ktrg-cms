@@ -338,8 +338,8 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (current.published) {
         // A published place must keep passing every publish rule.
         if (!verifiedNow) return bad("position_not_verified");
-        // Only a waypoint with a stamp needs the site's permission (a toilet or a turn on the path does not).
-        if ((changes.stampable ?? current.stampable) && !(changes.permissionConfirmed ?? current.permissionConfirmed)) return bad("permission_required");
+        // Every place needs the site's permission to stay public, with a stamp or without.
+        if (!(changes.permissionConfirmed ?? current.permissionConfirmed)) return bad("permission_required");
         if (changes.lat === null) return bad("no_coordinates");
       }
       const r = await store.updateSpot(actor, id, date(expected), changes);
@@ -354,7 +354,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (!s) return bad("not_found");
       if (s.lat === null || s.lng === null) return bad("no_coordinates");
       if (!s.positionVerified) return bad("position_not_verified");
-      if (s.stampable && !s.permissionConfirmed) return bad("permission_required");
+      if (!s.permissionConfirmed) return bad("permission_required");
       const r = await store.setPublished(actor, id, true);
       if (!r) return bad("not_found");
       // The store re-checks the same rules inside the write; a place changed in between stays unpublished.

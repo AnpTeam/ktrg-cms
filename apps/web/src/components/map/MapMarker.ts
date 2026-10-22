@@ -8,7 +8,8 @@ import { placeIconPaths, type PlaceGroup } from "@/lib/places";
 // never colour alone.
 
 export interface MarkerOptions {
-  order: number;
+  /** null for a side trip (寄り道): its pin carries no number. */
+  order: number | null;
   /** The spoken name, for example "3. 猿坂峠, stamped". */
   label: string;
   kind: MarkerKind;
@@ -25,7 +26,7 @@ export function createMarkerElement({ order, label, kind, status, sideTrip, onSe
   el.dataset.kind = kind;
   if (sideTrip) el.dataset.side = "true";
   el.dataset.status = status;
-  el.textContent = String(order);
+  el.textContent = order === null ? "" : String(order);
   el.setAttribute("aria-label", label);
   el.setAttribute("aria-pressed", "false");
   el.addEventListener("click", onSelect);

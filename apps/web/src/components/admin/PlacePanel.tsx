@@ -114,7 +114,7 @@ export function PlacePanel(p: PlacePanelProps) {
               {t`スタンプを押せる`}
             </Check>
             <p className="pl-9 text-base text-muted">
-              {isStamp ? t`ここに着いた人が、スタンプを押せます。公開するには、現地の許可の確認が必要です。` : t`道案内のための点です。スタンプは押せません。`}
+              {isStamp ? t`ここに着いた人が、スタンプを押せます。公開するには、現地の許可の確認が必要です。` : t`スタンプは押せません。場所のページは見られます。公開するには、現地の許可の確認が必要です。`}
             </p>
           </div>
 
@@ -156,7 +156,7 @@ export function PlacePanel(p: PlacePanelProps) {
           </fieldset>
 
           <details className="rounded-xl bg-surface p-4">
-            <summary className="tap-target flex cursor-pointer items-center text-lg font-bold">{isStamp ? t`スタンプ・状態・許可の設定` : t`状態の設定`}</summary>
+            <summary className="tap-target flex cursor-pointer items-center text-lg font-bold">{isStamp ? t`スタンプ・状態・許可の設定` : t`状態・許可の設定`}</summary>
             <div className="mt-3 flex flex-col gap-5">
               {isStamp ? (
                 <Field label={t`スタンプを押せる範囲（メートル）`} htmlFor={`${id}-radius`} hint={t`この経由地から、この距離の中にいるとスタンプを押せます。`}>
@@ -177,17 +177,15 @@ export function PlacePanel(p: PlacePanelProps) {
                 <MultilingualField id={`${id}-note`} label={t`状態のひとこと`} field="statusNote" ja={place.statusNoteJa} en={place.statusNoteEn} translations={place.translations} onJa={(v) => p.onChange({ statusNoteJa: v })} onEn={(v) => p.onChange({ statusNoteEn: v })} onTranslations={(v) => p.onChange({ translations: v })} />
               </fieldset>
 
-              {isStamp ? (
-                <fieldset className="flex flex-col gap-3">
-                  <legend className="text-base font-bold">{t`現地の許可`}</legend>
-                  <Check id={`${id}-permission`} checked={place.permissionConfirmed} onChange={(v) => p.onChange({ permissionConfirmed: v })}>
-                    {t`許可確認済み`}
-                  </Check>
-                  <Field label={t`許可してくれた人`} htmlFor={`${id}-permnote`}>
-                    <TextInput id={`${id}-permnote`} value={place.permissionNote} onChange={(v) => p.onChange({ permissionNote: v })} maxLength={500} />
-                  </Field>
-                </fieldset>
-              ) : null}
+              <fieldset className="flex flex-col gap-3">
+                <legend className="text-base font-bold">{t`現地の許可`}</legend>
+                <Check id={`${id}-permission`} checked={place.permissionConfirmed} onChange={(v) => p.onChange({ permissionConfirmed: v })}>
+                  {t`許可確認済み`}
+                </Check>
+                <Field label={t`許可してくれた人`} htmlFor={`${id}-permnote`}>
+                  <TextInput id={`${id}-permnote`} value={place.permissionNote} onChange={(v) => p.onChange({ permissionNote: v })} maxLength={500} />
+                </Field>
+              </fieldset>
             </div>
           </details>
 

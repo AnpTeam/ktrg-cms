@@ -13,21 +13,27 @@ const GUIDANCE_ONLY: readonly PointKind[] = ["turn", "danger"];
 /** With no style saved, a goal farther than this from the start is called one-way; a closer one is left unsaid. */
 export const FAR_GOAL_M = 300;
 
-export type TrailStop = { type: "stamp"; spot: SpotListItem; number: number } | { type: "point"; point: RoutePoint };
+/** `number` is the stop's index along the walk (stamp or not); a side trip (寄り道) has none. */
+export type TrailStop = { type: "stamp"; spot: SpotListItem; number: number | null } | { type: "point"; point: RoutePoint; number: number | null };
 
 export function trailStops(route: Pick<RouteDetail, "spots" | "points">): TrailStop[] {
   const stops: { order: number; stop: TrailStop }[] = [
-    ...route.spots.map((spot, i) => ({ order: spot.sortOrder ?? i, stop: { type: "stamp", spot, number: i + 1 } as TrailStop })),
+    ...route.spots.map((spot, i) => ({ order: spot.sortOrder ?? i, stop: { type: "stamp", spot, number: null } as TrailStop })),
     ...route.points
       .filter((point) => !GUIDANCE_ONLY.includes(point.kind))
-      .map((point, i) => ({ order: point.sortOrder ?? route.spots.length + i, stop: { type: "point", point } as TrailStop })),
+      .map((point, i) => ({ order: point.sortOrder ?? route.spots.length + i, stop: { type: "point", point, number: null } as TrailStop })),
   ];
-  // Array.sort is stable, so equal orders keep the stamp places first.
-  return stops.sort((a, b) => a.order - b.order).map((s) => s.stop);
+  // Array.sort is stable, so equal orders keep the stamp places first. Numbers follow the walk, side trips left out.
+  let n = 0;
+  return stops
+    .sort((a, b) => a.order - b.order)
+    .map(({ stop }) => ({ ...stop, number: isSideTrip(stop) ? null : ++n }) as TrailStop);
 }
 
 const positionOf = (stop: TrailStop) => (stop.type === "stamp" ? stop.spot.position : stop.point.position);
-const isSideTrip = (stop: TrailStop) => stop.type === "stamp" && stop.spot.stopBy === true;
+function isSideTrip(stop: TrailStop) {
+  return (stop.type === "stamp" ? stop.spot.stopBy : stop.point.stopBy) === true;
+}
 
 export interface Journey {
   start: TrailStop;

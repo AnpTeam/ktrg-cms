@@ -297,15 +297,21 @@ describe("the route's other points (turns, toilets, danger ...)", () => {
     expect(stampedToilet.stampable).toBe(true);
   });
 
-  test("a point other than a stamp place can be published without the site's permission, but still needs a checked position", async () => {
+  test("every place needs the site's permission and a checked position to be published, with a stamp or without", async () => {
     const r = await route();
-    const turn = await spot(r.id, { nameJa: "分かれ道", kind: "turn", lat: 34.3, lng: 135.1 });
-    expect(await svc.publishSpot(ADMIN, turn.id)).toEqual({ ok: false, reason: "position_not_verified" });
-    const checked = await svc.updateSpot(ADMIN, turn.id, turn.updatedAt, { positionVerified: true, positionSource: "現地確認" });
+    const toilet = await spot(r.id, { nameJa: "トイレ", kind: "toilet", lat: 34.3, lng: 135.1 });
+    expect(await svc.publishSpot(ADMIN, toilet.id)).toEqual({ ok: false, reason: "position_not_verified" });
+    const checked = await svc.updateSpot(ADMIN, toilet.id, toilet.updatedAt, { positionVerified: true, positionSource: "現地確認" });
     if (!checked.ok) throw new Error(checked.reason);
-    const published = await svc.publishSpot(ADMIN, turn.id);
+    // checked, but no permission yet: a place without a stamp has a page too, so it is refused like a stamp place
+    expect(await svc.publishSpot(ADMIN, toilet.id)).toEqual({ ok: false, reason: "permission_required" });
+    const allowed = await svc.updateSpot(ADMIN, toilet.id, checked.value.updatedAt, { permissionConfirmed: true });
+    if (!allowed.ok) throw new Error(allowed.reason);
+    const published = await svc.publishSpot(ADMIN, toilet.id);
     expect(published.ok && published.value.published).toBe(true);
-    // a stamp place still needs the permission
+    // and a published one cannot lose the permission
+    const lost = await svc.updateSpot(ADMIN, toilet.id, published.ok ? published.value.updatedAt : "", { permissionConfirmed: false });
+    expect(lost).toEqual({ ok: false, reason: "permission_required" });
     const stamp = await spot(r.id, { nameJa: "経塚", ...verified });
     expect(await svc.publishSpot(ADMIN, stamp.id)).toEqual({ ok: false, reason: "permission_required" });
   });
@@ -329,7 +335,7 @@ describe("the route's other points (turns, toilets, danger ...)", () => {
   test("visitors get stamp places and the other points apart; only stamp places make a route ready; the lists count stamp places only", async () => {
     const r = await route({ geometry: LINE });
     const stamp = await spot(r.id, { nameJa: "経塚", ...verified, permissionConfirmed: true });
-    const water = await spot(r.id, { nameJa: "水場", kind: "drinking_water", ...verified });
+    const water = await spot(r.id, { nameJa: "水場", kind: "drinking_water", ...verified, permissionConfirmed: true });
     await svc.publishSpot(ADMIN, water.id);
     expect((await svc.publicRoutes())[0]?.status).toBe("soon"); // only a water point is public: no stamp place yet
     await svc.publishSpot(ADMIN, stamp.id);

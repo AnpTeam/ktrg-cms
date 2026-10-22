@@ -30,8 +30,8 @@ import { StopCard } from "./StopCard";
 
 export interface MapStop {
   id: string;
-  /** 1, 2, 3 ... in walking order; the number shown on the marker. */
-  order: number;
+  /** 1, 2, 3 ... in walking order (stamp or not); the number shown on the marker. null for a side trip. */
+  order: number | null;
   name: string;
   /** The spoken name of the marker, for example "3. 猿坂峠, stamped". */
   label: string;
@@ -279,8 +279,8 @@ export function TrailMap({
         buttons.set(`stop:${stop.id}`, el);
         put(el, stop.position);
       } else {
-        const orders = members.map((m) => m.order);
-        const text = `${Math.min(...orders)}–${Math.max(...orders)}`;
+        const orders = members.flatMap((m) => (m.order === null ? [] : [m.order]));
+        const text = orders.length > 0 ? `${Math.min(...orders)}–${Math.max(...orders)}` : String(members.length);
         const el = createClusterElement({
           text,
           label: t`スタンプの場所 ${text} がここに集まっています。押すと拡大します`,

@@ -15,7 +15,8 @@ export function StopCard({
   href,
   draft,
 }: {
-  order: number;
+  /** null for a side trip (寄り道): no number. */
+  order: number | null;
   name: string;
   nameLang: "ja" | "en";
   status: SpotStatus;
@@ -25,7 +26,7 @@ export function StopCard({
   return (
     <div className="flex flex-col gap-2 rounded-xl border-2 border-line bg-paper p-4" role="status">
       <p className="text-xl font-bold leading-snug">
-        {order}. <span lang={nameLang}>{name}</span>
+        {order === null ? "" : `${order}. `}<span lang={nameLang}>{name}</span>
       </p>
       <p className="text-lg">
         <StatusWord status={status} />

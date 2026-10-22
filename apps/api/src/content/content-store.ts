@@ -236,7 +236,7 @@ export function createDrizzleContentStore(db: Db): ContentStore {
               eq(spots.id, id),
               eq(spots.published, !published),
               // Publishing re-checks the rules in the same statement, so a place another admin moved a moment ago is not published.
-              published ? and(isNotNull(spots.lat), isNotNull(spots.lng), eq(spots.positionVerified, true), or(eq(spots.stampable, false), eq(spots.permissionConfirmed, true))) : undefined,
+              published ? and(isNotNull(spots.lat), isNotNull(spots.lng), eq(spots.positionVerified, true), eq(spots.permissionConfirmed, true)) : undefined,
             ),
           )
           .returning();
