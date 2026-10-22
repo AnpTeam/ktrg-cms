@@ -8,7 +8,7 @@ import { Notice } from "@/components/Notice";
 import { PrefectureName } from "@/components/PrefectureName";
 import { RouteSilhouette } from "@/components/RouteSketch";
 import { SectionBanner } from "@/components/SectionBanner";
-import { StampGrid } from "@/components/StampGrid";
+import { RouteStats } from "@/components/RouteStats";
 import { TrailNode } from "@/components/TrailNode";
 import { BannerCarousel } from "@/components/landing/BannerCarousel";
 import { LandingHero } from "@/components/landing/LandingHero";
@@ -19,6 +19,7 @@ import { municipalityName } from "@/lib/municipalities";
 import { pickText, type RouteSummary } from "@/lib/content";
 import type { TrailNotice } from "@/lib/notices";
 import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
+import { nodeState, progressShare } from "@/lib/ribbon";
 import type { EmbedVideo } from "@/lib/video";
 
 const primary =
@@ -27,17 +28,13 @@ const secondary =
   "tap-target flex min-h-14 items-center justify-center rounded-xl border border-ink bg-surface px-6 text-xl font-bold text-ink hover:bg-paper";
 // Panels have no outline: a light grey fill with round corners, and room around them.
 const panel = "mx-4 rounded-3xl bg-surface p-5";
-const patternPanel = `${panel} pattern-shippo`;
-
-// The few stamp slots drawn in the example card; they are an illustration, never anyone's progress.
-const EXAMPLE_SLOTS = 8;
-const EXAMPLE_STAMPED: ReadonlySet<number> = new Set([1, 2, 3]);
-const PREVIEW_ROUTES = 3;
+const PREVIEW_ROUTES = 5;
 
 /**
- * The first screen for someone who is not signed in. From the top: the drawn hero, dated trail notices (only when
- * there are any), what Katsuragi Shugen is, the first courses, the stamp card, a small map of every course, an intro
- * video (only when one is set), what to know before leaving, and a footer with the source.
+ * The home page. From the top: the drawn hero (or, for a signed-in visitor, `top`: the greeting and where to go on),
+ * banners, dated trail notices (only when there are any), the courses that are ready, what Katsuragi Shugen is, a small
+ * map of every course, an intro video (only when one is set), what to know before leaving, and a footer with the source.
+ * The stamp rally is not a section of its own here (a banner can carry it).
  *
  * No photos (none are cleared for use yet) and no invented facts: the numbers come from `lib/rally`, the
  * course names from the course list, the Katsuragi text from the official Japan Heritage site.
@@ -49,6 +46,7 @@ export function Landing({
   introVideo,
   slides,
   blogUrl,
+  top,
 }: {
   locale: string;
   routes: RouteSummary[];
@@ -56,16 +54,23 @@ export function Landing({
   introVideo: EmbedVideo | null;
   slides: BannerSlide[];
   blogUrl: string | null;
+  /** For a signed-in visitor: shown in place of the hero (and the sign-up buttons are left out). */
+  top?: ReactNode;
 }) {
-  const firstRoutes = [...routes].sort((a, b) => a.order - b.order).slice(0, PREVIEW_ROUTES);
+  // Routes that are ready first, then the coming-soon ones; each keeps its own number.
+  const firstRoutes = [...routes].sort((a, b) => Number(a.status === "soon") - Number(b.status === "soon") || a.order - b.order).slice(0, PREVIEW_ROUTES);
 
   return (
     // One column on a phone and a tablet; two columns from 1024 px. The drawn hero comes first and the wide sections
     // (notices, video, the start buttons, the footer) span both.
     <div className="grid grid-cols-1 gap-10 pt-4 lg:grid-cols-2 lg:gap-x-8 lg:pt-0">
-      <div className="px-4 lg:col-span-2 lg:px-0">
-        <LandingHero />
-      </div>
+      {top ? (
+        <div className="lg:col-span-2">{top}</div>
+      ) : (
+        <div className="px-4 lg:col-span-2 lg:px-0">
+          <LandingHero />
+        </div>
+      )}
 
       {slides.length > 0 ? (
         <div className="lg:col-span-2">
@@ -76,27 +81,6 @@ export function Landing({
       <div className="lg:col-span-2">
         <TrailNotices notices={notices} locale={locale} blogUrl={blogUrl} />
       </div>
-
-      <section className="flex flex-col gap-3">
-        <div className="px-4">
-          <SectionBanner>
-            <Trans>葛城修験とは</Trans>
-          </SectionBanner>
-        </div>
-        <div className={panel}>
-          {/* Our own wording of well-known facts (the official site's text is protected; see CLAUDE.md, 2026-10-17). */}
-          <p className="max-w-prose text-lg leading-8">
-            <Trans>
-              和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。
-            </Trans>
-          </p>
-          <dl className="mt-4">
-            <Fact term={<Trans>コース</Trans>} value={<Trans>全{TOTAL_ROUTES}区間</Trans>} />
-            <Fact term={<Trans>長さ</Trans>} value={<Trans>約{TRAIL_KM}km</Trans>} />
-            <Fact term={<Trans>経塚</Trans>} value={<Trans>{TOTAL_STAMPS}か所</Trans>} />
-          </dl>
-        </div>
-      </section>
 
       {firstRoutes.length > 0 ? (
         <section className="flex flex-col gap-3">
@@ -127,20 +111,21 @@ export function Landing({
       <section className="flex flex-col gap-3">
         <div className="px-4">
           <SectionBanner>
-            <Trans>スタンプカード</Trans>
+            <Trans>葛城修験とは</Trans>
           </SectionBanner>
         </div>
-        <div className={patternPanel}>
-          <p className="text-xl font-bold leading-snug">
-            <Trans>着いたらボタンを押すだけ。場所を確かめて、スタンプがたまります。</Trans>
+        <div className={panel}>
+          {/* Our own wording of well-known facts (the official site's text is protected; see CLAUDE.md, 2026-10-17). */}
+          <p className="max-w-prose text-lg leading-8">
+            <Trans>
+              和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。
+            </Trans>
           </p>
-          {/* An illustration: hidden from screen readers so it is not read out as someone's progress. */}
-          <div aria-hidden="true" className="mt-4">
-            <StampGrid total={EXAMPLE_SLOTS} stamped={EXAMPLE_STAMPED} showNext={false} columns={4} art />
-          </div>
-          <p className="mt-3 text-lg text-muted">
-            <Trans>これは見本です。経塚のスタンプは全{TOTAL_STAMPS}か所。</Trans>
-          </p>
+          <dl className="mt-4">
+            <Fact term={<Trans>コース</Trans>} value={<Trans>全{TOTAL_ROUTES}区間</Trans>} />
+            <Fact term={<Trans>長さ</Trans>} value={<Trans>約{TRAIL_KM}km</Trans>} />
+            <Fact term={<Trans>経塚</Trans>} value={<Trans>{TOTAL_STAMPS}か所</Trans>} />
+          </dl>
         </div>
       </section>
 
@@ -190,6 +175,7 @@ export function Landing({
         </Notice>
       </section>
 
+      {top ? null : (
       <section className="flex flex-col gap-3 px-4 lg:col-span-2 lg:hidden">
         <SectionBanner>
           <Trans>さあ、はじめましょう</Trans>
@@ -203,6 +189,7 @@ export function Landing({
           </Link>
         </div>
       </section>
+      )}
 
       <footer className="flex flex-col gap-4 border-t-2 border-line px-4 pb-6 pt-6 lg:col-span-2">
         <p className="text-lg leading-7">
@@ -225,6 +212,8 @@ export function Landing({
 /** One of the first courses on the page's own little trail: a node, a line down to the next, its name. */
 function PreviewStop({ route, locale, last, href }: { route: RouteSummary; locale: string; last: boolean; href: string }) {
   const soon = route.status === "soon";
+  const { stampedCount, spotCount } = route;
+  const state = nodeState({ status: route.status, stamped: stampedCount, total: spotCount });
   const body = (
     <span className="flex items-start justify-between gap-3">
       <span className="min-w-0">
@@ -242,6 +231,18 @@ function PreviewStop({ route, locale, last, href }: { route: RouteSummary; local
           <span className="mt-1 inline-block rounded-lg border-2 border-dashed border-line px-2 text-base font-bold text-muted">
             <Trans>準備中</Trans>
           </span>
+        ) : (
+          <span className="mt-2 block">
+            {/* Distance and time only: the full set wraps onto three rows in this narrow column. */}
+            <RouteStats route={{ ...route, elevationGainM: null, difficulty: null }} compact />
+          </span>
+        )}
+        {stampedCount !== null && spotCount > 0 ? (
+          <span className="mt-1 block text-lg font-bold tabular-nums">
+            <Trans>
+              スタンプ {stampedCount} / {spotCount}
+            </Trans>
+          </span>
         ) : null}
       </span>
       {route.sketch ? <RouteSilhouette sketch={route.sketch} /> : null}
@@ -250,7 +251,7 @@ function PreviewStop({ route, locale, last, href }: { route: RouteSummary; local
   return (
     <li className="relative pb-6 pl-16 last:pb-0">
       <span className="absolute left-0 top-0">
-        <TrailNode state={soon ? "soon" : "neutral"} order={route.order} share={0} />
+        <TrailNode state={state} order={route.order} share={progressShare(stampedCount, spotCount)} />
       </span>
       {last ? null : <span aria-hidden="true" className="absolute bottom-0 left-[21px] top-11 w-0.5 bg-brand" />}
       {soon ? (
