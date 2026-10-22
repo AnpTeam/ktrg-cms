@@ -6,7 +6,7 @@ import { useLingui } from "@lingui/react/macro";
 import { ChevronIcon, WarningIcon } from "@/components/icons";
 import { ExpandableText } from "@/components/ExpandableText";
 import { ElevationProfile } from "@/components/ElevationProfile";
-import { PrefectureName } from "@/components/PrefectureName";
+import { PlaceLine } from "@/components/PlaceLine";
 import { RichText } from "@/components/RichText";
 import { RouteStats } from "@/components/RouteStats";
 import { StampHere } from "@/components/StampHere";
@@ -189,9 +189,7 @@ export function MapScreen({
           <span lang={route.nameLang}>{routeName}</span>
         ) : route.prefecture || route.municipality ? (
           <>
-            {route.prefecture ? <PrefectureName value={route.prefecture} /> : null}
-            {route.prefecture && route.municipality ? " " : null}
-            {route.municipality}
+            <PlaceLine prefecture={route.prefecture} place={route.municipality} locale={locale} />
           </>
         ) : null
       }
@@ -211,7 +209,7 @@ export function MapScreen({
 
   const homeBody = (
     <div className="flex flex-col gap-5 px-4 pb-4">
-      <CourseList routes={routes} onChoose={chooseRoute} />
+      <CourseList routes={routes} onChoose={chooseRoute} locale={locale} />
       {signedIn ? null : <LockedNote loginHref={loginHref} registerHref={registerHref} />}
     </div>
   );
@@ -298,7 +296,7 @@ function RouteChips({ routes, onChoose, selectedId }: { routes: MapScreenRoute[]
 }
 
 /** Every course as a row, so a course can be chosen by its name without finding it on the map. */
-function CourseList({ routes, onChoose }: { routes: MapScreenRoute[]; onChoose: (id: string) => void }) {
+function CourseList({ routes, onChoose, locale }: { routes: MapScreenRoute[]; onChoose: (id: string) => void; locale: string }) {
   const { t } = useLingui();
   const ordered = [...routes].sort((a, b) => a.order - b.order);
   return (
@@ -321,9 +319,7 @@ function CourseList({ routes, onChoose }: { routes: MapScreenRoute[]; onChoose: 
               </span>
               {r.prefecture || r.municipality ? (
                 <span className="block text-lg text-muted">
-                  {r.prefecture ? <PrefectureName value={r.prefecture} /> : null}
-                  {r.prefecture && r.municipality ? " " : null}
-                  {r.municipality}
+                  <PlaceLine prefecture={r.prefecture} place={r.municipality} locale={locale} />
                 </span>
               ) : null}
               {r.status === "soon" ? <span className="block text-base font-bold text-muted">{t`準備中`}</span> : null}

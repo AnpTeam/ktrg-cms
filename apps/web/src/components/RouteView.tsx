@@ -5,7 +5,7 @@ import { ExpandableText } from "@/components/ExpandableText";
 import { IntroVideo } from "@/components/IntroVideo";
 import { Localized } from "@/components/Localized";
 import { Notice } from "@/components/Notice";
-import { PrefectureName } from "@/components/PrefectureName";
+import { PlaceLine } from "@/components/PlaceLine";
 import { RichText } from "@/components/RichText";
 import { RouteJourney } from "@/components/RouteJourney";
 import { RouteSilhouette } from "@/components/RouteSketch";
@@ -118,9 +118,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             </div>
             {route.prefecture || route.municipality ? (
               <p className="mt-2 text-lg text-muted">
-                {route.prefecture ? <PrefectureName value={route.prefecture} /> : null}
-                {route.prefecture && route.municipality ? " " : null}
-                {municipalityName(locale, route.municipality)}
+                <PlaceLine prefecture={route.prefecture} place={municipalityName(locale, route.municipality)} locale={locale} />
               </p>
             ) : null}
             {/* The phone has the summary card below instead. */}
