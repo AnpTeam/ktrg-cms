@@ -199,7 +199,9 @@ export function MapEditor(props: MapEditorProps) {
   /**
    * Finds the way of the chosen leg again through these guide points (Navivi's via points): the route-finding service is given the
    * two stops with the guide points between them, so it cannot pick a shorter but worse way. The guide points stay on the leg for
-   * the next time. When no way is found the guide points are kept and the line is left as it was.
+   * the next time. When no way is found the guide points are kept and the line is left as it was. This is one search of the
+   * route-finding service (a limited allowance shared by everyone), so it runs only when the person asks (the 道を探す button),
+   * never on its own after a guide point is added, moved or removed.
    */
   async function routeThroughGuides(via: GuidePoint[]) {
     if (!activePair || working) return;
@@ -211,13 +213,18 @@ export function MapEditor(props: MapEditorProps) {
     setNote(via.length > 0 ? t`ガイド点を通る道を調べています…` : t`道を調べています…`);
     let line: LngLatEle[] | null = null;
     let message = "";
+    let fellBack = false;
     const result = await props.onSnap(points);
     if (result.ok) line = await closeLineGaps(result.line, points);
     else {
       message = result.message;
-      // The service is not set up or did not answer: GSI's own trail map does the same job without a key.
+      // The service is not set up, is over its allowance or did not answer: GSI's own trail map does the same job without a key
+      // (the note then says so, because it can choose a different way).
       const built = await buildLine(points, "trail");
-      if (built.straightHops < points.length - 1) line = built.line;
+      if (built.straightHops < points.length - 1) {
+        line = built.line;
+        fellBack = true;
+      }
     }
     setWorking(false);
     if (!line) {
@@ -225,7 +232,19 @@ export function MapEditor(props: MapEditorProps) {
       return setNote(message || t`道が見つかりませんでした。ガイド点は残してあります。`);
     }
     props.onSetLeg({ from: from.key, to: to.key, points: withEnds(simplify(roundLine(line), MAX_POINTS), from, to), ...keep });
-    setNote(via.length > 0 ? t`ガイド点を通るように、道を引きなおしました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。` : t`ガイド点をなくして、道を引きなおしました。形を確かめてから、保存してください。`);
+    setNote(
+      fellBack
+        ? t`道の探索サービスが使えなかったため、地図の道（国土地理院）で探しました。いつもと違う道になることがあります。形をよく確かめてください。「元に戻す」で、もとの線にもどせます。`
+        : t`ガイド点を通るように、道を引きなおしました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。`,
+    );
+  }
+
+  /** Puts the guide points on the chosen leg (a leg with no line yet is made straight). It does not search: the 道を探す button does. */
+  function changeGuides(via: GuidePoint[]) {
+    if (!activePair) return;
+    const base: Leg = activeLeg ?? { from: activePair.from.key, to: activePair.to.key, points: [[activePair.from.lng, activePair.from.lat], [activePair.to.lng, activePair.to.lat]] };
+    props.onSetLeg({ ...base, via: via.length > 0 ? via : undefined }); // (an undefined member is not saved)
+    setNote(via.length > 0 ? t`ガイド点を変えました。「道を探す」を押すと、この点を通る道を探します（探すのは1回だけです）。` : t`ガイド点をすべて消しました。線はそのままです。`);
   }
 
   function makeActions(): Actions {
@@ -242,7 +261,7 @@ export function MapEditor(props: MapEditorProps) {
         if (!activePair) return;
         const cur = activeLeg?.via ?? [];
         if (cur.length >= MAX_GUIDE_POINTS) return setNote(t`ガイド点は、1つの区間に${MAX_GUIDE_POINTS}個までです。`);
-        void routeThroughGuides(insertGuidePoint(activePair.from, activePair.to, cur, [e.lngLat.lng, e.lngLat.lat]));
+        changeGuides(insertGuidePoint(activePair.from, activePair.to, cur, [e.lngLat.lng, e.lngLat.lat]));
         return;
       }
       if (m === "draw") {
@@ -267,15 +286,15 @@ export function MapEditor(props: MapEditorProps) {
       } else setAnchorIdx(anchorIdx === i ? null : i);
     },
     toggleAnchor: (i) => editPath((p) => toggleAnchorCurve(p, i)),
-    // In the guide tool a guide point is removed by clicking it, or moved by dragging it; either finds the way again.
+    // In the guide tool a guide point is removed by clicking it, or moved by dragging it. Neither searches for a way.
     clickGuide: (i) => {
       if (justDragged.current || modeRef.current !== "guide") return;
-      void routeThroughGuides(removeGuidePoint(activeLeg?.via ?? [], i));
+      changeGuides(removeGuidePoint(activeLeg?.via ?? [], i));
     },
     dropGuide: (i, at) => {
       justDragged.current = true;
       setTimeout(() => (justDragged.current = false), 250);
-      void routeThroughGuides(moveGuidePoint(activeLeg?.via ?? [], i, [at.lng, at.lat]));
+      changeGuides(moveGuidePoint(activeLeg?.via ?? [], i, [at.lng, at.lat]));
     },
     previewAnchor: (i, at) => {
       if (!activePair) return;
@@ -664,7 +683,11 @@ export function MapEditor(props: MapEditorProps) {
     if (allStraight) return setNote(lastMessage || t`道が見つかりませんでした。`);
     props.onSetLegs([...props.legs.filter((l) => !made.some((b) => b.from === l.from && b.to === l.to)), ...made]);
     setTimeout(() => (activePair ? fitLeg(activePair.to.key) : fit()), 100);
-    setNote(t`線を道に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。`);
+    setNote(
+      useService
+        ? t`線を道に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。`
+        : t`道の探索サービスが使えなかったため、地図の道（国土地理院）で探しました。いつもと違う道になることがあります。形をよく確かめてください。「元に戻す」で、もとの線にもどせます。`,
+    );
   }
 
   // Rounds the corners of a leg (Navivi's smooth anchors): fewer, smoother bends.
@@ -781,7 +804,7 @@ export function MapEditor(props: MapEditorProps) {
       : mode === "guide"
         ? !activePair
           ? t`ガイド点を置きたい区間（経由地と経由地のあいだ）を選んでください。`
-          : t`地図をクリックすると、道を探すときの目印（ガイド点）を置きます。ガイド点は、訪れる人には見えません。置いたり動かしたりするたびに、点を通る道を探しなおします。点をクリックすると消えます。`
+          : t`地図をクリックすると、道を探すときの目印（ガイド点）を置きます。ガイド点は、訪れる人には見えません。点はドラッグで動かせ、クリックで消えます。置いたり動かしたりしても、道は探しません。並べ終わったら「道を探す」を押してください（探すのは1回だけです）。`
       : mode === "draw"
         ? !activePair
           ? t`描きたい区間（経由地と経由地のあいだ）を選んでください。`
@@ -969,10 +992,10 @@ export function MapEditor(props: MapEditorProps) {
               {activePair && mode === "guide" ? (
                 <>
                   <span className="px-1 text-sm tabular-nums">{t`ガイド点 ${guideCount}`}</span>
-                  <button type="button" disabled={working || guideCount === 0} onClick={() => void routeThroughGuides(activeLeg?.via ?? [])} className={iconBtn} title={t`いまのガイド点を通る道を、もう一度探します`}>
-                    {t`もう一度探す`}
+                  <button type="button" disabled={working || guideCount === 0} onClick={() => void routeThroughGuides(activeLeg?.via ?? [])} className={`${iconBtn} bg-ink text-paper hover:bg-ink`} title={t`いまのガイド点を通る道を、1回だけ探します`}>
+                    {working ? t`探しています…` : t`道を探す`}
                   </button>
-                  <button type="button" disabled={working || guideCount === 0} onClick={() => void routeThroughGuides([])} className={`${iconBtn} text-danger`} title={t`ガイド点をすべて消して、道を引きなおします`}>
+                  <button type="button" disabled={working || guideCount === 0} onClick={() => changeGuides([])} className={`${iconBtn} text-danger`} title={t`ガイド点をすべて消します（線はそのままです）`}>
                     {t`すべて消す`}
                   </button>
                   <button type="button" onClick={() => fitLeg(activeId)} className={iconBtn} title={t`この区間を見る`} aria-label={t`この区間を見る`}>
