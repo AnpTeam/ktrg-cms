@@ -2,6 +2,10 @@ import { describe, expect, test } from "bun:test";
 import {
   anchorsFromPoints,
   capLegs,
+  guideRoute,
+  insertGuidePoint,
+  moveGuidePoint,
+  removeGuidePoint,
   insertAnchor,
   joinLegs,
   legFromPath,
@@ -205,5 +209,35 @@ describe("hand-drawn legs", () => {
     expect(path.anchors.length).toBeLessThanOrEqual(28);
     expect(path.curves).toHaveLength(path.anchors.length);
     expect(anchorsFromPoints([[135, 34], [135.01, 34.01]])).toEqual([]);
+  });
+});
+
+describe("guide points", () => {
+  const P = (lng: number, lat: number): [number, number] => [lng, lat];
+
+  test("a new point goes where it adds the least walking, so the guide points stay in walking order", () => {
+    // A (135, 34) to B (135.01, 34.01): the first guide point near A's end, the second near B.
+    let via = insertGuidePoint(A, B, [], P(135.002, 34.002));
+    via = insertGuidePoint(A, B, via, P(135.008, 34.008));
+    expect(via).toEqual([P(135.002, 34.002), P(135.008, 34.008)]);
+    // One put beside the first leg of the chain goes before them, one in the middle goes between, one near B at the end.
+    expect(insertGuidePoint(A, B, via, P(135.0005, 34.0005))).toEqual([P(135.0005, 34.0005), ...via]);
+    expect(insertGuidePoint(A, B, via, P(135.005, 34.005))).toEqual([via[0]!, P(135.005, 34.005), via[1]!]);
+    expect(insertGuidePoint(A, B, via, P(135.0095, 34.0095))).toEqual([...via, P(135.0095, 34.0095)]);
+  });
+
+  test("they are rounded to about 10 cm, moved and removed by position, and asked of the router between the two stops", () => {
+    const via = insertGuidePoint(A, B, [], P(135.0020000004, 34.0020000004));
+    expect(via).toEqual([P(135.002, 34.002)]);
+    expect(moveGuidePoint(via, 0, P(135.003, 34.003))).toEqual([P(135.003, 34.003)]);
+    expect(removeGuidePoint([P(1, 1), P(2, 2), P(3, 3)], 1)).toEqual([P(1, 1), P(3, 3)]);
+    expect(guideRoute(A, B, via)).toEqual([{ lat: 34, lng: 135 }, { lat: 34.002, lng: 135.002 }, { lat: 34.01, lng: 135.01 }]);
+    expect(guideRoute(A, B)).toHaveLength(2);
+  });
+
+  test("a leg keeps its guide points when its stops move", () => {
+    const own: Leg = { ...leg(A, B), via: [P(135.002, 34.002)] };
+    const moved = reconcileLegs([stop("a", 34.0001, 135.0001), B], [own]);
+    expect(moved[0]!.via).toEqual([P(135.002, 34.002)]);
   });
 });

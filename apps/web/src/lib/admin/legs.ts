@@ -37,7 +37,49 @@ export interface Leg {
   side?: true;
   /** Ridden, not walked (a ferry from a port ...): visitors read this time instead of a walking estimate. */
   ride?: Ride;
+  /**
+   * Guide points ([lng, lat], in walking order from the first stop to the second): invisible marks the route-finding service is
+   * given between the two stops, so it cannot pick a shorter but worse way (Navivi's via points). Visitors never see them.
+   */
+  via?: GuidePoint[];
 }
+
+export type GuidePoint = [lng: number, lat: number];
+/** The most guide points one leg may have (the API accepts the same, and the routing service takes 50 points in all). */
+export const MAX_GUIDE_POINTS = 20;
+
+const round6 = (n: number) => Math.round(n * 1e6) / 1e6;
+
+/**
+ * The guide points with a new one added. They stay in walking order: the new point goes where it adds the least walking (a
+ * point placed beside the stretch between two guide points goes between them).
+ */
+export function insertGuidePoint(from: Stop, to: Stop, via: readonly GuidePoint[], pos: GuidePoint): GuidePoint[] {
+  const point: GuidePoint = [round6(pos[0]), round6(pos[1])];
+  const chain: GuidePoint[] = [[from.lng, from.lat], ...via, [to.lng, to.lat]];
+  let best = 0;
+  let bestCost = Infinity;
+  for (let i = 0; i < chain.length - 1; i++) {
+    const cost = distanceM(chain[i]!, point) + distanceM(point, chain[i + 1]!) - distanceM(chain[i]!, chain[i + 1]!);
+    if (cost < bestCost) {
+      bestCost = cost;
+      best = i;
+    }
+  }
+  const out = [...via];
+  out.splice(best, 0, point);
+  return out;
+}
+
+export const moveGuidePoint = (via: readonly GuidePoint[], index: number, pos: GuidePoint): GuidePoint[] => via.map((p, i): GuidePoint => (i === index ? [round6(pos[0]), round6(pos[1])] : p));
+export const removeGuidePoint = (via: readonly GuidePoint[], index: number): GuidePoint[] => via.filter((_, i) => i !== index);
+
+/** What the routing service is asked to route through: the first stop, the guide points in order, the second stop. */
+export const guideRoute = (from: Stop, to: Stop, via: readonly GuidePoint[] = []): { lat: number; lng: number }[] => [
+  { lat: from.lat, lng: from.lng },
+  ...via.map(([lng, lat]) => ({ lat, lng })),
+  { lat: to.lat, lng: to.lng },
+];
 
 /** The most points the whole line may have (the API keeps the line at this size too). */
 export const LINE_BUDGET = 2000;

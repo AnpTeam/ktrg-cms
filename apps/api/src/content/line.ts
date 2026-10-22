@@ -6,7 +6,14 @@ type Coordinates = [lng: number, lat: number, ele?: number][];
  * One stretch of the route between two waypoints (their ids), as the editor draws it. `side` marks a side trip (寄り道):
  * a stretch from a waypoint on the route out to a stop-by place, shown to visitors apart from the main line.
  */
-export type RouteLeg = { from: string; to: string; coordinates: Coordinates; side?: true; ride?: Ride };
+export type RouteLeg = { from: string; to: string; coordinates: Coordinates; side?: true; ride?: Ride; via?: GuidePoint[] };
+
+/**
+ * A guide point ([lng, lat]) of a leg: an invisible mark the editor gives the route-finding service so it knows which way to
+ * go between the two stops. It only steers the search; the leg's own coordinates are the line. Visitors never get it.
+ */
+export type GuidePoint = [lng: number, lat: number];
+const MAX_GUIDE_POINTS = 20;
 
 /** A stretch that is not walked (a ferry, a bus ...): what it is, and how long it takes, as the editor typed it. */
 export const RIDE_MODES = ["ferry", "bus", "train", "other"] as const;
@@ -40,6 +47,18 @@ function parseCoordinates(coordinates: unknown): Coordinates | null {
   return out;
 }
 
+function parseGuidePoints(input: unknown): GuidePoint[] | null {
+  if (!Array.isArray(input) || input.length > MAX_GUIDE_POINTS) return null;
+  const out: GuidePoint[] = [];
+  for (const p of input) {
+    if (!Array.isArray(p) || p.length !== 2) return null;
+    const [lng, lat] = p as unknown[];
+    if (!isNum(lng) || !isNum(lat) || lng < LNG[0] || lng > LNG[1] || lat < LAT[0] || lat > LAT[1]) return null;
+    out.push([lng, lat]);
+  }
+  return out;
+}
+
 function parseRide(input: unknown): Ride | null {
   if (typeof input !== "object" || input === null) return null;
   const { mode, minutes } = input as { mode?: unknown; minutes?: unknown };
@@ -60,14 +79,16 @@ export function parseLine(input: unknown): { ok: true; line: LineString } | { ok
   let points = 0;
   for (const leg of legs) {
     if (typeof leg !== "object" || leg === null) return { ok: false };
-    const { from, to, coordinates: legCoordinates, side, ride } = leg as { from?: unknown; to?: unknown; coordinates?: unknown; side?: unknown; ride?: unknown };
+    const { from, to, coordinates: legCoordinates, side, ride, via } = leg as { from?: unknown; to?: unknown; coordinates?: unknown; side?: unknown; ride?: unknown; via?: unknown };
     const c = parseCoordinates(legCoordinates);
     if (typeof from !== "string" || typeof to !== "string" || !ID.test(from) || !ID.test(to) || !c) return { ok: false };
     points += c.length;
     if (points > MAX_POINTS_ACCEPTED) return { ok: false };
     const parsedRide = parseRide(ride);
     if (ride !== undefined && ride !== null && !parsedRide) return { ok: false };
-    parsedLegs.push({ from, to, coordinates: c, ...(side === true ? { side: true as const } : {}), ...(parsedRide ? { ride: parsedRide } : {}) });
+    const parsedVia = via === undefined || via === null ? [] : parseGuidePoints(via);
+    if (!parsedVia) return { ok: false };
+    parsedLegs.push({ from, to, coordinates: c, ...(side === true ? { side: true as const } : {}), ...(parsedRide ? { ride: parsedRide } : {}), ...(parsedVia.length > 0 ? { via: parsedVia } : {}) });
   }
   return { ok: true, line: { type: "LineString", coordinates: out, ...(parsedLegs.length > 0 ? { legs: parsedLegs } : {}) } };
 }

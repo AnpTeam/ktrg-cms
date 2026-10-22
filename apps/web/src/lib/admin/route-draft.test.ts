@@ -93,6 +93,15 @@ describe("legs", () => {
     expect(drawn.legs[0]!.points).toHaveLength(3);
     expect(drawn.line).toHaveLength(3); // the line is what the legs make
   });
+  test("a leg's ride and guide points survive opening the route and saving it again", () => {
+    const spots = [serverSpot("s1", { lat: 34, lng: 135 }), serverSpot("s2", { lat: 34.01, lng: 135.01 })];
+    const ride = { mode: "ferry" as const, minutes: 20 };
+    const via: [number, number][] = [[135.004, 34.006]];
+    const opened = draftFromServer(serverRoute({ geometry: { type: "LineString", coordinates: [[135, 34], [135.01, 34.01]], legs: [{ from: "s1", to: "s2", coordinates: [[135, 34], [135.01, 34.01]], ride, via }] } }), spots);
+    expect(opened.legs[0]).toMatchObject({ ride, via });
+    const saved = routeBody(opened).geometry as { legs?: { ride?: unknown; via?: unknown }[] } | null;
+    expect(saved?.legs?.[0]).toMatchObject({ ride, via });
+  });
 });
 
 describe("a line ticked as checked without a source", () => {

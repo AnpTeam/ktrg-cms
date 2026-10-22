@@ -7,7 +7,7 @@ import type { GeoJSONSource, Map as MapLibreMap, MapMouseEvent, Marker } from "m
 import { isAllSmooth } from "@/lib/admin/drawn-path";
 import { parseGpx, type GpxWaypoint } from "@/lib/admin/gpx";
 import { LEG_HIT, LEG_SOURCE, legFeatures, legLayers } from "@/lib/admin/leg-map";
-import { insertAnchor, legFromPath, legOf, moveAnchor, pairsOf, pathOfLeg, pathStops, pointsFromAnchors, removeAnchors, RIDE_MODES, setAllCurves, sidePairs, toggleAnchorCurve, type Leg, type Path, type RideMode, type Stop } from "@/lib/admin/legs";
+import { guideRoute, insertAnchor, insertGuidePoint, legFromPath, legOf, MAX_GUIDE_POINTS, moveAnchor, moveGuidePoint, pairsOf, pathOfLeg, pathStops, pointsFromAnchors, removeAnchors, removeGuidePoint, RIDE_MODES, setAllCurves, sidePairs, toggleAnchorCurve, type GuidePoint, type Leg, type Path, type RideMode, type Stop } from "@/lib/admin/legs";
 import { simplify, type LngLatEle } from "@/lib/admin/line";
 import { legTime } from "@/lib/leg-times";
 import { searchPlaces, type PlaceHit } from "@/lib/admin/place-search";
@@ -79,8 +79,9 @@ export interface MapEditorProps {
   onSnap: (points: SnapPoint[]) => Promise<{ ok: true; line: LngLatEle[] } | { ok: false; message: string }>;
 }
 
-// Three tools for the person: select (move the map, move stops, move the points of the chosen leg), add a stop, draw a leg.
-type Mode = "pan" | "place" | "draw";
+// Four tools for the person: select (move the map, move stops, move the points of the chosen leg), add a stop, draw a leg, and
+// put guide points on a leg (invisible marks that tell the route-finding service which way to go, like Navivi's via points).
+type Mode = "pan" | "place" | "draw" | "guide";
 
 const MAX_POINTS = 2000;
 const NO_PATH: Path = { anchors: [], curves: [] };
@@ -93,6 +94,9 @@ const dotClass =
 // A point of the chosen leg (Navivi's anchor): a square is a sharp corner, a circle is a smooth bend.
 const anchorClass =
   "block size-3.5 min-h-0 min-w-0 cursor-grab rounded-[3px] border-2 border-white bg-ink p-0 shadow-md active:cursor-grabbing data-[smooth=true]:size-4 data-[smooth=true]:rounded-full data-[selected=true]:bg-brand data-[selected=true]:ring-2 data-[selected=true]:ring-ink";
+// A guide point of the chosen leg: a dashed orange ring. Visitors never see it; it only steers the route-finding service.
+const guideClass =
+  "block size-4 min-h-0 min-w-0 cursor-grab rounded-full border-[3px] border-dashed border-[var(--color-goal)] bg-paper p-0 shadow-md active:cursor-grabbing";
 const chipClass = "inline-flex h-9 min-h-0 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-line bg-paper px-3 text-sm font-bold hover:bg-surface disabled:opacity-40 disabled:hover:bg-paper";
 const floatClass = "flex items-center gap-0.5 rounded-xl border border-line bg-paper/95 p-1 shadow-md backdrop-blur-sm";
 const iconBtn = "inline-flex h-8 min-h-0 min-w-8 items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-bold [&:not([aria-pressed=true])]:hover:bg-surface disabled:opacity-40 disabled:hover:bg-transparent";
@@ -106,7 +110,9 @@ type Actions = {
   toggleAnchor: (i: number) => void;
   previewAnchor: (i: number, at: { lat: number; lng: number }) => void;
   dropAnchor: (i: number, at: { lat: number; lng: number }) => void;
-  chooseTool: (tool: "select" | "place" | "draw") => void;
+  chooseTool: (tool: "select" | "place" | "draw" | "guide") => void;
+  clickGuide: (i: number) => void;
+  dropGuide: (i: number, at: { lat: number; lng: number }) => void;
   toggleEraser: () => void;
   removeChosenAnchor: () => void;
   hasAnchor: () => boolean;
@@ -155,6 +161,7 @@ export function MapEditor(props: MapEditorProps) {
   const mlRef = useRef<typeof import("maplibre-gl") | null>(null);
   const markers = useRef(new Map<string, { marker: Marker; el: HTMLButtonElement }>());
   const anchorMarkers = useRef<Marker[]>([]);
+  const guideMarkers = useRef<Marker[]>([]);
   const justDragged = useRef(false);
   const modeRef = useRef<Mode>("pan");
   const latest = useRef(props);
@@ -186,7 +193,39 @@ export function MapEditor(props: MapEditorProps) {
   function editPath(update: (p: Path) => Path) {
     if (!activePair) return;
     const next = update(activePath);
-    props.onSetLeg({ ...legFromPath(activePair.from, activePair.to, next), ...(activeLeg?.ride ? { ride: activeLeg.ride } : {}) });
+    props.onSetLeg({ ...legFromPath(activePair.from, activePair.to, next), ...(activeLeg?.ride ? { ride: activeLeg.ride } : {}), ...(activeLeg?.via ? { via: activeLeg.via } : {}) });
+  }
+
+  /**
+   * Finds the way of the chosen leg again through these guide points (Navivi's via points): the route-finding service is given the
+   * two stops with the guide points between them, so it cannot pick a shorter but worse way. The guide points stay on the leg for
+   * the next time. When no way is found the guide points are kept and the line is left as it was.
+   */
+  async function routeThroughGuides(via: GuidePoint[]) {
+    if (!activePair || working) return;
+    const { from, to } = activePair;
+    const own = activeLeg;
+    const keep = { ...(own?.ride ? { ride: own.ride } : {}), ...(activePair.side ? { side: true as const } : {}), ...(via.length > 0 ? { via } : {}) };
+    const points = guideRoute(from, to, via);
+    setWorking(true);
+    setNote(via.length > 0 ? t`ガイド点を通る道を調べています…` : t`道を調べています…`);
+    let line: LngLatEle[] | null = null;
+    let message = "";
+    const result = await props.onSnap(points);
+    if (result.ok) line = await closeLineGaps(result.line, points);
+    else {
+      message = result.message;
+      // The service is not set up or did not answer: GSI's own trail map does the same job without a key.
+      const built = await buildLine(points, "trail");
+      if (built.straightHops < points.length - 1) line = built.line;
+    }
+    setWorking(false);
+    if (!line) {
+      props.onSetLeg({ from: from.key, to: to.key, points: own?.points ?? [[from.lng, from.lat], [to.lng, to.lat]], ...keep });
+      return setNote(message || t`道が見つかりませんでした。ガイド点は残してあります。`);
+    }
+    props.onSetLeg({ from: from.key, to: to.key, points: withEnds(simplify(roundLine(line), MAX_POINTS), from, to), ...keep });
+    setNote(via.length > 0 ? t`ガイド点を通るように、道を引きなおしました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。` : t`ガイド点をなくして、道を引きなおしました。形を確かめてから、保存してください。`);
   }
 
   function makeActions(): Actions {
@@ -199,6 +238,13 @@ export function MapEditor(props: MapEditorProps) {
     mapClick: (e) => {
       const m = modeRef.current;
       if (m === "place") return latest.current.onAddPlace(e.lngLat.lat, e.lngLat.lng);
+      if (m === "guide") {
+        if (!activePair) return;
+        const cur = activeLeg?.via ?? [];
+        if (cur.length >= MAX_GUIDE_POINTS) return setNote(t`ガイド点は、1つの区間に${MAX_GUIDE_POINTS}個までです。`);
+        void routeThroughGuides(insertGuidePoint(activePair.from, activePair.to, cur, [e.lngLat.lng, e.lngLat.lat]));
+        return;
+      }
       if (m === "draw") {
         if (!activePair) return;
         // New points go after the chosen point, or at the end.
@@ -221,6 +267,16 @@ export function MapEditor(props: MapEditorProps) {
       } else setAnchorIdx(anchorIdx === i ? null : i);
     },
     toggleAnchor: (i) => editPath((p) => toggleAnchorCurve(p, i)),
+    // In the guide tool a guide point is removed by clicking it, or moved by dragging it; either finds the way again.
+    clickGuide: (i) => {
+      if (justDragged.current || modeRef.current !== "guide") return;
+      void routeThroughGuides(removeGuidePoint(activeLeg?.via ?? [], i));
+    },
+    dropGuide: (i, at) => {
+      justDragged.current = true;
+      setTimeout(() => (justDragged.current = false), 250);
+      void routeThroughGuides(moveGuidePoint(activeLeg?.via ?? [], i, [at.lng, at.lat]));
+    },
     previewAnchor: (i, at) => {
       if (!activePair) return;
       const moved = moveAnchor(activePath, i, [at.lat, at.lng]);
@@ -235,9 +291,9 @@ export function MapEditor(props: MapEditorProps) {
       setNote(null);
       if (tool === "select") return setMode("pan");
       if (tool === "place") return setMode("place");
-      if (pairs.length === 0) return setNote(t`線を描くには、先に経由地を2つ以上置いてください（寄り道は数えません）。`);
+      if (pairs.length === 0) return setNote(tool === "guide" ? t`ガイド点を置くには、先に経由地を2つ以上置いてください（寄り道は数えません）。` : t`線を描くには、先に経由地を2つ以上置いてください（寄り道は数えません）。`);
       if (!activePair) setActiveId(firstLeg(pairs, props.legs, props.selectedKey));
-      setMode("draw");
+      setMode(tool === "guide" ? "guide" : "draw");
     },
     toggleEraser: () => setEraser((e) => !e),
     hasAnchor: () => anchorIdx !== null,
@@ -321,6 +377,8 @@ export function MapEditor(props: MapEditorProps) {
       placeMarkers.clear();
       for (const m of anchorMarkers.current) m.remove();
       anchorMarkers.current = [];
+      for (const m of guideMarkers.current) m.remove();
+      guideMarkers.current = [];
       map?.remove(); // CLAUDE.md: the map is always removed on unmount
       mapRef.current = null;
       setReady(false);
@@ -336,7 +394,7 @@ export function MapEditor(props: MapEditorProps) {
   useEffect(() => {
     const map = mapRef.current;
     if (!ready || !map) return;
-    map.getCanvas().style.cursor = mode === "place" || (mode === "draw" && activePair) ? "crosshair" : "";
+    map.getCanvas().style.cursor = mode === "place" || ((mode === "draw" || mode === "guide") && activePair) ? "crosshair" : "";
     for (const { marker } of markers.current.values()) marker.setDraggable(mode === "pan" || mode === "place");
   }, [mode, ready, activePair]);
 
@@ -346,7 +404,7 @@ export function MapEditor(props: MapEditorProps) {
     const ml = mlRef.current;
     for (const m of anchorMarkers.current) m.remove();
     anchorMarkers.current = [];
-    if (!ready || !map || !ml || !activePair || mode === "place") return;
+    if (!ready || !map || !ml || !activePair || mode === "place" || mode === "guide") return;
     activePath.anchors.forEach((a, i) => {
       const el = document.createElement("button");
       el.type = "button";
@@ -374,6 +432,35 @@ export function MapEditor(props: MapEditorProps) {
       anchorMarkers.current = [];
     };
   }, [ready, activePair, activePath, mode, anchorIdx, eraser, t]);
+
+  // ---- the guide points of the chosen leg ------------------------------------------------------------------------
+  // Shown whenever a leg is chosen (so the person knows they are there); moved and removed only with the guide tool.
+  useEffect(() => {
+    const map = mapRef.current;
+    const ml = mlRef.current;
+    for (const m of guideMarkers.current) m.remove();
+    guideMarkers.current = [];
+    if (!ready || !map || !ml || !activePair || mode === "place") return;
+    (activeLeg?.via ?? []).forEach(([lng, lat], i) => {
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className = guideClass;
+      const no = i + 1;
+      el.setAttribute("aria-label", t`ガイド点 ${no}`);
+      el.title = mode === "guide" ? t`ドラッグで動かします。クリックで消します。` : t`ガイド点（道を探すときの目印）。「ガイド点」の道具で動かしたり消したりできます。`;
+      el.addEventListener("click", (event) => {
+        event.stopPropagation();
+        actions.current.clickGuide(i);
+      });
+      const marker = new ml.Marker({ element: el, draggable: mode === "guide" }).setLngLat([lng, lat]).addTo(map);
+      marker.on("dragend", () => actions.current.dropGuide(i, marker.getLngLat()));
+      guideMarkers.current.push(marker);
+    });
+    return () => {
+      for (const m of guideMarkers.current) m.remove();
+      guideMarkers.current = [];
+    };
+  }, [ready, activePair, activeLeg, mode, t]);
 
   // ---- place markers ---------------------------------------------------------------------------------------
   useEffect(() => {
@@ -431,10 +518,13 @@ export function MapEditor(props: MapEditorProps) {
       if (key === "v") actions.current.chooseTool("select");
       else if (key === "p") actions.current.chooseTool("place");
       else if (key === "l") actions.current.chooseTool("draw");
+      else if (key === "g") actions.current.chooseTool("guide");
       else if (key === "e" && modeRef.current === "draw") actions.current.toggleEraser();
-      else if (e.key === "Escape" && modeRef.current === "draw") actions.current.leaveDraw();
+      else if (e.key === "Escape" && (modeRef.current === "draw" || modeRef.current === "guide")) actions.current.leaveDraw();
       else if (e.key === "Delete" || e.key === "Backspace") {
         e.preventDefault();
+        // With the guide tool a guide point is removed by clicking it: Delete never removes a waypoint then.
+        if (modeRef.current === "guide") return;
         // A chosen point of the leg goes first; with none chosen, the chosen waypoint.
         if (modeRef.current === "draw" || actions.current.hasAnchor()) actions.current.removeChosenAnchor();
         else if (latest.current.selectedKey) latest.current.onRemovePlace(latest.current.selectedKey);
@@ -550,7 +640,8 @@ export function MapEditor(props: MapEditorProps) {
       const total = list.length;
       setNote(t`道を調べています…（${step}/${total}）`);
       const leg = legOf(props.legs, from.key, to.key);
-      const points: SnapPoint[] = leg ? simplify(leg.points, 25).map((p) => ({ lat: p[1], lng: p[0] })) : [{ lat: from.lat, lng: from.lng }, { lat: to.lat, lng: to.lng }];
+      // A leg with guide points is found again through them; otherwise the drawn shape is followed.
+      const points: SnapPoint[] = leg?.via?.length ? guideRoute(from, to, leg.via) : leg ? simplify(leg.points, 25).map((p) => ({ lat: p[1], lng: p[0] })) : [{ lat: from.lat, lng: from.lng }, { lat: to.lat, lng: to.lng }];
       let line: LngLatEle[] | null = null;
       if (useService) {
         const result = await props.onSnap(points);
@@ -567,7 +658,7 @@ export function MapEditor(props: MapEditorProps) {
         if (built.straightHops < points.length - 1) allStraight = false;
         line = built.line;
       }
-      made.push({ from: from.key, to: to.key, points: withEnds(simplify(roundLine(line), MAX_POINTS), from, to), ...(leg?.ride ? { ride: leg.ride } : {}) });
+      made.push({ from: from.key, to: to.key, points: withEnds(simplify(roundLine(line), MAX_POINTS), from, to), ...(leg?.ride ? { ride: leg.ride } : {}), ...(leg?.via ? { via: leg.via } : {}), ...(leg?.side ? { side: true as const } : {}) });
     }
     setWorking(false);
     if (allStraight) return setNote(lastMessage || t`道が見つかりませんでした。`);
@@ -586,7 +677,7 @@ export function MapEditor(props: MapEditorProps) {
     if (have.length === 0) return setNote(t`先に、線を描いてください。`);
     props.onSetLegs([
       ...props.legs.filter((l) => !have.some(({ leg }) => leg === l)),
-      ...have.map(({ p, leg }): Leg => ({ from: leg.from, to: leg.to, points: withEnds(simplify(smoothLine(leg.points), MAX_POINTS), p.from, p.to), ...(leg.ride ? { ride: leg.ride } : {}), ...(leg.side ? { side: true as const } : {}) })),
+      ...have.map(({ p, leg }): Leg => ({ from: leg.from, to: leg.to, points: withEnds(simplify(smoothLine(leg.points), MAX_POINTS), p.from, p.to), ...(leg.ride ? { ride: leg.ride } : {}), ...(leg.via ? { via: leg.via } : {}), ...(leg.side ? { side: true as const } : {}) })),
     ]);
     setNote(t`線の角をなめらかにしました。形を確かめてください。「元に戻す」で、もとの線にもどせます。`);
   }
@@ -632,7 +723,7 @@ export function MapEditor(props: MapEditorProps) {
     setWaypoints(null);
   }
 
-  const toolButton = (tool: "select" | "place" | "draw", label: string, shortcut: string, icon: ReactNode) => {
+  const toolButton = (tool: "select" | "place" | "draw" | "guide", label: string, shortcut: string, icon: ReactNode) => {
     const pressed = tool === "select" ? mode === "pan" : mode === tool;
     return (
       <button
@@ -678,6 +769,7 @@ export function MapEditor(props: MapEditorProps) {
   const legName = activeName ?? "";
   const chosenNo = (anchorIdx ?? 0) + 1;
   const pointCount = activePath.anchors.length;
+  const guideCount = activeLeg?.via?.length ?? 0;
 
   // What to do next, depending on the tool and on what is already on the map.
   const hasLine = props.line.length >= 2;
@@ -686,6 +778,10 @@ export function MapEditor(props: MapEditorProps) {
     ? t`この線は、経由地の順番や位置と合わないため、区間に分けていません。経由地の順番と位置を直してから「区間に分ける」を押すか、区間を描くと、その区間から線が置き換わります（「元に戻す」で戻せます）。`
     : mode === "place"
       ? t`地図をクリックすると、その位置に経由地を置きます。`
+      : mode === "guide"
+        ? !activePair
+          ? t`ガイド点を置きたい区間（経由地と経由地のあいだ）を選んでください。`
+          : t`地図をクリックすると、道を探すときの目印（ガイド点）を置きます。ガイド点は、訪れる人には見えません。置いたり動かしたりするたびに、点を通る道を探しなおします。点をクリックすると消えます。`
       : mode === "draw"
         ? !activePair
           ? t`描きたい区間（経由地と経由地のあいだ）を選んでください。`
@@ -855,9 +951,10 @@ export function MapEditor(props: MapEditorProps) {
             {toolButton("select", t`選ぶ・動かす`, "V", <CursorIcon />)}
             {toolButton("place", t`経由地を置く`, "P", <PinIcon />)}
             {toolButton("draw", t`線を描く`, "L", <PencilIcon />)}
+            {toolButton("guide", t`ガイド点`, "G", <GuideIcon />)}
           </div>
-          {mode === "draw" ? (
-            <div role="group" aria-label={t`区間を描く`} className={`${floatClass} max-w-[calc(100vw-6rem)] flex-wrap`}>
+          {mode === "draw" || mode === "guide" ? (
+            <div role="group" aria-label={mode === "guide" ? t`ガイド点を置く` : t`区間を描く`} className={`${floatClass} max-w-[calc(100vw-6rem)] flex-wrap`}>
               <label htmlFor="leg-pick" className="sr-only">
                 {t`描く区間`}
               </label>
@@ -869,7 +966,21 @@ export function MapEditor(props: MapEditorProps) {
                   </option>
                 ))}
               </select>
-              {activePair ? (
+              {activePair && mode === "guide" ? (
+                <>
+                  <span className="px-1 text-sm tabular-nums">{t`ガイド点 ${guideCount}`}</span>
+                  <button type="button" disabled={working || guideCount === 0} onClick={() => void routeThroughGuides(activeLeg?.via ?? [])} className={iconBtn} title={t`いまのガイド点を通る道を、もう一度探します`}>
+                    {t`もう一度探す`}
+                  </button>
+                  <button type="button" disabled={working || guideCount === 0} onClick={() => void routeThroughGuides([])} className={`${iconBtn} text-danger`} title={t`ガイド点をすべて消して、道を引きなおします`}>
+                    {t`すべて消す`}
+                  </button>
+                  <button type="button" onClick={() => fitLeg(activeId)} className={iconBtn} title={t`この区間を見る`} aria-label={t`この区間を見る`}>
+                    <FitIcon />
+                  </button>
+                </>
+              ) : null}
+              {activePair && mode === "draw" ? (
                 <>
                   <div className="flex items-center rounded-lg bg-surface p-0.5" role="group" aria-label={t`点の操作`}>
                     <button type="button" aria-pressed={!eraser} onClick={() => setEraser(false)} className={`${iconBtn} ${!eraser ? "bg-paper shadow-sm" : "text-muted"}`}>
@@ -1049,6 +1160,12 @@ const PinIcon = () => (
   <Svg>
     <path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z" />
     <circle cx="12" cy="10" r="2.5" />
+  </Svg>
+);
+const GuideIcon = () => (
+  <Svg>
+    <circle cx="12" cy="12" r="4" strokeDasharray="3 3" />
+    <path d="M3 20c4-1 5-7 9-8s6-6 9-8" strokeDasharray="1 4" />
   </Svg>
 );
 const PencilIcon = () => (

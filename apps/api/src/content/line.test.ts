@@ -77,3 +77,26 @@ describe("sketchOf", () => {
     expect(s[0]).toHaveLength(2);
   });
 });
+
+describe("guide points on a leg", () => {
+  const A = "11111111-1111-4111-8111-111111111111";
+  const B = "22222222-2222-4222-8222-222222222222";
+  const withVia = (via: unknown) => parseLine({ type: "LineString", coordinates: [[135, 34], [135.01, 34.01]], legs: [{ from: A, to: B, coordinates: [[135, 34], [135.01, 34.01]], via }] });
+
+  test("are kept on the leg, in order, and an empty list is left out", () => {
+    const r = withVia([[135.002, 34.004], [135.006, 34.002]]);
+    expect(r.ok && r.line.legs?.[0]?.via).toEqual([[135.002, 34.004], [135.006, 34.002]]);
+    const none = withVia([]);
+    expect(none.ok && none.line.legs?.[0]).not.toHaveProperty("via");
+  });
+
+  test.each([
+    ["more than 20", Array.from({ length: 21 }, () => [135, 34])],
+    ["a point with three numbers", [[135, 34, 5]]],
+    ["a point outside Japan", [[-30, 20]]],
+    ["a text coordinate", [["a", 34]]],
+    ["not a list", "x"],
+  ])("are refused: %s", (_n, via) => {
+    expect(withVia(via).ok).toBe(false);
+  });
+});
