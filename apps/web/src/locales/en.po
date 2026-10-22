@@ -685,7 +685,8 @@ msgstr "Nearest first from the start of the course (straight-line distance)"
 msgid "コースを見る"
 msgstr "See the courses"
 
-#: src/components/RouteJourney.tsx:84
+#: src/components/RouteJourney.tsx:34
+#: src/components/RouteJourney.tsx:96
 #: src/components/TripSummary.tsx:36
 msgid "ゴール"
 msgstr "Goal"
@@ -1003,16 +1004,11 @@ msgstr "Height of the sheet (change it with the up and down arrow keys)"
 msgid "すぐ{turnWord}"
 msgstr "{turnWord} now"
 
-#: src/components/RouteJourney.tsx:80
+#: src/components/RouteJourney.tsx:31
+#: src/components/RouteJourney.tsx:92
 #: src/components/TripSummary.tsx:35
 msgid "スタート"
 msgstr "Start"
-
-#: src/components/RouteJourney.tsx:56
-#: src/components/RouteJourney.tsx:64
-#: src/components/TripSummary.tsx:35
-msgid "スタート・ゴール"
-msgstr "Start / Goal"
 
 #: src/app/(public)/settings/passkeys/page.tsx:23
 #: src/app/(public)/sitemap/page.tsx:74
@@ -2406,7 +2402,7 @@ msgstr "Source: {0}"
 msgid "出典のリンクは https:// で始まるアドレスを入れてください。"
 msgstr "The source link must be an address starting with https://."
 
-#: src/components/RouteJourney.tsx:59
+#: src/components/RouteJourney.tsx:71
 msgid "出発した場所に戻ってくる道です。"
 msgstr "A loop that brings you back to where you started."
 
@@ -2626,7 +2622,7 @@ msgstr "Add an end point here"
 msgid "同じ番号の行が、前にもあります"
 msgstr "An earlier row has the same number"
 
-#: src/components/RouteJourney.tsx:75
+#: src/components/RouteJourney.tsx:87
 msgid "同じ道を行って、同じ道を戻ります。"
 msgstr "You go out along the same path and come back the same way."
 
@@ -2930,11 +2926,11 @@ msgstr "Choose a city. For a town or village, choose \"Other\" and type its name
 msgid "市区町村"
 msgstr "City or town"
 
-#: src/components/RouteJourney.tsx:68
+#: src/components/RouteJourney.tsx:80
 msgid "帰り"
 msgstr "Return"
 
-#: src/components/RouteJourney.tsx:90
+#: src/components/RouteJourney.tsx:102
 msgid "帰りの方法は、下の交通の説明を見てください。"
 msgstr "For the way back, see the transport notes below."
 
@@ -3004,7 +3000,7 @@ msgstr "Entered by hand. Leave it empty to calculate it from the distance and cl
 msgid "手直しが必要なルートだけ（{needsWorkCount}）"
 msgstr "Only routes that need work ({needsWorkCount})"
 
-#: src/components/RouteJourney.tsx:70
+#: src/components/RouteJourney.tsx:82
 #: src/components/TripSummary.tsx:37
 msgid "折り返し"
 msgstr "Turnaround"
@@ -3832,7 +3828,7 @@ msgstr "Map of Katsuragi Shugen"
 msgid "葛城修験の道"
 msgstr "The Katsuragi Shugen Trail"
 
-#: src/components/RouteJourney.tsx:68
+#: src/components/RouteJourney.tsx:80
 msgid "行き"
 msgstr "Out"
 

@@ -4,12 +4,12 @@ import type { RouteDetail } from "@/lib/content";
 import type { Journey, TrailStop } from "@/lib/route-stops";
 import { Localized } from "./Localized";
 import { RouteStats } from "./RouteStats";
-import { stopName, WalkStyleChip } from "./RouteJourney";
+import { StartGoalWords, stopName, WalkStyleChip } from "./RouteJourney";
 
-function Line({ badge, stop, locale, goal = false }: { badge: ReactNode; stop: TrailStop; locale: string; goal?: boolean }) {
+function Line({ badge, stop, locale, goal = false, both = false }: { badge: ReactNode; stop: TrailStop; locale: string; goal?: boolean; both?: boolean }) {
   return (
     <p className="flex items-center gap-2 text-xl font-bold leading-snug">
-      <span className={`badge-ruri badge-small shrink-0 ${goal ? "badge-goal" : ""}`}>{badge}</span>
+      <span className={`badge-ruri badge-small shrink-0 ${goal ? "badge-goal" : both ? "badge-both" : ""}`}>{badge}</span>
       <span className="min-w-0">
         <Localized value={stopName(stop, locale)} />
       </span>
@@ -32,7 +32,7 @@ export function TripSummary({ route, journey, locale }: { route: RouteDetail; jo
     <section className="frame pattern-shippo mx-4 p-4 @4xl:hidden">
       {journey ? (
         <div className="flex flex-col gap-2">
-          <Line badge={startOnly ? <Trans>スタート・ゴール</Trans> : <Trans>スタート</Trans>} stop={journey.start} locale={locale} />
+          <Line badge={startOnly ? <StartGoalWords /> : <Trans>スタート</Trans>} stop={journey.start} locale={locale} both={startOnly} />
           {!startOnly && journey.goal ? <Line badge={<Trans>ゴール</Trans>} stop={journey.goal} locale={locale} goal /> : null}
           {style === "out_and_back" && journey.turnaround ? <Line badge={<Trans>折り返し</Trans>} stop={journey.turnaround} locale={locale} goal /> : null}
           {style ? (

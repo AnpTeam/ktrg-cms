@@ -685,7 +685,8 @@ msgstr "コースの出発地点から近い順（まっすぐ測った距離で
 msgid "コースを見る"
 msgstr "コースを見る"
 
-#: src/components/RouteJourney.tsx:84
+#: src/components/RouteJourney.tsx:34
+#: src/components/RouteJourney.tsx:96
 #: src/components/TripSummary.tsx:36
 msgid "ゴール"
 msgstr "ゴール"
@@ -1003,16 +1004,11 @@ msgstr "シートの高さ（上下の矢印キーで変えられます）"
 msgid "すぐ{turnWord}"
 msgstr "すぐ{turnWord}"
 
-#: src/components/RouteJourney.tsx:80
+#: src/components/RouteJourney.tsx:31
+#: src/components/RouteJourney.tsx:92
 #: src/components/TripSummary.tsx:35
 msgid "スタート"
 msgstr "スタート"
-
-#: src/components/RouteJourney.tsx:56
-#: src/components/RouteJourney.tsx:64
-#: src/components/TripSummary.tsx:35
-msgid "スタート・ゴール"
-msgstr "スタート・ゴール"
 
 #: src/app/(public)/settings/passkeys/page.tsx:23
 #: src/app/(public)/sitemap/page.tsx:74
@@ -2406,7 +2402,7 @@ msgstr "出典: {0}"
 msgid "出典のリンクは https:// で始まるアドレスを入れてください。"
 msgstr "出典のリンクは https:// で始まるアドレスを入れてください。"
 
-#: src/components/RouteJourney.tsx:59
+#: src/components/RouteJourney.tsx:71
 msgid "出発した場所に戻ってくる道です。"
 msgstr "出発した場所に戻ってくる道です。"
 
@@ -2626,7 +2622,7 @@ msgstr "同じ場所に終点を追加"
 msgid "同じ番号の行が、前にもあります"
 msgstr "同じ番号の行が、前にもあります"
 
-#: src/components/RouteJourney.tsx:75
+#: src/components/RouteJourney.tsx:87
 msgid "同じ道を行って、同じ道を戻ります。"
 msgstr "同じ道を行って、同じ道を戻ります。"
 
@@ -2930,11 +2926,11 @@ msgstr "市の名前を選びます。町や村は「その他」を選んで入
 msgid "市区町村"
 msgstr "市区町村"
 
-#: src/components/RouteJourney.tsx:68
+#: src/components/RouteJourney.tsx:80
 msgid "帰り"
 msgstr "帰り"
 
-#: src/components/RouteJourney.tsx:90
+#: src/components/RouteJourney.tsx:102
 msgid "帰りの方法は、下の交通の説明を見てください。"
 msgstr "帰りの方法は、下の交通の説明を見てください。"
 
@@ -3004,7 +3000,7 @@ msgstr "手で入れた数字です。空にすると、距離と登りから計
 msgid "手直しが必要なルートだけ（{needsWorkCount}）"
 msgstr "手直しが必要なルートだけ（{needsWorkCount}）"
 
-#: src/components/RouteJourney.tsx:70
+#: src/components/RouteJourney.tsx:82
 #: src/components/TripSummary.tsx:37
 msgid "折り返し"
 msgstr "折り返し"
@@ -3832,7 +3828,7 @@ msgstr "葛城修験の地図"
 msgid "葛城修験の道"
 msgstr "葛城修験の道"
 
-#: src/components/RouteJourney.tsx:68
+#: src/components/RouteJourney.tsx:80
 msgid "行き"
 msgstr "行き"
 

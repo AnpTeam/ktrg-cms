@@ -569,6 +569,15 @@ html[data-size="xlarge"] {
   color: var(--color-on-goal);
   border-color: var(--color-on-goal);
 }
+/* Start and Goal in one badge (a walk that ends where it began): blue over orange, one word on each. */
+.badge-both {
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  padding-block: 0.2rem;
+  line-height: 1.3;
+  background-image: linear-gradient(to bottom, var(--color-ruri) 50%, var(--color-goal) 50%);
+}
 /* The small badge of the phone's summary card. */
 .badge-small {
   min-height: 0;
