@@ -111,7 +111,15 @@ export function placeFromServer(p: AdminSpot): PlaceDraft {
  */
 function legsFromServer(route: AdminRoute, places: PlaceDraft[], line: LngLatEle[]): Leg[] {
   const stops = pathStops(places);
-  const saved: Leg[] = (route.geometry?.legs ?? []).map((l) => ({ from: l.from, to: l.to, points: l.coordinates.map((c): LngLatEle => (c[2] === undefined ? [c[0], c[1]] : [c[0], c[1], c[2]])) }));
+  // A leg keeps what the editor put on it: a side trip, a ride (ferry, bus ...) and its guide points.
+  const saved: Leg[] = (route.geometry?.legs ?? []).map((l) => ({
+    from: l.from,
+    to: l.to,
+    points: l.coordinates.map((c): LngLatEle => (c[2] === undefined ? [c[0], c[1]] : [c[0], c[1], c[2]])),
+    ...(l.side ? { side: true as const } : {}),
+    ...(l.ride ? { ride: l.ride } : {}),
+    ...(l.via && l.via.length > 0 ? { via: l.via } : {}),
+  }));
   const kept = reconcileLegs(stops, saved, sidePairs(places));
   return kept.length > 0 ? kept : splitLine(stops, line);
 }
