@@ -70,6 +70,17 @@ export interface Upload {
   size: number;
 }
 
+/** One photo already in the library. */
+export interface LibraryPhoto {
+  key: string;
+  url: string;
+  size: number;
+  uploadedAt: string;
+}
+
+/** The most photos the library lists (the newest first); the photo bucket is small, so one page. */
+export const LIBRARY_LIMIT = 1000;
+
 export type UploadResult =
   | { ok: true; upload: Upload }
   | { ok: false; reason: "invalid_file" | "uploads_unavailable" };
@@ -93,6 +104,21 @@ export function createUploadService(deps: {
 }) {
   const log = deps.log ?? console.error;
   return {
+    /** Every photo uploaded so far, newest first, so an editor can pick one again instead of uploading it twice. */
+    async listPhotos(): Promise<{ ok: true; photos: LibraryPhoto[] } | { ok: false; reason: "uploads_unavailable" }> {
+      if (!deps.storage || !deps.publicBaseUrl) return { ok: false, reason: "uploads_unavailable" };
+      try {
+        const files = await deps.storage.list("photos/", LIBRARY_LIMIT);
+        const photos = files
+          .filter((f) => f.size > 0 && /\.(jpe?g|png|webp)$/i.test(f.key))
+          .sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime())
+          .map((f) => ({ key: f.key, url: publicUrl(deps.publicBaseUrl!, f.key), size: f.size, uploadedAt: f.lastModified.toISOString() }));
+        return { ok: true, photos };
+      } catch (err) {
+        log(`listing the photo storage failed: ${err instanceof Error ? err.message : String(err)}`);
+        return { ok: false, reason: "uploads_unavailable" };
+      }
+    },
     async uploadPhoto(file: Blob): Promise<UploadResult> {
       if (!deps.storage || !deps.publicBaseUrl) return { ok: false, reason: "uploads_unavailable" };
       if (file.size === 0 || file.size > MAX_UPLOAD_BYTES) return { ok: false, reason: "invalid_file" };

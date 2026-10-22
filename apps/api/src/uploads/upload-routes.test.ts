@@ -34,8 +34,10 @@ function setup(opts: { storage?: boolean } = {}) {
       new Request("http://localhost/api/v1/admin/uploads", { method: "POST", body: form, headers: cookie ? { cookie } : {} }),
     );
   };
+  const library = (cookie?: string) =>
+    app.handle(new Request("http://localhost/api/v1/admin/uploads", { headers: cookie ? { cookie } : {} }));
   const login = async (u: AuthUser) => `session=${(await session.create(users.get(u.id)!)).token}`;
-  return { upload, login, audit, mem };
+  return { upload, library, login, audit, mem };
 }
 
 describe("POST /admin/uploads", () => {
@@ -84,5 +86,35 @@ describe("POST /admin/uploads", () => {
     s.mem.state.fail = true;
     expect((await s.upload(new File([JPEG], "a.jpg"), await s.login(admin))).status).toBe(503);
     expect(s.audit.rows).toHaveLength(0);
+  });
+});
+
+describe("GET /admin/uploads (the photo library)", () => {
+  test("an admin sees every uploaded photo with its public address, newest first", async () => {
+    const s = setup();
+    const cookie = await s.login(admin);
+    await s.upload(new File([JPEG], "old.jpg"), cookie);
+    await s.upload(new File([JPEG], "new.jpg"), cookie);
+    s.mem.files.get([...s.mem.files.keys()][0]!)!.lastModified = new Date("2020-01-01");
+    const res = await s.library(cookie);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { ok: true; photos: { key: string; url: string; size: number; uploadedAt: string }[] };
+    expect(body.photos).toHaveLength(2);
+    expect(body.photos[0]!.url).toMatch(/^https:\/\/photos\.example\.com\/photos\/new-[a-z2-9]{6}\.jpg$/);
+    expect(body.photos[1]!.key).toMatch(/^photos\/old-/);
+  });
+
+  test("signed out: 401; a participant: 403", async () => {
+    const s = setup();
+    expect((await s.library()).status).toBe(401);
+    expect((await s.library(await s.login(alice))).status).toBe(403);
+  });
+
+  test("storage not set up, or failing: 503 uploads_unavailable", async () => {
+    const off = setup({ storage: false });
+    expect((await off.library(await off.login(admin))).status).toBe(503);
+    const s = setup();
+    s.mem.state.fail = true;
+    expect((await s.library(await s.login(admin))).status).toBe(503);
   });
 });

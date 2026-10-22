@@ -14,7 +14,19 @@ export interface UploadServices extends KitServices {
 export function uploadRoutes(getServices: () => UploadServices, opts: RouteOptions) {
   const { plugins } = routeKit(getServices, opts);
 
-  return new Elysia({ prefix: "/admin/uploads", detail: { tags: ["Uploads"] } }).use(plugins).post(
+  return new Elysia({ prefix: "/admin/uploads", detail: { tags: ["Uploads"] } }).use(plugins)
+    .get(
+      "/",
+      async ({ set }) => {
+        const result = await getServices().uploads.listPhotos();
+        return result.ok ? { ok: true as const, photos: result.photos } : fail(set, 503, "uploads_unavailable");
+      },
+      {
+        auth: "upload.read",
+        detail: { summary: "The photo library: every uploaded photo, newest first" },
+      },
+    )
+    .post(
     "/",
     async ({ body, set }) => {
       const result = await getServices().uploads.uploadPhoto(body.file);
