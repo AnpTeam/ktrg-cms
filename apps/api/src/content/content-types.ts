@@ -10,6 +10,7 @@ export type SpotTranslations = Translations<(typeof SPOT_TEXT)[number]>;
 export type SpotKind = (typeof spotKinds)[number];
 
 export type Prefecture = "osaka" | "wakayama" | "nara";
+export type WalkStyle = "one_way" | "loop" | "out_and_back";
 export type SpotStatus = "open" | "caution" | "closed";
 
 /** A route as the admin sees it. */
@@ -24,6 +25,7 @@ export interface RouteRow {
   difficulty: string | null;
   expectedTimeMin: number | null;
   prefecture: Prefecture | null;
+  walkStyle: WalkStyle | null;
   municipality: string | null;
   geometry: LineString | null;
   /** True once a person has checked the line against an official source (lineSource). Visitors see the line only then. */
@@ -97,6 +99,7 @@ export interface RouteFields {
   difficulty: string | null;
   expectedTimeMin: number | null;
   prefecture: Prefecture | null;
+  walkStyle: WalkStyle | null;
   municipality: string | null;
   /** An unchecked line from the request; the service validates it. null removes the line. */
   geometry: unknown;

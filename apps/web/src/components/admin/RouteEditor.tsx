@@ -31,6 +31,7 @@ import { MapEditorLoader } from "./map-editor/MapEditorLoader";
 import type { ElevationStatus } from "./map-editor/MapEditor";
 import { isListedMunicipality } from "@/lib/municipalities";
 import { stampableByDefault } from "@/lib/point-kinds";
+import { walkStyleOf } from "@/lib/walk-style";
 import { PublishedEditDialog, skipsPublishedWarning } from "./PublishedEditDialog";
 import { MunicipalityField } from "./MunicipalityField";
 import { PhotoSlot } from "./PhotoSlot";
@@ -464,6 +465,14 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                       </select>
                     </Field>
                     <MunicipalityField id="route-muni" prefecture={draft.prefecture} value={draft.municipality} onChange={text("municipality")} />
+                    <Field label={t`歩き方`} htmlFor="route-walk-style" hint={t`ルートのページの「スタート・ゴール」の見せ方が変わります。未選択なら、周回や往復とは書きません。`}>
+                      <select id="route-walk-style" value={draft.walkStyle ?? ""} onChange={(e) => dispatch({ type: "walkStyle", value: walkStyleOf(e.target.value) })} className={`${inputClass} min-w-48`}>
+                        <option value="">{t`未選択`}</option>
+                        <option value="one_way">{t`片道（スタートとゴールが別の場所）`}</option>
+                        <option value="loop">{t`周回（出発した場所に戻る）`}</option>
+                        <option value="out_and_back">{t`往復（同じ道を行って戻る）`}</option>
+                      </select>
+                    </Field>
                   </div>
                 </Section>
 

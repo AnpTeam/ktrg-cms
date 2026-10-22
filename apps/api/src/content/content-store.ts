@@ -20,6 +20,7 @@ async function withRouteTexts(q: Reader, rows: (typeof routes.$inferSelect)[]): 
       ...t,
       nameJa: t.nameJa ?? "",
       prefecture: r.prefecture as RouteRow["prefecture"],
+      walkStyle: r.walkStyle as RouteRow["walkStyle"],
       geometry: (r.geometry ?? null) as RouteRow["geometry"],
     };
   });
