@@ -21,6 +21,8 @@ export interface RouteArea extends Position {
 export interface MapPhoto {
   src: string;
   alt: string;
+  /** Who took it / where it is from (may hold links), shown under the photo. */
+  credit?: string | null;
 }
 
 /** One stamp place of a course, as a row in its list (with or without a position on the map). */
@@ -105,6 +107,8 @@ export interface MapScreenRoute {
   /** The story of the course, and how to get there; read by scrolling down in the course's sheet. */
   history: string | null;
   access: string | null;
+  /** Where the words come from (出典), in the visitor's language; may hold links. */
+  source?: string | null;
   photo: MapPhoto | null;
   /** The course's photo and the photos of its places, for the gallery (the course's own first). */
   gallery: MapPhoto[];

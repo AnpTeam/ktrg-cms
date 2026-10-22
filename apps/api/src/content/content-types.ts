@@ -36,8 +36,13 @@ export interface RouteRow {
   historyEn: string | null;
   accessJa: string | null;
   accessEn: string | null;
+  /** Where the words come from (出典); may hold links. */
+  sourceJa: string | null;
+  sourceEn: string | null;
   translations: RouteTranslations;
   photoUrl: string | null;
+  /** Who took the photo / where it is from, shown on it. */
+  photoCredit: string | null;
   sortOrder: number;
   createdAt: Date;
   updatedAt: Date;
@@ -73,11 +78,15 @@ export interface SpotRow {
   /** An optional visit beside the way (寄り道). */
   stopBy: boolean;
   photoUrl: string | null;
+  photoCredit: string | null;
   /** More photos of the place, in order. */
   photos: SpotPhoto[];
   status: SpotStatus;
   statusNoteJa: string | null;
   statusNoteEn: string | null;
+  /** Where the words come from (出典); may hold links. */
+  sourceJa: string | null;
+  sourceEn: string | null;
   translations: SpotTranslations;
   statusUpdatedAt: Date | null;
   sortOrder: number;
@@ -110,8 +119,11 @@ export interface RouteFields {
   historyEn: string | null;
   accessJa: string | null;
   accessEn: string | null;
+  sourceJa: string | null;
+  sourceEn: string | null;
   translations: RouteTranslations;
   photoUrl: string | null;
+  photoCredit: string | null;
 }
 
 export interface SpotFields {
@@ -132,11 +144,14 @@ export interface SpotFields {
   /** An optional visit beside the way (寄り道). */
   stopBy: boolean;
   photoUrl: string | null;
+  photoCredit: string | null;
   /** More photos of the place, in order. */
   photos: SpotPhoto[];
   status: SpotStatus;
   statusNoteJa: string | null;
   statusNoteEn: string | null;
+  sourceJa: string | null;
+  sourceEn: string | null;
   translations: SpotTranslations;
   permissionConfirmed: boolean;
   permissionNote: string | null;

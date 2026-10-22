@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useLingui } from "@lingui/react/macro";
+import { CreditCaption } from "@/components/PhotoCredit";
 import type { MapPhoto } from "@/lib/map-screen";
 
 /**
@@ -14,6 +15,7 @@ export function HeroPhoto({ photo, placeholder }: { photo: MapPhoto | null; plac
   const { t } = useLingui();
   if (!photo && !placeholder) return null;
   return (
+    <>
     <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-surface">
       {photo ? (
         // An address typed in the admin can be on any host, which next/image would refuse; those are shown as they are.
@@ -22,5 +24,7 @@ export function HeroPhoto({ photo, placeholder }: { photo: MapPhoto | null; plac
         <p className="absolute inset-0 grid place-items-center text-lg text-muted">{t`写真（準備中）`}</p>
       )}
     </div>
+    <CreditCaption credit={photo?.credit} className="mt-2" />
+    </>
   );
 }

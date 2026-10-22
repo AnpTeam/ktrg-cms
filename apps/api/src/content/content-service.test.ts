@@ -280,6 +280,17 @@ describe("history, access and photo", () => {
     }
     expect((await svc.publicRoute(r.id))?.route).toMatchObject({ historyJa: "役行者が修行した道", photoUrl: "https://example.com/koyama.jpg" });
   });
+
+  test("the photo credit and the source are trimmed, blank clears them, and visitors get them", async () => {
+    const r = await route();
+    const saved = await svc.updateRoute(ADMIN, r.id, r.updatedAt, {
+      photoCredit: "  撮影：山田 [Commons](https://commons.wikimedia.org/)  ",
+      sourceJa: "葛城修験日本遺産",
+      sourceEn: "   ",
+    });
+    expect(saved.ok && saved.value).toMatchObject({ photoCredit: "撮影：山田 [Commons](https://commons.wikimedia.org/)", sourceJa: "葛城修験日本遺産", sourceEn: null });
+    expect((await svc.publicRoute(r.id))?.route).toMatchObject({ photoCredit: "撮影：山田 [Commons](https://commons.wikimedia.org/)", sourceJa: "葛城修験日本遺産" });
+  });
 });
 
 describe("the route's other points (turns, toilets, danger ...)", () => {

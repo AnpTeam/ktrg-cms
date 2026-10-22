@@ -95,6 +95,8 @@ export const routes = pgTable(
     videoUrl: text("video_url"),
     // A picture of the route: an https address (an upload comes when a storage provider is chosen).
     photoUrl: text("photo_url"),
+    // Who took the picture / where it comes from. Shown on it; may hold links (see the web app's rich-text format).
+    photoCredit: text("photo_credit"),
     sortOrder: integer("sort_order").notNull().default(0),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
@@ -132,6 +134,7 @@ export const spots = pgTable(
     // An optional visit beside the way (寄り道): the line of the route does not have to pass through it.
     stopBy: boolean("stop_by").notNull().default(false),
     photoUrl: text("photo_url"),
+    photoCredit: text("photo_credit"),
     // More photos of the place, in order (the first photo above is its main one).
     photos: jsonb("photos").$type<SpotPhoto[]>().notNull().default(sql`'[]'::jsonb`),
     status: spotStatus("status").notNull().default("open"),
@@ -328,6 +331,7 @@ export const banners = pgTable("banners", {
   id: uuid("id").primaryKey().defaultRandom(),
   // An https link to the photo (uploaded to R2, or pasted).
   imageUrl: text("image_url").notNull(),
+  imageCredit: text("image_credit"),
   sortOrder: integer("sort_order").notNull().default(0),
   published: boolean("published").notNull().default(false),
   createdAt: createdAt(),
@@ -374,6 +378,8 @@ export const routeTranslations = pgTable(
     // The story of the route, and how to get there and back.
     history: text("history"),
     access: text("access"),
+    // Where the words come from (出典), in this language.
+    source: text("source"),
   },
   (t) => [primaryKey({ columns: [t.routeId, t.locale] }), check("route_translations_ja_name", jaRequires(t, t.name))],
 );
@@ -390,6 +396,7 @@ export const spotTranslations = pgTable(
     // Its story: where the name comes from, what happened there.
     history: text("history"),
     statusNote: text("status_note"),
+    source: text("source"),
   },
   (t) => [primaryKey({ columns: [t.spotId, t.locale] }), check("spot_translations_ja_name", jaRequires(t, t.name))],
 );
@@ -481,6 +488,7 @@ export const places = pgTable(
     phone: text("phone"),
     website: text("website"),
     photoUrl: text("photo_url"),
+    photoCredit: text("photo_credit"),
     status: placeStatus("status").notNull().default("unknown"),
     // The day a person last checked the details (opening hours go stale).
     lastVerified: date("last_verified", { mode: "string" }),

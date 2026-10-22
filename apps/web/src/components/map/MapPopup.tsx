@@ -1,6 +1,8 @@
 import { useLingui } from "@lingui/react/macro";
 import { CloseIcon } from "@/components/icons";
+import { CreditCaption } from "@/components/PhotoCredit";
 import { RoutePhoto } from "@/components/RoutePhoto";
+import { plainRich } from "@/lib/rich-text";
 import type { MapPhoto } from "@/lib/map-screen";
 
 /**
@@ -46,8 +48,9 @@ export function MapPopup({
           {name}
         </h3>
         {sub ? <p className="mt-0.5 text-base text-muted">{sub}</p> : null}
-        {text ? <p className="mt-1 line-clamp-3 text-lg leading-7">{text}</p> : null}
+        {text ? <p className="mt-1 line-clamp-3 text-lg leading-7">{plainRich(text)}</p> : null}
       </div>
+      {photo?.credit ? <CreditCaption credit={photo.credit} className="col-span-2" /> : null}
       <button
         type="button"
         onClick={onClose}

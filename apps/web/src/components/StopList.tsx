@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
 import type { SpotListItem } from "@/lib/content";
 import { pickText } from "@/lib/pick-text";
+import { plainRich } from "@/lib/rich-text";
 import type { NodeState } from "@/lib/ribbon";
 import type { TrailStop } from "@/lib/route-stops";
 import { ChevronIcon } from "./icons";
@@ -113,7 +114,7 @@ export function StopList({ stops, hrefFor, locale }: { stops: TrailStop[]; hrefF
                 ) : null}
                 {description && description.text.trim() ? (
                   <span className="mt-1 line-clamp-3 text-lg leading-7">
-                    <Localized value={description} tag={false} />
+                    <span lang={description.lang}>{plainRich(description.text)}</span>
                   </span>
                 ) : null}
                 {stop.type === "stamp" ? <StampMeta spot={stop.spot} afterStamp={before?.type === "stamp"} /> : null}

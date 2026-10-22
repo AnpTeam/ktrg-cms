@@ -155,6 +155,13 @@
       "when": 1792634349716,
       "tag": "0021_permission_for_every_place",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1792648000614,
+      "tag": "0022_photo_credit_and_source",
+      "breakpoints": true
     }
   ]
 }

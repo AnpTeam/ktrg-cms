@@ -498,6 +498,9 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     <TextInput id="route-photo" value={draft.photoUrl} onChange={text("photoUrl")} maxLength={500} invalid={problemOf("photo_link")} />
                   </Field>
                   <PhotoUpload onUploaded={text("photoUrl")} />
+                  <Field label={t`写真の出どころ`} htmlFor="route-photo-credit" hint={t`写真の上や下に ℹ︎ と一緒に表示されます。撮った人や、写真を載せているサイトを書きます。リンクは [表示する文字](https://…) と書きます。`}>
+                    <TextInput id="route-photo-credit" value={draft.photoCredit} onChange={text("photoCredit")} maxLength={500} />
+                  </Field>
                   {problemOf("photo_link") ? <p role="alert" className="text-base font-bold text-danger">{t`写真のリンクは、https:// で始まるものだけ使えます。`}</p> : null}
                   <PhotoSlot url={draft.photoUrl} className="max-w-md" />
                   <Field label={t`動画のリンク（YouTube か Vimeo）`} htmlFor="route-video" hint={t`https:// で始まるリンクを入れます。空にすると、動画は表示されません。`}>
@@ -512,7 +515,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
               <>
                 <Section title={t`ルートの説明`}>
                   <MultilingualField id="route-desc" field="description" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`ルートの説明`} ja={draft.descriptionJa} en={draft.descriptionEn} onJa={text("descriptionJa")} onEn={text("descriptionEn")} multiline />
-                  <p className="text-base text-muted">{t`改行は、そのまま表示されます。`}</p>
+                  <p className="text-base text-muted">{t`改行は、そのまま表示されます。リンクは [表示する文字](https://…) と書きます。脚注は、本文に [^1] と書き、別の行に [^1]: 注の内容 と書きます。（歴史・アクセス・出典でも同じです。）`}</p>
                 </Section>
                 <Section title={t`歴史・由来`}>
                   <MultilingualField id="route-history" field="history" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`歴史・由来`} ja={draft.historyJa} en={draft.historyEn} onJa={text("historyJa")} onEn={text("historyEn")} multiline />
@@ -520,6 +523,10 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                 <Section title={t`アクセス・交通`}>
                   <MultilingualField id="route-access" field="access" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`アクセス・交通`} ja={draft.accessJa} en={draft.accessEn} onJa={text("accessJa")} onEn={text("accessEn")} multiline />
                   <p className="text-base text-muted">{t`最寄りの駅やバス停、スタート地点とゴール地点への行き方を書きます。`}</p>
+                </Section>
+                <Section title={t`出典`}>
+                  <MultilingualField id="route-source" field="source" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`出典`} ja={draft.sourceJa} en={draft.sourceEn} onJa={text("sourceJa")} onEn={text("sourceEn")} multiline />
+                  <p className="text-base text-muted">{t`この文章のもとにした資料や、確かめた公式サイトを書きます。ルートのページの下に表示されます。`}</p>
                 </Section>
               </>
             ) : null}

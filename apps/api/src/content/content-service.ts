@@ -39,6 +39,9 @@ export interface PublicSpot {
   /** An optional visit beside the way (寄り道). */
   stopBy: boolean;
   photoUrl: string | null;
+  photoCredit: string | null;
+  sourceJa: string | null;
+  sourceEn: string | null;
   /** More photos of the place, in order, each with who took it when that is known. */
   photos: SpotRow["photos"];
   status: SpotRow["status"];
@@ -66,7 +69,10 @@ export interface PublicRoute {
   historyEn: string | null;
   accessJa: string | null;
   accessEn: string | null;
+  sourceJa: string | null;
+  sourceEn: string | null;
   photoUrl: string | null;
+  photoCredit: string | null;
   sortOrder: number;
   /** "soon" until at least one place is published. */
   status: "ready" | "soon";
@@ -118,7 +124,10 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     historyEn: r.historyEn,
     accessJa: r.accessJa,
     accessEn: r.accessEn,
+    sourceJa: r.sourceJa,
+    sourceEn: r.sourceEn,
     photoUrl: r.photoUrl,
+    photoCredit: r.photoCredit,
     sortOrder: r.sortOrder,
     status: publishedSpotCount > 0 ? "ready" : "soon",
     publishedSpotCount,
@@ -147,6 +156,9 @@ function toPublicSpot(s: SpotRow): PublicSpot {
     stampable: s.stampable,
     stopBy: s.stopBy,
     photoUrl: s.photoUrl,
+    photoCredit: s.photoCredit,
+    sourceJa: s.sourceJa,
+    sourceEn: s.sourceEn,
     photos: s.photos,
     status: s.status,
     statusNoteJa: s.statusNoteJa,
@@ -183,7 +195,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (!n) return bad("validation_failed");
       out.nameJa = n;
     }
-    for (const k of ["nameEn", "descriptionJa", "descriptionEn", "difficulty", "municipality", "historyJa", "historyEn", "accessJa", "accessEn"] as const) {
+    for (const k of ["nameEn", "descriptionJa", "descriptionEn", "difficulty", "municipality", "historyJa", "historyEn", "accessJa", "accessEn", "sourceJa", "sourceEn", "photoCredit"] as const) {
       const v = text(input[k]);
       if (v !== undefined) out[k] = v;
     }
@@ -230,7 +242,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (!n) return bad("validation_failed");
       out.nameJa = n;
     }
-    for (const k of ["nameEn", "descriptionJa", "descriptionEn", "historyJa", "historyEn", "statusNoteJa", "statusNoteEn", "permissionNote", "positionSource"] as const) {
+    for (const k of ["nameEn", "descriptionJa", "descriptionEn", "historyJa", "historyEn", "statusNoteJa", "statusNoteEn", "permissionNote", "positionSource", "sourceJa", "sourceEn", "photoCredit"] as const) {
       const v = text(input[k]);
       if (v !== undefined) out[k] = v;
     }

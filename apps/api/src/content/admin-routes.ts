@@ -90,8 +90,11 @@ const routeProps = {
   historyEn: nullable(t.String({ maxLength: 20000 })),
   accessJa: nullable(t.String({ maxLength: 20000 })),
   accessEn: nullable(t.String({ maxLength: 20000 })),
-  translations: translationsSchema({ name: 200, description: 20000, history: 20000, access: 20000 }),
+  sourceJa: nullable(t.String({ maxLength: 2000 })),
+  sourceEn: nullable(t.String({ maxLength: 2000 })),
+  translations: translationsSchema({ name: 200, description: 20000, history: 20000, access: 20000, source: 2000 }),
   photoUrl: nullable(t.String({ maxLength: 500 })),
+  photoCredit: nullable(t.String({ maxLength: 500 })),
 };
 const spotProps = {
   nameJa: t.String({ minLength: 1, maxLength: 200 }),
@@ -111,12 +114,15 @@ const spotProps = {
   // An optional visit beside the way (寄り道): the route's line need not pass through it.
   stopBy: t.Boolean(),
   photoUrl: nullable(t.String({ maxLength: 500 })),
+  photoCredit: nullable(t.String({ maxLength: 500 })),
+  sourceJa: nullable(t.String({ maxLength: 2000 })),
+  sourceEn: nullable(t.String({ maxLength: 2000 })),
   // The gallery: up to 12 photos; the credit says who took one that is not ours.
   photos: t.Array(t.Object({ url: t.String({ maxLength: 500 }), credit: nullable(t.String({ maxLength: 300 })), sourceUrl: nullable(t.String({ maxLength: 500 })) }), { maxItems: 12 }),
   status,
   statusNoteJa: nullable(t.String({ maxLength: 1000 })),
   statusNoteEn: nullable(t.String({ maxLength: 1000 })),
-  translations: translationsSchema({ name: 200, description: 20000, history: 20000, statusNote: 1000 }),
+  translations: translationsSchema({ name: 200, description: 20000, history: 20000, statusNote: 1000, source: 2000 }),
   permissionConfirmed: t.Boolean(),
   permissionNote: nullable(t.String({ maxLength: 500 })),
 };

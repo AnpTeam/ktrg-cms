@@ -5,6 +5,7 @@ import { HeroPhoto } from "./map/HeroPhoto";
 import { Localized } from "./Localized";
 import { NearbyPlaces, type Nearby } from "./NearbyPlaces";
 import { Notice } from "./Notice";
+import { RichText } from "./RichText";
 import { SpotGallery } from "./SpotGallery";
 import { StampFace } from "./StampFace";
 import { StampHere } from "./StampHere";
@@ -36,6 +37,7 @@ export function SpotSheet({
   const stampable = spot.stampable !== false;
   const description = pickText(locale, spot.descriptionJa, spot.descriptionEn);
   const history = pickText(locale, spot.historyJa ?? null, spot.historyEn ?? null);
+  const source = pickText(locale, spot.sourceJa ?? null, spot.sourceEn ?? null);
   const gallery = spot.gallery ?? [];
 
   return (
@@ -51,7 +53,7 @@ export function SpotSheet({
 
       {spot.photoUrl ? (
         <div className="px-4">
-          <HeroPhoto photo={{ src: spot.photoUrl, alt: pickText(locale, spot.nameJa, spot.nameEn)?.text ?? spot.nameJa }} placeholder={false} />
+          <HeroPhoto photo={{ src: spot.photoUrl, alt: pickText(locale, spot.nameJa, spot.nameEn)?.text ?? spot.nameJa, credit: spot.photoCredit ?? null }} placeholder={false} />
         </div>
       ) : null}
 
@@ -104,9 +106,9 @@ export function SpotSheet({
             <Trans>説明</Trans>
           </h2>
           {/* Editors type plain text; line breaks are kept. Never raw HTML. */}
-          <p className="mt-2 max-w-prose whitespace-pre-line text-lg leading-8">
-            <Localized value={description} tag={false} />
-          </p>
+          <div className="mt-2 max-w-prose whitespace-pre-line text-lg leading-8">
+            <RichText text={description.text} lang={description.lang} />
+          </div>
           {description.fallback ? (
             <p className="mt-2 text-base text-muted">
               <Trans>この説明は日本語のみです。</Trans>
@@ -120,14 +122,25 @@ export function SpotSheet({
           <h2 className="text-xl font-bold">
             <Trans>歴史・由来</Trans>
           </h2>
-          <p className="mt-2 max-w-prose whitespace-pre-line text-lg leading-8">
-            <Localized value={history} tag={false} />
-          </p>
+          <div className="mt-2 max-w-prose whitespace-pre-line text-lg leading-8">
+            <RichText text={history.text} lang={history.lang} />
+          </div>
           {history.fallback ? (
             <p className="mt-2 text-base text-muted">
               <Trans>この説明は日本語のみです。</Trans>
             </p>
           ) : null}
+        </section>
+      ) : null}
+
+      {source ? (
+        <section className="px-4">
+          <h2 className="text-xl font-bold">
+            <Trans>出典</Trans>
+          </h2>
+          <div className="mt-2 max-w-prose whitespace-pre-line text-base leading-7 text-muted">
+            <RichText text={source.text} lang={source.lang} />
+          </div>
         </section>
       ) : null}
 

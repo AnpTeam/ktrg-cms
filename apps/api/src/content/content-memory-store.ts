@@ -50,7 +50,7 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       const row: RouteRow = {
         id: uuid(), nameEn: null, descriptionJa: null, descriptionEn: null, distanceKm: null,
         elevationGainM: null, difficulty: null, expectedTimeMin: null, prefecture: null, walkStyle: null, municipality: null, geometry: null, lineVerified: false, lineSource: null,
-        videoUrl: null, historyJa: null, historyEn: null, accessJa: null, accessEn: null, photoUrl: null, sortOrder: routes.size + 1, createdAt: at, updatedAt: at, ...fields,
+        videoUrl: null, historyJa: null, historyEn: null, accessJa: null, accessEn: null, sourceJa: null, sourceEn: null, photoUrl: null, photoCredit: null, sortOrder: routes.size + 1, createdAt: at, updatedAt: at, ...fields,
         translations: mergeTranslations({}, fields.translations),
       };
       routes.set(row.id, row);
@@ -85,7 +85,7 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       const at = stampTime();
       const row: SpotRow = {
         id: uuid(), routeId, nameEn: null, descriptionJa: null, descriptionEn: null, historyJa: null, historyEn: null, lat: null, lng: null,
-        positionVerified: false, positionSource: null, radiusM: 50, kind: "other", stampable: false, stopBy: false, photoUrl: null, photos: [], status: "open", statusNoteJa: null, statusNoteEn: null,
+        positionVerified: false, positionSource: null, radiusM: 50, kind: "other", stampable: false, stopBy: false, photoUrl: null, photoCredit: null, photos: [], status: "open", statusNoteJa: null, statusNoteEn: null, sourceJa: null, sourceEn: null,
         statusUpdatedAt: null, sortOrder: sortedSpots(routeId).length + 1, published: false, permissionConfirmed: false,
         permissionNote: null, createdAt: at, updatedAt: at, ...fields,
         translations: mergeTranslations({}, fields.translations),

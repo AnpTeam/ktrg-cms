@@ -19,7 +19,10 @@ export interface PublicRoute {
   historyEn: string | null;
   accessJa: string | null;
   accessEn: string | null;
+  sourceJa?: string | null;
+  sourceEn?: string | null;
   photoUrl: string | null;
+  photoCredit?: string | null;
   sortOrder: number;
   status: "ready" | "soon";
   publishedSpotCount: number;
@@ -49,6 +52,9 @@ export interface PublicSpot {
   /** An optional visit beside the way (寄り道). */
   stopBy?: boolean;
   photoUrl: string | null;
+  photoCredit?: string | null;
+  sourceJa?: string | null;
+  sourceEn?: string | null;
   photos?: { url: string; credit: string | null; sourceUrl: string | null }[];
   status: "open" | "caution" | "closed";
   statusNoteJa: string | null;
@@ -76,6 +82,7 @@ export interface PublicPlace {
   phone: string | null;
   website: string | null;
   photoUrl: string | null;
+  photoCredit?: string | null;
   status: string;
   lastVerified: string | null;
 }

@@ -7,13 +7,15 @@ import { fetchPublicBanners } from "./api-content";
 export interface BannerSlide {
   /** An https link to the photo; null draws a placeholder. */
   src: string | null;
+  /** Who took the photo / where it is from, shown on it (may hold links). */
+  credit?: string | null;
   altJa: string;
   altEn: string;
 }
 
 /** The published banners, in order; none when the API does not answer (the carousel is then left out). */
 export async function listBanners(): Promise<BannerSlide[]> {
-  return ((await fetchPublicBanners()) ?? []).map((b) => ({ src: b.imageUrl, altJa: b.altJa, altEn: b.altEn ?? b.altJa }));
+  return ((await fetchPublicBanners()) ?? []).map((b) => ({ src: b.imageUrl, credit: b.imageCredit ?? null, altJa: b.altJa, altEn: b.altEn ?? b.altJa }));
 }
 
 /** What the carousel shows: the real slides, or three placeholders while developing with sample content. */

@@ -42,6 +42,7 @@ export function routeSummaryFromApi(r: PublicRoute, order: number, stampedCount 
     // How many of this course's places the visitor has stamped (0 when signed out; the viewer filter hides it then).
     stampedCount,
     photoUrl: r.photoUrl,
+    photoCredit: r.photoCredit ?? null,
   };
 }
 
@@ -62,6 +63,7 @@ export function spotListItemFromApi(s: PublicSpot, stamped = false): SpotListIte
     statusNoteEn: s.statusNoteEn,
     statusUpdatedAt: s.statusUpdatedAt,
     photoUrl: s.photoUrl,
+    photoCredit: s.photoCredit ?? null,
     sortOrder: s.sortOrder,
   };
 }
@@ -84,6 +86,7 @@ export function placeItemFromApi(p: PublicPlace, order: number | null): PlaceIte
     status: placeStatuses.find((s) => s === p.status) ?? "unknown",
     lastVerified: p.lastVerified,
     photoUrl: p.photoUrl,
+    photoCredit: p.photoCredit ?? null,
   };
 }
 
@@ -98,6 +101,7 @@ export function routePointFromApi(s: PublicSpot): RoutePoint | null {
     descriptionJa: s.descriptionJa,
     descriptionEn: s.descriptionEn,
     photoUrl: s.photoUrl,
+    photoCredit: s.photoCredit ?? null,
     sortOrder: s.sortOrder,
     ...(s.stopBy ? { stopBy: true } : {}),
     position: s.position ? { lat: s.position.lat, lng: s.position.lng, verified: true } : null,
@@ -124,6 +128,8 @@ export function routeDetailFromApi(
     historyEn: r.historyEn,
     accessJa: r.accessJa,
     accessEn: r.accessEn,
+    sourceJa: r.sourceJa ?? null,
+    sourceEn: r.sourceEn ?? null,
     spots: spots.map((s) => {
       const item = spotListItemFromApi(s, mine.has(s.id));
       const fromPrev = times.get(s.id);
@@ -134,6 +140,7 @@ export function routeDetailFromApi(
     sideLines: (r.sideLines ?? []).map((s) => ({ spotId: s.spotId, line: s.coordinates.map(([lng, lat]) => ({ lat, lng })) })),
     videoUrl: r.videoUrl,
     photoUrl: r.photoUrl,
+    photoCredit: r.photoCredit ?? null,
     walkStyle: walkStyleOf(r.walkStyle),
   };
 }
@@ -152,6 +159,9 @@ export function spotDetailFromApi(s: PublicSpot, route: Pick<PublicRoute, "id" |
     statusNoteEn: s.statusNoteEn,
     statusUpdatedAt: s.statusUpdatedAt,
     photoUrl: s.photoUrl,
+    photoCredit: s.photoCredit ?? null,
+    sourceJa: s.sourceJa ?? null,
+    sourceEn: s.sourceEn ?? null,
     gallery: s.photos ?? [],
   };
 }
@@ -206,6 +216,6 @@ export async function fetchPublicNotices(): Promise<TrailNotice[] | null> {
 }
 
 /** Published home page banners, in order. */
-export async function fetchPublicBanners(): Promise<{ id: string; imageUrl: string; altJa: string; altEn: string | null }[] | null> {
-  return okBody<{ banners: { id: string; imageUrl: string; altJa: string; altEn: string | null }[] }>(await getJson("/banners"))?.banners ?? null;
+export async function fetchPublicBanners(): Promise<{ id: string; imageUrl: string; imageCredit?: string | null; altJa: string; altEn: string | null }[] | null> {
+  return okBody<{ banners: { id: string; imageUrl: string; imageCredit?: string | null; altJa: string; altEn: string | null }[] }>(await getJson("/banners"))?.banners ?? null;
 }

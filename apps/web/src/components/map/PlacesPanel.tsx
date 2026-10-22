@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { PlaceGroupIcon, WarningIcon } from "@/components/icons";
+import { RichText } from "@/components/RichText";
 import { formatDay } from "@/lib/format";
 import {
   distanceLabel,
@@ -215,7 +216,11 @@ export function PlaceCard({
           {place.closedDays}
         </p>
       ) : null}
-      {place.description ? <p className="text-lg leading-8">{place.description}</p> : null}
+      {place.description ? (
+        <div className="whitespace-pre-line text-lg leading-8">
+          <RichText text={place.description} />
+        </div>
+      ) : null}
       {place.lastVerified ? (
         <p className="text-base text-muted">{t`確認した日：${checkedOn}`}</p>
       ) : null}

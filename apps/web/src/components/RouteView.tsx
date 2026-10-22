@@ -6,6 +6,7 @@ import { IntroVideo } from "@/components/IntroVideo";
 import { Localized } from "@/components/Localized";
 import { Notice } from "@/components/Notice";
 import { PrefectureName } from "@/components/PrefectureName";
+import { RichText } from "@/components/RichText";
 import { RouteJourney } from "@/components/RouteJourney";
 import { RouteSilhouette } from "@/components/RouteSketch";
 import { RouteStats } from "@/components/RouteStats";
@@ -85,11 +86,12 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
   const { stampedCount, spotCount } = route;
   const history = pickText(locale, route.historyJa, route.historyEn);
   const access = pickText(locale, route.accessJa, route.accessEn);
+  const source = pickText(locale, route.sourceJa ?? null, route.sourceEn ?? null);
   // The places to visit are pins of their own; only the guiding points (turns, dangers) stay among the small place marks.
   const mapPlaces = [...places, ...pointsAsPlaces(route.points.filter((p) => isGuidanceOnly(p.kind)), locale)];
   const trail = trailStops(route);
   const journey = journeyOf(trail, route.walkStyle ?? null);
-  const photo = route.photoUrl ? { src: route.photoUrl, alt: pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa } : null;
+  const photo = route.photoUrl ? { src: route.photoUrl, alt: pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa, credit: route.photoCredit ?? null } : null;
 
   // One column (the phone, and the admin's narrow preview). When the box this sits in is wide (a desktop page), two
   // columns: the photo, the name and the numbers, the story and the access on the left; the elevation, the video, the map
@@ -134,7 +136,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           {description ? (
             <section className="order-8 px-4 @4xl:order-none @4xl:px-0">
               <ExpandableText text={description.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
-                <Localized value={description} tag={false} />
+                <RichText text={description.text} lang={description.lang} />
               </ExpandableText>
             </section>
           ) : null}
@@ -146,7 +148,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               </h2>
               <div className="mt-2">
                 <ExpandableText text={history.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
-                  <Localized value={history} tag={false} />
+                  <RichText text={history.text} lang={history.lang} />
                 </ExpandableText>
               </div>
               {history.fallback ? (
@@ -154,6 +156,17 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
                   <Trans>この文章は日本語のみです。</Trans>
                 </p>
               ) : null}
+            </section>
+          ) : null}
+
+          {source ? (
+            <section className="order-11 px-4 @4xl:order-none @4xl:px-0">
+              <h2 className="text-xl font-bold">
+                <Trans>出典</Trans>
+              </h2>
+              <div className="mt-2 max-w-prose whitespace-pre-line text-base leading-7 text-muted">
+                <RichText text={source.text} lang={source.lang} />
+              </div>
             </section>
           ) : null}
 
@@ -166,7 +179,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               {access ? (
                 <div>
                   <ExpandableText text={access.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
-                    <Localized value={access} tag={false} />
+                    <RichText text={access.text} lang={access.lang} />
                   </ExpandableText>
                   {access.fallback ? (
                     <p className="mt-2 text-base text-muted">
