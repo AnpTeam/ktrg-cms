@@ -36,6 +36,10 @@ export interface PlaceDraft {
   /** The other content languages ({ de: { name } }). */
   translations: Translations;
   photoUrl: string;
+  photoCredit: string;
+  /** Where the words come from (出典). */
+  sourceJa: string;
+  sourceEn: string;
   /** More photos of the place, in order. */
   photos: GalleryPhoto[];
   lat: number | null;
@@ -64,6 +68,9 @@ export interface RouteDraft {
   /** The other content languages ({ de: { name } }). */
   translations: Translations;
   photoUrl: string;
+  photoCredit: string;
+  sourceJa: string;
+  sourceEn: string;
   prefecture: Prefecture | null;
   walkStyle: WalkStyle | null;
   municipality: string;
@@ -88,17 +95,17 @@ export interface RouteDraft {
 
 export const emptyDraft = (): RouteDraft => ({
   id: null, updatedAt: null, nameJa: "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
-  accessJa: "", accessEn: "", translations: {}, photoUrl: "", prefecture: null, walkStyle: null, municipality: "",
+  accessJa: "", accessEn: "", translations: {}, photoUrl: "", photoCredit: "", sourceJa: "", sourceEn: "", prefecture: null, walkStyle: null, municipality: "",
   distanceKm: null, distanceManual: false, elevationGainM: null, climbManual: false, expectedTimeMin: null, timeManual: false,
   difficulty: "", videoUrl: "", line: [], legs: [], lineVerified: false, lineSource: "", places: [],
 });
 
-const s = (v: string | null) => v ?? "";
+const s = (v: string | null | undefined) => v ?? "";
 
 export function placeFromServer(p: AdminSpot): PlaceDraft {
   return {
     key: p.id, id: p.id, updatedAt: p.updatedAt, published: p.published, kind: p.kind, stampable: p.stampable, stopBy: p.stopBy,
-    nameJa: p.nameJa, nameEn: s(p.nameEn), descriptionJa: s(p.descriptionJa), descriptionEn: s(p.descriptionEn), historyJa: s(p.historyJa), historyEn: s(p.historyEn), translations: p.translations ?? {}, photoUrl: s(p.photoUrl), photos: p.photos ?? [],
+    nameJa: p.nameJa, nameEn: s(p.nameEn), descriptionJa: s(p.descriptionJa), descriptionEn: s(p.descriptionEn), historyJa: s(p.historyJa), historyEn: s(p.historyEn), translations: p.translations ?? {}, photoUrl: s(p.photoUrl), photoCredit: s(p.photoCredit), sourceJa: s(p.sourceJa), sourceEn: s(p.sourceEn), photos: p.photos ?? [],
     lat: p.lat, lng: p.lng, positionVerified: p.positionVerified, positionSource: s(p.positionSource), radiusM: p.radiusM,
     status: p.status, statusNoteJa: s(p.statusNoteJa), statusNoteEn: s(p.statusNoteEn),
     permissionConfirmed: p.permissionConfirmed, permissionNote: s(p.permissionNote),
@@ -133,6 +140,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
     id: route.id, updatedAt: route.updatedAt, nameJa: route.nameJa, nameEn: s(route.nameEn), descriptionJa: s(route.descriptionJa),
     descriptionEn: s(route.descriptionEn), historyJa: s(route.historyJa), historyEn: s(route.historyEn),
     accessJa: s(route.accessJa), accessEn: s(route.accessEn), translations: route.translations ?? {}, photoUrl: s(route.photoUrl),
+    photoCredit: s(route.photoCredit), sourceJa: s(route.sourceJa), sourceEn: s(route.sourceEn),
     prefecture: route.prefecture, walkStyle: route.walkStyle, municipality: s(route.municipality),
     distanceKm: route.distanceKm,
     // A saved distance that is not the line's own length was typed by hand: keep it when the line changes.
@@ -151,7 +159,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
 export const newPlace = (key: string, lat: number | null, lng: number | null, n: number, kind: PointKind = "other"): PlaceDraft => ({
   key, id: null, updatedAt: null, published: false, kind, stampable: stampableByDefault(kind), stopBy: false,
   nameJa: stampableByDefault(kind) ? `経由地${n}` : "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
-  translations: {}, photoUrl: "", photos: [], lat, lng, positionVerified: false, positionSource: "", radiusM: 50, status: "open", statusNoteJa: "", statusNoteEn: "",
+  translations: {}, photoUrl: "", photoCredit: "", sourceJa: "", sourceEn: "", photos: [], lat, lng, positionVerified: false, positionSource: "", radiusM: 50, status: "open", statusNoteJa: "", statusNoteEn: "",
   permissionConfirmed: false, permissionNote: "",
 });
 
@@ -180,6 +188,9 @@ export type TextField =
   | "accessJa"
   | "accessEn"
   | "photoUrl"
+  | "photoCredit"
+  | "sourceJa"
+  | "sourceEn"
   | "municipality"
   | "difficulty"
   | "videoUrl"
@@ -431,6 +442,7 @@ const pointOf = (p: PlaceDraft, d: Pick<RouteDraft, "places">): RoutePoint => ({
   id: p.id ?? p.key,
   sortOrder: d.places.indexOf(p),
   photoUrl: nz(p.photoUrl),
+  photoCredit: nz(p.photoCredit),
   ...(p.stopBy ? { stopBy: true } : {}),
   kind: p.kind,
   nameJa: p.nameJa,
@@ -470,6 +482,8 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
     historyEn: nz(d.historyEn),
     accessJa: nz(d.accessJa),
     accessEn: nz(d.accessEn),
+    sourceJa: nz(d.sourceJa),
+    sourceEn: nz(d.sourceEn),
     spots: stamps.map((p) => ({
       id: p.id ?? p.key,
       nameJa: p.nameJa,
@@ -481,6 +495,7 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
       descriptionJa: nz(p.descriptionJa),
       descriptionEn: nz(p.descriptionEn),
       photoUrl: nz(p.photoUrl),
+      photoCredit: nz(p.photoCredit),
       ...(p.stopBy ? { stopBy: true } : {}),
       ...(times.get(p.id ?? p.key) ? { fromPrev: times.get(p.id ?? p.key) } : {}),
       position: p.lat !== null && p.lng !== null ? { lat: p.lat, lng: p.lng, verified: p.positionVerified } : null,
@@ -490,5 +505,6 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
     sideLines: d.legs.filter((l) => l.side).map((l) => ({ spotId: l.to, line: l.points.map(([lng, lat]) => ({ lat, lng })) })),
     videoUrl: nz(d.videoUrl),
     photoUrl: nz(d.photoUrl),
+    photoCredit: nz(d.photoCredit),
   };
 }

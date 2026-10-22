@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { ChevronIcon } from "@/components/icons";
+import { CreditBadge } from "@/components/PhotoCredit";
 import type { BannerSlide } from "@/lib/banners";
 
 /**
@@ -65,6 +66,7 @@ export function BannerCarousel({ slides }: { slides: BannerSlide[] }) {
                   {i18n.locale === "ja" ? slide.altJa : slide.altEn}
                 </div>
               )}
+              <CreditBadge credit={slide.credit} />
             </li>
           ))}
         </ul>

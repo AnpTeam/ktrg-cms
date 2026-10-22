@@ -38,7 +38,12 @@ export interface AdminRoute {
   historyEn: string | null;
   accessJa: string | null;
   accessEn: string | null;
+  /** Where the words come from (出典); may hold links. */
+  sourceJa?: string | null;
+  sourceEn?: string | null;
   photoUrl: string | null;
+  /** Who took the photo / where it is from, shown with it; may hold links. */
+  photoCredit?: string | null;
   sortOrder: number;
   createdAt: string;
   updatedAt: string;
@@ -73,6 +78,9 @@ export interface AdminSpot {
   /** An optional visit beside the way (寄り道): the route's line need not pass through it. */
   stopBy: boolean;
   photoUrl: string | null;
+  photoCredit?: string | null;
+  sourceJa?: string | null;
+  sourceEn?: string | null;
   /** More photos of the place, in order. */
   photos: GalleryPhoto[];
   status: SpotStatus;

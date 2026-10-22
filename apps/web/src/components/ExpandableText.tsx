@@ -18,9 +18,9 @@ export function ExpandableText({ text, children, className = "" }: { text: strin
   const long = text.length > FOLD_AFTER_CHARS;
   return (
     <div>
-      <p id={id} className={`${className} ${long && !open ? "line-clamp-5" : ""}`}>
+      <div id={id} className={`${className} ${long && !open ? "line-clamp-5" : ""}`}>
         {children}
-      </p>
+      </div>
       {long ? (
         <button
           type="button"

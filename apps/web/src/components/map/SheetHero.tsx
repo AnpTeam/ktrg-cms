@@ -3,6 +3,7 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { ChevronLeftIcon } from "@/components/icons";
+import { CreditCaption } from "@/components/PhotoCredit";
 import type { MapPhoto } from "@/lib/map-screen";
 
 /**
@@ -30,6 +31,7 @@ export function SheetHero({
   onBack: () => void;
 }) {
   return (
+    <>
     <div className="relative mx-4 aspect-[16/10] overflow-hidden rounded-2xl" style={{ background: "linear-gradient(135deg, #6f241c, #b04a40)" }}>
       {photo ? <Image src={photo.src} alt="" fill sizes="(min-width: 1280px) 21rem, 100vw" className="object-cover" unoptimized={photo.src.startsWith("https://")} /> : null}
       <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/10" />
@@ -52,6 +54,8 @@ export function SheetHero({
       </div>
       {photo ? <span className="sr-only">{photo.alt}</span> : null}
     </div>
+    <CreditCaption credit={photo?.credit} className="mx-4 mt-2" />
+    </>
   );
 }
 
@@ -60,8 +64,11 @@ export function Gallery({ photos, label }: { photos: MapPhoto[]; label: string }
   return (
     <ul aria-label={label} className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2" tabIndex={0}>
       {photos.map((p) => (
-        <li key={p.src} className="relative aspect-[4/3] w-64 shrink-0 snap-start overflow-hidden rounded-2xl bg-surface">
-          <Image src={p.src} alt={p.alt} fill sizes="16rem" className="object-cover" unoptimized={p.src.startsWith("https://")} />
+        <li key={p.src} className="w-64 shrink-0 snap-start">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-surface">
+            <Image src={p.src} alt={p.alt} fill sizes="16rem" className="object-cover" unoptimized={p.src.startsWith("https://")} />
+          </div>
+          <CreditCaption credit={p.credit} className="mt-2" />
         </li>
       ))}
     </ul>

@@ -7,6 +7,7 @@ import { ChevronIcon, WarningIcon } from "@/components/icons";
 import { ExpandableText } from "@/components/ExpandableText";
 import { ElevationProfile } from "@/components/ElevationProfile";
 import { PrefectureName } from "@/components/PrefectureName";
+import { RichText } from "@/components/RichText";
 import { RouteStats } from "@/components/RouteStats";
 import { StampHere } from "@/components/StampHere";
 import { NavigationStart } from "@/components/navigation/NavigationHud";
@@ -372,7 +373,7 @@ function RoutePanel({
 
       {route.description ? (
         <ExpandableText text={route.description} className="whitespace-pre-line text-lg leading-8">
-          {route.description}
+          <RichText text={route.description} />
         </ExpandableText>
       ) : null}
 
@@ -443,7 +444,7 @@ function RoutePanel({
         <section className="flex flex-col gap-2">
           <h3 className="text-xl font-bold">{t`歴史・由来`}</h3>
           <ExpandableText text={route.history} className="whitespace-pre-line text-lg leading-8">
-            {route.history}
+            <RichText text={route.history} />
           </ExpandableText>
         </section>
       ) : null}
@@ -452,8 +453,17 @@ function RoutePanel({
         <section className="flex flex-col gap-2">
           <h3 className="text-xl font-bold">{t`アクセス・交通`}</h3>
           <ExpandableText text={route.access} className="whitespace-pre-line text-lg leading-8">
-            {route.access}
+            <RichText text={route.access} />
           </ExpandableText>
+        </section>
+      ) : null}
+
+      {route.source ? (
+        <section className="flex flex-col gap-2">
+          <h3 className="text-xl font-bold">{t`出典`}</h3>
+          <div className="whitespace-pre-line text-base leading-7 text-muted">
+            <RichText text={route.source} />
+          </div>
         </section>
       ) : null}
 
@@ -510,7 +520,11 @@ function StopPanel({
         </p>
       ) : null}
 
-      {stop.description ? <p className="whitespace-pre-line text-lg leading-8">{stop.description}</p> : null}
+      {stop.description ? (
+        <div className="whitespace-pre-line text-lg leading-8">
+          <RichText text={stop.description} />
+        </div>
+      ) : null}
 
       {stop.stamped === true ? (
         <div className="flex items-center gap-4">

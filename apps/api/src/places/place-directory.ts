@@ -36,6 +36,8 @@ export const PLACE_FIELDS = {
   phone: maybe(40),
   website: maybe(500),
   photoUrl: maybe(500),
+  /** Who took the photo / where it is from (may hold links). */
+  photoCredit: t.Optional(maybe(500)),
   status: t.UnionEnum(["open", "closed", "seasonal", "gone", "unknown"]),
   lastVerified: t.Union([t.String({ pattern: "^\\d{4}-\\d{2}-\\d{2}$" }), t.Null()]),
   listingConfirmed: t.Boolean(),
@@ -62,7 +64,7 @@ const isWebLink = (v: string) => {
   }
 };
 
-const NULLABLE_TEXT = ["nameEn", "descriptionJa", "descriptionEn", "hoursJa", "hoursEn", "closedDaysJa", "closedDaysEn", "positionSource", "address", "phone", "website", "photoUrl", "listingNote"] as const;
+const NULLABLE_TEXT = ["nameEn", "descriptionJa", "descriptionEn", "hoursJa", "hoursEn", "closedDaysJa", "closedDaysEn", "positionSource", "address", "phone", "website", "photoUrl", "photoCredit", "listingNote"] as const;
 
 /**
  * Trims every text and clears a blank one; a link must be https; a position needs both numbers; "checked" needs a
@@ -185,6 +187,12 @@ export const placeDirectoryList: ListDef<"directory", typeof PLACE_FIELDS, Place
       { name: "phone", kind: "text", label: { ja: "電話番号", en: "Phone" } },
       { name: "website", kind: "url", label: { ja: "Webサイト", en: "Website" } },
       { name: "photoUrl", kind: "image", label: { ja: "写真", en: "Photo" } },
+      {
+        name: "photoCredit",
+        kind: "text",
+        label: { ja: "写真の出どころ", en: "Photo credit" },
+        hint: { ja: "写真の下に表示されます。リンクは [表示する文字](https://…) の形で書けます。", en: "Shown under the photo. A link is written [text](https://…)." },
+      },
       { name: "lat", kind: "decimal", label: { ja: "緯度", en: "Latitude" }, hint: { ja: "地図アプリで確かめた値を入れてください。推測では入れません。", en: "Use a value checked on a map app. Never guess." } },
       { name: "lng", kind: "decimal", label: { ja: "経度", en: "Longitude" } },
       { name: "positionSource", kind: "text", label: { ja: "位置の出どころ", en: "Where the position comes from" } },
@@ -231,6 +239,7 @@ export function publicPlaceRoutes(getPlaces: () => PlaceService) {
         phone: p.phone,
         website: p.website,
         photoUrl: p.photoUrl,
+        photoCredit: p.photoCredit,
         status: p.status,
         lastVerified: p.lastVerified,
       })),

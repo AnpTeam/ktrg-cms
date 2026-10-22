@@ -36,7 +36,10 @@ export interface RouteBody {
   historyEn: string | null;
   accessJa: string | null;
   accessEn: string | null;
+  sourceJa: string | null;
+  sourceEn: string | null;
   photoUrl: string | null;
+  photoCredit: string | null;
   geometry: RouteLine | null;
   lineVerified: boolean;
   lineSource: string | null;
@@ -48,6 +51,9 @@ export interface PlaceBody {
   stampable: boolean;
   stopBy: boolean;
   photoUrl: string | null;
+  photoCredit: string | null;
+  sourceJa: string | null;
+  sourceEn: string | null;
   photos: GalleryPhoto[];
   nameJa: string;
   nameEn: string | null;
@@ -103,7 +109,10 @@ export function routeBody(d: RouteDraft): RouteBody {
     historyEn: nullIfEmpty(d.historyEn),
     accessJa: nullIfEmpty(d.accessJa),
     accessEn: nullIfEmpty(d.accessEn),
+    sourceJa: nullIfEmpty(d.sourceJa),
+    sourceEn: nullIfEmpty(d.sourceEn),
     photoUrl: nullIfEmpty(d.photoUrl),
+    photoCredit: nullIfEmpty(d.photoCredit),
     geometry: d.line.length >= 2 ? { type: "LineString", coordinates: d.line.map(coordinate), ...(d.legs.length > 0 ? { legs: d.legs.map((l) => ({ from: l.from, to: l.to, coordinates: l.points.map(coordinate), ...(l.side ? { side: true as const } : {}), ...(l.ride ? { ride: l.ride } : {}), ...(l.via && l.via.length > 0 ? { via: l.via } : {}) })) } : {}) } : null,
     // "Checked" needs a named source (the server refuses it otherwise): without one the line is saved as not checked yet.
     lineVerified: d.lineVerified && d.lineSource.trim() !== "",
@@ -118,6 +127,9 @@ export function placeBody(p: PlaceDraft): PlaceBody {
     stampable: p.stampable,
     stopBy: p.stopBy,
     photoUrl: nullIfEmpty(p.photoUrl),
+    photoCredit: nullIfEmpty(p.photoCredit),
+    sourceJa: nullIfEmpty(p.sourceJa),
+    sourceEn: nullIfEmpty(p.sourceEn),
     photos: p.photos.filter((x) => x.url.trim() !== ""),
     nameJa: p.nameJa.trim(),
     nameEn: nullIfEmpty(p.nameEn),

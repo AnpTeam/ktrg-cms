@@ -45,6 +45,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
         let description: string | null = null;
         let history: string | null = null;
         let access: string | null = null;
+        let source: string | null = null;
         let points: MapScreenPoint[] = [];
 
         if (r.status === "ready" && r.spotCount > 0) {
@@ -55,6 +56,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
             description = pickText(locale, detail.descriptionJa, detail.descriptionEn)?.text ?? null;
             history = pickText(locale, detail.historyJa, detail.historyEn)?.text ?? null;
             access = pickText(locale, detail.accessJa, detail.accessEn)?.text ?? null;
+            source = pickText(locale, detail.sourceJa ?? null, detail.sourceEn ?? null)?.text ?? null;
             // The places to visit are pins of their own (below); only the guiding points stay among the small place marks.
             points = detail.points.filter((p) => isGuidanceOnly(p.kind)).flatMap((p): MapScreenPoint[] => {
               const pointName = pickText(locale, p.nameJa, p.nameEn);
@@ -62,7 +64,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
                 ? [{ id: p.id, category: categoryOfKind(p.kind), name: pointName.text, nameLang: pointName.lang, position: { lat: p.position.lat, lng: p.position.lng } }]
                 : [];
             });
-            photo = detail.photoUrl ? { src: detail.photoUrl, alt: name?.text ?? detail.nameJa } : null;
+            photo = detail.photoUrl ? { src: detail.photoUrl, alt: name?.text ?? detail.nameJa, credit: detail.photoCredit ?? null } : null;
             const numbers = stopNumbers(detail);
             spots = detail.spots.flatMap((s): MapScreenSpot[] => {
               const spotName = pickText(locale, s.nameJa, s.nameEn);
@@ -106,7 +108,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
                   description: pickText(locale, item.descriptionJa ?? null, item.descriptionEn ?? null)?.text ?? null,
                   statusNote: note?.text ?? null,
                   statusUpdatedAt: t.type === "stamp" ? t.spot.statusUpdatedAt ?? null : null,
-                  photo: item.photoUrl ? { src: item.photoUrl, alt: spotName.text } : null,
+                  photo: item.photoUrl ? { src: item.photoUrl, alt: spotName.text, credit: item.photoCredit ?? null } : null,
                 };
               })
               .filter((s): s is MapScreenStop => s !== null);
@@ -128,7 +130,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
                 name: placeName?.text ?? p.nameJa,
                 nameLang: placeName?.lang ?? "ja",
                 position: { lat: p.position.lat, lng: p.position.lng },
-                photo: p.photoUrl ? { src: p.photoUrl, alt: placeName?.text ?? p.nameJa } : null,
+                photo: p.photoUrl ? { src: p.photoUrl, alt: placeName?.text ?? p.nameJa, credit: p.photoCredit ?? null } : null,
                 description: about,
                 hours,
               };
@@ -154,6 +156,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
           description,
           history,
           access,
+          source,
           photo,
           gallery: galleryOf(photo, stops),
           points,

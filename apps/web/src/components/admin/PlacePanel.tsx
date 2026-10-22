@@ -89,6 +89,8 @@ export function PlacePanel(p: PlacePanelProps) {
           <MultilingualField id={`${id}-name`} label={t`経由地の名前`} field="name" ja={place.nameJa} en={place.nameEn} translations={place.translations} onJa={(v) => p.onChange({ nameJa: v })} onEn={(v) => p.onChange({ nameEn: v })} onTranslations={(v) => p.onChange({ translations: v })} required invalid={p.invalidName} />
           <MultilingualField id={`${id}-desc`} label={t`説明`} field="description" ja={place.descriptionJa} en={place.descriptionEn} translations={place.translations} onJa={(v) => p.onChange({ descriptionJa: v })} onEn={(v) => p.onChange({ descriptionEn: v })} onTranslations={(v) => p.onChange({ translations: v })} multiline />
           <MultilingualField id={`${id}-history`} label={t`歴史・由来`} field="history" ja={place.historyJa} en={place.historyEn} translations={place.translations} onJa={(v) => p.onChange({ historyJa: v })} onEn={(v) => p.onChange({ historyEn: v })} onTranslations={(v) => p.onChange({ translations: v })} multiline />
+          <p className="-mt-3 text-base text-muted">{t`リンクは [表示する文字](https://…) と書きます。脚注は、本文に [^1] と書き、別の行に [^1]: 注の内容 と書きます。`}</p>
+          <MultilingualField id={`${id}-source`} label={t`出典`} field="source" ja={place.sourceJa} en={place.sourceEn} translations={place.translations} onJa={(v) => p.onChange({ sourceJa: v })} onEn={(v) => p.onChange({ sourceEn: v })} onTranslations={(v) => p.onChange({ translations: v })} multiline />
 
           <Field label={t`種類`} htmlFor={`${id}-kind`}>
             <select
@@ -130,6 +132,9 @@ export function PlacePanel(p: PlacePanelProps) {
               <TextInput id={`${id}-photo`} value={place.photoUrl} onChange={(v) => p.onChange({ photoUrl: v })} maxLength={500} invalid={p.invalidPhoto} />
             </Field>
             <PhotoUpload onUploaded={(url) => p.onChange({ photoUrl: url })} />
+            <Field label={t`写真の出どころ`} htmlFor={`${id}-photo-credit`} hint={t`写真の下に ℹ︎ と一緒に表示されます。リンクは [表示する文字](https://…) と書きます。`}>
+              <TextInput id={`${id}-photo-credit`} value={place.photoCredit} onChange={(v) => p.onChange({ photoCredit: v })} maxLength={500} />
+            </Field>
             {p.invalidPhoto ?<p role="alert" className="text-base font-bold text-danger">{t`写真のリンクは、https:// で始まるものだけ使えます。`}</p> : null}
             <PhotoSlot url={place.photoUrl} className="max-w-md" />
           </div>

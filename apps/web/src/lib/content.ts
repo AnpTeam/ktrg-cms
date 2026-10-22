@@ -50,6 +50,8 @@ export interface RouteSummary {
   stampedCount: number | null;
   /** A photo of the course (an address, or a path inside the site): the top of its card in the list; null when none. */
   photoUrl: string | null;
+  /** Who took it / where it is from, shown with the photo (may hold links). */
+  photoCredit?: string | null;
 }
 
 /** Where a stop is. `verified` is false for draft positions (for example clicked on Navivi's map). */
@@ -71,6 +73,7 @@ export interface SpotListItem {
   statusNoteEn?: string | null;
   statusUpdatedAt?: string | null;
   photoUrl?: string | null;
+  photoCredit?: string | null;
   /** Its place in the route's order together with the waypoints that have no stamp (lower comes first). */
   sortOrder?: number;
   /** What the place is (a sutra mound, a temple ...); left out when unknown. */
@@ -96,6 +99,7 @@ export interface RoutePoint {
   descriptionJa: string | null;
   descriptionEn: string | null;
   photoUrl?: string | null;
+  photoCredit?: string | null;
   /** Its place in the route's order together with the stamp places (lower comes first). */
   sortOrder?: number;
   /** An optional visit beside the way (寄り道): not numbered. */
@@ -111,6 +115,9 @@ export interface RouteDetail extends RouteSummary {
   historyEn: string | null;
   accessJa: string | null;
   accessEn: string | null;
+  /** Where the words come from (出典); may hold links. */
+  sourceJa?: string | null;
+  sourceEn?: string | null;
   spots: SpotListItem[];
   /** The route's other points, in order along the way. */
   points: RoutePoint[];
@@ -140,6 +147,8 @@ export interface SpotDetail extends SpotListItem {
   /** Its story: where the name comes from, what happened there. */
   historyJa?: string | null;
   historyEn?: string | null;
+  sourceJa?: string | null;
+  sourceEn?: string | null;
   statusNoteJa: string | null;
   statusNoteEn: string | null;
   /** ISO timestamp of the last status change. */
@@ -235,6 +244,7 @@ export interface PlaceItem {
   lastVerified: string | null;
   /** A photo of the place (an address); null or left out when there is none. */
   photoUrl?: string | null;
+  photoCredit?: string | null;
 }
 
 /** Every place of the directory a visitor may see (plus the samples when sample content is on). */

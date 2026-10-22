@@ -15,6 +15,8 @@ import { translationsSchema } from "../lib/schemas";
  */
 export const BANNER_FIELDS = {
   imageUrl: t.String({ minLength: 1, maxLength: 500 }),
+  /** Who took the photo / where it is from, shown on it (may hold links). */
+  imageCredit: t.Optional(t.Union([t.String({ maxLength: 500 }), t.Null()])),
   altJa: t.String({ minLength: 1, maxLength: 200 }),
   altEn: t.Union([t.String({ maxLength: 200 }), t.Null()]),
   /** The other content languages (admin entry; visitors see ja / en). */
@@ -49,6 +51,7 @@ export const bannerRules = (photoHosts: readonly string[] = []): ListRules<Banne
     if (out.altJa === "") return bad("validation_failed");
   }
   if (out.altEn !== undefined) out.altEn = out.altEn?.trim() || null;
+  if (out.imageCredit !== undefined) out.imageCredit = out.imageCredit?.trim() || null;
   if (out.translations !== undefined) out.translations = cleanTranslations(out.translations);
   return ok(out);
 };
@@ -100,6 +103,15 @@ export const bannerList: ListDef<"banners", typeof BANNER_FIELDS, BannerRow, Ban
         required: true,
       },
       {
+        name: "imageCredit",
+        kind: "text",
+        label: { ja: "写真の出どころ", en: "Photo credit" },
+        hint: {
+          ja: "写真の上に ℹ︎ と一緒に表示されます。リンクは [表示する文字](https://…) の形で書けます。例：撮影：山田 太郎 / [Wikimedia Commons](https://commons.wikimedia.org/)",
+          en: "Shown on the photo with an ℹ︎. A link is written [text](https://…). For example: Photo: Taro Yamada / [Wikimedia Commons](https://commons.wikimedia.org/)",
+        },
+      },
+      {
         name: "alt",
         kind: "bilingual",
         label: { ja: "写真の説明", en: "Photo description" },
@@ -128,6 +140,6 @@ export const bannerList: ListDef<"banners", typeof BANNER_FIELDS, BannerRow, Ban
 export function publicBannerRoutes(getBanners: () => BannerService) {
   return new Elysia({ detail: { tags: ["Content"] } }).get("/banners", async () => ({
     ok: true as const,
-    banners: (await getBanners().publicBanners()).map(({ id, imageUrl, altJa, altEn }) => ({ id, imageUrl, altJa, altEn })),
+    banners: (await getBanners().publicBanners()).map(({ id, imageUrl, imageCredit, altJa, altEn }) => ({ id, imageUrl, imageCredit, altJa, altEn })),
   }));
 }
