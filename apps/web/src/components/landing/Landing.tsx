@@ -5,7 +5,7 @@ import { IntroVideo } from "@/components/IntroVideo";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { Localized } from "@/components/Localized";
 import { Notice } from "@/components/Notice";
-import { PrefectureName } from "@/components/PrefectureName";
+import { PlaceLine } from "@/components/PlaceLine";
 import { RouteSilhouette } from "@/components/RouteSketch";
 import { SectionBanner } from "@/components/SectionBanner";
 import { RouteStats } from "@/components/RouteStats";
@@ -222,9 +222,7 @@ function PreviewStop({ route, locale, last, href }: { route: RouteSummary; local
         </span>
         {route.prefecture || route.municipality ? (
           <span className="mt-1 block text-lg text-muted">
-            {route.prefecture ? <PrefectureName value={route.prefecture} /> : null}
-            {route.prefecture && route.municipality ? " " : null}
-            {municipalityName(locale, route.municipality)}
+            <PlaceLine prefecture={route.prefecture} place={municipalityName(locale, route.municipality)} locale={locale} />
           </span>
         ) : null}
         {soon ? (

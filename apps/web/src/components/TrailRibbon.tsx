@@ -7,6 +7,7 @@ import { connectorStates, nodeState, progressShare, type NodeState } from "@/lib
 import { Localized } from "./Localized";
 import { MedalRow } from "./MedalRow";
 import { PrefectureIcon } from "./PrefectureIcon";
+import { PlaceLine } from "./PlaceLine";
 import { PrefectureName } from "./PrefectureName";
 import { RoutePhoto } from "./RoutePhoto";
 import { RouteStats } from "./RouteStats";
@@ -79,9 +80,7 @@ function RouteCard({ route, state, locale }: { route: RouteSummary; state: NodeS
           </span>
           {route.prefecture || place ? (
             <span className="mt-0.5 block text-lg leading-snug text-white/90">
-              {route.prefecture ? <PrefectureName value={route.prefecture} /> : null}
-              {route.prefecture && place ? " " : null}
-              {place}
+              <PlaceLine prefecture={route.prefecture} place={place} locale={locale} />
             </span>
           ) : null}
         </span>
