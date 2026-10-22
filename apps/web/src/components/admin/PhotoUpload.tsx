@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode, type ErrorKey } from "@/lib/api-error";
+import { PhotoLibraryButton } from "./PhotoLibrary";
 
 /** The longest side a site photo needs, in pixels (a phone photo is often 4000 or more). */
 const MAX_SIDE = 2400;
@@ -48,7 +49,10 @@ export async function uploadPhoto(original: File): Promise<{ ok: true; url: stri
   }
 }
 
-/** A "choose a photo" button for the box next to it: the file goes to the photo storage and `onUploaded` gets its https link. */
+/**
+ * A "choose a photo" button for the box next to it: the file goes to the photo storage and `onUploaded` gets its https link.
+ * Beside it, a button for the photo library: a photo uploaded before can be picked again instead of uploaded twice.
+ */
 export function PhotoUpload({ onUploaded, disabled = false }: { onUploaded: (url: string) => void; disabled?: boolean }) {
   const { t } = useLingui();
   const messages = useErrorMessages();
@@ -67,20 +71,23 @@ export function PhotoUpload({ onUploaded, disabled = false }: { onUploaded: (url
 
   return (
     <div className="flex flex-col gap-1">
-      <label className="tap-target inline-flex w-fit cursor-pointer items-center rounded-xl border-2 border-line px-5 text-lg font-bold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-accent has-[:disabled]:opacity-40">
-        {busy ? t`送っています…` : t`写真をアップロード`}
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          disabled={busy || disabled}
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            e.target.value = ""; // the same file can be chosen again
-            void send(file);
-          }}
-          className="sr-only"
-        />
-      </label>
+      <div className="flex flex-wrap gap-2">
+        <label className="tap-target inline-flex w-fit cursor-pointer items-center rounded-xl border-2 border-line px-5 text-lg font-bold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-accent has-[:disabled]:opacity-40">
+          {busy ? t`送っています…` : t`写真をアップロード`}
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            disabled={busy || disabled}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              e.target.value = ""; // the same file can be chosen again
+              void send(file);
+            }}
+            className="sr-only"
+          />
+        </label>
+        <PhotoLibraryButton onPicked={onUploaded} disabled={busy || disabled} />
+      </div>
       {error ? (
         <p role="alert" className="text-base font-bold text-danger">
           {messages[error]}

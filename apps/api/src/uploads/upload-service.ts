@@ -38,7 +38,7 @@ export function sniffImage(bytes: Uint8Array): { type: string; ext: string } | n
  * and the name is cut to 60 characters. The random ending means two files with the same name
  * never overwrite each other. The extension comes from the bytes, not from the name.
  */
-export function photoKey(fileName: string, ext: string, random: () => string = randomSuffix): string {
+export function photoKey(fileName: string, ext: string, random: () => string = randomSuffix, folder = "photos"): string {
   const stem = fileName.normalize("NFC").replace(/\.[^.]*$/, "");
   const clean = stem
     .replace(/\s+/g, "-")
@@ -46,7 +46,7 @@ export function photoKey(fileName: string, ext: string, random: () => string = r
     .replace(/-{2,}/g, "-")
     .replace(/^[-_]+|[-_]+$/g, "")
     .slice(0, 60);
-  return `photos/${clean || "photo"}-${random()}.${ext}`;
+  return `${folder}/${clean || "photo"}-${random()}.${ext}`;
 }
 
 function randomSuffix(): string {
@@ -59,6 +59,12 @@ function publicUrl(base: string, key: string): string {
   return `${base}/${key.split("/").map(encodeURIComponent).join("/")}`;
 }
 
+/** Videos go straight from the browser to storage, so the API only signs the address; this is the most it signs. */
+export const MAX_VIDEO_BYTES = 200 * 1024 * 1024;
+
+/** The video kinds accepted: what a phone or a export from an editor makes, and what every browser plays. */
+const VIDEO_TYPES = { "video/mp4": "mp4", "video/webm": "webm" } as const;
+
 export interface Upload {
   /** A new UUID: the audit target (the audit log keeps ids only, never file names). */
   id: string;
@@ -69,6 +75,30 @@ export interface Upload {
   contentType: string;
   size: number;
 }
+
+/** One photo already in the library. */
+export interface LibraryPhoto {
+  key: string;
+  url: string;
+  size: number;
+  uploadedAt: string;
+}
+
+/** The most photos the library lists (the newest first); the photo bucket is small, so one page. */
+export const LIBRARY_LIMIT = 1000;
+
+export interface VideoUpload {
+  id: string;
+  key: string;
+  /** The public https address to save as the route's video link, once the file is in. */
+  url: string;
+  /** Where the browser PUTs the file (with the same Content-Type and length), within 15 minutes. */
+  uploadUrl: string;
+}
+
+export type VideoUploadResult =
+  | { ok: true; upload: VideoUpload }
+  | { ok: false; reason: "invalid_file" | "uploads_unavailable" };
 
 export type UploadResult =
   | { ok: true; upload: Upload }
@@ -93,6 +123,35 @@ export function createUploadService(deps: {
 }) {
   const log = deps.log ?? console.error;
   return {
+    /** Every photo uploaded so far, newest first, so an editor can pick one again instead of uploading it twice. */
+    async listPhotos(): Promise<{ ok: true; photos: LibraryPhoto[] } | { ok: false; reason: "uploads_unavailable" }> {
+      if (!deps.storage || !deps.publicBaseUrl) return { ok: false, reason: "uploads_unavailable" };
+      try {
+        const files = await deps.storage.list("photos/", LIBRARY_LIMIT);
+        const photos = files
+          .filter((f) => f.size > 0 && /\.(jpe?g|png|webp)$/i.test(f.key))
+          .sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime())
+          .map((f) => ({ key: f.key, url: publicUrl(deps.publicBaseUrl!, f.key), size: f.size, uploadedAt: f.lastModified.toISOString() }));
+        return { ok: true, photos };
+      } catch (err) {
+        log(`listing the photo storage failed: ${err instanceof Error ? err.message : String(err)}`);
+        return { ok: false, reason: "uploads_unavailable" };
+      }
+    },
+    /** Signs an upload address for one video. The file's bytes are not seen here; the browser checks them before sending. */
+    async createVideoUpload(file: { name: string; contentType: string; size: number }): Promise<VideoUploadResult> {
+      if (!deps.storage || !deps.publicBaseUrl) return { ok: false, reason: "uploads_unavailable" };
+      const ext = (VIDEO_TYPES as Record<string, string | undefined>)[file.contentType];
+      if (!ext || !Number.isInteger(file.size) || file.size <= 0 || file.size > MAX_VIDEO_BYTES) return { ok: false, reason: "invalid_file" };
+      const key = photoKey(file.name, ext, undefined, "videos");
+      try {
+        const uploadUrl = await deps.storage.presignPut(key, file.contentType, file.size);
+        return { ok: true, upload: { id: randomUUID(), key, url: publicUrl(deps.publicBaseUrl, key), uploadUrl } };
+      } catch (err) {
+        log(`signing a video upload failed: ${err instanceof Error ? err.message : String(err)}`);
+        return { ok: false, reason: "uploads_unavailable" };
+      }
+    },
     async uploadPhoto(file: Blob): Promise<UploadResult> {
       if (!deps.storage || !deps.publicBaseUrl) return { ok: false, reason: "uploads_unavailable" };
       if (file.size === 0 || file.size > MAX_UPLOAD_BYTES) return { ok: false, reason: "invalid_file" };

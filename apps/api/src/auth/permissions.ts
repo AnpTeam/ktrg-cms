@@ -34,6 +34,8 @@ export const PERMISSIONS = {
   /** Dated trail notices and spot status. */
   "notice.manage": ["admin"],
   "upload.create": ["admin"],
+  /** Browse the photos already uploaded (the photo library). */
+  "upload.read": ["admin"],
   /** The photos in the home page carousel. */
   "banner.manage": ["admin"],
   /** Settings for the whole site (the map style): they change the live site at once. */

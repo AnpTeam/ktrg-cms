@@ -2,6 +2,7 @@ import { Trans } from "@lingui/react/macro";
 import { ElevationProfile } from "@/components/ElevationProfile";
 import { EmptyState } from "@/components/EmptyState";
 import { ExpandableText } from "@/components/ExpandableText";
+import { FileVideoPlayer } from "@/components/FileVideo";
 import { IntroVideo } from "@/components/IntroVideo";
 import { Localized } from "@/components/Localized";
 import { Notice } from "@/components/Notice";
@@ -22,7 +23,7 @@ import { pickText } from "@/lib/pick-text";
 import { pointsAsPlaces } from "@/lib/point-places";
 import { isGuidanceOnly, journeyOf, trailStops } from "@/lib/route-stops";
 import type { MapPlace } from "@/lib/places";
-import { parseVideoUrl } from "@/lib/video";
+import { parseVideoFile, parseVideoUrl } from "@/lib/video";
 
 /** Stops that have a position become map markers, numbered by their place in the list. */
 export function buildStops(
@@ -83,6 +84,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
   const stops = buildStops(route, locale, spotHref, labels);
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
   const video = parseVideoUrl(route.videoUrl);
+  const videoFile = video ? null : parseVideoFile(route.videoUrl);
   const { stampedCount, spotCount } = route;
   const history = pickText(locale, route.historyJa, route.historyEn);
   const access = pickText(locale, route.accessJa, route.accessEn);
@@ -197,12 +199,16 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             </section>
           ) : null}
 
-          {video ? (
+          {video || videoFile ? (
             <section className="order-9 flex flex-col gap-3 px-4 @4xl:order-none @4xl:px-0">
               <h2 className="text-xl font-bold">
                 <Trans>ルートの動画</Trans>
               </h2>
-              <IntroVideo video={video} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
+              {video ? (
+                <IntroVideo video={video} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
+              ) : videoFile ? (
+                <FileVideoPlayer video={videoFile} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
+              ) : null}
             </section>
           ) : null}
 

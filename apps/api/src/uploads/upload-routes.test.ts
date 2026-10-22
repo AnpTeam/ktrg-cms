@@ -34,8 +34,18 @@ function setup(opts: { storage?: boolean } = {}) {
       new Request("http://localhost/api/v1/admin/uploads", { method: "POST", body: form, headers: cookie ? { cookie } : {} }),
     );
   };
+  const video = (body: unknown, cookie?: string) =>
+    app.handle(
+      new Request("http://localhost/api/v1/admin/uploads/video", {
+        method: "POST",
+        body: JSON.stringify(body),
+        headers: { "content-type": "application/json", ...(cookie ? { cookie } : {}) },
+      }),
+    );
+  const library = (cookie?: string) =>
+    app.handle(new Request("http://localhost/api/v1/admin/uploads", { headers: cookie ? { cookie } : {} }));
   const login = async (u: AuthUser) => `session=${(await session.create(users.get(u.id)!)).token}`;
-  return { upload, login, audit, mem };
+  return { upload, video, library, login, audit, mem };
 }
 
 describe("POST /admin/uploads", () => {
@@ -84,5 +94,67 @@ describe("POST /admin/uploads", () => {
     s.mem.state.fail = true;
     expect((await s.upload(new File([JPEG], "a.jpg"), await s.login(admin))).status).toBe(503);
     expect(s.audit.rows).toHaveLength(0);
+  });
+});
+
+describe("GET /admin/uploads (the photo library)", () => {
+  test("an admin sees every uploaded photo with its public address, newest first", async () => {
+    const s = setup();
+    const cookie = await s.login(admin);
+    await s.upload(new File([JPEG], "old.jpg"), cookie);
+    await s.upload(new File([JPEG], "new.jpg"), cookie);
+    s.mem.files.get([...s.mem.files.keys()][0]!)!.lastModified = new Date("2020-01-01");
+    const res = await s.library(cookie);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as { ok: true; photos: { key: string; url: string; size: number; uploadedAt: string }[] };
+    expect(body.photos).toHaveLength(2);
+    expect(body.photos[0]!.url).toMatch(/^https:\/\/photos\.example\.com\/photos\/new-[a-z2-9]{6}\.jpg$/);
+    expect(body.photos[1]!.key).toMatch(/^photos\/old-/);
+  });
+
+  test("signed out: 401; a participant: 403", async () => {
+    const s = setup();
+    expect((await s.library()).status).toBe(401);
+    expect((await s.library(await s.login(alice))).status).toBe(403);
+  });
+
+  test("storage not set up, or failing: 503 uploads_unavailable", async () => {
+    const off = setup({ storage: false });
+    expect((await off.library(await off.login(admin))).status).toBe(503);
+    const s = setup();
+    s.mem.state.fail = true;
+    expect((await s.library(await s.login(admin))).status).toBe(503);
+  });
+});
+
+describe("POST /admin/uploads/video", () => {
+  const MB = 1024 * 1024;
+  test("an admin gets a signed address and the public link; one audit row", async () => {
+    const s = setup();
+    const res = await s.video({ name: "walk.mp4", contentType: "video/mp4", size: 150 * MB }, await s.login(admin));
+    expect(res.status).toBe(201);
+    const body = (await res.json()) as { ok: true; upload: { id: string; url: string; uploadUrl: string } };
+    expect(body.upload.url).toMatch(/^https:\/\/photos\.example\.com\/videos\/walk-[a-z2-9]{6}\.mp4$/);
+    expect(body.upload.uploadUrl).toContain("videos/walk-");
+    expect(s.audit.rows).toMatchObject([{ actorUserId: admin.id, action: "upload.create", targetId: body.upload.id }]);
+  });
+
+  test("not a video type, or too big: refused", async () => {
+    const s = setup();
+    const cookie = await s.login(admin);
+    expect((await s.video({ name: "a.mov", contentType: "video/quicktime", size: 10 * MB }, cookie)).status).toBe(400);
+    expect((await s.video({ name: "a.mp4", contentType: "video/mp4", size: 201 * MB }, cookie)).status).toBe(422);
+    expect(s.audit.rows).toHaveLength(0);
+  });
+
+  test("signed out: 401; a participant: 403; no storage or storage failing: 503", async () => {
+    const s = setup();
+    const ok = { name: "a.mp4", contentType: "video/mp4", size: MB };
+    expect((await s.video(ok)).status).toBe(401);
+    expect((await s.video(ok, await s.login(alice))).status).toBe(403);
+    const off = setup({ storage: false });
+    expect((await off.video(ok, await off.login(admin))).status).toBe(503);
+    s.mem.state.fail = true;
+    expect((await s.video(ok, await s.login(admin))).status).toBe(503);
   });
 });

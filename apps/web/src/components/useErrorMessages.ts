@@ -33,7 +33,7 @@ export function useErrorMessages(): Record<ErrorKey, string> {
     invalid_display_name: t`お名前に使えない文字が含まれているか、長すぎます（40文字まで）。`,
     // Admin: routes and places
     conflict: t`別の人が先に保存しました。読み込み直してから、もう一度お試しください。`,
-    invalid_video_url: t`動画のリンクは、https:// で始まるYouTubeかVimeoのものだけ使えます。`,
+    invalid_video_url: t`動画のリンクは、https:// で始まるYouTube・Vimeo、またはアップロードした動画（.mp4・.webm）のものだけ使えます。`,
     invalid_line: t`ルートの線が正しくありません。日本の中に、2点以上の線を描いてください。`,
     invalid_photo_url: t`写真のリンクは、https:// で始まるものだけ使えます。`,
     route_has_places: t`経由地が残っているルートは消せません。先に経由地を消してください。`,
@@ -54,7 +54,7 @@ export function useErrorMessages(): Record<ErrorKey, string> {
     cannot_change_own_role: t`自分の権限は変えられません。ほかの管理者に頼んでください。`,
     invalid_source_url: t`出典のリンクは https:// で始まるアドレスを入れてください。`,
     // Admin: photo uploads
-    invalid_file: t`写真は4MBまでのJPEG・PNG・WebPだけアップロードできます。`,
+    invalid_file: t`アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。`,
     uploads_unavailable: t`写真を保存できませんでした。しばらくしてからもう一度お試しください。`,
     // Admin: snapping a line to trails
     routing_unavailable: t`道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。`,
