@@ -1,8 +1,8 @@
 // How far a visitor is. One place gives one stamp; a COURSE is finished when every published stamp place on it is
 // stamped; a rally of PLACES (such as the sutra-mound rally) when every published place in it is stamped; a rally
 // of COURSES when every course in it is finished. A closed place counts as done (decided 2026-10-15); drafts never
-// count. Finishing is saved (completion.ts), so a saved finish stands even if more places or courses are added
-// later. Pure functions, unit-tested; rally-store.ts and completion.ts read the data and call them.
+// count. Finishing is saved (rally-store.ts), so a saved finish stands even if more places or courses are added
+// later. Pure functions, unit-tested; rally-store.ts reads the data and calls them.
 
 export type SpotStatus = "open" | "caution" | "closed";
 

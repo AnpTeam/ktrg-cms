@@ -1,4 +1,4 @@
-import { and, desc, eq, isNotNull, isNull } from "drizzle-orm";
+import { and, desc, eq, isNotNull, isNull, sql } from "drizzle-orm";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
 import { spots, stamps } from "../db/schema";
@@ -28,6 +28,8 @@ export function createDrizzleStampStore(db: Db): StampStore {
 
     async award(userId, spotId, flag) {
       return db.transaction(async (tx) => {
+        // Two stamps by one visitor at once would each miss the other when working out a finish: serialise them per user.
+        await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`stamps.${userId}`}))`);
         // The unique index (user, place) decides a race between two taps: one row, the other sees it.
         const [made] = await tx
           .insert(stamps)

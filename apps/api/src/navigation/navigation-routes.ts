@@ -28,7 +28,7 @@ export function navigationRoutes(getServices: () => NavigationServices, opts: Ro
     },
     {
       auth: "navigation.path",
-      rateLimit: { navigationPathUser: "user.id" },
+      rateLimit: { navigationPathUser: "user.id", navigationPathDaily: "user.id" },
       body: t.Object({
         spotId: t.String({ format: "uuid" }),
         lat: t.Number({ minimum: -90, maximum: 90 }),
