@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { areaCollection, areaContains, estimateGroupBox, estimateLabel, framePoints, groupLabelLines, MERGE_PX, namesThatFit, nextSnap, rectangleRing, revealedRouteId, sheetHeightPx, snapAfterDrag, spreadLabels, stopMergePx, type LabelBox, type MapScreenRoute } from "./map-screen";
+import { areaCollection, areaContains, estimateGroupBox, estimateLabel, framePoints, groupLabelLines, MERGE_PX, namesThatFit, nextSnap, rectangleRing, revealedRouteId, SAME_PLACE_M, sheetHeightPx, snapAfterDrag, spreadLabels, spreadMeters, stopMergePx, type LabelBox, type MapScreenRoute } from "./map-screen";
 import { distanceMeters } from "./places";
 
 const route = (id: string, order: number, over: Partial<MapScreenRoute> = {}): MapScreenRoute => ({
@@ -158,7 +158,7 @@ describe("the bottom sheet", () => {
   });
 
   test("pins that are too close always merge: a stop merges once it touches its neighbour, earlier when asked", () => {
-    expect(stopMergePx(false)).toBeGreaterThanOrEqual(40);
+    expect(stopMergePx(false)).toBeGreaterThanOrEqual(26); // a pin is about 30 px wide
     expect(stopMergePx(true)).toBeGreaterThan(stopMergePx(false));
     expect(MERGE_PX.namedPin).toBeGreaterThan(MERGE_PX.pin);
     expect(MERGE_PX.pin).toBeGreaterThan(MERGE_PX.tag);
@@ -219,5 +219,17 @@ describe("the bottom sheet", () => {
     expect(nextSnap("hidden")).toBe("half");
     expect(nextSnap("half")).toBe("full");
     expect(nextSnap("full")).toBe("peek");
+  });
+});
+
+describe("pins on the same spot", () => {
+  test("pins within 30 m are chosen from a list; pins farther apart are pulled apart by zooming", () => {
+    const station = { lat: 34.2808, lng: 135.0027 };
+    const nextDoor = { lat: 34.28085, lng: 135.00275 }; // about 7 m away
+    const farther = { lat: 34.2825, lng: 135.0027 }; // about 190 m away
+    expect(spreadMeters([station, station])).toBe(0);
+    expect(spreadMeters([station, nextDoor])).toBeLessThanOrEqual(SAME_PLACE_M);
+    expect(spreadMeters([station, nextDoor, farther])).toBeGreaterThan(SAME_PLACE_M);
+    expect(spreadMeters([])).toBe(0);
   });
 });

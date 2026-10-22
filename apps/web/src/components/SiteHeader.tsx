@@ -28,7 +28,8 @@ const wideButton =
  * On the home page for someone who is signed out the bar takes no room and stays out of sight at first, so the
  * banner and the title get the whole top of the screen (the register and login buttons are right there). It
  * fades in once the visitor has scrolled a little, floating over the page. It never appears on a timer: a
- * button that shows up by itself moves under the finger. On the map page the bar floats over the map, always.
+ * button that shows up by itself moves under the finger. On the map page the bar floats over the map, always, with no
+ * background of its own: just the menu button, the logo and the notice button, so the map has the whole screen.
  */
 export function SiteHeader({
   signedIn,
@@ -130,7 +131,7 @@ export function SiteHeader({
               : "relative px-3 pb-5 pt-3 md:hidden"
         }
       >
-        <div className="mx-auto grid max-w-xl grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-xl bg-surface p-1.5 shadow-lg">
+        <div className={`mx-auto grid max-w-xl grid-cols-[1fr_auto_1fr] items-center gap-2 ${onMap ? "" : "rounded-xl bg-surface p-1.5 shadow-lg"}`}>
           <button
             ref={buttonRef}
             type="button"
@@ -138,14 +139,15 @@ export function SiteHeader({
             aria-expanded={open}
             aria-controls="site-menu"
             aria-label={open ? t`閉じる` : t`メニュー`}
-            className={`${barButton} min-w-12 justify-center justify-self-start`}
+            className={`${barButton} min-w-12 justify-center justify-self-start ${onMap ? "shadow-md" : ""}`}
           >
             {open ? <CloseIcon /> : <MenuIcon />}
           </button>
-          {/* The logo is a link home. The map has no room for it. */}
-          {!onMap && !open ? (
+          {/* The logo is a link home. It is drawn in the page (inline SVG, not an image), so there is nothing to long-press and
+              save. On the map the bar has no background, so the logo gets a halo in the page colour to stay readable. */}
+          {!open ? (
             <Link href="/" aria-label={t`ホーム`} className="rounded-lg p-1">
-              <KatsuragiLogo compact className="h-9 w-auto" />
+              <KatsuragiLogo compact className={`h-9 w-auto ${onMap ? "[filter:drop-shadow(0_0_1px_var(--color-paper))_drop-shadow(0_0_3px_var(--color-paper))_drop-shadow(0_0_6px_var(--color-paper))]" : ""}`} />
             </Link>
           ) : (
             <span />

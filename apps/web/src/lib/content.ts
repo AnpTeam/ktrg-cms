@@ -233,6 +233,8 @@ export interface PlaceItem {
   status: PlaceStatus;
   /** YYYY-MM-DD of the last check by a person; null when never. */
   lastVerified: string | null;
+  /** A photo of the place (an address); null or left out when there is none. */
+  photoUrl?: string | null;
 }
 
 /** Every place of the directory a visitor may see (plus the samples when sample content is on). */
