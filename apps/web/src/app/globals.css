@@ -24,6 +24,8 @@
   --color-danger: #8f1818; /* errors */
   --color-ruri: #1e50a2; /* lapis lazuli (瑠璃): the Start and Goal badges */
   --color-on-ruri: #ffffff; /* the words and outline on the lapis lazuli */
+  --color-goal: #c2410c; /* orange: the Goal and Turnaround badges */
+  --color-on-goal: #ffffff; /* the words and outline on the orange */
   --color-line: #8a7f7a; /* borders of inputs and buttons, the trail line */
 
   /* System fonts only: nothing to download on a weak mountain connection.
@@ -157,6 +159,8 @@
     --color-danger: #fca5a5;
     --color-ruri: #1e50a2; /* lapis lazuli (瑠璃): the Start and Goal badges */
     --color-on-ruri: #ffffff; /* the words and outline on the lapis lazuli */
+    --color-goal: #c2410c; /* orange: the Goal and Turnaround badges */
+    --color-on-goal: #ffffff; /* the words and outline on the orange */
     --color-line: #8a7563;
     color-scheme: dark;
   }
@@ -182,6 +186,8 @@
   --color-danger: #fca5a5;
   --color-ruri: #1e50a2; /* lapis lazuli (瑠璃): the Start and Goal badges */
   --color-on-ruri: #ffffff; /* the words and outline on the lapis lazuli */
+  --color-goal: #c2410c; /* orange: the Goal and Turnaround badges */
+  --color-on-goal: #ffffff; /* the words and outline on the orange */
   --color-line: #8a7563;
   color-scheme: dark;
 }
@@ -201,6 +207,8 @@
   --color-danger: #8f1818; /* errors */
   --color-ruri: #1e50a2; /* lapis lazuli (瑠璃): the Start and Goal badges */
   --color-on-ruri: #ffffff; /* the words and outline on the lapis lazuli */
+  --color-goal: #c2410c; /* orange: the Goal and Turnaround badges */
+  --color-on-goal: #ffffff; /* the words and outline on the orange */
   --color-line: #8a7f7a; /* borders of inputs and buttons, the trail line */
   color-scheme: light;
 }
@@ -275,6 +283,13 @@ rt {
   width: calc(2.5rem * var(--pin, 1));
   height: calc(2.5rem * var(--pin, 1));
   border-style: dashed;
+}
+
+/* A place with no stamp: a square pin (a shape, not a colour), on a plain light fill. */
+.map-marker[data-no-stamp="true"] {
+  border-radius: calc(0.6rem * var(--pin, 1));
+  border-style: solid;
+  background: var(--color-surface);
 }
 
 .map-marker[data-kind="stamped"] {
@@ -501,6 +516,20 @@ html[data-size="xlarge"] {
   font-weight: 700;
   letter-spacing: 0.08em;
   white-space: nowrap;
+}
+/* The Goal and Turnaround badges: the same badge in orange. */
+.badge-goal {
+  background-color: var(--color-goal);
+  color: var(--color-on-goal);
+  border-color: var(--color-on-goal);
+}
+/* The small badge of the phone's summary card. */
+.badge-small {
+  min-height: 0;
+  padding: 0.1rem 0.6rem;
+  border-width: 2px;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
 }
 .badge-ruri::before {
   content: "";

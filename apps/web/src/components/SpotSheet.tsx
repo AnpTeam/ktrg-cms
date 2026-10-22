@@ -32,6 +32,8 @@ export function SpotSheet({
   /** Development only: pretend answers for the stamp button. */
   stampMock?: StampMock;
 }) {
+  // A place without a stamp has a page to read, but no stamp card and no stamp button.
+  const stampable = spot.stampable !== false;
   const description = pickText(locale, spot.descriptionJa, spot.descriptionEn);
   const history = pickText(locale, spot.historyJa ?? null, spot.historyEn ?? null);
   const gallery = spot.gallery ?? [];
@@ -73,6 +75,7 @@ export function SpotSheet({
         locale={locale}
       />
 
+      {stampable ? (
       <section className="mx-4 flex items-center gap-4 rounded-3xl bg-surface p-4">
         <StampFace state="empty" className="h-14 w-14 shrink-0 rounded-full!" />
         <div>
@@ -84,8 +87,9 @@ export function SpotSheet({
           </p>
         </div>
       </section>
+      ) : null}
 
-      {spot.stamped !== null ? (
+      {stampable && spot.stamped !== null ? (
         <section className="flex items-center gap-4 px-4">
           <StampFace state={spot.stamped ? "stamped" : "empty"} rough className="h-14 w-14 shrink-0" />
           <p className="text-xl font-bold">
@@ -149,7 +153,7 @@ export function SpotSheet({
         <Trans>出かける前に、公式の最新情報を確認してください。</Trans>
       </Notice>
 
-      {spot.stamped === null ? (
+      {!stampable ? null : spot.stamped === null ? (
         <div className="sticky bottom-24 z-10 flex flex-col gap-2 px-4 md:bottom-6">
           <Link href={loginHref} className="tap-target flex min-h-14 items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper shadow-lg">
             <Trans>ログインしてスタンプを押す</Trans>

@@ -203,7 +203,9 @@ export function markerKind(stamped: boolean | null, isNext: boolean): MarkerKind
 }
 
 /** The first stop not yet stamped, for the "next" ring. null when signed out or all are stamped. */
-export function nextStopId(stops: readonly { id: string; stamped: boolean | null }[]): string | null {
+export function nextStopId(all: readonly { id: string; stamped: boolean | null; noStamp?: boolean }[]): string | null {
+  // A place without a stamp is never "next to stamp", and its missing state is not "signed out".
+  const stops = all.filter((s) => !s.noStamp);
   if (stops.some((s) => s.stamped === null)) return null;
   return stops.find((s) => s.stamped === false)?.id ?? null;
 }

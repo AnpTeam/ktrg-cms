@@ -12,10 +12,11 @@ import { RoutePhoto } from "./RoutePhoto";
 import { StatusWord } from "./StatusWord";
 import { TrailNode } from "./TrailNode";
 
-// The places of one route, drawn like the trail on the route list: a node per place and a line between them, so the list
-// reads as the order of the walk. A stamp place has a numbered node (seal = stamped, ring = not yet, plain ring when signed
-// out, dashed ring = closed right now) and its own page. A place without a stamp (a toilet, a station ...) has a small
-// dashed dot, is marked "no stamp" and has no page. Each is a card: photo, name, and the start of its description.
+// The places of one route, drawn like the trail on the route list: a numbered node per place and a line between them, so
+// the list reads as the order of the walk. Every place has its own page. A stamp place's node shows its state (seal =
+// stamped, ring = not yet, plain ring when signed out, dashed ring = closed right now); a place without a stamp (a toilet,
+// a station ...) has a plain ring and is marked "no stamp". A side trip (寄り道) has no number, only a small dashed dot.
+// Each is a card: photo, name, and the start of its description.
 
 const COLUMN = "3.25rem"; // the node column; the line runs through its middle
 const NODE_CENTER = "2.125rem"; // the row has 0.75rem above the 44 px node
@@ -36,7 +37,7 @@ function Segment({ done, from, to }: { done: boolean; from: string; to: string }
   );
 }
 
-function PointNode() {
+function SideNode() {
   return (
     <span aria-hidden="true" className="grid size-11 place-items-center">
       <span className="size-5 rounded-full border-[3px] border-dashed border-line bg-paper" />
@@ -44,7 +45,7 @@ function PointNode() {
   );
 }
 
-function Card({ photo, alt, children, chevron }: { photo: string | null; alt: string; children: ReactNode; chevron: boolean }) {
+function Card({ photo, alt, children }: { photo: string | null; alt: string; children: ReactNode }) {
   return (
     <span className="my-1.5 block overflow-hidden rounded-2xl bg-surface group-hover:bg-[color-mix(in_srgb,var(--color-muted)_14%,var(--color-surface))]">
       {photo ? (
@@ -54,17 +55,17 @@ function Card({ photo, alt, children, chevron }: { photo: string | null; alt: st
       ) : null}
       <span className="flex items-start justify-between gap-3 p-3">
         <span className="min-w-0">{children}</span>
-        {chevron ? (
-          <span className="shrink-0 pt-1 text-muted">
-            <ChevronIcon />
-          </span>
-        ) : null}
+        <span className="shrink-0 pt-1 text-muted">
+          <ChevronIcon />
+        </span>
       </span>
     </span>
   );
 }
 
-export function StopList({ stops, hrefFor, locale }: { stops: TrailStop[]; hrefFor: (spot: SpotListItem) => string; locale: string }) {
+const chip = "rounded-lg border-2 border-dashed border-line px-2 text-base font-bold";
+
+export function StopList({ stops, hrefFor, locale }: { stops: TrailStop[]; hrefFor: (id: string) => string; locale: string }) {
   // The walk so far: the line is moss up to the last stamped place.
   const stampedUpTo = stops.reduce<boolean[]>((acc, s) => [...acc, s.type === "stamp" ? s.spot.stamped === true : (acc[acc.length - 1] ?? false)], []);
   return (
@@ -74,52 +75,50 @@ export function StopList({ stops, hrefFor, locale }: { stops: TrailStop[]; hrefF
         const doneAbove = index > 0 && stampedUpTo[index - 1] === true;
         const done = stampedUpTo[index] === true;
         const before = stops[index - 1];
-        const name = stop.type === "stamp" ? pickText(locale, stop.spot.nameJa, stop.spot.nameEn) : pickText(locale, stop.point.nameJa, stop.point.nameEn);
-        const description = stop.type === "stamp" ? pickText(locale, stop.spot.descriptionJa ?? null, stop.spot.descriptionEn ?? null) : pickText(locale, stop.point.descriptionJa, stop.point.descriptionEn);
-        const photo = (stop.type === "stamp" ? stop.spot.photoUrl : stop.point.photoUrl) ?? null;
-        const key = stop.type === "stamp" ? stop.spot.id : stop.point.id;
-        const body = (
-          <Card photo={photo} alt={name?.text ?? ""} chevron={stop.type === "stamp"}>
-            <span className="block text-xl font-bold leading-snug">
-              <Localized value={name} />
-            </span>
-            {stop.type === "point" ? (
-              <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
-                <span className="rounded-lg border-2 border-dashed border-line px-2 text-base font-bold">
-                  <Trans>スタンプなし</Trans>
-                </span>
-                <span className="text-lg text-muted">
-                  <PointKindName kind={stop.point.kind} />
-                </span>
-              </span>
-            ) : null}
-            {description && description.text.trim() ? (
-              <span className="mt-1 line-clamp-3 text-lg leading-7">
-                <Localized value={description} tag={false} />
-              </span>
-            ) : null}
-            {stop.type === "stamp" ? <StampMeta spot={stop.spot} afterStamp={before?.type === "stamp"} /> : null}
-          </Card>
-        );
+        const item = stop.type === "stamp" ? stop.spot : stop.point;
+        const name = pickText(locale, item.nameJa, item.nameEn);
+        const description = pickText(locale, item.descriptionJa ?? null, item.descriptionEn ?? null);
+        const photo = item.photoUrl ?? null;
+        const sideTrip = item.stopBy === true;
+        const node =
+          stop.number === null ? <SideNode /> : stop.type === "stamp" ? <TrailNode state={nodeFor(stop.spot)} order={stop.number} share={0} /> : <TrailNode state="neutral" order={stop.number} share={0} />;
         return (
-          <li key={key} className="relative">
+          <li key={item.id} className="relative">
             {index > 0 ? <Segment done={doneAbove} from="0" to={`calc(100% - ${NODE_CENTER})`} /> : null}
             {hasNext ? <Segment done={done} from={NODE_CENTER} to="0" /> : null}
-            {stop.type === "stamp" ? (
-              <Link href={hrefFor(stop.spot)} className="tap-target group relative grid items-start" style={{ gridTemplateColumns: `${COLUMN} 1fr` }}>
-                <span className="flex justify-center pt-3">
-                  <TrailNode state={nodeFor(stop.spot)} order={stop.number} share={0} />
+            <Link href={hrefFor(item.id)} className="tap-target group relative grid items-start" style={{ gridTemplateColumns: `${COLUMN} 1fr` }}>
+              <span className="flex justify-center pt-3">{node}</span>
+              <Card photo={photo} alt={name?.text ?? ""}>
+                <span className="block text-xl font-bold leading-snug">
+                  <Localized value={name} />
                 </span>
-                {body}
-              </Link>
-            ) : (
-              <div className="group relative grid items-start" style={{ gridTemplateColumns: `${COLUMN} 1fr` }}>
-                <span className="flex justify-center pt-3">
-                  <PointNode />
-                </span>
-                {body}
-              </div>
-            )}
+                {stop.type === "point" || sideTrip ? (
+                  <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+                    {stop.type === "point" ? (
+                      <>
+                        <span className={chip}>
+                          <Trans>スタンプなし</Trans>
+                        </span>
+                        <span className="text-lg text-muted">
+                          <PointKindName kind={stop.point.kind} />
+                        </span>
+                      </>
+                    ) : null}
+                    {sideTrip ? (
+                      <span className={chip}>
+                        <Trans>寄り道</Trans>
+                      </span>
+                    ) : null}
+                  </span>
+                ) : null}
+                {description && description.text.trim() ? (
+                  <span className="mt-1 line-clamp-3 text-lg leading-7">
+                    <Localized value={description} tag={false} />
+                  </span>
+                ) : null}
+                {stop.type === "stamp" ? <StampMeta spot={stop.spot} afterStamp={before?.type === "stamp"} /> : null}
+              </Card>
+            </Link>
           </li>
         );
       })}

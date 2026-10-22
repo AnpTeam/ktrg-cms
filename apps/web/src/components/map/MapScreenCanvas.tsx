@@ -400,20 +400,21 @@ export function MapScreenCanvas({
           const el = createMarkerElement({
             order: s.order,
             label: s.label,
-            kind: markerKind(s.stamped, s.id === next),
+            kind: s.noStamp ? "neutral" : markerKind(s.stamped, s.id === next),
             status: s.status,
             sideTrip: s.sideTrip,
+            noStamp: s.noStamp,
             onSelect: () => onSelectStop(focus.id, s.id),
           });
           el.setAttribute("aria-pressed", String(s.id === stopId));
           put(el, s.position);
         } else {
-          const orders = members.map((m) => m.order);
-          const text = `${Math.min(...orders)}–${Math.max(...orders)}`;
+          const orders = members.flatMap((m) => (m.order === null ? [] : [m.order]));
+          const text = orders.length > 0 ? `${Math.min(...orders)}–${Math.max(...orders)}` : String(members.length);
           put(
             createClusterElement({
               text,
-              label: t`スタンプの場所 ${text} がここに集まっています。押すと拡大します`,
+              label: t`場所 ${text} がここに集まっています。押すと拡大します`,
               kind: "stops",
               onSelect: () => zoomTo(members.map((m) => m.position)),
             }),

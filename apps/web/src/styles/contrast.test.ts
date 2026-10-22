@@ -58,7 +58,7 @@ function ratio(a: string, b: string) {
   return (light + 0.05) / (dark + 0.05);
 }
 
-const names = ["accent", "brand", "caution", "danger", "ink", "line", "moss", "muted", "on-brand", "on-ruri", "on-shu", "paper", "ruri", "shu", "surface"];
+const names = ["accent", "brand", "caution", "danger", "goal", "ink", "line", "moss", "muted", "on-brand", "on-goal", "on-ruri", "on-shu", "paper", "ruri", "shu", "surface"];
 
 // Text must reach WCAG AAA (7:1).
 const text: [string, string][] = [
@@ -105,6 +105,9 @@ const brandFill: [string, string][] = [
   ["brand", "surface"],
 ];
 
+// The Goal badge (orange, large bold words): held to 4.5:1.
+const goalBadge: [string, string][] = [["on-goal", "goal"]];
+
 for (const [scheme, colors] of Object.entries(palettes)) {
   describe(`${scheme} palette`, () => {
     test("defines every token", () => {
@@ -139,6 +142,12 @@ for (const [scheme, colors] of Object.entries(palettes)) {
     for (const [foreground, background] of brandFill) {
       test(`${foreground} fill against ${background} is at least 2.5:1`, () => {
         expect(pair(foreground, background)).toBeGreaterThanOrEqual(2.5);
+      });
+    }
+
+    for (const [foreground, background] of goalBadge) {
+      test(`${foreground} on ${background} (large bold label) is at least 4.5:1`, () => {
+        expect(pair(foreground, background)).toBeGreaterThanOrEqual(4.5);
       });
     }
 

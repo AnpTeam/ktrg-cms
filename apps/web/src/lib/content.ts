@@ -77,6 +77,8 @@ export interface SpotListItem {
   kind?: PointKind;
   /** An optional visit beside the way (寄り道): drawn apart from the route. */
   stopBy?: boolean;
+  /** A stamp can be collected here; false (or left out for sample data it is true) for a place with no stamp. */
+  stampable?: boolean;
   /** The walk from the stop before this one: left out for the first stop or when the line does not fit the stops. */
   fromPrev?: { km: number; minutes: number; mode?: "ferry" | "bus" | "train" | "other" };
   /** null when not signed in. */
@@ -96,6 +98,8 @@ export interface RoutePoint {
   photoUrl?: string | null;
   /** Its place in the route's order together with the stamp places (lower comes first). */
   sortOrder?: number;
+  /** An optional visit beside the way (寄り道): not numbered. */
+  stopBy?: boolean;
   position: SpotPosition | null;
 }
 
@@ -336,8 +340,8 @@ export async function getSpot(id: string): Promise<SpotDetail | undefined> {
   const fromSample = sampleContentEnabled() ? sampleSpots.find((s) => s.id === id) : undefined;
   if (fromSample) return fromSample;
   const spot = await fetchPublicSpot(id);
-  // A waypoint without a stamp (a turn, a toilet) has no page of its own: only the ones with a stamp do.
-  if (!spot || !spot.stampable) return undefined;
+  // A place without a stamp (a toilet, a station) has a page too, to read about it; only the stamp button is left off.
+  if (!spot) return undefined;
   const [route, mine] = await Promise.all([fetchPublicRoute(spot.routeId), getMyStamps()]);
   return route ? spotDetailFromApi(spot, route.route, mine.ids.has(spot.id)) : undefined;
 }

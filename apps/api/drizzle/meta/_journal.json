@@ -148,6 +148,13 @@
       "when": 1792631049065,
       "tag": "0020_route_walk_style",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1792634349716,
+      "tag": "0021_permission_for_every_place",
+      "breakpoints": true
     }
   ]
 }

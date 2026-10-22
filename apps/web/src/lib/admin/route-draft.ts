@@ -412,14 +412,14 @@ export type PublishBlocker = "no_coordinates" | "position_not_verified" | "permi
 
 /**
  * What still stops a place from being published, in the order the API checks it (the API decides in the end).
- * Only a waypoint with a stamp needs the site's permission; a toilet or a turn on the path does not.
+ * Every place needs the site's permission, with a stamp or without (each has its own page).
  */
 export function publishBlockers(p: PlaceDraft, dirty = false): PublishBlocker[] {
   const out: PublishBlocker[] = [];
   if (p.id === null || dirty) out.push("unsaved");
   if (p.lat === null || p.lng === null) out.push("no_coordinates");
   else if (!p.positionVerified || !p.positionSource.trim()) out.push("position_not_verified");
-  if (p.stampable && !p.permissionConfirmed) out.push("permission_required");
+  if (!p.permissionConfirmed) out.push("permission_required");
   return out;
 }
 
@@ -431,6 +431,7 @@ const pointOf = (p: PlaceDraft, d: Pick<RouteDraft, "places">): RoutePoint => ({
   id: p.id ?? p.key,
   sortOrder: d.places.indexOf(p),
   photoUrl: nz(p.photoUrl),
+  ...(p.stopBy ? { stopBy: true } : {}),
   kind: p.kind,
   nameJa: p.nameJa,
   nameEn: nz(p.nameEn),
@@ -476,6 +477,7 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
       status: p.status,
       stamped: null,
       sortOrder: d.places.indexOf(p),
+      stampable: true,
       descriptionJa: nz(p.descriptionJa),
       descriptionEn: nz(p.descriptionEn),
       photoUrl: nz(p.photoUrl),

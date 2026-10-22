@@ -972,14 +972,17 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       });
     });
 
-    test("the lists count waypoints with and without a stamp apart; one without a stamp can be published without permission, one with a stamp cannot", async () => {
+    test("the lists count waypoints with and without a stamp apart; every place needs the permission to be published, with a stamp or without", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {
           const list = await store.listRoutes();
           const route = list[2]!;
           const verified = { lat: 34.3, lng: 135.1, positionVerified: true, positionSource: "公式" };
-          const turn = await store.createSpot(actor, route.id, { nameJa: "分かれ道", kind: "turn", ...verified });
+          const turn = await store.createSpot(actor, route.id, { nameJa: "分かれ道", kind: "turn", permissionConfirmed: true, ...verified });
           expect(await store.setPublished(actor, turn!.id, true)).toMatchObject({ published: true });
+          // A place without a stamp has a page too: without the permission it stays a draft as well.
+          const toilet = await store.createSpot(actor, route.id, { nameJa: "トイレ", kind: "toilet", ...verified });
+          expect(await store.setPublished(actor, toilet!.id, true)).toMatchObject({ published: false });
           const stamp = await store.createSpot(actor, route.id, { nameJa: "経塚", kind: "mound", stampable: true, ...verified });
           // The write itself refuses a stamp place without permission: it stays a draft (no error, nothing recorded).
           expect(await store.setPublished(actor, stamp!.id, true)).toMatchObject({ published: false });
@@ -992,7 +995,7 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
             })(),
           ).rejects.toThrow();
           const row = (await store.listRoutes()).find((r) => r.id === route.id)!;
-          expect([row.spotCount, row.publishedSpotCount, row.pointCount]).toEqual([1, 0, 1]);
+          expect([row.spotCount, row.publishedSpotCount, row.pointCount]).toEqual([1, 0, 2]);
         });
       });
     });
