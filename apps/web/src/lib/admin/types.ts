@@ -4,9 +4,10 @@ import type { Translations } from "./content-locales";
 
 import type { GalleryPhoto } from "../content";
 import type { PointKind } from "../point-kinds";
+import type { WalkStyle } from "../walk-style";
 
 export type Prefecture = "osaka" | "wakayama" | "nara";
-export type { PointKind };
+export type { PointKind, WalkStyle };
 export type SpotStatus = "open" | "caution" | "closed";
 
 export interface AdminLine {
@@ -27,6 +28,7 @@ export interface AdminRoute {
   difficulty: string | null;
   expectedTimeMin: number | null;
   prefecture: Prefecture | null;
+  walkStyle: WalkStyle | null;
   municipality: string | null;
   geometry: AdminLine | null;
   lineVerified: boolean;

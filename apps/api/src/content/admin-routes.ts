@@ -48,6 +48,7 @@ function statusOf(reason: ErrorCode): 400 | 404 | 409 | 422 {
 const nullable = <T extends ReturnType<typeof t.String> | ReturnType<typeof t.Number> | ReturnType<typeof t.Integer>>(s: T) => t.Union([s, t.Null()]);
 
 const prefecture = t.Union([t.Literal("osaka"), t.Literal("wakayama"), t.Literal("nara")]);
+const walkStyle = t.Union([t.Literal("one_way"), t.Literal("loop"), t.Literal("out_and_back")]);
 // Written out as literals: a union built by mapping over a list loses its literal types for the typed web client.
 const kind = t.Union([
   t.Literal("temple"),
@@ -78,6 +79,7 @@ const routeProps = {
   difficulty: nullable(t.String({ maxLength: 100 })),
   expectedTimeMin: nullable(t.Integer({ minimum: 0, maximum: 20000 })),
   prefecture: t.Union([prefecture, t.Null()]),
+  walkStyle: t.Union([walkStyle, t.Null()]),
   municipality: nullable(t.String({ maxLength: 100 })),
   // Shape and range are checked by the service (parseLine); any JSON gets there.
   geometry: t.Unknown(),

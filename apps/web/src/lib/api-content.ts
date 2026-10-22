@@ -19,6 +19,8 @@ function sketchFromList(sketch: [number, number][] | null): Sketch | null {
   return sketch && sketch.length >= 2 ? sketchFromPoints(sketch, 40) : null;
 }
 
+import { walkStyleOf } from "./walk-style";
+
 const prefectureOf = (p: string | null): Prefecture | null => (p === "osaka" || p === "wakayama" || p === "nara" ? p : null);
 
 export function routeSummaryFromApi(r: PublicRoute, order: number, stampedCount = 0): RouteSummary {
@@ -59,6 +61,7 @@ export function spotListItemFromApi(s: PublicSpot, stamped = false): SpotListIte
     statusNoteEn: s.statusNoteEn,
     statusUpdatedAt: s.statusUpdatedAt,
     photoUrl: s.photoUrl,
+    sortOrder: s.sortOrder,
   };
 }
 
@@ -92,6 +95,8 @@ export function routePointFromApi(s: PublicSpot): RoutePoint | null {
     nameEn: s.nameEn,
     descriptionJa: s.descriptionJa,
     descriptionEn: s.descriptionEn,
+    photoUrl: s.photoUrl,
+    sortOrder: s.sortOrder,
     position: s.position ? { lat: s.position.lat, lng: s.position.lng, verified: true } : null,
   };
 }
@@ -126,6 +131,7 @@ export function routeDetailFromApi(
     sideLines: (r.sideLines ?? []).map((s) => ({ spotId: s.spotId, line: s.coordinates.map(([lng, lat]) => ({ lat, lng })) })),
     videoUrl: r.videoUrl,
     photoUrl: r.photoUrl,
+    walkStyle: walkStyleOf(r.walkStyle),
   };
 }
 

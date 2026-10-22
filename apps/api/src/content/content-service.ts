@@ -8,6 +8,7 @@ import type {
   ContentStore,
   Prefecture,
   Result,
+  WalkStyle,
   RouteFields,
   RouteRow,
   RouteSummaryRow,
@@ -58,6 +59,7 @@ export interface PublicRoute {
   difficulty: string | null;
   expectedTimeMin: number | null;
   prefecture: Prefecture | null;
+  walkStyle: WalkStyle | null;
   municipality: string | null;
   videoUrl: string | null;
   historyJa: string | null;
@@ -109,6 +111,7 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     difficulty: r.difficulty,
     expectedTimeMin: r.expectedTimeMin,
     prefecture: r.prefecture,
+    walkStyle: r.walkStyle,
     municipality: r.municipality,
     videoUrl: r.videoUrl,
     historyJa: r.historyJa,
@@ -189,6 +192,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
     if (input.elevationGainM !== undefined) out.elevationGainM = input.elevationGainM;
     if (input.expectedTimeMin !== undefined) out.expectedTimeMin = input.expectedTimeMin;
     if (input.prefecture !== undefined) out.prefecture = input.prefecture;
+    if (input.walkStyle !== undefined) out.walkStyle = input.walkStyle;
     if (input.videoUrl !== undefined) {
       const v = text(input.videoUrl);
       if (v && !isAllowedVideoUrl(v)) return bad("invalid_video_url");

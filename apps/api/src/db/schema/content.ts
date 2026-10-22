@@ -81,6 +81,9 @@ export const routes = pgTable(
     expectedTimeMin: integer("expected_time_min"),
     // Osaka, Wakayama or Nara (validated in the API).
     prefecture: text("prefecture"),
+    // How the route is walked: one_way, loop (ends where it began) or out_and_back (to a turnaround and back the same
+    // way). Validated in the API; null until an admin picks one (the route page then says nothing about it).
+    walkStyle: text("walk_style"),
     municipality: text("municipality"),
     // GeoJSON line drawn on the map.
     geometry: jsonb("geometry"),

@@ -10,6 +10,7 @@ import { samplePlaces } from "./sample-places";
 import { sampleRoutes, sampleSpots } from "./sample-content";
 import type { Sketch } from "./sketch";
 import type { Viewer } from "./viewer";
+import type { WalkStyle } from "./walk-style";
 
 // View-models for the public content screens (WBS 3.2.3, 3.2.4, 3.2.5). Each field
 // mirrors a CMS column in apps/api/src/db/schema/content.ts, so what an editor types
@@ -70,6 +71,8 @@ export interface SpotListItem {
   statusNoteEn?: string | null;
   statusUpdatedAt?: string | null;
   photoUrl?: string | null;
+  /** Its place in the route's order together with the waypoints that have no stamp (lower comes first). */
+  sortOrder?: number;
   /** What the place is (a sutra mound, a temple ...); left out when unknown. */
   kind?: PointKind;
   /** An optional visit beside the way (寄り道): drawn apart from the route. */
@@ -90,6 +93,9 @@ export interface RoutePoint {
   nameEn: string | null;
   descriptionJa: string | null;
   descriptionEn: string | null;
+  photoUrl?: string | null;
+  /** Its place in the route's order together with the stamp places (lower comes first). */
+  sortOrder?: number;
   position: SpotPosition | null;
 }
 
@@ -110,6 +116,8 @@ export interface RouteDetail extends RouteSummary {
   sideLines?: { spotId: string; line: { lat: number; lng: number }[] }[];
   /** The guidance video's address (the CMS `video_url`); only YouTube and Vimeo links are shown (`parseVideoUrl`). */
   videoUrl: string | null;
+  /** How the route is walked, as an admin saved it; null/left out when nobody has said. */
+  walkStyle?: WalkStyle | null;
 }
 
 /** One photo in a place's gallery: who took it (for a photo that is not ours) and the page it came from. */

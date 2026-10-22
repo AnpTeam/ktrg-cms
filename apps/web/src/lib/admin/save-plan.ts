@@ -3,7 +3,7 @@ import type { Ride } from "./legs";
 import type { PlaceDraft, RouteDraft } from "./route-draft";
 import type { GalleryPhoto } from "../content";
 import type { PointKind } from "../point-kinds";
-import type { Prefecture, SpotStatus } from "./types";
+import type { Prefecture, SpotStatus, WalkStyle } from "./types";
 
 // Works out what has to be sent to the API to turn the saved copy of a route into the edited one: which fields, in what
 // order. Pure, so the order of calls (and what is NOT sent) is tested. The editor runs the steps one by one and stops at
@@ -25,6 +25,7 @@ export interface RouteBody {
   descriptionJa: string | null;
   descriptionEn: string | null;
   prefecture: Prefecture | null;
+  walkStyle: WalkStyle | null;
   municipality: string | null;
   distanceKm: number | null;
   elevationGainM: number | null;
@@ -91,6 +92,7 @@ export function routeBody(d: RouteDraft): RouteBody {
     descriptionJa: nullIfEmpty(d.descriptionJa),
     descriptionEn: nullIfEmpty(d.descriptionEn),
     prefecture: d.prefecture,
+    walkStyle: d.walkStyle,
     municipality: nullIfEmpty(d.municipality),
     distanceKm: d.distanceKm,
     elevationGainM: d.elevationGainM,

@@ -4,7 +4,7 @@ import { areaFromBounds, sketchFromPoints } from "../route-geometry";
 import { climbM, elevationsOf, lengthKm, type LngLatEle } from "./line";
 import { capLegs, joinLegs, legsFromJoined, pathStops, reconcileLegs, sidePairs, splitLine, type Leg } from "./legs";
 import type { Translations } from "./content-locales";
-import type { AdminRoute, AdminSpot, Prefecture, SpotStatus } from "./types";
+import type { AdminRoute, AdminSpot, Prefecture, SpotStatus, WalkStyle } from "./types";
 import { timesFromPrevious } from "../leg-times";
 import { estimateWalkMinutes } from "./walk-time";
 
@@ -65,6 +65,7 @@ export interface RouteDraft {
   translations: Translations;
   photoUrl: string;
   prefecture: Prefecture | null;
+  walkStyle: WalkStyle | null;
   municipality: string;
   distanceKm: number | null;
   /** True once someone typed a distance: drawing no longer overwrites it. */
@@ -87,7 +88,7 @@ export interface RouteDraft {
 
 export const emptyDraft = (): RouteDraft => ({
   id: null, updatedAt: null, nameJa: "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
-  accessJa: "", accessEn: "", translations: {}, photoUrl: "", prefecture: null, municipality: "",
+  accessJa: "", accessEn: "", translations: {}, photoUrl: "", prefecture: null, walkStyle: null, municipality: "",
   distanceKm: null, distanceManual: false, elevationGainM: null, climbManual: false, expectedTimeMin: null, timeManual: false,
   difficulty: "", videoUrl: "", line: [], legs: [], lineVerified: false, lineSource: "", places: [],
 });
@@ -124,7 +125,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
     id: route.id, updatedAt: route.updatedAt, nameJa: route.nameJa, nameEn: s(route.nameEn), descriptionJa: s(route.descriptionJa),
     descriptionEn: s(route.descriptionEn), historyJa: s(route.historyJa), historyEn: s(route.historyEn),
     accessJa: s(route.accessJa), accessEn: s(route.accessEn), translations: route.translations ?? {}, photoUrl: s(route.photoUrl),
-    prefecture: route.prefecture, municipality: s(route.municipality),
+    prefecture: route.prefecture, walkStyle: route.walkStyle, municipality: s(route.municipality),
     distanceKm: route.distanceKm,
     // A saved distance that is not the line's own length was typed by hand: keep it when the line changes.
     distanceManual: route.distanceKm !== null && (line.length < 2 || route.distanceKm !== walkedStats(line, legs).km),
@@ -181,6 +182,7 @@ export type DraftAction =
   /** The route's words in the other content languages. */
   | { type: "translations"; value: Translations }
   | { type: "prefecture"; value: Prefecture | null }
+  | { type: "walkStyle"; value: WalkStyle | null }
   | { type: "distance"; value: number | null }
   | { type: "climb"; value: number | null }
   | { type: "time"; value: number | null }
@@ -287,6 +289,8 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       return { ...d, translations: a.value };
     case "prefecture":
       return { ...d, prefecture: a.value };
+    case "walkStyle":
+      return { ...d, walkStyle: a.value };
     case "distance":
       // Emptying the field hands the number back to the line.
       return a.value === null
@@ -415,8 +419,10 @@ export function publishBlockers(p: PlaceDraft, dirty = false): PublishBlocker[] 
 
 const nz = (v: string) => (v.trim() === "" ? null : v);
 
-const pointOf = (p: PlaceDraft): RoutePoint => ({
+const pointOf = (p: PlaceDraft, d: Pick<RouteDraft, "places">): RoutePoint => ({
   id: p.id ?? p.key,
+  sortOrder: d.places.indexOf(p),
+  photoUrl: nz(p.photoUrl),
   kind: p.kind,
   nameJa: p.nameJa,
   nameEn: nz(p.nameEn),
@@ -439,6 +445,7 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
     nameJa: d.nameJa,
     nameEn: nz(d.nameEn),
     prefecture: d.prefecture,
+    walkStyle: d.walkStyle,
     municipality: nz(d.municipality),
     distanceKm: d.distanceKm,
     elevationGainM: d.elevationGainM,
@@ -460,11 +467,15 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
       nameEn: nz(p.nameEn),
       status: p.status,
       stamped: null,
+      sortOrder: d.places.indexOf(p),
+      descriptionJa: nz(p.descriptionJa),
+      descriptionEn: nz(p.descriptionEn),
+      photoUrl: nz(p.photoUrl),
       ...(p.stopBy ? { stopBy: true } : {}),
       ...(times.get(p.id ?? p.key) ? { fromPrev: times.get(p.id ?? p.key) } : {}),
       position: p.lat !== null && p.lng !== null ? { lat: p.lat, lng: p.lng, verified: p.positionVerified } : null,
     })),
-    points: navigationPoints(d).map(pointOf),
+    points: navigationPoints(d).map((p) => pointOf(p, d)),
     line: d.line.length >= 2 ? d.line.map(([lng, lat]) => ({ lat, lng })) : null,
     sideLines: d.legs.filter((l) => l.side).map((l) => ({ spotId: l.to, line: l.points.map(([lng, lat]) => ({ lat, lng })) })),
     videoUrl: nz(d.videoUrl),

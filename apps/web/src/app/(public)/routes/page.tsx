@@ -31,7 +31,8 @@ export default async function RoutesPage({
   const active = isPrefecture(pref) ? pref : undefined;
 
   const all = (await listRoutes()).map((r) => forViewer(r, viewer));
-  const routes = filterByPrefecture(all, active);
+  // Routes that are ready come first, the coming-soon ones after; each keeps its own number (route.order), and the sort is stable.
+  const routes = [...filterByPrefecture(all, active)].sort((a, b) => Number(a.status === "soon") - Number(b.status === "soon"));
   const available = prefectures.filter((p) => all.some((r) => r.prefecture === p));
   const base = "/routes";
 
