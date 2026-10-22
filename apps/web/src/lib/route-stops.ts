@@ -7,8 +7,9 @@ import type { WalkStyle } from "./walk-style";
 // area, a station ...) in one list, in the order of the walk, and where the walk starts and ends. Pure, so the route page,
 // the admin's preview and the tests share one rule.
 
-/** Waypoints that only guide the way: they stay on the map but are not somewhere to go. */
+/** Waypoints that only guide the way: they stay on the map as plain marks but are not somewhere to go. */
 const GUIDANCE_ONLY: readonly PointKind[] = ["turn", "danger"];
+export const isGuidanceOnly = (kind: PointKind) => GUIDANCE_ONLY.includes(kind);
 
 /** With no style saved, a goal farther than this from the start is called one-way; a closer one is left unsaid. */
 export const FAR_GOAL_M = 300;
@@ -70,3 +71,7 @@ export function journeyOf(stops: readonly TrailStop[], saved: WalkStyle | null =
   }
   return { start, goal, style, turnaround };
 }
+
+/** The number of each place along the walk by id (null for a side trip), stamp places and the others together. */
+export const stopNumbers = (route: Pick<RouteDetail, "spots" | "points">): Map<string, number | null> =>
+  new Map(trailStops(route).map((s) => [s.type === "stamp" ? s.spot.id : s.point.id, s.number] as const));

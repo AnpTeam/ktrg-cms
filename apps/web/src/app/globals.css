@@ -285,6 +285,13 @@ rt {
   border-style: dashed;
 }
 
+/* A place with no stamp: a square pin (a shape, not a colour), on a plain light fill. */
+.map-marker[data-no-stamp="true"] {
+  border-radius: calc(0.6rem * var(--pin, 1));
+  border-style: solid;
+  background: var(--color-surface);
+}
+
 .map-marker[data-kind="stamped"] {
   background: var(--color-shu);
   border-color: var(--color-on-shu);

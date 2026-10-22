@@ -49,9 +49,10 @@ const GAP_PX = 8;
 export function NavigationStart({ route }: { route: MapScreenRoute }) {
   const { t } = useLingui();
   const { session, start } = useNavigation();
-  if (!route.stops || route.stops.length === 0) return null;
+  const stampStops = route.stops?.filter((s) => !s.noStamp) ?? [];
+  if (stampStops.length === 0) return null;
   if (session?.routeId === route.id) return null; // the toast already shows it
-  const stops: Record<string, NavStopInfo> = Object.fromEntries(route.stops.map((s) => [s.id, { name: s.name, nameLang: s.nameLang, status: s.status }]));
+  const stops: Record<string, NavStopInfo> = Object.fromEntries(stampStops.map((s) => [s.id, { name: s.name, nameLang: s.nameLang, status: s.status }]));
   return (
     <section className="flex flex-col gap-2">
       <p className="text-lg leading-snug">{t`いまいる場所から、いちばん近いスタンプの場所まで案内します。位置は、この端末の中だけで使います。`}</p>

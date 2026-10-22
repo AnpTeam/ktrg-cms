@@ -19,7 +19,7 @@ import type { MapSettings } from "@/lib/map-settings";
 import { municipalityName } from "@/lib/municipalities";
 import { pickText } from "@/lib/pick-text";
 import { pointsAsPlaces } from "@/lib/point-places";
-import { journeyOf, trailStops } from "@/lib/route-stops";
+import { isGuidanceOnly, journeyOf, trailStops } from "@/lib/route-stops";
 import type { MapPlace } from "@/lib/places";
 import { parseVideoUrl } from "@/lib/video";
 
@@ -30,28 +30,30 @@ export function buildStops(
   spotHref: (id: string) => string,
   labels: { stamped: string; closed: string },
 ): MapStop[] {
-  // The numbers are the places' index along the walk, the ones without a stamp counted too; a side trip has none.
-  const numbers = new Map(trailStops(route).flatMap((s) => (s.type === "stamp" ? [[s.spot.id, s.number] as const] : [])));
-  return route.spots.flatMap((spot) => {
-    if (!spot.position) return [];
-    const name = pickText(locale, spot.nameJa, spot.nameEn);
+  // Every place along the walk is a pin, numbered by its index (a side trip has none). A place without a stamp is a square pin.
+  return trailStops(route).flatMap((stop): MapStop[] => {
+    const item = stop.type === "stamp" ? stop.spot : stop.point;
+    if (!item.position) return [];
+    const name = pickText(locale, item.nameJa, item.nameEn);
     if (!name) return [];
-    const number = numbers.get(spot.id) ?? null;
-    const parts = [number === null ? name.text : `${number}. ${name.text}`];
-    if (spot.stamped) parts.push(labels.stamped);
-    if (spot.status === "closed") parts.push(labels.closed);
+    const stamped = stop.type === "stamp" ? stop.spot.stamped : null;
+    const status = stop.type === "stamp" ? stop.spot.status : "open";
+    const parts = [stop.number === null ? name.text : `${stop.number}. ${name.text}`];
+    if (stamped) parts.push(labels.stamped);
+    if (status === "closed") parts.push(labels.closed);
     return [
       {
-        id: spot.id,
-        order: number,
+        id: item.id,
+        order: stop.number,
         name: name.text,
         label: parts.join(", "),
         nameLang: name.lang,
-        position: { lat: spot.position.lat, lng: spot.position.lng },
-        stamped: spot.stamped,
-        status: spot.status,
-        href: spotHref(spot.id),
-        ...(spot.stopBy ? { sideTrip: true } : {}),
+        position: { lat: item.position.lat, lng: item.position.lng },
+        stamped,
+        status,
+        href: spotHref(item.id),
+        ...(item.stopBy ? { sideTrip: true } : {}),
+        ...(stop.type === "point" ? { noStamp: true } : {}),
       },
     ];
   });
@@ -83,7 +85,8 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
   const { stampedCount, spotCount } = route;
   const history = pickText(locale, route.historyJa, route.historyEn);
   const access = pickText(locale, route.accessJa, route.accessEn);
-  const mapPlaces = [...places, ...pointsAsPlaces(route.points, locale)];
+  // The places to visit are pins of their own; only the guiding points (turns, dangers) stay among the small place marks.
+  const mapPlaces = [...places, ...pointsAsPlaces(route.points.filter((p) => isGuidanceOnly(p.kind)), locale)];
   const trail = trailStops(route);
   const journey = journeyOf(trail, route.walkStyle ?? null);
   const photo = route.photoUrl ? { src: route.photoUrl, alt: pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa } : null;

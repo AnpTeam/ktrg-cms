@@ -24,6 +24,7 @@ const MAP_STOP_RADIUS_M = 50;
 /** The navigation model for a course as the map page has it (MapScreenRoute): its line and its stops with positions. */
 export function modelFromMapRoute(route: Pick<MapScreenRoute, "line" | "stops">): NavModel {
   const line: LinePoint[] = (route.line ?? []).map((p) => [p.lng, p.lat]);
-  const stops: NavStop[] = (route.stops ?? []).map((s) => ({ id: s.id, lat: s.position.lat, lng: s.position.lng, radiusM: MAP_STOP_RADIUS_M, status: s.status }));
+  // Navigation heads for stamp places: a place with no stamp is on the map but is never its destination.
+  const stops: NavStop[] = (route.stops ?? []).filter((s) => !s.noStamp).map((s) => ({ id: s.id, lat: s.position.lat, lng: s.position.lng, radiusM: MAP_STOP_RADIUS_M, status: s.status }));
   return buildModel(line, stops);
 }

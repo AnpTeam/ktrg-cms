@@ -44,6 +44,8 @@ export interface MapStop {
   href: string;
   /** An optional visit beside the way (寄り道): its pin is drawn smaller, and its line thin, dashed and blue. */
   sideTrip?: boolean;
+  /** A place where no stamp can be collected (a toilet, a station ...): a square pin, never "next to stamp". */
+  noStamp?: boolean;
 }
 
 type Selection = { kind: "stop" | "place"; id: string } | null;
@@ -271,9 +273,10 @@ export function TrailMap({
         const el = createMarkerElement({
           order: stop.order,
           label: stop.label,
-          kind: markerKind(stop.stamped, stop.id === next),
+          kind: stop.noStamp ? "neutral" : markerKind(stop.stamped, stop.id === next),
           status: stop.status,
           sideTrip: stop.sideTrip,
+          noStamp: stop.noStamp,
           onSelect: () => setSelected({ kind: "stop", id: stop.id }),
         });
         buttons.set(`stop:${stop.id}`, el);
@@ -283,7 +286,7 @@ export function TrailMap({
         const text = orders.length > 0 ? `${Math.min(...orders)}–${Math.max(...orders)}` : String(members.length);
         const el = createClusterElement({
           text,
-          label: t`スタンプの場所 ${text} がここに集まっています。押すと拡大します`,
+          label: t`場所 ${text} がここに集まっています。押すと拡大します`,
           kind: "stops",
           onSelect: () => zoomTo(members.map((m) => m.position)),
         });
@@ -500,7 +503,7 @@ export function TrailMap({
       ) : null}
 
       {!mergeStops && stops.length > 1 ? (
-        <div role="group" aria-label={t`スタンプの場所を順に見る`} className="flex items-stretch gap-2">
+        <div role="group" aria-label={t`場所を順に見る`} className="flex items-stretch gap-2">
           <button type="button" onClick={() => goToStop(-1)} disabled={stopIndex === 0} className={`${buttonClass} flex-1`}>
             {t`＜ 前へ`}
           </button>
@@ -525,6 +528,7 @@ export function TrailMap({
           nameLang={selectedStop.nameLang}
           status={selectedStop.status}
           href={selectedStop.href}
+          noStamp={selectedStop.noStamp}
           draft={draft}
         />
       ) : null}

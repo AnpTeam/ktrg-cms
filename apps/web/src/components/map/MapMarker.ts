@@ -16,15 +16,18 @@ export interface MarkerOptions {
   status: SpotStatus;
   /** A side trip (寄り道): smaller, with a dashed ring. */
   sideTrip?: boolean;
+  /** A place where no stamp can be collected: a square pin instead of a round one. */
+  noStamp?: boolean;
   onSelect: () => void;
 }
 
-export function createMarkerElement({ order, label, kind, status, sideTrip, onSelect }: MarkerOptions): HTMLButtonElement {
+export function createMarkerElement({ order, label, kind, status, sideTrip, noStamp, onSelect }: MarkerOptions): HTMLButtonElement {
   const el = document.createElement("button");
   el.type = "button";
   el.className = "map-marker";
   el.dataset.kind = kind;
   if (sideTrip) el.dataset.side = "true";
+  if (noStamp) el.dataset.noStamp = "true";
   el.dataset.status = status;
   el.textContent = order === null ? "" : String(order);
   el.setAttribute("aria-label", label);

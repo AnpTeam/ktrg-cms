@@ -26,7 +26,8 @@ export interface MapPhoto {
 /** One stamp place of a course, as a row in its list (with or without a position on the map). */
 export interface MapScreenSpot {
   id: string;
-  order: number;
+  /** Its index along the walk (stamp or not); null for a side trip. */
+  order: number | null;
   name: string;
   nameLang: "ja" | "en";
   status: SpotStatus;
@@ -39,8 +40,8 @@ export interface MapScreenSpot {
 /** A stop on a course's detailed map, with what its bottom sheet shows. Sent to the browser, so plain data only. */
 export interface MapScreenStop {
   id: string;
-  /** 1, 2, 3 ... in walking order. */
-  order: number;
+  /** 1, 2, 3 ... in walking order (stamp or not); null for a side trip. */
+  order: number | null;
   name: string;
   nameLang: "ja" | "en";
   /** The spoken name of the marker, for example "3. 猿坂峠, stamped". */
@@ -50,6 +51,8 @@ export interface MapScreenStop {
   kind?: PointKind;
   /** An optional visit beside the way (寄り道): its pin is smaller. */
   sideTrip?: boolean;
+  /** A place where no stamp can be collected: a square pin, no stamp card in its sheet. */
+  noStamp?: boolean;
   /** null when signed out. */
   stamped: boolean | null;
   status: SpotStatus;

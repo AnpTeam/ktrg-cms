@@ -181,7 +181,7 @@ export function MapScreen({
   const hero = route ? (
     <SheetHero
       photo={photo}
-      title={stop ? `${stop.order}. ${stop.name}` : `${route.order}. ${route.name}`}
+      title={stop ? `${stop.order === null ? "" : `${stop.order}. `}${stop.name}` : `${route.order}. ${route.name}`}
       lang={stop ? stop.nameLang : route.nameLang}
       eyebrow={
         stop ? (
@@ -514,12 +514,14 @@ function StopPanel({
 
       {stop.stamped === true ? (
         <div className="flex items-center gap-4">
-          <StampFace state="stamped" number={stop.order} rough className="h-14 w-14 shrink-0" />
+          <StampFace state="stamped" number={stop.order ?? undefined} rough className="h-14 w-14 shrink-0" />
           <p className="text-xl font-bold">{t`スタンプを押しました`}</p>
         </div>
       ) : null}
 
-      {signedIn && stop.stamped !== null ? (
+      {stop.noStamp ? (
+        <p className="self-start rounded-lg border-2 border-dashed border-line px-2 text-base font-bold">{t`スタンプなし`}</p>
+      ) : signedIn && stop.stamped !== null ? (
         <StampHere spotId={stop.id} status={stop.status} alreadyStamped={stop.stamped} loginHref={loginHref} mock={stampMock} inSheet />
       ) : (
         <LockedNote loginHref={loginHref} registerHref={registerHref} />

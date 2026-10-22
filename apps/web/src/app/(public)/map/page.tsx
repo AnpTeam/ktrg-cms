@@ -1,3 +1,4 @@
+import { isGuidanceOnly, stopNumbers, trailStops } from "@/lib/route-stops";
 import type { Metadata } from "next";
 import { msg } from "@lingui/core/macro";
 import { MapScreen } from "@/components/map/MapScreen";
@@ -54,17 +55,19 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
             description = pickText(locale, detail.descriptionJa, detail.descriptionEn)?.text ?? null;
             history = pickText(locale, detail.historyJa, detail.historyEn)?.text ?? null;
             access = pickText(locale, detail.accessJa, detail.accessEn)?.text ?? null;
-            points = detail.points.flatMap((p): MapScreenPoint[] => {
+            // The places to visit are pins of their own (below); only the guiding points stay among the small place marks.
+            points = detail.points.filter((p) => isGuidanceOnly(p.kind)).flatMap((p): MapScreenPoint[] => {
               const pointName = pickText(locale, p.nameJa, p.nameEn);
               return p.position && pointName
                 ? [{ id: p.id, category: categoryOfKind(p.kind), name: pointName.text, nameLang: pointName.lang, position: { lat: p.position.lat, lng: p.position.lng } }]
                 : [];
             });
             photo = detail.photoUrl ? { src: detail.photoUrl, alt: name?.text ?? detail.nameJa } : null;
-            spots = detail.spots.flatMap((s, index): MapScreenSpot[] => {
+            const numbers = stopNumbers(detail);
+            spots = detail.spots.flatMap((s): MapScreenSpot[] => {
               const spotName = pickText(locale, s.nameJa, s.nameEn);
               return spotName
-                ? [{ id: s.id, order: index + 1, name: spotName.text, nameLang: spotName.lang, status: s.status, stamped: s.stamped, href: `/spots/${s.id}` }]
+                ? [{ id: s.id, order: numbers.get(s.id) ?? null, name: spotName.text, nameLang: spotName.lang, status: s.status, stamped: s.stamped, href: `/spots/${s.id}` }]
                 : [];
             });
           }
@@ -75,31 +78,35 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
             sideLines = detail.sideLines?.map((s) => s.line) ?? [];
             draft = positioned.some((s) => !s.position?.verified);
             // Each place of the course already carries what its sheet shows: no request per place.
-            stops = detail.spots
-              .map((s, index): MapScreenStop | null => {
-                if (!s.position) return null;
-                const spotName = pickText(locale, s.nameJa, s.nameEn);
+            stops = trailStops(detail)
+              .map((t): MapScreenStop | null => {
+                const item = t.type === "stamp" ? t.spot : t.point;
+                if (!item.position) return null;
+                const spotName = pickText(locale, item.nameJa, item.nameEn);
                 if (!spotName) return null;
-                const parts = [`${index + 1}. ${spotName.text}`];
-                if (s.stamped) parts.push(words.stamped);
-                if (s.status === "closed") parts.push(words.closed);
-                const note = pickText(locale, s.statusNoteJa ?? null, s.statusNoteEn ?? null);
+                const stamped = t.type === "stamp" ? t.spot.stamped : null;
+                const status = t.type === "stamp" ? t.spot.status : "open";
+                const parts = [t.number === null ? spotName.text : `${t.number}. ${spotName.text}`];
+                if (stamped) parts.push(words.stamped);
+                if (status === "closed") parts.push(words.closed);
+                const note = t.type === "stamp" ? pickText(locale, t.spot.statusNoteJa ?? null, t.spot.statusNoteEn ?? null) : null;
                 return {
-                  id: s.id,
-                  order: index + 1,
+                  id: item.id,
+                  order: t.number,
                   name: spotName.text,
                   nameLang: spotName.lang,
                   label: parts.join(", "),
-                  position: { lat: s.position.lat, lng: s.position.lng },
-                  kind: s.kind,
-                  ...(s.stopBy ? { sideTrip: true } : {}),
-                  stamped: s.stamped,
-                  status: s.status,
-                  href: `/spots/${s.id}`,
-                  description: pickText(locale, s.descriptionJa ?? null, s.descriptionEn ?? null)?.text ?? null,
+                  position: { lat: item.position.lat, lng: item.position.lng },
+                  kind: item.kind,
+                  ...(item.stopBy ? { sideTrip: true } : {}),
+                  ...(t.type === "point" ? { noStamp: true } : {}),
+                  stamped,
+                  status,
+                  href: `/spots/${item.id}`,
+                  description: pickText(locale, item.descriptionJa ?? null, item.descriptionEn ?? null)?.text ?? null,
                   statusNote: note?.text ?? null,
-                  statusUpdatedAt: s.statusUpdatedAt ?? null,
-                  photo: s.photoUrl ? { src: s.photoUrl, alt: spotName.text } : null,
+                  statusUpdatedAt: t.type === "stamp" ? t.spot.statusUpdatedAt ?? null : null,
+                  photo: item.photoUrl ? { src: item.photoUrl, alt: spotName.text } : null,
                 };
               })
               .filter((s): s is MapScreenStop => s !== null);

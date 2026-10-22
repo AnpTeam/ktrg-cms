@@ -13,6 +13,7 @@ export function StopCard({
   nameLang,
   status,
   href,
+  noStamp = false,
   draft,
 }: {
   /** null for a side trip (寄り道): no number. */
@@ -21,6 +22,8 @@ export function StopCard({
   nameLang: "ja" | "en";
   status: SpotStatus;
   href: string;
+  /** A place where no stamp can be collected. */
+  noStamp?: boolean;
   draft: boolean;
 }) {
   return (
@@ -28,8 +31,13 @@ export function StopCard({
       <p className="text-xl font-bold leading-snug">
         {order === null ? "" : `${order}. `}<span lang={nameLang}>{name}</span>
       </p>
-      <p className="text-lg">
+      <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-lg">
         <StatusWord status={status} />
+        {noStamp ? (
+          <span className="rounded-lg border-2 border-dashed border-line px-2 text-base font-bold">
+            <Trans>スタンプなし</Trans>
+          </span>
+        ) : null}
       </p>
       {draft ? (
         <p className="flex items-start gap-2 text-base text-muted">
