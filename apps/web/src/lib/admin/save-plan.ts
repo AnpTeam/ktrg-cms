@@ -2,6 +2,7 @@ import { translationsChange, type Translations } from "./content-locales";
 import type { Ride } from "./legs";
 import type { PlaceDraft, RouteDraft } from "./route-draft";
 import type { GalleryPhoto } from "../content";
+import { parseVideoFile } from "../video";
 import type { PointKind } from "../point-kinds";
 import type { Prefecture, SpotStatus, WalkStyle } from "./types";
 
@@ -294,7 +295,7 @@ export function videoLinkLooksValid(raw: string): boolean {
   if (raw.trim() === "") return true;
   try {
     const u = new URL(raw.trim());
-    return u.protocol === "https:" && VIDEO_HOSTS.includes(u.hostname.toLowerCase());
+    return u.protocol === "https:" && (VIDEO_HOSTS.includes(u.hostname.toLowerCase()) || parseVideoFile(raw) !== null);
   } catch {
     return false;
   }

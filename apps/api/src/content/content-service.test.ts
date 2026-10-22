@@ -80,6 +80,14 @@ describe("routes", () => {
     expect((await svc.updateRoute(ADMIN, r.id, r.updatedAt, { videoUrl: "https://youtu.be/dQw4w9WgXcQ" })).ok).toBe(true);
   });
 
+  test("an uploaded .mp4 or .webm link is a video; other file types are not", async () => {
+    const r = await route();
+    const up = await svc.updateRoute(ADMIN, r.id, r.updatedAt, { videoUrl: "https://photos.example.com/videos/walk-abc234.mp4" });
+    expect(up.ok).toBe(true);
+    const again = await route();
+    expect(await svc.updateRoute(ADMIN, again.id, again.updatedAt, { videoUrl: "https://photos.example.com/videos/walk.mov" })).toEqual({ ok: false, reason: "invalid_video_url" });
+  });
+
   test("a blank Japanese name is refused; blank optional text becomes empty", async () => {
     expect(await svc.createRoute(ADMIN, { nameJa: "   " })).toEqual({ ok: false, reason: "validation_failed" });
     const r = await route({ nameEn: "  " });

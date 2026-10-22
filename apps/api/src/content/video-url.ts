@@ -4,7 +4,11 @@ const VIMEO_HOSTS = new Set(["vimeo.com", "www.vimeo.com", "player.vimeo.com"]);
 const YOUTUBE_ID = /^[\w-]{11}$/;
 const VIMEO_ID = /^\d{5,12}$/;
 
-export function isAllowedVideoUrl(raw: string): boolean {
+/** An uploaded video file (see POST /admin/uploads/video): an https link to an .mp4 or .webm, on one of `hosts` (PHOTO_HOSTS) when set. */
+export const isVideoFileUrl = (url: URL, hosts: readonly string[]): boolean =>
+  url.protocol === "https:" && /\.(mp4|webm)$/i.test(url.pathname) && (hosts.length === 0 || hosts.includes(url.hostname.toLowerCase()));
+
+export function isAllowedVideoUrl(raw: string, photoHosts: readonly string[] = []): boolean {
   let url: URL;
   try {
     url = new URL(raw.trim());
@@ -12,6 +16,7 @@ export function isAllowedVideoUrl(raw: string): boolean {
     return false;
   }
   if (url.protocol !== "https:") return false;
+  if (isVideoFileUrl(url, photoHosts)) return true;
   const host = url.hostname.toLowerCase();
   const parts = url.pathname.split("/").filter(Boolean);
   if (YOUTUBE_HOSTS.has(host)) {

@@ -207,7 +207,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
     if (input.walkStyle !== undefined) out.walkStyle = input.walkStyle;
     if (input.videoUrl !== undefined) {
       const v = text(input.videoUrl);
-      if (v && !isAllowedVideoUrl(v)) return bad("invalid_video_url");
+      if (v && !isAllowedVideoUrl(v, photoHosts)) return bad("invalid_video_url");
       out.videoUrl = v;
     }
     if (input.photoUrl !== undefined) {

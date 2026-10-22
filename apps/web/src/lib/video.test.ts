@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { parseVideoUrl } from "./video";
+import { parseVideoFile, parseVideoUrl } from "./video";
 
 describe("parseVideoUrl", () => {
   test("accepts the usual YouTube forms and embeds them without cookies", () => {
@@ -33,5 +33,15 @@ describe("parseVideoUrl", () => {
       expect(parseVideoUrl(url)).toBeNull();
     }
     expect(parseVideoUrl(undefined)).toBeNull();
+  });
+});
+
+describe("parseVideoFile", () => {
+  test("accepts https links to .mp4 and .webm files only", () => {
+    expect(parseVideoFile("https://photos.example.com/videos/walk-abc234.mp4")?.src).toBe("https://photos.example.com/videos/walk-abc234.mp4");
+    expect(parseVideoFile("https://photos.example.com/v.WEBM")).not.toBeNull();
+    for (const bad of ["http://photos.example.com/v.mp4", "https://photos.example.com/v.mov", "https://youtu.be/dQw4w9WgXcQ", "", null, "nope"]) {
+      expect(parseVideoFile(bad)).toBeNull();
+    }
   });
 });
