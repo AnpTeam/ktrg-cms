@@ -83,6 +83,7 @@ export function placeItemFromApi(p: PublicPlace, order: number | null): PlaceIte
     descriptionEn: p.descriptionEn,
     status: placeStatuses.find((s) => s === p.status) ?? "unknown",
     lastVerified: p.lastVerified,
+    photoUrl: p.photoUrl,
   };
 }
 

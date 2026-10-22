@@ -29,7 +29,7 @@ export function createMarkerElement({ order, label, kind, status, sideTrip, noSt
   if (sideTrip) el.dataset.side = "true";
   if (noStamp) el.dataset.noStamp = "true";
   el.dataset.status = status;
-  el.textContent = order === null ? "" : String(order);
+  el.appendChild(pinSvg(order, sideTrip ? "dot" : noStamp ? "flag" : "tear"));
   el.setAttribute("aria-label", label);
   el.setAttribute("aria-pressed", "false");
   el.addEventListener("click", onSelect);
@@ -38,17 +38,66 @@ export function createMarkerElement({ order, label, kind, status, sideTrip, noSt
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
+// The stop pins stand on their point (the tip is the position), so a pin never covers the spot it marks.
+//   tear  a stop with a stamp: a teardrop with its number
+//   flag  a place without a stamp: a flag-shaped pin with its number
+//   dot   a side trip (寄り道): a small dashed ring, no number
+const TEAR = "M15 39C15 39 3 25.5 3 14.5a12 12 0 0 1 24 0C27 25.5 15 39 15 39Z";
+const FLAG = "M6 3h18a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3h-6.5L15 33l-2.5-7H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z";
+
+function pinSvg(order: number | null, shape: "tear" | "flag" | "dot"): SVGSVGElement {
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("viewBox", shape === "dot" ? "0 0 20 20" : "0 0 30 40");
+  svg.setAttribute("class", "map-pin-svg");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  let body: SVGElement;
+  if (shape === "dot") {
+    body = document.createElementNS(SVG_NS, "circle");
+    body.setAttribute("cx", "10");
+    body.setAttribute("cy", "10");
+    body.setAttribute("r", "8");
+  } else {
+    body = document.createElementNS(SVG_NS, "path");
+    body.setAttribute("d", shape === "tear" ? TEAR : FLAG);
+  }
+  body.setAttribute("class", "pin-shape");
+  svg.appendChild(body);
+  if (shape !== "dot") {
+    // Closed: a bar across the head (drawn only for that state, by the page's own CSS).
+    const bar = document.createElementNS(SVG_NS, "line");
+    bar.setAttribute("x1", "8");
+    bar.setAttribute("y1", "7");
+    bar.setAttribute("x2", "22");
+    bar.setAttribute("y2", "21");
+    bar.setAttribute("class", "pin-bar");
+    svg.appendChild(bar);
+    if (order !== null) {
+      const text = document.createElementNS(SVG_NS, "text");
+      text.setAttribute("x", "15");
+      text.setAttribute("y", "15");
+      text.setAttribute("class", "pin-text");
+      text.textContent = String(order);
+      svg.appendChild(text);
+    }
+  }
+  return svg;
+}
+
 /** A place (toilet, shop ...): a rounded square with the group's picture, so it never looks like a numbered stop. */
 export function createPlaceMarkerElement({
   group,
   label,
   closed,
+  photo = false,
   onSelect,
 }: {
   group: PlaceGroup;
   label: string;
   /** Closed or gone: a diagonal bar over the picture. */
   closed: boolean;
+  /** The place has a photo: a small camera in the corner says a popup with it opens. */
+  photo?: boolean;
   onSelect: () => void;
 }): HTMLButtonElement {
   const el = document.createElement("button");
@@ -75,6 +124,14 @@ export function createPlaceMarkerElement({
     svg.appendChild(path);
   }
   el.appendChild(svg);
+  if (photo) {
+    el.dataset.photo = "true";
+    const badge = document.createElement("span");
+    badge.className = "place-photo";
+    badge.setAttribute("aria-hidden", "true");
+    badge.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h4l2-3h6l2 3h4v11H3z"/><circle cx="12" cy="13" r="3.2"/></svg>';
+    el.appendChild(badge);
+  }
   el.addEventListener("click", onSelect);
   return el;
 }

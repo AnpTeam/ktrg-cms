@@ -23,8 +23,10 @@ import {
   type Position,
 } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
+import { SAME_PLACE_M, spreadMeters, stopMergePx } from "@/lib/map-screen";
 import { groupCounts, groupOf, sortByDistance, type Coord, type MapPlace, type PlaceGroup } from "@/lib/places";
 import { createClusterElement, createMarkerElement, createPlaceMarkerElement } from "./MapMarker";
+import { MapPickList } from "./MapPickList";
 import { PlaceCard, PlaceChips, PlaceList, useGroupNames } from "./PlacesPanel";
 import { StopCard } from "./StopCard";
 
@@ -116,6 +118,8 @@ export function TrailMap({
   const [showSide, setShowSide] = useState(false);
   const hasSide = sideLines.some((l) => l.length >= 2);
   const [selected, setSelected] = useState<Selection>(null);
+  // Pins that stand on one spot cannot be pulled apart by zooming: a short list chooses among them.
+  const [pick, setPick] = useState<MapStop[] | null>(null);
   // Every kind of place that exists on this course is on from the start when the visitor chose that.
   const [active, setActive] = useState<ReadonlySet<PlaceGroup>>(
     () => new Set(placesFirst ? (Object.keys(groupCounts(places)) as PlaceGroup[]) : []),
@@ -229,8 +233,8 @@ export function TrailMap({
     const live: { remove: () => void }[] = [];
     const buttons = buttonByKey.current;
     buttons.clear();
-    const put = (el: HTMLElement, at: Coord) =>
-      live.push(new ml.Marker({ element: el, anchor: "center" }).setLngLat([at.lng, at.lat]).addTo(map));
+    const put = (el: HTMLElement, at: Coord, anchor: "center" | "bottom" = "center") =>
+      live.push(new ml.Marker({ element: el, anchor }).setLngLat([at.lng, at.lat]).addTo(map));
     const pixel = (id: string, at: Coord) => {
       const p = map.project([at.lng, at.lat]);
       return { id, x: p.x, y: p.y };
@@ -266,7 +270,8 @@ export function TrailMap({
 
     const next = nextStopId(stops);
     const stopById = new Map(stops.map((s) => [s.id, s]));
-    for (const ids of group(stops.map((s) => pixel(s.id, s.position)))) {
+    // Pins that touch always merge (one would hide the other); the accessibility choice only makes them merge earlier.
+    for (const ids of clusterByPixels(stops.map((s) => pixel(s.id, s.position)), stopMergePx(mergeStops))) {
       const members = ids.map((id) => stopById.get(id)!);
       if (members.length === 1) {
         const stop = members[0]!;
@@ -280,7 +285,7 @@ export function TrailMap({
           onSelect: () => setSelected({ kind: "stop", id: stop.id }),
         });
         buttons.set(`stop:${stop.id}`, el);
-        put(el, stop.position);
+        put(el, stop.position, stop.sideTrip ? "center" : "bottom");
       } else {
         const orders = members.flatMap((m) => (m.order === null ? [] : [m.order]));
         const text = orders.length > 0 ? `${Math.min(...orders)}–${Math.max(...orders)}` : String(members.length);
@@ -288,7 +293,8 @@ export function TrailMap({
           text,
           label: t`場所 ${text} がここに集まっています。押すと拡大します`,
           kind: "stops",
-          onSelect: () => zoomTo(members.map((m) => m.position)),
+          // Pins on the same spot cannot be pulled apart by zooming: they are chosen from a list.
+          onSelect: () => (spreadMeters(members.map((m) => m.position)) <= SAME_PLACE_M ? setPick(members) : zoomTo(members.map((m) => m.position))),
         });
         put(el, centerOf(members.map((m) => m.position)));
       }
@@ -460,6 +466,18 @@ export function TrailMap({
             {t`地図を読み込み中…`}
           </p>
         )}
+
+        {pick ? (
+          <MapPickList
+            items={pick.map((s) => ({ id: s.id, order: s.order, name: s.name, nameLang: s.nameLang }))}
+            bottomPx={0}
+            onPick={(id) => {
+              setPick(null);
+              setSelected({ kind: "stop", id });
+            }}
+            onClose={() => setPick(null)}
+          />
+        ) : null}
 
         {draft ? (
           <p className="absolute left-2 top-2 z-10 flex max-w-[calc(100%-5rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">

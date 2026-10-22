@@ -6,7 +6,7 @@ import { useLingui } from "@lingui/react/macro";
 import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import { WarningIcon } from "@/components/icons";
 import { clusterByPixels } from "@/lib/cluster";
-import { areaCollection, estimateGroupBox, framePoints, groupLabelLines, MERGE_PX, revealedRouteId, spreadLabels, stopMergePx, type LabelBox, type MapScreenRoute } from "@/lib/map-screen";
+import { areaCollection, estimateGroupBox, framePoints, groupLabelLines, MERGE_PX, revealedRouteId, SAME_PLACE_M, spreadLabels, spreadMeters, stopMergePx, type LabelBox, type MapScreenPoint, type MapScreenRoute, type MapScreenStop } from "@/lib/map-screen";
 import { defaultLayers, moundStops, offeredLayers, type MapLayer } from "@/lib/map-layers";
 import { groupOf } from "@/lib/places";
 import { PlaceGroupIcon } from "@/components/icons";
@@ -14,6 +14,8 @@ import { useGroupNames } from "./PlacesPanel";
 import { boundsOf, lineFeature, mapStyle, markerKind, nextStopId, pinScale, routeLineLayers, sideLineCollection, sideLineLayers, zoomLimits, type Position } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
 import { createClusterElement, createMarkerElement, createPinElement, createPlaceMarkerElement, createTagElement } from "./MapMarker";
+import { MapPickList } from "./MapPickList";
+import { MapPopup } from "./MapPopup";
 
 // The map of the home screen (WBS 3.2.10). Each course is an outlined rectangle with a pin in the middle that
 // carries its name. Zoom in over a course and its stops appear by themselves; choose a course and the others fold
@@ -92,6 +94,9 @@ export function MapScreenCanvas({
   const [view, setView] = useState(0);
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
+  // A place's photo popup, and the list that opens when pins stand on the same spot.
+  const [popup, setPopup] = useState<MapScreenPoint | null>(null);
+  const [pick, setPick] = useState<MapScreenStop[] | null>(null);
   const [autoId, setAutoId] = useState<string | null>(null);
   // What is switched on along the top: the courses, the sutra mounds, the kinds of places.
   const [layers, setLayers] = useState<ReadonlySet<MapLayer>>(defaultLayers);
@@ -168,6 +173,12 @@ export function MapScreenCanvas({
           map?.easeTo({ bearing: 0, duration: 400 });
         });
         map.on("error", () => {});
+        // Touching the map itself (not a pin) puts away the popup and the list.
+        map.on("click", (e) => {
+          if ((e.originalEvent.target as HTMLElement | null)?.closest(".place-marker, .map-marker, .map-cluster")) return;
+          setPopup(null);
+          setPick(null);
+        });
         // The numbered pins are smaller when zoomed out (the markers read this size from the map's own element).
         const sizePins = () => containerRef.current?.style.setProperty("--pin", String(pinScale(map!.getZoom())));
         map.on("zoom", sizePins);
@@ -404,10 +415,13 @@ export function MapScreenCanvas({
             status: s.status,
             sideTrip: s.sideTrip,
             noStamp: s.noStamp,
-            onSelect: () => onSelectStop(focus.id, s.id),
+            onSelect: () => {
+              setPopup(null);
+              onSelectStop(focus.id, s.id);
+            },
           });
           el.setAttribute("aria-pressed", String(s.id === stopId));
-          put(el, s.position);
+          put(el, s.position, s.sideTrip ? "center" : "bottom");
         } else {
           const orders = members.flatMap((m) => (m.order === null ? [] : [m.order]));
           const text = orders.length > 0 ? `${Math.min(...orders)}–${Math.max(...orders)}` : String(members.length);
@@ -416,7 +430,8 @@ export function MapScreenCanvas({
               text,
               label: t`場所 ${text} がここに集まっています。押すと拡大します`,
               kind: "stops",
-              onSelect: () => zoomTo(members.map((m) => m.position)),
+              // Pins on the same spot cannot be pulled apart by zooming: they are chosen from a list.
+              onSelect: () => (spreadMeters(members.map((m) => m.position)) <= SAME_PLACE_M ? setPick(members) : zoomTo(members.map((m) => m.position))),
             }),
             centerOf(members.map((m) => m.position)),
           );
@@ -462,7 +477,15 @@ export function MapScreenCanvas({
               group,
               label: p.name,
               closed: false,
-              onSelect: () => map.easeTo({ center: [p.position.lng, p.position.lat], zoom: Math.max(map.getZoom(), 16), duration: 400 }),
+              photo: !!p.photo,
+              onSelect: () => {
+                if (p.photo || p.description) {
+                  // A place with a photo or a few words opens a popup (the map moves only to keep the pin in view).
+                  setPick(null);
+                  setPopup(p);
+                  map.easeTo({ center: [p.position.lng, p.position.lat], padding: padding(), duration: 400 });
+                } else map.easeTo({ center: [p.position.lng, p.position.lat], zoom: Math.max(map.getZoom(), 16), duration: 400 });
+              },
             }),
             p.position,
           );
@@ -495,7 +518,14 @@ export function MapScreenCanvas({
 
       {ready ? null : <p className="pointer-events-none absolute inset-0 flex items-center justify-center bg-surface text-lg">{t`地図を読み込み中…`}</p>}
 
-      <div role="group" aria-label={t`地図に出すもの`} style={{ marginLeft: coveredLeftPx }} className="absolute inset-x-3 top-[5rem] z-[4] flex gap-2 md:top-16 overflow-x-auto pb-1">
+      <div
+        role="group"
+        aria-label={t`地図に出すもの`}
+        style={{ marginLeft: coveredLeftPx }}
+        // A row that scrolls sideways under the finger: no scrollbar, the page's edges fade where there is more, and a swipe on it
+        // moves the row, not the map.
+        className="absolute inset-x-0 top-[4.5rem] z-[4] flex touch-pan-x snap-x scroll-px-3 gap-2 overflow-x-auto overscroll-x-contain px-3 pb-1 [scrollbar-width:none] md:top-16 [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,#000_calc(100%-2.5rem),transparent)]"
+      >
         {offeredLayers(routes).map((layer) => {
           const on = layers.has(layer);
           const name = layer === "courses" ? t`コース` : layer === "mounds" ? t`経塚` : layer === "side" ? t`寄り道の線` : groupNames[layer];
@@ -505,7 +535,7 @@ export function MapScreenCanvas({
               type="button"
               aria-pressed={on}
               onClick={() => toggleLayer(layer)}
-              className={`tap-target flex shrink-0 items-center gap-2 rounded-full border border-ink px-4 text-lg font-bold ${on ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"}`}
+              className={`tap-target flex shrink-0 snap-start items-center gap-2 rounded-full border border-ink px-4 text-lg font-bold shadow-md ${on ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"}`}
             >
               {layer === "courses" || layer === "mounds" || layer === "side" ? null : <PlaceGroupIcon group={layer} />}
               {name}
@@ -514,8 +544,21 @@ export function MapScreenCanvas({
         })}
       </div>
 
+      {popup && !pick ? <MapPopup photo={popup.photo ?? null} name={popup.name} nameLang={popup.nameLang} text={popup.description ?? null} sub={popup.hours ?? null} bottomPx={coveredPx} onClose={() => setPopup(null)} /> : null}
+      {pick && focus ? (
+        <MapPickList
+          items={pick.map((s) => ({ id: s.id, order: s.order, name: s.name, nameLang: s.nameLang }))}
+          bottomPx={coveredPx}
+          onPick={(id) => {
+            setPick(null);
+            onSelectStop(focus.id, id);
+          }}
+          onClose={() => setPick(null)}
+        />
+      ) : null}
+
       {draftShown ? (
-        <p style={{ marginLeft: coveredLeftPx }} className="absolute left-3 top-[9.5rem] z-[4] md:top-[8.25rem] flex max-w-[calc(100%-6rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">
+        <p style={{ marginLeft: coveredLeftPx }} className="absolute left-3 top-[8.5rem] z-[4] md:top-[8.25rem] flex max-w-[calc(100%-6rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">
           <span className="text-caution">
             <WarningIcon />
           </span>
@@ -523,7 +566,7 @@ export function MapScreenCanvas({
         </p>
       ) : null}
 
-      <div className="absolute right-3 top-[9.5rem] z-[4] md:top-[8.25rem] flex flex-col gap-2">
+      <div className="absolute right-3 top-[8.5rem] z-[4] md:top-[8.25rem] flex flex-col gap-2">
         {(["＋", "－"] as const).map((sign) => (
           <button
             key={sign}

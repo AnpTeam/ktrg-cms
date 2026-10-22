@@ -120,7 +120,18 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
             .filter((p) => p.routes.includes(r.order))
             .map((p): MapScreenPoint => {
               const placeName = pickText(locale, p.nameJa, p.nameEn);
-              return { id: p.id, category: p.category, name: placeName?.text ?? p.nameJa, nameLang: placeName?.lang ?? "ja", position: { lat: p.position.lat, lng: p.position.lng } };
+              const about = pickText(locale, p.descriptionJa, p.descriptionEn)?.text ?? null;
+              const hours = pickText(locale, p.hoursJa, p.hoursEn)?.text ?? null;
+              return {
+                id: p.id,
+                category: p.category,
+                name: placeName?.text ?? p.nameJa,
+                nameLang: placeName?.lang ?? "ja",
+                position: { lat: p.position.lat, lng: p.position.lng },
+                photo: p.photoUrl ? { src: p.photoUrl, alt: placeName?.text ?? p.nameJa } : null,
+                description: about,
+                hours,
+              };
             }),
         ];
 

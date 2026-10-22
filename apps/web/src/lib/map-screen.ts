@@ -73,6 +73,10 @@ export interface MapScreenPoint {
   name: string;
   nameLang: "ja" | "en";
   position: Position;
+  /** What its popup shows: a photo, a few words and the opening hours, when the place has them. */
+  photo?: MapPhoto | null;
+  description?: string | null;
+  hours?: string | null;
 }
 
 /** One course as the home map needs it. Texts are already in the visitor's language. */
@@ -320,7 +324,24 @@ export function spreadLabels(boxes: readonly LabelBox[], area: { left: number; t
 
 /** The same for a course's stops. The accessibility choice 「まとめる」 merges them earlier; when it is off they still merge once they touch. */
 export function stopMergePx(mergeEarly: boolean): number {
-  return mergeEarly ? 56 : 40;
+  return mergeEarly ? 44 : 26;
+}
+
+/** Pins this close together (in metres) cannot be pulled apart by zooming: they are chosen from a list instead. */
+export const SAME_PLACE_M = 30;
+
+/** The widest distance, in metres, between the first of these points and any other (a straight line). */
+export function spreadMeters(points: readonly Position[]): number {
+  const first = points[0];
+  if (!first) return 0;
+  const rad = (d: number) => (d * Math.PI) / 180;
+  return Math.max(
+    0,
+    ...points.slice(1).map((p) => {
+      const h = Math.sin(rad(p.lat - first.lat) / 2) ** 2 + Math.cos(rad(first.lat)) * Math.cos(rad(p.lat)) * Math.sin(rad(p.lng - first.lng) / 2) ** 2;
+      return 2 * 6_371_000 * Math.asin(Math.min(1, Math.sqrt(h)));
+    }),
+  );
 }
 
 /**
