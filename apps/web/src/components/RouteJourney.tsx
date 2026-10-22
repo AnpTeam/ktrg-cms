@@ -24,11 +24,23 @@ export function WalkStyleChip({ style, className = "" }: { style: WalkStyle; cla
   );
 }
 
-/** One badge and the name of the place it marks: blue for the start, orange for the goal and the turnaround. */
-function Row({ badge, stop, locale, tone = "start" }: { badge: ReactNode; stop: TrailStop; locale: string; tone?: "start" | "goal" }) {
+/** The words of the two-colour badge of a walk that ends where it began: Start over Goal, one line each (in both languages). */
+export const StartGoalWords = () => (
+  <>
+    <span>
+      <Trans>スタート</Trans>
+    </span>
+    <span>
+      <Trans>ゴール</Trans>
+    </span>
+  </>
+);
+
+/** One badge and the name of the place it marks: blue for the start, orange for the goal and the turnaround, both for a start that is also the goal. */
+function Row({ badge, stop, locale, tone = "start" }: { badge: ReactNode; stop: TrailStop; locale: string; tone?: "start" | "goal" | "both" }) {
   return (
     <div className="flex items-center gap-3">
-      <span className={`badge-ruri ${tone === "goal" ? "badge-goal" : ""} min-w-[8.5rem] justify-center`}>{badge}</span>
+      <span className={`badge-ruri ${tone === "goal" ? "badge-goal" : tone === "both" ? "badge-both" : ""} min-w-[8.5rem] justify-center`}>{badge}</span>
       <span className="min-w-0 text-xl font-bold leading-snug">
         <Localized value={stopName(stop, locale)} />
       </span>
@@ -53,7 +65,7 @@ export function RouteJourney({ journey, locale }: { journey: Journey; locale: st
     <div className="flex flex-col gap-3 rounded-2xl bg-surface p-4">
       {style === "loop" ? (
         <>
-          <Row badge={<Trans>スタート・ゴール</Trans>} stop={start} locale={locale} />
+          <Row badge={<StartGoalWords />} stop={start} locale={locale} tone="both" />
           <p className={note}>
             <WalkStyleChip style="loop" className="mr-2" />
             <Trans>出発した場所に戻ってくる道です。</Trans>
@@ -61,7 +73,7 @@ export function RouteJourney({ journey, locale }: { journey: Journey; locale: st
         </>
       ) : style === "out_and_back" ? (
         <>
-          <Row badge={<Trans>スタート・ゴール</Trans>} stop={start} locale={locale} />
+          <Row badge={<StartGoalWords />} stop={start} locale={locale} tone="both" />
           {turnaround ? (
             <>
               <Connector>
