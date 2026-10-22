@@ -204,6 +204,8 @@ export function MapScreenCanvas({
           map.addSource(GUIDE, { type: "geojson", data: EMPTY });
           map.addLayer({ id: `${GUIDE}-line`, type: "line", source: GUIDE, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#1d4ed8", "line-width": 4, "line-dasharray": [1.5, 1.5] } });
           map.on("click", `${AREAS}-fill`, (e) => {
+            // A pin or tag standing on the area is the target, not the area under it.
+            if ((e.originalEvent.target as HTMLElement | null)?.closest(".place-marker, .map-marker, .map-cluster, .map-tag, .map-pin")) return;
             const id = e.features?.[0]?.properties?.id;
             if (typeof id === "string") selectRouteRef.current(id);
           });
