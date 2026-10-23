@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { useCategoryNames } from "@/components/map/PlacesPanel";
@@ -48,18 +48,24 @@ export function NearbyPlacesManager({ routeId, from }: { routeId: string; from: 
   const [category, setCategory] = useState("parking");
   const [query, setQuery] = useState("");
 
-  const load = useCallback(async () => {
-    const [mine, every] = await Promise.all([
-      listRequest<ListPage>("GET", `directory?filter=${encodeURIComponent(`routeId:${routeId}`)}`),
-      listRequest<ListPage>("GET", "directory"),
-    ]);
-    if (mine.ok) setLinked(mine.data.items.map(rowOf));
-    else setError(mine.key);
-    if (every.ok) setAll(every.data.items.map(rowOf));
-  }, [routeId]);
+  // Read again after every change: `version` is what the effect watches.
+  const [version, setVersion] = useState(0);
   useEffect(() => {
-    void load();
-  }, [load]);
+    let live = true;
+    void (async () => {
+      const [mine, every] = await Promise.all([
+        listRequest<ListPage>("GET", `directory?filter=${encodeURIComponent(`routeId:${routeId}`)}`),
+        listRequest<ListPage>("GET", "directory"),
+      ]);
+      if (!live) return;
+      if (mine.ok) setLinked(mine.data.items.map(rowOf));
+      else setError(mine.key);
+      if (every.ok) setAll(every.data.items.map(rowOf));
+    })();
+    return () => {
+      live = false;
+    };
+  }, [routeId, version]);
 
   async function link(row: Row, to: string | null) {
     setBusy(row.id);
@@ -67,7 +73,7 @@ export function NearbyPlacesManager({ routeId, from }: { routeId: string; from: 
     const res = await listRequest<OneItem>("PATCH", `directory/${row.id}`, { updatedAt: row.updatedAt, routeId: to });
     setBusy(null);
     if (!res.ok) return setError(res.key);
-    await load();
+    setVersion((v) => v + 1);
   }
 
   const candidates = (all ?? []).filter((p) => p.routeId !== routeId);

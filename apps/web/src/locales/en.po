@@ -67,7 +67,7 @@ msgstr "Open {0}"
 msgid "{added} に追加"
 msgstr "Added {added}"
 
-#: src/components/admin/DirectoryPicker.tsx:83
+#: src/components/admin/DirectoryPicker.tsx:89
 msgid "{amount}{unit}"
 msgstr "{amount}{unit}"
 
@@ -875,7 +875,7 @@ msgstr "This link cannot be used"
 msgid "このルートがまだありません"
 msgstr "This route does not exist yet"
 
-#: src/components/admin/DirectoryPicker.tsx:138
+#: src/components/admin/DirectoryPicker.tsx:144
 msgid "このルートに追加"
 msgstr "Add to this route"
 
@@ -1281,7 +1281,7 @@ msgid "すでに公開をやめた経由地があります（{names}）。「経
 msgstr "These waypoints were already unpublished: {names}. Check them in the Waypoints tab."
 
 #: src/components/admin/AdminListTable.tsx:92
-#: src/components/admin/DirectoryPicker.tsx:117
+#: src/components/admin/DirectoryPicker.tsx:123
 #: src/components/admin/RouteTable.tsx:77
 #: src/components/PrefectureFilter.tsx:36
 msgid "すべて"
@@ -1500,7 +1500,7 @@ msgstr "You can't add more passkeys. Remove one you don't use and try again."
 msgid "パスキーは、顔や指紋でログインするための鍵です。この端末のものを追加すると、メールを待たずにログインできます。"
 msgstr "A passkey lets you log in with your face or fingerprint. Add one for this device and you can log in without waiting for an email."
 
-#: src/components/admin/DirectoryPicker.tsx:106
+#: src/components/admin/DirectoryPicker.tsx:112
 msgid "はずす"
 msgstr "Unlink"
 
@@ -1638,7 +1638,7 @@ msgstr "Not yet"
 msgid "まだ、この場所から遠いようです。場所の近くで、もう一度お試しください。"
 msgstr "You still seem to be far from this place. Try again when you are near it."
 
-#: src/components/admin/DirectoryPicker.tsx:96
+#: src/components/admin/DirectoryPicker.tsx:102
 msgid "まだ、ひもづけた場所はありません。"
 msgstr "No places are linked yet."
 
@@ -1986,7 +1986,7 @@ msgstr "The physical level and technical level of a route are a guide to how har
 msgid "ルートの一覧"
 msgstr "All routes"
 
-#: src/components/admin/DirectoryPicker.tsx:126
+#: src/components/admin/DirectoryPicker.tsx:132
 msgid "ルートの最初の経由地に近い順です。"
 msgstr "Nearest first from the route's first waypoint."
 
@@ -2148,7 +2148,7 @@ msgstr "Move up"
 msgid "下へ"
 msgstr "Move down"
 
-#: src/components/admin/DirectoryPicker.tsx:103
+#: src/components/admin/DirectoryPicker.tsx:109
 #: src/components/admin/PlacePanel.tsx:83
 #: src/components/admin/RallyEditor.tsx:100
 #: src/components/admin/RallyList.tsx:64
@@ -2733,7 +2733,7 @@ msgstr "Resize column"
 msgid "初期値にする"
 msgstr "Use the default"
 
-#: src/components/admin/DirectoryPicker.tsx:135
+#: src/components/admin/DirectoryPicker.tsx:141
 msgid "別のルートにひもづいています"
 msgstr "Linked to another route"
 
@@ -2969,8 +2969,8 @@ msgstr "Name (Japanese)"
 msgid "名前でさがす"
 msgstr "Search by name"
 
-#: src/components/admin/DirectoryPicker.tsx:124
-#: src/components/admin/DirectoryPicker.tsx:124
+#: src/components/admin/DirectoryPicker.tsx:130
+#: src/components/admin/DirectoryPicker.tsx:130
 msgid "名前で絞る"
 msgstr "Filter by name"
 
@@ -3009,12 +3009,12 @@ msgstr "Round trip"
 msgid "周回（元の場所へ）"
 msgstr "Loop (back to the start)"
 
-#: src/components/admin/DirectoryPicker.tsx:87
+#: src/components/admin/DirectoryPicker.tsx:93
 #: src/components/RouteNearbyPlaces.tsx:23
 msgid "周辺の場所"
 msgstr "Nearby places"
 
-#: src/components/admin/DirectoryPicker.tsx:88
+#: src/components/admin/DirectoryPicker.tsx:94
 msgid "周辺の場所（駐車場・自販機・トイレなど）"
 msgstr "Nearby places (parking, vending machines, toilets ...)"
 
@@ -3184,11 +3184,11 @@ msgstr "Could not reach the place search. Please try again in a moment."
 msgid "場所を順に見る"
 msgstr "Go through the places in order"
 
-#: src/components/admin/DirectoryPicker.tsx:113
+#: src/components/admin/DirectoryPicker.tsx:119
 msgid "場所一覧から追加する"
 msgstr "Add from the places directory"
 
-#: src/components/admin/DirectoryPicker.tsx:89
+#: src/components/admin/DirectoryPicker.tsx:95
 msgid "場所一覧の場所を、このルートにひもづけます。ルートのページに「周辺の場所」として並び、大きな地図にもピンが出ます。変更はすぐに保存されます。"
 msgstr "Links places of the directory to this route. They are listed on the route's page as nearby places and get a pin on the big map. Changes are saved straight away."
 
@@ -4008,7 +4008,7 @@ msgstr "Send the confirmation number"
 msgid "移動の手段"
 msgstr "Way of travelling"
 
-#: src/components/admin/DirectoryPicker.tsx:116
+#: src/components/admin/DirectoryPicker.tsx:122
 #: src/components/admin/map-editor/MapEditor.tsx:1221
 #: src/components/admin/PlacePanel.tsx:98
 #: src/components/admin/PlaceTable.tsx:136
@@ -4144,7 +4144,7 @@ msgstr "Waypoint name"
 msgid "経由地を置く"
 msgstr "Place a waypoint"
 
-#: src/components/admin/DirectoryPicker.tsx:126
+#: src/components/admin/DirectoryPicker.tsx:132
 msgid "経由地を置くと、近い順に並びます。"
 msgstr "Once there is a waypoint, they are listed nearest first."
 
@@ -4420,7 +4420,7 @@ msgstr "Who gave permission"
 msgid "許可確認済み"
 msgstr "Permission confirmed"
 
-#: src/components/admin/DirectoryPicker.tsx:127
+#: src/components/admin/DirectoryPicker.tsx:133
 msgid "該当する場所はありません。"
 msgstr "No matching places."
 
