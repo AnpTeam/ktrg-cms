@@ -7,16 +7,13 @@ import { useReauth } from "@/components/auth/ReauthDialog";
 import { KeyIcon } from "@/components/icons";
 import { addPasskey, listPasskeys, passkeysSupported, removePasskey, type PasskeyItem } from "@/lib/auth-client";
 import type { AuthFailure } from "@/lib/auth-flow";
-import { formatDay } from "@/lib/format";
+import { formatDay, japanDay } from "@/lib/format";
 
 // A passkey is an account's face or fingerprint login on one phone. This screen lists them, adds this phone's,
 // and removes one after a confirmation. The API refuses to remove the last way to log in and emails the owner.
 
 const dangerButton =
   "tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-danger px-6 text-xl font-bold text-on-brand disabled:opacity-60";
-
-/** The day in Japan time as YYYY-MM-DD, for `formatDay`. */
-const japanDay = (iso: string) => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tokyo" }).format(new Date(iso));
 
 export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail: boolean }) {
   const { t } = useLingui();

@@ -43,7 +43,9 @@ import { MunicipalityField } from "./MunicipalityField";
 import { PhotoLinkDetails } from "./PhotoLinkDetails";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoUpload } from "./PhotoUpload";
+import { SubtitleUpload } from "./SubtitleUpload";
 import { VideoUpload } from "./VideoUpload";
+import { parseVideoFile } from "@/lib/video";
 import { PlacePanel } from "./PlacePanel";
 import { PlaceTable } from "./PlaceTable";
 import { useChecklistLabels } from "./useChecklistLabels";
@@ -473,18 +475,18 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
               <>
                 <Section title={t`基本`}>
                   <MultilingualField id="route-name" field="name" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`ルートの名前`} ja={draft.nameJa} en={draft.nameEn} onJa={text("nameJa")} onEn={text("nameEn")} required invalid={problemOf("route_name")} />
-                  <Field label={t`ルートの名前の読み（ふりがな）`} htmlFor="ruby-0" hint={t`読みを入れた漢字の上に、小さく表示されます。ひらがなで入れます。空にすると、表示しません。`}>
+                  <Field label={t`ルートの名前の読み（ふりがな）`} htmlFor="ruby-0" hint={t`読みを入れた漢字の上に、小さく表示されます（ひらがな）。`}>
                     <RubyEditor name={draft.nameJa} value={draft.nameKana} onChange={text("nameKana")} />
                   </Field>
                   {problemOf("route_name") ? <p role="alert" className="text-base font-bold text-danger">{t`日本語の名前を入れてください。`}</p> : null}
-                  <div className="flex flex-wrap gap-4">
+                  <div className="grid gap-4 sm:grid-cols-3">
                     <Field label={t`都道府県`} htmlFor="route-pref">
                       <select id="route-pref" value={draft.prefecture ?? ""} onChange={(e) => {
                           const next = (e.target.value || null) as Prefecture | null;
                           // A city of the old prefecture does not belong to the new one: start the city again.
                           if (isListedMunicipality(draft.prefecture, draft.municipality) && !isListedMunicipality(next, draft.municipality)) text("municipality")("");
                           dispatch({ type: "prefecture", value: next });
-                        }} className={`${inputClass} min-w-48`}>
+                        }} className={inputClass}>
                         <option value="">{t`未選択`}</option>
                         {(["wakayama", "osaka", "nara"] as const).map((p) => (
                           <option key={p} value={p}>
@@ -494,26 +496,26 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                       </select>
                     </Field>
                     <MunicipalityField id="route-muni" prefecture={draft.prefecture} value={draft.municipality} onChange={text("municipality")} />
-                    <Field label={t`歩き方`} htmlFor="route-walk-style" hint={t`ルートのページの「スタート・ゴール」の見せ方が変わります。未選択なら、周回や往復とは書きません。`}>
-                      <select id="route-walk-style" value={draft.walkStyle ?? ""} onChange={(e) => dispatch({ type: "walkStyle", value: walkStyleOf(e.target.value) })} className={`${inputClass} min-w-48`}>
+                    <Field label={t`歩き方`} htmlFor="route-walk-style" hint={t`「スタート・ゴール」の見せ方が変わります。`}>
+                      <select id="route-walk-style" value={draft.walkStyle ?? ""} onChange={(e) => dispatch({ type: "walkStyle", value: walkStyleOf(e.target.value) })} className={inputClass}>
                         <option value="">{t`未選択`}</option>
-                        <option value="one_way">{t`片道（スタートとゴールが別の場所）`}</option>
-                        <option value="loop">{t`周回（出発した場所に戻る）`}</option>
-                        <option value="out_and_back">{t`往復（同じ道を行って戻る）`}</option>
+                        <option value="one_way">{t`片道（別の場所へ）`}</option>
+                        <option value="loop">{t`周回（元の場所へ）`}</option>
+                        <option value="out_and_back">{t`往復（同じ道）`}</option>
                       </select>
                     </Field>
                   </div>
                 </Section>
 
                 <Section title={t`数字`}>
-                  <div className="flex flex-wrap gap-6">
-                    <Field label={t`距離`} htmlFor="route-distance" hint={draft.distanceManual ? t`手で入れた数字です。空にすると、線から計算します。` : t`線の長さから、自動で計算しています。`}>
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <Field label={t`距離`} htmlFor="route-distance" hint={draft.distanceManual ? t`手入力（空にすると、線から自動）` : t`線から自動で計算`}>
                       <NumberInput id="route-distance" value={draft.distanceKm} min={0} max={2000} suffix="km" onChange={(v) => dispatch({ type: "distance", value: v })} />
                     </Field>
-                    <Field label={t`登り（獲得標高）`} htmlFor="route-climb" hint={draft.climbManual ? t`手で入れた数字です。空にすると、標高から計算します。` : t`線の標高から、自動で計算します。`}>
+                    <Field label={t`登り（獲得標高）`} htmlFor="route-climb" hint={draft.climbManual ? t`手入力（空にすると、標高から自動）` : t`線の標高から自動で計算`}>
                       <NumberInput id="route-climb" value={draft.elevationGainM} min={0} max={10000} integer suffix="m" onChange={(v) => dispatch({ type: "climb", value: v })} />
                     </Field>
-                    <Field label={t`歩く時間`} htmlFor="route-time" hint={draft.timeManual ? t`手で入れた数字です。空にすると、距離と登りから計算します。` : t`距離と登りから、目安を自動で計算しています。`}>
+                    <Field label={t`歩く時間`} htmlFor="route-time" hint={draft.timeManual ? t`手入力（空にすると、距離と登りから自動）` : t`距離と登りから自動で計算`}>
                       <NumberInput id="route-time" value={draft.expectedTimeMin} min={0} max={20000} integer suffix={t`分`} onChange={(v) => dispatch({ type: "time", value: v })} />
                     </Field>
                   </div>
@@ -523,9 +525,14 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     onPhysical={(value) => dispatch({ type: "physicalLevel", value })}
                     onTechnical={(value) => dispatch({ type: "technicalLevel", value })}
                   />
-                  <Field label={t`むずかしさ（ひとこと）`} htmlFor="route-difficulty" hint={t`入れた文字が、そのまま表示されます。体力度・技術度を選んだときは、そちらを先に表示します。`}>
-                    <TextInput id="route-difficulty" value={draft.difficulty} onChange={text("difficulty")} maxLength={100} />
-                  </Field>
+                  <details className="rounded-xl border border-line bg-paper px-4 py-2" open={draft.difficulty !== ""}>
+                    <summary className="cursor-pointer text-base font-bold">{t`むずかしさを、ひとことで書く（任意）`}</summary>
+                    <div className="mt-2">
+                      <Field label={t`むずかしさ（ひとこと）`} htmlFor="route-difficulty" hint={t`入れた文字が、そのまま表示されます。体力度・技術度を選んだときは、そちらを先に表示します。`}>
+                        <TextInput id="route-difficulty" value={draft.difficulty} onChange={text("difficulty")} maxLength={100} />
+                      </Field>
+                    </div>
+                  </details>
                 </Section>
 
                 <Section title={t`写真と動画`}>
@@ -544,6 +551,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     <TextInput id="route-video" value={draft.videoUrl} onChange={text("videoUrl")} maxLength={500} invalid={problemOf("video_link")} />
                   </Field>
                   <VideoUpload onUploaded={text("videoUrl")} />
+                  {parseVideoFile(draft.videoUrl) ? <SubtitleUpload videoUrl={draft.videoUrl} /> : null}
                   {problemOf("video_link") ? <p role="alert" className="text-base font-bold text-danger">{t`YouTube か Vimeo、またはアップロードした動画の、https:// で始まるリンクにしてください。`}</p> : null}
                 </Section>
               </>

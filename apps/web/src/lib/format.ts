@@ -22,6 +22,9 @@ export function formatUpdated(locale: string, iso: string): string {
   return locale === "ja" ? `${month}月${get("day")}日${NBSP}${time}` : `${monthsEn[month - 1]} ${get("day")},${NBSP}${time}`;
 }
 
+/** The day in Japan time as YYYY-MM-DD, for `formatDay`. */
+export const japanDay = (iso: string) => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tokyo" }).format(new Date(iso));
+
 /**
  * A calendar day (YYYY-MM-DD) as people say it: "2026年10月16日" or "Oct 16, 2026". It is a plain date with
  * no time zone, so it is built from its parts and never shifted.

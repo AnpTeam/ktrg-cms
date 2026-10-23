@@ -50,7 +50,7 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       const row: RouteRow = {
         id: uuid(), nameEn: null, descriptionJa: null, descriptionEn: null, distanceKm: null,
         elevationGainM: null, difficulty: null, nameKana: null, accessPoints: [], physicalLevel: null, technicalLevel: null, expectedTimeMin: null, prefecture: null, walkStyle: null, municipality: null, geometry: null, lineVerified: false, lineSource: null,
-        videoUrl: null, historyJa: null, historyEn: null, accessJa: null, accessEn: null, sourceJa: null, sourceEn: null, photoUrl: null, photoCredit: null, sortOrder: routes.size + 1, createdAt: at, updatedAt: at, ...fields,
+        videoUrl: null, videoUpdatedAt: null, historyJa: null, historyEn: null, accessJa: null, accessEn: null, sourceJa: null, sourceEn: null, photoUrl: null, photoCredit: null, sortOrder: routes.size + 1, createdAt: at, updatedAt: at, ...fields,
         translations: mergeTranslations({}, fields.translations),
       };
       routes.set(row.id, row);

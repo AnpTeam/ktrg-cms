@@ -116,6 +116,8 @@ export const routes = pgTable(
     lineSource: text("line_source"),
     // YouTube / Vimeo only; the host is checked in the API.
     videoUrl: text("video_url"),
+    // When the video was last put there or replaced (shown under it as "last updated").
+    videoUpdatedAt: timestamp("video_updated_at", { withTimezone: true }),
     // A picture of the route: an https address (an upload comes when a storage provider is chosen).
     photoUrl: text("photo_url"),
     // Who took the picture / where it comes from. Shown on it; may hold links (see the web app's rich-text format).

@@ -37,6 +37,8 @@ export interface RouteRow {
   lineVerified: boolean;
   lineSource: string | null;
   videoUrl: string | null;
+  /** When the video was last put there or replaced; null for none (or from before this was kept). */
+  videoUpdatedAt: Date | null;
   historyJa: string | null;
   historyEn: string | null;
   accessJa: string | null;
@@ -167,7 +169,7 @@ export interface SpotFields {
 }
 
 /** What the store keeps: the route line is already checked and simplified. */
-export type StoredRouteFields = Omit<RouteFields, "geometry"> & { geometry: LineString | null };
+export type StoredRouteFields = Omit<RouteFields, "geometry"> & { geometry: LineString | null; videoUpdatedAt?: Date | null };
 
 export type Result<T> = { ok: true; value: T } | { ok: false; reason: ErrorCode };
 

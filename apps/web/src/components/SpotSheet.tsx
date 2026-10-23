@@ -4,6 +4,7 @@ import { pickText, type SpotDetail } from "@/lib/content";
 import { HeroPhoto } from "./map/HeroPhoto";
 import { Localized } from "./Localized";
 import { NearbyPlaces, type Nearby } from "./NearbyPlaces";
+import { LastUpdated } from "@/components/LastUpdated";
 import { Notice } from "./Notice";
 import { RichText } from "./RichText";
 import { SpotGallery } from "./SpotGallery";
@@ -165,6 +166,7 @@ export function SpotSheet({
       <Notice>
         <Trans>出かける前に、公式の最新情報を確認してください。</Trans>
       </Notice>
+      <LastUpdated iso={spot.updatedAt} locale={locale} className="px-4" />
 
       {!stampable ? null : spot.stamped === null ? (
         <div className="sticky bottom-24 z-10 flex flex-col gap-2 px-4 md:bottom-6">

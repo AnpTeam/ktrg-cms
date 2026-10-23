@@ -50,6 +50,7 @@ export interface PublicSpot {
   statusNoteEn: string | null;
   statusUpdatedAt: Date | null;
   sortOrder: number;
+  updatedAt: Date;
 }
 
 export interface PublicRoute {
@@ -70,6 +71,8 @@ export interface PublicRoute {
   walkStyle: WalkStyle | null;
   municipality: string | null;
   videoUrl: string | null;
+  videoUpdatedAt: Date | null;
+  updatedAt: Date;
   historyJa: string | null;
   historyEn: string | null;
   accessJa: string | null;
@@ -129,6 +132,8 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     walkStyle: r.walkStyle,
     municipality: r.municipality,
     videoUrl: r.videoUrl,
+    videoUpdatedAt: r.videoUpdatedAt,
+    updatedAt: r.updatedAt,
     historyJa: r.historyJa,
     historyEn: r.historyEn,
     accessJa: r.accessJa,
@@ -174,6 +179,7 @@ function toPublicSpot(s: SpotRow): PublicSpot {
     statusNoteEn: s.statusNoteEn,
     statusUpdatedAt: s.statusUpdatedAt,
     sortOrder: s.sortOrder,
+    updatedAt: s.updatedAt,
   };
 }
 
@@ -309,7 +315,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
     async createRoute(actor: string, input: Partial<RouteFields> & { nameJa: string }): Promise<Result<RouteRow>> {
       const p = prepareRoute(input);
       if (!p.ok) return p;
-      return ok(await store.createRoute(actor, { ...p.value, nameJa: p.value.nameJa! }));
+      return ok(await store.createRoute(actor, { ...p.value, nameJa: p.value.nameJa!, ...(p.value.videoUrl ? { videoUpdatedAt: new Date() } : {}) }));
     },
 
     async updateRoute(actor: string, id: string, expected: Date | string, input: Partial<RouteFields>): Promise<Result<RouteRow>> {
@@ -324,6 +330,8 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
         if (!(changes.lineSource !== undefined ? changes.lineSource : current.route.lineSource)) return bad("source_required");
         if ((changes.geometry !== undefined ? changes.geometry : current.route.geometry) === null) return bad("invalid_line");
       }
+      // The video counts as updated when its address changes (put there, replaced, or removed).
+      if (changes.videoUrl !== undefined && changes.videoUrl !== current.route.videoUrl) changes.videoUpdatedAt = changes.videoUrl ? new Date() : null;
       const r = await store.updateRoute(actor, id, date(expected), changes);
       if (r === null) return bad("not_found");
       if (r === "conflict") return bad("conflict");

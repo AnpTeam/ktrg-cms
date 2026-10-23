@@ -133,6 +133,10 @@ export interface RouteDetail extends RouteSummary {
   sideLines?: { spotId: string; line: { lat: number; lng: number }[] }[];
   /** The guidance video's address (the CMS `video_url`); only YouTube and Vimeo links are shown (`parseVideoUrl`). */
   videoUrl: string | null;
+  /** When the video was last put there or replaced (ISO); null when not known. */
+  videoUpdatedAt?: string | null;
+  /** When the route was last saved (ISO). */
+  updatedAt?: string | null;
   /** How the route is walked, as an admin saved it; null/left out when nobody has said. */
   walkStyle?: WalkStyle | null;
 }
@@ -159,6 +163,8 @@ export interface SpotDetail extends SpotListItem {
   statusNoteEn: string | null;
   /** ISO timestamp of the last status change. */
   statusUpdatedAt: string | null;
+  /** When the place was last saved (ISO). */
+  updatedAt?: string | null;
   /** A photo of the place, shown at the top of its card; null when none. */
   photoUrl: string | null;
   /** More photos, in order. */
