@@ -506,14 +506,14 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                 </Section>
 
                 <Section title={t`数字`}>
-                  <div className="flex flex-wrap gap-6">
-                    <Field label={t`距離`} htmlFor="route-distance" hint={draft.distanceManual ? t`手で入れた数字です。空にすると、線から計算します。` : t`線の長さから、自動で計算しています。`}>
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <Field label={t`距離`} htmlFor="route-distance" hint={draft.distanceManual ? t`手入力（空にすると、線から自動）` : t`線から自動で計算`}>
                       <NumberInput id="route-distance" value={draft.distanceKm} min={0} max={2000} suffix="km" onChange={(v) => dispatch({ type: "distance", value: v })} />
                     </Field>
-                    <Field label={t`登り（獲得標高）`} htmlFor="route-climb" hint={draft.climbManual ? t`手で入れた数字です。空にすると、標高から計算します。` : t`線の標高から、自動で計算します。`}>
+                    <Field label={t`登り（獲得標高）`} htmlFor="route-climb" hint={draft.climbManual ? t`手入力（空にすると、標高から自動）` : t`線の標高から自動で計算`}>
                       <NumberInput id="route-climb" value={draft.elevationGainM} min={0} max={10000} integer suffix="m" onChange={(v) => dispatch({ type: "climb", value: v })} />
                     </Field>
-                    <Field label={t`歩く時間`} htmlFor="route-time" hint={draft.timeManual ? t`手で入れた数字です。空にすると、距離と登りから計算します。` : t`距離と登りから、目安を自動で計算しています。`}>
+                    <Field label={t`歩く時間`} htmlFor="route-time" hint={draft.timeManual ? t`手入力（空にすると、距離と登りから自動）` : t`距離と登りから自動で計算`}>
                       <NumberInput id="route-time" value={draft.expectedTimeMin} min={0} max={20000} integer suffix={t`分`} onChange={(v) => dispatch({ type: "time", value: v })} />
                     </Field>
                   </div>
@@ -523,9 +523,14 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     onPhysical={(value) => dispatch({ type: "physicalLevel", value })}
                     onTechnical={(value) => dispatch({ type: "technicalLevel", value })}
                   />
-                  <Field label={t`むずかしさ（ひとこと）`} htmlFor="route-difficulty" hint={t`入れた文字が、そのまま表示されます。体力度・技術度を選んだときは、そちらを先に表示します。`}>
-                    <TextInput id="route-difficulty" value={draft.difficulty} onChange={text("difficulty")} maxLength={100} />
-                  </Field>
+                  <details className="rounded-xl border border-line bg-paper px-4 py-2" open={draft.difficulty !== ""}>
+                    <summary className="cursor-pointer text-base font-bold">{t`むずかしさを、ひとことで書く（任意）`}</summary>
+                    <div className="mt-2">
+                      <Field label={t`むずかしさ（ひとこと）`} htmlFor="route-difficulty" hint={t`入れた文字が、そのまま表示されます。体力度・技術度を選んだときは、そちらを先に表示します。`}>
+                        <TextInput id="route-difficulty" value={draft.difficulty} onChange={text("difficulty")} maxLength={100} />
+                      </Field>
+                    </div>
+                  </details>
                 </Section>
 
                 <Section title={t`写真と動画`}>
