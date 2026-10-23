@@ -1,5 +1,6 @@
 import { useLingui } from "@lingui/react/macro";
 import type { RouteSummary } from "@/lib/content";
+import type { WalkStyle } from "@/lib/walk-style";
 
 type Stats = Pick<RouteSummary, "distanceKm" | "elevationGainM" | "expectedTimeMin" | "difficulty" | "physicalLevel" | "technicalLevel">;
 
@@ -8,13 +9,15 @@ type Stats = Pick<RouteSummary, "distanceKm" | "elevationGainM" | "expectedTimeM
  * left out (skeleton routes start empty). `compact` is for the trail list: label and value
  * on one line; the default stacks a small label over a big value (route page).
  */
-export function RouteStats({ route, compact = false }: { route: Stats; compact?: boolean }) {
+export function RouteStats({ route, compact = false, walkStyle = null }: { route: Stats; compact?: boolean; walkStyle?: WalkStyle | null }) {
   const { t, i18n } = useLingui();
   const numbers = new Intl.NumberFormat(i18n.locale === "ja" ? "ja-JP" : "en-US", {
     maximumFractionDigits: 1,
   });
 
   const items: { label: string; value: string }[] = [];
+  // How the walk goes (片道, 周回 or 往復), where the page chooses to say it: it reads as one more number of the route.
+  if (walkStyle) items.push({ label: t`歩き方`, value: walkStyle === "loop" ? t`周回` : walkStyle === "out_and_back" ? t`往復` : t`片道` });
   if (route.distanceKm !== null) {
     const km = numbers.format(route.distanceKm);
     items.push({ label: t`距離`, value: t`${km}km` });

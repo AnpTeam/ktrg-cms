@@ -11,6 +11,7 @@ import { listRequest, type ListAnswer, type OneItem } from "@/lib/admin/lists/li
 import { translationsChange, type Translations } from "@/lib/admin/content-locales";
 import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
 import { PhotoSlot } from "./PhotoSlot";
+import { PhotoLinkDetails } from "./PhotoLinkDetails";
 import { PhotoUpload } from "./PhotoUpload";
 
 type Notice = { kind: "saved" | "error"; text: string } | null;
@@ -143,9 +144,11 @@ export function AdminItemForm({ meta: config, initial, locale, routes }: { meta:
       case "image":
         return (
           <Field key={f.name} label={label} hint={hint} htmlFor={id} required={f.required}>
-            <TextInput id={id} value={text(f.name)} onChange={set(f.name)} maxLength={500} placeholder="https://" invalid={missing.includes(f.name)} />
+            <PhotoUpload onUploaded={set(f.name)} disabled={busy} />
             <div className="mt-2">
-              <PhotoUpload onUploaded={set(f.name)} disabled={busy} />
+              <PhotoLinkDetails open={missing.includes(f.name)}>
+                <TextInput id={id} value={text(f.name)} onChange={set(f.name)} maxLength={500} placeholder="https://" invalid={missing.includes(f.name)} />
+              </PhotoLinkDetails>
             </div>
             <PhotoSlot url={text(f.name)} className="mt-2 max-w-md" />
           </Field>

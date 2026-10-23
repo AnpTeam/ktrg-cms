@@ -33,6 +33,7 @@ export interface RouteBody {
   elevationGainM: number | null;
   expectedTimeMin: number | null;
   difficulty: string | null;
+  nameKana: string | null;
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   videoUrl: string | null;
@@ -108,6 +109,7 @@ export function routeBody(d: RouteDraft): RouteBody {
     elevationGainM: d.elevationGainM,
     expectedTimeMin: d.expectedTimeMin,
     difficulty: nullIfEmpty(d.difficulty),
+    nameKana: nullIfEmpty(d.nameKana),
     physicalLevel: d.physicalLevel,
     technicalLevel: d.technicalLevel,
     videoUrl: nullIfEmpty(d.videoUrl),

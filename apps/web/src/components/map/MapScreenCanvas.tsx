@@ -404,7 +404,7 @@ export function MapScreenCanvas({
     if (focus?.stops) {
       const next = nextStopId(focus.stops);
       const stopById = new Map(focus.stops.map((s) => [s.id, s]));
-      // Stops that touch always merge; the accessibility choice only makes them merge earlier.
+      // Stops merge into numbered groups only when the visitor chose it; otherwise each keeps its own pin (see stopMergePx).
       const stopGroups = clusterByPixels(focus.stops.map((s) => pixel(s.id, s.position)), stopMergePx(mergeStops));
       for (const ids of stopGroups) {
         const members = ids.map((id) => stopById.get(id)!);

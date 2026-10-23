@@ -36,6 +36,7 @@ import { walkStyleOf } from "@/lib/walk-style";
 import { PublishedEditDialog, skipsPublishedWarning } from "./PublishedEditDialog";
 import { GradingFields } from "./GradingFields";
 import { MunicipalityField } from "./MunicipalityField";
+import { PhotoLinkDetails } from "./PhotoLinkDetails";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoUpload } from "./PhotoUpload";
 import { VideoUpload } from "./VideoUpload";
@@ -419,7 +420,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
       <div className="flex gap-2 lg:hidden" role="tablist" aria-label={t`表示の切り替え`}>
         {(["edit", "preview"] as const).map((id) => (
           <button key={id} type="button" role="tab" aria-selected={view === id} onClick={() => setView(id)} className={`tap-target flex-1 rounded-xl border-2 text-lg font-bold ${view === id ? "border-ink bg-ink text-paper" : "border-line"}`}>
-            {id === "edit" ? t`入力` : t`見え方`}
+            {id === "edit" ? t`入力` : t`プレビュー`}
           </button>
         ))}
       </div>
@@ -450,6 +451,9 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
               <>
                 <Section title={t`基本`}>
                   <MultilingualField id="route-name" field="name" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`ルートの名前`} ja={draft.nameJa} en={draft.nameEn} onJa={text("nameJa")} onEn={text("nameEn")} required invalid={problemOf("route_name")} />
+                  <Field label={t`ルートの名前の読み（ふりがな）`} htmlFor="route-kana" hint={t`日本語の名前の上に、小さく表示されます。ひらがなで入れます。空にすると、表示しません。`}>
+                    <TextInput id="route-kana" value={draft.nameKana} onChange={text("nameKana")} maxLength={200} />
+                  </Field>
                   {problemOf("route_name") ? <p role="alert" className="text-base font-bold text-danger">{t`日本語の名前を入れてください。`}</p> : null}
                   <div className="flex flex-wrap gap-4">
                     <Field label={t`都道府県`} htmlFor="route-pref">
@@ -503,10 +507,12 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                 </Section>
 
                 <Section title={t`写真と動画`}>
-                  <Field label={t`ルートの写真のリンク`} htmlFor="route-photo" hint={t`https:// で始まるリンクを入れます。空にすると、写真は表示されません。`}>
-                    <TextInput id="route-photo" value={draft.photoUrl} onChange={text("photoUrl")} maxLength={500} invalid={problemOf("photo_link")} />
-                  </Field>
                   <PhotoUpload onUploaded={text("photoUrl")} />
+                  <PhotoLinkDetails open={problemOf("photo_link")}>
+                    <Field label={t`ルートの写真のリンク`} htmlFor="route-photo" hint={t`https:// で始まるリンクを入れます。空にすると、写真は表示されません。`}>
+                      <TextInput id="route-photo" value={draft.photoUrl} onChange={text("photoUrl")} maxLength={500} invalid={problemOf("photo_link")} />
+                    </Field>
+                  </PhotoLinkDetails>
                   <Field label={t`写真の出どころ`} htmlFor="route-photo-credit" hint={t`写真の上や下に ℹ︎ と一緒に表示されます。撮った人や、写真を載せているサイトを書きます。リンクは [表示する文字](https://…) と書きます。`}>
                     <TextInput id="route-photo-credit" value={draft.photoCredit} onChange={text("photoCredit")} maxLength={500} />
                   </Field>

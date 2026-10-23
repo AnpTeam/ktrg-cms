@@ -24,6 +24,7 @@ export interface RouteRow {
   distanceKm: number | null;
   elevationGainM: number | null;
   difficulty: string | null;
+  nameKana: string | null;
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
@@ -109,6 +110,7 @@ export interface RouteFields {
   distanceKm: number | null;
   elevationGainM: number | null;
   difficulty: string | null;
+  nameKana: string | null;
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;

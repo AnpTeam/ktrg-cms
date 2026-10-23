@@ -130,11 +130,11 @@ describe("an admin edits a route and its places", () => {
   test("the grading levels are saved and can be cleared", async () => {
     const { call, cookie, route } = await created();
     const patch = (body: unknown, updatedAt: string) => call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt, ...(body as object) } });
-    const first = await patch({ physicalLevel: 3, technicalLevel: "B" }, route.updatedAt);
+    const first = await patch({ physicalLevel: 3, technicalLevel: "B", nameKana: " ともがしま " }, route.updatedAt);
     expect(first.status).toBe(200);
     const got = async () => ((await (await call("GET", `/admin/routes/${route.id}`, { cookie })).json()) as Json).route as Json;
     const saved = await got();
-    expect(saved).toMatchObject({ physicalLevel: 3, technicalLevel: "B" });
+    expect(saved).toMatchObject({ physicalLevel: 3, technicalLevel: "B", nameKana: "ともがしま" });
     expect((await patch({ physicalLevel: null, technicalLevel: null }, saved.updatedAt as string)).status).toBe(200);
     expect(await got()).toMatchObject({ physicalLevel: null, technicalLevel: null });
   });

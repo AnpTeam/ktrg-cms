@@ -330,9 +330,12 @@ export function spreadLabels(boxes: readonly LabelBox[], area: { left: number; t
   return out;
 }
 
-/** The same for a course's stops. The accessibility choice 「まとめる」 merges them earlier; when it is off they still merge once they touch. */
+/**
+ * The same for a course's stops. Stops merge only when the visitor chose 「近い場所をまとめて表示する」; otherwise every stop
+ * keeps its own pin, and only pins that sit exactly on top of each other (a few px) share one, since they cannot be told apart.
+ */
 export function stopMergePx(mergeEarly: boolean): number {
-  return mergeEarly ? 44 : 26;
+  return mergeEarly ? 44 : 3;
 }
 
 /** Pins this close together (in metres) cannot be pulled apart by zooming: they are chosen from a list instead. */

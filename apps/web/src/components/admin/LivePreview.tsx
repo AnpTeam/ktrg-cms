@@ -18,7 +18,7 @@ export function LivePreview({ draft, order, locale }: { draft: RouteDraft; order
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-base font-bold">{t`見え方`}</p>
+      <p className="text-base font-bold">{t`プレビュー`}</p>
       <div className="mx-auto w-full max-w-[26rem] overflow-hidden rounded-[2rem] border-4 border-ink bg-paper shadow-sm">
         <div className="flex max-h-[44rem] flex-col gap-6 overflow-y-auto overflow-x-hidden py-6" data-testid="live-preview">
           <RouteView

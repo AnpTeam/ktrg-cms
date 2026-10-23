@@ -79,6 +79,8 @@ export const routes = pgTable(
     elevationGainM: integer("elevation_gain_m"),
     difficulty: text("difficulty"),
     // The mountain-grading levels: physical 1 to 10 and technical "A" to "E" (validated in the API).
+    // How the Japanese name is read, shown over it as furigana (ruby).
+    nameKana: text("name_kana"),
     physicalLevel: integer("physical_level"),
     technicalLevel: text("technical_level"),
     expectedTimeMin: integer("expected_time_min"),

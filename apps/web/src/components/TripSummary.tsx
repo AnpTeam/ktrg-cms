@@ -4,7 +4,8 @@ import type { RouteDetail } from "@/lib/content";
 import type { Journey, TrailStop } from "@/lib/route-stops";
 import { Localized } from "./Localized";
 import { RouteStats } from "./RouteStats";
-import { StartGoalWords, stopName, WalkStyleChip } from "./RouteJourney";
+import { StampIcon } from "./icons";
+import { StartGoalWords, stopName } from "./RouteJourney";
 
 function Line({ badge, stop, locale, goal = false, both = false }: { badge: ReactNode; stop: TrailStop; locale: string; goal?: boolean; both?: boolean }) {
   return (
@@ -35,18 +36,14 @@ export function TripSummary({ route, journey, locale }: { route: RouteDetail; jo
           <Line badge={startOnly ? <StartGoalWords /> : <Trans>スタート</Trans>} stop={journey.start} locale={locale} both={startOnly} />
           {!startOnly && journey.goal ? <Line badge={<Trans>ゴール</Trans>} stop={journey.goal} locale={locale} goal /> : null}
           {style === "out_and_back" && journey.turnaround ? <Line badge={<Trans>折り返し</Trans>} stop={journey.turnaround} locale={locale} goal /> : null}
-          {style ? (
-            <p>
-              <WalkStyleChip style={style} className="text-base" />
-            </p>
-          ) : null}
         </div>
       ) : null}
       <div className="mt-3">
-        <RouteStats route={route} compact />
+        <RouteStats route={route} compact walkStyle={style} />
       </div>
       {spotCount > 0 ? (
-        <p className="mt-3 text-lg font-bold tabular-nums">
+        <p className="mt-3 flex items-center gap-2 text-lg font-bold tabular-nums">
+          <StampIcon />
           {stampedCount !== null ? (
             <Trans>
               スタンプ {stampedCount} / {spotCount}

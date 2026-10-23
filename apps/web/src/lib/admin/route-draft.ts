@@ -84,6 +84,8 @@ export interface RouteDraft {
   /** True once someone typed a walking time: it no longer follows the distance and climb. */
   timeManual: boolean;
   difficulty: string;
+  /** How the Japanese name is read (furigana shown over it); "" when not set. */
+  nameKana: string;
   /** The mountain-grading levels (see lib/grading.ts); null until chosen. */
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
@@ -101,7 +103,7 @@ export const emptyDraft = (): RouteDraft => ({
   id: null, updatedAt: null, nameJa: "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
   accessJa: "", accessEn: "", translations: {}, photoUrl: "", photoCredit: "", sourceJa: "", sourceEn: "", prefecture: null, walkStyle: null, municipality: "",
   distanceKm: null, distanceManual: false, elevationGainM: null, climbManual: false, expectedTimeMin: null, timeManual: false,
-  difficulty: "", physicalLevel: null, technicalLevel: null, videoUrl: "", line: [], legs: [], lineVerified: false, lineSource: "", places: [],
+  difficulty: "", nameKana: "", physicalLevel: null, technicalLevel: null, videoUrl: "", line: [], legs: [], lineVerified: false, lineSource: "", places: [],
 });
 
 const s = (v: string | null | undefined) => v ?? "";
@@ -154,7 +156,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
     expectedTimeMin: route.expectedTimeMin,
     // A saved time that is not what the distance and climb give was typed by hand.
     timeManual: route.expectedTimeMin !== null && route.expectedTimeMin !== estimateWalkMinutes(route.distanceKm, route.elevationGainM),
-    difficulty: s(route.difficulty), physicalLevel: route.physicalLevel, technicalLevel: route.technicalLevel, videoUrl: s(route.videoUrl),
+    difficulty: s(route.difficulty), nameKana: s(route.nameKana), physicalLevel: route.physicalLevel, technicalLevel: route.technicalLevel, videoUrl: s(route.videoUrl),
     line: legs.length > 0 ? joinLegs(pathStops(places), legs).line : line, legs, lineVerified: route.lineVerified, lineSource: s(route.lineSource),
     places,
   };
@@ -197,6 +199,7 @@ export type TextField =
   | "sourceEn"
   | "municipality"
   | "difficulty"
+  | "nameKana"
   | "videoUrl"
   | "lineSource";
 
@@ -486,6 +489,7 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
     distanceKm: d.distanceKm,
     elevationGainM: d.elevationGainM,
     difficulty: nz(d.difficulty),
+    nameKana: nz(d.nameKana),
     physicalLevel: d.physicalLevel,
     technicalLevel: d.technicalLevel,
     expectedTimeMin: d.expectedTimeMin,

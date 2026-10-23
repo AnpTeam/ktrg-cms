@@ -6,7 +6,6 @@ import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { Localized } from "@/components/Localized";
 import { Notice } from "@/components/Notice";
 import { PlaceLine } from "@/components/PlaceLine";
-import { RouteSilhouette } from "@/components/RouteSketch";
 import { SectionBanner } from "@/components/SectionBanner";
 import { RouteStats } from "@/components/RouteStats";
 import { TrailNode } from "@/components/TrailNode";
@@ -243,7 +242,6 @@ function PreviewStop({ route, locale, last, href }: { route: RouteSummary; local
           </span>
         ) : null}
       </span>
-      {route.sketch ? <RouteSilhouette sketch={route.sketch} /> : null}
     </span>
   );
   return (

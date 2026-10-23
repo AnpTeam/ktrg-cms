@@ -2,6 +2,7 @@ import { Trans } from "@lingui/react/macro";
 import { ElevationProfile } from "@/components/ElevationProfile";
 import { EmptyState } from "@/components/EmptyState";
 import { ExpandableText } from "@/components/ExpandableText";
+import { Ruby } from "@/components/Ruby";
 import { FileVideoPlayer } from "@/components/FileVideo";
 import { IntroVideo } from "@/components/IntroVideo";
 import { Localized } from "@/components/Localized";
@@ -9,7 +10,6 @@ import { Notice } from "@/components/Notice";
 import { PlaceLine } from "@/components/PlaceLine";
 import { RichText } from "@/components/RichText";
 import { RouteJourney } from "@/components/RouteJourney";
-import { RouteSilhouette } from "@/components/RouteSketch";
 import { RouteStats } from "@/components/RouteStats";
 import { StopList } from "@/components/StopList";
 import { TripSummary } from "@/components/TripSummary";
@@ -83,6 +83,8 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
   const description = pickText(locale, route.descriptionJa, route.descriptionEn);
   const stops = buildStops(route, locale, spotHref, labels);
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
+  const title = pickText(locale, route.nameJa, route.nameEn);
+  const ruby = title && title.lang === "ja" && !title.fallback && route.nameKana ? { text: title.text, reading: route.nameKana } : null;
   const video = parseVideoUrl(route.videoUrl);
   const videoFile = video ? null : parseVideoFile(route.videoUrl);
   const { stampedCount, spotCount } = route;
@@ -112,12 +114,10 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             </div>
           ) : null}
           <header className="order-2 px-4 @4xl:order-none @4xl:px-0">
-            <div className="flex items-start justify-between gap-4">
-              <h1 className="min-w-0 text-3xl font-bold @4xl:text-4xl">
-                <Localized value={pickText(locale, route.nameJa, route.nameEn)} />
-              </h1>
-              {route.sketch ? <RouteSilhouette sketch={route.sketch} size={96} /> : null}
-            </div>
+            {/* In Japanese the name can carry its reading over it; the heading sits a little lower to give the reading room. */}
+            <h1 className={`min-w-0 text-3xl font-bold @4xl:text-4xl ${ruby ? "pt-4" : ""}`}>
+              {ruby ? <Ruby reading={ruby.reading}>{ruby.text}</Ruby> : <Localized value={title} />}
+            </h1>
             {route.prefecture || route.municipality ? (
               <p className="mt-2 text-lg text-muted">
                 <PlaceLine prefecture={route.prefecture} place={municipalityName(locale, route.municipality)} locale={locale} />

@@ -41,6 +41,7 @@ export interface RouteSummary {
   distanceKm: number | null;
   elevationGainM: number | null;
   difficulty: string | null;
+  nameKana: string | null;
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
@@ -218,6 +219,7 @@ function toSummary(r: RouteDetail): RouteSummary {
     distanceKm: r.distanceKm,
     elevationGainM: r.elevationGainM,
     difficulty: r.difficulty,
+    nameKana: r.nameKana,
     physicalLevel: r.physicalLevel,
     technicalLevel: r.technicalLevel,
     expectedTimeMin: r.expectedTimeMin,
