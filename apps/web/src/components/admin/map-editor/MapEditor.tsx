@@ -779,10 +779,10 @@ export function MapEditor(props: MapEditorProps) {
         aria-keyshortcuts={shortcut}
         title={`${label} (${shortcut})`}
         onClick={() => actions.current.chooseTool(tool)}
-        className={`${iconBtn} ${pressed ? "bg-ink text-paper hover:bg-ink" : "text-ink"}`}
+        className={`${iconBtn} justify-start px-1.5 text-xs sm:px-2 sm:text-sm ${pressed ? "bg-ink text-paper hover:bg-ink" : "text-ink"}`}
       >
         {icon}
-        <span className="hidden sm:inline">{label}</span>
+        <span>{label}</span>
       </button>
     );
   };
@@ -940,7 +940,7 @@ export function MapEditor(props: MapEditorProps) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t`場所の名前で探す（例：西念寺）`}
-          className="tap-target min-w-60 flex-1 rounded-xl border-2 border-line bg-paper px-4 text-lg"
+          className="tap-target min-w-0 basis-40 flex-1 rounded-xl border-2 border-line bg-paper px-4 text-lg"
         />
         <button type="submit" disabled={searching || !query.trim()} className={`${toolClass} border-line bg-paper`}>
           {searching ? t`探しています…` : t`探す`}
@@ -1004,7 +1004,7 @@ export function MapEditor(props: MapEditorProps) {
       >
         <div ref={container} className="h-full w-full" />
         <div className="absolute left-3 top-3 flex flex-col items-start gap-2">
-          <div role="toolbar" aria-label={t`地図の道具`} className={floatClass}>
+          <div role="toolbar" aria-label={t`地図の道具`} className={`${floatClass} grid max-w-[calc(100%-4.5rem)] grid-cols-[repeat(2,max-content)] sm:flex sm:flex-wrap`}>
             {toolButton("select", t`選ぶ・動かす`, "V", <CursorIcon />)}
             {toolButton("place", t`経由地を置く`, "P", <PinIcon />)}
             {toolButton("draw", t`線を描く`, "L", <PencilIcon />)}
@@ -1162,7 +1162,7 @@ function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchP
         {t`経由地（${places.length}か所）`}
         <span className="ml-3 text-sm font-normal text-muted">{t`スタンプ ${stamps}・そのほか ${others}`}</span>
       </h3>
-      <ol className="flex max-h-[28rem] flex-col gap-2 overflow-auto pr-1 xl:max-h-[calc(100dvh-12rem)]">
+      <ol className="flex max-h-[70dvh] flex-col gap-2 overflow-auto pr-1 xl:max-h-[calc(100dvh-12rem)]">
         {places.map((p, i) => (
           <li
             key={p.key}

@@ -17,3 +17,24 @@ export function Ruby({ reading, children }: { reading: string; children: ReactNo
     </ruby>
   );
 }
+
+/** A name with a reading over each of its kanji runs (see lib/ruby.ts). Japanese only, like `Ruby`. */
+export function RubyParts({ parts }: { parts: readonly { text: string; reading: string | null }[] }) {
+  const { i18n } = useLingui();
+  return (
+    <>
+      {parts.map((p, i) =>
+        p.reading && i18n.locale === "ja" ? (
+          <ruby key={i}>
+            {p.text}
+            <rp>(</rp>
+            <rt>{p.reading}</rt>
+            <rp>)</rp>
+          </ruby>
+        ) : (
+          p.text
+        ),
+      )}
+    </>
+  );
+}

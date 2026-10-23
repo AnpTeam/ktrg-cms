@@ -2,7 +2,7 @@ import { Trans } from "@lingui/react/macro";
 import { ElevationProfile } from "@/components/ElevationProfile";
 import { EmptyState } from "@/components/EmptyState";
 import { ExpandableText } from "@/components/ExpandableText";
-import { Ruby } from "@/components/Ruby";
+import { Ruby, RubyParts } from "@/components/Ruby";
 import { AccessList } from "@/components/AccessList";
 import { FileVideoPlayer } from "@/components/FileVideo";
 import { IntroVideo } from "@/components/IntroVideo";
@@ -21,6 +21,7 @@ import type { RouteDetail } from "@/lib/content";
 import type { MapSettings } from "@/lib/map-settings";
 import { municipalityName } from "@/lib/municipalities";
 import { pickText } from "@/lib/pick-text";
+import { parseRuby, textOfRuby } from "@/lib/ruby";
 import { pointsAsPlaces } from "@/lib/point-places";
 import { isGuidanceOnly, journeyOf, roleLabel, stopRoles, trailStops } from "@/lib/route-stops";
 import type { MapPlace } from "@/lib/places";
@@ -91,7 +92,11 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
   const stops = buildStops(route, locale, spotHref, labels);
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
   const title = pickText(locale, route.nameJa, route.nameEn);
-  const ruby = title && title.lang === "ja" && !title.fallback && route.nameKana ? { text: title.text, reading: route.nameKana } : null;
+  const rubyOn = !!title && title.lang === "ja" && !title.fallback && !!route.nameKana;
+  // A reading written per kanji is used when it spells this very name; an old one-reading-for-all is shown over the whole name.
+  const perKanji = rubyOn ? parseRuby(route.nameKana!) : null;
+  const rubyParts = perKanji && title && textOfRuby(perKanji) === title.text ? perKanji : null;
+  const ruby = rubyOn && !perKanji && !route.nameKana!.includes("{") ? { text: title!.text, reading: route.nameKana! } : null;
   const video = parseVideoUrl(route.videoUrl);
   const videoFile = video ? null : parseVideoFile(route.videoUrl);
   const { stampedCount, spotCount } = route;
@@ -122,8 +127,8 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           ) : null}
           <header className="order-2 px-4 @4xl:order-none @4xl:px-0">
             {/* In Japanese the name can carry its reading over it; the heading sits a little lower to give the reading room. */}
-            <h1 className={`min-w-0 text-3xl font-bold @4xl:text-4xl ${ruby ? "pt-4" : ""}`}>
-              {ruby ? <Ruby reading={ruby.reading}>{ruby.text}</Ruby> : <Localized value={title} />}
+            <h1 className={`min-w-0 text-3xl font-bold @4xl:text-4xl ${ruby || rubyParts ? "pt-4" : ""}`}>
+              {rubyParts ? <RubyParts parts={rubyParts} /> : ruby ? <Ruby reading={ruby.reading}>{ruby.text}</Ruby> : <Localized value={title} />}
             </h1>
             {route.prefecture || route.municipality ? (
               <p className="mt-2 text-lg text-muted">
