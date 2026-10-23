@@ -6,6 +6,7 @@ import { Ruby, RubyParts } from "@/components/Ruby";
 import { AccessList } from "@/components/AccessList";
 import { FileVideoPlayer } from "@/components/FileVideo";
 import { IntroVideo } from "@/components/IntroVideo";
+import { LastUpdated } from "@/components/LastUpdated";
 import { Localized } from "@/components/Localized";
 import { Notice } from "@/components/Notice";
 import { PlaceLine } from "@/components/PlaceLine";
@@ -222,6 +223,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               ) : videoFile ? (
                 <FileVideoPlayer video={videoFile} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
               ) : null}
+              <LastUpdated iso={route.videoUpdatedAt} locale={locale} />
             </section>
           ) : null}
 
@@ -262,6 +264,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
       <Notice>
         <Trans>出かける前に、公式の最新情報を確認してください。</Trans>
       </Notice>
+      <LastUpdated iso={route.updatedAt} locale={locale} className="px-4" />
     </div>
   );
 }

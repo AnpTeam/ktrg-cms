@@ -170,6 +170,24 @@ describe("an admin edits a route and its places", () => {
     expect((await patch({ accessPoints: [row("javascript:alert(1)")] }, next)).status).toBe(422);
   });
 
+  test("the video's update time moves only when its address changes; visitors get it with the route's own", async () => {
+    const { call, cookie, route } = await created();
+    const patch = async (body: unknown, updatedAt: string) => {
+      const r = await call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt, ...(body as object) } });
+      expect(r.status).toBe(200);
+      return ((await r.json()) as Json).route as Json;
+    };
+    const first = await patch({ videoUrl: "https://www.youtube.com/watch?v=abcdefghijk" }, route.updatedAt);
+    expect(typeof first.videoUpdatedAt).toBe("string");
+    const same = await patch({ videoUrl: "https://www.youtube.com/watch?v=abcdefghijk", nameEn: "x" }, first.updatedAt as string);
+    expect(same.videoUpdatedAt).toBe(first.videoUpdatedAt);
+    const gone = await patch({ videoUrl: null }, same.updatedAt as string);
+    expect(gone.videoUpdatedAt).toBeNull();
+    const listed = (((await (await call("GET", "/routes")).json()) as Json).routes as Json[]).find((r) => r.id === route.id)!;
+    expect(typeof listed.updatedAt).toBe("string");
+    expect(listed.videoUpdatedAt).toBeNull();
+  });
+
   test("bad input: 400 invalid_line / invalid_video_url, 422 for the wrong shape", async () => {
     const { call, cookie, route } = await created();
     const patch = (body: unknown) => call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt: route.updatedAt, ...(body as object) } });

@@ -63,7 +63,7 @@ msgstr "{0}を消す"
 msgid "{0}を開く"
 msgstr "{0}を開く"
 
-#: src/components/settings/PasskeyManager.tsx:113
+#: src/components/settings/PasskeyManager.tsx:110
 msgid "{added} に追加"
 msgstr "{added} に追加"
 
@@ -481,7 +481,7 @@ msgstr "アカウントを削除する"
 #: src/components/admin/RouteEditor.tsx:566
 #: src/components/admin/useChecklistLabels.ts:18
 #: src/components/map/MapScreen.tsx:455
-#: src/components/RouteView.tsx:188
+#: src/components/RouteView.tsx:189
 msgid "アクセス・交通"
 msgstr "アクセス・交通"
 
@@ -801,7 +801,7 @@ msgstr "こちらの問題で、うまくいきませんでした。しばらく
 msgid "こちらの問題です。もう一度お試しください。それでも直らないときは、しばらくしてからお試しください。"
 msgstr "こちらの問題です。もう一度お試しください。それでも直らないときは、しばらくしてからお試しください。"
 
-#: src/components/settings/PasskeyManager.tsx:99
+#: src/components/settings/PasskeyManager.tsx:96
 msgid "このアカウントに、パスキーはまだありません。"
 msgstr "このアカウントに、パスキーはまだありません。"
 
@@ -822,11 +822,11 @@ msgstr "このスタンプは、もう押してあります。"
 msgid "このデータについて"
 msgstr "このデータについて"
 
-#: src/components/settings/PasskeyManager.tsx:148
+#: src/components/settings/PasskeyManager.tsx:145
 msgid "このパスキーは、消せません"
 msgstr "このパスキーは、消せません"
 
-#: src/components/settings/PasskeyManager.tsx:160
+#: src/components/settings/PasskeyManager.tsx:157
 msgid "このパスキーを消しますか？"
 msgstr "このパスキーを消しますか？"
 
@@ -972,8 +972,8 @@ msgstr "この操作は、できません。"
 msgid "この文章のもとにした資料や、確かめた公式サイトを書きます。ルートのページの下に表示されます。"
 msgstr "この文章のもとにした資料や、確かめた公式サイトを書きます。ルートのページの下に表示されます。"
 
-#: src/components/RouteView.tsx:168
-#: src/components/RouteView.tsx:199
+#: src/components/RouteView.tsx:169
+#: src/components/RouteView.tsx:200
 msgid "この文章は日本語のみです。"
 msgstr "この文章は日本語のみです。"
 
@@ -986,7 +986,7 @@ msgstr "この次に追加"
 msgid "この端末・ブラウザでは、位置情報を使えません。"
 msgstr "この端末・ブラウザでは、位置情報を使えません。"
 
-#: src/components/settings/PasskeyManager.tsx:136
+#: src/components/settings/PasskeyManager.tsx:133
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "この端末・ブラウザではパスキーを使えません。"
 
@@ -1010,7 +1010,7 @@ msgstr "この端末では地図を表示できません。下の一覧から場
 msgid "この端末には保存しました。つながったときに、アカウントにも保存されます。"
 msgstr "この端末には保存しました。つながったときに、アカウントにも保存されます。"
 
-#: src/components/settings/PasskeyManager.tsx:133
+#: src/components/settings/PasskeyManager.tsx:130
 msgid "この端末のパスキーを追加する"
 msgstr "この端末のパスキーを追加する"
 
@@ -1046,8 +1046,8 @@ msgstr "この設定ではじめる"
 msgid "この設定は、本番のサイトにすぐ反映されます。すべての訪問者の地図の見た目が変わります。保存しますか？"
 msgstr "この設定は、本番のサイトにすぐ反映されます。すべての訪問者の地図の見た目が変わります。保存しますか？"
 
-#: src/components/SpotSheet.tsx:114
-#: src/components/SpotSheet.tsx:130
+#: src/components/SpotSheet.tsx:115
+#: src/components/SpotSheet.tsx:131
 msgid "この説明は日本語のみです。"
 msgstr "この説明は日本語のみです。"
 
@@ -1059,7 +1059,7 @@ msgstr "この近くに、歩ける道が見つかりませんでした。線の
 msgid "この道を見る"
 msgstr "この道を見る"
 
-#: src/components/settings/PasskeyManager.tsx:150
+#: src/components/settings/PasskeyManager.tsx:147
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 msgstr "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 
@@ -1149,7 +1149,7 @@ msgstr "スタンプ"
 #: src/components/landing/ContinueCard.tsx:23
 #: src/components/landing/Landing.tsx:239
 #: src/components/map/MapScreen.tsx:386
-#: src/components/RouteView.tsx:248
+#: src/components/RouteView.tsx:250
 #: src/components/TrailRibbon.tsx:62
 #: src/components/TripSummary.tsx:48
 msgid "スタンプ {stampedCount} / {spotCount}"
@@ -1178,7 +1178,7 @@ msgid "スタンプなし"
 msgstr "スタンプなし"
 
 #: src/components/map/MapScreen.tsx:399
-#: src/components/SpotSheet.tsx:85
+#: src/components/SpotSheet.tsx:86
 msgid "スタンプの場所"
 msgstr "スタンプの場所"
 
@@ -1191,7 +1191,7 @@ msgid "スタンプの場所の近くにいるか、たしかめるために、�
 msgstr "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 
 #: src/components/map/MapScreen.tsx:441
-#: src/components/RouteView.tsx:236
+#: src/components/RouteView.tsx:238
 msgid "スタンプの場所は、まだ準備中です。"
 msgstr "スタンプの場所は、まだ準備中です。"
 
@@ -1225,7 +1225,7 @@ msgid "スタンプを押しています…"
 msgstr "スタンプを押しています…"
 
 #: src/components/map/MapScreen.tsx:536
-#: src/components/SpotSheet.tsx:98
+#: src/components/SpotSheet.tsx:99
 msgid "スタンプを押しました"
 msgstr "スタンプを押しました"
 
@@ -1467,7 +1467,7 @@ msgstr "はじめの道を歩きませんか？"
 msgid "バス"
 msgstr "バス"
 
-#: src/components/settings/PasskeyManager.tsx:112
+#: src/components/settings/PasskeyManager.tsx:109
 msgid "パスキー {number}"
 msgstr "パスキー {number}"
 
@@ -1630,7 +1630,7 @@ msgstr "まだありません。「＋ 行を追加」で、経由地を表に�
 msgid "まだスタンプはありません。"
 msgstr "まだスタンプはありません。"
 
-#: src/components/SpotSheet.tsx:98
+#: src/components/SpotSheet.tsx:99
 msgid "まだスタンプを押していません"
 msgstr "まだスタンプを押していません"
 
@@ -1661,7 +1661,7 @@ msgstr "マップ"
 msgid "マップをひらく"
 msgstr "マップをひらく"
 
-#: src/components/SpotSheet.tsx:159
+#: src/components/SpotSheet.tsx:160
 msgid "まわりにあるもの"
 msgstr "まわりにあるもの"
 
@@ -1775,7 +1775,7 @@ msgstr "もっと見る（あと{hidden}か所）"
 #: src/components/auth/ReauthDialog.tsx:84
 #: src/components/ProfileCard.tsx:139
 #: src/components/ProfileCard.tsx:181
-#: src/components/settings/PasskeyManager.tsx:168
+#: src/components/settings/PasskeyManager.tsx:165
 #: src/components/StampHere.tsx:172
 msgid "やめる"
 msgstr "やめる"
@@ -1958,7 +1958,7 @@ msgstr "ルートの一覧"
 msgid "ルートの写真のリンク"
 msgstr "ルートの写真のリンク"
 
-#: src/components/RouteView.tsx:218
+#: src/components/RouteView.tsx:219
 msgid "ルートの動画"
 msgstr "ルートの動画"
 
@@ -2041,7 +2041,7 @@ msgstr "ログイン"
 msgid "ログインが切れたようです。ログインしなおしてください。"
 msgstr "ログインが切れたようです。ログインしなおしてください。"
 
-#: src/components/SpotSheet.tsx:172
+#: src/components/SpotSheet.tsx:174
 msgid "ログインしてスタンプを押す"
 msgstr "ログインしてスタンプを押す"
 
@@ -2075,7 +2075,7 @@ msgstr "ログインの方法（パスキー）"
 msgid "ログイン中"
 msgstr "ログイン中"
 
-#: src/components/settings/PasskeyManager.tsx:153
+#: src/components/settings/PasskeyManager.tsx:150
 msgid "わかりました"
 msgstr "わかりました"
 
@@ -2441,7 +2441,7 @@ msgstr "公開できるようになったら、ここにスタンプのラリー
 msgid "公開できるようになったら、ここにルートが表示されます。"
 msgstr "公開できるようになったら、ここにルートが表示されます。"
 
-#: src/components/RouteView.tsx:237
+#: src/components/RouteView.tsx:239
 msgid "公開できるようになったら、ここに場所の一覧が表示されます。"
 msgstr "公開できるようになったら、ここに場所の一覧が表示されます。"
 
@@ -2528,6 +2528,10 @@ msgstr "最後に押した日時　{when}"
 msgid "最終更新"
 msgstr "最終更新"
 
+#: src/components/LastUpdated.tsx:10
+msgid "最終更新：{day}"
+msgstr "最終更新：{day}"
+
 #: src/components/ElevationProfile.tsx:34
 msgid "最高 {highest}m"
 msgstr "最高 {highest}m"
@@ -2538,7 +2542,7 @@ msgstr "最高 {highest}m"
 #: src/components/landing/BannerCarousel.tsx:38
 #: src/components/map/MapScreen.tsx:473
 #: src/components/SpotGallery.tsx:12
-#: src/components/SpotSheet.tsx:150
+#: src/components/SpotSheet.tsx:151
 msgid "写真"
 msgstr "写真"
 
@@ -2632,8 +2636,8 @@ msgstr "出かける前に"
 #: src/app/(public)/routes/page.tsx:87
 #: src/app/(public)/stamps/page.tsx:74
 #: src/components/landing/Landing.tsx:173
-#: src/components/RouteView.tsx:263
-#: src/components/SpotSheet.tsx:166
+#: src/components/RouteView.tsx:265
+#: src/components/SpotSheet.tsx:167
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "出かける前に、公式の最新情報を確認してください。"
 
@@ -2645,8 +2649,8 @@ msgstr "出どころ（撮った人、使用条件）"
 #: src/components/admin/RouteEditor.tsx:571
 #: src/components/admin/RouteEditor.tsx:572
 #: src/components/map/MapScreen.tsx:464
-#: src/components/RouteView.tsx:177
-#: src/components/SpotSheet.tsx:139
+#: src/components/RouteView.tsx:178
+#: src/components/SpotSheet.tsx:140
 msgid "出典"
 msgstr "出典"
 
@@ -2973,7 +2977,7 @@ msgstr "営業中・利用可"
 msgid "地図"
 msgstr "地図"
 
-#: src/components/SpotSheet.tsx:67
+#: src/components/SpotSheet.tsx:68
 msgid "地図で見る"
 msgstr "地図で見る"
 
@@ -3349,7 +3353,7 @@ msgstr "折り返し"
 msgid "押した"
 msgstr "押した"
 
-#: src/components/SpotSheet.tsx:88
+#: src/components/SpotSheet.tsx:89
 msgid "押し方: 場所の近くで、ボタンを押します（位置情報）"
 msgstr "押し方: 場所の近くで、ボタンを押します（位置情報）"
 
@@ -3663,8 +3667,8 @@ msgstr "歩く順番に並んでいます。名前を押すと、文章や地図
 #: src/components/admin/RouteEditor.tsx:564
 #: src/components/admin/useChecklistLabels.ts:17
 #: src/components/map/MapScreen.tsx:446
-#: src/components/RouteView.tsx:159
-#: src/components/SpotSheet.tsx:123
+#: src/components/RouteView.tsx:160
+#: src/components/SpotSheet.tsx:124
 msgid "歴史・由来"
 msgstr "歴史・由来"
 
@@ -3705,12 +3709,12 @@ msgstr "消したい点をクリックします。"
 
 #: src/components/admin/map-editor/MapEditor.tsx:1215
 #: src/components/admin/RubyEditor.tsx:59
-#: src/components/settings/PasskeyManager.tsx:121
-#: src/components/settings/PasskeyManager.tsx:165
+#: src/components/settings/PasskeyManager.tsx:118
+#: src/components/settings/PasskeyManager.tsx:162
 msgid "消す"
 msgstr "消す"
 
-#: src/components/settings/PasskeyManager.tsx:162
+#: src/components/settings/PasskeyManager.tsx:159
 msgid "消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。"
 msgstr "消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。"
 
@@ -3992,7 +3996,7 @@ msgid "経度"
 msgstr "経度"
 
 #: src/components/admin/useChecklistLabels.ts:22
-#: src/components/RouteView.tsx:244
+#: src/components/RouteView.tsx:246
 msgid "経由地"
 msgstr "経由地"
 
@@ -4321,7 +4325,7 @@ msgid "許可確認済み"
 msgstr "許可確認済み"
 
 #: src/components/admin/PlacePanel.tsx:93
-#: src/components/SpotSheet.tsx:106
+#: src/components/SpotSheet.tsx:107
 msgid "説明"
 msgstr "説明"
 
@@ -4333,7 +4337,7 @@ msgstr "説明文（日本語）"
 msgid "読みを入れた漢字の上に、小さく表示されます（ひらがな）。"
 msgstr "読みを入れた漢字の上に、小さく表示されます（ひらがな）。"
 
-#: src/components/settings/PasskeyManager.tsx:95
+#: src/components/settings/PasskeyManager.tsx:92
 msgid "読み込み中"
 msgstr "読み込み中"
 

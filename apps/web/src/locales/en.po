@@ -63,7 +63,7 @@ msgstr "Delete {0}"
 msgid "{0}を開く"
 msgstr "Open {0}"
 
-#: src/components/settings/PasskeyManager.tsx:113
+#: src/components/settings/PasskeyManager.tsx:110
 msgid "{added} に追加"
 msgstr "Added {added}"
 
@@ -481,7 +481,7 @@ msgstr "Delete account"
 #: src/components/admin/RouteEditor.tsx:566
 #: src/components/admin/useChecklistLabels.ts:18
 #: src/components/map/MapScreen.tsx:455
-#: src/components/RouteView.tsx:188
+#: src/components/RouteView.tsx:189
 msgid "アクセス・交通"
 msgstr "Access and transport"
 
@@ -801,7 +801,7 @@ msgstr "It is a problem on our side. Please try again in a little while."
 msgid "こちらの問題です。もう一度お試しください。それでも直らないときは、しばらくしてからお試しください。"
 msgstr "It is a problem on our side. Please try again. If it still does not work, try again in a little while."
 
-#: src/components/settings/PasskeyManager.tsx:99
+#: src/components/settings/PasskeyManager.tsx:96
 msgid "このアカウントに、パスキーはまだありません。"
 msgstr "This account has no passkeys yet."
 
@@ -822,11 +822,11 @@ msgstr "You already have this stamp."
 msgid "このデータについて"
 msgstr "About this data"
 
-#: src/components/settings/PasskeyManager.tsx:148
+#: src/components/settings/PasskeyManager.tsx:145
 msgid "このパスキーは、消せません"
 msgstr "This passkey can't be removed"
 
-#: src/components/settings/PasskeyManager.tsx:160
+#: src/components/settings/PasskeyManager.tsx:157
 msgid "このパスキーを消しますか？"
 msgstr "Remove this passkey?"
 
@@ -972,8 +972,8 @@ msgstr "You can't do this."
 msgid "この文章のもとにした資料や、確かめた公式サイトを書きます。ルートのページの下に表示されます。"
 msgstr "Write the material this text is based on, or the official site you checked. It is shown at the bottom of the page."
 
-#: src/components/RouteView.tsx:168
-#: src/components/RouteView.tsx:199
+#: src/components/RouteView.tsx:169
+#: src/components/RouteView.tsx:200
 msgid "この文章は日本語のみです。"
 msgstr "This text is only available in Japanese."
 
@@ -986,7 +986,7 @@ msgstr "Add after this"
 msgid "この端末・ブラウザでは、位置情報を使えません。"
 msgstr "This device or browser can't use location."
 
-#: src/components/settings/PasskeyManager.tsx:136
+#: src/components/settings/PasskeyManager.tsx:133
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "This device or browser can't use passkeys."
 
@@ -1010,7 +1010,7 @@ msgstr "This device can't show the map. You can pick a place from the list below
 msgid "この端末には保存しました。つながったときに、アカウントにも保存されます。"
 msgstr "Saved on this phone. It will be saved to your account when you are connected."
 
-#: src/components/settings/PasskeyManager.tsx:133
+#: src/components/settings/PasskeyManager.tsx:130
 msgid "この端末のパスキーを追加する"
 msgstr "Add a passkey for this device"
 
@@ -1046,8 +1046,8 @@ msgstr "Start with these settings"
 msgid "この設定は、本番のサイトにすぐ反映されます。すべての訪問者の地図の見た目が変わります。保存しますか？"
 msgstr "This goes live at once and changes the map for every visitor. Save it?"
 
-#: src/components/SpotSheet.tsx:114
-#: src/components/SpotSheet.tsx:130
+#: src/components/SpotSheet.tsx:115
+#: src/components/SpotSheet.tsx:131
 msgid "この説明は日本語のみです。"
 msgstr "This description is in Japanese only."
 
@@ -1059,7 +1059,7 @@ msgstr "No walkable path was found near here. Move the points of the line closer
 msgid "この道を見る"
 msgstr "See this route"
 
-#: src/components/settings/PasskeyManager.tsx:150
+#: src/components/settings/PasskeyManager.tsx:147
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 msgstr "This is the only way to sign in to this account. If you remove it, you won't be able to sign in. Add an email address or another passkey first."
 
@@ -1149,7 +1149,7 @@ msgstr "Stamps"
 #: src/components/landing/ContinueCard.tsx:23
 #: src/components/landing/Landing.tsx:239
 #: src/components/map/MapScreen.tsx:386
-#: src/components/RouteView.tsx:248
+#: src/components/RouteView.tsx:250
 #: src/components/TrailRibbon.tsx:62
 #: src/components/TripSummary.tsx:48
 msgid "スタンプ {stampedCount} / {spotCount}"
@@ -1178,7 +1178,7 @@ msgid "スタンプなし"
 msgstr "No stamp"
 
 #: src/components/map/MapScreen.tsx:399
-#: src/components/SpotSheet.tsx:85
+#: src/components/SpotSheet.tsx:86
 msgid "スタンプの場所"
 msgstr "Stamp locations"
 
@@ -1191,7 +1191,7 @@ msgid "スタンプの場所の近くにいるか、たしかめるために、�
 msgstr "To check that you are near the stamp place, we look at your phone's location once."
 
 #: src/components/map/MapScreen.tsx:441
-#: src/components/RouteView.tsx:236
+#: src/components/RouteView.tsx:238
 msgid "スタンプの場所は、まだ準備中です。"
 msgstr "The stamp places are not ready yet."
 
@@ -1225,7 +1225,7 @@ msgid "スタンプを押しています…"
 msgstr "Collecting the stamp…"
 
 #: src/components/map/MapScreen.tsx:536
-#: src/components/SpotSheet.tsx:98
+#: src/components/SpotSheet.tsx:99
 msgid "スタンプを押しました"
 msgstr "You collected this stamp"
 
@@ -1467,7 +1467,7 @@ msgstr "Shall we walk the first route?"
 msgid "バス"
 msgstr "Bus"
 
-#: src/components/settings/PasskeyManager.tsx:112
+#: src/components/settings/PasskeyManager.tsx:109
 msgid "パスキー {number}"
 msgstr "Passkey {number}"
 
@@ -1630,7 +1630,7 @@ msgstr "No waypoints yet. Use “+ Add a row” to put waypoints in the table."
 msgid "まだスタンプはありません。"
 msgstr "No stamps yet."
 
-#: src/components/SpotSheet.tsx:98
+#: src/components/SpotSheet.tsx:99
 msgid "まだスタンプを押していません"
 msgstr "You haven't collected this stamp yet"
 
@@ -1661,7 +1661,7 @@ msgstr "Map"
 msgid "マップをひらく"
 msgstr "Open the map"
 
-#: src/components/SpotSheet.tsx:159
+#: src/components/SpotSheet.tsx:160
 msgid "まわりにあるもの"
 msgstr "Around here"
 
@@ -1775,7 +1775,7 @@ msgstr "Show more ({hidden} more)"
 #: src/components/auth/ReauthDialog.tsx:84
 #: src/components/ProfileCard.tsx:139
 #: src/components/ProfileCard.tsx:181
-#: src/components/settings/PasskeyManager.tsx:168
+#: src/components/settings/PasskeyManager.tsx:165
 #: src/components/StampHere.tsx:172
 msgid "やめる"
 msgstr "Cancel"
@@ -1958,7 +1958,7 @@ msgstr "All routes"
 msgid "ルートの写真のリンク"
 msgstr "Route photo link"
 
-#: src/components/RouteView.tsx:218
+#: src/components/RouteView.tsx:219
 msgid "ルートの動画"
 msgstr "Route video"
 
@@ -2041,7 +2041,7 @@ msgstr "Log in"
 msgid "ログインが切れたようです。ログインしなおしてください。"
 msgstr "You seem to have been logged out. Please log in again."
 
-#: src/components/SpotSheet.tsx:172
+#: src/components/SpotSheet.tsx:174
 msgid "ログインしてスタンプを押す"
 msgstr "Log in to stamp"
 
@@ -2075,7 +2075,7 @@ msgstr "Ways to log in (passkeys)"
 msgid "ログイン中"
 msgstr "Logged in"
 
-#: src/components/settings/PasskeyManager.tsx:153
+#: src/components/settings/PasskeyManager.tsx:150
 msgid "わかりました"
 msgstr "OK"
 
@@ -2441,7 +2441,7 @@ msgstr "When they are ready to publish, the stamp rallies will appear here."
 msgid "公開できるようになったら、ここにルートが表示されます。"
 msgstr "Routes will appear here once they are published."
 
-#: src/components/RouteView.tsx:237
+#: src/components/RouteView.tsx:239
 msgid "公開できるようになったら、ここに場所の一覧が表示されます。"
 msgstr "When they are ready to publish, the list of places will appear here."
 
@@ -2528,6 +2528,10 @@ msgstr "Last stamped: {when}"
 msgid "最終更新"
 msgstr "Last updated"
 
+#: src/components/LastUpdated.tsx:10
+msgid "最終更新：{day}"
+msgstr "Last updated: {day}"
+
 #: src/components/ElevationProfile.tsx:34
 msgid "最高 {highest}m"
 msgstr "Highest {highest}m"
@@ -2538,7 +2542,7 @@ msgstr "Highest {highest}m"
 #: src/components/landing/BannerCarousel.tsx:38
 #: src/components/map/MapScreen.tsx:473
 #: src/components/SpotGallery.tsx:12
-#: src/components/SpotSheet.tsx:150
+#: src/components/SpotSheet.tsx:151
 msgid "写真"
 msgstr "Photos"
 
@@ -2632,8 +2636,8 @@ msgstr "Before you go"
 #: src/app/(public)/routes/page.tsx:87
 #: src/app/(public)/stamps/page.tsx:74
 #: src/components/landing/Landing.tsx:173
-#: src/components/RouteView.tsx:263
-#: src/components/SpotSheet.tsx:166
+#: src/components/RouteView.tsx:265
+#: src/components/SpotSheet.tsx:167
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "Check official sources before you go."
 
@@ -2645,8 +2649,8 @@ msgstr "Credit (who took it, terms of use)"
 #: src/components/admin/RouteEditor.tsx:571
 #: src/components/admin/RouteEditor.tsx:572
 #: src/components/map/MapScreen.tsx:464
-#: src/components/RouteView.tsx:177
-#: src/components/SpotSheet.tsx:139
+#: src/components/RouteView.tsx:178
+#: src/components/SpotSheet.tsx:140
 msgid "出典"
 msgstr "Source"
 
@@ -2973,7 +2977,7 @@ msgstr "Open / available"
 msgid "地図"
 msgstr "Map"
 
-#: src/components/SpotSheet.tsx:67
+#: src/components/SpotSheet.tsx:68
 msgid "地図で見る"
 msgstr "Show in the map"
 
@@ -3349,7 +3353,7 @@ msgstr "Turnaround"
 msgid "押した"
 msgstr "Stamped"
 
-#: src/components/SpotSheet.tsx:88
+#: src/components/SpotSheet.tsx:89
 msgid "押し方: 場所の近くで、ボタンを押します（位置情報）"
 msgstr "How: press the button near the place (uses your location)"
 
@@ -3663,8 +3667,8 @@ msgstr "Routes are in walking order. Select a name to edit its text and map."
 #: src/components/admin/RouteEditor.tsx:564
 #: src/components/admin/useChecklistLabels.ts:17
 #: src/components/map/MapScreen.tsx:446
-#: src/components/RouteView.tsx:159
-#: src/components/SpotSheet.tsx:123
+#: src/components/RouteView.tsx:160
+#: src/components/SpotSheet.tsx:124
 msgid "歴史・由来"
 msgstr "History and background"
 
@@ -3705,12 +3709,12 @@ msgstr "Click the point to remove."
 
 #: src/components/admin/map-editor/MapEditor.tsx:1215
 #: src/components/admin/RubyEditor.tsx:59
-#: src/components/settings/PasskeyManager.tsx:121
-#: src/components/settings/PasskeyManager.tsx:165
+#: src/components/settings/PasskeyManager.tsx:118
+#: src/components/settings/PasskeyManager.tsx:162
 msgid "消す"
 msgstr "Remove"
 
-#: src/components/settings/PasskeyManager.tsx:162
+#: src/components/settings/PasskeyManager.tsx:159
 msgid "消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。"
 msgstr "After removing it, you can no longer log in with your face or fingerprint on that device. It can only be removed if you have another way to log in."
 
@@ -3992,7 +3996,7 @@ msgid "経度"
 msgstr "Longitude"
 
 #: src/components/admin/useChecklistLabels.ts:22
-#: src/components/RouteView.tsx:244
+#: src/components/RouteView.tsx:246
 msgid "経由地"
 msgstr "Waypoints"
 
@@ -4321,7 +4325,7 @@ msgid "許可確認済み"
 msgstr "Permission confirmed"
 
 #: src/components/admin/PlacePanel.tsx:93
-#: src/components/SpotSheet.tsx:106
+#: src/components/SpotSheet.tsx:107
 msgid "説明"
 msgstr "About this place"
 
@@ -4333,7 +4337,7 @@ msgstr "Description (Japanese)"
 msgid "読みを入れた漢字の上に、小さく表示されます（ひらがな）。"
 msgstr "Shown small over the kanji that have a reading (hiragana)."
 
-#: src/components/settings/PasskeyManager.tsx:95
+#: src/components/settings/PasskeyManager.tsx:92
 msgid "読み込み中"
 msgstr "Loading"
 
