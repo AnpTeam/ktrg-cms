@@ -42,3 +42,31 @@ export function LocaleSwitcher() {
     </nav>
   );
 }
+
+/**
+ * The same choice as a drop-down, small enough for the menu's top row (next to its close button), so the language is
+ * always one tap away without a block of its own inside the menu.
+ */
+export function LocaleSelect() {
+  const { t, i18n } = useLingui();
+  const router = useRouter();
+  return (
+    <select
+      aria-label={t`言語`}
+      value={i18n.locale}
+      onChange={(e) => {
+        const next = e.target.value as Locale;
+        if (next === i18n.locale) return;
+        rememberLocale(next);
+        router.refresh();
+      }}
+      className="min-h-11 rounded-lg border border-ink bg-paper px-2.5 text-base font-bold text-ink hover:bg-surface"
+    >
+      {locales.map((locale) => (
+        <option key={locale} value={locale} lang={locale}>
+          {names[locale]}
+        </option>
+      ))}
+    </select>
+  );
+}

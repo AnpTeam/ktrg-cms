@@ -47,6 +47,7 @@ export function MapScreenCanvas({
   stopId,
   onSelectRoute,
   onSelectStop,
+  onSelectMound,
   coveredPx,
   coveredLeftPx = 0,
   settings,
@@ -60,6 +61,8 @@ export function MapScreenCanvas({
   stopId: string | null;
   onSelectRoute: (id: string) => void;
   onSelectStop: (routeId: string, stopId: string) => void;
+  /** A sutra mound chosen from the 経塚 pins (outside of its course): the page shows it without the course's number. */
+  onSelectMound: (routeId: string, stopId: string) => void;
   /** How much of the map's bottom the sheet and the tab bar cover right now: what is framed stays clear of it. */
   coveredPx: number;
   /** On a desktop: how much of the map's left side the panel covers, so what is framed stays clear of it. */
@@ -98,15 +101,20 @@ export function MapScreenCanvas({
   const [popup, setPopup] = useState<MapScreenPoint | null>(null);
   const [pick, setPick] = useState<MapScreenStop[] | null>(null);
   const [autoId, setAutoId] = useState<string | null>(null);
+  // The pin whose name is showing. Names stay out of sight until a pin is tapped once (a second tap opens it), except for
+  // the courses alone in Japanese, where the tags are narrow enough to show all together.
+  const [revealed, setRevealed] = useState<string | null>(null);
   // What is switched on along the top: the courses, the sutra mounds, the kinds of places.
   const [layers, setLayers] = useState<ReadonlySet<MapLayer>>(defaultLayers);
   const groupNames = useGroupNames();
-  const toggleLayer = (layer: MapLayer) =>
+  const toggleLayer = (layer: MapLayer) => {
+    setRevealed(null);
     setLayers((now) => {
       const next = new Set(now);
       if (!next.delete(layer)) next.add(layer);
       return next;
     });
+  };
 
   useEffect(() => {
     coveredRef.current = coveredPx;
@@ -175,9 +183,10 @@ export function MapScreenCanvas({
         map.on("error", () => {});
         // Touching the map itself (not a pin) puts away the popup and the list.
         map.on("click", (e) => {
-          if ((e.originalEvent.target as HTMLElement | null)?.closest(".place-marker, .map-marker, .map-cluster")) return;
+          if ((e.originalEvent.target as HTMLElement | null)?.closest(".place-marker, .map-marker, .map-cluster, .map-tag, .map-pin")) return;
           setPopup(null);
           setPick(null);
+          setRevealed(null);
         });
         // The numbered pins are smaller when zoomed out (the markers read this size from the map's own element).
         const sizePins = () => {
@@ -361,14 +370,27 @@ export function MapScreenCanvas({
       ? clusterByPixels(pinned.map((r) => pixel(r.id, r.area as Position)), sideways ? MERGE_PX.namedPin : MERGE_PX.tag)
       : pinned.map((r) => [r.id]);
     const merged: { box: LabelBox; node: HTMLElement }[] = [];
+    // Names show on their own only for the courses alone, in Japanese; with the mounds on too, or in English, they would pile up.
+    const namesShown = layers.has("courses") && !layers.has("mounds") && !sideways;
     for (const ids of groups) {
       const members = ids.map((id) => byId.get(id)!);
       if (members.length === 1) {
         const r = members[0]!;
         const order = r.order;
         const name = r.name;
-        const common = { number: String(r.order), label: t`${order}. ${name}`, soon: r.status === "soon", onSelect: () => onSelectRoute(r.id) };
-        put(r.nameLang === "ja" ? createTagElement({ ...common, name }) : createPinElement({ ...common, name }), r.area as Position, "bottom");
+        const showName = namesShown || revealed === r.id;
+        const common = {
+          number: String(r.order),
+          label: t`${order}. ${name}`,
+          soon: r.status === "soon",
+          onSelect: () => {
+            if (!showName) return setRevealed(r.id);
+            setRevealed(null);
+            onSelectRoute(r.id);
+          },
+        };
+        const shown = showName ? name : null;
+        put(r.nameLang === "ja" ? createTagElement({ ...common, name: shown }) : createPinElement({ ...common, name: shown }), r.area as Position, "bottom");
       } else {
         const sorted = [...members].sort((x, y) => x.order - y.order);
         const orders = sorted.map((m) => m.order);
@@ -457,7 +479,23 @@ export function MapScreenCanvas({
         if (members.length === 1) {
           const { route: owner, stop } = members[0]!;
           const name = stop.name;
-          put(createTagElement({ number: "経", name, label: t`経塚 ${name}`, soon: false, onSelect: () => onSelectStop(owner.id, stop.id) }), stop.position, "bottom");
+          // A mound's name is long ("葛城第二十三経塚 倶戸羅・薬王菩薩本事品"): once tapped it shows beside the pin, cut short.
+          const showName = revealed === stop.id;
+          put(
+            createPinElement({
+              number: "経",
+              name: showName ? (name.length > 16 ? `${name.slice(0, 15)}…` : name) : null,
+              label: t`経塚 ${name}`,
+              soon: false,
+              onSelect: () => {
+                if (!showName) return setRevealed(stop.id);
+                setRevealed(null);
+                onSelectMound(owner.id, stop.id);
+              },
+            }),
+            stop.position,
+            "bottom",
+          );
         } else {
           const count = members.length;
           put(
@@ -504,7 +542,7 @@ export function MapScreenCanvas({
     return () => live.forEach((m) => m.remove());
     // `t` changes only with the language, which reloads the page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, mapGen, view, routes, routeId, autoId, stopId, mergeStops, layers]);
+  }, [ready, mapGen, view, routes, routeId, autoId, stopId, mergeStops, layers, revealed]);
 
   const zoom = (delta: 1 | -1) => {
     const map = mapRef.current;

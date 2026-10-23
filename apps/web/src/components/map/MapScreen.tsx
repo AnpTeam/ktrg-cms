@@ -74,6 +74,8 @@ export function MapScreen({
   // Coming back to the map during a navigation opens its course again.
   const [routeId, setRouteId] = useState<string | null>(initialRouteId ?? nav.session?.routeId ?? null);
   const [stopId, setStopId] = useState<string | null>(initialRouteId ? initialStopId : null);
+  // The stop was opened from the sutra mound pins, not from its course: it is then shown without the course's numbering.
+  const [viaMounds, setViaMounds] = useState(false);
   const [snap, setSnap] = useState<SheetSnap>(initialRouteId || nav.session ? "half" : "peek");
   const [available, setAvailable] = useState(520);
   // The room under the sheet taken by the tab bar (none on a wide screen, where it is a rail).
@@ -139,14 +141,16 @@ export function MapScreen({
     (id: string) => {
       setRouteId(id);
       setStopId(null);
+      setViaMounds(false);
       if (!wide) setSnap("half");
     },
     [wide],
   );
   const chooseStop = useCallback(
-    (routeId: string, id: string) => {
+    (routeId: string, id: string, fromMounds = false) => {
       setRouteId(routeId);
       setStopId(id);
+      setViaMounds(fromMounds);
       if (!wide) setSnap((s) => (s === "peek" || s === "hidden" ? "half" : s));
     },
     [wide],
@@ -182,7 +186,7 @@ export function MapScreen({
   const hero = route ? (
     <SheetHero
       photo={photo}
-      title={stop ? `${stop.order === null ? "" : `${stop.order}. `}${stop.name}` : `${route.order}. ${route.name}`}
+      title={stop ? `${stop.order === null || viaMounds ? "" : `${stop.order}. `}${stop.name}` : `${route.order}. ${route.name}`}
       lang={stop ? stop.nameLang : route.nameLang}
       eyebrow={
         stop ? (
@@ -201,7 +205,7 @@ export function MapScreen({
 
   const detailBody =
     stop && route ? (
-      <StopPanel route={route} stop={stop} signedIn={signedIn} locale={locale} loginHref={loginHref} registerHref={registerHref} stampMock={stampMock} />
+      <StopPanel route={route} stop={stop} showNumber={!viaMounds} signedIn={signedIn} locale={locale} loginHref={loginHref} registerHref={registerHref} stampMock={stampMock} />
     ) : route ? (
       <RoutePanel route={route} signedIn={signedIn} loginHref={loginHref} registerHref={registerHref} onChooseStop={(id) => chooseStop(route.id, id)} />
     ) : null;
@@ -231,6 +235,7 @@ export function MapScreen({
         stopId={stopId}
         onSelectRoute={chooseRoute}
         onSelectStop={chooseStop}
+        onSelectMound={(routeId, id) => chooseStop(routeId, id, true)}
         coveredPx={wide ? 0 : sheetHeightPx(snap, available) + bottomPx}
         coveredLeftPx={panelPx}
         settings={settings}
@@ -478,6 +483,7 @@ function RoutePanel({
 function StopPanel({
   route,
   stop,
+  showNumber,
   signedIn,
   locale,
   loginHref,
@@ -486,6 +492,8 @@ function StopPanel({
 }: {
   route: MapScreenRoute;
   stop: MapScreenStop;
+  /** False when the stop was opened from the sutra mound pins: the course's numbering means nothing there. */
+  showNumber: boolean;
   signedIn: boolean;
   locale: string;
   loginHref: string;
@@ -524,7 +532,7 @@ function StopPanel({
 
       {stop.stamped === true ? (
         <div className="flex items-center gap-4">
-          <StampFace state="stamped" number={stop.order ?? undefined} rough className="h-14 w-14 shrink-0" />
+          <StampFace state="stamped" number={showNumber ? (stop.order ?? undefined) : undefined} rough className="h-14 w-14 shrink-0" />
           <p className="text-xl font-bold">{t`スタンプを押しました`}</p>
         </div>
       ) : null}
