@@ -48,7 +48,8 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 //   tear  a stop with a stamp: a teardrop with its number
 //   flag  a place without a stamp: a flag-shaped pin with its number
 //   dot   a side trip (寄り道): a small dashed ring, no number
-const TEAR = "M15 39C15 39 3 25.5 3 14.5a12 12 0 0 1 24 0C27 25.5 15 39 15 39Z";
+// The tip is a small arc, not a point, so the pin ends softly.
+const TEAR = "M27 14.5a12 12 0 0 0-24 0C3 23.5 8.2 31.5 12.9 37.7a2.7 2.7 0 0 0 4.2 0C21.8 31.5 27 23.5 27 14.5Z";
 const FLAG = "M6 3h18a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3h-6.5L15 33l-2.5-7H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z";
 
 function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: StopRole | null, stamped: boolean): SVGSVGElement {
@@ -69,8 +70,8 @@ function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: Stop
   }
   body.setAttribute("class", "pin-shape");
   if (role === "both") {
-    // One place that is the start and the goal: blue over orange, as on the Start / Goal badge. Every pin draws the same
-    // gradient under the same id, so a repeated id is harmless.
+    // One place that is the start and the goal: blue fading into orange, top to bottom (the colours of the Start / Goal
+    // badge). Every pin draws the same gradient under the same id, so a repeated id is harmless.
     const defs = document.createElementNS(SVG_NS, "defs");
     const grad = document.createElementNS(SVG_NS, "linearGradient");
     grad.setAttribute("id", "pin-start-goal");
@@ -78,7 +79,7 @@ function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: Stop
     grad.setAttribute("y1", "0");
     grad.setAttribute("x2", "0");
     grad.setAttribute("y2", "1");
-    for (const [offset, cssVar] of [["0", "--color-ruri"], ["0.5", "--color-ruri"], ["0.5", "--color-goal"], ["1", "--color-goal"]] as const) {
+    for (const [offset, cssVar] of [["0.25", "--color-ruri"], ["0.75", "--color-goal"]] as const) {
       const stop = document.createElementNS(SVG_NS, "stop");
       stop.setAttribute("offset", offset);
       stop.setAttribute("stop-color", `var(${cssVar})`);
