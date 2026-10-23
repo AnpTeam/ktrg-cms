@@ -64,6 +64,8 @@ export interface AccessPoint {
   nameEn: string | null;
   noteJa: string | null;
   noteEn: string | null;
+  /** An https link for this way of getting there. */
+  url?: string | null;
 }
 
 /** A photo in a waypoint's gallery: an https link, who took it (when the license asks for a credit), and the page it came from. */

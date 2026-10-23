@@ -13,6 +13,8 @@ export interface AccessPoint {
   nameEn: string | null;
   noteJa: string | null;
   noteEn: string | null;
+  /** An https link for this way of getting there (a timetable, the operator's page). */
+  url?: string | null;
 }
 
 export const isAccessType = (v: unknown): v is AccessType => typeof v === "string" && (accessTypes as readonly string[]).includes(v);

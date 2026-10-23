@@ -88,6 +88,8 @@ const routeProps = {
       nameEn: nullable(t.String({ maxLength: 100 })),
       noteJa: nullable(t.String({ maxLength: 300 })),
       noteEn: nullable(t.String({ maxLength: 300 })),
+      // An optional https link (the operator's timetable, the ferry's page ...).
+      url: t.Optional(nullable(t.String({ maxLength: 500 }))),
     }),
     { maxItems: 10 },
   ),

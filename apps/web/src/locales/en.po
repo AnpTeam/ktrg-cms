@@ -19,6 +19,10 @@ msgstr "(no name)"
 msgid "（名前なし）"
 msgstr "(no name)"
 
+#: src/components/AccessList.tsx:29
+msgid "（外部サイトが新しいタブで開きます）"
+msgstr "(opens an external site in a new tab)"
+
 #. placeholder {0}: name(r)
 #: src/components/admin/RallyList.tsx:70
 msgid "{0} を1つ前へ"
@@ -300,7 +304,7 @@ msgstr "Row {0} of the “経由地” sheet"
 msgid "【サブコース】"
 msgstr "[Sub-course] "
 
-#: src/components/admin/AccessPointsEditor.tsx:77
+#: src/components/admin/AccessPointsEditor.tsx:80
 msgid "＋ 交通を追加"
 msgstr "+ Add a way to get there"
 
@@ -411,6 +415,10 @@ msgstr "Loaded the GPX file. Once there are two or more waypoints, it is cut int
 #: src/components/admin/map-editor/MapEditor.tsx:624
 msgid "GPXファイルを読み込めませんでした。道すじ（トラック）か、名前のついた地点が入ったファイルを選んでください。"
 msgstr "Could not read the GPX file. Choose a file with a path (track) or named points."
+
+#: src/components/admin/AccessPointsEditor.tsx:69
+msgid "https:// から始まるアドレス。入れると、場所の名前がリンクになります。"
+msgstr "An address starting with https://. The place name becomes a link."
 
 #: src/components/admin/PlacePanel.tsx:136
 #: src/components/admin/RouteEditor.tsx:534
@@ -1867,6 +1875,10 @@ msgstr "Back to the rallies"
 #: src/components/admin/RichTextToolbar.tsx:29
 msgid "リンク"
 msgstr "Link"
+
+#: src/components/admin/AccessPointsEditor.tsx:69
+msgid "リンク（任意）"
+msgstr "Link (optional)"
 
 #: src/components/admin/GalleryEditor.tsx:118
 msgid "リンクで追加"

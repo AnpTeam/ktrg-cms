@@ -19,6 +19,10 @@ msgstr "（名前がありません）"
 msgid "（名前なし）"
 msgstr "（名前なし）"
 
+#: src/components/AccessList.tsx:29
+msgid "（外部サイトが新しいタブで開きます）"
+msgstr "（外部サイトが新しいタブで開きます）"
+
 #. placeholder {0}: name(r)
 #: src/components/admin/RallyList.tsx:70
 msgid "{0} を1つ前へ"
@@ -300,7 +304,7 @@ msgstr "「経由地」シート {0} 行目"
 msgid "【サブコース】"
 msgstr "【サブコース】"
 
-#: src/components/admin/AccessPointsEditor.tsx:77
+#: src/components/admin/AccessPointsEditor.tsx:80
 msgid "＋ 交通を追加"
 msgstr "＋ 交通を追加"
 
@@ -411,6 +415,10 @@ msgstr "GPXファイルを読み込みました。経由地を2つ以上置く�
 #: src/components/admin/map-editor/MapEditor.tsx:624
 msgid "GPXファイルを読み込めませんでした。道すじ（トラック）か、名前のついた地点が入ったファイルを選んでください。"
 msgstr "GPXファイルを読み込めませんでした。道すじ（トラック）か、名前のついた地点が入ったファイルを選んでください。"
+
+#: src/components/admin/AccessPointsEditor.tsx:69
+msgid "https:// から始まるアドレス。入れると、場所の名前がリンクになります。"
+msgstr "https:// から始まるアドレス。入れると、場所の名前がリンクになります。"
 
 #: src/components/admin/PlacePanel.tsx:136
 #: src/components/admin/RouteEditor.tsx:534
@@ -1867,6 +1875,10 @@ msgstr "ラリー一覧にもどる"
 #: src/components/admin/RichTextToolbar.tsx:29
 msgid "リンク"
 msgstr "リンク"
+
+#: src/components/admin/AccessPointsEditor.tsx:69
+msgid "リンク（任意）"
+msgstr "リンク（任意）"
 
 #: src/components/admin/GalleryEditor.tsx:118
 msgid "リンクで追加"
