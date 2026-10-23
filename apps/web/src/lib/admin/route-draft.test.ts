@@ -299,6 +299,13 @@ describe("places", () => {
     const same = run(s, { type: "reorderPlaces", keys: ["b"] });
     expect(same).toBe(s);
   });
+  test("a place added after another goes right behind it; an unknown one goes last", () => {
+    let s = run(fresh(), { type: "addPlace", key: "a", lat: 1, lng: 1 }, { type: "addPlace", key: "b", lat: 1, lng: 1 });
+    s = run(s, { type: "addPlace", key: "m", lat: 1, lng: 1, after: "a" });
+    expect(s.present.places.map((p) => p.key)).toEqual(["a", "m", "b"]);
+    s = run(s, { type: "addPlace", key: "z", lat: 1, lng: 1, after: "nope" });
+    expect(s.present.places.map((p) => p.key)).toEqual(["a", "m", "b", "z"]);
+  });
   test("the next default name counts the places", () => {
     const s = run(fresh(), { type: "addPlace", key: "a", lat: 1, lng: 1 }, { type: "addPlace", key: "b", lat: 1, lng: 1 });
     expect(s.present.places.map((p) => p.nameJa)).toEqual(["経由地1", "経由地2"]);

@@ -40,6 +40,6 @@ export const accessIconSvg: Record<AccessType, string> = {
   ferry: pointIconSvg.ferry,
   car: pointIconSvg.parking,
   walk:
-    '<circle cx="13" cy="4.5" r="2.2" fill="#14532d"/><path d="M13 8l-2.5 5 3 3v5M10.5 13l-3.5 1M13 8l3.5 3 2.5-.5M13.5 16l3 5" stroke="#14532d" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+    '<circle cx="14" cy="4.4" r="2.3" fill="#14532d"/><path d="M13 8.6l-1.6 5.2M12.6 9.8L9.4 12.4M13 9.6l3.2 3M11.4 13.8L8.6 20.6M11.4 13.8l3.2 3 .4 4.6" stroke="#14532d" stroke-width="2.3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
   other: pointIconSvg.other,
 };

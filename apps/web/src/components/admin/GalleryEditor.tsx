@@ -10,6 +10,18 @@ import { PhotoUpload } from "./PhotoUpload";
 import { TextInput } from "./fields";
 
 const MAX_PHOTOS = 12;
+/** A short name for a photo link: the file's name (decoded), not the whole address. */
+function photoName(url: string): string {
+  try {
+    const parts = new URL(url).pathname.split("/").filter(Boolean);
+    const last = parts.at(-1) ?? "";
+    // A Wikimedia thumbnail ends in "<width>px-<file>"; the file's own name is the segment before it.
+    const file = /^\d+px-/.test(last) && parts.length > 1 ? parts.at(-2)! : last;
+    return decodeURIComponent(file).replace(/_/g, " ");
+  } catch {
+    return url;
+  }
+}
 const smallButton = "tap-target rounded-xl border-2 border-line px-4 text-base font-bold disabled:opacity-40";
 
 /**
@@ -65,17 +77,23 @@ export function GalleryEditor({ photos, onChange, name, lat, lng }: { photos: Ga
             <li key={p.url} className="flex flex-col gap-2 rounded-xl border border-line bg-paper p-3 sm:flex-row">
               <PhotoSlot url={p.url} className="sm:w-48 sm:shrink-0" />
               <div className="flex min-w-0 flex-1 flex-col gap-2">
-                <p className="break-all text-base text-muted">{p.url}</p>
-                <TextInput id={`gallery-credit-${i}`} value={p.credit ?? ""} onChange={(v) => patch(i, { credit: v.trim() === "" ? null : v })} maxLength={300} placeholder={t`出どころ（撮った人、使用条件）`} />
-                <div className="flex flex-wrap gap-2">
+                <p className="truncate text-base font-bold" title={p.url}>
+                  {photoName(p.url)}
+                </p>
+                <label htmlFor={`gallery-credit-${i}`} className="text-base text-muted">
+                  {t`出どころ（撮った人、使用条件）`}
+                </label>
+                <TextInput id={`gallery-credit-${i}`} value={p.credit ?? ""} onChange={(v) => patch(i, { credit: v.trim() === "" ? null : v })} maxLength={300} placeholder={t`例：山田太郎, CC BY-SA 4.0`} />
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-base text-muted">{t`順番`}</span>
                   <button type="button" disabled={i === 0} onClick={() => move(i, -1)} className={smallButton}>
                     {t`前へ`}
                   </button>
                   <button type="button" disabled={i === photos.length - 1} onClick={() => move(i, 1)} className={smallButton}>
                     {t`後ろへ`}
                   </button>
-                  <button type="button" onClick={() => onChange(photos.filter((_, j) => j !== i))} className="tap-target rounded-xl border-2 border-danger px-4 text-base font-bold text-danger">
-                    {t`外す`}
+                  <button type="button" onClick={() => onChange(photos.filter((_, j) => j !== i))} className="tap-target ml-auto rounded-xl border-2 border-danger px-4 text-base font-bold text-danger">
+                    {t`ギャラリーから外す`}
                   </button>
                 </div>
               </div>

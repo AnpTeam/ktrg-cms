@@ -16,6 +16,8 @@ import { roundLine, type SnapPoint } from "@/lib/admin/snap";
 import { boundsOf, editorBaseVisibility, editorBases, editorStyle, terrainLayerId, zoomLimits, type EditorBase } from "@/lib/map";
 import { pointKinds, type PointKind } from "@/lib/point-kinds";
 import { useKindLabels } from "../PlacePanel";
+import { createMarkerElement } from "@/components/map/MapMarker";
+import type { StopRole } from "@/lib/route-stops";
 
 export interface EditorPlace {
   key: string;
@@ -30,6 +32,8 @@ export interface EditorPlace {
   kind: PointKind;
   /** Visitors can see it: it cannot be deleted, and editing it turns it back into a draft. */
   published: boolean;
+  /** Where the walk starts and ends (blue and orange pins), as visitors see it. */
+  role?: StopRole;
 }
 
 /** What the list under the map can change on a waypoint. */
@@ -65,7 +69,10 @@ export interface MapEditorProps {
   onClearLegs: () => void;
   /** Cut the loose line into legs at the stops even though they do not follow it. */
   onSplitLine: () => void;
-  onAddPlace: (lat: number, lng: number) => void;
+  /** `after`: put it right after this waypoint (between two others) instead of at the end. */
+  onAddPlace: (lat: number, lng: number, after?: string) => void;
+  /** The waypoints in a new order (all keys). Legs that still join neighbours stay; the others are reconciled. */
+  onReorderPlaces: (keys: string[]) => void;
   /** A route that ends where it starts: adds an end point (not a stamp place) at exactly the position of this waypoint. */
   onAddEndAt: (key: string) => void;
   /** Several places at once (the named points of a GPX file). */
@@ -87,10 +94,6 @@ const MAX_POINTS = 2000;
 const NO_PATH: Path = { anchors: [], curves: [] };
 // Where the map starts when there is nothing to show yet: the Katsuragi area.
 const START = { center: [135.45, 34.45] as [number, number], zoom: 9 };
-const markerClass =
-  "flex size-10 min-h-0 min-w-0 p-0 items-center justify-center rounded-full border-2 border-paper bg-brand text-lg font-bold text-on-brand shadow-md data-[published=true]:border-moss data-[selected=true]:ring-4 data-[selected=true]:ring-ink data-[stopby=true]:border-dashed data-[unplaced=true]:opacity-60";
-const dotClass =
-  "flex size-7 min-h-0 min-w-0 p-0 items-center justify-center rounded-full border-2 border-ink bg-paper text-sm font-bold text-ink shadow-md data-[published=true]:border-moss data-[selected=true]:ring-4 data-[selected=true]:ring-ink data-[stopby=true]:border-dashed data-[unplaced=true]:opacity-60";
 // A point of the chosen leg (Navivi's anchor): a square is a sharp corner, a circle is a smooth bend.
 const anchorClass =
   "block size-3.5 min-h-0 min-w-0 cursor-grab rounded-[3px] border-2 border-white bg-ink p-0 shadow-md active:cursor-grabbing data-[smooth=true]:size-4 data-[smooth=true]:rounded-full data-[selected=true]:bg-brand data-[selected=true]:ring-2 data-[selected=true]:ring-ink";
@@ -99,7 +102,7 @@ const guideClass =
   "block size-4 min-h-0 min-w-0 cursor-grab rounded-full border-[3px] border-dashed border-[var(--color-goal)] bg-paper p-0 shadow-md active:cursor-grabbing";
 const chipClass = "inline-flex h-9 min-h-0 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-line bg-paper px-3 text-sm font-bold hover:bg-surface disabled:opacity-40 disabled:hover:bg-paper";
 const floatClass = "flex items-center gap-0.5 rounded-xl border border-line bg-paper/95 p-1 shadow-md backdrop-blur-sm";
-const iconBtn = "inline-flex h-8 min-h-0 min-w-8 items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-bold [&:not([aria-pressed=true])]:hover:bg-surface disabled:opacity-40 disabled:hover:bg-transparent";
+const iconBtn = "inline-flex shrink-0 whitespace-nowrap h-8 min-h-0 min-w-8 items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-bold [&:not([aria-pressed=true])]:hover:bg-surface disabled:opacity-40 disabled:hover:bg-transparent";
 const toolClass = "tap-target inline-flex items-center justify-center rounded-xl border-2 px-3 text-base font-bold disabled:opacity-40";
 
 type Actions = {
@@ -154,12 +157,15 @@ export function MapEditor(props: MapEditorProps) {
   const [chosenId, setActiveId] = useState<string | null>(null);
   const [anchorAt, setAnchorAt] = useState<{ from: string | null; index: number } | null>(null);
   const [eraser, setEraser] = useState(false);
+  // "Add after this waypoint" from the list: the next pin put on the map goes right after it.
+  const [insertAfter, setInsertAfter] = useState<string | null>(null);
+  const insertAfterRef = useRef<string | null>(null);
 
   const container = useRef<HTMLDivElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const mlRef = useRef<typeof import("maplibre-gl") | null>(null);
-  const markers = useRef(new Map<string, { marker: Marker; el: HTMLButtonElement }>());
+  const markers = useRef(new Map<string, { marker: Marker; el: HTMLButtonElement; shape: string }>());
   const anchorMarkers = useRef<Marker[]>([]);
   const guideMarkers = useRef<Marker[]>([]);
   const justDragged = useRef(false);
@@ -256,7 +262,13 @@ export function MapEditor(props: MapEditorProps) {
     },
     mapClick: (e) => {
       const m = modeRef.current;
-      if (m === "place") return latest.current.onAddPlace(e.lngLat.lat, e.lngLat.lng);
+      if (m === "place") {
+        const after = insertAfterRef.current ?? undefined;
+        latest.current.onAddPlace(e.lngLat.lat, e.lngLat.lng, after);
+        insertAfterRef.current = null;
+        setInsertAfter(null);
+        return;
+      }
       if (m === "guide") {
         if (!activePair) return;
         const cur = activeLeg?.via ?? [];
@@ -308,6 +320,10 @@ export function MapEditor(props: MapEditorProps) {
     },
     chooseTool: (tool) => {
       setNote(null);
+      if (tool !== "place") {
+        insertAfterRef.current = null;
+        setInsertAfter(null);
+      }
       if (tool === "select") return setMode("pan");
       if (tool === "place") return setMode("place");
       if (pairs.length === 0) return setNote(tool === "guide" ? t`ガイド点を置くには、先に経由地を2つ以上置いてください（寄り道は数えません）。` : t`線を描くには、先に経由地を2つ以上置いてください（寄り道は数えません）。`);
@@ -495,34 +511,42 @@ export function MapEditor(props: MapEditorProps) {
       }
     }
     for (const p of wanted) {
+      // The same pins visitors see. A pin is drawn from its number, kind, role and shape, so it is made again when one changes.
+      const shape = `${p.number}|${p.stampable}|${p.stopBy}|${p.role ?? ""}|${p.kind}|${p.name}`;
       let entry = markers.current.get(p.key);
+      if (entry && entry.shape !== shape) {
+        entry.marker.remove();
+        markers.current.delete(p.key);
+        entry = undefined;
+      }
       if (!entry) {
-        const el = document.createElement("button");
-        el.type = "button";
-        el.className = markerClass;
+        const el = createMarkerElement({
+          order: p.stampable ? p.number : null,
+          label: p.stampable ? `${p.number}. ${p.name}` : p.name,
+          kind: "neutral",
+          status: "open",
+          sideTrip: p.stopBy,
+          noStamp: !p.stampable,
+          role: p.role,
+          place: p.kind,
+          onSelect: () => {},
+        });
         el.addEventListener("click", (event) => {
           event.stopPropagation();
           latest.current.onSelectPlace(p.key);
         });
-        const marker = new ml.Marker({ element: el, draggable: modeRef.current === "pan" || modeRef.current === "place" }).setLngLat([p.lng!, p.lat!]).addTo(map);
+        const marker = new ml.Marker({ element: el, anchor: p.stopBy ? "center" : "bottom", draggable: modeRef.current === "pan" || modeRef.current === "place" }).setLngLat([p.lng!, p.lat!]).addTo(map);
         marker.on("dragend", () => {
           const { lat, lng } = marker.getLngLat();
           latest.current.onMovePlace(p.key, lat, lng);
         });
-        entry = { marker, el };
+        entry = { marker, el, shape };
         markers.current.set(p.key, entry);
       }
       entry.marker.setLngLat([p.lng!, p.lat!]);
-      // Add and remove only our own classes: MapLibre keeps `maplibregl-marker` (position: absolute) on the element, and
-      // replacing the whole className dropped it, so markers fell out of place and drifted when the map zoomed.
-      entry.el.classList.remove(...(p.stampable ? dotClass : markerClass).split(" "));
-      entry.el.classList.add(...(p.stampable ? markerClass : dotClass).split(" "));
-      entry.el.textContent = p.stampable ? String(p.number) : "";
-      entry.el.dataset.stopby = String(p.stopBy);
       entry.el.dataset.published = String(p.published);
       entry.el.title = p.published ? `${p.name}（公開中）` : p.name;
-      entry.el.setAttribute("aria-label", p.stampable ? `${p.number}. ${p.name}` : p.name);
-      entry.el.dataset.selected = String(p.key === props.selectedKey);
+      entry.el.setAttribute("aria-pressed", String(p.key === props.selectedKey));
     }
   }, [props.places, props.selectedKey, ready]);
 
@@ -764,7 +788,7 @@ export function MapEditor(props: MapEditorProps) {
     );
   };
 
-  const legLabel = (pair: { from: Stop; to: Stop }) => `${nameOf.get(pair.from.key) ?? ""} → ${nameOf.get(pair.to.key) ?? ""}`;
+  const legLabel = (pair: { from: Stop; to: Stop; side?: true }) => `${pair.side ? t`【サブコース】` : ""}${nameOf.get(pair.from.key) ?? ""} → ${nameOf.get(pair.to.key) ?? ""}`;
   const rideName: Record<RideMode, string> = { ferry: t`船`, bus: t`バス`, train: t`電車`, other: t`ほかの乗り物` };
   /** Walk, or ride (a ferry from a port ...) for this long: the leg is made (straight) when it has no line yet. */
   function setRide(mode: RideMode | "walk", minutes: number) {
@@ -797,10 +821,13 @@ export function MapEditor(props: MapEditorProps) {
   // What to do next, depending on the tool and on what is already on the map.
   const hasLine = props.line.length >= 2;
   const hasPlaces = props.places.length > 0;
+  const afterName = insertAfter ? (nameOf.get(insertAfter) ?? "") : "";
   const hint = looseLine
     ? t`この線は、経由地の順番や位置と合わないため、区間に分けていません。経由地の順番と位置を直してから「区間に分ける」を押すか、区間を描くと、その区間から線が置き換わります（「元に戻す」で戻せます）。`
     : mode === "place"
-      ? t`地図をクリックすると、その位置に経由地を置きます。`
+      ? insertAfter
+        ? t`地図をクリックすると、「${afterName}」のすぐ次に経由地を置きます。`
+        : t`地図をクリックすると、その位置に経由地を置きます。`
       : mode === "guide"
         ? !activePair
           ? t`ガイド点を置きたい区間（経由地と経由地のあいだ）を選んでください。`
@@ -830,11 +857,34 @@ export function MapEditor(props: MapEditorProps) {
           {t`GPXファイルから読み込む`}
         </button>
         <input ref={fileInput} type="file" accept=".gpx,application/gpx+xml,text/xml,application/xml" onChange={onFile} className="sr-only" tabIndex={-1} aria-hidden="true" />
-        <span className="mx-1 h-6 w-px bg-line" aria-hidden="true" />
-        <span className="text-sm text-muted" aria-live="polite">
-          {activePair ? t`選んだ区間：${legName}` : t`すべての区間（線のない所）`}
-        </span>
-        {activePair && !activePair.side ? (
+        <span className="text-sm text-muted">{activePair ? t`選んだ区間に` : t`すべての区間（線のない所）に`}</span>
+        <div className="grid basis-full grid-cols-2 gap-2 sm:grid-cols-4">
+        <button type="button" disabled={!canWork} onClick={() => void connect("trail")} className={`${chipClass} w-full`} title={t`経由地のあいだを、地図の道でつなぎます（寄り道は通りません）`}>
+          {working ? t`調べています…` : t`道でつなぐ`}
+        </button>
+        <button type="button" disabled={!canWork} onClick={() => void connect("direct")} className={`${chipClass} w-full`} title={t`経由地のあいだを、まっすぐな線でつなぎます`}>
+          {t`まっすぐつなぐ`}
+        </button>
+        <button type="button" disabled={!canWork} onClick={() => void snapToTrails()} className={`${chipClass} w-full`} title={t`描いた線を、地図の道に沿わせます`}>
+          {t`道に沿わせる`}
+        </button>
+        <button type="button" disabled={!canWork || !hasLine} onClick={smooth} className={`${chipClass} w-full`} title={t`線の角を、丸くなめらかにします`}>
+          {t`なめらかにする`}
+        </button>
+        {looseLine ? (
+          <button type="button" onClick={props.onSplitLine} className={`${chipClass} w-full`} title={t`今ある線を、経由地の順に区間へ切り分けます（経由地が線と合わないと、まっすぐな部分ができます）`}>
+            {t`区間に分ける`}
+          </button>
+        ) : null}
+        </div>
+      </div>
+
+      {activePair ? (
+        <div role="group" aria-label={t`選んだ区間`} className="flex flex-wrap items-center gap-2 rounded-xl border border-ink bg-surface px-3 py-2">
+          <span className="min-w-0 flex-1 basis-60 truncate text-sm font-bold" title={legName} aria-live="polite">
+            {t`選んだ区間：${legName}`}
+          </span>
+          {activePair && !activePair.side ? (
           <span className="flex items-center gap-1" role="group" aria-label={t`この区間の移動`}>
             <select
               aria-label={t`移動の手段`}
@@ -865,29 +915,11 @@ export function MapEditor(props: MapEditorProps) {
             ) : null}
           </span>
         ) : null}
-        <button type="button" disabled={!canWork} onClick={() => void connect("trail")} className={chipClass} title={t`経由地のあいだを、地図の道でつなぎます（寄り道は通りません）`}>
-          {working ? t`調べています…` : t`道でつなぐ`}
-        </button>
-        <button type="button" disabled={!canWork} onClick={() => void connect("direct")} className={chipClass} title={t`経由地のあいだを、まっすぐな線でつなぎます`}>
-          {t`まっすぐつなぐ`}
-        </button>
-        <button type="button" disabled={!canWork} onClick={() => void snapToTrails()} className={chipClass} title={t`描いた線を、地図の道に沿わせます`}>
-          {t`道に沿わせる`}
-        </button>
-        <button type="button" disabled={!canWork || !hasLine} onClick={smooth} className={chipClass} title={t`線の角を、丸くなめらかにします`}>
-          {t`なめらかにする`}
-        </button>
-        {looseLine ? (
-          <button type="button" onClick={props.onSplitLine} className={chipClass} title={t`今ある線を、経由地の順に区間へ切り分けます（経由地が線と合わないと、まっすぐな部分ができます）`}>
-            {t`区間に分ける`}
-          </button>
-        ) : null}
-        {activePair ? (
           <button type="button" onClick={() => setActiveId(null)} className={chipClass} title={t`区間の選択をやめて、全体を対象にします`}>
             {t`選択をやめる`}
           </button>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
 
       <form
         role="search"
@@ -1075,7 +1107,16 @@ export function MapEditor(props: MapEditorProps) {
       </p>
 
       </div>
-      {props.places.length > 0 ? <PlaceList {...props} /> : null}
+      {props.places.length > 0 ? <PlaceList
+          {...props}
+          insertAfter={insertAfter}
+          onInsertAfter={(key) => {
+            const next = insertAfter === key ? null : key;
+            insertAfterRef.current = next;
+            setInsertAfter(next);
+            if (next) actions.current.chooseTool("place");
+          }}
+        /> : null}
     </div>
   );
 }
@@ -1085,13 +1126,28 @@ const chipToggle = (on: boolean) =>
   `inline-flex h-8 min-h-0 min-w-0 items-center justify-center rounded-full border px-3 text-sm font-bold ${on ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"}`;
 
 /** Every waypoint of the route in one list: its name, its kind and its two switches can all be changed here. */
-function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchPlace, onAddEndAt }: Pick<MapEditorProps, "places" | "selectedKey" | "onSelectPlace" | "onRemovePlace" | "onPatchPlace" | "onAddEndAt">) {
+function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchPlace, onAddEndAt, onReorderPlaces, insertAfter, onInsertAfter }: Pick<MapEditorProps, "places" | "selectedKey" | "onSelectPlace" | "onRemovePlace" | "onPatchPlace" | "onAddEndAt" | "onReorderPlaces"> & { insertAfter: string | null; onInsertAfter: (key: string) => void }) {
   const { t } = useLingui();
   const kindName = useKindLabels();
   const stamps = places.filter((p) => p.stampable).length;
   const others = places.length - stamps;
   // The first stop of the path: a round trip ends where it began, so this is where an end point can be added.
   const firstStop = places.find((p) => !p.stopBy && p.lat !== null)?.key;
+  const move = (i: number, step: -1 | 1) => {
+    const keys = places.map((p) => p.key);
+    const j = i + step;
+    if (j < 0 || j >= keys.length) return;
+    [keys[i], keys[j]] = [keys[j]!, keys[i]!];
+    onReorderPlaces(keys);
+  };
+  // The sub-course of a side trip starts at the last waypoint before it that is on the route; choosing another puts it right after that one.
+  const mainBefore = (i: number) => places.slice(0, i).findLast((p) => !p.stopBy && p.lat !== null)?.key ?? "";
+  const branchTo = (key: string, from: string) => {
+    const keys = places.map((p) => p.key).filter((k) => k !== key);
+    keys.splice(keys.indexOf(from) + 1, 0, key);
+    onReorderPlaces(keys);
+  };
+  const mains = places.filter((p) => !p.stopBy && p.lat !== null);
   return (
     <section aria-label={t`経由地の一覧`} className="flex min-w-0 flex-col gap-2 xl:sticky xl:top-24">
       <h3 className="text-lg font-bold">
@@ -1099,7 +1155,7 @@ function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchP
         <span className="ml-3 text-sm font-normal text-muted">{t`スタンプ ${stamps}・そのほか ${others}`}</span>
       </h3>
       <ol className="flex max-h-[28rem] flex-col gap-2 overflow-auto pr-1 xl:max-h-[calc(100dvh-12rem)]">
-        {places.map((p) => (
+        {places.map((p, i) => (
           <li
             key={p.key}
             onClick={() => onSelectPlace(p.key)}
@@ -1158,6 +1214,32 @@ function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchP
                 </button>
               ) : null}
               {p.lat === null ? <span className="text-sm font-bold text-danger">{t`位置なし`}</span> : null}
+            </div>
+            <div className="col-start-2 col-end-4 flex flex-wrap items-center gap-2">
+              <button type="button" disabled={i === 0} onClick={(e) => { e.stopPropagation(); move(i, -1); }} aria-label={t`${p.name || p.number}を前へ`} title={t`順番を前へ`} className={chipToggle(false)}>
+                ↑
+              </button>
+              <button type="button" disabled={i === places.length - 1} onClick={(e) => { e.stopPropagation(); move(i, 1); }} aria-label={t`${p.name || p.number}を後ろへ`} title={t`順番を後ろへ`} className={chipToggle(false)}>
+                ↓
+              </button>
+              <button type="button" aria-pressed={insertAfter === p.key} onClick={(e) => { e.stopPropagation(); onInsertAfter(p.key); }} className={chipToggle(insertAfter === p.key)} title={t`地図をクリックして、この経由地のすぐ次に新しい経由地を入れます`}>
+                {t`この次に追加`}
+              </button>
+              {p.stopBy && mains.length > 0 ? (
+                <label className="flex items-center gap-1 text-sm font-bold" onClick={(e) => e.stopPropagation()}>
+                  {t`サブコースの分岐点`}
+                  <select value={mainBefore(i)} onChange={(e) => branchTo(p.key, e.target.value)} className={fieldClass} title={t`ここから寄り道へ向かう、サブコースの線を引きます。本線は、そのまま次の経由地へ続きます。`}>
+                    <option value="" disabled>
+                      {t`選ぶ`}
+                    </option>
+                    {mains.map((m) => (
+                      <option key={m.key} value={m.key}>
+                        {m.name || t`（名前がありません）`}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ) : null}
             </div>
           </li>
         ))}

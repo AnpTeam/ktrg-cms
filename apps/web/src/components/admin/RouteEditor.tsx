@@ -23,6 +23,7 @@ import {
   type TextField,
   type RouteDraft,
 } from "@/lib/admin/route-draft";
+import type { StopRole } from "@/lib/route-stops";
 import { backupKey, parseBackup, worthRestoring, writeBackup } from "@/lib/admin/draft-backup";
 import { draftProblems, placeChanged, planSave, restoreHeld, withLegIds, type DraftProblem } from "@/lib/admin/save-plan";
 import type { Prefecture } from "@/lib/admin/types";
@@ -94,6 +95,13 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     if (p?.published && p.id !== null && !skipsPublishedWarning()) setPendingEdit({ key, action });
     else dispatch(action);
   }
+
+  // A good result fades on its own; an error stays until it is closed.
+  useEffect(() => {
+    if (message?.kind !== "ok") return;
+    const timer = setTimeout(() => setMessage(null), 5000);
+    return () => clearTimeout(timer);
+  }, [message]);
 
   const dirty = isDirty(draft, saved);
   const isNew = draft.id === null;
@@ -196,6 +204,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     }
     const held = new Set(found.flatMap((p) => ("key" in p ? [p.key] : [])));
     const unsourced = draft.lineVerified && draft.lineSource.trim() === "";
+    setOfferClosed(true); // saving settles the question of an old copy; the banner must not return for the copy this very edit made
     setSaving(true);
     setMessage(null);
     // What is sent: without the held waypoints (a saved one is sent as it was saved, a new one is left out).
@@ -349,7 +358,12 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
   // The numbers on the map are the stamp numbers visitors see; a waypoint without a stamp has none.
   const editorPlaces = (() => {
     let stamp = 0;
-    return draft.places.map((p) => ({ key: p.key, lat: p.lat, lng: p.lng, number: p.stampable ? ++stamp : null, name: p.nameJa, stampable: p.stampable, stopBy: p.stopBy, kind: p.kind, published: p.published }));
+    // Where the walk starts and ends, by the same rule as the public map (a round trip or an out-and-back has one start and goal place).
+    const along = draft.places.filter((p) => !p.stopBy && p.lat !== null && p.lng !== null);
+    const startOnly = draft.walkStyle === "loop" || draft.walkStyle === "out_and_back";
+    const roleOf = (key: string): StopRole | undefined =>
+      key === along[0]?.key ? (startOnly ? "both" : "start") : !startOnly && along.length > 1 && key === along.at(-1)!.key ? "goal" : undefined;
+    return draft.places.map((p) => ({ key: p.key, lat: p.lat, lng: p.lng, number: p.stampable ? ++stamp : null, name: p.nameJa, stampable: p.stampable, stopBy: p.stopBy, kind: p.kind, published: p.published, role: roleOf(p.key) }));
   })();
   const text = (field: TextField) => (value: string) => dispatch({ type: "text", field, value });
   const checks = useMemo(() => checklist(factsFromDraft(draft)), [draft]);
@@ -374,18 +388,21 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
         <button type="button" disabled={!dirty || saving} onClick={save} className="tap-target rounded-xl bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
           {saving ? t`保存中…` : t`保存する`}
         </button>
-        {/* In the bar, not under it: a failure must be seen wherever the page is scrolled to. */}
+        {/* A toast over the page, not a line in the bar: it must catch the eye wherever the page is scrolled to. */}
         {message ? (
-          <div className="flex basis-full items-start gap-3 rounded-xl bg-surface p-3">
-            <p role={message.kind === "error" ? "alert" : "status"} className={`min-w-0 flex-1 text-lg font-bold ${message.kind === "error" ? "text-danger" : "text-moss"}`}>
+          <div className={`fixed inset-x-4 top-20 z-50 mx-auto flex max-w-xl items-start gap-3 rounded-2xl border-2 p-4 shadow-2xl ${message.kind === "error" ? "border-white/40 bg-[#8f1818] text-white" : "border-white/40 bg-[#14532d] text-white"}`}>
+            <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-white text-xl font-bold text-ink">
+              {message.kind === "error" ? "!" : "✓"}
+            </span>
+            <p role={message.kind === "error" ? "alert" : "status"} className="min-w-0 flex-1 pt-0.5 text-lg font-bold">
               {message.text}
             </p>
             {message.kind === "error" && problems.length > 0 ? (
-              <button type="button" onClick={() => showFirstProblem(problems[0]!.kind)} className="tap-target shrink-0 rounded-lg border-2 border-danger px-3 text-base font-bold text-danger">
+              <button type="button" onClick={() => showFirstProblem(problems[0]!.kind)} className="tap-target shrink-0 rounded-lg border-2 border-white px-3 text-base font-bold">
                 {t`直す場所を見る`}
               </button>
             ) : null}
-            <button type="button" onClick={() => setMessage(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-lg px-3 text-xl font-bold hover:bg-paper">
+            <button type="button" onClick={() => setMessage(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-lg px-3 text-xl font-bold hover:bg-white/20">
               ×
             </button>
           </div>
@@ -572,9 +589,10 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   onClearLeg={(from, to) => dispatch({ type: "clearLeg", from, to })}
                   onClearLegs={() => dispatch({ type: "clearLegs" })}
                   onSplitLine={() => dispatch({ type: "splitLine" })}
-                  onAddPlace={(lat, lng) => {
+                  onReorderPlaces={(keys) => dispatch({ type: "reorderPlaces", keys })}
+                  onAddPlace={(lat, lng, after) => {
                     const key = crypto.randomUUID();
-                    dispatch({ type: "addPlace", key, lat, lng });
+                    dispatch({ type: "addPlace", key, lat, lng, after });
                     setSelectedKey(key);
                   }}
                   onAddEndAt={(from) => {
