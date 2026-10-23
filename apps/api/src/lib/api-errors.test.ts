@@ -54,6 +54,22 @@ describe("Origin check (CSRF)", () => {
   });
 });
 
+describe("Origin check: a refused origin is named in the log, once", () => {
+  test("the log says which origin was refused and which one is allowed; a repeat is not logged again; reads and own origin log nothing", async () => {
+    const logs: string[] = [];
+    const app = new Elysia({ prefix: "/api/v1" })
+      .use(apiBase({ allowedOrigin: () => "https://app.example", log: (l) => logs.push(l) }))
+      .post("/write", () => ({ ok: true as const }));
+    const post = (origin: string) => app.handle(new Request("http://localhost/api/v1/write", { method: "POST", headers: { origin } }));
+    expect((await post("https://www.app.example")).status).toBe(403);
+    expect((await post("https://www.app.example")).status).toBe(403);
+    expect((await post("https://app.example")).status).toBe(200);
+    expect(logs).toHaveLength(1);
+    expect(logs[0]).toContain("https://www.app.example");
+    expect(logs[0]).toContain("https://app.example");
+  });
+});
+
 describe("request ids", () => {
   test("every answer carries a new x-request-id: success, a route's own error, a guard's 401", async () => {
     const { call } = setup();

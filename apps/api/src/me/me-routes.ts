@@ -37,6 +37,7 @@ export function meRoutes(getServices: () => MeServices, opts: RouteOptions) {
         },
         {
           auth: "me.manage",
+          rateLimit: { meProfileUser: "user.id" },
           body: t.Object(
             {
               locale: t.Optional(localeSchema),

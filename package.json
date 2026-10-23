@@ -4,9 +4,13 @@
   "packageManager": "bun@1.4.3",
   "workspaces": ["apps/*"],
   "scripts": {
+    "ktrg": "bun apps/api/scripts/ktrg.ts",
     "dev:api": "bun run --cwd apps/api dev",
     "dev:web": "bun run --cwd apps/web dev",
+    "db:generate": "bun run --cwd apps/api db:generate",
+    "db:migrate": "bun run --cwd apps/api db:migrate",
     "db:seed": "bun run --cwd apps/api db:seed",
+    "check": "bun run typecheck && bun run test",
     "lint": "bun run --filter '*' --if-present lint",
     "typecheck": "bun run --filter '*' typecheck",
     "test": "bun run --filter '*' test"
@@ -16,5 +20,9 @@
   },
   "dependencies": {
     "next": "^16.4.2"
+  },
+  "overrides": {
+    "uuid": "^11.1.1",
+    "esbuild": "^0.25.12"
   }
 }

@@ -4,6 +4,7 @@ import { areaFromBounds, sketchFromPoints } from "../route-geometry";
 import { climbM, descentM, elevationsOf, lengthKm, type LngLatEle } from "./line";
 import { capLegs, joinLegs, legsFromJoined, pathStops, reconcileLegs, sidePairs, splitLine, type Leg } from "./legs";
 import type { Translations } from "./content-locales";
+import type { AccessPoint } from "../access-points";
 import type { TechnicalLevel } from "../grading";
 import type { AdminRoute, AdminSpot, Prefecture, SpotStatus, WalkStyle } from "./types";
 import { timesFromPrevious } from "../leg-times";
@@ -86,6 +87,8 @@ export interface RouteDraft {
   difficulty: string;
   /** How the Japanese name is read (furigana shown over it); "" when not set. */
   nameKana: string;
+  /** How to get there: kind, place and note for each way (see lib/access-points.ts). */
+  accessPoints: AccessPoint[];
   /** The mountain-grading levels (see lib/grading.ts); null until chosen. */
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
@@ -103,7 +106,7 @@ export const emptyDraft = (): RouteDraft => ({
   id: null, updatedAt: null, nameJa: "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
   accessJa: "", accessEn: "", translations: {}, photoUrl: "", photoCredit: "", sourceJa: "", sourceEn: "", prefecture: null, walkStyle: null, municipality: "",
   distanceKm: null, distanceManual: false, elevationGainM: null, climbManual: false, expectedTimeMin: null, timeManual: false,
-  difficulty: "", nameKana: "", physicalLevel: null, technicalLevel: null, videoUrl: "", line: [], legs: [], lineVerified: false, lineSource: "", places: [],
+  difficulty: "", nameKana: "", accessPoints: [], physicalLevel: null, technicalLevel: null, videoUrl: "", line: [], legs: [], lineVerified: false, lineSource: "", places: [],
 });
 
 const s = (v: string | null | undefined) => v ?? "";
@@ -156,7 +159,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
     expectedTimeMin: route.expectedTimeMin,
     // A saved time that is not what the distance and climb give was typed by hand.
     timeManual: route.expectedTimeMin !== null && route.expectedTimeMin !== estimateWalkMinutes(route.distanceKm, route.elevationGainM),
-    difficulty: s(route.difficulty), nameKana: s(route.nameKana), physicalLevel: route.physicalLevel, technicalLevel: route.technicalLevel, videoUrl: s(route.videoUrl),
+    difficulty: s(route.difficulty), nameKana: s(route.nameKana), accessPoints: route.accessPoints ?? [], physicalLevel: route.physicalLevel, technicalLevel: route.technicalLevel, videoUrl: s(route.videoUrl),
     line: legs.length > 0 ? joinLegs(pathStops(places), legs).line : line, legs, lineVerified: route.lineVerified, lineSource: s(route.lineSource),
     places,
   };
@@ -207,6 +210,7 @@ export type DraftAction =
   | { type: "text"; field: TextField; value: string }
   /** The route's words in the other content languages. */
   | { type: "translations"; value: Translations }
+  | { type: "accessPoints"; value: AccessPoint[] }
   | { type: "prefecture"; value: Prefecture | null }
   | { type: "walkStyle"; value: WalkStyle | null }
   | { type: "physicalLevel"; value: number | null }
@@ -229,7 +233,7 @@ export type DraftAction =
   /** The same points with elevations filled in (from the map tiles): not an undo step, and the line stays as drawn. */
   | { type: "elevations"; points: LngLatEle[] }
   /** `patch` is applied to the new waypoint (one undo step), for example a copy that is not a stamp place. */
-  | { type: "addPlace"; key: string; lat: number; lng: number; kind?: PointKind; patch?: Partial<PlaceDraft> }
+  | { type: "addPlace"; key: string; lat: number; lng: number; kind?: PointKind; patch?: Partial<PlaceDraft>; /** Put it right after this waypoint instead of at the end. */ after?: string }
   /** Several places at once (named points of a GPX file): one undo step, all drafts. */
   | { type: "addPlaces"; places: { key: string; name: string; lat: number; lng: number }[] }
   /** An empty row in the places table: a stamp place with no name and no position yet (typed in the row). */
@@ -320,6 +324,8 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       return { ...d, [a.field]: a.value };
     case "translations":
       return { ...d, translations: a.value };
+    case "accessPoints":
+      return { ...d, accessPoints: a.value };
     case "prefecture":
       return { ...d, prefecture: a.value };
     case "walkStyle":
@@ -376,7 +382,9 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
     case "addPlace": {
       const kind = a.kind ?? "other";
       const n = d.places.filter((p) => p.stampable).length + 1;
-      return syncLegs({ ...d, places: [...d.places, { ...newPlace(a.key, a.lat, a.lng, n, kind), ...a.patch }] });
+      const added = { ...newPlace(a.key, a.lat, a.lng, n, kind), ...a.patch };
+      const at = a.after === undefined ? -1 : d.places.findIndex((p) => p.key === a.after);
+      return syncLegs({ ...d, places: at < 0 ? [...d.places, added] : [...d.places.slice(0, at + 1), added, ...d.places.slice(at + 1)] });
     }
     case "addPlaces": {
       if (a.places.length === 0) return d;
@@ -490,6 +498,7 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
     elevationGainM: d.elevationGainM,
     difficulty: nz(d.difficulty),
     nameKana: nz(d.nameKana),
+    accessPoints: d.accessPoints,
     physicalLevel: d.physicalLevel,
     technicalLevel: d.technicalLevel,
     expectedTimeMin: d.expectedTimeMin,

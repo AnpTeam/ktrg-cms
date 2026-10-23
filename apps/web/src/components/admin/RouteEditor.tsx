@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
+import { CheckIcon, DocumentIcon, ListIcon, MapIcon, PinIcon } from "@/components/icons";
 import { api } from "@/lib/api";
 import { outcome } from "@/lib/admin/admin-client";
 import { checklist, factsFromDraft, progress, type EditorTab } from "@/lib/admin/checklist";
@@ -22,6 +23,8 @@ import {
   type TextField,
   type RouteDraft,
 } from "@/lib/admin/route-draft";
+import { RubyEditor } from "./RubyEditor";
+import type { StopRole } from "@/lib/route-stops";
 import { backupKey, parseBackup, worthRestoring, writeBackup } from "@/lib/admin/draft-backup";
 import { draftProblems, placeChanged, planSave, restoreHeld, withLegIds, type DraftProblem } from "@/lib/admin/save-plan";
 import type { Prefecture } from "@/lib/admin/types";
@@ -34,17 +37,21 @@ import { isListedMunicipality } from "@/lib/municipalities";
 import { stampableByDefault } from "@/lib/point-kinds";
 import { walkStyleOf } from "@/lib/walk-style";
 import { PublishedEditDialog, skipsPublishedWarning } from "./PublishedEditDialog";
+import { AccessPointsEditor } from "./AccessPointsEditor";
 import { GradingFields } from "./GradingFields";
 import { MunicipalityField } from "./MunicipalityField";
 import { PhotoLinkDetails } from "./PhotoLinkDetails";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoUpload } from "./PhotoUpload";
+import { SubtitleUpload } from "./SubtitleUpload";
 import { VideoUpload } from "./VideoUpload";
+import { parseVideoFile } from "@/lib/video";
 import { PlacePanel } from "./PlacePanel";
 import { PlaceTable } from "./PlaceTable";
 import { useChecklistLabels } from "./useChecklistLabels";
 
 const TABS: EditorTab[] = ["overview", "text", "map", "places", "check"];
+const TAB_ICONS: Record<EditorTab, ReactNode> = { overview: <ListIcon />, text: <DocumentIcon />, map: <MapIcon />, places: <PinIcon />, check: <CheckIcon /> };
 const isTab = (v: string | null): v is EditorTab => v !== null && (TABS as string[]).includes(v);
 
 const isTyping = (target: EventTarget | null) => target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
@@ -91,6 +98,13 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     if (p?.published && p.id !== null && !skipsPublishedWarning()) setPendingEdit({ key, action });
     else dispatch(action);
   }
+
+  // A good result fades on its own; an error stays until it is closed.
+  useEffect(() => {
+    if (message?.kind !== "ok") return;
+    const timer = setTimeout(() => setMessage(null), 5000);
+    return () => clearTimeout(timer);
+  }, [message]);
 
   const dirty = isDirty(draft, saved);
   const isNew = draft.id === null;
@@ -193,6 +207,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     }
     const held = new Set(found.flatMap((p) => ("key" in p ? [p.key] : [])));
     const unsourced = draft.lineVerified && draft.lineSource.trim() === "";
+    setOfferClosed(true); // saving settles the question of an old copy; the banner must not return for the copy this very edit made
     setSaving(true);
     setMessage(null);
     // What is sent: without the held waypoints (a saved one is sent as it was saved, a new one is left out).
@@ -315,6 +330,32 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     if (snapshot.id === null) router.replace(`/admin/routes/${routeId}`);
   }
 
+  // Takes every published waypoint off the site at once. The route itself stays in the list, shown as "coming soon" (準備中).
+  async function unpublishAll() {
+    const live = draft.places.filter((p) => p.id && p.published);
+    if (live.length === 0 || busyKey) return;
+    const count = live.length;
+    if (!window.confirm(t`公開中の${count}か所を、すべて公開をやめます。ルートは「準備中」として一覧に残ります。よろしいですか？`)) return;
+    setBusyKey("all");
+    setMessage(null);
+    let places = savedRef.current.places;
+    let done = 0;
+    for (const place of live) {
+      const res = await outcome(api.admin.spots({ id: place.id! }).unpublish.post());
+      if (!res.ok) {
+        setMessage({ kind: "error", text: messages[res.key] });
+        break;
+      }
+      const next: PlaceDraft = { ...placeFromServer(res.data.spot), key: place.key };
+      dispatch({ type: "savedPlace", key: place.key, place: next });
+      places = places.map((p) => (p.key === place.key ? next : p));
+      done++;
+    }
+    setSavedCopy({ ...savedRef.current, places });
+    if (done === count) setMessage({ kind: "ok", text: t`${count}か所の公開をやめました。ルートは「準備中」として一覧に残ります。` });
+    setBusyKey(null);
+  }
+
   async function setPublished(key: string, publish: boolean) {
     const place = draft.places.find((p) => p.key === key);
     if (!place?.id || busyKey) return;
@@ -346,7 +387,12 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
   // The numbers on the map are the stamp numbers visitors see; a waypoint without a stamp has none.
   const editorPlaces = (() => {
     let stamp = 0;
-    return draft.places.map((p) => ({ key: p.key, lat: p.lat, lng: p.lng, number: p.stampable ? ++stamp : null, name: p.nameJa, stampable: p.stampable, stopBy: p.stopBy, kind: p.kind, published: p.published }));
+    // Where the walk starts and ends, by the same rule as the public map (a round trip or an out-and-back has one start and goal place).
+    const along = draft.places.filter((p) => !p.stopBy && p.lat !== null && p.lng !== null);
+    const startOnly = draft.walkStyle === "loop" || draft.walkStyle === "out_and_back";
+    const roleOf = (key: string): StopRole | undefined =>
+      key === along[0]?.key ? (startOnly ? "both" : "start") : !startOnly && along.length > 1 && key === along.at(-1)!.key ? "goal" : undefined;
+    return draft.places.map((p) => ({ key: p.key, lat: p.lat, lng: p.lng, number: p.stampable ? ++stamp : null, name: p.nameJa, stampable: p.stampable, stopBy: p.stopBy, kind: p.kind, published: p.published, role: roleOf(p.key) }));
   })();
   const text = (field: TextField) => (value: string) => dispatch({ type: "text", field, value });
   const checks = useMemo(() => checklist(factsFromDraft(draft)), [draft]);
@@ -371,18 +417,21 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
         <button type="button" disabled={!dirty || saving} onClick={save} className="tap-target rounded-xl bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
           {saving ? t`保存中…` : t`保存する`}
         </button>
-        {/* In the bar, not under it: a failure must be seen wherever the page is scrolled to. */}
+        {/* A toast over the page, not a line in the bar: it must catch the eye wherever the page is scrolled to. */}
         {message ? (
-          <div className="flex basis-full items-start gap-3 rounded-xl bg-surface p-3">
-            <p role={message.kind === "error" ? "alert" : "status"} className={`min-w-0 flex-1 text-lg font-bold ${message.kind === "error" ? "text-danger" : "text-moss"}`}>
+          <div className={`fixed inset-x-4 top-20 z-50 mx-auto flex max-w-xl items-start gap-3 rounded-2xl border-2 p-4 shadow-2xl ${message.kind === "error" ? "border-white/40 bg-[#8f1818] text-white" : "border-white/40 bg-[#14532d] text-white"}`}>
+            <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-white text-xl font-bold text-ink">
+              {message.kind === "error" ? "!" : "✓"}
+            </span>
+            <p role={message.kind === "error" ? "alert" : "status"} className="min-w-0 flex-1 pt-0.5 text-lg font-bold">
               {message.text}
             </p>
             {message.kind === "error" && problems.length > 0 ? (
-              <button type="button" onClick={() => showFirstProblem(problems[0]!.kind)} className="tap-target shrink-0 rounded-lg border-2 border-danger px-3 text-base font-bold text-danger">
+              <button type="button" onClick={() => showFirstProblem(problems[0]!.kind)} className="tap-target shrink-0 rounded-lg border-2 border-white px-3 text-base font-bold">
                 {t`直す場所を見る`}
               </button>
             ) : null}
-            <button type="button" onClick={() => setMessage(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-lg px-3 text-xl font-bold hover:bg-paper">
+            <button type="button" onClick={() => setMessage(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-lg px-3 text-xl font-bold hover:bg-white/20">
               ×
             </button>
           </div>
@@ -438,8 +487,9 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                 aria-selected={section === id}
                 aria-controls="editor-panel"
                 onClick={() => setSection(id)}
-                className={`tap-target rounded-xl border-2 px-4 text-lg font-bold ${section === id ? "border-ink bg-ink text-paper" : "border-line"}`}
+                className={`tap-target inline-flex items-center gap-2 rounded-xl border-2 px-4 text-lg font-bold ${section === id ? "border-ink bg-ink text-paper" : "border-line"}`}
               >
+                {TAB_ICONS[id]}
                 {labels.tab[id]}
                 {id === "check" && missingRequired > 0 ? <span className="ml-2 rounded-full bg-danger px-2 text-base text-white">{missingRequired}</span> : null}
               </button>
@@ -451,18 +501,18 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
               <>
                 <Section title={t`基本`}>
                   <MultilingualField id="route-name" field="name" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`ルートの名前`} ja={draft.nameJa} en={draft.nameEn} onJa={text("nameJa")} onEn={text("nameEn")} required invalid={problemOf("route_name")} />
-                  <Field label={t`ルートの名前の読み（ふりがな）`} htmlFor="route-kana" hint={t`日本語の名前の上に、小さく表示されます。ひらがなで入れます。空にすると、表示しません。`}>
-                    <TextInput id="route-kana" value={draft.nameKana} onChange={text("nameKana")} maxLength={200} />
+                  <Field label={t`ルートの名前の読み（ふりがな）`} htmlFor="ruby-0" hint={t`読みを入れた漢字の上に、小さく表示されます（ひらがな）。`}>
+                    <RubyEditor name={draft.nameJa} value={draft.nameKana} onChange={text("nameKana")} />
                   </Field>
                   {problemOf("route_name") ? <p role="alert" className="text-base font-bold text-danger">{t`日本語の名前を入れてください。`}</p> : null}
-                  <div className="flex flex-wrap gap-4">
+                  <div className="grid gap-4 sm:grid-cols-3">
                     <Field label={t`都道府県`} htmlFor="route-pref">
                       <select id="route-pref" value={draft.prefecture ?? ""} onChange={(e) => {
                           const next = (e.target.value || null) as Prefecture | null;
                           // A city of the old prefecture does not belong to the new one: start the city again.
                           if (isListedMunicipality(draft.prefecture, draft.municipality) && !isListedMunicipality(next, draft.municipality)) text("municipality")("");
                           dispatch({ type: "prefecture", value: next });
-                        }} className={`${inputClass} min-w-48`}>
+                        }} className={inputClass}>
                         <option value="">{t`未選択`}</option>
                         {(["wakayama", "osaka", "nara"] as const).map((p) => (
                           <option key={p} value={p}>
@@ -472,26 +522,26 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                       </select>
                     </Field>
                     <MunicipalityField id="route-muni" prefecture={draft.prefecture} value={draft.municipality} onChange={text("municipality")} />
-                    <Field label={t`歩き方`} htmlFor="route-walk-style" hint={t`ルートのページの「スタート・ゴール」の見せ方が変わります。未選択なら、周回や往復とは書きません。`}>
-                      <select id="route-walk-style" value={draft.walkStyle ?? ""} onChange={(e) => dispatch({ type: "walkStyle", value: walkStyleOf(e.target.value) })} className={`${inputClass} min-w-48`}>
+                    <Field label={t`歩き方`} htmlFor="route-walk-style" hint={t`「スタート・ゴール」の見せ方が変わります。`}>
+                      <select id="route-walk-style" value={draft.walkStyle ?? ""} onChange={(e) => dispatch({ type: "walkStyle", value: walkStyleOf(e.target.value) })} className={inputClass}>
                         <option value="">{t`未選択`}</option>
-                        <option value="one_way">{t`片道（スタートとゴールが別の場所）`}</option>
-                        <option value="loop">{t`周回（出発した場所に戻る）`}</option>
-                        <option value="out_and_back">{t`往復（同じ道を行って戻る）`}</option>
+                        <option value="one_way">{t`片道（別の場所へ）`}</option>
+                        <option value="loop">{t`周回（元の場所へ）`}</option>
+                        <option value="out_and_back">{t`往復（同じ道）`}</option>
                       </select>
                     </Field>
                   </div>
                 </Section>
 
                 <Section title={t`数字`}>
-                  <div className="flex flex-wrap gap-6">
-                    <Field label={t`距離`} htmlFor="route-distance" hint={draft.distanceManual ? t`手で入れた数字です。空にすると、線から計算します。` : t`線の長さから、自動で計算しています。`}>
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <Field label={t`距離`} htmlFor="route-distance" hint={draft.distanceManual ? t`手入力（空にすると、線から自動）` : t`線から自動で計算`}>
                       <NumberInput id="route-distance" value={draft.distanceKm} min={0} max={2000} suffix="km" onChange={(v) => dispatch({ type: "distance", value: v })} />
                     </Field>
-                    <Field label={t`登り（獲得標高）`} htmlFor="route-climb" hint={draft.climbManual ? t`手で入れた数字です。空にすると、標高から計算します。` : t`線の標高から、自動で計算します。`}>
+                    <Field label={t`登り（獲得標高）`} htmlFor="route-climb" hint={draft.climbManual ? t`手入力（空にすると、標高から自動）` : t`線の標高から自動で計算`}>
                       <NumberInput id="route-climb" value={draft.elevationGainM} min={0} max={10000} integer suffix="m" onChange={(v) => dispatch({ type: "climb", value: v })} />
                     </Field>
-                    <Field label={t`歩く時間`} htmlFor="route-time" hint={draft.timeManual ? t`手で入れた数字です。空にすると、距離と登りから計算します。` : t`距離と登りから、目安を自動で計算しています。`}>
+                    <Field label={t`歩く時間`} htmlFor="route-time" hint={draft.timeManual ? t`手入力（空にすると、距離と登りから自動）` : t`距離と登りから自動で計算`}>
                       <NumberInput id="route-time" value={draft.expectedTimeMin} min={0} max={20000} integer suffix={t`分`} onChange={(v) => dispatch({ type: "time", value: v })} />
                     </Field>
                   </div>
@@ -501,9 +551,14 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     onPhysical={(value) => dispatch({ type: "physicalLevel", value })}
                     onTechnical={(value) => dispatch({ type: "technicalLevel", value })}
                   />
-                  <Field label={t`むずかしさ（ひとこと）`} htmlFor="route-difficulty" hint={t`入れた文字が、そのまま表示されます。体力度・技術度を選んだときは、そちらを先に表示します。`}>
-                    <TextInput id="route-difficulty" value={draft.difficulty} onChange={text("difficulty")} maxLength={100} />
-                  </Field>
+                  <details className="rounded-xl border border-line bg-paper px-4 py-2" open={draft.difficulty !== ""}>
+                    <summary className="cursor-pointer text-base font-bold">{t`むずかしさを、ひとことで書く（任意）`}</summary>
+                    <div className="mt-2">
+                      <Field label={t`むずかしさ（ひとこと）`} htmlFor="route-difficulty" hint={t`入れた文字が、そのまま表示されます。体力度・技術度を選んだときは、そちらを先に表示します。`}>
+                        <TextInput id="route-difficulty" value={draft.difficulty} onChange={text("difficulty")} maxLength={100} />
+                      </Field>
+                    </div>
+                  </details>
                 </Section>
 
                 <Section title={t`写真と動画`}>
@@ -522,6 +577,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     <TextInput id="route-video" value={draft.videoUrl} onChange={text("videoUrl")} maxLength={500} invalid={problemOf("video_link")} />
                   </Field>
                   <VideoUpload onUploaded={text("videoUrl")} />
+                  {parseVideoFile(draft.videoUrl) ? <SubtitleUpload videoUrl={draft.videoUrl} /> : null}
                   {problemOf("video_link") ? <p role="alert" className="text-base font-bold text-danger">{t`YouTube か Vimeo、またはアップロードした動画の、https:// で始まるリンクにしてください。`}</p> : null}
                 </Section>
               </>
@@ -537,8 +593,9 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   <MultilingualField id="route-history" field="history" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`歴史・由来`} ja={draft.historyJa} en={draft.historyEn} onJa={text("historyJa")} onEn={text("historyEn")} multiline />
                 </Section>
                 <Section title={t`アクセス・交通`}>
-                  <MultilingualField id="route-access" field="access" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`アクセス・交通`} ja={draft.accessJa} en={draft.accessEn} onJa={text("accessJa")} onEn={text("accessEn")} multiline />
-                  <p className="text-base text-muted">{t`最寄りの駅やバス停、スタート地点とゴール地点への行き方を書きます。`}</p>
+                  <AccessPointsEditor value={draft.accessPoints} onChange={(value) => dispatch({ type: "accessPoints", value })} />
+                  <MultilingualField id="route-access" field="access" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`アクセス・交通の補足`} ja={draft.accessJa} en={draft.accessEn} onJa={text("accessJa")} onEn={text("accessEn")} multiline />
+                  <p className="text-base text-muted">{t`上の一覧に入らない行き方（乗りかえ、時刻、帰りの方法など）を、自由に書きます。`}</p>
                 </Section>
                 <Section title={t`出典`}>
                   <MultilingualField id="route-source" field="source" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`出典`} ja={draft.sourceJa} en={draft.sourceEn} onJa={text("sourceJa")} onEn={text("sourceEn")} multiline />
@@ -567,9 +624,10 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   onClearLeg={(from, to) => dispatch({ type: "clearLeg", from, to })}
                   onClearLegs={() => dispatch({ type: "clearLegs" })}
                   onSplitLine={() => dispatch({ type: "splitLine" })}
-                  onAddPlace={(lat, lng) => {
+                  onReorderPlaces={(keys) => dispatch({ type: "reorderPlaces", keys })}
+                  onAddPlace={(lat, lng, after) => {
                     const key = crypto.randomUUID();
-                    dispatch({ type: "addPlace", key, lat, lng });
+                    dispatch({ type: "addPlace", key, lat, lng, after });
                     setSelectedKey(key);
                   }}
                   onAddEndAt={(from) => {
@@ -630,6 +688,14 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
 
             {section === "places" ? (
               <Section title={t`経由地（${draft.places.length}か所）`}>
+                {draft.places.some((p) => p.id && p.published) ? (
+                  <div className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-paper p-3">
+                    <button type="button" disabled={busyKey !== null} onClick={() => void unpublishAll()} className="tap-target rounded-xl border-2 border-danger px-5 text-lg font-bold text-danger disabled:opacity-40">
+                      {busyKey === "all" ? t`処理しています…` : t`すべての公開をやめる`}
+                    </button>
+                    <p className="min-w-0 flex-1 text-base text-muted">{t`公開中の経由地をまとめて下書きに戻します。ルートは「準備中」として、一覧に残ります。`}</p>
+                  </div>
+                ) : null}
                 <div role="group" aria-label={t`場所の見せ方`} className="flex flex-wrap gap-2">
                   {(["table", "detail"] as const).map((v) => (
                     <button

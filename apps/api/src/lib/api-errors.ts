@@ -116,6 +116,8 @@ const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
 export function apiBase(opts: { log?: (line: string) => void; allowedOrigin?: () => string } = {}) {
   const log = opts.log ?? console.error;
+  // Each refused origin is logged once (up to a few), so a site served from a second address (www, a preview URL) is easy to spot.
+  const refusedOrigins = new Set<string>();
 
   return new Elysia({ name: "api-base" })
     .onRequest(({ request, set, status }) => {
@@ -123,6 +125,10 @@ export function apiBase(opts: { log?: (line: string) => void; allowedOrigin?: ()
       set.headers["x-content-type-options"] = "nosniff"; // the API answers JSON only; never let a browser guess otherwise
       const origin = request.headers.get("origin");
       if (opts.allowedOrigin && origin && !SAFE_METHODS.has(request.method) && origin !== opts.allowedOrigin()) {
+        if (refusedOrigins.size < 20 && !refusedOrigins.has(origin)) {
+          refusedOrigins.add(origin);
+          log(`[api] refused a write from origin ${origin.slice(0, 200)}; the allowed origin is ${opts.allowedOrigin()} (set APP_ORIGIN to the address people use)`);
+        }
         return status(403, { ok: false, error: "forbidden" } satisfies ApiError);
       }
     })

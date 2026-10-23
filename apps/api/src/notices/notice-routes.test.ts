@@ -152,6 +152,18 @@ describe("an admin manages notices", () => {
     expect(second.body.next).toBeNull();
     expect((await s.call("GET", "/admin/lists/notices?cursor=nonsense", { cookie })).status).toBe(422);
   });
+
+  test("?q= searches the text fields and ?filter=field:value narrows by a field", async () => {
+    const s = setup();
+    const cookie = await s.login(admin);
+    for (const titleJa of ["通行止め", "崩落注意", "通行止め解除"]) await s.call("POST", "/admin/lists/notices", { cookie, body: notice({ titleJa }) });
+    const found = await s.call("GET", `/admin/lists/notices?q=${encodeURIComponent("通行止め")}`, { cookie });
+    expect(found.body.items.map((n: Json) => n.titleJa)).toEqual(["通行止め解除", "通行止め"]);
+    expect((await s.call("GET", "/admin/lists/notices?q=nothing-like-this", { cookie })).body.items).toEqual([]);
+    expect((await s.call("GET", `/admin/lists/notices?filter=routeId:${ROUTE}`, { cookie })).body.items).toHaveLength(3);
+    expect((await s.call("GET", "/admin/lists/notices?filter=routeId:other", { cookie })).body.items).toEqual([]);
+    expect((await s.call("GET", "/admin/lists/notices?filter=nope:x", { cookie })).body.items).toEqual([]);
+  });
 });
 
 describe("visitors read published notices", () => {

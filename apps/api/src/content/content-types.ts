@@ -1,5 +1,5 @@
 import type { ErrorCode } from "../lib/api-errors";
-import type { SpotPhoto, spotKinds } from "../db/schema/content";
+import type { AccessPoint, SpotPhoto, spotKinds } from "../db/schema/content";
 import type { ROUTE_TEXT, SPOT_TEXT, Translations } from "../db/translations";
 import type { LineString } from "./line";
 
@@ -25,6 +25,7 @@ export interface RouteRow {
   elevationGainM: number | null;
   difficulty: string | null;
   nameKana: string | null;
+  accessPoints: AccessPoint[];
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
@@ -36,6 +37,8 @@ export interface RouteRow {
   lineVerified: boolean;
   lineSource: string | null;
   videoUrl: string | null;
+  /** When the video was last put there or replaced; null for none (or from before this was kept). */
+  videoUpdatedAt: Date | null;
   historyJa: string | null;
   historyEn: string | null;
   accessJa: string | null;
@@ -111,6 +114,7 @@ export interface RouteFields {
   elevationGainM: number | null;
   difficulty: string | null;
   nameKana: string | null;
+  accessPoints: AccessPoint[];
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
@@ -165,7 +169,7 @@ export interface SpotFields {
 }
 
 /** What the store keeps: the route line is already checked and simplified. */
-export type StoredRouteFields = Omit<RouteFields, "geometry"> & { geometry: LineString | null };
+export type StoredRouteFields = Omit<RouteFields, "geometry"> & { geometry: LineString | null; videoUpdatedAt?: Date | null };
 
 export type Result<T> = { ok: true; value: T } | { ok: false; reason: ErrorCode };
 

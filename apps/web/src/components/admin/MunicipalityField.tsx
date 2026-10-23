@@ -52,7 +52,7 @@ export function MunicipalityField({
               onChange(next);
             }
           }}
-          className={`${inputClass} min-w-48`}
+          className={inputClass}
         >
           <option value="">{t`未選択`}</option>
           {cities.map((c) => (

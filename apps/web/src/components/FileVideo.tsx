@@ -2,13 +2,12 @@
 
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
-import type { FileVideo } from "@/lib/video";
+import { subtitleUrl, type FileVideo } from "@/lib/video";
 
 /**
  * A video file from the site's own storage, in the browser's own player. Like IntroVideo it loads nothing until the
  * visitor taps it, so a long video costs no mobile data (and nothing on a weak signal) before they choose to watch.
- * After the tap the player streams the file as it plays; a plain link to the file stays underneath for when it
- * cannot play.
+ * After the tap the player streams the file as it plays.
  */
 export function FileVideoPlayer({ video, title }: { video: FileVideo; title: string }) {
   const { t } = useLingui();
@@ -18,8 +17,11 @@ export function FileVideoPlayer({ video, title }: { video: FileVideo; title: str
     <div className="flex flex-col gap-3">
       <div className="aspect-video w-full overflow-hidden rounded-xl border-2 border-line bg-ink">
         {playing ? (
-          // eslint-disable-next-line jsx-a11y/media-has-caption -- a walking guide shot on the trail; no caption track exists
-          <video src={video.src} title={title} controls autoPlay playsInline preload="auto" className="h-full w-full" />
+          // No download button and no right-click menu: this only stops casual saving, the file's address stays public.
+          // The subtitles are the .vtt beside the video; a video without them simply shows none.
+          <video src={video.src} title={title} controls controlsList="nodownload" disablePictureInPicture onContextMenu={(e) => e.preventDefault()} autoPlay playsInline preload="auto" className="h-full w-full">
+            <track kind="subtitles" src={subtitleUrl(video)} srcLang="ja" label={t`字幕`} default />
+          </video>
         ) : (
           <button
             type="button"
@@ -35,9 +37,6 @@ export function FileVideoPlayer({ video, title }: { video: FileVideo; title: str
           </button>
         )}
       </div>
-      <a href={video.src} target="_blank" rel="noopener noreferrer" className="tap-target inline-flex items-center text-lg font-bold underline">
-        {t`動画のページをひらく`}
-      </a>
     </div>
   );
 }

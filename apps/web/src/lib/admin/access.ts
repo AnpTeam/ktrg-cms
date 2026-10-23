@@ -7,5 +7,6 @@ import type { Viewer } from "../viewer";
  */
 export function adminAccess(viewer: Pick<Viewer, "signedIn" | "role">): "login" | "forbidden" | "ok" {
   if (!viewer.signedIn) return "login";
-  return viewer.role === "admin" ? "ok" : "forbidden";
+  // An editor works on the content; the pages only an admin may use (settings) are hidden from the menu and refused by the API.
+  return viewer.role === "admin" || viewer.role === "editor" ? "ok" : "forbidden";
 }

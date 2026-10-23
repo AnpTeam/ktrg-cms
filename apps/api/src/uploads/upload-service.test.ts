@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { MAX_UPLOAD_BYTES, createUploadService, photoKey, sniffImage } from "./upload-service";
+import { MAX_SUBTITLE_BYTES, MAX_UPLOAD_BYTES, createUploadService, photoKey, sniffImage, subtitleKeyFor } from "./upload-service";
 import { createMemoryStorage } from "./upload-storage";
 
 const JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3]);
@@ -92,5 +92,66 @@ describe("uploadPhoto", () => {
     expect(await s.service.uploadPhoto(new File([JPEG], "secret-name.jpg"))).toEqual({ ok: false, reason: "uploads_unavailable" });
     expect(s.logs).toHaveLength(1);
     expect(s.logs[0]).not.toContain("secret-name");
+  });
+});
+
+describe("the photo library list is kept for a minute", () => {
+  function counted() {
+    const mem = createMemoryStorage();
+    let reads = 0;
+    let clock = 1_000_000;
+    const storage = {
+      ...mem.storage,
+      list: async (prefix: string, limit: number) => {
+        reads++;
+        return mem.storage.list(prefix, limit);
+      },
+    };
+    const service = createUploadService({ storage, publicBaseUrl: BASE, log: () => {}, now: () => clock });
+    return { service, reads: () => reads, advance: (ms: number) => (clock += ms) };
+  }
+
+  test("the second look within a minute does not read the bucket again; after a minute it does", async () => {
+    const t = counted();
+    await t.service.listPhotos();
+    await t.service.listPhotos();
+    expect(t.reads()).toBe(1);
+    t.advance(61_000);
+    await t.service.listPhotos();
+    expect(t.reads()).toBe(2);
+  });
+
+  test("a new upload shows up at once: it drops the kept list", async () => {
+    const t = counted();
+    await t.service.listPhotos();
+    await t.service.uploadPhoto(new File([JPEG], "new.jpg"));
+    const after = await t.service.listPhotos();
+    expect(t.reads()).toBe(2);
+    expect(after.ok && after.photos.length).toBe(1);
+  });
+
+  test("a failure is not kept", async () => {
+    const mem = createMemoryStorage();
+    const service = createUploadService({ storage: mem.storage, publicBaseUrl: BASE, log: () => {} });
+    mem.state.fail = true;
+    expect((await service.listPhotos()).ok).toBe(false);
+    expect((await service.listPhotos()).ok).toBe(true);
+  });
+});
+
+describe("subtitles", () => {
+  test("their key is the video's own with .vtt; only our videos qualify", () => {
+    expect(subtitleKeyFor(`${BASE}/videos/Kada-abc123.mp4`, BASE)).toBe("videos/Kada-abc123.vtt");
+    expect(subtitleKeyFor(`${BASE}/videos/%E5%8A%A0%E5%A4%AA-abc123.webm`, BASE)).toBe("videos/加太-abc123.vtt");
+    expect(subtitleKeyFor("https://evil.example.com/videos/a.mp4", BASE)).toBeNull();
+    expect(subtitleKeyFor(`${BASE}/photos/a.jpg`, BASE)).toBeNull();
+    expect(subtitleKeyFor(`${BASE}/videos/../secret.mp4`, BASE)).toBeNull();
+  });
+  test("signs for a video of ours, refuses anything else or too big", async () => {
+    const { service } = setup();
+    const ok = await service.createSubtitleUpload({ videoUrl: `${BASE}/videos/a-abc123.mp4`, size: 1200 });
+    expect(ok.ok && ok.upload.url).toBe(`${BASE}/videos/a-abc123.vtt`);
+    expect(await service.createSubtitleUpload({ videoUrl: `${BASE}/photos/a.jpg`, size: 10 })).toEqual({ ok: false, reason: "invalid_file" });
+    expect(await service.createSubtitleUpload({ videoUrl: `${BASE}/videos/a-abc123.mp4`, size: MAX_SUBTITLE_BYTES + 1 })).toEqual({ ok: false, reason: "invalid_file" });
   });
 });

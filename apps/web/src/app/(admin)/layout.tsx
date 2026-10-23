@@ -45,7 +45,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   // The generic lists (described by the API) join the menu by themselves.
   const lists = ((await adminLists()) ?? []).map((l) => ({ key: l.key, title: pick(l.title, i18n.locale) }));
   return (
-    <AdminShell name={viewer.name} lists={lists}>
+    <AdminShell name={viewer.name} role={viewer.role === "admin" || viewer.role === "editor" ? viewer.role : null} lists={lists}>
       {children}
     </AdminShell>
   );

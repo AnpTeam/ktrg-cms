@@ -1,7 +1,7 @@
 import type { ErrorCode } from "../lib/api-errors";
 import { stampableByDefault } from "../db/schema/content";
 import { cleanTranslations } from "../db/translations";
-import { isHttpsUrl, isPhotoUrl } from "../lib/https-url";
+import { isHttpsUrl, isPhotoUrl, withWikimedia } from "../lib/https-url";
 import { isAllowedVideoUrl } from "./video-url";
 import { lineLengthKm, parseLine, plainLine, ridesOf, sideLinesOf, simplifyLine, sketchOf, type LineString, type Ride } from "./line";
 import type {
@@ -50,6 +50,7 @@ export interface PublicSpot {
   statusNoteEn: string | null;
   statusUpdatedAt: Date | null;
   sortOrder: number;
+  updatedAt: Date;
 }
 
 export interface PublicRoute {
@@ -62,6 +63,7 @@ export interface PublicRoute {
   elevationGainM: number | null;
   difficulty: string | null;
   nameKana: string | null;
+  accessPoints: RouteRow["accessPoints"];
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
@@ -69,6 +71,8 @@ export interface PublicRoute {
   walkStyle: WalkStyle | null;
   municipality: string | null;
   videoUrl: string | null;
+  videoUpdatedAt: Date | null;
+  updatedAt: Date;
   historyJa: string | null;
   historyEn: string | null;
   accessJa: string | null;
@@ -120,6 +124,7 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     elevationGainM: r.elevationGainM,
     difficulty: r.difficulty,
     nameKana: r.nameKana,
+    accessPoints: r.accessPoints,
     physicalLevel: r.physicalLevel,
     technicalLevel: r.technicalLevel,
     expectedTimeMin: r.expectedTimeMin,
@@ -127,6 +132,8 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     walkStyle: r.walkStyle,
     municipality: r.municipality,
     videoUrl: r.videoUrl,
+    videoUpdatedAt: r.videoUpdatedAt,
+    updatedAt: r.updatedAt,
     historyJa: r.historyJa,
     historyEn: r.historyEn,
     accessJa: r.accessJa,
@@ -172,6 +179,7 @@ function toPublicSpot(s: SpotRow): PublicSpot {
     statusNoteEn: s.statusNoteEn,
     statusUpdatedAt: s.statusUpdatedAt,
     sortOrder: s.sortOrder,
+    updatedAt: s.updatedAt,
   };
 }
 
@@ -192,7 +200,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       rows.map((s) => ({ id: s.id, status: s.status, statusNoteJa: s.statusNoteJa, statusNoteEn: s.statusNoteEn, statusUpdatedAt: s.statusUpdatedAt })),
     );
   let statusCache: { at: number; value: ReturnType<typeof listStatuses> } | null = null;
-  const photoHosts = deps.photoHosts ?? [];
+  const photoHosts = withWikimedia(deps.photoHosts ?? []);
 
   /** Turn a request's route fields into what the store keeps, or say what is wrong. */
   function prepareRoute(input: Partial<RouteFields>): Result<Partial<StoredRouteFields>> {
@@ -210,6 +218,17 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
     if (input.distanceKm !== undefined) out.distanceKm = input.distanceKm;
     if (input.elevationGainM !== undefined) out.elevationGainM = input.elevationGainM;
     if (input.expectedTimeMin !== undefined) out.expectedTimeMin = input.expectedTimeMin;
+    if (input.accessPoints !== undefined) {
+      // A row with no Japanese name is an empty row left in the form: dropped. The rest are trimmed.
+      const rows: NonNullable<StoredRouteFields["accessPoints"]> = [];
+      for (const p of input.accessPoints) {
+        if (p.nameJa.trim() === "") continue;
+        const url = text(p.url) ?? null;
+        if (url !== null && !isHttpsUrl(url)) return bad("validation_failed");
+        rows.push({ type: p.type, nameJa: p.nameJa.trim(), nameEn: text(p.nameEn) ?? null, noteJa: text(p.noteJa) ?? null, noteEn: text(p.noteEn) ?? null, ...(url ? { url } : {}) });
+      }
+      out.accessPoints = rows;
+    }
     if (input.physicalLevel !== undefined) out.physicalLevel = input.physicalLevel;
     if (input.technicalLevel !== undefined) out.technicalLevel = input.technicalLevel;
     if (input.prefecture !== undefined) out.prefecture = input.prefecture;
@@ -269,13 +288,11 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       out.photoUrl = v;
     }
     if (input.photos !== undefined) {
-      // Wikimedia Commons is always allowed for the gallery (the photo finder in the editor uses it), as well as the photo hosts.
-      const hosts = photoHosts.length > 0 ? [...photoHosts, "upload.wikimedia.org"] : [];
       const photos: NonNullable<SpotFields["photos"]> = [];
       for (const p of input.photos) {
         const url = p.url.trim();
         const sourceUrl = text(p.sourceUrl) ?? null;
-        if (!isPhotoUrl(url, hosts) || (sourceUrl !== null && !isHttpsUrl(sourceUrl))) return bad("invalid_photo_url");
+        if (!isPhotoUrl(url, photoHosts) || (sourceUrl !== null && !isHttpsUrl(sourceUrl))) return bad("invalid_photo_url");
         photos.push({ url, credit: text(p.credit) ?? null, sourceUrl });
       }
       out.photos = photos;
@@ -298,7 +315,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
     async createRoute(actor: string, input: Partial<RouteFields> & { nameJa: string }): Promise<Result<RouteRow>> {
       const p = prepareRoute(input);
       if (!p.ok) return p;
-      return ok(await store.createRoute(actor, { ...p.value, nameJa: p.value.nameJa! }));
+      return ok(await store.createRoute(actor, { ...p.value, nameJa: p.value.nameJa!, ...(p.value.videoUrl ? { videoUpdatedAt: new Date() } : {}) }));
     },
 
     async updateRoute(actor: string, id: string, expected: Date | string, input: Partial<RouteFields>): Promise<Result<RouteRow>> {
@@ -313,6 +330,8 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
         if (!(changes.lineSource !== undefined ? changes.lineSource : current.route.lineSource)) return bad("source_required");
         if ((changes.geometry !== undefined ? changes.geometry : current.route.geometry) === null) return bad("invalid_line");
       }
+      // The video counts as updated when its address changes (put there, replaced, or removed).
+      if (changes.videoUrl !== undefined && changes.videoUrl !== current.route.videoUrl) changes.videoUpdatedAt = changes.videoUrl ? new Date() : null;
       const r = await store.updateRoute(actor, id, date(expected), changes);
       if (r === null) return bad("not_found");
       if (r === "conflict") return bad("conflict");

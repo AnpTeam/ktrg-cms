@@ -91,7 +91,7 @@ export function VideoUpload({ onUploaded, disabled = false }: { onUploaded: (url
           className="sr-only"
         />
       </label>
-      <p className="text-base text-muted">{t`MP4（H.264）かWebM、200MBまで。スマホで見やすいよう、画質は720p・2〜3Mbps程度がおすすめです。`}</p>
+      <p className="text-base text-muted">{t`MP4（H.264）かWebM、200MBまで。スマホで見やすいよう、書き出しは720p・1.5〜2Mbps程度（8分で100MB前後）がおすすめです。ffmpegなら：ffmpeg -i 元.mp4 -vf scale=-2:720 -c:v libx264 -b:v 1800k -c:a aac -b:a 96k -movflags +faststart 出力.mp4`}</p>
       {error ? (
         <p role="alert" className="text-base font-bold text-danger">
           {messages[error]}

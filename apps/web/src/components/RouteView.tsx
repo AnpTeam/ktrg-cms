@@ -2,9 +2,11 @@ import { Trans } from "@lingui/react/macro";
 import { ElevationProfile } from "@/components/ElevationProfile";
 import { EmptyState } from "@/components/EmptyState";
 import { ExpandableText } from "@/components/ExpandableText";
-import { Ruby } from "@/components/Ruby";
+import { Ruby, RubyParts } from "@/components/Ruby";
+import { AccessList } from "@/components/AccessList";
 import { FileVideoPlayer } from "@/components/FileVideo";
 import { IntroVideo } from "@/components/IntroVideo";
+import { LastUpdated } from "@/components/LastUpdated";
 import { Localized } from "@/components/Localized";
 import { Notice } from "@/components/Notice";
 import { PlaceLine } from "@/components/PlaceLine";
@@ -20,6 +22,7 @@ import type { RouteDetail } from "@/lib/content";
 import type { MapSettings } from "@/lib/map-settings";
 import { municipalityName } from "@/lib/municipalities";
 import { pickText } from "@/lib/pick-text";
+import { parseRuby, textOfRuby } from "@/lib/ruby";
 import { pointsAsPlaces } from "@/lib/point-places";
 import { isGuidanceOnly, journeyOf, roleLabel, stopRoles, trailStops } from "@/lib/route-stops";
 import type { MapPlace } from "@/lib/places";
@@ -90,7 +93,11 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
   const stops = buildStops(route, locale, spotHref, labels);
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
   const title = pickText(locale, route.nameJa, route.nameEn);
-  const ruby = title && title.lang === "ja" && !title.fallback && route.nameKana ? { text: title.text, reading: route.nameKana } : null;
+  const rubyOn = !!title && title.lang === "ja" && !title.fallback && !!route.nameKana;
+  // A reading written per kanji is used when it spells this very name; an old one-reading-for-all is shown over the whole name.
+  const perKanji = rubyOn ? parseRuby(route.nameKana!) : null;
+  const rubyParts = perKanji && title && textOfRuby(perKanji) === title.text ? perKanji : null;
+  const ruby = rubyOn && !perKanji && !route.nameKana!.includes("{") ? { text: title!.text, reading: route.nameKana! } : null;
   const video = parseVideoUrl(route.videoUrl);
   const videoFile = video ? null : parseVideoFile(route.videoUrl);
   const { stampedCount, spotCount } = route;
@@ -121,8 +128,8 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           ) : null}
           <header className="order-2 px-4 @4xl:order-none @4xl:px-0">
             {/* In Japanese the name can carry its reading over it; the heading sits a little lower to give the reading room. */}
-            <h1 className={`min-w-0 text-3xl font-bold @4xl:text-4xl ${ruby ? "pt-4" : ""}`}>
-              {ruby ? <Ruby reading={ruby.reading}>{ruby.text}</Ruby> : <Localized value={title} />}
+            <h1 className={`min-w-0 text-3xl font-bold @4xl:text-4xl ${ruby || rubyParts ? "pt-4" : ""}`}>
+              {rubyParts ? <RubyParts parts={rubyParts} /> : ruby ? <Ruby reading={ruby.reading}>{ruby.text}</Ruby> : <Localized value={title} />}
             </h1>
             {route.prefecture || route.municipality ? (
               <p className="mt-2 text-lg text-muted">
@@ -176,12 +183,13 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             </section>
           ) : null}
 
-          {access || journey ? (
+          {access || journey || route.accessPoints.length > 0 ? (
             <section className="order-7 flex flex-col gap-4 px-4 @4xl:order-none @4xl:px-0">
               <h2 className="text-xl font-bold">
                 <Trans>アクセス・交通</Trans>
               </h2>
               {journey ? <RouteJourney journey={journey} locale={locale} /> : null}
+              {route.accessPoints.length > 0 ? <AccessList points={route.accessPoints} locale={locale} /> : null}
               {access ? (
                 <div>
                   <ExpandableText text={access.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
@@ -215,6 +223,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               ) : videoFile ? (
                 <FileVideoPlayer video={videoFile} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
               ) : null}
+              <LastUpdated iso={route.videoUpdatedAt} locale={locale} />
             </section>
           ) : null}
 
@@ -255,6 +264,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
       <Notice>
         <Trans>出かける前に、公式の最新情報を確認してください。</Trans>
       </Notice>
+      <LastUpdated iso={route.updatedAt} locale={locale} className="px-4" />
     </div>
   );
 }

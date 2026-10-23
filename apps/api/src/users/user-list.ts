@@ -22,7 +22,7 @@ export interface UserListRow extends ListRow {
 }
 
 /** What an admin may change on an account: only its role (and only with a fresh login). */
-export const USER_FIELDS = { role: t.Union([t.Literal("participant"), t.Literal("admin")]) };
+export const USER_FIELDS = { role: t.Union([t.Literal("participant"), t.Literal("editor"), t.Literal("admin")]) };
 
 export interface UserListStore extends ListReadStore<UserListRow> {
   /**
@@ -139,6 +139,7 @@ export const userList: ReadDef<"users", UserListRow, UserListServices> & { field
         label: { ja: "権限", en: "Permission" },
         options: [
           { value: "participant", label: { ja: "参加者", en: "Participant" } },
+          { value: "editor", label: { ja: "編集者", en: "Editor" } },
           { value: "admin", label: { ja: "管理者", en: "Administrator" } },
         ],
         required: true,

@@ -12,6 +12,7 @@ import type { Sketch } from "./sketch";
 import type { Viewer } from "./viewer";
 import type { WalkStyle } from "./walk-style";
 import type { TechnicalLevel } from "./grading";
+import type { AccessPoint } from "./access-points";
 
 // View-models for the public content screens (WBS 3.2.3, 3.2.4, 3.2.5). Each field
 // mirrors a CMS column in apps/api/src/db/schema/content.ts, so what an editor types
@@ -42,6 +43,7 @@ export interface RouteSummary {
   elevationGainM: number | null;
   difficulty: string | null;
   nameKana: string | null;
+  accessPoints: AccessPoint[];
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
@@ -131,6 +133,10 @@ export interface RouteDetail extends RouteSummary {
   sideLines?: { spotId: string; line: { lat: number; lng: number }[] }[];
   /** The guidance video's address (the CMS `video_url`); only YouTube and Vimeo links are shown (`parseVideoUrl`). */
   videoUrl: string | null;
+  /** When the video was last put there or replaced (ISO); null when not known. */
+  videoUpdatedAt?: string | null;
+  /** When the route was last saved (ISO). */
+  updatedAt?: string | null;
   /** How the route is walked, as an admin saved it; null/left out when nobody has said. */
   walkStyle?: WalkStyle | null;
 }
@@ -157,6 +163,8 @@ export interface SpotDetail extends SpotListItem {
   statusNoteEn: string | null;
   /** ISO timestamp of the last status change. */
   statusUpdatedAt: string | null;
+  /** When the place was last saved (ISO). */
+  updatedAt?: string | null;
   /** A photo of the place, shown at the top of its card; null when none. */
   photoUrl: string | null;
   /** More photos, in order. */
@@ -220,6 +228,7 @@ function toSummary(r: RouteDetail): RouteSummary {
     elevationGainM: r.elevationGainM,
     difficulty: r.difficulty,
     nameKana: r.nameKana,
+    accessPoints: r.accessPoints,
     physicalLevel: r.physicalLevel,
     technicalLevel: r.technicalLevel,
     expectedTimeMin: r.expectedTimeMin,

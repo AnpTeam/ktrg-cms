@@ -2,15 +2,16 @@ import { createHash, randomBytes } from "node:crypto";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-export type SessionRole = "participant" | "admin";
+export type SessionRole = "participant" | "editor" | "admin";
 
 /**
  * How long a session lives. `idleMs` slides forward on use; `absoluteMs` is the
  * hard cap from the moment of login. A participant gets about a year; an admin
- * is logged out after 14 days idle or 30 days in total.
+ * and an editor are logged out after 14 days idle or 30 days in total.
  */
 export const SESSION_POLICY: Record<SessionRole, { idleMs: number; absoluteMs: number }> = {
   participant: { idleMs: 365 * DAY_MS, absoluteMs: 365 * DAY_MS },
+  editor: { idleMs: 14 * DAY_MS, absoluteMs: 30 * DAY_MS },
   admin: { idleMs: 14 * DAY_MS, absoluteMs: 30 * DAY_MS },
 };
 

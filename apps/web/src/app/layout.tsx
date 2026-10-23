@@ -18,6 +18,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  // The page may draw under the notch and the status bar; the map screen paints its own solid strip there (see MapScreen).
+  viewportFit: "cover",
   colorScheme: "light dark",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
@@ -37,6 +39,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: home, template: `%s | ${site}` },
     description,
     openGraph: { type: "website", siteName: site, title: home, description },
+    // Added to the iPhone's home screen it opens like an app, with a plain status bar.
+    appleWebApp: { capable: true, title: site, statusBarStyle: "default" },
   };
 }
 

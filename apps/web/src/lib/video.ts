@@ -49,6 +49,9 @@ export interface FileVideo {
   src: string;
 }
 
+/** Where the subtitles of an uploaded video are: beside it, with ".vtt" in place of ".mp4" / ".webm" (the admin uploads them there). */
+export const subtitleUrl = (video: FileVideo): string => video.src.replace(/\.(mp4|webm)(?=$|\?)/i, ".vtt");
+
 export function parseVideoFile(raw: string | null | undefined): FileVideo | null {
   if (!raw) return null;
   try {

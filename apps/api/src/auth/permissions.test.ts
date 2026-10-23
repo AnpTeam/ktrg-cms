@@ -6,7 +6,7 @@ const permissions = Object.keys(PERMISSIONS) as Permission[];
 
 describe("permission table", () => {
   test("the roles match the user_role type in the database", () => {
-    expect([...userRole.enumValues].sort()).toEqual(["admin", "participant"]);
+    expect([...userRole.enumValues].sort()).toEqual(["admin", "editor", "participant"]);
   });
 
   test("every permission names at least one role, with no repeats and no unknown roles", () => {
@@ -56,6 +56,19 @@ describe("permission table", () => {
     for (const p of cms) {
       expect(can("participant", p)).toBe(false);
       expect(can("admin", p)).toBe(true);
+    }
+  });
+});
+
+describe("the editor role", () => {
+  const ADMIN_ONLY = ["audit.read", "site.manage", "stamp.review", "user.manage_roles", "user.read"];
+
+  test("an editor does the content work and the participant things, and nothing about accounts, settings, history or revoking stamps", () => {
+    const forEditor: string[] = permissions.filter((p) => can("editor", p)).sort();
+    const forAdmin: string[] = permissions.filter((p) => can("admin", p)).sort();
+    expect(forAdmin.filter((p) => !forEditor.includes(p))).toEqual(ADMIN_ONLY);
+    for (const p of ["route.manage", "spot.manage", "spot.publish", "rally.manage", "notice.manage", "banner.manage", "upload.create", "upload.read", "me.manage", "stamp.create"]) {
+      expect(can("editor", p as Permission)).toBe(true);
     }
   });
 });

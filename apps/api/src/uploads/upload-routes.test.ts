@@ -168,3 +168,29 @@ describe("POST /admin/uploads/video", () => {
     expect((await s.video(ok, await s.login(admin))).status).toBe(503);
   });
 });
+
+describe("uploads have their own limits", () => {
+  const MB = 1024 * 1024;
+  test("video signing: 10 in 15 minutes, then 429", async () => {
+    const s = setup();
+    const cookie = await s.login(admin);
+    for (let i = 0; i < 10; i++) expect((await s.video({ name: "a.mp4", contentType: "video/mp4", size: MB }, cookie)).status).toBe(201);
+    expect((await s.video({ name: "a.mp4", contentType: "video/mp4", size: MB }, cookie)).status).toBe(429);
+  });
+
+  test("opening the library: 30 in 15 minutes, then 429", async () => {
+    const s = setup();
+    const cookie = await s.login(admin);
+    for (let i = 0; i < 30; i++) expect((await s.library(cookie)).status).toBe(200);
+    expect((await s.library(cookie)).status).toBe(429);
+  });
+
+  test("photo uploads: 60 in 15 minutes, then 429; videos and the library count on their own", async () => {
+    const s = setup();
+    const cookie = await s.login(admin);
+    for (let i = 0; i < 60; i++) expect((await s.upload(new File([JPEG], `p${i}.jpg`), cookie)).status).toBe(201);
+    expect((await s.upload(new File([JPEG], "late.jpg"), cookie)).status).toBe(429);
+    expect((await s.video({ name: "a.mp4", contentType: "video/mp4", size: MB }, cookie)).status).toBe(201);
+    expect((await s.library(cookie)).status).toBe(200);
+  });
+});

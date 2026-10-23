@@ -80,6 +80,19 @@ const routeProps = {
   elevationGainM: nullable(t.Integer({ minimum: 0, maximum: 10000 })),
   difficulty: nullable(t.String({ maxLength: 100 })),
   nameKana: nullable(t.String({ maxLength: 200 })),
+  // How to get there: up to 10 entries, each a kind, a place name and a short note (Japanese and English).
+  accessPoints: t.Array(
+    t.Object({
+      type: t.Union([t.Literal("train"), t.Literal("bus"), t.Literal("ferry"), t.Literal("car"), t.Literal("walk"), t.Literal("other")]),
+      nameJa: t.String({ maxLength: 100 }),
+      nameEn: nullable(t.String({ maxLength: 100 })),
+      noteJa: nullable(t.String({ maxLength: 300 })),
+      noteEn: nullable(t.String({ maxLength: 300 })),
+      // An optional https link (the operator's timetable, the ferry's page ...).
+      url: t.Optional(nullable(t.String({ maxLength: 500 }))),
+    }),
+    { maxItems: 10 },
+  ),
   physicalLevel: nullable(t.Integer({ minimum: 1, maximum: 10 })),
   technicalLevel: t.Union([t.Literal("A"), t.Literal("B"), t.Literal("C"), t.Literal("D"), t.Literal("E"), t.Null()]),
   expectedTimeMin: nullable(t.Integer({ minimum: 0, maximum: 20000 })),

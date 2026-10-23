@@ -37,7 +37,7 @@ export function formatMoment(locale: string, iso: string): string {
 }
 
 /** One field's value as text (null when it has none): a day or moment written out, a route by name, a choice by label. */
-export function displayValue(f: FieldUi, item: ListItem, locale: string, routeName: (id: string) => string | null): string | null {
+export function displayValue(f: FieldUi, item: ListItem, locale: string, routeName: (id: string, field: string) => string | null): string | null {
   if (f.kind === "bilingual" || f.kind === "bilingual-long") return itemName({ titleField: f.name } as ListMeta, item, locale) || null;
   const value = item[f.name];
   if (value === null || value === undefined || value === "") return null;
@@ -47,7 +47,8 @@ export function displayValue(f: FieldUi, item: ListItem, locale: string, routeNa
     case "datetime":
       return formatMoment(locale, String(value));
     case "route":
-      return routeName(String(value));
+    case "relation":
+      return routeName(String(value), f.name);
     case "select": {
       const option = f.options?.find((o) => o.value === value);
       return option ? pick(option.label, locale) : String(value);
@@ -58,7 +59,7 @@ export function displayValue(f: FieldUi, item: ListItem, locale: string, routeNa
 }
 
 /** The short facts under a row's name, from the fields marked `inList`, in field order. */
-export function itemFacts(meta: ListMeta, item: ListItem, locale: string, routeName: (id: string) => string | null): string[] {
+export function itemFacts(meta: ListMeta, item: ListItem, locale: string, routeName: (id: string, field: string) => string | null): string[] {
   return meta.fields.flatMap((f) => {
     const show = f.inList;
     if (!show) return [];

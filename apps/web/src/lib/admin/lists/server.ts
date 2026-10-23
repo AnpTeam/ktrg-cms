@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import { adminGet } from "../admin-fetch";
 import type { AdminRouteSummary } from "../types";
-import type { ListMeta } from "./config";
+import { itemName, type ListMeta } from "./config";
+import type { ListPage } from "./list-client";
 
 // Server side of the generic admin pages and menu. Server code only (it forwards the admin's cookie).
 
@@ -19,10 +20,43 @@ export async function listMetaOr404(key: string): Promise<ListMeta> {
   return meta;
 }
 
-/** The routes a route field offers (only fetched when the list has one), named in the page's language. */
-export async function routeChoices(meta: ListMeta, locale: string): Promise<{ id: string; name: string }[]> {
-  if (!meta.fields.some((f) => f.kind === "route")) return [];
-  const { status, body } = await adminGet<{ ok: true; routes: AdminRouteSummary[] }>("/routes");
-  const routes = status === 200 && body?.ok ? body.routes : [];
-  return routes.map((r) => ({ id: r.id, name: locale === "en" && r.nameEn ? r.nameEn : r.nameJa }));
+export type Choice = { id: string; name: string };
+
+// shortcut: a relation field offers at most this many rows of the other list (read 50 at a time); a list with more
+// than that needs a search-as-you-type picker instead.
+const MAX_CHOICES = 500;
+
+/**
+ * The rows each relation field of a list offers, by field name, named in the page's language: a `route` field offers the
+ * routes, a `relation` field the rows of the list it points at. Only fetched when the list has such a field.
+ */
+export async function relationChoices(meta: ListMeta, locale: string): Promise<Record<string, Choice[]>> {
+  const targets = new Map<string, Choice[]>();
+  const out: Record<string, Choice[]> = {};
+  for (const f of meta.fields) {
+    const target = f.kind === "route" ? "routes" : f.kind === "relation" ? f.to : undefined;
+    if (!target) continue;
+    if (!targets.has(target)) targets.set(target, await choicesOf(target, locale));
+    out[f.name] = targets.get(target)!;
+  }
+  return out;
+}
+
+async function choicesOf(target: string, locale: string): Promise<Choice[]> {
+  if (target === "routes") {
+    const { status, body } = await adminGet<{ ok: true; routes: AdminRouteSummary[] }>("/routes");
+    const routes = status === 200 && body?.ok ? body.routes : [];
+    return routes.map((r) => ({ id: r.id, name: locale === "en" && r.nameEn ? r.nameEn : r.nameJa }));
+  }
+  const meta = (await adminLists())?.find((l) => l.key === target);
+  if (!meta) return [];
+  const out: Choice[] = [];
+  let cursor: string | null = null;
+  do {
+    const { status, body }: { status: number; body: ({ ok: true } & ListPage) | null } = await adminGet(`/lists/${target}${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`);
+    if (status !== 200 || !body?.ok) break;
+    out.push(...body.items.map((item) => ({ id: item.id, name: itemName(meta, item, locale) })));
+    cursor = body.next;
+  } while (cursor && out.length < MAX_CHOICES);
+  return out;
 }

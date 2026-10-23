@@ -109,6 +109,13 @@ describe("PATCH /me", () => {
     expect(((await (await call("GET", "", cookie)).json()) as MeBody).me).toMatchObject({ locale: "en", displayName: "Alice" });
   });
 
+  test("saving the profile is limited: 30 in 15 minutes, then 429", async () => {
+    const { call, login } = setup();
+    const cookie = await login(alice);
+    for (let i = 0; i < 30; i++) expect((await call("PATCH", "", cookie, { displayName: `a${i}` })).status).toBe(200);
+    expect((await call("PATCH", "", cookie, { displayName: "late" })).status).toBe(429);
+  });
+
   test("the new language is what the session reports straight away", async () => {
     const { call, login, session } = setup();
     const cookie = await login(alice);

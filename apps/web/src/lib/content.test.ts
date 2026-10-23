@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { filterByPrefecture, isPrefecture, pickText, sampleContentEnabled } from "./content";
-import { formatUpdated } from "./format";
+import { formatDayTime, formatUpdated } from "./format";
 
 describe("pickText", () => {
   test("Japanese UI uses Japanese", () => {
@@ -39,6 +39,15 @@ describe("prefecture filter", () => {
   test("filters, and leaves everything when no prefecture is chosen", () => {
     expect(filterByPrefecture(routes, "nara").map((r) => r.id)).toEqual(["a"]);
     expect(filterByPrefecture(routes, undefined)).toHaveLength(3);
+  });
+});
+
+describe("formatDayTime", () => {
+  test("a full date with the time, in Japan time, rolling over to the next day", () => {
+    const NBSP = String.fromCharCode(160);
+    expect(formatDayTime("ja", "2026-10-15T05:30:00Z")).toBe("2026年10月15日" + NBSP + "14:30");
+    expect(formatDayTime("en", "2026-10-15T05:30:00Z")).toBe("Oct 15, 2026," + NBSP + "14:30");
+    expect(formatDayTime("ja", "2026-10-15T16:05:00Z")).toBe("2026年10月16日" + NBSP + "01:05");
   });
 });
 

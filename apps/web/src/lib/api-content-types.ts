@@ -2,6 +2,7 @@
 // Declared here by hand because Eden types the JSON dates as Date; the times arrive as ISO text.
 
 import type { TechnicalLevel } from "./grading";
+import type { AccessPoint } from "./access-points";
 
 export interface PublicRoute {
   id: string;
@@ -13,6 +14,7 @@ export interface PublicRoute {
   elevationGainM: number | null;
   difficulty: string | null;
   nameKana: string | null;
+  accessPoints?: AccessPoint[];
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
@@ -20,6 +22,10 @@ export interface PublicRoute {
   walkStyle?: string | null;
   municipality: string | null;
   videoUrl: string | null;
+  /** When the video was last put there or replaced (ISO); null for none. */
+  videoUpdatedAt?: string | null;
+  /** When the route was last saved (ISO). */
+  updatedAt?: string;
   historyJa: string | null;
   historyEn: string | null;
   accessJa: string | null;
@@ -66,6 +72,8 @@ export interface PublicSpot {
   statusNoteEn: string | null;
   statusUpdatedAt: string | null;
   sortOrder: number;
+  /** When the place was last saved (ISO). */
+  updatedAt?: string;
 }
 
 /** One place of the directory as GET /places sends it (only published ones with a checked position). */

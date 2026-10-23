@@ -8,7 +8,7 @@ const empty: RouteFacts = {
   descriptionJa: null,
   descriptionEn: null,
   historyJa: null,
-  accessJa: null,
+  accessJa: null, accessPoints: 0,
   photoUrl: null,
   videoUrl: null,
   prefecture: null,

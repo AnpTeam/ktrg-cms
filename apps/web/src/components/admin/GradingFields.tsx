@@ -43,14 +43,14 @@ export function GradingFields({
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="grid gap-4 sm:grid-cols-3">
       <Field
         label={t`体力度（1〜10）`}
         htmlFor="route-physical"
         hint={
           suggestion
-            ? t`目安：コース定数 ${constant} → 体力度 ${level}。数字から計算した目安です。保存されるのは、ここで選んだ値です。`
-            : t`距離と時間を入れると、目安が出ます。`
+            ? t`目安：コース定数 ${constant} → ${level}`
+            : t`距離と時間を入れると、目安が出ます`
         }
       >
         <div className="flex flex-wrap items-center gap-3">
@@ -58,7 +58,7 @@ export function GradingFields({
             id="route-physical"
             value={draft.physicalLevel ?? ""}
             onChange={(e) => onPhysical(e.target.value === "" ? null : Number(e.target.value))}
-            className={`${inputClass} max-w-48`}
+            className={`${inputClass} w-28`}
           >
             <option value="">{t`選ばない`}</option>
             {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
@@ -68,13 +68,14 @@ export function GradingFields({
             ))}
           </select>
           {suggestion && suggestion.level !== draft.physicalLevel ? (
-            <button type="button" onClick={() => onPhysical(suggestion.level)} className="tap-target rounded-xl border-2 border-line px-5 text-lg font-bold">
-              {t`目安の値を入れる`}
+            <button type="button" onClick={() => onPhysical(suggestion.level)} className="tap-target rounded-xl border-2 border-line px-3 text-base font-bold">
+              {t`目安を使う`}
             </button>
           ) : null}
         </div>
       </Field>
 
+      <div className="sm:col-span-2">
       <Field
         label={t`技術度（A〜E）`}
         htmlFor="route-technical"
@@ -84,7 +85,7 @@ export function GradingFields({
           id="route-technical"
           value={draft.technicalLevel ?? ""}
           onChange={(e) => onTechnical(isTechnicalLevel(e.target.value) ? e.target.value : null)}
-          className={`${inputClass} max-w-48`}
+          className={`${inputClass} w-28`}
         >
           <option value="">{t`選ばない`}</option>
           {TECHNICAL_LEVELS.map((l) => (
@@ -94,6 +95,7 @@ export function GradingFields({
           ))}
         </select>
       </Field>
+      </div>
     </div>
   );
 }

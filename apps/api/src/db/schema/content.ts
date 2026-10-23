@@ -54,6 +54,20 @@ export const spotKinds = [
 ] as const;
 export const spotKind = pgEnum("spot_kind", spotKinds);
 
+/** How a visitor gets to or from a route: by train, bus, ferry, car or on foot. */
+export const accessTypes = ["train", "bus", "ferry", "car", "walk", "other"] as const;
+
+/** One way of getting there, shown like the Start / Goal badges: the kind, the place's name and a short note, in Japanese and English. */
+export interface AccessPoint {
+  type: (typeof accessTypes)[number];
+  nameJa: string;
+  nameEn: string | null;
+  noteJa: string | null;
+  noteEn: string | null;
+  /** An https link for this way of getting there. */
+  url?: string | null;
+}
+
 /** A photo in a waypoint's gallery: an https link, who took it (when the license asks for a credit), and the page it came from. */
 export interface SpotPhoto {
   url: string;
@@ -83,6 +97,8 @@ export const routes = pgTable(
     // The mountain-grading levels: physical 1 to 10 and technical "A" to "E" (validated in the API).
     // How the Japanese name is read, shown over it as furigana (ruby).
     nameKana: text("name_kana"),
+    // How to get there, in order (see AccessPoint).
+    accessPoints: jsonb("access_points").$type<AccessPoint[]>().notNull().default(sql`'[]'::jsonb`),
     physicalLevel: integer("physical_level"),
     technicalLevel: text("technical_level"),
     expectedTimeMin: integer("expected_time_min"),
@@ -100,6 +116,8 @@ export const routes = pgTable(
     lineSource: text("line_source"),
     // YouTube / Vimeo only; the host is checked in the API.
     videoUrl: text("video_url"),
+    // When the video was last put there or replaced (shown under it as "last updated").
+    videoUpdatedAt: timestamp("video_updated_at", { withTimezone: true }),
     // A picture of the route: an https address (an upload comes when a storage provider is chosen).
     photoUrl: text("photo_url"),
     // Who took the picture / where it comes from. Shown on it; may hold links (see the web app's rich-text format).

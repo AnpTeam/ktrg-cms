@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { RichTextToolbar } from "./RichTextToolbar";
 import { ADDED_LOCALES, LOCALE_NAMES, MAX_LANGUAGES, moveLanguage, nextLanguage, startLanguages, withTranslation, type AddedLocale, type Translations } from "@/lib/admin/content-locales";
 
 // The small pieces every admin form is made of. Big controls, a visible label, and a hint line when it helps.
@@ -92,7 +93,10 @@ export function MultilingualField({
   }
   const box = (boxId: string, lang: string, value: string, onChange: (v: string) => void, ariaLabel?: string) =>
     multiline ? (
-      <TextArea id={boxId} lang={lang} value={value} onChange={onChange} ariaLabel={ariaLabel} />
+      <>
+        <RichTextToolbar targetId={boxId} value={value} onChange={onChange} />
+        <TextArea id={boxId} lang={lang} value={value} onChange={onChange} ariaLabel={ariaLabel} />
+      </>
     ) : (
       <TextInput id={boxId} lang={lang} value={value} onChange={onChange} maxLength={200} invalid={lang === "ja" && invalid} ariaLabel={ariaLabel} />
     );

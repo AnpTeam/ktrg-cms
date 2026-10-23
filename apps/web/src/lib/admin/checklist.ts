@@ -33,6 +33,8 @@ export interface RouteFacts {
   descriptionEn: string | null;
   historyJa: string | null;
   accessJa: string | null;
+  /** How many ways of getting there are listed. */
+  accessPoints: number;
   photoUrl: string | null;
   videoUrl: string | null;
   prefecture: Prefecture | null;
@@ -52,7 +54,7 @@ export function checklist(f: RouteFacts): ChecklistItem[] {
     { id: "prefecture", required: false, done: f.prefecture !== null, tab: "overview" },
     { id: "english", required: false, done: filled(f.nameEn) && filled(f.descriptionEn), tab: "text" },
     { id: "history", required: false, done: filled(f.historyJa), tab: "text" },
-    { id: "access", required: false, done: filled(f.accessJa), tab: "text" },
+    { id: "access", required: false, done: filled(f.accessJa) || f.accessPoints > 0, tab: "text" },
     { id: "photo", required: false, done: filled(f.photoUrl), tab: "overview" },
     { id: "video", required: false, done: filled(f.videoUrl), tab: "overview" },
   ];
@@ -66,6 +68,7 @@ export function factsFromSummary(r: AdminRouteSummary): RouteFacts {
     descriptionEn: r.descriptionEn,
     historyJa: r.historyJa,
     accessJa: r.accessJa,
+    accessPoints: r.accessPoints?.length ?? 0,
     photoUrl: r.photoUrl,
     videoUrl: r.videoUrl,
     prefecture: r.prefecture,
@@ -83,6 +86,7 @@ export function factsFromDraft(d: RouteDraft): RouteFacts {
     descriptionEn: d.descriptionEn,
     historyJa: d.historyJa,
     accessJa: d.accessJa,
+    accessPoints: d.accessPoints.length,
     photoUrl: d.photoUrl,
     videoUrl: d.videoUrl,
     prefecture: d.prefecture,

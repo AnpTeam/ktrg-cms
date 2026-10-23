@@ -12,6 +12,9 @@ describe("who may open the admin area", () => {
   test("an admin gets in", () => {
     expect(adminAccess(viewerFromMe(200, { ok: true, me: { role: "admin" } }))).toBe("ok");
   });
+  test("an editor gets in too", () => {
+    expect(adminAccess(viewerFromMe(200, { ok: true, me: { role: "editor" } }))).toBe("ok");
+  });
   test("a signed-in account whose role is unknown is not let in", () => {
     expect(adminAccess(viewerFromMe(200, { ok: true, me: { role: "root" } }))).toBe("forbidden");
     expect(adminAccess({ signedIn: true, role: null })).toBe("forbidden");

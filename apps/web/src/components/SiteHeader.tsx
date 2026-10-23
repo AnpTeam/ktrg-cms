@@ -7,7 +7,7 @@ import { useLingui } from "@lingui/react/macro";
 import { logOut } from "@/lib/auth-client";
 import { ChevronIcon, CloseIcon, MenuIcon, UserIcon } from "./icons";
 import { KatsuragiLogo } from "./KatsuragiLogo";
-import { LocaleSwitcher } from "./LocaleSwitcher";
+import { LocaleSelect } from "./LocaleSwitcher";
 import { useMenu } from "./MenuProvider";
 import { SampleNoticeButton } from "./SampleNotice";
 import { ThemeSwitcher } from "./ThemeSwitcher";
@@ -152,7 +152,8 @@ export function SiteHeader({
           ) : (
             <span />
           )}
-          <span className="justify-self-end">{sample && !open ? <SampleNoticeButton /> : null}</span>
+          {/* Open: the language drop-down takes the right end of the bar, so the bar and the menu read as one piece. */}
+          <span className="justify-self-end">{open ? <LocaleSelect /> : sample ? <SampleNoticeButton /> : null}</span>
         </div>
       </div>
 
@@ -163,14 +164,14 @@ export function SiteHeader({
           className={`menu-drop absolute inset-x-0 overflow-y-auto overscroll-contain border-b-2 border-brand bg-surface shadow-lg md:fixed md:right-auto md:w-[26rem] md:max-h-[calc(100dvh-1.5rem)] md:rounded-2xl md:border-2 md:shadow-xl ${onLanding ? "top-[4.75rem] max-h-[calc(100dvh-4.75rem)]" : "top-full max-h-[calc(100dvh-3.5rem)]"}`}
         >
           <div className="mx-auto flex max-w-xl flex-col gap-5 px-4 py-5">
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="tap-target hidden items-center gap-2 self-end rounded-lg border border-ink px-3 text-lg font-bold md:inline-flex"
-            >
-              <CloseIcon />
-              {t`閉じる`}
-            </button>
+            {/* From 768 px the bar is not drawn (the rail has the menu button), so the top row of the popover holds both. */}
+            <div className="hidden items-center justify-end gap-2 md:flex">
+              <LocaleSelect />
+              <button type="button" onClick={() => setOpen(false)} className="tap-target inline-flex items-center gap-2 rounded-lg border border-ink px-3 text-lg font-bold">
+                <CloseIcon />
+                {t`閉じる`}
+              </button>
+            </div>
             {signedIn ? (
               <div className="flex flex-col gap-3">
                 <Link prefetch={false}
@@ -206,10 +207,6 @@ export function SiteHeader({
               <div>
                 <ThemeSwitcher />
               </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <p className="text-lg font-bold">{t`言語`}</p>
-              <LocaleSwitcher />
             </div>
             <div className="flex flex-col gap-2 border-t-2 border-line pt-4">
               <Link prefetch={false}
