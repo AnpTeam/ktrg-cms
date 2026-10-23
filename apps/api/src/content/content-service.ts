@@ -214,9 +214,14 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
     if (input.expectedTimeMin !== undefined) out.expectedTimeMin = input.expectedTimeMin;
     if (input.accessPoints !== undefined) {
       // A row with no Japanese name is an empty row left in the form: dropped. The rest are trimmed.
-      out.accessPoints = input.accessPoints
-        .filter((p) => p.nameJa.trim() !== "")
-        .map((p) => ({ type: p.type, nameJa: p.nameJa.trim(), nameEn: text(p.nameEn) ?? null, noteJa: text(p.noteJa) ?? null, noteEn: text(p.noteEn) ?? null }));
+      const rows: NonNullable<StoredRouteFields["accessPoints"]> = [];
+      for (const p of input.accessPoints) {
+        if (p.nameJa.trim() === "") continue;
+        const url = text(p.url) ?? null;
+        if (url !== null && !isHttpsUrl(url)) return bad("validation_failed");
+        rows.push({ type: p.type, nameJa: p.nameJa.trim(), nameEn: text(p.nameEn) ?? null, noteJa: text(p.noteJa) ?? null, noteEn: text(p.noteEn) ?? null, ...(url ? { url } : {}) });
+      }
+      out.accessPoints = rows;
     }
     if (input.physicalLevel !== undefined) out.physicalLevel = input.physicalLevel;
     if (input.technicalLevel !== undefined) out.technicalLevel = input.technicalLevel;

@@ -66,6 +66,9 @@ export function AccessPointsEditor({ value, onChange }: { value: AccessPoint[]; 
               <TextInput id={`access-${i}-note-en`} lang="en" value={p.noteEn ?? ""} onChange={(v) => set(i, { noteEn: nullIfEmpty(v) })} maxLength={300} />
             </Field>
           </div>
+          <Field label={t`リンク（任意）`} htmlFor={`access-${i}-url`} hint={t`https:// から始まるアドレス。入れると、場所の名前がリンクになります。`}>
+            <TextInput id={`access-${i}-url`} value={p.url ?? ""} onChange={(v) => set(i, { url: nullIfEmpty(v.trim()) })} maxLength={500} placeholder="https://" invalid={!!p.url && !/^https:\/\//.test(p.url)} />
+          </Field>
         </div>
       ))}
       <button

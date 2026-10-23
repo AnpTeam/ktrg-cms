@@ -158,6 +158,18 @@ describe("an admin edits a route and its places", () => {
     expect((await patch({ accessPoints: Array.from({ length: 11 }, () => rows[0]) }, next)).status).toBe(422);
   });
 
+  test("an access point may carry an https link; any other kind of link is refused", async () => {
+    const { call, cookie, route } = await created();
+    const patch = (body: unknown, updatedAt: string) => call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt, ...(body as object) } });
+    const row = (url: string | null) => ({ type: "bus", nameJa: "高田五條線", nameEn: null, noteJa: null, noteEn: null, url });
+    expect((await patch({ accessPoints: [row(" https://example.com/bus ")] }, route.updatedAt)).status).toBe(200);
+    const got = ((await (await call("GET", `/admin/routes/${route.id}`, { cookie })).json()) as Json).route as Json;
+    expect((got.accessPoints as Json[])[0]!.url).toBe("https://example.com/bus");
+    const next = got.updatedAt as string;
+    expect((await patch({ accessPoints: [row("http://example.com")] }, next)).status).toBe(422);
+    expect((await patch({ accessPoints: [row("javascript:alert(1)")] }, next)).status).toBe(422);
+  });
+
   test("bad input: 400 invalid_line / invalid_video_url, 422 for the wrong shape", async () => {
     const { call, cookie, route } = await created();
     const patch = (body: unknown) => call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt: route.updatedAt, ...(body as object) } });
