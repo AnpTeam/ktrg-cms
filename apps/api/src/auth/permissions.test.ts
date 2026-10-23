@@ -35,6 +35,7 @@ describe("permission table", () => {
         "me.sensitive",
         "navigation.path",
         "notice.manage",
+        "post.manage",
         "rally.manage",
         "route.manage",
         "spot.manage",

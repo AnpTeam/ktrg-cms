@@ -1,0 +1,94 @@
+import { describe, expect, test } from "bun:test";
+import { createMemoryAuditWriter } from "../audit/audit-log";
+import { createMemoryPostStore, createPostService, PUBLIC_POSTS_LIMIT } from "./post-list";
+
+const actor = "11111111-1111-4111-8111-111111111111";
+
+/** 15:30 UTC is already the next day in Japan, so "today" here is 2026-10-21. */
+const NOW = new Date("2026-10-20T15:30:00Z");
+
+const post = (over: Record<string, unknown> = {}) => ({
+  titleJa: " 金剛山の秋 ",
+  titleEn: "  ",
+  bodyJa: " 紅葉が見事です。 ",
+  bodyEn: null,
+  authorNameJa: "  ",
+  authorNameEn: null,
+  coverPhotoUrl: null,
+  coverCredit: "  ",
+  authorPhotoUrl: null,
+  publishedOn: "2026-10-20",
+  published: false,
+  ...over,
+});
+
+function setup() {
+  const audit = createMemoryAuditWriter();
+  const mem = createMemoryPostStore(audit.writer);
+  return { svc: createPostService({ store: mem.store, now: () => NOW }), audit, mem };
+}
+
+describe("blog posts", () => {
+  test("cleaned on save: text trimmed, blank optional text cleared; audited", async () => {
+    const s = setup();
+    const r = await s.svc.create(actor, post());
+    expect(r.ok && r.value).toMatchObject({
+      titleJa: "金剛山の秋",
+      titleEn: null,
+      bodyJa: "紅葉が見事です。",
+      authorNameJa: null,
+      coverCredit: null,
+    });
+    expect(s.audit.rows.map((a) => a.action)).toEqual(["post.create"]);
+  });
+
+  test("refused: a photo link that is not https, a Japanese title or body of only spaces", async () => {
+    const s = setup();
+    const bad = { ok: false, reason: "invalid_photo_url" } as const;
+    expect(await s.svc.create(actor, post({ coverPhotoUrl: "http://img.example.com/a.jpg" }))).toEqual(bad);
+    expect(await s.svc.create(actor, post({ authorPhotoUrl: "http://img.example.com/me.jpg" }))).toEqual(bad);
+    expect(await s.svc.create(actor, post({ titleJa: "   " }))).toEqual({ ok: false, reason: "validation_failed" });
+    expect(await s.svc.create(actor, post({ bodyJa: "   " }))).toEqual({ ok: false, reason: "validation_failed" });
+    expect(s.audit.rows).toEqual([]);
+  });
+
+  test("an https photo link is kept, trimmed", async () => {
+    const s = setup();
+    const r = await s.svc.create(actor, post({ coverPhotoUrl: " https://img.example.com/a.jpg " }));
+    expect(r.ok && r.value.coverPhotoUrl).toBe("https://img.example.com/a.jpg");
+  });
+
+  test("visitors get published posts whose day has come, newest first; drafts and future days are hidden", async () => {
+    const s = setup();
+    await s.svc.create(actor, post({ titleJa: "昨日・先に書いた", published: true, publishedOn: "2026-10-20" }));
+    await s.svc.create(actor, post({ titleJa: "昨日・あとで書いた", published: true, publishedOn: "2026-10-20" }));
+    await s.svc.create(actor, post({ titleJa: "今日", published: true, publishedOn: "2026-10-21" }));
+    await s.svc.create(actor, post({ titleJa: "明日", published: true, publishedOn: "2026-10-22" }));
+    await s.svc.create(actor, post({ titleJa: "下書き", published: false, publishedOn: "2026-10-20" }));
+
+    // Newest day first; two posts on one day show the one written later first. Tomorrow's and the draft are missing.
+    expect((await s.svc.publicPosts()).map((p) => p.titleJa)).toEqual(["今日", "昨日・あとで書いた", "昨日・先に書いた"]);
+  });
+
+  test("one post by id: only when a visitor may read it", async () => {
+    const s = setup();
+    const made = await s.svc.create(actor, post({ published: false }));
+    const id = made.ok ? made.value.id : "";
+    expect(await s.svc.publicPost(id)).toBeNull();
+
+    await s.svc.update(actor, id, (await s.svc.get(id))!.updatedAt, { published: true });
+    expect((await s.svc.publicPost(id))?.titleJa).toBe("金剛山の秋");
+
+    await s.svc.update(actor, id, (await s.svc.get(id))!.updatedAt, { publishedOn: "2026-10-22" });
+    expect(await s.svc.publicPost(id)).toBeNull(); // dated tomorrow
+    expect(await s.svc.publicPost("11111111-1111-4111-8111-999999999999")).toBeNull();
+  });
+
+  test("the public list is capped, so one runaway blog cannot grow the answer without end", async () => {
+    const s = setup();
+    for (let i = 0; i < PUBLIC_POSTS_LIMIT + 3; i++) {
+      await s.svc.create(actor, post({ titleJa: `記事${i}`, published: true }));
+    }
+    expect(await s.svc.publicPosts()).toHaveLength(PUBLIC_POSTS_LIMIT);
+  });
+});

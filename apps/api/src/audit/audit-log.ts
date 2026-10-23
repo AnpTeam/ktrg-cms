@@ -49,6 +49,10 @@ export const AUDIT_ACTIONS = {
   "notice.update": "notice",
   "notice.delete": "notice",
   /** Admin banners (admin-lists): made, changed (including published or not), deleted. */
+  /** Admin content: blog posts. */
+  "post.create": "post",
+  "post.update": "post",
+  "post.delete": "post",
   "banner.create": "banner",
   "banner.update": "banner",
   "banner.delete": "banner",
