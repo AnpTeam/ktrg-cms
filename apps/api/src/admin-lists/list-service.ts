@@ -1,4 +1,5 @@
-import { bad, ok, type Cursor, type ListReadStore, type ListRow, type ListRules, type ListStore, type Result } from "./list-types";
+import { isFiltering, MAX_SCAN, rowMatches, SCAN_BATCH, type ListFilter } from "./list-filter";
+import { bad, ok, type Cursor, type FieldUi, type ListReadStore, type ListRow, type ListRules, type ListStore, type Result } from "./list-types";
 
 export const PAGE_SIZE = 50;
 
@@ -26,7 +27,27 @@ export function createListReader<R extends ListRow>(deps: { store: ListReadStore
   const size = deps.pageSize ?? PAGE_SIZE;
   return {
     /** One page, and the cursor of the next one (null on the last page). */
-    async list(cursor?: string): Promise<{ items: R[]; next: string | null }> {
+    async list(cursor?: string, narrow?: { filter: ListFilter | undefined; fields: readonly FieldUi[] }): Promise<{ items: R[]; next: string | null }> {
+      if (narrow && isFiltering(narrow.filter)) {
+        const { filter, fields } = narrow;
+        const kept: R[] = [];
+        let at = parseCursor(cursor);
+        let scanned = 0;
+        let last: R | null = null;
+        let more = true;
+        while (more && kept.length <= size && scanned < MAX_SCAN) {
+          const rows = await store.list(at, SCAN_BATCH);
+          more = rows.length === SCAN_BATCH;
+          scanned += rows.length;
+          last = rows[rows.length - 1] ?? last;
+          if (last) at = { createdAt: last.createdAt, id: last.id };
+          kept.push(...rows.filter((r) => rowMatches(r as unknown as Record<string, unknown>, fields, filter)));
+        }
+        const items = kept.slice(0, size);
+        // More to read when this page is full, or when the scan stopped early.
+        const next = kept.length > size ? cursorText(items[items.length - 1]!) : more && last ? cursorText(last) : null;
+        return { items, next };
+      }
       const rows = await store.list(parseCursor(cursor), size + 1);
       const items = rows.slice(0, size);
       return { items, next: rows.length > size ? cursorText(items[items.length - 1]!) : null };

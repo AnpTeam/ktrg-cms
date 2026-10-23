@@ -34,7 +34,7 @@ msgid "{0}か所を、経由地として追加しました。名前や種類は�
 msgstr "{0}か所を、経由地として追加しました。名前や種類は「経由地」で直せます。"
 
 #. placeholder {0}: LOCALE_NAMES[l]
-#: src/components/admin/fields.tsx:148
+#: src/components/admin/fields.tsx:152
 msgid "{0}を削除"
 msgstr "{0}を削除"
 
@@ -101,7 +101,7 @@ msgstr "{km}km"
 msgid "{label}（管理）"
 msgstr "{label}（管理）"
 
-#: src/components/admin/fields.tsx:124
+#: src/components/admin/fields.tsx:128
 msgid "{label}の言語"
 msgstr "{label}の言語"
 
@@ -202,7 +202,7 @@ msgstr "{text} を1つ後ろへ"
 msgid "{title}（管理）"
 msgstr "{title}（管理）"
 
-#: src/components/admin/AdminListTable.tsx:47
+#: src/components/admin/AdminListTable.tsx:138
 msgid "{title}はまだありません。"
 msgstr "{title}はまだありません。"
 
@@ -293,7 +293,7 @@ msgstr "＋ 交通を追加"
 msgid "＋ 行を追加"
 msgstr "＋ 行を追加"
 
-#: src/components/admin/fields.tsx:118
+#: src/components/admin/fields.tsx:122
 msgid "＋ 言語を追加"
 msgstr "＋ 言語を追加"
 
@@ -499,6 +499,10 @@ msgstr "あると、もっとよいこと"
 #: src/components/admin/RouteTable.tsx:138
 msgid "あるとよい：{0}"
 msgstr "あるとよい：{0}"
+
+#: src/components/admin/AdminListTable.tsx:96
+msgid "いいえ"
+msgstr "いいえ"
 
 #: src/components/PrivacyNote.tsx:13
 msgid "いただいた情報は、どんな方がこのアプリを使っているかを知るためだけに使います。個人が分からない形でまとめます。くわしくは<0>プライバシーポリシー</0>をご覧ください。"
@@ -1031,6 +1035,10 @@ msgstr "サイト全体の設定"
 msgid "サイト全体の設定（管理）"
 msgstr "サイト全体の設定（管理）"
 
+#: src/components/admin/AdminListTable.tsx:77
+msgid "さがす"
+msgstr "さがす"
+
 #: src/components/map/MapSheet.tsx:101
 msgid "シートの高さ（上下の矢印キーで変えられます）"
 msgstr "シートの高さ（上下の矢印キーで変えられます）"
@@ -1181,6 +1189,7 @@ msgstr "スタンプ済み"
 msgid "すでに公開をやめた経由地があります（{names}）。「経由地」タブで確かめてください。"
 msgstr "すでに公開をやめた経由地があります（{names}）。「経由地」タブで確かめてください。"
 
+#: src/components/admin/AdminListTable.tsx:92
 #: src/components/admin/RouteTable.tsx:77
 #: src/components/PrefectureFilter.tsx:36
 msgid "すべて"
@@ -1337,6 +1346,10 @@ msgstr "ニックネームでもかまいません。"
 #: src/components/RouteStats.tsx:27
 msgid "のぼり"
 msgstr "のぼり"
+
+#: src/components/admin/AdminListTable.tsx:95
+msgid "はい"
+msgstr "はい"
 
 #: src/components/auth/LoginFlow.tsx:102
 msgid "はじめての方は"
@@ -1649,7 +1662,7 @@ msgstr "もう一度試す"
 msgid "もう一度送りました。届かないときは、1分ほど待ってからお試しください。"
 msgstr "もう一度送りました。届かないときは、1分ほど待ってからお試しください。"
 
-#: src/components/admin/AdminListTable.tsx:69
+#: src/components/admin/AdminListTable.tsx:160
 #: src/components/admin/PhotoLibrary.tsx:125
 msgid "もっと見る"
 msgstr "もっと見る"
@@ -1779,6 +1792,10 @@ msgstr "ラリーを読み込めませんでした。しばらくしてから、
 #: src/app/(admin)/admin/rallies/new/page.tsx:36
 msgid "ラリー一覧にもどる"
 msgstr "ラリー一覧にもどる"
+
+#: src/components/admin/RichTextToolbar.tsx:29
+msgid "リンク"
+msgstr "リンク"
 
 #: src/components/admin/GalleryEditor.tsx:100
 msgid "リンクで追加"
@@ -2533,7 +2550,7 @@ msgstr "利用規約"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
 #: src/components/admin/AdminItemForm.tsx:184
-#: src/components/admin/fields.tsx:151
+#: src/components/admin/fields.tsx:155
 #: src/components/admin/PlaceTable.tsx:140
 #: src/components/admin/PlaceTable.tsx:205
 #: src/components/admin/RallyEditor.tsx:149
@@ -3089,8 +3106,8 @@ msgstr "必要：{0}"
 msgid "必要なこと"
 msgstr "必要なこと"
 
-#: src/components/admin/fields.tsx:17
-#: src/components/admin/fields.tsx:104
+#: src/components/admin/fields.tsx:18
+#: src/components/admin/fields.tsx:108
 msgid "必須"
 msgstr "必須"
 
@@ -3174,6 +3191,7 @@ msgstr "捨てる"
 msgid "探しています…"
 msgstr "探しています…"
 
+#: src/components/admin/AdminListTable.tsx:115
 #: src/components/admin/map-editor/MapEditor.tsx:912
 msgid "探す"
 msgstr "探す"
@@ -3241,6 +3259,10 @@ msgstr "文字やボタンの大きさ、地図の見せ方を選べます。大
 #: src/components/admin/useChecklistLabels.ts:22
 msgid "文章"
 msgstr "文章"
+
+#: src/components/admin/RichTextToolbar.tsx:27
+msgid "文章の書式"
+msgstr "文章の書式"
 
 #: src/components/admin/RallyCreate.tsx:61
 #: src/components/admin/RallyList.tsx:41
@@ -3341,9 +3363,17 @@ msgstr "本人かどうか、確認します"
 msgid "本文へ移動"
 msgstr "本文へ移動"
 
+#: src/components/admin/AdminListTable.tsx:138
+msgid "条件に合う{title}はありません。"
+msgstr "条件に合う{title}はありません。"
+
 #: src/components/admin/RouteTable.tsx:105
 msgid "条件に合うルートがありません。"
 msgstr "条件に合うルートがありません。"
+
+#: src/components/admin/AdminListTable.tsx:128
+msgid "条件をやめる"
+msgstr "条件をやめる"
 
 #: src/components/navigation/NavigationHud.tsx:127
 msgid "東"
@@ -3455,6 +3485,10 @@ msgstr "注意"
 #: src/components/PointKindName.tsx:12
 msgid "注意の場所"
 msgstr "注意の場所"
+
+#: src/components/admin/RichTextToolbar.tsx:32
+msgid "注釈"
+msgstr "注釈"
 
 #: src/components/auth/authUi.tsx:81
 msgid "海外"
@@ -3959,7 +3993,7 @@ msgstr "英語のページには、入れた文字がそのまま表示されま
 msgid "英語の名前と説明"
 msgstr "英語の名前と説明"
 
-#: src/components/admin/fields.tsx:156
+#: src/components/admin/fields.tsx:160
 msgid "英語は未入力です（日本語を表示します）"
 msgstr "英語は未入力です（日本語を表示します）"
 
@@ -4056,7 +4090,7 @@ msgstr "見本の位置（目安です）"
 msgid "言語"
 msgstr "言語"
 
-#: src/components/admin/fields.tsx:157
+#: src/components/admin/fields.tsx:161
 msgid "言語は{MAX_LANGUAGES}つまで（日本語を含む）。英語以外は、まだ訪れる人には表示されません。"
 msgstr "言語は{MAX_LANGUAGES}つまで（日本語を含む）。英語以外は、まだ訪れる人には表示されません。"
 

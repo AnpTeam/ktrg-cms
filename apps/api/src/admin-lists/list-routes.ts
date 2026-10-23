@@ -4,6 +4,7 @@ import { fail } from "../auth/http";
 import { can, type Permission } from "../auth/permissions";
 import { routeKit, type KitServices, type RouteOptions } from "../auth/route-kit";
 import type { ErrorCode } from "../lib/api-errors";
+import { eqFromQuery } from "./list-filter";
 import { CURSOR_PATTERN, type ListReader, type ListService } from "./list-service";
 import type { ListMeta, ListRow, ListUi } from "./list-types";
 
@@ -49,7 +50,7 @@ function statusOf(reason: ErrorCode): 400 | 404 | 409 | 422 {
 
 const idParams = t.Object({ id: t.String({ format: "uuid" }) });
 
-/** Read a list: a page (newest first, `?cursor=` for the next one) and one row. */
+/** Read a list: a page (newest first, `?cursor=` for the next one; `?q=` and `?filter=field:value` narrow it) and one row. */
 export function listReadRoutes<K extends string, R extends ListRow, S extends KitServices>(
   def: ReadDef<K, R, S>,
   getServices: () => S,
@@ -62,10 +63,18 @@ export function listReadRoutes<K extends string, R extends ListRow, S extends Ki
     .get(
       "/",
       async ({ query }) => {
-        const page = await svc().list(query.cursor);
+        const page = await svc().list(query.cursor, { filter: { q: query.q?.trim(), eq: eqFromQuery(query.filter) }, fields: def.ui.fields });
         return { ok: true as const, items: page.items.map(rowOut), next: page.next };
       },
-      { auth: def.permission, query: t.Object({ cursor: t.Optional(t.String({ pattern: CURSOR_PATTERN })) }) },
+      {
+        auth: def.permission,
+        query: t.Object({
+          cursor: t.Optional(t.String({ pattern: CURSOR_PATTERN })),
+          // Search words, and "field:value" filters (repeat the parameter for several).
+          q: t.Optional(t.String({ maxLength: 100 })),
+          filter: t.Optional(t.Union([t.String({ maxLength: 200 }), t.Array(t.String({ maxLength: 200 }), { maxItems: 10 })])),
+        }),
+      },
     )
     .get(
       "/:id",
