@@ -69,6 +69,7 @@ export function spotListItemFromApi(s: PublicSpot, stamped = false): SpotListIte
     statusUpdatedAt: s.statusUpdatedAt,
     photoUrl: s.photoUrl,
     photoCredit: s.photoCredit ?? null,
+    stampImageUrl: s.stampImageUrl ?? null,
     sortOrder: s.sortOrder,
   };
 }

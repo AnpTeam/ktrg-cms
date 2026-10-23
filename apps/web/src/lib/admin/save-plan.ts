@@ -58,6 +58,7 @@ export interface PlaceBody {
   kind: PointKind;
   stampable: boolean;
   stopBy: boolean;
+  stampImageUrl: string | null;
   photoUrl: string | null;
   photoCredit: string | null;
   sourceJa: string | null;
@@ -139,6 +140,7 @@ export function placeBody(p: PlaceDraft): PlaceBody {
     kind: p.kind,
     stampable: p.stampable,
     stopBy: p.stopBy,
+    stampImageUrl: nullIfEmpty(p.stampImageUrl),
     photoUrl: nullIfEmpty(p.photoUrl),
     photoCredit: nullIfEmpty(p.photoCredit),
     sourceJa: nullIfEmpty(p.sourceJa),

@@ -84,6 +84,7 @@ export interface AdminSpot {
   stampable: boolean;
   /** An optional visit beside the way (寄り道): the route's line need not pass through it. */
   stopBy: boolean;
+  stampImageUrl?: string | null;
   photoUrl: string | null;
   photoCredit?: string | null;
   sourceJa?: string | null;

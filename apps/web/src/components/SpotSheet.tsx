@@ -84,7 +84,7 @@ export function SpotSheet({
 
       {stampable ? (
       <section className="mx-4 flex items-center gap-4 rounded-3xl bg-surface p-4">
-        <StampFace state="empty" className="h-14 w-14 shrink-0 rounded-full!" />
+        <StampFace state="empty" image={spot.stampImageUrl} className="h-14 w-14 shrink-0 rounded-full!" />
         <div>
           <p className="text-xl font-bold">
             <Trans>スタンプの場所</Trans>
@@ -98,7 +98,7 @@ export function SpotSheet({
 
       {stampable && spot.stamped !== null ? (
         <section className="flex items-center gap-4 px-4">
-          <StampFace state={spot.stamped ? "stamped" : "empty"} rough className="h-14 w-14 shrink-0" />
+          <StampFace state={spot.stamped ? "stamped" : "empty"} image={spot.stampImageUrl} rough className="h-14 w-14 shrink-0" />
           <p className="text-xl font-bold">
             {spot.stamped ? <Trans>スタンプを押しました</Trans> : <Trans>まだスタンプを押していません</Trans>}
           </p>
@@ -188,7 +188,7 @@ export function SpotSheet({
           </Link>
         </div>
       ) : (
-        <StampHere spotId={spot.id} status={spot.status} alreadyStamped={spot.stamped} loginHref={loginHref} mock={stampMock} />
+        <StampHere spotId={spot.id} status={spot.status} alreadyStamped={spot.stamped} stampImage={spot.stampImageUrl} loginHref={loginHref} mock={stampMock} />
       )}
     </article>
   );

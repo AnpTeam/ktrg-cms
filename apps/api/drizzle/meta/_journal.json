@@ -211,6 +211,13 @@
       "when": 1792762484289,
       "tag": "0029_route_video_subtitles",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1792765532691,
+      "tag": "0030_spot_stamp_image",
+      "breakpoints": true
     }
   ]
 }

@@ -40,6 +40,7 @@ export interface PublicSpot {
   stampable: boolean;
   /** An optional visit beside the way (寄り道). */
   stopBy: boolean;
+  stampImageUrl: string | null;
   photoUrl: string | null;
   photoCredit: string | null;
   sourceJa: string | null;
@@ -172,6 +173,7 @@ function toPublicSpot(s: SpotRow): PublicSpot {
     kind: s.kind,
     stampable: s.stampable,
     stopBy: s.stopBy,
+    stampImageUrl: s.stampImageUrl,
     photoUrl: s.photoUrl,
     photoCredit: s.photoCredit,
     sourceJa: s.sourceJa,
@@ -290,6 +292,11 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       const v = text(input.photoUrl);
       if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");
       out.photoUrl = v;
+    }
+    if (input.stampImageUrl !== undefined) {
+      const v = text(input.stampImageUrl);
+      if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");
+      out.stampImageUrl = v;
     }
     if (input.photos !== undefined) {
       const photos: NonNullable<SpotFields["photos"]> = [];

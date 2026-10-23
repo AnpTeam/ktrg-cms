@@ -76,6 +76,7 @@ export interface PublicSpot {
   stampable: boolean;
   /** An optional visit beside the way (寄り道). */
   stopBy?: boolean;
+  stampImageUrl?: string | null;
   photoUrl: string | null;
   photoCredit?: string | null;
   sourceJa?: string | null;

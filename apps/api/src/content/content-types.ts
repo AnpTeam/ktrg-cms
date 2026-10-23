@@ -86,6 +86,8 @@ export interface SpotRow {
   stampable: boolean;
   /** An optional visit beside the way (寄り道). */
   stopBy: boolean;
+  /** A picture used as this place's stamp. */
+  stampImageUrl: string | null;
   photoUrl: string | null;
   photoCredit: string | null;
   /** More photos of the place, in order. */
@@ -157,6 +159,8 @@ export interface SpotFields {
   stampable: boolean;
   /** An optional visit beside the way (寄り道). */
   stopBy: boolean;
+  /** A picture used as this place's stamp. */
+  stampImageUrl: string | null;
   photoUrl: string | null;
   photoCredit: string | null;
   /** More photos of the place, in order. */

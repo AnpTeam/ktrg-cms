@@ -388,7 +388,7 @@ msgstr "70歳以上"
 msgid "Ctrlキーを押しながら地図を動かします"
 msgstr "Ctrlキーを押しながら地図を動かします"
 
-#: src/components/StampHere.tsx:91
+#: src/components/StampHere.tsx:94
 msgid "GPSの電波が弱いようです。空の開けた場所に動いて、もう一度お試しください。"
 msgstr "GPSの電波が弱いようです。空の開けた場所に動いて、もう一度お試しください。"
 
@@ -571,28 +571,28 @@ msgstr "いまのラリー"
 msgid "いまの位置が、わかりません。空の開けた場所で、しばらくお待ちください。"
 msgstr "いまの位置が、わかりません。空の開けた場所で、しばらくお待ちください。"
 
-#: src/components/StampHere.tsx:88
+#: src/components/StampHere.tsx:91
 msgid "いまの位置が、わかりません。空の開けた場所で、もう一度お試しください。"
 msgstr "いまの位置が、わかりません。空の開けた場所で、もう一度お試しください。"
 
-#: src/components/StampHere.tsx:147
+#: src/components/StampHere.tsx:150
 msgid "いまの位置を調べています…"
 msgstr "いまの位置を調べています…"
 
-#: src/components/StampHere.tsx:163
+#: src/components/StampHere.tsx:166
 msgid "いまの位置を調べます"
 msgstr "いまの位置を調べます"
 
-#: src/components/StampHere.tsx:127
+#: src/components/StampHere.tsx:130
 msgid "いまの場所から、約{km}km"
 msgstr "いまの場所から、約{km}km"
 
-#: src/components/StampHere.tsx:127
+#: src/components/StampHere.tsx:130
 msgid "いまの場所から、約{m}m"
 msgstr "いまの場所から、約{m}m"
 
-#: src/components/admin/PlacePanel.tsx:181
-#: src/components/admin/PlacePanel.tsx:182
+#: src/components/admin/PlacePanel.tsx:193
+#: src/components/admin/PlacePanel.tsx:194
 msgid "いまの状態"
 msgstr "いまの状態"
 
@@ -821,7 +821,7 @@ msgstr "このアカウントには、パスキーがありません。メール
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
 msgstr "このアカウントには、メールがありません。顔・指紋で確認してください。"
 
-#: src/components/StampHere.tsx:108
+#: src/components/StampHere.tsx:111
 msgid "このスタンプは、もう押してあります。"
 msgstr "このスタンプは、もう押してあります。"
 
@@ -850,7 +850,7 @@ msgstr "このページを見る権限がありません"
 msgid "このメールアドレスは、使えません。すでに別のアカウントで使われているか、このアカウントにはメールが入っています。"
 msgstr "このメールアドレスは、使えません。すでに別のアカウントで使われているか、このアカウントにはメールが入っています。"
 
-#: src/components/StampHere.tsx:93
+#: src/components/StampHere.tsx:96
 msgid "このラリーは、いまは行われていません。"
 msgstr "このラリーは、いまは行われていません。"
 
@@ -946,6 +946,10 @@ msgstr "この区間を見る"
 msgid "この地域のルートはまだありません。"
 msgstr "この地域のルートはまだありません。"
 
+#: src/components/admin/PlacePanel.tsx:148
+msgid "この場所のスタンプの絵"
+msgstr "この場所のスタンプの絵"
+
 #: src/components/useErrorMessages.ts:43
 msgid "この場所のスタンプは、確認のため取り消されています。お困りの場合は運営にお問い合わせください。"
 msgstr "この場所のスタンプは、確認のため取り消されています。お困りの場合は運営にお問い合わせください。"
@@ -960,11 +964,11 @@ msgstr "この場所のページを開く"
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
 msgstr "この場所の位置は仮のもので、まだ確認されていません。"
 
-#: src/components/StampHere.tsx:142
+#: src/components/StampHere.tsx:145
 msgid "この場所は、いまは閉鎖中です。"
 msgstr "この場所は、いまは閉鎖中です。"
 
-#: src/components/StampHere.tsx:92
+#: src/components/StampHere.tsx:95
 msgid "この場所は、いまは閉鎖中です。スタンプは押せません。"
 msgstr "この場所は、いまは閉鎖中です。スタンプは押せません。"
 
@@ -998,7 +1002,7 @@ msgid "この次に追加"
 msgstr "この次に追加"
 
 #: src/components/navigation/NavigationHud.tsx:142
-#: src/components/StampHere.tsx:86
+#: src/components/StampHere.tsx:89
 msgid "この端末・ブラウザでは、位置情報を使えません。"
 msgstr "この端末・ブラウザでは、位置情報を使えません。"
 
@@ -1030,7 +1034,7 @@ msgstr "この端末には保存しました。つながったときに、アカ
 msgid "この端末のパスキーを追加する"
 msgstr "この端末のパスキーを追加する"
 
-#: src/components/admin/PlacePanel.tsx:172
+#: src/components/admin/PlacePanel.tsx:184
 msgid "この経由地から、この距離の中にいるとスタンプを押せます。"
 msgstr "この経由地から、この距離の中にいるとスタンプを押せます。"
 
@@ -1038,11 +1042,11 @@ msgstr "この経由地から、この距離の中にいるとスタンプを押
 msgid "この経由地の位置がまだ決まっていません。地図で位置を決めてください。"
 msgstr "この経由地の位置がまだ決まっていません。地図で位置を決めてください。"
 
-#: src/components/admin/PlacePanel.tsx:205
+#: src/components/admin/PlacePanel.tsx:217
 msgid "この経由地は公開されています。"
 msgstr "この経由地は公開されています。"
 
-#: src/components/admin/PlacePanel.tsx:234
+#: src/components/admin/PlacePanel.tsx:246
 msgid "この経由地を削除"
 msgstr "この経由地を削除"
 
@@ -1183,7 +1187,7 @@ msgstr "スタンプ {stampedCount} / {spotCount}"
 msgid "スタンプ {stamps}・そのほか {others}"
 msgstr "スタンプ {stamps}・そのほか {others}"
 
-#: src/components/admin/PlacePanel.tsx:169
+#: src/components/admin/PlacePanel.tsx:181
 msgid "スタンプ・状態・許可の設定"
 msgstr "スタンプ・状態・許可の設定"
 
@@ -1210,7 +1214,7 @@ msgstr "スタンプの場所"
 msgid "スタンプの場所 {spotCount}か所"
 msgstr "スタンプの場所 {spotCount}か所"
 
-#: src/components/StampHere.tsx:165
+#: src/components/StampHere.tsx:168
 msgid "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 msgstr "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 
@@ -1248,7 +1252,7 @@ msgstr "スタンプは押せません。場所のページは見られます。
 msgid "スタンプラリー"
 msgstr "スタンプラリー"
 
-#: src/components/StampHere.tsx:149
+#: src/components/StampHere.tsx:152
 msgid "スタンプを押しています…"
 msgstr "スタンプを押しています…"
 
@@ -1257,16 +1261,16 @@ msgstr "スタンプを押しています…"
 msgid "スタンプを押しました"
 msgstr "スタンプを押しました"
 
-#: src/components/StampHere.tsx:108
+#: src/components/StampHere.tsx:111
 msgid "スタンプを押しました！"
 msgstr "スタンプを押しました！"
 
-#: src/components/StampHere.tsx:140
-#: src/components/StampHere.tsx:152
+#: src/components/StampHere.tsx:143
+#: src/components/StampHere.tsx:155
 msgid "スタンプを押す"
 msgstr "スタンプを押す"
 
-#: src/components/StampHere.tsx:94
+#: src/components/StampHere.tsx:97
 msgid "スタンプを押す機能は、まだ使えません。"
 msgstr "スタンプを押す機能は、まだ使えません。"
 
@@ -1274,7 +1278,7 @@ msgstr "スタンプを押す機能は、まだ使えません。"
 msgid "スタンプを押せる"
 msgstr "スタンプを押せる"
 
-#: src/components/admin/PlacePanel.tsx:172
+#: src/components/admin/PlacePanel.tsx:184
 msgid "スタンプを押せる範囲（メートル）"
 msgstr "スタンプを押せる範囲（メートル）"
 
@@ -1654,7 +1658,7 @@ msgstr "まず、GPXファイルをここにドラッグするか「GPXファイ
 msgid "まだ"
 msgstr "まだ"
 
-#: src/components/StampHere.tsx:90
+#: src/components/StampHere.tsx:93
 msgid "まだ、この場所から遠いようです。場所の近くで、もう一度お試しください。"
 msgstr "まだ、この場所から遠いようです。場所の近くで、もう一度お試しください。"
 
@@ -1802,7 +1806,7 @@ msgstr "もう一度ひらく"
 msgid "もう一度公開するときは、「経由地」タブで「公開する」を押してください。"
 msgstr "もう一度公開するときは、「経由地」タブで「公開する」を押してください。"
 
-#: src/components/StampHere.tsx:151
+#: src/components/StampHere.tsx:154
 msgid "もう一度試す"
 msgstr "もう一度試す"
 
@@ -1825,7 +1829,7 @@ msgstr "もっと見る（あと{hidden}か所）"
 #: src/components/ProfileCard.tsx:139
 #: src/components/ProfileCard.tsx:181
 #: src/components/settings/PasskeyManager.tsx:165
-#: src/components/StampHere.tsx:172
+#: src/components/StampHere.tsx:175
 msgid "やめる"
 msgstr "やめる"
 
@@ -2117,7 +2121,7 @@ msgstr "ログアウト"
 msgid "ログイン"
 msgstr "ログイン"
 
-#: src/components/StampHere.tsx:95
+#: src/components/StampHere.tsx:98
 #: src/components/useErrorMessages.ts:19
 msgid "ログインが切れたようです。ログインしなおしてください。"
 msgstr "ログインが切れたようです。ログインしなおしてください。"
@@ -2126,7 +2130,7 @@ msgstr "ログインが切れたようです。ログインしなおしてくだ
 msgid "ログインしてスタンプを押す"
 msgstr "ログインしてスタンプを押す"
 
-#: src/components/StampHere.tsx:131
+#: src/components/StampHere.tsx:134
 msgid "ログインする"
 msgstr "ログインする"
 
@@ -2256,7 +2260,7 @@ msgstr "休憩所・東屋"
 msgid "休業中"
 msgstr "休業中"
 
-#: src/components/admin/PlacePanel.tsx:150
+#: src/components/admin/PlacePanel.tsx:162
 msgid "位置"
 msgstr "位置"
 
@@ -2264,11 +2268,11 @@ msgstr "位置"
 msgid "位置なし"
 msgstr "位置なし"
 
-#: src/components/StampHere.tsx:166
+#: src/components/StampHere.tsx:169
 msgid "位置は、保存しません。保存するのは、スタンプだけです。"
 msgstr "位置は、保存しません。保存するのは、スタンプだけです。"
 
-#: src/components/admin/PlacePanel.tsx:159
+#: src/components/admin/PlacePanel.tsx:171
 msgid "位置は、公式の情報から入れて、地図で確かめます。推測では入れません。"
 msgstr "位置は、公式の情報から入れて、地図で確かめます。推測では入れません。"
 
@@ -2296,7 +2300,7 @@ msgstr "位置を取り込んだ経由地は「位置を確認していない」
 msgid "位置を決めてください（地図に置くか、緯度と経度を入れます）。"
 msgstr "位置を決めてください（地図に置くか、緯度と経度を入れます）。"
 
-#: src/components/admin/PlacePanel.tsx:161
+#: src/components/admin/PlacePanel.tsx:173
 msgid "位置を確認した"
 msgstr "位置を確認した"
 
@@ -2308,15 +2312,15 @@ msgstr "位置を確認した情報源（サイトの名前やリンク）を書
 msgid "位置を確認していない"
 msgstr "位置を確認していない"
 
-#: src/components/StampHere.tsx:169
+#: src/components/StampHere.tsx:172
 msgid "位置を調べてスタンプを押す"
 msgstr "位置を調べてスタンプを押す"
 
-#: src/components/StampHere.tsx:89
+#: src/components/StampHere.tsx:92
 msgid "位置を調べるのに、時間がかかっています。空の開けた場所で、もう一度お試しください。"
 msgstr "位置を調べるのに、時間がかかっています。空の開けた場所で、もう一度お試しください。"
 
-#: src/components/StampHere.tsx:87
+#: src/components/StampHere.tsx:90
 msgid "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてから、もう一度お試しください。"
 msgstr "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてから、もう一度お試しください。"
 
@@ -2467,6 +2471,10 @@ msgstr "先に「保存」してください。"
 msgid "入れた文字が、そのまま表示されます。体力度・技術度を選んだときは、そちらを先に表示します。"
 msgstr "入れた文字が、そのまま表示されます。体力度・技術度を選んだときは、そちらを先に表示します。"
 
+#: src/components/admin/PlacePanel.tsx:149
+msgid "入れると、この場所のスタンプが、ふつうの赤い印の代わりにこの絵になります。正方形で、背景が透明な画像がきれいです。"
+msgstr "入れると、この場所のスタンプが、ふつうの赤い印の代わりにこの絵になります。正方形で、背景が透明な画像がきれいです。"
+
 #: src/components/admin/RouteEditor.tsx:476
 msgid "入力"
 msgstr "入力"
@@ -2523,7 +2531,7 @@ msgstr "公開サイトを見る"
 msgid "公開しました。"
 msgstr "公開しました。"
 
-#: src/components/admin/PlacePanel.tsx:213
+#: src/components/admin/PlacePanel.tsx:225
 #: src/components/admin/RallyEditor.tsx:135
 msgid "公開する"
 msgstr "公開する"
@@ -2554,7 +2562,7 @@ msgstr "公開まで、あと{0}つ"
 msgid "公開をやめました。"
 msgstr "公開をやめました。"
 
-#: src/components/admin/PlacePanel.tsx:207
+#: src/components/admin/PlacePanel.tsx:219
 #: src/components/admin/RallyEditor.tsx:135
 msgid "公開をやめる"
 msgstr "公開をやめる"
@@ -2579,7 +2587,7 @@ msgstr "公開中のスタンプの経由地"
 msgid "公開中のスタンプの経由地なし（達成できません）"
 msgstr "公開中のスタンプの経由地なし（達成できません）"
 
-#: src/components/admin/PlacePanel.tsx:237
+#: src/components/admin/PlacePanel.tsx:249
 msgid "公開中の経由地は、先に「公開をやめる」と、削除できます。"
 msgstr "公開中の経由地は、先に「公開をやめる」と、削除できます。"
 
@@ -3104,7 +3112,7 @@ msgstr "和歌山県"
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 
-#: src/components/StampHere.tsx:98
+#: src/components/StampHere.tsx:101
 #: src/components/useErrorMessages.ts:67
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "問題が発生しました。しばらくしてからもう一度お試しください。"
@@ -3953,11 +3961,11 @@ msgstr "片道"
 msgid "片道（別の場所へ）"
 msgstr "片道（別の場所へ）"
 
-#: src/components/admin/PlacePanel.tsx:169
+#: src/components/admin/PlacePanel.tsx:181
 msgid "状態・許可の設定"
 msgstr "状態・許可の設定"
 
-#: src/components/admin/PlacePanel.tsx:187
+#: src/components/admin/PlacePanel.tsx:199
 msgid "状態のひとこと"
 msgstr "状態のひとこと"
 
@@ -3973,7 +3981,7 @@ msgstr "現在地を真ん中にする（進む向きが上）"
 msgid "現在地を調べています…"
 msgstr "現在地を調べています…"
 
-#: src/components/admin/PlacePanel.tsx:191
+#: src/components/admin/PlacePanel.tsx:203
 msgid "現地の許可"
 msgstr "現地の許可"
 
@@ -4069,12 +4077,12 @@ msgstr "直すところは、ありません。"
 msgid "直す場所を見る"
 msgstr "直す場所を見る"
 
-#: src/components/StampHere.tsx:96
+#: src/components/StampHere.tsx:99
 #: src/components/useErrorMessages.ts:16
 msgid "短い間に何度も操作されました。しばらくしてからお試しください。"
 msgstr "短い間に何度も操作されました。しばらくしてからお試しください。"
 
-#: src/components/admin/PlacePanel.tsx:163
+#: src/components/admin/PlacePanel.tsx:175
 #: src/components/admin/RouteEditor.tsx:696
 msgid "確認した情報源（サイト名やリンク）"
 msgstr "確認した情報源（サイト名やリンク）"
@@ -4187,7 +4195,7 @@ msgstr "経塚 {name}"
 msgid "経塚ラリー"
 msgstr "経塚ラリー"
 
-#: src/components/admin/PlacePanel.tsx:155
+#: src/components/admin/PlacePanel.tsx:167
 #: src/components/admin/PlaceTable.tsx:139
 msgid "経度"
 msgstr "経度"
@@ -4281,6 +4289,10 @@ msgstr "経由地を置く"
 #: src/components/admin/DirectoryPicker.tsx:162
 msgid "経由地を置くと、近い順に並びます。"
 msgstr "経由地を置くと、近い順に並びます。"
+
+#: src/components/admin/PlacePanel.tsx:154
+msgid "絵をはずす"
+msgstr "絵をはずす"
 
 #: src/components/landing/ContinueCard.tsx:17
 msgid "続きを歩きませんか？"
@@ -4376,7 +4388,7 @@ msgstr "編集を戻しました。内容を確かめて、「保存する」を
 msgid "編集を戻す"
 msgstr "編集を戻す"
 
-#: src/components/admin/PlacePanel.tsx:152
+#: src/components/admin/PlacePanel.tsx:164
 #: src/components/admin/PlaceTable.tsx:138
 msgid "緯度"
 msgstr "緯度"
@@ -4558,11 +4570,11 @@ msgstr "言語は{MAX_LANGUAGES}つまで（日本語を含む）。英語以外
 msgid "訪問者が見る地図（マップ画面、ルートのページ）の見た目です。地図を作る管理画面の地図は、見やすさのため、いつも「標準」です。"
 msgstr "訪問者が見る地図（マップ画面、ルートのページ）の見た目です。地図を作る管理画面の地図は、見やすさのため、いつも「標準」です。"
 
-#: src/components/admin/PlacePanel.tsx:195
+#: src/components/admin/PlacePanel.tsx:207
 msgid "許可してくれた人"
 msgstr "許可してくれた人"
 
-#: src/components/admin/PlacePanel.tsx:193
+#: src/components/admin/PlacePanel.tsx:205
 msgid "許可確認済み"
 msgstr "許可確認済み"
 
@@ -4662,7 +4674,7 @@ msgstr "送っています…"
 msgid "送っています… {percent}%"
 msgstr "送っています… {percent}%"
 
-#: src/components/StampHere.tsx:97
+#: src/components/StampHere.tsx:100
 #: src/components/useErrorMessages.ts:66
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "通信できませんでした。電波の良い場所でもう一度お試しください。"
@@ -4874,12 +4886,12 @@ msgid "順番"
 msgstr "順番"
 
 #: src/components/admin/map-editor/PlaceList.tsx:124
-#: src/components/admin/PlacePanel.tsx:228
+#: src/components/admin/PlacePanel.tsx:240
 msgid "順番を前へ"
 msgstr "順番を前へ"
 
 #: src/components/admin/map-editor/PlaceList.tsx:127
-#: src/components/admin/PlacePanel.tsx:231
+#: src/components/admin/PlacePanel.tsx:243
 msgid "順番を後ろへ"
 msgstr "順番を後ろへ"
 

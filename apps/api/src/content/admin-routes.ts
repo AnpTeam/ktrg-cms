@@ -132,6 +132,7 @@ const spotProps = {
   stampable: t.Boolean(),
   // An optional visit beside the way (寄り道): the route's line need not pass through it.
   stopBy: t.Boolean(),
+  stampImageUrl: nullable(t.String({ maxLength: 500 })),
   photoUrl: nullable(t.String({ maxLength: 500 })),
   photoCredit: nullable(t.String({ maxLength: 500 })),
   sourceJa: nullable(t.String({ maxLength: 2000 })),

@@ -27,6 +27,7 @@ export function StampHere({
   spotId,
   status,
   alreadyStamped,
+  stampImage,
   loginHref,
   mock,
   inSheet = false,
@@ -36,6 +37,8 @@ export function StampHere({
   status: "open" | "caution" | "closed";
   /** The visitor already holds this stamp (before this visit). */
   alreadyStamped: boolean;
+  /** The place's own stamp picture, shown in the "stamped" message. */
+  stampImage?: string | null;
   loginHref: string;
   /** Development only: pretend answers, see stamp-client.ts. Never set in production. */
   mock?: StampMock;
@@ -104,7 +107,7 @@ export function StampHere({
     return (
       <div className={wrapper}>
         <div role="status" className="flex items-center gap-4 rounded-3xl bg-surface p-4 shadow-lg">
-          <StampFace state="stamped" number={1} rough className="stamp-land h-16 w-16 shrink-0" />
+          <StampFace state="stamped" number={1} image={stampImage} rough className="stamp-land h-16 w-16 shrink-0" />
           <p className="text-xl font-bold leading-snug">{phase.already ? t`このスタンプは、もう押してあります。` : t`スタンプを押しました！`}</p>
         </div>
       </div>

@@ -79,6 +79,8 @@ export interface SpotListItem {
   statusUpdatedAt?: string | null;
   photoUrl?: string | null;
   photoCredit?: string | null;
+  /** A picture used as this place's stamp, in place of the plain seal. */
+  stampImageUrl?: string | null;
   /** Its place in the route's order together with the waypoints that have no stamp (lower comes first). */
   sortOrder?: number;
   /** What the place is (a sutra mound, a temple ...); left out when unknown. */

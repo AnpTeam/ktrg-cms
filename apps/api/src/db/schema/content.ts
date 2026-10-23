@@ -162,6 +162,8 @@ export const spots = pgTable(
     stopBy: boolean("stop_by").notNull().default(false),
     photoUrl: text("photo_url"),
     photoCredit: text("photo_credit"),
+    // A picture to use as this place's stamp, in place of the plain seal.
+    stampImageUrl: text("stamp_image_url"),
     // More photos of the place, in order (the first photo above is its main one).
     photos: jsonb("photos").$type<SpotPhoto[]>().notNull().default(sql`'[]'::jsonb`),
     status: spotStatus("status").notNull().default("open"),

@@ -1,0 +1,1 @@
+ALTER TABLE "spots" ADD COLUMN "stamp_image_url" text;
