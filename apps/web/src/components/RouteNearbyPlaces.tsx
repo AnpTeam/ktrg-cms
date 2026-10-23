@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { PlaceGroupIcon } from "@/components/icons";
-import { PlaceCard, useCategoryNames } from "@/components/map/PlacesPanel";
+import { PlaceDialog } from "@/components/PlaceDialog";
+import { useCategoryNames } from "@/components/map/PlacesPanel";
 import { groupOf, type MapPlace } from "@/lib/places";
 
 /**
@@ -14,7 +14,6 @@ import { groupOf, type MapPlace } from "@/lib/places";
 export function RouteNearbyPlaces({ routeId, places }: { routeId: string; places: MapPlace[] }) {
   const { t } = useLingui();
   const names = useCategoryNames();
-  const dialog = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState<MapPlace | null>(null);
   if (places.length === 0) return null;
 
@@ -26,10 +25,7 @@ export function RouteNearbyPlaces({ routeId, places }: { routeId: string; places
           <li key={p.id}>
             <button
               type="button"
-              onClick={() => {
-                setOpen(p);
-                dialog.current?.showModal();
-              }}
+              onClick={() => setOpen(p)}
               className="tap-target flex w-full items-center gap-3 px-4 py-3 text-left"
             >
               <span className="shrink-0 text-accent">
@@ -48,16 +44,7 @@ export function RouteNearbyPlaces({ routeId, places }: { routeId: string; places
           </li>
         ))}
       </ul>
-      <dialog ref={dialog} onClose={() => setOpen(null)} onClick={(e) => e.target === dialog.current && dialog.current?.close()} className="m-auto w-[min(32rem,calc(100vw-2rem))] rounded-2xl border-2 border-ink bg-paper p-3 text-ink backdrop:bg-black/60">
-        {open ? (
-          <div className="flex flex-col gap-3">
-            <PlaceCard place={open} meters={null} onClose={() => dialog.current?.close()} />
-            <Link href={`/map?route=${encodeURIComponent(routeId)}&place=${encodeURIComponent(open.id)}`} className="tap-target flex min-h-12 items-center justify-center rounded-xl bg-ink px-5 text-lg font-bold text-paper">
-              {t`地図で見る`}
-            </Link>
-          </div>
-        ) : null}
-      </dialog>
+      <PlaceDialog place={open} mapHref={open ? `/map?route=${encodeURIComponent(routeId)}&place=${encodeURIComponent(open.id)}` : null} onClose={() => setOpen(null)} />
     </section>
   );
 }

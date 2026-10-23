@@ -5,6 +5,7 @@ import { HeroPhoto } from "./map/HeroPhoto";
 import { Localized } from "./Localized";
 import { NearbyPlaces, type Nearby } from "./NearbyPlaces";
 import { LastUpdated } from "@/components/LastUpdated";
+import { NearestPlaces, type NearestGroup } from "./NearestPlaces";
 import { Notice } from "./Notice";
 import { RichText } from "./RichText";
 import { SpotGallery } from "./SpotGallery";
@@ -25,12 +26,15 @@ export function SpotSheet({
   loginHref,
   stampMock,
   nearby = [],
+  nearest = [],
 }: {
   spot: SpotDetail;
   locale: string;
   loginHref: string;
   /** What is around the place (toilets, shops ...), nearest first. */
   nearby?: Nearby[];
+  /** The nearest stations, bus stops and parking, a tab for each. */
+  nearest?: NearestGroup[];
   /** Development only: pretend answers for the stamp button. */
   stampMock?: StampMock;
 }) {
@@ -160,6 +164,15 @@ export function SpotSheet({
             <Trans>まわりにあるもの</Trans>
           </h2>
           <NearbyPlaces places={nearby} />
+        </section>
+      ) : null}
+
+      {nearest.length > 0 ? (
+        <section className="mx-4 rounded-3xl bg-surface p-4">
+          <h2 className="mb-2 text-xl font-bold">
+            <Trans>最寄り</Trans>
+          </h2>
+          <NearestPlaces groups={nearest} />
         </section>
       ) : null}
 

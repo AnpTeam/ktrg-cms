@@ -951,7 +951,7 @@ msgid "この場所のページを開く"
 msgstr "この場所のページを開く"
 
 #: src/components/map/MapScreen.tsx:529
-#: src/components/map/PlacesPanel.tsx:232
+#: src/components/map/PlacesPanel.tsx:262
 #: src/components/map/StopCard.tsx:47
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
 msgstr "この場所の位置は仮のもので、まだ確認されていません。"
@@ -1058,8 +1058,8 @@ msgstr "この設定ではじめる"
 msgid "この設定は、本番のサイトにすぐ反映されます。すべての訪問者の地図の見た目が変わります。保存しますか？"
 msgstr "この設定は、本番のサイトにすぐ反映されます。すべての訪問者の地図の見た目が変わります。保存しますか？"
 
-#: src/components/SpotSheet.tsx:115
-#: src/components/SpotSheet.tsx:131
+#: src/components/SpotSheet.tsx:119
+#: src/components/SpotSheet.tsx:135
 msgid "この説明は日本語のみです。"
 msgstr "この説明は日本語のみです。"
 
@@ -1098,6 +1098,10 @@ msgstr "さあ、はじめましょう"
 #: src/components/admin/PhotoLibrary.tsx:171
 msgid "サイズ"
 msgstr "サイズ"
+
+#: src/components/map/PlacesPanel.tsx:227
+msgid "サイト"
+msgstr "サイト"
 
 #: src/app/(admin)/admin/settings/page.tsx:24
 msgid "サイトの全体に関わる設定です。ここで変えたことは、すぐに訪問者の画面に反映されます。"
@@ -1186,7 +1190,7 @@ msgid "スタンプなし"
 msgstr "スタンプなし"
 
 #: src/components/map/MapScreen.tsx:405
-#: src/components/SpotSheet.tsx:86
+#: src/components/SpotSheet.tsx:90
 msgid "スタンプの場所"
 msgstr "スタンプの場所"
 
@@ -1237,7 +1241,7 @@ msgid "スタンプを押しています…"
 msgstr "スタンプを押しています…"
 
 #: src/components/map/MapScreen.tsx:542
-#: src/components/SpotSheet.tsx:99
+#: src/components/SpotSheet.tsx:103
 msgid "スタンプを押しました"
 msgstr "スタンプを押しました"
 
@@ -1655,7 +1659,7 @@ msgstr "まだありません。「＋ 行を追加」で、経由地を表に�
 msgid "まだスタンプはありません。"
 msgstr "まだスタンプはありません。"
 
-#: src/components/SpotSheet.tsx:99
+#: src/components/SpotSheet.tsx:103
 msgid "まだスタンプを押していません"
 msgstr "まだスタンプを押していません"
 
@@ -1686,7 +1690,7 @@ msgstr "マップ"
 msgid "マップをひらく"
 msgstr "マップをひらく"
 
-#: src/components/SpotSheet.tsx:160
+#: src/components/SpotSheet.tsx:164
 msgid "まわりにあるもの"
 msgstr "まわりにあるもの"
 
@@ -1974,7 +1978,7 @@ msgstr "ルートがまだありません。"
 msgid "ルートがまだありません。「新しいルート」から作ってください。"
 msgstr "ルートがまだありません。「新しいルート」から作ってください。"
 
-#: src/app/(public)/spots/[id]/page.tsx:49
+#: src/app/(public)/spots/[id]/page.tsx:63
 msgid "ルートにもどる"
 msgstr "ルートにもどる"
 
@@ -2077,7 +2081,7 @@ msgstr "ログイン"
 msgid "ログインが切れたようです。ログインしなおしてください。"
 msgstr "ログインが切れたようです。ログインしなおしてください。"
 
-#: src/components/SpotSheet.tsx:174
+#: src/components/SpotSheet.tsx:187
 msgid "ログインしてスタンプを押す"
 msgstr "ログインしてスタンプを押す"
 
@@ -2193,7 +2197,7 @@ msgstr "今後はこの確認を表示しない"
 msgid "仮のルート・位置（未確認）"
 msgstr "仮のルート・位置（未確認）"
 
-#: src/components/map/PlacesPanel.tsx:215
+#: src/components/map/PlacesPanel.tsx:245
 msgid "休み"
 msgstr "休み"
 
@@ -2277,6 +2281,10 @@ msgstr "位置情報が許可されていません。ブラウザの設定で、
 #: src/components/map/MapSheet.tsx:106
 msgid "低い"
 msgstr "低い"
+
+#: src/components/map/PlacesPanel.tsx:211
+msgid "住所"
+msgstr "住所"
 
 #: src/components/RouteStats.tsx:39
 msgid "体力度"
@@ -2565,6 +2573,11 @@ msgstr "内容を確認する"
 msgid "最低 {lowest}m"
 msgstr "最低 {lowest}m"
 
+#: src/components/NearestPlaces.tsx:37
+#: src/components/SpotSheet.tsx:173
+msgid "最寄り"
+msgstr "最寄り"
+
 #: src/components/RallyViews.tsx:45
 msgid "最後に押した日時　{when}"
 msgstr "最後に押した日時　{when}"
@@ -2587,7 +2600,7 @@ msgstr "最高 {highest}m"
 #: src/components/landing/BannerCarousel.tsx:38
 #: src/components/map/MapScreen.tsx:479
 #: src/components/SpotGallery.tsx:12
-#: src/components/SpotSheet.tsx:151
+#: src/components/SpotSheet.tsx:155
 msgid "写真"
 msgstr "写真"
 
@@ -2686,7 +2699,7 @@ msgstr "出かける前に"
 #: src/app/(public)/routes/page.tsx:87
 #: src/components/landing/Landing.tsx:173
 #: src/components/RouteView.tsx:272
-#: src/components/SpotSheet.tsx:167
+#: src/components/SpotSheet.tsx:180
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "出かける前に、公式の最新情報を確認してください。"
 
@@ -2699,7 +2712,7 @@ msgstr "出どころ（撮った人、使用条件）"
 #: src/components/admin/RouteEditor.tsx:602
 #: src/components/map/MapScreen.tsx:470
 #: src/components/RouteView.tsx:179
-#: src/components/SpotSheet.tsx:140
+#: src/components/SpotSheet.tsx:144
 msgid "出典"
 msgstr "出典"
 
@@ -3010,7 +3023,7 @@ msgid "周回（元の場所へ）"
 msgstr "周回（元の場所へ）"
 
 #: src/components/admin/DirectoryPicker.tsx:93
-#: src/components/RouteNearbyPlaces.tsx:23
+#: src/components/RouteNearbyPlaces.tsx:22
 msgid "周辺の場所"
 msgstr "周辺の場所"
 
@@ -3043,8 +3056,8 @@ msgstr "営業中・利用可"
 msgid "地図"
 msgstr "地図"
 
-#: src/components/RouteNearbyPlaces.tsx:56
-#: src/components/SpotSheet.tsx:68
+#: src/components/PlaceDialog.tsx:29
+#: src/components/SpotSheet.tsx:72
 msgid "地図で見る"
 msgstr "地図で見る"
 
@@ -3440,7 +3453,7 @@ msgstr "折り返し"
 msgid "押した"
 msgstr "押した"
 
-#: src/components/SpotSheet.tsx:89
+#: src/components/SpotSheet.tsx:93
 msgid "押し方: 場所の近くで、ボタンを押します（位置情報）"
 msgstr "押し方: 場所の近くで、ボタンを押します（位置情報）"
 
@@ -3606,7 +3619,7 @@ msgstr "日本語の名前を入れてください。"
 msgid "日本語の字幕です。もう一度送ると、置き換わります。字幕は動画の横に保存され、動画を入れ替えたときは、字幕も送りなおしてください。"
 msgstr "日本語の字幕です。もう一度送ると、置き換わります。字幕は動画の横に保存され、動画を入れ替えたときは、字幕も送りなおしてください。"
 
-#: src/components/map/PlacesPanel.tsx:209
+#: src/components/map/PlacesPanel.tsx:239
 #: src/components/RouteStats.tsx:34
 msgid "時間"
 msgstr "時間"
@@ -3759,7 +3772,7 @@ msgstr "歩く順番に並んでいます。名前を押すと、文章や地図
 #: src/components/admin/useChecklistLabels.ts:17
 #: src/components/map/MapScreen.tsx:452
 #: src/components/RouteView.tsx:161
-#: src/components/SpotSheet.tsx:124
+#: src/components/SpotSheet.tsx:128
 msgid "歴史・由来"
 msgstr "歴史・由来"
 
@@ -3974,7 +3987,7 @@ msgstr "短い間に何度も操作されました。しばらくしてからお
 msgid "確認した情報源（サイト名やリンク）"
 msgstr "確認した情報源（サイト名やリンク）"
 
-#: src/components/map/PlacesPanel.tsx:225
+#: src/components/map/PlacesPanel.tsx:255
 msgid "確認した日：{checkedOn}"
 msgstr "確認した日：{checkedOn}"
 
@@ -4425,7 +4438,7 @@ msgid "該当する場所はありません。"
 msgstr "該当する場所はありません。"
 
 #: src/components/admin/PlacePanel.tsx:93
-#: src/components/SpotSheet.tsx:107
+#: src/components/SpotSheet.tsx:111
 msgid "説明"
 msgstr "説明"
 
@@ -4477,6 +4490,10 @@ msgstr "転落・滑落の危険がある所がある。地図を読む力と、
 #: src/components/settings/PrefsForm.tsx:128
 msgid "近い場所をまとめて表示する"
 msgstr "近い場所をまとめて表示する"
+
+#: src/components/NearestPlaces.tsx:52
+msgid "近くに{category}はありません。"
+msgstr "近くに{category}はありません。"
 
 #: src/components/admin/map-editor/MapEditor.tsx:988
 msgid "追加しない"
@@ -4701,6 +4718,10 @@ msgstr "隠す"
 #: src/components/RouteStats.tsx:41
 msgid "難しさ"
 msgstr "難しさ"
+
+#: src/components/map/PlacesPanel.tsx:217
+msgid "電話"
+msgstr "電話"
 
 #: src/components/AccessList.tsx:9
 #: src/components/admin/map-editor/MapEditor.tsx:791

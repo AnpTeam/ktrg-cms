@@ -951,7 +951,7 @@ msgid "この場所のページを開く"
 msgstr "Open this place's page"
 
 #: src/components/map/MapScreen.tsx:529
-#: src/components/map/PlacesPanel.tsx:232
+#: src/components/map/PlacesPanel.tsx:262
 #: src/components/map/StopCard.tsx:47
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
 msgstr "The position of this place is a draft and has not been checked yet."
@@ -1058,8 +1058,8 @@ msgstr "Start with these settings"
 msgid "この設定は、本番のサイトにすぐ反映されます。すべての訪問者の地図の見た目が変わります。保存しますか？"
 msgstr "This goes live at once and changes the map for every visitor. Save it?"
 
-#: src/components/SpotSheet.tsx:115
-#: src/components/SpotSheet.tsx:131
+#: src/components/SpotSheet.tsx:119
+#: src/components/SpotSheet.tsx:135
 msgid "この説明は日本語のみです。"
 msgstr "This description is in Japanese only."
 
@@ -1098,6 +1098,10 @@ msgstr "Let's get started"
 #: src/components/admin/PhotoLibrary.tsx:171
 msgid "サイズ"
 msgstr "Size"
+
+#: src/components/map/PlacesPanel.tsx:227
+msgid "サイト"
+msgstr "Website"
 
 #: src/app/(admin)/admin/settings/page.tsx:24
 msgid "サイトの全体に関わる設定です。ここで変えたことは、すぐに訪問者の画面に反映されます。"
@@ -1186,7 +1190,7 @@ msgid "スタンプなし"
 msgstr "No stamp"
 
 #: src/components/map/MapScreen.tsx:405
-#: src/components/SpotSheet.tsx:86
+#: src/components/SpotSheet.tsx:90
 msgid "スタンプの場所"
 msgstr "Stamp locations"
 
@@ -1237,7 +1241,7 @@ msgid "スタンプを押しています…"
 msgstr "Collecting the stamp…"
 
 #: src/components/map/MapScreen.tsx:542
-#: src/components/SpotSheet.tsx:99
+#: src/components/SpotSheet.tsx:103
 msgid "スタンプを押しました"
 msgstr "You collected this stamp"
 
@@ -1655,7 +1659,7 @@ msgstr "No waypoints yet. Use “+ Add a row” to put waypoints in the table."
 msgid "まだスタンプはありません。"
 msgstr "No stamps yet."
 
-#: src/components/SpotSheet.tsx:99
+#: src/components/SpotSheet.tsx:103
 msgid "まだスタンプを押していません"
 msgstr "You haven't collected this stamp yet"
 
@@ -1686,7 +1690,7 @@ msgstr "Map"
 msgid "マップをひらく"
 msgstr "Open the map"
 
-#: src/components/SpotSheet.tsx:160
+#: src/components/SpotSheet.tsx:164
 msgid "まわりにあるもの"
 msgstr "Around here"
 
@@ -1974,7 +1978,7 @@ msgstr "There are no routes yet."
 msgid "ルートがまだありません。「新しいルート」から作ってください。"
 msgstr "There are no routes yet. Create one with \"New route\"."
 
-#: src/app/(public)/spots/[id]/page.tsx:49
+#: src/app/(public)/spots/[id]/page.tsx:63
 msgid "ルートにもどる"
 msgstr "Back to route"
 
@@ -2077,7 +2081,7 @@ msgstr "Log in"
 msgid "ログインが切れたようです。ログインしなおしてください。"
 msgstr "You seem to have been logged out. Please log in again."
 
-#: src/components/SpotSheet.tsx:174
+#: src/components/SpotSheet.tsx:187
 msgid "ログインしてスタンプを押す"
 msgstr "Log in to stamp"
 
@@ -2193,7 +2197,7 @@ msgstr "Do not show this again"
 msgid "仮のルート・位置（未確認）"
 msgstr "Draft route and positions (unchecked)"
 
-#: src/components/map/PlacesPanel.tsx:215
+#: src/components/map/PlacesPanel.tsx:245
 msgid "休み"
 msgstr "Closed"
 
@@ -2277,6 +2281,10 @@ msgstr "Location is not allowed. Please allow location for this site in your bro
 #: src/components/map/MapSheet.tsx:106
 msgid "低い"
 msgstr "low"
+
+#: src/components/map/PlacesPanel.tsx:211
+msgid "住所"
+msgstr "Address"
 
 #: src/components/RouteStats.tsx:39
 msgid "体力度"
@@ -2565,6 +2573,11 @@ msgstr "Check the contents"
 msgid "最低 {lowest}m"
 msgstr "Lowest {lowest}m"
 
+#: src/components/NearestPlaces.tsx:37
+#: src/components/SpotSheet.tsx:173
+msgid "最寄り"
+msgstr "Nearest"
+
 #: src/components/RallyViews.tsx:45
 msgid "最後に押した日時　{when}"
 msgstr "Last stamped: {when}"
@@ -2587,7 +2600,7 @@ msgstr "Highest {highest}m"
 #: src/components/landing/BannerCarousel.tsx:38
 #: src/components/map/MapScreen.tsx:479
 #: src/components/SpotGallery.tsx:12
-#: src/components/SpotSheet.tsx:151
+#: src/components/SpotSheet.tsx:155
 msgid "写真"
 msgstr "Photos"
 
@@ -2686,7 +2699,7 @@ msgstr "Before you go"
 #: src/app/(public)/routes/page.tsx:87
 #: src/components/landing/Landing.tsx:173
 #: src/components/RouteView.tsx:272
-#: src/components/SpotSheet.tsx:167
+#: src/components/SpotSheet.tsx:180
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "Check official sources before you go."
 
@@ -2699,7 +2712,7 @@ msgstr "Credit (who took it, terms of use)"
 #: src/components/admin/RouteEditor.tsx:602
 #: src/components/map/MapScreen.tsx:470
 #: src/components/RouteView.tsx:179
-#: src/components/SpotSheet.tsx:140
+#: src/components/SpotSheet.tsx:144
 msgid "出典"
 msgstr "Source"
 
@@ -3010,7 +3023,7 @@ msgid "周回（元の場所へ）"
 msgstr "Loop (back to the start)"
 
 #: src/components/admin/DirectoryPicker.tsx:93
-#: src/components/RouteNearbyPlaces.tsx:23
+#: src/components/RouteNearbyPlaces.tsx:22
 msgid "周辺の場所"
 msgstr "Nearby places"
 
@@ -3043,8 +3056,8 @@ msgstr "Open / available"
 msgid "地図"
 msgstr "Map"
 
-#: src/components/RouteNearbyPlaces.tsx:56
-#: src/components/SpotSheet.tsx:68
+#: src/components/PlaceDialog.tsx:29
+#: src/components/SpotSheet.tsx:72
 msgid "地図で見る"
 msgstr "Show in the map"
 
@@ -3440,7 +3453,7 @@ msgstr "Turnaround"
 msgid "押した"
 msgstr "Stamped"
 
-#: src/components/SpotSheet.tsx:89
+#: src/components/SpotSheet.tsx:93
 msgid "押し方: 場所の近くで、ボタンを押します（位置情報）"
 msgstr "How: press the button near the place (uses your location)"
 
@@ -3606,7 +3619,7 @@ msgstr "Enter the Japanese name."
 msgid "日本語の字幕です。もう一度送ると、置き換わります。字幕は動画の横に保存され、動画を入れ替えたときは、字幕も送りなおしてください。"
 msgstr "Japanese subtitles. Sending again replaces them. They are stored beside the video, so when you replace the video, send the subtitles again."
 
-#: src/components/map/PlacesPanel.tsx:209
+#: src/components/map/PlacesPanel.tsx:239
 #: src/components/RouteStats.tsx:34
 msgid "時間"
 msgstr "Time"
@@ -3759,7 +3772,7 @@ msgstr "Routes are in walking order. Select a name to edit its text and map."
 #: src/components/admin/useChecklistLabels.ts:17
 #: src/components/map/MapScreen.tsx:452
 #: src/components/RouteView.tsx:161
-#: src/components/SpotSheet.tsx:124
+#: src/components/SpotSheet.tsx:128
 msgid "歴史・由来"
 msgstr "History and background"
 
@@ -3974,7 +3987,7 @@ msgstr "Too many attempts in a short time. Please try again in a little while."
 msgid "確認した情報源（サイト名やリンク）"
 msgstr "Source checked (site name or link)"
 
-#: src/components/map/PlacesPanel.tsx:225
+#: src/components/map/PlacesPanel.tsx:255
 msgid "確認した日：{checkedOn}"
 msgstr "Checked on: {checkedOn}"
 
@@ -4425,7 +4438,7 @@ msgid "該当する場所はありません。"
 msgstr "No matching places."
 
 #: src/components/admin/PlacePanel.tsx:93
-#: src/components/SpotSheet.tsx:107
+#: src/components/SpotSheet.tsx:111
 msgid "説明"
 msgstr "About this place"
 
@@ -4477,6 +4490,10 @@ msgstr "Some places where a fall is dangerous. Needs map-reading skill and care 
 #: src/components/settings/PrefsForm.tsx:128
 msgid "近い場所をまとめて表示する"
 msgstr "Merge places that are close together"
+
+#: src/components/NearestPlaces.tsx:52
+msgid "近くに{category}はありません。"
+msgstr "No {category} nearby."
 
 #: src/components/admin/map-editor/MapEditor.tsx:988
 msgid "追加しない"
@@ -4701,6 +4718,10 @@ msgstr "hidden"
 #: src/components/RouteStats.tsx:41
 msgid "難しさ"
 msgstr "Difficulty"
+
+#: src/components/map/PlacesPanel.tsx:217
+msgid "電話"
+msgstr "Phone"
 
 #: src/components/AccessList.tsx:9
 #: src/components/admin/map-editor/MapEditor.tsx:791

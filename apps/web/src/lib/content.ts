@@ -261,6 +261,9 @@ export interface PlaceItem {
   /** A photo of the place (an address); null or left out when there is none. */
   photoUrl?: string | null;
   photoCredit?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  website?: string | null;
 }
 
 /** Every place of the directory a visitor may see (plus the samples when sample content is on). */
@@ -293,6 +296,9 @@ export function toMapPlace(locale: string, p: PlaceItem): MapPlace {
     position: { lat: p.position.lat, lng: p.position.lng },
     verified: p.position.verified,
     lastVerified: p.lastVerified,
+    address: p.address ?? null,
+    phone: p.phone ?? null,
+    website: p.website ?? null,
   };
 }
 
