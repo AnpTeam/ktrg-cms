@@ -10,7 +10,7 @@ import { listRequest, type ListPage } from "@/lib/admin/lists/list-client";
 
 // Any generic admin list, drawn from its description (GET /admin/lists) like the rally list: a button for a new row,
 // then each row's name (a link to its form) with a short line of facts. Newest first; "もっと見る" loads the next 50.
-export function AdminListTable({ meta: config, initial, locale, routeNames }: { meta: ListMeta; initial: ListPage; locale: string; routeNames: Record<string, string> }) {
+export function AdminListTable({ meta: config, initial, locale, choices }: { meta: ListMeta; initial: ListPage; locale: string; choices: Record<string, { id: string; name: string }[]> }) {
   const { t } = useLingui();
   const messages = useErrorMessages();
   const [items, setItems] = useState(initial.items);
@@ -21,7 +21,7 @@ export function AdminListTable({ meta: config, initial, locale, routeNames }: { 
   const [q, setQ] = useState("");
   const [picked, setPicked] = useState<Record<string, string>>({});
   const [applied, setApplied] = useState("");
-  const filterFields = config.fields.filter((f) => f.kind === "select" || f.kind === "boolean" || f.kind === "route");
+  const filterFields = config.fields.filter((f) => f.kind === "select" || f.kind === "boolean" || f.kind === "route" || f.kind === "relation");
   const base = `/admin/${config.key}`;
   const name = (item: (typeof items)[number]) => itemName(config, item, locale);
   const title = pick(config.title, locale);
@@ -102,9 +102,9 @@ export function AdminListTable({ meta: config, initial, locale, routeNames }: { 
                   </option>
                 ))
               ) : (
-                Object.entries(routeNames).map(([id, routeName]) => (
-                  <option key={id} value={id}>
-                    {routeName}
+                (choices[f.name] ?? []).map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
                   </option>
                 ))
               )}
@@ -149,7 +149,7 @@ export function AdminListTable({ meta: config, initial, locale, routeNames }: { 
               ) : (
                 <p className="text-xl font-bold">{name(item)}</p>
               )}
-              <p className="text-base text-muted">{itemFacts(config, item, locale, (id) => routeNames[id] ?? null).join(" ・ ")}</p>
+              <p className="text-base text-muted">{itemFacts(config, item, locale, (id, field) => choices[field]?.find((c) => c.id === id)?.name ?? null).join(" ・ ")}</p>
             </li>
             );
           })}

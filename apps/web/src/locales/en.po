@@ -268,7 +268,7 @@ msgstr "What the \"Terrain\" button adds"
 msgid "「地形」ボタンを押した状態で見る"
 msgstr "Show it as when \"Terrain\" is pressed"
 
-#: src/components/admin/AdminItemForm.tsx:180
+#: src/components/admin/AdminItemForm.tsx:181
 msgid "「必須」の欄をすべて入れると保存できます。"
 msgstr "Fill in every field marked “Required” to save."
 
@@ -996,7 +996,7 @@ msgstr "See this route"
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 msgstr "This is the only way to sign in to this account. If you remove it, you won't be able to sign in. Add an email address or another passkey first."
 
-#: src/components/admin/AdminNav.tsx:65
+#: src/components/admin/AdminNav.tsx:66
 msgid "これから追加します"
 msgstr "Coming later"
 
@@ -1027,7 +1027,7 @@ msgid "サイトマップ"
 msgstr "Site map"
 
 #: src/app/(admin)/admin/settings/page.tsx:21
-#: src/components/admin/AdminNav.tsx:34
+#: src/components/admin/AdminNav.tsx:35
 msgid "サイト全体の設定"
 msgstr "Site-wide settings"
 
@@ -1462,7 +1462,7 @@ msgstr "Profile and stamps"
 msgid "ページが見つかりません"
 msgstr "Page not found"
 
-#: src/components/admin/AdminNav.tsx:36
+#: src/components/admin/AdminNav.tsx:37
 msgid "ページの文章"
 msgstr "Page text"
 
@@ -1628,7 +1628,7 @@ msgstr "Add email"
 msgid "メインメニュー"
 msgstr "Main menu"
 
-#: src/components/admin/AdminNav.tsx:47
+#: src/components/admin/AdminNav.tsx:48
 #: src/components/SiteHeader.tsx:141
 #: src/components/TabBar.tsx:68
 msgid "メニュー"
@@ -2137,7 +2137,7 @@ msgstr "Physical level (1–10)"
 msgid "作っています…"
 msgstr "Creating…"
 
-#: src/components/admin/AdminItemForm.tsx:177
+#: src/components/admin/AdminItemForm.tsx:178
 msgid "作成"
 msgstr "Create"
 
@@ -2145,7 +2145,7 @@ msgstr "Create"
 msgid "使える写真は見つかりませんでした。"
 msgstr "No usable photos were found."
 
-#: src/components/admin/AdminItemForm.tsx:177
+#: src/components/admin/AdminItemForm.tsx:178
 msgid "保存"
 msgstr "Save"
 
@@ -2370,7 +2370,7 @@ msgstr "Check before publishing"
 msgid "公開前の経由地も、ここには表示されます。"
 msgstr "Waypoints that are not published yet are shown here too."
 
-#: src/components/admin/AdminItemForm.tsx:173
+#: src/components/admin/AdminItemForm.tsx:174
 msgid "内容"
 msgstr "Content"
 
@@ -2549,7 +2549,7 @@ msgid "利用規約"
 msgstr "Terms of use"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
-#: src/components/admin/AdminItemForm.tsx:184
+#: src/components/admin/AdminItemForm.tsx:185
 #: src/components/admin/fields.tsx:155
 #: src/components/admin/PlaceTable.tsx:140
 #: src/components/admin/PlaceTable.tsx:205
@@ -2557,7 +2557,7 @@ msgstr "Terms of use"
 msgid "削除"
 msgstr "Delete"
 
-#: src/components/admin/AdminItemForm.tsx:186
+#: src/components/admin/AdminItemForm.tsx:187
 msgid "削除する"
 msgstr "Delete"
 
@@ -3522,7 +3522,7 @@ msgstr "Pale"
 msgid "港・フェリー乗り場"
 msgstr "Port or ferry"
 
-#: src/components/admin/AdminNav.tsx:73
+#: src/components/admin/AdminNav.tsx:74
 #: src/components/admin/RouteTable.tsx:30
 #: src/components/landing/Landing.tsx:229
 #: src/components/map/MapScreen.tsx:325
@@ -3725,7 +3725,7 @@ msgstr "Prefer not to say"
 msgid "答えなくても大丈夫です。"
 msgstr "You can skip this."
 
-#: src/components/admin/AdminNav.tsx:39
+#: src/components/admin/AdminNav.tsx:40
 msgid "管理メニュー"
 msgstr "Admin menu"
 

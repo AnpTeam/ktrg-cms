@@ -21,7 +21,7 @@ const LIST_ICONS: Record<string, ReactNode> = {
 // The side menu of the admin area. The screens that exist are links (the generic lists come from the API, see
 // lib/admin/lists); the others are listed so the editors can see what is coming, and are not links yet. On a narrow
 // screen the list folds behind a button, so it does not push the page down.
-export function AdminNav({ lists }: { lists: { key: string; title: string }[] }) {
+export function AdminNav({ lists, isAdmin }: { lists: { key: string; title: string }[]; isAdmin: boolean }) {
   const { t } = useLingui();
   const pathname = usePathname() ?? "";
   const base = "/admin";
@@ -31,7 +31,8 @@ export function AdminNav({ lists }: { lists: { key: string; title: string }[] })
     { href: `${base}/routes`, label: t`ルート`, icon: <RouteIcon /> },
     { href: `${base}/rallies`, label: t`ラリー`, icon: <FlagIcon /> },
     ...lists.map((l) => ({ href: `${base}/${l.key}`, label: l.title, icon: LIST_ICONS[l.key] ?? <DocumentIcon /> })),
-    { href: `${base}/settings`, label: t`サイト全体の設定`, icon: <GearIcon /> },
+    // The site settings are for an admin only (the API refuses an editor).
+    ...(isAdmin ? [{ href: `${base}/settings`, label: t`サイト全体の設定`, icon: <GearIcon /> }] : []),
   ];
   const later = [{ label: t`ページの文章`, icon: <DocumentIcon /> }];
 

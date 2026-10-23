@@ -7,7 +7,7 @@ import { AdminNav } from "./AdminNav";
 
 // The frame of every admin page: a menu on the left (a strip on top on a narrow screen), a bar with the
 // signed-in name, the language and a way back to the site visitors see, and the page itself.
-export function AdminShell({ name, lists, children }: { name: string | null; lists: { key: string; title: string }[]; children: ReactNode }) {
+export function AdminShell({ name, role, lists, children }: { name: string | null; role: "editor" | "admin" | null; lists: { key: string; title: string }[]; children: ReactNode }) {
   return (
     <AdminFrame
       aside={
@@ -15,7 +15,7 @@ export function AdminShell({ name, lists, children }: { name: string | null; lis
           <Link href="/admin/routes" className="tap-target mb-3 flex items-center px-2 text-xl font-bold text-accent">
             <Trans>葛城修験 管理</Trans>
           </Link>
-          <AdminNav lists={lists} />
+          <AdminNav lists={lists} isAdmin={role === "admin"} />
         </>
       }
     >

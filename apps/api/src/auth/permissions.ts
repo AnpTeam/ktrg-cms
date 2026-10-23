@@ -14,34 +14,34 @@ export type { Role };
 export const PERMISSIONS = {
   // --- Any logged-in account -------------------------------------------------------------
   /** Own profile, language, passkeys and account deletion request. */
-  "me.manage": ["participant", "admin"],
+  "me.manage": ["participant", "editor", "admin"],
   /**
    * Account security: add or remove a passkey, ask for the account to be deleted. Needs a fresh login (below),
    * so someone holding a signed-in phone cannot give themselves a login that outlives the owner's changes.
    */
-  "me.sensitive": ["participant", "admin"],
+  "me.sensitive": ["participant", "editor", "admin"],
   /** Collect a stamp at a spot. */
-  "stamp.create": ["participant", "admin"],
+  "stamp.create": ["participant", "editor", "admin"],
   /** Ask for a walking path to a stamp place while off the course line (navigation; the server calls OpenRouteService). */
-  "navigation.path": ["participant", "admin"],
+  "navigation.path": ["participant", "editor", "admin"],
 
-  // --- Admin CMS only --------------------------------------------------------------------
-  "route.manage": ["admin"],
-  "spot.manage": ["admin"],
+  // --- The CMS: content work is for an editor and an admin; settings, history and accounts are for an admin only -----
+  "route.manage": ["editor", "admin"],
+  "spot.manage": ["editor", "admin"],
   /** Publish or unpublish a spot (needs coordinates and confirmed site permission). */
-  "spot.publish": ["admin"],
-  "rally.manage": ["admin"],
+  "spot.publish": ["editor", "admin"],
+  "rally.manage": ["editor", "admin"],
   /** Dated trail notices and spot status. */
-  "notice.manage": ["admin"],
-  "upload.create": ["admin"],
+  "notice.manage": ["editor", "admin"],
+  "upload.create": ["editor", "admin"],
   /** Browse the photos already uploaded (the photo library). */
-  "upload.read": ["admin"],
+  "upload.read": ["editor", "admin"],
   /** The photos in the home page carousel. */
-  "banner.manage": ["admin"],
+  "banner.manage": ["editor", "admin"],
   /** Settings for the whole site (the map style): they change the live site at once. */
   "site.manage": ["admin"],
   /** Review flagged stamps and revoke them. */
-  "stamp.review": ["admin"],
+  "stamp.review": ["editor", "admin"],
   "audit.read": ["admin"],
   /** See the list of accounts (the users screen). No fresh login: only changing a role needs one. */
   "user.read": ["admin"],

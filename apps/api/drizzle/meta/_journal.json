@@ -190,6 +190,13 @@
       "when": 1792723286218,
       "tag": "0026_route_access_points",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1792727135166,
+      "tag": "0027_user_role_editor",
+      "breakpoints": true
     }
   ]
 }

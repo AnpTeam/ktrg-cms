@@ -70,6 +70,25 @@ describe("the generic admin form", () => {
     expect(itemFacts(noticesList, saved, "ja", () => null)).toEqual(["全体", "2026年10月20日 に確認", "期限なし", "下書き"]);
   });
 
+  test("a relation field shows the row it points at, by the name its own field gives", () => {
+    const tours: ListMeta = {
+      ...noticesList,
+      key: "tours",
+      titleField: "name",
+      fields: [
+        { name: "name", kind: "text", label: l("n") },
+        { name: "guideId", kind: "relation", to: "guides", label: l("g"), inList: { empty: l("案内なし") } },
+        { name: "placeId", kind: "relation", to: "places", label: l("p"), inList: {} },
+      ],
+    };
+    const names: Record<string, Record<string, string>> = { guideId: { g1: "山田さん" }, placeId: { g1: "加太駅" } };
+    const lookup = (id: string, field: string) => names[field]?.[id] ?? null;
+    const row = { id: "t1", createdAt: "x", updatedAt: "x", name: "ツアー", guideId: "g1", placeId: null };
+    expect(itemFacts(tours, row, "ja", lookup)).toEqual(["山田さん"]);
+    expect(itemFacts(tours, { ...row, guideId: null }, "ja", lookup)).toEqual(["案内なし"]);
+    expect(formValues(tours, row)).toEqual({ name: "ツアー", guideId: "g1", placeId: "" });
+  });
+
   test("read-only fields are shown, never sent; numbers go out as numbers; a select starts on its first choice", () => {
     const users: ListMeta = {
       ...noticesList,

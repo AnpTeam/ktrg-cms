@@ -4,6 +4,7 @@
   "packageManager": "bun@1.4.3",
   "workspaces": ["apps/*"],
   "scripts": {
+    "ktrg": "bun apps/api/scripts/ktrg.ts",
     "dev:api": "bun run --cwd apps/api dev",
     "dev:web": "bun run --cwd apps/web dev",
     "db:generate": "bun run --cwd apps/api db:generate",

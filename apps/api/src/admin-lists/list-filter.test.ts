@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { createMemoryAuditWriter } from "../audit/audit-log";
 import { eqFromQuery, rowMatches } from "./list-filter";
-import { createListReader } from "./list-service";
+import { createListReader, createListService } from "./list-service";
 import { createMemoryListStore } from "./list-memory-store";
 import type { FieldUi } from "./list-types";
 
@@ -50,5 +50,43 @@ describe("a filtered page", () => {
     expect(second.items).toHaveLength(1); // 4 rows in all are "a"
     expect(second.next).toBeNull();
     expect(new Set([...first.items, ...second.items].map((r) => r.id)).size).toBe(4);
+  });
+});
+
+describe("the after-save hook", () => {
+  const actor = "11111111-1111-4111-8111-111111111111";
+  const actions = { create: "banner.create", update: "banner.update", delete: "banner.delete" } as never;
+  const rules = async (f: { titleJa?: string }) => ({ ok: true as const, value: f });
+  const setup = (afterWrite: (e: unknown) => void | Promise<void>, log: (m: string) => void = () => {}) => {
+    const mem = createMemoryListStore<{ titleJa: string }>(createMemoryAuditWriter().writer, actions);
+    return createListService({ store: mem.store, rules, afterWrite: afterWrite as never, log });
+  };
+
+  test("is told about each saved create, update and delete, once, with the row", async () => {
+    const seen: unknown[] = [];
+    const svc = setup((e) => void seen.push(e));
+    const made = (await svc.create(actor, { titleJa: "a" })) as { ok: true; value: { id: string; updatedAt: Date } };
+    const changed = (await svc.update(actor, made.value.id, made.value.updatedAt, { titleJa: "b" })) as { ok: boolean };
+    await svc.remove(actor, made.value.id);
+    expect(changed.ok).toBe(true);
+    expect(seen.map((e) => (e as { type: string }).type)).toEqual(["create", "update", "delete"]);
+    expect((seen[1] as { row: { titleJa: string } }).row.titleJa).toBe("b");
+    expect((seen[2] as { row: unknown }).row).toBeNull();
+  });
+
+  test("a hook that throws is logged and the save stands; a refused or conflicting change does not call it", async () => {
+    const logged: string[] = [];
+    let calls = 0;
+    const svc = setup(() => {
+      calls++;
+      throw new Error("cache is down");
+    }, (m) => logged.push(m));
+    const made = (await svc.create(actor, { titleJa: "a" })) as { ok: true; value: { id: string; updatedAt: Date } };
+    expect(made.ok).toBe(true);
+    expect(logged).toEqual(["list hook after create failed: cache is down"]);
+    const stale = await svc.update(actor, made.value.id, new Date(0), { titleJa: "b" });
+    expect(stale.ok).toBe(false);
+    expect((await svc.remove(actor, "99999999-9999-4999-8999-999999999999")).ok).toBe(false);
+    expect(calls).toBe(1);
   });
 });

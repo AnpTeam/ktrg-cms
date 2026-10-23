@@ -268,7 +268,7 @@ msgstr "「地形」ボタンで重ねるもの"
 msgid "「地形」ボタンを押した状態で見る"
 msgstr "「地形」ボタンを押した状態で見る"
 
-#: src/components/admin/AdminItemForm.tsx:180
+#: src/components/admin/AdminItemForm.tsx:181
 msgid "「必須」の欄をすべて入れると保存できます。"
 msgstr "「必須」の欄をすべて入れると保存できます。"
 
@@ -996,7 +996,7 @@ msgstr "この道を見る"
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 msgstr "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 
-#: src/components/admin/AdminNav.tsx:65
+#: src/components/admin/AdminNav.tsx:66
 msgid "これから追加します"
 msgstr "これから追加します"
 
@@ -1027,7 +1027,7 @@ msgid "サイトマップ"
 msgstr "サイトマップ"
 
 #: src/app/(admin)/admin/settings/page.tsx:21
-#: src/components/admin/AdminNav.tsx:34
+#: src/components/admin/AdminNav.tsx:35
 msgid "サイト全体の設定"
 msgstr "サイト全体の設定"
 
@@ -1462,7 +1462,7 @@ msgstr "プロフィールとスタンプ"
 msgid "ページが見つかりません"
 msgstr "ページが見つかりません"
 
-#: src/components/admin/AdminNav.tsx:36
+#: src/components/admin/AdminNav.tsx:37
 msgid "ページの文章"
 msgstr "ページの文章"
 
@@ -1628,7 +1628,7 @@ msgstr "メールを追加する"
 msgid "メインメニュー"
 msgstr "メインメニュー"
 
-#: src/components/admin/AdminNav.tsx:47
+#: src/components/admin/AdminNav.tsx:48
 #: src/components/SiteHeader.tsx:141
 #: src/components/TabBar.tsx:68
 msgid "メニュー"
@@ -2137,7 +2137,7 @@ msgstr "体力度（1〜10）"
 msgid "作っています…"
 msgstr "作っています…"
 
-#: src/components/admin/AdminItemForm.tsx:177
+#: src/components/admin/AdminItemForm.tsx:178
 msgid "作成"
 msgstr "作成"
 
@@ -2145,7 +2145,7 @@ msgstr "作成"
 msgid "使える写真は見つかりませんでした。"
 msgstr "使える写真は見つかりませんでした。"
 
-#: src/components/admin/AdminItemForm.tsx:177
+#: src/components/admin/AdminItemForm.tsx:178
 msgid "保存"
 msgstr "保存"
 
@@ -2370,7 +2370,7 @@ msgstr "公開前のチェック"
 msgid "公開前の経由地も、ここには表示されます。"
 msgstr "公開前の経由地も、ここには表示されます。"
 
-#: src/components/admin/AdminItemForm.tsx:173
+#: src/components/admin/AdminItemForm.tsx:174
 msgid "内容"
 msgstr "内容"
 
@@ -2549,7 +2549,7 @@ msgid "利用規約"
 msgstr "利用規約"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
-#: src/components/admin/AdminItemForm.tsx:184
+#: src/components/admin/AdminItemForm.tsx:185
 #: src/components/admin/fields.tsx:155
 #: src/components/admin/PlaceTable.tsx:140
 #: src/components/admin/PlaceTable.tsx:205
@@ -2557,7 +2557,7 @@ msgstr "利用規約"
 msgid "削除"
 msgstr "削除"
 
-#: src/components/admin/AdminItemForm.tsx:186
+#: src/components/admin/AdminItemForm.tsx:187
 msgid "削除する"
 msgstr "削除する"
 
@@ -3522,7 +3522,7 @@ msgstr "淡色"
 msgid "港・フェリー乗り場"
 msgstr "港・フェリー乗り場"
 
-#: src/components/admin/AdminNav.tsx:73
+#: src/components/admin/AdminNav.tsx:74
 #: src/components/admin/RouteTable.tsx:30
 #: src/components/landing/Landing.tsx:229
 #: src/components/map/MapScreen.tsx:325
@@ -3725,7 +3725,7 @@ msgstr "答えたくない"
 msgid "答えなくても大丈夫です。"
 msgstr "答えなくても大丈夫です。"
 
-#: src/components/admin/AdminNav.tsx:39
+#: src/components/admin/AdminNav.tsx:40
 msgid "管理メニュー"
 msgstr "管理メニュー"
 

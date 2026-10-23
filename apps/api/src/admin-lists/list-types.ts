@@ -63,8 +63,10 @@ export type Label = { ja: string; en: string };
  * - boolean: a tick box
  * - select: one of `options`
  * - route: one of the routes, or none (null)
+ * - relation: one row of another list (`to`: that list's key), or none (null). Stored as its id; the list's own rules check
+ *   that the row exists, as they do for a route. `route` is the same thing aimed at the routes.
  */
-export type FieldKind = "bilingual" | "bilingual-long" | "text" | "url" | "image" | "number" | "decimal" | "date" | "datetime" | "boolean" | "select" | "route";
+export type FieldKind = "bilingual" | "bilingual-long" | "text" | "url" | "image" | "number" | "decimal" | "date" | "datetime" | "boolean" | "select" | "route" | "relation";
 
 export interface FieldUi {
   /** The API field; for a bilingual field the stem ("title" → titleJa / titleEn). */
@@ -76,7 +78,9 @@ export interface FieldUi {
   required?: boolean;
   /** A date that may be left empty. */
   optional?: boolean;
-  /** For a route field: what "no route" means. */
+  /** For a relation field: the key of the list it points at. */
+  to?: string;
+  /** For a route or relation field: what "none" means. */
   noneLabel?: Label;
   /** For a select field: the values it offers. */
   options?: { value: string; label: Label }[];
@@ -111,6 +115,23 @@ export interface ListMeta extends ListUi {
   key: string;
   ops: { create: boolean; edit: boolean; delete: boolean };
 }
+
+/**
+ * What an `afterWrite` hook is told after a change is saved: what happened, who did it, which row, and the row as saved
+ * (null after a delete, which only returns whether a row was there).
+ */
+export interface ListEvent<R> {
+  type: "create" | "update" | "delete";
+  actor: string;
+  id: string;
+  row: R | null;
+}
+
+/**
+ * Code a list runs after each saved change (clear a cache, tell someone, update a copy). It runs once the change is
+ * already saved, so a hook that throws is logged and never undoes or fails the save.
+ */
+export type ListHook<R> = (event: ListEvent<R>) => void | Promise<void>;
 
 /**
  * The table's own rules, run before every write. Gets the whole new row on create, and the saved row with the changes

@@ -38,7 +38,8 @@ describe("every admin list describes its screens completely", () => {
 describe("GET /admin/lists", () => {
   const admin: AuthUser = { id: "11111111-1111-4111-8111-111111111111", email: "admin@example.com", role: "admin", locale: "ja" };
   const alice: AuthUser = { id: "22222222-2222-4222-8222-222222222222", email: "alice@example.com", role: "participant", locale: "ja" };
-  const users = new Map<string, AuthUser>([[admin.id, admin], [alice.id, alice]]);
+  const editor: AuthUser = { id: "33333333-3333-4333-8333-333333333333", email: "editor@example.com", role: "editor", locale: "ja" };
+  const users = new Map<string, AuthUser>([[admin.id, admin], [alice.id, alice], [editor.id, editor]]);
   const session = createSessionService({ store: createMemorySessionStore(users).store });
   const services = {
     session,
@@ -57,6 +58,11 @@ describe("GET /admin/lists", () => {
     expect((await get(alice)).body).toEqual({ ok: true, lists: [] });
     const lists = (await get(admin)).body.lists!;
     expect(lists.map((l) => l.key)).toEqual(ADMIN_LISTS.map((d) => d.key));
+    // An editor gets the content lists, not the accounts or the history.
+    const forEditor = (await get(editor)).body.lists!.map((l) => l.key);
+    expect(forEditor).toContain("notices");
+    expect(forEditor).not.toContain("users");
+    expect(forEditor).not.toContain("audit");
     for (const l of lists) {
       expect(Object.keys(l).filter((k) => !["deleteWarning", "fields", "intro", "key", "newLabel", "ops", "title", "titleField", "linkTo"].includes(k))).toEqual([]);
     }

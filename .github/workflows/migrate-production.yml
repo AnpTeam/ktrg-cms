@@ -45,7 +45,17 @@ jobs:
             exit 1
           fi
 
+      - name: Show what is waiting
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+        run: bun run ktrg db status
+
       - name: Apply migrations
         env:
           DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
         run: bun run --cwd apps/api db:migrate:ci
+
+      - name: Show the result
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+        run: bun run ktrg db status

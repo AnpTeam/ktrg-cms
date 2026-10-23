@@ -1,5 +1,5 @@
 import { isFiltering, MAX_SCAN, rowMatches, SCAN_BATCH, type ListFilter } from "./list-filter";
-import { bad, ok, type Cursor, type FieldUi, type ListReadStore, type ListRow, type ListRules, type ListStore, type Result } from "./list-types";
+import { bad, ok, type Cursor, type FieldUi, type ListHook, type ListReadStore, type ListRow, type ListRules, type ListStore, type Result } from "./list-types";
 
 export const PAGE_SIZE = 50;
 
@@ -57,8 +57,17 @@ export function createListReader<R extends ListRow>(deps: { store: ListReadStore
 }
 
 /** A list an admin can also write: the table's rules before each write; conflicts reported. */
-export function createListService<R extends ListRow, F>(deps: { store: ListStore<R, F>; rules: ListRules<F>; pageSize?: number }) {
+export function createListService<R extends ListRow, F>(deps: { store: ListStore<R, F>; rules: ListRules<F>; pageSize?: number; afterWrite?: ListHook<R>; log?: (message: string) => void }) {
   const { store, rules } = deps;
+  const log = deps.log ?? console.error;
+  /** Run the hook after a saved change; a failure is logged (its message only) and the save stands. */
+  const after = async (event: Parameters<ListHook<R>>[0]) => {
+    try {
+      await deps.afterWrite?.(event);
+    } catch (err) {
+      log(`list hook after ${event.type} failed: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  };
   const done = (r: R | "conflict" | null): Result<R> => (r === null ? bad("not_found") : r === "conflict" ? bad("conflict") : ok(r));
 
   return {
@@ -66,7 +75,10 @@ export function createListService<R extends ListRow, F>(deps: { store: ListStore
 
     async create(actor: string, input: F): Promise<Result<R>> {
       const checked = await rules(input, "create");
-      return checked.ok ? ok(await store.create(actor, checked.value as F)) : checked;
+      if (!checked.ok) return checked;
+      const row = await store.create(actor, checked.value as F);
+      await after({ type: "create", actor, id: row.id, row });
+      return ok(row);
     },
 
     async update(actor: string, id: string, expected: Date | string, input: Partial<F>): Promise<Result<R>> {
@@ -78,11 +90,15 @@ export function createListService<R extends ListRow, F>(deps: { store: ListStore
       if (!checked.ok) return checked;
       const cleaned = checked.value as Record<string, unknown>;
       const changes = Object.fromEntries(Object.keys(input).map((k) => [k, cleaned[k]])) as Partial<F>;
-      return done(await store.update(actor, id, expected instanceof Date ? expected : new Date(expected), changes));
+      const saved = await store.update(actor, id, expected instanceof Date ? expected : new Date(expected), changes);
+      if (saved !== null && saved !== "conflict") await after({ type: "update", actor, id, row: saved });
+      return done(saved);
     },
 
     async remove(actor: string, id: string): Promise<Result<true>> {
-      return (await store.remove(actor, id)) ? ok(true) : bad("not_found");
+      if (!(await store.remove(actor, id))) return bad("not_found");
+      await after({ type: "delete", actor, id, row: null });
+      return ok(true);
     },
   };
 }
