@@ -12,9 +12,9 @@ import { forRallyViewer, otherRallies, pickFeatured } from "@/lib/rally-model";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
 
-// The stamp page: who you are, the rally you stamped in most recently (with how many are left), and
-// below it every other rally: the 31 sutra mound places as one rally and one rally for each course.
-// Until accounts and the stamp API exist the rallies come from sample content (development only).
+// The rally page (the stamps live inside each rally): who you are, the rally you stamped in most recently (with how many
+// are left), and below it every other published rally. The rallies come from GET /rallies; sample content stands in only
+// in development when none are published.
 export default async function StampsPage({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
   const i18n = await initLingui();
   const viewer = await getViewer(searchParams);
@@ -28,7 +28,7 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-start lg:gap-x-10">
       <div className="flex flex-col gap-6">
       <h1 className="px-4 text-3xl font-bold lg:text-4xl">
-        <Trans>スタンプ</Trans>
+        <Trans>ラリー</Trans>
       </h1>
 
       {/* How to play lives here, with the stamps, and nowhere else. */}

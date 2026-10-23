@@ -46,6 +46,18 @@ export interface PublicRoute {
   bounds: { west: number; south: number; east: number; north: number } | null;
 }
 
+/** One published rally as GET /rallies sends it: a rally of places lists its places, a rally of courses its courses. */
+export interface PublicRally {
+  id: string;
+  kind: "places" | "course";
+  nameJa: string;
+  nameEn: string | null;
+  sortOrder: number;
+  places: { id: string; routeId: string; nameJa: string; nameEn: string | null }[];
+  /** Each course with the ids of its published stamp places. */
+  courses: { routeId: string; nameJa: string; nameEn: string | null; spotIds: string[] }[];
+}
+
 export interface PublicSpot {
   id: string;
   routeId: string;

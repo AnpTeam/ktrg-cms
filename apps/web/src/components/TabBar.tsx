@@ -22,7 +22,7 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
     { path: "/", label: t`ホーム`, icon: <HomeIcon /> },
     { path: "/map", label: t`マップ`, icon: <MapIcon /> },
     { path: "/routes", label: t`ルート`, icon: <RouteIcon /> },
-    { path: "/stamps", label: t`スタンプ`, icon: <StampIcon /> },
+    { path: "/rallies", label: t`ラリー`, icon: <StampIcon /> },
   ];
 
   const item =

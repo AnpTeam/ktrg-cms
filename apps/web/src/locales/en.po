@@ -1140,13 +1140,9 @@ msgid "スタート"
 msgstr "Start"
 
 #: src/app/(public)/settings/passkeys/page.tsx:23
-#: src/app/(public)/sitemap/page.tsx:74
-#: src/app/(public)/sitemap/page.tsx:76
-#: src/app/(public)/stamps/page.tsx:31
 #: src/components/admin/map-editor/MapEditor.tsx:1229
 #: src/components/admin/PlaceTable.tsx:137
 #: src/components/ProgressSummary.tsx:19
-#: src/components/TabBar.tsx:25
 msgid "スタンプ"
 msgstr "Stamps"
 
@@ -1223,6 +1219,10 @@ msgstr "Stamp progress"
 #: src/components/admin/PlacePanel.tsx:122
 msgid "スタンプは押せません。場所のページは見られます。公開するには、現地の許可の確認が必要です。"
 msgstr "No stamp can be collected here, but visitors can open the place's page. To publish it, the site's permission must be confirmed."
+
+#: src/components/RallyViews.tsx:98
+msgid "スタンプラリー"
+msgstr "Stamp rally"
 
 #: src/components/StampHere.tsx:149
 msgid "スタンプを押しています…"
@@ -1828,7 +1828,10 @@ msgid "ライト"
 msgstr "Light"
 
 #: src/app/(admin)/admin/rallies/page.tsx:22
+#: src/app/(public)/rallies/page.tsx:31
+#: src/app/(public)/sitemap/page.tsx:74
 #: src/components/admin/AdminNav.tsx:32
+#: src/components/TabBar.tsx:25
 msgid "ラリー"
 msgstr "Rallies"
 
@@ -1839,6 +1842,10 @@ msgstr "Rallies (admin)"
 #: src/components/admin/RallyList.tsx:49
 msgid "ラリーがまだありません。「新しいラリー」から作ってください。"
 msgstr "There are no rallies yet. Create one with \"New rally\"."
+
+#: src/app/(public)/sitemap/page.tsx:76
+msgid "ラリーとスタンプ"
+msgstr "Rallies and stamps"
 
 #: src/components/admin/RallyEditor.tsx:141
 msgid "ラリーに入るコース"
@@ -1856,7 +1863,7 @@ msgstr "Courses to put in the rally"
 msgid "ラリーに入れる経由地"
 msgstr "Stamp waypoints to put in the rally"
 
-#: src/app/(public)/stamps/page.tsx:60
+#: src/app/(public)/rallies/page.tsx:60
 msgid "ラリーの一覧"
 msgstr "All rallies"
 
@@ -1881,7 +1888,7 @@ msgstr "Rally name"
 msgid "ラリーは、コースを集めてつくるか、経由地を集めてつくります。名前を押すと、名前・公開・中身を直せます。"
 msgstr "A rally is made from courses or from stamp waypoints. Open one to change its name, whether it is public, and what is in it."
 
-#: src/app/(public)/stamps/page.tsx:50
+#: src/app/(public)/rallies/page.tsx:50
 msgid "ラリーは、まだ準備中です。"
 msgstr "The rallies are not ready yet."
 
@@ -2441,7 +2448,7 @@ msgstr "Published."
 msgid "公開する"
 msgstr "Publish"
 
-#: src/app/(public)/stamps/page.tsx:51
+#: src/app/(public)/rallies/page.tsx:51
 msgid "公開できるようになったら、ここにスタンプのラリーが表示されます。"
 msgstr "When they are ready to publish, the stamp rallies will appear here."
 
@@ -2653,8 +2660,8 @@ msgstr "Working…"
 msgid "出かける前に"
 msgstr "Before you go"
 
+#: src/app/(public)/rallies/page.tsx:74
 #: src/app/(public)/routes/page.tsx:87
-#: src/app/(public)/stamps/page.tsx:74
 #: src/components/landing/Landing.tsx:173
 #: src/components/RouteView.tsx:265
 #: src/components/SpotSheet.tsx:167
@@ -4452,8 +4459,8 @@ msgstr "Normal"
 msgid "通行止め"
 msgstr "Closed"
 
+#: src/app/(public)/rallies/page.tsx:39
 #: src/app/(public)/sitemap/page.tsx:79
-#: src/app/(public)/stamps/page.tsx:39
 msgid "遊び方"
 msgstr "How to play"
 

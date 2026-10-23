@@ -95,7 +95,7 @@ export function RallyCard({ rally, locale, signedIn }: { rally: RallyItem; local
   const name = nameOf(locale, rally.nameJa, rally.nameEn);
   const order = rally.order;
   const total = rally.total;
-  const kind: ReactNode = rally.kind === "mounds" ? t`経塚ラリー` : t`コース${order}`;
+  const kind: ReactNode = rally.kind === "mounds" ? t`経塚ラリー` : rally.kind === "rally" ? t`スタンプラリー` : t`コース${order}`;
 
   if (isSoon(rally)) {
     return (

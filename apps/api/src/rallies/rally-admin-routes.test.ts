@@ -9,6 +9,7 @@ import type { AuthUser } from "../auth/user";
 import { apiBase } from "../lib/api-errors";
 import { createMemoryRallyAdminStore } from "./rally-admin-memory-store";
 import { rallyAdminRoutes } from "./rally-admin-routes";
+import { rallyPublicRoutes } from "./rally-public-routes";
 import { createRallyAdminService } from "./rally-admin-service";
 
 const admin: AuthUser = { id: "11111111-1111-4111-8111-111111111111", email: "admin@example.com", role: "admin", locale: "ja" };
@@ -261,5 +262,21 @@ describe("what is in a rally", () => {
     const empty = await s.call("PUT", `/admin/rallies/${s.courses.id}/courses`, { cookie, body: { updatedAt: s.courses.updatedAt.toISOString(), routeIds: [] } });
     expect(await empty.json()).toEqual({ ok: false, error: "rally_empty" });
     expect((await s.call("PUT", `/admin/rallies/${s.courses.id}/courses`, { cookie, body: { updatedAt: new Date(0).toISOString(), routeIds: [ROUTE_B] } })).status).toBe(409);
+  });
+});
+
+describe("what visitors read about rallies", () => {
+  test("only published rallies, in order; a rally of places lists its published places, a rally of courses its courses with their stamp places", async () => {
+    const s = setup();
+    s.mem.addRally({ kind: "places", nameJa: "下書き", sortOrder: 3, published: false }, [A1]);
+    const content = { publicRoute: async (id: string) => (id === ROUTE_A ? { route: {}, spots: [{ id: A1 }], points: [] } : null) };
+    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(rallyPublicRoutes(() => ({ rallyAdmin: createRallyAdminService({ store: s.mem.store }), content: content as never })));
+    const res = await app.handle(new Request("http://localhost/api/v1/rallies"));
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Json;
+    expect(body.rallies.map((r: Json) => [r.nameJa, r.kind])).toEqual([["経塚ラリー", "places"], ["全コース", "course"]]);
+    // A1 is published, B1 is not: only A1 is named.
+    expect(body.rallies[0].places.map((p: Json) => p.id)).toEqual([A1]);
+    expect(body.rallies[1].courses).toEqual([{ routeId: ROUTE_A, nameJa: "ルートA", nameEn: "Route A", spotIds: [A1] }]);
   });
 });

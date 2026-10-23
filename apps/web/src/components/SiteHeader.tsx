@@ -175,7 +175,7 @@ export function SiteHeader({
             {signedIn ? (
               <div className="flex flex-col gap-3">
                 <Link prefetch={false}
-                  href="/stamps"
+                  href="/rallies"
                   className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface"
                 >
                   <UserIcon />

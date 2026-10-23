@@ -41,6 +41,10 @@ const nextConfig: NextConfig = {
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
+  // The stamp page became the rally page: old links and bookmarks arrive at /rallies with a proper redirect.
+  async redirects() {
+    return [{ source: "/stamps", destination: "/rallies", permanent: true }];
+  },
   async rewrites() {
     return [{ source: "/api/v1/:path*", destination: `${apiOrigin}/api/v1/:path*` }];
   },

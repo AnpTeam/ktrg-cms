@@ -1,4 +1,4 @@
-import { fetchPublicPlaces, fetchPublicRoute, fetchPublicRoutes, fetchPublicSpot, placeItemFromApi, isEmptyRoute, routeDetailFromApi, routeSummaryFromApi, spotDetailFromApi } from "./api-content";
+import { fetchPublicPlaces, fetchPublicRallies, fetchPublicRoute, ralliesFromApi, fetchPublicRoutes, fetchPublicSpot, placeItemFromApi, isEmptyRoute, routeDetailFromApi, routeSummaryFromApi, spotDetailFromApi } from "./api-content";
 import type { RouteArea } from "./map-screen";
 import type { PointKind } from "./point-kinds";
 import { pickText } from "./pick-text";
@@ -303,6 +303,8 @@ export function toMapPlace(locale: string, p: PlaceItem): MapPlace {
  * forRallyViewer.
  */
 export async function listRallies(): Promise<RallyItem[]> {
+  const real = await fetchPublicRallies();
+  if (real && real.length > 0) return ralliesFromApi(real, (await getMyStamps()).ids);
   if (!sampleContentEnabled()) return [];
   const moundSlots = sampleMounds.map((m) => ({
     id: `sample-m${m.number}`,
