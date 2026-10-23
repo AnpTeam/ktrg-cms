@@ -632,6 +632,10 @@ msgstr "Complete when every chosen stamp waypoint is stamped (like the sutra mou
 msgid "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 msgstr "When off, every stamp place is shown on its own (recommended). When on, places close together are merged into a group such as \"3-5\"."
 
+#: src/components/OfflineSave.tsx:47
+msgid "オフラインで使う"
+msgstr "Save for offline use"
+
 #: src/components/auth/RegisterFlow.tsx:86
 #: src/components/ProfileCard.tsx:150
 msgid "お名前"
@@ -777,7 +781,7 @@ msgid "コース定数 ＝ 1.8 × 時間（h） ＋ 0.3 × 距離（km） ＋ 10
 msgstr "Course constant = 1.8 × hours + 0.3 × distance (km) + 10 × climb (km) + 0.6 × descent (km)"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:61
 #: src/components/admin/LivePreview.tsx:43
 #: src/components/RouteJourney.tsx:34
 #: src/components/RouteJourney.tsx:96
@@ -879,7 +883,7 @@ msgstr "This route does not exist yet"
 msgid "このルートに追加"
 msgstr "Add to this route"
 
-#: src/app/(public)/routes/[id]/page.tsx:48
+#: src/app/(public)/routes/[id]/page.tsx:51
 msgid "このルートのお知らせをフィードで受け取る"
 msgstr "Follow this route's notices in a feed reader"
 
@@ -1159,7 +1163,7 @@ msgid "すぐ{turnWord}"
 msgstr "{turnWord} now"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:61
 #: src/components/admin/LivePreview.tsx:43
 #: src/components/RouteJourney.tsx:31
 #: src/components/RouteJourney.tsx:92
@@ -1291,7 +1295,7 @@ msgid "スタンプ場所 {spotCount}か所"
 msgstr "{spotCount} stamp locations"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:61
 #: src/components/admin/LivePreview.tsx:43
 msgid "スタンプ済み"
 msgstr "stamped"
@@ -2092,7 +2096,7 @@ msgid "ルートを読み込めませんでした。しばらくしてから、�
 msgstr "Could not load the routes. Please wait a moment and reopen the page."
 
 #: src/app/(public)/grading/page.tsx:39
-#: src/app/(public)/routes/[id]/page.tsx:41
+#: src/app/(public)/routes/[id]/page.tsx:43
 msgid "ルート一覧"
 msgstr "All routes"
 
@@ -2399,6 +2403,7 @@ msgid "保存していない編集が、このブラウザに残っています�
 msgstr "Unsaved edits were kept in this browser ({offeredAt}). Restore them?"
 
 #: src/components/admin/SiteSettingsForm.tsx:112
+#: src/components/OfflineSave.tsx:47
 msgid "保存しています…"
 msgstr "Saving…"
 
@@ -2421,6 +2426,10 @@ msgstr "Saved. The source was empty, so the line was saved as not checked. Enter
 msgid "保存しました。ただし、未完成の経由地が{heldCount}件あり、まだ保存していません（赤く示した項目）。"
 msgstr "Saved. {heldCount} unfinished waypoint(s) were not saved yet (the red items)."
 
+#: src/components/OfflineSave.tsx:47
+msgid "保存しました（電波がなくても開けます）"
+msgstr "Saved (opens without a signal)"
+
 #: src/components/admin/RouteEditor.tsx:422
 #: src/components/admin/SiteSettingsForm.tsx:112
 #: src/components/ProfileCard.tsx:167
@@ -2431,6 +2440,10 @@ msgstr "Save"
 #: src/components/admin/RouteEditor.tsx:206
 msgid "保存できません。赤く示した項目を直してください。"
 msgstr "Cannot save. Fix the items marked in red."
+
+#: src/components/OfflineSave.tsx:49
+msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
+msgstr "Could not save. Please try again where the signal is good."
 
 #: src/components/admin/RouteEditor.tsx:422
 msgid "保存中…"
@@ -4850,7 +4863,7 @@ msgid "閉店・撤去"
 msgstr "Closed for good"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:61
 #: src/components/admin/LivePreview.tsx:43
 #: src/components/StatusWord.tsx:13
 msgid "閉鎖中"

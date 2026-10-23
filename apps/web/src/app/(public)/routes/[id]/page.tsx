@@ -5,6 +5,8 @@ import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
 import { TrailNotices } from "@/components/landing/TrailNotices";
 import { listNotices } from "@/lib/notices";
+import { OfflineSave } from "@/components/OfflineSave";
+import { gsiTileUrl } from "@/lib/map";
 import { PrintShare } from "@/components/PrintShare";
 import { RouteView } from "@/components/RouteView";
 import { forViewer, getRoute, listPlacesForRoute, pickText, toMapPlace } from "@/lib/content";
@@ -42,6 +44,7 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
         </BackLink>
       </div>
       <PrintShare title={route.nameJa} />
+      <OfflineSave area={route.area} tileTemplate={gsiTileUrl(settings.base === "photo" ? "seamlessphoto" : settings.base)} />
       <TrailNotices notices={notices} locale={i18n.locale} blogUrl={null} />
       {notices.length > 0 ? (
         <a href={`/notices/feed.xml?route=${encodeURIComponent(route.id)}${i18n.locale === "en" ? "&lang=en" : ""}`} className="-mt-3 px-4 text-sm text-accent underline">
