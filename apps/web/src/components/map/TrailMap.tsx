@@ -14,7 +14,7 @@ import {
   mapStyle,
   markerKind,
   nextStopId,
-  pinScale,
+  pinScale, PIN_NUMBER_MIN_ZOOM,
   routeLineLayers,
   sideLineCollection,
   sideLineLayers,
@@ -180,7 +180,10 @@ export function TrailMap({
         map.on("error", () => {});
         map.on("moveend", () => setView((v) => v + 1));
         // The pins are smaller when zoomed out (the markers read this size from the map's own element).
-        const sizePins = () => containerRef.current?.style.setProperty("--pin", String(pinScale(map!.getZoom())));
+        const sizePins = () => {
+          containerRef.current?.style.setProperty("--pin", String(pinScale(map!.getZoom())));
+          containerRef.current?.toggleAttribute("data-far", map!.getZoom() < PIN_NUMBER_MIN_ZOOM);
+        };
         map.on("zoom", sizePins);
         sizePins();
 

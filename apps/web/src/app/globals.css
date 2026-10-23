@@ -306,6 +306,9 @@ rt {
   stroke: var(--pin-base);
   stroke-width: 0.9;
 }
+[data-far] .map-marker .pin-chip {
+  display: none;
+}
 .map-marker .pin-chip text {
   fill: var(--pin-base);
   font-size: 8.6px;

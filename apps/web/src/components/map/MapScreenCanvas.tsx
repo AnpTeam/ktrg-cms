@@ -11,7 +11,7 @@ import { defaultLayers, moundStops, offeredLayers, type MapLayer } from "@/lib/m
 import { groupOf } from "@/lib/places";
 import { PlaceGroupIcon } from "@/components/icons";
 import { useGroupNames } from "./PlacesPanel";
-import { boundsOf, lineFeature, mapStyle, markerKind, nextStopId, pinScale, routeLineLayers, sideLineCollection, sideLineLayers, zoomLimits, type Position } from "@/lib/map";
+import { boundsOf, lineFeature, mapStyle, markerKind, nextStopId, pinScale, PIN_NUMBER_MIN_ZOOM, routeLineLayers, sideLineCollection, sideLineLayers, zoomLimits, type Position } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
 import { createClusterElement, createMarkerElement, createPinElement, createPlaceMarkerElement, createTagElement } from "./MapMarker";
 import { MapPickList } from "./MapPickList";
@@ -180,7 +180,10 @@ export function MapScreenCanvas({
           setPick(null);
         });
         // The numbered pins are smaller when zoomed out (the markers read this size from the map's own element).
-        const sizePins = () => containerRef.current?.style.setProperty("--pin", String(pinScale(map!.getZoom())));
+        const sizePins = () => {
+          containerRef.current?.style.setProperty("--pin", String(pinScale(map!.getZoom())));
+          containerRef.current?.toggleAttribute("data-far", map!.getZoom() < PIN_NUMBER_MIN_ZOOM);
+        };
         map.on("zoom", sizePins);
         sizePins();
         map.on("moveend", () => {
