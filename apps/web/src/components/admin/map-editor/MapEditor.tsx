@@ -157,9 +157,14 @@ export function MapEditor(props: MapEditorProps) {
   const [chosenId, setActiveId] = useState<string | null>(null);
   const [anchorAt, setAnchorAt] = useState<{ from: string | null; index: number } | null>(null);
   const [eraser, setEraser] = useState(false);
-  // "Add after this waypoint" from the list: the next pin put on the map goes right after it.
-  const [insertAfter, setInsertAfter] = useState<string | null>(null);
+  // With the place tool, the next pin goes right after the chosen waypoint (the new pin is chosen in turn, so pins chain in order).
+  // "Add after this" in the list turns it off again (afterOff) until another tool is used.
+  const [afterOff, setAfterOff] = useState(false);
   const insertAfterRef = useRef<string | null>(null);
+  const insertAfter = mode === "place" && !afterOff ? props.selectedKey : null;
+  useEffect(() => {
+    insertAfterRef.current = insertAfter;
+  });
 
   const container = useRef<HTMLDivElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -264,10 +269,7 @@ export function MapEditor(props: MapEditorProps) {
       const m = modeRef.current;
       if (m === "place") {
         const after = insertAfterRef.current ?? undefined;
-        latest.current.onAddPlace(e.lngLat.lat, e.lngLat.lng, after);
-        insertAfterRef.current = null;
-        setInsertAfter(null);
-        return;
+        return latest.current.onAddPlace(e.lngLat.lat, e.lngLat.lng, after);
       }
       if (m === "guide") {
         if (!activePair) return;
@@ -320,10 +322,7 @@ export function MapEditor(props: MapEditorProps) {
     },
     chooseTool: (tool) => {
       setNote(null);
-      if (tool !== "place") {
-        insertAfterRef.current = null;
-        setInsertAfter(null);
-      }
+      setAfterOff(false);
       if (tool === "select") return setMode("pan");
       if (tool === "place") return setMode("place");
       if (pairs.length === 0) return setNote(tool === "guide" ? t`ガイド点を置くには、先に経由地を2つ以上置いてください（寄り道は数えません）。` : t`線を描くには、先に経由地を2つ以上置いてください（寄り道は数えません）。`);
@@ -821,6 +820,7 @@ export function MapEditor(props: MapEditorProps) {
   // What to do next, depending on the tool and on what is already on the map.
   const hasLine = props.line.length >= 2;
   const hasPlaces = props.places.length > 0;
+  const selectedSide = props.places.some((p) => p.key === props.selectedKey && p.stopBy);
   const afterName = insertAfter ? (nameOf.get(insertAfter) ?? "") : "";
   const hint = looseLine
     ? t`この線は、経由地の順番や位置と合わないため、区間に分けていません。経由地の順番と位置を直してから「区間に分ける」を押すか、区間を描くと、その区間から線が置き換わります（「元に戻す」で戻せます）。`
@@ -840,6 +840,8 @@ export function MapEditor(props: MapEditorProps) {
             : anchorIdx !== null
               ? t`新しい点は、選んだ点（${chosenNo}番）のあとに入ります。もう一度クリックすると、選びなおせます。`
               : t`地図をクリックして、この区間に点を置いていきます。点はドラッグで動かせます。ダブルクリックで、なめらかな点と角の点が切り替わります。`
+        : selectedSide && activePair
+          ? t`寄り道の点を選んでいます。サブコースの線（${legName}）は、右の一覧の「サブコースの線を描く」か、「線を描く」で描けます。本線の点をクリックする必要はありません。`
         : activePair
           ? t`「${legName}」を選んでいます。この区間の点をドラッグして動かせます。地図の何もない所をクリックすると、選びなおせます。`
           : hasLine
@@ -1110,11 +1112,17 @@ export function MapEditor(props: MapEditorProps) {
       {props.places.length > 0 ? <PlaceList
           {...props}
           insertAfter={insertAfter}
+          onDrawSubCourse={(key) => {
+            props.onSelectPlace(key);
+            setActiveId(key); // a side trip's leg is named by the place it runs to
+            setAfterOff(false);
+            setNote(null);
+            setMode("draw");
+          }}
           onInsertAfter={(key) => {
-            const next = insertAfter === key ? null : key;
-            insertAfterRef.current = next;
-            setInsertAfter(next);
-            if (next) actions.current.chooseTool("place");
+            if (insertAfter === key) return setAfterOff(true);
+            props.onSelectPlace(key);
+            actions.current.chooseTool("place");
           }}
         /> : null}
     </div>
@@ -1126,7 +1134,7 @@ const chipToggle = (on: boolean) =>
   `inline-flex h-8 min-h-0 min-w-0 items-center justify-center rounded-full border px-3 text-sm font-bold ${on ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"}`;
 
 /** Every waypoint of the route in one list: its name, its kind and its two switches can all be changed here. */
-function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchPlace, onAddEndAt, onReorderPlaces, insertAfter, onInsertAfter }: Pick<MapEditorProps, "places" | "selectedKey" | "onSelectPlace" | "onRemovePlace" | "onPatchPlace" | "onAddEndAt" | "onReorderPlaces"> & { insertAfter: string | null; onInsertAfter: (key: string) => void }) {
+function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchPlace, onAddEndAt, onReorderPlaces, insertAfter, onInsertAfter, onDrawSubCourse }: Pick<MapEditorProps, "places" | "selectedKey" | "onSelectPlace" | "onRemovePlace" | "onPatchPlace" | "onAddEndAt" | "onReorderPlaces"> & { insertAfter: string | null; onInsertAfter: (key: string) => void; onDrawSubCourse: (key: string) => void }) {
   const { t } = useLingui();
   const kindName = useKindLabels();
   const stamps = places.filter((p) => p.stampable).length;
@@ -1161,6 +1169,26 @@ function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchP
             onClick={() => onSelectPlace(p.key)}
             className={`grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 rounded-xl border bg-paper p-3 ${p.key === selectedKey ? "border-ink ring-2 ring-ink" : "border-line"}`}
           >
+            {p.stopBy && mains.length > 0 ? (
+              <div className="col-span-3 flex flex-col gap-2 rounded-lg bg-surface p-2" onClick={(e) => e.stopPropagation()}>
+                <label className="flex min-w-0 flex-col gap-1 text-sm font-bold">
+                  {t`サブコースの分岐点（ここから、この寄り道へ）`}
+                  <select value={mainBefore(i)} onChange={(e) => branchTo(p.key, e.target.value)} className={`${fieldClass} w-full min-w-0`}>
+                    <option value="" disabled>
+                      {t`選ぶ`}
+                    </option>
+                    {mains.map((m) => (
+                      <option key={m.key} value={m.key}>
+                        {m.name || t`（名前がありません）`}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <button type="button" onClick={() => onDrawSubCourse(p.key)} className={`${chipToggle(false)} self-start`} title={t`この寄り道の点を選んで、分岐点からここまでの線を描きます。本線はそのまま続きます。`}>
+                  {t`サブコースの線を描く`}
+                </button>
+              </div>
+            ) : null}
             <span
               aria-hidden="true"
               className={`flex shrink-0 items-center justify-center rounded-full text-base font-bold ${p.stampable ? "size-9 bg-brand text-on-brand" : "size-7 border-2 border-ink bg-paper"} ${p.stopBy ? "border-dashed" : ""}`}
@@ -1225,21 +1253,6 @@ function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchP
               <button type="button" aria-pressed={insertAfter === p.key} onClick={(e) => { e.stopPropagation(); onInsertAfter(p.key); }} className={chipToggle(insertAfter === p.key)} title={t`地図をクリックして、この経由地のすぐ次に新しい経由地を入れます`}>
                 {t`この次に追加`}
               </button>
-              {p.stopBy && mains.length > 0 ? (
-                <label className="flex items-center gap-1 text-sm font-bold" onClick={(e) => e.stopPropagation()}>
-                  {t`サブコースの分岐点`}
-                  <select value={mainBefore(i)} onChange={(e) => branchTo(p.key, e.target.value)} className={fieldClass} title={t`ここから寄り道へ向かう、サブコースの線を引きます。本線は、そのまま次の経由地へ続きます。`}>
-                    <option value="" disabled>
-                      {t`選ぶ`}
-                    </option>
-                    {mains.map((m) => (
-                      <option key={m.key} value={m.key}>
-                        {m.name || t`（名前がありません）`}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              ) : null}
             </div>
           </li>
         ))}

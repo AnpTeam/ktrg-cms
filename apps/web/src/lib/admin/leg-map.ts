@@ -55,10 +55,10 @@ const SIDE_DRAWN = ["all", DRAWN, ["get", "side"]] as const;
 /** The layers for the legs source, bottom to top. Fixed colours: the map tiles do not change with the app theme. */
 export function legLayers(): LayerSpecification[] {
   return [
-    { id: `${LEG_SOURCE}-casing`, type: "line", source: LEG_SOURCE, filter: MAIN_DRAWN as never, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#ffffff", "line-opacity": 0.9, "line-width": ["case", ["get", "active"], 11, 9] } },
+    { id: `${LEG_SOURCE}-casing`, type: "line", source: LEG_SOURCE, filter: MAIN_DRAWN as never, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#ffffff", "line-opacity": 0.9, "line-width": ["case", ["get", "active"], 12, 10] } },
     { id: `${LEG_SOURCE}-missing`, type: "line", source: LEG_SOURCE, filter: ["==", ["get", "state"], "missing"], layout: { "line-cap": "butt", "line-join": "round" }, paint: { "line-color": "#4b4b4b", "line-width": 3, "line-dasharray": [2, 1.6] } },
-    { id: `${LEG_SOURCE}-line`, type: "line", source: LEG_SOURCE, filter: MAIN_DRAWN as never, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": ["case", ["get", "active"], "#d22d1f", "#8a3b00"], "line-width": ["case", ["get", "active"], 7, 5] } },
-    { id: `${LEG_SOURCE}-side`, type: "line", source: LEG_SOURCE, filter: SIDE_DRAWN as never, layout: { "line-cap": "butt", "line-join": "round" }, paint: { "line-color": ["case", ["get", "active"], "#d22d1f", "#1d4ed8"], "line-width": ["case", ["get", "active"], 4, 2.5], "line-dasharray": [2, 1.5] } },
+    { id: `${LEG_SOURCE}-line`, type: "line", source: LEG_SOURCE, filter: MAIN_DRAWN as never, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": ["case", ["get", "active"], "#d22d1f", "#6d28d9"], "line-width": ["case", ["get", "active"], 7, 5.5] } },
+    { id: `${LEG_SOURCE}-side`, type: "line", source: LEG_SOURCE, filter: SIDE_DRAWN as never, layout: { "line-cap": "butt", "line-join": "round" }, paint: { "line-color": ["case", ["get", "active"], "#d22d1f", "#db2777"], "line-width": ["case", ["get", "active"], 4, 2.5], "line-dasharray": [2, 1.5] } },
     { id: LEG_HIT, type: "line", source: LEG_SOURCE, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#000000", "line-opacity": 0, "line-width": 18 } },
   ];
 }
