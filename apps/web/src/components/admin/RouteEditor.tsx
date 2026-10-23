@@ -330,6 +330,32 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     if (snapshot.id === null) router.replace(`/admin/routes/${routeId}`);
   }
 
+  // Takes every published waypoint off the site at once. The route itself stays in the list, shown as "coming soon" (準備中).
+  async function unpublishAll() {
+    const live = draft.places.filter((p) => p.id && p.published);
+    if (live.length === 0 || busyKey) return;
+    const count = live.length;
+    if (!window.confirm(t`公開中の${count}か所を、すべて公開をやめます。ルートは「準備中」として一覧に残ります。よろしいですか？`)) return;
+    setBusyKey("all");
+    setMessage(null);
+    let places = savedRef.current.places;
+    let done = 0;
+    for (const place of live) {
+      const res = await outcome(api.admin.spots({ id: place.id! }).unpublish.post());
+      if (!res.ok) {
+        setMessage({ kind: "error", text: messages[res.key] });
+        break;
+      }
+      const next: PlaceDraft = { ...placeFromServer(res.data.spot), key: place.key };
+      dispatch({ type: "savedPlace", key: place.key, place: next });
+      places = places.map((p) => (p.key === place.key ? next : p));
+      done++;
+    }
+    setSavedCopy({ ...savedRef.current, places });
+    if (done === count) setMessage({ kind: "ok", text: t`${count}か所の公開をやめました。ルートは「準備中」として一覧に残ります。` });
+    setBusyKey(null);
+  }
+
   async function setPublished(key: string, publish: boolean) {
     const place = draft.places.find((p) => p.key === key);
     if (!place?.id || busyKey) return;
@@ -662,6 +688,14 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
 
             {section === "places" ? (
               <Section title={t`経由地（${draft.places.length}か所）`}>
+                {draft.places.some((p) => p.id && p.published) ? (
+                  <div className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-paper p-3">
+                    <button type="button" disabled={busyKey !== null} onClick={() => void unpublishAll()} className="tap-target rounded-xl border-2 border-danger px-5 text-lg font-bold text-danger disabled:opacity-40">
+                      {busyKey === "all" ? t`処理しています…` : t`すべての公開をやめる`}
+                    </button>
+                    <p className="min-w-0 flex-1 text-base text-muted">{t`公開中の経由地をまとめて下書きに戻します。ルートは「準備中」として、一覧に残ります。`}</p>
+                  </div>
+                ) : null}
                 <div role="group" aria-label={t`場所の見せ方`} className="flex flex-wrap gap-2">
                   {(["table", "detail"] as const).map((v) => (
                     <button
