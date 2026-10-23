@@ -2,7 +2,7 @@ import type { SpotStatus } from "@/lib/content";
 import type { MarkerKind } from "@/lib/map";
 import type { StopRole } from "@/lib/route-stops";
 import type { PointKind } from "@/lib/point-kinds";
-import { pointIconPaths } from "@/lib/point-icons";
+import { pointIconSvg } from "@/lib/point-icons";
 import { placeIconPaths, type PlaceGroup } from "@/lib/places";
 
 // Everything on the map is a real <button>: it can be reached with the keyboard, has a big tap
@@ -94,6 +94,19 @@ function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: Stop
   }
   svg.appendChild(body);
   if (shape !== "dot") {
+    if (place) {
+      // The kind of place as a coloured picture on a white disc in the head, with the number in a chip on the upper right.
+      const disc = document.createElementNS(SVG_NS, "circle");
+      disc.setAttribute("cx", "15");
+      disc.setAttribute("cy", "14.5");
+      disc.setAttribute("r", "9.2");
+      disc.setAttribute("class", "pin-disc");
+      svg.appendChild(disc);
+      const icon = document.createElementNS(SVG_NS, "g");
+      icon.setAttribute("transform", "translate(7.4 6.9) scale(0.62)");
+      icon.innerHTML = pointIconSvg[place];
+      svg.appendChild(icon);
+    }
     // Closed: a bar across the head (drawn only for that state, by the page's own CSS).
     const bar = document.createElementNS(SVG_NS, "line");
     bar.setAttribute("x1", "8");
@@ -103,12 +116,28 @@ function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: Stop
     bar.setAttribute("class", "pin-bar");
     svg.appendChild(bar);
     if (order !== null) {
-      const text = document.createElementNS(SVG_NS, "text");
-      text.setAttribute("x", "15");
-      text.setAttribute("y", "15");
-      text.setAttribute("class", "pin-text");
-      text.textContent = String(order);
-      svg.appendChild(text);
+      if (place) {
+        const chip = document.createElementNS(SVG_NS, "g");
+        chip.setAttribute("class", "pin-chip");
+        const ring = document.createElementNS(SVG_NS, "circle");
+        ring.setAttribute("cx", "25.5");
+        ring.setAttribute("cy", "4.5");
+        ring.setAttribute("r", "6.3");
+        const num = document.createElementNS(SVG_NS, "text");
+        num.setAttribute("x", "25.5");
+        num.setAttribute("y", "5");
+        if (String(order).length > 1) num.setAttribute("font-size", "7.4");
+        num.textContent = String(order);
+        chip.append(ring, num);
+        svg.appendChild(chip);
+      } else {
+        const text = document.createElementNS(SVG_NS, "text");
+        text.setAttribute("x", "15");
+        text.setAttribute("y", "15");
+        text.setAttribute("class", "pin-text");
+        text.textContent = String(order);
+        svg.appendChild(text);
+      }
     }
   }
   if (role && stamped && shape !== "dot") {
@@ -118,26 +147,6 @@ function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: Stop
     seal.setAttribute("r", "4.6");
     seal.setAttribute("class", "pin-seal");
     svg.appendChild(seal);
-  }
-  if (place && shape !== "dot") {
-    // The kind of place, in a small white badge on the upper right corner: a 24-grid drawing scaled down to 10 units.
-    const badge = document.createElementNS(SVG_NS, "g");
-    badge.setAttribute("class", "pin-badge");
-    const disc = document.createElementNS(SVG_NS, "circle");
-    disc.setAttribute("cx", "25");
-    disc.setAttribute("cy", "5.5");
-    disc.setAttribute("r", "6.2");
-    badge.appendChild(disc);
-    const icon = document.createElementNS(SVG_NS, "g");
-    icon.setAttribute("class", "pin-badge-icon");
-    icon.setAttribute("transform", "translate(19.8 0.3) scale(0.43)");
-    for (const d of pointIconPaths[place]) {
-      const path = document.createElementNS(SVG_NS, "path");
-      path.setAttribute("d", d);
-      icon.appendChild(path);
-    }
-    badge.appendChild(icon);
-    svg.appendChild(badge);
   }
   return svg;
 }

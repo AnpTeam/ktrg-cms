@@ -1,31 +1,64 @@
 import type { PointKind } from "./point-kinds";
 
 /**
- * A small line drawing for each kind of waypoint (24 x 24 grid, stroked): the map's pins carry it in a badge on their
- * corner, so what a place is can be read before it is opened. Plain shapes that stay readable at about 9 px.
+ * A small coloured picture for each kind of waypoint (24 x 24 grid, flat colours): the map's pins carry it in a white
+ * disc, so what a place is can be read before it is opened. The colours are the picture's own, not the theme's: the disc
+ * behind them is always white. Fixed markup written here, never from user input (the map sets it as the picture's inner SVG).
  */
-export const pointIconPaths: Record<PointKind, string[]> = {
-  // A torii gate.
-  temple: ["M3 6.5c4 1.6 14 1.6 18 0", "M5.5 10.5h13", "M7.5 10.5V20", "M16.5 10.5V20"],
-  // A mound with a stone marker on top.
-  mound: ["M3 20h18", "M6 20a6 6 0 0 1 12 0", "M12 14V8", "M9.5 8h5"],
-  // A mountain.
-  view: ["M2.5 20 9 8.5l4 6.5 2.5-3.5L21.5 20z"],
-  turn: ["M7 20V10a3 3 0 0 1 3-3h7", "M14 3.5 17.5 7 14 10.5"],
-  danger: ["M12 4 21 20H3z", "M12 10v4.5", "M12 17.6v.01"],
-  // Two standing figures.
-  toilet: ["M12 3v18", "M7.5 4.2a1.3 1.3 0 1 0 .01 0", "M5 9h5v5.5H5z", "M7.5 14.5V20", "M16.5 4.2a1.3 1.3 0 1 0 .01 0", "M14.5 9h4l1 11h-6z"],
-  // A bench.
-  rest_area: ["M4 11h16", "M5 7h14", "M6 11v8", "M18 11v8"],
-  // A drop.
-  drinking_water: ["M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"],
-  vending_machine: ["M7 4h10v16H7z", "M10 8h4", "M10 12h4", "M9.5 17h5"],
-  // A bus-stop sign on its pole.
-  bus_stop: ["M12 21V11", "M6.5 3h11A1.5 1.5 0 0 1 19 4.5V11H5V4.5A1.5 1.5 0 0 1 6.5 3z", "M8.5 7h7"],
-  // A train.
-  station: ["M7 3h10a2 2 0 0 1 2 2v10a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2z", "M5 10h14", "M9 21l2-3", "M15 21l-2-3"],
-  // The letter P.
-  parking: ["M9 20V5h4.5a3.2 3.2 0 0 1 0 6.4H9"],
-  // A map pin.
-  other: ["M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10z", "M12 9.5a1.5 1.5 0 1 0 .01 0"],
+const INK = "#2b2523";
+const RED = "#c0392b";
+const BLUE = "#1e50a2";
+const SKY = "#2a9bd8";
+const GREEN = "#4d8a4a";
+const TEAL = "#0f766e";
+const AMBER = "#f2b705";
+const WOOD = "#8a5a2b";
+const STONE = "#8d8680";
+
+export const pointIconSvg: Record<PointKind, string> = {
+  // A torii gate: dark roof beam, red posts.
+  temple:
+    `<rect x="6.2" y="7.5" width="2.4" height="13.5" rx=".8" fill="${RED}"/><rect x="15.4" y="7.5" width="2.4" height="13.5" rx=".8" fill="${RED}"/>` +
+    `<rect x="4.5" y="9.8" width="15" height="2.1" rx=".6" fill="${RED}"/><path d="M2 4.8c4.2 2 15.8 2 20 0v3c-4.2 1.8-15.8 1.8-20 0z" fill="${INK}"/>`,
+  // A grassy mound with a stone marker.
+  mound:
+    `<rect x="10.2" y="7.2" width="3.6" height="8" rx=".7" fill="#b8b1aa"/><path d="M12 3.6l2.8 3.6H9.2z" fill="${STONE}"/>` +
+    `<path d="M2.5 21a9.5 9.5 0 0 1 19 0z" fill="${GREEN}"/>`,
+  // A mountain with a snow cap and a sun.
+  view:
+    `<circle cx="18" cy="6" r="2.6" fill="${AMBER}"/><path d="M1.5 21 9 8.5l4.6 7.2 2.6-3.6 6.3 8.9z" fill="#5b7c99"/>` +
+    `<path d="M9 8.5l2.4 3.9-1.2-.9-1.2 1.4-1.2-1.4-1.2.9z" fill="#fff"/>`,
+  turn:
+    `<path d="M7 21V11a3.5 3.5 0 0 1 3.5-3.5H15" fill="none" stroke="${BLUE}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.5 3.5l5 4-5 4z" fill="${BLUE}"/>`,
+  danger:
+    `<path d="M12 3.2 22 20.5H2z" fill="${AMBER}" stroke="${INK}" stroke-width="1.4" stroke-linejoin="round"/><path d="M12 9.5v5" stroke="${INK}" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17.4" r="1.1" fill="${INK}"/>`,
+  // A blue and a red figure either side of a divider.
+  toilet:
+    `<rect x="11.4" y="3" width="1.2" height="18" rx=".6" fill="#b8b1aa"/>` +
+    `<circle cx="7.2" cy="4.8" r="2" fill="${BLUE}"/><rect x="4.6" y="8" width="5.2" height="7" rx="1.6" fill="${BLUE}"/><rect x="5.2" y="15" width="1.7" height="6" rx=".8" fill="${BLUE}"/><rect x="7.6" y="15" width="1.7" height="6" rx=".8" fill="${BLUE}"/>` +
+    `<circle cx="16.8" cy="4.8" r="2" fill="${RED}"/><path d="M16.8 8c1.4 0 2.4.8 2.8 2l1.3 6h-8.2l1.3-6c.4-1.2 1.4-2 2.8-2z" fill="${RED}"/><rect x="15.2" y="16" width="1.5" height="5" rx=".7" fill="${RED}"/><rect x="17" y="16" width="1.5" height="5" rx=".7" fill="${RED}"/>`,
+  // A wooden bench under a tree.
+  rest_area:
+    `<circle cx="12" cy="7" r="4.6" fill="${GREEN}"/><rect x="11.2" y="10.5" width="1.6" height="4" fill="${WOOD}"/>` +
+    `<rect x="4.5" y="11.6" width="15" height="1.8" rx=".7" fill="${WOOD}"/><rect x="3.5" y="14.2" width="17" height="2.6" rx=".8" fill="#c98a4b"/><rect x="5.2" y="16.8" width="2" height="4.2" fill="${WOOD}"/><rect x="16.8" y="16.8" width="2" height="4.2" fill="${WOOD}"/>`,
+  // A water drop with a highlight.
+  drinking_water:
+    `<path d="M12 2.8s6.2 6.6 6.2 11.2a6.2 6.2 0 0 1-12.4 0C5.8 9.4 12 2.8 12 2.8z" fill="${SKY}"/><path d="M9 14.2a3.4 3.4 0 0 0 2.2 3" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".85"/>`,
+  // A red vending machine with its drinks lit.
+  vending_machine:
+    `<rect x="5" y="2.5" width="14" height="19" rx="2.2" fill="${RED}"/><rect x="7.2" y="5" width="9.6" height="8" rx="1" fill="#fff"/>` +
+    `<rect x="8.2" y="6.2" width="2.2" height="2.6" fill="${SKY}"/><rect x="11" y="6.2" width="2.2" height="2.6" fill="${AMBER}"/><rect x="13.8" y="6.2" width="2" height="2.6" fill="${GREEN}"/><rect x="7.5" y="15.5" width="9" height="3.4" rx=".8" fill="${INK}"/>`,
+  // A green bus seen from the front.
+  bus_stop:
+    `<rect x="4.5" y="3" width="15" height="15" rx="3" fill="${TEAL}"/><rect x="6.5" y="5.2" width="11" height="5.6" rx="1.2" fill="#fff"/><rect x="4.5" y="12.4" width="15" height="1.5" fill="${AMBER}"/>` +
+    `<circle cx="8" cy="15.4" r="1" fill="#ffe08a"/><circle cx="16" cy="15.4" r="1" fill="#ffe08a"/><rect x="6" y="18" width="3" height="3.5" rx=".8" fill="${INK}"/><rect x="15" y="18" width="3" height="3.5" rx=".8" fill="${INK}"/>`,
+  // A blue train seen from the front.
+  station:
+    `<rect x="5.5" y="2.5" width="13" height="15.5" rx="3.2" fill="${BLUE}"/><rect x="7.5" y="5" width="9" height="5.5" rx="1.2" fill="#fff"/><rect x="5.5" y="12.2" width="13" height="1.6" fill="${AMBER}"/>` +
+    `<circle cx="8.6" cy="15.6" r="1.1" fill="#ffe08a"/><circle cx="15.4" cy="15.6" r="1.1" fill="#ffe08a"/><path d="M8 21.5l1.8-3.5M16 21.5l-1.8-3.5" stroke="${STONE}" stroke-width="1.8" stroke-linecap="round"/>`,
+  // A white P on a blue square.
+  parking:
+    `<rect x="3.5" y="3.5" width="17" height="17" rx="4" fill="${BLUE}"/><path d="M9.6 17.5V7h3.2a3 3 0 0 1 0 6H9.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`,
+  // A red map pin.
+  other: `<path d="M12 22s-7-6.2-7-11.5a7 7 0 0 1 14-0c0 5.3-7 11.5-7 11.5z" fill="${RED}"/><circle cx="12" cy="10.5" r="2.6" fill="#fff"/>`,
 };
