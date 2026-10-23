@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
+import { CheckIcon, DocumentIcon, ListIcon, MapIcon, PinIcon } from "@/components/icons";
 import { api } from "@/lib/api";
 import { outcome } from "@/lib/admin/admin-client";
 import { checklist, factsFromDraft, progress, type EditorTab } from "@/lib/admin/checklist";
@@ -46,6 +47,7 @@ import { PlaceTable } from "./PlaceTable";
 import { useChecklistLabels } from "./useChecklistLabels";
 
 const TABS: EditorTab[] = ["overview", "text", "map", "places", "check"];
+const TAB_ICONS: Record<EditorTab, ReactNode> = { overview: <ListIcon />, text: <DocumentIcon />, map: <MapIcon />, places: <PinIcon />, check: <CheckIcon /> };
 const isTab = (v: string | null): v is EditorTab => v !== null && (TABS as string[]).includes(v);
 
 const isTyping = (target: EventTarget | null) => target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
@@ -439,8 +441,9 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                 aria-selected={section === id}
                 aria-controls="editor-panel"
                 onClick={() => setSection(id)}
-                className={`tap-target rounded-xl border-2 px-4 text-lg font-bold ${section === id ? "border-ink bg-ink text-paper" : "border-line"}`}
+                className={`tap-target inline-flex items-center gap-2 rounded-xl border-2 px-4 text-lg font-bold ${section === id ? "border-ink bg-ink text-paper" : "border-line"}`}
               >
+                {TAB_ICONS[id]}
                 {labels.tab[id]}
                 {id === "check" && missingRequired > 0 ? <span className="ml-2 rounded-full bg-danger px-2 text-base text-white">{missingRequired}</span> : null}
               </button>
