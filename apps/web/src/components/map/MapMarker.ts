@@ -254,7 +254,8 @@ export function createTagElement({
   onSelect,
 }: {
   number: string;
-  name: string;
+  /** null: only the round head with its number (the name appears once the pin is tapped, see MapScreenCanvas). */
+  name: string | null;
   label: string;
   soon: boolean;
   onSelect: () => void;
@@ -266,10 +267,13 @@ export function createTagElement({
   const head = document.createElement("span");
   head.className = "map-tag-head";
   head.textContent = number;
-  const text = document.createElement("span");
-  text.className = "map-tag-name";
-  text.textContent = name;
-  el.append(head, text);
+  el.append(head);
+  if (name) {
+    const text = document.createElement("span");
+    text.className = "map-tag-name";
+    text.textContent = name;
+    el.append(text);
+  }
   el.setAttribute("aria-label", label);
   el.addEventListener("click", onSelect);
   return el;

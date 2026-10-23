@@ -157,8 +157,8 @@ msgstr "No. {number}, next stamp"
 msgid "{number}番 まだ押していません"
 msgstr "No. {number}, not stamped yet"
 
-#: src/components/map/MapScreen.tsx:278
-#: src/components/map/MapScreenCanvas.tsx:370
+#: src/components/map/MapScreen.tsx:283
+#: src/components/map/MapScreenCanvas.tsx:384
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
 
@@ -223,7 +223,7 @@ msgstr "{TOTAL_STAMPS} places"
 msgid "{turnIn}先 {turnWord}"
 msgstr "{turnWord} in {turnIn}"
 
-#: src/components/map/MapScreen.tsx:506
+#: src/components/map/MapScreen.tsx:514
 msgid "{updated} 更新"
 msgstr "Updated {updated}"
 
@@ -445,7 +445,7 @@ msgstr "Delete account"
 
 #: src/components/admin/RouteEditor.tsx:543
 #: src/components/admin/useChecklistLabels.ts:18
-#: src/components/map/MapScreen.tsx:450
+#: src/components/map/MapScreen.tsx:455
 #: src/components/RouteView.tsx:183
 msgid "アクセス・交通"
 msgstr "Access and transport"
@@ -688,7 +688,7 @@ msgid "クリックで、この点を消します"
 msgstr "Click to remove this point"
 
 #: src/components/landing/Landing.tsx:124
-#: src/components/map/MapScreenCanvas.tsx:539
+#: src/components/map/MapScreenCanvas.tsx:577
 msgid "コース"
 msgstr "Courses"
 
@@ -848,11 +848,11 @@ msgstr "Every stamp on this course is collected."
 msgid "この区間のナビに切り替える"
 msgstr "Navigate this course instead"
 
-#: src/components/map/MapScreen.tsx:386
+#: src/components/map/MapScreen.tsx:391
 msgid "この区間のページを開く"
 msgstr "Open this course's page"
 
-#: src/components/map/MapScreen.tsx:469
+#: src/components/map/MapScreen.tsx:474
 msgid "この区間の写真"
 msgstr "Photos of this course"
 
@@ -860,7 +860,7 @@ msgstr "Photos of this course"
 msgid "この区間の移動"
 msgstr "How this leg is travelled"
 
-#: src/components/map/MapScreen.tsx:368
+#: src/components/map/MapScreen.tsx:373
 msgid "この区間は、準備中です。"
 msgstr "This course isn't ready yet."
 
@@ -883,11 +883,11 @@ msgstr "There are no routes in this area yet."
 msgid "この場所のスタンプは、確認のため取り消されています。お困りの場合は運営にお問い合わせください。"
 msgstr "The stamp for this place was revoked after a check. If this looks wrong, please contact the team."
 
-#: src/components/map/MapScreen.tsx:541
+#: src/components/map/MapScreen.tsx:549
 msgid "この場所のページを開く"
 msgstr "Open this place's page"
 
-#: src/components/map/MapScreen.tsx:515
+#: src/components/map/MapScreen.tsx:523
 #: src/components/map/PlacesPanel.tsx:232
 #: src/components/map/StopCard.tsx:47
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
@@ -939,7 +939,7 @@ msgstr "Passkeys cannot be used on this device or browser. Please try email inst
 msgid "この端末では地図の見本を表示できません。"
 msgstr "The map preview cannot be shown on this device."
 
-#: src/components/map/MapScreenCanvas.tsx:518
+#: src/components/map/MapScreenCanvas.tsx:556
 msgid "この端末では地図を表示できません。下の一覧から区間を選べます。"
 msgstr "This device can't show the map. You can choose a course from the list below."
 
@@ -1077,7 +1077,7 @@ msgstr "Stamps"
 
 #: src/components/landing/ContinueCard.tsx:23
 #: src/components/landing/Landing.tsx:239
-#: src/components/map/MapScreen.tsx:381
+#: src/components/map/MapScreen.tsx:386
 #: src/components/RouteView.tsx:243
 #: src/components/TrailRibbon.tsx:62
 #: src/components/TripSummary.tsx:48
@@ -1100,13 +1100,13 @@ msgstr "See your stamp card"
 msgid "スタンプが押されたことのある経由地は消せません。「公開をやめる」をお使いください。"
 msgstr "A waypoint that has been stamped cannot be deleted. Use \"Unpublish\" instead."
 
-#: src/components/map/MapScreen.tsx:533
+#: src/components/map/MapScreen.tsx:541
 #: src/components/map/StopCard.tsx:38
 #: src/components/StopList.tsx:102
 msgid "スタンプなし"
 msgstr "No stamp"
 
-#: src/components/map/MapScreen.tsx:394
+#: src/components/map/MapScreen.tsx:399
 #: src/components/SpotSheet.tsx:85
 msgid "スタンプの場所"
 msgstr "Stamp locations"
@@ -1119,7 +1119,7 @@ msgstr "{spotCount} stamp places"
 msgid "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 msgstr "To check that you are near the stamp place, we look at your phone's location once."
 
-#: src/components/map/MapScreen.tsx:436
+#: src/components/map/MapScreen.tsx:441
 #: src/components/RouteView.tsx:231
 msgid "スタンプの場所は、まだ準備中です。"
 msgstr "The stamp places are not ready yet."
@@ -1153,7 +1153,7 @@ msgstr "No stamp can be collected here, but visitors can open the place's page. 
 msgid "スタンプを押しています…"
 msgstr "Collecting the stamp…"
 
-#: src/components/map/MapScreen.tsx:528
+#: src/components/map/MapScreen.tsx:536
 #: src/components/SpotSheet.tsx:98
 msgid "スタンプを押しました"
 msgstr "You collected this stamp"
@@ -1449,7 +1449,7 @@ msgstr "Footer"
 
 #: src/app/(public)/sitemap/page.tsx:106
 #: src/components/SiteFooter.tsx:30
-#: src/components/SiteHeader.tsx:228
+#: src/components/SiteHeader.tsx:225
 msgid "プライバシーポリシー"
 msgstr "Privacy policy"
 
@@ -1466,7 +1466,7 @@ msgstr "Read the blog"
 msgid "プロフィール"
 msgstr "Profile"
 
-#: src/components/SiteHeader.tsx:182
+#: src/components/SiteHeader.tsx:183
 msgid "プロフィールとスタンプ"
 msgstr "Profile and stamps"
 
@@ -1508,7 +1508,7 @@ msgstr "Back to Home"
 msgid "ホームへ戻る"
 msgstr "Back to home"
 
-#: src/components/map/MapScreenCanvas.tsx:387
+#: src/components/map/MapScreenCanvas.tsx:409
 msgid "ほか {more} 区間"
 msgstr "{more} more courses"
 
@@ -1569,7 +1569,7 @@ msgstr "Connect straight"
 
 #: src/app/(public)/map/page.tsx:17
 #: src/app/(public)/sitemap/page.tsx:57
-#: src/components/map/MapScreen.tsx:173
+#: src/components/map/MapScreen.tsx:177
 #: src/components/TabBar.tsx:23
 msgid "マップ"
 msgstr "Map"
@@ -1646,11 +1646,11 @@ msgstr "Main menu"
 msgid "メニュー"
 msgstr "Menu"
 
-#: src/components/admin/AdminFrame.tsx:58
+#: src/components/admin/AdminFrame.tsx:74
 msgid "メニューを出す"
 msgstr "Show menu"
 
-#: src/components/admin/AdminFrame.tsx:58
+#: src/components/admin/AdminFrame.tsx:74
 msgid "メニューを隠す"
 msgstr "Hide menu"
 
@@ -1714,13 +1714,13 @@ msgstr "Redo"
 
 #: src/app/(public)/sitemap/page.tsx:100
 #: src/components/SiteFooter.tsx:18
-#: src/components/SiteHeader.tsx:226
+#: src/components/SiteHeader.tsx:223
 msgid "よくあるご質問"
 msgstr "FAQ"
 
 #: src/app/(public)/sitemap/page.tsx:109
 #: src/components/SiteFooter.tsx:21
-#: src/components/SiteHeader.tsx:229
+#: src/components/SiteHeader.tsx:226
 msgid "ライセンス情報"
 msgstr "Licenses"
 
@@ -1924,7 +1924,7 @@ msgstr "Back to the route list"
 msgid "ルート名（日本語）"
 msgstr "Route name (Japanese)"
 
-#: src/components/SiteHeader.tsx:190
+#: src/components/SiteHeader.tsx:191
 msgid "ログアウト"
 msgstr "Log out"
 
@@ -1934,9 +1934,9 @@ msgstr "Log out"
 #: src/components/auth/LoginFlow.tsx:55
 #: src/components/auth/RegisterFlow.tsx:141
 #: src/components/landing/LandingHero.tsx:55
-#: src/components/map/MapScreen.tsx:345
+#: src/components/map/MapScreen.tsx:350
 #: src/components/SignInPrompt.tsx:36
-#: src/components/SiteHeader.tsx:196
+#: src/components/SiteHeader.tsx:197
 msgid "ログイン"
 msgstr "Log in"
 
@@ -1957,7 +1957,7 @@ msgstr "Log in"
 msgid "ログインすると、スタンプを記録できます。"
 msgstr "Sign in to record your stamps."
 
-#: src/components/map/MapScreen.tsx:340
+#: src/components/map/MapScreen.tsx:345
 msgid "ログインすると、ルート案内とスタンプが使えます。見るだけなら、このままどうぞ。"
 msgstr "Log in to use route guidance and stamps. If you only want to look around, carry on as you are."
 
@@ -1975,7 +1975,7 @@ msgstr "Ways to log in"
 msgid "ログインの方法（パスキー）"
 msgstr "Ways to log in (passkeys)"
 
-#: src/components/SiteHeader.tsx:181
+#: src/components/SiteHeader.tsx:182
 msgid "ログイン中"
 msgstr "Logged in"
 
@@ -2288,7 +2288,7 @@ msgid "全{total}か所"
 msgstr "{total} places"
 
 #: src/components/landing/LandingMap.tsx:36
-#: src/components/map/MapScreen.tsx:196
+#: src/components/map/MapScreen.tsx:200
 msgid "全体の地図"
 msgstr "Whole map"
 
@@ -2418,7 +2418,7 @@ msgstr "Highest {highest}m"
 #: src/components/admin/SiteSettingsForm.tsx:37
 #: src/components/admin/useChecklistLabels.ts:19
 #: src/components/landing/BannerCarousel.tsx:38
-#: src/components/map/MapScreen.tsx:468
+#: src/components/map/MapScreen.tsx:473
 #: src/components/SpotGallery.tsx:12
 #: src/components/SpotSheet.tsx:150
 msgid "写真"
@@ -2526,7 +2526,7 @@ msgstr "Credit (who took it, terms of use)"
 #: src/components/admin/PlacePanel.tsx:96
 #: src/components/admin/RouteEditor.tsx:548
 #: src/components/admin/RouteEditor.tsx:549
-#: src/components/map/MapScreen.tsx:459
+#: src/components/map/MapScreen.tsx:464
 #: src/components/RouteView.tsx:172
 #: src/components/SpotSheet.tsx:139
 msgid "出典"
@@ -2568,7 +2568,7 @@ msgstr "Someone else saved first. Reload the page and try again."
 
 #: src/app/(public)/sitemap/page.tsx:103
 #: src/components/SiteFooter.tsx:27
-#: src/components/SiteHeader.tsx:227
+#: src/components/SiteHeader.tsx:224
 msgid "利用規約"
 msgstr "Terms of use"
 
@@ -2640,7 +2640,7 @@ msgstr "Video"
 msgid "動画で見る"
 msgstr "Watch the video"
 
-#: src/components/FileVideo.tsx:39
+#: src/components/FileVideo.tsx:38
 #: src/components/IntroVideo.tsx:44
 msgid "動画のページをひらく"
 msgstr "Open the video page"
@@ -2657,7 +2657,7 @@ msgstr "Video links must start with https:// and point to YouTube, Vimeo or an u
 msgid "動画をアップロード"
 msgstr "Upload a video"
 
-#: src/components/FileVideo.tsx:34
+#: src/components/FileVideo.tsx:33
 #: src/components/IntroVideo.tsx:39
 msgid "動画を見る"
 msgstr "Play the video"
@@ -2674,7 +2674,7 @@ msgstr "Northeast"
 msgid "北西"
 msgstr "Northwest"
 
-#: src/components/map/MapScreenCanvas.tsx:385
+#: src/components/map/MapScreenCanvas.tsx:407
 msgid "区間 {text} がここに集まっています。押すと拡大します"
 msgstr "Courses {text} are gathered here. Press to zoom in"
 
@@ -2682,11 +2682,11 @@ msgstr "Courses {text} are gathered here. Press to zoom in"
 msgid "区間に分ける"
 msgstr "Cut into legs"
 
-#: src/components/map/MapScreen.tsx:250
+#: src/components/map/MapScreen.tsx:255
 msgid "区間の一覧を見る"
 msgstr "Show the courses"
 
-#: src/components/map/MapScreen.tsx:250
+#: src/components/map/MapScreen.tsx:255
 msgid "区間の情報を見る"
 msgstr "Show the course"
 
@@ -2694,7 +2694,7 @@ msgstr "Show the course"
 msgid "区間の選択をやめて、全体を対象にします"
 msgstr "Stop choosing a leg and work on all of them"
 
-#: src/components/map/MapScreen.tsx:274
+#: src/components/map/MapScreen.tsx:279
 msgid "区間をえらぶ"
 msgstr "Choose a course"
 
@@ -2706,7 +2706,7 @@ msgstr "Draw a leg"
 msgid "区間を選ぶ"
 msgstr "Choose a leg"
 
-#: src/components/map/MapScreen.tsx:174
+#: src/components/map/MapScreen.tsx:178
 msgid "区間を選ぶと、道とスタンプの場所が見えます。"
 msgstr "Choose a course to see its path and its stamp places."
 
@@ -2864,7 +2864,7 @@ msgstr "Show in the map"
 msgid "地図と線"
 msgstr "Map & line"
 
-#: src/components/map/MapScreenCanvas.tsx:531
+#: src/components/map/MapScreenCanvas.tsx:569
 msgid "地図に出すもの"
 msgstr "Show on the map"
 
@@ -2872,7 +2872,7 @@ msgstr "Show on the map"
 msgid "地図のルートと場所は仮のものです。実際の公開情報ではありません。"
 msgstr "The route and places on the map are provisional. They are not published information."
 
-#: src/components/map/MapScreen.tsx:433
+#: src/components/map/MapScreen.tsx:438
 msgid "地図の上の場所は、準備中です。"
 msgstr "The places on the map are not ready yet."
 
@@ -2918,7 +2918,7 @@ msgstr "Make the map easier on the eyes"
 
 #: src/components/admin/map-editor/MapEditor.tsx:1067
 #: src/components/admin/map-editor/MapEditorLoader.tsx:11
-#: src/components/map/MapScreenCanvas.tsx:527
+#: src/components/map/MapScreenCanvas.tsx:565
 #: src/components/map/MapScreenCanvasLoader.tsx:12
 #: src/components/map/TrailMap.tsx:478
 #: src/components/map/TrailMapLoader.tsx:12
@@ -2950,7 +2950,7 @@ msgstr "Show terrain shading"
 msgid "基本"
 msgstr "Basics"
 
-#: src/components/map/MapScreenCanvas.tsx:439
+#: src/components/map/MapScreenCanvas.tsx:461
 #: src/components/map/TrailMap.tsx:306
 msgid "場所 {text} がここに集まっています。押すと拡大します"
 msgstr "Places {text} are gathered here. Tap to zoom in."
@@ -3058,7 +3058,7 @@ msgstr "Side trip"
 msgid "寄り道（道すじから少しはずれた、任意の立ち寄り先）"
 msgstr "Side trip (an optional stop a little off the path)"
 
-#: src/components/map/MapScreenCanvas.tsx:539
+#: src/components/map/MapScreenCanvas.tsx:577
 msgid "寄り道の線"
 msgstr "Side trips"
 
@@ -3207,7 +3207,7 @@ msgstr "Technical level (A–E)"
 msgid "折り返し"
 msgstr "Turnaround"
 
-#: src/components/map/MapScreen.tsx:411
+#: src/components/map/MapScreen.tsx:416
 #: src/components/RallyViews.tsx:167
 #: src/components/StampLegend.tsx:8
 #: src/components/StopList.tsx:157
@@ -3222,7 +3222,7 @@ msgstr "How: press the button near the place (uses your location)"
 msgid "押すと、アカウントと、集めたスタンプなどの記録を、3日後にすべて消します。"
 msgstr "If you press this, your account and your records, such as your stamps, will all be erased after 3 days."
 
-#: src/components/map/MapScreenCanvas.tsx:583
+#: src/components/map/MapScreenCanvas.tsx:621
 #: src/components/map/TrailMap.tsx:504
 msgid "拡大"
 msgstr "Zoom in"
@@ -3290,7 +3290,7 @@ msgstr "Text and buttons become as big as they go."
 msgid "文字もボタンも、少し大きくなります。"
 msgstr "Text and buttons become a little bigger."
 
-#: src/components/SiteHeader.tsx:221
+#: src/components/SiteHeader.tsx:218
 msgid "文字やボタンの大きさ、地図の見せ方"
 msgstr "Size of text and buttons, how the map is shown"
 
@@ -3346,9 +3346,9 @@ msgstr "A Japanese name is needed to create a new one"
 #: src/components/auth/LoginFlow.tsx:104
 #: src/components/landing/Landing.tsx:184
 #: src/components/landing/LandingHero.tsx:46
-#: src/components/map/MapScreen.tsx:342
+#: src/components/map/MapScreen.tsx:347
 #: src/components/SignInPrompt.tsx:30
-#: src/components/SiteHeader.tsx:199
+#: src/components/SiteHeader.tsx:200
 msgid "新規登録"
 msgstr "Register"
 
@@ -3515,7 +3515,7 @@ msgstr "Routes are in walking order. Select a name to edit its text and map."
 #: src/components/admin/RouteEditor.tsx:540
 #: src/components/admin/RouteEditor.tsx:541
 #: src/components/admin/useChecklistLabels.ts:17
-#: src/components/map/MapScreen.tsx:441
+#: src/components/map/MapScreen.tsx:446
 #: src/components/RouteView.tsx:154
 #: src/components/SpotSheet.tsx:123
 msgid "歴史・由来"
@@ -3579,7 +3579,7 @@ msgstr "Port or ferry"
 #: src/components/admin/AdminNav.tsx:74
 #: src/components/admin/RouteTable.tsx:30
 #: src/components/landing/Landing.tsx:229
-#: src/components/map/MapScreen.tsx:325
+#: src/components/map/MapScreen.tsx:330
 #: src/components/RallyViews.tsx:106
 #: src/components/TrailRibbon.tsx:74
 msgid "準備中"
@@ -3626,7 +3626,7 @@ msgstr "Status note"
 msgid "状態は未確認"
 msgstr "Status not checked"
 
-#: src/components/map/MapScreenCanvas.tsx:594
+#: src/components/map/MapScreenCanvas.tsx:632
 msgid "現在地を真ん中にする（進む向きが上）"
 msgstr "Keep my position in the middle (direction of travel up)"
 
@@ -3658,7 +3658,7 @@ msgstr "Name of the town or village"
 msgid "画面が見えない間は、位置を止めています。"
 msgstr "Position is paused while the screen is hidden."
 
-#: src/components/SiteHeader.tsx:205
+#: src/components/SiteHeader.tsx:206
 msgid "画面の明るさ"
 msgstr "Screen brightness"
 
@@ -3817,16 +3817,16 @@ msgstr "End"
 
 #: src/components/admin/PlacePanel.tsx:37
 #: src/components/landing/Landing.tsx:126
-#: src/components/map/MapScreenCanvas.tsx:539
+#: src/components/map/MapScreenCanvas.tsx:577
 #: src/components/PointKindName.tsx:9
 msgid "経塚"
 msgstr "Sutra mounds"
 
-#: src/components/map/MapScreenCanvas.tsx:466
+#: src/components/map/MapScreenCanvas.tsx:504
 msgid "経塚 {count} か所がここに集まっています。押すと拡大します"
 msgstr "{count} sutra mounds are gathered here. Press to zoom in"
 
-#: src/components/map/MapScreenCanvas.tsx:460
+#: src/components/map/MapScreenCanvas.tsx:488
 msgid "経塚 {name}"
 msgstr "Sutra mound {name}"
 
@@ -3999,7 +3999,7 @@ msgstr "Enter both latitude and longitude, or leave both empty."
 msgid "緯度と経度は、両方書いてください"
 msgstr "Write both latitude and longitude"
 
-#: src/components/map/MapScreenCanvas.tsx:583
+#: src/components/map/MapScreenCanvas.tsx:621
 #: src/components/map/TrailMap.tsx:507
 msgid "縮小"
 msgstr "Zoom out"
@@ -4127,7 +4127,7 @@ msgstr "Point of interest"
 #: src/app/(public)/settings/page.tsx:12
 #: src/app/(public)/settings/page.tsx:29
 #: src/app/(public)/sitemap/page.tsx:91
-#: src/components/SiteHeader.tsx:219
+#: src/components/SiteHeader.tsx:216
 msgid "見やすさの設定"
 msgstr "Display settings"
 
@@ -4143,12 +4143,12 @@ msgstr "Set up how things look?"
 msgid "見やすさを選びましょう"
 msgstr "Choose how it looks"
 
-#: src/components/map/MapScreenCanvas.tsx:573
+#: src/components/map/MapScreenCanvas.tsx:611
 msgid "見本の位置（目安です）"
 msgstr "Sample positions (rough)"
 
 #: src/components/LocaleSwitcher.tsx:20
-#: src/components/SiteHeader.tsx:211
+#: src/components/LocaleSwitcher.tsx:55
 msgid "言語"
 msgstr "Language"
 
