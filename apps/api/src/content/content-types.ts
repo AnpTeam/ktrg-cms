@@ -197,6 +197,8 @@ export interface ContentStore {
   createSpot(actor: string, routeId: string, fields: Partial<SpotFields> & { nameJa: string }): Promise<SpotRow | null>;
   updateSpot(actor: string, id: string, expected: Date, changes: Partial<SpotFields>): Promise<SpotRow | "conflict" | "has_stamps" | null>;
   setPublished(actor: string, id: string, published: boolean): Promise<SpotRow | null>;
+  /** What was done to a route and its places, newest first (ids only, like the audit log). */
+  routeHistory(routeId: string, limit: number): Promise<{ id: string; action: string; targetType: string; targetId: string | null; actorUserId: string | null; createdAt: Date }[]>;
   /** Every published place of a route back to draft in one transaction (one audit row each); the places changed, or null for no such route. */
   unpublishRouteSpots(actor: string, routeId: string): Promise<SpotRow[] | null>;
   deleteSpot(actor: string, id: string): Promise<"ok" | "has_stamps" | "not_found">;

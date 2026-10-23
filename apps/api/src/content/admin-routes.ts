@@ -167,6 +167,7 @@ export function adminContentRoutes(getServices: () => ContentServices, opts: Rou
     .use(plugins)
     // ---- routes ----------------------------------------------------------------------------
     .get("/routes", async () => ({ ok: true as const, routes: (await svc().listRoutes()).map(routeOut) }), { auth: "route.manage" })
+    .get("/attention", async () => ({ ok: true as const, ...(await svc().attention()) }), { auth: "route.manage", detail: { summary: "Routes and waypoints with something missing" } })
     .get(
       "/routes/:id",
       async ({ params, set }) => {
@@ -263,6 +264,11 @@ export function adminContentRoutes(getServices: () => ContentServices, opts: Rou
         return r.ok ? { ok: true as const, spot: spotOut(r.value) } : fail(set, statusOf(r.reason), r.reason);
       },
       { auth: "spot.publish", rateLimit: { adminWriteUser: "user.id" }, params: idParams },
+    )
+    .get(
+      "/routes/:id/history",
+      async ({ params }) => ({ ok: true as const, history: (await svc().routeHistory(params.id)).map((h) => ({ ...h, createdAt: h.createdAt.toISOString() })) }),
+      { auth: "route.manage", params: idParams, detail: { summary: "What was done to a route and its places (ids only), newest first" } },
     )
     .post(
       "/routes/:id/unpublish-spots",

@@ -117,6 +117,10 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       await audit.record({ actorUserId: actor, action: published ? "spot.publish" : "spot.unpublish", targetId: id });
       return next;
     },
+    // The in-memory audit writer keeps its rows to itself, so the history is empty here (the real store is tested on PostgreSQL).
+    async routeHistory() {
+      return [];
+    },
     async unpublishRouteSpots(actor, routeId) {
       if (!routes.has(routeId)) return null;
       const changed: SpotRow[] = [];

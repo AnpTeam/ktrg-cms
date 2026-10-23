@@ -43,6 +43,7 @@ import { MunicipalityField } from "./MunicipalityField";
 import { PhotoLinkDetails } from "./PhotoLinkDetails";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoUpload } from "./PhotoUpload";
+import { RouteHistory } from "./RouteHistory";
 import { NearbyPlacesManager } from "./DirectoryPicker";
 import { SubtitleUpload } from "./SubtitleUpload";
 import { VideoUpload } from "./VideoUpload";
@@ -583,6 +584,8 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   {parseVideoFile(draft.videoUrl) ? <SubtitleUpload videoUrl={draft.videoUrl} uploaded={draft.videoSubtitles} onUploaded={() => dispatch({ type: "videoSubtitles", value: true })} /> : null}
                   {problemOf("video_link") ? <p role="alert" className="text-base font-bold text-danger">{t`YouTube か Vimeo、またはアップロードした動画の、https:// で始まるリンクにしてください。`}</p> : null}
                 </Section>
+
+                {draft.id ? <RouteHistory routeId={draft.id} locale={locale} /> : null}
               </>
             ) : null}
 

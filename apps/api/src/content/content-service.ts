@@ -2,6 +2,7 @@ import type { ErrorCode } from "../lib/api-errors";
 import { stampableByDefault } from "../db/schema/content";
 import { cleanTranslations } from "../db/translations";
 import { isHttpsUrl, isPhotoUrl, withWikimedia } from "../lib/https-url";
+import { attention } from "./attention";
 import { isAllowedVideoUrl } from "./video-url";
 import { lineLengthKm, parseLine, plainLine, ridesOf, sideLinesOf, simplifyLine, sketchOf, type LineString, type Ride } from "./line";
 import type {
@@ -313,6 +314,13 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
   return {
     // ---- admin: routes -------------------------------------------------------------------
     listRoutes: (): Promise<RouteSummaryRow[]> => store.listRoutes(),
+
+    /** Routes and waypoints with something missing (an unchecked line, no English name, no photo ...). Reads each route once. */
+    async attention() {
+      const rows = await store.listRoutes();
+      const full = await Promise.all(rows.map(async (r) => ({ ...r, spots: (await store.getRoute(r.id))?.spots ?? [] })));
+      return attention(full);
+    },
     getRoute: (id: string) => store.getRoute(id),
 
     async createRoute(actor: string, input: Partial<RouteFields> & { nameJa: string }): Promise<Result<RouteRow>> {
@@ -412,6 +420,9 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       const r = await store.setPublished(actor, id, false);
       return r ? ok(r) : bad("not_found");
     },
+
+    /** The latest 50 things done to a route or its places: what, when, and by whom (an account id). */
+    routeHistory: (routeId: string) => store.routeHistory(routeId, 50),
 
     /** Takes every published place of a route off the site at once; the route stays in the list as coming soon. */
     async unpublishRouteSpots(actor: string, routeId: string): Promise<Result<SpotRow[]>> {
