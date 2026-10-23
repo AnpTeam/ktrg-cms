@@ -2,9 +2,9 @@
 
 import { useLingui } from "@lingui/react/macro";
 import { isKanji, isPerKanji, partsFor, serializeRuby, type RubyPart } from "@/lib/ruby";
-import { TextInput } from "./fields";
 
-const tiny = "tap-target rounded-lg border border-line px-2 text-sm font-bold hover:bg-surface";
+const tiny = "inline-flex h-7 min-h-0 min-w-0 items-center justify-center rounded-md border border-line px-2 text-xs font-bold hover:bg-surface";
+const box = "h-9 min-h-0 min-w-0 rounded-lg border-2 border-line bg-paper px-2 text-base";
 
 /**
  * The reading of a name, typed over each run of kanji (葛城 → かつらぎ), not for the whole name. A run can be split into
@@ -23,34 +23,35 @@ export function RubyEditor({ name, value, onChange }: { name: string; value: str
   if (name.trim() === "" || !hasKanjiRun) return <p className="text-base text-muted">{t`日本語の名前に漢字があると、ここで読みを入れられます。`}</p>;
   return (
     <div className="flex flex-col gap-2">
-      <ul className="flex flex-wrap items-end gap-x-2 gap-y-3">
+      {/* The name in one row, a reading box under each run of kanji, and the split / join buttons under those. */}
+      <div role="group" aria-label={t`漢字ごとの読み`} className="grid w-fit max-w-full items-center gap-x-1.5 gap-y-1 overflow-x-auto" style={{ gridTemplateColumns: `repeat(${parts.length}, auto)` }}>
+        {parts.map((p, i) => (
+          <label key={`t${i}`} htmlFor={`ruby-${i}`} className="px-1 text-center text-xl font-bold leading-tight">
+            {p.text}
+          </label>
+        ))}
         {parts.map((p, i) =>
           isKanji(p.text[0] ?? "") ? (
-            <li key={i} className="flex w-32 flex-col gap-1 rounded-xl border border-line bg-paper p-2">
-              <label htmlFor={`ruby-${i}`} className="text-center text-2xl font-bold">
-                {p.text}
-              </label>
-              <TextInput id={`ruby-${i}`} value={p.reading ?? ""} onChange={(v) => patch(i, v)} maxLength={40} placeholder={t`よみ`} lang="ja" />
-              <span className="flex gap-1">
-                {[...p.text].length > 1 ? (
-                  <button type="button" onClick={() => split(i)} className={tiny} title={t`1文字ずつ、別の読みを入れます`}>
-                    {t`1文字ずつ`}
-                  </button>
-                ) : null}
-                {parts[i + 1] && isKanji(parts[i + 1]!.text[0] ?? "") ? (
-                  <button type="button" onClick={() => join(i)} className={tiny} title={t`となりの漢字と、ひとつの読みにします`}>
-                    {t`つなぐ`}
-                  </button>
-                ) : null}
-              </span>
-            </li>
+            <input key={`r${i}`} id={`ruby-${i}`} type="text" value={p.reading ?? ""} onChange={(e) => patch(i, e.target.value)} maxLength={40} placeholder={t`よみ`} lang="ja" size={Math.max(4, [...p.text].length * 3)} className={box} />
           ) : (
-            <li key={i} className="pb-1 text-2xl font-bold">
-              {p.text}
-            </li>
+            <span key={`r${i}`} />
           ),
         )}
-      </ul>
+        {parts.map((p, i) => (
+          <span key={`b${i}`} className="flex flex-wrap justify-center gap-1">
+            {isKanji(p.text[0] ?? "") && [...p.text].length > 1 ? (
+              <button type="button" onClick={() => split(i)} className={tiny} title={t`1文字ずつ、別の読みを入れます`}>
+                {t`1文字ずつ`}
+              </button>
+            ) : null}
+            {isKanji(p.text[0] ?? "") && parts[i + 1] && isKanji(parts[i + 1]!.text[0] ?? "") ? (
+              <button type="button" onClick={() => join(i)} className={tiny} title={t`となりの漢字と、ひとつの読みにします`}>
+                {t`つなぐ`}
+              </button>
+            ) : null}
+          </span>
+        ))}
+      </div>
       {legacy ? (
         <p className="text-base text-muted">
           {t`いまの読み（名前全体にひとつ）：${value}。上に入れると、漢字ごとの読みに置き換わります。`}

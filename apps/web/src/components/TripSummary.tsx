@@ -39,7 +39,7 @@ export function TripSummary({ route, journey, locale }: { route: RouteDetail; jo
         </div>
       ) : null}
       <div className="mt-3">
-        <RouteStats route={route} compact walkStyle={style} />
+        <RouteStats route={route} compact tips walkStyle={style} />
       </div>
       {spotCount > 0 ? (
         <p className="mt-3 flex items-center gap-2 text-lg font-bold tabular-nums">

@@ -99,16 +99,16 @@ msgstr "Your account and all your records will be erased on {due} (Japan time). 
 msgid "{email} に、6桁の番号を送りました。"
 msgstr "We sent a 6-digit number to {email}."
 
-#: src/components/RouteStats.tsx:34
+#: src/components/RouteStats.tsx:35
 msgid "{hours}時間"
 msgstr "{hours} h"
 
-#: src/components/RouteStats.tsx:34
+#: src/components/RouteStats.tsx:35
 msgid "{hours}時間{minutes}分"
 msgstr "{hours} h {minutes} min"
 
 #: src/components/ElevationProfile.tsx:24
-#: src/components/RouteStats.tsx:23
+#: src/components/RouteStats.tsx:24
 msgid "{km}km"
 msgstr "{km} km"
 
@@ -120,11 +120,11 @@ msgstr "{label} (admin)"
 msgid "{label}の言語"
 msgstr "Language of {label}"
 
-#: src/components/RouteStats.tsx:27
+#: src/components/RouteStats.tsx:28
 msgid "{meters}m"
 msgstr "{meters} m"
 
-#: src/components/RouteStats.tsx:34
+#: src/components/RouteStats.tsx:35
 msgid "{minutes}分"
 msgstr "{minutes} min"
 
@@ -328,11 +328,11 @@ msgstr "Hold the ⌘ key to move the map"
 msgid "1か所ずつ詳しく"
 msgstr "One place at a time"
 
-#: src/components/admin/RubyEditor.tsx:37
+#: src/components/admin/RubyEditor.tsx:44
 msgid "1文字ずつ"
 msgstr "Per kanji"
 
-#: src/components/admin/RubyEditor.tsx:36
+#: src/components/admin/RubyEditor.tsx:43
 msgid "1文字ずつ、別の読みを入れます"
 msgstr "Type a separate reading for each kanji"
 
@@ -584,7 +584,7 @@ msgstr "About {m} m from where you are"
 msgid "いまの状態"
 msgstr "Current status"
 
-#: src/components/admin/RubyEditor.tsx:56
+#: src/components/admin/RubyEditor.tsx:57
 msgid "いまの読み（名前全体にひとつ）：{value}。上に入れると、漢字ごとの読みに置き換わります。"
 msgstr "Current reading (one for the whole name): {value}. Typing above replaces it with per-kanji readings."
 
@@ -726,6 +726,10 @@ msgstr "Campsite"
 msgid "クリックで、この点を消します"
 msgstr "Click to remove this point"
 
+#: src/components/InfoTip.tsx:26
+msgid "くわしく見る"
+msgstr "Learn more"
+
 #: src/components/landing/Landing.tsx:124
 #: src/components/map/MapScreenCanvas.tsx:577
 msgid "コース"
@@ -755,6 +759,10 @@ msgstr "Nearest first from the start of the course (straight-line distance)"
 #: src/components/RallyViews.tsx:179
 msgid "コースを見る"
 msgstr "See the courses"
+
+#: src/app/(public)/grading/page.tsx:57
+msgid "コース定数 ＝ 1.8 × 時間（h） ＋ 0.3 × 距離（km） ＋ 10 × 登り（km） ＋ 0.6 × 下り（km）"
+msgstr "Course constant = 1.8 × hours + 0.3 × distance (km) + 10 × climb (km) + 0.6 × descent (km)"
 
 #: src/app/(public)/map/page.tsx:192
 #: src/app/(public)/routes/[id]/page.tsx:46
@@ -1021,6 +1029,10 @@ msgstr "Delete this waypoint"
 #: src/components/admin/map-editor/MapEditor.tsx:826
 msgid "この線は、経由地の順番や位置と合わないため、区間に分けていません。経由地の順番と位置を直してから「区間に分ける」を押すか、区間を描くと、その区間から線が置き換わります（「元に戻す」で戻せます）。"
 msgstr "This line does not match the order or positions of the waypoints, so it has not been cut into legs. Fix the order and positions and press \"Cut into legs\", or draw a leg: the line is then replaced leg by leg (Undo brings it back)."
+
+#: src/app/(public)/grading/page.tsx:101
+msgid "この考え方は、長野県の「信州 山のグレーディング」を参考にしています。説明は、このサイト独自の言葉です。"
+msgstr "The idea follows the mountain grading used in Nagano Prefecture (信州 山のグレーディング). The explanations are in this site's own words."
 
 #: src/components/settings/PrefsForm.tsx:147
 msgid "この設定ではじめる"
@@ -1320,6 +1332,10 @@ msgstr "Dark"
 msgid "タイル"
 msgstr "Tiles"
 
+#: src/app/(public)/grading/page.tsx:60
+msgid "たとえば、4時間・距離8km・登り500m・下り500mなら、1.8×4 ＋ 0.3×8 ＋ 10×0.5 ＋ 0.6×0.5 ＝ 14.9 で、体力度は2です。"
+msgstr "For example, 4 hours, 8 km, 500 m up and 500 m down gives 1.8×4 + 0.3×8 + 10×0.5 + 0.6×0.5 = 14.9, so the physical level is 2."
+
 #: src/components/admin/useChecklistLabels.ts:22
 msgid "チェック"
 msgstr "Check"
@@ -1352,7 +1368,7 @@ msgstr "How it is made"
 msgid "つくり方は、あとから変えられません。"
 msgstr "This cannot be changed later."
 
-#: src/components/admin/RubyEditor.tsx:42
+#: src/components/admin/RubyEditor.tsx:49
 msgid "つなぐ"
 msgstr "Join"
 
@@ -1386,7 +1402,7 @@ msgstr "Place not set"
 msgid "とても大きい"
 msgstr "Extra large"
 
-#: src/components/admin/RubyEditor.tsx:41
+#: src/components/admin/RubyEditor.tsx:48
 msgid "となりの漢字と、ひとつの読みにします"
 msgstr "Make one reading with the next kanji"
 
@@ -1418,7 +1434,7 @@ msgstr "Smooth"
 msgid "ニックネームでもかまいません。"
 msgstr "A nickname is fine."
 
-#: src/components/RouteStats.tsx:27
+#: src/components/RouteStats.tsx:28
 msgid "のぼり"
 msgstr "Climb"
 
@@ -1781,7 +1797,7 @@ msgstr "Redo"
 msgid "よくあるご質問"
 msgstr "FAQ"
 
-#: src/components/admin/RubyEditor.tsx:33
+#: src/components/admin/RubyEditor.tsx:35
 msgid "よみ"
 msgstr "Reading"
 
@@ -1922,6 +1938,10 @@ msgstr "There are no routes yet. Create one with \"New route\"."
 msgid "ルートにもどる"
 msgstr "Back to route"
 
+#: src/app/(public)/grading/page.tsx:45
+msgid "ルートの「体力度」と「技術度」は、歩く前に大変さを知るための目安です。公式の情報ではありません。天気や体調で、感じ方は変わります。"
+msgstr "The physical level and technical level of a route are a guide to how hard it is before you set out. They are not official information, and how it feels changes with the weather and how you feel."
+
 #: src/components/admin/RouteEditor.tsx:497
 msgid "ルートのページの「スタート・ゴール」の見せ方が変わります。未選択なら、周回や往復とは書きません。"
 msgstr "Changes how Start / Goal is shown on the route page. If left unset, the page does not say round trip or out and back."
@@ -1982,6 +2002,7 @@ msgstr "Edit route (admin)"
 msgid "ルートを読み込めませんでした。しばらくしてから、ページを開き直してください。"
 msgstr "Could not load the routes. Please wait a moment and reopen the page."
 
+#: src/app/(public)/grading/page.tsx:39
 #: src/app/(public)/routes/[id]/page.tsx:36
 msgid "ルート一覧"
 msgstr "All routes"
@@ -2216,13 +2237,31 @@ msgstr "Location is not allowed. Please allow location for this site in your bro
 msgid "低い"
 msgstr "low"
 
-#: src/components/RouteStats.tsx:38
+#: src/components/RouteStats.tsx:39
 msgid "体力度"
 msgstr "Physical level"
 
+#. placeholder {0}: i + 1
+#: src/app/(public)/grading/page.tsx:66
+msgid "体力度 {0}"
+msgstr "Physical level {0}"
+
+#: src/app/(public)/grading/page.tsx:73
+msgid "体力度 10"
+msgstr "Physical level 10"
+
+#: src/app/(public)/grading/page.tsx:51
 #: src/components/admin/GradingFields.tsx:48
 msgid "体力度（1〜10）"
 msgstr "Physical level (1–10)"
+
+#: src/components/RouteStats.tsx:66
+msgid "体力度とは"
+msgstr "About the physical level"
+
+#: src/app/(public)/grading/page.tsx:42
+msgid "体力度と技術度について"
+msgstr "About the physical and technical levels"
 
 #: src/components/admin/RallyCreate.tsx:98
 msgid "作っています…"
@@ -2897,7 +2936,7 @@ msgid "名前順"
 msgstr "Name"
 
 #: src/components/RouteJourney.tsx:22
-#: src/components/RouteStats.tsx:20
+#: src/components/RouteStats.tsx:21
 msgid "周回"
 msgstr "Round trip"
 
@@ -3207,7 +3246,7 @@ msgid "年代"
 msgstr "Age"
 
 #: src/components/RouteJourney.tsx:22
-#: src/components/RouteStats.tsx:20
+#: src/components/RouteStats.tsx:21
 msgid "往復"
 msgstr "Out and back"
 
@@ -3277,13 +3316,22 @@ msgstr "Entered by hand. Leave it empty to calculate it from the distance and cl
 msgid "手直しが必要なルートだけ（{needsWorkCount}）"
 msgstr "Only routes that need work ({needsWorkCount})"
 
-#: src/components/RouteStats.tsx:39
+#: src/components/RouteStats.tsx:40
 msgid "技術度"
 msgstr "Technical level"
 
+#: src/app/(public)/grading/page.tsx:85
 #: src/components/admin/GradingFields.tsx:79
 msgid "技術度（A〜E）"
 msgstr "Technical level (A–E)"
+
+#: src/components/RouteStats.tsx:70
+msgid "技術度とは"
+msgstr "About the technical level"
+
+#: src/app/(public)/grading/page.tsx:88
+msgid "技術度は計算ではなく、道の様子から人が決めます。Aがいちばんやさしく、Eがいちばん難しいです。"
+msgstr "The technical level is not calculated: a person decides it from what the path is like. A is the easiest and E the hardest."
 
 #: src/components/RouteJourney.tsx:82
 #: src/components/TripSummary.tsx:38
@@ -3352,6 +3400,10 @@ msgstr "Write a number"
 #: src/components/admin/map-editor/MapEditor.tsx:850
 msgid "数字の丸をドラッグすると、経由地を動かせます。道すじは「線を描く」か、GPXファイルで入れます。"
 msgstr "Drag a numbered circle to move a waypoint. Add the path with \"Draw line\" or a GPX file."
+
+#: src/app/(public)/grading/page.tsx:79
+msgid "数字は目安です。保存される体力度は、ルートを作った人が、この計算を見て決めています。"
+msgstr "The numbers are a guide. The saved physical level is chosen by whoever made the route, looking at this calculation."
 
 #: src/components/admin/GradingFields.tsx:38
 msgid "整備された道で、迷いにくく、転んでも大きな事故になりにくい。"
@@ -3456,7 +3508,7 @@ msgid "日本語の名前を入れてください。"
 msgstr "Enter the Japanese name."
 
 #: src/components/map/PlacesPanel.tsx:209
-#: src/components/RouteStats.tsx:33
+#: src/components/RouteStats.tsx:34
 msgid "時間"
 msgstr "Time"
 
@@ -3570,7 +3622,7 @@ msgid "歩いた場所で、スタンプを押そう。"
 msgstr "Collect a stamp wherever you have walked."
 
 #: src/components/admin/RouteEditor.tsx:497
-#: src/components/RouteStats.tsx:20
+#: src/components/RouteStats.tsx:21
 msgid "歩き方"
 msgstr "How it is walked"
 
@@ -3585,6 +3637,14 @@ msgstr "Walk"
 #: src/components/admin/RouteEditor.tsx:516
 msgid "歩く時間"
 msgstr "Walking time"
+
+#: src/components/RouteStats.tsx:67
+msgid "歩く時間・距離・登りと下りから、必要な体力を1（やさしい）から10（とても大変）で表した目安です。"
+msgstr "A guide to the stamina a route needs, from 1 (easy) to 10 (very demanding), worked out from walking time, distance, and climbing and descending."
+
+#: src/app/(public)/grading/page.tsx:54
+msgid "歩く時間、距離、登りと下りの高さから、「コース定数」という数字を出します。この数字が大きいほど、体力が必要です。"
+msgstr "From the walking time, distance and the height climbed and descended, we work out a number called the course constant. The bigger it is, the more stamina is needed."
 
 #: src/components/landing/Landing.tsx:88
 msgid "歩く道"
@@ -3640,7 +3700,7 @@ msgid "消したい点をクリックします。"
 msgstr "Click the point to remove."
 
 #: src/components/admin/map-editor/MapEditor.tsx:1215
-#: src/components/admin/RubyEditor.tsx:58
+#: src/components/admin/RubyEditor.tsx:59
 #: src/components/settings/PasskeyManager.tsx:121
 #: src/components/settings/PasskeyManager.tsx:165
 msgid "消す"
@@ -3669,6 +3729,10 @@ msgstr "Port or ferry"
 msgid "準備中"
 msgstr "Coming soon"
 
+#: src/components/admin/RubyEditor.tsx:27
+msgid "漢字ごとの読み"
+msgstr "Reading for each kanji"
+
 #: src/components/admin/map-editor/MapEditor.tsx:1060
 msgid "点 {pointCount}"
 msgstr "Points {pointCount}"
@@ -3690,7 +3754,7 @@ msgid "点を置く"
 msgstr "Add points"
 
 #: src/components/RouteJourney.tsx:22
-#: src/components/RouteStats.tsx:20
+#: src/components/RouteStats.tsx:21
 msgid "片道"
 msgstr "One way"
 
@@ -4282,7 +4346,7 @@ msgid "足りないもの"
 msgstr "What is missing"
 
 #: src/components/admin/RouteEditor.tsx:510
-#: src/components/RouteStats.tsx:23
+#: src/components/RouteStats.tsx:24
 msgid "距離"
 msgstr "Distance"
 
@@ -4397,6 +4461,10 @@ msgstr "The route service could not be used, so the way was found on GSI's trail
 #: src/components/admin/GradingFields.tsx:81
 msgid "道の状態から、手で選びます。"
 msgstr "Choose by hand, based on the condition of the path."
+
+#: src/components/RouteStats.tsx:71
+msgid "道の険しさや迷いやすさを、A（整った道）からE（厳しい岩場や藪）で表した目安です。"
+msgstr "A guide to how rough a path is and how easy it is to lose, from A (a well-kept path) to E (hard rock or thick brush)."
 
 #: src/components/admin/SiteSettingsForm.tsx:34
 msgid "道や建物、記号が細かく描かれた、いちばん詳しい地図です。"
@@ -4521,7 +4589,7 @@ msgstr "Shading (soft shadow)"
 msgid "隠す"
 msgstr "hidden"
 
-#: src/components/RouteStats.tsx:40
+#: src/components/RouteStats.tsx:41
 msgid "難しさ"
 msgstr "Difficulty"
 
