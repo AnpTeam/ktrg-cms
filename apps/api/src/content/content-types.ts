@@ -10,6 +10,7 @@ export type SpotTranslations = Translations<(typeof SPOT_TEXT)[number]>;
 export type SpotKind = (typeof spotKinds)[number];
 
 export type Prefecture = "osaka" | "wakayama" | "nara";
+export type TechnicalLevel = "A" | "B" | "C" | "D" | "E";
 export type WalkStyle = "one_way" | "loop" | "out_and_back";
 export type SpotStatus = "open" | "caution" | "closed";
 
@@ -23,6 +24,8 @@ export interface RouteRow {
   distanceKm: number | null;
   elevationGainM: number | null;
   difficulty: string | null;
+  physicalLevel: number | null;
+  technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
   prefecture: Prefecture | null;
   walkStyle: WalkStyle | null;
@@ -106,6 +109,8 @@ export interface RouteFields {
   distanceKm: number | null;
   elevationGainM: number | null;
   difficulty: string | null;
+  physicalLevel: number | null;
+  technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
   prefecture: Prefecture | null;
   walkStyle: WalkStyle | null;

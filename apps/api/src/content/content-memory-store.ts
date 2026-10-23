@@ -49,7 +49,7 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       const at = stampTime();
       const row: RouteRow = {
         id: uuid(), nameEn: null, descriptionJa: null, descriptionEn: null, distanceKm: null,
-        elevationGainM: null, difficulty: null, expectedTimeMin: null, prefecture: null, walkStyle: null, municipality: null, geometry: null, lineVerified: false, lineSource: null,
+        elevationGainM: null, difficulty: null, physicalLevel: null, technicalLevel: null, expectedTimeMin: null, prefecture: null, walkStyle: null, municipality: null, geometry: null, lineVerified: false, lineSource: null,
         videoUrl: null, historyJa: null, historyEn: null, accessJa: null, accessEn: null, sourceJa: null, sourceEn: null, photoUrl: null, photoCredit: null, sortOrder: routes.size + 1, createdAt: at, updatedAt: at, ...fields,
         translations: mergeTranslations({}, fields.translations),
       };

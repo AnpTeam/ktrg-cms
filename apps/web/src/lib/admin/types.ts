@@ -5,6 +5,7 @@ import type { Translations } from "./content-locales";
 import type { GalleryPhoto } from "../content";
 import type { PointKind } from "../point-kinds";
 import type { WalkStyle } from "../walk-style";
+import type { TechnicalLevel } from "../grading";
 
 export type Prefecture = "osaka" | "wakayama" | "nara";
 export type { PointKind, WalkStyle };
@@ -26,6 +27,8 @@ export interface AdminRoute {
   distanceKm: number | null;
   elevationGainM: number | null;
   difficulty: string | null;
+  physicalLevel: number | null;
+  technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
   prefecture: Prefecture | null;
   walkStyle: WalkStyle | null;

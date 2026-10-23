@@ -77,6 +77,8 @@ const routeProps = {
   distanceKm: nullable(t.Number({ minimum: 0, maximum: 2000 })),
   elevationGainM: nullable(t.Integer({ minimum: 0, maximum: 10000 })),
   difficulty: nullable(t.String({ maxLength: 100 })),
+  physicalLevel: nullable(t.Integer({ minimum: 1, maximum: 10 })),
+  technicalLevel: t.Union([t.Literal("A"), t.Literal("B"), t.Literal("C"), t.Literal("D"), t.Literal("E"), t.Null()]),
   expectedTimeMin: nullable(t.Integer({ minimum: 0, maximum: 20000 })),
   prefecture: t.Union([prefecture, t.Null()]),
   walkStyle: t.Union([walkStyle, t.Null()]),

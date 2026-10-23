@@ -1,7 +1,7 @@
 import { useLingui } from "@lingui/react/macro";
 import type { RouteSummary } from "@/lib/content";
 
-type Stats = Pick<RouteSummary, "distanceKm" | "elevationGainM" | "expectedTimeMin" | "difficulty">;
+type Stats = Pick<RouteSummary, "distanceKm" | "elevationGainM" | "expectedTimeMin" | "difficulty" | "physicalLevel" | "technicalLevel">;
 
 /**
  * Distance, climb, time and difficulty. Anything the CMS has not filled in yet is simply
@@ -31,7 +31,10 @@ export function RouteStats({ route, compact = false }: { route: Stats; compact?:
       value: hours > 0 && minutes > 0 ? t`${hours}時間${minutes}分` : hours > 0 ? t`${hours}時間` : t`${minutes}分`,
     });
   }
-  if (route.difficulty) items.push({ label: t`難しさ`, value: route.difficulty });
+  // The grading levels when they are set; otherwise the editor's own words.
+  if (route.physicalLevel !== null) items.push({ label: t`体力度`, value: `${route.physicalLevel}` });
+  if (route.technicalLevel !== null) items.push({ label: t`技術度`, value: route.technicalLevel });
+  if (route.physicalLevel === null && route.technicalLevel === null && route.difficulty) items.push({ label: t`難しさ`, value: route.difficulty });
 
   if (items.length === 0) return null;
 

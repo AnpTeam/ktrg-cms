@@ -15,6 +15,7 @@ import {
   draftReducer,
   initialState,
   isDirty,
+  walkedStats,
   placeFromServer,
   type DraftAction,
   type PlaceDraft,
@@ -33,6 +34,7 @@ import { isListedMunicipality } from "@/lib/municipalities";
 import { stampableByDefault } from "@/lib/point-kinds";
 import { walkStyleOf } from "@/lib/walk-style";
 import { PublishedEditDialog, skipsPublishedWarning } from "./PublishedEditDialog";
+import { GradingFields } from "./GradingFields";
 import { MunicipalityField } from "./MunicipalityField";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoUpload } from "./PhotoUpload";
@@ -489,7 +491,13 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                       <NumberInput id="route-time" value={draft.expectedTimeMin} min={0} max={20000} integer suffix={t`分`} onChange={(v) => dispatch({ type: "time", value: v })} />
                     </Field>
                   </div>
-                  <Field label={t`むずかしさ`} htmlFor="route-difficulty" hint={t`入れた文字が、そのまま表示されます。`}>
+                  <GradingFields
+                    draft={draft}
+                    descentM={walkedStats(draft.line, draft.legs).descent}
+                    onPhysical={(value) => dispatch({ type: "physicalLevel", value })}
+                    onTechnical={(value) => dispatch({ type: "technicalLevel", value })}
+                  />
+                  <Field label={t`むずかしさ（ひとこと）`} htmlFor="route-difficulty" hint={t`入れた文字が、そのまま表示されます。体力度・技術度を選んだときは、そちらを先に表示します。`}>
                     <TextInput id="route-difficulty" value={draft.difficulty} onChange={text("difficulty")} maxLength={100} />
                   </Field>
                 </Section>

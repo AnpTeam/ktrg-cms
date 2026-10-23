@@ -35,6 +35,8 @@ export function routeSummaryFromApi(r: PublicRoute, order: number, stampedCount 
     distanceKm: r.distanceKm,
     elevationGainM: r.elevationGainM,
     difficulty: r.difficulty,
+    physicalLevel: r.physicalLevel,
+    technicalLevel: r.technicalLevel,
     expectedTimeMin: r.expectedTimeMin,
     sketch: sketchFromList(r.sketch),
     area: areaFromBounds(r.bounds),

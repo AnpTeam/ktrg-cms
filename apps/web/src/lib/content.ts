@@ -11,6 +11,7 @@ import { sampleRoutes, sampleSpots } from "./sample-content";
 import type { Sketch } from "./sketch";
 import type { Viewer } from "./viewer";
 import type { WalkStyle } from "./walk-style";
+import type { TechnicalLevel } from "./grading";
 
 // View-models for the public content screens (WBS 3.2.3, 3.2.4, 3.2.5). Each field
 // mirrors a CMS column in apps/api/src/db/schema/content.ts, so what an editor types
@@ -40,6 +41,8 @@ export interface RouteSummary {
   distanceKm: number | null;
   elevationGainM: number | null;
   difficulty: string | null;
+  physicalLevel: number | null;
+  technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
   /** A simplified route line for the list silhouette, when the CMS has geometry. */
   sketch: Sketch | null;
@@ -215,6 +218,8 @@ function toSummary(r: RouteDetail): RouteSummary {
     distanceKm: r.distanceKm,
     elevationGainM: r.elevationGainM,
     difficulty: r.difficulty,
+    physicalLevel: r.physicalLevel,
+    technicalLevel: r.technicalLevel,
     expectedTimeMin: r.expectedTimeMin,
     sketch: r.sketch,
     area: r.area,

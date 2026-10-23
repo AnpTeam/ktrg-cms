@@ -13,6 +13,8 @@ const route = (id: string, order: number, over: Partial<MapScreenRoute> = {}): M
   elevationGainM: null,
   expectedTimeMin: null,
   difficulty: null,
+  physicalLevel: null,
+  technicalLevel: null,
   status: "ready",
   spotCount: 0,
   stampedCount: null,

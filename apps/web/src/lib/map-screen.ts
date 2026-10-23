@@ -11,6 +11,8 @@ import type { PointKind } from "./point-kinds";
  * east-west and north-south, like the boxes on the official map). The CMS holds it per course; `verified` is
  * false for a rough placement (sample data), and the map then says so.
  */
+import type { TechnicalLevel } from "./grading";
+
 export interface RouteArea extends Position {
   widthM: number;
   heightM: number;
@@ -94,6 +96,8 @@ export interface MapScreenRoute {
   elevationGainM: number | null;
   expectedTimeMin: number | null;
   difficulty: string | null;
+  physicalLevel: number | null;
+  technicalLevel: TechnicalLevel | null;
   /** "soon" = no published spots yet. */
   status: "ready" | "soon";
   spotCount: number;

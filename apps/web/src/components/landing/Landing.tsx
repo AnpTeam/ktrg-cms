@@ -232,7 +232,7 @@ function PreviewStop({ route, locale, last, href }: { route: RouteSummary; local
         ) : (
           <span className="mt-2 block">
             {/* Distance and time only: the full set wraps onto three rows in this narrow column. */}
-            <RouteStats route={{ ...route, elevationGainM: null, difficulty: null }} compact />
+            <RouteStats route={{ ...route, elevationGainM: null, difficulty: null, physicalLevel: null, technicalLevel: null }} compact />
           </span>
         )}
         {stampedCount !== null && spotCount > 0 ? (

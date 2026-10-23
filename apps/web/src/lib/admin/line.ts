@@ -82,6 +82,11 @@ export function climbM(elevations: readonly number[]): number {
   return Math.round(up);
 }
 
+/** Total descent in metres, counted the same way as `climbM` (smoothed over three points). */
+export function descentM(elevations: readonly number[]): number {
+  return climbM(elevations.map((e) => -e));
+}
+
 /** The elevations of a line when every point has one; otherwise null. */
 export function elevationsOf(points: readonly LngLatEle[]): number[] | null {
   const e = points.map((p) => p[2]);
