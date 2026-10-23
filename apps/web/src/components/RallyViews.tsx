@@ -4,6 +4,7 @@ import { Trans, useLingui } from "@lingui/react/macro";
 import { pickText } from "@/lib/content";
 import { formatUpdated } from "@/lib/format";
 import { isSoon, nextSlot, sealName, stampedNumbers, type RallyItem } from "@/lib/rally-model";
+import { CertificateButton } from "./CertificateButton";
 import { ChevronIcon } from "./icons";
 import { SectionBanner } from "./SectionBanner";
 import { StampGrid } from "./StampGrid";
@@ -84,6 +85,7 @@ export function FeaturedRally({ rally, locale, signedIn }: { rally: RallyItem; l
             names={rally.kind === "mounds" ? new Map(rally.slots.map((slot) => [slot.number, sealName(slot.nameJa)])) : undefined}
           />
         </div>
+        {signedIn && rally.total > 0 && stamped === rally.total ? <CertificateButton title={nameOf(locale, rally.nameJa, rally.nameEn)} total={rally.total} locale={locale} /> : null}
       </div>
     </section>
   );
@@ -170,6 +172,11 @@ export function RallyCard({ rally, locale, signedIn }: { rally: RallyItem; local
             </li>
           ))}
         </ol>
+        {signedIn && rally.total > 0 && stamped === rally.total ? (
+          <div className="border-t-2 border-line px-4 pb-4">
+            <CertificateButton title={name} total={rally.total} locale={locale} />
+          </div>
+        ) : null}
         {rally.routeId ? (
           <div className="border-t-2 border-line p-4">
             <Link

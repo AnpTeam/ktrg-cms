@@ -510,7 +510,7 @@ msgid "アップロード済みの写真です。選んで「この写真を使�
 msgstr "These are the photos already uploaded. Choose one and press \"Use this photo\" to fill in its link."
 
 #: src/components/ProgressSummary.tsx:15
-#: src/components/RallyViews.tsx:55
+#: src/components/RallyViews.tsx:56
 msgid "あと{remaining}か所"
 msgstr "{remaining} left to go"
 
@@ -563,7 +563,7 @@ msgstr "Guides you from where you are to the nearest stamp place. Your position 
 msgid "いまのガイド点を通る道を、1回だけ探します"
 msgstr "Search once for a way through the current guide points"
 
-#: src/components/RallyViews.tsx:42
+#: src/components/RallyViews.tsx:43
 msgid "いまのラリー"
 msgstr "Current rally"
 
@@ -752,7 +752,7 @@ msgstr "Courses"
 msgid "コース {0}"
 msgstr "{0} courses"
 
-#: src/components/RallyViews.tsx:98
+#: src/components/RallyViews.tsx:100
 msgid "コース{order}"
 msgstr "Course {order}"
 
@@ -768,7 +768,7 @@ msgstr "Make it from courses"
 msgid "コースの出発地点から近い順（まっすぐ測った距離です）"
 msgstr "Nearest first from the start of the course (straight-line distance)"
 
-#: src/components/RallyViews.tsx:179
+#: src/components/RallyViews.tsx:186
 msgid "コースを見る"
 msgstr "See the courses"
 
@@ -1091,6 +1091,14 @@ msgstr "Contrast"
 msgid "コンビニ・商店"
 msgstr "Convenience store / local shop"
 
+#: src/components/CertificateButton.tsx:41
+msgid "コンプリート証"
+msgstr "Certificate of completion"
+
+#: src/components/CertificateButton.tsx:62
+msgid "コンプリート証を保存・共有"
+msgstr "Save or share your certificate"
+
 #: src/app/(public)/sitemap/page.tsx:98
 msgid "ご案内"
 msgstr "Information"
@@ -1227,8 +1235,8 @@ msgid "スタンプの記録を読めませんでした。"
 msgstr "Your stamps could not be read."
 
 #: src/components/ProgressSummary.tsx:27
-#: src/components/RallyViews.tsx:58
-#: src/components/RallyViews.tsx:126
+#: src/components/RallyViews.tsx:59
+#: src/components/RallyViews.tsx:128
 msgid "スタンプの進み具合"
 msgstr "Stamp progress"
 
@@ -1236,7 +1244,7 @@ msgstr "Stamp progress"
 msgid "スタンプは押せません。場所のページは見られます。公開するには、現地の許可の確認が必要です。"
 msgstr "No stamp can be collected here, but visitors can open the place's page. To publish it, the site's permission must be confirmed."
 
-#: src/components/RallyViews.tsx:98
+#: src/components/RallyViews.tsx:100
 msgid "スタンプラリー"
 msgstr "Stamp rally"
 
@@ -1296,7 +1304,7 @@ msgid "すべて"
 msgstr "All"
 
 #: src/components/ProgressSummary.tsx:14
-#: src/components/RallyViews.tsx:55
+#: src/components/RallyViews.tsx:56
 msgid "すべてそろいました。"
 msgstr "You have all the stamps."
 
@@ -1373,7 +1381,7 @@ msgstr "Check"
 msgid "チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。代わりに、一つ前の経由地から、この場所までの寄り道の線（青い細い点線）を、地図で描けます。分かれ道に経由地を置き、その次にこの場所を並べてください。"
 msgstr "When this is checked, \"Connect the waypoints\" skips this point. Instead, you can draw a side-trip line (thin blue dashes) on the map from the previous waypoint to this place. Put a waypoint at the fork, then list this place right after it."
 
-#: src/components/RallyViews.tsx:62
+#: src/components/RallyViews.tsx:63
 #: src/components/StampGrid.tsx:75
 #: src/components/StampGrid.tsx:97
 #: src/components/StampGrid.tsx:108
@@ -1479,7 +1487,7 @@ msgstr "First time here?"
 msgid "はじめての設定"
 msgstr "First-time set-up"
 
-#: src/components/RallyViews.tsx:42
+#: src/components/RallyViews.tsx:43
 msgid "はじめのラリー"
 msgstr "First rally"
 
@@ -1637,7 +1645,7 @@ msgid "まず、GPXファイルをここにドラッグするか「GPXファイ�
 msgstr "Start by dragging a GPX file here or pressing \"Load a GPX file\". To enter by hand, place waypoints with \"Add waypoint\", then draw the path leg by leg with \"Draw path\"."
 
 #: src/components/admin/RouteEditor.tsx:795
-#: src/components/RallyViews.tsx:167
+#: src/components/RallyViews.tsx:169
 #: src/components/StampLegend.tsx:9
 msgid "まだ"
 msgstr "Not yet"
@@ -1663,7 +1671,7 @@ msgid "まだありません。「＋ 行を追加」で、経由地を表に入
 msgstr "No waypoints yet. Use “+ Add a row” to put waypoints in the table."
 
 #: src/components/ProgressSummary.tsx:12
-#: src/components/RallyViews.tsx:55
+#: src/components/RallyViews.tsx:56
 msgid "まだスタンプはありません。"
 msgstr "No stamps yet."
 
@@ -2479,10 +2487,14 @@ msgstr "{TOTAL_ROUTES} sections, about {TRAIL_KM} km"
 msgid "全{TOTAL_ROUTES}区間を見る"
 msgstr "See all {TOTAL_ROUTES} sections"
 
-#: src/components/RallyViews.tsx:70
-#: src/components/RallyViews.tsx:130
+#: src/components/RallyViews.tsx:71
+#: src/components/RallyViews.tsx:132
 msgid "全{total}か所"
 msgstr "{total} places"
+
+#: src/components/CertificateButton.tsx:43
+msgid "全{total}か所のスタンプをそろえました"
+msgstr "Collected all {total} stamps"
 
 #: src/components/landing/LandingMap.tsx:36
 #: src/components/map/MapScreen.tsx:203
@@ -2616,7 +2628,7 @@ msgstr "Lowest {lowest}m"
 msgid "最寄り"
 msgstr "Nearest"
 
-#: src/components/RallyViews.tsx:45
+#: src/components/RallyViews.tsx:46
 msgid "最後に押した日時　{when}"
 msgstr "Last stamped: {when}"
 
@@ -3505,7 +3517,7 @@ msgid "折り返し"
 msgstr "Turnaround"
 
 #: src/components/map/MapScreen.tsx:422
-#: src/components/RallyViews.tsx:167
+#: src/components/RallyViews.tsx:169
 #: src/components/StampLegend.tsx:8
 #: src/components/StopList.tsx:157
 msgid "押した"
@@ -3899,7 +3911,7 @@ msgstr "Port or ferry"
 #: src/components/admin/RouteTable.tsx:30
 #: src/components/landing/Landing.tsx:229
 #: src/components/map/MapScreen.tsx:336
-#: src/components/RallyViews.tsx:106
+#: src/components/RallyViews.tsx:108
 #: src/components/TrailRibbon.tsx:74
 msgid "準備中"
 msgstr "Coming soon"
@@ -4144,7 +4156,7 @@ msgstr "About {amount} m"
 msgid "約{TRAIL_KM}km"
 msgstr "About {TRAIL_KM} km"
 
-#: src/components/RallyViews.tsx:141
+#: src/components/RallyViews.tsx:143
 msgid "納経帳"
 msgstr "Pilgrim’s stamp book"
 
@@ -4167,7 +4179,7 @@ msgstr "{count} sutra mounds are gathered here. Press to zoom in"
 msgid "経塚 {name}"
 msgstr "Sutra mound {name}"
 
-#: src/components/RallyViews.tsx:98
+#: src/components/RallyViews.tsx:100
 msgid "経塚ラリー"
 msgstr "Sutra mound rally"
 
