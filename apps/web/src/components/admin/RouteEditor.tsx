@@ -473,18 +473,18 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
               <>
                 <Section title={t`基本`}>
                   <MultilingualField id="route-name" field="name" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`ルートの名前`} ja={draft.nameJa} en={draft.nameEn} onJa={text("nameJa")} onEn={text("nameEn")} required invalid={problemOf("route_name")} />
-                  <Field label={t`ルートの名前の読み（ふりがな）`} htmlFor="ruby-0" hint={t`読みを入れた漢字の上に、小さく表示されます。ひらがなで入れます。空にすると、表示しません。`}>
+                  <Field label={t`ルートの名前の読み（ふりがな）`} htmlFor="ruby-0" hint={t`読みを入れた漢字の上に、小さく表示されます（ひらがな）。`}>
                     <RubyEditor name={draft.nameJa} value={draft.nameKana} onChange={text("nameKana")} />
                   </Field>
                   {problemOf("route_name") ? <p role="alert" className="text-base font-bold text-danger">{t`日本語の名前を入れてください。`}</p> : null}
-                  <div className="flex flex-wrap gap-4">
+                  <div className="grid gap-4 sm:grid-cols-3">
                     <Field label={t`都道府県`} htmlFor="route-pref">
                       <select id="route-pref" value={draft.prefecture ?? ""} onChange={(e) => {
                           const next = (e.target.value || null) as Prefecture | null;
                           // A city of the old prefecture does not belong to the new one: start the city again.
                           if (isListedMunicipality(draft.prefecture, draft.municipality) && !isListedMunicipality(next, draft.municipality)) text("municipality")("");
                           dispatch({ type: "prefecture", value: next });
-                        }} className={`${inputClass} min-w-48`}>
+                        }} className={inputClass}>
                         <option value="">{t`未選択`}</option>
                         {(["wakayama", "osaka", "nara"] as const).map((p) => (
                           <option key={p} value={p}>
@@ -494,12 +494,12 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                       </select>
                     </Field>
                     <MunicipalityField id="route-muni" prefecture={draft.prefecture} value={draft.municipality} onChange={text("municipality")} />
-                    <Field label={t`歩き方`} htmlFor="route-walk-style" hint={t`ルートのページの「スタート・ゴール」の見せ方が変わります。未選択なら、周回や往復とは書きません。`}>
-                      <select id="route-walk-style" value={draft.walkStyle ?? ""} onChange={(e) => dispatch({ type: "walkStyle", value: walkStyleOf(e.target.value) })} className={`${inputClass} min-w-48`}>
+                    <Field label={t`歩き方`} htmlFor="route-walk-style" hint={t`「スタート・ゴール」の見せ方が変わります。`}>
+                      <select id="route-walk-style" value={draft.walkStyle ?? ""} onChange={(e) => dispatch({ type: "walkStyle", value: walkStyleOf(e.target.value) })} className={inputClass}>
                         <option value="">{t`未選択`}</option>
-                        <option value="one_way">{t`片道（スタートとゴールが別の場所）`}</option>
-                        <option value="loop">{t`周回（出発した場所に戻る）`}</option>
-                        <option value="out_and_back">{t`往復（同じ道を行って戻る）`}</option>
+                        <option value="one_way">{t`片道（別の場所へ）`}</option>
+                        <option value="loop">{t`周回（元の場所へ）`}</option>
+                        <option value="out_and_back">{t`往復（同じ道）`}</option>
                       </select>
                     </Field>
                   </div>

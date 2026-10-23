@@ -262,6 +262,10 @@ msgstr "\"{legName}\" is chosen. Drag its points to move them. Click an empty pl
 msgid "「{stopName}」から近い順"
 msgstr "Nearest first, from \"{stopName}\""
 
+#: src/components/admin/RouteEditor.tsx:497
+msgid "「スタート・ゴール」の見せ方が変わります。"
+msgstr "Changes how Start / Goal is shown."
+
 #: src/components/admin/RouteImport.tsx:81
 msgid "「はい」か「いいえ」で書いてください"
 msgstr "Write はい (yes) or いいえ (no)"
@@ -1946,10 +1950,6 @@ msgstr "Back to route"
 msgid "ルートの「体力度」と「技術度」は、歩く前に大変さを知るための目安です。公式の情報ではありません。天気や体調で、感じ方は変わります。"
 msgstr "The physical level and technical level of a route are a guide to how hard it is before you set out. They are not official information, and how it feels changes with the weather and how you feel."
 
-#: src/components/admin/RouteEditor.tsx:497
-msgid "ルートのページの「スタート・ゴール」の見せ方が変わります。未選択なら、周回や往復とは書きません。"
-msgstr "Changes how Start / Goal is shown on the route page. If left unset, the page does not say round trip or out and back."
-
 #: src/app/(public)/sitemap/page.tsx:65
 msgid "ルートの一覧"
 msgstr "All routes"
@@ -2945,8 +2945,8 @@ msgid "周回"
 msgstr "Round trip"
 
 #: src/components/admin/RouteEditor.tsx:501
-msgid "周回（出発した場所に戻る）"
-msgstr "Round trip (back to where you started)"
+msgid "周回（元の場所へ）"
+msgstr "Loop (back to the start)"
 
 #: src/components/admin/RouteEditor.tsx:358
 #: src/components/admin/RouteTable.tsx:31
@@ -3255,8 +3255,8 @@ msgid "往復"
 msgstr "Out and back"
 
 #: src/components/admin/RouteEditor.tsx:502
-msgid "往復（同じ道を行って戻る）"
-msgstr "Out and back (the same path there and back)"
+msgid "往復（同じ道）"
+msgstr "Out and back (same path)"
 
 #: src/components/admin/GalleryEditor.tsx:93
 #: src/components/admin/RallyList.tsx:74
@@ -3325,7 +3325,7 @@ msgid "技術度"
 msgstr "Technical level"
 
 #: src/app/(public)/grading/page.tsx:85
-#: src/components/admin/GradingFields.tsx:79
+#: src/components/admin/GradingFields.tsx:80
 msgid "技術度（A〜E）"
 msgstr "Technical level (A–E)"
 
@@ -3763,8 +3763,8 @@ msgid "片道"
 msgstr "One way"
 
 #: src/components/admin/RouteEditor.tsx:500
-msgid "片道（スタートとゴールが別の場所）"
-msgstr "One way (the start and the goal are different places)"
+msgid "片道（別の場所へ）"
+msgstr "One way (to another place)"
 
 #: src/components/admin/PlacePanel.tsx:169
 msgid "状態・許可の設定"
@@ -4330,8 +4330,8 @@ msgid "説明文（日本語）"
 msgstr "Description (Japanese)"
 
 #: src/components/admin/RouteEditor.tsx:476
-msgid "読みを入れた漢字の上に、小さく表示されます。ひらがなで入れます。空にすると、表示しません。"
-msgstr "Shown small over the kanji that have a reading. Type it in hiragana. Leave empty to show none."
+msgid "読みを入れた漢字の上に、小さく表示されます（ひらがな）。"
+msgstr "Shown small over the kanji that have a reading (hiragana)."
 
 #: src/components/settings/PasskeyManager.tsx:95
 msgid "読み込み中"
@@ -4462,7 +4462,7 @@ msgstr "Off the course, in a straight line"
 msgid "道の探索サービスが使えなかったため、地図の道（国土地理院）で探しました。いつもと違う道になることがあります。形をよく確かめてください。「元に戻す」で、もとの線にもどせます。"
 msgstr "The route service could not be used, so the way was found on GSI's trail map instead. It can choose a different way. Check the shape carefully. Undo brings back the old line."
 
-#: src/components/admin/GradingFields.tsx:81
+#: src/components/admin/GradingFields.tsx:82
 msgid "道の状態から、手で選びます。"
 msgstr "Choose by hand, based on the condition of the path."
 
@@ -4499,7 +4499,7 @@ msgid "達成した人 {0}"
 msgstr "{0} finished"
 
 #: src/components/admin/GradingFields.tsx:63
-#: src/components/admin/GradingFields.tsx:89
+#: src/components/admin/GradingFields.tsx:90
 msgid "選ばない"
 msgstr "Not set"
 

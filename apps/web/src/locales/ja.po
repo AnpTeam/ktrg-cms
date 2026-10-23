@@ -262,6 +262,10 @@ msgstr "「{legName}」を選んでいます。この区間の点をドラッグ
 msgid "「{stopName}」から近い順"
 msgstr "「{stopName}」から近い順"
 
+#: src/components/admin/RouteEditor.tsx:497
+msgid "「スタート・ゴール」の見せ方が変わります。"
+msgstr "「スタート・ゴール」の見せ方が変わります。"
+
 #: src/components/admin/RouteImport.tsx:81
 msgid "「はい」か「いいえ」で書いてください"
 msgstr "「はい」か「いいえ」で書いてください"
@@ -1946,10 +1950,6 @@ msgstr "ルートにもどる"
 msgid "ルートの「体力度」と「技術度」は、歩く前に大変さを知るための目安です。公式の情報ではありません。天気や体調で、感じ方は変わります。"
 msgstr "ルートの「体力度」と「技術度」は、歩く前に大変さを知るための目安です。公式の情報ではありません。天気や体調で、感じ方は変わります。"
 
-#: src/components/admin/RouteEditor.tsx:497
-msgid "ルートのページの「スタート・ゴール」の見せ方が変わります。未選択なら、周回や往復とは書きません。"
-msgstr "ルートのページの「スタート・ゴール」の見せ方が変わります。未選択なら、周回や往復とは書きません。"
-
 #: src/app/(public)/sitemap/page.tsx:65
 msgid "ルートの一覧"
 msgstr "ルートの一覧"
@@ -2945,8 +2945,8 @@ msgid "周回"
 msgstr "周回"
 
 #: src/components/admin/RouteEditor.tsx:501
-msgid "周回（出発した場所に戻る）"
-msgstr "周回（出発した場所に戻る）"
+msgid "周回（元の場所へ）"
+msgstr "周回（元の場所へ）"
 
 #: src/components/admin/RouteEditor.tsx:358
 #: src/components/admin/RouteTable.tsx:31
@@ -3255,8 +3255,8 @@ msgid "往復"
 msgstr "往復"
 
 #: src/components/admin/RouteEditor.tsx:502
-msgid "往復（同じ道を行って戻る）"
-msgstr "往復（同じ道を行って戻る）"
+msgid "往復（同じ道）"
+msgstr "往復（同じ道）"
 
 #: src/components/admin/GalleryEditor.tsx:93
 #: src/components/admin/RallyList.tsx:74
@@ -3325,7 +3325,7 @@ msgid "技術度"
 msgstr "技術度"
 
 #: src/app/(public)/grading/page.tsx:85
-#: src/components/admin/GradingFields.tsx:79
+#: src/components/admin/GradingFields.tsx:80
 msgid "技術度（A〜E）"
 msgstr "技術度（A〜E）"
 
@@ -3763,8 +3763,8 @@ msgid "片道"
 msgstr "片道"
 
 #: src/components/admin/RouteEditor.tsx:500
-msgid "片道（スタートとゴールが別の場所）"
-msgstr "片道（スタートとゴールが別の場所）"
+msgid "片道（別の場所へ）"
+msgstr "片道（別の場所へ）"
 
 #: src/components/admin/PlacePanel.tsx:169
 msgid "状態・許可の設定"
@@ -4330,8 +4330,8 @@ msgid "説明文（日本語）"
 msgstr "説明文（日本語）"
 
 #: src/components/admin/RouteEditor.tsx:476
-msgid "読みを入れた漢字の上に、小さく表示されます。ひらがなで入れます。空にすると、表示しません。"
-msgstr "読みを入れた漢字の上に、小さく表示されます。ひらがなで入れます。空にすると、表示しません。"
+msgid "読みを入れた漢字の上に、小さく表示されます（ひらがな）。"
+msgstr "読みを入れた漢字の上に、小さく表示されます（ひらがな）。"
 
 #: src/components/settings/PasskeyManager.tsx:95
 msgid "読み込み中"
@@ -4462,7 +4462,7 @@ msgstr "道の外・直線"
 msgid "道の探索サービスが使えなかったため、地図の道（国土地理院）で探しました。いつもと違う道になることがあります。形をよく確かめてください。「元に戻す」で、もとの線にもどせます。"
 msgstr "道の探索サービスが使えなかったため、地図の道（国土地理院）で探しました。いつもと違う道になることがあります。形をよく確かめてください。「元に戻す」で、もとの線にもどせます。"
 
-#: src/components/admin/GradingFields.tsx:81
+#: src/components/admin/GradingFields.tsx:82
 msgid "道の状態から、手で選びます。"
 msgstr "道の状態から、手で選びます。"
 
@@ -4499,7 +4499,7 @@ msgid "達成した人 {0}"
 msgstr "達成した人 {0}"
 
 #: src/components/admin/GradingFields.tsx:63
-#: src/components/admin/GradingFields.tsx:89
+#: src/components/admin/GradingFields.tsx:90
 msgid "選ばない"
 msgstr "選ばない"
 
