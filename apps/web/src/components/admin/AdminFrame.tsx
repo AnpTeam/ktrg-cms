@@ -1,10 +1,32 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useSyncExternalStore, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { SidebarIcon } from "@/components/icons";
 
 const KEY = "admin-sidebar-hidden";
+const CHANGED = "admin-sidebar-changed";
+
+function subscribe(onChange: () => void) {
+  window.addEventListener("storage", onChange); // another tab changed it
+  window.addEventListener(CHANGED, onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener(CHANGED, onChange);
+  };
+}
+
+// Kept in memory too, so the button still works in a browser that blocks storage (it just is not remembered).
+let inMemory = false;
+
+function readHidden(): boolean {
+  try {
+    return window.localStorage.getItem(KEY) === "1";
+  } catch {
+    return inMemory;
+  }
+}
+
 const Sidebar = createContext<{ hidden: boolean; toggle: () => void }>({ hidden: false, toggle: () => {} });
 
 /**
@@ -12,23 +34,17 @@ const Sidebar = createContext<{ hidden: boolean; toggle: () => void }>({ hidden:
  * the page the whole width; the choice is remembered in this browser (a convenience, so a blocked store just means "shown").
  */
 export function AdminFrame({ aside, children }: { aside: ReactNode; children: ReactNode }) {
-  const [hidden, setHidden] = useState(false);
-  useEffect(() => {
+  // Read from the browser's storage as an external value: shown on the server and while hydrating, then what was chosen.
+  const hidden = useSyncExternalStore(subscribe, readHidden, () => false);
+  const toggle = () => {
+    inMemory = !hidden;
     try {
-      if (window.localStorage.getItem(KEY) === "1") setHidden(true);
+      window.localStorage.setItem(KEY, hidden ? "0" : "1");
     } catch {
-      // Not stored: the menu starts shown.
+      // Not stored: the choice lasts until the page is closed.
     }
-  }, []);
-  const toggle = () =>
-    setHidden((was) => {
-      try {
-        window.localStorage.setItem(KEY, was ? "0" : "1");
-      } catch {
-        // Not stored.
-      }
-      return !was;
-    });
+    window.dispatchEvent(new Event(CHANGED));
+  };
 
   return (
     <Sidebar.Provider value={{ hidden, toggle }}>

@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { ReactNode } from "react";
-import { BellIcon, ClockIcon, DocumentIcon, FlagIcon, GearIcon, ImageIcon, MapIcon, PinIcon, RouteIcon, ShopIcon, StampIcon, UserIcon } from "@/components/icons";
+import { BellIcon, ClockIcon, DocumentIcon, FlagIcon, GearIcon, ImageIcon, PinIcon, RouteIcon, ShopIcon, StampIcon, UserIcon } from "@/components/icons";
 
 /** The picture beside each list in the menu; a list the app does not know yet gets a plain document. */
 const LIST_ICONS: Record<string, ReactNode> = {
