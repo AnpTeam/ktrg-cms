@@ -2,6 +2,7 @@
 // Declared here by hand because Eden types the JSON dates as Date; the times arrive as ISO text.
 
 import type { TechnicalLevel } from "./grading";
+import type { AccessPoint } from "./access-points";
 
 export interface PublicRoute {
   id: string;
@@ -13,6 +14,7 @@ export interface PublicRoute {
   elevationGainM: number | null;
   difficulty: string | null;
   nameKana: string | null;
+  accessPoints?: AccessPoint[];
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;

@@ -62,6 +62,7 @@ export interface PublicRoute {
   elevationGainM: number | null;
   difficulty: string | null;
   nameKana: string | null;
+  accessPoints: RouteRow["accessPoints"];
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
@@ -120,6 +121,7 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     elevationGainM: r.elevationGainM,
     difficulty: r.difficulty,
     nameKana: r.nameKana,
+    accessPoints: r.accessPoints,
     physicalLevel: r.physicalLevel,
     technicalLevel: r.technicalLevel,
     expectedTimeMin: r.expectedTimeMin,
@@ -210,6 +212,12 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
     if (input.distanceKm !== undefined) out.distanceKm = input.distanceKm;
     if (input.elevationGainM !== undefined) out.elevationGainM = input.elevationGainM;
     if (input.expectedTimeMin !== undefined) out.expectedTimeMin = input.expectedTimeMin;
+    if (input.accessPoints !== undefined) {
+      // A row with no Japanese name is an empty row left in the form: dropped. The rest are trimmed.
+      out.accessPoints = input.accessPoints
+        .filter((p) => p.nameJa.trim() !== "")
+        .map((p) => ({ type: p.type, nameJa: p.nameJa.trim(), nameEn: text(p.nameEn) ?? null, noteJa: text(p.noteJa) ?? null, noteEn: text(p.noteEn) ?? null }));
+    }
     if (input.physicalLevel !== undefined) out.physicalLevel = input.physicalLevel;
     if (input.technicalLevel !== undefined) out.technicalLevel = input.technicalLevel;
     if (input.prefecture !== undefined) out.prefecture = input.prefecture;

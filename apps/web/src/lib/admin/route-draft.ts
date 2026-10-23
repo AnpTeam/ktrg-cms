@@ -4,6 +4,7 @@ import { areaFromBounds, sketchFromPoints } from "../route-geometry";
 import { climbM, descentM, elevationsOf, lengthKm, type LngLatEle } from "./line";
 import { capLegs, joinLegs, legsFromJoined, pathStops, reconcileLegs, sidePairs, splitLine, type Leg } from "./legs";
 import type { Translations } from "./content-locales";
+import type { AccessPoint } from "../access-points";
 import type { TechnicalLevel } from "../grading";
 import type { AdminRoute, AdminSpot, Prefecture, SpotStatus, WalkStyle } from "./types";
 import { timesFromPrevious } from "../leg-times";
@@ -86,6 +87,8 @@ export interface RouteDraft {
   difficulty: string;
   /** How the Japanese name is read (furigana shown over it); "" when not set. */
   nameKana: string;
+  /** How to get there: kind, place and note for each way (see lib/access-points.ts). */
+  accessPoints: AccessPoint[];
   /** The mountain-grading levels (see lib/grading.ts); null until chosen. */
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
@@ -103,7 +106,7 @@ export const emptyDraft = (): RouteDraft => ({
   id: null, updatedAt: null, nameJa: "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
   accessJa: "", accessEn: "", translations: {}, photoUrl: "", photoCredit: "", sourceJa: "", sourceEn: "", prefecture: null, walkStyle: null, municipality: "",
   distanceKm: null, distanceManual: false, elevationGainM: null, climbManual: false, expectedTimeMin: null, timeManual: false,
-  difficulty: "", nameKana: "", physicalLevel: null, technicalLevel: null, videoUrl: "", line: [], legs: [], lineVerified: false, lineSource: "", places: [],
+  difficulty: "", nameKana: "", accessPoints: [], physicalLevel: null, technicalLevel: null, videoUrl: "", line: [], legs: [], lineVerified: false, lineSource: "", places: [],
 });
 
 const s = (v: string | null | undefined) => v ?? "";
@@ -156,7 +159,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
     expectedTimeMin: route.expectedTimeMin,
     // A saved time that is not what the distance and climb give was typed by hand.
     timeManual: route.expectedTimeMin !== null && route.expectedTimeMin !== estimateWalkMinutes(route.distanceKm, route.elevationGainM),
-    difficulty: s(route.difficulty), nameKana: s(route.nameKana), physicalLevel: route.physicalLevel, technicalLevel: route.technicalLevel, videoUrl: s(route.videoUrl),
+    difficulty: s(route.difficulty), nameKana: s(route.nameKana), accessPoints: route.accessPoints ?? [], physicalLevel: route.physicalLevel, technicalLevel: route.technicalLevel, videoUrl: s(route.videoUrl),
     line: legs.length > 0 ? joinLegs(pathStops(places), legs).line : line, legs, lineVerified: route.lineVerified, lineSource: s(route.lineSource),
     places,
   };
@@ -207,6 +210,7 @@ export type DraftAction =
   | { type: "text"; field: TextField; value: string }
   /** The route's words in the other content languages. */
   | { type: "translations"; value: Translations }
+  | { type: "accessPoints"; value: AccessPoint[] }
   | { type: "prefecture"; value: Prefecture | null }
   | { type: "walkStyle"; value: WalkStyle | null }
   | { type: "physicalLevel"; value: number | null }
@@ -320,6 +324,8 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       return { ...d, [a.field]: a.value };
     case "translations":
       return { ...d, translations: a.value };
+    case "accessPoints":
+      return { ...d, accessPoints: a.value };
     case "prefecture":
       return { ...d, prefecture: a.value };
     case "walkStyle":
@@ -490,6 +496,7 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
     elevationGainM: d.elevationGainM,
     difficulty: nz(d.difficulty),
     nameKana: nz(d.nameKana),
+    accessPoints: d.accessPoints,
     physicalLevel: d.physicalLevel,
     technicalLevel: d.technicalLevel,
     expectedTimeMin: d.expectedTimeMin,

@@ -3,6 +3,7 @@ import { ElevationProfile } from "@/components/ElevationProfile";
 import { EmptyState } from "@/components/EmptyState";
 import { ExpandableText } from "@/components/ExpandableText";
 import { Ruby } from "@/components/Ruby";
+import { AccessList } from "@/components/AccessList";
 import { FileVideoPlayer } from "@/components/FileVideo";
 import { IntroVideo } from "@/components/IntroVideo";
 import { Localized } from "@/components/Localized";
@@ -176,12 +177,13 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             </section>
           ) : null}
 
-          {access || journey ? (
+          {access || journey || route.accessPoints.length > 0 ? (
             <section className="order-7 flex flex-col gap-4 px-4 @4xl:order-none @4xl:px-0">
               <h2 className="text-xl font-bold">
                 <Trans>アクセス・交通</Trans>
               </h2>
               {journey ? <RouteJourney journey={journey} locale={locale} /> : null}
+              {route.accessPoints.length > 0 ? <AccessList points={route.accessPoints} locale={locale} /> : null}
               {access ? (
                 <div>
                   <ExpandableText text={access.text} className="max-w-prose whitespace-pre-line text-lg leading-8">

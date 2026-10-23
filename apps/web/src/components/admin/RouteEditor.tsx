@@ -34,6 +34,7 @@ import { isListedMunicipality } from "@/lib/municipalities";
 import { stampableByDefault } from "@/lib/point-kinds";
 import { walkStyleOf } from "@/lib/walk-style";
 import { PublishedEditDialog, skipsPublishedWarning } from "./PublishedEditDialog";
+import { AccessPointsEditor } from "./AccessPointsEditor";
 import { GradingFields } from "./GradingFields";
 import { MunicipalityField } from "./MunicipalityField";
 import { PhotoLinkDetails } from "./PhotoLinkDetails";
@@ -537,8 +538,9 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   <MultilingualField id="route-history" field="history" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`歴史・由来`} ja={draft.historyJa} en={draft.historyEn} onJa={text("historyJa")} onEn={text("historyEn")} multiline />
                 </Section>
                 <Section title={t`アクセス・交通`}>
-                  <MultilingualField id="route-access" field="access" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`アクセス・交通`} ja={draft.accessJa} en={draft.accessEn} onJa={text("accessJa")} onEn={text("accessEn")} multiline />
-                  <p className="text-base text-muted">{t`最寄りの駅やバス停、スタート地点とゴール地点への行き方を書きます。`}</p>
+                  <AccessPointsEditor value={draft.accessPoints} onChange={(value) => dispatch({ type: "accessPoints", value })} />
+                  <MultilingualField id="route-access" field="access" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`アクセス・交通の補足`} ja={draft.accessJa} en={draft.accessEn} onJa={text("accessJa")} onEn={text("accessEn")} multiline />
+                  <p className="text-base text-muted">{t`上の一覧に入らない行き方（乗りかえ、時刻、帰りの方法など）を、自由に書きます。`}</p>
                 </Section>
                 <Section title={t`出典`}>
                   <MultilingualField id="route-source" field="source" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`出典`} ja={draft.sourceJa} en={draft.sourceEn} onJa={text("sourceJa")} onEn={text("sourceEn")} multiline />

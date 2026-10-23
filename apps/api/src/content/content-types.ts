@@ -1,5 +1,5 @@
 import type { ErrorCode } from "../lib/api-errors";
-import type { SpotPhoto, spotKinds } from "../db/schema/content";
+import type { AccessPoint, SpotPhoto, spotKinds } from "../db/schema/content";
 import type { ROUTE_TEXT, SPOT_TEXT, Translations } from "../db/translations";
 import type { LineString } from "./line";
 
@@ -25,6 +25,7 @@ export interface RouteRow {
   elevationGainM: number | null;
   difficulty: string | null;
   nameKana: string | null;
+  accessPoints: AccessPoint[];
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
@@ -111,6 +112,7 @@ export interface RouteFields {
   elevationGainM: number | null;
   difficulty: string | null;
   nameKana: string | null;
+  accessPoints: AccessPoint[];
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;

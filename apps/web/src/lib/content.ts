@@ -12,6 +12,7 @@ import type { Sketch } from "./sketch";
 import type { Viewer } from "./viewer";
 import type { WalkStyle } from "./walk-style";
 import type { TechnicalLevel } from "./grading";
+import type { AccessPoint } from "./access-points";
 
 // View-models for the public content screens (WBS 3.2.3, 3.2.4, 3.2.5). Each field
 // mirrors a CMS column in apps/api/src/db/schema/content.ts, so what an editor types
@@ -42,6 +43,7 @@ export interface RouteSummary {
   elevationGainM: number | null;
   difficulty: string | null;
   nameKana: string | null;
+  accessPoints: AccessPoint[];
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
@@ -220,6 +222,7 @@ function toSummary(r: RouteDetail): RouteSummary {
     elevationGainM: r.elevationGainM,
     difficulty: r.difficulty,
     nameKana: r.nameKana,
+    accessPoints: r.accessPoints,
     physicalLevel: r.physicalLevel,
     technicalLevel: r.technicalLevel,
     expectedTimeMin: r.expectedTimeMin,
