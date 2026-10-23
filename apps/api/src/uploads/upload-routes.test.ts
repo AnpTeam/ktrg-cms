@@ -112,6 +112,16 @@ describe("GET /admin/uploads (the photo library)", () => {
     expect(body.photos[1]!.key).toMatch(/^photos\/old-/);
   });
 
+  test("with more photos than the list shows, the newest are kept, not the first by name", async () => {
+    const s = setup();
+    const cookie = await s.login(admin);
+    for (let i = 0; i < 1100; i++) s.mem.files.set(`photos/a-${String(i).padStart(4, "0")}.jpg`, { body: JPEG, contentType: "image/jpeg", lastModified: new Date(2020, 0, 1, 0, 0, i) });
+    s.mem.files.set("photos/zzz-newest.jpg", { body: JPEG, contentType: "image/jpeg", lastModified: new Date(2026, 0, 1) });
+    const body = (await (await s.library(cookie)).json()) as { photos: { key: string }[] };
+    expect(body.photos).toHaveLength(1000);
+    expect(body.photos[0]!.key).toBe("photos/zzz-newest.jpg");
+  });
+
   test("signed out: 401; a participant: 403", async () => {
     const s = setup();
     expect((await s.library()).status).toBe(401);

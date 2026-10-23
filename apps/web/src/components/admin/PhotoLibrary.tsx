@@ -12,6 +12,8 @@ interface LibraryPhoto {
   uploadedAt: string;
 }
 
+const PAGE = 24;
+
 type Loaded = { state: "loading" } | { state: "ready"; photos: LibraryPhoto[] } | { state: "error"; key: ErrorKey };
 
 /** GET /admin/uploads: every photo uploaded so far, newest first. */
@@ -62,6 +64,8 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
   const messages = useErrorMessages();
   const ref = useRef<HTMLDialogElement>(null);
   const [loaded, setLoaded] = useState<Loaded>({ state: "loading" });
+  // The photos are full-size files, so only a page of them is drawn at a time (a long list would pull a lot of data).
+  const [shown, setShown] = useState(PAGE);
 
   useEffect(() => {
     const dialog = ref.current;
@@ -101,7 +105,7 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
       {loaded.state === "ready" && loaded.photos.length === 0 ? <p className="mt-4 text-lg">{t`まだ写真がありません。`}</p> : null}
       {loaded.state === "ready" && loaded.photos.length > 0 ? (
         <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {loaded.photos.map((p) => (
+          {loaded.photos.slice(0, shown).map((p) => (
             <li key={p.key}>
               <button
                 type="button"
@@ -115,6 +119,11 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
             </li>
           ))}
         </ul>
+      ) : null}
+      {loaded.state === "ready" && loaded.photos.length > shown ? (
+        <button type="button" onClick={() => setShown((n) => n + PAGE)} className="tap-target mt-4 rounded-xl border-2 border-line px-5 text-lg font-bold">
+          {t`もっと見る`}
+        </button>
       ) : null}
     </dialog>
   );

@@ -21,7 +21,7 @@ import type { MapSettings } from "@/lib/map-settings";
 import { municipalityName } from "@/lib/municipalities";
 import { pickText } from "@/lib/pick-text";
 import { pointsAsPlaces } from "@/lib/point-places";
-import { isGuidanceOnly, journeyOf, stopRoles, trailStops } from "@/lib/route-stops";
+import { isGuidanceOnly, journeyOf, roleLabel, stopRoles, trailStops } from "@/lib/route-stops";
 import type { MapPlace } from "@/lib/places";
 import { parseVideoFile, parseVideoUrl } from "@/lib/video";
 
@@ -30,7 +30,7 @@ export function buildStops(
   route: RouteDetail,
   locale: string,
   spotHref: (id: string) => string,
-  labels: { stamped: string; closed: string },
+  labels: { stamped: string; closed: string; start: string; goal: string },
 ): MapStop[] {
   // Every place along the walk is a pin, numbered by its index (a side trip has none). A place without a stamp is a square pin.
   const trail = trailStops(route);
@@ -43,6 +43,8 @@ export function buildStops(
     const stamped = stop.type === "stamp" ? stop.spot.stamped : null;
     const status = stop.type === "stamp" ? stop.spot.status : "open";
     const parts = [stop.number === null ? name.text : `${stop.number}. ${name.text}`];
+    const roleWord = roleLabel(roles.get(item.id), labels);
+    if (roleWord) parts.push(roleWord);
     if (stamped) parts.push(labels.stamped);
     if (status === "closed") parts.push(labels.closed);
     return [
@@ -73,7 +75,7 @@ export interface RouteViewProps {
   settings: MapSettings;
   mergeStops: boolean;
   placesFirst: boolean;
-  labels: { stamped: string; closed: string };
+  labels: { stamped: string; closed: string; start: string; goal: string };
   /** Where a place's own page is. The admin's preview points these at nothing. */
   spotHref: (id: string) => string;
 }

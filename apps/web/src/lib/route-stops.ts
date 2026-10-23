@@ -90,6 +90,11 @@ export function stopRoles(journey: Journey | null): Map<string, StopRole> {
   return roles;
 }
 
+/** The spoken word for a stop's role, so the Start and Goal pins are not told apart by colour alone; null for an ordinary stop. */
+export function roleLabel(role: StopRole | undefined, words: { start: string; goal: string }): string | null {
+  return role === "both" ? `${words.start}・${words.goal}` : role === "start" ? words.start : role === "goal" ? words.goal : null;
+}
+
 /** The stamp number of each place along the walk by id (null for a side trip and for places without a stamp). */
 export const stopNumbers = (route: Pick<RouteDetail, "spots" | "points">): Map<string, number | null> =>
   new Map(trailStops(route).map((s) => [s.type === "stamp" ? s.spot.id : s.point.id, s.number] as const));

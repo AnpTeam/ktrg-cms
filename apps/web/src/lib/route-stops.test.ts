@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { RoutePoint, SpotListItem } from "./content";
-import { journeyOf, stopRoles, trailStops, type Journey, type TrailStop } from "./route-stops";
+import { journeyOf, roleLabel, stopRoles, trailStops, type Journey, type TrailStop } from "./route-stops";
 
 const spot = (id: string, over: Partial<SpotListItem> = {}): SpotListItem => ({
   id, nameJa: id, nameEn: null, status: "open", stamped: null, position: { lat: 34.3, lng: 135.1, verified: true }, ...over,
@@ -101,4 +101,9 @@ describe("stopRoles", () => {
   test("no journey, no roles", () => {
     expect(stopRoles(null).size).toBe(0);
   });
+});
+
+test("roleLabel speaks the role, and says nothing for an ordinary stop", () => {
+  const w = { start: "スタート", goal: "ゴール" };
+  expect([roleLabel("start", w), roleLabel("goal", w), roleLabel("both", w), roleLabel(undefined, w)]).toEqual(["スタート", "ゴール", "スタート・ゴール", null]);
 });

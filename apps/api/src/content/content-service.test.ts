@@ -80,6 +80,13 @@ describe("routes", () => {
     expect((await svc.updateRoute(ADMIN, r.id, r.updatedAt, { videoUrl: "https://youtu.be/dQw4w9WgXcQ" })).ok).toBe(true);
   });
 
+  test("with PHOTO_HOSTS set, an uploaded video must be on one of those hosts", async () => {
+    const limited = createContentService({ store: mem.store, photoHosts: ["photos.example.com"] });
+    const r = await route();
+    expect(await limited.updateRoute(ADMIN, r.id, r.updatedAt, { videoUrl: "https://other.example.com/videos/walk.mp4" })).toEqual({ ok: false, reason: "invalid_video_url" });
+    expect((await limited.updateRoute(ADMIN, r.id, r.updatedAt, { videoUrl: "https://photos.example.com/videos/walk.mp4" })).ok).toBe(true);
+  });
+
   test("an uploaded .mp4 or .webm link is a video; other file types are not", async () => {
     const r = await route();
     const up = await svc.updateRoute(ADMIN, r.id, r.updatedAt, { videoUrl: "https://photos.example.com/videos/walk-abc234.mp4" });

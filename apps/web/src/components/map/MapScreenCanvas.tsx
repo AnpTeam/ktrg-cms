@@ -432,7 +432,7 @@ export function MapScreenCanvas({
           put(el, s.position, s.sideTrip ? "center" : "bottom");
         } else {
           const orders = members.flatMap((m) => (m.order === null ? [] : [m.order]));
-          const text = orders.length > 0 ? `${Math.min(...orders)}–${Math.max(...orders)}` : String(members.length);
+          const text = orders.length > 1 ? `${Math.min(...orders)}–${Math.max(...orders)}` : String(members.length);
           put(
             createClusterElement({
               text,

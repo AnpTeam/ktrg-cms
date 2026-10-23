@@ -28,7 +28,7 @@ export function LivePreview({ draft, order, locale }: { draft: RouteDraft; order
             settings={defaultMapSettings}
             mergeStops={false}
             placesFirst={false}
-            labels={{ stamped: t`スタンプ済み`, closed: t`閉鎖中` }}
+            labels={{ stamped: t`スタンプ済み`, closed: t`閉鎖中`, start: t`スタート`, goal: t`ゴール` }}
             spotHref={() => "#"}
           />
         </div>
