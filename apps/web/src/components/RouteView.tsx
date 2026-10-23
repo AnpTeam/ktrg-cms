@@ -53,6 +53,7 @@ export function buildStops(
         label: parts.join(", "),
         nameLang: name.lang,
         position: { lat: item.position.lat, lng: item.position.lng },
+        kind: item.kind,
         stamped,
         status,
         href: spotHref(item.id),

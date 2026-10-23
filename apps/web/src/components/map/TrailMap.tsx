@@ -24,6 +24,7 @@ import {
 } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
 import type { StopRole } from "@/lib/route-stops";
+import type { PointKind } from "@/lib/point-kinds";
 import { SAME_PLACE_M, spreadMeters, stopMergePx } from "@/lib/map-screen";
 import { groupCounts, groupOf, sortByDistance, type Coord, type MapPlace, type PlaceGroup } from "@/lib/places";
 import { createClusterElement, createMarkerElement, createPlaceMarkerElement } from "./MapMarker";
@@ -51,6 +52,8 @@ export interface MapStop {
   noStamp?: boolean;
   /** Where the walk starts and ends: the pin takes the Start (blue), Goal (orange) or both colours. */
   role?: StopRole;
+  /** What the place is, shown as a small picture on the pin. */
+  kind?: PointKind;
 }
 
 type Selection = { kind: "stop" | "place"; id: string } | null;
@@ -286,6 +289,7 @@ export function TrailMap({
           sideTrip: stop.sideTrip,
           noStamp: stop.noStamp,
           role: stop.role,
+          place: stop.kind,
           stamped: stop.stamped === true,
           onSelect: () => setSelected({ kind: "stop", id: stop.id }),
         });

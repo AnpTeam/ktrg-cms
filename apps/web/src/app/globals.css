@@ -297,6 +297,18 @@ rt {
   stroke-width: 3;
   stroke-linecap: round;
 }
+.map-marker .pin-badge circle {
+  fill: var(--pin-on);
+  stroke: var(--pin-base);
+  stroke-width: 0.9;
+}
+.map-marker .pin-badge-icon {
+  fill: none;
+  stroke: var(--pin-base);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 .map-marker .pin-seal {
   fill: var(--color-shu);
   stroke: var(--pin-on);

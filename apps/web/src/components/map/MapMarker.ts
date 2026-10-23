@@ -1,6 +1,8 @@
 import type { SpotStatus } from "@/lib/content";
 import type { MarkerKind } from "@/lib/map";
 import type { StopRole } from "@/lib/route-stops";
+import type { PointKind } from "@/lib/point-kinds";
+import { pointIconPaths } from "@/lib/point-icons";
 import { placeIconPaths, type PlaceGroup } from "@/lib/places";
 
 // Everything on the map is a real <button>: it can be reached with the keyboard, has a big tap
@@ -23,10 +25,12 @@ export interface MarkerOptions {
   role?: StopRole;
   /** Stamped already: a pin that has a role colour shows it with a small seal on the corner (the colour is the role's). */
   stamped?: boolean;
+  /** What the place is (a station, a toilet ...): drawn as a small picture on the pin's corner. */
+  place?: PointKind;
   onSelect: () => void;
 }
 
-export function createMarkerElement({ order, label, kind, status, sideTrip, noStamp, role, stamped, onSelect }: MarkerOptions): HTMLButtonElement {
+export function createMarkerElement({ order, label, kind, status, sideTrip, noStamp, role, stamped, place, onSelect }: MarkerOptions): HTMLButtonElement {
   const el = document.createElement("button");
   el.type = "button";
   el.className = "map-marker";
@@ -35,7 +39,7 @@ export function createMarkerElement({ order, label, kind, status, sideTrip, noSt
   if (noStamp) el.dataset.noStamp = "true";
   if (role && !sideTrip) el.dataset.role = role;
   el.dataset.status = status;
-  el.appendChild(pinSvg(order, sideTrip ? "dot" : noStamp ? "flag" : "tear", role && !sideTrip ? role : null, !!stamped));
+  el.appendChild(pinSvg(order, sideTrip ? "dot" : noStamp ? "flag" : "tear", role && !sideTrip ? role : null, !!stamped, sideTrip ? null : place ?? null));
   el.setAttribute("aria-label", label);
   el.setAttribute("aria-pressed", "false");
   el.addEventListener("click", onSelect);
@@ -52,7 +56,7 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 const TEAR = "M27 14.5a12 12 0 0 0-24 0C3 23.5 8.2 31.5 12.9 37.7a2.7 2.7 0 0 0 4.2 0C21.8 31.5 27 23.5 27 14.5Z";
 const FLAG = "M6 3h18a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3h-6.5L15 33l-2.5-7H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z";
 
-function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: StopRole | null, stamped: boolean): SVGSVGElement {
+function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: StopRole | null, stamped: boolean, place: PointKind | null): SVGSVGElement {
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.setAttribute("viewBox", shape === "dot" ? "0 0 20 20" : "0 0 30 40");
   svg.setAttribute("class", "map-pin-svg");
@@ -109,11 +113,31 @@ function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: Stop
   }
   if (role && stamped && shape !== "dot") {
     const seal = document.createElementNS(SVG_NS, "circle");
-    seal.setAttribute("cx", "25");
+    seal.setAttribute("cx", "4.5");
     seal.setAttribute("cy", "5");
     seal.setAttribute("r", "4.6");
     seal.setAttribute("class", "pin-seal");
     svg.appendChild(seal);
+  }
+  if (place && shape !== "dot") {
+    // The kind of place, in a small white badge on the upper right corner: a 24-grid drawing scaled down to 10 units.
+    const badge = document.createElementNS(SVG_NS, "g");
+    badge.setAttribute("class", "pin-badge");
+    const disc = document.createElementNS(SVG_NS, "circle");
+    disc.setAttribute("cx", "25");
+    disc.setAttribute("cy", "5.5");
+    disc.setAttribute("r", "6.2");
+    badge.appendChild(disc);
+    const icon = document.createElementNS(SVG_NS, "g");
+    icon.setAttribute("class", "pin-badge-icon");
+    icon.setAttribute("transform", "translate(19.8 0.3) scale(0.43)");
+    for (const d of pointIconPaths[place]) {
+      const path = document.createElementNS(SVG_NS, "path");
+      path.setAttribute("d", d);
+      icon.appendChild(path);
+    }
+    badge.appendChild(icon);
+    svg.appendChild(badge);
   }
   return svg;
 }

@@ -418,6 +418,7 @@ export function MapScreenCanvas({
             sideTrip: s.sideTrip,
             noStamp: s.noStamp,
             role: s.role,
+            place: s.kind,
             stamped: s.stamped === true,
             onSelect: () => {
               setPopup(null);
