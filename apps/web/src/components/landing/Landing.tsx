@@ -12,11 +12,13 @@ import { TrailNode } from "@/components/TrailNode";
 import { BannerCarousel } from "@/components/landing/BannerCarousel";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { LandingMap } from "@/components/landing/LandingMap";
+import { BlogCard } from "@/components/landing/BlogCard";
 import { TrailNotices } from "@/components/landing/TrailNotices";
 import type { BannerSlide } from "@/lib/banners";
 import { municipalityName } from "@/lib/municipalities";
 import { pickText, type RouteSummary } from "@/lib/content";
 import type { TrailNotice } from "@/lib/notices";
+import type { BlogPost } from "@/lib/posts";
 import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
 import { nodeState, progressShare } from "@/lib/ribbon";
 import type { EmbedVideo } from "@/lib/video";
@@ -44,7 +46,7 @@ export function Landing({
   notices,
   introVideo,
   slides,
-  blogUrl,
+  posts,
   top,
 }: {
   locale: string;
@@ -52,7 +54,7 @@ export function Landing({
   notices: TrailNotice[];
   introVideo: EmbedVideo | null;
   slides: BannerSlide[];
-  blogUrl: string | null;
+  posts: BlogPost[];
   /** For a signed-in visitor: shown in place of the hero (and the sign-up buttons are left out). */
   top?: ReactNode;
 }) {
@@ -78,7 +80,11 @@ export function Landing({
       ) : null}
 
       <div className="lg:col-span-2">
-        <TrailNotices notices={notices} locale={locale} blogUrl={blogUrl} />
+        <TrailNotices notices={notices} locale={locale} />
+      </div>
+
+      <div className="lg:col-span-2">
+        <BlogCard posts={posts} locale={locale} />
       </div>
 
       {firstRoutes.length > 0 ? (

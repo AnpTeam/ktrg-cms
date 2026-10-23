@@ -14,6 +14,9 @@ export function SiteFooter({ locale, variant = "page" }: { locale: string; varia
   return (
     <footer className={sidebar ? "site-footer border-t border-line/30 px-2 pt-3" : "site-footer mt-10 border-t border-line/30 px-4 pt-4"}>
       <nav aria-label={t`フッター`} className={sidebar ? "flex flex-col" : "flex flex-wrap gap-x-6 gap-y-1"}>
+        <Link prefetch={false} href="/blog" className={link}>
+          <Trans>ブログ</Trans>
+        </Link>
         <Link prefetch={false} href="/faq" className={link}>
           <Trans>よくあるご質問</Trans>
         </Link>

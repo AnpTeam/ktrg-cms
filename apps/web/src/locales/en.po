@@ -52,7 +52,7 @@ msgstr "Open {0}"
 msgid "{added} に追加"
 msgstr "Added {added}"
 
-#: src/components/landing/TrailNotices.tsx:40
+#: src/components/landing/TrailNotices.tsx:38
 msgid "{checked} に確認"
 msgstr "Checked on {checked}"
 
@@ -215,7 +215,7 @@ msgstr "Edit {title} (admin)"
 msgid "{title}を読み込めませんでした。しばらくしてから、ページを開き直してください。"
 msgstr "{title} could not be loaded. Please reload the page in a little while."
 
-#: src/components/landing/Landing.tsx:126
+#: src/components/landing/Landing.tsx:132
 msgid "{TOTAL_STAMPS}か所"
 msgstr "{TOTAL_STAMPS} places"
 
@@ -419,7 +419,7 @@ msgstr "Use an https:// link to YouTube or Vimeo, or to an uploaded video."
 msgid "アウトドア"
 msgstr "Outdoors"
 
-#: src/app/(public)/sitemap/page.tsx:83
+#: src/app/(public)/sitemap/page.tsx:89
 msgid "アカウント"
 msgstr "Account"
 
@@ -599,7 +599,7 @@ msgstr "Shops and food"
 msgid "お探しのものは、見つかりませんでした。"
 msgstr "We could not find what you were looking for."
 
-#: src/components/landing/TrailNotices.tsx:30
+#: src/components/landing/TrailNotices.tsx:28
 msgid "お知らせ"
 msgstr "Notices"
 
@@ -676,7 +676,7 @@ msgstr "Campsite"
 msgid "クリックで、この点を消します"
 msgstr "Click to remove this point"
 
-#: src/components/landing/Landing.tsx:124
+#: src/components/landing/Landing.tsx:130
 #: src/components/map/MapScreenCanvas.tsx:539
 msgid "コース"
 msgstr "Courses"
@@ -997,11 +997,11 @@ msgstr "Contrast"
 msgid "コンビニ・商店"
 msgstr "Convenience store / local shop"
 
-#: src/app/(public)/sitemap/page.tsx:98
+#: src/app/(public)/sitemap/page.tsx:104
 msgid "ご案内"
 msgstr "Information"
 
-#: src/components/landing/Landing.tsx:180
+#: src/components/landing/Landing.tsx:186
 msgid "さあ、はじめましょう"
 msgstr "Let's get started"
 
@@ -1011,7 +1011,7 @@ msgstr "Settings that affect the whole site. What you change here shows on visit
 
 #: src/app/(public)/sitemap/page.tsx:14
 #: src/app/(public)/sitemap/page.tsx:48
-#: src/components/SiteFooter.tsx:24
+#: src/components/SiteFooter.tsx:27
 msgid "サイトマップ"
 msgstr "Site map"
 
@@ -1042,8 +1042,8 @@ msgid "スタート"
 msgstr "Start"
 
 #: src/app/(public)/settings/passkeys/page.tsx:23
-#: src/app/(public)/sitemap/page.tsx:74
-#: src/app/(public)/sitemap/page.tsx:76
+#: src/app/(public)/sitemap/page.tsx:80
+#: src/app/(public)/sitemap/page.tsx:82
 #: src/app/(public)/stamps/page.tsx:31
 #: src/components/admin/map-editor/MapEditor.tsx:1145
 #: src/components/admin/PlaceTable.tsx:137
@@ -1053,7 +1053,7 @@ msgid "スタンプ"
 msgstr "Stamps"
 
 #: src/components/landing/ContinueCard.tsx:23
-#: src/components/landing/Landing.tsx:239
+#: src/components/landing/Landing.tsx:245
 #: src/components/map/MapScreen.tsx:381
 #: src/components/RouteView.tsx:241
 #: src/components/TrailRibbon.tsx:62
@@ -1401,8 +1401,8 @@ msgstr "The usual size."
 msgid "フッター"
 msgstr "Footer"
 
-#: src/app/(public)/sitemap/page.tsx:106
-#: src/components/SiteFooter.tsx:30
+#: src/app/(public)/sitemap/page.tsx:112
+#: src/components/SiteFooter.tsx:33
 #: src/components/SiteHeader.tsx:228
 msgid "プライバシーポリシー"
 msgstr "Privacy policy"
@@ -1412,9 +1412,22 @@ msgstr "Privacy policy"
 msgid "プレビュー"
 msgstr "Preview"
 
-#: src/components/landing/TrailNotices.tsx:69
-msgid "ブログを見る"
-msgstr "Read the blog"
+#: src/app/(public)/blog/[id]/page.tsx:37
+#: src/app/(public)/blog/page.tsx:17
+#: src/app/(public)/blog/page.tsx:36
+#: src/app/(public)/sitemap/page.tsx:74
+#: src/components/landing/BlogCard.tsx:22
+#: src/components/SiteFooter.tsx:18
+msgid "ブログ"
+msgstr "Blog"
+
+#: src/app/(public)/sitemap/page.tsx:76
+msgid "ブログの一覧"
+msgstr "All blog posts"
+
+#: src/components/landing/BlogCard.tsx:42
+msgid "ブログをすべて見る"
+msgstr "See all blog posts"
 
 #: src/components/ProfileCard.tsx:224
 msgid "プロフィール"
@@ -1436,6 +1449,7 @@ msgstr "Page text"
 msgid "ベースの地図"
 msgstr "Base map"
 
+#: src/app/(public)/blog/page.tsx:33
 #: src/app/(public)/faq/page.tsx:23
 #: src/app/(public)/guide/page.tsx:23
 #: src/app/(public)/licenses/page.tsx:21
@@ -1658,14 +1672,14 @@ msgstr "Undo and redo"
 msgid "やり直す"
 msgstr "Redo"
 
-#: src/app/(public)/sitemap/page.tsx:100
-#: src/components/SiteFooter.tsx:18
+#: src/app/(public)/sitemap/page.tsx:106
+#: src/components/SiteFooter.tsx:21
 #: src/components/SiteHeader.tsx:226
 msgid "よくあるご質問"
 msgstr "FAQ"
 
-#: src/app/(public)/sitemap/page.tsx:109
-#: src/components/SiteFooter.tsx:21
+#: src/app/(public)/sitemap/page.tsx:115
+#: src/components/SiteFooter.tsx:24
 #: src/components/SiteHeader.tsx:229
 msgid "ライセンス情報"
 msgstr "Licenses"
@@ -1839,7 +1853,7 @@ msgid "ルートや場所は、ログインしなくても見られます。"
 msgstr "You can browse routes and places without signing in."
 
 #: src/components/admin/RouteTable.tsx:61
-#: src/components/landing/Landing.tsx:187
+#: src/components/landing/Landing.tsx:193
 #: src/components/landing/LandingHero.tsx:49
 msgid "ルートをさがす"
 msgstr "Find a route"
@@ -1872,7 +1886,7 @@ msgstr "Log out"
 
 #: src/app/(public)/login/page.tsx:15
 #: src/app/(public)/login/page.tsx:32
-#: src/app/(public)/sitemap/page.tsx:85
+#: src/app/(public)/sitemap/page.tsx:91
 #: src/components/auth/LoginFlow.tsx:55
 #: src/components/auth/RegisterFlow.tsx:141
 #: src/components/landing/LandingHero.tsx:55
@@ -1909,7 +1923,7 @@ msgstr "Could not log in. If this device has no passkey, log in with email."
 
 #: src/app/(public)/settings/passkeys/page.tsx:12
 #: src/app/(public)/settings/passkeys/page.tsx:26
-#: src/app/(public)/sitemap/page.tsx:94
+#: src/app/(public)/sitemap/page.tsx:100
 msgid "ログインの方法"
 msgstr "Ways to log in"
 
@@ -2188,7 +2202,7 @@ msgstr "Something in what you entered looks wrong. Please check it and try again
 msgid "全{count}区間のある場所を示した図"
 msgstr "A diagram of where all {count} courses lie"
 
-#: src/components/landing/Landing.tsx:124
+#: src/components/landing/Landing.tsx:130
 msgid "全{TOTAL_ROUTES}区間"
 msgstr "{TOTAL_ROUTES} sections"
 
@@ -2196,7 +2210,7 @@ msgstr "{TOTAL_ROUTES} sections"
 msgid "全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）"
 msgstr "{TOTAL_ROUTES} sections, about {TRAIL_KM} km"
 
-#: src/components/landing/Landing.tsx:104
+#: src/components/landing/Landing.tsx:110
 msgid "全{TOTAL_ROUTES}区間を見る"
 msgstr "See all {TOTAL_ROUTES} sections"
 
@@ -2215,7 +2229,7 @@ msgstr "Whole map"
 msgid "全体を見る"
 msgstr "Show everything"
 
-#: src/components/landing/Landing.tsx:203
+#: src/components/landing/Landing.tsx:209
 msgid "公式サイトをひらく"
 msgstr "Open the official site"
 
@@ -2425,13 +2439,13 @@ msgstr "The photo could not be saved. Please try again in a moment."
 msgid "写真を探すサービスにつながりませんでした。しばらくしてから、もう一度お試しください。"
 msgstr "Could not reach the photo search. Please try again in a moment."
 
-#: src/components/landing/Landing.tsx:149
+#: src/components/landing/Landing.tsx:155
 msgid "出かける前に"
 msgstr "Before you go"
 
 #: src/app/(public)/routes/page.tsx:87
 #: src/app/(public)/stamps/page.tsx:74
-#: src/components/landing/Landing.tsx:173
+#: src/components/landing/Landing.tsx:179
 #: src/components/RouteView.tsx:256
 #: src/components/SpotSheet.tsx:166
 msgid "出かける前に、公式の最新情報を確認してください。"
@@ -2451,7 +2465,7 @@ msgid "出典"
 msgstr "Source"
 
 #. placeholder {0}: source?.text ?? n.sourceNameJa
-#: src/components/landing/TrailNotices.tsx:55
+#: src/components/landing/TrailNotices.tsx:53
 msgid "出典: {0}"
 msgstr "Source: {0}"
 
@@ -2484,8 +2498,8 @@ msgstr "Use the default"
 msgid "別の人が先に保存しました。読み込み直してから、もう一度お試しください。"
 msgstr "Someone else saved first. Reload the page and try again."
 
-#: src/app/(public)/sitemap/page.tsx:103
-#: src/components/SiteFooter.tsx:27
+#: src/app/(public)/sitemap/page.tsx:109
+#: src/components/SiteFooter.tsx:30
 #: src/components/SiteHeader.tsx:227
 msgid "利用規約"
 msgstr "Terms of use"
@@ -2553,7 +2567,7 @@ msgstr "Earlier"
 msgid "動画"
 msgstr "Video"
 
-#: src/components/landing/Landing.tsx:137
+#: src/components/landing/Landing.tsx:143
 msgid "動画で見る"
 msgstr "Watch the video"
 
@@ -2740,7 +2754,7 @@ msgstr "Round trip (back to where you started)"
 msgid "和歌山県"
 msgstr "Wakayama"
 
-#: src/components/landing/Landing.tsx:119
+#: src/components/landing/Landing.tsx:125
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "From the Izumi range to the Kongo mountains, these ridges run along the borders of Osaka, Wakayama and Nara. They have long been called Katsuragi and revered as mountains where the gods dwell. It is said that En no Gyoja, who is believed to have founded Shugendo, the path of training in the mountains, first practised here."
 
@@ -2966,11 +2980,11 @@ msgstr "Temple or shrine"
 msgid "少なく表示"
 msgstr "Show less"
 
-#: src/components/landing/Landing.tsx:163
+#: src/components/landing/Landing.tsx:169
 msgid "山の中は、電波がつながりにくいことがあります。"
 msgstr "Mobile signal can be weak in the mountains."
 
-#: src/components/landing/Landing.tsx:157
+#: src/components/landing/Landing.tsx:163
 msgid "山道です。天気と、水や食べ物、歩きやすい靴を用意してください。"
 msgstr "These are mountain paths. Check the weather and bring water, food and sturdy shoes."
 
@@ -3216,9 +3230,9 @@ msgstr "A Japanese name is needed to create a new one"
 
 #: src/app/(public)/register/page.tsx:15
 #: src/app/(public)/register/page.tsx:31
-#: src/app/(public)/sitemap/page.tsx:88
+#: src/app/(public)/sitemap/page.tsx:94
 #: src/components/auth/LoginFlow.tsx:104
-#: src/components/landing/Landing.tsx:184
+#: src/components/landing/Landing.tsx:190
 #: src/components/landing/LandingHero.tsx:46
 #: src/components/map/MapScreen.tsx:342
 #: src/components/SignInPrompt.tsx:30
@@ -3265,9 +3279,17 @@ msgstr "Updated {updated} (Japan time)"
 msgid "書いたファイル（.xlsx）"
 msgstr "Your filled-in file (.xlsx)"
 
+#: src/app/(public)/blog/[id]/page.tsx:78
+msgid "書いた人"
+msgstr "Written by"
+
 #: src/components/admin/RouteImport.tsx:85
 msgid "書いてありません"
 msgstr "Nothing is written"
+
+#: src/app/(public)/blog/page.tsx:45
+msgid "書けたら、ここに表示されます。"
+msgstr "Posts will appear here once they are written."
 
 #: src/components/admin/PlacePanel.tsx:84
 msgid "未保存"
@@ -3365,7 +3387,7 @@ msgstr "Walk"
 msgid "歩く時間"
 msgstr "Walking time"
 
-#: src/components/landing/Landing.tsx:88
+#: src/components/landing/Landing.tsx:94
 msgid "歩く道"
 msgstr "The path"
 
@@ -3383,7 +3405,7 @@ msgstr "Routes are in walking order. Select a name to edit its text and map."
 msgid "歴史・由来"
 msgstr "History and background"
 
-#: src/components/landing/Landing.tsx:195
+#: src/components/landing/Landing.tsx:201
 msgid "歴史や観光の情報は、日本遺産「葛城修験」の公式サイトでも見られます。"
 msgstr "You can also find history and sightseeing information on the official Japan Heritage Katsuragi Shugen site."
 
@@ -3436,7 +3458,7 @@ msgstr "Port or ferry"
 
 #: src/components/admin/AdminNav.tsx:56
 #: src/components/admin/RouteTable.tsx:30
-#: src/components/landing/Landing.tsx:229
+#: src/components/landing/Landing.tsx:235
 #: src/components/map/MapScreen.tsx:325
 #: src/components/RallyViews.tsx:106
 #: src/components/TrailRibbon.tsx:74
@@ -3661,7 +3683,7 @@ msgstr "About {amount} km"
 msgid "約{amount}m"
 msgstr "About {amount} m"
 
-#: src/components/landing/Landing.tsx:125
+#: src/components/landing/Landing.tsx:131
 msgid "約{TRAIL_KM}km"
 msgstr "About {TRAIL_KM} km"
 
@@ -3674,7 +3696,7 @@ msgid "終了"
 msgstr "End"
 
 #: src/components/admin/PlacePanel.tsx:37
-#: src/components/landing/Landing.tsx:126
+#: src/components/landing/Landing.tsx:132
 #: src/components/map/MapScreenCanvas.tsx:539
 #: src/components/PointKindName.tsx:9
 msgid "経塚"
@@ -3924,7 +3946,7 @@ msgstr "Katsuragi Shugen | Ancient Mountain Trails & Stamp Rally"
 msgid "葛城修験 管理"
 msgstr "Katsuragi Shugen Admin"
 
-#: src/components/landing/Landing.tsx:113
+#: src/components/landing/Landing.tsx:119
 msgid "葛城修験とは"
 msgstr "About Katsuragi Shugen"
 
@@ -3935,6 +3957,10 @@ msgstr "Map of Katsuragi Shugen"
 #: src/app/(public)/routes/page.tsx:49
 msgid "葛城修験の道"
 msgstr "The Katsuragi Shugen Trail"
+
+#: src/app/(public)/blog/page.tsx:39
+msgid "葛城修験の道のことや、歩いた日のことをお知らせします。"
+msgstr "News about the Katsuragi Shugendo trails, and days out walking them."
 
 #: src/components/RouteJourney.tsx:80
 msgid "行き"
@@ -3976,7 +4002,7 @@ msgstr "Point of interest"
 
 #: src/app/(public)/settings/page.tsx:12
 #: src/app/(public)/settings/page.tsx:29
-#: src/app/(public)/sitemap/page.tsx:91
+#: src/app/(public)/sitemap/page.tsx:97
 #: src/components/SiteHeader.tsx:219
 msgid "見やすさの設定"
 msgstr "Display settings"
@@ -4005,6 +4031,10 @@ msgstr "Language"
 #: src/components/admin/fields.tsx:157
 msgid "言語は{MAX_LANGUAGES}つまで（日本語を含む）。英語以外は、まだ訪れる人には表示されません。"
 msgstr "Up to {MAX_LANGUAGES} languages (Japanese included). Languages other than English are not shown to visitors yet."
+
+#: src/app/(public)/blog/page.tsx:44
+msgid "記事は、まだありません。"
+msgstr "There are no posts yet."
 
 #: src/components/admin/SiteSettingsForm.tsx:75
 msgid "訪問者が見る地図（マップ画面、ルートのページ）の見た目です。地図を作る管理画面の地図は、見やすさのため、いつも「標準」です。"
@@ -4102,7 +4132,7 @@ msgstr "Normal"
 msgid "通行止め"
 msgstr "Closed"
 
-#: src/app/(public)/sitemap/page.tsx:79
+#: src/app/(public)/sitemap/page.tsx:85
 #: src/app/(public)/stamps/page.tsx:39
 msgid "遊び方"
 msgstr "How to play"
@@ -4115,7 +4145,7 @@ msgstr "No trail was found."
 msgid "道が見つかりませんでした。ガイド点は残してあります。"
 msgstr "No way was found. The guide points are kept."
 
-#: src/components/landing/Landing.tsx:169
+#: src/components/landing/Landing.tsx:175
 msgid "道が通れないときは、無理をせず引き返してください。"
 msgstr "If the path is closed, do not push on. Turn back."
 
@@ -4226,7 +4256,7 @@ msgstr "Prefecture"
 msgid "都道府県が未入力"
 msgstr "Prefecture not set"
 
-#: src/components/landing/Landing.tsx:125
+#: src/components/landing/Landing.tsx:131
 msgid "長さ"
 msgstr "Length"
 
