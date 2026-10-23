@@ -48,6 +48,8 @@ export const spotKinds = [
   "bus_stop",
   "station",
   "parking",
+  "ferry",
+  "campsite",
   "other",
 ] as const;
 export const spotKind = pgEnum("spot_kind", spotKinds);

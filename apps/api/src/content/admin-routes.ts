@@ -63,6 +63,8 @@ const kind = t.Union([
   t.Literal("bus_stop"),
   t.Literal("station"),
   t.Literal("parking"),
+  t.Literal("ferry"),
+  t.Literal("campsite"),
   t.Literal("other"),
 ]);
 const status = t.Union([t.Literal("open"), t.Literal("caution"), t.Literal("closed")]);

@@ -74,6 +74,8 @@ const KIND_LABELS: Record<PlaceListRow["kind"], Label> = {
   bus_stop: { ja: "バス停", en: "Bus stop" },
   station: { ja: "駅", en: "Station" },
   parking: { ja: "駐車場", en: "Parking" },
+  ferry: { ja: "港・フェリー乗り場", en: "Port or ferry" },
+  campsite: { ja: "キャンプ場", en: "Campsite" },
   other: { ja: "その他", en: "Other" },
 };
 

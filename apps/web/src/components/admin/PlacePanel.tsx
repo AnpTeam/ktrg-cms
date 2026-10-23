@@ -45,6 +45,8 @@ export function useKindLabels(): Record<PointKind, string> {
     bus_stop: t`バス停`,
     station: t`駅`,
     parking: t`駐車場`,
+    ferry: t`港・フェリー乗り場`,
+    campsite: t`キャンプ場`,
     other: t`その他`,
   };
 }

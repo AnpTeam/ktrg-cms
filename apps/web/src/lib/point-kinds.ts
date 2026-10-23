@@ -16,6 +16,8 @@ export const pointKinds = [
   "bus_stop",
   "station",
   "parking",
+  "ferry",
+  "campsite",
   "other",
 ] as const;
 export type PointKind = (typeof pointKinds)[number];

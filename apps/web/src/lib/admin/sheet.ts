@@ -73,6 +73,8 @@ export const KIND_NAMES: Record<PointKind, string> = {
   bus_stop: "バス停",
   station: "駅",
   parking: "駐車場",
+  ferry: "港・フェリー乗り場",
+  campsite: "キャンプ場",
   other: "その他",
 };
 
