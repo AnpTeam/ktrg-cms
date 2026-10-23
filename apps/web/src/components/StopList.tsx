@@ -38,10 +38,11 @@ function Segment({ done, from, to }: { done: boolean; from: string; to: string }
   );
 }
 
-function SideNode() {
+/** A dot for a place with no number: dashed for a side trip, solid for a place without a stamp. */
+function SideNode({ solid = false }: { solid?: boolean }) {
   return (
     <span aria-hidden="true" className="grid size-11 place-items-center">
-      <span className="size-5 rounded-full border-[3px] border-dashed border-line bg-paper" />
+      <span className={`size-5 rounded-full border-[3px] border-line bg-paper ${solid ? "" : "border-dashed"}`} />
     </span>
   );
 }
@@ -82,7 +83,7 @@ export function StopList({ stops, hrefFor, locale }: { stops: TrailStop[]; hrefF
         const photo = item.photoUrl ?? null;
         const sideTrip = item.stopBy === true;
         const node =
-          stop.number === null ? <SideNode /> : stop.type === "stamp" ? <TrailNode state={nodeFor(stop.spot)} order={stop.number} share={0} /> : <TrailNode state="neutral" order={stop.number} share={0} />;
+          stop.number !== null && stop.type === "stamp" ? <TrailNode state={nodeFor(stop.spot)} order={stop.number} share={0} /> : <SideNode solid={!sideTrip} />;
         return (
           <li key={item.id} className="relative">
             {index > 0 ? <Segment done={doneAbove} from="0" to={`calc(100% - ${NODE_CENTER})`} /> : null}

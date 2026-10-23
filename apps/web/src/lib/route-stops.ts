@@ -14,7 +14,7 @@ export const isGuidanceOnly = (kind: PointKind) => GUIDANCE_ONLY.includes(kind);
 /** With no style saved, a goal farther than this from the start is called one-way; a closer one is left unsaid. */
 export const FAR_GOAL_M = 300;
 
-/** `number` is the stop's index along the walk (stamp or not); a side trip (寄り道) has none. */
+/** `number` is the stamp place's number along the walk (1 to N); places without a stamp and side trips (寄り道) have none. */
 export type TrailStop = { type: "stamp"; spot: SpotListItem; number: number | null } | { type: "point"; point: RoutePoint; number: number | null };
 
 export function trailStops(route: Pick<RouteDetail, "spots" | "points">): TrailStop[] {
@@ -24,11 +24,11 @@ export function trailStops(route: Pick<RouteDetail, "spots" | "points">): TrailS
       .filter((point) => !GUIDANCE_ONLY.includes(point.kind))
       .map((point, i) => ({ order: point.sortOrder ?? route.spots.length + i, stop: { type: "point", point, number: null } as TrailStop })),
   ];
-  // Array.sort is stable, so equal orders keep the stamp places first. Numbers follow the walk, side trips left out.
+  // Array.sort is stable, so equal orders keep the stamp places first. Numbers follow the walk, counting only stamp places that are not side trips.
   let n = 0;
   return stops
     .sort((a, b) => a.order - b.order)
-    .map(({ stop }) => ({ ...stop, number: isSideTrip(stop) ? null : ++n }) as TrailStop);
+    .map(({ stop }) => ({ ...stop, number: isSideTrip(stop) || stop.type === "point" ? null : ++n }) as TrailStop);
 }
 
 const positionOf = (stop: TrailStop) => (stop.type === "stamp" ? stop.spot.position : stop.point.position);
@@ -90,6 +90,6 @@ export function stopRoles(journey: Journey | null): Map<string, StopRole> {
   return roles;
 }
 
-/** The number of each place along the walk by id (null for a side trip), stamp places and the others together. */
+/** The stamp number of each place along the walk by id (null for a side trip and for places without a stamp). */
 export const stopNumbers = (route: Pick<RouteDetail, "spots" | "points">): Map<string, number | null> =>
   new Map(trailStops(route).map((s) => [s.type === "stamp" ? s.spot.id : s.point.id, s.number] as const));

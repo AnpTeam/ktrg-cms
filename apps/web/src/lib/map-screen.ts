@@ -31,7 +31,7 @@ export interface MapPhoto {
 /** One stamp place of a course, as a row in its list (with or without a position on the map). */
 export interface MapScreenSpot {
   id: string;
-  /** Its index along the walk (stamp or not); null for a side trip. */
+  /** Its stamp number along the walk; null for a side trip and a place without a stamp. */
   order: number | null;
   name: string;
   nameLang: "ja" | "en";
@@ -45,7 +45,7 @@ export interface MapScreenSpot {
 /** A stop on a course's detailed map, with what its bottom sheet shows. Sent to the browser, so plain data only. */
 export interface MapScreenStop {
   id: string;
-  /** 1, 2, 3 ... in walking order (stamp or not); null for a side trip. */
+  /** 1, 2, 3 ... in walking order, stamp places only; null for a side trip and a place without a stamp. */
   order: number | null;
   name: string;
   nameLang: "ja" | "en";

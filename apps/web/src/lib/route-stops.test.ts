@@ -19,12 +19,12 @@ describe("trailStops", () => {
     expect(ids(stops)).toEqual(["a", "wc", "b", "bus"]);
   });
 
-  test("every place along the walk is numbered, with or without a stamp; a side trip has no number", () => {
+  test("only stamp places are numbered; places without a stamp and side trips have no number", () => {
     const stops = trailStops({
       spots: [spot("a", { sortOrder: 1 }), spot("b", { sortOrder: 4 }), spot("side", { sortOrder: 5, stopBy: true })],
       points: [point("wc", { sortOrder: 2 }), point("bus", { kind: "bus_stop", sortOrder: 6 }), point("view", { kind: "view", sortOrder: 7, stopBy: true })],
     });
-    expect(stops.map((s) => [s.type === "stamp" ? s.spot.id : s.point.id, s.number])).toEqual([["a", 1], ["wc", 2], ["b", 3], ["side", null], ["bus", 4], ["view", null]]);
+    expect(stops.map((s) => [s.type === "stamp" ? s.spot.id : s.point.id, s.number])).toEqual([["a", 1], ["wc", null], ["b", 2], ["side", null], ["bus", null], ["view", null]]);
   });
 
   test("turns and dangers only guide the way, so they are not listed", () => {

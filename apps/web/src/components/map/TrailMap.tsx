@@ -34,7 +34,7 @@ import { StopCard } from "./StopCard";
 
 export interface MapStop {
   id: string;
-  /** 1, 2, 3 ... in walking order (stamp or not); the number shown on the marker. null for a side trip. */
+  /** 1, 2, 3 ... in walking order, stamp places only; the number shown on the marker. null for a side trip and a place without a stamp. */
   order: number | null;
   name: string;
   /** The spoken name of the marker, for example "3. 猿坂峠, stamped". */
