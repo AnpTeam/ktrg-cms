@@ -11,7 +11,7 @@ msgstr ""
 #: src/components/admin/map-editor/MapEditor.tsx:1182
 #: src/components/admin/map-editor/MapEditor.tsx:1203
 #: src/components/admin/PlacePanel.tsx:80
-#: src/components/admin/RouteEditor.tsx:413
+#: src/components/admin/RouteEditor.tsx:415
 msgid "（名前がありません）"
 msgstr "(no name)"
 
@@ -59,7 +59,7 @@ msgid "{0}を消す"
 msgstr "Delete {0}"
 
 #. placeholder {0}: labels.tab[i.tab]
-#: src/components/admin/RouteEditor.tsx:784
+#: src/components/admin/RouteEditor.tsx:806
 msgid "{0}を開く"
 msgstr "Open {0}"
 
@@ -67,11 +67,15 @@ msgstr "Open {0}"
 msgid "{added} に追加"
 msgstr "Added {added}"
 
+#: src/components/admin/DirectoryPicker.tsx:66
+msgid "{amount}{unit}"
+msgstr "{amount}{unit}"
+
 #: src/components/landing/TrailNotices.tsx:40
 msgid "{checked} に確認"
 msgstr "Checked on {checked}"
 
-#: src/components/admin/RouteEditor.tsx:355
+#: src/components/admin/RouteEditor.tsx:357
 msgid "{count}か所の公開をやめました。ルートは「準備中」として一覧に残ります。"
 msgstr "Unpublished {count} waypoints. The route stays in the list as coming soon."
 
@@ -152,7 +156,7 @@ msgstr "Move {name} one step earlier"
 msgid "{name} を1つ後ろへ"
 msgstr "Move {name} one step later"
 
-#: src/components/admin/RouteEditor.tsx:648
+#: src/components/admin/RouteEditor.tsx:670
 msgid "{name}（終点）"
 msgstr "{name} (end)"
 
@@ -160,7 +164,7 @@ msgstr "{name} (end)"
 msgid "{name}さん、こんにちは。"
 msgstr "Hello, {name}."
 
-#: src/components/admin/RouteEditor.tsx:649
+#: src/components/admin/RouteEditor.tsx:671
 msgid "{nameEn} (end)"
 msgstr "{nameEn} (end)"
 
@@ -266,7 +270,7 @@ msgstr "\"{legName}\" is chosen. Drag its points to move them. Click an empty pl
 msgid "「{stopName}」から近い順"
 msgstr "Nearest first, from \"{stopName}\""
 
-#: src/components/admin/RouteEditor.tsx:525
+#: src/components/admin/RouteEditor.tsx:527
 msgid "「スタート・ゴール」の見せ方が変わります。"
 msgstr "Changes how Start / Goal is shown."
 
@@ -279,7 +283,7 @@ msgstr "Write はい (yes) or いいえ (no)"
 msgid "「ルート」シート {0} 行目"
 msgstr "Row {0} of the “ルート” sheet"
 
-#: src/components/admin/RouteEditor.tsx:725
+#: src/components/admin/RouteEditor.tsx:747
 msgid "「地図と線」で経由地を置く"
 msgstr "Place waypoints in “Map & line”"
 
@@ -332,7 +336,7 @@ msgstr "< Previous"
 msgid "⌘キーを押しながら地図を動かします"
 msgstr "Hold the ⌘ key to move the map"
 
-#: src/components/admin/RouteEditor.tsx:708
+#: src/components/admin/RouteEditor.tsx:730
 msgid "1か所ずつ詳しく"
 msgstr "One place at a time"
 
@@ -429,11 +433,11 @@ msgid "https:// から始まるアドレス。入れると、場所の名前が�
 msgstr "An address starting with https://. The place name becomes a link."
 
 #: src/components/admin/PlacePanel.tsx:136
-#: src/components/admin/RouteEditor.tsx:567
+#: src/components/admin/RouteEditor.tsx:569
 msgid "https:// で始まるリンクを入れます。空にすると、写真は表示されません。"
 msgstr "Enter a link that starts with https://. If left empty, no photo is shown."
 
-#: src/components/admin/RouteEditor.tsx:576
+#: src/components/admin/RouteEditor.tsx:578
 msgid "https:// で始まるリンクを入れます。空にすると、動画は表示されません。"
 msgstr "Enter a link that starts with https://. If left empty, no video is shown."
 
@@ -454,7 +458,7 @@ msgstr "Make a U-turn"
 msgid "WikipediaやWikimedia Commonsから探す"
 msgstr "Find on Wikipedia and Wikimedia Commons"
 
-#: src/components/admin/RouteEditor.tsx:581
+#: src/components/admin/RouteEditor.tsx:583
 msgid "YouTube か Vimeo、またはアップロードした動画の、https:// で始まるリンクにしてください。"
 msgstr "Use an https:// link to YouTube or Vimeo, or to an uploaded video."
 
@@ -482,14 +486,14 @@ msgstr "Delete your account?"
 msgid "アカウントを削除する"
 msgstr "Delete account"
 
-#: src/components/admin/RouteEditor.tsx:595
+#: src/components/admin/RouteEditor.tsx:597
 #: src/components/admin/useChecklistLabels.ts:18
 #: src/components/map/MapScreen.tsx:457
 #: src/components/RouteView.tsx:189
 msgid "アクセス・交通"
 msgstr "Access and transport"
 
-#: src/components/admin/RouteEditor.tsx:597
+#: src/components/admin/RouteEditor.tsx:599
 msgid "アクセス・交通の補足"
 msgstr "Getting there: extra notes"
 
@@ -530,7 +534,7 @@ msgstr "The address may be wrong, or the page is not published."
 msgid "あなたのことを、少しだけ教えてください。答えなくても大丈夫です。あとから変えられます。"
 msgstr "Tell us a little about yourself. You don't have to answer, and you can change it later."
 
-#: src/components/admin/RouteEditor.tsx:770
+#: src/components/admin/RouteEditor.tsx:792
 msgid "あると、もっとよいこと"
 msgstr "Nice to have"
 
@@ -875,11 +879,11 @@ msgstr "This route does not exist yet"
 msgid "このルートの経由地をすべて"
 msgstr "All waypoints on this route"
 
-#: src/components/admin/RouteEditor.tsx:799
+#: src/components/admin/RouteEditor.tsx:821
 msgid "このルートを削除"
 msgstr "Delete this route"
 
-#: src/components/admin/RouteEditor.tsx:377
+#: src/components/admin/RouteEditor.tsx:379
 msgid "このルートを削除します。元に戻せません。よろしいですか？"
 msgstr "This route will be deleted and cannot be restored. Continue?"
 
@@ -972,7 +976,7 @@ msgstr "Select this side-trip point and draw the line from the branch point to h
 msgid "この操作は、できません。"
 msgstr "You can't do this."
 
-#: src/components/admin/RouteEditor.tsx:602
+#: src/components/admin/RouteEditor.tsx:604
 msgid "この文章のもとにした資料や、確かめた公式サイトを書きます。ルートのページの下に表示されます。"
 msgstr "Write the material this text is based on, or the official site you checked. It is shown at the bottom of the page."
 
@@ -1268,11 +1272,12 @@ msgstr "{spotCount} stamp locations"
 msgid "スタンプ済み"
 msgstr "stamped"
 
-#: src/components/admin/RouteEditor.tsx:307
+#: src/components/admin/RouteEditor.tsx:309
 msgid "すでに公開をやめた経由地があります（{names}）。「経由地」タブで確かめてください。"
 msgstr "These waypoints were already unpublished: {names}. Check them in the Waypoints tab."
 
 #: src/components/admin/AdminListTable.tsx:92
+#: src/components/admin/DirectoryPicker.tsx:44
 #: src/components/admin/RouteTable.tsx:77
 #: src/components/PrefectureFilter.tsx:36
 msgid "すべて"
@@ -1291,7 +1296,7 @@ msgstr "All smooth"
 msgid "すべてのルートを見る"
 msgstr "See all routes"
 
-#: src/components/admin/RouteEditor.tsx:694
+#: src/components/admin/RouteEditor.tsx:716
 msgid "すべての公開をやめる"
 msgstr "Unpublish all"
 
@@ -1384,7 +1389,7 @@ msgstr "This cannot be changed later."
 msgid "つなぐ"
 msgstr "Join"
 
-#: src/components/admin/RouteEditor.tsx:780
+#: src/components/admin/RouteEditor.tsx:802
 msgid "できた"
 msgstr "Done"
 
@@ -1545,7 +1550,7 @@ msgid "プライバシーポリシー"
 msgstr "Privacy policy"
 
 #: src/components/admin/LivePreview.tsx:21
-#: src/components/admin/RouteEditor.tsx:472
+#: src/components/admin/RouteEditor.tsx:474
 msgid "プレビュー"
 msgstr "Preview"
 
@@ -1615,7 +1620,7 @@ msgstr "Other vehicle"
 msgid "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。"
 msgstr "Start by dragging a GPX file here or pressing \"Load a GPX file\". To enter by hand, place waypoints with \"Add waypoint\", then draw the path leg by leg with \"Draw path\"."
 
-#: src/components/admin/RouteEditor.tsx:780
+#: src/components/admin/RouteEditor.tsx:802
 #: src/components/RallyViews.tsx:167
 #: src/components/StampLegend.tsx:9
 msgid "まだ"
@@ -1625,7 +1630,7 @@ msgstr "Not yet"
 msgid "まだ、この場所から遠いようです。場所の近くで、もう一度お試しください。"
 msgstr "You still seem to be far from this place. Try again when you are near it."
 
-#: src/components/admin/RouteEditor.tsx:723
+#: src/components/admin/RouteEditor.tsx:745
 msgid "まだありません。"
 msgstr "None yet."
 
@@ -1688,11 +1693,11 @@ msgstr "Show places nearby from the start"
 msgid "まわりの場所を地図に出す"
 msgstr "Show places nearby on the map"
 
-#: src/components/admin/RouteEditor.tsx:557
+#: src/components/admin/RouteEditor.tsx:559
 msgid "むずかしさ（ひとこと）"
 msgstr "Difficulty (in a few words)"
 
-#: src/components/admin/RouteEditor.tsx:555
+#: src/components/admin/RouteEditor.tsx:557
 msgid "むずかしさを、ひとことで書く（任意）"
 msgstr "Describe the difficulty in a few words (optional)"
 
@@ -1969,7 +1974,7 @@ msgstr "The physical level and technical level of a route are a guide to how har
 msgid "ルートの一覧"
 msgstr "All routes"
 
-#: src/components/admin/RouteEditor.tsx:567
+#: src/components/admin/RouteEditor.tsx:569
 msgid "ルートの写真のリンク"
 msgstr "Route photo link"
 
@@ -1977,11 +1982,11 @@ msgstr "Route photo link"
 msgid "ルートの動画"
 msgstr "Route video"
 
-#: src/components/admin/RouteEditor.tsx:503
+#: src/components/admin/RouteEditor.tsx:505
 msgid "ルートの名前"
 msgstr "Route name"
 
-#: src/components/admin/RouteEditor.tsx:504
+#: src/components/admin/RouteEditor.tsx:506
 msgid "ルートの名前の読み（ふりがな）"
 msgstr "Reading of the route name (furigana)"
 
@@ -1997,8 +2002,8 @@ msgstr "The route line is not valid. Draw a line of at least 2 points inside Jap
 msgid "ルートの線を確認済み"
 msgstr "Route line checked"
 
-#: src/components/admin/RouteEditor.tsx:588
-#: src/components/admin/RouteEditor.tsx:589
+#: src/components/admin/RouteEditor.tsx:590
+#: src/components/admin/RouteEditor.tsx:591
 msgid "ルートの説明"
 msgstr "Route description"
 
@@ -2115,7 +2120,7 @@ msgstr "Back to the list"
 msgid "上のボタンを押すと、{restName}や{shopsName}などが地図と一覧に出ます。"
 msgstr "Tap a button above to show {restName}, {shopsName} and more on the map and in the list."
 
-#: src/components/admin/RouteEditor.tsx:598
+#: src/components/admin/RouteEditor.tsx:600
 msgid "上の一覧に入らない行き方（乗りかえ、時刻、帰りの方法など）を、自由に書きます。"
 msgstr "Write anything that does not fit the list above (transfers, times, how to get back and so on)."
 
@@ -2302,11 +2307,11 @@ msgstr "e.g. Jane Doe, CC BY-SA 4.0"
 msgid "保存"
 msgstr "Save"
 
-#: src/components/admin/RouteEditor.tsx:766
+#: src/components/admin/RouteEditor.tsx:788
 msgid "保存していない内容も含めて調べています。"
 msgstr "This includes changes you have not saved yet."
 
-#: src/components/admin/RouteEditor.tsx:415
+#: src/components/admin/RouteEditor.tsx:417
 msgid "保存していない変更があります"
 msgstr "You have unsaved changes"
 
@@ -2314,7 +2319,7 @@ msgstr "You have unsaved changes"
 msgid "保存していない変更があります。先に保存してから公開を切りかえてください。"
 msgstr "There are unsaved changes. Save them before publishing or unpublishing."
 
-#: src/components/admin/RouteEditor.tsx:443
+#: src/components/admin/RouteEditor.tsx:445
 msgid "保存していない編集が、このブラウザに残っています（{offeredAt}）。戻しますか？"
 msgstr "Unsaved edits were kept in this browser ({offeredAt}). Restore them?"
 
@@ -2324,7 +2329,7 @@ msgstr "Saving…"
 
 #: src/components/admin/AdminItemForm.tsx:64
 #: src/components/admin/RallyEditor.tsx:66
-#: src/components/admin/RouteEditor.tsx:325
+#: src/components/admin/RouteEditor.tsx:327
 #: src/components/settings/PrefsForm.tsx:74
 msgid "保存しました。"
 msgstr "Saved."
@@ -2333,31 +2338,31 @@ msgstr "Saved."
 msgid "保存しました。サイトの地図に反映されています。"
 msgstr "Saved. The site's map now uses it."
 
-#: src/components/admin/RouteEditor.tsx:325
+#: src/components/admin/RouteEditor.tsx:327
 msgid "保存しました。ただし、情報源が空のため、線は「確認していない」状態で保存しました。情報源を入れて、もう一度保存してください。"
 msgstr "Saved. The source was empty, so the line was saved as not checked. Enter a source and save again."
 
-#: src/components/admin/RouteEditor.tsx:326
+#: src/components/admin/RouteEditor.tsx:328
 msgid "保存しました。ただし、未完成の経由地が{heldCount}件あり、まだ保存していません（赤く示した項目）。"
 msgstr "Saved. {heldCount} unfinished waypoint(s) were not saved yet (the red items)."
 
-#: src/components/admin/RouteEditor.tsx:418
+#: src/components/admin/RouteEditor.tsx:420
 #: src/components/admin/SiteSettingsForm.tsx:112
 #: src/components/ProfileCard.tsx:167
 #: src/components/settings/PrefsForm.tsx:161
 msgid "保存する"
 msgstr "Save"
 
-#: src/components/admin/RouteEditor.tsx:204
+#: src/components/admin/RouteEditor.tsx:206
 msgid "保存できません。赤く示した項目を直してください。"
 msgstr "Cannot save. Fix the items marked in red."
 
-#: src/components/admin/RouteEditor.tsx:418
+#: src/components/admin/RouteEditor.tsx:420
 msgid "保存中…"
 msgstr "Saving…"
 
 #. placeholder {0}: formatUpdated(locale, draft.updatedAt ?? new Date().toISOString())
-#: src/components/admin/RouteEditor.tsx:415
+#: src/components/admin/RouteEditor.tsx:417
 msgid "保存済み（更新 {0}）"
 msgstr "Saved (updated {0})"
 
@@ -2387,11 +2392,11 @@ msgstr "Choose a prefecture first."
 msgid "先に「保存」してください。"
 msgstr "Save first."
 
-#: src/components/admin/RouteEditor.tsx:557
+#: src/components/admin/RouteEditor.tsx:559
 msgid "入れた文字が、そのまま表示されます。体力度・技術度を選んだときは、そちらを先に表示します。"
 msgstr "Shown exactly as typed. When a physical or technical level is chosen, those are shown instead."
 
-#: src/components/admin/RouteEditor.tsx:472
+#: src/components/admin/RouteEditor.tsx:474
 msgid "入力"
 msgstr "Edit"
 
@@ -2439,7 +2444,7 @@ msgid "公開サイトを見る"
 msgstr "View the public site"
 
 #: src/components/admin/RallyEditor.tsx:72
-#: src/components/admin/RouteEditor.tsx:370
+#: src/components/admin/RouteEditor.tsx:372
 msgid "公開しました。"
 msgstr "Published."
 
@@ -2470,7 +2475,7 @@ msgid "公開まで、あと{0}つ"
 msgstr "{0} more to do before it can be published"
 
 #: src/components/admin/RallyEditor.tsx:72
-#: src/components/admin/RouteEditor.tsx:370
+#: src/components/admin/RouteEditor.tsx:372
 msgid "公開をやめました。"
 msgstr "Unpublished."
 
@@ -2487,7 +2492,7 @@ msgstr "Unpublish"
 msgid "公開中"
 msgstr "Published"
 
-#: src/components/admin/RouteEditor.tsx:338
+#: src/components/admin/RouteEditor.tsx:340
 msgid "公開中の{count}か所を、すべて公開をやめます。ルートは「準備中」として一覧に残ります。よろしいですか？"
 msgstr "Unpublish all {count} published waypoints? The route stays in the list as coming soon."
 
@@ -2511,11 +2516,11 @@ msgstr "A published waypoint cannot be deleted. First press \"Unpublish\" in the
 msgid "公開中の経由地は削除できません。編集すると下書きに戻ります。"
 msgstr "A published waypoint cannot be deleted. Editing it turns it back into a draft."
 
-#: src/components/admin/RouteEditor.tsx:660
+#: src/components/admin/RouteEditor.tsx:682
 msgid "公開中の経由地は消せません。先に「公開をやめる」を押してください。"
 msgstr "A published waypoint cannot be deleted. Unpublish it first."
 
-#: src/components/admin/RouteEditor.tsx:696
+#: src/components/admin/RouteEditor.tsx:718
 msgid "公開中の経由地をまとめて下書きに戻します。ルートは「準備中」として、一覧に残ります。"
 msgstr "Puts every published waypoint back to draft at once. The route stays in the list as coming soon."
 
@@ -2523,7 +2528,7 @@ msgstr "Puts every published waypoint back to draft at once. The route stays in 
 msgid "公開中の経由地を編集します"
 msgstr "Editing a published waypoint"
 
-#: src/components/admin/RouteEditor.tsx:765
+#: src/components/admin/RouteEditor.tsx:787
 msgid "公開前のチェック"
 msgstr "Check before publishing"
 
@@ -2593,7 +2598,7 @@ msgstr "Photo coming soon"
 msgid "写真「{0}」は入りませんでした（{1}）"
 msgstr "Photo “{0}” was not added ({1})"
 
-#: src/components/admin/RouteEditor.tsx:564
+#: src/components/admin/RouteEditor.tsx:566
 msgid "写真と動画"
 msgstr "Photo and video"
 
@@ -2602,12 +2607,12 @@ msgid "写真のリンク"
 msgstr "Photo link"
 
 #: src/components/admin/PlacePanel.tsx:143
-#: src/components/admin/RouteEditor.tsx:574
+#: src/components/admin/RouteEditor.tsx:576
 #: src/components/useErrorMessages.ts:38
 msgid "写真のリンクは、https:// で始まるものだけ使えます。"
 msgstr "Photo links must start with https://."
 
-#: src/components/admin/RouteEditor.tsx:571
+#: src/components/admin/RouteEditor.tsx:573
 msgid "写真の上や下に ℹ︎ と一緒に表示されます。撮った人や、写真を載せているサイトを書きます。リンクは [表示する文字](https://…) と書きます。"
 msgstr "Shown with an ℹ︎ on or under the photo. Write who took it, or the site that publishes it. A link is written [shown words](https://…)."
 
@@ -2616,7 +2621,7 @@ msgid "写真の下に ℹ︎ と一緒に表示されます。リンクは [表
 msgstr "Shown with an ℹ︎ under the photo. A link is written [shown words](https://…)."
 
 #: src/components/admin/PlacePanel.tsx:140
-#: src/components/admin/RouteEditor.tsx:571
+#: src/components/admin/RouteEditor.tsx:573
 msgid "写真の出どころ"
 msgstr "Photo credit"
 
@@ -2652,7 +2657,7 @@ msgstr "Could not reach the photo search. Please try again in a moment."
 msgid "写真を選んでください。"
 msgstr "Choose a photo."
 
-#: src/components/admin/RouteEditor.tsx:694
+#: src/components/admin/RouteEditor.tsx:716
 msgid "処理しています…"
 msgstr "Working…"
 
@@ -2673,8 +2678,8 @@ msgid "出どころ（撮った人、使用条件）"
 msgstr "Credit (who took it, terms of use)"
 
 #: src/components/admin/PlacePanel.tsx:96
-#: src/components/admin/RouteEditor.tsx:600
-#: src/components/admin/RouteEditor.tsx:601
+#: src/components/admin/RouteEditor.tsx:602
+#: src/components/admin/RouteEditor.tsx:603
 #: src/components/map/MapScreen.tsx:466
 #: src/components/RouteView.tsx:178
 #: src/components/SpotSheet.tsx:140
@@ -2694,12 +2699,12 @@ msgstr "The source link must be an address starting with https://."
 msgid "出発した場所に戻ってくる道です。"
 msgstr "A loop that brings you back to where you started."
 
-#: src/components/admin/RouteEditor.tsx:637
+#: src/components/admin/RouteEditor.tsx:659
 msgid "出発点"
 msgstr "Start"
 
 #: src/components/admin/map-editor/MapEditor.tsx:915
-#: src/components/admin/RouteEditor.tsx:545
+#: src/components/admin/RouteEditor.tsx:547
 msgid "分"
 msgstr "min"
 
@@ -2793,7 +2798,7 @@ msgstr "Watch the video"
 msgid "動画のページをひらく"
 msgstr "Open the video page"
 
-#: src/components/admin/RouteEditor.tsx:576
+#: src/components/admin/RouteEditor.tsx:578
 msgid "動画のリンク（YouTube・Vimeo、またはアップロードした動画）"
 msgstr "Video link (YouTube, Vimeo or an uploaded video)"
 
@@ -2943,6 +2948,11 @@ msgstr "Name (Japanese)"
 msgid "名前でさがす"
 msgstr "Search by name"
 
+#: src/components/admin/DirectoryPicker.tsx:51
+#: src/components/admin/DirectoryPicker.tsx:51
+msgid "名前で絞る"
+msgstr "Filter by name"
+
 #: src/components/admin/RallyEditor.tsx:111
 msgid "名前と公開"
 msgstr "Name and publishing"
@@ -2952,8 +2962,8 @@ msgstr "Name and publishing"
 msgid "名前のついた地点が{0}か所ありました。経由地として追加しますか？"
 msgstr "Found {0} named points. Add them as waypoints?"
 
-#: src/components/admin/RouteEditor.tsx:237
-#: src/components/admin/RouteEditor.tsx:404
+#: src/components/admin/RouteEditor.tsx:239
+#: src/components/admin/RouteEditor.tsx:406
 msgid "名前のない経由地"
 msgstr "Unnamed waypoint"
 
@@ -2974,11 +2984,11 @@ msgstr "Name"
 msgid "周回"
 msgstr "Round trip"
 
-#: src/components/admin/RouteEditor.tsx:529
+#: src/components/admin/RouteEditor.tsx:531
 msgid "周回（元の場所へ）"
 msgstr "Loop (back to the start)"
 
-#: src/components/admin/RouteEditor.tsx:386
+#: src/components/admin/RouteEditor.tsx:388
 #: src/components/admin/RouteTable.tsx:31
 #: src/components/auth/authUi.tsx:78
 #: src/components/PrefectureName.tsx:9
@@ -3007,7 +3017,7 @@ msgstr "Map"
 msgid "地図で見る"
 msgstr "Show in the map"
 
-#: src/components/admin/RouteEditor.tsx:608
+#: src/components/admin/RouteEditor.tsx:610
 #: src/components/admin/useChecklistLabels.ts:22
 msgid "地図と線"
 msgstr "Map & line"
@@ -3102,7 +3112,7 @@ msgstr "Hide terrain shading"
 msgid "地形の陰影を見る"
 msgstr "Show terrain shading"
 
-#: src/components/admin/RouteEditor.tsx:502
+#: src/components/admin/RouteEditor.tsx:504
 msgid "基本"
 msgstr "Basics"
 
@@ -3131,7 +3141,7 @@ msgstr "Search by place name"
 msgid "場所の名前で探す（例：西念寺）"
 msgstr "Search by place name (e.g. Sainen-ji)"
 
-#: src/components/admin/RouteEditor.tsx:699
+#: src/components/admin/RouteEditor.tsx:721
 msgid "場所の見せ方"
 msgstr "How places are shown"
 
@@ -3142,6 +3152,19 @@ msgstr "Could not reach the place search. Please try again in a moment."
 #: src/components/map/TrailMap.tsx:536
 msgid "場所を順に見る"
 msgstr "Go through the places in order"
+
+#. placeholder {0}: place.nameJa
+#: src/components/admin/RouteEditor.tsx:626
+msgid "場所一覧：{0}"
+msgstr "Places directory: {0}"
+
+#: src/components/admin/DirectoryPicker.tsx:40
+msgid "場所一覧から経由地を追加（駐車場・トイレ・駅など）"
+msgstr "Add a waypoint from the places directory (parking, toilets, stations ...)"
+
+#: src/components/admin/DirectoryPicker.tsx:54
+msgid "場所一覧を読み込めませんでした。"
+msgstr "Could not load the places directory."
 
 #: src/components/settings/PrefsForm.tsx:40
 msgid "大きい"
@@ -3171,7 +3194,7 @@ msgstr "This is an important action, so we confirm it is you once more."
 msgid "大阪・和歌山・奈良にまたがる、葛城修験の山の古道を歩くための道案内とスタンプラリーです。"
 msgstr "A trail guide and stamp rally for the ancient mountain paths of Katsuragi Shugen, across Osaka, Wakayama and Nara."
 
-#: src/components/admin/RouteEditor.tsx:386
+#: src/components/admin/RouteEditor.tsx:388
 #: src/components/admin/RouteTable.tsx:31
 #: src/components/auth/authUi.tsx:77
 #: src/components/PrefectureName.tsx:7
@@ -3182,7 +3205,7 @@ msgstr "Osaka"
 msgid "大阪府・和歌山県・奈良県のどれかで書いてください"
 msgstr "Write one of 大阪府, 和歌山県 or 奈良県"
 
-#: src/components/admin/RouteEditor.tsx:386
+#: src/components/admin/RouteEditor.tsx:388
 #: src/components/admin/RouteTable.tsx:31
 #: src/components/auth/authUi.tsx:79
 #: src/components/PrefectureName.tsx:11
@@ -3296,7 +3319,7 @@ msgstr "Age"
 msgid "往復"
 msgstr "Out and back"
 
-#: src/components/admin/RouteEditor.tsx:530
+#: src/components/admin/RouteEditor.tsx:532
 msgid "往復（同じ道）"
 msgstr "Out and back (same path)"
 
@@ -3316,7 +3339,7 @@ msgstr "On foot"
 msgid "必要：{0}"
 msgstr "Required: {0}"
 
-#: src/components/admin/RouteEditor.tsx:769
+#: src/components/admin/RouteEditor.tsx:791
 msgid "必要なこと"
 msgstr "Required"
 
@@ -3337,7 +3360,7 @@ msgstr "Gender"
 msgid "情報"
 msgstr "Information"
 
-#: src/components/admin/RouteEditor.tsx:684
+#: src/components/admin/RouteEditor.tsx:706
 msgid "情報源を入れないと、「確認した」は保存されません。"
 msgstr "\"Checked\" is not saved without a source."
 
@@ -3346,15 +3369,15 @@ msgstr "\"Checked\" is not saved without a source."
 msgid "戻る"
 msgstr "Back"
 
-#: src/components/admin/RouteEditor.tsx:541
+#: src/components/admin/RouteEditor.tsx:543
 msgid "手入力（空にすると、標高から自動）"
 msgstr "Typed by hand (empty = from the elevation)"
 
-#: src/components/admin/RouteEditor.tsx:538
+#: src/components/admin/RouteEditor.tsx:540
 msgid "手入力（空にすると、線から自動）"
 msgstr "Typed by hand (empty = from the line)"
 
-#: src/components/admin/RouteEditor.tsx:544
+#: src/components/admin/RouteEditor.tsx:546
 msgid "手入力（空にすると、距離と登りから自動）"
 msgstr "Typed by hand (empty = from distance and climb)"
 
@@ -3404,7 +3427,7 @@ msgstr "If you press this, your account and your records, such as your stamps, w
 msgid "拡大"
 msgstr "Zoom in"
 
-#: src/components/admin/RouteEditor.tsx:463
+#: src/components/admin/RouteEditor.tsx:465
 msgid "捨てる"
 msgstr "Discard"
 
@@ -3431,11 +3454,11 @@ msgstr "Choose the leg to draw (between two waypoints)."
 msgid "描く区間"
 msgstr "Leg to draw"
 
-#: src/components/admin/RouteEditor.tsx:590
+#: src/components/admin/RouteEditor.tsx:592
 msgid "改行は、そのまま表示されます。リンクは [表示する文字](https://…) と書きます。脚注は、本文に [^1] と書き、別の行に [^1]: 注の内容 と書きます。（歴史・アクセス・出典でも同じです。）"
 msgstr "Line breaks are shown as typed. A link is written [shown words](https://…). For a footnote, write [^1] in the text and, on a line of its own, [^1]: the note. (The same works in History, Access and Source.)"
 
-#: src/components/admin/RouteEditor.tsx:536
+#: src/components/admin/RouteEditor.tsx:538
 msgid "数字"
 msgstr "Numbers"
 
@@ -3500,7 +3523,7 @@ msgstr "New rally"
 msgid "新しいラリー（管理）"
 msgstr "New rally (admin)"
 
-#: src/components/admin/RouteEditor.tsx:413
+#: src/components/admin/RouteEditor.tsx:415
 #: src/components/admin/RouteTable.tsx:90
 msgid "新しいルート"
 msgstr "New route"
@@ -3549,7 +3572,7 @@ msgstr "Japanese only"
 msgid "日本語の名前に漢字があると、ここで読みを入れられます。"
 msgstr "When the Japanese name has kanji, you can type their readings here."
 
-#: src/components/admin/RouteEditor.tsx:507
+#: src/components/admin/RouteEditor.tsx:509
 msgid "日本語の名前を入れてください。"
 msgstr "Enter the Japanese name."
 
@@ -3589,8 +3612,8 @@ msgid "未保存"
 msgstr "Unsaved"
 
 #: src/components/admin/MunicipalityField.tsx:57
-#: src/components/admin/RouteEditor.tsx:516
-#: src/components/admin/RouteEditor.tsx:527
+#: src/components/admin/RouteEditor.tsx:518
+#: src/components/admin/RouteEditor.tsx:529
 msgid "未選択"
 msgstr "Not chosen"
 
@@ -3671,7 +3694,7 @@ msgstr "Next >"
 msgid "歩いた場所で、スタンプを押そう。"
 msgstr "Collect a stamp wherever you have walked."
 
-#: src/components/admin/RouteEditor.tsx:525
+#: src/components/admin/RouteEditor.tsx:527
 #: src/components/RouteStats.tsx:21
 msgid "歩き方"
 msgstr "How it is walked"
@@ -3684,7 +3707,7 @@ msgstr "Sections walked {done} / {TOTAL_ROUTES}"
 msgid "歩く"
 msgstr "Walk"
 
-#: src/components/admin/RouteEditor.tsx:544
+#: src/components/admin/RouteEditor.tsx:546
 msgid "歩く時間"
 msgstr "Walking time"
 
@@ -3705,8 +3728,8 @@ msgid "歩く順番に並んでいます。名前を押すと、文章や地図�
 msgstr "Routes are in walking order. Select a name to edit its text and map."
 
 #: src/components/admin/PlacePanel.tsx:94
-#: src/components/admin/RouteEditor.tsx:592
-#: src/components/admin/RouteEditor.tsx:593
+#: src/components/admin/RouteEditor.tsx:594
+#: src/components/admin/RouteEditor.tsx:595
 #: src/components/admin/useChecklistLabels.ts:17
 #: src/components/map/MapScreen.tsx:448
 #: src/components/RouteView.tsx:160
@@ -3808,7 +3831,7 @@ msgstr "Add points"
 msgid "片道"
 msgstr "One way"
 
-#: src/components/admin/RouteEditor.tsx:528
+#: src/components/admin/RouteEditor.tsx:530
 msgid "片道（別の場所へ）"
 msgstr "One way (to another place)"
 
@@ -3877,7 +3900,7 @@ msgstr "Send the number again"
 msgid "登り {0} m"
 msgstr "Climb {0} m"
 
-#: src/components/admin/RouteEditor.tsx:541
+#: src/components/admin/RouteEditor.tsx:543
 msgid "登り（獲得標高）"
 msgstr "Climb (elevation gain)"
 
@@ -3911,7 +3934,7 @@ msgstr "Guide: course constant {constant} → {level}"
 msgid "目安を使う"
 msgstr "Use guide"
 
-#: src/components/admin/RouteEditor.tsx:431
+#: src/components/admin/RouteEditor.tsx:433
 msgid "直す場所を見る"
 msgstr "Show me what to fix"
 
@@ -3921,7 +3944,7 @@ msgid "短い間に何度も操作されました。しばらくしてからお�
 msgstr "Too many attempts in a short time. Please try again in a little while."
 
 #: src/components/admin/PlacePanel.tsx:163
-#: src/components/admin/RouteEditor.tsx:681
+#: src/components/admin/RouteEditor.tsx:703
 msgid "確認した情報源（サイト名やリンク）"
 msgstr "Source checked (site name or link)"
 
@@ -3929,7 +3952,7 @@ msgstr "Source checked (site name or link)"
 msgid "確認した日：{checkedOn}"
 msgstr "Checked on: {checkedOn}"
 
-#: src/components/admin/RouteEditor.tsx:677
+#: src/components/admin/RouteEditor.tsx:699
 msgid "確認していない線は、利用者には表示されません。公式の地図などと見比べてから、チェックを入れてください。"
 msgstr "A line that has not been checked is not shown to visitors. Compare it with an official map, then tick the box."
 
@@ -3959,6 +3982,7 @@ msgstr "Send the confirmation number"
 msgid "移動の手段"
 msgstr "Way of travelling"
 
+#: src/components/admin/DirectoryPicker.tsx:43
 #: src/components/admin/map-editor/MapEditor.tsx:1221
 #: src/components/admin/PlacePanel.tsx:98
 #: src/components/admin/PlaceTable.tsx:136
@@ -4050,11 +4074,11 @@ msgstr "{0} waypoints"
 #. placeholder {0}: draft.places.length
 #. placeholder {0}: places.length
 #: src/components/admin/map-editor/MapEditor.tsx:1162
-#: src/components/admin/RouteEditor.tsx:690
+#: src/components/admin/RouteEditor.tsx:712
 msgid "経由地（{0}か所）"
 msgstr "Waypoints ({0})"
 
-#: src/components/admin/RouteEditor.tsx:801
+#: src/components/admin/RouteEditor.tsx:823
 msgid "経由地が残っているルートは削除できません。"
 msgstr "A route that still has waypoints cannot be deleted."
 
@@ -4073,6 +4097,10 @@ msgstr "A rally of waypoints takes stamp waypoints and a rally of courses takes 
 #: src/components/admin/RallyCreate.tsx:71
 msgid "経由地でつくる"
 msgstr "Make it from waypoints"
+
+#: src/components/admin/DirectoryPicker.tsx:77
+msgid "経由地に追加"
+msgstr "Add as waypoint"
 
 #: src/components/admin/map-editor/MapEditor.tsx:867
 msgid "経由地のあいだを、まっすぐな線でつなぎます"
@@ -4094,6 +4122,10 @@ msgstr "Waypoint name"
 msgid "経由地を置く"
 msgstr "Place a waypoint"
 
+#: src/components/admin/DirectoryPicker.tsx:53
+msgid "経由地を置くと、近い順に並びます。"
+msgstr "Once there is a waypoint, they are listed nearest first."
+
 #: src/components/landing/ContinueCard.tsx:17
 msgid "続きを歩きませんか？"
 msgstr "Shall we go on?"
@@ -4102,7 +4134,7 @@ msgstr "Shall we go on?"
 msgid "続きを読む"
 msgstr "Read more"
 
-#: src/components/admin/RouteEditor.tsx:538
+#: src/components/admin/RouteEditor.tsx:540
 msgid "線から自動で計算"
 msgstr "Calculated from the line"
 
@@ -4110,11 +4142,11 @@ msgstr "Calculated from the line"
 msgid "線のない区間はありません。区間を選ぶと、その区間をつくり直せます。"
 msgstr "Every leg has a line. Choose a leg to make it again."
 
-#: src/components/admin/RouteEditor.tsx:541
+#: src/components/admin/RouteEditor.tsx:543
 msgid "線の標高から自動で計算"
 msgstr "Calculated from the line's elevation"
 
-#: src/components/admin/RouteEditor.tsx:676
+#: src/components/admin/RouteEditor.tsx:698
 msgid "線の確認"
 msgstr "Line check"
 
@@ -4152,7 +4184,7 @@ msgstr "Draw line"
 msgid "線を描くには、先に経由地を2つ以上置いてください（寄り道は数えません）。"
 msgstr "To draw a line, first place two or more waypoints (side trips do not count)."
 
-#: src/components/admin/RouteEditor.tsx:679
+#: src/components/admin/RouteEditor.tsx:701
 msgid "線を確認した"
 msgstr "Line checked"
 
@@ -4168,15 +4200,15 @@ msgstr "Edit"
 msgid "編集して下書きに戻す"
 msgstr "Edit and return to draft"
 
-#: src/components/admin/RouteEditor.tsx:480
+#: src/components/admin/RouteEditor.tsx:482
 msgid "編集する内容"
 msgstr "What to edit"
 
-#: src/components/admin/RouteEditor.tsx:449
+#: src/components/admin/RouteEditor.tsx:451
 msgid "編集を戻しました。内容を確かめて、「保存する」を押してください。"
 msgstr "Edits restored. Check them, then press Save."
 
-#: src/components/admin/RouteEditor.tsx:453
+#: src/components/admin/RouteEditor.tsx:455
 msgid "編集を戻す"
 msgstr "Restore edits"
 
@@ -4189,7 +4221,7 @@ msgstr "Latitude"
 msgid "緯度・経度は、公式の情報で確かめてから、場所ごとに「位置を確認した」にチェックを入れてください。それまで訪れる人には表示されません。"
 msgstr "Check each latitude and longitude against an official source, then tick “Position checked” for that place. Until then visitors do not see it."
 
-#: src/components/admin/RouteEditor.tsx:760
+#: src/components/admin/RouteEditor.tsx:782
 msgid "緯度と経度は、両方入れるか、両方空にしてください。"
 msgstr "Enter both latitude and longitude, or leave both empty."
 
@@ -4280,7 +4312,7 @@ msgstr "The Katsuragi Shugen Trail"
 msgid "行き"
 msgstr "Out"
 
-#: src/components/admin/RouteEditor.tsx:708
+#: src/components/admin/RouteEditor.tsx:730
 msgid "表でまとめて入力"
 msgstr "Enter many in a table"
 
@@ -4288,7 +4320,7 @@ msgstr "Enter many in a table"
 msgid "表示"
 msgstr "View"
 
-#: src/components/admin/RouteEditor.tsx:469
+#: src/components/admin/RouteEditor.tsx:471
 msgid "表示の切り替え"
 msgstr "Switch view"
 
@@ -4366,6 +4398,10 @@ msgstr "Who gave permission"
 msgid "許可確認済み"
 msgstr "Permission confirmed"
 
+#: src/components/admin/DirectoryPicker.tsx:55
+msgid "該当する場所はありません。"
+msgstr "No matching places."
+
 #: src/components/admin/PlacePanel.tsx:93
 #: src/components/SpotSheet.tsx:107
 msgid "説明"
@@ -4375,7 +4411,7 @@ msgstr "About this place"
 msgid "説明文（日本語）"
 msgstr "Description (Japanese)"
 
-#: src/components/admin/RouteEditor.tsx:504
+#: src/components/admin/RouteEditor.tsx:506
 msgid "読みを入れた漢字の上に、小さく表示されます（ひらがな）。"
 msgstr "Shown small over the kanji that have a reading (hiragana)."
 
@@ -4395,7 +4431,7 @@ msgstr "Searching…"
 msgid "足りないもの"
 msgstr "What is missing"
 
-#: src/components/admin/RouteEditor.tsx:538
+#: src/components/admin/RouteEditor.tsx:540
 #: src/components/RouteStats.tsx:24
 msgid "距離"
 msgstr "Distance"
@@ -4404,7 +4440,7 @@ msgstr "Distance"
 msgid "距離と時間を入れると、目安が出ます"
 msgstr "Enter distance and time to get a guide"
 
-#: src/components/admin/RouteEditor.tsx:544
+#: src/components/admin/RouteEditor.tsx:546
 msgid "距離と登りから自動で計算"
 msgstr "Calculated from distance and climb"
 
@@ -4424,6 +4460,7 @@ msgstr "Merge places that are close together"
 msgid "追加しない"
 msgstr "Do not add"
 
+#: src/components/admin/DirectoryPicker.tsx:77
 #: src/components/admin/GalleryEditor.tsx:136
 msgid "追加しました"
 msgstr "Added"
@@ -4585,11 +4622,15 @@ msgstr "Clear the chosen leg"
 msgid "選んだ数：{0} / {1}"
 msgstr "Selected: {0} / {1}"
 
+#: src/components/admin/DirectoryPicker.tsx:53
+msgid "選んでいる経由地（なければ最初の経由地）に近い順です。"
+msgstr "Nearest first from the selected waypoint (or the first one)."
+
 #: src/components/admin/map-editor/MapEditor.tsx:921
 msgid "選択をやめる"
 msgstr "Clear choice"
 
-#: src/components/admin/RouteEditor.tsx:509
+#: src/components/admin/RouteEditor.tsx:511
 #: src/components/admin/RouteTable.tsx:71
 #: src/components/admin/useChecklistLabels.ts:15
 msgid "都道府県"
@@ -4605,7 +4646,7 @@ msgstr "Length"
 
 #: src/components/admin/map-editor/MapEditor.tsx:964
 #: src/components/admin/PhotoLibrary.tsx:124
-#: src/components/admin/RouteEditor.tsx:434
+#: src/components/admin/RouteEditor.tsx:436
 #: src/components/ExpandableText.tsx:32
 #: src/components/map/MapPickList.tsx:36
 #: src/components/map/MapPopup.tsx:57
