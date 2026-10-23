@@ -345,6 +345,30 @@ export const banners = pgTable("banners", {
   updatedAt: updatedAt(),
 });
 
+/**
+ * A blog post. Its words (title, body, the author's name) are in blog_post_translations. A draft until published,
+ * and hidden until `published_on` arrives, so a post can be written early and appear on the day it is dated.
+ * The body may hold the markers of the web app's rich text (links, footnotes, headings, lists, photos).
+ */
+export const blogPosts = pgTable(
+  "blog_posts",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    // An https link to the photo at the top of the post (uploaded to R2, or pasted).
+    coverPhotoUrl: text("cover_photo_url"),
+    coverCredit: text("cover_credit"),
+    // A free-text byline, never a link to an account: no account email can reach a public answer this way.
+    authorPhotoUrl: text("author_photo_url"),
+    // The day the post is dated and from which visitors see it (YYYY-MM-DD, Japan time).
+    publishedOn: date("published_on", { mode: "string" }).notNull(),
+    published: boolean("published").notNull().default(false),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  // The public list asks for published posts dated today or earlier, newest first.
+  (t) => [index("blog_posts_public_idx").on(t.published, t.publishedOn)],
+);
+
 /** Append-only record of admin actions. User ids only: no names or emails. */
 export const auditLog = pgTable(
   "audit_log",
@@ -448,6 +472,24 @@ export const bannerTranslations = pgTable(
     alt: text("alt"),
   },
   (t) => [primaryKey({ columns: [t.bannerId, t.locale] }), check("banner_translations_ja_alt", jaRequires(t, t.alt))],
+);
+
+export const blogPostTranslations = pgTable(
+  "blog_post_translations",
+  {
+    blogPostId: uuid("blog_post_id")
+      .notNull()
+      .references(() => blogPosts.id, { onDelete: "cascade" }),
+    locale: contentLocale("locale").notNull(),
+    title: text("title"),
+    body: text("body"),
+    authorName: text("author_name"),
+  },
+  (t) => [
+    primaryKey({ columns: [t.blogPostId, t.locale] }),
+    check("blog_post_translations_ja_title", jaRequires(t, t.title)),
+    check("blog_post_translations_ja_body", jaRequires(t, t.body)),
+  ],
 );
 
 /** Settings for the whole site, one named value each (see site-settings/): the map style visitors see, and later others. */

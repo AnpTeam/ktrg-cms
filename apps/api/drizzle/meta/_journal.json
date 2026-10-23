@@ -183,6 +183,13 @@
       "when": 1792719544625,
       "tag": "0025_spot_kind_ferry_campsite",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1792733225155,
+      "tag": "0026_blog_posts",
+      "breakpoints": true
     }
   ]
 }
