@@ -20,7 +20,7 @@ type Notice = { kind: "saved" | "error"; text: string } | null;
 // editor. A new row is created in one go and then opens as its own page; a change sends only what changed, with the
 // updatedAt it loaded, so nobody overwrites a newer save. Read-only fields are shown as text. When the API asks for a
 // fresh login (a role change), the "confirm it is you" dialog opens and the save is tried again.
-export function AdminItemForm({ meta: config, initial, locale, routes }: { meta: ListMeta; initial: ListItem | null; locale: string; routes: { id: string; name: string }[] }) {
+export function AdminItemForm({ meta: config, initial, locale, choices }: { meta: ListMeta; initial: ListItem | null; locale: string; choices: Record<string, { id: string; name: string }[]> }) {
   const { t } = useLingui();
   const messages = useErrorMessages();
   const router = useRouter();
@@ -39,7 +39,7 @@ export function AdminItemForm({ meta: config, initial, locale, routes }: { meta:
   const canSave = !busy && editable && missing.length === 0 && (changes === null || Object.keys(changes).length > 0);
   const set = (name: string) => (v: string | boolean) => setValues((now) => ({ ...now, [name]: v }));
   const text = (name: string) => String(values[name] ?? "");
-  const routeName = (id: string) => routes.find((r) => r.id === id)?.name ?? null;
+  const routeName = (id: string, field: string) => choices[field]?.find((r) => r.id === id)?.name ?? null;
 
   async function save() {
     setBusy(true);
@@ -116,11 +116,12 @@ export function AdminItemForm({ meta: config, initial, locale, routes }: { meta:
         );
       case "select":
       case "route":
+      case "relation":
         return (
           <Field key={f.name} label={label} hint={hint} htmlFor={id} required={f.required}>
             <select id={id} value={text(f.name)} onChange={(e) => set(f.name)(e.target.value)} className={inputClass}>
-              {f.kind === "route" ? <option value="">{f.noneLabel ? pick(f.noneLabel, locale) : "—"}</option> : null}
-              {(f.kind === "route" ? routes.map((r) => ({ value: r.id, text: r.name })) : (f.options ?? []).map((o) => ({ value: o.value, text: pick(o.label, locale) }))).map((o) => (
+              {f.kind === "route" || f.kind === "relation" ? <option value="">{f.noneLabel ? pick(f.noneLabel, locale) : "—"}</option> : null}
+              {(f.kind === "route" || f.kind === "relation" ? (choices[f.name] ?? []).map((r) => ({ value: r.id, text: r.name })) : (f.options ?? []).map((o) => ({ value: o.value, text: pick(o.label, locale) }))).map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.text}
                 </option>

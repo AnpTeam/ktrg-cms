@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
+import { CheckIcon, DocumentIcon, ListIcon, MapIcon, PinIcon } from "@/components/icons";
 import { api } from "@/lib/api";
 import { outcome } from "@/lib/admin/admin-client";
 import { checklist, factsFromDraft, progress, type EditorTab } from "@/lib/admin/checklist";
@@ -34,6 +35,7 @@ import { isListedMunicipality } from "@/lib/municipalities";
 import { stampableByDefault } from "@/lib/point-kinds";
 import { walkStyleOf } from "@/lib/walk-style";
 import { PublishedEditDialog, skipsPublishedWarning } from "./PublishedEditDialog";
+import { AccessPointsEditor } from "./AccessPointsEditor";
 import { GradingFields } from "./GradingFields";
 import { MunicipalityField } from "./MunicipalityField";
 import { PhotoLinkDetails } from "./PhotoLinkDetails";
@@ -45,6 +47,7 @@ import { PlaceTable } from "./PlaceTable";
 import { useChecklistLabels } from "./useChecklistLabels";
 
 const TABS: EditorTab[] = ["overview", "text", "map", "places", "check"];
+const TAB_ICONS: Record<EditorTab, ReactNode> = { overview: <ListIcon />, text: <DocumentIcon />, map: <MapIcon />, places: <PinIcon />, check: <CheckIcon /> };
 const isTab = (v: string | null): v is EditorTab => v !== null && (TABS as string[]).includes(v);
 
 const isTyping = (target: EventTarget | null) => target instanceof HTMLElement && (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
@@ -438,8 +441,9 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                 aria-selected={section === id}
                 aria-controls="editor-panel"
                 onClick={() => setSection(id)}
-                className={`tap-target rounded-xl border-2 px-4 text-lg font-bold ${section === id ? "border-ink bg-ink text-paper" : "border-line"}`}
+                className={`tap-target inline-flex items-center gap-2 rounded-xl border-2 px-4 text-lg font-bold ${section === id ? "border-ink bg-ink text-paper" : "border-line"}`}
               >
+                {TAB_ICONS[id]}
                 {labels.tab[id]}
                 {id === "check" && missingRequired > 0 ? <span className="ml-2 rounded-full bg-danger px-2 text-base text-white">{missingRequired}</span> : null}
               </button>
@@ -537,8 +541,9 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   <MultilingualField id="route-history" field="history" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`歴史・由来`} ja={draft.historyJa} en={draft.historyEn} onJa={text("historyJa")} onEn={text("historyEn")} multiline />
                 </Section>
                 <Section title={t`アクセス・交通`}>
-                  <MultilingualField id="route-access" field="access" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`アクセス・交通`} ja={draft.accessJa} en={draft.accessEn} onJa={text("accessJa")} onEn={text("accessEn")} multiline />
-                  <p className="text-base text-muted">{t`最寄りの駅やバス停、スタート地点とゴール地点への行き方を書きます。`}</p>
+                  <AccessPointsEditor value={draft.accessPoints} onChange={(value) => dispatch({ type: "accessPoints", value })} />
+                  <MultilingualField id="route-access" field="access" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`アクセス・交通の補足`} ja={draft.accessJa} en={draft.accessEn} onJa={text("accessJa")} onEn={text("accessEn")} multiline />
+                  <p className="text-base text-muted">{t`上の一覧に入らない行き方（乗りかえ、時刻、帰りの方法など）を、自由に書きます。`}</p>
                 </Section>
                 <Section title={t`出典`}>
                   <MultilingualField id="route-source" field="source" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`出典`} ja={draft.sourceJa} en={draft.sourceEn} onJa={text("sourceJa")} onEn={text("sourceEn")} multiline />

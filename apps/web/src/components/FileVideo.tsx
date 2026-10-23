@@ -18,7 +18,6 @@ export function FileVideoPlayer({ video, title }: { video: FileVideo; title: str
     <div className="flex flex-col gap-3">
       <div className="aspect-video w-full overflow-hidden rounded-xl border-2 border-line bg-ink">
         {playing ? (
-          // eslint-disable-next-line jsx-a11y/media-has-caption -- a walking guide shot on the trail; no caption track exists
           <video src={video.src} title={title} controls autoPlay playsInline preload="auto" className="h-full w-full" />
         ) : (
           <button

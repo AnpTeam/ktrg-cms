@@ -180,3 +180,78 @@ export const ExpandIcon = () => (
     <path d="M20 15v5h-5" />
   </Icon>
 );
+
+// The admin's menu and tabs.
+export const GearIcon = () => (
+  <Icon>
+    <circle cx="12" cy="12" r="3" />
+    <path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8" />
+  </Icon>
+);
+
+export const BellIcon = () => (
+  <Icon>
+    <path d="M6 17V11a6 6 0 0 1 12 0v6l1.5 2h-15z" />
+    <path d="M10 21h4" />
+  </Icon>
+);
+
+export const ImageIcon = () => (
+  <Icon>
+    <path d="M3.5 5h17v14h-17z" />
+    <circle cx="9" cy="10" r="1.6" />
+    <path d="m3.5 17 5-4.5 4 3.5 3-2.5 5 4" />
+  </Icon>
+);
+
+export const ShopIcon = () => (
+  <Icon>
+    <path d="M4 9 5.5 4h13L20 9" />
+    <path d="M4 9a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0A2.7 2.7 0 0 0 20 9" />
+    <path d="M5.5 11.5V20h13v-8.5" />
+  </Icon>
+);
+
+export const PinIcon = () => (
+  <Icon>
+    <path d="M12 21s-6.5-5.8-6.5-11a6.5 6.5 0 0 1 13 0c0 5.2-6.5 11-6.5 11z" />
+    <circle cx="12" cy="10" r="2.3" />
+  </Icon>
+);
+
+export const ClockIcon = () => (
+  <Icon>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v5l3.5 2" />
+  </Icon>
+);
+
+export const FlagIcon = () => (
+  <Icon>
+    <path d="M6 21V4" />
+    <path d="M6 5h11l-2.5 4 2.5 4H6" />
+  </Icon>
+);
+
+export const DocumentIcon = () => (
+  <Icon>
+    <path d="M6 3h8l4 4v14H6z" />
+    <path d="M14 3v4h4" />
+    <path d="M9 12h6M9 16h6" />
+  </Icon>
+);
+
+export const ListIcon = () => (
+  <Icon>
+    <path d="M9 6h11M9 12h11M9 18h11" />
+    <path d="M4 6h.5M4 12h.5M4 18h.5" />
+  </Icon>
+);
+
+/** A window with a side panel: the button that hides and shows the admin menu. */
+export const SidebarIcon = () => (
+  <Icon>
+    <path d="M3.5 5h17v14h-17z" />
+    <path d="M9.5 5v14" />
+  </Icon>
+);

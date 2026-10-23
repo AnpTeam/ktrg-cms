@@ -1,13 +1,20 @@
 name: Migrate production database
 
 # Applies apps/api/drizzle migrations to the hosted database (Supabase), from GitHub's servers.
-# Run by hand: Actions → "Migrate production database" → Run workflow. Needs the repository
+# Runs by itself when a merge to main changes apps/api/drizzle (see `on:` below), or by hand. Needs the repository
 # secret PRODUCTION_DATABASE_URL (Supabase session pooler, port 5432, ?sslmode=require).
 # Use this instead of migrating from a laptop: some networks block the Postgres port.
-# ORDER: Vercel deploys main on every merge, so a merge that adds a migration is live before this runs, and pages that
-# read the new columns answer 500 until it has. Run this right after merging such a PR (check apps/api/drizzle/ in the
-# diff), or keep the deploy waiting (disable the auto-deploy for that merge) until it has finished.
+# ORDER: Vercel deploys main on every merge too. A build takes a minute or two and this job under one, so the database is
+# normally ready before the new pages go live. If this job fails (see its log) the new pages answer 500 where they read the
+# new columns: fix the cause and run it again by hand, or roll the deploy back in Vercel.
 on:
+  # Automatic: every merge to main that changes a migration applies it right away. Vercel starts deploying the same merge at
+  # the same moment, so the gap in which new pages meet an old database is a minute or two; migrations only ever ADD (a
+  # column, a value), so the old pages keep working in that gap.
+  push:
+    branches: [main]
+    paths: ["apps/api/drizzle/**"]
+  # By hand, to re-run it or to catch up: Actions -> "Migrate production database" -> Run workflow.
   workflow_dispatch:
     inputs:
       confirm:
@@ -23,7 +30,7 @@ concurrency:
 
 jobs:
   migrate:
-    if: github.event.inputs.confirm == 'migrate' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event.inputs.confirm == 'migrate')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -45,7 +52,17 @@ jobs:
             exit 1
           fi
 
+      - name: Show what is waiting
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+        run: bun run ktrg db status
+
       - name: Apply migrations
         env:
           DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
         run: bun run --cwd apps/api db:migrate:ci
+
+      - name: Show the result
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+        run: bun run ktrg db status

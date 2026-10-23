@@ -13,7 +13,7 @@ import {
 } from "drizzle-orm/pg-core";
 import type { Preferences } from "../../me/preferences";
 
-export const userRole = pgEnum("user_role", ["participant", "admin"]);
+export const userRole = pgEnum("user_role", ["participant", "editor", "admin"]);
 export const userLocale = pgEnum("user_locale", ["ja", "en"]);
 /** Where a visitor says they come from (asked at sign-up; optional, for knowing who the app serves). */
 export const userOrigin = pgEnum("user_origin", ["osaka", "wakayama", "nara", "other_japan", "overseas"]);

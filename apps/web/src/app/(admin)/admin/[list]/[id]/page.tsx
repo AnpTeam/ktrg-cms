@@ -8,7 +8,7 @@ import { initLingui } from "@/i18n/server";
 import { adminGet } from "@/lib/admin/admin-fetch";
 import { itemName, pick } from "@/lib/admin/lists/config";
 import type { OneItem } from "@/lib/admin/lists/list-client";
-import { listMetaOr404, routeChoices } from "@/lib/admin/lists/server";
+import { listMetaOr404, relationChoices } from "@/lib/admin/lists/server";
 
 export async function generateMetadata({ params }: { params: Promise<{ list: string }> }): Promise<Metadata> {
   const i18n = await initLingui();
@@ -21,7 +21,7 @@ export default async function EditListItemPage({ params }: { params: Promise<{ l
   const { list, id } = await params;
   const meta = await listMetaOr404(list);
   if (!meta.ops.edit) notFound();
-  const [one, routes] = await Promise.all([adminGet<{ ok: true } & OneItem>(`/lists/${meta.key}/${encodeURIComponent(id)}`), routeChoices(meta, i18n.locale)]);
+  const [one, choices] = await Promise.all([adminGet<{ ok: true } & OneItem>(`/lists/${meta.key}/${encodeURIComponent(id)}`), relationChoices(meta, i18n.locale)]);
   if (one.status === 404 || one.status === 422) notFound();
   const item = one.status === 200 && one.body?.ok ? one.body.item : null;
   const title = pick(meta.title, i18n.locale);
@@ -34,7 +34,7 @@ export default async function EditListItemPage({ params }: { params: Promise<{ l
       {item ? (
         <>
           <h1 className="text-3xl font-bold">{itemName(meta, item, i18n.locale)}</h1>
-          <AdminItemForm meta={meta} initial={item} locale={i18n.locale} routes={routes} />
+          <AdminItemForm meta={meta} initial={item} locale={i18n.locale} choices={choices} />
         </>
       ) : (
         <p role="alert" className="rounded-2xl bg-surface p-6 text-lg font-bold text-danger">

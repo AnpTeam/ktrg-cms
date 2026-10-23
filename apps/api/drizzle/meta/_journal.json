@@ -183,6 +183,20 @@
       "when": 1792719544625,
       "tag": "0025_spot_kind_ferry_campsite",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1792723286218,
+      "tag": "0026_route_access_points",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1792727135166,
+      "tag": "0027_user_role_editor",
+      "breakpoints": true
     }
   ]
 }

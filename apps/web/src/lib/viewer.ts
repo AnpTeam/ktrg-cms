@@ -9,7 +9,7 @@ import { accountPrefs, type Prefs } from "./prefs";
 export interface Viewer {
   signedIn: boolean;
   /** The account's role (what it may do); null when signed out or when the API did not say. */
-  role: "participant" | "admin" | null;
+  role: "participant" | "editor" | "admin" | null;
   /** The unique 8-digit ID shown on the profile (quote it to support); null when signed out. */
   publicId: string | null;
   /** When a requested account deletion will really happen (ISO time); null with no request. */
@@ -48,7 +48,7 @@ export function viewerFromMe(status: number, body: unknown): Viewer {
   if ((body as { ok?: unknown } | null)?.ok !== true || !me) return signedOut;
   return {
     signedIn: true,
-    role: me.role === "admin" || me.role === "participant" ? me.role : null,
+    role: me.role === "admin" || me.role === "editor" || me.role === "participant" ? me.role : null,
     publicId: typeof me.publicId === "string" && me.publicId ? me.publicId : null,
     deletionDueAt: typeof me.deletionDueAt === "string" && me.deletionDueAt ? me.deletionDueAt : null,
     name: typeof me.displayName === "string" && me.displayName ? me.displayName : null,

@@ -39,6 +39,15 @@ describe("photo hosts and distance", () => {
     expect((await svc.createRoute(ADMIN, { nameJa: "甲山", photoUrl: "https://elsewhere.example/a.jpg" })).ok).toBe(true);
   });
 
+  test("with PHOTO_HOSTS set, Wikimedia photos are accepted too, for the main photo and the video; other hosts are not", async () => {
+    const limited = createContentService({ store: mem.store, photoHosts: ["photos.example.com"] });
+    const made = await limited.createRoute(ADMIN, { nameJa: "甲山", photoUrl: "https://upload.wikimedia.org/wikipedia/commons/a/ab/Koyama.jpg" });
+    expect(made.ok).toBe(true);
+    const r = await route();
+    expect((await limited.updateRoute(ADMIN, r.id, r.updatedAt, { videoUrl: "https://upload.wikimedia.org/wikipedia/commons/a/ab/Walk.webm" })).ok).toBe(true);
+    expect(await limited.createRoute(ADMIN, { nameJa: "甲山", photoUrl: "https://commons.wikimedia.org/wiki/File:Koyama.jpg" })).toEqual({ ok: false, reason: "invalid_photo_url" });
+  });
+
   test("the distance is measured on the line as drawn, before it is simplified", async () => {
     const zigzag = { type: "LineString", coordinates: Array.from({ length: 3000 }, (_, i): [number, number] => [135 + (i % 2) * 0.001, 34 + i * 0.0001]) };
     const r = await route({ geometry: zigzag });

@@ -6,7 +6,7 @@ import { Trans } from "@lingui/react/macro";
 import { AdminItemForm } from "@/components/admin/AdminItemForm";
 import { initLingui } from "@/i18n/server";
 import { pick } from "@/lib/admin/lists/config";
-import { listMetaOr404, routeChoices } from "@/lib/admin/lists/server";
+import { listMetaOr404, relationChoices } from "@/lib/admin/lists/server";
 
 export async function generateMetadata({ params }: { params: Promise<{ list: string }> }): Promise<Metadata> {
   const i18n = await initLingui();
@@ -19,7 +19,7 @@ export default async function NewListItemPage({ params }: { params: Promise<{ li
   const i18n = await initLingui();
   const meta = await listMetaOr404((await params).list);
   if (!meta.ops.create || !meta.newLabel) notFound();
-  const routes = await routeChoices(meta, i18n.locale);
+  const choices = await relationChoices(meta, i18n.locale);
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4">
@@ -27,7 +27,7 @@ export default async function NewListItemPage({ params }: { params: Promise<{ li
         <Trans>一覧へ戻る</Trans>
       </Link>
       <h1 className="text-3xl font-bold">{pick(meta.newLabel, i18n.locale)}</h1>
-      <AdminItemForm meta={meta} initial={null} locale={i18n.locale} routes={routes} />
+      <AdminItemForm meta={meta} initial={null} locale={i18n.locale} choices={choices} />
     </div>
   );
 }

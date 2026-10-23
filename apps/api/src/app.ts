@@ -1,5 +1,6 @@
 import { Elysia } from "elysia";
 import { createDrizzleAuditWriter } from "./audit/audit-store";
+import { withWikimedia } from "./lib/https-url";
 import { parseAdminEmails } from "./auth/admin-emails";
 import { createDrizzleOtpStore } from "./auth/otp-store";
 import { adminContentRoutes } from "./content/admin-routes";
@@ -72,7 +73,7 @@ function getServices(): Services {
       audit: createDrizzleAuditWriter(db),
       mailer: createMailer(env),
       routing: createRoutingService({ apiKey: env.ORS_API_KEY }),
-      photoHosts: env.PHOTO_HOSTS?.split(",").map((h) => h.trim().toLowerCase()).filter(Boolean),
+      photoHosts: withWikimedia(env.PHOTO_HOSTS?.split(",").map((h) => h.trim().toLowerCase()).filter(Boolean) ?? []),
       publicRoutesTtlMs: env.NODE_ENV === "production" ? 10_000 : undefined,
       // Production requires the secret (parse-env); this dev fallback never ships.
       secret: env.OTP_HMAC_SECRET ?? "dev-only-otp-secret-change-me-0000000",

@@ -139,6 +139,25 @@ describe("an admin edits a route and its places", () => {
     expect(await got()).toMatchObject({ physicalLevel: null, technicalLevel: null });
   });
 
+  test("access points are saved in order, trimmed, with empty rows dropped; bad ones are refused", async () => {
+    const { call, cookie, route } = await created();
+    const patch = (body: unknown, updatedAt: string) => call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt, ...(body as object) } });
+    const rows = [
+      { type: "train", nameJa: " 加太駅 ", nameEn: "Kada Sta.", noteJa: "南海加太線", noteEn: null },
+      { type: "ferry", nameJa: "友ヶ島汽船", nameEn: null, noteJa: null, noteEn: null },
+      { type: "bus", nameJa: "  ", nameEn: null, noteJa: null, noteEn: null },
+    ];
+    expect((await patch({ accessPoints: rows }, route.updatedAt)).status).toBe(200);
+    const got = ((await (await call("GET", `/admin/routes/${route.id}`, { cookie })).json()) as Json).route as Json;
+    expect(got.accessPoints).toEqual([
+      { type: "train", nameJa: "加太駅", nameEn: "Kada Sta.", noteJa: "南海加太線", noteEn: null },
+      { type: "ferry", nameJa: "友ヶ島汽船", nameEn: null, noteJa: null, noteEn: null },
+    ]);
+    const next = got.updatedAt as string;
+    expect((await patch({ accessPoints: [{ type: "plane", nameJa: "x", nameEn: null, noteJa: null, noteEn: null }] }, next)).status).toBe(422);
+    expect((await patch({ accessPoints: Array.from({ length: 11 }, () => rows[0]) }, next)).status).toBe(422);
+  });
+
   test("bad input: 400 invalid_line / invalid_video_url, 422 for the wrong shape", async () => {
     const { call, cookie, route } = await created();
     const patch = (body: unknown) => call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt: route.updatedAt, ...(body as object) } });

@@ -1,4 +1,5 @@
-import { bad, ok, type Cursor, type ListReadStore, type ListRow, type ListRules, type ListStore, type Result } from "./list-types";
+import { isFiltering, MAX_SCAN, rowMatches, SCAN_BATCH, type ListFilter } from "./list-filter";
+import { bad, ok, type Cursor, type FieldUi, type ListHook, type ListReadStore, type ListRow, type ListRules, type ListStore, type Result } from "./list-types";
 
 export const PAGE_SIZE = 50;
 
@@ -26,7 +27,27 @@ export function createListReader<R extends ListRow>(deps: { store: ListReadStore
   const size = deps.pageSize ?? PAGE_SIZE;
   return {
     /** One page, and the cursor of the next one (null on the last page). */
-    async list(cursor?: string): Promise<{ items: R[]; next: string | null }> {
+    async list(cursor?: string, narrow?: { filter: ListFilter | undefined; fields: readonly FieldUi[] }): Promise<{ items: R[]; next: string | null }> {
+      if (narrow && isFiltering(narrow.filter)) {
+        const { filter, fields } = narrow;
+        const kept: R[] = [];
+        let at = parseCursor(cursor);
+        let scanned = 0;
+        let last: R | null = null;
+        let more = true;
+        while (more && kept.length <= size && scanned < MAX_SCAN) {
+          const rows = await store.list(at, SCAN_BATCH);
+          more = rows.length === SCAN_BATCH;
+          scanned += rows.length;
+          last = rows[rows.length - 1] ?? last;
+          if (last) at = { createdAt: last.createdAt, id: last.id };
+          kept.push(...rows.filter((r) => rowMatches(r as unknown as Record<string, unknown>, fields, filter)));
+        }
+        const items = kept.slice(0, size);
+        // More to read when this page is full, or when the scan stopped early.
+        const next = kept.length > size ? cursorText(items[items.length - 1]!) : more && last ? cursorText(last) : null;
+        return { items, next };
+      }
       const rows = await store.list(parseCursor(cursor), size + 1);
       const items = rows.slice(0, size);
       return { items, next: rows.length > size ? cursorText(items[items.length - 1]!) : null };
@@ -36,8 +57,28 @@ export function createListReader<R extends ListRow>(deps: { store: ListReadStore
 }
 
 /** A list an admin can also write: the table's rules before each write; conflicts reported. */
-export function createListService<R extends ListRow, F>(deps: { store: ListStore<R, F>; rules: ListRules<F>; pageSize?: number }) {
+export function createListService<R extends ListRow, F>(deps: { store: ListStore<R, F>; rules: ListRules<F>; pageSize?: number; afterWrite?: ListHook<R>; log?: (message: string) => void; relations?: Record<string, (id: string) => Promise<boolean>> }) {
   const { store, rules } = deps;
+  const log = deps.log ?? console.error;
+  /**
+   * True when a relation field (see `relations`: field name -> "does this row exist?") holds an id that points nowhere. Only
+   * the values being saved are looked at, so an old dangling id never blocks editing the other fields.
+   */
+  const danglingRelation = async (values: Record<string, unknown>): Promise<boolean> => {
+    for (const [field, exists] of Object.entries(deps.relations ?? {})) {
+      const id = values[field];
+      if (typeof id === "string" && id !== "" && !(await exists(id))) return true;
+    }
+    return false;
+  };
+  /** Run the hook after a saved change; a failure is logged (its message only) and the save stands. */
+  const after = async (event: Parameters<ListHook<R>>[0]) => {
+    try {
+      await deps.afterWrite?.(event);
+    } catch (err) {
+      log(`list hook after ${event.type} failed: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  };
   const done = (r: R | "conflict" | null): Result<R> => (r === null ? bad("not_found") : r === "conflict" ? bad("conflict") : ok(r));
 
   return {
@@ -45,7 +86,11 @@ export function createListService<R extends ListRow, F>(deps: { store: ListStore
 
     async create(actor: string, input: F): Promise<Result<R>> {
       const checked = await rules(input, "create");
-      return checked.ok ? ok(await store.create(actor, checked.value as F)) : checked;
+      if (!checked.ok) return checked;
+      if (await danglingRelation(checked.value as Record<string, unknown>)) return bad("validation_failed");
+      const row = await store.create(actor, checked.value as F);
+      await after({ type: "create", actor, id: row.id, row });
+      return ok(row);
     },
 
     async update(actor: string, id: string, expected: Date | string, input: Partial<F>): Promise<Result<R>> {
@@ -57,11 +102,16 @@ export function createListService<R extends ListRow, F>(deps: { store: ListStore
       if (!checked.ok) return checked;
       const cleaned = checked.value as Record<string, unknown>;
       const changes = Object.fromEntries(Object.keys(input).map((k) => [k, cleaned[k]])) as Partial<F>;
-      return done(await store.update(actor, id, expected instanceof Date ? expected : new Date(expected), changes));
+      if (await danglingRelation(changes as Record<string, unknown>)) return bad("validation_failed");
+      const saved = await store.update(actor, id, expected instanceof Date ? expected : new Date(expected), changes);
+      if (saved !== null && saved !== "conflict") await after({ type: "update", actor, id, row: saved });
+      return done(saved);
     },
 
     async remove(actor: string, id: string): Promise<Result<true>> {
-      return (await store.remove(actor, id)) ? ok(true) : bad("not_found");
+      if (!(await store.remove(actor, id))) return bad("not_found");
+      await after({ type: "delete", actor, id, row: null });
+      return ok(true);
     },
   };
 }
