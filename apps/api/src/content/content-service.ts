@@ -7,6 +7,7 @@ import { lineLengthKm, parseLine, plainLine, ridesOf, sideLinesOf, simplifyLine,
 import type {
   ContentStore,
   Prefecture,
+  TechnicalLevel,
   Result,
   WalkStyle,
   RouteFields,
@@ -60,6 +61,9 @@ export interface PublicRoute {
   distanceKm: number | null;
   elevationGainM: number | null;
   difficulty: string | null;
+  nameKana: string | null;
+  physicalLevel: number | null;
+  technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
   prefecture: Prefecture | null;
   walkStyle: WalkStyle | null;
@@ -115,6 +119,9 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     distanceKm: r.distanceKm,
     elevationGainM: r.elevationGainM,
     difficulty: r.difficulty,
+    nameKana: r.nameKana,
+    physicalLevel: r.physicalLevel,
+    technicalLevel: r.technicalLevel,
     expectedTimeMin: r.expectedTimeMin,
     prefecture: r.prefecture,
     walkStyle: r.walkStyle,
@@ -195,7 +202,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (!n) return bad("validation_failed");
       out.nameJa = n;
     }
-    for (const k of ["nameEn", "descriptionJa", "descriptionEn", "difficulty", "municipality", "historyJa", "historyEn", "accessJa", "accessEn", "sourceJa", "sourceEn", "photoCredit"] as const) {
+    for (const k of ["nameEn", "descriptionJa", "descriptionEn", "difficulty", "nameKana", "municipality", "historyJa", "historyEn", "accessJa", "accessEn", "sourceJa", "sourceEn", "photoCredit"] as const) {
       const v = text(input[k]);
       if (v !== undefined) out[k] = v;
     }
@@ -203,6 +210,8 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
     if (input.distanceKm !== undefined) out.distanceKm = input.distanceKm;
     if (input.elevationGainM !== undefined) out.elevationGainM = input.elevationGainM;
     if (input.expectedTimeMin !== undefined) out.expectedTimeMin = input.expectedTimeMin;
+    if (input.physicalLevel !== undefined) out.physicalLevel = input.physicalLevel;
+    if (input.technicalLevel !== undefined) out.technicalLevel = input.technicalLevel;
     if (input.prefecture !== undefined) out.prefecture = input.prefecture;
     if (input.walkStyle !== undefined) out.walkStyle = input.walkStyle;
     if (input.videoUrl !== undefined) {

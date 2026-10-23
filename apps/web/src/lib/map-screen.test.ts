@@ -13,6 +13,8 @@ const route = (id: string, order: number, over: Partial<MapScreenRoute> = {}): M
   elevationGainM: null,
   expectedTimeMin: null,
   difficulty: null,
+  physicalLevel: null,
+  technicalLevel: null,
   status: "ready",
   spotCount: 0,
   stampedCount: null,
@@ -157,8 +159,8 @@ describe("the bottom sheet", () => {
     expect(sheetHeightPx("full", room)).toBe(room); // the top resting place covers the whole page
   });
 
-  test("pins that are too close always merge: a stop merges once it touches its neighbour, earlier when asked", () => {
-    expect(stopMergePx(false)).toBeGreaterThanOrEqual(26); // a pin is about 30 px wide
+  test("stops merge only when asked: off, just pins on top of each other share one", () => {
+    expect(stopMergePx(false)).toBeLessThan(8); // off: only pins right on top of each other share one
     expect(stopMergePx(true)).toBeGreaterThan(stopMergePx(false));
     expect(MERGE_PX.namedPin).toBeGreaterThan(MERGE_PX.pin);
     expect(MERGE_PX.pin).toBeGreaterThan(MERGE_PX.tag);

@@ -11,7 +11,7 @@ import { defaultLayers, moundStops, offeredLayers, type MapLayer } from "@/lib/m
 import { groupOf } from "@/lib/places";
 import { PlaceGroupIcon } from "@/components/icons";
 import { useGroupNames } from "./PlacesPanel";
-import { boundsOf, lineFeature, mapStyle, markerKind, nextStopId, pinScale, routeLineLayers, sideLineCollection, sideLineLayers, zoomLimits, type Position } from "@/lib/map";
+import { boundsOf, lineFeature, mapStyle, markerKind, nextStopId, pinScale, PIN_NUMBER_MIN_ZOOM, routeLineLayers, sideLineCollection, sideLineLayers, zoomLimits, type Position } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
 import { createClusterElement, createMarkerElement, createPinElement, createPlaceMarkerElement, createTagElement } from "./MapMarker";
 import { MapPickList } from "./MapPickList";
@@ -180,7 +180,10 @@ export function MapScreenCanvas({
           setPick(null);
         });
         // The numbered pins are smaller when zoomed out (the markers read this size from the map's own element).
-        const sizePins = () => containerRef.current?.style.setProperty("--pin", String(pinScale(map!.getZoom())));
+        const sizePins = () => {
+          containerRef.current?.style.setProperty("--pin", String(pinScale(map!.getZoom())));
+          containerRef.current?.toggleAttribute("data-far", map!.getZoom() < PIN_NUMBER_MIN_ZOOM);
+        };
         map.on("zoom", sizePins);
         sizePins();
         map.on("moveend", () => {
@@ -404,7 +407,7 @@ export function MapScreenCanvas({
     if (focus?.stops) {
       const next = nextStopId(focus.stops);
       const stopById = new Map(focus.stops.map((s) => [s.id, s]));
-      // Stops that touch always merge; the accessibility choice only makes them merge earlier.
+      // Stops merge into numbered groups only when the visitor chose it; otherwise each keeps its own pin (see stopMergePx).
       const stopGroups = clusterByPixels(focus.stops.map((s) => pixel(s.id, s.position)), stopMergePx(mergeStops));
       for (const ids of stopGroups) {
         const members = ids.map((id) => stopById.get(id)!);
@@ -417,6 +420,9 @@ export function MapScreenCanvas({
             status: s.status,
             sideTrip: s.sideTrip,
             noStamp: s.noStamp,
+            role: s.role,
+            place: s.kind,
+            stamped: s.stamped === true,
             onSelect: () => {
               setPopup(null);
               onSelectStop(focus.id, s.id);
@@ -426,7 +432,7 @@ export function MapScreenCanvas({
           put(el, s.position, s.sideTrip ? "center" : "bottom");
         } else {
           const orders = members.flatMap((m) => (m.order === null ? [] : [m.order]));
-          const text = orders.length > 0 ? `${Math.min(...orders)}–${Math.max(...orders)}` : String(members.length);
+          const text = orders.length > 1 ? `${Math.min(...orders)}–${Math.max(...orders)}` : String(members.length);
           put(
             createClusterElement({
               text,

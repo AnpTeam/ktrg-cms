@@ -48,6 +48,8 @@ export const spotKinds = [
   "bus_stop",
   "station",
   "parking",
+  "ferry",
+  "campsite",
   "other",
 ] as const;
 export const spotKind = pgEnum("spot_kind", spotKinds);
@@ -78,6 +80,11 @@ export const routes = pgTable(
     distanceKm: numeric("distance_km", { precision: 6, scale: 2, mode: "number" }),
     elevationGainM: integer("elevation_gain_m"),
     difficulty: text("difficulty"),
+    // The mountain-grading levels: physical 1 to 10 and technical "A" to "E" (validated in the API).
+    // How the Japanese name is read, shown over it as furigana (ruby).
+    nameKana: text("name_kana"),
+    physicalLevel: integer("physical_level"),
+    technicalLevel: text("technical_level"),
     expectedTimeMin: integer("expected_time_min"),
     // Osaka, Wakayama or Nara (validated in the API).
     prefecture: text("prefecture"),

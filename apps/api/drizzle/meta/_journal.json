@@ -162,6 +162,27 @@
       "when": 1792648000614,
       "tag": "0022_photo_credit_and_source",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1792714828802,
+      "tag": "0023_route_grading",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1792717998576,
+      "tag": "0024_route_name_kana",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1792719544625,
+      "tag": "0025_spot_kind_ferry_campsite",
+      "breakpoints": true
     }
   ]
 }

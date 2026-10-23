@@ -14,7 +14,7 @@ export const isGuidanceOnly = (kind: PointKind) => GUIDANCE_ONLY.includes(kind);
 /** With no style saved, a goal farther than this from the start is called one-way; a closer one is left unsaid. */
 export const FAR_GOAL_M = 300;
 
-/** `number` is the stop's index along the walk (stamp or not); a side trip (寄り道) has none. */
+/** `number` is the stamp place's number along the walk (1 to N); places without a stamp and side trips (寄り道) have none. */
 export type TrailStop = { type: "stamp"; spot: SpotListItem; number: number | null } | { type: "point"; point: RoutePoint; number: number | null };
 
 export function trailStops(route: Pick<RouteDetail, "spots" | "points">): TrailStop[] {
@@ -24,11 +24,11 @@ export function trailStops(route: Pick<RouteDetail, "spots" | "points">): TrailS
       .filter((point) => !GUIDANCE_ONLY.includes(point.kind))
       .map((point, i) => ({ order: point.sortOrder ?? route.spots.length + i, stop: { type: "point", point, number: null } as TrailStop })),
   ];
-  // Array.sort is stable, so equal orders keep the stamp places first. Numbers follow the walk, side trips left out.
+  // Array.sort is stable, so equal orders keep the stamp places first. Numbers follow the walk, counting only stamp places that are not side trips.
   let n = 0;
   return stops
     .sort((a, b) => a.order - b.order)
-    .map(({ stop }) => ({ ...stop, number: isSideTrip(stop) ? null : ++n }) as TrailStop);
+    .map(({ stop }) => ({ ...stop, number: isSideTrip(stop) || stop.type === "point" ? null : ++n }) as TrailStop);
 }
 
 const positionOf = (stop: TrailStop) => (stop.type === "stamp" ? stop.spot.position : stop.point.position);
@@ -72,6 +72,29 @@ export function journeyOf(stops: readonly TrailStop[], saved: WalkStyle | null =
   return { start, goal, style, turnaround };
 }
 
-/** The number of each place along the walk by id (null for a side trip), stamp places and the others together. */
+/** What a stop is to the walk: where it starts, where it ends, or both at once (a round trip begins and ends in one place). */
+export type StopRole = "start" | "goal" | "both";
+
+/**
+ * The start and end of a walk by stop id, for the map's pin colours. Matches how the page words it: a round trip or an
+ * out-and-back names one start/goal place (and an out-and-back's turnaround is a goal); anything else has a start and a goal.
+ */
+export function stopRoles(journey: Journey | null): Map<string, StopRole> {
+  const roles = new Map<string, StopRole>();
+  if (!journey) return roles;
+  const id = (s: TrailStop) => (s.type === "stamp" ? s.spot.id : s.point.id);
+  const startOnly = journey.style === "loop" || journey.style === "out_and_back";
+  roles.set(id(journey.start), startOnly ? "both" : "start");
+  if (!startOnly && journey.goal) roles.set(id(journey.goal), "goal");
+  if (journey.style === "out_and_back" && journey.turnaround) roles.set(id(journey.turnaround), "goal");
+  return roles;
+}
+
+/** The spoken word for a stop's role, so the Start and Goal pins are not told apart by colour alone; null for an ordinary stop. */
+export function roleLabel(role: StopRole | undefined, words: { start: string; goal: string }): string | null {
+  return role === "both" ? `${words.start}・${words.goal}` : role === "start" ? words.start : role === "goal" ? words.goal : null;
+}
+
+/** The stamp number of each place along the walk by id (null for a side trip and for places without a stamp). */
 export const stopNumbers = (route: Pick<RouteDetail, "spots" | "points">): Map<string, number | null> =>
   new Map(trailStops(route).map((s) => [s.type === "stamp" ? s.spot.id : s.point.id, s.number] as const));

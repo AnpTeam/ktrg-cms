@@ -1,0 +1,1 @@
+ALTER TABLE "routes" ADD COLUMN "name_kana" text;

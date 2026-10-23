@@ -84,8 +84,11 @@ export interface LibraryPhoto {
   uploadedAt: string;
 }
 
-/** The most photos the library lists (the newest first); the photo bucket is small, so one page. */
+/** The most photos the library lists, newest first. */
 export const LIBRARY_LIMIT = 1000;
+
+/** How many files are read from the bucket before sorting: the bucket lists by name, so the newest are only known after reading them all. */
+const LIBRARY_SCAN_LIMIT = 5000;
 
 export interface VideoUpload {
   id: string;
@@ -127,10 +130,11 @@ export function createUploadService(deps: {
     async listPhotos(): Promise<{ ok: true; photos: LibraryPhoto[] } | { ok: false; reason: "uploads_unavailable" }> {
       if (!deps.storage || !deps.publicBaseUrl) return { ok: false, reason: "uploads_unavailable" };
       try {
-        const files = await deps.storage.list("photos/", LIBRARY_LIMIT);
+        const files = await deps.storage.list("photos/", LIBRARY_SCAN_LIMIT);
         const photos = files
           .filter((f) => f.size > 0 && /\.(jpe?g|png|webp)$/i.test(f.key))
           .sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime())
+          .slice(0, LIBRARY_LIMIT)
           .map((f) => ({ key: f.key, url: publicUrl(deps.publicBaseUrl!, f.key), size: f.size, uploadedAt: f.lastModified.toISOString() }));
         return { ok: true, photos };
       } catch (err) {

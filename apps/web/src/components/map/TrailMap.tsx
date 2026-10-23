@@ -14,7 +14,7 @@ import {
   mapStyle,
   markerKind,
   nextStopId,
-  pinScale,
+  pinScale, PIN_NUMBER_MIN_ZOOM,
   routeLineLayers,
   sideLineCollection,
   sideLineLayers,
@@ -23,6 +23,8 @@ import {
   type Position,
 } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
+import type { StopRole } from "@/lib/route-stops";
+import type { PointKind } from "@/lib/point-kinds";
 import { SAME_PLACE_M, spreadMeters, stopMergePx } from "@/lib/map-screen";
 import { groupCounts, groupOf, sortByDistance, type Coord, type MapPlace, type PlaceGroup } from "@/lib/places";
 import { createClusterElement, createMarkerElement, createPlaceMarkerElement } from "./MapMarker";
@@ -32,7 +34,7 @@ import { StopCard } from "./StopCard";
 
 export interface MapStop {
   id: string;
-  /** 1, 2, 3 ... in walking order (stamp or not); the number shown on the marker. null for a side trip. */
+  /** 1, 2, 3 ... in walking order, stamp places only; the number shown on the marker. null for a side trip and a place without a stamp. */
   order: number | null;
   name: string;
   /** The spoken name of the marker, for example "3. 猿坂峠, stamped". */
@@ -48,6 +50,10 @@ export interface MapStop {
   sideTrip?: boolean;
   /** A place where no stamp can be collected (a toilet, a station ...): a square pin, never "next to stamp". */
   noStamp?: boolean;
+  /** Where the walk starts and ends: the pin takes the Start (blue), Goal (orange) or both colours. */
+  role?: StopRole;
+  /** What the place is, shown as a small picture on the pin. */
+  kind?: PointKind;
 }
 
 type Selection = { kind: "stop" | "place"; id: string } | null;
@@ -174,7 +180,10 @@ export function TrailMap({
         map.on("error", () => {});
         map.on("moveend", () => setView((v) => v + 1));
         // The pins are smaller when zoomed out (the markers read this size from the map's own element).
-        const sizePins = () => containerRef.current?.style.setProperty("--pin", String(pinScale(map!.getZoom())));
+        const sizePins = () => {
+          containerRef.current?.style.setProperty("--pin", String(pinScale(map!.getZoom())));
+          containerRef.current?.toggleAttribute("data-far", map!.getZoom() < PIN_NUMBER_MIN_ZOOM);
+        };
         map.on("zoom", sizePins);
         sizePins();
 
@@ -282,13 +291,16 @@ export function TrailMap({
           status: stop.status,
           sideTrip: stop.sideTrip,
           noStamp: stop.noStamp,
+          role: stop.role,
+          place: stop.kind,
+          stamped: stop.stamped === true,
           onSelect: () => setSelected({ kind: "stop", id: stop.id }),
         });
         buttons.set(`stop:${stop.id}`, el);
         put(el, stop.position, stop.sideTrip ? "center" : "bottom");
       } else {
         const orders = members.flatMap((m) => (m.order === null ? [] : [m.order]));
-        const text = orders.length > 0 ? `${Math.min(...orders)}–${Math.max(...orders)}` : String(members.length);
+        const text = orders.length > 1 ? `${Math.min(...orders)}–${Math.max(...orders)}` : String(members.length);
         const el = createClusterElement({
           text,
           label: t`場所 ${text} がここに集まっています。押すと拡大します`,

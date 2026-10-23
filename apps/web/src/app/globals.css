@@ -240,10 +240,12 @@ rt {
 
 /*
  * The trail map (WBS 3.2.1, 3.2.2). A stop is a numbered button; its state is a shape, never
- * colour alone: vermilion seal = stamped, thick ring = next, plain ring = not yet, dashed =
- * signed out, amber outline = caution, barrier stripes = closed.
+ * colour alone: vermilion pin = stamped, big red pin with a thick ring = next, dashed round-ended ring = not yet,
+ * amber outline = caution, barrier stripe = closed. The start is blue, the goal orange, both a blue-to-orange fade.
  */
 .map-marker {
+  --pin-base: #2b2523;
+  --pin-on: #ffffff;
   display: block;
   /* --pin (set on the map by its zoom, 0.55 to 1) makes the pins smaller when the whole course is in view. */
   width: calc(1.9rem * var(--pin, 1));
@@ -254,7 +256,7 @@ rt {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--color-ink);
+  color: var(--pin-on);
   cursor: pointer;
   filter: drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.55));
   -webkit-tap-highlight-color: transparent;
@@ -274,13 +276,15 @@ rt {
   transition: transform 120ms ease-out;
 }
 .map-marker .pin-shape {
-  fill: var(--color-paper);
-  stroke: var(--color-ink);
-  stroke-width: 2.6;
+  /* A solid dark pin with a white outline reads on any map tile; the dark is fixed, not the theme's ink, so a dark page does not turn it pale. */
+  fill: var(--pin-base);
+  stroke: var(--pin-on);
+  stroke-width: 1.5;
   stroke-linejoin: round;
+  stroke-linecap: round;
 }
 .map-marker .pin-text {
-  fill: currentColor;
+  fill: var(--pin-on);
   font-size: 13px;
   font-weight: 700;
   text-anchor: middle;
@@ -289,30 +293,72 @@ rt {
 }
 .map-marker .pin-bar {
   display: none;
-  stroke: var(--color-ink);
+  stroke: var(--pin-on);
   stroke-width: 3;
   stroke-linecap: round;
 }
+.map-marker .pin-disc {
+  fill: #fff;
+}
+/* The number of a pin that has a picture: a white chip on its upper right. */
+.map-marker .pin-chip circle {
+  fill: #fff;
+  stroke: var(--pin-base);
+  stroke-width: 0.9;
+}
+[data-far] .map-marker .pin-chip {
+  display: none;
+}
+.map-marker .pin-chip text {
+  fill: var(--pin-base);
+  font-size: 8.6px;
+  font-weight: 800;
+  text-anchor: middle;
+  dominant-baseline: central;
+  font-variant-numeric: tabular-nums;
+}
+.map-marker .pin-seal {
+  fill: var(--color-shu);
+  stroke: var(--pin-on);
+  stroke-width: 1.5;
+}
 
-/* The state is the shape and the line, never colour alone: seal = stamped, thick ring = next, dashed = not yet. */
+/* The state is the shape and the line, never colour alone: seal red = stamped, big ring = next, dashed (round-ended) = not yet. */
 .map-marker[data-kind="todo"] .pin-shape {
-  stroke-dasharray: 4.5 2.8;
+  stroke-dasharray: 3.4 3;
+}
+.map-marker[data-kind="next"] {
+  z-index: 2;
 }
 .map-marker[data-kind="next"] .pin-shape {
-  stroke: var(--color-accent);
-  stroke-width: 4.2;
-}
-.map-marker[data-kind="stamped"] {
-  color: var(--color-on-shu);
+  fill: var(--color-accent);
+  stroke-width: 2.4;
 }
 .map-marker[data-kind="stamped"] .pin-shape {
   fill: var(--color-shu);
-  stroke: var(--color-on-shu);
 }
 
 /* A place with no stamp: a flag-shaped pin (the shape says it) on a plain light fill. */
 .map-marker[data-no-stamp="true"] .pin-shape {
   fill: var(--color-surface);
+  stroke: var(--pin-base);
+}
+.map-marker[data-no-stamp="true"] .pin-text {
+  fill: var(--pin-base);
+}
+
+/* Where the walk starts and ends takes the badges' colours: lapis blue for the start, orange for the goal, a blue-to-orange fade for both. */
+.map-marker[data-role="start"] .pin-shape {
+  fill: var(--color-ruri);
+}
+.map-marker[data-role="goal"] .pin-shape {
+  fill: var(--color-goal);
+}
+.map-marker[data-role="both"] .pin-shape {
+  fill: url(#pin-start-goal);
+}
+.map-marker[data-role] .pin-text {
+  fill: var(--color-on-ruri);
 }
 
 /* A side trip (寄り道): a small dashed ring standing on its point, with no number. */
@@ -321,30 +367,36 @@ rt {
   height: calc(1.5rem * var(--pin, 1));
 }
 .map-marker[data-side="true"] .pin-shape {
-  stroke-dasharray: 3.2 2.6;
+  stroke-dasharray: 2.8 2.6;
 }
 
 .map-marker[data-status="caution"] .pin-shape {
   stroke: var(--color-caution);
-  stroke-width: 4.2;
+  stroke-width: 2.4;
+  stroke-dasharray: none;
 }
 .map-marker[data-status="closed"] .pin-shape {
   fill: var(--color-surface);
-  stroke-dasharray: 2.4 2.4;
+  stroke: var(--pin-base);
+  stroke-dasharray: 2.8 2.8;
+}
+.map-marker[data-status="closed"] .pin-text {
+  fill: var(--pin-base);
 }
 .map-marker[data-status="closed"] .pin-bar {
   display: block;
+  stroke: var(--pin-base);
 }
 
 .map-marker[aria-pressed="true"] {
   z-index: 3;
+  filter: drop-shadow(0 0 0 transparent) drop-shadow(0 0 4px var(--color-accent)) drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.55));
 }
 .map-marker[aria-pressed="true"] .map-pin-svg {
   transform: scale(1.25);
 }
 .map-marker[aria-pressed="true"] .pin-shape {
-  stroke: var(--color-accent);
-  stroke-width: 4.2;
+  stroke-width: 2.4;
 }
 
 /* The camera on a place that has a photo: its popup shows the picture. */

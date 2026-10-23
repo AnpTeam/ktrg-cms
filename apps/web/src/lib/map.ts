@@ -193,6 +193,9 @@ export function sideLineCollection(lines: readonly (readonly Position[])[]): { t
  */
 export const pinScale = (zoom: number): number => Math.min(1, Math.max(0.55, 0.55 + (zoom - 11) * 0.1125));
 
+/** Below this zoom the pins are small: their number chips are hidden (the picture still says what the place is). */
+export const PIN_NUMBER_MIN_ZOOM = 13;
+
 export type MarkerKind = "neutral" | "todo" | "next" | "stamped";
 
 /** Which marker shape a stop gets. Signed out (stamped === null) is always neutral. */

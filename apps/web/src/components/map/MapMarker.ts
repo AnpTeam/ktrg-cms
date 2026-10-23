@@ -1,5 +1,8 @@
 import type { SpotStatus } from "@/lib/content";
 import type { MarkerKind } from "@/lib/map";
+import type { StopRole } from "@/lib/route-stops";
+import type { PointKind } from "@/lib/point-kinds";
+import { pointIconSvg } from "@/lib/point-icons";
 import { placeIconPaths, type PlaceGroup } from "@/lib/places";
 
 // Everything on the map is a real <button>: it can be reached with the keyboard, has a big tap
@@ -18,18 +21,25 @@ export interface MarkerOptions {
   sideTrip?: boolean;
   /** A place where no stamp can be collected: a square pin instead of a round one. */
   noStamp?: boolean;
+  /** Where the walk starts or ends: blue for the start, orange for the goal, both colours for one place that is both. */
+  role?: StopRole;
+  /** Stamped already: a pin that has a role colour shows it with a small seal on the corner (the colour is the role's). */
+  stamped?: boolean;
+  /** What the place is (a station, a toilet ...): drawn as a small picture on the pin's corner. */
+  place?: PointKind;
   onSelect: () => void;
 }
 
-export function createMarkerElement({ order, label, kind, status, sideTrip, noStamp, onSelect }: MarkerOptions): HTMLButtonElement {
+export function createMarkerElement({ order, label, kind, status, sideTrip, noStamp, role, stamped, place, onSelect }: MarkerOptions): HTMLButtonElement {
   const el = document.createElement("button");
   el.type = "button";
   el.className = "map-marker";
   el.dataset.kind = kind;
   if (sideTrip) el.dataset.side = "true";
   if (noStamp) el.dataset.noStamp = "true";
+  if (role && !sideTrip) el.dataset.role = role;
   el.dataset.status = status;
-  el.appendChild(pinSvg(order, sideTrip ? "dot" : noStamp ? "flag" : "tear"));
+  el.appendChild(pinSvg(order, sideTrip ? "dot" : noStamp ? "flag" : "tear", role && !sideTrip ? role : null, !!stamped, sideTrip ? null : place ?? null));
   el.setAttribute("aria-label", label);
   el.setAttribute("aria-pressed", "false");
   el.addEventListener("click", onSelect);
@@ -42,10 +52,11 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 //   tear  a stop with a stamp: a teardrop with its number
 //   flag  a place without a stamp: a flag-shaped pin with its number
 //   dot   a side trip (寄り道): a small dashed ring, no number
-const TEAR = "M15 39C15 39 3 25.5 3 14.5a12 12 0 0 1 24 0C27 25.5 15 39 15 39Z";
+// The tip is a small arc, not a point, so the pin ends softly.
+const TEAR = "M27 14.5a12 12 0 0 0-24 0C3 23.5 8.2 31.5 12.9 37.7a2.7 2.7 0 0 0 4.2 0C21.8 31.5 27 23.5 27 14.5Z";
 const FLAG = "M6 3h18a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3h-6.5L15 33l-2.5-7H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z";
 
-function pinSvg(order: number | null, shape: "tear" | "flag" | "dot"): SVGSVGElement {
+function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: StopRole | null, stamped: boolean, place: PointKind | null): SVGSVGElement {
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.setAttribute("viewBox", shape === "dot" ? "0 0 20 20" : "0 0 30 40");
   svg.setAttribute("class", "map-pin-svg");
@@ -62,8 +73,40 @@ function pinSvg(order: number | null, shape: "tear" | "flag" | "dot"): SVGSVGEle
     body.setAttribute("d", shape === "tear" ? TEAR : FLAG);
   }
   body.setAttribute("class", "pin-shape");
+  if (role === "both") {
+    // One place that is the start and the goal: blue fading into orange, top to bottom (the colours of the Start / Goal
+    // badge). Every pin draws the same gradient under the same id, so a repeated id is harmless.
+    const defs = document.createElementNS(SVG_NS, "defs");
+    const grad = document.createElementNS(SVG_NS, "linearGradient");
+    grad.setAttribute("id", "pin-start-goal");
+    grad.setAttribute("x1", "0");
+    grad.setAttribute("y1", "0");
+    grad.setAttribute("x2", "0");
+    grad.setAttribute("y2", "1");
+    for (const [offset, cssVar] of [["0.25", "--color-ruri"], ["0.75", "--color-goal"]] as const) {
+      const stop = document.createElementNS(SVG_NS, "stop");
+      stop.setAttribute("offset", offset);
+      stop.setAttribute("stop-color", `var(${cssVar})`);
+      grad.appendChild(stop);
+    }
+    defs.appendChild(grad);
+    svg.appendChild(defs);
+  }
   svg.appendChild(body);
   if (shape !== "dot") {
+    if (place) {
+      // The kind of place as a coloured picture on a white disc in the head, with the number in a chip on the upper right.
+      const disc = document.createElementNS(SVG_NS, "circle");
+      disc.setAttribute("cx", "15");
+      disc.setAttribute("cy", "14.5");
+      disc.setAttribute("r", "9.2");
+      disc.setAttribute("class", "pin-disc");
+      svg.appendChild(disc);
+      const icon = document.createElementNS(SVG_NS, "g");
+      icon.setAttribute("transform", "translate(7.4 6.9) scale(0.62)");
+      icon.innerHTML = pointIconSvg[place];
+      svg.appendChild(icon);
+    }
     // Closed: a bar across the head (drawn only for that state, by the page's own CSS).
     const bar = document.createElementNS(SVG_NS, "line");
     bar.setAttribute("x1", "8");
@@ -73,13 +116,37 @@ function pinSvg(order: number | null, shape: "tear" | "flag" | "dot"): SVGSVGEle
     bar.setAttribute("class", "pin-bar");
     svg.appendChild(bar);
     if (order !== null) {
-      const text = document.createElementNS(SVG_NS, "text");
-      text.setAttribute("x", "15");
-      text.setAttribute("y", "15");
-      text.setAttribute("class", "pin-text");
-      text.textContent = String(order);
-      svg.appendChild(text);
+      if (place) {
+        const chip = document.createElementNS(SVG_NS, "g");
+        chip.setAttribute("class", "pin-chip");
+        const ring = document.createElementNS(SVG_NS, "circle");
+        ring.setAttribute("cx", "25.5");
+        ring.setAttribute("cy", "4.5");
+        ring.setAttribute("r", "6.3");
+        const num = document.createElementNS(SVG_NS, "text");
+        num.setAttribute("x", "25.5");
+        num.setAttribute("y", "5");
+        if (String(order).length > 1) num.setAttribute("font-size", "7.4");
+        num.textContent = String(order);
+        chip.append(ring, num);
+        svg.appendChild(chip);
+      } else {
+        const text = document.createElementNS(SVG_NS, "text");
+        text.setAttribute("x", "15");
+        text.setAttribute("y", "15");
+        text.setAttribute("class", "pin-text");
+        text.textContent = String(order);
+        svg.appendChild(text);
+      }
     }
+  }
+  if (role && stamped && shape !== "dot") {
+    const seal = document.createElementNS(SVG_NS, "circle");
+    seal.setAttribute("cx", "4.5");
+    seal.setAttribute("cy", "5");
+    seal.setAttribute("r", "4.6");
+    seal.setAttribute("class", "pin-seal");
+    svg.appendChild(seal);
   }
   return svg;
 }

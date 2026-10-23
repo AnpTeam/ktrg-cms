@@ -11,6 +11,9 @@ import type { PointKind } from "./point-kinds";
  * east-west and north-south, like the boxes on the official map). The CMS holds it per course; `verified` is
  * false for a rough placement (sample data), and the map then says so.
  */
+import type { TechnicalLevel } from "./grading";
+import type { StopRole } from "./route-stops";
+
 export interface RouteArea extends Position {
   widthM: number;
   heightM: number;
@@ -28,7 +31,7 @@ export interface MapPhoto {
 /** One stamp place of a course, as a row in its list (with or without a position on the map). */
 export interface MapScreenSpot {
   id: string;
-  /** Its index along the walk (stamp or not); null for a side trip. */
+  /** Its stamp number along the walk; null for a side trip and a place without a stamp. */
   order: number | null;
   name: string;
   nameLang: "ja" | "en";
@@ -42,7 +45,7 @@ export interface MapScreenSpot {
 /** A stop on a course's detailed map, with what its bottom sheet shows. Sent to the browser, so plain data only. */
 export interface MapScreenStop {
   id: string;
-  /** 1, 2, 3 ... in walking order (stamp or not); null for a side trip. */
+  /** 1, 2, 3 ... in walking order, stamp places only; null for a side trip and a place without a stamp. */
   order: number | null;
   name: string;
   nameLang: "ja" | "en";
@@ -55,6 +58,8 @@ export interface MapScreenStop {
   sideTrip?: boolean;
   /** A place where no stamp can be collected: a square pin, no stamp card in its sheet. */
   noStamp?: boolean;
+  /** Where the walk starts and ends: the pin takes the Start (blue), Goal (orange) or both colours. */
+  role?: StopRole;
   /** null when signed out. */
   stamped: boolean | null;
   status: SpotStatus;
@@ -94,6 +99,8 @@ export interface MapScreenRoute {
   elevationGainM: number | null;
   expectedTimeMin: number | null;
   difficulty: string | null;
+  physicalLevel: number | null;
+  technicalLevel: TechnicalLevel | null;
   /** "soon" = no published spots yet. */
   status: "ready" | "soon";
   spotCount: number;
@@ -326,9 +333,12 @@ export function spreadLabels(boxes: readonly LabelBox[], area: { left: number; t
   return out;
 }
 
-/** The same for a course's stops. The accessibility choice 「まとめる」 merges them earlier; when it is off they still merge once they touch. */
+/**
+ * The same for a course's stops. Stops merge only when the visitor chose 「近い場所をまとめて表示する」; otherwise every stop
+ * keeps its own pin, and only pins that sit exactly on top of each other (a few px) share one, since they cannot be told apart.
+ */
 export function stopMergePx(mergeEarly: boolean): number {
-  return mergeEarly ? 44 : 26;
+  return mergeEarly ? 44 : 3;
 }
 
 /** Pins this close together (in metres) cannot be pulled apart by zooming: they are chosen from a list instead. */

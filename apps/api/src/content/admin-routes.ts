@@ -63,6 +63,8 @@ const kind = t.Union([
   t.Literal("bus_stop"),
   t.Literal("station"),
   t.Literal("parking"),
+  t.Literal("ferry"),
+  t.Literal("campsite"),
   t.Literal("other"),
 ]);
 const status = t.Union([t.Literal("open"), t.Literal("caution"), t.Literal("closed")]);
@@ -77,6 +79,9 @@ const routeProps = {
   distanceKm: nullable(t.Number({ minimum: 0, maximum: 2000 })),
   elevationGainM: nullable(t.Integer({ minimum: 0, maximum: 10000 })),
   difficulty: nullable(t.String({ maxLength: 100 })),
+  nameKana: nullable(t.String({ maxLength: 200 })),
+  physicalLevel: nullable(t.Integer({ minimum: 1, maximum: 10 })),
+  technicalLevel: t.Union([t.Literal("A"), t.Literal("B"), t.Literal("C"), t.Literal("D"), t.Literal("E"), t.Null()]),
   expectedTimeMin: nullable(t.Integer({ minimum: 0, maximum: 20000 })),
   prefecture: t.Union([prefecture, t.Null()]),
   walkStyle: t.Union([walkStyle, t.Null()]),

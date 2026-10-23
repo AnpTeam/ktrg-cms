@@ -127,6 +127,18 @@ describe("an admin edits a route and its places", () => {
     expect(got.nameEn).toBe("Koyama");
   });
 
+  test("the grading levels are saved and can be cleared", async () => {
+    const { call, cookie, route } = await created();
+    const patch = (body: unknown, updatedAt: string) => call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt, ...(body as object) } });
+    const first = await patch({ physicalLevel: 3, technicalLevel: "B", nameKana: " ともがしま " }, route.updatedAt);
+    expect(first.status).toBe(200);
+    const got = async () => ((await (await call("GET", `/admin/routes/${route.id}`, { cookie })).json()) as Json).route as Json;
+    const saved = await got();
+    expect(saved).toMatchObject({ physicalLevel: 3, technicalLevel: "B", nameKana: "ともがしま" });
+    expect((await patch({ physicalLevel: null, technicalLevel: null }, saved.updatedAt as string)).status).toBe(200);
+    expect(await got()).toMatchObject({ physicalLevel: null, technicalLevel: null });
+  });
+
   test("bad input: 400 invalid_line / invalid_video_url, 422 for the wrong shape", async () => {
     const { call, cookie, route } = await created();
     const patch = (body: unknown) => call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt: route.updatedAt, ...(body as object) } });
@@ -137,6 +149,9 @@ describe("an admin edits a route and its places", () => {
     expect((await patch({ prefecture: "tokyo" })).status).toBe(422);
     expect((await patch({ walkStyle: "zigzag" })).status).toBe(422);
     expect((await patch({ distanceKm: -1 })).status).toBe(422);
+    expect((await patch({ physicalLevel: 0 })).status).toBe(422);
+    expect((await patch({ physicalLevel: 11 })).status).toBe(422);
+    expect((await patch({ technicalLevel: "F" })).status).toBe(422);
     expect((await call("PATCH", `/admin/routes/not-a-uuid`, { cookie, body: { updatedAt: route.updatedAt } })).status).toBe(422);
     expect((await call("POST", "/admin/routes", { cookie, body: { nameJa: "" } })).status).toBe(422);
   });

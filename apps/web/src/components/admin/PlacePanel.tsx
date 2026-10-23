@@ -6,6 +6,7 @@ import { publishBlockers, type PlaceDraft, type PublishBlocker } from "@/lib/adm
 import type { SpotStatus } from "@/lib/admin/types";
 import { Check, Field, inputClass, MultilingualField, NumberInput, TextInput } from "./fields";
 import { GalleryEditor } from "./GalleryEditor";
+import { PhotoLinkDetails } from "./PhotoLinkDetails";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoUpload } from "./PhotoUpload";
 
@@ -44,6 +45,8 @@ export function useKindLabels(): Record<PointKind, string> {
     bus_stop: t`バス停`,
     station: t`駅`,
     parking: t`駐車場`,
+    ferry: t`港・フェリー乗り場`,
+    campsite: t`キャンプ場`,
     other: t`その他`,
   };
 }
@@ -128,10 +131,12 @@ export function PlacePanel(p: PlacePanelProps) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <Field label={t`写真のリンク`} htmlFor={`${id}-photo`} hint={t`https:// で始まるリンクを入れます。空にすると、写真は表示されません。`}>
-              <TextInput id={`${id}-photo`} value={place.photoUrl} onChange={(v) => p.onChange({ photoUrl: v })} maxLength={500} invalid={p.invalidPhoto} />
-            </Field>
             <PhotoUpload onUploaded={(url) => p.onChange({ photoUrl: url })} />
+            <PhotoLinkDetails open={p.invalidPhoto}>
+              <Field label={t`写真のリンク`} htmlFor={`${id}-photo`} hint={t`https:// で始まるリンクを入れます。空にすると、写真は表示されません。`}>
+                <TextInput id={`${id}-photo`} value={place.photoUrl} onChange={(v) => p.onChange({ photoUrl: v })} maxLength={500} invalid={p.invalidPhoto} />
+              </Field>
+            </PhotoLinkDetails>
             <Field label={t`写真の出どころ`} htmlFor={`${id}-photo-credit`} hint={t`写真の下に ℹ︎ と一緒に表示されます。リンクは [表示する文字](https://…) と書きます。`}>
               <TextInput id={`${id}-photo-credit`} value={place.photoCredit} onChange={(v) => p.onChange({ photoCredit: v })} maxLength={500} />
             </Field>

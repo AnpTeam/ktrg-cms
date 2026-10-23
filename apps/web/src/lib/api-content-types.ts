@@ -1,6 +1,8 @@
 // What the API sends for GET /routes, /routes/{id} and /spots/{id} (see apps/api/src/content/content-service.ts).
 // Declared here by hand because Eden types the JSON dates as Date; the times arrive as ISO text.
 
+import type { TechnicalLevel } from "./grading";
+
 export interface PublicRoute {
   id: string;
   nameJa: string;
@@ -10,6 +12,9 @@ export interface PublicRoute {
   distanceKm: number | null;
   elevationGainM: number | null;
   difficulty: string | null;
+  nameKana: string | null;
+  physicalLevel: number | null;
+  technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
   prefecture: string | null;
   walkStyle?: string | null;

@@ -38,6 +38,8 @@ export function createR2Storage(config: R2Config): FileStorage {
     region: "auto",
     endpoint: `https://${config.accountId}.r2.cloudflarestorage.com`,
     credentials: { accessKeyId: config.accessKeyId, secretAccessKey: config.secretAccessKey },
+    // Newer SDKs put a checksum of an EMPTY body into a presigned address, so the browser's real upload never matches it.
+    requestChecksumCalculation: "WHEN_REQUIRED",
   });
   return {
     async put(key, body, contentType) {
@@ -62,7 +64,8 @@ export function createR2Storage(config: R2Config): FileStorage {
           ContentLength: size,
           CacheControl: "public, max-age=31536000, immutable",
         }),
-        { expiresIn: PRESIGN_SECONDS },
+        // The type is signed too: the browser must send exactly this Content-Type, so a file cannot be stored as something else.
+        { expiresIn: PRESIGN_SECONDS, signableHeaders: new Set(["content-type"]) },
       );
     },
     async list(prefix, limit) {

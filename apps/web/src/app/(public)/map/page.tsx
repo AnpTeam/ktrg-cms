@@ -1,4 +1,4 @@
-import { isGuidanceOnly, stopNumbers, trailStops } from "@/lib/route-stops";
+import { isGuidanceOnly, journeyOf, roleLabel, stopNumbers, stopRoles, trailStops } from "@/lib/route-stops";
 import type { Metadata } from "next";
 import { msg } from "@lingui/core/macro";
 import { MapScreen } from "@/components/map/MapScreen";
@@ -29,7 +29,7 @@ function galleryOf(photo: MapPhoto | null, stops: MapScreenStop[] | null): MapPh
  * only for courses whose stops have positions, which today is the one draft course; the rest show their area.
  * TODO(WBS 2.2.1): when the API exists, load a course's detail when it is chosen instead of for all of them.
  */
-async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Viewer, locale: string, words: { stamped: string; closed: string }): Promise<MapScreenRoute[]> {
+async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Viewer, locale: string, words: { stamped: string; closed: string; start: string; goal: string }): Promise<MapScreenRoute[]> {
   return Promise.all(
     [...routes]
       .sort((a, b) => a.order - b.order)
@@ -80,7 +80,9 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
             sideLines = detail.sideLines?.map((s) => s.line) ?? [];
             draft = positioned.some((s) => !s.position?.verified);
             // Each place of the course already carries what its sheet shows: no request per place.
-            stops = trailStops(detail)
+            const trail = trailStops(detail);
+            const roles = stopRoles(journeyOf(trail, detail.walkStyle ?? null));
+            stops = trail
               .map((t): MapScreenStop | null => {
                 const item = t.type === "stamp" ? t.spot : t.point;
                 if (!item.position) return null;
@@ -89,6 +91,8 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
                 const stamped = t.type === "stamp" ? t.spot.stamped : null;
                 const status = t.type === "stamp" ? t.spot.status : "open";
                 const parts = [t.number === null ? spotName.text : `${t.number}. ${spotName.text}`];
+                const roleWord = roleLabel(roles.get(item.id), words);
+                if (roleWord) parts.push(roleWord);
                 if (stamped) parts.push(words.stamped);
                 if (status === "closed") parts.push(words.closed);
                 const note = t.type === "stamp" ? pickText(locale, t.spot.statusNoteJa ?? null, t.spot.statusNoteEn ?? null) : null;
@@ -102,6 +106,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
                   kind: item.kind,
                   ...(item.stopBy ? { sideTrip: true } : {}),
                   ...(t.type === "point" ? { noStamp: true } : {}),
+                  ...(roles.has(item.id) ? { role: roles.get(item.id) } : {}),
                   stamped,
                   status,
                   href: `/spots/${item.id}`,
@@ -148,6 +153,8 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
           elevationGainM: r.elevationGainM,
           expectedTimeMin: r.expectedTimeMin,
           difficulty: r.difficulty,
+          physicalLevel: r.physicalLevel,
+          technicalLevel: r.technicalLevel,
           status: r.status,
           spotCount: r.spotCount,
           stampedCount: r.stampedCount,
@@ -182,7 +189,7 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
   const stampMock = process.env.NODE_ENV !== "production" && isStampMock(stamp) ? stamp : undefined;
 
   const summaries = listed.map((r) => forViewer(r, viewer));
-  const routes = await mapRoutes(summaries, places, viewer, i18n.locale, { stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`) });
+  const routes = await mapRoutes(summaries, places, viewer, i18n.locale, { stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`), start: i18n._(msg`スタート`), goal: i18n._(msg`ゴール`) });
   const next = `?next=${encodeURIComponent("/map")}`;
   // "Show in the map" from a place page: only an existing course (and a stop of it) is taken over from the address.
   const initialRoute = routes.find((r) => r.id === wantedRoute) ?? null;

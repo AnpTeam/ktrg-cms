@@ -1,9 +1,10 @@
 import type { GalleryPhoto, RouteDetail, RoutePoint } from "../content";
 import { stampableByDefault, type PointKind } from "../point-kinds";
 import { areaFromBounds, sketchFromPoints } from "../route-geometry";
-import { climbM, elevationsOf, lengthKm, type LngLatEle } from "./line";
+import { climbM, descentM, elevationsOf, lengthKm, type LngLatEle } from "./line";
 import { capLegs, joinLegs, legsFromJoined, pathStops, reconcileLegs, sidePairs, splitLine, type Leg } from "./legs";
 import type { Translations } from "./content-locales";
+import type { TechnicalLevel } from "../grading";
 import type { AdminRoute, AdminSpot, Prefecture, SpotStatus, WalkStyle } from "./types";
 import { timesFromPrevious } from "../leg-times";
 import { estimateWalkMinutes } from "./walk-time";
@@ -83,6 +84,11 @@ export interface RouteDraft {
   /** True once someone typed a walking time: it no longer follows the distance and climb. */
   timeManual: boolean;
   difficulty: string;
+  /** How the Japanese name is read (furigana shown over it); "" when not set. */
+  nameKana: string;
+  /** The mountain-grading levels (see lib/grading.ts); null until chosen. */
+  physicalLevel: number | null;
+  technicalLevel: TechnicalLevel | null;
   videoUrl: string;
   /** The whole line: the legs joined in order. Only a track imported before there are two stops to cut it at is held here alone. */
   line: LngLatEle[];
@@ -97,7 +103,7 @@ export const emptyDraft = (): RouteDraft => ({
   id: null, updatedAt: null, nameJa: "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
   accessJa: "", accessEn: "", translations: {}, photoUrl: "", photoCredit: "", sourceJa: "", sourceEn: "", prefecture: null, walkStyle: null, municipality: "",
   distanceKm: null, distanceManual: false, elevationGainM: null, climbManual: false, expectedTimeMin: null, timeManual: false,
-  difficulty: "", videoUrl: "", line: [], legs: [], lineVerified: false, lineSource: "", places: [],
+  difficulty: "", nameKana: "", physicalLevel: null, technicalLevel: null, videoUrl: "", line: [], legs: [], lineVerified: false, lineSource: "", places: [],
 });
 
 const s = (v: string | null | undefined) => v ?? "";
@@ -150,7 +156,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
     expectedTimeMin: route.expectedTimeMin,
     // A saved time that is not what the distance and climb give was typed by hand.
     timeManual: route.expectedTimeMin !== null && route.expectedTimeMin !== estimateWalkMinutes(route.distanceKm, route.elevationGainM),
-    difficulty: s(route.difficulty), videoUrl: s(route.videoUrl),
+    difficulty: s(route.difficulty), nameKana: s(route.nameKana), physicalLevel: route.physicalLevel, technicalLevel: route.technicalLevel, videoUrl: s(route.videoUrl),
     line: legs.length > 0 ? joinLegs(pathStops(places), legs).line : line, legs, lineVerified: route.lineVerified, lineSource: s(route.lineSource),
     places,
   };
@@ -193,6 +199,7 @@ export type TextField =
   | "sourceEn"
   | "municipality"
   | "difficulty"
+  | "nameKana"
   | "videoUrl"
   | "lineSource";
 
@@ -202,6 +209,8 @@ export type DraftAction =
   | { type: "translations"; value: Translations }
   | { type: "prefecture"; value: Prefecture | null }
   | { type: "walkStyle"; value: WalkStyle | null }
+  | { type: "physicalLevel"; value: number | null }
+  | { type: "technicalLevel"; value: TechnicalLevel | null }
   | { type: "distance"; value: number | null }
   | { type: "climb"; value: number | null }
   | { type: "time"; value: number | null }
@@ -243,15 +252,20 @@ const HISTORY = 100;
  * The distance and climb of the part that is walked. A leg that is ridden (a ferry across the water) is left out: its time is
  * what the editor typed, not a walking estimate. Without ridden legs this is the whole line.
  */
-export function walkedStats(line: readonly LngLatEle[], legs: readonly Leg[]): { km: number | null; climb: number | null } {
+export function walkedStats(line: readonly LngLatEle[], legs: readonly Leg[]): { km: number | null; climb: number | null; descent: number | null } {
   if (!legs.some((l) => l.ride && !l.side)) {
     const eles = elevationsOf([...line]);
-    return { km: line.length >= 2 ? lengthKm(line) : null, climb: eles ? climbM(eles) : null };
+    return { km: line.length >= 2 ? lengthKm(line) : null, climb: eles ? climbM(eles) : null, descent: eles ? descentM(eles) : null };
   }
   const walked = legs.filter((l) => !l.ride && !l.side);
   const km = Math.round(walked.reduce((n, l) => n + lengthKm(l.points), 0) * 100) / 100;
   const climbs = walked.map((l) => elevationsOf(l.points));
-  return { km: km > 0 ? km : null, climb: climbs.every((c) => c !== null) ? climbs.reduce((n, c) => n + climbM(c!), 0) : null };
+  const all = walked.map((l) => elevationsOf(l.points));
+  return {
+    km: km > 0 ? km : null,
+    climb: climbs.every((c) => c !== null) ? climbs.reduce((n, c) => n + climbM(c!), 0) : null,
+    descent: all.every((c) => c !== null) ? all.reduce((n, c) => n + descentM(c!), 0) : null,
+  };
 }
 
 function withLine(d: RouteDraft, points: LngLatEle[], legs: readonly Leg[] = d.legs): RouteDraft {
@@ -310,6 +324,10 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       return { ...d, prefecture: a.value };
     case "walkStyle":
       return { ...d, walkStyle: a.value };
+    case "physicalLevel":
+      return { ...d, physicalLevel: a.value };
+    case "technicalLevel":
+      return { ...d, technicalLevel: a.value };
     case "distance":
       // Emptying the field hands the number back to the line.
       return a.value === null
@@ -471,6 +489,9 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
     distanceKm: d.distanceKm,
     elevationGainM: d.elevationGainM,
     difficulty: nz(d.difficulty),
+    nameKana: nz(d.nameKana),
+    physicalLevel: d.physicalLevel,
+    technicalLevel: d.technicalLevel,
     expectedTimeMin: d.expectedTimeMin,
     sketch: sketchFromPoints(d.line),
     area: areaFromBounds(bounds),

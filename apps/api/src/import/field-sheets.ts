@@ -4,7 +4,7 @@
 // and a position shared by several different places is dropped (it was copied, not measured).
 import { parseCsv } from "./navivi";
 
-export type SpotKindName = "temple" | "mound" | "view" | "turn" | "danger" | "toilet" | "rest_area" | "drinking_water" | "vending_machine" | "bus_stop" | "station" | "parking" | "other";
+export type SpotKindName = "temple" | "mound" | "view" | "turn" | "danger" | "toilet" | "rest_area" | "drinking_water" | "vending_machine" | "bus_stop" | "station" | "parking" | "ferry" | "campsite" | "other";
 export type StopType = "start" | "end" | "stamp" | "optional" | "info" | "return";
 
 export interface StopRow {

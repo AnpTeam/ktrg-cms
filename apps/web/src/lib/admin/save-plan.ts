@@ -5,6 +5,7 @@ import type { GalleryPhoto } from "../content";
 import { parseVideoFile } from "../video";
 import type { PointKind } from "../point-kinds";
 import type { Prefecture, SpotStatus, WalkStyle } from "./types";
+import type { TechnicalLevel } from "../grading";
 
 // Works out what has to be sent to the API to turn the saved copy of a route into the edited one: which fields, in what
 // order. Pure, so the order of calls (and what is NOT sent) is tested. The editor runs the steps one by one and stops at
@@ -32,6 +33,9 @@ export interface RouteBody {
   elevationGainM: number | null;
   expectedTimeMin: number | null;
   difficulty: string | null;
+  nameKana: string | null;
+  physicalLevel: number | null;
+  technicalLevel: TechnicalLevel | null;
   videoUrl: string | null;
   historyJa: string | null;
   historyEn: string | null;
@@ -105,6 +109,9 @@ export function routeBody(d: RouteDraft): RouteBody {
     elevationGainM: d.elevationGainM,
     expectedTimeMin: d.expectedTimeMin,
     difficulty: nullIfEmpty(d.difficulty),
+    nameKana: nullIfEmpty(d.nameKana),
+    physicalLevel: d.physicalLevel,
+    technicalLevel: d.technicalLevel,
     videoUrl: nullIfEmpty(d.videoUrl),
     historyJa: nullIfEmpty(d.historyJa),
     historyEn: nullIfEmpty(d.historyEn),
