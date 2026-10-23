@@ -777,7 +777,7 @@ msgid "コース定数 ＝ 1.8 × 時間（h） ＋ 0.3 × 距離（km） ＋ 10
 msgstr "Course constant = 1.8 × hours + 0.3 × distance (km) + 10 × climb (km) + 0.6 × descent (km)"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:46
+#: src/app/(public)/routes/[id]/page.tsx:56
 #: src/components/admin/LivePreview.tsx:31
 #: src/components/RouteJourney.tsx:34
 #: src/components/RouteJourney.tsx:96
@@ -878,6 +878,10 @@ msgstr "This route does not exist yet"
 #: src/components/admin/DirectoryPicker.tsx:174
 msgid "このルートに追加"
 msgstr "Add to this route"
+
+#: src/app/(public)/routes/[id]/page.tsx:46
+msgid "このルートのお知らせをフィードで受け取る"
+msgstr "Follow this route's notices in a feed reader"
 
 #: src/components/admin/RallyMemberPicker.tsx:65
 msgid "このルートの経由地をすべて"
@@ -1143,7 +1147,7 @@ msgid "すぐ{turnWord}"
 msgstr "{turnWord} now"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:46
+#: src/app/(public)/routes/[id]/page.tsx:56
 #: src/components/admin/LivePreview.tsx:31
 #: src/components/RouteJourney.tsx:31
 #: src/components/RouteJourney.tsx:92
@@ -1275,7 +1279,7 @@ msgid "スタンプ場所 {spotCount}か所"
 msgstr "{spotCount} stamp locations"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:46
+#: src/app/(public)/routes/[id]/page.tsx:56
 #: src/components/admin/LivePreview.tsx:31
 msgid "スタンプ済み"
 msgstr "stamped"
@@ -2068,7 +2072,7 @@ msgid "ルートを読み込めませんでした。しばらくしてから、�
 msgstr "Could not load the routes. Please wait a moment and reopen the page."
 
 #: src/app/(public)/grading/page.tsx:39
-#: src/app/(public)/routes/[id]/page.tsx:36
+#: src/app/(public)/routes/[id]/page.tsx:40
 msgid "ルート一覧"
 msgstr "All routes"
 
@@ -4806,7 +4810,7 @@ msgid "閉店・撤去"
 msgstr "Closed for good"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:46
+#: src/app/(public)/routes/[id]/page.tsx:56
 #: src/components/admin/LivePreview.tsx:31
 #: src/components/StatusWord.tsx:13
 msgid "閉鎖中"
