@@ -5,10 +5,11 @@ import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { useCategoryNames } from "@/components/map/PlacesPanel";
 import { pickList, type DirectoryPlace } from "@/lib/admin/directory-pick";
-import { listRequest, type ListPage, type OneItem } from "@/lib/admin/lists/list-client";
+import { listRequest, type ListAnswer, type ListPage, type OneItem } from "@/lib/admin/lists/list-client";
 import type { ErrorKey } from "@/lib/api-error";
 import { distanceLabel, placeCategories, type Coord } from "@/lib/places";
 
+const MAX_PAGES = 10;
 const chip = "inline-flex h-9 min-h-0 min-w-0 items-center justify-center rounded-lg border border-line bg-paper px-3 text-sm font-bold hover:bg-surface disabled:opacity-40";
 
 /** A directory row as the admin list sends it, with what the manager needs. */
@@ -48,24 +49,52 @@ export function NearbyPlacesManager({ routeId, from }: { routeId: string; from: 
   const [category, setCategory] = useState("parking");
   const [query, setQuery] = useState("");
 
-  // Read again after every change: `version` is what the effect watches.
+  // Read again after every change: `version` is what the effects watch.
   const [version, setVersion] = useState(0);
+  const [words, setWords] = useState("");
+  useEffect(() => {
+    const timer = setTimeout(() => setWords(query.trim()), 250); // ask the server once typing pauses
+    return () => clearTimeout(timer);
+  }, [query]);
+
   useEffect(() => {
     let live = true;
     void (async () => {
-      const [mine, every] = await Promise.all([
-        listRequest<ListPage>("GET", `directory?filter=${encodeURIComponent(`routeId:${routeId}`)}`),
-        listRequest<ListPage>("GET", "directory"),
-      ]);
+      const mine = await listRequest<ListPage>("GET", `directory?filter=${encodeURIComponent(`routeId:${routeId}`)}`);
       if (!live) return;
       if (mine.ok) setLinked(mine.data.items.map(rowOf));
       else setError(mine.key);
-      if (every.ok) setAll(every.data.items.map(rowOf));
     })();
     return () => {
       live = false;
     };
   }, [routeId, version]);
+
+  // The places to offer: the server narrows by kind and words (the list is paged by 50), and every page is read.
+  // shortcut: at most MAX_PAGES pages (500 places) are read; narrow with the kind and words when there are more.
+  useEffect(() => {
+    let live = true;
+    void (async () => {
+      const found: Row[] = [];
+      let cursor: string | null = null;
+      for (let page = 0; page < MAX_PAGES; page++) {
+        const params = new URLSearchParams();
+        if (category) params.append("filter", `category:${category}`);
+        if (words) params.set("q", words);
+        if (cursor) params.set("cursor", cursor);
+        const res: ListAnswer<ListPage> = await listRequest<ListPage>("GET", `directory?${params}`);
+        if (!live) return;
+        if (!res.ok) return setError(res.key);
+        found.push(...res.data.items.map(rowOf));
+        cursor = res.data.next;
+        if (!cursor) break;
+      }
+      setAll(found);
+    })();
+    return () => {
+      live = false;
+    };
+  }, [version, category, words]);
 
   async function link(row: Row, to: string | null) {
     setBusy(row.id);
@@ -77,9 +106,10 @@ export function NearbyPlacesManager({ routeId, from }: { routeId: string; from: 
   }
 
   const candidates = (all ?? []).filter((p) => p.routeId !== routeId);
+  // The server has already narrowed by kind and words; this only puts them nearest first.
   const rows = pickList(
     candidates.filter((p) => Number.isFinite(p.lat)),
-    { from, category, query },
+    { from, category: "", query: "", limit: 100 },
   ) as (Row & { meters: number | null })[];
   const distance = (meters: number | null) => {
     if (meters === null) return null;

@@ -189,6 +189,29 @@ describe("places", () => {
   });
 });
 
+describe("unpublishing a whole route", () => {
+  test("every published place goes back to draft in one step, one audit row each; the route stays listed as coming soon", async () => {
+    const r = await route();
+    const other = await route({ nameJa: "別のルート" });
+    const ready = { lat: 34.3, lng: 135.1, positionVerified: true, positionSource: "公式", permissionConfirmed: true };
+    const a = await spot(r.id, ready);
+    const b = await spot(r.id, { ...ready, nameJa: "二つ目" });
+    const draft = await spot(r.id, { nameJa: "下書き" });
+    const elsewhere = await spot(other.id, ready);
+    for (const s of [a, b, elsewhere]) await svc.publishSpot(ADMIN, s.id);
+    const before = audit.rows.length;
+    const done = await svc.unpublishRouteSpots(ADMIN, r.id);
+    expect(done.ok && done.value.map((s) => s.id).sort()).toEqual([a.id, b.id].sort());
+    expect(audit.rows.length - before).toBe(2);
+    expect(await svc.publicSpot(a.id)).toBeNull();
+    expect(await svc.publicSpot(draft.id)).toBeNull();
+    expect(await svc.publicSpot(elsewhere.id)).not.toBeNull();
+    expect((await svc.publicRoutes()).find((x) => x.id === r.id)?.status).toBe("soon");
+    expect(await svc.unpublishRouteSpots(ADMIN, r.id)).toEqual({ ok: true, value: [] });
+    expect(await svc.unpublishRouteSpots(ADMIN, crypto.randomUUID())).toEqual({ ok: false, reason: "not_found" });
+  });
+});
+
 describe("the route lists", () => {
   test("do not carry the legs of a line, but the editor's own read of one route does", async () => {
     const A = "11111111-1111-4111-8111-111111111111";

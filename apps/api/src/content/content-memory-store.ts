@@ -50,7 +50,7 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       const row: RouteRow = {
         id: uuid(), nameEn: null, descriptionJa: null, descriptionEn: null, distanceKm: null,
         elevationGainM: null, difficulty: null, nameKana: null, accessPoints: [], physicalLevel: null, technicalLevel: null, expectedTimeMin: null, prefecture: null, walkStyle: null, municipality: null, geometry: null, lineVerified: false, lineSource: null,
-        videoUrl: null, videoUpdatedAt: null, historyJa: null, historyEn: null, accessJa: null, accessEn: null, sourceJa: null, sourceEn: null, photoUrl: null, photoCredit: null, sortOrder: routes.size + 1, createdAt: at, updatedAt: at, ...fields,
+        videoUrl: null, videoUpdatedAt: null, videoSubtitles: false, historyJa: null, historyEn: null, accessJa: null, accessEn: null, sourceJa: null, sourceEn: null, photoUrl: null, photoCredit: null, sortOrder: routes.size + 1, createdAt: at, updatedAt: at, ...fields,
         translations: mergeTranslations({}, fields.translations),
       };
       routes.set(row.id, row);
@@ -116,6 +116,18 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       spots.set(id, next);
       await audit.record({ actorUserId: actor, action: published ? "spot.publish" : "spot.unpublish", targetId: id });
       return next;
+    },
+    async unpublishRouteSpots(actor, routeId) {
+      if (!routes.has(routeId)) return null;
+      const changed: SpotRow[] = [];
+      for (const cur of [...spots.values()]) {
+        if (cur.routeId !== routeId || !cur.published) continue;
+        const next: SpotRow = { ...cur, published: false, updatedAt: stampTime() };
+        spots.set(cur.id, next);
+        await audit.record({ actorUserId: actor, action: "spot.unpublish", targetId: cur.id });
+        changed.push(next);
+      }
+      return changed;
     },
     async deleteSpot(actor, id) {
       const cur = spots.get(id);

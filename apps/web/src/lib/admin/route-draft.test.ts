@@ -10,7 +10,7 @@ const fresh = () => initialState(emptyDraft());
 const serverRoute = (over: Partial<AdminRoute> = {}): AdminRoute => ({
   id: "r1", nameJa: "甲山から孝子越え", nameEn: null, translations: {}, descriptionJa: null, descriptionEn: null, distanceKm: null, elevationGainM: null,
   difficulty: null, nameKana: null, physicalLevel: null, technicalLevel: null, expectedTimeMin: null, prefecture: "wakayama", walkStyle: null, municipality: null, geometry: null, lineVerified: false, lineSource: null,
-  videoUrl: null, historyJa: null, historyEn: null, accessJa: null, accessEn: null, photoUrl: null, sortOrder: 2, createdAt: "2026-10-19T00:00:00.000Z", updatedAt: "2026-10-19T00:00:00.000Z", ...over,
+  videoUrl: null, videoSubtitles: false, historyJa: null, historyEn: null, accessJa: null, accessEn: null, photoUrl: null, sortOrder: 2, createdAt: "2026-10-19T00:00:00.000Z", updatedAt: "2026-10-19T00:00:00.000Z", ...over,
 });
 const serverSpot = (id: string, over: Partial<AdminSpot> = {}): AdminSpot => ({
   id, routeId: "r1", nameJa: "虎島の経塚", nameEn: null, translations: {}, descriptionJa: null, descriptionEn: null, historyJa: null, historyEn: null, lat: null, lng: null, positionVerified: false,

@@ -54,6 +54,10 @@ jobs:
       - name: Lint
         run: bun run --if-present lint
 
+      # Fails when a message has no English text (it would show Japanese on the English site); extracts first.
+      - name: English strings are complete
+        run: bun run --cwd apps/web check:catalogs
+
       # Fails when the schema files changed but no migration was written for it (run: bun run ktrg db generate <name>).
       - name: Migrations match the schema
         run: bun run ktrg db drift

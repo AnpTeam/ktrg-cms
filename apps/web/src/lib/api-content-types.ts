@@ -24,6 +24,8 @@ export interface PublicRoute {
   videoUrl: string | null;
   /** When the video was last put there or replaced (ISO); null for none. */
   videoUpdatedAt?: string | null;
+  /** The video has subtitles beside it. */
+  videoSubtitles?: boolean;
   /** When the route was last saved (ISO). */
   updatedAt?: string;
   historyJa: string | null;
@@ -54,8 +56,8 @@ export interface PublicRally {
   nameEn: string | null;
   sortOrder: number;
   places: { id: string; routeId: string; nameJa: string; nameEn: string | null }[];
-  /** Each course with the ids of its published stamp places. */
-  courses: { routeId: string; nameJa: string; nameEn: string | null; spotIds: string[] }[];
+  /** Each course with its published stamp places and their status. */
+  courses: { routeId: string; nameJa: string; nameEn: string | null; spots: { id: string; status: string }[] }[];
 }
 
 export interface PublicSpot {

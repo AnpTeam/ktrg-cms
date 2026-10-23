@@ -39,6 +39,7 @@ export interface RouteBody {
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   videoUrl: string | null;
+  videoSubtitles: boolean;
   historyJa: string | null;
   historyEn: string | null;
   accessJa: string | null;
@@ -116,6 +117,7 @@ export function routeBody(d: RouteDraft): RouteBody {
     physicalLevel: d.physicalLevel,
     technicalLevel: d.technicalLevel,
     videoUrl: nullIfEmpty(d.videoUrl),
+    videoSubtitles: d.videoSubtitles,
     historyJa: nullIfEmpty(d.historyJa),
     historyEn: nullIfEmpty(d.historyEn),
     accessJa: nullIfEmpty(d.accessJa),

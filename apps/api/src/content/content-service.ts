@@ -72,6 +72,7 @@ export interface PublicRoute {
   municipality: string | null;
   videoUrl: string | null;
   videoUpdatedAt: Date | null;
+  videoSubtitles: boolean;
   updatedAt: Date;
   historyJa: string | null;
   historyEn: string | null;
@@ -133,6 +134,7 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     municipality: r.municipality,
     videoUrl: r.videoUrl,
     videoUpdatedAt: r.videoUpdatedAt,
+    videoSubtitles: r.videoSubtitles,
     updatedAt: r.updatedAt,
     historyJa: r.historyJa,
     historyEn: r.historyEn,
@@ -238,6 +240,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (v && !isAllowedVideoUrl(v, photoHosts)) return bad("invalid_video_url");
       out.videoUrl = v;
     }
+    if (input.videoSubtitles !== undefined) out.videoSubtitles = input.videoSubtitles;
     if (input.photoUrl !== undefined) {
       const v = text(input.photoUrl);
       if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");
@@ -331,7 +334,11 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
         if ((changes.geometry !== undefined ? changes.geometry : current.route.geometry) === null) return bad("invalid_line");
       }
       // The video counts as updated when its address changes (put there, replaced, or removed).
-      if (changes.videoUrl !== undefined && changes.videoUrl !== current.route.videoUrl) changes.videoUpdatedAt = changes.videoUrl ? new Date() : null;
+      if (changes.videoUrl !== undefined && changes.videoUrl !== current.route.videoUrl) {
+        changes.videoUpdatedAt = changes.videoUrl ? new Date() : null;
+        // Subtitles belong to the file: another video has none until they are uploaded for it.
+        if (changes.videoSubtitles === undefined) changes.videoSubtitles = false;
+      }
       const r = await store.updateRoute(actor, id, date(expected), changes);
       if (r === null) return bad("not_found");
       if (r === "conflict") return bad("conflict");
@@ -403,6 +410,12 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
 
     async unpublishSpot(actor: string, id: string): Promise<Result<SpotRow>> {
       const r = await store.setPublished(actor, id, false);
+      return r ? ok(r) : bad("not_found");
+    },
+
+    /** Takes every published place of a route off the site at once; the route stays in the list as coming soon. */
+    async unpublishRouteSpots(actor: string, routeId: string): Promise<Result<SpotRow[]>> {
+      const r = await store.unpublishRouteSpots(actor, routeId);
       return r ? ok(r) : bad("not_found");
     },
 

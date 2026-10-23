@@ -131,7 +131,7 @@ describe("placeItemFromApi", () => {
 
 describe("ralliesFromApi", () => {
   const places = { id: "r-p", kind: "places" as const, nameJa: "経塚", nameEn: "Mounds", sortOrder: 1, courses: [], places: [{ id: "s1", routeId: "c1", nameJa: "一", nameEn: null }, { id: "s2", routeId: "c1", nameJa: "二", nameEn: null }] };
-  const courses = { id: "r-c", kind: "course" as const, nameJa: "全部", nameEn: null, sortOrder: 2, places: [], courses: [{ routeId: "c1", nameJa: "道1", nameEn: null, spotIds: ["s1", "s2"] }, { routeId: "c2", nameJa: "道2", nameEn: null, spotIds: [] }] };
+  const courses = { id: "r-c", kind: "course" as const, nameJa: "全部", nameEn: null, sortOrder: 2, places: [], courses: [{ routeId: "c1", nameJa: "道1", nameEn: null, spots: [{ id: "s1", status: "open" }, { id: "s2", status: "open" }] }, { routeId: "c2", nameJa: "道2", nameEn: null, spots: [] }] };
   test("a rally of places has a slot for each place, stamped from the visitor's stamps", () => {
     const [r] = ralliesFromApi([places], new Set(["s2"]));
     expect(r).toMatchObject({ id: "r-p", kind: "rally", total: 2, stamped: 1 });
@@ -141,5 +141,10 @@ describe("ralliesFromApi", () => {
     const [r] = ralliesFromApi([courses], new Set(["s1", "s2"]));
     expect(r!.slots.map((s) => s.stamped)).toEqual([true, false]);
     expect(r!.stamped).toBe(1);
+  });
+  test("a closed place that nobody stamped counts as done, like on the server; an open one does not", () => {
+    const closed = { ...courses, courses: [{ routeId: "c1", nameJa: "道1", nameEn: null, spots: [{ id: "s1", status: "open" }, { id: "s2", status: "closed" }] }] };
+    expect(ralliesFromApi([closed], new Set(["s1"]))[0]!.slots[0]!.stamped).toBe(true);
+    expect(ralliesFromApi([closed], new Set(["s2"]))[0]!.slots[0]!.stamped).toBe(false);
   });
 });

@@ -38,3 +38,17 @@ describe("changing one field of a place", () => {
     expect(changed.body.item).toMatchObject({ nameJa: "新しい名前", category: "parking", status: "seasonal" });
   });
 });
+
+describe("the public places answer", () => {
+  test("more than the limit are cut, and the cut is logged once", async () => {
+    const { MAX_PUBLIC_PLACES, publicPlaceRoutes } = await import("./place-directory");
+    const rows = Array.from({ length: MAX_PUBLIC_PLACES + 5 }, (_, i) => ({ id: crypto.randomUUID(), category: "toilet", routeId: null, nameJa: `p${i}`, nameEn: null, descriptionJa: null, descriptionEn: null, hoursJa: null, hoursEn: null, closedDaysJa: null, closedDaysEn: null, lat: 34, lng: 135, address: null, phone: null, website: null, photoUrl: null, photoCredit: null, status: "open", lastVerified: null }));
+    const logs: string[] = [];
+    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(publicPlaceRoutes(() => ({ publicPlaces: async () => rows }) as never, (m) => logs.push(m)));
+    for (let i = 0; i < 2; i++) {
+      const body = (await (await app.handle(new Request("http://localhost/api/v1/places"))).json()) as { places: unknown[] };
+      expect(body.places).toHaveLength(MAX_PUBLIC_PLACES);
+    }
+    expect(logs).toHaveLength(1);
+  });
+});

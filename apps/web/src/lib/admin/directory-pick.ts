@@ -1,8 +1,7 @@
-// Choosing a place from the site's places directory (parking, toilets, stations ...) to put on a route as a waypoint.
+// Listing places of the site's directory (parking, toilets, stations ...) nearest first, to link them to a route.
 // Pure, so it is tested without a browser.
 
-import { distanceMeters, placeCategories, type Coord, type PlaceCategory } from "@/lib/places";
-import { isPointKind, type PointKind } from "@/lib/point-kinds";
+import { distanceMeters, type Coord } from "@/lib/places";
 
 /** A directory place as GET /places sends it (only what the picker needs). */
 export interface DirectoryPlace {
@@ -19,11 +18,6 @@ export interface DirectoryRow extends DirectoryPlace {
   /** Straight-line metres from the reference point; null when there is none. */
   meters: number | null;
 }
-
-/** The waypoint kind of a directory category: the same word where there is one (a shop or a cafe is "other"). */
-export const kindOfCategory = (category: string): PointKind => (isPointKind(category) ? category : "other");
-
-export const isCategory = (c: string): c is PlaceCategory => (placeCategories as readonly string[]).includes(c);
 
 const squash = (s: string) => s.normalize("NFKC").toLowerCase().replace(/\s+/g, "");
 

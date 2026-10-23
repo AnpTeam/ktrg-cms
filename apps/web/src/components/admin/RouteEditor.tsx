@@ -334,26 +334,28 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
   // Takes every published waypoint off the site at once. The route itself stays in the list, shown as "coming soon" (準備中).
   async function unpublishAll() {
     const live = draft.places.filter((p) => p.id && p.published);
-    if (live.length === 0 || busyKey) return;
+    if (!draft.id || live.length === 0 || busyKey) return;
     const count = live.length;
     if (!window.confirm(t`公開中の${count}か所を、すべて公開をやめます。ルートは「準備中」として一覧に残ります。よろしいですか？`)) return;
     setBusyKey("all");
     setMessage(null);
+    // One request: the server takes them all back in one step, so it is all or nothing.
+    const res = await outcome(api.admin.routes({ id: draft.id })["unpublish-spots"].post());
+    if (!res.ok) {
+      setMessage({ kind: "error", text: messages[res.key] });
+      setBusyKey(null);
+      return;
+    }
     let places = savedRef.current.places;
-    let done = 0;
-    for (const place of live) {
-      const res = await outcome(api.admin.spots({ id: place.id! }).unpublish.post());
-      if (!res.ok) {
-        setMessage({ kind: "error", text: messages[res.key] });
-        break;
-      }
-      const next: PlaceDraft = { ...placeFromServer(res.data.spot), key: place.key };
-      dispatch({ type: "savedPlace", key: place.key, place: next });
-      places = places.map((p) => (p.key === place.key ? next : p));
-      done++;
+    for (const spot of res.data.spots) {
+      const key = draft.places.find((p) => p.id === spot.id)?.key;
+      if (!key) continue;
+      const next: PlaceDraft = { ...placeFromServer(spot), key };
+      dispatch({ type: "savedPlace", key, place: next });
+      places = places.map((p) => (p.key === key ? next : p));
     }
     setSavedCopy({ ...savedRef.current, places });
-    if (done === count) setMessage({ kind: "ok", text: t`${count}か所の公開をやめました。ルートは「準備中」として一覧に残ります。` });
+    setMessage({ kind: "ok", text: t`${count}か所の公開をやめました。ルートは「準備中」として一覧に残ります。` });
     setBusyKey(null);
   }
 
@@ -578,7 +580,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     <TextInput id="route-video" value={draft.videoUrl} onChange={text("videoUrl")} maxLength={500} invalid={problemOf("video_link")} />
                   </Field>
                   <VideoUpload onUploaded={text("videoUrl")} />
-                  {parseVideoFile(draft.videoUrl) ? <SubtitleUpload videoUrl={draft.videoUrl} /> : null}
+                  {parseVideoFile(draft.videoUrl) ? <SubtitleUpload videoUrl={draft.videoUrl} uploaded={draft.videoSubtitles} onUploaded={() => dispatch({ type: "videoSubtitles", value: true })} /> : null}
                   {problemOf("video_link") ? <p role="alert" className="text-base font-bold text-danger">{t`YouTube か Vimeo、またはアップロードした動画の、https:// で始まるリンクにしてください。`}</p> : null}
                 </Section>
               </>

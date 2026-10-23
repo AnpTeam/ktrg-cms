@@ -127,7 +127,7 @@ export function createApp(
     .use(publicContentRoutes(() => getServices().content))
     .use(uploadRoutes(getServices, opts))
     .use(rallyAdminRoutes(getServices, opts))
-    .use(rallyPublicRoutes(getServices))
+    .use(rallyPublicRoutes(getServices, env.NODE_ENV === "production" ? 10_000 : 0))
     .use(stampRoutes(getServices, opts))
     .use(navigationRoutes(getServices, opts))
     .use(stampAdminRoutes(getServices, opts))

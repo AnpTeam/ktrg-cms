@@ -215,13 +215,23 @@ export const placeDirectoryList: ListDef<"directory", typeof PLACE_FIELDS, Place
 };
 
 /** What visitors get: published places with a checked position, without the admin's fields. `?route=<id>` keeps one course's. */
-export function publicPlaceRoutes(getPlaces: () => PlaceService) {
+/** The most places one answer holds. Past this the rest are left out, so it is logged (once) instead of happening silently. */
+export const MAX_PUBLIC_PLACES = 1000;
+
+export function publicPlaceRoutes(getPlaces: () => PlaceService, log: (message: string) => void = console.error) {
+  let warned = false;
   return new Elysia({ detail: { tags: ["Content"] } }).get(
     "/places",
-    async ({ query }) => ({
-      ok: true as const,
-      // shortcut: the whole list in one answer, fine for a few hundred places; add a map-box filter and paging before thousands.
-      places: (await getPlaces().publicPlaces(query.route)).slice(0, 1000).map((p) => ({
+    async ({ query }) => {
+      const all = await getPlaces().publicPlaces(query.route);
+      if (all.length > MAX_PUBLIC_PLACES && !warned) {
+        warned = true;
+        log(`[places] ${all.length} published places: only the first ${MAX_PUBLIC_PLACES} are sent; add paging or a map-box filter`);
+      }
+      return {
+        ok: true as const,
+        // shortcut: the whole list in one answer, fine for a few hundred places; add a map-box filter and paging before thousands.
+        places: all.slice(0, MAX_PUBLIC_PLACES).map((p) => ({
         id: p.id,
         category: p.category,
         routeId: p.routeId,
@@ -242,8 +252,9 @@ export function publicPlaceRoutes(getPlaces: () => PlaceService) {
         photoCredit: p.photoCredit,
         status: p.status,
         lastVerified: p.lastVerified,
-      })),
-    }),
+        })),
+      };
+    },
     { query: t.Object({ route: t.Optional(t.String({ format: "uuid" })) }) },
   );
 }

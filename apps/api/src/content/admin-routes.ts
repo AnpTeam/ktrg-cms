@@ -104,6 +104,7 @@ const routeProps = {
   lineVerified: t.Boolean(),
   lineSource: nullable(t.String({ maxLength: 500 })),
   videoUrl: nullable(t.String({ maxLength: 500 })),
+  videoSubtitles: t.Boolean(),
   historyJa: nullable(t.String({ maxLength: 20000 })),
   historyEn: nullable(t.String({ maxLength: 20000 })),
   accessJa: nullable(t.String({ maxLength: 20000 })),
@@ -260,6 +261,14 @@ export function adminContentRoutes(getServices: () => ContentServices, opts: Rou
       async ({ user, params, set }) => {
         const r = await svc().publishSpot(user.id, params.id);
         return r.ok ? { ok: true as const, spot: spotOut(r.value) } : fail(set, statusOf(r.reason), r.reason);
+      },
+      { auth: "spot.publish", rateLimit: { adminWriteUser: "user.id" }, params: idParams },
+    )
+    .post(
+      "/routes/:id/unpublish-spots",
+      async ({ user, params, set }) => {
+        const r = await svc().unpublishRouteSpots(user.id, params.id);
+        return r.ok ? { ok: true as const, spots: r.value.map(spotOut) } : fail(set, statusOf(r.reason), r.reason);
       },
       { auth: "spot.publish", rateLimit: { adminWriteUser: "user.id" }, params: idParams },
     )

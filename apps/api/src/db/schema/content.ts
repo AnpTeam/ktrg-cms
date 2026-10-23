@@ -118,6 +118,8 @@ export const routes = pgTable(
     videoUrl: text("video_url"),
     // When the video was last put there or replaced (shown under it as "last updated").
     videoUpdatedAt: timestamp("video_updated_at", { withTimezone: true }),
+    // Whether the uploaded video has subtitles beside it (the .vtt named like the video); the player asks for them only then.
+    videoSubtitles: boolean("video_subtitles").notNull().default(false),
     // A picture of the route: an https address (an upload comes when a storage provider is chosen).
     photoUrl: text("photo_url"),
     // Who took the picture / where it comes from. Shown on it; may hold links (see the web app's rich-text format).

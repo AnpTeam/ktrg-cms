@@ -251,6 +251,20 @@ export function createDrizzleContentStore(db: Db): ContentStore {
       });
     },
 
+    async unpublishRouteSpots(actor, routeId) {
+      return db.transaction(async (tx) => {
+        const [route] = await tx.select({ id: routes.id }).from(routes).where(eq(routes.id, routeId)).limit(1);
+        if (!route) return null;
+        const rows = await tx
+          .update(spots)
+          .set({ published: false, updatedAt: sql`clock_timestamp()` })
+          .where(and(eq(spots.routeId, routeId), eq(spots.published, true)))
+          .returning();
+        for (const row of rows) await writeAudit(tx, { actorUserId: actor, action: "spot.unpublish", targetId: row.id });
+        return withSpotTexts(tx, rows);
+      });
+    },
+
     async deleteSpot(actor, id) {
       return db.transaction(async (tx) => {
         const [exists] = await tx.select({ id: spots.id }).from(spots).where(eq(spots.id, id)).limit(1);

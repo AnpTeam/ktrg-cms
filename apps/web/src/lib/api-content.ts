@@ -148,6 +148,7 @@ export function routeDetailFromApi(
     sideLines: (r.sideLines ?? []).map((s) => ({ spotId: s.spotId, line: s.coordinates.map(([lng, lat]) => ({ lat, lng })) })),
     videoUrl: r.videoUrl,
     videoUpdatedAt: r.videoUpdatedAt ?? null,
+    videoSubtitles: r.videoSubtitles === true,
     updatedAt: r.updatedAt ?? null,
     photoUrl: r.photoUrl,
     photoCredit: r.photoCredit ?? null,
@@ -216,6 +217,10 @@ export const fetchPublicSpot = cache(async (id: string): Promise<PublicSpot | nu
   return okBody<{ spot: PublicSpot }>(await getJson(`/spots/${encodeURIComponent(id)}`))?.spot ?? null;
 });
 
+/** A course is finished when it has places and every one is stamped, a closed one counting as done (the server's rule, rallies/progress.ts). */
+const courseFinished = (spots: readonly { id: string; status: string }[], stamped: ReadonlySet<string>) =>
+  spots.length > 0 && spots.every((s) => stamped.has(s.id) || s.status === "closed");
+
 /**
  * The rallies the CMS publishes, as the stamp page shows them. A rally of places has one slot for each place; a rally of
  * courses one for each course, stamped once every published stamp place of that course is. `stamped` is the set of place
@@ -226,7 +231,7 @@ export function ralliesFromApi(rallies: readonly PublicRally[], stamped: Readonl
     const slots =
       r.kind === "places"
         ? r.places.map((p, n) => ({ id: p.id, number: n + 1, nameJa: p.nameJa, nameEn: p.nameEn, stamped: stamped.has(p.id) }))
-        : r.courses.map((c, n) => ({ id: c.routeId, number: n + 1, nameJa: c.nameJa, nameEn: c.nameEn, stamped: c.spotIds.length > 0 && c.spotIds.every((id) => stamped.has(id)) }));
+        : r.courses.map((c, n) => ({ id: c.routeId, number: n + 1, nameJa: c.nameJa, nameEn: c.nameEn, stamped: courseFinished(c.spots, stamped) }));
     return { id: r.id, kind: "rally", order: i + 1, nameJa: r.nameJa, nameEn: r.nameEn, routeId: null, total: slots.length, stamped: slots.filter((s) => s.stamped).length, lastStampedAt: null, slots };
   });
 }
