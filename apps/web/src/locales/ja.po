@@ -778,7 +778,7 @@ msgstr "コース定数 ＝ 1.8 × 時間（h） ＋ 0.3 × 距離（km） ＋ 1
 
 #: src/app/(public)/map/page.tsx:192
 #: src/app/(public)/routes/[id]/page.tsx:58
-#: src/components/admin/LivePreview.tsx:31
+#: src/components/admin/LivePreview.tsx:43
 #: src/components/RouteJourney.tsx:34
 #: src/components/RouteJourney.tsx:96
 #: src/components/TripSummary.tsx:37
@@ -1156,7 +1156,7 @@ msgstr "すぐ{turnWord}"
 
 #: src/app/(public)/map/page.tsx:192
 #: src/app/(public)/routes/[id]/page.tsx:58
-#: src/components/admin/LivePreview.tsx:31
+#: src/components/admin/LivePreview.tsx:43
 #: src/components/RouteJourney.tsx:31
 #: src/components/RouteJourney.tsx:92
 #: src/components/TripSummary.tsx:36
@@ -1288,7 +1288,7 @@ msgstr "スタンプ場所 {spotCount}か所"
 
 #: src/app/(public)/map/page.tsx:192
 #: src/app/(public)/routes/[id]/page.tsx:58
-#: src/components/admin/LivePreview.tsx:31
+#: src/components/admin/LivePreview.tsx:43
 msgid "スタンプ済み"
 msgstr "スタンプ済み"
 
@@ -1526,6 +1526,10 @@ msgstr "はずす"
 msgid "バス停"
 msgstr "バス停"
 
+#: src/components/admin/LivePreview.tsx:31
+msgid "パソコン幅"
+msgstr "パソコン幅"
+
 #: src/components/admin/AccessPointsEditor.tsx:65
 msgid "ひとこと（English）"
 msgstr "ひとこと（English）"
@@ -1573,7 +1577,7 @@ msgstr "フッター"
 msgid "プライバシーポリシー"
 msgstr "プライバシーポリシー"
 
-#: src/components/admin/LivePreview.tsx:21
+#: src/components/admin/LivePreview.tsx:26
 #: src/components/admin/RouteEditor.tsx:476
 msgid "プレビュー"
 msgstr "プレビュー"
@@ -2603,7 +2607,7 @@ msgstr "公開中の経由地を編集します"
 msgid "公開前のチェック"
 msgstr "公開前のチェック"
 
-#: src/components/admin/LivePreview.tsx:36
+#: src/components/admin/LivePreview.tsx:48
 msgid "公開前の経由地も、ここには表示されます。"
 msgstr "公開前の経由地も、ここには表示されます。"
 
@@ -4835,7 +4839,7 @@ msgstr "閉店・撤去"
 
 #: src/app/(public)/map/page.tsx:192
 #: src/app/(public)/routes/[id]/page.tsx:58
-#: src/components/admin/LivePreview.tsx:31
+#: src/components/admin/LivePreview.tsx:43
 #: src/components/StatusWord.tsx:13
 msgid "閉鎖中"
 msgstr "閉鎖中"
