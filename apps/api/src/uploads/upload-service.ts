@@ -91,6 +91,23 @@ export const LIBRARY_LIMIT = 1000;
 const LIBRARY_SCAN_LIMIT = 5000;
 const LIBRARY_CACHE_MS = 60_000;
 
+/** A subtitle file is small text; this is the most it signs. */
+export const MAX_SUBTITLE_BYTES = 1024 * 1024;
+
+/**
+ * The key of the subtitles that belong to a video: the video's own key with ".vtt" in place of its extension, so the player
+ * finds them without anything saved on the route. null when the address is not one of our videos.
+ */
+export function subtitleKeyFor(videoUrl: string, base: string): string | null {
+  if (!videoUrl.startsWith(`${base}/`)) return null;
+  try {
+    const path = decodeURIComponent(new URL(videoUrl).pathname.replace(/^\//, ""));
+    return /^videos\/[^/]+\.(mp4|webm)$/i.test(path) ? path.replace(/\.[^.]+$/, ".vtt") : null;
+  } catch {
+    return null;
+  }
+}
+
 export interface VideoUpload {
   id: string;
   key: string;
@@ -99,6 +116,10 @@ export interface VideoUpload {
   /** Where the browser PUTs the file (with the same Content-Type and length), within 15 minutes. */
   uploadUrl: string;
 }
+
+export type SubtitleUploadResult =
+  | { ok: true; upload: { id: string; url: string; uploadUrl: string } }
+  | { ok: false; reason: "invalid_file" | "uploads_unavailable" };
 
 export type VideoUploadResult =
   | { ok: true; upload: VideoUpload }
@@ -160,6 +181,19 @@ export function createUploadService(deps: {
         return { ok: true, upload: { id: randomUUID(), key, url: publicUrl(deps.publicBaseUrl, key), uploadUrl } };
       } catch (err) {
         log(`signing a video upload failed: ${err instanceof Error ? err.message : String(err)}`);
+        return { ok: false, reason: "uploads_unavailable" };
+      }
+    },
+    /** Signs an upload address for the subtitles (WebVTT text) of one of our videos; they sit beside it under the same name. */
+    async createSubtitleUpload(file: { videoUrl: string; size: number }): Promise<SubtitleUploadResult> {
+      if (!deps.storage || !deps.publicBaseUrl) return { ok: false, reason: "uploads_unavailable" };
+      const key = subtitleKeyFor(file.videoUrl, deps.publicBaseUrl);
+      if (!key || !Number.isInteger(file.size) || file.size <= 0 || file.size > MAX_SUBTITLE_BYTES) return { ok: false, reason: "invalid_file" };
+      try {
+        const uploadUrl = await deps.storage.presignPut(key, "text/vtt", file.size);
+        return { ok: true, upload: { id: randomUUID(), url: publicUrl(deps.publicBaseUrl, key), uploadUrl } };
+      } catch (err) {
+        log(`signing a subtitle upload failed: ${err instanceof Error ? err.message : String(err)}`);
         return { ok: false, reason: "uploads_unavailable" };
       }
     },

@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 import { fail } from "../auth/http";
 import { routeKit, type KitServices, type RouteOptions } from "../auth/route-kit";
-import { MAX_UPLOAD_BYTES, MAX_VIDEO_BYTES, type UploadService } from "./upload-service";
+import { MAX_SUBTITLE_BYTES, MAX_UPLOAD_BYTES, MAX_VIDEO_BYTES, type UploadService } from "./upload-service";
 
 export interface UploadServices extends KitServices {
   uploads: UploadService;
@@ -68,6 +68,24 @@ export function uploadRoutes(getServices: () => UploadServices, opts: RouteOptio
           size: t.Integer({ minimum: 1, maximum: MAX_VIDEO_BYTES }),
         }),
         detail: { summary: "Get a signed address to upload a video (MP4 or WebM, up to 200 MB) straight to storage" },
+      },
+    )
+    .post(
+      "/subtitles",
+      async ({ body, set }) => {
+        const result = await getServices().uploads.createSubtitleUpload(body);
+        if (result.ok) {
+          set.status = 201;
+          return { ok: true as const, upload: result.upload };
+        }
+        return result.reason === "invalid_file" ? fail(set, 400, "invalid_file") : fail(set, 503, "uploads_unavailable");
+      },
+      {
+        auth: "upload.create",
+        rateLimit: { adminVideoUser: "user.id" },
+        audit: { action: "upload.create", target: "response:upload.id" },
+        body: t.Object({ videoUrl: t.String({ maxLength: 500 }), size: t.Integer({ minimum: 1, maximum: MAX_SUBTITLE_BYTES }) }),
+        detail: { summary: "Get a signed address to upload the subtitles (WebVTT, up to 1 MB) of one of our videos" },
       },
     );
 }
