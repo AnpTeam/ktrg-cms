@@ -72,6 +72,24 @@ export function journeyOf(stops: readonly TrailStop[], saved: WalkStyle | null =
   return { start, goal, style, turnaround };
 }
 
+/** What a stop is to the walk: where it starts, where it ends, or both at once (a round trip begins and ends in one place). */
+export type StopRole = "start" | "goal" | "both";
+
+/**
+ * The start and end of a walk by stop id, for the map's pin colours. Matches how the page words it: a round trip or an
+ * out-and-back names one start/goal place (and an out-and-back's turnaround is a goal); anything else has a start and a goal.
+ */
+export function stopRoles(journey: Journey | null): Map<string, StopRole> {
+  const roles = new Map<string, StopRole>();
+  if (!journey) return roles;
+  const id = (s: TrailStop) => (s.type === "stamp" ? s.spot.id : s.point.id);
+  const startOnly = journey.style === "loop" || journey.style === "out_and_back";
+  roles.set(id(journey.start), startOnly ? "both" : "start");
+  if (!startOnly && journey.goal) roles.set(id(journey.goal), "goal");
+  if (journey.style === "out_and_back" && journey.turnaround) roles.set(id(journey.turnaround), "goal");
+  return roles;
+}
+
 /** The number of each place along the walk by id (null for a side trip), stamp places and the others together. */
 export const stopNumbers = (route: Pick<RouteDetail, "spots" | "points">): Map<string, number | null> =>
   new Map(trailStops(route).map((s) => [s.type === "stamp" ? s.spot.id : s.point.id, s.number] as const));

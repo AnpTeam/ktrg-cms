@@ -12,6 +12,7 @@ import type { PointKind } from "./point-kinds";
  * false for a rough placement (sample data), and the map then says so.
  */
 import type { TechnicalLevel } from "./grading";
+import type { StopRole } from "./route-stops";
 
 export interface RouteArea extends Position {
   widthM: number;
@@ -57,6 +58,8 @@ export interface MapScreenStop {
   sideTrip?: boolean;
   /** A place where no stamp can be collected: a square pin, no stamp card in its sheet. */
   noStamp?: boolean;
+  /** Where the walk starts and ends: the pin takes the Start (blue), Goal (orange) or both colours. */
+  role?: StopRole;
   /** null when signed out. */
   stamped: boolean | null;
   status: SpotStatus;

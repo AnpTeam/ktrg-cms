@@ -21,7 +21,7 @@ import type { MapSettings } from "@/lib/map-settings";
 import { municipalityName } from "@/lib/municipalities";
 import { pickText } from "@/lib/pick-text";
 import { pointsAsPlaces } from "@/lib/point-places";
-import { isGuidanceOnly, journeyOf, trailStops } from "@/lib/route-stops";
+import { isGuidanceOnly, journeyOf, stopRoles, trailStops } from "@/lib/route-stops";
 import type { MapPlace } from "@/lib/places";
 import { parseVideoFile, parseVideoUrl } from "@/lib/video";
 
@@ -33,7 +33,9 @@ export function buildStops(
   labels: { stamped: string; closed: string },
 ): MapStop[] {
   // Every place along the walk is a pin, numbered by its index (a side trip has none). A place without a stamp is a square pin.
-  return trailStops(route).flatMap((stop): MapStop[] => {
+  const trail = trailStops(route);
+  const roles = stopRoles(journeyOf(trail, route.walkStyle ?? null));
+  return trail.flatMap((stop): MapStop[] => {
     const item = stop.type === "stamp" ? stop.spot : stop.point;
     if (!item.position) return [];
     const name = pickText(locale, item.nameJa, item.nameEn);
@@ -56,6 +58,7 @@ export function buildStops(
         href: spotHref(item.id),
         ...(item.stopBy ? { sideTrip: true } : {}),
         ...(stop.type === "point" ? { noStamp: true } : {}),
+        ...(roles.has(item.id) ? { role: roles.get(item.id) } : {}),
       },
     ];
   });

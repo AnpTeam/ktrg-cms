@@ -1,5 +1,6 @@
 import type { SpotStatus } from "@/lib/content";
 import type { MarkerKind } from "@/lib/map";
+import type { StopRole } from "@/lib/route-stops";
 import { placeIconPaths, type PlaceGroup } from "@/lib/places";
 
 // Everything on the map is a real <button>: it can be reached with the keyboard, has a big tap
@@ -18,18 +19,23 @@ export interface MarkerOptions {
   sideTrip?: boolean;
   /** A place where no stamp can be collected: a square pin instead of a round one. */
   noStamp?: boolean;
+  /** Where the walk starts or ends: blue for the start, orange for the goal, both colours for one place that is both. */
+  role?: StopRole;
+  /** Stamped already: a pin that has a role colour shows it with a small seal on the corner (the colour is the role's). */
+  stamped?: boolean;
   onSelect: () => void;
 }
 
-export function createMarkerElement({ order, label, kind, status, sideTrip, noStamp, onSelect }: MarkerOptions): HTMLButtonElement {
+export function createMarkerElement({ order, label, kind, status, sideTrip, noStamp, role, stamped, onSelect }: MarkerOptions): HTMLButtonElement {
   const el = document.createElement("button");
   el.type = "button";
   el.className = "map-marker";
   el.dataset.kind = kind;
   if (sideTrip) el.dataset.side = "true";
   if (noStamp) el.dataset.noStamp = "true";
+  if (role && !sideTrip) el.dataset.role = role;
   el.dataset.status = status;
-  el.appendChild(pinSvg(order, sideTrip ? "dot" : noStamp ? "flag" : "tear"));
+  el.appendChild(pinSvg(order, sideTrip ? "dot" : noStamp ? "flag" : "tear", role && !sideTrip ? role : null, !!stamped));
   el.setAttribute("aria-label", label);
   el.setAttribute("aria-pressed", "false");
   el.addEventListener("click", onSelect);
@@ -45,7 +51,7 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 const TEAR = "M15 39C15 39 3 25.5 3 14.5a12 12 0 0 1 24 0C27 25.5 15 39 15 39Z";
 const FLAG = "M6 3h18a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3h-6.5L15 33l-2.5-7H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z";
 
-function pinSvg(order: number | null, shape: "tear" | "flag" | "dot"): SVGSVGElement {
+function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: StopRole | null, stamped: boolean): SVGSVGElement {
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.setAttribute("viewBox", shape === "dot" ? "0 0 20 20" : "0 0 30 40");
   svg.setAttribute("class", "map-pin-svg");
@@ -62,6 +68,25 @@ function pinSvg(order: number | null, shape: "tear" | "flag" | "dot"): SVGSVGEle
     body.setAttribute("d", shape === "tear" ? TEAR : FLAG);
   }
   body.setAttribute("class", "pin-shape");
+  if (role === "both") {
+    // One place that is the start and the goal: blue over orange, as on the Start / Goal badge. Every pin draws the same
+    // gradient under the same id, so a repeated id is harmless.
+    const defs = document.createElementNS(SVG_NS, "defs");
+    const grad = document.createElementNS(SVG_NS, "linearGradient");
+    grad.setAttribute("id", "pin-start-goal");
+    grad.setAttribute("x1", "0");
+    grad.setAttribute("y1", "0");
+    grad.setAttribute("x2", "0");
+    grad.setAttribute("y2", "1");
+    for (const [offset, cssVar] of [["0", "--color-ruri"], ["0.5", "--color-ruri"], ["0.5", "--color-goal"], ["1", "--color-goal"]] as const) {
+      const stop = document.createElementNS(SVG_NS, "stop");
+      stop.setAttribute("offset", offset);
+      stop.setAttribute("stop-color", `var(${cssVar})`);
+      grad.appendChild(stop);
+    }
+    defs.appendChild(grad);
+    svg.appendChild(defs);
+  }
   svg.appendChild(body);
   if (shape !== "dot") {
     // Closed: a bar across the head (drawn only for that state, by the page's own CSS).
@@ -80,6 +105,14 @@ function pinSvg(order: number | null, shape: "tear" | "flag" | "dot"): SVGSVGEle
       text.textContent = String(order);
       svg.appendChild(text);
     }
+  }
+  if (role && stamped && shape !== "dot") {
+    const seal = document.createElementNS(SVG_NS, "circle");
+    seal.setAttribute("cx", "25");
+    seal.setAttribute("cy", "5");
+    seal.setAttribute("r", "4.6");
+    seal.setAttribute("class", "pin-seal");
+    svg.appendChild(seal);
   }
   return svg;
 }

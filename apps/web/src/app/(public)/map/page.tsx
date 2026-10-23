@@ -1,4 +1,4 @@
-import { isGuidanceOnly, stopNumbers, trailStops } from "@/lib/route-stops";
+import { isGuidanceOnly, journeyOf, stopNumbers, stopRoles, trailStops } from "@/lib/route-stops";
 import type { Metadata } from "next";
 import { msg } from "@lingui/core/macro";
 import { MapScreen } from "@/components/map/MapScreen";
@@ -80,7 +80,9 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
             sideLines = detail.sideLines?.map((s) => s.line) ?? [];
             draft = positioned.some((s) => !s.position?.verified);
             // Each place of the course already carries what its sheet shows: no request per place.
-            stops = trailStops(detail)
+            const trail = trailStops(detail);
+            const roles = stopRoles(journeyOf(trail, detail.walkStyle ?? null));
+            stops = trail
               .map((t): MapScreenStop | null => {
                 const item = t.type === "stamp" ? t.spot : t.point;
                 if (!item.position) return null;
@@ -102,6 +104,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
                   kind: item.kind,
                   ...(item.stopBy ? { sideTrip: true } : {}),
                   ...(t.type === "point" ? { noStamp: true } : {}),
+                  ...(roles.has(item.id) ? { role: roles.get(item.id) } : {}),
                   stamped,
                   status,
                   href: `/spots/${item.id}`,

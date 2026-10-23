@@ -417,6 +417,8 @@ export function MapScreenCanvas({
             status: s.status,
             sideTrip: s.sideTrip,
             noStamp: s.noStamp,
+            role: s.role,
+            stamped: s.stamped === true,
             onSelect: () => {
               setPopup(null);
               onSelectStop(focus.id, s.id);

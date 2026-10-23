@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { RoutePoint, SpotListItem } from "./content";
-import { journeyOf, trailStops } from "./route-stops";
+import { journeyOf, stopRoles, trailStops, type Journey, type TrailStop } from "./route-stops";
 
 const spot = (id: string, over: Partial<SpotListItem> = {}): SpotListItem => ({
   id, nameJa: id, nameEn: null, status: "open", stamped: null, position: { lat: 34.3, lng: 135.1, verified: true }, ...over,
@@ -82,5 +82,23 @@ describe("journeyOf", () => {
   test("a place without a position is never called far", () => {
     const j = journeyOf(trailStops({ spots: [spot("a", { sortOrder: 1 }), spot("b", { sortOrder: 2, position: null })], points: [] }));
     expect(j?.style).toBeNull();
+  });
+});
+
+describe("stopRoles", () => {
+  const stop = (id: string): TrailStop => ({ type: "point", point: { id } as RoutePoint, number: 1 });
+  const journey = (style: Journey["style"], extra: Partial<Journey> = {}): Journey => ({ start: stop("a"), goal: stop("c"), style, turnaround: null, ...extra });
+
+  test("a one-way walk has a start and a goal", () => {
+    expect([...stopRoles(journey("one_way"))]).toEqual([["a", "start"], ["c", "goal"]]);
+  });
+  test("a round trip begins and ends in one place", () => {
+    expect([...stopRoles(journey("loop"))]).toEqual([["a", "both"]]);
+  });
+  test("an out-and-back also names its turnaround as a goal", () => {
+    expect([...stopRoles(journey("out_and_back", { turnaround: stop("b") }))]).toEqual([["a", "both"], ["b", "goal"]]);
+  });
+  test("no journey, no roles", () => {
+    expect(stopRoles(null).size).toBe(0);
   });
 });
