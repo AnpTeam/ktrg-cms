@@ -777,7 +777,7 @@ msgid "コース定数 ＝ 1.8 × 時間（h） ＋ 0.3 × 距離（km） ＋ 10
 msgstr "Course constant = 1.8 × hours + 0.3 × distance (km) + 10 × climb (km) + 0.6 × descent (km)"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:56
+#: src/app/(public)/routes/[id]/page.tsx:58
 #: src/components/admin/LivePreview.tsx:31
 #: src/components/RouteJourney.tsx:34
 #: src/components/RouteJourney.tsx:96
@@ -879,7 +879,7 @@ msgstr "This route does not exist yet"
 msgid "このルートに追加"
 msgstr "Add to this route"
 
-#: src/app/(public)/routes/[id]/page.tsx:46
+#: src/app/(public)/routes/[id]/page.tsx:48
 msgid "このルートのお知らせをフィードで受け取る"
 msgstr "Follow this route's notices in a feed reader"
 
@@ -1147,7 +1147,7 @@ msgid "すぐ{turnWord}"
 msgstr "{turnWord} now"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:56
+#: src/app/(public)/routes/[id]/page.tsx:58
 #: src/components/admin/LivePreview.tsx:31
 #: src/components/RouteJourney.tsx:31
 #: src/components/RouteJourney.tsx:92
@@ -1279,7 +1279,7 @@ msgid "スタンプ場所 {spotCount}か所"
 msgstr "{spotCount} stamp locations"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:56
+#: src/app/(public)/routes/[id]/page.tsx:58
 #: src/components/admin/LivePreview.tsx:31
 msgid "スタンプ済み"
 msgstr "stamped"
@@ -1956,6 +1956,10 @@ msgstr "Add by link"
 msgid "リンクは [表示する文字](https://…) と書きます。脚注は、本文に [^1] と書き、別の行に [^1]: 注の内容 と書きます。"
 msgstr "A link is written [shown words](https://…). For a footnote, write [^1] in the text and, on a line of its own, [^1]: the note."
 
+#: src/components/PrintShare.tsx:29
+msgid "リンクをコピーしました"
+msgstr "Link copied"
+
 #: src/components/admin/PhotoLinkDetails.tsx:15
 msgid "リンクを直接入れる"
 msgstr "Enter the link directly"
@@ -2072,7 +2076,7 @@ msgid "ルートを読み込めませんでした。しばらくしてから、�
 msgstr "Could not load the routes. Please wait a moment and reopen the page."
 
 #: src/app/(public)/grading/page.tsx:39
-#: src/app/(public)/routes/[id]/page.tsx:40
+#: src/app/(public)/routes/[id]/page.tsx:41
 msgid "ルート一覧"
 msgstr "All routes"
 
@@ -2591,6 +2595,10 @@ msgstr "Check before publishing"
 msgid "公開前の経由地も、ここには表示されます。"
 msgstr "Waypoints that are not published yet are shown here too."
 
+#: src/components/PrintShare.tsx:29
+msgid "共有"
+msgstr "Share"
+
 #: src/components/admin/AdminItemForm.tsx:174
 msgid "内容"
 msgstr "Content"
@@ -2946,6 +2954,10 @@ msgstr "Southeast"
 #: src/components/navigation/NavigationHud.tsx:127
 msgid "南西"
 msgstr "Southwest"
+
+#: src/components/PrintShare.tsx:26
+msgid "印刷・PDF"
+msgstr "Print or save as PDF"
 
 #: src/components/admin/PlacePanel.tsx:39
 msgid "危険な所"
@@ -4810,7 +4822,7 @@ msgid "閉店・撤去"
 msgstr "Closed for good"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:56
+#: src/app/(public)/routes/[id]/page.tsx:58
 #: src/components/admin/LivePreview.tsx:31
 #: src/components/StatusWord.tsx:13
 msgid "閉鎖中"

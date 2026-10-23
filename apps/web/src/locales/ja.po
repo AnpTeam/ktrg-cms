@@ -777,7 +777,7 @@ msgid "コース定数 ＝ 1.8 × 時間（h） ＋ 0.3 × 距離（km） ＋ 10
 msgstr "コース定数 ＝ 1.8 × 時間（h） ＋ 0.3 × 距離（km） ＋ 10 × 登り（km） ＋ 0.6 × 下り（km）"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:56
+#: src/app/(public)/routes/[id]/page.tsx:58
 #: src/components/admin/LivePreview.tsx:31
 #: src/components/RouteJourney.tsx:34
 #: src/components/RouteJourney.tsx:96
@@ -879,7 +879,7 @@ msgstr "このルートがまだありません"
 msgid "このルートに追加"
 msgstr "このルートに追加"
 
-#: src/app/(public)/routes/[id]/page.tsx:46
+#: src/app/(public)/routes/[id]/page.tsx:48
 msgid "このルートのお知らせをフィードで受け取る"
 msgstr "このルートのお知らせをフィードで受け取る"
 
@@ -1147,7 +1147,7 @@ msgid "すぐ{turnWord}"
 msgstr "すぐ{turnWord}"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:56
+#: src/app/(public)/routes/[id]/page.tsx:58
 #: src/components/admin/LivePreview.tsx:31
 #: src/components/RouteJourney.tsx:31
 #: src/components/RouteJourney.tsx:92
@@ -1279,7 +1279,7 @@ msgid "スタンプ場所 {spotCount}か所"
 msgstr "スタンプ場所 {spotCount}か所"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:56
+#: src/app/(public)/routes/[id]/page.tsx:58
 #: src/components/admin/LivePreview.tsx:31
 msgid "スタンプ済み"
 msgstr "スタンプ済み"
@@ -1956,6 +1956,10 @@ msgstr "リンクで追加"
 msgid "リンクは [表示する文字](https://…) と書きます。脚注は、本文に [^1] と書き、別の行に [^1]: 注の内容 と書きます。"
 msgstr "リンクは [表示する文字](https://…) と書きます。脚注は、本文に [^1] と書き、別の行に [^1]: 注の内容 と書きます。"
 
+#: src/components/PrintShare.tsx:29
+msgid "リンクをコピーしました"
+msgstr "リンクをコピーしました"
+
 #: src/components/admin/PhotoLinkDetails.tsx:15
 msgid "リンクを直接入れる"
 msgstr "リンクを直接入れる"
@@ -2072,7 +2076,7 @@ msgid "ルートを読み込めませんでした。しばらくしてから、�
 msgstr "ルートを読み込めませんでした。しばらくしてから、ページを開き直してください。"
 
 #: src/app/(public)/grading/page.tsx:39
-#: src/app/(public)/routes/[id]/page.tsx:40
+#: src/app/(public)/routes/[id]/page.tsx:41
 msgid "ルート一覧"
 msgstr "ルート一覧"
 
@@ -2591,6 +2595,10 @@ msgstr "公開前のチェック"
 msgid "公開前の経由地も、ここには表示されます。"
 msgstr "公開前の経由地も、ここには表示されます。"
 
+#: src/components/PrintShare.tsx:29
+msgid "共有"
+msgstr "共有"
+
 #: src/components/admin/AdminItemForm.tsx:174
 msgid "内容"
 msgstr "内容"
@@ -2946,6 +2954,10 @@ msgstr "南東"
 #: src/components/navigation/NavigationHud.tsx:127
 msgid "南西"
 msgstr "南西"
+
+#: src/components/PrintShare.tsx:26
+msgid "印刷・PDF"
+msgstr "印刷・PDF"
 
 #: src/components/admin/PlacePanel.tsx:39
 msgid "危険な所"
@@ -4810,7 +4822,7 @@ msgid "閉店・撤去"
 msgstr "閉店・撤去"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:56
+#: src/app/(public)/routes/[id]/page.tsx:58
 #: src/components/admin/LivePreview.tsx:31
 #: src/components/StatusWord.tsx:13
 msgid "閉鎖中"

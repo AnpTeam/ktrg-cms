@@ -12,7 +12,7 @@ export function SiteFooter({ locale, variant = "page" }: { locale: string; varia
   const sidebar = variant === "sidebar";
   const link = sidebar ? "inline-flex items-center py-1 text-base font-bold underline" : "tap-target inline-flex items-center text-lg font-bold underline";
   return (
-    <footer className={sidebar ? "site-footer border-t border-line/30 px-2 pt-3" : "site-footer mt-10 border-t border-line/30 px-4 pt-4"}>
+    <footer className={sidebar ? "print:hidden site-footer border-t border-line/30 px-2 pt-3" : "print:hidden site-footer mt-10 border-t border-line/30 px-4 pt-4"}>
       <nav aria-label={t`フッター`} className={sidebar ? "flex flex-col" : "flex flex-wrap gap-x-6 gap-y-1"}>
         <Link prefetch={false} href="/faq" className={link}>
           <Trans>よくあるご質問</Trans>
