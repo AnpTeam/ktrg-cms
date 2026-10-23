@@ -1,7 +1,7 @@
 import type { ErrorCode } from "../lib/api-errors";
 import { stampableByDefault } from "../db/schema/content";
 import { cleanTranslations } from "../db/translations";
-import { isHttpsUrl, isPhotoUrl } from "../lib/https-url";
+import { isHttpsUrl, isPhotoUrl, withWikimedia } from "../lib/https-url";
 import { isAllowedVideoUrl } from "./video-url";
 import { lineLengthKm, parseLine, plainLine, ridesOf, sideLinesOf, simplifyLine, sketchOf, type LineString, type Ride } from "./line";
 import type {
@@ -194,7 +194,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       rows.map((s) => ({ id: s.id, status: s.status, statusNoteJa: s.statusNoteJa, statusNoteEn: s.statusNoteEn, statusUpdatedAt: s.statusUpdatedAt })),
     );
   let statusCache: { at: number; value: ReturnType<typeof listStatuses> } | null = null;
-  const photoHosts = deps.photoHosts ?? [];
+  const photoHosts = withWikimedia(deps.photoHosts ?? []);
 
   /** Turn a request's route fields into what the store keeps, or say what is wrong. */
   function prepareRoute(input: Partial<RouteFields>): Result<Partial<StoredRouteFields>> {
@@ -277,13 +277,11 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       out.photoUrl = v;
     }
     if (input.photos !== undefined) {
-      // Wikimedia Commons is always allowed for the gallery (the photo finder in the editor uses it), as well as the photo hosts.
-      const hosts = photoHosts.length > 0 ? [...photoHosts, "upload.wikimedia.org"] : [];
       const photos: NonNullable<SpotFields["photos"]> = [];
       for (const p of input.photos) {
         const url = p.url.trim();
         const sourceUrl = text(p.sourceUrl) ?? null;
-        if (!isPhotoUrl(url, hosts) || (sourceUrl !== null && !isHttpsUrl(sourceUrl))) return bad("invalid_photo_url");
+        if (!isPhotoUrl(url, photoHosts) || (sourceUrl !== null && !isHttpsUrl(sourceUrl))) return bad("invalid_photo_url");
         photos.push({ url, credit: text(p.credit) ?? null, sourceUrl });
       }
       out.photos = photos;

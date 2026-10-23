@@ -41,7 +41,7 @@ export const PERMISSIONS = {
   /** Settings for the whole site (the map style): they change the live site at once. */
   "site.manage": ["admin"],
   /** Review flagged stamps and revoke them. */
-  "stamp.review": ["editor", "admin"],
+  "stamp.review": ["admin"],
   "audit.read": ["admin"],
   /** See the list of accounts (the users screen). No fresh login: only changing a role needs one. */
   "user.read": ["admin"],

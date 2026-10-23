@@ -57,9 +57,20 @@ export function createListReader<R extends ListRow>(deps: { store: ListReadStore
 }
 
 /** A list an admin can also write: the table's rules before each write; conflicts reported. */
-export function createListService<R extends ListRow, F>(deps: { store: ListStore<R, F>; rules: ListRules<F>; pageSize?: number; afterWrite?: ListHook<R>; log?: (message: string) => void }) {
+export function createListService<R extends ListRow, F>(deps: { store: ListStore<R, F>; rules: ListRules<F>; pageSize?: number; afterWrite?: ListHook<R>; log?: (message: string) => void; relations?: Record<string, (id: string) => Promise<boolean>> }) {
   const { store, rules } = deps;
   const log = deps.log ?? console.error;
+  /**
+   * True when a relation field (see `relations`: field name -> "does this row exist?") holds an id that points nowhere. Only
+   * the values being saved are looked at, so an old dangling id never blocks editing the other fields.
+   */
+  const danglingRelation = async (values: Record<string, unknown>): Promise<boolean> => {
+    for (const [field, exists] of Object.entries(deps.relations ?? {})) {
+      const id = values[field];
+      if (typeof id === "string" && id !== "" && !(await exists(id))) return true;
+    }
+    return false;
+  };
   /** Run the hook after a saved change; a failure is logged (its message only) and the save stands. */
   const after = async (event: Parameters<ListHook<R>>[0]) => {
     try {
@@ -76,6 +87,7 @@ export function createListService<R extends ListRow, F>(deps: { store: ListStore
     async create(actor: string, input: F): Promise<Result<R>> {
       const checked = await rules(input, "create");
       if (!checked.ok) return checked;
+      if (await danglingRelation(checked.value as Record<string, unknown>)) return bad("validation_failed");
       const row = await store.create(actor, checked.value as F);
       await after({ type: "create", actor, id: row.id, row });
       return ok(row);
@@ -90,6 +102,7 @@ export function createListService<R extends ListRow, F>(deps: { store: ListStore
       if (!checked.ok) return checked;
       const cleaned = checked.value as Record<string, unknown>;
       const changes = Object.fromEntries(Object.keys(input).map((k) => [k, cleaned[k]])) as Partial<F>;
+      if (await danglingRelation(changes as Record<string, unknown>)) return bad("validation_failed");
       const saved = await store.update(actor, id, expected instanceof Date ? expected : new Date(expected), changes);
       if (saved !== null && saved !== "conflict") await after({ type: "update", actor, id, row: saved });
       return done(saved);

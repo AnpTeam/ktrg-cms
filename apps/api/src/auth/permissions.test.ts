@@ -60,13 +60,13 @@ describe("permission table", () => {
 });
 
 describe("the editor role", () => {
-  const ADMIN_ONLY = ["audit.read", "site.manage", "user.manage_roles", "user.read"];
+  const ADMIN_ONLY = ["audit.read", "site.manage", "stamp.review", "user.manage_roles", "user.read"];
 
-  test("an editor does the content work and the participant things, and nothing about accounts, settings or history", () => {
+  test("an editor does the content work and the participant things, and nothing about accounts, settings, history or revoking stamps", () => {
     const forEditor: string[] = permissions.filter((p) => can("editor", p)).sort();
     const forAdmin: string[] = permissions.filter((p) => can("admin", p)).sort();
     expect(forAdmin.filter((p) => !forEditor.includes(p))).toEqual(ADMIN_ONLY);
-    for (const p of ["route.manage", "spot.manage", "spot.publish", "rally.manage", "notice.manage", "banner.manage", "upload.create", "upload.read", "stamp.review", "me.manage", "stamp.create"]) {
+    for (const p of ["route.manage", "spot.manage", "spot.publish", "rally.manage", "notice.manage", "banner.manage", "upload.create", "upload.read", "me.manage", "stamp.create"]) {
       expect(can("editor", p as Permission)).toBe(true);
     }
   });

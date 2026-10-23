@@ -89,6 +89,7 @@ export const LIBRARY_LIMIT = 1000;
 
 /** How many files are read from the bucket before sorting: the bucket lists by name, so the newest are only known after reading them all. */
 const LIBRARY_SCAN_LIMIT = 5000;
+const LIBRARY_CACHE_MS = 60_000;
 
 export interface VideoUpload {
   id: string;
@@ -123,12 +124,17 @@ export function createUploadService(deps: {
   /** Where the bucket is public, e.g. https://photos.example.com (no trailing slash). */
   publicBaseUrl?: string;
   log?: (message: string) => void;
+  now?: () => number;
 }) {
   const log = deps.log ?? console.error;
+  const now = deps.now ?? Date.now;
+  // The library list is kept for a minute (and dropped after an upload): opening it reads the bucket, which costs time and money.
+  let cached: { at: number; photos: LibraryPhoto[] } | null = null;
   return {
     /** Every photo uploaded so far, newest first, so an editor can pick one again instead of uploading it twice. */
     async listPhotos(): Promise<{ ok: true; photos: LibraryPhoto[] } | { ok: false; reason: "uploads_unavailable" }> {
       if (!deps.storage || !deps.publicBaseUrl) return { ok: false, reason: "uploads_unavailable" };
+      if (cached && now() - cached.at < LIBRARY_CACHE_MS) return { ok: true, photos: cached.photos };
       try {
         const files = await deps.storage.list("photos/", LIBRARY_SCAN_LIMIT);
         const photos = files
@@ -136,6 +142,7 @@ export function createUploadService(deps: {
           .sort((a, b) => b.lastModified.getTime() - a.lastModified.getTime())
           .slice(0, LIBRARY_LIMIT)
           .map((f) => ({ key: f.key, url: publicUrl(deps.publicBaseUrl!, f.key), size: f.size, uploadedAt: f.lastModified.toISOString() }));
+        cached = { at: now(), photos };
         return { ok: true, photos };
       } catch (err) {
         log(`listing the photo storage failed: ${err instanceof Error ? err.message : String(err)}`);
@@ -172,6 +179,7 @@ export function createUploadService(deps: {
         log(`upload to storage failed: ${err instanceof Error ? err.message : String(err)}`);
         return { ok: false, reason: "uploads_unavailable" };
       }
+      cached = null; // the new photo shows up in the library at once
       return {
         ok: true,
         upload: { id, key, url: publicUrl(deps.publicBaseUrl, key), contentType: image.type, size: bytes.length },

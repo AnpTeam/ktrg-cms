@@ -18,3 +18,9 @@ export const isPhotoUrl = (v: string, hosts: readonly string[]): boolean => {
     return false;
   }
 };
+
+/** Wikimedia Commons serves the photos the editor's photo finder picks; always allowed when photo hosts are restricted. */
+const WIKIMEDIA_HOSTS = ["upload.wikimedia.org"];
+
+/** The photo hosts plus Wikimedia's; no hosts (unrestricted) stays unrestricted. */
+export const withWikimedia = (hosts: readonly string[]): readonly string[] => (hosts.length === 0 ? hosts : [...new Set([...hosts, ...WIKIMEDIA_HOSTS])]);

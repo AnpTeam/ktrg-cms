@@ -458,13 +458,13 @@ msgstr "Getting there: extra notes"
 msgid "アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。"
 msgstr "Only photos (JPEG, PNG or WebP, up to 4 MB) and videos (MP4 or WebM, up to 200 MB) can be uploaded."
 
-#: src/components/admin/PhotoLibrary.tsx:46
+#: src/components/admin/PhotoLibrary.tsx:41
 msgid "アップロード済みの写真から選ぶ"
 msgstr "Choose from uploaded photos"
 
-#: src/components/admin/PhotoLibrary.tsx:97
-msgid "アップロード済みの写真です。選ぶと、その写真のリンクが入ります。"
-msgstr "These are the photos already uploaded. Choose one to fill in its link."
+#: src/components/admin/PhotoLibrary.tsx:121
+msgid "アップロード済みの写真です。選んで「この写真を使う」を押すと、その写真のリンクが入ります。"
+msgstr "These are the photos already uploaded. Choose one and press \"Use this photo\" to fill in its link."
 
 #: src/components/ProgressSummary.tsx:15
 #: src/components/RallyViews.tsx:55
@@ -832,6 +832,10 @@ msgstr "This route will be deleted and cannot be restored. Continue?"
 msgid "この内容で取り込む"
 msgstr "Import this"
 
+#: src/components/admin/PhotoLibrary.tsx:229
+msgid "この写真を使う"
+msgstr "Use this photo"
+
 #: src/components/admin/VideoUpload.tsx:102
 msgid "この動画は「ファストスタート」になっていないため、再生が始まるまで時間がかかることがあります。書き出し時に「Web向けに最適化」をオンにしてください。"
 msgstr "This video is not set up for fast start, so it may take a while before playback begins. When exporting, turn on \"Optimize for web\"."
@@ -1015,6 +1019,10 @@ msgstr "Information"
 #: src/components/landing/Landing.tsx:180
 msgid "さあ、はじめましょう"
 msgstr "Let's get started"
+
+#: src/components/admin/PhotoLibrary.tsx:171
+msgid "サイズ"
+msgstr "Size"
 
 #: src/app/(admin)/admin/settings/page.tsx:24
 msgid "サイトの全体に関わる設定です。ここで変えたことは、すぐに訪問者の画面に反映されます。"
@@ -1252,6 +1260,10 @@ msgstr "No place with that name was found."
 #: src/components/ThemeSwitcher.tsx:30
 msgid "ダーク"
 msgstr "Dark"
+
+#: src/components/admin/PhotoLibrary.tsx:149
+msgid "タイル"
+msgstr "Tiles"
 
 #: src/components/admin/useChecklistLabels.ts:22
 msgid "チェック"
@@ -1543,7 +1555,7 @@ msgstr "You haven't collected this stamp yet"
 msgid "まだ保存していません。"
 msgstr "Not saved yet."
 
-#: src/components/admin/PhotoLibrary.tsx:105
+#: src/components/admin/PhotoLibrary.tsx:163
 msgid "まだ写真がありません。"
 msgstr "There are no photos yet."
 
@@ -1663,7 +1675,7 @@ msgid "もう一度送りました。届かないときは、1分ほど待って
 msgstr "Sent again. If it does not arrive, wait about a minute and try again."
 
 #: src/components/admin/AdminListTable.tsx:160
-#: src/components/admin/PhotoLibrary.tsx:125
+#: src/components/admin/PhotoLibrary.tsx:216
 msgid "もっと見る"
 msgstr "Show more"
 
@@ -1979,6 +1991,10 @@ msgstr "For a route that comes back here: adds an end point, not a stamp place, 
 msgid "一度に取り込める数をこえています（{writes} 回の保存が必要で、上限は {IMPORT_WRITE_LIMIT} 回です）。ファイルを分けて、時間をおいて取り込んでください。"
 msgstr "This is more than one import can do ({writes} saves are needed; the limit is {IMPORT_WRITE_LIMIT}). Split the file and import the parts a little apart."
 
+#: src/components/admin/PhotoLibrary.tsx:149
+msgid "一覧"
+msgstr "List"
+
 #: src/app/(admin)/admin/[list]/[id]/page.tsx:32
 #: src/app/(admin)/admin/[list]/new/page.tsx:27
 msgid "一覧へ戻る"
@@ -2015,6 +2031,10 @@ msgstr "Create as a draft"
 #: src/components/admin/RallyEditor.tsx:146
 msgid "下書きの経由地は、公開されるまで数に入りません。スタンプの記録は変わりません。"
 msgstr "Draft waypoints do not count until they are published. Visitors' stamps are not changed."
+
+#: src/components/admin/PhotoLibrary.tsx:130
+msgid "並べ方"
+msgstr "Sort by"
 
 #: src/components/admin/RouteTable.tsx:169
 msgid "並べ替えは、検索や絞り込みを外してからできます。"
@@ -2467,7 +2487,7 @@ msgstr "Up to {MAX_PHOTOS} photos."
 msgid "写真はまだありません"
 msgstr "No photo yet"
 
-#: src/components/admin/PhotoLibrary.tsx:91
+#: src/components/admin/PhotoLibrary.tsx:119
 msgid "写真ライブラリ"
 msgstr "Photo library"
 
@@ -2482,6 +2502,10 @@ msgstr "The photo could not be saved. Please try again in a moment."
 #: src/components/admin/GalleryEditor.tsx:50
 msgid "写真を探すサービスにつながりませんでした。しばらくしてから、もう一度お試しください。"
 msgstr "Could not reach the photo search. Please try again in a moment."
+
+#: src/components/admin/PhotoLibrary.tsx:222
+msgid "写真を選んでください。"
+msgstr "Choose a photo."
 
 #: src/components/landing/Landing.tsx:149
 msgid "出かける前に"
@@ -2723,6 +2747,10 @@ msgstr "Imported: {0} created, {1} updated, {2} rows not imported"
 msgid "取り込み中… {0} / {1}"
 msgstr "Importing… {0} / {1}"
 
+#: src/components/admin/PhotoLibrary.tsx:140
+msgid "古い順"
+msgstr "Oldest first"
+
 #: src/components/navigation/NavigationHud.tsx:122
 msgid "右"
 msgstr "Right"
@@ -2753,6 +2781,7 @@ msgid "同じ道を行って、同じ道を戻ります。"
 msgstr "You go out along the same path and come back the same way."
 
 #: src/components/admin/map-editor/MapEditor.tsx:1118
+#: src/components/admin/PhotoLibrary.tsx:169
 #: src/components/admin/RallyCreate.tsx:76
 msgid "名前"
 msgstr "Name"
@@ -2760,6 +2789,11 @@ msgstr "Name"
 #: src/components/admin/PlaceTable.tsx:135
 msgid "名前（日本語）"
 msgstr "Name (Japanese)"
+
+#: src/components/admin/PhotoLibrary.tsx:128
+#: src/components/admin/PhotoLibrary.tsx:128
+msgid "名前でさがす"
+msgstr "Search by name"
 
 #: src/components/admin/RallyEditor.tsx:111
 msgid "名前と公開"
@@ -2782,6 +2816,10 @@ msgstr "Part of the name"
 #: src/components/admin/RallyEditor.tsx:127
 msgid "名前を保存"
 msgstr "Save the name"
+
+#: src/components/admin/PhotoLibrary.tsx:141
+msgid "名前順"
+msgstr "Name"
 
 #: src/components/RouteJourney.tsx:22
 #: src/components/RouteStats.tsx:20
@@ -2957,6 +2995,10 @@ msgstr "Remove"
 msgid "大きい"
 msgstr "Large"
 
+#: src/components/admin/PhotoLibrary.tsx:142
+msgid "大きい順"
+msgstr "Largest first"
+
 #: src/components/navigation/NavigationHud.tsx:112
 msgid "大きく右"
 msgstr "Sharp right"
@@ -3028,6 +3070,10 @@ msgstr "Show side trips"
 #: src/components/PointKindName.tsx:8
 msgid "寺社"
 msgstr "Temple or shrine"
+
+#: src/components/admin/PhotoLibrary.tsx:143
+msgid "小さい順"
+msgstr "Smallest first"
 
 #: src/components/map/PlacesPanel.tsx:163
 msgid "少なく表示"
@@ -3286,6 +3332,10 @@ msgstr "New route (admin)"
 msgid "新しい点は、選んだ点（{chosenNo}番）のあとに入ります。もう一度クリックすると、選びなおせます。"
 msgstr "New points go after the chosen point (number {chosenNo}). Click it again to choose differently."
 
+#: src/components/admin/PhotoLibrary.tsx:139
+msgid "新しい順"
+msgstr "Newest first"
+
 #: src/components/admin/RouteImport.tsx:89
 msgid "新しく作るには、名前（日本語）が必要です"
 msgstr "A Japanese name is needed to create a new one"
@@ -3301,6 +3351,10 @@ msgstr "A Japanese name is needed to create a new one"
 #: src/components/SiteHeader.tsx:199
 msgid "新規登録"
 msgstr "Register"
+
+#: src/components/admin/PhotoLibrary.tsx:170
+msgid "日付"
+msgstr "Date"
 
 #: src/components/auth/authUi.tsx:80
 msgid "日本のほかの地域"
@@ -4032,6 +4086,10 @@ msgstr "Out"
 msgid "表でまとめて入力"
 msgstr "Enter many in a table"
 
+#: src/components/admin/PhotoLibrary.tsx:146
+msgid "表示"
+msgstr "View"
+
 #: src/components/admin/RouteEditor.tsx:423
 msgid "表示の切り替え"
 msgstr "Switch view"
@@ -4056,6 +4114,10 @@ msgstr "Places found"
 #: src/components/admin/RouteImport.tsx:200
 msgid "見つからない写真（その写真だけ入りません）：{0}"
 msgstr "Photos not found (only those photos are left out): {0}"
+
+#: src/components/admin/PhotoLibrary.tsx:164
+msgid "見つかりませんでした。"
+msgstr "Nothing found."
 
 #: src/components/admin/PlacePanel.tsx:40
 #: src/components/PointKindName.tsx:10
@@ -4119,7 +4181,7 @@ msgstr "Description (Japanese)"
 msgid "読み込み中"
 msgstr "Loading"
 
-#: src/components/admin/PhotoLibrary.tsx:99
+#: src/components/admin/PhotoLibrary.tsx:157
 msgid "読み込んでいます…"
 msgstr "Loading…"
 
@@ -4323,7 +4385,7 @@ msgid "長さ"
 msgstr "Length"
 
 #: src/components/admin/map-editor/MapEditor.tsx:930
-#: src/components/admin/PhotoLibrary.tsx:94
+#: src/components/admin/PhotoLibrary.tsx:124
 #: src/components/admin/RouteEditor.tsx:388
 #: src/components/ExpandableText.tsx:32
 #: src/components/map/MapPickList.tsx:36

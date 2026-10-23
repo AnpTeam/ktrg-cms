@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { linguiMacroSwcPlugin } from "@lingui/swc-plugin/options";
+import { buildCsp } from "./src/lib/csp";
 
 // The Elysia API is proxied under /api/v1 so session cookies stay same-origin.
 // Baked in at build time (standalone output): set API_ORIGIN when building.
@@ -7,25 +8,7 @@ const apiOrigin = process.env.API_ORIGIN ?? "http://localhost:3001";
 
 const isProd = process.env.NODE_ENV === "production";
 
-// Everything the pages load from outside: GSI map tiles, the admin's place search (Nominatim) and photo finder
-// (Wikipedia / Wikimedia Commons), YouTube and Vimeo embeds, and the admin's video upload straight to R2 (connect-src) and
-// its playback (media-src). Photos may come from any https address until PHOTO_HOSTS is set.
-// 'unsafe-inline' scripts: Next writes small inline scripts; a nonce needs every page to render per request.
-const csp = [
-  "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isProd ? "" : " 'unsafe-eval'"}`,
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https:",
-  "font-src 'self' data:",
-  `connect-src 'self' https://cyberjapandata.gsi.go.jp https://maps.gsi.go.jp https://nominatim.openstreetmap.org https://*.wikipedia.org https://commons.wikimedia.org https://*.tile.opentopomap.org https://*.r2.cloudflarestorage.com${isProd ? "" : " ws: http://localhost:*"}`,
-  "media-src 'self' https:",
-  "worker-src 'self' blob:",
-  "frame-src https://www.youtube-nocookie.com https://www.youtube.com https://player.vimeo.com",
-  "frame-ancestors 'none'",
-  "object-src 'none'",
-  "base-uri 'self'",
-  "form-action 'self'",
-].join("; ");
+const csp = buildCsp({ isProd, r2UploadHost: process.env.R2_UPLOAD_HOST });
 
 const securityHeaders = [
   { key: "Content-Security-Policy", value: csp },

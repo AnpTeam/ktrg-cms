@@ -90,3 +90,32 @@ describe("the after-save hook", () => {
     expect(calls).toBe(1);
   });
 });
+
+describe("relation fields are checked by the service", () => {
+  const actor = "11111111-1111-4111-8111-111111111111";
+  const actions = { create: "banner.create", update: "banner.update", delete: "banner.delete" } as never;
+  const rules = async (f: { titleJa?: string; guideId?: string | null }) => ({ ok: true as const, value: f });
+  const known = new Set(["g1"]);
+  const setup = () => {
+    const mem = createMemoryListStore<{ titleJa: string; guideId: string | null }>(createMemoryAuditWriter().writer, actions);
+    return createListService({ store: mem.store, rules: rules as never, relations: { guideId: async (id) => known.has(id) } });
+  };
+
+  test("a row pointing at a row that does not exist is refused; none (null) and a real one are saved", async () => {
+    const svc = setup();
+    expect((await svc.create(actor, { titleJa: "a", guideId: "gone" })).ok).toBe(false);
+    expect((await svc.create(actor, { titleJa: "a", guideId: null })).ok).toBe(true);
+    expect((await svc.create(actor, { titleJa: "a", guideId: "g1" })).ok).toBe(true);
+  });
+
+  test("on a change only the values being saved are looked at: an old dangling id does not block other edits", async () => {
+    const svc = setup();
+    const made = (await svc.create(actor, { titleJa: "a", guideId: "g1" })) as { ok: true; value: { id: string; updatedAt: Date } };
+    known.delete("g1"); // the row it pointed at has since gone
+    const rename = (await svc.update(actor, made.value.id, made.value.updatedAt, { titleJa: "b" })) as { ok: boolean; value?: { updatedAt: Date } };
+    expect(rename.ok).toBe(true);
+    const again = await svc.update(actor, made.value.id, rename.value!.updatedAt, { guideId: "g1" });
+    expect(again.ok).toBe(false);
+    known.add("g1");
+  });
+});

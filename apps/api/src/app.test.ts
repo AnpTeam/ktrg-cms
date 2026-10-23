@@ -55,6 +55,19 @@ describe("parseEnv", () => {
     expect(parseEnv({ ...prod, VERCEL: "1", TRUST_PROXY: "false" }, () => {}).TRUST_PROXY).toBe(false);
   });
 
+  test("production without PHOTO_HOSTS logs a warning; with it, nothing", () => {
+    const prod = { NODE_ENV: "production", OTP_HMAC_SECRET: "k".repeat(32), TRUST_PROXY: "true" };
+    const lines: string[] = [];
+    parseEnv(prod, (l) => lines.push(l));
+    expect(lines.some((l) => l.includes("PHOTO_HOSTS is not set"))).toBe(true);
+    const quiet: string[] = [];
+    parseEnv({ ...prod, PHOTO_HOSTS: "photos.example.com" }, (l) => quiet.push(l));
+    expect(quiet).toEqual([]);
+    const dev: string[] = [];
+    parseEnv({}, (l) => dev.push(l));
+    expect(dev).toEqual([]);
+  });
+
   test("boots with an empty environment", () => {
     expect(parseEnv({}).PORT).toBe(3001);
   });

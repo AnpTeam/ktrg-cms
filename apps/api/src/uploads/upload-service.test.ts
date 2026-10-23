@@ -94,3 +94,47 @@ describe("uploadPhoto", () => {
     expect(s.logs[0]).not.toContain("secret-name");
   });
 });
+
+describe("the photo library list is kept for a minute", () => {
+  function counted() {
+    const mem = createMemoryStorage();
+    let reads = 0;
+    let clock = 1_000_000;
+    const storage = {
+      ...mem.storage,
+      list: async (prefix: string, limit: number) => {
+        reads++;
+        return mem.storage.list(prefix, limit);
+      },
+    };
+    const service = createUploadService({ storage, publicBaseUrl: BASE, log: () => {}, now: () => clock });
+    return { service, reads: () => reads, advance: (ms: number) => (clock += ms) };
+  }
+
+  test("the second look within a minute does not read the bucket again; after a minute it does", async () => {
+    const t = counted();
+    await t.service.listPhotos();
+    await t.service.listPhotos();
+    expect(t.reads()).toBe(1);
+    t.advance(61_000);
+    await t.service.listPhotos();
+    expect(t.reads()).toBe(2);
+  });
+
+  test("a new upload shows up at once: it drops the kept list", async () => {
+    const t = counted();
+    await t.service.listPhotos();
+    await t.service.uploadPhoto(new File([JPEG], "new.jpg"));
+    const after = await t.service.listPhotos();
+    expect(t.reads()).toBe(2);
+    expect(after.ok && after.photos.length).toBe(1);
+  });
+
+  test("a failure is not kept", async () => {
+    const mem = createMemoryStorage();
+    const service = createUploadService({ storage: mem.storage, publicBaseUrl: BASE, log: () => {} });
+    mem.state.fail = true;
+    expect((await service.listPhotos()).ok).toBe(false);
+    expect((await service.listPhotos()).ok).toBe(true);
+  });
+});

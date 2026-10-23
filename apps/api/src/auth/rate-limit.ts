@@ -48,6 +48,14 @@ export const AUTH_LIMITS = {
   navigationPathDaily: { name: "navigation-path-daily", limit: 200, windowMs: 24 * 60 * MINUTE },
   // Keyed by user id: an admin saving routes and places. Generous, because the editor saves often.
   adminWriteUser: { name: "admin-write-user", limit: 300, windowMs: 15 * MINUTE },
+  // Keyed by user id: photo uploads (each is at most 4 MB). Enough for a gallery, not for filling the bucket.
+  adminUploadUser: { name: "admin-upload-user", limit: 60, windowMs: 15 * MINUTE },
+  // Keyed by user id: signing video uploads (each can be 200 MB, so 10 is about 2 GB at most).
+  adminVideoUser: { name: "admin-video-user", limit: 10, windowMs: 15 * MINUTE },
+  // Keyed by user id: opening the photo library (each open reads the bucket's file list).
+  adminLibraryUser: { name: "admin-library-user", limit: 30, windowMs: 15 * MINUTE },
+  // Keyed by user id: saving the own profile (language, name, preferences); the settings screen saves as things are changed.
+  meProfileUser: { name: "me-profile-user", limit: 30, windowMs: 15 * MINUTE },
   // Keyed by user id: asking the route-finding service to snap a line to trails. The service has a daily allowance
   // (and may bill beyond it), so a slip or a script cannot use it all up.
   adminRoutingUser: { name: "admin-routing-user", limit: 40, windowMs: 15 * MINUTE },
