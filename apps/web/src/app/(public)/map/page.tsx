@@ -181,10 +181,10 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
 
 // The map tab (WBS 3.2.10): all 19 courses as areas, with a bottom sheet that keeps the map in view. Anyone can look
 // around; stamps and navigation are for accounts.
-export default async function MapPage({ searchParams }: { searchParams: Promise<{ as?: string; stamp?: string; route?: string; stop?: string }> }) {
+export default async function MapPage({ searchParams }: { searchParams: Promise<{ as?: string; stamp?: string; route?: string; stop?: string; place?: string }> }) {
   // Everything the page needs is asked at once (each is a trip to the API): none of them waits for another.
   const [i18n, viewer, params, prefs, settings, listed, places] = await Promise.all([initLingui(), getViewer(searchParams), searchParams, getPrefs(), getMapSettings(), listRoutes(), listPlaces()]);
-  const { stamp, route: wantedRoute, stop: wantedStop } = params;
+  const { stamp, route: wantedRoute, stop: wantedStop, place: wantedPlace } = params;
   // Development only: `?stamp=far` and so on pretends the answers of the stamping API, which does not exist yet.
   const stampMock = process.env.NODE_ENV !== "production" && isStampMock(stamp) ? stamp : undefined;
 
@@ -194,11 +194,14 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
   // "Show in the map" from a place page: only an existing course (and a stop of it) is taken over from the address.
   const initialRoute = routes.find((r) => r.id === wantedRoute) ?? null;
   const initialStop = initialRoute?.stops?.find((s) => s.id === wantedStop) ?? null;
+  // "Show on map" from a route's nearby places: the place must be one of that course's own.
+  const initialPlace = initialRoute?.points.find((p) => p.id === wantedPlace) ?? null;
 
   return (
     <MapScreen
       initialRouteId={initialRoute?.id ?? null}
       initialStopId={initialStop?.id ?? null}
+      initialPlaceId={initialPlace?.id ?? null}
       routes={routes}
       settings={settings}
       mergeStops={prefs.mergeStops}

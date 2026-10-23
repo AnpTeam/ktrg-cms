@@ -5,6 +5,13 @@ import { EXTRA_LOCALES, type ExtraLocale } from "../db/translations";
 
 /** Request-body pieces shared by several routes, so each rule lives in one place. */
 
+/**
+ * One of these words, as a union of literals. Not `t.UnionEnum`: it gives the field a default (its first word), and a
+ * field left out of a partial change (a PATCH sends only what changed) is then filled with that default and silently
+ * overwritten. The Unsafe wrapper keeps the word types for the typed web client.
+ */
+export const oneOf = <const T extends readonly string[]>(values: T) => t.Unsafe<T[number]>(t.Union(values.map((v) => t.Literal(v))));
+
 /** An email address, as long as an address can be. */
 export const emailSchema = t.String({ format: "email", maxLength: 254 });
 

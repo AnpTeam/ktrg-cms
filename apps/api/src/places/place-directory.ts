@@ -8,7 +8,7 @@ import type { KitServices } from "../auth/route-kit";
 import { cleanTranslations } from "../db/translations";
 import { placeCategories } from "../db/schema";
 import { isPhotoUrl } from "../lib/https-url";
-import { translationsSchema } from "../lib/schemas";
+import { oneOf, translationsSchema } from "../lib/schemas";
 
 const maybe = (max: number) => t.Union([t.String({ maxLength: max }), t.Null()]);
 
@@ -17,7 +17,7 @@ const maybe = (max: number) => t.Union([t.String({ maxLength: max }), t.Null()])
  * (`nameJa`, `nameEn` ...) and the other content languages ride in `translations`, like the other generated lists.
  */
 export const PLACE_FIELDS = {
-  category: t.UnionEnum([...placeCategories]),
+  category: oneOf(placeCategories),
   routeId: t.Union([t.String({ format: "uuid" }), t.Null()]),
   nameJa: t.String({ minLength: 1, maxLength: 200 }),
   nameEn: maybe(200),
@@ -38,7 +38,7 @@ export const PLACE_FIELDS = {
   photoUrl: maybe(500),
   /** Who took the photo / where it is from (may hold links). */
   photoCredit: t.Optional(maybe(500)),
-  status: t.UnionEnum(["open", "closed", "seasonal", "gone", "unknown"]),
+  status: oneOf(["open", "closed", "seasonal", "gone", "unknown"] as const),
   lastVerified: t.Union([t.String({ pattern: "^\\d{4}-\\d{2}-\\d{2}$" }), t.Null()]),
   listingConfirmed: t.Boolean(),
   listingNote: maybe(200),

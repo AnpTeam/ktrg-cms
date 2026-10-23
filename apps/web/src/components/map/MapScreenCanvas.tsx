@@ -48,6 +48,7 @@ export function MapScreenCanvas({
   onSelectRoute,
   onSelectStop,
   onSelectMound,
+  focusPlaceId = null,
   coveredPx,
   coveredLeftPx = 0,
   settings,
@@ -63,6 +64,8 @@ export function MapScreenCanvas({
   onSelectStop: (routeId: string, stopId: string) => void;
   /** A sutra mound chosen from the 経塚 pins (outside of its course): the page shows it without the course's number. */
   onSelectMound: (routeId: string, stopId: string) => void;
+  /** A place of the open course to bring into view and open once, when the page was asked for it. */
+  focusPlaceId?: string | null;
   /** How much of the map's bottom the sheet and the tab bar cover right now: what is framed stays clear of it. */
   coveredPx: number;
   /** On a desktop: how much of the map's left side the panel covers, so what is framed stays clear of it. */
@@ -332,6 +335,19 @@ export function MapScreenCanvas({
     const bounds = boundsOf(points);
     if (bounds) map.fitBounds(bounds, { padding: padding(), maxZoom: route ? 15 : 11, duration: 600 });
   }, [ready, routeId, mapGen, routeId ? lines[routeId] : null]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // A place asked for in the address ("show on map" from a route's nearby places): after the course has been framed, the map
+  // moves to it, zoomed in enough for its pin to show, and its popup opens.
+  useEffect(() => {
+    const map = mapRef.current;
+    const place = focusPlaceId ? focus?.points.find((p) => p.id === focusPlaceId) : null;
+    if (!map || !ready || !place) return;
+    const timer = setTimeout(() => {
+      map.easeTo({ center: [place.position.lng, place.position.lat], zoom: Math.max(map.getZoom(), 17), padding: padding(), duration: 600 });
+      setPopup(place);
+    }, 900);
+    return () => clearTimeout(timer);
+  }, [ready, focusPlaceId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // A chosen stop is brought into view above the sheet.
   useEffect(() => {

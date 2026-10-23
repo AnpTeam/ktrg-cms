@@ -54,10 +54,13 @@ export function MapScreen({
   stampMock,
   initialRouteId = null,
   initialStopId = null,
+  initialPlaceId = null,
 }: {
   /** Open with this course (and stop) chosen, as when a place page links here with "show in the map". */
   initialRouteId?: string | null;
   initialStopId?: string | null;
+  /** A place of that course to bring into view (from a route page's "nearby places"). */
+  initialPlaceId?: string | null;
   routes: MapScreenRoute[];
   settings: MapSettings;
   mergeStops: boolean;
@@ -238,6 +241,7 @@ export function MapScreen({
         onSelectRoute={chooseRoute}
         onSelectStop={chooseStop}
         onSelectMound={(routeId, id) => chooseStop(routeId, id, true)}
+        focusPlaceId={initialPlaceId}
         coveredPx={wide ? 0 : sheetHeightPx(snap, available) + bottomPx}
         coveredLeftPx={panelPx}
         settings={settings}

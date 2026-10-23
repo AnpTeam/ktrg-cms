@@ -43,8 +43,7 @@ import { MunicipalityField } from "./MunicipalityField";
 import { PhotoLinkDetails } from "./PhotoLinkDetails";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoUpload } from "./PhotoUpload";
-import { DirectoryPicker } from "./DirectoryPicker";
-import { kindOfCategory } from "@/lib/admin/directory-pick";
+import { NearbyPlacesManager } from "./DirectoryPicker";
 import { SubtitleUpload } from "./SubtitleUpload";
 import { VideoUpload } from "./VideoUpload";
 import { parseVideoFile } from "@/lib/video";
@@ -608,26 +607,15 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
 
             {section === "map" ? (
               <Section title={t`地図と線`} id="map-section">
-                <DirectoryPicker
-                  from={(() => {
-                    const ref = draft.places.find((p) => p.key === selectedKey && p.lat !== null) ?? draft.places.find((p) => p.lat !== null && p.lng !== null);
-                    return ref && ref.lat !== null && ref.lng !== null ? { lat: ref.lat, lng: ref.lng } : null;
-                  })()}
-                  onAdd={(place) => {
-                    const key = crypto.randomUUID();
-                    // A directory place is never a stamp place; its position was checked when it was put in the directory.
-                    dispatch({
-                      type: "addPlace",
-                      key,
-                      lat: place.lat,
-                      lng: place.lng,
-                      kind: kindOfCategory(place.category),
-                      after: selectedKey ?? undefined,
-                      patch: { stampable: false, nameJa: place.nameJa, nameEn: place.nameEn ?? "", positionVerified: true, positionSource: t`場所一覧：${place.nameJa}` },
-                    });
-                    setSelectedKey(key);
-                  }}
-                />
+                {draft.id ? (
+                  <NearbyPlacesManager
+                    routeId={draft.id}
+                    from={(() => {
+                      const ref = draft.places.find((p) => p.lat !== null && p.lng !== null);
+                      return ref && ref.lat !== null && ref.lng !== null ? { lat: ref.lat, lng: ref.lng } : null;
+                    })()}
+                  />
+                ) : null}
                 <MapEditorLoader
                   line={draft.line}
                   legs={draft.legs}
