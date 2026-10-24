@@ -24,7 +24,7 @@ describe("parseAdminEmails", () => {
 
 describe("first admin from ADMIN_EMAILS on email-code login", () => {
   function setup(adminEmails: string) {
-    const { store, users, promotions } = createMemoryOtpStore();
+    const { store, users, promotions, roleSetByAdmin } = createMemoryOtpStore();
     const sent: string[] = [];
     const logs: string[] = [];
     const mailer: Mailer = {
@@ -47,7 +47,7 @@ describe("first admin from ADMIN_EMAILS on email-code login", () => {
       clock = new Date(clock.getTime() + 2 * 60_000); // past the resend cooldown
       return result;
     }
-    return { service, login, sent, users, promotions, logs };
+    return { service, login, sent, users, promotions, roleSetByAdmin, logs };
   }
 
   test("a listed address becomes admin on its first login", async () => {
@@ -84,6 +84,15 @@ describe("first admin from ADMIN_EMAILS on email-code login", () => {
     const again = await login("owner@example.com");
     expect(again).toMatchObject({ ok: true, user: { role: "admin" } });
     expect(promotions).toHaveLength(1);
+  });
+
+  test("a listed address an admin has demoted stays demoted at its next login", async () => {
+    const { login, users, promotions, roleSetByAdmin } = setup("owner@example.com");
+    users.set("owner@example.com", { id: "u1", email: "owner@example.com", role: "editor", locale: "ja" });
+    roleSetByAdmin.add("u1");
+    expect(await login("owner@example.com")).toMatchObject({ ok: true, user: { id: "u1", role: "editor" } });
+    expect(users.get("owner@example.com")!.role).toBe("editor");
+    expect(promotions).toHaveLength(0);
   });
 
   test("a wrong code promotes nobody", async () => {

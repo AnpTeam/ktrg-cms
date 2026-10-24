@@ -5,7 +5,7 @@
 // points or the answer. Without a key the service says so and the editor keeps working by hand.
 
 import type { ErrorCode } from "../lib/api-errors";
-import { AUTH_LIMITS, type RateLimiter } from "../auth/rate-limit";
+import { AUTH_LIMITS, type RateLimiter, type RateLimitRule } from "../auth/rate-limit";
 
 export interface LatLng {
   lat: number;
@@ -33,12 +33,12 @@ const MAX_LINE_POINTS = 50_000;
 /**
  * The service with a cap on calls per day for the whole site. Only a call that would really go to OpenRouteService counts
  * (the per-user limits run first, so a refused request never reaches this), and over the cap it answers like a service
- * that is not available, which the screens already handle.
+ * that is not available, which the screens already handle. `rule` picks which site-wide count (routingDaily by default).
  */
-export function withDailyCap(inner: RoutingService, limiter: Pick<RateLimiter, "check">): RoutingService {
+export function withDailyCap(inner: RoutingService, limiter: Pick<RateLimiter, "check">, rule: RateLimitRule = AUTH_LIMITS.routingDaily): RoutingService {
   return {
     async snap(points) {
-      const r = await limiter.check(AUTH_LIMITS.routingDaily, "all");
+      const r = await limiter.check(rule, "all");
       return r.allowed ? inner.snap(points) : { ok: false, reason: "routing_unavailable" };
     },
   };

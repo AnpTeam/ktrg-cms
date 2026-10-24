@@ -2,7 +2,8 @@ import type { AuditWriter } from "./audit/audit-log";
 import { createOtpService, type OtpStore } from "./auth/otp-service";
 import { createPasskeyService, type PasskeyConfig, type PasskeyStore } from "./auth/passkey-service";
 import type { PasskeyServices } from "./auth/passkey-routes";
-import { createRateLimiter, type RateLimitStore } from "./auth/rate-limit";
+import { AUTH_LIMITS, createRateLimiter, type RateLimitStore } from "./auth/rate-limit";
+import type { NavigationServices } from "./navigation/navigation-routes";
 import type { AuthServices } from "./auth/routes";
 import { createSessionService, type SessionStore } from "./auth/session-service";
 import type { Mailer } from "./lib/mailer";
@@ -36,7 +37,7 @@ import { createUploadService } from "./uploads/upload-service";
 import type { FileStorage } from "./uploads/upload-storage";
 
 /** Everything the routes use. */
-export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & PostServices & BannerServices & PlaceServices & SiteSettingsServices & AuditListServices & PlaceListServices & UserListServices;
+export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & PostServices & BannerServices & PlaceServices & SiteSettingsServices & AuditListServices & PlaceListServices & UserListServices & NavigationServices;
 
 /** What the services are built from: the storage (database or in-memory) and the outside world. */
 export interface ServiceDeps {
@@ -86,6 +87,7 @@ export interface ServiceDeps {
 export function createServices(deps: ServiceDeps): Services {
   const { stores, mailer, secret, now } = deps;
   const rateLimit = createRateLimiter({ store: stores.rateLimit, secret, now });
+  const routing = withDailyCap(deps.routing ?? createRoutingService({}), rateLimit);
   return {
     otp: createOtpService({ store: stores.otp, mailer, secret, adminEmails: deps.adminEmails, now }),
     session: createSessionService({ store: stores.session, now }),
@@ -116,6 +118,8 @@ export function createServices(deps: ServiceDeps): Services {
     // Admin photo uploads.
     uploads: createUploadService({ ...deps.uploads }),
     // The route-finding service behind the map editor's "snap to trails" (no key: it answers "not set up").
-    routing: withDailyCap(deps.routing ?? createRoutingService({}), rateLimit),
+    routing,
+    // Visitors' navigation: the same service, held to its own share of the day so the admin's snap always keeps some.
+    navigationRouting: withDailyCap(routing, rateLimit, AUTH_LIMITS.navigationAllDaily),
   };
 }

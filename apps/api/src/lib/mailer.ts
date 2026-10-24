@@ -34,6 +34,8 @@ export function createSmtpMailer(env: MailEnv): Mailer {
     host: env.SMTP_HOST,
     port: env.SMTP_PORT,
     secure: env.SMTP_PORT === 465,
+    // Other ports start plain and upgrade (STARTTLS): insist on it, so login codes never travel unencrypted.
+    requireTLS: env.SMTP_PORT !== 465,
     auth: env.SMTP_USER && env.SMTP_PASS ? { user: env.SMTP_USER, pass: env.SMTP_PASS } : undefined,
   });
   return {

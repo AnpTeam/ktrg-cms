@@ -44,7 +44,7 @@ export interface OtpStore {
   findOrCreateUser(email: string, profile?: NewAccountProfile): Promise<AuthUser>;
   /**
    * Atomically make this user an admin and write the audit row. Returns false when they
-   * already were one (nothing is written then).
+   * already were one, or when an admin has ever set their role (user.role.change): nothing is written then.
    */
   promoteToAdmin(userId: string): Promise<boolean>;
   /**
@@ -160,8 +160,12 @@ export function createOtpService({
 
       const user = await store.findOrCreateUser(email, profile);
       if (user.role !== "admin" && adminEmails.has(email)) {
-        if (await store.promoteToAdmin(user.id)) log(`[auth] ${user.id} promoted to admin (ADMIN_EMAILS)`);
-        return { ok: true, user: { ...user, role: "admin" } };
+        if (await store.promoteToAdmin(user.id)) {
+          log(`[auth] ${user.id} promoted to admin (ADMIN_EMAILS)`);
+          return { ok: true, user: { ...user, role: "admin" } };
+        }
+        // Not promoted: an admin has set this account's role (it stays), or a parallel login just promoted it. Read it again.
+        return { ok: true, user: await store.findOrCreateUser(email) };
       }
       return { ok: true, user };
     },

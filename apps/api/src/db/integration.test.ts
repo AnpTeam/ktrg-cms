@@ -180,6 +180,18 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
         await db.delete(auditLog).where(eq(auditLog.targetId, user.id));
       }
     });
+
+    test("promoteToAdmin: an account whose role an admin has set is not promoted", async () => {
+      const user = await otp.findOrCreateUser(email("otp-demoted"));
+      try {
+        await db.insert(auditLog).values({ actorUserId: null, action: "user.role.change", targetType: "user", targetId: user.id });
+        expect(await otp.promoteToAdmin(user.id)).toBe(false);
+        const [row] = await db.select({ role: users.role }).from(users).where(eq(users.id, user.id));
+        expect(row!.role).toBe("participant");
+      } finally {
+        await db.delete(auditLog).where(eq(auditLog.targetId, user.id));
+      }
+    });
   });
 
   describe("session store", () => {

@@ -1,7 +1,7 @@
 import { and, desc, eq, isNull, lt, ne, sql } from "drizzle-orm";
 import type { Db } from "../db/client";
 import { writeAudit } from "../audit/audit-store";
-import { otpCodes, users } from "../db/schema";
+import { auditLog, otpCodes, users } from "../db/schema";
 import type { AuthUser } from "./user";
 import type { OtpStore } from "./otp-service";
 
@@ -88,6 +88,13 @@ export function createDrizzleOtpStore(db: Db): OtpStore {
 
     async promoteToAdmin(userId) {
       return db.transaction(async (tx) => {
+        // An admin has set this account's role on the users screen: that choice wins over ADMIN_EMAILS.
+        const [set] = await tx
+          .select({ id: auditLog.id })
+          .from(auditLog)
+          .where(and(eq(auditLog.targetType, "user"), eq(auditLog.targetId, userId), eq(auditLog.action, "user.role.change")))
+          .limit(1);
+        if (set) return false;
         // Only a real change counts, so two parallel logins write one audit row, not two.
         const changed = await tx
           .update(users)

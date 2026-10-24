@@ -23,6 +23,16 @@ describe("withDailyCap", () => {
     expect(await capped.snap(POINTS)).toEqual({ ok: false, reason: "routing_unavailable" });
     expect(calls).toBe(AUTH_LIMITS.routingDaily.limit);
   });
+
+  test("when visitors' navigation has used its share, the admin's snap still gets the rest of the day", async () => {
+    const inner: RoutingService = { snap: async () => found };
+    const limiter = createRateLimiter({ store: createMemoryRateLimitStore().store, secret: "r".repeat(32), now: () => new Date("2026-10-21T00:00:00Z") });
+    const admin = withDailyCap(inner, limiter);
+    const visitors = withDailyCap(admin, limiter, AUTH_LIMITS.navigationAllDaily);
+    for (let i = 0; i < AUTH_LIMITS.navigationAllDaily.limit; i++) expect((await visitors.snap(POINTS)).ok).toBe(true);
+    expect(await visitors.snap(POINTS)).toEqual({ ok: false, reason: "routing_unavailable" });
+    expect((await admin.snap(POINTS)).ok).toBe(true);
+  });
 });
 
 describe("parseSnapAnswer", () => {
