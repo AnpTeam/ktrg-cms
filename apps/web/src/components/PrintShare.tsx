@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { t } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react/macro";
 
 // Print (the browser can save it as a PDF) and share the page. The layout hides its menus when printing.
 export function PrintShare({ title }: { title: string }) {
+  const { t } = useLingui();
   const [copied, setCopied] = useState(false);
   const canShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
   const share = async () => {
