@@ -118,6 +118,8 @@ export const routes = pgTable(
     videoUrl: text("video_url"),
     // When the video was last put there or replaced (shown under it as "last updated").
     videoUpdatedAt: timestamp("video_updated_at", { withTimezone: true }),
+    // Whether the uploaded video has subtitles beside it (the .vtt named like the video); the player asks for them only then.
+    videoSubtitles: boolean("video_subtitles").notNull().default(false),
     // A picture of the route: an https address (an upload comes when a storage provider is chosen).
     photoUrl: text("photo_url"),
     // Who took the picture / where it comes from. Shown on it; may hold links (see the web app's rich-text format).
@@ -160,6 +162,8 @@ export const spots = pgTable(
     stopBy: boolean("stop_by").notNull().default(false),
     photoUrl: text("photo_url"),
     photoCredit: text("photo_credit"),
+    // A picture to use as this place's stamp, in place of the plain seal.
+    stampImageUrl: text("stamp_image_url"),
     // More photos of the place, in order (the first photo above is its main one).
     photos: jsonb("photos").$type<SpotPhoto[]>().notNull().default(sql`'[]'::jsonb`),
     status: spotStatus("status").notNull().default("open"),

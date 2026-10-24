@@ -7,6 +7,7 @@ import { adminContentRoutes } from "./content/admin-routes";
 import { createDrizzleContentStore } from "./content/content-store";
 import { createDrizzleRallyAdminStore } from "./rallies/rally-admin-store";
 import { rallyAdminRoutes } from "./rallies/rally-admin-routes";
+import { rallyPublicRoutes } from "./rallies/rally-public-routes";
 import { navigationRoutes } from "./navigation/navigation-routes";
 import { stampAdminRoutes } from "./stamps/stamp-admin-routes";
 import { stampRoutes } from "./stamps/stamp-routes";
@@ -126,6 +127,7 @@ export function createApp(
     .use(publicContentRoutes(() => getServices().content))
     .use(uploadRoutes(getServices, opts))
     .use(rallyAdminRoutes(getServices, opts))
+    .use(rallyPublicRoutes(getServices, env.NODE_ENV === "production" ? 10_000 : 0))
     .use(stampRoutes(getServices, opts))
     .use(navigationRoutes(getServices, opts))
     .use(stampAdminRoutes(getServices, opts))

@@ -63,6 +63,10 @@ export interface MapPlace {
   verified: boolean;
   /** The date (YYYY-MM-DD) someone last checked the details; null when unknown. */
   lastVerified: string | null;
+  /** Where it is, a phone number and its website, when the directory has them. */
+  address?: string | null;
+  phone?: string | null;
+  website?: string | null;
 }
 
 const EARTH_RADIUS_M = 6_371_000;

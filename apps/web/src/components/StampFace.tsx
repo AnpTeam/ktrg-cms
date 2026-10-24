@@ -23,6 +23,7 @@ export function StampFace({
   number,
   className = "",
   rough = false,
+  image,
   children,
 }: {
   state: StampState;
@@ -30,8 +31,14 @@ export function StampFace({
   className?: string;
   /** Make a stamped seal look pressed by hand (a wobbly edge, gaps in the ink). For big seals only: at a few pixels it is just noise. */
   rough?: boolean;
+  /** The place's own stamp picture; it takes the seal's place, dimmed and grey until the stamp is held. */
+  image?: string | null;
   children?: ReactNode;
 }) {
+  if (image && state !== "next") {
+    // eslint-disable-next-line @next/next/no-img-element -- an admin-chosen picture from the photo host, shown as it is
+    return <img src={image} alt="" aria-hidden="true" className={`rounded-lg object-contain ${state === "stamped" ? "" : "opacity-40 grayscale"} ${className}`} />;
+  }
   const style: CSSProperties | undefined =
     state === "stamped"
       ? {

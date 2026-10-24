@@ -104,6 +104,7 @@ const routeProps = {
   lineVerified: t.Boolean(),
   lineSource: nullable(t.String({ maxLength: 500 })),
   videoUrl: nullable(t.String({ maxLength: 500 })),
+  videoSubtitles: t.Boolean(),
   historyJa: nullable(t.String({ maxLength: 20000 })),
   historyEn: nullable(t.String({ maxLength: 20000 })),
   accessJa: nullable(t.String({ maxLength: 20000 })),
@@ -131,6 +132,7 @@ const spotProps = {
   stampable: t.Boolean(),
   // An optional visit beside the way (寄り道): the route's line need not pass through it.
   stopBy: t.Boolean(),
+  stampImageUrl: nullable(t.String({ maxLength: 500 })),
   photoUrl: nullable(t.String({ maxLength: 500 })),
   photoCredit: nullable(t.String({ maxLength: 500 })),
   sourceJa: nullable(t.String({ maxLength: 2000 })),
@@ -166,6 +168,7 @@ export function adminContentRoutes(getServices: () => ContentServices, opts: Rou
     .use(plugins)
     // ---- routes ----------------------------------------------------------------------------
     .get("/routes", async () => ({ ok: true as const, routes: (await svc().listRoutes()).map(routeOut) }), { auth: "route.manage" })
+    .get("/attention", async () => ({ ok: true as const, ...(await svc().attention()) }), { auth: "route.manage", detail: { summary: "Routes and waypoints with something missing" } })
     .get(
       "/routes/:id",
       async ({ params, set }) => {
@@ -260,6 +263,19 @@ export function adminContentRoutes(getServices: () => ContentServices, opts: Rou
       async ({ user, params, set }) => {
         const r = await svc().publishSpot(user.id, params.id);
         return r.ok ? { ok: true as const, spot: spotOut(r.value) } : fail(set, statusOf(r.reason), r.reason);
+      },
+      { auth: "spot.publish", rateLimit: { adminWriteUser: "user.id" }, params: idParams },
+    )
+    .get(
+      "/routes/:id/history",
+      async ({ params }) => ({ ok: true as const, history: (await svc().routeHistory(params.id)).map((h) => ({ ...h, createdAt: h.createdAt.toISOString() })) }),
+      { auth: "route.manage", params: idParams, detail: { summary: "What was done to a route and its places (ids only), newest first" } },
+    )
+    .post(
+      "/routes/:id/unpublish-spots",
+      async ({ user, params, set }) => {
+        const r = await svc().unpublishRouteSpots(user.id, params.id);
+        return r.ok ? { ok: true as const, spots: r.value.map(spotOut) } : fail(set, statusOf(r.reason), r.reason);
       },
       { auth: "spot.publish", rateLimit: { adminWriteUser: "user.id" }, params: idParams },
     )

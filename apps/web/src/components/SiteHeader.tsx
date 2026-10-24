@@ -115,7 +115,7 @@ export function SiteHeader({
   }
 
   return (
-    <header className={`site-header ${onLanding ? "sticky top-0 z-30 h-0" : "relative z-30 md:sticky md:top-0 md:h-0"}`}>
+    <header className={`print:hidden site-header ${onLanding ? "sticky top-0 z-30 h-0" : "relative z-30 md:sticky md:top-0 md:h-0"}`}>
       {open ? (
         // Tapping outside the panel closes it. (Escape and the button do the same for the keyboard.)
         <div aria-hidden="true" onClick={() => setOpen(false)} className="fixed inset-0 bg-black/50 md:bg-transparent" />
@@ -175,7 +175,7 @@ export function SiteHeader({
             {signedIn ? (
               <div className="flex flex-col gap-3">
                 <Link prefetch={false}
-                  href="/stamps"
+                  href="/rallies"
                   className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface"
                 >
                   <UserIcon />

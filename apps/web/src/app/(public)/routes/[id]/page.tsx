@@ -3,6 +3,11 @@ import type { Metadata } from "next";
 import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
+import { TrailNotices } from "@/components/landing/TrailNotices";
+import { listNotices } from "@/lib/notices";
+import { OfflineSave } from "@/components/OfflineSave";
+import { gsiTileUrl } from "@/lib/map";
+import { PrintShare } from "@/components/PrintShare";
 import { RouteView } from "@/components/RouteView";
 import { forViewer, getRoute, listPlacesForRoute, pickText, toMapPlace } from "@/lib/content";
 import { getViewer } from "@/lib/viewer";
@@ -29,6 +34,8 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
   const settings = await getMapSettings();
   const places = (await listPlacesForRoute(route.order)).map((p) => toMapPlace(i18n.locale, p));
 
+  const notices = (await listNotices()).filter((n) => n.routeId === null || n.routeId === route.id);
+
   return (
     <div className="flex flex-col gap-6">
       <div className="px-4">
@@ -36,6 +43,14 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
           <Trans>ルート一覧</Trans>
         </BackLink>
       </div>
+      <PrintShare title={route.nameJa} />
+      <OfflineSave area={route.area} tileTemplate={gsiTileUrl(settings.base === "photo" ? "seamlessphoto" : settings.base)} />
+      <TrailNotices notices={notices} locale={i18n.locale} blogUrl={null} />
+      {notices.length > 0 ? (
+        <a href={`/notices/feed.xml?route=${encodeURIComponent(route.id)}${i18n.locale === "en" ? "&lang=en" : ""}`} className="-mt-3 px-4 text-sm text-accent underline">
+          <Trans>このルートのお知らせをフィードで受け取る</Trans>
+        </a>
+      ) : null}
       <RouteView
         route={route}
         locale={i18n.locale}

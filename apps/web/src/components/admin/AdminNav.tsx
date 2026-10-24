@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { ReactNode } from "react";
-import { BellIcon, ClockIcon, DocumentIcon, FlagIcon, GearIcon, ImageIcon, PinIcon, RouteIcon, ShopIcon, StampIcon, UserIcon } from "@/components/icons";
+import { BellIcon, ClockIcon, DocumentIcon, FlagIcon, GearIcon, ImageIcon, PinIcon, RouteIcon, ShopIcon, StampIcon, UserIcon, WarningIcon } from "@/components/icons";
 
 /** The picture beside each list in the menu; a list the app does not know yet gets a plain document. */
 const LIST_ICONS: Record<string, ReactNode> = {
@@ -30,6 +30,7 @@ export function AdminNav({ lists, isAdmin }: { lists: { key: string; title: stri
   const ready = [
     { href: `${base}/routes`, label: t`ルート`, icon: <RouteIcon /> },
     { href: `${base}/rallies`, label: t`ラリー`, icon: <FlagIcon /> },
+    { href: `${base}/attention`, label: t`直すところ`, icon: <WarningIcon /> },
     ...lists.map((l) => ({ href: `${base}/${l.key}`, label: l.title, icon: LIST_ICONS[l.key] ?? <DocumentIcon /> })),
     // The site settings are for an admin only (the API refuses an editor).
     ...(isAdmin ? [{ href: `${base}/settings`, label: t`サイト全体の設定`, icon: <GearIcon /> }] : []),

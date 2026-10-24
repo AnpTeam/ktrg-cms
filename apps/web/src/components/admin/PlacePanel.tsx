@@ -144,6 +144,18 @@ export function PlacePanel(p: PlacePanelProps) {
             <PhotoSlot url={place.photoUrl} className="max-w-md" />
           </div>
 
+          <div className="flex flex-col gap-2">
+            <p className="text-base font-bold">{t`この場所のスタンプの絵`}</p>
+            <p className="text-base text-muted">{t`入れると、この場所のスタンプが、ふつうの赤い印の代わりにこの絵になります。正方形で、背景が透明な画像がきれいです。`}</p>
+            <PhotoUpload onUploaded={(url) => p.onChange({ stampImageUrl: url })} />
+            <PhotoSlot url={place.stampImageUrl} className="max-w-32" />
+            {place.stampImageUrl ? (
+              <button type="button" className="self-start text-base font-bold text-accent underline" onClick={() => p.onChange({ stampImageUrl: "" })}>
+                {t`絵をはずす`}
+              </button>
+            ) : null}
+          </div>
+
           <GalleryEditor photos={place.photos} onChange={(photos) => p.onChange({ photos })} name={place.nameJa} lat={place.lat} lng={place.lng} />
 
           <fieldset className="flex flex-col gap-3">

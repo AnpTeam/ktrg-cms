@@ -85,7 +85,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
       <div className="lg:col-start-1 lg:row-start-2">
         <ProgressSummary stamped={stamped} total={total}>
-          <ButtonLink href="/stamps">
+          <ButtonLink href="/rallies">
             <Trans>スタンプカードを見る</Trans>
           </ButtonLink>
         </ProgressSummary>

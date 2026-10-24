@@ -2,6 +2,7 @@ import type { ErrorCode } from "../lib/api-errors";
 import { stampableByDefault } from "../db/schema/content";
 import { cleanTranslations } from "../db/translations";
 import { isHttpsUrl, isPhotoUrl, withWikimedia } from "../lib/https-url";
+import { attention } from "./attention";
 import { isAllowedVideoUrl } from "./video-url";
 import { lineLengthKm, parseLine, plainLine, ridesOf, sideLinesOf, simplifyLine, sketchOf, type LineString, type Ride } from "./line";
 import type {
@@ -39,6 +40,7 @@ export interface PublicSpot {
   stampable: boolean;
   /** An optional visit beside the way (寄り道). */
   stopBy: boolean;
+  stampImageUrl: string | null;
   photoUrl: string | null;
   photoCredit: string | null;
   sourceJa: string | null;
@@ -72,6 +74,7 @@ export interface PublicRoute {
   municipality: string | null;
   videoUrl: string | null;
   videoUpdatedAt: Date | null;
+  videoSubtitles: boolean;
   updatedAt: Date;
   historyJa: string | null;
   historyEn: string | null;
@@ -133,6 +136,7 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     municipality: r.municipality,
     videoUrl: r.videoUrl,
     videoUpdatedAt: r.videoUpdatedAt,
+    videoSubtitles: r.videoSubtitles,
     updatedAt: r.updatedAt,
     historyJa: r.historyJa,
     historyEn: r.historyEn,
@@ -169,6 +173,7 @@ function toPublicSpot(s: SpotRow): PublicSpot {
     kind: s.kind,
     stampable: s.stampable,
     stopBy: s.stopBy,
+    stampImageUrl: s.stampImageUrl,
     photoUrl: s.photoUrl,
     photoCredit: s.photoCredit,
     sourceJa: s.sourceJa,
@@ -238,6 +243,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (v && !isAllowedVideoUrl(v, photoHosts)) return bad("invalid_video_url");
       out.videoUrl = v;
     }
+    if (input.videoSubtitles !== undefined) out.videoSubtitles = input.videoSubtitles;
     if (input.photoUrl !== undefined) {
       const v = text(input.photoUrl);
       if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");
@@ -287,6 +293,11 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");
       out.photoUrl = v;
     }
+    if (input.stampImageUrl !== undefined) {
+      const v = text(input.stampImageUrl);
+      if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");
+      out.stampImageUrl = v;
+    }
     if (input.photos !== undefined) {
       const photos: NonNullable<SpotFields["photos"]> = [];
       for (const p of input.photos) {
@@ -310,6 +321,13 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
   return {
     // ---- admin: routes -------------------------------------------------------------------
     listRoutes: (): Promise<RouteSummaryRow[]> => store.listRoutes(),
+
+    /** Routes and waypoints with something missing (an unchecked line, no English name, no photo ...). Reads each route once. */
+    async attention() {
+      const rows = await store.listRoutes();
+      const full = await Promise.all(rows.map(async (r) => ({ ...r, spots: (await store.getRoute(r.id))?.spots ?? [] })));
+      return attention(full);
+    },
     getRoute: (id: string) => store.getRoute(id),
 
     async createRoute(actor: string, input: Partial<RouteFields> & { nameJa: string }): Promise<Result<RouteRow>> {
@@ -331,7 +349,11 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
         if ((changes.geometry !== undefined ? changes.geometry : current.route.geometry) === null) return bad("invalid_line");
       }
       // The video counts as updated when its address changes (put there, replaced, or removed).
-      if (changes.videoUrl !== undefined && changes.videoUrl !== current.route.videoUrl) changes.videoUpdatedAt = changes.videoUrl ? new Date() : null;
+      if (changes.videoUrl !== undefined && changes.videoUrl !== current.route.videoUrl) {
+        changes.videoUpdatedAt = changes.videoUrl ? new Date() : null;
+        // Subtitles belong to the file: another video has none until they are uploaded for it.
+        if (changes.videoSubtitles === undefined) changes.videoSubtitles = false;
+      }
       const r = await store.updateRoute(actor, id, date(expected), changes);
       if (r === null) return bad("not_found");
       if (r === "conflict") return bad("conflict");
@@ -403,6 +425,15 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
 
     async unpublishSpot(actor: string, id: string): Promise<Result<SpotRow>> {
       const r = await store.setPublished(actor, id, false);
+      return r ? ok(r) : bad("not_found");
+    },
+
+    /** The latest 50 things done to a route or its places: what, when, and by whom (an account id). */
+    routeHistory: (routeId: string) => store.routeHistory(routeId, 50),
+
+    /** Takes every published place of a route off the site at once; the route stays in the list as coming soon. */
+    async unpublishRouteSpots(actor: string, routeId: string): Promise<Result<SpotRow[]>> {
+      const r = await store.unpublishRouteSpots(actor, routeId);
       return r ? ok(r) : bad("not_found");
     },
 

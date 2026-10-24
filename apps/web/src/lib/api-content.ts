@@ -1,5 +1,6 @@
 import { cache } from "react";
-import type { PublicPlace, PublicRoute, PublicSpot } from "./api-content-types";
+import type { PublicPlace, PublicRally, PublicRoute, PublicSpot } from "./api-content-types";
+import type { RallyItem } from "./rally-model";
 import type { TrailNotice } from "./notices";
 import type { PlaceItem, Prefecture, RouteDetail, RoutePoint, RouteSummary, SpotDetail, SpotListItem } from "./content";
 import { placeCategories, placeStatuses } from "./places";
@@ -68,6 +69,7 @@ export function spotListItemFromApi(s: PublicSpot, stamped = false): SpotListIte
     statusUpdatedAt: s.statusUpdatedAt,
     photoUrl: s.photoUrl,
     photoCredit: s.photoCredit ?? null,
+    stampImageUrl: s.stampImageUrl ?? null,
     sortOrder: s.sortOrder,
   };
 }
@@ -91,6 +93,9 @@ export function placeItemFromApi(p: PublicPlace, order: number | null): PlaceIte
     lastVerified: p.lastVerified,
     photoUrl: p.photoUrl,
     photoCredit: p.photoCredit ?? null,
+    address: p.address,
+    phone: p.phone,
+    website: p.website,
   };
 }
 
@@ -144,6 +149,7 @@ export function routeDetailFromApi(
     sideLines: (r.sideLines ?? []).map((s) => ({ spotId: s.spotId, line: s.coordinates.map(([lng, lat]) => ({ lat, lng })) })),
     videoUrl: r.videoUrl,
     videoUpdatedAt: r.videoUpdatedAt ?? null,
+    videoSubtitles: r.videoSubtitles === true,
     updatedAt: r.updatedAt ?? null,
     photoUrl: r.photoUrl,
     photoCredit: r.photoCredit ?? null,
@@ -210,6 +216,30 @@ export const fetchPublicRoute = cache(async (id: string): Promise<{ route: Publi
 
 export const fetchPublicSpot = cache(async (id: string): Promise<PublicSpot | null> => {
   return okBody<{ spot: PublicSpot }>(await getJson(`/spots/${encodeURIComponent(id)}`))?.spot ?? null;
+});
+
+/** A course is finished when it has places and every one is stamped, a closed one counting as done (the server's rule, rallies/progress.ts). */
+const courseFinished = (spots: readonly { id: string; status: string }[], stamped: ReadonlySet<string>) =>
+  spots.length > 0 && spots.every((s) => stamped.has(s.id) || s.status === "closed");
+
+/**
+ * The rallies the CMS publishes, as the stamp page shows them. A rally of places has one slot for each place; a rally of
+ * courses one for each course, stamped once every published stamp place of that course is. `stamped` is the set of place
+ * ids the visitor holds (empty when signed out: the page then hides the progress).
+ */
+export function ralliesFromApi(rallies: readonly PublicRally[], stamped: ReadonlySet<string>): RallyItem[] {
+  return rallies.map((r, i): RallyItem => {
+    const slots =
+      r.kind === "places"
+        ? r.places.map((p, n) => ({ id: p.id, number: n + 1, nameJa: p.nameJa, nameEn: p.nameEn, stamped: stamped.has(p.id) }))
+        : r.courses.map((c, n) => ({ id: c.routeId, number: n + 1, nameJa: c.nameJa, nameEn: c.nameEn, stamped: courseFinished(c.spots, stamped) }));
+    return { id: r.id, kind: "rally", order: i + 1, nameJa: r.nameJa, nameEn: r.nameEn, routeId: null, total: slots.length, stamped: slots.filter((s) => s.stamped).length, lastStampedAt: null, slots };
+  });
+}
+
+/** The published stamp rallies, in order. */
+export const fetchPublicRallies = cache(async (): Promise<PublicRally[] | null> => {
+  return okBody<{ rallies: PublicRally[] }>(await getJson("/rallies"))?.rallies ?? null;
 });
 
 /** Published places of the directory (the API keeps back the ones without a checked position). */

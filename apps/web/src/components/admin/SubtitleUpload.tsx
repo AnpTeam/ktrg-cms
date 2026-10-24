@@ -34,7 +34,7 @@ async function uploadSubtitles(file: File, videoUrl: string): Promise<Sent> {
 }
 
 /** For a video uploaded to the site: a button that adds its subtitles (.srt or .vtt, Japanese). Sending again replaces them. */
-export function SubtitleUpload({ videoUrl }: { videoUrl: string }) {
+export function SubtitleUpload({ videoUrl, uploaded, onUploaded }: { videoUrl: string; /** Subtitles were uploaded for this video before. */ uploaded: boolean; /** They have just been uploaded: the route remembers it (saved with the route). */ onUploaded: () => void }) {
   const { t } = useLingui();
   const messages = useErrorMessages();
   const [busy, setBusy] = useState(false);
@@ -48,7 +48,10 @@ export function SubtitleUpload({ videoUrl }: { videoUrl: string }) {
     setError(null);
     const res = await uploadSubtitles(file, videoUrl);
     setBusy(false);
-    if (res.ok) setDone(true);
+    if (res.ok) {
+      setDone(true);
+      onUploaded();
+    }
     else setError(res.key);
   }
 
@@ -69,6 +72,7 @@ export function SubtitleUpload({ videoUrl }: { videoUrl: string }) {
         />
       </label>
       <p className="text-base text-muted">{t`日本語の字幕です。もう一度送ると、置き換わります。字幕は動画の横に保存され、動画を入れ替えたときは、字幕も送りなおしてください。`}</p>
+      {uploaded && !done ? <p className="text-base font-bold">{t`字幕は入っています。`}</p> : null}
       {done ? (
         <p role="status" className="text-base font-bold">
           {t`字幕を入れました。動画を再生して確かめてください。`}

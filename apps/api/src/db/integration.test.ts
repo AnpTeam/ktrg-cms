@@ -871,6 +871,22 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       });
     });
 
+    test("the history of a route holds what was done to it and to its places, and nothing about other routes", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const [first, second] = await store.listRoutes();
+          const made = await store.createSpot(actor, first!.id, { nameJa: "履歴の場所" });
+          await store.updateRoute(actor, first!.id, first!.updatedAt, { nameEn: "Changed" });
+          await store.updateRoute(actor, second!.id, second!.updatedAt, { nameEn: "Elsewhere" });
+          const history = await store.routeHistory(first!.id, 50);
+          // (inside one rolled-back transaction every row has the same time, so the order is not asserted here)
+          expect(history.map((h) => h.action).sort()).toEqual(["route.update", "spot.create"]);
+          expect(history.every((h) => h.actorUserId === actor)).toBe(true);
+          expect(history.find((h) => h.action === "spot.create")!.targetId).toBe(made!.id);
+        });
+      });
+    });
+
     test("creating a place puts it on its course (and so in its course's rallies) but in no rally of places; it is audited", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {

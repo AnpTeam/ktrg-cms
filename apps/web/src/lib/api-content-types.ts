@@ -24,6 +24,8 @@ export interface PublicRoute {
   videoUrl: string | null;
   /** When the video was last put there or replaced (ISO); null for none. */
   videoUpdatedAt?: string | null;
+  /** The video has subtitles beside it. */
+  videoSubtitles?: boolean;
   /** When the route was last saved (ISO). */
   updatedAt?: string;
   historyJa: string | null;
@@ -46,6 +48,18 @@ export interface PublicRoute {
   bounds: { west: number; south: number; east: number; north: number } | null;
 }
 
+/** One published rally as GET /rallies sends it: a rally of places lists its places, a rally of courses its courses. */
+export interface PublicRally {
+  id: string;
+  kind: "places" | "course";
+  nameJa: string;
+  nameEn: string | null;
+  sortOrder: number;
+  places: { id: string; routeId: string; nameJa: string; nameEn: string | null }[];
+  /** Each course with its published stamp places and their status. */
+  courses: { routeId: string; nameJa: string; nameEn: string | null; spots: { id: string; status: string }[] }[];
+}
+
 export interface PublicSpot {
   id: string;
   routeId: string;
@@ -62,6 +76,7 @@ export interface PublicSpot {
   stampable: boolean;
   /** An optional visit beside the way (寄り道). */
   stopBy?: boolean;
+  stampImageUrl?: string | null;
   photoUrl: string | null;
   photoCredit?: string | null;
   sourceJa?: string | null;

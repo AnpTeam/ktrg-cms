@@ -2,6 +2,7 @@ import { afterEach, describe, expect, test } from "bun:test";
 import {
   areaFromBounds,
   fetchPublicRoutes,
+  ralliesFromApi,
   isEmptyRoute,
   placeItemFromApi,
   routeDetailFromApi,
@@ -125,5 +126,25 @@ describe("placeItemFromApi", () => {
   });
   test("a category or status this app does not know is read as other / unknown", () => {
     expect(placeItemFromApi({ ...place, category: "hot_spring", status: "weird" }, 1)).toMatchObject({ category: "other", status: "unknown" });
+  });
+});
+
+describe("ralliesFromApi", () => {
+  const places = { id: "r-p", kind: "places" as const, nameJa: "経塚", nameEn: "Mounds", sortOrder: 1, courses: [], places: [{ id: "s1", routeId: "c1", nameJa: "一", nameEn: null }, { id: "s2", routeId: "c1", nameJa: "二", nameEn: null }] };
+  const courses = { id: "r-c", kind: "course" as const, nameJa: "全部", nameEn: null, sortOrder: 2, places: [], courses: [{ routeId: "c1", nameJa: "道1", nameEn: null, spots: [{ id: "s1", status: "open" }, { id: "s2", status: "open" }] }, { routeId: "c2", nameJa: "道2", nameEn: null, spots: [] }] };
+  test("a rally of places has a slot for each place, stamped from the visitor's stamps", () => {
+    const [r] = ralliesFromApi([places], new Set(["s2"]));
+    expect(r).toMatchObject({ id: "r-p", kind: "rally", total: 2, stamped: 1 });
+    expect(r!.slots.map((s) => [s.number, s.stamped])).toEqual([[1, false], [2, true]]);
+  });
+  test("a rally of courses has a slot for each course; one is stamped when all its places are, and a course with none never is", () => {
+    const [r] = ralliesFromApi([courses], new Set(["s1", "s2"]));
+    expect(r!.slots.map((s) => s.stamped)).toEqual([true, false]);
+    expect(r!.stamped).toBe(1);
+  });
+  test("a closed place that nobody stamped counts as done, like on the server; an open one does not", () => {
+    const closed = { ...courses, courses: [{ routeId: "c1", nameJa: "道1", nameEn: null, spots: [{ id: "s1", status: "open" }, { id: "s2", status: "closed" }] }] };
+    expect(ralliesFromApi([closed], new Set(["s1"]))[0]!.slots[0]!.stamped).toBe(true);
+    expect(ralliesFromApi([closed], new Set(["s2"]))[0]!.slots[0]!.stamped).toBe(false);
   });
 });

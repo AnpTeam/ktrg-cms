@@ -1,11 +1,10 @@
-import { fetchPublicPlaces, fetchPublicRoute, fetchPublicRoutes, fetchPublicSpot, placeItemFromApi, isEmptyRoute, routeDetailFromApi, routeSummaryFromApi, spotDetailFromApi } from "./api-content";
+import { fetchPublicPlaces, fetchPublicRallies, fetchPublicRoute, ralliesFromApi, fetchPublicRoutes, fetchPublicSpot, placeItemFromApi, isEmptyRoute, routeDetailFromApi, routeSummaryFromApi, spotDetailFromApi } from "./api-content";
 import type { RouteArea } from "./map-screen";
 import type { PointKind } from "./point-kinds";
 import { pickText } from "./pick-text";
 import { getMyStamps } from "./my-stamps";
 import type { MapPlace, PlaceCategory, PlaceStatus } from "./places";
 import type { RallyItem } from "./rally-model";
-import { sampleLastStamped, sampleMounds, sampleMoundsStamped } from "./sample-mounds";
 import { samplePlaces } from "./sample-places";
 import { sampleRoutes, sampleSpots } from "./sample-content";
 import type { Sketch } from "./sketch";
@@ -80,6 +79,8 @@ export interface SpotListItem {
   statusUpdatedAt?: string | null;
   photoUrl?: string | null;
   photoCredit?: string | null;
+  /** A picture used as this place's stamp, in place of the plain seal. */
+  stampImageUrl?: string | null;
   /** Its place in the route's order together with the waypoints that have no stamp (lower comes first). */
   sortOrder?: number;
   /** What the place is (a sutra mound, a temple ...); left out when unknown. */
@@ -135,6 +136,8 @@ export interface RouteDetail extends RouteSummary {
   videoUrl: string | null;
   /** When the video was last put there or replaced (ISO); null when not known. */
   videoUpdatedAt?: string | null;
+  /** The video has subtitles beside it (a .vtt named like the video). */
+  videoSubtitles?: boolean;
   /** When the route was last saved (ISO). */
   updatedAt?: string | null;
   /** How the route is walked, as an admin saved it; null/left out when nobody has said. */
@@ -261,6 +264,9 @@ export interface PlaceItem {
   /** A photo of the place (an address); null or left out when there is none. */
   photoUrl?: string | null;
   photoCredit?: string | null;
+  address?: string | null;
+  phone?: string | null;
+  website?: string | null;
 }
 
 /** Every place of the directory a visitor may see (plus the samples when sample content is on). */
@@ -293,52 +299,19 @@ export function toMapPlace(locale: string, p: PlaceItem): MapPlace {
     position: { lat: p.position.lat, lng: p.position.lng },
     verified: p.position.verified,
     lastVerified: p.lastVerified,
+    address: p.address ?? null,
+    phone: p.phone ?? null,
+    website: p.website ?? null,
   };
 }
 
 /**
- * Every stamp rally: the 31 sutra mound places as one rally, then one rally per course (a course
- * with no published places has none to show and is 準備中). Only sample data for now (the
- * rallies API does not exist yet); the personal parts are removed for a signed-out visitor by
- * forRallyViewer.
+ * Every rally the CMS publishes (GET /rallies), with the visitor's own stamps counted in; none when the API is not
+ * reachable. The personal parts are removed for a signed-out visitor by forRallyViewer.
  */
 export async function listRallies(): Promise<RallyItem[]> {
-  if (!sampleContentEnabled()) return [];
-  const moundSlots = sampleMounds.map((m) => ({
-    id: `sample-m${m.number}`,
-    number: m.number,
-    nameJa: m.nameJa,
-    nameEn: m.nameEn,
-    stamped: sampleMoundsStamped.has(m.number),
-  }));
-  const mounds: RallyItem = {
-    id: "mounds",
-    kind: "mounds",
-    order: 0,
-    nameJa: "経塚スタンプラリー",
-    nameEn: "Sutra mound stamp rally",
-    routeId: null,
-    total: moundSlots.length,
-    stamped: moundSlots.filter((s) => s.stamped).length,
-    lastStampedAt: sampleLastStamped.mounds ?? null,
-    slots: moundSlots,
-  };
-  const courses = sampleRoutes.map((r): RallyItem => {
-    const slots = r.spots.map((s, i) => ({ id: s.id, number: i + 1, nameJa: s.nameJa, nameEn: s.nameEn, stamped: s.stamped === true }));
-    return {
-      id: `course-${r.order}`,
-      kind: "course",
-      order: r.order,
-      nameJa: r.nameJa,
-      nameEn: r.nameEn,
-      routeId: r.id,
-      total: slots.length,
-      stamped: slots.filter((s) => s.stamped).length,
-      lastStampedAt: sampleLastStamped[r.id] ?? null,
-      slots,
-    };
-  });
-  return [mounds, ...courses];
+  const real = await fetchPublicRallies();
+  return real ? ralliesFromApi(real, (await getMyStamps()).ids) : [];
 }
 
 export async function listRoutes(): Promise<RouteSummary[]> {

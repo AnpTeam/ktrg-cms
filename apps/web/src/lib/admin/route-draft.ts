@@ -37,6 +37,8 @@ export interface PlaceDraft {
   historyEn: string;
   /** The other content languages ({ de: { name } }). */
   translations: Translations;
+  /** A picture used as this place's stamp (empty: the plain seal). */
+  stampImageUrl: string;
   photoUrl: string;
   photoCredit: string;
   /** Where the words come from (出典). */
@@ -93,6 +95,8 @@ export interface RouteDraft {
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   videoUrl: string;
+  /** Subtitles were uploaded for the video. */
+  videoSubtitles: boolean;
   /** The whole line: the legs joined in order. Only a track imported before there are two stops to cut it at is held here alone. */
   line: LngLatEle[];
   /** The line cut into one leg for each pair of stops; redrawing a leg leaves the others alone (see legs.ts). */
@@ -106,7 +110,7 @@ export const emptyDraft = (): RouteDraft => ({
   id: null, updatedAt: null, nameJa: "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
   accessJa: "", accessEn: "", translations: {}, photoUrl: "", photoCredit: "", sourceJa: "", sourceEn: "", prefecture: null, walkStyle: null, municipality: "",
   distanceKm: null, distanceManual: false, elevationGainM: null, climbManual: false, expectedTimeMin: null, timeManual: false,
-  difficulty: "", nameKana: "", accessPoints: [], physicalLevel: null, technicalLevel: null, videoUrl: "", line: [], legs: [], lineVerified: false, lineSource: "", places: [],
+  difficulty: "", nameKana: "", accessPoints: [], physicalLevel: null, technicalLevel: null, videoUrl: "", videoSubtitles: false, line: [], legs: [], lineVerified: false, lineSource: "", places: [],
 });
 
 const s = (v: string | null | undefined) => v ?? "";
@@ -114,7 +118,7 @@ const s = (v: string | null | undefined) => v ?? "";
 export function placeFromServer(p: AdminSpot): PlaceDraft {
   return {
     key: p.id, id: p.id, updatedAt: p.updatedAt, published: p.published, kind: p.kind, stampable: p.stampable, stopBy: p.stopBy,
-    nameJa: p.nameJa, nameEn: s(p.nameEn), descriptionJa: s(p.descriptionJa), descriptionEn: s(p.descriptionEn), historyJa: s(p.historyJa), historyEn: s(p.historyEn), translations: p.translations ?? {}, photoUrl: s(p.photoUrl), photoCredit: s(p.photoCredit), sourceJa: s(p.sourceJa), sourceEn: s(p.sourceEn), photos: p.photos ?? [],
+    nameJa: p.nameJa, nameEn: s(p.nameEn), descriptionJa: s(p.descriptionJa), descriptionEn: s(p.descriptionEn), historyJa: s(p.historyJa), historyEn: s(p.historyEn), translations: p.translations ?? {}, stampImageUrl: s(p.stampImageUrl), photoUrl: s(p.photoUrl), photoCredit: s(p.photoCredit), sourceJa: s(p.sourceJa), sourceEn: s(p.sourceEn), photos: p.photos ?? [],
     lat: p.lat, lng: p.lng, positionVerified: p.positionVerified, positionSource: s(p.positionSource), radiusM: p.radiusM,
     status: p.status, statusNoteJa: s(p.statusNoteJa), statusNoteEn: s(p.statusNoteEn),
     permissionConfirmed: p.permissionConfirmed, permissionNote: s(p.permissionNote),
@@ -159,7 +163,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
     expectedTimeMin: route.expectedTimeMin,
     // A saved time that is not what the distance and climb give was typed by hand.
     timeManual: route.expectedTimeMin !== null && route.expectedTimeMin !== estimateWalkMinutes(route.distanceKm, route.elevationGainM),
-    difficulty: s(route.difficulty), nameKana: s(route.nameKana), accessPoints: route.accessPoints ?? [], physicalLevel: route.physicalLevel, technicalLevel: route.technicalLevel, videoUrl: s(route.videoUrl),
+    difficulty: s(route.difficulty), nameKana: s(route.nameKana), accessPoints: route.accessPoints ?? [], physicalLevel: route.physicalLevel, technicalLevel: route.technicalLevel, videoUrl: s(route.videoUrl), videoSubtitles: route.videoSubtitles === true,
     line: legs.length > 0 ? joinLegs(pathStops(places), legs).line : line, legs, lineVerified: route.lineVerified, lineSource: s(route.lineSource),
     places,
   };
@@ -168,7 +172,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
 export const newPlace = (key: string, lat: number | null, lng: number | null, n: number, kind: PointKind = "other"): PlaceDraft => ({
   key, id: null, updatedAt: null, published: false, kind, stampable: stampableByDefault(kind), stopBy: false,
   nameJa: stampableByDefault(kind) ? `経由地${n}` : "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
-  translations: {}, photoUrl: "", photoCredit: "", sourceJa: "", sourceEn: "", photos: [], lat, lng, positionVerified: false, positionSource: "", radiusM: 50, status: "open", statusNoteJa: "", statusNoteEn: "",
+  translations: {}, stampImageUrl: "", photoUrl: "", photoCredit: "", sourceJa: "", sourceEn: "", photos: [], lat, lng, positionVerified: false, positionSource: "", radiusM: 50, status: "open", statusNoteJa: "", statusNoteEn: "",
   permissionConfirmed: false, permissionNote: "",
 });
 
@@ -219,6 +223,7 @@ export type DraftAction =
   | { type: "climb"; value: number | null }
   | { type: "time"; value: number | null }
   | { type: "lineVerified"; value: boolean }
+  | { type: "videoSubtitles"; value: boolean }
   /** A whole line (an imported track): cut into legs at the stops when there are two or more. */
   | { type: "line"; points: LngLatEle[] }
   /** One leg drawn, found on trails or made straight; it replaces that pair's leg and no other. */
@@ -321,7 +326,10 @@ const moves = new Set<DraftAction["type"]>(["distance", "climb", "line", "setLeg
 function apply(d: RouteDraft, a: DraftAction): RouteDraft {
   switch (a.type) {
     case "text":
-      return { ...d, [a.field]: a.value };
+      // Another video has no subtitles until they are uploaded for it.
+      return { ...d, [a.field]: a.value, ...(a.field === "videoUrl" && a.value !== d.videoUrl ? { videoSubtitles: false } : {}) };
+    case "videoSubtitles":
+      return { ...d, videoSubtitles: a.value };
     case "translations":
       return { ...d, translations: a.value };
     case "accessPoints":
@@ -534,6 +542,7 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
     line: d.line.length >= 2 ? d.line.map(([lng, lat]) => ({ lat, lng })) : null,
     sideLines: d.legs.filter((l) => l.side).map((l) => ({ spotId: l.to, line: l.points.map(([lng, lat]) => ({ lat, lng })) })),
     videoUrl: nz(d.videoUrl),
+    videoSubtitles: d.videoSubtitles,
     photoUrl: nz(d.photoUrl),
     photoCredit: nz(d.photoCredit),
   };

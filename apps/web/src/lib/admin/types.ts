@@ -40,6 +40,7 @@ export interface AdminRoute {
   lineVerified: boolean;
   lineSource: string | null;
   videoUrl: string | null;
+  videoSubtitles: boolean;
   historyJa: string | null;
   historyEn: string | null;
   accessJa: string | null;
@@ -83,6 +84,7 @@ export interface AdminSpot {
   stampable: boolean;
   /** An optional visit beside the way (寄り道): the route's line need not pass through it. */
   stopBy: boolean;
+  stampImageUrl?: string | null;
   photoUrl: string | null;
   photoCredit?: string | null;
   sourceJa?: string | null;

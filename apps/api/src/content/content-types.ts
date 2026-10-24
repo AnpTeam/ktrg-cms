@@ -39,6 +39,8 @@ export interface RouteRow {
   videoUrl: string | null;
   /** When the video was last put there or replaced; null for none (or from before this was kept). */
   videoUpdatedAt: Date | null;
+  /** Subtitles were uploaded for this video (they sit beside it as a .vtt). */
+  videoSubtitles: boolean;
   historyJa: string | null;
   historyEn: string | null;
   accessJa: string | null;
@@ -84,6 +86,8 @@ export interface SpotRow {
   stampable: boolean;
   /** An optional visit beside the way (寄り道). */
   stopBy: boolean;
+  /** A picture used as this place's stamp. */
+  stampImageUrl: string | null;
   photoUrl: string | null;
   photoCredit: string | null;
   /** More photos of the place, in order. */
@@ -126,6 +130,7 @@ export interface RouteFields {
   lineVerified: boolean;
   lineSource: string | null;
   videoUrl: string | null;
+  videoSubtitles: boolean;
   historyJa: string | null;
   historyEn: string | null;
   accessJa: string | null;
@@ -154,6 +159,8 @@ export interface SpotFields {
   stampable: boolean;
   /** An optional visit beside the way (寄り道). */
   stopBy: boolean;
+  /** A picture used as this place's stamp. */
+  stampImageUrl: string | null;
   photoUrl: string | null;
   photoCredit: string | null;
   /** More photos of the place, in order. */
@@ -194,6 +201,10 @@ export interface ContentStore {
   createSpot(actor: string, routeId: string, fields: Partial<SpotFields> & { nameJa: string }): Promise<SpotRow | null>;
   updateSpot(actor: string, id: string, expected: Date, changes: Partial<SpotFields>): Promise<SpotRow | "conflict" | "has_stamps" | null>;
   setPublished(actor: string, id: string, published: boolean): Promise<SpotRow | null>;
+  /** What was done to a route and its places, newest first (ids only, like the audit log). */
+  routeHistory(routeId: string, limit: number): Promise<{ id: string; action: string; targetType: string; targetId: string | null; actorUserId: string | null; createdAt: Date }[]>;
+  /** Every published place of a route back to draft in one transaction (one audit row each); the places changed, or null for no such route. */
+  unpublishRouteSpots(actor: string, routeId: string): Promise<SpotRow[] | null>;
   deleteSpot(actor: string, id: string): Promise<"ok" | "has_stamps" | "not_found">;
   reorderSpots(actor: string, routeId: string, ids: string[]): Promise<boolean>;
 }

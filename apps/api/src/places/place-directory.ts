@@ -8,7 +8,7 @@ import type { KitServices } from "../auth/route-kit";
 import { cleanTranslations } from "../db/translations";
 import { placeCategories } from "../db/schema";
 import { isPhotoUrl } from "../lib/https-url";
-import { translationsSchema } from "../lib/schemas";
+import { oneOf, translationsSchema } from "../lib/schemas";
 
 const maybe = (max: number) => t.Union([t.String({ maxLength: max }), t.Null()]);
 
@@ -17,7 +17,7 @@ const maybe = (max: number) => t.Union([t.String({ maxLength: max }), t.Null()])
  * (`nameJa`, `nameEn` ...) and the other content languages ride in `translations`, like the other generated lists.
  */
 export const PLACE_FIELDS = {
-  category: t.UnionEnum([...placeCategories]),
+  category: oneOf(placeCategories),
   routeId: t.Union([t.String({ format: "uuid" }), t.Null()]),
   nameJa: t.String({ minLength: 1, maxLength: 200 }),
   nameEn: maybe(200),
@@ -38,7 +38,7 @@ export const PLACE_FIELDS = {
   photoUrl: maybe(500),
   /** Who took the photo / where it is from (may hold links). */
   photoCredit: t.Optional(maybe(500)),
-  status: t.UnionEnum(["open", "closed", "seasonal", "gone", "unknown"]),
+  status: oneOf(["open", "closed", "seasonal", "gone", "unknown"] as const),
   lastVerified: t.Union([t.String({ pattern: "^\\d{4}-\\d{2}-\\d{2}$" }), t.Null()]),
   listingConfirmed: t.Boolean(),
   listingNote: maybe(200),
@@ -215,13 +215,23 @@ export const placeDirectoryList: ListDef<"directory", typeof PLACE_FIELDS, Place
 };
 
 /** What visitors get: published places with a checked position, without the admin's fields. `?route=<id>` keeps one course's. */
-export function publicPlaceRoutes(getPlaces: () => PlaceService) {
+/** The most places one answer holds. Past this the rest are left out, so it is logged (once) instead of happening silently. */
+export const MAX_PUBLIC_PLACES = 1000;
+
+export function publicPlaceRoutes(getPlaces: () => PlaceService, log: (message: string) => void = console.error) {
+  let warned = false;
   return new Elysia({ detail: { tags: ["Content"] } }).get(
     "/places",
-    async ({ query }) => ({
-      ok: true as const,
-      // shortcut: the whole list in one answer, fine for a few hundred places; add a map-box filter and paging before thousands.
-      places: (await getPlaces().publicPlaces(query.route)).slice(0, 1000).map((p) => ({
+    async ({ query }) => {
+      const all = await getPlaces().publicPlaces(query.route);
+      if (all.length > MAX_PUBLIC_PLACES && !warned) {
+        warned = true;
+        log(`[places] ${all.length} published places: only the first ${MAX_PUBLIC_PLACES} are sent; add paging or a map-box filter`);
+      }
+      return {
+        ok: true as const,
+        // shortcut: the whole list in one answer, fine for a few hundred places; add a map-box filter and paging before thousands.
+        places: all.slice(0, MAX_PUBLIC_PLACES).map((p) => ({
         id: p.id,
         category: p.category,
         routeId: p.routeId,
@@ -242,8 +252,9 @@ export function publicPlaceRoutes(getPlaces: () => PlaceService) {
         photoCredit: p.photoCredit,
         status: p.status,
         lastVerified: p.lastVerified,
-      })),
-    }),
+        })),
+      };
+    },
     { query: t.Object({ route: t.Optional(t.String({ format: "uuid" })) }) },
   );
 }

@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "lingui:extract": "lingui extract --clean",
+    "check:catalogs": "bun scripts/check-catalogs.ts",
     "build": "lingui extract --clean && next build",
     "lint": "eslint .",
     "start": "next start",

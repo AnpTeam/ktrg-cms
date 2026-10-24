@@ -71,9 +71,9 @@ export default async function SitemapPage() {
         ))}
       </Group>
 
-      <Group title={<Trans>スタンプ</Trans>}>
-        <LinkRow href="/stamps">
-          <Trans>スタンプ</Trans>
+      <Group title={<Trans>ラリー</Trans>}>
+        <LinkRow href="/rallies">
+          <Trans>ラリーとスタンプ</Trans>
         </LinkRow>
         <LinkRow href="/guide">
           <Trans>遊び方</Trans>

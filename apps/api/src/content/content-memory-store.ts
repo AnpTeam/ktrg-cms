@@ -50,7 +50,7 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       const row: RouteRow = {
         id: uuid(), nameEn: null, descriptionJa: null, descriptionEn: null, distanceKm: null,
         elevationGainM: null, difficulty: null, nameKana: null, accessPoints: [], physicalLevel: null, technicalLevel: null, expectedTimeMin: null, prefecture: null, walkStyle: null, municipality: null, geometry: null, lineVerified: false, lineSource: null,
-        videoUrl: null, videoUpdatedAt: null, historyJa: null, historyEn: null, accessJa: null, accessEn: null, sourceJa: null, sourceEn: null, photoUrl: null, photoCredit: null, sortOrder: routes.size + 1, createdAt: at, updatedAt: at, ...fields,
+        videoUrl: null, videoUpdatedAt: null, videoSubtitles: false, historyJa: null, historyEn: null, accessJa: null, accessEn: null, sourceJa: null, sourceEn: null, photoUrl: null, photoCredit: null, sortOrder: routes.size + 1, createdAt: at, updatedAt: at, ...fields,
         translations: mergeTranslations({}, fields.translations),
       };
       routes.set(row.id, row);
@@ -85,7 +85,7 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       const at = stampTime();
       const row: SpotRow = {
         id: uuid(), routeId, nameEn: null, descriptionJa: null, descriptionEn: null, historyJa: null, historyEn: null, lat: null, lng: null,
-        positionVerified: false, positionSource: null, radiusM: 50, kind: "other", stampable: false, stopBy: false, photoUrl: null, photoCredit: null, photos: [], status: "open", statusNoteJa: null, statusNoteEn: null, sourceJa: null, sourceEn: null,
+        positionVerified: false, positionSource: null, radiusM: 50, kind: "other", stampable: false, stopBy: false, stampImageUrl: null, photoUrl: null, photoCredit: null, photos: [], status: "open", statusNoteJa: null, statusNoteEn: null, sourceJa: null, sourceEn: null,
         statusUpdatedAt: null, sortOrder: sortedSpots(routeId).length + 1, published: false, permissionConfirmed: false,
         permissionNote: null, createdAt: at, updatedAt: at, ...fields,
         translations: mergeTranslations({}, fields.translations),
@@ -116,6 +116,22 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       spots.set(id, next);
       await audit.record({ actorUserId: actor, action: published ? "spot.publish" : "spot.unpublish", targetId: id });
       return next;
+    },
+    // The in-memory audit writer keeps its rows to itself, so the history is empty here (the real store is tested on PostgreSQL).
+    async routeHistory() {
+      return [];
+    },
+    async unpublishRouteSpots(actor, routeId) {
+      if (!routes.has(routeId)) return null;
+      const changed: SpotRow[] = [];
+      for (const cur of [...spots.values()]) {
+        if (cur.routeId !== routeId || !cur.published) continue;
+        const next: SpotRow = { ...cur, published: false, updatedAt: stampTime() };
+        spots.set(cur.id, next);
+        await audit.record({ actorUserId: actor, action: "spot.unpublish", targetId: cur.id });
+        changed.push(next);
+      }
+      return changed;
     },
     async deleteSpot(actor, id) {
       const cur = spots.get(id);

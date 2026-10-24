@@ -1,7 +1,7 @@
-import { and, asc, count, eq, getTableColumns, inArray, isNotNull, max, ne, or, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, getTableColumns, inArray, isNotNull, max, ne, or, sql } from "drizzle-orm";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
-import { rallySpots, routes, routeTranslations, spots, spotTranslations, stamps } from "../db/schema";
+import { auditLog, rallySpots, routes, routeTranslations, spots, spotTranslations, stamps } from "../db/schema";
 import { emptyTexts, flattenTexts, ROUTE_TEXT, SPOT_TEXT, splitTexts, type Texts } from "../db/translations";
 import type { ContentStore, RouteRow, RouteSummaryRow, SpotRow } from "./content-types";
 
@@ -248,6 +248,29 @@ export function createDrizzleContentStore(db: Db): ContentStore {
         }
         await writeAudit(tx, { actorUserId: actor, action: published ? "spot.publish" : "spot.unpublish", targetId: id });
         return spotFromDb(tx, row);
+      });
+    },
+
+    async routeHistory(routeId, limit) {
+      return db
+        .select({ id: auditLog.id, action: auditLog.action, targetType: auditLog.targetType, targetId: auditLog.targetId, actorUserId: auditLog.actorUserId, createdAt: auditLog.createdAt })
+        .from(auditLog)
+        .where(or(eq(auditLog.targetId, routeId), sql`${auditLog.targetId} in (select ${spots.id}::text from ${spots} where ${spots.routeId} = ${routeId})`))
+        .orderBy(desc(auditLog.createdAt), desc(auditLog.id))
+        .limit(limit);
+    },
+
+    async unpublishRouteSpots(actor, routeId) {
+      return db.transaction(async (tx) => {
+        const [route] = await tx.select({ id: routes.id }).from(routes).where(eq(routes.id, routeId)).limit(1);
+        if (!route) return null;
+        const rows = await tx
+          .update(spots)
+          .set({ published: false, updatedAt: sql`clock_timestamp()` })
+          .where(and(eq(spots.routeId, routeId), eq(spots.published, true)))
+          .returning();
+        for (const row of rows) await writeAudit(tx, { actorUserId: actor, action: "spot.unpublish", targetId: row.id });
+        return withSpotTexts(tx, rows);
       });
     },
 

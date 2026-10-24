@@ -181,7 +181,13 @@ describe("an admin edits a route and its places", () => {
     expect(typeof first.videoUpdatedAt).toBe("string");
     const same = await patch({ videoUrl: "https://www.youtube.com/watch?v=abcdefghijk", nameEn: "x" }, first.updatedAt as string);
     expect(same.videoUpdatedAt).toBe(first.videoUpdatedAt);
-    const gone = await patch({ videoUrl: null }, same.updatedAt as string);
+    // Subtitles belong to the file: they are on once uploaded, and off again when the video is replaced.
+    expect(first.videoSubtitles).toBe(false);
+    const withSubs = await patch({ videoSubtitles: true }, same.updatedAt as string);
+    expect(withSubs.videoSubtitles).toBe(true);
+    const replaced = await patch({ videoUrl: "https://www.youtube.com/watch?v=zzzzzzzzzzz" }, withSubs.updatedAt as string);
+    expect(replaced.videoSubtitles).toBe(false);
+    const gone = await patch({ videoUrl: null }, replaced.updatedAt as string);
     expect(gone.videoUpdatedAt).toBeNull();
     const listed = (((await (await call("GET", "/routes")).json()) as Json).routes as Json[]).find((r) => r.id === route.id)!;
     expect(typeof listed.updatedAt).toBe("string");

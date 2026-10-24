@@ -204,6 +204,36 @@ export function PlaceCard({
         {meters !== null ? <span className="text-muted">　{distanceText(meters)}</span> : null}
       </p>
       <p className="text-lg font-bold">{statusNames[place.status]}</p>
+      {place.address || place.phone || place.website ? (
+        <dl className="flex flex-col gap-1 text-lg">
+          {place.address ? (
+            <div className="flex gap-3">
+              <dt className="w-16 shrink-0 text-muted">{t`住所`}</dt>
+              <dd className="min-w-0 break-words">{place.address}</dd>
+            </div>
+          ) : null}
+          {place.phone ? (
+            <div className="flex gap-3">
+              <dt className="w-16 shrink-0 text-muted">{t`電話`}</dt>
+              <dd>
+                <a href={`tel:${place.phone.replace(/[^\d+]/g, "")}`} className="underline underline-offset-4">
+                  {place.phone}
+                </a>
+              </dd>
+            </div>
+          ) : null}
+          {place.website && /^https:\/\//.test(place.website) ? (
+            <div className="flex gap-3">
+              <dt className="w-16 shrink-0 text-muted">{t`サイト`}</dt>
+              <dd className="min-w-0 break-all">
+                <a href={place.website} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
+                  {place.website}
+                </a>
+              </dd>
+            </div>
+          ) : null}
+        </dl>
+      ) : null}
       {place.hours ? (
         <p className="text-lg">
           <span className="text-muted">{t`時間`}　</span>

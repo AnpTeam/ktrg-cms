@@ -5,6 +5,7 @@ import { HeroPhoto } from "./map/HeroPhoto";
 import { Localized } from "./Localized";
 import { NearbyPlaces, type Nearby } from "./NearbyPlaces";
 import { LastUpdated } from "@/components/LastUpdated";
+import { NearestPlaces, type NearestGroup } from "./NearestPlaces";
 import { Notice } from "./Notice";
 import { RichText } from "./RichText";
 import { SpotGallery } from "./SpotGallery";
@@ -25,12 +26,15 @@ export function SpotSheet({
   loginHref,
   stampMock,
   nearby = [],
+  nearest = [],
 }: {
   spot: SpotDetail;
   locale: string;
   loginHref: string;
   /** What is around the place (toilets, shops ...), nearest first. */
   nearby?: Nearby[];
+  /** The nearest stations, bus stops and parking, a tab for each. */
+  nearest?: NearestGroup[];
   /** Development only: pretend answers for the stamp button. */
   stampMock?: StampMock;
 }) {
@@ -80,7 +84,7 @@ export function SpotSheet({
 
       {stampable ? (
       <section className="mx-4 flex items-center gap-4 rounded-3xl bg-surface p-4">
-        <StampFace state="empty" className="h-14 w-14 shrink-0 rounded-full!" />
+        <StampFace state="empty" image={spot.stampImageUrl} className="h-14 w-14 shrink-0 rounded-full!" />
         <div>
           <p className="text-xl font-bold">
             <Trans>スタンプの場所</Trans>
@@ -94,7 +98,7 @@ export function SpotSheet({
 
       {stampable && spot.stamped !== null ? (
         <section className="flex items-center gap-4 px-4">
-          <StampFace state={spot.stamped ? "stamped" : "empty"} rough className="h-14 w-14 shrink-0" />
+          <StampFace state={spot.stamped ? "stamped" : "empty"} image={spot.stampImageUrl} rough className="h-14 w-14 shrink-0" />
           <p className="text-xl font-bold">
             {spot.stamped ? <Trans>スタンプを押しました</Trans> : <Trans>まだスタンプを押していません</Trans>}
           </p>
@@ -163,6 +167,15 @@ export function SpotSheet({
         </section>
       ) : null}
 
+      {nearest.length > 0 ? (
+        <section className="mx-4 rounded-3xl bg-surface p-4">
+          <h2 className="mb-2 text-xl font-bold">
+            <Trans>最寄り</Trans>
+          </h2>
+          <NearestPlaces groups={nearest} />
+        </section>
+      ) : null}
+
       <Notice>
         <Trans>出かける前に、公式の最新情報を確認してください。</Trans>
       </Notice>
@@ -175,7 +188,7 @@ export function SpotSheet({
           </Link>
         </div>
       ) : (
-        <StampHere spotId={spot.id} status={spot.status} alreadyStamped={spot.stamped} loginHref={loginHref} mock={stampMock} />
+        <StampHere spotId={spot.id} status={spot.status} alreadyStamped={spot.stamped} stampImage={spot.stampImageUrl} loginHref={loginHref} mock={stampMock} />
       )}
     </article>
   );

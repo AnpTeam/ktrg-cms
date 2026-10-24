@@ -13,7 +13,8 @@ export interface RallySlot {
 
 export interface RallyItem {
   id: string;
-  kind: "mounds" | "course";
+  /** "mounds" and "course" are the sample rallies; "rally" is any rally the CMS publishes (a list of places or of courses). */
+  kind: "mounds" | "course" | "rally";
   /** 0 for the mound rally, the course number (1 to 19) for a course. */
   order: number;
   nameJa: string;
