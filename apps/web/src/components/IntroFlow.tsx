@@ -18,7 +18,7 @@ const big = "tap-target flex min-h-14 w-full items-center justify-center rounded
 
 /**
  * What a new visitor meets on the home page, once: pick a language, what 葛城修験 is, how the app works in a few
- * cards, then one big start button that goes to the routes. Over the page, so the page underneath is still the
+ * cards, then one big start button that goes to the routes. Full screen on a phone and a card in the middle of the page on a larger screen, over the page, so the page underneath is still the
  * real home page for search engines and for anyone who skips it. Shown only to someone signed out who has not seen
  * it (the `intro` cookie, which the server reads); skipping counts as seeing it.
  */
@@ -66,9 +66,9 @@ export function IntroFlow({ seen }: { seen: boolean }) {
         e.preventDefault();
         finish("skipped");
       }}
-      className="m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto bg-paper p-0 text-ink backdrop:bg-black/60"
+      className="m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto bg-paper p-0 text-ink backdrop:bg-black/60 md:m-auto md:h-auto md:max-h-[88dvh] md:w-[38rem] md:max-w-[calc(100%-2rem)] md:rounded-3xl md:shadow-2xl"
     >
-      <div className="mx-auto flex min-h-dvh max-w-xl flex-col gap-6 px-5 pb-8 pt-[calc(1.5rem+env(safe-area-inset-top))]">
+      <div className="mx-auto flex min-h-dvh max-w-xl flex-col gap-6 px-5 pb-8 pt-[calc(1.5rem+env(safe-area-inset-top))] md:min-h-[30rem] md:px-8 md:pt-8">
         <div className="flex items-center justify-between gap-3">
           <ol aria-label={`${step + 1} / ${STEPS}`} className="flex gap-2">
             {Array.from({ length: STEPS }, (_, i) => (
