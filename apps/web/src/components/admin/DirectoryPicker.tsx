@@ -120,8 +120,13 @@ export function NearbyPlacesManager({ routeId, from }: { routeId: string; from: 
   };
 
   return (
-    <section aria-label={t`周辺の場所`} className="flex flex-col gap-3 rounded-xl border border-line bg-paper p-4">
-      <h3 className="text-lg font-bold">{t`周辺の場所（駐車場・自販機・トイレなど）`}</h3>
+    <details aria-label={t`周辺の場所`} className="group rounded-xl border border-line bg-paper p-4">
+      <summary className="tap-target flex cursor-pointer list-none items-center gap-2 text-lg font-bold [&::-webkit-details-marker]:hidden">
+        <span aria-hidden="true" className="transition-transform group-open:rotate-90">▸</span>
+        {t`周辺の場所（駐車場・自販機・トイレなど）`}
+        {linked ? <span className="rounded-full bg-surface px-2 text-base">{linked.length}</span> : null}
+      </summary>
+      <div className="mt-3 flex flex-col gap-3">
       <p className="text-base text-muted">{t`場所一覧の場所を、このルートにひもづけます。ルートのページに「周辺の場所」として並び、大きな地図にもピンが出ます。変更はすぐに保存されます。`}</p>
       {error ? (
         <p role="alert" className="text-base font-bold text-danger">
@@ -130,7 +135,7 @@ export function NearbyPlacesManager({ routeId, from }: { routeId: string; from: 
       ) : null}
 
       {linked && linked.length === 0 ? <p className="text-base">{t`まだ、ひもづけた場所はありません。`}</p> : null}
-      <ul className="flex flex-col gap-1">
+      <ul className="flex max-h-96 flex-col gap-1 overflow-y-auto">
         {(linked ?? []).map((p) => (
           <li key={p.id} className="flex flex-wrap items-center gap-2 rounded-lg bg-surface px-3 py-1.5">
             <span className="min-w-0 flex-1 text-base">
@@ -178,6 +183,7 @@ export function NearbyPlacesManager({ routeId, from }: { routeId: string; from: 
           </ul>
         </div>
       </details>
-    </section>
+          </div>
+    </details>
   );
 }
