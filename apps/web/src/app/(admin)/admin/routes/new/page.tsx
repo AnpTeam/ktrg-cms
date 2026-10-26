@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { RouteEditor } from "@/components/admin/RouteEditor";
+import { AdminBack } from "@/components/admin/AdminBack";
 import { initLingui } from "@/i18n/server";
 import { adminGet } from "@/lib/admin/admin-fetch";
 import { emptyDraft } from "@/lib/admin/route-draft";
@@ -20,9 +20,7 @@ export default async function NewRoutePage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <Link href="/admin/routes" className="tap-target inline-flex w-fit items-center text-lg font-bold text-accent underline underline-offset-4">
-        <Trans>ルート一覧にもどる</Trans>
-      </Link>
+      <AdminBack href="/admin/routes"><Trans>ルート一覧にもどる</Trans></AdminBack>
       <RouteEditor initial={emptyDraft()} order={order} locale={i18n.locale} />
     </div>
   );

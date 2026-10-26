@@ -161,7 +161,7 @@ msgstr "{minutes}分（{km} km）"
 msgid "{mode} {minutes}分"
 msgstr "{mode} {minutes}分"
 
-#: src/components/admin/AdminShell.tsx:26
+#: src/components/admin/AdminShell.tsx:28
 msgid "{name} さんでログイン中"
 msgstr "{name} さんでログイン中"
 
@@ -254,7 +254,7 @@ msgstr "{title}はまだありません。"
 msgid "{title}を直す（管理）"
 msgstr "{title}を直す（管理）"
 
-#: src/app/(admin)/admin/[list]/[id]/page.tsx:41
+#: src/app/(admin)/admin/[list]/[id]/page.tsx:39
 #: src/app/(admin)/admin/[list]/page.tsx:33
 msgid "{title}を読み込めませんでした。しばらくしてから、ページを開き直してください。"
 msgstr "{title}を読み込めませんでした。しばらくしてから、ページを開き直してください。"
@@ -317,7 +317,7 @@ msgstr "「地形」ボタンで重ねるもの"
 msgid "「地形」ボタンを押した状態で見る"
 msgstr "「地形」ボタンを押した状態で見る"
 
-#: src/components/admin/AdminItemForm.tsx:262
+#: src/components/admin/AdminItemForm.tsx:274
 msgid "「必須」の欄をすべて入れると保存できます。"
 msgstr "「必須」の欄をすべて入れると保存できます。"
 
@@ -1213,7 +1213,7 @@ msgstr "コピーしました"
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 msgstr "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 
-#: src/components/admin/AdminNav.tsx:67
+#: src/components/admin/AdminNav.tsx:75
 msgid "これから追加します"
 msgstr "これから追加します"
 
@@ -1821,7 +1821,7 @@ msgstr "プロフィール"
 msgid "ページが見つかりません"
 msgstr "ページが見つかりません"
 
-#: src/components/admin/AdminNav.tsx:38
+#: src/components/admin/AdminNav.tsx:42
 msgid "ページの文章"
 msgstr "ページの文章"
 
@@ -2011,17 +2011,17 @@ msgstr "メールを追加する"
 msgid "メインメニュー"
 msgstr "メインメニュー"
 
-#: src/components/admin/AdminNav.tsx:49
+#: src/components/admin/AdminNav.tsx:53
 #: src/components/SiteHeader.tsx:189
 #: src/components/TabBar.tsx:68
 msgid "メニュー"
 msgstr "メニュー"
 
-#: src/components/admin/AdminFrame.tsx:74
+#: src/components/admin/AdminFrame.tsx:82
 msgid "メニューを出す"
 msgstr "メニューを出す"
 
-#: src/components/admin/AdminFrame.tsx:74
+#: src/components/admin/AdminFrame.tsx:69
 msgid "メニューを隠す"
 msgstr "メニューを隠す"
 
@@ -2353,8 +2353,8 @@ msgstr "ルートを読み込めませんでした。しばらくしてから、
 msgid "ルート一覧"
 msgstr "ルート一覧"
 
-#: src/app/(admin)/admin/routes/[id]/page.tsx:38
-#: src/app/(admin)/admin/routes/new/page.tsx:24
+#: src/app/(admin)/admin/routes/[id]/page.tsx:37
+#: src/app/(admin)/admin/routes/new/page.tsx:23
 msgid "ルート一覧にもどる"
 msgstr "ルート一覧にもどる"
 
@@ -2418,8 +2418,8 @@ msgstr "一度に取り込める数をこえています（{writes} 回の保存
 msgid "一覧"
 msgstr "一覧"
 
-#: src/app/(admin)/admin/[list]/[id]/page.tsx:32
-#: src/app/(admin)/admin/[list]/new/page.tsx:27
+#: src/app/(admin)/admin/[list]/[id]/page.tsx:31
+#: src/app/(admin)/admin/[list]/new/page.tsx:26
 msgid "一覧へ戻る"
 msgstr "一覧へ戻る"
 
@@ -2620,7 +2620,7 @@ msgstr "体力度と技術度について"
 msgid "作っています…"
 msgstr "作っています…"
 
-#: src/components/admin/AdminItemForm.tsx:242
+#: src/components/admin/AdminItemForm.tsx:254
 msgid "作成"
 msgstr "作成"
 
@@ -2632,7 +2632,7 @@ msgstr "使える写真は見つかりませんでした。"
 msgid "例：山田太郎, CC BY-SA 4.0"
 msgstr "例：山田太郎, CC BY-SA 4.0"
 
-#: src/components/admin/AdminItemForm.tsx:242
+#: src/components/admin/AdminItemForm.tsx:254
 msgid "保存"
 msgstr "保存"
 
@@ -2640,12 +2640,13 @@ msgstr "保存"
 msgid "保存していない内容も含めて調べています。"
 msgstr "保存していない内容も含めて調べています。"
 
-#: src/components/admin/AdminItemForm.tsx:234
+#: src/components/admin/AdminItemForm.tsx:246
 #: src/components/admin/RouteEditor.tsx:419
 msgid "保存していない変更があります"
 msgstr "保存していない変更があります"
 
 #: src/components/admin/AdminItemForm.tsx:54
+#: src/components/admin/AdminItemForm.tsx:64
 msgid "保存していない変更があります。このページを離れますか？"
 msgstr "保存していない変更があります。このページを離れますか？"
 
@@ -2662,11 +2663,11 @@ msgstr "保存していない編集が、このブラウザに残っています
 msgid "保存しています…"
 msgstr "保存しています…"
 
-#: src/components/admin/AdminItemForm.tsx:238
+#: src/components/admin/AdminItemForm.tsx:250
 msgid "保存して次へ"
 msgstr "保存して次へ"
 
-#: src/components/admin/AdminItemForm.tsx:110
+#: src/components/admin/AdminItemForm.tsx:122
 #: src/components/admin/RallyEditor.tsx:66
 #: src/components/admin/RouteEditor.tsx:327
 #: src/components/ProfileSettings.tsx:172
@@ -2686,7 +2687,7 @@ msgstr "保存しました。ただし、情報源が空のため、線は「確
 msgid "保存しました。ただし、未完成の経由地が{heldCount}件あり、まだ保存していません（赤く示した項目）。"
 msgstr "保存しました。ただし、未完成の経由地が{heldCount}件あり、まだ保存していません（赤く示した項目）。"
 
-#: src/components/admin/AdminItemForm.tsx:87
+#: src/components/admin/AdminItemForm.tsx:99
 msgid "保存しました。次に確認する場所はありません。"
 msgstr "保存しました。次に確認する場所はありません。"
 
@@ -2709,12 +2710,12 @@ msgstr "保存できません。赤く示した項目を直してください。
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "保存できませんでした。電波の良い場所でもう一度お試しください。"
 
-#: src/components/admin/AdminItemForm.tsx:242
+#: src/components/admin/AdminItemForm.tsx:254
 #: src/components/admin/RouteEditor.tsx:422
 msgid "保存中…"
 msgstr "保存中…"
 
-#: src/components/admin/AdminItemForm.tsx:234
+#: src/components/admin/AdminItemForm.tsx:246
 msgid "保存済み"
 msgstr "保存済み"
 
@@ -2800,9 +2801,9 @@ msgstr "全体の地図"
 msgid "全体を見る"
 msgstr "全体を見る"
 
-#: src/components/admin/AdminShell.tsx:32
-msgid "公開サイトを見る"
-msgstr "公開サイトを見る"
+#: src/components/admin/PublicSiteLink.tsx:30
+msgid "公開サイトで見る"
+msgstr "公開サイトで見る"
 
 #: src/components/admin/RallyEditor.tsx:72
 #: src/components/admin/RouteEditor.tsx:374
@@ -2906,7 +2907,7 @@ msgstr "公開前の経由地も、ここには表示されます。"
 msgid "共有"
 msgstr "共有"
 
-#: src/components/admin/AdminItemForm.tsx:260
+#: src/components/admin/AdminItemForm.tsx:272
 msgid "内容"
 msgstr "内容"
 
@@ -3114,7 +3115,7 @@ msgid "利用規約"
 msgstr "利用規約"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
-#: src/components/admin/AdminItemForm.tsx:266
+#: src/components/admin/AdminItemForm.tsx:278
 #: src/components/admin/fields.tsx:155
 #: src/components/admin/PlaceTable.tsx:140
 #: src/components/admin/PlaceTable.tsx:205
@@ -3122,7 +3123,7 @@ msgstr "利用規約"
 msgid "削除"
 msgstr "削除"
 
-#: src/components/admin/AdminItemForm.tsx:268
+#: src/components/admin/AdminItemForm.tsx:280
 msgid "削除する"
 msgstr "削除する"
 
@@ -4267,7 +4268,7 @@ msgstr "淡色"
 msgid "港・フェリー乗り場"
 msgstr "港・フェリー乗り場"
 
-#: src/components/admin/AdminNav.tsx:75
+#: src/components/admin/AdminNav.tsx:83
 #: src/components/admin/RouteTable.tsx:30
 #: src/components/landing/Landing.tsx:225
 #: src/components/map/MapScreen.tsx:329
@@ -4509,7 +4510,7 @@ msgstr "答えたくない"
 msgid "答えなくても大丈夫です。"
 msgstr "答えなくても大丈夫です。"
 
-#: src/components/admin/AdminNav.tsx:41
+#: src/components/admin/AdminNav.tsx:45
 msgid "管理メニュー"
 msgstr "管理メニュー"
 
@@ -4517,7 +4518,7 @@ msgstr "管理メニュー"
 msgid "管理画面は、管理者だけが使えます。権限が必要な場合は、管理者にお知らせください。"
 msgstr "管理画面は、管理者だけが使えます。権限が必要な場合は、管理者にお知らせください。"
 
-#: src/components/admin/AdminShell.tsx:26
+#: src/components/admin/AdminShell.tsx:28
 msgid "管理者としてログイン中"
 msgstr "管理者としてログイン中"
 
@@ -4846,7 +4847,7 @@ msgctxt "tab title"
 msgid "葛城修験"
 msgstr "葛城修験"
 
-#: src/components/admin/AdminShell.tsx:16
+#: src/components/admin/AdminShell.tsx:17
 msgid "葛城修験 管理"
 msgstr "葛城修験 管理"
 
@@ -5223,7 +5224,7 @@ msgstr "都道府県が未入力"
 msgid "長さ"
 msgstr "長さ"
 
-#: src/components/admin/AdminItemForm.tsx:254
+#: src/components/admin/AdminItemForm.tsx:266
 #: src/components/admin/map-editor/MapEditor.tsx:965
 #: src/components/admin/PhotoLibrary.tsx:124
 #: src/components/admin/RouteEditor.tsx:438

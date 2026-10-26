@@ -161,7 +161,7 @@ msgstr "{minutes} min ({km} km)"
 msgid "{mode} {minutes}分"
 msgstr "{mode} {minutes} min"
 
-#: src/components/admin/AdminShell.tsx:26
+#: src/components/admin/AdminShell.tsx:28
 msgid "{name} さんでログイン中"
 msgstr "Signed in as {name}"
 
@@ -254,7 +254,7 @@ msgstr "No {title} yet."
 msgid "{title}を直す（管理）"
 msgstr "Edit {title} (admin)"
 
-#: src/app/(admin)/admin/[list]/[id]/page.tsx:41
+#: src/app/(admin)/admin/[list]/[id]/page.tsx:39
 #: src/app/(admin)/admin/[list]/page.tsx:33
 msgid "{title}を読み込めませんでした。しばらくしてから、ページを開き直してください。"
 msgstr "{title} could not be loaded. Please reload the page in a little while."
@@ -317,7 +317,7 @@ msgstr "What the \"Terrain\" button adds"
 msgid "「地形」ボタンを押した状態で見る"
 msgstr "Show it as when \"Terrain\" is pressed"
 
-#: src/components/admin/AdminItemForm.tsx:262
+#: src/components/admin/AdminItemForm.tsx:274
 msgid "「必須」の欄をすべて入れると保存できます。"
 msgstr "Fill in every field marked “Required” to save."
 
@@ -1213,7 +1213,7 @@ msgstr "Copied"
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 msgstr "This is the only way to sign in to this account. If you remove it, you won't be able to sign in. Add an email address or another passkey first."
 
-#: src/components/admin/AdminNav.tsx:67
+#: src/components/admin/AdminNav.tsx:75
 msgid "これから追加します"
 msgstr "Coming later"
 
@@ -1821,7 +1821,7 @@ msgstr "Profile"
 msgid "ページが見つかりません"
 msgstr "Page not found"
 
-#: src/components/admin/AdminNav.tsx:38
+#: src/components/admin/AdminNav.tsx:42
 msgid "ページの文章"
 msgstr "Page text"
 
@@ -2011,17 +2011,17 @@ msgstr "Add email"
 msgid "メインメニュー"
 msgstr "Main menu"
 
-#: src/components/admin/AdminNav.tsx:49
+#: src/components/admin/AdminNav.tsx:53
 #: src/components/SiteHeader.tsx:189
 #: src/components/TabBar.tsx:68
 msgid "メニュー"
 msgstr "Menu"
 
-#: src/components/admin/AdminFrame.tsx:74
+#: src/components/admin/AdminFrame.tsx:82
 msgid "メニューを出す"
 msgstr "Show menu"
 
-#: src/components/admin/AdminFrame.tsx:74
+#: src/components/admin/AdminFrame.tsx:69
 msgid "メニューを隠す"
 msgstr "Hide menu"
 
@@ -2353,8 +2353,8 @@ msgstr "Could not load the routes. Please wait a moment and reopen the page."
 msgid "ルート一覧"
 msgstr "All routes"
 
-#: src/app/(admin)/admin/routes/[id]/page.tsx:38
-#: src/app/(admin)/admin/routes/new/page.tsx:24
+#: src/app/(admin)/admin/routes/[id]/page.tsx:37
+#: src/app/(admin)/admin/routes/new/page.tsx:23
 msgid "ルート一覧にもどる"
 msgstr "Back to the route list"
 
@@ -2418,8 +2418,8 @@ msgstr "This is more than one import can do ({writes} saves are needed; the limi
 msgid "一覧"
 msgstr "List"
 
-#: src/app/(admin)/admin/[list]/[id]/page.tsx:32
-#: src/app/(admin)/admin/[list]/new/page.tsx:27
+#: src/app/(admin)/admin/[list]/[id]/page.tsx:31
+#: src/app/(admin)/admin/[list]/new/page.tsx:26
 msgid "一覧へ戻る"
 msgstr "Back to the list"
 
@@ -2620,7 +2620,7 @@ msgstr "About the physical and technical levels"
 msgid "作っています…"
 msgstr "Creating…"
 
-#: src/components/admin/AdminItemForm.tsx:242
+#: src/components/admin/AdminItemForm.tsx:254
 msgid "作成"
 msgstr "Create"
 
@@ -2632,7 +2632,7 @@ msgstr "No usable photos were found."
 msgid "例：山田太郎, CC BY-SA 4.0"
 msgstr "e.g. Jane Doe, CC BY-SA 4.0"
 
-#: src/components/admin/AdminItemForm.tsx:242
+#: src/components/admin/AdminItemForm.tsx:254
 msgid "保存"
 msgstr "Save"
 
@@ -2640,12 +2640,13 @@ msgstr "Save"
 msgid "保存していない内容も含めて調べています。"
 msgstr "This includes changes you have not saved yet."
 
-#: src/components/admin/AdminItemForm.tsx:234
+#: src/components/admin/AdminItemForm.tsx:246
 #: src/components/admin/RouteEditor.tsx:419
 msgid "保存していない変更があります"
 msgstr "You have unsaved changes"
 
 #: src/components/admin/AdminItemForm.tsx:54
+#: src/components/admin/AdminItemForm.tsx:64
 msgid "保存していない変更があります。このページを離れますか？"
 msgstr "You have unsaved changes. Leave this page?"
 
@@ -2662,11 +2663,11 @@ msgstr "Unsaved edits were kept in this browser ({offeredAt}). Restore them?"
 msgid "保存しています…"
 msgstr "Saving…"
 
-#: src/components/admin/AdminItemForm.tsx:238
+#: src/components/admin/AdminItemForm.tsx:250
 msgid "保存して次へ"
 msgstr "Save and next"
 
-#: src/components/admin/AdminItemForm.tsx:110
+#: src/components/admin/AdminItemForm.tsx:122
 #: src/components/admin/RallyEditor.tsx:66
 #: src/components/admin/RouteEditor.tsx:327
 #: src/components/ProfileSettings.tsx:172
@@ -2686,7 +2687,7 @@ msgstr "Saved. The source was empty, so the line was saved as not checked. Enter
 msgid "保存しました。ただし、未完成の経由地が{heldCount}件あり、まだ保存していません（赤く示した項目）。"
 msgstr "Saved. {heldCount} unfinished waypoint(s) were not saved yet (the red items)."
 
-#: src/components/admin/AdminItemForm.tsx:87
+#: src/components/admin/AdminItemForm.tsx:99
 msgid "保存しました。次に確認する場所はありません。"
 msgstr "Saved. No more places waiting to be checked."
 
@@ -2709,12 +2710,12 @@ msgstr "Cannot save. Fix the items marked in red."
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not save. Please try again where the signal is good."
 
-#: src/components/admin/AdminItemForm.tsx:242
+#: src/components/admin/AdminItemForm.tsx:254
 #: src/components/admin/RouteEditor.tsx:422
 msgid "保存中…"
 msgstr "Saving…"
 
-#: src/components/admin/AdminItemForm.tsx:234
+#: src/components/admin/AdminItemForm.tsx:246
 msgid "保存済み"
 msgstr "Saved"
 
@@ -2800,9 +2801,9 @@ msgstr "Whole map"
 msgid "全体を見る"
 msgstr "Show everything"
 
-#: src/components/admin/AdminShell.tsx:32
-msgid "公開サイトを見る"
-msgstr "View the public site"
+#: src/components/admin/PublicSiteLink.tsx:30
+msgid "公開サイトで見る"
+msgstr "View this page on the public site"
 
 #: src/components/admin/RallyEditor.tsx:72
 #: src/components/admin/RouteEditor.tsx:374
@@ -2906,7 +2907,7 @@ msgstr "Waypoints that are not published yet are shown here too."
 msgid "共有"
 msgstr "Share"
 
-#: src/components/admin/AdminItemForm.tsx:260
+#: src/components/admin/AdminItemForm.tsx:272
 msgid "内容"
 msgstr "Content"
 
@@ -3114,7 +3115,7 @@ msgid "利用規約"
 msgstr "Terms of use"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
-#: src/components/admin/AdminItemForm.tsx:266
+#: src/components/admin/AdminItemForm.tsx:278
 #: src/components/admin/fields.tsx:155
 #: src/components/admin/PlaceTable.tsx:140
 #: src/components/admin/PlaceTable.tsx:205
@@ -3122,7 +3123,7 @@ msgstr "Terms of use"
 msgid "削除"
 msgstr "Delete"
 
-#: src/components/admin/AdminItemForm.tsx:268
+#: src/components/admin/AdminItemForm.tsx:280
 msgid "削除する"
 msgstr "Delete"
 
@@ -4267,7 +4268,7 @@ msgstr "Pale"
 msgid "港・フェリー乗り場"
 msgstr "Port or ferry"
 
-#: src/components/admin/AdminNav.tsx:75
+#: src/components/admin/AdminNav.tsx:83
 #: src/components/admin/RouteTable.tsx:30
 #: src/components/landing/Landing.tsx:225
 #: src/components/map/MapScreen.tsx:329
@@ -4509,7 +4510,7 @@ msgstr "Prefer not to say"
 msgid "答えなくても大丈夫です。"
 msgstr "You can skip this."
 
-#: src/components/admin/AdminNav.tsx:41
+#: src/components/admin/AdminNav.tsx:45
 msgid "管理メニュー"
 msgstr "Admin menu"
 
@@ -4517,7 +4518,7 @@ msgstr "Admin menu"
 msgid "管理画面は、管理者だけが使えます。権限が必要な場合は、管理者にお知らせください。"
 msgstr "Only administrators can use the admin area. If you need access, tell an administrator."
 
-#: src/components/admin/AdminShell.tsx:26
+#: src/components/admin/AdminShell.tsx:28
 msgid "管理者としてログイン中"
 msgstr "Signed in as an administrator"
 
@@ -4846,7 +4847,7 @@ msgctxt "tab title"
 msgid "葛城修験"
 msgstr "Katsuragi Shugen | Ancient Mountain Trails & Stamp Rally"
 
-#: src/components/admin/AdminShell.tsx:16
+#: src/components/admin/AdminShell.tsx:17
 msgid "葛城修験 管理"
 msgstr "Katsuragi Shugen Admin"
 
@@ -5223,7 +5224,7 @@ msgstr "Prefecture not set"
 msgid "長さ"
 msgstr "Length"
 
-#: src/components/admin/AdminItemForm.tsx:254
+#: src/components/admin/AdminItemForm.tsx:266
 #: src/components/admin/map-editor/MapEditor.tsx:965
 #: src/components/admin/PhotoLibrary.tsx:124
 #: src/components/admin/RouteEditor.tsx:438

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { AdminItemForm } from "@/components/admin/AdminItemForm";
+import { AdminBack } from "@/components/admin/AdminBack";
 import { initLingui } from "@/i18n/server";
 import { adminGet } from "@/lib/admin/admin-fetch";
 import { itemName, pick } from "@/lib/admin/lists/config";
@@ -28,9 +28,7 @@ export default async function EditListItemPage({ params }: { params: Promise<{ l
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4">
-      <Link href={`/admin/${meta.key}`} className="tap-target inline-flex w-fit items-center text-lg font-bold text-accent underline underline-offset-4">
-        <Trans>一覧へ戻る</Trans>
-      </Link>
+      <AdminBack href={`/admin/${meta.key}`}><Trans>一覧へ戻る</Trans></AdminBack>
       {item ? (
         <>
           <h1 className="text-3xl font-bold">{itemName(meta, item, i18n.locale)}</h1>
