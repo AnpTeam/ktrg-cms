@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { locationAlreadyAllowed, mockPosition, mockStamp, readPosition, requestStamp } from "@/lib/stamp-client";
 import { distanceParts, type Problem, type StampMock } from "@/lib/stamp-flow";
+import { track } from "@/lib/track";
 import { StampFace } from "./StampFace";
 
 // The "stamp here" button of a spot page (WBS 3.3.1). One tap: explain why the position is needed (before the
@@ -72,6 +73,7 @@ export function StampHere({
     const result = mock ? await mockStamp(mock) : await requestStamp(spotId, position.reading);
     if (result.ok) {
       setPhase({ name: "done", already: result.already });
+      track("stamp", { already: result.already, finishedCourse: (result.finished?.routeIds.length ?? 0) > 0 });
       window.dispatchEvent(new Event("ktrg:stamped")); // the sign-up reminder for a visitor with no account listens
       onStamped?.();
       router.refresh();

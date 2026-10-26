@@ -8,6 +8,7 @@ import { SampleNoticeHost } from "@/components/SampleNotice";
 import { SiteFooter } from "@/components/SiteFooter";
 import { StampFilters } from "@/components/StampFilters";
 import { BookmarkProvider } from "@/components/useBookmarks";
+import { IntroFlow } from "@/components/IntroFlow";
 import { GuestClaim } from "@/components/GuestClaim";
 import { GuestNag } from "@/components/GuestNag";
 import { FuriganaLayer } from "@/components/FuriganaLayer";
@@ -60,6 +61,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           </main>
         </div>
       </div>
+      {viewer.signedIn ? null : <IntroFlow seen={jar.has("intro")} />}
       {viewer.signedIn ? (hasGuestStamps ? <GuestClaim /> : null) : <GuestNag hasStamps={hasGuestStamps} />}
       {prefsState.effective.furigana ? <FuriganaLayer /> : null}
       <NavigationToast />

@@ -242,6 +242,7 @@ msgstr "{title}を直す（管理）"
 msgid "{title}を読み込めませんでした。しばらくしてから、ページを開き直してください。"
 msgstr "{title}を読み込めませんでした。しばらくしてから、ページを開き直してください。"
 
+#: src/components/IntroFlow.tsx:135
 #: src/components/landing/Landing.tsx:126
 msgid "{TOTAL_STAMPS}か所"
 msgstr "{TOTAL_STAMPS}か所"
@@ -396,7 +397,7 @@ msgstr "7日間は表示しない"
 msgid "Ctrlキーを押しながら地図を動かします"
 msgstr "Ctrlキーを押しながら地図を動かします"
 
-#: src/components/StampHere.tsx:95
+#: src/components/StampHere.tsx:97
 msgid "GPSの電波が弱いようです。空の開けた場所に動いて、もう一度お試しください。"
 msgstr "GPSの電波が弱いようです。空の開けた場所に動いて、もう一度お試しください。"
 
@@ -599,23 +600,23 @@ msgstr "いまのラリー"
 msgid "いまの位置が、わかりません。空の開けた場所で、しばらくお待ちください。"
 msgstr "いまの位置が、わかりません。空の開けた場所で、しばらくお待ちください。"
 
-#: src/components/StampHere.tsx:92
+#: src/components/StampHere.tsx:94
 msgid "いまの位置が、わかりません。空の開けた場所で、もう一度お試しください。"
 msgstr "いまの位置が、わかりません。空の開けた場所で、もう一度お試しください。"
 
-#: src/components/StampHere.tsx:152
+#: src/components/StampHere.tsx:154
 msgid "いまの位置を調べています…"
 msgstr "いまの位置を調べています…"
 
-#: src/components/StampHere.tsx:168
+#: src/components/StampHere.tsx:170
 msgid "いまの位置を調べます"
 msgstr "いまの位置を調べます"
 
-#: src/components/StampHere.tsx:132
+#: src/components/StampHere.tsx:134
 msgid "いまの場所から、約{km}km"
 msgstr "いまの場所から、約{km}km"
 
-#: src/components/StampHere.tsx:132
+#: src/components/StampHere.tsx:134
 msgid "いまの場所から、約{m}m"
 msgstr "いまの場所から、約{m}m"
 
@@ -782,6 +783,7 @@ msgstr "クリックで、この点を消します"
 msgid "くわしく見る"
 msgstr "くわしく見る"
 
+#: src/components/IntroFlow.tsx:126
 #: src/components/landing/Landing.tsx:124
 #: src/components/map/MapScreenCanvas.tsx:593
 msgid "コース"
@@ -861,7 +863,7 @@ msgstr "このアカウントには、パスキーがありません。メール
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
 msgstr "このアカウントには、メールがありません。顔・指紋で確認してください。"
 
-#: src/components/StampHere.tsx:113
+#: src/components/StampHere.tsx:115
 msgid "このスタンプは、もう押してあります。"
 msgstr "このスタンプは、もう押してあります。"
 
@@ -890,7 +892,7 @@ msgstr "このページを見る権限がありません"
 msgid "このメールアドレスは、使えません。すでに別のアカウントで使われているか、このアカウントにはメールが入っています。"
 msgstr "このメールアドレスは、使えません。すでに別のアカウントで使われているか、このアカウントにはメールが入っています。"
 
-#: src/components/StampHere.tsx:97
+#: src/components/StampHere.tsx:99
 msgid "このラリーは、いまは行われていません。"
 msgstr "このラリーは、いまは行われていません。"
 
@@ -1004,11 +1006,11 @@ msgstr "この場所のページを開く"
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
 msgstr "この場所の位置は仮のもので、まだ確認されていません。"
 
-#: src/components/StampHere.tsx:147
+#: src/components/StampHere.tsx:149
 msgid "この場所は、いまは閉鎖中です。"
 msgstr "この場所は、いまは閉鎖中です。"
 
-#: src/components/StampHere.tsx:96
+#: src/components/StampHere.tsx:98
 msgid "この場所は、いまは閉鎖中です。スタンプは押せません。"
 msgstr "この場所は、いまは閉鎖中です。スタンプは押せません。"
 
@@ -1042,7 +1044,7 @@ msgid "この次に追加"
 msgstr "この次に追加"
 
 #: src/components/navigation/NavigationHud.tsx:142
-#: src/components/StampHere.tsx:90
+#: src/components/StampHere.tsx:92
 msgid "この端末・ブラウザでは、位置情報を使えません。"
 msgstr "この端末・ブラウザでは、位置情報を使えません。"
 
@@ -1161,6 +1163,10 @@ msgstr "ご案内"
 msgid "さあ、はじめましょう"
 msgstr "さあ、はじめましょう"
 
+#: src/components/IntroFlow.tsx:162
+msgid "さあ、歩きはじめましょう"
+msgstr "さあ、歩きはじめましょう"
+
 #: src/components/admin/PhotoLibrary.tsx:171
 msgid "サイズ"
 msgstr "サイズ"
@@ -1203,6 +1209,10 @@ msgstr "サブコースの線を描く"
 #: src/components/map/MapSheet.tsx:101
 msgid "シートの高さ（上下の矢印キーで変えられます）"
 msgstr "シートの高さ（上下の矢印キーで変えられます）"
+
+#: src/components/IntroFlow.tsx:79
+msgid "スキップ"
+msgstr "スキップ"
 
 #: src/components/navigation/NavigationHud.tsx:171
 msgid "すぐ{turnWord}"
@@ -1263,7 +1273,7 @@ msgstr "スタンプの場所"
 msgid "スタンプの場所 {spotCount}か所"
 msgstr "スタンプの場所 {spotCount}か所"
 
-#: src/components/StampHere.tsx:170
+#: src/components/StampHere.tsx:172
 msgid "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 msgstr "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 
@@ -1306,7 +1316,7 @@ msgstr "スタンプラリー"
 msgid "スタンプを {0} 個、アカウントに移しました。"
 msgstr "スタンプを {0} 個、アカウントに移しました。"
 
-#: src/components/StampHere.tsx:154
+#: src/components/StampHere.tsx:156
 msgid "スタンプを押しています…"
 msgstr "スタンプを押しています…"
 
@@ -1315,16 +1325,16 @@ msgstr "スタンプを押しています…"
 msgid "スタンプを押しました"
 msgstr "スタンプを押しました"
 
-#: src/components/StampHere.tsx:113
+#: src/components/StampHere.tsx:115
 msgid "スタンプを押しました！"
 msgstr "スタンプを押しました！"
 
-#: src/components/StampHere.tsx:145
-#: src/components/StampHere.tsx:157
+#: src/components/StampHere.tsx:147
+#: src/components/StampHere.tsx:159
 msgid "スタンプを押す"
 msgstr "スタンプを押す"
 
-#: src/components/StampHere.tsx:98
+#: src/components/StampHere.tsx:100
 msgid "スタンプを押す機能は、まだ使えません。"
 msgstr "スタンプを押す機能は、まだ使えません。"
 
@@ -1455,6 +1465,7 @@ msgstr "つぎ"
 msgid "つぎの場所"
 msgstr "つぎの場所"
 
+#: src/components/IntroFlow.tsx:178
 #: src/components/settings/WelcomeFlow.tsx:73
 msgid "つぎへ"
 msgstr "つぎへ"
@@ -1556,6 +1567,10 @@ msgstr "はじめのラリー"
 #: src/components/landing/ContinueCard.tsx:17
 msgid "はじめの道を歩きませんか？"
 msgstr "はじめの道を歩きませんか？"
+
+#: src/components/IntroFlow.tsx:174
+msgid "はじめる"
+msgstr "はじめる"
 
 #: src/components/AccessList.tsx:9
 #: src/components/admin/map-editor/MapEditor.tsx:792
@@ -1742,13 +1757,17 @@ msgstr "ほかの乗り物"
 msgid "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。"
 msgstr "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。"
 
+#: src/components/IntroFlow.tsx:165
+msgid "まずは、歩きたい道をえらびます。登録しなくても、スタンプは押せます。"
+msgstr "まずは、歩きたい道をえらびます。登録しなくても、スタンプは押せます。"
+
 #: src/components/admin/RouteEditor.tsx:795
 #: src/components/RallyViews.tsx:154
 #: src/components/StampLegend.tsx:9
 msgid "まだ"
 msgstr "まだ"
 
-#: src/components/StampHere.tsx:94
+#: src/components/StampHere.tsx:96
 msgid "まだ、この場所から遠いようです。場所の近くで、もう一度お試しください。"
 msgstr "まだ、この場所から遠いようです。場所の近くで、もう一度お試しください。"
 
@@ -1896,7 +1915,7 @@ msgstr "もう一度ひらく"
 msgid "もう一度公開するときは、「経由地」タブで「公開する」を押してください。"
 msgstr "もう一度公開するときは、「経由地」タブで「公開する」を押してください。"
 
-#: src/components/StampHere.tsx:156
+#: src/components/StampHere.tsx:158
 msgid "もう一度試す"
 msgstr "もう一度試す"
 
@@ -1913,6 +1932,7 @@ msgstr "もっと見る"
 msgid "もっと見る（あと{hidden}か所）"
 msgstr "もっと見る（あと{hidden}か所）"
 
+#: src/components/IntroFlow.tsx:183
 #: src/components/SiteHeader.tsx:160
 msgid "もどる"
 msgstr "もどる"
@@ -1923,7 +1943,7 @@ msgstr "もどる"
 #: src/components/ProfileCard.tsx:135
 #: src/components/ProfileCard.tsx:177
 #: src/components/settings/PasskeyManager.tsx:165
-#: src/components/StampHere.tsx:177
+#: src/components/StampHere.tsx:179
 msgid "やめる"
 msgstr "やめる"
 
@@ -2215,12 +2235,12 @@ msgstr "ログアウト"
 msgid "ログイン"
 msgstr "ログイン"
 
-#: src/components/StampHere.tsx:99
+#: src/components/StampHere.tsx:101
 #: src/components/useErrorMessages.ts:19
 msgid "ログインが切れたようです。ログインしなおしてください。"
 msgstr "ログインが切れたようです。ログインしなおしてください。"
 
-#: src/components/StampHere.tsx:136
+#: src/components/StampHere.tsx:138
 msgid "ログインする"
 msgstr "ログインする"
 
@@ -2354,7 +2374,7 @@ msgstr "位置"
 msgid "位置なし"
 msgstr "位置なし"
 
-#: src/components/StampHere.tsx:171
+#: src/components/StampHere.tsx:173
 msgid "位置は、保存しません。保存するのは、スタンプだけです。"
 msgstr "位置は、保存しません。保存するのは、スタンプだけです。"
 
@@ -2398,15 +2418,15 @@ msgstr "位置を確認した情報源（サイトの名前やリンク）を書
 msgid "位置を確認していない"
 msgstr "位置を確認していない"
 
-#: src/components/StampHere.tsx:174
+#: src/components/StampHere.tsx:176
 msgid "位置を調べてスタンプを押す"
 msgstr "位置を調べてスタンプを押す"
 
-#: src/components/StampHere.tsx:93
+#: src/components/StampHere.tsx:95
 msgid "位置を調べるのに、時間がかかっています。空の開けた場所で、もう一度お試しください。"
 msgstr "位置を調べるのに、時間がかかっています。空の開けた場所で、もう一度お試しください。"
 
-#: src/components/StampHere.tsx:91
+#: src/components/StampHere.tsx:93
 msgid "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてから、もう一度お試しください。"
 msgstr "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてから、もう一度お試しください。"
 
@@ -2582,6 +2602,7 @@ msgstr "入力に、まちがいがあるようです。見直して、もう一
 msgid "全{count}区間のある場所を示した図"
 msgstr "全{count}区間のある場所を示した図"
 
+#: src/components/IntroFlow.tsx:127
 #: src/components/landing/Landing.tsx:124
 msgid "全{TOTAL_ROUTES}区間"
 msgstr "全{TOTAL_ROUTES}区間"
@@ -3204,11 +3225,12 @@ msgstr "周辺の場所（駐車場・自販機・トイレなど）"
 msgid "和歌山県"
 msgstr "和歌山県"
 
+#: src/components/IntroFlow.tsx:120
 #: src/components/landing/Landing.tsx:119
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 
-#: src/components/StampHere.tsx:103
+#: src/components/StampHere.tsx:105
 #: src/components/useErrorMessages.ts:68
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "問題が発生しました。しばらくしてからもう一度お試しください。"
@@ -3407,7 +3429,7 @@ msgstr "大きく表示"
 msgid "大切な操作なので、もう一度、確認します。"
 msgstr "大切な操作なので、もう一度、確認します。"
 
-#: src/app/layout.tsx:37
+#: src/app/layout.tsx:38
 msgid "大阪・和歌山・奈良にまたがる、葛城修験の山の古道を歩くための道案内とスタンプラリーです。"
 msgstr "大阪・和歌山・奈良にまたがる、葛城修験の山の古道を歩くための道案内とスタンプラリーです。"
 
@@ -3863,7 +3885,7 @@ msgstr "未選択"
 msgid "本人かどうか、確認します"
 msgstr "本人かどうか、確認します"
 
-#: src/app/layout.tsx:65
+#: src/app/layout.tsx:66
 msgid "本文へ移動"
 msgstr "本文へ移動"
 
@@ -4163,7 +4185,7 @@ msgstr "登録する"
 msgid "登録できませんでした。もう一度お試しください。"
 msgstr "登録できませんでした。もう一度お試しください。"
 
-#: src/components/StampHere.tsx:100
+#: src/components/StampHere.tsx:102
 #: src/components/useErrorMessages.ts:45
 msgid "登録なしで残せるスタンプの数が、上限になりました。新規登録すると、続けて集められます。"
 msgstr "登録なしで残せるスタンプの数が、上限になりました。新規登録すると、続けて集められます。"
@@ -4202,7 +4224,7 @@ msgstr "直すところは、ありません。"
 msgid "直す場所を見る"
 msgstr "直す場所を見る"
 
-#: src/components/StampHere.tsx:101
+#: src/components/StampHere.tsx:103
 #: src/components/useErrorMessages.ts:16
 msgid "短い間に何度も操作されました。しばらくしてからお試しください。"
 msgstr "短い間に何度も操作されました。しばらくしてからお試しください。"
@@ -4289,6 +4311,7 @@ msgstr "約{amount}km"
 msgid "約{amount}m"
 msgstr "約{amount}m"
 
+#: src/components/IntroFlow.tsx:131
 #: src/components/landing/Landing.tsx:125
 msgid "約{TRAIL_KM}km"
 msgstr "約{TRAIL_KM}km"
@@ -4302,6 +4325,7 @@ msgid "終了"
 msgstr "終了"
 
 #: src/components/admin/PlacePanel.tsx:37
+#: src/components/IntroFlow.tsx:134
 #: src/components/landing/Landing.tsx:126
 #: src/components/map/MapScreenCanvas.tsx:593
 #: src/components/PointKindName.tsx:9
@@ -4587,12 +4611,12 @@ msgid "英語は未入力です（日本語を表示します）"
 msgstr "英語は未入力です（日本語を表示します）"
 
 #: src/app/(public)/page.tsx:55
-#: src/app/layout.tsx:32
+#: src/app/layout.tsx:33
 #: src/components/landing/LandingHero.tsx:37
 msgid "葛城修験"
 msgstr "葛城修験"
 
-#: src/app/layout.tsx:35
+#: src/app/layout.tsx:36
 msgctxt "tab title"
 msgid "葛城修験"
 msgstr "葛城修験"
@@ -4601,6 +4625,7 @@ msgstr "葛城修験"
 msgid "葛城修験 管理"
 msgstr "葛城修験 管理"
 
+#: src/components/IntroFlow.tsx:117
 #: src/components/landing/Landing.tsx:113
 msgid "葛城修験とは"
 msgstr "葛城修験とは"
@@ -4807,7 +4832,7 @@ msgstr "送っています…"
 msgid "送っています… {percent}%"
 msgstr "送っています… {percent}%"
 
-#: src/components/StampHere.tsx:102
+#: src/components/StampHere.tsx:104
 #: src/components/useErrorMessages.ts:67
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "通信できませんでした。電波の良い場所でもう一度お試しください。"
@@ -4960,6 +4985,7 @@ msgstr "都道府県"
 msgid "都道府県が未入力"
 msgstr "都道府県が未入力"
 
+#: src/components/IntroFlow.tsx:130
 #: src/components/landing/Landing.tsx:125
 msgid "長さ"
 msgstr "長さ"
