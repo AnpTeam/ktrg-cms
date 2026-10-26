@@ -21,6 +21,8 @@ export const userOrigin = pgEnum("user_origin", ["osaka", "wakayama", "nara", "o
 export const userAgeRange = pgEnum("user_age_range", ["under20", "20s", "30s", "40s", "50s", "60s", "70plus"]);
 /** Optional. "unspecified" is an answer ("I'd rather not say"); null means the question was never answered. */
 export const userGender = pgEnum("user_gender", ["female", "male", "other", "unspecified"]);
+/** How the visitor says they found the rally (asked after registering; optional, for knowing what brings people in). */
+export const userFoundVia = pgEnum("user_found_via", ["qr_or_sign", "flyer", "tourism_site", "sns", "search", "friend", "other"]);
 export const webauthnChallengeType = pgEnum("webauthn_challenge_type", [
   "registration",
   "authentication",
@@ -57,6 +59,7 @@ export const users = pgTable(
     // Asked once after registering; both optional and changeable on the profile.
     ageRange: userAgeRange("age_range"),
     gender: userGender("gender"),
+    foundVia: userFoundVia("found_via"),
     // Accessibility and map choices (see me/preferences.ts); null until the person sets them.
     preferences: jsonb("preferences").$type<Preferences>(),
     // Routes the person bookmarked (route ids, newest first), so they follow them to a new phone.

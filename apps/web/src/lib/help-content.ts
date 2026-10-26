@@ -45,6 +45,11 @@ const ja: Help = {
         "スタンプは、アカウントに保存されています。ログインの方法を変えると、別のアカウントになっていることがあります（メールで登録した方と、顔・指紋だけで登録した方は、別のアカウントです）。前と同じ方法でログインしてみてください。それでも見つからないときは、「スタンプ」のページに出ているID（8けたの数字）を、問い合わせ先にお伝えください。問い合わせ先は、公開までにここに書きます。",
     },
     {
+      question: "ログインしていないとき、スタンプが残らないことがあります",
+      answer:
+        "登録しないで押したスタンプは、お使いのブラウザにだけ残ります。次のときは、記録が消えます。LINEやInstagramなど、ほかのアプリの中で開いたとき。プライベートモード（シークレットモード）で開いたとき。ブラウザのデータ（クッキー）を消したとき。QRコードを標準のカメラアプリで読み取り、アプリの中のブラウザで開いたとき。SafariかChromeで、同じブラウザを使い続けてください。登録しておくと、記録はアカウントに残り、別のスマートフォンでも見られます。",
+    },
+    {
       question: "位置情報を許可できません",
       answer: "お使いのスマートフォンの設定で、ブラウザの位置情報を「許可」にしてから、もう一度お試しください。位置情報は、スタンプを押すときにだけ使います。",
     },
@@ -103,6 +108,11 @@ const en: Help = {
       question: "My stamps are gone",
       answer:
         "Stamps are saved on your account. If you signed in a different way, it may be a different account (someone who registered with email and someone who registered with only a face or fingerprint have separate accounts). Try signing in the same way as before. If you still cannot find them, tell the contact point the ID (8 digits) shown on the Stamps page. The contact point will be written here before the app is published.",
+    },
+    {
+      question: "My stamps are not kept when I am not signed in",
+      answer:
+        "Stamps you collect without signing up are kept only in your browser. They are lost when you open the page inside another app (LINE, Instagram and so on), when you use private (incognito) mode, when you clear the browser's data (cookies), or when you scan the QR code with the camera app and it opens in the app's own browser. Keep using Safari or Chrome, the same one each time. If you sign up, your stamps stay on your account and you can see them on another phone too.",
     },
     {
       question: "I cannot allow location",

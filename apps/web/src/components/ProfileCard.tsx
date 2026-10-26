@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useLingui } from "@lingui/react/macro";
-import { AgeRangePicker, GenderPicker, useAgeRangeNames, useGenderNames } from "@/components/auth/AboutYou";
+import { AgeRangePicker, FoundViaPicker, GenderPicker, useAgeRangeNames, useFoundViaNames, useGenderNames } from "@/components/auth/AboutYou";
 import { AuthError, inputClass, OriginPicker, primaryButton, secondaryButton, useOriginNames } from "@/components/auth/authUi";
 import { useReauth } from "@/components/auth/ReauthDialog";
 import { UserIcon } from "@/components/icons";
@@ -12,7 +12,7 @@ import { PrivacyNote } from "@/components/PrivacyNote";
 import { api } from "@/lib/api";
 import { requestAccountDeletion } from "@/lib/auth-client";
 import { formatUpdated } from "@/lib/format";
-import { failureFromApi, formatPublicId, hasName, NAME_MAX, type AgeRange, type AuthFailure, type Gender, type Origin } from "@/lib/auth-flow";
+import { failureFromApi, formatPublicId, hasName, NAME_MAX, type AgeRange, type AuthFailure, type FoundVia, type Gender, type Origin } from "@/lib/auth-flow";
 
 /**
  * Who is signed in, on its own page (/profile): the name and where they come from, and a button to
@@ -31,21 +31,24 @@ export interface ProfileCardProps {
   origin: Origin | null;
   ageRange: AgeRange | null;
   gender: Gender | null;
+  foundVia: FoundVia | null;
   /** Only shows the details (the menu): changing them and deleting the account happen on the profile page. */
   readOnly?: boolean;
 }
 
-export function ProfileCard({ publicId, deletionDueAt, locale, name, origin, ageRange, gender, readOnly = false }: ProfileCardProps) {
+export function ProfileCard({ publicId, deletionDueAt, locale, name, origin, ageRange, gender, foundVia, readOnly = false }: ProfileCardProps) {
   const { t } = useLingui();
   const router = useRouter();
   const originNames = useOriginNames();
   const ageNames = useAgeRangeNames();
   const genderNames = useGenderNames();
+  const foundViaNames = useFoundViaNames();
   const [editing, setEditing] = useState(false);
   const [nameInput, setNameInput] = useState(name ?? "");
   const [originInput, setOriginInput] = useState<Origin | null>(origin);
   const [ageInput, setAgeInput] = useState<AgeRange | null>(ageRange);
   const [genderInput, setGenderInput] = useState<Gender | null>(gender);
+  const [foundViaInput, setFoundViaInput] = useState<FoundVia | null>(foundVia);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<AuthFailure | null>(null);
   const [confirming, setConfirming] = useState(false);
@@ -96,7 +99,7 @@ export function ProfileCard({ publicId, deletionDueAt, locale, name, origin, age
     setBusy(true);
     setError(null);
     try {
-      const res = await api.me.patch({ displayName: nameInput.trim(), origin: originInput, ageRange: ageInput, gender: genderInput });
+      const res = await api.me.patch({ displayName: nameInput.trim(), origin: originInput, ageRange: ageInput, gender: genderInput, foundVia: foundViaInput });
       if (res.error) {
         const status = typeof res.error.status === "number" ? res.error.status : 0;
         setError(status === 0 ? "network" : failureFromApi(status, res.error.value));
@@ -156,6 +159,7 @@ export function ProfileCard({ publicId, deletionDueAt, locale, name, origin, age
           <OriginPicker value={originInput} onChange={setOriginInput} />
           <AgeRangePicker value={ageInput} onChange={setAgeInput} />
           <GenderPicker value={genderInput} onChange={setGenderInput} />
+          <FoundViaPicker value={foundViaInput} onChange={setFoundViaInput} />
           <PrivacyNote />
           <AuthError code={error} />
           <div className="flex flex-col gap-3">
@@ -171,6 +175,7 @@ export function ProfileCard({ publicId, deletionDueAt, locale, name, origin, age
                 setOriginInput(origin);
                 setAgeInput(ageRange);
                 setGenderInput(gender);
+                setFoundViaInput(foundVia);
               }}
               className={secondaryButton}
             >
@@ -231,6 +236,7 @@ export function ProfileCard({ publicId, deletionDueAt, locale, name, origin, age
               {gender ? genderNames[gender] : null}
             </p>
           ) : null}
+          {foundVia ? <p className="text-lg text-muted">{foundViaNames[foundVia]}</p> : null}
           {publicId ? <p className="mt-1 text-base text-muted">{t`ID: ${formatPublicId(publicId)}`}</p> : null}
         </div>
         {readOnly ? null : (

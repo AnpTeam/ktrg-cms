@@ -1,4 +1,4 @@
-import type { AgeRange, AuthUser, Gender, Locale, Origin, Role } from "../auth/user";
+import type { AgeRange, AuthUser, FoundVia, Gender, Locale, Origin, Role } from "../auth/user";
 import { buildDeletionRequestEmail } from "../emails/deletion-request";
 import type { Preferences } from "./preferences";
 import type { Mailer } from "../lib/mailer";
@@ -24,6 +24,8 @@ export interface Profile {
   /** Age band and gender they chose after registering; null until answered. */
   ageRange: AgeRange | null;
   gender: Gender | null;
+  /** How they found the rally; null until answered. */
+  foundVia: FoundVia | null;
   /** Accessibility and map choices; null until the person has set them. */
   preferences: Preferences | null;
   /** Route ids they bookmarked, newest first. */
@@ -51,6 +53,7 @@ export interface ProfileChanges {
   /** Null clears it. */
   ageRange?: AgeRange | null;
   gender?: Gender | null;
+  foundVia?: FoundVia | null;
 }
 
 /** Storage the service needs; the Drizzle version is in me-store.ts. */
@@ -131,6 +134,7 @@ export function createMeService({
       if (input.origin !== undefined) changes.origin = input.origin;
       if (input.ageRange !== undefined) changes.ageRange = input.ageRange;
       if (input.gender !== undefined) changes.gender = input.gender;
+      if (input.foundVia !== undefined) changes.foundVia = input.foundVia;
       const profile = await store.update(user.id, changes);
       return profile ? { ok: true, profile: present(profile) } : { ok: false, reason: "gone" };
     },

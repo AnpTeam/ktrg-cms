@@ -99,7 +99,7 @@ msgstr "Connected {count} legs along trails. Check the shape, then save. Undo ta
 msgid "{direction} {distText}"
 msgstr "{distText} {direction}"
 
-#: src/components/ProfileCard.tsx:213
+#: src/components/ProfileCard.tsx:218
 msgid "{due}（日本時間）に、アカウントとすべての記録が消えます。それまでは、取り消せます。"
 msgstr "Your account and all your records will be erased on {due} (Japan time). Until then, you can cancel."
 
@@ -369,7 +369,7 @@ msgstr "Use two fingers to move the map"
 msgid "30代"
 msgstr "30s"
 
-#: src/components/ProfileCard.tsx:129
+#: src/components/ProfileCard.tsx:132
 msgid "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 msgstr "For 3 days you can sign in and cancel. After that, it cannot be undone."
 
@@ -451,13 +451,21 @@ msgid "https:// で始まるリンクを入れます。空にすると、動画�
 msgstr "Enter a link that starts with https://. If left empty, no video is shown."
 
 #. placeholder {0}: formatPublicId(publicId)
-#: src/components/ProfileCard.tsx:234
+#: src/components/ProfileCard.tsx:240
 msgid "ID: {0}"
 msgstr "ID: {0}"
 
 #: src/components/admin/VideoUpload.tsx:94
 msgid "MP4（H.264）かWebM、200MBまで。スマホで見やすいよう、書き出しは720p・1.5〜2Mbps程度（8分で100MB前後）がおすすめです。ffmpegなら：ffmpeg -i 元.mp4 -vf scale=-2:720 -c:v libx264 -b:v 1800k -c:a aac -b:a 96k -movflags +faststart 出力.mp4"
 msgstr "MP4 (H.264) or WebM, up to 200 MB. For phones, export at about 720p and 1.5–2 Mbps (around 100 MB for 8 minutes). With ffmpeg: ffmpeg -i in.mp4 -vf scale=-2:720 -c:v libx264 -b:v 1800k -c:a aac -b:a 96k -movflags +faststart out.mp4"
+
+#: src/components/auth/AboutYou.tsx:100
+msgid "QRコード・看板"
+msgstr "QR code or sign"
+
+#: src/components/auth/AboutYou.tsx:103
+msgid "SNS"
+msgstr "Social media"
 
 #: src/components/navigation/NavigationHud.tsx:113
 msgid "Uターン"
@@ -483,19 +491,19 @@ msgstr "Account"
 msgid "アカウントのものだけにする"
 msgstr "Keep only the account's"
 
-#: src/components/ProfileCard.tsx:190
+#: src/components/ProfileCard.tsx:195
 msgid "アカウントの削除を依頼ずみです。"
 msgstr "You have already asked to delete this account."
 
-#: src/components/ProfileCard.tsx:212
+#: src/components/ProfileCard.tsx:217
 msgid "アカウントを削除します"
 msgstr "Your account will be deleted"
 
-#: src/components/ProfileCard.tsx:124
+#: src/components/ProfileCard.tsx:127
 msgid "アカウントを削除しますか？"
 msgstr "Delete your account?"
 
-#: src/components/ProfileCard.tsx:197
+#: src/components/ProfileCard.tsx:202
 msgid "アカウントを削除する"
 msgstr "Delete account"
 
@@ -543,7 +551,7 @@ msgstr "Later"
 msgid "あとで決める"
 msgstr "Decide later"
 
-#: src/components/settings/WelcomeFlow.tsx:76
+#: src/components/settings/WelcomeFlow.tsx:78
 msgid "あとで答える"
 msgstr "Answer later"
 
@@ -551,13 +559,21 @@ msgstr "Answer later"
 msgid "アドレスがちがうか、ページが公開されていません。"
 msgstr "The address may be wrong, or the page is not published."
 
-#: src/components/settings/WelcomeFlow.tsx:66
+#: src/components/BrowserWarning.tsx:38
+msgid "アドレスをコピー"
+msgstr "Copy the address"
+
+#: src/components/settings/WelcomeFlow.tsx:67
 msgid "あなたのことを、少しだけ教えてください。答えなくても大丈夫です。あとから変えられます。"
 msgstr "Tell us a little about yourself. You don't have to answer, and you can change it later."
 
 #: src/components/settings/PrefsForm.tsx:122
 msgid "アニメーションや、ふわっと動く表示をやめます。"
 msgstr "Turns off animation and fading effects."
+
+#: src/components/BrowserWarning.tsx:24
+msgid "アプリの中で開いたページや、プライベートモードでは、記録が残りません。SafariかChromeで、このページを開いてください。登録しておくと、記録は消えません。"
+msgstr "Pages opened inside another app, or in private mode, keep no record. Please open this page in Safari or Chrome. If you sign up, your record is not lost."
 
 #: src/components/admin/RouteEditor.tsx:785
 msgid "あると、もっとよいこと"
@@ -666,7 +682,7 @@ msgid "オフラインで使う"
 msgstr "Save for offline use"
 
 #: src/components/auth/RegisterFlow.tsx:86
-#: src/components/ProfileCard.tsx:146
+#: src/components/ProfileCard.tsx:149
 msgid "お名前"
 msgstr "Your name"
 
@@ -674,7 +690,7 @@ msgstr "Your name"
 msgid "お名前に使えない文字が含まれているか、長すぎます（40文字まで）。"
 msgstr "The name has characters that cannot be used, or is too long (40 characters at most)."
 
-#: src/components/ProfileCard.tsx:225
+#: src/components/ProfileCard.tsx:230
 msgid "お名前は未設定です"
 msgstr "No name set"
 
@@ -871,6 +887,10 @@ msgstr "This account has no email. Confirm with your face or fingerprint."
 msgid "このアプリでわかること"
 msgstr "What you will find here"
 
+#: src/components/auth/AboutYou.tsx:116
+msgid "このアプリを知ったきっかけ"
+msgstr "How did you find out about this?"
+
 #: src/components/StampHere.tsx:122
 msgid "このスタンプは、もう押してあります。"
 msgstr "You already have this stamp."
@@ -891,6 +911,10 @@ msgstr "Remove this passkey?"
 #: src/components/admin/RouteImport.tsx:113
 msgid "このファイルは読み取れませんでした。「ひな形」から作ったファイル（.xlsx）を選んでください。"
 msgstr "This file could not be read. Choose a file (.xlsx) made from the template."
+
+#: src/components/BrowserWarning.tsx:23
+msgid "このブラウザでは、スタンプが消えてしまうことがあります。"
+msgstr "Your stamps may be lost in this browser."
 
 #: src/app/(admin)/layout.tsx:33
 msgid "このページを見る権限がありません"
@@ -916,6 +940,10 @@ msgstr "This rally will be deleted. Are you sure?"
 #: src/components/admin/RallyEditor.tsx:85
 msgid "このラリーを削除します。達成した {0} 人の達成記録も消えます（スタンプは残ります）。よろしいですか？"
 msgstr "This rally will be deleted, and so will the completion records of the {0} visitors who finished it (their stamps stay). Are you sure?"
+
+#: src/components/RestoreStamps.tsx:40
+msgid "このリンクからは、スタンプをもどせませんでした。リンクが途中で切れていないか、確かめてください。"
+msgstr "The stamps could not be restored from this link. Check that the link was not cut off."
 
 #: src/components/admin/PhotoSlot.tsx:17
 msgid "このリンクは使えません"
@@ -1143,6 +1171,10 @@ msgstr "Along this path stand sutra mounds (経塚) named after the 28 chapters 
 msgid "この道を見る"
 msgstr "See this route"
 
+#: src/components/BrowserWarning.tsx:38
+msgid "コピーしました"
+msgstr "Copied"
+
 #: src/components/settings/PasskeyManager.tsx:147
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 msgstr "This is the only way to sign in to this account. If you remove it, you won't be able to sign in. Add an email address or another passkey first."
@@ -1276,6 +1308,14 @@ msgstr "A waypoint that has been stamped cannot be deleted. Use \"Unpublish\" in
 msgid "スタンプなし"
 msgstr "No stamp"
 
+#: src/components/GuestBackup.tsx:22
+msgid "スタンプのバックアップ"
+msgstr "Stamp backup"
+
+#: src/components/GuestBackup.tsx:33
+msgid "スタンプのバックアップリンク"
+msgstr "Stamp backup link"
+
 #: src/components/map/MapScreen.tsx:376
 #: src/components/SpotSheet.tsx:90
 msgid "スタンプの場所"
@@ -1328,6 +1368,17 @@ msgstr "Stamp rally"
 #: src/components/GuestClaim.tsx:81
 msgid "スタンプを {0} 個、アカウントに移しました。"
 msgstr "Moved {0} stamps to your account."
+
+#. placeholder {0}: state.restored
+#. placeholder {1}: state.total
+#: src/components/RestoreStamps.tsx:37
+msgid "スタンプを{0}個、もどしました。（いま {1}個）"
+msgstr "Restored {0} stamps ({1} now)."
+
+#: src/app/(public)/restore/page.tsx:9
+#: src/app/(public)/restore/page.tsx:18
+msgid "スタンプをもどす"
+msgstr "Restore stamps"
 
 #: src/components/StampHere.tsx:163
 msgid "スタンプを押しています…"
@@ -1428,6 +1479,7 @@ msgstr "As is"
 #: src/components/AccessList.tsx:9
 #: src/components/admin/PlacePanel.tsx:50
 #: src/components/auth/AboutYou.tsx:24
+#: src/components/auth/AboutYou.tsx:106
 #: src/components/map/PlacesPanel.tsx:28
 #: src/components/map/PlacesPanel.tsx:46
 #: src/components/PointKindName.tsx:22
@@ -1450,7 +1502,7 @@ msgstr "Dark"
 msgid "タイル"
 msgstr "Tiles"
 
-#: src/components/SignInPrompt.tsx:21
+#: src/components/SignInPrompt.tsx:22
 msgid "ただし、この端末にしか残りません。登録すると、なくならず、コンプリート証ももらえます。"
 msgstr "But they stay only on this device. Sign up and they are never lost, and you can get a certificate."
 
@@ -1466,6 +1518,10 @@ msgstr "Check"
 msgid "チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。代わりに、一つ前の経由地から、この場所までの寄り道の線（青い細い点線）を、地図で描けます。分かれ道に経由地を置き、その次にこの場所を並べてください。"
 msgstr "When this is checked, \"Connect the waypoints\" skips this point. Instead, you can draw a side-trip line (thin blue dashes) on the map from the previous waypoint to this place. Put a waypoint at the fork, then list this place right after it."
 
+#: src/components/auth/AboutYou.tsx:101
+msgid "チラシ・ポスター"
+msgstr "Flyer or poster"
+
 #: src/components/RallyViews.tsx:61
 #: src/components/StampGrid.tsx:75
 #: src/components/StampGrid.tsx:97
@@ -1480,7 +1536,7 @@ msgid "つぎの場所"
 msgstr "Next places"
 
 #: src/components/IntroFlow.tsx:202
-#: src/components/settings/WelcomeFlow.tsx:73
+#: src/components/settings/WelcomeFlow.tsx:75
 msgid "つぎへ"
 msgstr "Next"
 
@@ -1518,7 +1574,7 @@ msgstr "Show toilets, shops and so on as soon as the map opens."
 msgid "どちらからお越しですか？"
 msgstr "Where are you visiting from?"
 
-#: src/components/ProfileCard.tsx:226
+#: src/components/ProfileCard.tsx:231
 msgid "どちらからかは未設定です"
 msgstr "Place not set"
 
@@ -1724,7 +1780,7 @@ msgstr "Read the blog"
 #: src/app/(public)/profile/page.tsx:14
 #: src/app/(public)/settings/passkeys/page.tsx:23
 #: src/app/(public)/sitemap/page.tsx:88
-#: src/components/ProfileCard.tsx:220
+#: src/components/ProfileCard.tsx:225
 msgid "プロフィール"
 msgstr "Profile"
 
@@ -1815,6 +1871,10 @@ msgstr "None yet."
 #: src/components/admin/PlaceTable.tsx:215
 msgid "まだありません。「＋ 行を追加」で、経由地を表に入れてください。"
 msgstr "No waypoints yet. Use “+ Add a row” to put waypoints in the table."
+
+#: src/components/GuestBackup.tsx:36
+msgid "まだスタンプがありません。"
+msgstr "No stamps yet."
 
 #: src/components/ProgressSummary.tsx:31
 #: src/components/RallyViews.tsx:54
@@ -1961,6 +2021,15 @@ msgstr "Show more"
 msgid "もっと見る（あと{hidden}か所）"
 msgstr "Show more ({hidden} more)"
 
+#: src/components/RestoreStamps.tsx:34
+msgid "もどしています…"
+msgstr "Restoring…"
+
+#. placeholder {0}: state.total
+#: src/components/RestoreStamps.tsx:37
+msgid "もどすスタンプは、ありませんでした。（いま {0}個）"
+msgstr "There were no stamps to restore ({0} now)."
+
 #: src/components/IntroFlow.tsx:207
 #: src/components/SiteHeader.tsx:160
 msgid "もどる"
@@ -1973,8 +2042,8 @@ msgstr "Earned"
 #: src/components/admin/PublishedEditDialog.tsx:63
 #: src/components/auth/ReauthDialog.tsx:62
 #: src/components/auth/ReauthDialog.tsx:84
-#: src/components/ProfileCard.tsx:135
-#: src/components/ProfileCard.tsx:177
+#: src/components/ProfileCard.tsx:138
+#: src/components/ProfileCard.tsx:182
 #: src/components/settings/PasskeyManager.tsx:165
 #: src/components/StampHere.tsx:186
 msgid "やめる"
@@ -2092,6 +2161,10 @@ msgstr "Deleting a rally keeps visitors' stamps and finished courses. Only the c
 msgid "ラリーを直す（管理）"
 msgstr "Edit rally (admin)"
 
+#: src/components/RestoreStamps.tsx:43
+msgid "ラリーを見る"
+msgstr "See the rallies"
+
 #: src/app/(admin)/admin/rallies/[id]/page.tsx:32
 #: src/app/(admin)/admin/rallies/new/page.tsx:27
 #: src/app/(admin)/admin/rallies/page.tsx:31
@@ -2122,6 +2195,10 @@ msgstr "A link is written [shown words](https://…). For a footnote, write [^1]
 #: src/components/PrintShare.tsx:38
 msgid "リンクをコピーしました"
 msgstr "Link copied"
+
+#: src/components/GuestBackup.tsx:37
+msgid "リンクを作れませんでした。もう一度お試しください。"
+msgstr "Could not make the link. Please try again."
 
 #: src/components/admin/PhotoLinkDetails.tsx:15
 msgid "リンクを直接入れる"
@@ -2263,7 +2340,7 @@ msgstr "Log out"
 #: src/components/auth/RegisterFlow.tsx:141
 #: src/components/GuestNag.tsx:78
 #: src/components/landing/LandingHero.tsx:55
-#: src/components/SignInPrompt.tsx:36
+#: src/components/SignInPrompt.tsx:37
 #: src/components/SiteHeader.tsx:214
 msgid "ログイン"
 msgstr "Log in"
@@ -2287,7 +2364,7 @@ msgstr "Could not log in. If this device has no passkey, log in with email."
 msgid "ログインの方法"
 msgstr "Ways to log in"
 
-#: src/components/ProfileCard.tsx:187
+#: src/components/ProfileCard.tsx:192
 msgid "ログインの方法（パスキー）"
 msgstr "Ways to log in (passkeys)"
 
@@ -2567,7 +2644,7 @@ msgstr "Saved (opens without a signal)"
 
 #: src/components/admin/RouteEditor.tsx:422
 #: src/components/admin/SiteSettingsForm.tsx:112
-#: src/components/ProfileCard.tsx:163
+#: src/components/ProfileCard.tsx:167
 #: src/components/settings/PrefsForm.tsx:162
 msgid "保存する"
 msgstr "Save"
@@ -2992,11 +3069,11 @@ msgstr "Delete"
 msgid "削除する"
 msgstr "Delete"
 
-#: src/components/ProfileCard.tsx:132
+#: src/components/ProfileCard.tsx:135
 msgid "削除を依頼する"
 msgstr "Ask to delete"
 
-#: src/components/ProfileCard.tsx:216
+#: src/components/ProfileCard.tsx:221
 msgid "削除を取り消す"
 msgstr "Cancel deletion"
 
@@ -3152,6 +3229,10 @@ msgstr "Danger spot"
 #: src/components/admin/GradingFields.tsx:42
 msgid "厳しい岩場や藪こぎが続く。道を自分で見つける技術と、高い判断力が必要。"
 msgstr "Long stretches of hard rock and thick undergrowth. Needs route-finding skill and sound judgement."
+
+#: src/components/auth/AboutYou.tsx:105
+msgid "友人・知人"
+msgstr "Friend or acquaintance"
 
 #. placeholder {0}: report.filter((r) => r.status === "created").length
 #. placeholder {1}: report.filter((r) => r.status === "updated").length
@@ -3718,7 +3799,7 @@ msgstr "Stamped"
 msgid "押し方: 場所の近くで、ボタンを押します（位置情報）"
 msgstr "How: press the button near the place (uses your location)"
 
-#: src/components/ProfileCard.tsx:127
+#: src/components/ProfileCard.tsx:130
 msgid "押すと、アカウントと、集めたスタンプなどの記録を、3日後にすべて消します。"
 msgstr "If you press this, your account and your records, such as your stamps, will all be erased after 3 days."
 
@@ -3868,7 +3949,7 @@ msgstr "A Japanese name is needed to create a new one"
 #: src/components/GuestNag.tsx:75
 #: src/components/landing/Landing.tsx:184
 #: src/components/landing/LandingHero.tsx:46
-#: src/components/SignInPrompt.tsx:30
+#: src/components/SignInPrompt.tsx:31
 #: src/components/SiteHeader.tsx:217
 msgid "新規登録"
 msgstr "Register"
@@ -3957,6 +4038,10 @@ msgstr "Clear the conditions"
 #: src/components/navigation/NavigationHud.tsx:127
 msgid "東"
 msgstr "east"
+
+#: src/components/auth/AboutYou.tsx:104
+msgid "検索"
+msgstr "Web search"
 
 #: src/components/admin/useChecklistLabels.ts:22
 msgid "概要"
@@ -4225,12 +4310,12 @@ msgstr "Climb {0} m"
 msgid "登り（獲得標高）"
 msgstr "Climb (elevation gain)"
 
-#: src/components/settings/WelcomeFlow.tsx:65
-#: src/components/settings/WelcomeFlow.tsx:85
+#: src/components/settings/WelcomeFlow.tsx:66
+#: src/components/settings/WelcomeFlow.tsx:87
 msgid "登録ありがとうございます"
 msgstr "Thank you for registering"
 
-#: src/components/SignInPrompt.tsx:18
+#: src/components/SignInPrompt.tsx:19
 msgid "登録しなくても、スタンプは押せます。"
 msgstr "You can collect stamps without signing up."
 
@@ -4578,7 +4663,7 @@ msgstr "Line not checked"
 msgid "線を道に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。"
 msgstr "The line now follows the paths. Check its shape, then save. \"Undo\" brings back the line you drew."
 
-#: src/components/ProfileCard.tsx:242
+#: src/components/ProfileCard.tsx:248
 msgid "編集"
 msgstr "Edit"
 
@@ -4619,6 +4704,10 @@ msgstr "Write both latitude and longitude"
 #: src/components/map/TrailMap.tsx:509
 msgid "縮小"
 msgstr "Zoom out"
+
+#: src/components/GuestBackup.tsx:35
+msgid "自分に送っておくと、ブラウザのデータが消えても、このリンクからスタンプをもどせます。ほかの人には見せないでください。"
+msgstr "Send it to yourself, and if the browser's data is lost you can bring the stamps back from this link. Do not show it to other people."
 
 #: src/components/useErrorMessages.ts:55
 msgid "自分の権限は変えられません。ほかの管理者に頼んでください。"
@@ -4760,7 +4849,7 @@ msgstr "Quick readability settings"
 msgid "見やすさの設定"
 msgstr "Display settings"
 
-#: src/components/settings/WelcomeFlow.tsx:86
+#: src/components/settings/WelcomeFlow.tsx:88
 msgid "見やすさを、あなたに合わせましょう。大きさは、選ぶとすぐに変わります。"
 msgstr "Let us make things easy for you to see. The size changes as soon as you choose it."
 
@@ -4768,13 +4857,17 @@ msgstr "Let us make things easy for you to see. The size changes as soon as you 
 msgid "見やすさを設定しませんか"
 msgstr "Set up how things look?"
 
-#: src/components/settings/WelcomeFlow.tsx:85
+#: src/components/settings/WelcomeFlow.tsx:87
 msgid "見やすさを選びましょう"
 msgstr "Choose how it looks"
 
 #: src/components/map/MapScreenCanvas.tsx:627
 msgid "見本の位置（目安です）"
 msgstr "Sample positions (rough)"
+
+#: src/components/auth/AboutYou.tsx:102
+msgid "観光サイト"
+msgstr "Tourism website"
 
 #: src/components/LocaleSwitcher.tsx:20
 #: src/components/LocaleSwitcher.tsx:55
@@ -5058,6 +5151,7 @@ msgstr "Length"
 #: src/components/admin/map-editor/MapEditor.tsx:965
 #: src/components/admin/PhotoLibrary.tsx:124
 #: src/components/admin/RouteEditor.tsx:438
+#: src/components/BrowserWarning.tsx:41
 #: src/components/ExpandableText.tsx:32
 #: src/components/GuestClaim.tsx:84
 #: src/components/map/MapPickList.tsx:36

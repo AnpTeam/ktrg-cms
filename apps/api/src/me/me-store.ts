@@ -14,6 +14,7 @@ const profileColumns = {
   origin: users.origin,
   ageRange: users.ageRange,
   gender: users.gender,
+  foundVia: users.foundVia,
   preferences: users.preferences,
   bookmarks: users.bookmarks,
   deletionRequestedAt: users.deletionRequestedAt,

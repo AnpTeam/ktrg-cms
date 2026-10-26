@@ -21,7 +21,7 @@ function setup() {
   const audit = createMemoryAuditWriter();
   const mem = createMemoryUserListStore(audit.writer);
   for (const u of [admin, alice]) {
-    mem.rows.set(u.id, { id: u.id, publicId: u.id.slice(0, 8), email: u.email, displayName: null, role: u.role, createdAt: clock, updatedAt: clock });
+    mem.rows.set(u.id, { id: u.id, publicId: u.id.slice(0, 8), email: u.email, displayName: null, role: u.role, origin: null, ageRange: null, gender: null, foundVia: null, createdAt: clock, updatedAt: clock });
   }
   const services = {
     session,

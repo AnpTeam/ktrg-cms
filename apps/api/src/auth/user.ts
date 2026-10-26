@@ -1,4 +1,4 @@
-import type { userAgeRange, userGender, userLocale, userOrigin, userRole } from "../db/schema";
+import type { userAgeRange, userFoundVia, userGender, userLocale, userOrigin, userRole } from "../db/schema";
 
 /** The roles an account can have: the user_role type in the database. */
 export type Role = (typeof userRole.enumValues)[number];
@@ -14,6 +14,9 @@ export type AgeRange = (typeof userAgeRange.enumValues)[number];
 
 /** A gender answer (including "unspecified"): the user_gender type in the database. */
 export type Gender = (typeof userGender.enumValues)[number];
+
+/** How they found the rally: the user_found_via type in the database. */
+export type FoundVia = (typeof userFoundVia.enumValues)[number];
 
 /** What sign-up asks besides the login method. Applied only when the account is created. */
 export interface NewAccountProfile {

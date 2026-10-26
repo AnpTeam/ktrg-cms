@@ -8,7 +8,7 @@ import { bad, ok, type ListReadStore, type ListRow, type Result } from "../admin
 import type { AuditWriter } from "../audit/audit-log";
 import { writeAudit } from "../audit/audit-store";
 import type { KitServices } from "../auth/route-kit";
-import type { Role } from "../auth/user";
+import type { AgeRange, FoundVia, Gender, Origin, Role } from "../auth/user";
 import type { Db } from "../db/client";
 import { sessions, users } from "../db/schema";
 
@@ -19,6 +19,11 @@ export interface UserListRow extends ListRow {
   email: string | null;
   displayName: string | null;
   role: Role;
+  /** What they chose to say about themselves (all optional; null = not answered). */
+  origin: Origin | null;
+  ageRange: AgeRange | null;
+  gender: Gender | null;
+  foundVia: FoundVia | null;
 }
 
 /** What an admin may change on an account: only its role (and only with a fresh login). */
@@ -38,6 +43,10 @@ const columns = {
   email: users.email,
   displayName: users.displayName,
   role: users.role,
+  origin: users.origin,
+  ageRange: users.ageRange,
+  gender: users.gender,
+  foundVia: users.foundVia,
   createdAt: users.createdAt,
   updatedAt: users.updatedAt,
 };
@@ -145,6 +154,37 @@ export const userList: ReadDef<"users", UserListRow, UserListServices> & { field
         required: true,
         inList: {},
       },
+      { name: "origin", kind: "select", readOnly: true, label: { ja: "お住まい", en: "Where from" }, options: [
+        { value: "osaka", label: { ja: "大阪府", en: "Osaka" } },
+        { value: "wakayama", label: { ja: "和歌山県", en: "Wakayama" } },
+        { value: "nara", label: { ja: "奈良県", en: "Nara" } },
+        { value: "other_japan", label: { ja: "日本のほかの地域", en: "Elsewhere in Japan" } },
+        { value: "overseas", label: { ja: "海外", en: "Overseas" } },
+      ], inList: { empty: { ja: "お住まい：未回答", en: "Where from: not answered" } } },
+      { name: "ageRange", kind: "select", readOnly: true, label: { ja: "年代", en: "Age" }, options: [
+        { value: "under20", label: { ja: "20歳未満", en: "Under 20" } },
+        { value: "20s", label: { ja: "20代", en: "20s" } },
+        { value: "30s", label: { ja: "30代", en: "30s" } },
+        { value: "40s", label: { ja: "40代", en: "40s" } },
+        { value: "50s", label: { ja: "50代", en: "50s" } },
+        { value: "60s", label: { ja: "60代", en: "60s" } },
+        { value: "70plus", label: { ja: "70歳以上", en: "70 and over" } },
+      ], inList: {} },
+      { name: "gender", kind: "select", readOnly: true, label: { ja: "性別", en: "Gender" }, options: [
+        { value: "female", label: { ja: "女性", en: "Female" } },
+        { value: "male", label: { ja: "男性", en: "Male" } },
+        { value: "other", label: { ja: "その他", en: "Other" } },
+        { value: "unspecified", label: { ja: "答えたくない", en: "Prefer not to say" } },
+      ], inList: {} },
+      { name: "foundVia", kind: "select", readOnly: true, label: { ja: "知ったきっかけ", en: "How they found it" }, options: [
+        { value: "qr_or_sign", label: { ja: "QRコード・看板", en: "QR code or sign" } },
+        { value: "flyer", label: { ja: "チラシ・ポスター", en: "Flyer or poster" } },
+        { value: "tourism_site", label: { ja: "観光サイト", en: "Tourism website" } },
+        { value: "sns", label: { ja: "SNS", en: "Social media" } },
+        { value: "search", label: { ja: "検索", en: "Web search" } },
+        { value: "friend", label: { ja: "友人・知人", en: "Friend or acquaintance" } },
+        { value: "other", label: { ja: "その他", en: "Other" } },
+      ], inList: {} },
       { name: "createdAt", kind: "datetime", label: { ja: "登録した日時", en: "Registered" }, readOnly: true },
     ],
   },

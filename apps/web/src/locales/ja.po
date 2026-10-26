@@ -99,7 +99,7 @@ msgstr "{count}つの区間を、道に沿ってつなぎました。形を確�
 msgid "{direction} {distText}"
 msgstr "{direction} {distText}"
 
-#: src/components/ProfileCard.tsx:213
+#: src/components/ProfileCard.tsx:218
 msgid "{due}（日本時間）に、アカウントとすべての記録が消えます。それまでは、取り消せます。"
 msgstr "{due}（日本時間）に、アカウントとすべての記録が消えます。それまでは、取り消せます。"
 
@@ -369,7 +369,7 @@ msgstr "2本の指で地図を動かします"
 msgid "30代"
 msgstr "30代"
 
-#: src/components/ProfileCard.tsx:129
+#: src/components/ProfileCard.tsx:132
 msgid "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 msgstr "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 
@@ -451,13 +451,21 @@ msgid "https:// で始まるリンクを入れます。空にすると、動画�
 msgstr "https:// で始まるリンクを入れます。空にすると、動画は表示されません。"
 
 #. placeholder {0}: formatPublicId(publicId)
-#: src/components/ProfileCard.tsx:234
+#: src/components/ProfileCard.tsx:240
 msgid "ID: {0}"
 msgstr "ID: {0}"
 
 #: src/components/admin/VideoUpload.tsx:94
 msgid "MP4（H.264）かWebM、200MBまで。スマホで見やすいよう、書き出しは720p・1.5〜2Mbps程度（8分で100MB前後）がおすすめです。ffmpegなら：ffmpeg -i 元.mp4 -vf scale=-2:720 -c:v libx264 -b:v 1800k -c:a aac -b:a 96k -movflags +faststart 出力.mp4"
 msgstr "MP4（H.264）かWebM、200MBまで。スマホで見やすいよう、書き出しは720p・1.5〜2Mbps程度（8分で100MB前後）がおすすめです。ffmpegなら：ffmpeg -i 元.mp4 -vf scale=-2:720 -c:v libx264 -b:v 1800k -c:a aac -b:a 96k -movflags +faststart 出力.mp4"
+
+#: src/components/auth/AboutYou.tsx:100
+msgid "QRコード・看板"
+msgstr "QRコード・看板"
+
+#: src/components/auth/AboutYou.tsx:103
+msgid "SNS"
+msgstr "SNS"
 
 #: src/components/navigation/NavigationHud.tsx:113
 msgid "Uターン"
@@ -483,19 +491,19 @@ msgstr "アカウント"
 msgid "アカウントのものだけにする"
 msgstr "アカウントのものだけにする"
 
-#: src/components/ProfileCard.tsx:190
+#: src/components/ProfileCard.tsx:195
 msgid "アカウントの削除を依頼ずみです。"
 msgstr "アカウントの削除を依頼ずみです。"
 
-#: src/components/ProfileCard.tsx:212
+#: src/components/ProfileCard.tsx:217
 msgid "アカウントを削除します"
 msgstr "アカウントを削除します"
 
-#: src/components/ProfileCard.tsx:124
+#: src/components/ProfileCard.tsx:127
 msgid "アカウントを削除しますか？"
 msgstr "アカウントを削除しますか？"
 
-#: src/components/ProfileCard.tsx:197
+#: src/components/ProfileCard.tsx:202
 msgid "アカウントを削除する"
 msgstr "アカウントを削除する"
 
@@ -543,7 +551,7 @@ msgstr "あとで"
 msgid "あとで決める"
 msgstr "あとで決める"
 
-#: src/components/settings/WelcomeFlow.tsx:76
+#: src/components/settings/WelcomeFlow.tsx:78
 msgid "あとで答える"
 msgstr "あとで答える"
 
@@ -551,13 +559,21 @@ msgstr "あとで答える"
 msgid "アドレスがちがうか、ページが公開されていません。"
 msgstr "アドレスがちがうか、ページが公開されていません。"
 
-#: src/components/settings/WelcomeFlow.tsx:66
+#: src/components/BrowserWarning.tsx:38
+msgid "アドレスをコピー"
+msgstr "アドレスをコピー"
+
+#: src/components/settings/WelcomeFlow.tsx:67
 msgid "あなたのことを、少しだけ教えてください。答えなくても大丈夫です。あとから変えられます。"
 msgstr "あなたのことを、少しだけ教えてください。答えなくても大丈夫です。あとから変えられます。"
 
 #: src/components/settings/PrefsForm.tsx:122
 msgid "アニメーションや、ふわっと動く表示をやめます。"
 msgstr "アニメーションや、ふわっと動く表示をやめます。"
+
+#: src/components/BrowserWarning.tsx:24
+msgid "アプリの中で開いたページや、プライベートモードでは、記録が残りません。SafariかChromeで、このページを開いてください。登録しておくと、記録は消えません。"
+msgstr "アプリの中で開いたページや、プライベートモードでは、記録が残りません。SafariかChromeで、このページを開いてください。登録しておくと、記録は消えません。"
 
 #: src/components/admin/RouteEditor.tsx:785
 msgid "あると、もっとよいこと"
@@ -666,7 +682,7 @@ msgid "オフラインで使う"
 msgstr "オフラインで使う"
 
 #: src/components/auth/RegisterFlow.tsx:86
-#: src/components/ProfileCard.tsx:146
+#: src/components/ProfileCard.tsx:149
 msgid "お名前"
 msgstr "お名前"
 
@@ -674,7 +690,7 @@ msgstr "お名前"
 msgid "お名前に使えない文字が含まれているか、長すぎます（40文字まで）。"
 msgstr "お名前に使えない文字が含まれているか、長すぎます（40文字まで）。"
 
-#: src/components/ProfileCard.tsx:225
+#: src/components/ProfileCard.tsx:230
 msgid "お名前は未設定です"
 msgstr "お名前は未設定です"
 
@@ -871,6 +887,10 @@ msgstr "このアカウントには、メールがありません。顔・指紋
 msgid "このアプリでわかること"
 msgstr "このアプリでわかること"
 
+#: src/components/auth/AboutYou.tsx:116
+msgid "このアプリを知ったきっかけ"
+msgstr "このアプリを知ったきっかけ"
+
 #: src/components/StampHere.tsx:122
 msgid "このスタンプは、もう押してあります。"
 msgstr "このスタンプは、もう押してあります。"
@@ -891,6 +911,10 @@ msgstr "このパスキーを消しますか？"
 #: src/components/admin/RouteImport.tsx:113
 msgid "このファイルは読み取れませんでした。「ひな形」から作ったファイル（.xlsx）を選んでください。"
 msgstr "このファイルは読み取れませんでした。「ひな形」から作ったファイル（.xlsx）を選んでください。"
+
+#: src/components/BrowserWarning.tsx:23
+msgid "このブラウザでは、スタンプが消えてしまうことがあります。"
+msgstr "このブラウザでは、スタンプが消えてしまうことがあります。"
 
 #: src/app/(admin)/layout.tsx:33
 msgid "このページを見る権限がありません"
@@ -916,6 +940,10 @@ msgstr "このラリーを削除します。よろしいですか？"
 #: src/components/admin/RallyEditor.tsx:85
 msgid "このラリーを削除します。達成した {0} 人の達成記録も消えます（スタンプは残ります）。よろしいですか？"
 msgstr "このラリーを削除します。達成した {0} 人の達成記録も消えます（スタンプは残ります）。よろしいですか？"
+
+#: src/components/RestoreStamps.tsx:40
+msgid "このリンクからは、スタンプをもどせませんでした。リンクが途中で切れていないか、確かめてください。"
+msgstr "このリンクからは、スタンプをもどせませんでした。リンクが途中で切れていないか、確かめてください。"
 
 #: src/components/admin/PhotoSlot.tsx:17
 msgid "このリンクは使えません"
@@ -1143,6 +1171,10 @@ msgstr "この道すじには、法華経の二十八の章にちなむ「経塚
 msgid "この道を見る"
 msgstr "この道を見る"
 
+#: src/components/BrowserWarning.tsx:38
+msgid "コピーしました"
+msgstr "コピーしました"
+
 #: src/components/settings/PasskeyManager.tsx:147
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 msgstr "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
@@ -1276,6 +1308,14 @@ msgstr "スタンプが押されたことのある経由地は消せません。
 msgid "スタンプなし"
 msgstr "スタンプなし"
 
+#: src/components/GuestBackup.tsx:22
+msgid "スタンプのバックアップ"
+msgstr "スタンプのバックアップ"
+
+#: src/components/GuestBackup.tsx:33
+msgid "スタンプのバックアップリンク"
+msgstr "スタンプのバックアップリンク"
+
 #: src/components/map/MapScreen.tsx:376
 #: src/components/SpotSheet.tsx:90
 msgid "スタンプの場所"
@@ -1328,6 +1368,17 @@ msgstr "スタンプラリー"
 #: src/components/GuestClaim.tsx:81
 msgid "スタンプを {0} 個、アカウントに移しました。"
 msgstr "スタンプを {0} 個、アカウントに移しました。"
+
+#. placeholder {0}: state.restored
+#. placeholder {1}: state.total
+#: src/components/RestoreStamps.tsx:37
+msgid "スタンプを{0}個、もどしました。（いま {1}個）"
+msgstr "スタンプを{0}個、もどしました。（いま {1}個）"
+
+#: src/app/(public)/restore/page.tsx:9
+#: src/app/(public)/restore/page.tsx:18
+msgid "スタンプをもどす"
+msgstr "スタンプをもどす"
 
 #: src/components/StampHere.tsx:163
 msgid "スタンプを押しています…"
@@ -1428,6 +1479,7 @@ msgstr "そのまま"
 #: src/components/AccessList.tsx:9
 #: src/components/admin/PlacePanel.tsx:50
 #: src/components/auth/AboutYou.tsx:24
+#: src/components/auth/AboutYou.tsx:106
 #: src/components/map/PlacesPanel.tsx:28
 #: src/components/map/PlacesPanel.tsx:46
 #: src/components/PointKindName.tsx:22
@@ -1450,7 +1502,7 @@ msgstr "ダーク"
 msgid "タイル"
 msgstr "タイル"
 
-#: src/components/SignInPrompt.tsx:21
+#: src/components/SignInPrompt.tsx:22
 msgid "ただし、この端末にしか残りません。登録すると、なくならず、コンプリート証ももらえます。"
 msgstr "ただし、この端末にしか残りません。登録すると、なくならず、コンプリート証ももらえます。"
 
@@ -1466,6 +1518,10 @@ msgstr "チェック"
 msgid "チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。代わりに、一つ前の経由地から、この場所までの寄り道の線（青い細い点線）を、地図で描けます。分かれ道に経由地を置き、その次にこの場所を並べてください。"
 msgstr "チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。代わりに、一つ前の経由地から、この場所までの寄り道の線（青い細い点線）を、地図で描けます。分かれ道に経由地を置き、その次にこの場所を並べてください。"
 
+#: src/components/auth/AboutYou.tsx:101
+msgid "チラシ・ポスター"
+msgstr "チラシ・ポスター"
+
 #: src/components/RallyViews.tsx:61
 #: src/components/StampGrid.tsx:75
 #: src/components/StampGrid.tsx:97
@@ -1480,7 +1536,7 @@ msgid "つぎの場所"
 msgstr "つぎの場所"
 
 #: src/components/IntroFlow.tsx:202
-#: src/components/settings/WelcomeFlow.tsx:73
+#: src/components/settings/WelcomeFlow.tsx:75
 msgid "つぎへ"
 msgstr "つぎへ"
 
@@ -1518,7 +1574,7 @@ msgstr "トイレやお店などを、地図を開いたときから表示しま
 msgid "どちらからお越しですか？"
 msgstr "どちらからお越しですか？"
 
-#: src/components/ProfileCard.tsx:226
+#: src/components/ProfileCard.tsx:231
 msgid "どちらからかは未設定です"
 msgstr "どちらからかは未設定です"
 
@@ -1724,7 +1780,7 @@ msgstr "ブログを見る"
 #: src/app/(public)/profile/page.tsx:14
 #: src/app/(public)/settings/passkeys/page.tsx:23
 #: src/app/(public)/sitemap/page.tsx:88
-#: src/components/ProfileCard.tsx:220
+#: src/components/ProfileCard.tsx:225
 msgid "プロフィール"
 msgstr "プロフィール"
 
@@ -1815,6 +1871,10 @@ msgstr "まだありません。"
 #: src/components/admin/PlaceTable.tsx:215
 msgid "まだありません。「＋ 行を追加」で、経由地を表に入れてください。"
 msgstr "まだありません。「＋ 行を追加」で、経由地を表に入れてください。"
+
+#: src/components/GuestBackup.tsx:36
+msgid "まだスタンプがありません。"
+msgstr "まだスタンプがありません。"
 
 #: src/components/ProgressSummary.tsx:31
 #: src/components/RallyViews.tsx:54
@@ -1961,6 +2021,15 @@ msgstr "もっと見る"
 msgid "もっと見る（あと{hidden}か所）"
 msgstr "もっと見る（あと{hidden}か所）"
 
+#: src/components/RestoreStamps.tsx:34
+msgid "もどしています…"
+msgstr "もどしています…"
+
+#. placeholder {0}: state.total
+#: src/components/RestoreStamps.tsx:37
+msgid "もどすスタンプは、ありませんでした。（いま {0}個）"
+msgstr "もどすスタンプは、ありませんでした。（いま {0}個）"
+
 #: src/components/IntroFlow.tsx:207
 #: src/components/SiteHeader.tsx:160
 msgid "もどる"
@@ -1973,8 +2042,8 @@ msgstr "もらいました"
 #: src/components/admin/PublishedEditDialog.tsx:63
 #: src/components/auth/ReauthDialog.tsx:62
 #: src/components/auth/ReauthDialog.tsx:84
-#: src/components/ProfileCard.tsx:135
-#: src/components/ProfileCard.tsx:177
+#: src/components/ProfileCard.tsx:138
+#: src/components/ProfileCard.tsx:182
 #: src/components/settings/PasskeyManager.tsx:165
 #: src/components/StampHere.tsx:186
 msgid "やめる"
@@ -2092,6 +2161,10 @@ msgstr "ラリーを削除しても、スタンプやコースの達成は消え
 msgid "ラリーを直す（管理）"
 msgstr "ラリーを直す（管理）"
 
+#: src/components/RestoreStamps.tsx:43
+msgid "ラリーを見る"
+msgstr "ラリーを見る"
+
 #: src/app/(admin)/admin/rallies/[id]/page.tsx:32
 #: src/app/(admin)/admin/rallies/new/page.tsx:27
 #: src/app/(admin)/admin/rallies/page.tsx:31
@@ -2122,6 +2195,10 @@ msgstr "リンクは [表示する文字](https://…) と書きます。脚注�
 #: src/components/PrintShare.tsx:38
 msgid "リンクをコピーしました"
 msgstr "リンクをコピーしました"
+
+#: src/components/GuestBackup.tsx:37
+msgid "リンクを作れませんでした。もう一度お試しください。"
+msgstr "リンクを作れませんでした。もう一度お試しください。"
 
 #: src/components/admin/PhotoLinkDetails.tsx:15
 msgid "リンクを直接入れる"
@@ -2263,7 +2340,7 @@ msgstr "ログアウト"
 #: src/components/auth/RegisterFlow.tsx:141
 #: src/components/GuestNag.tsx:78
 #: src/components/landing/LandingHero.tsx:55
-#: src/components/SignInPrompt.tsx:36
+#: src/components/SignInPrompt.tsx:37
 #: src/components/SiteHeader.tsx:214
 msgid "ログイン"
 msgstr "ログイン"
@@ -2287,7 +2364,7 @@ msgstr "ログインできませんでした。この端末にパスキーがな
 msgid "ログインの方法"
 msgstr "ログインの方法"
 
-#: src/components/ProfileCard.tsx:187
+#: src/components/ProfileCard.tsx:192
 msgid "ログインの方法（パスキー）"
 msgstr "ログインの方法（パスキー）"
 
@@ -2567,7 +2644,7 @@ msgstr "保存しました（電波がなくても開けます）"
 
 #: src/components/admin/RouteEditor.tsx:422
 #: src/components/admin/SiteSettingsForm.tsx:112
-#: src/components/ProfileCard.tsx:163
+#: src/components/ProfileCard.tsx:167
 #: src/components/settings/PrefsForm.tsx:162
 msgid "保存する"
 msgstr "保存する"
@@ -2992,11 +3069,11 @@ msgstr "削除"
 msgid "削除する"
 msgstr "削除する"
 
-#: src/components/ProfileCard.tsx:132
+#: src/components/ProfileCard.tsx:135
 msgid "削除を依頼する"
 msgstr "削除を依頼する"
 
-#: src/components/ProfileCard.tsx:216
+#: src/components/ProfileCard.tsx:221
 msgid "削除を取り消す"
 msgstr "削除を取り消す"
 
@@ -3152,6 +3229,10 @@ msgstr "危険な所"
 #: src/components/admin/GradingFields.tsx:42
 msgid "厳しい岩場や藪こぎが続く。道を自分で見つける技術と、高い判断力が必要。"
 msgstr "厳しい岩場や藪こぎが続く。道を自分で見つける技術と、高い判断力が必要。"
+
+#: src/components/auth/AboutYou.tsx:105
+msgid "友人・知人"
+msgstr "友人・知人"
 
 #. placeholder {0}: report.filter((r) => r.status === "created").length
 #. placeholder {1}: report.filter((r) => r.status === "updated").length
@@ -3718,7 +3799,7 @@ msgstr "押した"
 msgid "押し方: 場所の近くで、ボタンを押します（位置情報）"
 msgstr "押し方: 場所の近くで、ボタンを押します（位置情報）"
 
-#: src/components/ProfileCard.tsx:127
+#: src/components/ProfileCard.tsx:130
 msgid "押すと、アカウントと、集めたスタンプなどの記録を、3日後にすべて消します。"
 msgstr "押すと、アカウントと、集めたスタンプなどの記録を、3日後にすべて消します。"
 
@@ -3868,7 +3949,7 @@ msgstr "新しく作るには、名前（日本語）が必要です"
 #: src/components/GuestNag.tsx:75
 #: src/components/landing/Landing.tsx:184
 #: src/components/landing/LandingHero.tsx:46
-#: src/components/SignInPrompt.tsx:30
+#: src/components/SignInPrompt.tsx:31
 #: src/components/SiteHeader.tsx:217
 msgid "新規登録"
 msgstr "新規登録"
@@ -3957,6 +4038,10 @@ msgstr "条件をやめる"
 #: src/components/navigation/NavigationHud.tsx:127
 msgid "東"
 msgstr "東"
+
+#: src/components/auth/AboutYou.tsx:104
+msgid "検索"
+msgstr "検索"
 
 #: src/components/admin/useChecklistLabels.ts:22
 msgid "概要"
@@ -4225,12 +4310,12 @@ msgstr "登り {0} m"
 msgid "登り（獲得標高）"
 msgstr "登り（獲得標高）"
 
-#: src/components/settings/WelcomeFlow.tsx:65
-#: src/components/settings/WelcomeFlow.tsx:85
+#: src/components/settings/WelcomeFlow.tsx:66
+#: src/components/settings/WelcomeFlow.tsx:87
 msgid "登録ありがとうございます"
 msgstr "登録ありがとうございます"
 
-#: src/components/SignInPrompt.tsx:18
+#: src/components/SignInPrompt.tsx:19
 msgid "登録しなくても、スタンプは押せます。"
 msgstr "登録しなくても、スタンプは押せます。"
 
@@ -4578,7 +4663,7 @@ msgstr "線を確認していない"
 msgid "線を道に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。"
 msgstr "線を道に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。"
 
-#: src/components/ProfileCard.tsx:242
+#: src/components/ProfileCard.tsx:248
 msgid "編集"
 msgstr "編集"
 
@@ -4619,6 +4704,10 @@ msgstr "緯度と経度は、両方書いてください"
 #: src/components/map/TrailMap.tsx:509
 msgid "縮小"
 msgstr "縮小"
+
+#: src/components/GuestBackup.tsx:35
+msgid "自分に送っておくと、ブラウザのデータが消えても、このリンクからスタンプをもどせます。ほかの人には見せないでください。"
+msgstr "自分に送っておくと、ブラウザのデータが消えても、このリンクからスタンプをもどせます。ほかの人には見せないでください。"
 
 #: src/components/useErrorMessages.ts:55
 msgid "自分の権限は変えられません。ほかの管理者に頼んでください。"
@@ -4760,7 +4849,7 @@ msgstr "見やすさのクイック設定"
 msgid "見やすさの設定"
 msgstr "見やすさの設定"
 
-#: src/components/settings/WelcomeFlow.tsx:86
+#: src/components/settings/WelcomeFlow.tsx:88
 msgid "見やすさを、あなたに合わせましょう。大きさは、選ぶとすぐに変わります。"
 msgstr "見やすさを、あなたに合わせましょう。大きさは、選ぶとすぐに変わります。"
 
@@ -4768,13 +4857,17 @@ msgstr "見やすさを、あなたに合わせましょう。大きさは、選
 msgid "見やすさを設定しませんか"
 msgstr "見やすさを設定しませんか"
 
-#: src/components/settings/WelcomeFlow.tsx:85
+#: src/components/settings/WelcomeFlow.tsx:87
 msgid "見やすさを選びましょう"
 msgstr "見やすさを選びましょう"
 
 #: src/components/map/MapScreenCanvas.tsx:627
 msgid "見本の位置（目安です）"
 msgstr "見本の位置（目安です）"
+
+#: src/components/auth/AboutYou.tsx:102
+msgid "観光サイト"
+msgstr "観光サイト"
 
 #: src/components/LocaleSwitcher.tsx:20
 #: src/components/LocaleSwitcher.tsx:55
@@ -5058,6 +5151,7 @@ msgstr "長さ"
 #: src/components/admin/map-editor/MapEditor.tsx:965
 #: src/components/admin/PhotoLibrary.tsx:124
 #: src/components/admin/RouteEditor.tsx:438
+#: src/components/BrowserWarning.tsx:41
 #: src/components/ExpandableText.tsx:32
 #: src/components/GuestClaim.tsx:84
 #: src/components/map/MapPickList.tsx:36

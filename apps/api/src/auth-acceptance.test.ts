@@ -313,6 +313,8 @@ describe("user B cannot touch user A", () => {
     // Stamps kept in a signed cookie for a visitor with no account (see guest/guest-routes.test.ts); claiming them is logged-in.
     "POST /api/v1/guest/stamps",
     "GET /api/v1/guest/stamps",
+    "GET /api/v1/guest/backup",
+    "POST /api/v1/guest/restore",
     // Published trail notices (see notices/notice-routes.test.ts).
     "GET /api/v1/notices",
     // The furigana words visitors read (see furigana/furigana-words.test.ts).

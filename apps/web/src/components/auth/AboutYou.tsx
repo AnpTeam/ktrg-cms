@@ -1,7 +1,7 @@
 "use client";
 
 import { useLingui } from "@lingui/react/macro";
-import { ageRanges, genders, type AgeRange, type Gender } from "@/lib/auth-flow";
+import { ageRanges, foundVias, genders, type AgeRange, type FoundVia, type Gender } from "@/lib/auth-flow";
 
 export function useAgeRangeNames(): Record<AgeRange, string> {
   const { t } = useLingui();
@@ -90,6 +90,31 @@ export function GenderPicker({ value, onChange }: { value: Gender | null; onChan
     <fieldset className="flex flex-col gap-3">
       <legend className="text-lg font-bold">{t`性別`}</legend>
       <Tiles name="gender" keys={genders} names={names} value={value} onChange={onChange} columns={2} />
+    </fieldset>
+  );
+}
+
+export function useFoundViaNames(): Record<FoundVia, string> {
+  const { t } = useLingui();
+  return {
+    qr_or_sign: t`QRコード・看板`,
+    flyer: t`チラシ・ポスター`,
+    tourism_site: t`観光サイト`,
+    sns: t`SNS`,
+    search: t`検索`,
+    friend: t`友人・知人`,
+    other: t`その他`,
+  };
+}
+
+/** "How did you find out about this?": big tiles, optional; tapping the chosen one again clears it. */
+export function FoundViaPicker({ value, onChange }: { value: FoundVia | null; onChange: (value: FoundVia | null) => void }) {
+  const { t } = useLingui();
+  const names = useFoundViaNames();
+  return (
+    <fieldset className="flex flex-col gap-3">
+      <legend className="text-lg font-bold">{t`このアプリを知ったきっかけ`}</legend>
+      <Tiles name="foundVia" keys={foundVias} names={names} value={value} onChange={onChange} columns={2} />
     </fieldset>
   );
 }

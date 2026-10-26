@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Trans } from "@lingui/react/macro";
 import { initLingui } from "@/i18n/server";
+import { GuestBackup } from "./GuestBackup";
 import { StampFace } from "./StampFace";
 
 /**
@@ -36,6 +37,7 @@ export async function SignInPrompt() {
           <Trans>ログイン</Trans>
         </Link>
       </div>
+      <GuestBackup />
     </section>
   );
 }

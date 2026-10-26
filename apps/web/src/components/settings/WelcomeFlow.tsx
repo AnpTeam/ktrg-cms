@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
-import { AgeRangePicker, GenderPicker } from "@/components/auth/AboutYou";
+import { AgeRangePicker, FoundViaPicker, GenderPicker } from "@/components/auth/AboutYou";
 import { AuthError, primaryButton, secondaryButton } from "@/components/auth/authUi";
 import { PrefsForm } from "@/components/settings/PrefsForm";
 import { PrivacyNote } from "@/components/PrivacyNote";
 import { api } from "@/lib/api";
-import type { AgeRange, AuthFailure, Gender } from "@/lib/auth-flow";
+import type { AgeRange, AuthFailure, FoundVia, Gender } from "@/lib/auth-flow";
 import type { Prefs } from "@/lib/prefs";
 
 /**
@@ -32,13 +32,14 @@ export function WelcomeFlow({
   const [step, setStep] = useState<"about" | "prefs">(askAbout ? "about" : "prefs");
   const [ageRange, setAgeRange] = useState<AgeRange | null>(null);
   const [gender, setGender] = useState<Gender | null>(null);
+  const [foundVia, setFoundVia] = useState<FoundVia | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<AuthFailure | null>(null);
 
   async function saveAbout() {
     if (busy) return;
     // Only what was chosen is sent: an unanswered question stays unanswered.
-    const body = { ...(ageRange ? { ageRange } : {}), ...(gender ? { gender } : {}) };
+    const body = { ...(ageRange ? { ageRange } : {}), ...(gender ? { gender } : {}), ...(foundVia ? { foundVia } : {}) };
     if (signedIn && Object.keys(body).length > 0) {
       setBusy(true);
       setError(null);
@@ -66,6 +67,7 @@ export function WelcomeFlow({
         <p className="text-lg">{t`あなたのことを、少しだけ教えてください。答えなくても大丈夫です。あとから変えられます。`}</p>
         <AgeRangePicker value={ageRange} onChange={setAgeRange} />
         <GenderPicker value={gender} onChange={setGender} />
+        <FoundViaPicker value={foundVia} onChange={setFoundVia} />
         <PrivacyNote />
         <AuthError code={error} />
         <div className="flex flex-col gap-3">
