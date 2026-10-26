@@ -29,6 +29,8 @@ import { ADMIN_LISTS } from "./admin-lists/lists";
 import { listMetaRoutes, listReadRoutes, listWriteRoutes } from "./admin-lists/list-routes";
 import { purgeRoutes } from "./internal/purge-routes";
 import { auditLogList, createDrizzleAuditListStore } from "./audit/audit-list";
+import { createDrizzleFuriganaStore } from "./furigana/furigana-store";
+import { furiganaList, publicFuriganaRoutes } from "./furigana/furigana-words";
 import { bannerList, publicBannerRoutes } from "./banners/banner-list";
 import { createDrizzleBannerStore } from "./banners/banner-store";
 import { placeDirectoryList, publicPlaceRoutes } from "./places/place-directory";
@@ -66,6 +68,7 @@ function getServices(): Services {
         stampList: createDrizzleStampListStore(db),
         notices: createDrizzleNoticeStore(db),
         banners: createDrizzleBannerStore(db),
+        furigana: createDrizzleFuriganaStore(db),
         places: createDrizzlePlaceStore(db),
         siteSettings: createDrizzleSiteSettingsStore(db),
         auditList: createDrizzleAuditListStore(db),
@@ -142,6 +145,9 @@ export function createApp(
     .use(listReadRoutes(bannerList, getServices, opts))
     .use(listWriteRoutes(bannerList, getServices, opts))
     .use(publicBannerRoutes(() => getServices().banners))
+    .use(listReadRoutes(furiganaList, getServices, opts))
+    .use(listWriteRoutes(furiganaList, getServices, opts))
+    .use(publicFuriganaRoutes(() => getServices().furigana))
     .use(listReadRoutes(placeDirectoryList, getServices, opts))
     .use(listWriteRoutes(placeDirectoryList, getServices, opts))
     .use(publicPlaceRoutes(() => getServices().places))

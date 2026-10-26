@@ -354,6 +354,15 @@ export const trailNotices = pgTable(
   (t) => [index("trail_notices_route_idx").on(t.routeId, t.expiresOn)],
 );
 
+/** A word furigana is drawn over, and its reading in marked-up form ("葛城{かつらぎ}山{さん}"). One row per word. */
+export const furiganaWords = pgTable("furigana_words", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  word: text("word").notNull().unique(),
+  reading: text("reading").notNull(),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
 /** A photo in the carousel at the top of the home page, in `sort_order`. A draft until published. Its words (the
  * description read out by screen readers) are in banner_translations. */
 export const banners = pgTable("banners", {

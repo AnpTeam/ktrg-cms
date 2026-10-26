@@ -1,5 +1,5 @@
 // The browser side of "furigana everywhere": finds the page's Japanese text and draws the readings from our own word list
-// (furigana-words.json, see furigana-words.ts) over the words that have one. React owns the page's text nodes, so none is
+// (served by GET /furigana/words, edited in the admin; see furigana-words.ts) over the words that have one. React owns the page's text nodes, so none is
 // ever removed or replaced: the original text node is emptied and a <span data-furi> holding the ruby is put beside it.
 // When React changes or removes that text, the change is seen here and the span is redrawn or taken away. Switching it
 // off puts every text back.
@@ -90,9 +90,14 @@ export function startFurigana(root: HTMLElement = document.body): () => void {
   // Wait until the page has finished starting up in the browser: changing text before React has taken it over would break that.
   const begin = () => {
     window.setTimeout(async () => {
-      const list = (await import("./furigana-words.json")).default as Record<string, string>;
-      cut = wordMatcher(list);
-      run();
+      try {
+        const body = (await (await fetch("/api/v1/furigana/words")).json()) as { ok?: boolean; words?: Record<string, string> };
+        if (!body.ok || !body.words) return;
+        cut = wordMatcher(body.words);
+        run();
+      } catch {
+        // offline: the page simply stays without furigana
+      }
     }, 1200);
   };
   if (document.readyState === "complete") begin();

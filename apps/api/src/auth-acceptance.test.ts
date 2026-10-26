@@ -22,6 +22,7 @@ import { createMemoryStampStore } from "./stamps/stamp-memory-store";
 import { createMemoryNoticeStore } from "./notices/notice-memory-store";
 import { createMemorySiteSettingsStore } from "./site-settings/site-settings";
 import { createMemoryPlaceStore } from "./places/place-directory";
+import { createMemoryFuriganaStore } from "./furigana/furigana-words";
 import { createMemoryBannerStore } from "./banners/banner-list";
 import { memoryReader } from "./admin-lists/list-memory-store";
 import { createMemoryUserListStore } from "./users/user-list";
@@ -73,6 +74,7 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       stampList: stampMem.listStore,
       notices: createMemoryNoticeStore(audit.writer).store,
       banners: createMemoryBannerStore(audit.writer).store,
+      furigana: createMemoryFuriganaStore(audit.writer).store,
       places: createMemoryPlaceStore(audit.writer).store,
       siteSettings: createMemorySiteSettingsStore(audit.writer),
       auditList: memoryReader(new Map()),
@@ -313,6 +315,8 @@ describe("user B cannot touch user A", () => {
     "GET /api/v1/guest/stamps",
     // Published trail notices (see notices/notice-routes.test.ts).
     "GET /api/v1/notices",
+    // The furigana words visitors read (see furigana/furigana-words.test.ts).
+    "GET /api/v1/furigana/words",
     // Published home page banners (see banners/banner-list.test.ts).
     "GET /api/v1/banners",
     // Published places with a checked position (see places/place-directory.test.ts).
@@ -352,6 +356,8 @@ describe("user B cannot touch user A", () => {
     "PATCH /api/v1/admin/lists/notices/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/lists/banners": () => ({ imageUrl: "https://example.com/a.jpg", altJa: "x", altEn: null, sortOrder: 0, published: false }),
     "PATCH /api/v1/admin/lists/banners/:id": () => ({ updatedAt: new Date().toISOString() }),
+    "POST /api/v1/admin/lists/furigana": () => ({ word: "葛城", reading: "かつらぎ" }),
+    "PATCH /api/v1/admin/lists/furigana/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/lists/directory": () => ({
       category: "cafe", routeId: null, nameJa: "x", nameEn: null, descriptionJa: null, descriptionEn: null, hoursJa: null, hoursEn: null, closedDaysJa: null, closedDaysEn: null,
       lat: null, lng: null, positionVerified: false, positionSource: null, address: null, phone: null, website: null, photoUrl: null, status: "unknown", lastVerified: null,

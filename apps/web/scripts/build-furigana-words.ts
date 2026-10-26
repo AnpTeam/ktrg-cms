@@ -1,12 +1,12 @@
-// Adds readings to src/lib/furigana-words.json for every word that holds a kanji outside the elementary-school list
-// (the words furigana is drawn over). It reads the Japanese texts of the app (src/locales/ja.po) and, with --api, the
-// published content of a running site, asks the kuromoji dictionary how each word is read, and ADDS what is missing:
-// an entry already in the file (a reading fixed by hand) is never changed. Look through the new entries before committing.
-//   bun scripts/build-furigana-words.ts [--api http://localhost:3001]...
-// kuromoji is only used here; the site itself reads the finished list and loads no dictionary.
+// Finds the words that have a kanji outside the elementary-school list and are not in the site's furigana list yet, asks the
+// kuromoji dictionary how each is read, and prints SQL that adds them (nothing is written anywhere by this script). It reads the
+// Japanese texts of the app (src/locales/ja.po) and the published content of a running site (--api), and skips every word
+// the site already has. Look the guesses over, fix any wrong reading in the SQL or later in the admin (ふりがな), then run it.
+//   bun scripts/build-furigana-words.ts --api https://the-site.example > new-words.sql
+// kuromoji is only used here; the site itself loads no dictionary.
 
 import { createRequire } from "node:module";
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { hasHardKanji } from "../src/lib/kyoiku-kanji";
 import { isKanji } from "../src/lib/ruby";
@@ -74,13 +74,17 @@ async function apiTexts(origin: string): Promise<string[]> {
 
 if (import.meta.main) {
   const root = import.meta.dir + "/..";
-  const listFile = `${root}/src/lib/furigana-words.json`;
-  const words: Record<string, string> = JSON.parse(readFileSync(listFile, "utf8"));
-
   const po = readFileSync(`${root}/src/locales/ja.po`, "utf8");
   const texts = [...po.matchAll(/^msgid "(.+)"$/gm)].map((m) => m[1]!.replace(/\\"/g, '"'));
+  const known = new Set<string>();
   const args = process.argv.slice(2);
-  for (let i = 0; i < args.length; i++) if (args[i] === "--api") texts.push(...(await apiTexts(args[++i]!)));
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] !== "--api") continue;
+    const origin = args[++i]!;
+    texts.push(...(await apiTexts(origin)));
+    const listed = (await (await fetch(`${origin}/api/v1/furigana/words`)).json().catch(() => null)) as { words?: Record<string, string> } | null;
+    for (const w of Object.keys(listed?.words ?? {})) known.add(w);
+  }
 
   // kuromoji ships no types; the name is held in a variable so the compiler does not look for them.
   const name = "kuromoji";
@@ -88,21 +92,20 @@ if (import.meta.main) {
   const dicPath = join(dirname(createRequire(import.meta.url).resolve(`${name}/package.json`)), "dict");
   const tokenizer = await new Promise<Tokenizer>((resolve, reject) => kuromoji.builder({ dicPath }).build((e, t) => (e ? reject(e) : resolve(t))));
 
-  let added = 0;
-  const skipped: string[] = [];
+  const found = new Map<string, string>();
+  const skipped = new Set<string>();
   for (const text of new Set(texts)) {
     if (!hasHardKanji(text)) continue;
     for (const t of tokenizer.tokenize(text)) {
-      if (t.surface_form in words || !hasHardKanji(t.surface_form)) continue;
+      if (known.has(t.surface_form) || found.has(t.surface_form) || !hasHardKanji(t.surface_form)) continue;
       const markup = markupFor(t.surface_form, t.reading);
-      if (markup) {
-        words[t.surface_form] = markup;
-        added++;
-      } else skipped.push(t.surface_form);
+      if (markup) found.set(t.surface_form, markup);
+      else skipped.add(t.surface_form);
     }
   }
-  const sorted = Object.fromEntries(Object.entries(words).sort(([a], [b]) => a.localeCompare(b, "ja")));
-  writeFileSync(listFile, JSON.stringify(sorted, null, 2) + "\n");
-  console.log(`${added} words added (${Object.keys(sorted).length} in all).`);
-  if (skipped.length > 0) console.log(`No reading could be lined up for: ${[...new Set(skipped)].join("、")}. Add them by hand.`);
+  const q = (s: string) => `'${s.replaceAll("'", "''")}'`;
+  const rows = [...found].sort(([a], [b]) => a.localeCompare(b, "ja")).map(([w, r]) => `  (${q(w)}, ${q(r)})`);
+  if (rows.length > 0) console.log(`INSERT INTO "furigana_words" ("word", "reading") VALUES\n${rows.join(",\n")}\nON CONFLICT ("word") DO NOTHING;`);
+  console.error(`${found.size} new words.`);
+  if (skipped.size > 0) console.error(`No reading could be lined up for: ${[...skipped].join("、")}. Add them in the admin by hand.`);
 }

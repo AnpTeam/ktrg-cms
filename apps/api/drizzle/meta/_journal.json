@@ -225,6 +225,13 @@
       "when": 1792979702322,
       "tag": "0031_user_bookmarks",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1792982130560,
+      "tag": "0032_furigana_words",
+      "breakpoints": true
     }
   ]
 }

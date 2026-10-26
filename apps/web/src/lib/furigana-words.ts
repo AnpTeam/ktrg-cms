@@ -1,9 +1,9 @@
 import { parseRuby } from "./ruby";
 
-// Our own list of readings for the words furigana is drawn over (furigana-words.json): the word as it is written, and its
-// reading in the marked-up form of lib/ruby.ts ("葛城{かつらぎ}"). Only words with a kanji outside the elementary-school list
-// are in it (see kyoiku-kanji.ts); everything else is left plain. The list is made by apps/api/scripts/build-furigana-words.ts
-// and corrected by hand: the script never overwrites an entry that is already there.
+// Our own list of readings for the words furigana is drawn over: the word as it is written, and its reading in the
+// marked-up form of lib/ruby.ts ("葛城{かつらぎ}"). The list is kept in the database and edited in the admin (ふりがな);
+// the page gets it from GET /furigana/words. It should hold only words with a kanji outside the elementary-school list
+// (see kyoiku-kanji.ts): everything else is left plain. scripts/build-furigana-words.ts finds words that are missing.
 
 export type WordList = Readonly<Record<string, string>>;
 export interface Part {
