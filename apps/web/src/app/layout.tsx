@@ -39,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: home, template: `%s | ${site}` },
     description,
     openGraph: { type: "website", siteName: site, title: home, description },
-    // Added to the iPhone's home screen it opens like an app; the page runs under the status bar (globals.css draws a dark strip there, and the map shows through).
+    // Added to the iPhone's home screen it opens like an app; the page runs under the status bar (globals.css paints the top edge, which also stops iOS 27's blur there; the map shows through).
     appleWebApp: { capable: true, title: site, statusBarStyle: "black-translucent" },
   };
 }
