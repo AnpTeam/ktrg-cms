@@ -165,19 +165,30 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
 
   return (
     <div className="flex flex-col gap-5">
+      {/* The save button stays in reach, and its answer is a toast over the page (like the route editor's). */}
+      {editable ? (
+        <div className="sticky top-0 z-20 -mx-4 flex items-center justify-end gap-3 border-b border-line bg-paper px-4 py-3 lg:-mx-8 lg:px-8">
+          <button type="button" onClick={save} disabled={!canSave} className="tap-target rounded-xl bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
+            {busy ? t`保存中…` : saved ? t`保存` : t`作成`}
+          </button>
+        </div>
+      ) : null}
       {notice ? (
-        <p role={notice.kind === "error" ? "alert" : "status"} className={`rounded-xl bg-surface p-4 text-lg font-bold ${notice.kind === "error" ? "text-danger" : "text-moss"}`}>
-          {notice.text}
-        </p>
+        <div className={`fixed inset-x-4 top-20 z-50 mx-auto flex max-w-xl items-start gap-3 rounded-2xl border-2 border-white/40 p-4 text-white shadow-2xl ${notice.kind === "error" ? "bg-[#8f1818]" : "bg-[#14532d]"}`}>
+          <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-white text-xl font-bold text-ink">
+            {notice.kind === "error" ? "!" : "✓"}
+          </span>
+          <p role={notice.kind === "error" ? "alert" : "status"} className="min-w-0 flex-1 pt-0.5 text-lg font-bold">
+            {notice.text}
+          </p>
+          <button type="button" onClick={() => setNotice(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-lg px-3 text-xl font-bold hover:bg-white/20">
+            ×
+          </button>
+        </div>
       ) : null}
 
       <Section title={t`内容`}>
         {config.fields.map(input)}
-        {editable ? (
-          <button type="button" onClick={save} disabled={!canSave} className="tap-target w-fit rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50">
-            {saved ? t`保存` : t`作成`}
-          </button>
-        ) : null}
         {editable && missing.length > 0 ? <p className="text-base text-muted">{t`「必須」の欄をすべて入れると保存できます。`}</p> : null}
       </Section>
 

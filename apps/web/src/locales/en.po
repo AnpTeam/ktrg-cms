@@ -317,7 +317,7 @@ msgstr "What the \"Terrain\" button adds"
 msgid "「地形」ボタンを押した状態で見る"
 msgstr "Show it as when \"Terrain\" is pressed"
 
-#: src/components/admin/AdminItemForm.tsx:181
+#: src/components/admin/AdminItemForm.tsx:192
 msgid "「必須」の欄をすべて入れると保存できます。"
 msgstr "Fill in every field marked “Required” to save."
 
@@ -2612,7 +2612,7 @@ msgstr "About the physical and technical levels"
 msgid "作っています…"
 msgstr "Creating…"
 
-#: src/components/admin/AdminItemForm.tsx:178
+#: src/components/admin/AdminItemForm.tsx:172
 msgid "作成"
 msgstr "Create"
 
@@ -2624,7 +2624,7 @@ msgstr "No usable photos were found."
 msgid "例：山田太郎, CC BY-SA 4.0"
 msgstr "e.g. Jane Doe, CC BY-SA 4.0"
 
-#: src/components/admin/AdminItemForm.tsx:178
+#: src/components/admin/AdminItemForm.tsx:172
 msgid "保存"
 msgstr "Save"
 
@@ -2688,6 +2688,7 @@ msgstr "Cannot save. Fix the items marked in red."
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not save. Please try again where the signal is good."
 
+#: src/components/admin/AdminItemForm.tsx:172
 #: src/components/admin/RouteEditor.tsx:422
 msgid "保存中…"
 msgstr "Saving…"
@@ -2880,7 +2881,7 @@ msgstr "Waypoints that are not published yet are shown here too."
 msgid "共有"
 msgstr "Share"
 
-#: src/components/admin/AdminItemForm.tsx:174
+#: src/components/admin/AdminItemForm.tsx:190
 msgid "内容"
 msgstr "Content"
 
@@ -3088,7 +3089,7 @@ msgid "利用規約"
 msgstr "Terms of use"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
-#: src/components/admin/AdminItemForm.tsx:185
+#: src/components/admin/AdminItemForm.tsx:196
 #: src/components/admin/fields.tsx:155
 #: src/components/admin/PlaceTable.tsx:140
 #: src/components/admin/PlaceTable.tsx:205
@@ -3096,7 +3097,7 @@ msgstr "Terms of use"
 msgid "削除"
 msgstr "Delete"
 
-#: src/components/admin/AdminItemForm.tsx:187
+#: src/components/admin/AdminItemForm.tsx:198
 msgid "削除する"
 msgstr "Delete"
 
@@ -5189,6 +5190,7 @@ msgstr "Prefecture not set"
 msgid "長さ"
 msgstr "Length"
 
+#: src/components/admin/AdminItemForm.tsx:184
 #: src/components/admin/map-editor/MapEditor.tsx:965
 #: src/components/admin/PhotoLibrary.tsx:124
 #: src/components/admin/RouteEditor.tsx:438
