@@ -2,7 +2,7 @@ import { and, desc, eq, inArray, lte, sql } from "drizzle-orm";
 import { afterCursor, newestFirst, sameInstant } from "../admin-lists/list-sql";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
-import { blogPosts, blogPostTranslations, users } from "../db/schema";
+import { blogAuthors, blogPosts, blogPostTranslations, users } from "../db/schema";
 import { emptyTexts, flattenTexts, POST_TEXT, splitTexts, type Texts } from "../db/translations";
 import { POST_AUDIT, PUBLIC_POSTS_LIMIT, type PostRow, type PostStore } from "./post-list";
 
@@ -22,6 +22,10 @@ async function withTexts(q: Reader, rows: (typeof blogPosts.$inferSelect)[]): Pr
   const accounts = new Map(
     (authorIds.length === 0 ? [] : await q.select({ id: users.id, name: users.displayName, photo: users.avatarUrl }).from(users).where(inArray(users.id, authorIds))).map((u) => [u.id, u]),
   );
+  const writerIds = [...new Set(rows.flatMap((r) => (r.authorId ? [r.authorId] : [])))];
+  const writers = new Map(
+    (writerIds.length === 0 ? [] : await q.select().from(blogAuthors).where(inArray(blogAuthors.id, writerIds))).map((a) => [a.id, { nameJa: a.nameJa, nameEn: a.nameEn, photoUrl: a.photoUrl }]),
+  );
   return rows.map((r) => {
     const w = words.get(r.id) ?? emptyTexts(POST_TEXT);
     const account = r.authorUserId ? accounts.get(r.authorUserId) : undefined;
@@ -39,6 +43,8 @@ async function withTexts(q: Reader, rows: (typeof blogPosts.$inferSelect)[]): Pr
       placeId: r.placeId,
       routeId: r.routeId,
       spotId: r.spotId,
+      authorId: r.authorId,
+      writer: r.authorId ? (writers.get(r.authorId) ?? null) : null,
       authorUserId: r.authorUserId,
       accountName: account?.name ?? null,
       accountPhotoUrl: account?.photo ?? null,

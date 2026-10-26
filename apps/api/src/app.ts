@@ -29,6 +29,8 @@ import { ADMIN_LISTS } from "./admin-lists/lists";
 import { listMetaRoutes, listReadRoutes, listWriteRoutes } from "./admin-lists/list-routes";
 import { purgeRoutes } from "./internal/purge-routes";
 import { auditLogList, createDrizzleAuditListStore } from "./audit/audit-list";
+import { createDrizzleAuthorStore } from "./posts/author-store";
+import { authorList } from "./posts/author-list";
 import { createDrizzleCommentStore } from "./posts/comment-store";
 import { commentAdminRoutes, commentList, publicCommentRoutes } from "./posts/comments";
 import { createDrizzleSitePageStore } from "./pages/site-page-store";
@@ -78,6 +80,7 @@ function getServices(): Services {
         furigana: createDrizzleFuriganaStore(db),
         sitePages: createDrizzleSitePageStore(db),
         comments: createDrizzleCommentStore(db),
+        authors: createDrizzleAuthorStore(db),
         places: createDrizzlePlaceStore(db),
         siteSettings: createDrizzleSiteSettingsStore(db),
         auditList: createDrizzleAuditListStore(db),
@@ -163,6 +166,8 @@ export function createApp(
     .use(listReadRoutes(sitePageList, getServices, opts))
     .use(listWriteRoutes(sitePageList, getServices, opts))
     .use(publicSitePageRoutes(() => getServices().sitePages))
+    .use(listReadRoutes(authorList, getServices, opts))
+    .use(listWriteRoutes(authorList, getServices, opts))
     .use(listReadRoutes(commentList, getServices, opts))
     .use(commentAdminRoutes(getServices, opts))
     .use(publicCommentRoutes(getServices, opts))

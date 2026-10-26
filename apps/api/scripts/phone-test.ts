@@ -24,6 +24,7 @@ import { createMemoryNoticeStore } from "../src/notices/notice-memory-store";
 import { createMemoryPostStore } from "../src/posts/post-list";
 import { createMemorySiteSettingsStore } from "../src/site-settings/site-settings";
 import { createMemoryPlaceStore } from "../src/places/place-directory";
+import { createMemoryAuthorStore } from "../src/posts/author-list";
 import { createMemoryCommentStore } from "../src/posts/comments";
 import { createMemorySitePageStore } from "../src/pages/site-pages";
 import { createMemoryFuriganaStore } from "../src/furigana/furigana-words";
@@ -90,6 +91,7 @@ const services = createServices({
     furigana: createMemoryFuriganaStore(audit).store,
     sitePages: createMemorySitePageStore(audit).store,
     comments: createMemoryCommentStore(audit).store,
+    authors: createMemoryAuthorStore(audit).store,
     places: createMemoryPlaceStore(audit).store,
     siteSettings: createMemorySiteSettingsStore(audit),
     auditList: memoryReader(new Map()),

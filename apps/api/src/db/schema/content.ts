@@ -363,6 +363,16 @@ export const furiganaWords = pgTable("furigana_words", {
   updatedAt: updatedAt(),
 });
 
+/** Someone a blog post can be "written by" besides the account that made it (a guest writer, the team, a mascot). */
+export const blogAuthors = pgTable("blog_authors", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  nameJa: text("name_ja").notNull(),
+  nameEn: text("name_en"),
+  photoUrl: text("photo_url"),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
 /** A visitor's comment under a post. Held (`pending`) until a staff member approves it; `hidden` is kept but not shown. */
 export const blogComments = pgTable(
   "blog_comments",
@@ -426,6 +436,8 @@ export const blogPosts = pgTable(
     routeId: uuid("route_id").references(() => routes.id, { onDelete: "set null" }),
     spotId: uuid("spot_id").references(() => spots.id, { onDelete: "set null" }),
     // Who made the post: their profile name and photo are the byline unless the post names someone else. Never sent out.
+    // The writer picked for the post (a row of blog_authors), or none: then the byline is the account that made it.
+    authorId: uuid("author_id").references(() => blogAuthors.id, { onDelete: "set null" }),
     authorUserId: uuid("author_user_id").references(() => users.id, { onDelete: "set null" }),
     // The day the post is dated and from which visitors see it (YYYY-MM-DD, Japan time).
     publishedOn: date("published_on", { mode: "string" }).notNull(),

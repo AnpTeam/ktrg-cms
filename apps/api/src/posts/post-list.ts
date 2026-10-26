@@ -37,6 +37,8 @@ export const POST_FIELDS = {
   /** A route and a waypoint (a sutra mound is one) this post is about, or none. */
   routeId: t.Union([t.String({ format: "uuid" }), t.Null()]),
   spotId: t.Union([t.String({ format: "uuid" }), t.Null()]),
+  /** The writer picked for the post (see author-list.ts), or none: the byline is then the account that made it. */
+  authorId: t.Union([t.String({ format: "uuid" }), t.Null()]),
   /** The other content languages (admin entry; visitors see ja / en). */
   translations: t.Optional(translationsSchema({ title: 200, body: 20000, authorName: 100 })),
   /** YYYY-MM-DD, Japan time: the day the post is dated and from which visitors see it. */
@@ -47,7 +49,7 @@ export const POST_FIELDS = {
 const postFields = t.Object(POST_FIELDS);
 export type PostFields = Static<typeof postFields>;
 /** The account behind a post is read with it (never saved from the form): its name and photo are the byline when the post names no one. */
-export type PostRow = ListRow & PostFields & { authorUserId?: string | null; accountName?: string | null; accountPhotoUrl?: string | null };
+export type PostRow = ListRow & PostFields & { authorUserId?: string | null; accountName?: string | null; accountPhotoUrl?: string | null; writer?: { nameJa: string; nameEn: string | null; photoUrl: string | null } | null };
 
 export interface PostStore extends ListStore<PostRow, PostFields> {
   /** Published posts dated `today` (YYYY-MM-DD) or earlier, newest first, at most PUBLIC_POSTS_LIMIT. */
@@ -86,13 +88,14 @@ export const postRules = (photoHosts: readonly string[] = []): ListRules<PostFie
 export type PostService = ReturnType<typeof createPostService>;
 
 /** The admin list of blog posts, and what visitors read. */
-export function createPostService(deps: { store: PostStore; photoHosts?: readonly string[]; now?: () => Date; placeExists?: (id: string) => Promise<boolean>; routeExists?: (id: string) => Promise<boolean>; spotExists?: (id: string) => Promise<boolean> }) {
+export function createPostService(deps: { store: PostStore; photoHosts?: readonly string[]; now?: () => Date; placeExists?: (id: string) => Promise<boolean>; routeExists?: (id: string) => Promise<boolean>; spotExists?: (id: string) => Promise<boolean>; authorExists?: (id: string) => Promise<boolean> }) {
   const now = deps.now ?? (() => new Date());
   return {
     ...createListService({ store: deps.store, rules: postRules(deps.photoHosts), relations: {
         ...(deps.placeExists ? { placeId: deps.placeExists } : {}),
         ...(deps.routeExists ? { routeId: deps.routeExists } : {}),
         ...(deps.spotExists ? { spotId: deps.spotExists } : {}),
+        ...(deps.authorExists ? { authorId: deps.authorExists } : {}),
       },
     }),
     publicPosts: () => deps.store.listPublic(todayInJapan(now())),
@@ -168,10 +171,18 @@ export const postList: ListDef<"posts", typeof POST_FIELDS, PostRow, PostService
         },
       },
       {
+        name: "authorId",
+        kind: "relation",
+        to: "authors",
+        label: { ja: "書いた人", en: "Written by" },
+        hint: { ja: "ふつうは「自分」のままで、ログイン中のアカウントのプロフィール（名前と写真）が使われます。ゲストの書き手やキャラクターで出したいときは、一覧から選びます（「書き手」の画面で足せます）。", en: "Usually left as yourself: the profile (name and photo) of the account you are logged in with. To post as a guest writer or a character, choose one from the list (add them under Writers)." },
+        noneLabel: { ja: "自分（ログイン中のアカウント）", en: "Me (the account I am logged in with)" },
+      },
+      {
         name: "authorName",
         kind: "bilingual",
-        label: { ja: "書いた人の名前", en: "Author's name" },
-        hint: { ja: "空のままにすると、この記事をつくった人のプロフィールの名前が使われます。別の名前にしたいときだけ入れてください（本人の了解を得てから）。", en: "Left empty, the profile name of whoever made the post is used. Type a name only to use someone else's (ask them first)." },
+        label: { ja: "名前を直接入れる（ふだんは空のまま）", en: "Type a name instead (usually left empty)" },
+        hint: { ja: "この記事だけ別の名前にしたいときに入れます。上の「書いた人」より優先されます。空のままでかまいません。", en: "For a one-off name on this post only; it wins over \"Written by\" above. May be left empty." },
       },
       { name: "authorPhotoUrl", kind: "image", label: { ja: "書いた人の写真", en: "Author's photo" }, hint: { ja: "空のままにすると、プロフィールの写真が使われます。", en: "Left empty, the profile photo is used." } },
       { name: "routeId", kind: "route", label: { ja: "この記事のルート", en: "The route this post is about" }, noneLabel: { ja: "（なし）", en: "(none)" } },
@@ -213,11 +224,12 @@ export const postList: ListDef<"posts", typeof POST_FIELDS, PostRow, PostService
  * What a visitor sees of a post: no draft flag, no edit times, no other languages (the site speaks ja / en), and no account
  * id. The byline is the name typed on the post, else the profile name of whoever made it; likewise the photo.
  */
-const publicOut = ({ published: _p, createdAt: _c, updatedAt: _u, translations: _t, authorUserId: _a, accountName, accountPhotoUrl, ...post }: PostRow) => ({
+const publicOut = ({ published: _p, createdAt: _c, updatedAt: _u, translations: _t, authorUserId: _a, accountName, accountPhotoUrl, writer, ...post }: PostRow) => ({
   ...post,
-  authorNameJa: post.authorNameJa ?? accountName ?? null,
-  authorNameEn: post.authorNameEn ?? (post.authorNameJa ? null : (accountName ?? null)),
-  authorPhotoUrl: post.authorPhotoUrl ?? accountPhotoUrl ?? null,
+  // The name typed on the post, else the picked writer, else the account that made it.
+  authorNameJa: post.authorNameJa ?? writer?.nameJa ?? accountName ?? null,
+  authorNameEn: post.authorNameEn ?? (post.authorNameJa ? null : (writer ? writer.nameEn : (accountName ?? null))),
+  authorPhotoUrl: post.authorPhotoUrl ?? (writer ? writer.photoUrl : (accountPhotoUrl ?? null)),
 });
 
 /** What visitors read, no login: published posts whose day has come, newest first, and one post by its id. */

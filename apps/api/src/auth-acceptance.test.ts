@@ -23,6 +23,7 @@ import { createMemoryNoticeStore } from "./notices/notice-memory-store";
 import { createMemoryPostStore } from "./posts/post-list";
 import { createMemorySiteSettingsStore } from "./site-settings/site-settings";
 import { createMemoryPlaceStore } from "./places/place-directory";
+import { createMemoryAuthorStore } from "./posts/author-list";
 import { createMemoryCommentStore } from "./posts/comments";
 import { createMemorySitePageStore } from "./pages/site-pages";
 import { createMemoryFuriganaStore } from "./furigana/furigana-words";
@@ -42,7 +43,7 @@ const samplePost = () => ({
   authorNameEn: null,
   coverPhotoUrl: null,
   coverCredit: null,
-  placeId: null, routeId: null, spotId: null,
+  placeId: null, routeId: null, spotId: null, authorId: null,
   authorPhotoUrl: null,
   publishedOn: "2026-10-20",
   published: false,
@@ -97,6 +98,7 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       furigana: createMemoryFuriganaStore(audit.writer).store,
       sitePages: createMemorySitePageStore(audit.writer).store,
       comments: createMemoryCommentStore(audit.writer).store,
+      authors: createMemoryAuthorStore(audit.writer).store,
       places: createMemoryPlaceStore(audit.writer).store,
       siteSettings: createMemorySiteSettingsStore(audit.writer),
       auditList: memoryReader(new Map()),
@@ -388,6 +390,8 @@ describe("user B cannot touch user A", () => {
     "POST /api/v1/admin/lists/posts": () => samplePost(),
     "POST /api/v1/posts/:id/comments": () => ({ body: "x" }),
     "PATCH /api/v1/admin/lists/comments/:id": () => ({ updatedAt: new Date().toISOString(), status: "approved" }),
+    "POST /api/v1/admin/lists/authors": () => ({ nameJa: "x", nameEn: null, photoUrl: null }),
+    "PATCH /api/v1/admin/lists/authors/:id": () => ({ updatedAt: new Date().toISOString() }),
     "PATCH /api/v1/admin/lists/posts/:id": () => ({ updatedAt: new Date().toISOString() }),
     "PATCH /api/v1/admin/lists/notices/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/lists/banners": () => ({ imageUrl: "https://example.com/a.jpg", altJa: "x", altEn: null, sortOrder: 0, published: false }),

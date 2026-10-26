@@ -20,6 +20,7 @@ const post = (over: Record<string, unknown> = {}) => ({
   placeId: null,
   routeId: null,
   spotId: null,
+  authorId: null,
   publishedOn: "2026-10-20",
   published: false,
   ...over,
@@ -120,5 +121,25 @@ describe("blog posts", () => {
     mem.rows.set(made.value.id, { ...mem.rows.get(made.value.id)!, authorNameJa: "取材班" });
     const named = (await (await app.handle(new Request(`http://localhost/api/v1/posts/${made.value.id}`))).json()) as { post: Record<string, unknown> };
     expect(named.post.authorNameJa).toBe("取材班");
+  });
+
+  test("a picked writer wins over the account that made the post; the name typed on the post wins over both", async () => {
+    const audit = createMemoryAuditWriter();
+    const mem = createMemoryPostStore(audit.writer);
+    const svc = createPostService({ store: mem.store, now: () => NOW });
+    const made = await svc.create(actor, post({ published: true }));
+    if (!made.ok) throw new Error("not made");
+    const set = (extra: object) => mem.rows.set(made.value.id, { ...made.value, authorUserId: actor, accountName: "山田", accountPhotoUrl: "https://example.com/me.jpg", ...extra } as never);
+    const { publicPostRoutes } = await import("./post-list");
+    const { Elysia } = await import("elysia");
+    const { apiBase } = await import("../lib/api-errors");
+    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(publicPostRoutes(() => svc));
+    const read = async () => ((await (await app.handle(new Request(`http://localhost/api/v1/posts/${made.value.id}`))).json()) as { post: Record<string, unknown> }).post;
+    set({});
+    expect(await read()).toMatchObject({ authorNameJa: "山田", authorPhotoUrl: "https://example.com/me.jpg" });
+    set({ writer: { nameJa: "取材班", nameEn: "Survey team", photoUrl: "https://example.com/team.jpg" } });
+    expect(await read()).toMatchObject({ authorNameJa: "取材班", authorNameEn: "Survey team", authorPhotoUrl: "https://example.com/team.jpg" });
+    set({ writer: { nameJa: "取材班", nameEn: null, photoUrl: null }, authorNameJa: "ゲスト" });
+    expect(await read()).toMatchObject({ authorNameJa: "ゲスト", authorPhotoUrl: null });
   });
 });
