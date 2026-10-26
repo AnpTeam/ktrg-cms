@@ -99,28 +99,28 @@ describe("resolveViewer", () => {
   test("development can force signed in or out; otherwise the session decides", () => {
     const dev = { NODE_ENV: "development" };
     expect(resolveViewer({}, dev)).toBeNull();
-    expect(resolveViewer({ as: "in" }, dev)).toEqual({ signedIn: true, role: null, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, preferences: null });
-    expect(resolveViewer({ as: "out" }, dev)).toEqual({ signedIn: false, role: null, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, preferences: null });
+    expect(resolveViewer({ as: "in" }, dev)).toEqual({ signedIn: true, role: null, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, preferences: null, bookmarks: [] });
+    expect(resolveViewer({ as: "out" }, dev)).toEqual({ signedIn: false, role: null, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, preferences: null, bookmarks: [] });
     expect(resolveViewer({ as: "auto" }, dev)).toBeNull();
   });
 });
 
 describe("viewerFromMe", () => {
   test("a good answer gives the name", () => {
-    expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana" } })).toEqual({ signedIn: true, role: null, publicId: null, deletionDueAt: null, name: "Hana", origin: null, ageRange: null, gender: null, preferences: null });
-    expect(viewerFromMe(200, { ok: true, me: { displayName: null } })).toEqual({ signedIn: true, role: null, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, preferences: null });
+    expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana" } })).toEqual({ signedIn: true, role: null, publicId: null, deletionDueAt: null, name: "Hana", origin: null, ageRange: null, gender: null, preferences: null, bookmarks: [] });
+    expect(viewerFromMe(200, { ok: true, me: { displayName: null } })).toEqual({ signedIn: true, role: null, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, preferences: null, bookmarks: [] });
     expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana", origin: "nara" } }).origin).toBe("nara");
     expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana", origin: "mars" } }).origin).toBeNull();
     const about = viewerFromMe(200, { ok: true, me: { publicId: "00048271", deletionDueAt: "2026-10-18T05:30:00.000Z", displayName: "Hana", ageRange: "60s", gender: "unspecified" } });
     expect(about).toMatchObject({ publicId: "00048271", deletionDueAt: "2026-10-18T05:30:00.000Z", ageRange: "60s", gender: "unspecified" });
     expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana", ageRange: "teens", gender: "robot" } })).toMatchObject({ ageRange: null, gender: null });
     // The account's saved choices come with it.
-    const saved = { size: "large", mergeStops: true, placesOnMap: false, setupDone: true, updatedAt: 1760000000000 } as const;
+    const saved = { size: "large", mergeStops: true, placesOnMap: false, setupDone: true, furigana: false, contrast: false, calm: false, updatedAt: 1760000000000 } as const;
     expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana", preferences: saved } }).preferences).toEqual(saved);
   });
 
   test("anything else is signed out", () => {
-    const out = { signedIn: false, role: null, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, preferences: null };
+    const out = { signedIn: false, role: null, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, preferences: null, bookmarks: [] };
     expect(viewerFromMe(401, { ok: false, error: "unauthenticated" })).toEqual(out);
     expect(viewerFromMe(200, null)).toEqual(out);
     expect(viewerFromMe(200, { ok: false })).toEqual(out);

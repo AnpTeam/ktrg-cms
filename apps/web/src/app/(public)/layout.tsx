@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 import { MenuProvider } from "@/components/MenuProvider";
 import { NavigationProvider } from "@/components/navigation/NavigationProvider";
@@ -6,6 +7,10 @@ import { OfflineNotice } from "@/components/OfflineNotice";
 import { SampleNoticeHost } from "@/components/SampleNotice";
 import { SiteFooter } from "@/components/SiteFooter";
 import { StampFilters } from "@/components/StampFilters";
+import { BookmarkProvider } from "@/components/useBookmarks";
+import { GuestClaim } from "@/components/GuestClaim";
+import { GuestNag } from "@/components/GuestNag";
+import { FuriganaLayer } from "@/components/FuriganaLayer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { TabBar } from "@/components/TabBar";
 import { PrefsSync } from "@/components/settings/PrefsSync";
@@ -24,16 +29,26 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   const sample = sampleContentEnabled();
   const viewer = await getViewer();
   const prefsState = await getPrefsState();
+  // Stamps held without an account live in a signed cookie (guest/ in the API); the server only needs to know it is there.
+  const jar = await cookies();
+  const hasGuestStamps = jar.has("guest") || jar.has("__Host-guest");
 
   return (
     <MenuProvider>
+      <BookmarkProvider signedIn={viewer.signedIn} ids={viewer.bookmarks}>
       <NavigationProvider signedIn={viewer.signedIn}>
       <StampFilters />
       <div className="mx-auto flex w-full max-w-5xl justify-center md:gap-6 lg:mx-0 lg:max-w-none lg:justify-start lg:gap-0">
         {/* The footer lives in the sidebar on a desktop (and is hidden on the map, whose page has no room for it). */}
         <TabBar footer={<SiteFooter locale={i18n.locale} variant="sidebar" />} />
         <div className="min-w-0 max-w-xl flex-1 md:border-x md:border-surface lg:max-w-none lg:border-x-0">
-          <SiteHeader signedIn={viewer.signedIn} name={viewer.name} sample={sample} />
+          <SiteHeader
+            signedIn={viewer.signedIn}
+            locale={i18n.locale}
+            profile={{ publicId: viewer.publicId, deletionDueAt: viewer.deletionDueAt, name: viewer.name, origin: viewer.origin, ageRange: viewer.ageRange, gender: viewer.gender }}
+            prefs={prefsState.effective}
+            sample={sample}
+          />
           <OfflineNotice />
           {sample ? <SampleNoticeHost /> : null}
           <PrefsSync signedIn={viewer.signedIn} account={prefsState.account} device={prefsState.device} />
@@ -45,8 +60,11 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           </main>
         </div>
       </div>
+      {viewer.signedIn ? (hasGuestStamps ? <GuestClaim /> : null) : <GuestNag hasStamps={hasGuestStamps} />}
+      {prefsState.effective.furigana ? <FuriganaLayer /> : null}
       <NavigationToast />
       </NavigationProvider>
+      </BookmarkProvider>
     </MenuProvider>
   );
 }

@@ -218,6 +218,13 @@
       "when": 1792765532691,
       "tag": "0030_spot_stamp_image",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1792979702322,
+      "tag": "0031_user_bookmarks",
+      "breakpoints": true
     }
   ]
 }

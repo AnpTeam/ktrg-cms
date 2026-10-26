@@ -5,7 +5,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { logOut } from "@/lib/auth-client";
-import { ChevronIcon, CloseIcon, MenuIcon, UserIcon } from "./icons";
+import { BookmarkIcon, ChevronIcon, ChevronLeftIcon, CloseIcon, GearIcon } from "./icons";
+import { QuickActions } from "./QuickActions";
+import type { Prefs } from "@/lib/prefs";
+import { ProfileCard, type ProfileCardProps } from "./ProfileCard";
 import { KatsuragiLogo } from "./KatsuragiLogo";
 import { LocaleSelect } from "./LocaleSwitcher";
 import { useMenu } from "./MenuProvider";
@@ -19,11 +22,17 @@ const SHOW_MENU_AFTER = 240;
 const wideButton =
   "tap-target flex w-full items-center justify-center rounded-xl px-5 text-lg font-bold";
 
+// The four tab pages: nothing is "behind" them, so the bar has no back button there.
+const TOP_LEVEL = /^\/(map|routes|rallies)?\/?$/;
+
+/** Where "back" goes when this visit has no earlier page of the site to return to (a link opened from outside). */
+const parentOf = (pathname: string) => (pathname.startsWith("/routes/") ? "/routes" : pathname.startsWith("/spots/") ? "/map" : "/");
+
 /**
- * The top bar: one menu button on the left, the data-notice button on the right. The menu holds
- * everything that used to crowd the bar (theme, language, sign in or the profile). On a phone it opens as a
- * panel dropping down from the top; from 768 px it is a popover beside the rail's menu button. While it is open
- * the notice button is hidden.
+ * The top bar: a back button on the left (where a thumb expects it), the logo in the middle and the data-notice
+ * button on the right. The menu is the last item of the tab bar at the bottom; it holds everything that used to
+ * crowd the bar (theme, language, sign in or the profile). On a phone it opens as a panel dropping down from the
+ * top; from 768 px it is a popover beside the rail's menu button. While it is open the notice button is hidden.
  *
  * On the home page for someone who is signed out the bar takes no room and stays out of sight at first, so the
  * banner and the title get the whole top of the screen (the register and login buttons are right there). It
@@ -33,11 +42,15 @@ const wideButton =
  */
 export function SiteHeader({
   signedIn,
-  name,
+  profile,
+  locale,
+  prefs,
   sample,
 }: {
   signedIn: boolean;
-  name: string | null;
+  profile: Omit<ProfileCardProps, "locale">;
+  locale: string;
+  prefs: Prefs;
   sample: boolean;
 }) {
   const { t } = useLingui();
@@ -45,6 +58,13 @@ export function SiteHeader({
   const pathname = usePathname() ?? "/";
   const { open, setOpen, railButton } = useMenu();
   const [leaving, setLeaving] = useState(false);
+  // Whether this visit has moved between pages yet: then "back" is the browser's own, else it goes to the page's parent.
+  const moved = useRef(false);
+  const first = useRef(pathname);
+  useEffect(() => {
+    if (pathname !== first.current) moved.current = true;
+  }, [pathname]);
+  const goBack = () => (moved.current ? router.back() : router.push(parentOf(pathname)));
   const onMap = /^\/map\/?$/.test(pathname);
   const onLanding = onMap || (!signedIn && pathname === "/");
   const [scrolled, setScrolled] = useState(false);
@@ -56,7 +76,6 @@ export function SiteHeader({
     return () => window.removeEventListener("scroll", onScroll);
   }, [onLanding, onMap]);
   const hidden = onLanding && !onMap && !scrolled && !open;
-  const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   // 768 px and up: the menu is a popover beside the rail button, and the page behind it may scroll.
@@ -95,7 +114,7 @@ export function SiteHeader({
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
       setOpen(false);
-      (wide() ? railButton.current : buttonRef.current)?.focus();
+      railButton.current?.focus();
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
@@ -125,24 +144,25 @@ export function SiteHeader({
         // The bar is as wide as the tab bar at the bottom (same side gaps), with the logo in the middle.
         className={
           onMap
-            ? "pointer-events-none absolute inset-x-3 top-3 md:hidden [&>*]:pointer-events-auto"
+            ? "pointer-events-none absolute inset-x-3 top-[calc(0.75rem+env(safe-area-inset-top))] md:hidden [&>*]:pointer-events-auto"
             : onLanding
               ? `absolute inset-x-3 top-3 transition-opacity md:hidden motion-reduce:transition-none ${hidden ? "pointer-events-none opacity-0" : ""}`
               : "relative px-3 pb-5 pt-3 md:hidden"
         }
       >
         <div className={`mx-auto grid max-w-xl grid-cols-[1fr_auto_1fr] items-center gap-2 ${onMap ? "" : "rounded-xl bg-surface p-1.5 shadow-lg"}`}>
-          <button
-            ref={buttonRef}
-            type="button"
-            onClick={() => setOpen(!open)}
-            aria-expanded={open}
-            aria-controls="site-menu"
-            aria-label={open ? t`閉じる` : t`メニュー`}
-            className={`${barButton} min-w-12 justify-center justify-self-start ${onMap ? "shadow-md" : ""}`}
-          >
-            {open ? <CloseIcon /> : <MenuIcon />}
-          </button>
+          {TOP_LEVEL.test(pathname) ? (
+            <span />
+          ) : (
+            <button
+              type="button"
+              onClick={goBack}
+              aria-label={t`もどる`}
+              className={`${barButton} min-w-12 justify-center justify-self-start`}
+            >
+              <ChevronLeftIcon />
+            </button>
+          )}
           {/* The logo is a link home. It is drawn in the page (inline SVG, not an image), so there is nothing to long-press and
               save. On the map the bar has no background, so the logo gets a halo in the page colour to stay readable. */}
           {!open ? (
@@ -161,27 +181,25 @@ export function SiteHeader({
         <div
           ref={panelRef}
           id="site-menu"
-          className={`menu-drop absolute inset-x-0 overflow-y-auto overscroll-contain border-b-2 border-brand bg-surface shadow-lg md:fixed md:right-auto md:w-[26rem] md:max-h-[calc(100dvh-1.5rem)] md:rounded-2xl md:border-2 md:shadow-xl ${onLanding ? "top-[4.75rem] max-h-[calc(100dvh-4.75rem)]" : "top-full max-h-[calc(100dvh-3.5rem)]"}`}
+          className="menu-drop fixed inset-0 overflow-y-auto overscroll-contain bg-surface pb-28 md:inset-auto md:right-auto md:w-[26rem] md:max-h-[calc(100dvh-1.5rem)] md:rounded-2xl md:border-2 md:border-brand md:pb-0 md:shadow-xl"
         >
           <div className="mx-auto flex max-w-xl flex-col gap-5 px-4 py-5">
             {/* From 768 px the bar is not drawn (the rail has the menu button), so the top row of the popover holds both. */}
-            <div className="hidden items-center justify-end gap-2 md:flex">
+            <div className="flex items-center justify-between gap-2 md:justify-end">
+              <span className="text-2xl font-bold md:hidden">{t`メニュー`}</span>
               <LocaleSelect />
               <button type="button" onClick={() => setOpen(false)} className="tap-target inline-flex items-center gap-2 rounded-lg border border-ink px-3 text-lg font-bold">
                 <CloseIcon />
                 {t`閉じる`}
               </button>
             </div>
+            <QuickActions prefs={prefs} signedIn={signedIn} />
             {signedIn ? (
               <div className="flex flex-col gap-3">
-                <Link prefetch={false}
-                  href="/rallies"
-                  className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface"
-                >
-                  <UserIcon />
-                  <span className="min-w-0 flex-1 break-words">{name ?? t`ログイン中`}</span>
-                  <span className="shrink-0 text-lg text-muted">{t`プロフィールとスタンプ`}</span>
-                </Link>
+                {/* Who is signed in, for a glance; changing it is on the profile page (the account settings item below). */}
+                <div className="-mx-4">
+                  <ProfileCard {...profile} locale={locale} readOnly />
+                </div>
                 <button
                   type="button"
                   onClick={signOut}
@@ -201,6 +219,19 @@ export function SiteHeader({
                 </Link>
               </div>
             )}
+
+            {signedIn ? (
+              <Link prefetch={false} href="/profile" className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
+                <GearIcon />
+                <span className="min-w-0 flex-1">{t`アカウント設定`}</span>
+                <ChevronIcon />
+              </Link>
+            ) : null}
+            <Link prefetch={false} href="/bookmarks" className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
+              <BookmarkIcon />
+              <span className="min-w-0 flex-1">{t`ブックマーク`}</span>
+              <ChevronIcon />
+            </Link>
 
             <div className="flex flex-col gap-2 border-t-2 border-line pt-4">
               <p className="text-lg font-bold">{t`画面の明るさ`}</p>

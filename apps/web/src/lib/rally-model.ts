@@ -45,17 +45,6 @@ export function sealName(nameJa: string): string {
 /** A rally with no places yet (a course whose spots are not published) is shown as 準備中. */
 export const isSoon = (rally: RallyItem) => rally.total === 0;
 
-/** No personal data for a signed-out visitor: no progress, no stamp state, no times. */
-export function forRallyViewer(rally: RallyItem, signedIn: boolean): RallyItem {
-  if (signedIn) return rally;
-  return {
-    ...rally,
-    stamped: null,
-    lastStampedAt: null,
-    slots: rally.slots.map((s) => ({ ...s, stamped: null })),
-  };
-}
-
 /**
  * The rally to show first: the one the visitor stamped in most recently. If they have not stamped
  * anywhere, the mound rally (the main one); with nothing at all, null. Rallies with no places yet

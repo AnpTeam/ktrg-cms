@@ -72,7 +72,6 @@ export function buildStops(
 }
 
 export interface RouteViewProps {
-  /** Already filtered for the person looking (see forViewer). */
   route: RouteDetail;
   locale: string;
   places: MapPlace[];

@@ -18,7 +18,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  // The page may draw under the notch and the status bar; the map screen paints its own solid strip there (see MapScreen).
+  // The page may draw under the notch and the status bar; globals.css covers it in the installed app.
   viewportFit: "cover",
   colorScheme: "light dark",
   themeColor: [
@@ -39,8 +39,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: home, template: `%s | ${site}` },
     description,
     openGraph: { type: "website", siteName: site, title: home, description },
-    // Added to the iPhone's home screen it opens like an app, with a plain status bar.
-    appleWebApp: { capable: true, title: site, statusBarStyle: "default" },
+    // Added to the iPhone's home screen it opens like an app; the page runs under the status bar (globals.css draws a dark strip there, and the map shows through).
+    appleWebApp: { capable: true, title: site, statusBarStyle: "black-translucent" },
   };
 }
 
@@ -52,10 +52,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // Reading the cookie makes pages render per request; that is the price of no flash and no script.
   const theme = themeFromValue((await cookies()).get(themeCookie)?.value);
   // The text and component size the visitor chose, written the same way.
-  const { size } = await getPrefs();
+  const { size, contrast, calm, furigana } = await getPrefs();
 
   return (
-    <html lang={i18n.locale} data-theme={theme === "auto" ? undefined : theme} data-size={size}>
+    <html lang={i18n.locale} data-theme={theme === "auto" ? undefined : theme} data-size={size} data-contrast={contrast ? "" : undefined} data-calm={calm ? "" : undefined} data-furigana={furigana ? "" : undefined}>
       <body>
         <LinguiClientProvider initialLocale={i18n.locale} initialMessages={i18n.messages}>
           <a

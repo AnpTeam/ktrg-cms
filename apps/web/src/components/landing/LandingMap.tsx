@@ -1,15 +1,24 @@
 import Link from "next/link";
 import { Trans, useLingui } from "@lingui/react/macro";
 import { SectionBanner } from "@/components/SectionBanner";
+import { gsiTileListUrl } from "@/lib/map";
 import { rectangleRing } from "@/lib/map-screen";
 import type { RouteSummary } from "@/lib/content";
 
-// A small picture of where all the courses lie: each course's area as an outlined box with its number, drawn from
-// the same areas as the map tab. Not a map you can move (no tiles, no script), so it is light on a weak signal;
-// the button opens the real map.
+// A small picture of where all the courses lie: GSI tiles as the background (plain images, no script, so it stays light
+// on a weak signal) with each course's area as an outlined box and its number on top. The button opens the real map.
 
-const W = 640;
-const PAD = 28;
+const PAD = 40;
+const TILE = 256;
+/** About this many pixels across: it decides the zoom, and so how many tiles are fetched. */
+const TARGET_W = 720;
+
+// Web Mercator, in pixels of the whole world at zoom z (the same maths the tiles use).
+const worldX = (lng: number, z: number) => ((lng + 180) / 360) * TILE * 2 ** z;
+const worldY = (lat: number, z: number) => {
+  const r = (lat * Math.PI) / 180;
+  return ((1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2) * TILE * 2 ** z;
+};
 
 export function LandingMap({ routes }: { routes: RouteSummary[] }) {
   const { t } = useLingui();
@@ -21,12 +30,15 @@ export function LandingMap({ routes }: { routes: RouteSummary[] }) {
   const east = Math.max(...all.map((p) => p.lng));
   const south = Math.min(...all.map((p) => p.lat));
   const north = Math.max(...all.map((p) => p.lat));
-  // East-west degrees are shorter than north-south ones at this latitude.
-  const k = Math.cos((((south + north) / 2) * Math.PI) / 180);
-  const scale = (W - 2 * PAD) / Math.max(1e-6, (east - west) * k);
-  const H = Math.round((north - south) * scale + 2 * PAD);
-  const x = (lng: number) => PAD + (lng - west) * k * scale;
-  const y = (lat: number) => PAD + (north - lat) * scale;
+  const z = Math.min(14, Math.max(5, Math.floor(Math.log2(TARGET_W / Math.max(1e-6, worldX(east, 0) - worldX(west, 0))))));
+  const x = (lng: number) => worldX(lng, z);
+  const y = (lat: number) => worldY(lat, z);
+  const [left, top] = [x(west) - PAD, y(north) - PAD];
+  const [W, H] = [Math.round(x(east) - x(west) + 2 * PAD), Math.round(y(south) - y(north) + 2 * PAD)];
+  const tiles: { key: string; href: string; x: number; y: number }[] = [];
+  for (let tx = Math.floor(left / TILE); tx <= Math.floor((left + W) / TILE); tx++)
+    for (let ty = Math.floor(top / TILE); ty <= Math.floor((top + H) / TILE); ty++)
+      tiles.push({ key: `${tx}/${ty}`, href: `https://cyberjapandata.gsi.go.jp/xyz/pale/${z}/${tx}/${ty}.png`, x: tx * TILE, y: ty * TILE });
   const count = boxes.length;
 
   return (
@@ -37,12 +49,15 @@ export function LandingMap({ routes }: { routes: RouteSummary[] }) {
         </SectionBanner>
       </div>
       <div className="mx-4 rounded-3xl bg-surface p-5">
-        <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={t`全${count}区間のある場所を示した図`} className="h-auto w-full rounded-2xl bg-paper">
+        <svg viewBox={`${left} ${top} ${W} ${H}`} role="img" aria-label={t`全${count}区間のある場所を示した図`} className="h-auto w-full rounded-2xl bg-paper">
+          {tiles.map((tile) => (
+            <image key={tile.key} href={tile.href} x={tile.x} y={tile.y} width={TILE} height={TILE} />
+          ))}
           {boxes.map((b) => (
             <polygon
               key={b.order}
               points={b.ring.map((p) => `${x(p.lng).toFixed(1)},${y(p.lat).toFixed(1)}`).join(" ")}
-              className="fill-brand/20 stroke-accent"
+              className="fill-brand/25 stroke-accent"
               strokeWidth="1.6"
             />
           ))}
@@ -59,6 +74,11 @@ export function LandingMap({ routes }: { routes: RouteSummary[] }) {
             );
           })}
         </svg>
+        <p className="mt-1 text-sm text-muted">
+          <a href={gsiTileListUrl} target="_blank" rel="noopener noreferrer" className="underline">
+            <Trans>国土地理院（地理院タイル）</Trans>
+          </a>
+        </p>
         <Link href="/map" className="tap-target mt-4 flex min-h-14 items-center justify-center rounded-xl border border-ink bg-surface px-6 text-xl font-bold text-ink hover:bg-paper">
           <Trans>マップをひらく</Trans>
         </Link>

@@ -903,3 +903,81 @@ body.map-sheet-full .site-header {
     padding-inline: 0;
   }
 }
+
+/* On paper the map keeps to the page width, and its buttons (useless there) are left off. */
+@media print {
+  .trail-map .maplibregl-canvas {
+    max-width: 100%;
+    height: auto !important;
+  }
+  .trail-map .maplibregl-ctrl-top-left, .trail-map .maplibregl-ctrl-top-right {
+    display: none;
+  }
+}
+
+/* On a phone the top bar has the back button, so the page's own back link (and a wrapper holding only it) is left out;
+   from 768 px the bar is not drawn and the link is the way back. */
+@media (max-width: 767px) {
+  .back-link,
+  :has(> .back-link:only-child) {
+    display: none;
+  }
+}
+
+/* The installed iPhone app runs under the status bar (black-translucent, see layout.tsx). Its clock and battery are always
+   white, so every page starts below a dark strip; the map is the exception: it runs right up under the bar, with only a
+   soft shade behind the clock. Elsewhere (a browser tab) the safe-area inset is 0 and none of this applies. */
+@media (display-mode: standalone) {
+  body {
+    padding-top: env(safe-area-inset-top);
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: env(safe-area-inset-top);
+    background: #000;
+    z-index: 60;
+    pointer-events: none;
+  }
+  body.map-screen-active {
+    padding-top: 0;
+  }
+  body.map-screen-active::before {
+    height: calc(env(safe-area-inset-top) + 0.5rem);
+    background: linear-gradient(to bottom, rgb(0 0 0 / 0.55), transparent);
+  }
+}
+
+/* The visitor's own accessibility choices (settings, the menu's quick buttons): the same as the device's "more contrast" and
+   "reduce motion" settings, for people whose device does not say so. Stronger contrast also underlines every link. */
+html[data-contrast],
+html[data-contrast][data-theme] {
+  --color-line: var(--color-ink);
+  --color-muted: var(--color-ink);
+}
+html[data-contrast] a {
+  text-decoration: underline;
+}
+html[data-contrast] :focus-visible {
+  outline-width: 5px;
+}
+html[data-calm] *,
+html[data-calm] ::before,
+html[data-calm] ::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* Furigana drawn by components/FuriganaLayer.tsx: the reading sits over the kanji, and the line grows to hold it. */
+[data-furi] ruby {
+  ruby-position: over;
+}
+[data-furi] rt {
+  font-size: 0.5em;
+  font-weight: 500;
+}
+html[data-furigana] {
+  line-height: 1.9;
+}

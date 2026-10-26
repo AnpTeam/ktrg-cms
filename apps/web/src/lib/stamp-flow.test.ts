@@ -42,6 +42,7 @@ describe("parseStampResponse", () => {
   });
 
   test("each refusal has its own failure", () => {
+    expect(parseStampResponse(409, { ok: false, error: "guest_full" })).toEqual({ ok: false, failure: "guest_full" });
     expect(parseStampResponse(409, { ok: false, error: "too_far" })).toEqual({ ok: false, failure: "too_far" });
     expect(parseStampResponse(409, { ok: false, error: "too_far", distanceM: 240 })).toEqual({ ok: false, failure: "too_far", distanceM: 240 });
     expect(parseStampResponse(422, { ok: false, error: "gps_accuracy_poor" })).toEqual({ ok: false, failure: "low_accuracy" });

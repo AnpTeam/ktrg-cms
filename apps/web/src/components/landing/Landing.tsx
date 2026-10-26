@@ -191,17 +191,6 @@ export function Landing({
       )}
 
       <footer className="flex flex-col gap-4 border-t-2 border-line px-4 pb-6 pt-6 lg:col-span-2">
-        <p className="text-lg leading-7">
-          <Trans>歴史や観光の情報は、日本遺産「葛城修験」の公式サイトでも見られます。</Trans>
-        </p>
-        <a
-          href="https://katsuragisyugen-nihonisan.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="tap-target inline-flex items-center text-lg font-bold underline"
-        >
-          <Trans>公式サイトをひらく</Trans>
-        </a>
         <LocaleSwitcher />
       </footer>
     </div>

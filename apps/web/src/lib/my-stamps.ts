@@ -1,4 +1,4 @@
-// The visitor's own stamps, read on the server for the screens that show progress (spot page, course page, course list).
+// The visitor's own stamps (an account's or a guest's), read on the server for the screens that show progress (spot page, course page, course list).
 // Like the viewer (viewer.ts), the session is the API's HttpOnly cookie, forwarded to GET /stamps; the browser's
 // JavaScript never sees it. Server code only: it is on the client-boundary list.
 
@@ -28,8 +28,11 @@ export const getMyStamps = cache(async (): Promise<MyStamps> => {
   const { headers } = await import("next/headers");
   const cookie = (await headers()).get("cookie");
   if (!cookie) return noStamps;
+  // A visitor with no account holds theirs in a signed cookie the API reads (guest/guest-routes.ts); a signed-in one, in the account.
+  const path = /(^|;\s*)(__Host-)?session=/.test(cookie) ? "/stamps" : /(^|;\s*)(__Host-)?guest=/.test(cookie) ? "/guest/stamps" : null;
+  if (!path) return noStamps;
   try {
-    const res = await fetch(`${process.env.API_ORIGIN ?? "http://localhost:3001"}/api/v1/stamps`, {
+    const res = await fetch(`${process.env.API_ORIGIN ?? "http://localhost:3001"}/api/v1${path}`, {
       headers: { cookie },
       cache: "no-store",
       signal: AbortSignal.timeout(2500),

@@ -47,6 +47,7 @@ const SERVER_CODES: Record<ErrorCode, true> = {
   spot_closed: true,
   too_far: true,
   gps_accuracy_poor: true,
+  guest_full: true,
   stamp_revoked: true,
   rally_empty: true,
   invalid_rally_members: true,

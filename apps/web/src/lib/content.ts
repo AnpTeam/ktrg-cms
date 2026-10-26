@@ -8,7 +8,6 @@ import type { RallyItem } from "./rally-model";
 import { samplePlaces } from "./sample-places";
 import { sampleRoutes, sampleSpots } from "./sample-content";
 import type { Sketch } from "./sketch";
-import type { Viewer } from "./viewer";
 import type { WalkStyle } from "./walk-style";
 import type { TechnicalLevel } from "./grading";
 import type { AccessPoint } from "./access-points";
@@ -192,19 +191,6 @@ export function canGroupByPrefecture(routes: { prefecture: Prefecture | null }[]
   return routes.length > 0 && routes.every((r) => r.prefecture !== null);
 }
 
-/** Remove everything personal for a signed-out visitor: progress counts and stamp state. */
-export function forViewer<T extends { stampedCount?: number | null; stamped?: boolean | null; spots?: SpotListItem[] }>(
-  item: T,
-  viewer: Viewer,
-): T {
-  if (viewer.signedIn) return item;
-  const out = { ...item };
-  if ("stampedCount" in out) out.stampedCount = null;
-  if ("stamped" in out) out.stamped = null;
-  if (out.spots) out.spots = out.spots.map((s) => ({ ...s, stamped: null }));
-  return out;
-}
-
 /**
  * Sample content is for design review only. It is on by default in development and in Vercel preview
  * deployments (so all 19 courses can be looked at without touching any setting), and off in production
@@ -307,7 +293,7 @@ export function toMapPlace(locale: string, p: PlaceItem): MapPlace {
 
 /**
  * Every rally the CMS publishes (GET /rallies), with the visitor's own stamps counted in; none when the API is not
- * reachable. The personal parts are removed for a signed-out visitor by forRallyViewer.
+ * reachable.
  */
 export async function listRallies(): Promise<RallyItem[]> {
   const real = await fetchPublicRallies();

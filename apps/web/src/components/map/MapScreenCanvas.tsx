@@ -569,7 +569,7 @@ export function MapScreenCanvas({
   };
 
   if (failed) {
-    return <p className="absolute inset-x-4 top-20 z-10 rounded-2xl bg-surface p-4 text-lg">{t`この端末では地図を表示できません。下の一覧から区間を選べます。`}</p>;
+    return <p className="absolute inset-x-4 top-[calc(5rem+env(safe-area-inset-top))] z-10 rounded-2xl bg-surface p-4 text-lg">{t`この端末では地図を表示できません。下の一覧から区間を選べます。`}</p>;
   }
 
   return (
@@ -586,7 +586,7 @@ export function MapScreenCanvas({
         style={{ marginLeft: coveredLeftPx }}
         // A row that scrolls sideways under the finger: no scrollbar, the page's edges fade where there is more, and a swipe on it
         // moves the row, not the map.
-        className="absolute inset-x-0 top-[4.5rem] z-[4] flex touch-pan-x snap-x scroll-px-3 gap-2 overflow-x-auto overscroll-x-contain px-3 pb-1 [scrollbar-width:none] md:top-16 [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,#000_calc(100%-2.5rem),transparent)]"
+        className="absolute inset-x-0 top-[calc(4.5rem+env(safe-area-inset-top))] z-[4] flex touch-pan-x snap-x scroll-px-3 gap-2 overflow-x-auto overscroll-x-contain px-3 pb-1 [scrollbar-width:none] md:top-[calc(4rem+env(safe-area-inset-top))] [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,#000_calc(100%-2.5rem),transparent)]"
       >
         {offeredLayers(routes).map((layer) => {
           const on = layers.has(layer);
@@ -620,7 +620,7 @@ export function MapScreenCanvas({
       ) : null}
 
       {draftShown ? (
-        <p style={{ marginLeft: coveredLeftPx }} className="absolute left-3 top-[8.5rem] z-[4] md:top-[8.25rem] flex max-w-[calc(100%-6rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">
+        <p style={{ marginLeft: coveredLeftPx }} className="absolute left-3 top-[calc(8.5rem+env(safe-area-inset-top))] z-[4] md:top-[calc(8.25rem+env(safe-area-inset-top))] flex max-w-[calc(100%-6rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">
           <span className="text-caution">
             <WarningIcon />
           </span>
@@ -628,7 +628,7 @@ export function MapScreenCanvas({
         </p>
       ) : null}
 
-      <div className="absolute right-3 top-[8.5rem] z-[4] md:top-[8.25rem] flex flex-col gap-2">
+      <div className="absolute right-3 top-[calc(8.5rem+env(safe-area-inset-top))] z-[4] md:top-[calc(8.25rem+env(safe-area-inset-top))] flex flex-col gap-2">
         {(["＋", "－"] as const).map((sign) => (
           <button
             key={sign}

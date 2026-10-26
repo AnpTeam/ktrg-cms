@@ -16,12 +16,18 @@ export interface Prefs {
   placesOnMap: boolean;
   /** The first-time set-up was done or skipped, so it is not offered again. */
   setupDone: boolean;
+  /** Furigana over every kanji on the page (read by the server that adds them, see components/FuriganaLayer.tsx). */
+  furigana: boolean;
+  /** Stronger contrast: black on white and thicker lines. */
+  contrast: boolean;
+  /** Calm: no animation or movement. */
+  calm: boolean;
   /** When this choice was made (milliseconds since 1970, by the phone's clock); the newer copy wins. 0 = unknown. */
   updatedAt: number;
 }
 
 /** The plain map and standard size: the simplest choices. */
-export const defaultPrefs: Prefs = { size: "standard", mergeStops: false, placesOnMap: false, setupDone: false, updatedAt: 0 };
+export const defaultPrefs: Prefs = { size: "standard", mergeStops: false, placesOnMap: false, setupDone: false, furigana: false, contrast: false, calm: false, updatedAt: 0 };
 
 export const prefsCookie = "prefs";
 
@@ -38,6 +44,9 @@ export function sanitizePrefs(value: unknown): Prefs {
     mergeStops: typeof v.mergeStops === "boolean" ? v.mergeStops : defaultPrefs.mergeStops,
     placesOnMap: typeof v.placesOnMap === "boolean" ? v.placesOnMap : defaultPrefs.placesOnMap,
     setupDone: typeof v.setupDone === "boolean" ? v.setupDone : defaultPrefs.setupDone,
+    furigana: v.furigana === true,
+    contrast: v.contrast === true,
+    calm: v.calm === true,
     updatedAt: Number.isSafeInteger(v.updatedAt) && (v.updatedAt as number) >= 0 ? (v.updatedAt as number) : 0,
   };
 }

@@ -5,12 +5,9 @@ import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
 import { TrailNotices } from "@/components/landing/TrailNotices";
 import { listNotices } from "@/lib/notices";
-import { OfflineSave } from "@/components/OfflineSave";
-import { gsiTileUrl } from "@/lib/map";
 import { PrintShare } from "@/components/PrintShare";
 import { RouteView } from "@/components/RouteView";
-import { forViewer, getRoute, listPlacesForRoute, pickText, toMapPlace } from "@/lib/content";
-import { getViewer } from "@/lib/viewer";
+import { getRoute, listPlacesForRoute, pickText, toMapPlace } from "@/lib/content";
 import { initLingui } from "@/i18n/server";
 import { getMapSettings } from "@/lib/site-settings";
 import { getPrefs } from "@/lib/server-prefs";
@@ -24,12 +21,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 // Route page (WBS 3.2.4, 3.2.8). The body is RouteView, shared with the admin's live preview.
-export default async function RouteDetailPage({ params, searchParams }: Props) {
+export default async function RouteDetailPage({ params }: Props) {
   const i18n = await initLingui();
-  const viewer = await getViewer(searchParams);
   const found = await getRoute((await params).id);
   if (!found) notFound();
-  const route = forViewer(found, viewer);
+  const route = found;
   const prefs = await getPrefs();
   const settings = await getMapSettings();
   const places = (await listPlacesForRoute(route.order)).map((p) => toMapPlace(i18n.locale, p));
@@ -43,8 +39,9 @@ export default async function RouteDetailPage({ params, searchParams }: Props) {
           <Trans>ルート一覧</Trans>
         </BackLink>
       </div>
-      <PrintShare title={route.nameJa} />
-      <OfflineSave area={route.area} tileTemplate={gsiTileUrl(settings.base === "photo" ? "seamlessphoto" : settings.base)} />
+      <PrintShare route={{ id: route.id, nameJa: route.nameJa }} />
+      {/* The offline save (components/OfflineSave.tsx, public/sw.js) is built but left off until it is ready:
+          <OfflineSave area={route.area} tileTemplate={gsiTileUrl(settings.base === "photo" ? "seamlessphoto" : settings.base)} /> */}
       <TrailNotices notices={notices} locale={i18n.locale} blogUrl={null} />
       {notices.length > 0 ? (
         <a href={`/notices/feed.xml?route=${encodeURIComponent(route.id)}${i18n.locale === "en" ? "&lang=en" : ""}`} className="-mt-3 px-4 text-sm text-accent underline">

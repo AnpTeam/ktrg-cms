@@ -308,6 +308,11 @@ describe("user B cannot touch user A", () => {
     "GET /api/v1/spots/:id",
     // Published stamp rallies (see rallies/rally-admin-routes.test.ts).
     "GET /api/v1/rallies",
+    // Readings for the page's Japanese text, for the furigana choice (see furigana/furigana.test.ts).
+    "POST /api/v1/furigana",
+    // Stamps kept in a signed cookie for a visitor with no account (see guest/guest-routes.test.ts); claiming them is logged-in.
+    "POST /api/v1/guest/stamps",
+    "GET /api/v1/guest/stamps",
     // Published trail notices (see notices/notice-routes.test.ts).
     "GET /api/v1/notices",
     // Published home page banners (see banners/banner-list.test.ts).
@@ -329,6 +334,7 @@ describe("user B cannot touch user A", () => {
   /** A well-formed body for each logged-in route that needs one (validation runs before the guard). */
   const BODIES: Record<string, () => unknown> = {
     "PATCH /api/v1/me": () => ({ locale: "en" }),
+    "POST /api/v1/guest/claim": () => ({ mode: "merge" }),
     "POST /api/v1/admin/routes": () => ({ nameJa: "x" }),
     "PUT /api/v1/admin/routes/order": () => ({ ids: [] }),
     "POST /api/v1/admin/route-snap": () => ({ points: [{ lat: 34, lng: 135 }, { lat: 34.1, lng: 135.1 }] }),

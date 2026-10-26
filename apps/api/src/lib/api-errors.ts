@@ -52,6 +52,7 @@ export const ERROR_CODES = {
   too_far: "409: the phone is not close enough to the place",
   stamp_revoked: "409: an admin revoked the stamp this account held at the place, so a new one cannot be collected",
   gps_accuracy_poor: "422: the GPS reading is too rough (worse than 100 m); move to open sky and try again",
+  guest_full: "409: a visitor without an account holds the most stamps that can be kept this way; sign up to keep collecting",
 
   // --- Admin rallies ---------------------------------------------------------------------
   rally_empty: "409: a rally with nothing in it cannot be published, and a published rally cannot be emptied",

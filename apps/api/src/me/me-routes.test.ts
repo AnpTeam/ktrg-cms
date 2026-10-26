@@ -26,6 +26,7 @@ type MeBody = {
     ageRange: string | null;
     gender: string | null;
     preferences: { size: string; mergeStops: boolean; placesOnMap: boolean; setupDone: boolean; updatedAt: number } | null;
+    bookmarks: string[];
     deletionRequestedAt: string | null;
     deletionDueAt: string | null;
     publicId: string;
@@ -201,6 +202,21 @@ describe("PATCH /me: age range and gender", () => {
     expect((await t.call("PATCH", "", cookie, { ageRange: "teens" })).status).toBe(422);
     expect((await t.call("PATCH", "", cookie, { gender: "robot" })).status).toBe(422);
     expect(((await (await t.call("GET", "", cookie)).json()) as MeBody).me).toMatchObject({ ageRange: null, gender: null });
+  });
+});
+
+describe("bookmarks", () => {
+  const A = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+  const B = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+
+  test("none until set; saved as a whole, without repeats; the caller's own", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    expect(((await (await t.call("GET", "", cookie)).json()) as MeBody).me.bookmarks).toEqual([]);
+    const saved = await t.call("PATCH", "", cookie, { bookmarks: [A, B, A] });
+    expect(((await saved.json()) as MeBody).me.bookmarks).toEqual([A, B]);
+    expect(((await (await t.call("GET", "", await t.login(bob))).json()) as MeBody).me.bookmarks).toEqual([]);
+    expect((await t.call("PATCH", "", cookie, { bookmarks: ["not-an-id"] })).status).toBe(422);
   });
 });
 

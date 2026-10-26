@@ -81,6 +81,12 @@ export default async function SitemapPage() {
       </Group>
 
       <Group title={<Trans>アカウント</Trans>}>
+        <LinkRow href="/profile">
+          <Trans>プロフィール</Trans>
+        </LinkRow>
+        <LinkRow href="/bookmarks">
+          <Trans>ブックマーク</Trans>
+        </LinkRow>
         <LinkRow href="/login">
           <Trans>ログイン</Trans>
         </LinkRow>

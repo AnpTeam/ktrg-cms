@@ -181,15 +181,9 @@ export function SpotSheet({
       </Notice>
       <LastUpdated iso={spot.updatedAt} locale={locale} className="px-4" />
 
-      {!stampable ? null : spot.stamped === null ? (
-        <div className="sticky bottom-24 z-10 flex flex-col gap-2 px-4 md:bottom-6">
-          <Link href={loginHref} className="tap-target flex min-h-14 items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper shadow-lg">
-            <Trans>ログインしてスタンプを押す</Trans>
-          </Link>
-        </div>
-      ) : (
-        <StampHere spotId={spot.id} status={spot.status} alreadyStamped={spot.stamped} stampImage={spot.stampImageUrl} loginHref={loginHref} mock={stampMock} />
-      )}
+      {stampable ? (
+        <StampHere spotId={spot.id} status={spot.status} alreadyStamped={spot.stamped === true} stampImage={spot.stampImageUrl} loginHref={loginHref} mock={stampMock} />
+      ) : null}
     </article>
   );
 }

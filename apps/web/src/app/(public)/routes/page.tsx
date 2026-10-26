@@ -7,7 +7,7 @@ import { Notice } from "@/components/Notice";
 import { PrefectureFilter } from "@/components/PrefectureFilter";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { TrailRibbon } from "@/components/TrailRibbon";
-import { filterByPrefecture, forViewer, isPrefecture, listRoutes, prefectures } from "@/lib/content";
+import { filterByPrefecture, isPrefecture, listRoutes, prefectures } from "@/lib/content";
 import { completedCount, nodeState } from "@/lib/ribbon";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
@@ -30,7 +30,7 @@ export default async function RoutesPage({
   const { pref } = await searchParams;
   const active = isPrefecture(pref) ? pref : undefined;
 
-  const all = (await listRoutes()).map((r) => forViewer(r, viewer));
+  const all = await listRoutes();
   // Routes that are ready come first, the coming-soon ones after; each keeps its own number (route.order), and the sort is stable.
   const routes = [...filterByPrefecture(all, active)].sort((a, b) => Number(a.status === "soon") - Number(b.status === "soon"));
   const available = prefectures.filter((p) => all.some((r) => r.prefecture === p));
@@ -38,7 +38,7 @@ export default async function RoutesPage({
 
   const done = completedCount(
     all.map((r) => nodeState({ status: r.status, stamped: r.stampedCount, total: r.spotCount })),
-    viewer.signedIn,
+    true,
   );
 
   return (

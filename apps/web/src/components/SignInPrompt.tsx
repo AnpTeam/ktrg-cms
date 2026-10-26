@@ -4,8 +4,8 @@ import { initLingui } from "@/i18n/server";
 import { StampFace } from "./StampFace";
 
 /**
- * Shown to a signed-out visitor where progress would be. It explains what an account is
- * for, reassures that browsing needs none, and offers the two ways in.
+ * Shown to a visitor with no account, where progress would be. Stamps work without one (they are kept in this browser), so
+ * it explains what an account adds (they are not lost, and there is a certificate) and offers the two ways in.
  */
 export async function SignInPrompt() {
   await initLingui();
@@ -15,10 +15,10 @@ export async function SignInPrompt() {
         <StampFace state="empty" className="h-12 w-12 shrink-0" />
         <div className="text-lg">
           <p className="font-bold">
-            <Trans>ログインすると、スタンプを記録できます。</Trans>
+            <Trans>登録しなくても、スタンプは押せます。</Trans>
           </p>
           <p className="mt-1 text-muted">
-            <Trans>ルートや場所は、ログインしなくても見られます。</Trans>
+            <Trans>ただし、この端末にしか残りません。登録すると、なくならず、コンプリート証ももらえます。</Trans>
           </p>
         </div>
       </div>
