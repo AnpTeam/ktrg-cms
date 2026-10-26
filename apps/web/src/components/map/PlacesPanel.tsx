@@ -72,17 +72,20 @@ export function PlaceChips({
   counts,
   active,
   onToggle,
+  label,
 }: {
   counts: Partial<Record<PlaceGroup, number>>;
   active: ReadonlySet<PlaceGroup>;
   onToggle: (group: PlaceGroup) => void;
+  /** What the group of buttons is for, read out by screen readers (by default: showing the places on the map). */
+  label?: string;
 }) {
   const { t } = useLingui();
   const names = useGroupNames();
   const offered = placeGroups.filter((g) => (counts[g] ?? 0) > 0);
   if (offered.length === 0) return null;
   return (
-    <div role="group" aria-label={t`まわりの場所を地図に出す`} className="grid grid-cols-2 gap-2">
+    <div role="group" aria-label={label ?? t`まわりの場所を地図に出す`} className="grid grid-cols-2 gap-2">
       {offered.map((group) => {
         const on = active.has(group);
         return (

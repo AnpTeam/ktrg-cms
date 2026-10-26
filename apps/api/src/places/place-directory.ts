@@ -30,12 +30,13 @@ export const PLACE_FIELDS = {
   hoursEn: maybe(300),
   closedDaysJa: maybe(200),
   closedDaysEn: maybe(200),
-  translations: t.Optional(translationsSchema({ name: 200, description: 2000, hours: 300, closedDays: 200 })),
+  translations: t.Optional(translationsSchema({ name: 200, description: 2000, hours: 300, closedDays: 200, address: 300 })),
   lat: t.Union([t.Number({ minimum: -90, maximum: 90 }), t.Null()]),
   lng: t.Union([t.Number({ minimum: -180, maximum: 180 }), t.Null()]),
   positionVerified: t.Boolean(),
   positionSource: maybe(200),
-  address: maybe(300),
+  addressJa: maybe(300),
+  addressEn: maybe(300),
   phone: maybe(40),
   website: maybe(500),
   photoUrl: maybe(500),
@@ -67,7 +68,7 @@ const isWebLink = (v: string) => {
   }
 };
 
-const NULLABLE_TEXT = ["nameEn", "descriptionJa", "descriptionEn", "hoursJa", "hoursEn", "closedDaysJa", "closedDaysEn", "positionSource", "address", "phone", "website", "photoUrl", "photoCredit", "listingNote"] as const;
+const NULLABLE_TEXT = ["nameEn", "descriptionJa", "descriptionEn", "hoursJa", "hoursEn", "closedDaysJa", "closedDaysEn", "positionSource", "addressJa", "addressEn", "phone", "website", "photoUrl", "photoCredit", "listingNote"] as const;
 
 /**
  * Trims every text and clears a blank one; a link must be https; a position needs both numbers; "checked" needs a
@@ -113,7 +114,7 @@ export const SAME_PLACE_METRES = 150;
 
 /** How much of a place is filled in: the one to keep among twins is the most complete. */
 const completeness = (p: PlaceRow) =>
-  [p.published, p.positionVerified, p.listingConfirmed, p.photoUrl, p.descriptionJa, p.hoursJa, p.address, p.phone, p.website, p.lat !== null].filter(Boolean).length;
+  [p.published, p.positionVerified, p.listingConfirmed, p.photoUrl, p.descriptionJa, p.hoursJa, p.addressJa, p.phone, p.website, p.lat !== null].filter(Boolean).length;
 
 /**
  * Places that look like one place entered twice: the same name (as the names are compared above) and, where both have a
@@ -210,7 +211,8 @@ export function createPlaceService(deps: { store: PlaceStore; photoHosts?: reado
           lng: p.lng,
           positionVerified: false,
           positionSource: p.positionSource,
-          address: p.address,
+          addressJa: p.addressJa,
+          addressEn: p.addressEn,
           phone: p.phone,
           website: p.website,
           photoUrl: null,
@@ -306,7 +308,7 @@ export const placeDirectoryList: ListDef<"directory", typeof PLACE_FIELDS, Place
         inList: {},
       },
       { name: "lastVerified", kind: "date", optional: true, label: { ja: "最後に確認した日", en: "Last checked on" }, inList: { text: { ja: "確認 {value}", en: "Checked {value}" } } },
-      { name: "address", kind: "text", label: { ja: "住所", en: "Address" } },
+      { name: "address", kind: "bilingual", label: { ja: "住所", en: "Address" } },
       { name: "phone", kind: "text", label: { ja: "電話番号", en: "Phone" } },
       { name: "website", kind: "url", label: { ja: "Webサイト", en: "Website" } },
       { name: "photoUrl", kind: "image", label: { ja: "写真", en: "Photo" } },
@@ -368,7 +370,8 @@ export function publicPlaceRoutes(getPlaces: () => PlaceService, log: (message: 
         closedDaysEn: p.closedDaysEn,
         lat: p.lat!,
         lng: p.lng!,
-        address: p.address,
+        addressJa: p.addressJa,
+        addressEn: p.addressEn,
         phone: p.phone,
         website: p.website,
         photoUrl: p.photoUrl,

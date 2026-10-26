@@ -32,7 +32,7 @@ export const RALLY_TEXT = ["name"] as const;
 export const NOTICE_TEXT = ["title", "body", "sourceName"] as const;
 export const BANNER_TEXT = ["alt"] as const;
 export const POST_TEXT = ["title", "body", "authorName"] as const;
-export const PLACE_TEXT = ["name", "description", "hours", "closedDays"] as const;
+export const PLACE_TEXT = ["name", "description", "hours", "closedDays", "address"] as const;
 
 /** Every field null, no other languages: an owner with no translation rows. */
 export function emptyTexts<F extends string>(fields: readonly F[]): Flat<F> {

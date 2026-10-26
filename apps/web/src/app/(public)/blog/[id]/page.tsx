@@ -161,7 +161,7 @@ export default async function BlogPostPage({ params }: Props) {
                     place={{
                       category: place.category,
                       name: placeName?.text ?? place.nameJa,
-                      address: place.address ?? null,
+                      address: pickText(locale, place.addressJa ?? "", place.addressEn ?? null)?.text || null,
                       phone: place.phone ?? null,
                       hours: hours?.text ?? null,
                       closedDays: closed?.text ?? null,

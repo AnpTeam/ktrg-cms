@@ -106,7 +106,8 @@ export interface PublicPlace {
   closedDaysEn: string | null;
   lat: number;
   lng: number;
-  address: string | null;
+  addressJa: string | null;
+  addressEn: string | null;
   phone: string | null;
   website: string | null;
   photoUrl: string | null;

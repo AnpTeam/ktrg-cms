@@ -26,7 +26,7 @@ const rowOf = (it: Record<string, unknown>): Row => ({
   nameEn: typeof it.nameEn === "string" ? it.nameEn : null,
   lat: typeof it.lat === "number" ? it.lat : Number.NaN,
   lng: typeof it.lng === "number" ? it.lng : Number.NaN,
-  address: typeof it.address === "string" ? it.address : null,
+  address: typeof it.addressJa === "string" ? it.addressJa : null,
   updatedAt: String(it.updatedAt ?? ""),
   routeId: typeof it.routeId === "string" ? it.routeId : null,
   published: it.published === true,

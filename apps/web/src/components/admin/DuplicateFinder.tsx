@@ -79,7 +79,7 @@ export function DuplicateFinder({ meta, locale, choices, onChanged }: { meta: Li
                         </Link>
                       ) : null}
                       <p className="text-base text-muted">{itemFacts(meta, p, locale, routeName).join(" ・ ")}</p>
-                      {typeof p.address === "string" && p.address ? <p className="text-base text-muted">{p.address}</p> : null}
+                      {typeof p.addressJa === "string" && p.addressJa ? <p className="text-base text-muted">{p.addressJa}</p> : null}
                     </div>
                     <button type="button" disabled={busy} onClick={() => void remove([p.id])} className="tap-target shrink-0 rounded-xl border-2 border-line px-3 text-base font-bold text-danger disabled:opacity-50">
                       {t`削除`}
