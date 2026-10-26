@@ -78,4 +78,22 @@ describe("places directory", () => {
     expect(await svc.create(actor, place({ routeId: "33333333-3333-4333-8333-333333333333" }))).toEqual({ ok: false, reason: "validation_failed" });
     expect((await svc.create(actor, place({ routeId: known }))).ok).toBe(true);
   });
+
+  test("imports a field sheet as drafts, counts first, and skips what is already there", async () => {
+    const audit = createMemoryAuditWriter();
+    const svc = createPlaceService({ store: createMemoryPlaceStore(audit.writer).store, routeIds: async () => ["22222222-2222-4222-8222-222222222222"] });
+    const csv = [
+      "sample,place_id,category,name_ja,name_en,course_no,index,near_spot_ja,prefecture,municipality,address_ja,lat,lng,coord_source,status,last_verified,listing_permission",
+      "見本,場所ID,種類,名前,名前,コース,#,近い,府県,市,住所,緯度,経度,出どころ,状態,日,了承",
+      ",1,トイレ,公衆トイレ,Toilets,1,4,桟橋,和歌山県,和歌山市,住所,34.28,135.00,地図アプリで確認,営業中・利用可,2026/10/16,不要（公共施設）",
+      ",2,飲食店,喫茶,Cafe,9,S,駅,和歌山県,和歌山市,住所,34.27,135.08,地図アプリで確認,営業中・利用可,2026/10/17,未確認",
+    ].join("\n");
+    expect(await svc.importSheet(actor, csv, false)).toMatchObject({ read: 2, added: 1, skipped: 0 });
+    expect((await svc.list()).items).toHaveLength(0);
+    const done = await svc.importSheet(actor, csv, true);
+    expect(done).toMatchObject({ added: 1, failed: [{ name: "喫茶", reason: "course 9" }] });
+    const [row] = (await svc.list()).items;
+    expect(row).toMatchObject({ category: "toilet", positionVerified: false, published: false, listingConfirmed: true, lastVerified: "2026-10-16" });
+    expect(await svc.importSheet(actor, csv, true)).toMatchObject({ added: 0, skipped: 1 });
+  });
 });

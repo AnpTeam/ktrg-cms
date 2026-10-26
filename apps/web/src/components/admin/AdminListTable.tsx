@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
+import { PlaceImport } from "./PlaceImport";
 import { inputClass } from "./fields";
 import { itemFacts, itemHref, itemName, pick, type ListMeta } from "@/lib/admin/lists/config";
 import { listRequest, type ListPage } from "@/lib/admin/lists/list-client";
@@ -65,6 +66,7 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
           {pick(config.newLabel, locale)}
         </Link>
       ) : null}
+      {config.key === "directory" ? <PlaceImport onDone={() => void search(q, picked)} /> : null}
       <form
         role="search"
         onSubmit={(e) => {

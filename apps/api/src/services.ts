@@ -112,7 +112,7 @@ export function createServices(deps: ServiceDeps): Services {
     // The other generated admin lists: home banners, the audit log, every place, accounts and their roles.
     banners: createBannerService({ store: stores.banners, photoHosts: deps.photoHosts }),
     furigana: createFuriganaService({ store: stores.furigana }),
-    places: createPlaceService({ store: stores.places, photoHosts: deps.photoHosts, routeExists: async (id) => (await stores.content.getRoute(id)) !== null }),
+    places: createPlaceService({ store: stores.places, photoHosts: deps.photoHosts, routeExists: async (id) => (await stores.content.getRoute(id)) !== null, routeIds: async () => (await stores.content.listRoutes()).map((r) => r.id) }),
     siteSettings: createSiteSettingsService({ store: stores.siteSettings }),
     auditList: createListReader({ store: stores.auditList }),
     placeList: createListReader({ store: stores.placeList }),

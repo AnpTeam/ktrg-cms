@@ -5,6 +5,8 @@ import { createListService } from "../admin-lists/list-service";
 import { bad, ok, type Label, type ListRow, type ListRules, type ListStore } from "../admin-lists/list-types";
 import type { AuditWriter } from "../audit/audit-log";
 import type { KitServices } from "../auth/route-kit";
+import { parseFacilities, planPlaces, type ExistingPlace } from "../import/field-sheets";
+import { routeKit, type RouteOptions } from "../auth/route-kit";
 import { cleanTranslations } from "../db/translations";
 import { placeCategories } from "../db/schema";
 import { isPhotoUrl } from "../lib/https-url";
@@ -99,9 +101,78 @@ export const placeRules = (photoHosts: readonly string[] = [], routeExists?: (id
 
 export type PlaceService = ReturnType<typeof createPlaceService>;
 
-export function createPlaceService(deps: { store: PlaceStore; photoHosts?: readonly string[]; routeExists?: (id: string) => Promise<boolean> }) {
+export interface PlaceImportResult {
+  /** Rows read from the sheet, how many are (or would be) new, and how many were already in the directory. */
+  read: number;
+  added: number;
+  skipped: number;
+  /** Rows the rules refused (or whose course does not exist), by name and line-free reason. */
+  failed: { name: string; reason: string }[];
+}
+
+export function createPlaceService(deps: { store: PlaceStore; photoHosts?: readonly string[]; routeExists?: (id: string) => Promise<boolean>; routeIds?: () => Promise<string[]> }) {
+  const list = createListService({ store: deps.store, rules: placeRules(deps.photoHosts, deps.routeExists) });
   return {
-    ...createListService({ store: deps.store, rules: placeRules(deps.photoHosts, deps.routeExists) }),
+    ...list,
+    /**
+     * Adds the places of a field sheet (see import/field-sheets.ts) as drafts: positions stay "not checked", nothing is
+     * published, and a place already there (same course, category, name and position) is not added again. `apply: false`
+     * only counts.
+     */
+    async importSheet(actor: string, csv: string, apply: boolean): Promise<PlaceImportResult> {
+      const courses = (await deps.routeIds?.()) ?? [];
+      const number = new Map(courses.map((id, i) => [id, i + 1]));
+      const existing: ExistingPlace[] = [];
+      for (let cursor = null as { createdAt: Date; id: string } | null; ; ) {
+        const rows = await deps.store.list(cursor, 500);
+        existing.push(...rows.map((r) => ({ id: r.id, route: r.routeId ? (number.get(r.routeId) ?? null) : null, category: r.category, nameJa: r.nameJa, lat: r.lat, lng: r.lng })));
+        if (rows.length < 500) break;
+        cursor = { createdAt: rows[rows.length - 1]!.createdAt, id: rows[rows.length - 1]!.id };
+      }
+      const facilities = parseFacilities(csv);
+      const plan = planPlaces(facilities, existing);
+      const failed: PlaceImportResult["failed"] = [];
+      let added = 0;
+      for (const p of plan.places) {
+        const routeId = courses[p.route - 1] ?? null;
+        if (routeId === null) {
+          failed.push({ name: p.nameJa, reason: `course ${p.route}` });
+          continue;
+        }
+        if (!apply) {
+          added++;
+          continue;
+        }
+        const r = await list.create(actor, {
+          category: p.category as PlaceFields["category"],
+          routeId,
+          nameJa: p.nameJa,
+          nameEn: p.nameEn,
+          descriptionJa: p.descriptionJa,
+          descriptionEn: p.descriptionEn,
+          hoursJa: p.hoursJa,
+          hoursEn: p.hoursEn,
+          closedDaysJa: p.closedDaysJa,
+          closedDaysEn: p.closedDaysEn,
+          lat: p.lat,
+          lng: p.lng,
+          positionVerified: false,
+          positionSource: p.positionSource,
+          address: p.address,
+          phone: p.phone,
+          website: p.website,
+          photoUrl: null,
+          status: p.status as PlaceFields["status"],
+          lastVerified: p.lastVerified,
+          listingConfirmed: p.listingConfirmed,
+          listingNote: p.listingNote,
+          published: false,
+        });
+        if (r.ok) added++;
+        else failed.push({ name: p.nameJa, reason: r.reason });
+      }
+      return { read: facilities.length, added, skipped: plan.skipped, failed };
+    },
     /** What visitors see: published places with a checked position (the database also refuses to publish others). */
     async publicPlaces(routeId?: string): Promise<PlaceRow[]> {
       return (await deps.store.listPublic()).filter((p) => p.lat !== null && p.positionVerified && (routeId === undefined || p.routeId === routeId));
@@ -256,5 +327,15 @@ export function publicPlaceRoutes(getPlaces: () => PlaceService, log: (message: 
       };
     },
     { query: t.Object({ route: t.Optional(t.String({ format: "uuid" })) }) },
+  );
+}
+
+/** Import a field sheet into the directory (`spot.manage`): `apply: false` is the preview that only counts. */
+export function placeImportRoutes<S extends PlaceServices>(getServices: () => S, opts: RouteOptions) {
+  const { plugins } = routeKit(getServices, opts);
+  return new Elysia({ prefix: "/admin/lists/directory", detail: { tags: ["Admin lists"] } }).use(plugins).post(
+    "/import",
+    async ({ user, body }) => ({ ok: true as const, ...(await getServices().places.importSheet(user.id, body.csv, body.apply)) }),
+    { auth: placeDirectoryList.permission, rateLimit: { adminWriteUser: "user.id" }, body: t.Object({ csv: t.String({ maxLength: 2_000_000 }), apply: t.Boolean() }) },
   );
 }
