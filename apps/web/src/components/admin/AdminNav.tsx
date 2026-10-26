@@ -32,14 +32,14 @@ export function AdminNav({ lists, isAdmin }: { lists: { key: string; title: stri
     { key: "rallies", href: `${base}/rallies`, label: t`ラリー`, icon: <FlagIcon /> },
     { key: "attention", href: `${base}/attention`, label: t`直すところ`, icon: <WarningIcon /> },
     ...lists.map((l) => ({ key: l.key, href: `${base}/${l.key}`, label: l.title, icon: LIST_ICONS[l.key] ?? <DocumentIcon /> })),
+    { key: "pages", href: `${base}/pages`, label: t`ページの文章`, icon: <DocumentIcon /> },
     // The site settings are for an admin only (the API refuses an editor).
     ...(isAdmin ? [{ key: "settings", href: `${base}/settings`, label: t`サイト全体の設定`, icon: <GearIcon /> }] : []),
   ];
   // Menu sections, split by a line. A list the app does not know yet joins the section of notices and banners.
-  const SECTIONS = [["routes", "rallies", "places", "directory"], ["attention"], ["notices", "banners", "furigana"], ["stamps", "users", "audit"], ["settings"]];
+  const SECTIONS = [["routes", "rallies", "places", "directory"], ["attention"], ["notices", "banners", "furigana", "pages"], ["stamps", "users", "audit"], ["settings"]];
   const known = new Set(SECTIONS.flat());
   const sections = SECTIONS.map((keys, i) => [...keys.flatMap((k) => ready.filter((r) => r.key === k)), ...(i === 2 ? ready.filter((r) => !known.has(r.key)) : [])]).filter((g) => g.length > 0);
-  const later = [{ label: t`ページの文章`, icon: <DocumentIcon /> }];
 
   return (
     <nav aria-label={t`管理メニュー`} className="flex flex-col gap-1">
@@ -72,18 +72,6 @@ export function AdminNav({ lists, isAdmin }: { lists: { key: string; title: stri
             })}
           </div>
         ))}
-        <p className="mt-2 border-t border-line px-4 pt-3 text-base font-bold text-muted">{t`これから追加します`}</p>
-        <ul className="flex flex-col gap-1">
-          {later.map(({ label, icon }) => (
-            <li key={label} className="tap-target flex items-center justify-between rounded-xl px-4 text-lg text-muted">
-              <span className="flex items-center gap-3">
-                {icon}
-                {label}
-              </span>
-              <span className="text-base">{t`準備中`}</span>
-            </li>
-          ))}
-        </ul>
       </div>
     </nav>
   );

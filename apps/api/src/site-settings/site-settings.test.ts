@@ -22,4 +22,16 @@ describe("site settings", () => {
     expect(Value.Check(MAP_STYLE, { ...style, terrainOpacity: 1 })).toBe(false);
     expect(Value.Check(MAP_STYLE, { ...style, saturation: -2 })).toBe(false);
   });
+
+  test("a page's own text is read back per page and audited by page only", async () => {
+    const audit = createMemoryAuditWriter();
+    const svc = createSiteSettingsService({ store: createMemorySiteSettingsStore(audit.writer) });
+    const text = { ja: { title: "よくある質問", body: "## 質問\n答え" }, en: { title: "", body: "" } };
+    expect(await svc.pageText("faq")).toBeNull();
+    await svc.setPageText("11111111-1111-4111-8111-111111111111", "faq", text);
+    expect(await svc.pageText("faq")).toEqual(text);
+    expect(await svc.pageText("guide")).toBeNull();
+    expect(audit.rows.map((r) => r.targetId)).toEqual(["00000000-0000-4000-8000-000000000002"]);
+    expect(JSON.stringify(audit.rows)).not.toContain("答え");
+  });
 });

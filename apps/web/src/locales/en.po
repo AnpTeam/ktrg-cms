@@ -185,6 +185,10 @@ msgstr "Hello, {name}."
 msgid "{name}のブックマークをはずす"
 msgstr "Remove bookmark: {name}"
 
+#: src/components/admin/PageTextEditor.tsx:118
+msgid "{name}を空にして、もとの文章に戻す"
+msgstr "Empty {name} and go back to the built-in text"
+
 #: src/components/admin/RouteEditor.tsx:664
 msgid "{nameEn} (end)"
 msgstr "{nameEn} (end)"
@@ -280,6 +284,10 @@ msgstr "{v} km"
 msgid "{v}m"
 msgstr "{v} m"
 
+#: src/components/admin/PageTextEditor.tsx:101
+msgid "「---」だけの行から下は、いちばん下の注意書きになります。"
+msgstr "Everything below a line with only \"---\" becomes the note at the bottom."
+
 #: src/components/admin/PublishedEditDialog.tsx:52
 msgid "「{label}」は公開中です。編集すると、この経由地は下書きに戻ります。保存した時点から、利用者には表示されなくなります（スタンプの記録は残ります）。"
 msgstr "\"{label}\" is published. Editing it turns it back into a draft: once you save, visitors no longer see it (stamp records are kept)."
@@ -291,6 +299,10 @@ msgstr "\"{legName}\" is chosen. Drag its points to move them. Click an empty pl
 #: src/components/map/TrailMap.tsx:426
 msgid "「{stopName}」から近い順"
 msgstr "Nearest first, from \"{stopName}\""
+
+#: src/components/admin/PageTextEditor.tsx:100
+msgid "「## 」で始まる行は、見出しです（よくあるご質問では質問、遊び方では手順の名前）。その下に、本文を書きます。"
+msgstr "A line starting with \"## \" is a heading (a question in the FAQ, the name of a step in How to play). Write its text below it."
 
 #: src/components/admin/RouteEditor.tsx:529
 msgid "「スタート・ゴール」の見せ方が変わります。"
@@ -596,6 +608,10 @@ msgstr "Tell us a little about yourself. You don't have to answer, and you can c
 msgid "アニメーションや、ふわっと動く表示をやめます。"
 msgstr "Turns off animation and fading effects."
 
+#: src/app/(admin)/admin/pages/page.tsx:32
+msgid "アプリにもともと入っている固定のページの文章を、ここで書きかえられます。何も書かなければ、もとの文章が表示されます。"
+msgstr "Replace the text of the fixed pages built into the app. If nothing is written, the built-in text is shown."
+
 #: src/components/BrowserWarning.tsx:24
 msgid "アプリの中で開いたページや、プライベートモードでは、記録が残りません。SafariかChromeで、このページを開いてください。登録しておくと、記録は消えません。"
 msgstr "Pages opened inside another app, or in private mode, keep no record. Please open this page in Safari or Chrome. If you sign up, your record is not lost."
@@ -893,6 +909,10 @@ msgstr "Place a waypoint here"
 msgid "ここの写真は、この経由地のページに順に並びます。他の人が撮った写真は、撮った人と使用条件を、下の「出どころ」に書いてください。"
 msgstr "These photos appear in order on this waypoint's page. For a photo someone else took, write who took it and the terms of use in its credit field."
 
+#: src/components/admin/PageTextEditor.tsx:94
+msgid "ここは、本番のサイトの文章です。保存すると、すぐにすべての訪問者の画面が変わります。"
+msgstr "This is the text of the live site. When you save, every visitor's screen changes at once."
+
 #: src/components/admin/SiteSettingsForm.tsx:68
 msgid "ここは、本番のサイト全体の設定です。保存すると、すぐにすべての訪問者の画面が変わります。内容をよく確かめてから保存してください。"
 msgstr "These are settings for the live site as a whole. When you save, every visitor's screen changes at once. Check them carefully before you save."
@@ -1104,6 +1124,10 @@ msgstr "You can't do this."
 msgid "この文章のもとにした資料や、確かめた公式サイトを書きます。ルートのページの下に表示されます。"
 msgstr "Write the material this text is based on, or the official site you checked. It is shown at the bottom of the page."
 
+#: src/components/admin/PageTextEditor.tsx:44
+msgid "この文章は、本番のサイトにすぐ反映されます。保存しますか？"
+msgstr "This text goes live at once. Save it?"
+
 #: src/components/RouteView.tsx:169
 #: src/components/RouteView.tsx:200
 msgid "この文章は日本語のみです。"
@@ -1213,10 +1237,6 @@ msgstr "Copied"
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 msgstr "This is the only way to sign in to this account. If you remove it, you won't be able to sign in. Add an email address or another passkey first."
 
-#: src/components/admin/AdminNav.tsx:75
-msgid "これから追加します"
-msgstr "Coming later"
-
 #: src/components/admin/SiteSettingsForm.tsx:104
 msgid "コントラスト"
 msgstr "Contrast"
@@ -1264,7 +1284,7 @@ msgid "サイトマップ"
 msgstr "Site map"
 
 #: src/app/(admin)/admin/settings/page.tsx:21
-#: src/components/admin/AdminNav.tsx:36
+#: src/components/admin/AdminNav.tsx:37
 msgid "サイト全体の設定"
 msgstr "Site-wide settings"
 
@@ -1668,6 +1688,10 @@ msgstr "First-time set-up"
 msgid "はじめのラリー"
 msgstr "First rally"
 
+#: src/app/(admin)/admin/pages/page.tsx:22
+msgid "はじめの説明と、手順（1、2、3…）です。"
+msgstr "An introduction and the steps (1, 2, 3 ...)."
+
 #: src/components/landing/ContinueCard.tsx:17
 msgid "はじめの道を歩きませんか？"
 msgstr "Shall we walk the first route?"
@@ -1786,7 +1810,9 @@ msgstr "Remove bookmark"
 msgid "フッター"
 msgstr "Footer"
 
+#: src/app/(admin)/admin/pages/page.tsx:24
 #: src/app/(public)/sitemap/page.tsx:115
+#: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:30
 #: src/components/SiteHeader.tsx:257
 msgid "プライバシーポリシー"
@@ -1821,9 +1847,19 @@ msgstr "Profile"
 msgid "ページが見つかりません"
 msgstr "Page not found"
 
-#: src/components/admin/AdminNav.tsx:42
+#: src/app/(admin)/admin/pages/page.tsx:29
+#: src/components/admin/AdminNav.tsx:35
 msgid "ページの文章"
 msgstr "Page text"
+
+#: src/app/(admin)/admin/pages/[key]/page.tsx:14
+#: src/app/(admin)/admin/pages/page.tsx:12
+msgid "ページの文章（管理）"
+msgstr "Page text (admin)"
+
+#: src/app/(admin)/admin/pages/[key]/page.tsx:29
+msgid "ページの文章へ戻る"
+msgstr "Back to page text"
 
 #: src/components/settings/PrefsForm.tsx:120
 msgid "ページの漢字すべてに、読みがなをつけます。"
@@ -1833,17 +1869,17 @@ msgstr "Adds a reading over every kanji on the page."
 msgid "ベースの地図"
 msgstr "Base map"
 
-#: src/app/(public)/faq/page.tsx:23
-#: src/app/(public)/guide/page.tsx:23
+#: src/app/(public)/faq/page.tsx:24
+#: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/licenses/page.tsx:21
 #: src/app/(public)/login/page.tsx:29
-#: src/app/(public)/privacy/page.tsx:24
+#: src/app/(public)/privacy/page.tsx:25
 #: src/app/(public)/register/page.tsx:28
 #: src/app/(public)/settings/page.tsx:26
 #: src/app/(public)/sitemap/page.tsx:46
 #: src/app/(public)/sitemap/page.tsx:51
 #: src/app/(public)/sitemap/page.tsx:53
-#: src/app/(public)/terms/page.tsx:23
+#: src/app/(public)/terms/page.tsx:26
 #: src/components/SiteHeader.tsx:169
 #: src/components/TabBar.tsx:22
 #: src/components/TabBar.tsx:34
@@ -1870,6 +1906,10 @@ msgstr "This passkey can't be removed because it is your only way to log in. Set
 #: src/components/admin/map-editor/MapEditor.tsx:792
 msgid "ほかの乗り物"
 msgstr "Other vehicle"
+
+#: src/components/admin/PageTextEditor.tsx:123
+msgid "ほかの言語（ドイツ語など）の訪問者には、English の文章が表示されます。"
+msgstr "Visitors in other languages (such as German) see the English text."
 
 #: src/components/admin/map-editor/MapEditor.tsx:852
 msgid "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。"
@@ -2063,6 +2103,10 @@ msgstr "Restoring…"
 msgid "もどすスタンプは、ありませんでした。（いま {0}個）"
 msgstr "There were no stamps to restore ({0} now)."
 
+#: src/app/(admin)/admin/pages/page.tsx:46
+msgid "もとの文章"
+msgstr "Built-in text"
+
 #: src/components/IntroFlow.tsx:216
 #: src/components/SiteHeader.tsx:160
 msgid "もどる"
@@ -2100,7 +2144,9 @@ msgstr "Undo and redo"
 msgid "やり直す"
 msgstr "Redo"
 
+#: src/app/(admin)/admin/pages/page.tsx:21
 #: src/app/(public)/sitemap/page.tsx:109
+#: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:18
 #: src/components/SiteHeader.tsx:255
 msgid "よくあるご質問"
@@ -2224,6 +2270,10 @@ msgstr "Add by link"
 #: src/components/admin/PlacePanel.tsx:95
 msgid "リンクは [表示する文字](https://…) と書きます。脚注は、本文に [^1] と書き、別の行に [^1]: 注の内容 と書きます。"
 msgstr "A link is written [shown words](https://…). For a footnote, write [^1] in the text and, on a line of its own, [^1]: the note."
+
+#: src/components/admin/PageTextEditor.tsx:102
+msgid "リンクは [表示する文字](https://…) の形で書けます（下のボタンでも入れられます）。"
+msgstr "A link is written [shown words](https://…) (the button below can add one too)."
 
 #: src/components/PrintShare.tsx:38
 msgid "リンクをコピーしました"
@@ -2633,6 +2683,7 @@ msgid "例：山田太郎, CC BY-SA 4.0"
 msgstr "e.g. Jane Doe, CC BY-SA 4.0"
 
 #: src/components/admin/AdminItemForm.tsx:254
+#: src/components/admin/PageTextEditor.tsx:76
 msgid "保存"
 msgstr "Save"
 
@@ -2641,6 +2692,7 @@ msgid "保存していない内容も含めて調べています。"
 msgstr "This includes changes you have not saved yet."
 
 #: src/components/admin/AdminItemForm.tsx:246
+#: src/components/admin/PageTextEditor.tsx:70
 #: src/components/admin/RouteEditor.tsx:419
 msgid "保存していない変更があります"
 msgstr "You have unsaved changes"
@@ -2674,6 +2726,10 @@ msgstr "Save and next"
 #: src/components/settings/PrefsForm.tsx:68
 msgid "保存しました。"
 msgstr "Saved."
+
+#: src/components/admin/PageTextEditor.tsx:57
+msgid "保存しました。サイトに反映されています。"
+msgstr "Saved. It is live on the site."
 
 #: src/components/admin/SiteSettingsForm.tsx:55
 msgid "保存しました。サイトの地図に反映されています。"
@@ -2711,11 +2767,13 @@ msgid "保存できませんでした。電波の良い場所でもう一度お�
 msgstr "Could not save. Please try again where the signal is good."
 
 #: src/components/admin/AdminItemForm.tsx:254
+#: src/components/admin/PageTextEditor.tsx:76
 #: src/components/admin/RouteEditor.tsx:422
 msgid "保存中…"
 msgstr "Saving…"
 
 #: src/components/admin/AdminItemForm.tsx:246
+#: src/components/admin/PageTextEditor.tsx:70
 msgid "保存済み"
 msgstr "Saved"
 
@@ -2801,7 +2859,8 @@ msgstr "Whole map"
 msgid "全体を見る"
 msgstr "Show everything"
 
-#: src/components/admin/PublicSiteLink.tsx:30
+#: src/components/admin/PageTextEditor.tsx:73
+#: src/components/admin/PublicSiteLink.tsx:32
 msgid "公開サイトで見る"
 msgstr "View this page on the public site"
 
@@ -2932,7 +2991,7 @@ msgstr "Last stamped: {when}"
 msgid "最新のお知らせ"
 msgstr "Latest notices"
 
-#: src/app/(public)/privacy/page.tsx:30
+#: src/app/(public)/privacy/page.tsx:32
 msgid "最終更新"
 msgstr "Last updated"
 
@@ -3108,7 +3167,9 @@ msgstr "Linked to another route"
 msgid "別の人が先に保存しました。読み込み直してから、もう一度お試しください。"
 msgstr "Someone else saved first. Reload the page and try again."
 
+#: src/app/(admin)/admin/pages/page.tsx:23
 #: src/app/(public)/sitemap/page.tsx:112
+#: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:27
 #: src/components/SiteHeader.tsx:256
 msgid "利用規約"
@@ -4035,6 +4096,10 @@ msgstr "Date"
 msgid "日本のほかの地域"
 msgstr "Elsewhere in Japan"
 
+#: src/components/admin/PageTextEditor.tsx:39
+msgid "日本語"
+msgstr "Japanese"
+
 #: src/components/Localized.tsx:16
 msgid "日本語のみ"
 msgstr "Japanese only"
@@ -4078,6 +4143,18 @@ msgstr "Your filled-in file (.xlsx)"
 msgid "書いてありません"
 msgstr "Nothing is written"
 
+#: src/components/admin/PageTextEditor.tsx:103
+msgid "書きかえると、「案です」の表示や更新日の表示は出なくなります。日付などは、本文に書いてください。"
+msgstr "Once rewritten, the \"this is a draft\" notice and the updated date are no longer shown. Put a date in the text yourself."
+
+#: src/app/(admin)/admin/pages/page.tsx:46
+msgid "書きかえ済み"
+msgstr "Rewritten"
+
+#: src/components/admin/PageTextEditor.tsx:97
+msgid "書き方"
+msgstr "How to write"
+
 #: src/components/admin/PlacePanel.tsx:84
 msgid "未保存"
 msgstr "Unsaved"
@@ -4095,6 +4172,10 @@ msgstr "Not chosen"
 #: src/components/auth/ReauthDialog.tsx:41
 msgid "本人かどうか、確認します"
 msgstr "Confirming it is you"
+
+#: src/components/admin/PageTextEditor.tsx:113
+msgid "本文"
+msgstr "Text"
 
 #: src/app/layout.tsx:66
 msgid "本文へ移動"
@@ -4216,11 +4297,20 @@ msgstr "Routes are in walking order. Select a name to edit its text and map."
 msgid "歴史・由来"
 msgstr "History and background"
 
+#: src/components/admin/PageTextEditor.tsx:99
+msgid "段落は、空の行で区切ります。"
+msgstr "Separate paragraphs with a blank line."
+
 #: src/components/admin/PlacePanel.tsx:43
 #: src/components/map/PlacesPanel.tsx:41
 #: src/components/PointKindName.tsx:15
 msgid "水場"
 msgstr "Drinking water"
+
+#: src/app/(admin)/admin/pages/page.tsx:23
+#: src/app/(admin)/admin/pages/page.tsx:24
+msgid "法的な文章です。管理者だけが直せます。"
+msgstr "A legal text. Only an admin can change it."
 
 #: src/components/admin/PlacePanel.tsx:70
 #: src/components/StatusWord.tsx:23
@@ -4268,7 +4358,6 @@ msgstr "Pale"
 msgid "港・フェリー乗り場"
 msgstr "Port or ferry"
 
-#: src/components/admin/AdminNav.tsx:83
 #: src/components/admin/RouteTable.tsx:30
 #: src/components/landing/Landing.tsx:225
 #: src/components/map/MapScreen.tsx:329
@@ -4999,6 +5088,10 @@ msgstr "Loading…"
 msgid "調べています…"
 msgstr "Searching…"
 
+#: src/app/(admin)/admin/pages/page.tsx:21
+msgid "質問と答えの一覧です。"
+msgstr "A list of questions and answers."
+
 #: src/components/admin/RouteTable.tsx:129
 msgid "足りないもの"
 msgstr "What is missing"
@@ -5079,8 +5172,10 @@ msgstr "Closed"
 msgid "通行止めなどの知らせを、確認した日づけで見られます。"
 msgstr "See closures and other notices with the date they were checked."
 
+#: src/app/(admin)/admin/pages/page.tsx:22
 #: src/app/(public)/rallies/page.tsx:39
 #: src/app/(public)/sitemap/page.tsx:82
+#: src/components/admin/PageTextEditor.tsx:37
 msgid "遊び方"
 msgstr "How to play"
 
@@ -5226,6 +5321,7 @@ msgstr "Length"
 
 #: src/components/admin/AdminItemForm.tsx:266
 #: src/components/admin/map-editor/MapEditor.tsx:965
+#: src/components/admin/PageTextEditor.tsx:86
 #: src/components/admin/PhotoLibrary.tsx:124
 #: src/components/admin/RouteEditor.tsx:438
 #: src/components/BrowserWarning.tsx:41
@@ -5294,6 +5390,14 @@ msgstr "Move earlier"
 #: src/components/admin/PlacePanel.tsx:243
 msgid "順番を後ろへ"
 msgstr "Move later"
+
+#: src/components/admin/PageTextEditor.tsx:110
+msgid "題"
+msgstr "Title"
+
+#: src/components/admin/PageTextEditor.tsx:104
+msgid "題と本文の両方を空にして保存すると、もとの文章に戻ります。"
+msgstr "Save with both the title and the text empty to go back to the built-in text."
 
 #: src/components/auth/ReauthDialog.tsx:50
 msgid "顔・指紋・ロック番号で確認"

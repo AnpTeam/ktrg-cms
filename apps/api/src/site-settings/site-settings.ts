@@ -1,5 +1,7 @@
 import { Elysia, t, type Static } from "elysia";
 import type { AuditWriter } from "../audit/audit-log";
+import { fail } from "../auth/http";
+import { can } from "../auth/permissions";
 import { routeKit, type KitServices, type RouteOptions } from "../auth/route-kit";
 
 // Settings for the whole site, kept as one named value each. Changing one changes the live site at once, so only
@@ -24,6 +26,20 @@ export type MapStyleSetting = Static<typeof MAP_STYLE>;
 
 export const SETTING_KEYS = { mapStyle: "map_style" } as const;
 
+/**
+ * The fixed pages whose text an editor can replace (管理 > ページの文章): the FAQ and how to play, and the terms and
+ * the privacy policy. Until a page has its own text, the page built into the app is shown. The legal two are for an
+ * admin only (`site.manage`).
+ */
+export const PAGE_KEYS = ["faq", "guide", "terms", "privacy"] as const;
+export type PageKey = (typeof PAGE_KEYS)[number];
+export const LEGAL_PAGES: readonly PageKey[] = ["terms", "privacy"];
+const PAGE_LANG = t.Object({ title: t.String({ maxLength: 200 }), body: t.String({ maxLength: 30000 }) });
+/** A language left blank (no title, no body) keeps showing the page built into the app. */
+export const PAGE_TEXT = t.Object({ ja: PAGE_LANG, en: PAGE_LANG });
+export type PageText = Static<typeof PAGE_TEXT>;
+const pageSetting = (key: PageKey) => `page:${key}`;
+
 export interface SiteSettingsStore {
   /** The saved value of a setting, or null when it was never set. */
   get(key: string): Promise<unknown | null>;
@@ -38,11 +54,19 @@ export function createSiteSettingsService(deps: { store: SiteSettingsStore }) {
     /** The saved map style, or null (the site then uses its built-in default). */
     mapStyle: async () => (await deps.store.get(SETTING_KEYS.mapStyle)) as MapStyleSetting | null,
     setMapStyle: (actor: string, value: MapStyleSetting) => deps.store.set(actor, SETTING_KEYS.mapStyle, value),
+    pageText: async (key: PageKey) => (await deps.store.get(pageSetting(key))) as PageText | null,
+    setPageText: (actor: string, key: PageKey, value: PageText) => deps.store.set(actor, pageSetting(key), value),
   };
 }
 
 /** The audit log wants a UUID as the target: each setting has a fixed one (the log records which setting changed, never its value). */
-export const SETTING_TARGET: Record<string, string> = { [SETTING_KEYS.mapStyle]: "00000000-0000-4000-8000-000000000001" };
+export const SETTING_TARGET: Record<string, string> = {
+  [SETTING_KEYS.mapStyle]: "00000000-0000-4000-8000-000000000001",
+  "page:faq": "00000000-0000-4000-8000-000000000002",
+  "page:guide": "00000000-0000-4000-8000-000000000003",
+  "page:terms": "00000000-0000-4000-8000-000000000004",
+  "page:privacy": "00000000-0000-4000-8000-000000000005",
+};
 
 export const SETTING_AUDIT = "site_setting.update" as const;
 
@@ -77,10 +101,32 @@ export function siteSettingsRoutes(getServices: () => SiteSettingsServices, opts
         return { ok: true as const, mapStyle: body };
       },
       { auth: "site.manage", rateLimit: { adminWriteUser: "user.id" }, body: MAP_STYLE },
+    )
+    // The pages' own text. Editors may change the FAQ and how to play; the terms and the privacy policy are for an admin.
+    .get(
+      "/pages",
+      async ({ user }) => {
+        const svc = getServices().siteSettings;
+        const pages: Partial<Record<PageKey, PageText | null>> = {};
+        for (const key of PAGE_KEYS) if (!LEGAL_PAGES.includes(key) || can(user.role, "site.manage")) pages[key] = await svc.pageText(key);
+        return { ok: true as const, pages };
+      },
+      { auth: "notice.manage" },
+    )
+    .put(
+      "/pages/:key",
+      async ({ user, params, body, set }) => {
+        if (LEGAL_PAGES.includes(params.key) && !can(user.role, "site.manage")) return fail(set, 403, "forbidden");
+        await getServices().siteSettings.setPageText(user.id, params.key, body);
+        return { ok: true as const, page: body };
+      },
+      { auth: "notice.manage", rateLimit: { adminWriteUser: "user.id" }, params: t.Object({ key: t.UnionEnum([...PAGE_KEYS]) }), body: PAGE_TEXT },
     );
 }
 
 /** What visitors' pages read (no login): the map style, or null for the default. */
 export function publicSettingsRoutes(getSettings: () => SiteSettingsService) {
-  return new Elysia({ detail: { tags: ["Content"] } }).get("/settings", async () => ({ ok: true as const, mapStyle: await getSettings().mapStyle() }));
+  return new Elysia({ detail: { tags: ["Content"] } })
+    .get("/settings", async () => ({ ok: true as const, mapStyle: await getSettings().mapStyle() }))
+    .get("/pages/:key", async ({ params }) => ({ ok: true as const, page: await getSettings().pageText(params.key) }), { params: t.Object({ key: t.UnionEnum([...PAGE_KEYS]) }) });
 }

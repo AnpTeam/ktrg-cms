@@ -325,6 +325,7 @@ describe("user B cannot touch user A", () => {
     "GET /api/v1/places",
     // The site-wide settings visitors read: the map style (see site-settings/site-settings.test.ts).
     "GET /api/v1/settings",
+    "GET /api/v1/pages/:key",
     "POST /api/v1/auth/otp/request",
     "POST /api/v1/auth/otp/verify",
     "POST /api/v1/auth/logout",
@@ -366,6 +367,7 @@ describe("user B cannot touch user A", () => {
       listingConfirmed: false, listingNote: null, published: false,
     }),
     "PUT /api/v1/admin/settings/map-style": () => ({ base: "pale", terrain: "hillshade", terrainOpacity: 0.5, saturation: 0, contrast: 0 }),
+    "PUT /api/v1/admin/settings/pages/:key": () => ({ ja: { title: "", body: "" }, en: { title: "", body: "" } }),
     "PATCH /api/v1/admin/lists/directory/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/lists/directory/import": () => ({ csv: "", apply: false }),
     "PATCH /api/v1/admin/lists/users/:id": () => ({ updatedAt: new Date().toISOString(), role: "admin" }),
@@ -398,7 +400,7 @@ describe("user B cannot touch user A", () => {
 
     for (const key of routes) {
       const [method, path] = key.split(" ") as [string, string];
-      const url = path.replace("/api/v1", "").replace(":id", crypto.randomUUID());
+      const url = path.replace("/api/v1", "").replace(":id", crypto.randomUUID()).replace(":key", "faq");
       for (const cookie of [undefined, "session=made-up-token"]) {
         const res = await s.call(method, url, { cookie, body: BODIES[key]?.() });
         expect({ key, status: res.status, body: await res.json() }).toEqual({ key, status: 401, body: UNAUTHENTICATED });

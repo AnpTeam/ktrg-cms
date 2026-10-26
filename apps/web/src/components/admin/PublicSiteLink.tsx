@@ -11,6 +11,8 @@ export function publicPathFor(adminPath: string): string {
       return id && id !== "new" ? `/routes/${id}` : "/routes";
     case "places":
       return id && id !== "new" ? `/spots/${id}` : "/map";
+    case "pages":
+      return id ? `/${id}` : "/";
     case "rallies":
       return "/rallies";
     case "notices":

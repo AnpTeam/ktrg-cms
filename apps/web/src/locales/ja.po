@@ -185,6 +185,10 @@ msgstr "{name}さん、こんにちは。"
 msgid "{name}のブックマークをはずす"
 msgstr "{name}のブックマークをはずす"
 
+#: src/components/admin/PageTextEditor.tsx:118
+msgid "{name}を空にして、もとの文章に戻す"
+msgstr "{name}を空にして、もとの文章に戻す"
+
 #: src/components/admin/RouteEditor.tsx:664
 msgid "{nameEn} (end)"
 msgstr "{nameEn} (end)"
@@ -280,6 +284,10 @@ msgstr "{v}km"
 msgid "{v}m"
 msgstr "{v}m"
 
+#: src/components/admin/PageTextEditor.tsx:101
+msgid "「---」だけの行から下は、いちばん下の注意書きになります。"
+msgstr "「---」だけの行から下は、いちばん下の注意書きになります。"
+
 #: src/components/admin/PublishedEditDialog.tsx:52
 msgid "「{label}」は公開中です。編集すると、この経由地は下書きに戻ります。保存した時点から、利用者には表示されなくなります（スタンプの記録は残ります）。"
 msgstr "「{label}」は公開中です。編集すると、この経由地は下書きに戻ります。保存した時点から、利用者には表示されなくなります（スタンプの記録は残ります）。"
@@ -291,6 +299,10 @@ msgstr "「{legName}」を選んでいます。この区間の点をドラッグ
 #: src/components/map/TrailMap.tsx:426
 msgid "「{stopName}」から近い順"
 msgstr "「{stopName}」から近い順"
+
+#: src/components/admin/PageTextEditor.tsx:100
+msgid "「## 」で始まる行は、見出しです（よくあるご質問では質問、遊び方では手順の名前）。その下に、本文を書きます。"
+msgstr "「## 」で始まる行は、見出しです（よくあるご質問では質問、遊び方では手順の名前）。その下に、本文を書きます。"
 
 #: src/components/admin/RouteEditor.tsx:529
 msgid "「スタート・ゴール」の見せ方が変わります。"
@@ -596,6 +608,10 @@ msgstr "あなたのことを、少しだけ教えてください。答えなく
 msgid "アニメーションや、ふわっと動く表示をやめます。"
 msgstr "アニメーションや、ふわっと動く表示をやめます。"
 
+#: src/app/(admin)/admin/pages/page.tsx:32
+msgid "アプリにもともと入っている固定のページの文章を、ここで書きかえられます。何も書かなければ、もとの文章が表示されます。"
+msgstr "アプリにもともと入っている固定のページの文章を、ここで書きかえられます。何も書かなければ、もとの文章が表示されます。"
+
 #: src/components/BrowserWarning.tsx:24
 msgid "アプリの中で開いたページや、プライベートモードでは、記録が残りません。SafariかChromeで、このページを開いてください。登録しておくと、記録は消えません。"
 msgstr "アプリの中で開いたページや、プライベートモードでは、記録が残りません。SafariかChromeで、このページを開いてください。登録しておくと、記録は消えません。"
@@ -893,6 +909,10 @@ msgstr "ここに経由地を置く"
 msgid "ここの写真は、この経由地のページに順に並びます。他の人が撮った写真は、撮った人と使用条件を、下の「出どころ」に書いてください。"
 msgstr "ここの写真は、この経由地のページに順に並びます。他の人が撮った写真は、撮った人と使用条件を、下の「出どころ」に書いてください。"
 
+#: src/components/admin/PageTextEditor.tsx:94
+msgid "ここは、本番のサイトの文章です。保存すると、すぐにすべての訪問者の画面が変わります。"
+msgstr "ここは、本番のサイトの文章です。保存すると、すぐにすべての訪問者の画面が変わります。"
+
 #: src/components/admin/SiteSettingsForm.tsx:68
 msgid "ここは、本番のサイト全体の設定です。保存すると、すぐにすべての訪問者の画面が変わります。内容をよく確かめてから保存してください。"
 msgstr "ここは、本番のサイト全体の設定です。保存すると、すぐにすべての訪問者の画面が変わります。内容をよく確かめてから保存してください。"
@@ -1104,6 +1124,10 @@ msgstr "この操作は、できません。"
 msgid "この文章のもとにした資料や、確かめた公式サイトを書きます。ルートのページの下に表示されます。"
 msgstr "この文章のもとにした資料や、確かめた公式サイトを書きます。ルートのページの下に表示されます。"
 
+#: src/components/admin/PageTextEditor.tsx:44
+msgid "この文章は、本番のサイトにすぐ反映されます。保存しますか？"
+msgstr "この文章は、本番のサイトにすぐ反映されます。保存しますか？"
+
 #: src/components/RouteView.tsx:169
 #: src/components/RouteView.tsx:200
 msgid "この文章は日本語のみです。"
@@ -1213,10 +1237,6 @@ msgstr "コピーしました"
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 msgstr "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 
-#: src/components/admin/AdminNav.tsx:75
-msgid "これから追加します"
-msgstr "これから追加します"
-
 #: src/components/admin/SiteSettingsForm.tsx:104
 msgid "コントラスト"
 msgstr "コントラスト"
@@ -1264,7 +1284,7 @@ msgid "サイトマップ"
 msgstr "サイトマップ"
 
 #: src/app/(admin)/admin/settings/page.tsx:21
-#: src/components/admin/AdminNav.tsx:36
+#: src/components/admin/AdminNav.tsx:37
 msgid "サイト全体の設定"
 msgstr "サイト全体の設定"
 
@@ -1668,6 +1688,10 @@ msgstr "はじめての設定"
 msgid "はじめのラリー"
 msgstr "はじめのラリー"
 
+#: src/app/(admin)/admin/pages/page.tsx:22
+msgid "はじめの説明と、手順（1、2、3…）です。"
+msgstr "はじめの説明と、手順（1、2、3…）です。"
+
 #: src/components/landing/ContinueCard.tsx:17
 msgid "はじめの道を歩きませんか？"
 msgstr "はじめの道を歩きませんか？"
@@ -1786,7 +1810,9 @@ msgstr "ブックマークをはずす"
 msgid "フッター"
 msgstr "フッター"
 
+#: src/app/(admin)/admin/pages/page.tsx:24
 #: src/app/(public)/sitemap/page.tsx:115
+#: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:30
 #: src/components/SiteHeader.tsx:257
 msgid "プライバシーポリシー"
@@ -1821,9 +1847,19 @@ msgstr "プロフィール"
 msgid "ページが見つかりません"
 msgstr "ページが見つかりません"
 
-#: src/components/admin/AdminNav.tsx:42
+#: src/app/(admin)/admin/pages/page.tsx:29
+#: src/components/admin/AdminNav.tsx:35
 msgid "ページの文章"
 msgstr "ページの文章"
+
+#: src/app/(admin)/admin/pages/[key]/page.tsx:14
+#: src/app/(admin)/admin/pages/page.tsx:12
+msgid "ページの文章（管理）"
+msgstr "ページの文章（管理）"
+
+#: src/app/(admin)/admin/pages/[key]/page.tsx:29
+msgid "ページの文章へ戻る"
+msgstr "ページの文章へ戻る"
 
 #: src/components/settings/PrefsForm.tsx:120
 msgid "ページの漢字すべてに、読みがなをつけます。"
@@ -1833,17 +1869,17 @@ msgstr "ページの漢字すべてに、読みがなをつけます。"
 msgid "ベースの地図"
 msgstr "ベースの地図"
 
-#: src/app/(public)/faq/page.tsx:23
-#: src/app/(public)/guide/page.tsx:23
+#: src/app/(public)/faq/page.tsx:24
+#: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/licenses/page.tsx:21
 #: src/app/(public)/login/page.tsx:29
-#: src/app/(public)/privacy/page.tsx:24
+#: src/app/(public)/privacy/page.tsx:25
 #: src/app/(public)/register/page.tsx:28
 #: src/app/(public)/settings/page.tsx:26
 #: src/app/(public)/sitemap/page.tsx:46
 #: src/app/(public)/sitemap/page.tsx:51
 #: src/app/(public)/sitemap/page.tsx:53
-#: src/app/(public)/terms/page.tsx:23
+#: src/app/(public)/terms/page.tsx:26
 #: src/components/SiteHeader.tsx:169
 #: src/components/TabBar.tsx:22
 #: src/components/TabBar.tsx:34
@@ -1870,6 +1906,10 @@ msgstr "ほかにログインの方法がないので、このパスキーは消
 #: src/components/admin/map-editor/MapEditor.tsx:792
 msgid "ほかの乗り物"
 msgstr "ほかの乗り物"
+
+#: src/components/admin/PageTextEditor.tsx:123
+msgid "ほかの言語（ドイツ語など）の訪問者には、English の文章が表示されます。"
+msgstr "ほかの言語（ドイツ語など）の訪問者には、English の文章が表示されます。"
 
 #: src/components/admin/map-editor/MapEditor.tsx:852
 msgid "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。"
@@ -2063,6 +2103,10 @@ msgstr "もどしています…"
 msgid "もどすスタンプは、ありませんでした。（いま {0}個）"
 msgstr "もどすスタンプは、ありませんでした。（いま {0}個）"
 
+#: src/app/(admin)/admin/pages/page.tsx:46
+msgid "もとの文章"
+msgstr "もとの文章"
+
 #: src/components/IntroFlow.tsx:216
 #: src/components/SiteHeader.tsx:160
 msgid "もどる"
@@ -2100,7 +2144,9 @@ msgstr "やり直し"
 msgid "やり直す"
 msgstr "やり直す"
 
+#: src/app/(admin)/admin/pages/page.tsx:21
 #: src/app/(public)/sitemap/page.tsx:109
+#: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:18
 #: src/components/SiteHeader.tsx:255
 msgid "よくあるご質問"
@@ -2224,6 +2270,10 @@ msgstr "リンクで追加"
 #: src/components/admin/PlacePanel.tsx:95
 msgid "リンクは [表示する文字](https://…) と書きます。脚注は、本文に [^1] と書き、別の行に [^1]: 注の内容 と書きます。"
 msgstr "リンクは [表示する文字](https://…) と書きます。脚注は、本文に [^1] と書き、別の行に [^1]: 注の内容 と書きます。"
+
+#: src/components/admin/PageTextEditor.tsx:102
+msgid "リンクは [表示する文字](https://…) の形で書けます（下のボタンでも入れられます）。"
+msgstr "リンクは [表示する文字](https://…) の形で書けます（下のボタンでも入れられます）。"
 
 #: src/components/PrintShare.tsx:38
 msgid "リンクをコピーしました"
@@ -2633,6 +2683,7 @@ msgid "例：山田太郎, CC BY-SA 4.0"
 msgstr "例：山田太郎, CC BY-SA 4.0"
 
 #: src/components/admin/AdminItemForm.tsx:254
+#: src/components/admin/PageTextEditor.tsx:76
 msgid "保存"
 msgstr "保存"
 
@@ -2641,6 +2692,7 @@ msgid "保存していない内容も含めて調べています。"
 msgstr "保存していない内容も含めて調べています。"
 
 #: src/components/admin/AdminItemForm.tsx:246
+#: src/components/admin/PageTextEditor.tsx:70
 #: src/components/admin/RouteEditor.tsx:419
 msgid "保存していない変更があります"
 msgstr "保存していない変更があります"
@@ -2674,6 +2726,10 @@ msgstr "保存して次へ"
 #: src/components/settings/PrefsForm.tsx:68
 msgid "保存しました。"
 msgstr "保存しました。"
+
+#: src/components/admin/PageTextEditor.tsx:57
+msgid "保存しました。サイトに反映されています。"
+msgstr "保存しました。サイトに反映されています。"
 
 #: src/components/admin/SiteSettingsForm.tsx:55
 msgid "保存しました。サイトの地図に反映されています。"
@@ -2711,11 +2767,13 @@ msgid "保存できませんでした。電波の良い場所でもう一度お�
 msgstr "保存できませんでした。電波の良い場所でもう一度お試しください。"
 
 #: src/components/admin/AdminItemForm.tsx:254
+#: src/components/admin/PageTextEditor.tsx:76
 #: src/components/admin/RouteEditor.tsx:422
 msgid "保存中…"
 msgstr "保存中…"
 
 #: src/components/admin/AdminItemForm.tsx:246
+#: src/components/admin/PageTextEditor.tsx:70
 msgid "保存済み"
 msgstr "保存済み"
 
@@ -2801,7 +2859,8 @@ msgstr "全体の地図"
 msgid "全体を見る"
 msgstr "全体を見る"
 
-#: src/components/admin/PublicSiteLink.tsx:30
+#: src/components/admin/PageTextEditor.tsx:73
+#: src/components/admin/PublicSiteLink.tsx:32
 msgid "公開サイトで見る"
 msgstr "公開サイトで見る"
 
@@ -2932,7 +2991,7 @@ msgstr "最後に押した日時　{when}"
 msgid "最新のお知らせ"
 msgstr "最新のお知らせ"
 
-#: src/app/(public)/privacy/page.tsx:30
+#: src/app/(public)/privacy/page.tsx:32
 msgid "最終更新"
 msgstr "最終更新"
 
@@ -3108,7 +3167,9 @@ msgstr "別のルートにひもづいています"
 msgid "別の人が先に保存しました。読み込み直してから、もう一度お試しください。"
 msgstr "別の人が先に保存しました。読み込み直してから、もう一度お試しください。"
 
+#: src/app/(admin)/admin/pages/page.tsx:23
 #: src/app/(public)/sitemap/page.tsx:112
+#: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:27
 #: src/components/SiteHeader.tsx:256
 msgid "利用規約"
@@ -4035,6 +4096,10 @@ msgstr "日付"
 msgid "日本のほかの地域"
 msgstr "日本のほかの地域"
 
+#: src/components/admin/PageTextEditor.tsx:39
+msgid "日本語"
+msgstr "日本語"
+
 #: src/components/Localized.tsx:16
 msgid "日本語のみ"
 msgstr "日本語のみ"
@@ -4078,6 +4143,18 @@ msgstr "書いたファイル（.xlsx）"
 msgid "書いてありません"
 msgstr "書いてありません"
 
+#: src/components/admin/PageTextEditor.tsx:103
+msgid "書きかえると、「案です」の表示や更新日の表示は出なくなります。日付などは、本文に書いてください。"
+msgstr "書きかえると、「案です」の表示や更新日の表示は出なくなります。日付などは、本文に書いてください。"
+
+#: src/app/(admin)/admin/pages/page.tsx:46
+msgid "書きかえ済み"
+msgstr "書きかえ済み"
+
+#: src/components/admin/PageTextEditor.tsx:97
+msgid "書き方"
+msgstr "書き方"
+
 #: src/components/admin/PlacePanel.tsx:84
 msgid "未保存"
 msgstr "未保存"
@@ -4095,6 +4172,10 @@ msgstr "未選択"
 #: src/components/auth/ReauthDialog.tsx:41
 msgid "本人かどうか、確認します"
 msgstr "本人かどうか、確認します"
+
+#: src/components/admin/PageTextEditor.tsx:113
+msgid "本文"
+msgstr "本文"
 
 #: src/app/layout.tsx:66
 msgid "本文へ移動"
@@ -4216,11 +4297,20 @@ msgstr "歩く順番に並んでいます。名前を押すと、文章や地図
 msgid "歴史・由来"
 msgstr "歴史・由来"
 
+#: src/components/admin/PageTextEditor.tsx:99
+msgid "段落は、空の行で区切ります。"
+msgstr "段落は、空の行で区切ります。"
+
 #: src/components/admin/PlacePanel.tsx:43
 #: src/components/map/PlacesPanel.tsx:41
 #: src/components/PointKindName.tsx:15
 msgid "水場"
 msgstr "水場"
+
+#: src/app/(admin)/admin/pages/page.tsx:23
+#: src/app/(admin)/admin/pages/page.tsx:24
+msgid "法的な文章です。管理者だけが直せます。"
+msgstr "法的な文章です。管理者だけが直せます。"
 
 #: src/components/admin/PlacePanel.tsx:70
 #: src/components/StatusWord.tsx:23
@@ -4268,7 +4358,6 @@ msgstr "淡色"
 msgid "港・フェリー乗り場"
 msgstr "港・フェリー乗り場"
 
-#: src/components/admin/AdminNav.tsx:83
 #: src/components/admin/RouteTable.tsx:30
 #: src/components/landing/Landing.tsx:225
 #: src/components/map/MapScreen.tsx:329
@@ -4999,6 +5088,10 @@ msgstr "読み込んでいます…"
 msgid "調べています…"
 msgstr "調べています…"
 
+#: src/app/(admin)/admin/pages/page.tsx:21
+msgid "質問と答えの一覧です。"
+msgstr "質問と答えの一覧です。"
+
 #: src/components/admin/RouteTable.tsx:129
 msgid "足りないもの"
 msgstr "足りないもの"
@@ -5079,8 +5172,10 @@ msgstr "通行止め"
 msgid "通行止めなどの知らせを、確認した日づけで見られます。"
 msgstr "通行止めなどの知らせを、確認した日づけで見られます。"
 
+#: src/app/(admin)/admin/pages/page.tsx:22
 #: src/app/(public)/rallies/page.tsx:39
 #: src/app/(public)/sitemap/page.tsx:82
+#: src/components/admin/PageTextEditor.tsx:37
 msgid "遊び方"
 msgstr "遊び方"
 
@@ -5226,6 +5321,7 @@ msgstr "長さ"
 
 #: src/components/admin/AdminItemForm.tsx:266
 #: src/components/admin/map-editor/MapEditor.tsx:965
+#: src/components/admin/PageTextEditor.tsx:86
 #: src/components/admin/PhotoLibrary.tsx:124
 #: src/components/admin/RouteEditor.tsx:438
 #: src/components/BrowserWarning.tsx:41
@@ -5294,6 +5390,14 @@ msgstr "順番を前へ"
 #: src/components/admin/PlacePanel.tsx:243
 msgid "順番を後ろへ"
 msgstr "順番を後ろへ"
+
+#: src/components/admin/PageTextEditor.tsx:110
+msgid "題"
+msgstr "題"
+
+#: src/components/admin/PageTextEditor.tsx:104
+msgid "題と本文の両方を空にして保存すると、もとの文章に戻ります。"
+msgstr "題と本文の両方を空にして保存すると、もとの文章に戻ります。"
 
 #: src/components/auth/ReauthDialog.tsx:50
 msgid "顔・指紋・ロック番号で確認"
