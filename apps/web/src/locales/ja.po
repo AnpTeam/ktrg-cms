@@ -242,7 +242,7 @@ msgstr "{title}を直す（管理）"
 msgid "{title}を読み込めませんでした。しばらくしてから、ページを開き直してください。"
 msgstr "{title}を読み込めませんでした。しばらくしてから、ページを開き直してください。"
 
-#: src/components/IntroFlow.tsx:135
+#: src/components/IntroFlow.tsx:138
 #: src/components/landing/Landing.tsx:126
 msgid "{TOTAL_STAMPS}か所"
 msgstr "{TOTAL_STAMPS}か所"
@@ -783,7 +783,7 @@ msgstr "クリックで、この点を消します"
 msgid "くわしく見る"
 msgstr "くわしく見る"
 
-#: src/components/IntroFlow.tsx:126
+#: src/components/IntroFlow.tsx:129
 #: src/components/landing/Landing.tsx:124
 #: src/components/map/MapScreenCanvas.tsx:593
 msgid "コース"
@@ -862,6 +862,10 @@ msgstr "このアカウントには、パスキーがありません。メール
 #: src/components/useErrorMessages.ts:23
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
 msgstr "このアカウントには、メールがありません。顔・指紋で確認してください。"
+
+#: src/components/IntroFlow.tsx:147
+msgid "このアプリでわかること"
+msgstr "このアプリでわかること"
 
 #: src/components/StampHere.tsx:115
 msgid "このスタンプは、もう押してあります。"
@@ -1127,6 +1131,10 @@ msgstr "この説明は日本語のみです。"
 msgid "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 msgstr "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 
+#: src/components/IntroFlow.tsx:125
+msgid "この道すじには、法華経の二十八の章にちなむ「経塚」が並び、「葛城二十八宿」と呼ばれています。"
+msgstr "この道すじには、法華経の二十八の章にちなむ「経塚」が並び、「葛城二十八宿」と呼ばれています。"
+
 #: src/components/landing/ContinueCard.tsx:51
 msgid "この道を見る"
 msgstr "この道を見る"
@@ -1163,7 +1171,7 @@ msgstr "ご案内"
 msgid "さあ、はじめましょう"
 msgstr "さあ、はじめましょう"
 
-#: src/components/IntroFlow.tsx:162
+#: src/components/IntroFlow.tsx:186
 msgid "さあ、歩きはじめましょう"
 msgstr "さあ、歩きはじめましょう"
 
@@ -1307,6 +1315,7 @@ msgstr "スタンプの進み具合"
 msgid "スタンプは押せません。場所のページは見られます。公開するには、現地の許可の確認が必要です。"
 msgstr "スタンプは押せません。場所のページは見られます。公開するには、現地の許可の確認が必要です。"
 
+#: src/components/IntroFlow.tsx:154
 #: src/components/RallyViews.tsx:91
 msgid "スタンプラリー"
 msgstr "スタンプラリー"
@@ -1465,7 +1474,7 @@ msgstr "つぎ"
 msgid "つぎの場所"
 msgstr "つぎの場所"
 
-#: src/components/IntroFlow.tsx:178
+#: src/components/IntroFlow.tsx:202
 #: src/components/settings/WelcomeFlow.tsx:73
 msgid "つぎへ"
 msgstr "つぎへ"
@@ -1568,7 +1577,7 @@ msgstr "はじめのラリー"
 msgid "はじめの道を歩きませんか？"
 msgstr "はじめの道を歩きませんか？"
 
-#: src/components/IntroFlow.tsx:174
+#: src/components/IntroFlow.tsx:198
 msgid "はじめる"
 msgstr "はじめる"
 
@@ -1757,7 +1766,7 @@ msgstr "ほかの乗り物"
 msgid "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。"
 msgstr "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。"
 
-#: src/components/IntroFlow.tsx:165
+#: src/components/IntroFlow.tsx:189
 msgid "まずは、歩きたい道をえらびます。登録しなくても、スタンプは押せます。"
 msgstr "まずは、歩きたい道をえらびます。登録しなくても、スタンプは押せます。"
 
@@ -1932,7 +1941,7 @@ msgstr "もっと見る"
 msgid "もっと見る（あと{hidden}か所）"
 msgstr "もっと見る（あと{hidden}か所）"
 
-#: src/components/IntroFlow.tsx:183
+#: src/components/IntroFlow.tsx:207
 #: src/components/SiteHeader.tsx:160
 msgid "もどる"
 msgstr "もどる"
@@ -2602,7 +2611,7 @@ msgstr "入力に、まちがいがあるようです。見直して、もう一
 msgid "全{count}区間のある場所を示した図"
 msgstr "全{count}区間のある場所を示した図"
 
-#: src/components/IntroFlow.tsx:127
+#: src/components/IntroFlow.tsx:130
 #: src/components/landing/Landing.tsx:124
 msgid "全{TOTAL_ROUTES}区間"
 msgstr "全{TOTAL_ROUTES}区間"
@@ -2610,6 +2619,10 @@ msgstr "全{TOTAL_ROUTES}区間"
 #: src/app/(public)/routes/page.tsx:52
 msgid "全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）"
 msgstr "全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）"
+
+#: src/components/IntroFlow.tsx:151
+msgid "全{TOTAL_ROUTES}区間の道すじを、地図で見られます。距離、時間、きつさ、行き方もわかります。"
+msgstr "全{TOTAL_ROUTES}区間の道すじを、地図で見られます。距離、時間、きつさ、行き方もわかります。"
 
 #: src/components/landing/Landing.tsx:104
 msgid "全{TOTAL_ROUTES}区間を見る"
@@ -2751,6 +2764,10 @@ msgstr "最寄り"
 #: src/components/RallyViews.tsx:46
 msgid "最後に押した日時　{when}"
 msgstr "最後に押した日時　{when}"
+
+#: src/components/IntroFlow.tsx:153
+msgid "最新のお知らせ"
+msgstr "最新のお知らせ"
 
 #: src/app/(public)/privacy/page.tsx:30
 msgid "最終更新"
@@ -3253,6 +3270,10 @@ msgstr "地図"
 msgid "地図で見る"
 msgstr "地図で見る"
 
+#: src/components/IntroFlow.tsx:151
+msgid "地図とルート"
+msgstr "地図とルート"
+
 #: src/components/admin/RouteEditor.tsx:614
 #: src/components/admin/useChecklistLabels.ts:22
 msgid "地図と線"
@@ -3376,6 +3397,10 @@ msgstr "場所の名前で探す"
 #: src/components/admin/map-editor/MapEditor.tsx:943
 msgid "場所の名前で探す（例：西念寺）"
 msgstr "場所の名前で探す（例：西念寺）"
+
+#: src/components/IntroFlow.tsx:152
+msgid "場所の物語"
+msgstr "場所の物語"
 
 #: src/components/admin/RouteEditor.tsx:714
 msgid "場所の見せ方"
@@ -3958,6 +3983,10 @@ msgstr "次へ ＞"
 msgid "歩いた場所で、スタンプを押そう。"
 msgstr "歩いた場所で、スタンプを押そう。"
 
+#: src/components/IntroFlow.tsx:154
+msgid "歩いた場所で、スタンプを集められます。登録しなくても始められます。"
+msgstr "歩いた場所で、スタンプを集められます。登録しなくても始められます。"
+
 #: src/components/admin/RouteEditor.tsx:529
 #: src/components/RouteStats.tsx:21
 msgid "歩き方"
@@ -4311,7 +4340,7 @@ msgstr "約{amount}km"
 msgid "約{amount}m"
 msgstr "約{amount}m"
 
-#: src/components/IntroFlow.tsx:131
+#: src/components/IntroFlow.tsx:134
 #: src/components/landing/Landing.tsx:125
 msgid "約{TRAIL_KM}km"
 msgstr "約{TRAIL_KM}km"
@@ -4325,7 +4354,7 @@ msgid "終了"
 msgstr "終了"
 
 #: src/components/admin/PlacePanel.tsx:37
-#: src/components/IntroFlow.tsx:134
+#: src/components/IntroFlow.tsx:137
 #: src/components/landing/Landing.tsx:126
 #: src/components/map/MapScreenCanvas.tsx:593
 #: src/components/PointKindName.tsx:9
@@ -4374,6 +4403,10 @@ msgstr "経由地が残っているルートは削除できません。"
 #: src/components/useErrorMessages.ts:39
 msgid "経由地が残っているルートは消せません。先に経由地を消してください。"
 msgstr "経由地が残っているルートは消せません。先に経由地を消してください。"
+
+#: src/components/IntroFlow.tsx:152
+msgid "経由地ごとに、写真と、名前の由来や歴史を読めます。近くの駅、バス停、駐車場もわかります。"
+msgstr "経由地ごとに、写真と、名前の由来や歴史を読めます。近くの駅、バス停、駐車場もわかります。"
 
 #: src/components/admin/RallyEditor.tsx:98
 msgid "経由地でつくったラリー：えらんだ経由地のスタンプを全部押すと達成。"
@@ -4845,6 +4878,10 @@ msgstr "通常"
 msgid "通行止め"
 msgstr "通行止め"
 
+#: src/components/IntroFlow.tsx:153
+msgid "通行止めなどの知らせを、確認した日づけで見られます。"
+msgstr "通行止めなどの知らせを、確認した日づけで見られます。"
+
 #: src/app/(public)/rallies/page.tsx:38
 #: src/app/(public)/sitemap/page.tsx:79
 msgid "遊び方"
@@ -4985,7 +5022,7 @@ msgstr "都道府県"
 msgid "都道府県が未入力"
 msgstr "都道府県が未入力"
 
-#: src/components/IntroFlow.tsx:130
+#: src/components/IntroFlow.tsx:133
 #: src/components/landing/Landing.tsx:125
 msgid "長さ"
 msgstr "長さ"

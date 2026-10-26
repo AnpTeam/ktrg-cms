@@ -13,7 +13,7 @@ const INTRO_COOKIE = "intro";
 // Endonyms: each language names itself, so it is findable in a language the person cannot read.
 const names: Record<Locale, string> = { ja: "日本語", en: "English" };
 
-const STEPS = 4;
+const STEPS = 5;
 const big = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl px-6 text-xl font-bold";
 
 /**
@@ -121,6 +121,9 @@ export function IntroFlow({ seen }: { seen: boolean }) {
                   和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。
                 </Trans>
               </p>
+              <p className="max-w-prose text-lg leading-8">
+                <Trans>この道すじには、法華経の二十八の章にちなむ「経塚」が並び、「葛城二十八宿」と呼ばれています。</Trans>
+              </p>
               <dl className="grid grid-cols-3 gap-3 text-center">
                 <div className="rounded-2xl bg-surface p-3">
                   <dt className="text-base text-muted"><Trans>コース</Trans></dt>
@@ -140,6 +143,27 @@ export function IntroFlow({ seen }: { seen: boolean }) {
 
           {step === 2 ? (
             <>
+              <h1 id="intro-title" className="text-3xl font-bold text-accent">
+                <Trans>このアプリでわかること</Trans>
+              </h1>
+              <ul className="flex flex-col gap-3">
+                {[
+                  { title: <Trans>地図とルート</Trans>, text: <Trans>全{TOTAL_ROUTES}区間の道すじを、地図で見られます。距離、時間、きつさ、行き方もわかります。</Trans> },
+                  { title: <Trans>場所の物語</Trans>, text: <Trans>経由地ごとに、写真と、名前の由来や歴史を読めます。近くの駅、バス停、駐車場もわかります。</Trans> },
+                  { title: <Trans>最新のお知らせ</Trans>, text: <Trans>通行止めなどの知らせを、確認した日づけで見られます。</Trans> },
+                  { title: <Trans>スタンプラリー</Trans>, text: <Trans>歩いた場所で、スタンプを集められます。登録しなくても始められます。</Trans> },
+                ].map((f, i) => (
+                  <li key={i} className="rounded-3xl bg-surface p-4">
+                    <h2 className="text-xl font-bold leading-snug text-accent">{f.title}</h2>
+                    <p className="mt-1 text-lg leading-7">{f.text}</p>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : null}
+
+          {step === 3 ? (
+            <>
               <h1 id="intro-title" className="text-3xl font-bold text-accent">{help.guideTitle}</h1>
               <p className="text-lg leading-8">{help.guideIntro}</p>
               <ol className="flex flex-col gap-3">
@@ -156,7 +180,7 @@ export function IntroFlow({ seen }: { seen: boolean }) {
             </>
           ) : null}
 
-          {step === 3 ? (
+          {step === 4 ? (
             <>
               <h1 id="intro-title" className="text-3xl font-bold text-accent">
                 <Trans>さあ、歩きはじめましょう</Trans>
