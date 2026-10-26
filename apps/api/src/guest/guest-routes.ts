@@ -59,6 +59,25 @@ export function guestRoutes(getServices: () => GuestServices, opts: RouteOptions
       }),
       { detail: { summary: "The stamps kept in this browser's guest cookie" } },
     )
+    .get(
+      "/backup",
+      ({ headers }) => ({ ok: true as const, code: guest().backup(readCookie(headers.cookie, name)) }),
+      { detail: { summary: "A code that brings this browser's guest stamps back in another browser (see /restore)" } },
+    )
+    .post(
+      "/restore",
+      ({ body, headers, set }) => {
+        const r = guest().restore(readCookie(headers.cookie, name), body.code);
+        if (!r) return fail(set, 422, "validation_failed");
+        set.headers["set-cookie"] = setCookie(r.cookie);
+        return { ok: true as const, restored: r.restored, total: r.total };
+      },
+      {
+        rateLimit: { stampGuestIp: "ip" },
+        body: t.Object({ code: t.String({ minLength: 1, maxLength: 6000, pattern: "^[A-Za-z0-9_.-]+$" }) }),
+        detail: { summary: "Bring back guest stamps from a backup code" },
+      },
+    )
     .post(
       "/claim",
       async ({ user, body, headers, set }) => {

@@ -8,6 +8,8 @@ import { SampleNoticeHost } from "@/components/SampleNotice";
 import { SiteFooter } from "@/components/SiteFooter";
 import { StampFilters } from "@/components/StampFilters";
 import { BookmarkProvider } from "@/components/useBookmarks";
+import { IntroFlow } from "@/components/IntroFlow";
+import { BrowserWarning } from "@/components/BrowserWarning";
 import { GuestClaim } from "@/components/GuestClaim";
 import { GuestNag } from "@/components/GuestNag";
 import { FuriganaLayer } from "@/components/FuriganaLayer";
@@ -45,7 +47,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           <SiteHeader
             signedIn={viewer.signedIn}
             locale={i18n.locale}
-            profile={{ publicId: viewer.publicId, deletionDueAt: viewer.deletionDueAt, name: viewer.name, origin: viewer.origin, ageRange: viewer.ageRange, gender: viewer.gender }}
+            profile={{ publicId: viewer.publicId, deletionDueAt: viewer.deletionDueAt, name: viewer.name, origin: viewer.origin, ageRange: viewer.ageRange, gender: viewer.gender, foundVia: viewer.foundVia }}
             prefs={prefsState.effective}
             sample={sample}
           />
@@ -53,13 +55,17 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           {sample ? <SampleNoticeHost /> : null}
           <PrefsSync signedIn={viewer.signedIn} account={prefsState.account} device={prefsState.device} />
           <main id="main" className="pb-[calc(7rem+var(--nav-toast,0px))] md:pb-[calc(2.5rem+var(--nav-toast,0px))] md:pt-6 lg:pb-[calc(5rem+var(--nav-toast,0px))] lg:pt-8">
-            <div className="lg:mx-auto lg:max-w-6xl lg:px-10">{children}</div>
+            <div className="lg:mx-auto lg:max-w-6xl lg:px-10">
+              {viewer.signedIn ? null : <BrowserWarning />}
+              {children}
+            </div>
             <div className="lg:hidden">
               <SiteFooter locale={i18n.locale} />
             </div>
           </main>
         </div>
       </div>
+      {viewer.signedIn ? null : <IntroFlow seen={jar.has("intro")} />}
       {viewer.signedIn ? (hasGuestStamps ? <GuestClaim /> : null) : <GuestNag hasStamps={hasGuestStamps} />}
       {prefsState.effective.furigana ? <FuriganaLayer /> : null}
       <NavigationToast />

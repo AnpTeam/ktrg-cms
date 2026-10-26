@@ -31,10 +31,10 @@ const ja: Help = {
   guideTitle: "遊び方",
   guideIntro: "歩いた場所で、スタンプを集めていくアプリです。むずかしい操作はありません。",
   steps: [
-    { title: "登録する", text: "メールか、顔・指紋（パスキー）で登録します。数分で終わります。" },
     { title: "ルートをえらぶ", text: "「ルート」から、歩きたいコースをえらびます。地図で、道とスタンプの場所が見られます。" },
-    { title: "着いたら、スタンプを押す", text: "スタンプの場所に着いたら、ボタンを押します。アプリがいまの場所を確かめて、近くにいればスタンプが押されます。" },
-    { title: "スタンプカードで見る", text: "「スタンプ」のページで、集めたスタンプと、のこりが見られます。" },
+    { title: "着いたら、スタンプを押す", text: "スタンプの場所に着いたら、ボタンを押します。アプリがいまの場所を確かめて、近くにいればスタンプが押されます。登録しなくても押せます。" },
+    { title: "ラリーで見る", text: "「ラリー」のページで、集めたスタンプと、のこりが見られます。" },
+    { title: "登録して、残す", text: "登録しないと、スタンプはこの端末にしか残りません。メールか、顔・指紋（パスキー）で登録すると、ずっと残り、コンプリート証ももらえます。" },
   ],
   guideNote: "山の中は、電波がつながりにくいことがあります。出かける前に、公式の最新情報を確認してください。",
   faqTitle: "よくあるご質問",
@@ -43,6 +43,11 @@ const ja: Help = {
       question: "集めたスタンプが消えました",
       answer:
         "スタンプは、アカウントに保存されています。ログインの方法を変えると、別のアカウントになっていることがあります（メールで登録した方と、顔・指紋だけで登録した方は、別のアカウントです）。前と同じ方法でログインしてみてください。それでも見つからないときは、「スタンプ」のページに出ているID（8けたの数字）を、問い合わせ先にお伝えください。問い合わせ先は、公開までにここに書きます。",
+    },
+    {
+      question: "ログインしていないとき、スタンプが残らないことがあります",
+      answer:
+        "登録しないで押したスタンプは、お使いのブラウザにだけ残ります。次のときは、記録が消えます。LINEやInstagramなど、ほかのアプリの中で開いたとき。プライベートモード（シークレットモード）で開いたとき。ブラウザのデータ（クッキー）を消したとき。QRコードを標準のカメラアプリで読み取り、アプリの中のブラウザで開いたとき。SafariかChromeで、同じブラウザを使い続けてください。登録しておくと、記録はアカウントに残り、別のスマートフォンでも見られます。",
     },
     {
       question: "位置情報を許可できません",
@@ -91,10 +96,10 @@ const en: Help = {
   guideTitle: "How to play",
   guideIntro: "Collect stamps as you walk. There is nothing complicated to learn.",
   steps: [
-    { title: "Register", text: "Register with your email, or with your face or fingerprint (a passkey). It takes a few minutes." },
     { title: "Choose a route", text: "Pick the course you want to walk under Routes. The map shows the path and the stamp places." },
-    { title: "Press the button when you arrive", text: "At a stamp place, press the button. The app checks where you are and, if you are close enough, gives you the stamp." },
-    { title: "See your stamp card", text: "On the Stamps page you can see the stamps you have and how many are left." },
+    { title: "Press the button when you arrive", text: "At a stamp place, press the button. The app checks where you are and, if you are close enough, gives you the stamp. You can do this without signing up." },
+    { title: "See them under Rallies", text: "On the Rallies page you can see the stamps you have and how many are left." },
+    { title: "Sign up to keep them", text: "Without an account, stamps stay only on this device. Sign up with your email, or with your face or fingerprint (a passkey), and they stay for good, and you can get a certificate." },
   ],
   guideNote: "Signal can be weak in the mountains. Check the latest official information before you go.",
   faqTitle: "FAQ",
@@ -103,6 +108,11 @@ const en: Help = {
       question: "My stamps are gone",
       answer:
         "Stamps are saved on your account. If you signed in a different way, it may be a different account (someone who registered with email and someone who registered with only a face or fingerprint have separate accounts). Try signing in the same way as before. If you still cannot find them, tell the contact point the ID (8 digits) shown on the Stamps page. The contact point will be written here before the app is published.",
+    },
+    {
+      question: "My stamps are not kept when I am not signed in",
+      answer:
+        "Stamps you collect without signing up are kept only in your browser. They are lost when you open the page inside another app (LINE, Instagram and so on), when you use private (incognito) mode, when you clear the browser's data (cookies), or when you scan the QR code with the camera app and it opens in the app's own browser. Keep using Safari or Chrome, the same one each time. If you sign up, your stamps stay on your account and you can see them on another phone too.",
     },
     {
       question: "I cannot allow location",

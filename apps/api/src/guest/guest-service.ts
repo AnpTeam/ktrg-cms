@@ -37,6 +37,27 @@ export function createGuestService({ stamps, secret, now = () => new Date() }: {
       return { ok: true, value: { spotId: r.spotId, createdAt: new Date(at * 1000), flagged: checked.value.flagged, alreadyStamped: false, finished, cookie: encodeGuest(next, secret) } };
     },
 
+    /** The cookie's own value, to be kept as a backup (empty when there are no stamps). */
+    backup(cookie: string | null | undefined): string {
+      const held = list(cookie);
+      return held.length > 0 ? encodeGuest(held, secret) : "";
+    },
+
+    /** Adds the stamps of a backup to the ones this browser holds (a place held in both keeps its earlier time). Null for a code that is not ours. */
+    restore(cookie: string | null | undefined, code: string): { cookie: string; restored: number; total: number } | null {
+      const backup = decodeGuest(code, secret);
+      if (backup.length === 0) return null;
+      const merged = new Map(list(cookie).map((s) => [s.spotId, s]));
+      let restored = 0;
+      for (const s of backup) {
+        const have = merged.get(s.spotId);
+        if (!have) restored++;
+        if (!have || s.at < have.at) merged.set(s.spotId, s);
+      }
+      const all = [...merged.values()].sort((a, b) => a.at - b.at).slice(0, GUEST_MAX);
+      return { cookie: encodeGuest(all, secret), restored, total: all.length };
+    },
+
     /** Moves the guest's stamps to the account (a place the account already holds is left as it is). Returns how many were new. */
     async claim(userId: string, cookie: string | null | undefined): Promise<{ added: number; already: number }> {
       let added = 0;

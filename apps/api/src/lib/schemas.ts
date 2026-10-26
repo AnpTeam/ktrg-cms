@@ -1,5 +1,5 @@
 import { t, type Static } from "elysia";
-import { userAgeRange, userGender, userLocale, userOrigin } from "../db/schema";
+import { userAgeRange, userFoundVia, userGender, userLocale, userOrigin } from "../db/schema";
 import type { TNull, TObject, TOptional, TString, TUnion } from "@sinclair/typebox";
 import { EXTRA_LOCALES, type ExtraLocale } from "../db/translations";
 
@@ -52,7 +52,10 @@ export const ageRangeSchema = t.Union([
 export const genderSchema = t.Union([t.Literal("female"), t.Literal("male"), t.Literal("other"), t.Literal("unspecified")]);
 const _ageCovered: Exclude<(typeof userAgeRange.enumValues)[number], Static<typeof ageRangeSchema>> extends never ? true : never = true;
 const _genderCovered: Exclude<(typeof userGender.enumValues)[number], Static<typeof genderSchema>> extends never ? true : never = true;
-void [_ageCovered, _genderCovered];
+/** How they found the rally, asked after registering. */
+export const foundViaSchema = t.Union([t.Literal("qr_or_sign"), t.Literal("flyer"), t.Literal("tourism_site"), t.Literal("sns"), t.Literal("search"), t.Literal("friend"), t.Literal("other")]);
+const _foundViaCovered: Exclude<(typeof userFoundVia.enumValues)[number], Static<typeof foundViaSchema>> extends never ? true : never = true;
+void [_ageCovered, _genderCovered, _foundViaCovered];
 
 /** The accessibility and map choices (me/preferences.ts): the first five fields are required, nothing else is allowed. */
 export const preferencesSchema = t.Object(

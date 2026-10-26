@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { persistPrefs } from "@/lib/prefs-client";
+import { setSound, useSound } from "@/lib/stamp-feel";
 import { textSizes, type Prefs } from "@/lib/prefs";
 
 type Toggle = "furigana" | "contrast" | "calm";
@@ -16,6 +17,7 @@ export function QuickActions({ prefs, signedIn }: { prefs: Prefs; signedIn: bool
   const { t } = useLingui();
   const router = useRouter();
   const [current, setCurrent] = useState(prefs);
+  const sound = useSound();
 
   async function change(next: Prefs) {
     setCurrent(next);
@@ -32,26 +34,31 @@ export function QuickActions({ prefs, signedIn }: { prefs: Prefs; signedIn: bool
   const bigger = () => change({ ...current, size: textSizes[(textSizes.indexOf(current.size) + 1) % textSizes.length]! });
 
   const button = (on: boolean) =>
-    `tap-target flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-xl border-2 px-1 py-2 text-center text-base font-bold leading-tight ${on ? "border-brand bg-brand text-on-brand" : "border-line bg-paper text-ink"}`;
+    `tap-target flex min-w-0 flex-1 flex-col items-center justify-center rounded-lg border px-1 py-1 text-center text-sm font-bold leading-tight ${on ? "border-brand bg-brand text-on-brand" : "border-line bg-paper text-ink"}`;
   const sizeName = { standard: t`ふつう`, large: t`大`, xlarge: t`特大` }[current.size];
 
   return (
     <div role="group" aria-label={t`見やすさのクイック設定`} className="flex gap-2">
       <button type="button" aria-pressed={current.furigana} onClick={() => flip("furigana")} className={button(current.furigana)}>
-        <span aria-hidden="true" className="text-2xl">あ</span>
+        <span aria-hidden="true" className="text-lg leading-none">あ</span>
         {t`ふりがな`}
       </button>
       <button type="button" onClick={bigger} className={button(current.size !== "standard")} aria-label={t`文字の大きさ: ${sizeName}（押すと変わります）`}>
-        <span aria-hidden="true" className="text-2xl">文</span>
+        <span aria-hidden="true" className="text-lg leading-none">文</span>
         {t`文字 ${sizeName}`}
       </button>
       <button type="button" aria-pressed={current.contrast} onClick={() => flip("contrast")} className={button(current.contrast)}>
-        <span aria-hidden="true" className="text-2xl">◐</span>
+        <span aria-hidden="true" className="text-lg leading-none">◐</span>
         {t`くっきり`}
       </button>
       <button type="button" aria-pressed={current.calm} onClick={() => flip("calm")} className={button(current.calm)}>
-        <span aria-hidden="true" className="text-2xl">≈</span>
+        <span aria-hidden="true" className="text-lg leading-none">≈</span>
         {t`動きなし`}
+      </button>
+      {/* The stamp sound: kept on this device only, off until chosen. */}
+      <button type="button" aria-pressed={sound} onClick={() => setSound(!sound)} className={button(sound)}>
+        <span aria-hidden="true" className="text-lg leading-none">♪</span>
+        {t`音`}
       </button>
     </div>
   );

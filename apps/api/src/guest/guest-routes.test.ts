@@ -94,6 +94,23 @@ describe("stamps without an account", () => {
     expect(dropped.headers.get("set-cookie")).toContain("Max-Age=0");
   });
 
+  test("a backup code brings the stamps back in another browser, and a made-up code does nothing", async () => {
+    const { stamp, call, guestCookieOf } = await setup();
+    const cookie = `guest=${guestCookieOf(await stamp())}`;
+    const code = ((await (await call("GET", "/guest/backup", { cookie })).json()) as Json).code as string;
+    expect(code.length).toBeGreaterThan(10);
+    expect(((await (await call("GET", "/guest/backup")).json()) as Json).code).toBe("");
+
+    // A browser that holds nothing gets the stamp back.
+    const back = await call("POST", "/guest/restore", { body: { code } });
+    expect(((await back.json()) as Json)).toMatchObject({ ok: true, restored: 1, total: 1 });
+    const list = (await (await call("GET", "/guest/stamps", { cookie: `guest=${guestCookieOf(back)}` })).json()) as Json;
+    expect(list.stamps).toHaveLength(1);
+    // The same code again adds nothing.
+    expect(((await (await call("POST", "/guest/restore", { cookie, body: { code } })).json()) as Json).restored).toBe(0);
+    expect((await call("POST", "/guest/restore", { body: { code: "AAAA.BBBB" } })).status).toBe(422);
+  });
+
   test("claiming needs a login", async () => {
     const { call } = await setup();
     expect((await call("POST", "/guest/claim", { body: { mode: "merge" } })).status).toBe(401);

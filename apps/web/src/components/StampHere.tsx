@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { locationAlreadyAllowed, mockPosition, mockStamp, readPosition, requestStamp } from "@/lib/stamp-client";
 import { distanceParts, type Problem, type StampMock } from "@/lib/stamp-flow";
+import { buzz, playThud, unlockAudio } from "@/lib/stamp-feel";
+import { track } from "@/lib/track";
 import { StampFace } from "./StampFace";
 
 // The "stamp here" button of a spot page (WBS 3.3.1). One tap: explain why the position is needed (before the
@@ -62,6 +64,7 @@ export function StampHere({
   }, [phase.name]);
 
   async function start() {
+    unlockAudio();
     setPhase({ name: "locating" });
     const position = mock ? await mockPosition(mock) : await readPosition();
     if (!position.ok) {
@@ -72,6 +75,11 @@ export function StampHere({
     const result = mock ? await mockStamp(mock) : await requestStamp(spotId, position.reading);
     if (result.ok) {
       setPhase({ name: "done", already: result.already });
+      if (!result.already) {
+        playThud();
+        buzz();
+      }
+      track("stamp", { already: result.already, finishedCourse: (result.finished?.routeIds.length ?? 0) > 0 });
       window.dispatchEvent(new Event("ktrg:stamped")); // the sign-up reminder for a visitor with no account listens
       onStamped?.();
       router.refresh();
@@ -103,11 +111,12 @@ export function StampHere({
     failed: t`問題が発生しました。しばらくしてからもう一度お試しください。`,
   };
 
-  const wrapper = inSheet ? "sticky bottom-[var(--tab-room)] z-10 flex flex-col gap-2 bg-paper/95 py-2" : "sticky bottom-24 z-10 flex flex-col gap-2 px-4 md:bottom-6";
+  const wrapper = inSheet ? "sticky bottom-[var(--tab-room)] z-10 flex flex-col gap-2 bg-paper/95 py-2" : "sticky bottom-[calc(6rem+env(safe-area-inset-bottom))] z-10 flex flex-col gap-2 px-4 md:bottom-6";
 
   if (phase.name === "done") {
     return (
       <div className={wrapper}>
+        {phase.already ? null : <StampPress image={stampImage} />}
         <div role="status" className="flex items-center gap-4 rounded-3xl bg-surface p-4 shadow-lg">
           <StampFace state="stamped" number={1} image={stampImage} rough className="stamp-land h-16 w-16 shrink-0" />
           <p className="text-xl font-bold leading-snug">{phase.already ? t`このスタンプは、もう押してあります。` : t`スタンプを押しました！`}</p>
@@ -178,6 +187,19 @@ export function StampHere({
           </button>
         </div>
       </dialog>
+    </div>
+  );
+}
+
+/**
+ * The moment the stamp is pressed: a big seal drops onto the screen, the page gives one small thump, and an ink ring spreads
+ * out. It is all CSS animation that ends invisible, so with "calm" on (animations off) nothing is drawn at all.
+ */
+function StampPress({ image }: { image?: string | null }) {
+  return (
+    <div aria-hidden="true" className="stamp-press pointer-events-none fixed inset-0 z-50 flex items-center justify-center opacity-0">
+      <span className="stamp-press-ring absolute size-56 rounded-full border-8 border-shu" />
+      <StampFace state="stamped" number={1} image={image} rough className="stamp-press-seal size-56 rounded-full! p-4" />
     </div>
   );
 }

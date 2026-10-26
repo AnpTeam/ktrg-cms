@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import type { ReactNode } from "react";
+import { Analytics } from "@vercel/analytics/next";
 import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { LinguiClientProvider } from "@/i18n/LinguiClientProvider";
@@ -66,6 +67,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           </a>
           {children}
         </LinguiClientProvider>
+        {/* Page views for the project (Vercel Analytics: no cookies, no personal data). Only counts on Vercel. */}
+        <Analytics />
       </body>
     </html>
   );

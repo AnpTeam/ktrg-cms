@@ -13,6 +13,10 @@ export type AgeRange = (typeof ageRanges)[number];
 export const genders = ["female", "male", "other", "unspecified"] as const;
 export type Gender = (typeof genders)[number];
 
+/** How they found the rally, asked after registering; the keys match the API's `user_found_via`. */
+export const foundVias = ["qr_or_sign", "flyer", "tourism_site", "sns", "search", "friend", "other"] as const;
+export type FoundVia = (typeof foundVias)[number];
+
 /**
  * The ID shown on the profile, in two groups of four (0004-8271). It is the account's unique 8-digit public ID
  * (see the API's lib/public-id.ts): support can go straight to the account with it. It is not a secret and

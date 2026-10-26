@@ -14,7 +14,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         <Trans>プロフィール</Trans>
       </h1>
       {viewer.signedIn ? (
-        <ProfileCard publicId={viewer.publicId} deletionDueAt={viewer.deletionDueAt} locale={i18n.locale} name={viewer.name} origin={viewer.origin} ageRange={viewer.ageRange} gender={viewer.gender} />
+        <ProfileCard publicId={viewer.publicId} deletionDueAt={viewer.deletionDueAt} locale={i18n.locale} name={viewer.name} origin={viewer.origin} ageRange={viewer.ageRange} gender={viewer.gender} foundVia={viewer.foundVia} />
       ) : (
         <SignInPrompt />
       )}

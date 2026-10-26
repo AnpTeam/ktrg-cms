@@ -1,0 +1,2 @@
+CREATE TYPE "public"."user_found_via" AS ENUM('qr_or_sign', 'flyer', 'tourism_site', 'sns', 'search', 'friend', 'other');--> statement-breakpoint
+ALTER TABLE "users" ADD COLUMN "found_via" "user_found_via";

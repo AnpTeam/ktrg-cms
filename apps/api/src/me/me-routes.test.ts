@@ -336,3 +336,17 @@ describe("DELETE /me (deletion request) and POST /me/deletion/cancel", () => {
     expect(sent).toHaveLength(3);
   });
 });
+
+describe("how they found the rally", () => {
+  test("none until answered; saved, changed and cleared by the caller only", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    expect(((await (await t.call("GET", "", cookie)).json()) as { me: { foundVia: string | null } }).me.foundVia).toBeNull();
+    const saved = await t.call("PATCH", "", cookie, { foundVia: "qr_or_sign" });
+    expect(((await saved.json()) as { me: { foundVia: string | null } }).me.foundVia).toBe("qr_or_sign");
+    expect(((await (await t.call("GET", "", await t.login(bob))).json()) as { me: { foundVia: string | null } }).me.foundVia).toBeNull();
+    expect((await t.call("PATCH", "", cookie, { foundVia: "somewhere" })).status).toBe(422);
+    const cleared = await t.call("PATCH", "", cookie, { foundVia: null });
+    expect(((await cleared.json()) as { me: { foundVia: string | null } }).me.foundVia).toBeNull();
+  });
+});
