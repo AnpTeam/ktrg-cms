@@ -1,10 +1,12 @@
 import { Trans } from "@lingui/react/macro";
 import { ProfileCard } from "@/components/ProfileCard";
+import { ProfileSettings } from "@/components/ProfileSettings";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
 
-// The profile, reached from the menu: who is signed in and the button to change it.
+// The profile, reached from the menu: who is signed in, the answers they gave (changed one at a time), the ways to log in,
+// and deleting the account.
 export default async function ProfilePage({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
   const i18n = await initLingui();
   const viewer = await getViewer(searchParams);
@@ -14,7 +16,10 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         <Trans>プロフィール</Trans>
       </h1>
       {viewer.signedIn ? (
-        <ProfileCard publicId={viewer.publicId} deletionDueAt={viewer.deletionDueAt} locale={i18n.locale} name={viewer.name} origin={viewer.origin} ageRange={viewer.ageRange} gender={viewer.gender} foundVia={viewer.foundVia} />
+        <>
+          <ProfileCard publicId={viewer.publicId} deletionDueAt={viewer.deletionDueAt} locale={i18n.locale} name={viewer.name} origin={viewer.origin} ageRange={viewer.ageRange} gender={viewer.gender} foundVia={viewer.foundVia} email={viewer.email} />
+          <ProfileSettings locale={i18n.locale} deletionDueAt={viewer.deletionDueAt} name={viewer.name} origin={viewer.origin} ageRange={viewer.ageRange} gender={viewer.gender} foundVia={viewer.foundVia} />
+        </>
       ) : (
         <SignInPrompt />
       )}
