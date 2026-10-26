@@ -1679,7 +1679,7 @@ msgstr "Desktop width"
 
 #: src/app/(public)/badges/page.tsx:13
 #: src/app/(public)/badges/page.tsx:28
-#: src/app/(public)/rallies/page.tsx:37
+#: src/app/(public)/rallies/page.tsx:36
 #: src/app/(public)/sitemap/page.tsx:79
 msgid "バッジ"
 msgstr "Badges"
@@ -2089,7 +2089,7 @@ msgid "ライト"
 msgstr "Light"
 
 #: src/app/(admin)/admin/rallies/page.tsx:22
-#: src/app/(public)/rallies/page.tsx:30
+#: src/app/(public)/rallies/page.tsx:33
 #: src/app/(public)/sitemap/page.tsx:74
 #: src/components/admin/AdminNav.tsx:32
 #: src/components/TabBar.tsx:25
@@ -2124,7 +2124,7 @@ msgstr "Courses to put in the rally"
 msgid "ラリーに入れる経由地"
 msgstr "Stamp waypoints to put in the rally"
 
-#: src/app/(public)/rallies/page.tsx:67
+#: src/app/(public)/rallies/page.tsx:64
 msgid "ラリーの一覧"
 msgstr "All rallies"
 
@@ -2149,7 +2149,7 @@ msgstr "Rally name"
 msgid "ラリーは、コースを集めてつくるか、経由地を集めてつくります。名前を押すと、名前・公開・中身を直せます。"
 msgstr "A rally is made from courses or from stamp waypoints. Open one to change its name, whether it is public, and what is in it."
 
-#: src/app/(public)/rallies/page.tsx:57
+#: src/app/(public)/rallies/page.tsx:54
 msgid "ラリーは、まだ準備中です。"
 msgstr "The rallies are not ready yet."
 
@@ -2761,7 +2761,7 @@ msgstr "Publish"
 msgid "公開できるようになったら、ここにコースのバッジが表示されます。"
 msgstr "When they can be published, the course badges will show here."
 
-#: src/app/(public)/rallies/page.tsx:58
+#: src/app/(public)/rallies/page.tsx:55
 msgid "公開できるようになったら、ここにスタンプのラリーが表示されます。"
 msgstr "When they are ready to publish, the stamp rallies will appear here."
 
@@ -2991,7 +2991,7 @@ msgstr "Working…"
 msgid "出かける前に"
 msgstr "Before you go"
 
-#: src/app/(public)/rallies/page.tsx:81
+#: src/app/(public)/rallies/page.tsx:78
 #: src/app/(public)/routes/page.tsx:87
 #: src/components/landing/Landing.tsx:173
 #: src/components/RouteView.tsx:271
@@ -5003,7 +5003,7 @@ msgstr "Closed"
 msgid "通行止めなどの知らせを、確認した日づけで見られます。"
 msgstr "See closures and other notices with the date they were checked."
 
-#: src/app/(public)/rallies/page.tsx:46
+#: src/app/(public)/rallies/page.tsx:40
 #: src/app/(public)/sitemap/page.tsx:82
 msgid "遊び方"
 msgstr "How to play"

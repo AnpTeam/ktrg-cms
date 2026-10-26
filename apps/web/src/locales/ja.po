@@ -1679,7 +1679,7 @@ msgstr "パソコン幅"
 
 #: src/app/(public)/badges/page.tsx:13
 #: src/app/(public)/badges/page.tsx:28
-#: src/app/(public)/rallies/page.tsx:37
+#: src/app/(public)/rallies/page.tsx:36
 #: src/app/(public)/sitemap/page.tsx:79
 msgid "バッジ"
 msgstr "バッジ"
@@ -2089,7 +2089,7 @@ msgid "ライト"
 msgstr "ライト"
 
 #: src/app/(admin)/admin/rallies/page.tsx:22
-#: src/app/(public)/rallies/page.tsx:30
+#: src/app/(public)/rallies/page.tsx:33
 #: src/app/(public)/sitemap/page.tsx:74
 #: src/components/admin/AdminNav.tsx:32
 #: src/components/TabBar.tsx:25
@@ -2124,7 +2124,7 @@ msgstr "ラリーに入れるコース"
 msgid "ラリーに入れる経由地"
 msgstr "ラリーに入れる経由地"
 
-#: src/app/(public)/rallies/page.tsx:67
+#: src/app/(public)/rallies/page.tsx:64
 msgid "ラリーの一覧"
 msgstr "ラリーの一覧"
 
@@ -2149,7 +2149,7 @@ msgstr "ラリーの名前"
 msgid "ラリーは、コースを集めてつくるか、経由地を集めてつくります。名前を押すと、名前・公開・中身を直せます。"
 msgstr "ラリーは、コースを集めてつくるか、経由地を集めてつくります。名前を押すと、名前・公開・中身を直せます。"
 
-#: src/app/(public)/rallies/page.tsx:57
+#: src/app/(public)/rallies/page.tsx:54
 msgid "ラリーは、まだ準備中です。"
 msgstr "ラリーは、まだ準備中です。"
 
@@ -2761,7 +2761,7 @@ msgstr "公開する"
 msgid "公開できるようになったら、ここにコースのバッジが表示されます。"
 msgstr "公開できるようになったら、ここにコースのバッジが表示されます。"
 
-#: src/app/(public)/rallies/page.tsx:58
+#: src/app/(public)/rallies/page.tsx:55
 msgid "公開できるようになったら、ここにスタンプのラリーが表示されます。"
 msgstr "公開できるようになったら、ここにスタンプのラリーが表示されます。"
 
@@ -2991,7 +2991,7 @@ msgstr "処理しています…"
 msgid "出かける前に"
 msgstr "出かける前に"
 
-#: src/app/(public)/rallies/page.tsx:81
+#: src/app/(public)/rallies/page.tsx:78
 #: src/app/(public)/routes/page.tsx:87
 #: src/components/landing/Landing.tsx:173
 #: src/components/RouteView.tsx:271
@@ -5003,7 +5003,7 @@ msgstr "通行止め"
 msgid "通行止めなどの知らせを、確認した日づけで見られます。"
 msgstr "通行止めなどの知らせを、確認した日づけで見られます。"
 
-#: src/app/(public)/rallies/page.tsx:46
+#: src/app/(public)/rallies/page.tsx:40
 #: src/app/(public)/sitemap/page.tsx:82
 msgid "遊び方"
 msgstr "遊び方"

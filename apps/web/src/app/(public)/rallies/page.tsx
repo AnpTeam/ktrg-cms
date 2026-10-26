@@ -1,6 +1,6 @@
 import Link from "next/link";
+import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
-import { ChevronIcon } from "@/components/icons";
 import { EmptyState } from "@/components/EmptyState";
 import { Notice } from "@/components/Notice";
 import { FeaturedRally, RallyCard } from "@/components/RallyViews";
@@ -26,26 +26,22 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
       {/* From 1024 px: you and how to play on the left, the rallies on the right. On a phone, one column in this order. */}
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-start lg:gap-x-10">
       <div className="flex flex-col gap-6">
-      <h1 className="px-4 text-3xl font-bold lg:text-4xl">
-        <Trans>ラリー</Trans>
-      </h1>
-
-      <Link
-        href="/badges"
-        className="tap-target mx-4 flex items-center justify-between rounded-2xl bg-surface px-5 text-xl font-bold text-accent"
-      >
-        <Trans>バッジ</Trans>
-        <ChevronIcon />
-      </Link>
-
-      {/* How to play lives here, with the stamps, and nowhere else. */}
-      <Link
-        href="/guide"
-        className="tap-target mx-4 flex items-center justify-between rounded-2xl bg-surface px-5 text-xl font-bold text-accent"
-      >
-        <Trans>遊び方</Trans>
-        <ChevronIcon />
-      </Link>
+      {/* The title, with the badges and how to play to its side ("?"): how to play lives here, with the stamps, and nowhere else. */}
+      <div className="flex items-center gap-3 px-4">
+        <h1 className="min-w-0 flex-1 text-3xl font-bold lg:text-4xl">
+          <Trans>ラリー</Trans>
+        </h1>
+        <Link href="/badges" className="tap-target inline-flex items-center rounded-full bg-surface px-5 text-xl font-bold text-accent">
+          <Trans>バッジ</Trans>
+        </Link>
+        <Link
+          href="/guide"
+          aria-label={i18n._(msg`遊び方`)}
+          className="tap-target inline-flex size-12 items-center justify-center rounded-full bg-surface text-2xl font-bold text-accent"
+        >
+          ?
+        </Link>
+      </div>
 
       {/* Signed out: a reason to sign in and the rallies, never a false "0 stamps". */}
       {viewer.signedIn ? null : <SignInPrompt />}
