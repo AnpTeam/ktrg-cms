@@ -363,6 +363,22 @@ export const furiganaWords = pgTable("furigana_words", {
   updatedAt: updatedAt(),
 });
 
+/** A visitor's comment under a post. Held (`pending`) until a staff member approves it; `hidden` is kept but not shown. */
+export const blogComments = pgTable(
+  "blog_comments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    postId: uuid("post_id").notNull().references(() => blogPosts.id, { onDelete: "cascade" }),
+    // Kept as none (shown as "a deleted account") if the writer's account is deleted.
+    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    body: text("body").notNull(),
+    status: text("status", { enum: ["pending", "approved", "hidden"] }).notNull().default("pending"),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [index("blog_comments_post_idx").on(t.postId, t.status, t.createdAt)],
+);
+
 /** A page an editor makes, shown at /p/<slug> once published (see pages/). The text is in the page-text format. */
 export const sitePages = pgTable("site_pages", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -406,6 +422,11 @@ export const blogPosts = pgTable(
     // The place of the directory the post is about (its details and the places near it are shown under the text); kept as
     // none when that place is deleted.
     placeId: uuid("place_id").references(() => places.id, { onDelete: "set null" }),
+    // A route and a waypoint (or sutra mound) the post is about: shown as cards under the text. Kept as none when deleted.
+    routeId: uuid("route_id").references(() => routes.id, { onDelete: "set null" }),
+    spotId: uuid("spot_id").references(() => spots.id, { onDelete: "set null" }),
+    // Who made the post: their profile name and photo are the byline unless the post names someone else. Never sent out.
+    authorUserId: uuid("author_user_id").references(() => users.id, { onDelete: "set null" }),
     // The day the post is dated and from which visitors see it (YYYY-MM-DD, Japan time).
     publishedOn: date("published_on", { mode: "string" }).notNull(),
     published: boolean("published").notNull().default(false),

@@ -18,6 +18,8 @@ const post = (over: Record<string, unknown> = {}) => ({
   coverCredit: "  ",
   authorPhotoUrl: null,
   placeId: null,
+  routeId: null,
+  spotId: null,
   publishedOn: "2026-10-20",
   published: false,
   ...over,
@@ -99,5 +101,24 @@ describe("blog posts", () => {
     const svc = createPostService({ store: createMemoryPostStore(audit.writer).store, now: () => NOW, placeExists: async (id) => id === known });
     expect((await svc.create(actor, post({ placeId: known }))).ok).toBe(true);
     expect(await svc.create(actor, post({ placeId: "33333333-3333-4333-8333-333333333333" }))).toMatchObject({ ok: false });
+  });
+
+  test("the byline is the name on the post, else the profile name of whoever made it; the account id is never sent", async () => {
+    const audit = createMemoryAuditWriter();
+    const mem = createMemoryPostStore(audit.writer);
+    const svc = createPostService({ store: mem.store, now: () => NOW });
+    const made = await svc.create(actor, post({ published: true }));
+    if (!made.ok) throw new Error("not made");
+    mem.rows.set(made.value.id, { ...made.value, authorUserId: actor, accountName: "山田", accountPhotoUrl: "https://example.com/a.jpg" } as never);
+    const { publicPostRoutes } = await import("./post-list");
+    const { Elysia } = await import("elysia");
+    const { apiBase } = await import("../lib/api-errors");
+    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(publicPostRoutes(() => svc));
+    const body = (await (await app.handle(new Request(`http://localhost/api/v1/posts/${made.value.id}`))).json()) as { post: Record<string, unknown> };
+    expect(body.post).toMatchObject({ authorNameJa: "山田", authorPhotoUrl: "https://example.com/a.jpg" });
+    expect(JSON.stringify(body)).not.toContain(actor);
+    mem.rows.set(made.value.id, { ...mem.rows.get(made.value.id)!, authorNameJa: "取材班" });
+    const named = (await (await app.handle(new Request(`http://localhost/api/v1/posts/${made.value.id}`))).json()) as { post: Record<string, unknown> };
+    expect(named.post.authorNameJa).toBe("取材班");
   });
 });

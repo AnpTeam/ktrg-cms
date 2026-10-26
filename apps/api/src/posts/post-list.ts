@@ -34,6 +34,9 @@ export const POST_FIELDS = {
   authorPhotoUrl: nullable(500),
   /** The place of the directory this post is about, or none. */
   placeId: t.Union([t.String({ format: "uuid" }), t.Null()]),
+  /** A route and a waypoint (a sutra mound is one) this post is about, or none. */
+  routeId: t.Union([t.String({ format: "uuid" }), t.Null()]),
+  spotId: t.Union([t.String({ format: "uuid" }), t.Null()]),
   /** The other content languages (admin entry; visitors see ja / en). */
   translations: t.Optional(translationsSchema({ title: 200, body: 20000, authorName: 100 })),
   /** YYYY-MM-DD, Japan time: the day the post is dated and from which visitors see it. */
@@ -43,7 +46,8 @@ export const POST_FIELDS = {
 
 const postFields = t.Object(POST_FIELDS);
 export type PostFields = Static<typeof postFields>;
-export type PostRow = ListRow & PostFields;
+/** The account behind a post is read with it (never saved from the form): its name and photo are the byline when the post names no one. */
+export type PostRow = ListRow & PostFields & { authorUserId?: string | null; accountName?: string | null; accountPhotoUrl?: string | null };
 
 export interface PostStore extends ListStore<PostRow, PostFields> {
   /** Published posts dated `today` (YYYY-MM-DD) or earlier, newest first, at most PUBLIC_POSTS_LIMIT. */
@@ -82,10 +86,15 @@ export const postRules = (photoHosts: readonly string[] = []): ListRules<PostFie
 export type PostService = ReturnType<typeof createPostService>;
 
 /** The admin list of blog posts, and what visitors read. */
-export function createPostService(deps: { store: PostStore; photoHosts?: readonly string[]; now?: () => Date; placeExists?: (id: string) => Promise<boolean> }) {
+export function createPostService(deps: { store: PostStore; photoHosts?: readonly string[]; now?: () => Date; placeExists?: (id: string) => Promise<boolean>; routeExists?: (id: string) => Promise<boolean>; spotExists?: (id: string) => Promise<boolean> }) {
   const now = deps.now ?? (() => new Date());
   return {
-    ...createListService({ store: deps.store, rules: postRules(deps.photoHosts), relations: deps.placeExists ? { placeId: deps.placeExists } : undefined }),
+    ...createListService({ store: deps.store, rules: postRules(deps.photoHosts), relations: {
+        ...(deps.placeExists ? { placeId: deps.placeExists } : {}),
+        ...(deps.routeExists ? { routeId: deps.routeExists } : {}),
+        ...(deps.spotExists ? { spotId: deps.spotExists } : {}),
+      },
+    }),
     publicPosts: () => deps.store.listPublic(todayInJapan(now())),
     publicPost: (id: string) => deps.store.getPublic(id, todayInJapan(now())),
   };
@@ -165,6 +174,15 @@ export const postList: ListDef<"posts", typeof POST_FIELDS, PostRow, PostService
         hint: { ja: "記事に表示されます。本人の了解を得てから入れてください。空でもかまいません。", en: "Shown on the post. Ask the person first. It may be left empty." },
       },
       { name: "authorPhotoUrl", kind: "image", label: { ja: "書いた人の写真", en: "Author's photo" } },
+      { name: "routeId", kind: "route", label: { ja: "この記事のルート", en: "The route this post is about" }, noneLabel: { ja: "（なし）", en: "(none)" } },
+      {
+        name: "spotId",
+        kind: "relation",
+        to: "places",
+        label: { ja: "この記事の経由地・経塚", en: "The waypoint or sutra mound this post is about" },
+        hint: { ja: "経由地の一覧から選びます（経塚も経由地です）。記事の下に、その場所のカードが出ます。", en: "Choose from the waypoints list (a sutra mound is a waypoint). A card for it is shown under the post." },
+        noneLabel: { ja: "（なし）", en: "(none)" },
+      },
       {
         name: "placeId",
         kind: "relation",
@@ -191,8 +209,16 @@ export const postList: ListDef<"posts", typeof POST_FIELDS, PostRow, PostService
   },
 };
 
-/** What a visitor sees of a post: no draft flag, no edit times, no other languages (the site speaks ja / en). */
-const publicOut = ({ published: _p, createdAt: _c, updatedAt: _u, translations: _t, ...post }: PostRow) => post;
+/**
+ * What a visitor sees of a post: no draft flag, no edit times, no other languages (the site speaks ja / en), and no account
+ * id. The byline is the name typed on the post, else the profile name of whoever made it; likewise the photo.
+ */
+const publicOut = ({ published: _p, createdAt: _c, updatedAt: _u, translations: _t, authorUserId: _a, accountName, accountPhotoUrl, ...post }: PostRow) => ({
+  ...post,
+  authorNameJa: post.authorNameJa ?? accountName ?? null,
+  authorNameEn: post.authorNameEn ?? (post.authorNameJa ? null : (accountName ?? null)),
+  authorPhotoUrl: post.authorPhotoUrl ?? accountPhotoUrl ?? null,
+});
 
 /** What visitors read, no login: published posts whose day has come, newest first, and one post by its id. */
 export function publicPostRoutes(getPosts: () => PostService) {

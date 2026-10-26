@@ -35,6 +35,8 @@ export const PERMISSIONS = {
   "notice.manage": ["editor", "admin"],
   /** Write and publish blog posts. */
   "post.manage": ["editor", "admin"],
+  /** Write a comment under a blog post (it waits for approval unless the writer is on the staff). */
+  "comment.create": ["participant", "editor", "admin"],
   "upload.create": ["editor", "admin"],
   /** Browse the photos already uploaded (the photo library). */
   "upload.read": ["editor", "admin"],

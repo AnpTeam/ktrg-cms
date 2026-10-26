@@ -1437,7 +1437,7 @@ describe.skipIf(!url)("blog posts on real PostgreSQL", () => {
     authorNameEn: null,
     coverPhotoUrl: null,
     coverCredit: null,
-    authorPhotoUrl: null, placeId: null,
+    authorPhotoUrl: null, placeId: null, routeId: null, spotId: null,
     publishedOn: "2026-10-20",
     published: false,
     ...over,

@@ -186,3 +186,15 @@ describe("deletion after the grace period", () => {
     expect(a).not.toBe(b);
   });
 });
+
+describe("profile photo", () => {
+  test("only the staff have one; it must be an https photo address; null clears it", async () => {
+    const { service, users } = setup();
+    const editor: AuthUser = { ...alice, role: "editor" };
+    users.set(alice.id, editor);
+    expect(await service.update(editor, { avatarUrl: "https://example.com/me.jpg" })).toMatchObject({ ok: true, profile: { avatarUrl: "https://example.com/me.jpg" } });
+    expect(await service.update(editor, { avatarUrl: "http://example.com/me.jpg" })).toEqual({ ok: false, reason: "invalid_photo_url" });
+    expect(await service.update(editor, { avatarUrl: null })).toMatchObject({ ok: true, profile: { avatarUrl: null } });
+    expect(await service.update(alice, { avatarUrl: "https://example.com/me.jpg" })).toEqual({ ok: false, reason: "forbidden" });
+  });
+});

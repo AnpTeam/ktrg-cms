@@ -2,7 +2,7 @@ import { and, desc, eq, inArray, lte, sql } from "drizzle-orm";
 import { afterCursor, newestFirst, sameInstant } from "../admin-lists/list-sql";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
-import { blogPosts, blogPostTranslations } from "../db/schema";
+import { blogPosts, blogPostTranslations, users } from "../db/schema";
 import { emptyTexts, flattenTexts, POST_TEXT, splitTexts, type Texts } from "../db/translations";
 import { POST_AUDIT, PUBLIC_POSTS_LIMIT, type PostRow, type PostStore } from "./post-list";
 
@@ -17,8 +17,14 @@ async function withTexts(q: Reader, rows: (typeof blogPosts.$inferSelect)[]): Pr
     await q.select().from(blogPostTranslations).where(inArray(blogPostTranslations.blogPostId, rows.map((r) => r.id))),
     (t) => t.blogPostId,
   );
+  // The account behind each post: its profile name and photo are the byline unless the post names someone else.
+  const authorIds = [...new Set(rows.flatMap((r) => (r.authorUserId ? [r.authorUserId] : [])))];
+  const accounts = new Map(
+    (authorIds.length === 0 ? [] : await q.select({ id: users.id, name: users.displayName, photo: users.avatarUrl }).from(users).where(inArray(users.id, authorIds))).map((u) => [u.id, u]),
+  );
   return rows.map((r) => {
     const w = words.get(r.id) ?? emptyTexts(POST_TEXT);
+    const account = r.authorUserId ? accounts.get(r.authorUserId) : undefined;
     return {
       id: r.id,
       titleJa: w.titleJa ?? "",
@@ -31,6 +37,11 @@ async function withTexts(q: Reader, rows: (typeof blogPosts.$inferSelect)[]): Pr
       coverCredit: r.coverCredit,
       authorPhotoUrl: r.authorPhotoUrl,
       placeId: r.placeId,
+      routeId: r.routeId,
+      spotId: r.spotId,
+      authorUserId: r.authorUserId,
+      accountName: account?.name ?? null,
+      accountPhotoUrl: account?.photo ?? null,
       translations: w.translations,
       publishedOn: r.publishedOn,
       published: r.published,
@@ -75,7 +86,7 @@ export function createDrizzlePostStore(db: Db): PostStore {
     async create(actor, fields) {
       const { rest, texts } = splitTexts(POST_TEXT, fields);
       return db.transaction(async (tx) => {
-        const [made] = await tx.insert(blogPosts).values(rest).returning();
+        const [made] = await tx.insert(blogPosts).values({ ...rest, authorUserId: actor }).returning();
         await saveTexts(tx, made!.id, texts);
         await writeAudit(tx, { actorUserId: actor, action: POST_AUDIT.create, targetId: made!.id });
         return (await withTexts(tx, [made!]))[0]!;

@@ -33,7 +33,8 @@ export function meRoutes(getServices: () => MeServices, opts: RouteOptions) {
         async ({ user, body, set }) => {
           const result = await getServices().me.update(user, body);
           if (result.ok) return { ok: true as const, me: result.profile };
-          return result.reason === "gone" ? fail(set, 401, "unauthenticated") : fail(set, 400, "invalid_display_name");
+          if (result.reason === "gone") return fail(set, 401, "unauthenticated");
+          return result.reason === "forbidden" ? fail(set, 403, "forbidden") : fail(set, 400, result.reason);
         },
         {
           auth: "me.manage",
@@ -43,6 +44,8 @@ export function meRoutes(getServices: () => MeServices, opts: RouteOptions) {
               locale: t.Optional(localeSchema),
               // null clears it. Checked further in the service (length, hidden characters).
               displayName: t.Optional(t.Union([t.String({ maxLength: 200 }), t.Null()])),
+              // A photo of you (an https link); null clears it. Staff only.
+              avatarUrl: t.Optional(t.Union([t.String({ maxLength: 500 }), t.Null()])),
               // Where you come from; null clears it.
               origin: t.Optional(t.Union([originSchema, t.Null()])),
               // Age band and gender (answered after registering); null clears them.

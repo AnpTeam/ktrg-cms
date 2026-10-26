@@ -21,6 +21,7 @@ import { createUserListService, type UserListServices, type UserListStore } from
 import type { NoticeServices } from "./notices/notice-routes";
 import { createNoticeService } from "./notices/notice-service";
 import type { NoticeStore } from "./notices/notice-types";
+import { createCommentService, type CommentServices, type CommentStore } from "./posts/comments";
 import { createPostService, type PostServices, type PostStore } from "./posts/post-list";
 import type { ContentServices } from "./content/admin-routes";
 import { createContentService } from "./content/content-service";
@@ -41,7 +42,7 @@ import { createUploadService } from "./uploads/upload-service";
 import type { FileStorage } from "./uploads/upload-storage";
 
 /** Everything the routes use. */
-export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & PostServices & BannerServices & PlaceServices & SiteSettingsServices & AuditListServices & PlaceListServices & UserListServices & GuestServices & FuriganaServices & SitePageServices & NavigationServices;
+export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & PostServices & CommentServices & BannerServices & PlaceServices & SiteSettingsServices & AuditListServices & PlaceListServices & UserListServices & GuestServices & FuriganaServices & SitePageServices & NavigationServices;
 
 /** What the services are built from: the storage (database or in-memory) and the outside world. */
 export interface ServiceDeps {
@@ -60,6 +61,7 @@ export interface ServiceDeps {
     banners: BannerStore;
     furigana: FuriganaStore;
     sitePages: SitePageStore;
+    comments: CommentStore;
     places: PlaceStore;
     siteSettings: SiteSettingsStore;
     auditList: ListReadStore<AuditListRow>;
@@ -94,6 +96,7 @@ export function createServices(deps: ServiceDeps): Services {
   const { stores, mailer, secret, now } = deps;
   const rateLimit = createRateLimiter({ store: stores.rateLimit, secret, now });
   const stamps = createStampService({ store: stores.stamps });
+  const posts = createPostService({ store: stores.posts, photoHosts: deps.photoHosts, now, placeExists: async (id) => (await stores.places.get(id)) !== null, routeExists: async (id) => (await stores.content.getRoute(id)) !== null, spotExists: async (id) => (await stores.content.getSpot(id)) !== null });
   const routing = withDailyCap(deps.routing ?? createRoutingService({}), rateLimit);
   return {
     otp: createOtpService({ store: stores.otp, mailer, secret, adminEmails: deps.adminEmails, now }),
@@ -103,7 +106,7 @@ export function createServices(deps: ServiceDeps): Services {
     // Emails the owner when a passkey is added or removed.
     passkeys: createPasskeyService({ store: stores.passkeys, mailer, config: deps.passkey, now }),
     // Profile, language, display name and deletion requests (emails the owner).
-    me: createMeService({ store: stores.me, mailer, now }),
+    me: createMeService({ store: stores.me, mailer, now, photoHosts: deps.photoHosts }),
     // Routes and places: what the admin edits and visitors read.
     content: createContentService({ store: stores.content, photoHosts: deps.photoHosts, publicRoutesTtlMs: deps.publicRoutesTtlMs }),
     // Rallies: names, dates, required count and which places they hold.
@@ -116,11 +119,12 @@ export function createServices(deps: ServiceDeps): Services {
     // Trail notices: the admin list and what visitors read.
     notices: createNoticeService({ store: stores.notices, now }),
     // Blog posts: the admin list and what visitors read.
-    posts: createPostService({ store: stores.posts, photoHosts: deps.photoHosts, now, placeExists: async (id) => (await stores.places.get(id)) !== null }),
+    posts,
     // The other generated admin lists: home banners, the audit log, every place, accounts and their roles.
     banners: createBannerService({ store: stores.banners, photoHosts: deps.photoHosts }),
     furigana: createFuriganaService({ store: stores.furigana }),
     sitePages: createSitePageService({ store: stores.sitePages }),
+    comments: createCommentService({ store: stores.comments, postVisible: async (id) => (await posts.publicPost(id)) !== null }),
     places: createPlaceService({ store: stores.places, photoHosts: deps.photoHosts, routeExists: async (id) => (await stores.content.getRoute(id)) !== null, routeIds: async () => (await stores.content.listRoutes()).map((r) => r.id) }),
     siteSettings: createSiteSettingsService({ store: stores.siteSettings }),
     auditList: createListReader({ store: stores.auditList }),
