@@ -476,9 +476,9 @@ rt {
   position: relative;
   display: grid;
   place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.5rem;
+  width: 1.625rem;
+  height: 1.625rem;
+  border-radius: 0.4rem;
   border: 2px solid var(--color-ink);
   /* White in every theme: the pictures are drawn for it. */
   background: #fff;
@@ -491,7 +491,7 @@ rt {
 .place-marker::before {
   content: "";
   position: absolute;
-  inset: -0.4rem;
+  inset: -0.55rem;
 }
 
 .place-marker[data-closed="true"]::after {
@@ -502,9 +502,9 @@ rt {
 }
 
 .place-marker[aria-pressed="true"] {
-  transform: scale(1.18);
-  outline: 4px solid var(--color-accent);
-  outline-offset: 3px;
+  /* Picked: a ring, not a bigger square, so it still leaves the pins beside it uncovered. */
+  outline: 3px solid var(--color-accent);
+  outline-offset: 1px;
 }
 
 .map-cluster {
