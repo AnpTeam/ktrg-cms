@@ -6,6 +6,7 @@ import { useLingui } from "@lingui/react/macro";
 import type { GeoJSONSource, Map as MapLibreMap, MapMouseEvent, Marker } from "maplibre-gl";
 import { isAllSmooth } from "@/lib/admin/drawn-path";
 import { parseGpx, type GpxWaypoint } from "@/lib/admin/gpx";
+import { applyGpxElevations } from "@/lib/admin/gpx-elevation";
 import { LEG_HIT, LEG_SOURCE, legFeatures, legLayers } from "@/lib/admin/leg-map";
 import { guideRoute, insertAnchor, insertGuidePoint, legFromPath, legOf, MAX_GUIDE_POINTS, moveAnchor, moveGuidePoint, pairsOf, pathOfLeg, pathStops, pointsFromAnchors, removeAnchors, removeGuidePoint, RIDE_MODES, setAllCurves, sidePairs, toggleAnchorCurve, type GuidePoint, type Leg, type Path, type RideMode, type Stop } from "@/lib/admin/legs";
 import { simplify, type LngLatEle } from "@/lib/admin/line";
@@ -68,6 +69,8 @@ export interface MapEditorProps {
   onSetLegs: (legs: Leg[]) => void;
   onClearLeg: (from: string, to: string) => void;
   onClearLegs: () => void;
+  /** The same line with new elevations (taken from a GPX file); the shape does not change. */
+  onHeights: (points: LngLatEle[]) => void;
   /** Cut the loose line into legs at the stops even though they do not follow it. */
   onSplitLine: () => void;
   /** `after`: put it right after this waypoint (between two others) instead of at the end. */
@@ -168,6 +171,7 @@ export function MapEditor(props: MapEditorProps) {
   });
 
   const container = useRef<HTMLDivElement>(null);
+  const heightsInput = useRef<HTMLInputElement>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const mlRef = useRef<typeof import("maplibre-gl") | null>(null);
@@ -638,6 +642,21 @@ export function MapEditor(props: MapEditorProps) {
     }
   }
 
+  /** Only the heights of a GPX track are taken, and put on the line as it is drawn. */
+  async function heightsFromGpx(file: File | undefined) {
+    if (!file) return;
+    setNote(null);
+    if (file.size > 20_000_000) return setNote(t`ファイルが大きすぎます（20MBまで）。`);
+    const parsed = parseGpx(await file.text());
+    if (!parsed.ok || parsed.points.length < 2) return setNote(t`GPXファイルを読み込めませんでした。道すじ（トラック）の入ったファイルを選んでください。`);
+    const r = applyGpxElevations(props.line, parsed.points);
+    if (!r) return setNote(t`このGPXファイルには、標高のある道すじがないか、今の線とほとんど重なっていません。`);
+    props.onHeights(r.points);
+    const total = props.line.length;
+    const matched = r.matched;
+    setNote(t`標高を入れました。線の${total}点のうち、${matched}点がGPXの道すじに重なっていました（ほかの点は、前後の高さから補いました）。線の形は変えていません。保存してください。`);
+  }
+
   /** The legs to work on: the chosen one; or, with none chosen, every leg that `all` accepts. */
   const targets = (all: (pair: { from: Stop; to: Stop }) => boolean) => (activePair ? [activePair] : pairs.filter(all));
 
@@ -874,6 +893,21 @@ export function MapEditor(props: MapEditorProps) {
         <button type="button" disabled={!canWork || !hasLine} onClick={smooth} className={`${chipClass} w-full`} title={t`線の角を、丸くなめらかにします`}>
           {t`なめらかにする`}
         </button>
+        <button type="button" disabled={!hasLine} onClick={() => heightsInput.current?.click()} className={`${chipClass} w-full`} title={t`GPXファイルから標高だけを取り出して、今の線に入れます（線の形は変わりません）`}>
+          {t`標高だけGPXから`}
+        </button>
+        <input
+          ref={heightsInput}
+          type="file"
+          accept=".gpx,application/gpx+xml,text/xml,application/xml"
+          onChange={(e) => {
+            void heightsFromGpx(e.target.files?.[0]);
+            e.target.value = "";
+          }}
+          className="sr-only"
+          tabIndex={-1}
+          aria-hidden="true"
+        />
         {looseLine ? (
           <button type="button" onClick={props.onSplitLine} className={`${chipClass} w-full`} title={t`今ある線を、経由地の順に区間へ切り分けます（経由地が線と合わないと、まっすぐな部分ができます）`}>
             {t`区間に分ける`}
