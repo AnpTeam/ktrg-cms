@@ -1,7 +1,14 @@
 import { describe, expect, test } from "bun:test";
 import { Value } from "@sinclair/typebox/value";
 import { createMemoryAuditWriter } from "../audit/audit-log";
-import { createMemorySiteSettingsStore, createSiteSettingsService, MAP_STYLE } from "./site-settings";
+import { Elysia } from "elysia";
+import { createRateLimiter } from "../auth/rate-limit";
+import { createMemoryRateLimitStore } from "../auth/rate-limit-memory-store";
+import { createMemorySessionStore } from "../auth/session-memory-store";
+import { createSessionService } from "../auth/session-service";
+import type { AuthUser } from "../auth/user";
+import { apiBase } from "../lib/api-errors";
+import { createMemorySiteSettingsStore, createSiteSettingsService, MAP_STYLE, publicSettingsRoutes, siteSettingsRoutes } from "./site-settings";
 
 const style = { base: "pale", terrain: "hillshade", terrainOpacity: 0.5, saturation: -0.2, contrast: 0 } as const;
 
@@ -33,5 +40,59 @@ describe("site settings", () => {
     expect(await svc.pageText("guide")).toBeNull();
     expect(audit.rows.map((r) => r.targetId)).toEqual(["00000000-0000-4000-8000-000000000002"]);
     expect(JSON.stringify(audit.rows)).not.toContain("答え");
+  });
+});
+
+describe("who may change a page's text", () => {
+  const user = (role: AuthUser["role"], n: number): AuthUser => ({ id: `${n}${n}${n}${n}${n}${n}${n}${n}-1111-4111-8111-111111111111`, email: `${role}@example.com`, role, locale: "ja" });
+  const people = { admin: user("admin", 1), editor: user("editor", 2), participant: user("participant", 3) };
+  const page = (title: string) => ({ ja: { title, body: "## Q\nA" }, en: { title: "", body: "" } });
+
+  async function setup() {
+    const users = new Map(Object.values(people).map((u) => [u.id, { ...u }]));
+    const session = createSessionService({ store: createMemorySessionStore(users).store });
+    const audit = createMemoryAuditWriter();
+    const siteSettings = createSiteSettingsService({ store: createMemorySiteSettingsStore(audit.writer) });
+    const rateLimit = createRateLimiter({ store: createMemoryRateLimitStore().store, secret: "m".repeat(32) });
+    const services = { session, rateLimit, audit: audit.writer, siteSettings };
+    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(siteSettingsRoutes(() => services, { secureCookies: false })).use(publicSettingsRoutes(() => siteSettings));
+    const cookies = Object.fromEntries(await Promise.all(Object.entries(people).map(async ([role, u]) => [role, `session=${(await session.create(users.get(u.id)!)).token}`])));
+    const call = async (as: keyof typeof people | null, method: string, path: string, body?: unknown) => {
+      const headers: Record<string, string> = { "content-type": "application/json", ...(as ? { cookie: cookies[as]! } : {}) };
+      const res = await app.handle(new Request(`http://localhost/api/v1${path}`, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) }));
+      return { status: res.status, body: (await res.json()) as Record<string, any> }; // eslint-disable-line -- test helper
+    };
+    return { call, audit };
+  }
+
+  test("an editor changes the FAQ and how to play, and is refused the terms and the privacy policy", async () => {
+    const { call } = await setup();
+    expect((await call("editor", "PUT", "/admin/settings/pages/faq", page("FAQ"))).status).toBe(200);
+    expect((await call("editor", "PUT", "/admin/settings/pages/guide", page("Guide"))).status).toBe(200);
+    for (const key of ["terms", "privacy"]) {
+      const refused = await call("editor", "PUT", `/admin/settings/pages/${key}`, page("x"));
+      expect(refused).toMatchObject({ status: 403, body: { ok: false, error: "forbidden" } });
+    }
+    // The refused write saved nothing.
+    expect((await call(null, "GET", "/pages/terms")).body.page).toBeNull();
+  });
+
+  test("an admin changes all four, and what is saved is what visitors read", async () => {
+    const { call } = await setup();
+    for (const key of ["faq", "guide", "terms", "privacy"]) expect((await call("admin", "PUT", `/admin/settings/pages/${key}`, page(key))).status).toBe(200);
+    expect((await call(null, "GET", "/pages/privacy")).body.page.ja.title).toBe("privacy");
+  });
+
+  test("the list an editor reads leaves out the legal pages; an admin's has them", async () => {
+    const { call } = await setup();
+    expect(Object.keys((await call("editor", "GET", "/admin/settings/pages")).body.pages).sort()).toEqual(["faq", "guide"]);
+    expect(Object.keys((await call("admin", "GET", "/admin/settings/pages")).body.pages).sort()).toEqual(["faq", "guide", "privacy", "terms"]);
+  });
+
+  test("a participant or a visitor who is not signed in changes and reads nothing here", async () => {
+    const { call } = await setup();
+    expect((await call("participant", "PUT", "/admin/settings/pages/faq", page("x"))).status).toBe(403);
+    expect((await call("participant", "GET", "/admin/settings/pages")).status).toBe(403);
+    expect((await call(null, "PUT", "/admin/settings/pages/faq", page("x"))).status).toBe(401);
   });
 });
