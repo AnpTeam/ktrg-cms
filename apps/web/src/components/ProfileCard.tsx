@@ -15,8 +15,8 @@ import { formatUpdated } from "@/lib/format";
 import { failureFromApi, formatPublicId, hasName, NAME_MAX, type AgeRange, type AuthFailure, type Gender, type Origin } from "@/lib/auth-flow";
 
 /**
- * Who is signed in, at the top of the stamp page: the name and where they come from, and a button to
- * change them (saved with PATCH /me). The profile lives here, with the stamps, not in the menu.
+ * Who is signed in, on its own page (/profile): the name and where they come from, and a button to
+ * change them (saved with PATCH /me). The menu links to it.
  */
 // A button that does something that cannot be undone after the grace period: red, never the brand colour.
 const dangerButton =

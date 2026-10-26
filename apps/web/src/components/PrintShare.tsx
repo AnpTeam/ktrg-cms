@@ -2,32 +2,50 @@
 
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { BookmarkIcon, PrintIcon, ShareIcon } from "./icons";
+import { useBookmarks } from "./useBookmarks";
 
-// Print (the browser can save it as a PDF) and share the page. The layout hides its menus when printing.
-export function PrintShare({ title }: { title: string }) {
+// Print (the browser can save it as a PDF), share and bookmark the page, as icon buttons. Bookmark sits at the far
+// end of the row. The layout hides its menus when printing.
+export function PrintShare({ route }: { route: { id: string; nameJa: string; nameEn: string | null } }) {
   const { t } = useLingui();
+  const { list, toggle } = useBookmarks();
   const [copied, setCopied] = useState(false);
-  const canShare = typeof navigator !== "undefined" && typeof navigator.share === "function";
+  const saved = list.some((b) => b.id === route.id);
   const share = async () => {
     const url = window.location.href;
     try {
-      if (canShare) await navigator.share({ title, url });
+      if (typeof navigator.share === "function") await navigator.share({ title: route.nameJa, url });
       else {
         await navigator.clipboard.writeText(url);
         setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
       }
     } catch {
       // The person closed the share sheet, or the browser refused the clipboard: nothing to do.
     }
   };
-  const button = "rounded-full bg-surface px-4 py-2 text-sm font-bold text-accent";
+  const button = "tap-target flex size-12 items-center justify-center rounded-full bg-surface text-accent hover:bg-paper";
   return (
-    <div className="flex gap-2 px-4 print:hidden">
-      <button type="button" className={button} onClick={() => window.print()}>
-        {t`印刷・PDF`}
+    <div className="flex items-center gap-2 px-4 print:hidden">
+      <button type="button" className={button} aria-label={t`印刷・PDF`} title={t`印刷・PDF`} onClick={() => window.print()}>
+        <PrintIcon />
       </button>
-      <button type="button" className={button} onClick={share}>
-        {copied ? t`リンクをコピーしました` : t`共有`}
+      <button type="button" className={button} aria-label={t`共有`} title={t`共有`} onClick={share}>
+        <ShareIcon />
+      </button>
+      <span role="status" className="text-base font-bold text-muted">
+        {copied ? t`リンクをコピーしました` : ""}
+      </span>
+      <button
+        type="button"
+        className={`${button} ml-auto ${saved ? "bg-brand! text-on-brand" : ""}`}
+        aria-pressed={saved}
+        aria-label={saved ? t`ブックマークをはずす` : t`ブックマークする`}
+        title={saved ? t`ブックマークをはずす` : t`ブックマークする`}
+        onClick={() => toggle(route)}
+      >
+        <BookmarkIcon filled={saved} />
       </button>
     </div>
   );

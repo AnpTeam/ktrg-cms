@@ -255,3 +255,26 @@ export const SidebarIcon = () => (
     <path d="M9.5 5v14" />
   </Icon>
 );
+
+export const PrintIcon = () => (
+  <Icon>
+    <path d="M7 9V4h10v5" />
+    <rect x="4" y="9" width="16" height="8" rx="1" />
+    <path d="M7 14h10v6H7z" />
+  </Icon>
+);
+
+export const ShareIcon = () => (
+  <Icon>
+    <path d="M12 15V4" />
+    <path d="m8 8 4-4 4 4" />
+    <path d="M5 12v7h14v-7" />
+  </Icon>
+);
+
+/** An outline, or filled in once the route is saved. */
+export const BookmarkIcon = ({ filled = false }: { filled?: boolean }) => (
+  <svg aria-hidden="true" viewBox="0 0 24 24" width="28" height="28" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 4h12v16l-6-4-6 4z" />
+  </svg>
+);

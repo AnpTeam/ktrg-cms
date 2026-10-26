@@ -37,9 +37,9 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
     <nav
       aria-label={t`メインメニュー`}
       data-tabbar
-      className="fixed inset-x-3 bottom-3 z-20 mb-[env(safe-area-inset-bottom)] rounded-xl bg-surface p-1.5 shadow-lg md:sticky md:inset-x-auto md:bottom-auto md:top-0 md:mb-0 md:h-dvh md:w-44 md:shrink-0 md:self-start md:rounded-none md:bg-transparent md:p-0 md:px-2 md:pt-6 md:shadow-none lg:static lg:h-auto lg:w-full lg:flex-1 lg:self-auto lg:px-4 lg:pt-4"
+      className="fixed inset-x-3 bottom-3 z-40 mb-[env(safe-area-inset-bottom)] rounded-xl bg-surface p-1.5 shadow-lg md:sticky md:inset-x-auto md:bottom-auto md:top-0 md:mb-0 md:h-dvh md:w-44 md:shrink-0 md:self-start md:rounded-none md:bg-transparent md:p-0 md:px-2 md:pt-6 md:shadow-none lg:static lg:h-auto lg:w-full lg:flex-1 lg:self-auto lg:px-4 lg:pt-4"
     >
-      <ul className="mx-auto grid max-w-xl grid-cols-4 gap-1 md:flex md:max-w-none md:flex-col md:gap-2">
+      <ul className="mx-auto grid max-w-xl grid-cols-5 gap-1 md:flex md:max-w-none md:flex-col md:gap-2">
         {tabs.map(({ path, label, icon }) => {
           const active = path === "/" ? pathname === "/" : pathname.startsWith(path);
           return (
@@ -55,7 +55,7 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
             </li>
           );
         })}
-        <li className="hidden md:block">
+        <li>
           <button
             ref={railButton}
             type="button"
