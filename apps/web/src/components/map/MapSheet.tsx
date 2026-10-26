@@ -70,6 +70,15 @@ export function MapSheet({
     const moved = Math.abs(d.startY - e.clientY);
     const final = dragPx ?? restingPx;
     setDragPx(null);
+    // The sheet changes under the finger (at its top it covers the site's bar, and it uncovers it when it shrinks), and the
+    // click that follows a touch is sent to whatever is under the finger by then: the logo, which opens the home page.
+    // That one click is dropped.
+    const drop = (ev: MouseEvent) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+    };
+    window.addEventListener("click", drop, { capture: true, once: true });
+    window.setTimeout(() => window.removeEventListener("click", drop, { capture: true }), 500);
     // Hardly moved: it was a tap on the handle.
     if (moved < 6) onSnap(nextSnap(snap));
     else onSnap(snapAfterDrag(final, d.velocity, available, snap));
