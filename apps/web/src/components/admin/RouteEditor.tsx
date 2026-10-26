@@ -820,7 +820,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
 
         <div className={`min-w-0 ${view === "preview" ? "" : section === "map" ? "hidden" : "hidden lg:block"}`}>
           {/* Never taller than the screen (so its bottom is always reachable), and the browser is told not to re-anchor the page to it while it scrolls inside. */}
-          <div className="lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto [overflow-anchor:none]">
+          <div className="lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto [contain:paint] [overflow-anchor:none]">
             <LivePreview draft={draft} order={order} locale={locale} />
           </div>
         </div>

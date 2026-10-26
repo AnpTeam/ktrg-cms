@@ -43,7 +43,7 @@ export function LivePreview({ draft, order, locale: adminLocale }: { draft: Rout
         </button>
       </div>
       <div className={`mx-auto w-full ${wide ? "max-w-5xl" : "max-w-[26rem]"} overflow-hidden rounded-[2rem] border-4 border-ink bg-paper shadow-sm`}>
-        <div className="flex max-h-[min(44rem,calc(100dvh-14rem))] flex-col gap-6 overflow-y-auto overflow-x-hidden py-6" data-testid="live-preview">
+        <div className="relative flex max-h-[min(44rem,calc(100dvh-14rem))] flex-col gap-6 overflow-y-auto overflow-x-hidden py-6" data-testid="live-preview">
           {english && enI18n ? (
             <I18nProvider i18n={enI18n}>
               <PreviewBody route={route} locale={locale} />
