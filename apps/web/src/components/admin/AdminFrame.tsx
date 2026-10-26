@@ -58,20 +58,28 @@ export function AdminFrame({ aside, children }: { aside: ReactNode; children: Re
   );
 }
 
-/** The button in the top bar that hides or shows the menu (wide screens only: a narrow screen has its own menu button). */
+/** The button at the top of the menu that hides it (wide screens only: a narrow screen has its own menu button). */
 export function SidebarToggle() {
   const { t } = useLingui();
   const { hidden, toggle } = useContext(Sidebar);
+  if (hidden) return null;
   return (
-    <button
-      type="button"
-      onClick={toggle}
-      aria-expanded={!hidden}
-      aria-controls="admin-sidebar"
-      className="tap-target hidden items-center gap-2 rounded-xl border-2 border-line px-3 text-base font-bold lg:inline-flex"
-    >
+    <button type="button" onClick={toggle} aria-expanded aria-controls="admin-sidebar" className="tap-target mb-3 hidden items-center gap-2 rounded-xl border-2 border-line px-3 text-base font-bold lg:inline-flex">
       <SidebarIcon />
-      {hidden ? t`メニューを出す` : t`メニューを隠す`}
+      {t`メニューを隠す`}
+    </button>
+  );
+}
+
+/** The button in the top bar that brings the hidden menu back; there while the menu is hidden. */
+export function SidebarShow() {
+  const { t } = useLingui();
+  const { hidden, toggle } = useContext(Sidebar);
+  if (!hidden) return null;
+  return (
+    <button type="button" onClick={toggle} aria-expanded={false} aria-controls="admin-sidebar" className="tap-target hidden items-center gap-2 rounded-xl border-2 border-line px-3 text-base font-bold lg:inline-flex">
+      <SidebarIcon />
+      {t`メニューを出す`}
     </button>
   );
 }

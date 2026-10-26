@@ -3,18 +3,19 @@ import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
 import { ChevronIcon } from "@/components/icons";
 import { initLingui } from "@/i18n/server";
-import { helpContent } from "@/lib/help-content";
+import { RichText } from "@/components/RichText";
+import { helpFor } from "@/lib/page-text-server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
-  return { title: helpContent(i18n.locale).faqTitle };
+  return { title: (await helpFor(i18n.locale)).faqTitle };
 }
 
 // Frequently asked questions: each question opens to its answer (a native <details>, so it works with the
 // keyboard and screen readers and without scripts).
 export default async function FaqPage() {
   const i18n = await initLingui();
-  const help = helpContent(i18n.locale);
+  const help = await helpFor(i18n.locale);
 
   return (
     <div className="page-narrow flex flex-col gap-6 pt-2">
@@ -34,7 +35,9 @@ export default async function FaqPage() {
                   <ChevronIcon />
                 </span>
               </summary>
-              <p className="px-5 pb-5 text-lg leading-8">{faq.answer}</p>
+              <div className="whitespace-pre-line px-5 pb-5 text-lg leading-8">
+                <RichText text={faq.answer} />
+              </div>
             </details>
           </li>
         ))}

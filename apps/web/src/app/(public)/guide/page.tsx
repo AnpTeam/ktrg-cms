@@ -4,17 +4,18 @@ import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
 import { Notice } from "@/components/Notice";
 import { initLingui } from "@/i18n/server";
-import { helpContent } from "@/lib/help-content";
+import { RichText } from "@/components/RichText";
+import { helpFor } from "@/lib/page-text-server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
-  return { title: helpContent(i18n.locale).guideTitle };
+  return { title: (await helpFor(i18n.locale)).guideTitle };
 }
 
 // How to play: four numbered steps and nothing else to read.
 export default async function GuidePage() {
   const i18n = await initLingui();
-  const help = helpContent(i18n.locale);
+  const help = await helpFor(i18n.locale);
 
   return (
     <div className="page-narrow flex flex-col gap-6 pt-2">
@@ -23,7 +24,9 @@ export default async function GuidePage() {
           <Trans>ホーム</Trans>
         </BackLink>
         <h1 className="text-3xl font-bold">{help.guideTitle}</h1>
-        <p className="max-w-prose text-lg leading-8">{help.guideIntro}</p>
+        <div className="max-w-prose whitespace-pre-line text-lg leading-8">
+          <RichText text={help.guideIntro} />
+        </div>
       </div>
       <ol className="mx-4 flex flex-col gap-4">
         {help.steps.map((step, i) => (
@@ -33,18 +36,20 @@ export default async function GuidePage() {
             </span>
             <div>
               <h2 className="text-xl font-bold leading-snug text-accent">{step.title}</h2>
-              <p className="mt-1 text-lg leading-8">{step.text}</p>
+              <div className="mt-1 whitespace-pre-line text-lg leading-8">
+                <RichText text={step.text} />
+              </div>
             </div>
           </li>
         ))}
       </ol>
-      <Notice>{help.guideNote}</Notice>
+      {help.guideNote ? <Notice>{help.guideNote}</Notice> : null}
       <div className="px-4">
         <Link
           href="/faq"
           className="tap-target flex min-h-14 items-center justify-center rounded-xl border border-ink bg-surface px-6 text-xl font-bold text-accent hover:bg-paper"
         >
-          {helpContent(i18n.locale).faqTitle}
+          {help.faqTitle}
         </Link>
       </div>
     </div>

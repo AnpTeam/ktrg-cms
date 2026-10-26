@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { AdminItemForm } from "@/components/admin/AdminItemForm";
+import { AdminBack } from "@/components/admin/AdminBack";
 import { initLingui } from "@/i18n/server";
 import { pick } from "@/lib/admin/lists/config";
 import { listMetaOr404, relationChoices } from "@/lib/admin/lists/server";
@@ -23,9 +23,7 @@ export default async function NewListItemPage({ params }: { params: Promise<{ li
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4">
-      <Link href={`/admin/${meta.key}`} className="tap-target inline-flex w-fit items-center text-lg font-bold text-accent underline underline-offset-4">
-        <Trans>一覧へ戻る</Trans>
-      </Link>
+      <AdminBack href={`/admin/${meta.key}`}><Trans>一覧へ戻る</Trans></AdminBack>
       <h1 className="text-3xl font-bold">{pick(meta.newLabel, i18n.locale)}</h1>
       <AdminItemForm meta={meta} initial={null} locale={i18n.locale} choices={choices} />
     </div>
