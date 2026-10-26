@@ -254,7 +254,7 @@ export function MapScreen({
           {route ? t`区間の情報を見る` : t`区間の一覧を見る`}
         </button>
       ) : null}
-      <MapSheet panel={wide} snap={snap} onSnap={setSnap} available={available} tabPx={bottomPx} header={showDetailInSheet ? null : homeHeader}>
+      <MapSheet panel={wide} snap={snap} onSnap={setSnap} available={available} tabPx={bottomPx} header={showDetailInSheet ? null : homeHeader} contentKey={`${routeId ?? ""}/${stopId ?? ""}`}>
         {showDetailInSheet ? (
           <div className="flex flex-col gap-4">
             {hero}
