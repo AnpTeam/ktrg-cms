@@ -63,6 +63,13 @@ export function Landing({
     // One column on a phone and a tablet; two columns from 1024 px. The drawn hero comes first and the wide sections
     // (notices, video, the start buttons, the footer) span both.
     <div className="grid grid-cols-1 gap-10 pt-4 lg:grid-cols-2 lg:gap-x-8 lg:pt-0">
+      {/* With a dashboard (someone who has stamps or an account) the banners, the current events, come first. */}
+      {top && slides.length > 0 ? (
+        <div className="lg:col-span-2">
+          <BannerCarousel slides={slides} />
+        </div>
+      ) : null}
+
       {top ? (
         <div className="lg:col-span-2">{top}</div>
       ) : (
@@ -71,7 +78,7 @@ export function Landing({
         </div>
       )}
 
-      {slides.length > 0 ? (
+      {!top && slides.length > 0 ? (
         <div className="lg:col-span-2">
           <BannerCarousel slides={slides} />
         </div>

@@ -67,7 +67,7 @@ export function ProgressSummary({
         <p className="text-2xl font-bold leading-snug">{sentence}</p>
       </div>
       {next ? (
-        <Link href={`/spots/${next.id}`} className="tap-target mt-5 flex items-center justify-between gap-3 rounded-2xl bg-surface px-5 py-3">
+        <Link href={`/spots/${next.id}`} className="tap-target mt-5 flex items-center justify-between gap-3 rounded-2xl bg-paper px-5 py-3">
           <span className="min-w-0">
             <span className="block text-base text-muted">{t`つぎの場所`}</span>
             <span className="block text-xl font-bold leading-snug text-accent">{next.name}</span>
