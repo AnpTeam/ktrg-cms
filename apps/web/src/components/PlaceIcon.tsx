@@ -1,5 +1,5 @@
-import { placeIconSvg } from "@/lib/place-icons";
-import type { PlaceCategory } from "@/lib/places";
+import { groupPictureCategory, placeIconSvg } from "@/lib/place-icons";
+import type { PlaceCategory, PlaceGroup } from "@/lib/places";
 
 /** The coloured picture of a kind of place (see lib/place-icons.ts), on a white disc so it reads in any theme. */
 export function PlaceIcon({ category, size = 28 }: { category: PlaceCategory; size?: number }) {
@@ -8,4 +8,9 @@ export function PlaceIcon({ category, size = 28 }: { category: PlaceCategory; si
       <svg viewBox="0 0 24 24" width={size} height={size} focusable="false" dangerouslySetInnerHTML={{ __html: placeIconSvg[category] }} />
     </span>
   );
+}
+
+/** The picture of a group of places (toilets and rest, shops and food ...), drawn from one of its kinds. */
+export function PlaceGroupPicture({ group, size }: { group: PlaceGroup; size?: number }) {
+  return <PlaceIcon category={groupPictureCategory[group]} size={size} />;
 }

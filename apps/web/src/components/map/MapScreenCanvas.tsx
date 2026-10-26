@@ -9,7 +9,7 @@ import { clusterByPixels } from "@/lib/cluster";
 import { areaCollection, estimateGroupBox, framePoints, groupLabelLines, MERGE_PX, revealedRouteId, SAME_PLACE_M, spreadLabels, spreadMeters, stopMergePx, type LabelBox, type MapScreenPoint, type MapScreenRoute, type MapScreenStop } from "@/lib/map-screen";
 import { defaultLayers, moundStops, offeredLayers, type MapLayer } from "@/lib/map-layers";
 import { groupOf } from "@/lib/places";
-import { PlaceGroupIcon } from "@/components/icons";
+import { PlaceGroupPicture } from "@/components/PlaceIcon";
 import { useGroupNames } from "./PlacesPanel";
 import { boundsOf, lineFeature, mapStyle, markerKind, nextStopId, pinScale, PIN_NUMBER_MIN_ZOOM, routeLineLayers, sideLineCollection, sideLineLayers, zoomLimits, type Position } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
@@ -600,7 +600,7 @@ export function MapScreenCanvas({
               onClick={() => toggleLayer(layer)}
               className={`tap-target flex shrink-0 snap-start items-center gap-2 rounded-full border border-ink px-4 text-lg font-bold shadow-md ${on ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"}`}
             >
-              {layer === "courses" || layer === "mounds" || layer === "side" ? null : <PlaceGroupIcon group={layer} />}
+              {layer === "courses" || layer === "mounds" || layer === "side" ? null : <PlaceGroupPicture group={layer} size={22} />}
               {name}
             </button>
           );

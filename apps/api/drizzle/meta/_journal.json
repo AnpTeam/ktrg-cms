@@ -253,6 +253,20 @@
       "when": 1792999863140,
       "tag": "0035_blog_posts",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1793002386251,
+      "tag": "0036_blog_comments_avatar",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1793003355504,
+      "tag": "0037_blog_authors",
+      "breakpoints": true
     }
   ]
 }

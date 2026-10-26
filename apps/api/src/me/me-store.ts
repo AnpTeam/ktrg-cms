@@ -11,6 +11,7 @@ const profileColumns = {
   role: users.role,
   locale: users.locale,
   displayName: users.displayName,
+  avatarUrl: users.avatarUrl,
   origin: users.origin,
   ageRange: users.ageRange,
   gender: users.gender,

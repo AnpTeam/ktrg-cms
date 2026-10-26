@@ -6,6 +6,8 @@ import { createMemoryRateLimitStore } from "./auth/rate-limit-memory-store";
 import { createMemorySessionStore } from "./auth/session-memory-store";
 import { createMemorySiteSettingsStore } from "./site-settings/site-settings";
 import { createMemoryPlaceStore } from "./places/place-directory";
+import { createMemoryAuthorStore } from "./posts/author-list";
+import { createMemoryCommentStore } from "./posts/comments";
 import { createMemorySitePageStore } from "./pages/site-pages";
 import { createMemoryFuriganaStore } from "./furigana/furigana-words";
 import { createMemoryBannerStore } from "./banners/banner-list";
@@ -39,6 +41,8 @@ function build(photoHosts?: string[]) {
       banners: createMemoryBannerStore(audit.writer).store,
       furigana: createMemoryFuriganaStore(audit.writer).store,
       sitePages: createMemorySitePageStore(audit.writer).store,
+      comments: createMemoryCommentStore(audit.writer).store,
+      authors: createMemoryAuthorStore(audit.writer).store,
       places: createMemoryPlaceStore(audit.writer).store,
       siteSettings: createMemorySiteSettingsStore(audit.writer),
       auditList: memoryReader(new Map()),

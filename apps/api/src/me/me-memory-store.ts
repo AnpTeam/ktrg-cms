@@ -4,7 +4,7 @@ import type { Preferences } from "./preferences";
 import { publicIdFor } from "../lib/public-id";
 import type { MeStore, StoredProfile } from "./me-service";
 
-type Extra = { publicId: string; displayName: string | null; origin: Origin | null; ageRange: AgeRange | null; gender: Gender | null; foundVia: FoundVia | null; preferences: Preferences | null; bookmarks: string[]; deletionRequestedAt: Date | null; createdAt: Date };
+type Extra = { publicId: string; displayName: string | null; avatarUrl: string | null; origin: Origin | null; ageRange: AgeRange | null; gender: Gender | null; foundVia: FoundVia | null; preferences: Preferences | null; bookmarks: string[]; deletionRequestedAt: Date | null; createdAt: Date };
 
 /**
  * In-memory store for tests and the dev test page. `users` is the same map the OTP and
@@ -25,7 +25,7 @@ export function createMemoryMeStore(
     let e = extras.get(userId);
     if (!e) {
       const given = profiles.get(userId);
-      e = { publicId: publicIdFor(++sequence), displayName: given?.displayName ?? null, origin: (given?.origin as Origin | null | undefined) ?? null,
+      e = { publicId: publicIdFor(++sequence), displayName: given?.displayName ?? null, avatarUrl: null, origin: (given?.origin as Origin | null | undefined) ?? null,
         ageRange: null, gender: null, foundVia: null, preferences: null, bookmarks: [], deletionRequestedAt: null, createdAt: new Date() };
       extras.set(userId, e);
     }
@@ -49,6 +49,7 @@ export function createMemoryMeStore(
       if (!user) return null;
       if (changes.locale !== undefined) user.locale = changes.locale;
       if (changes.displayName !== undefined) extraOf(userId).displayName = changes.displayName;
+      if (changes.avatarUrl !== undefined) extraOf(userId).avatarUrl = changes.avatarUrl;
       if (changes.preferences !== undefined) extraOf(userId).preferences = changes.preferences;
       if (changes.bookmarks !== undefined) extraOf(userId).bookmarks = changes.bookmarks;
       if (changes.origin !== undefined) extraOf(userId).origin = changes.origin;

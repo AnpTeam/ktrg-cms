@@ -1,4 +1,6 @@
 import type { AgeRange, AuthUser, FoundVia, Gender, Locale, Origin, Role } from "../auth/user";
+import { can } from "../auth/permissions";
+import { isPhotoUrl } from "../lib/https-url";
 import { buildDeletionRequestEmail } from "../emails/deletion-request";
 import type { Preferences } from "./preferences";
 import type { Mailer } from "../lib/mailer";
@@ -19,6 +21,8 @@ export interface Profile {
   role: Role;
   locale: Locale;
   displayName: string | null;
+  /** A photo of the person (an https link); null when none. Only the staff can set one. */
+  avatarUrl: string | null;
   /** Where they said they come from; null if they did not say. */
   origin: Origin | null;
   /** Age band and gender they chose after registering; null until answered. */
@@ -44,6 +48,8 @@ export interface ProfileChanges {
   locale?: Locale;
   /** null clears the name. */
   displayName?: string | null;
+  /** null clears the photo. */
+  avatarUrl?: string | null;
   /** Replaces the stored choices as a whole. */
   preferences?: Preferences;
   /** Replaces the bookmarks as a whole. */
@@ -100,14 +106,17 @@ export function normalizeDisplayName(raw: string | null): string | null | undefi
   return name;
 }
 
-export type UpdateResult = { ok: true; profile: Profile } | { ok: false; reason: "invalid_display_name" | "gone" };
+export type UpdateResult = { ok: true; profile: Profile } | { ok: false; reason: "invalid_display_name" | "invalid_photo_url" | "forbidden" | "gone" };
 
 export function createMeService({
   store,
   mailer,
   now = () => new Date(),
   log = console.error,
+  photoHosts = [],
 }: {
+  /** Where a profile photo may be hosted (PHOTO_HOSTS); empty allows any https address. */
+  photoHosts?: readonly string[];
   store: MeStore;
   /** Emails the owner when a deletion is requested. Optional for tests. */
   mailer?: Mailer;
@@ -128,6 +137,13 @@ export function createMeService({
         const name = normalizeDisplayName(input.displayName);
         if (name === undefined) return { ok: false, reason: "invalid_display_name" };
         changes.displayName = name;
+      }
+      if (input.avatarUrl !== undefined) {
+        // Photos are uploaded through the staff's upload endpoint, so only the staff have one to give.
+        if (!can(user.role, "upload.create")) return { ok: false, reason: "forbidden" };
+        const url = input.avatarUrl?.trim() || null;
+        if (url !== null && !isPhotoUrl(url, photoHosts)) return { ok: false, reason: "invalid_photo_url" };
+        changes.avatarUrl = url;
       }
       if (input.preferences !== undefined) changes.preferences = input.preferences;
       if (input.bookmarks !== undefined) changes.bookmarks = [...new Set(input.bookmarks)].slice(0, BOOKMARKS_MAX);

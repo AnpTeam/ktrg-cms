@@ -10,7 +10,7 @@ describe("the audit action list", () => {
   test("every action is dotted lowercase and acts on a known kind of thing", () => {
     for (const [action, targetType] of Object.entries(AUDIT_ACTIONS)) {
       expect(action).toMatch(/^[a-z_]+(\.[a-z_]+)+$/);
-      expect(["user", "passkey", "route", "spot", "upload", "rally", "notice", "post", "banner", "furigana", "place", "site_page", "stamp", "site_setting"]).toContain(targetType);
+      expect(["user", "passkey", "route", "spot", "upload", "rally", "notice", "post", "author", "comment", "banner", "furigana", "place", "site_page", "stamp", "site_setting"]).toContain(targetType);
     }
   });
 

@@ -39,6 +39,11 @@ msgstr "{0} を1つ後ろへ"
 msgid "{0}（{1}件）"
 msgstr "{0}（{1}件）"
 
+#. placeholder {0}: route.distanceKm
+#: src/components/blog/LinkedCards.tsx:28
+msgid "{0}km"
+msgstr "{0}km"
+
 #. placeholder {0}: waypoints.length
 #: src/components/admin/map-editor/MapEditor.tsx:801
 msgid "{0}か所を、経由地として追加しました。名前や種類は「経由地」で直せます。"
@@ -284,7 +289,7 @@ msgstr "{title}を直す（管理）"
 msgid "{title}を読み込めませんでした。しばらくしてから、ページを開き直してください。"
 msgstr "{title}を読み込めませんでした。しばらくしてから、ページを開き直してください。"
 
-#: src/components/IntroFlow.tsx:147
+#: src/components/IntroFlow.tsx:212
 #: src/components/landing/Landing.tsx:139
 msgid "{TOTAL_STAMPS}か所"
 msgstr "{TOTAL_STAMPS}か所"
@@ -376,6 +381,14 @@ msgstr "「経由地」シート {0} 行目"
 msgid "【サブコース】"
 msgstr "【サブコース】"
 
+#: src/app/(public)/blog/[id]/page.tsx:204
+msgid "← 前の記事"
+msgstr "← 前の記事"
+
+#: src/app/(public)/blog/page.tsx:78
+msgid "← 前へ"
+msgstr "← 前へ"
+
 #: src/components/admin/AccessPointsEditor.tsx:80
 msgid "＋ 交通を追加"
 msgstr "＋ 交通を追加"
@@ -444,7 +457,7 @@ msgstr "60代"
 msgid "70歳以上"
 msgstr "70歳以上"
 
-#: src/components/GuestNag.tsx:91
+#: src/components/GuestNag.tsx:95
 msgid "7日間は表示しない"
 msgstr "7日間は表示しない"
 
@@ -534,6 +547,10 @@ msgstr "MP4（H.264）かWebM、200MBまで。スマホで見やすいよう、�
 msgid "QRコード・看板"
 msgstr "QRコード・看板"
 
+#: src/components/IntroFlow.tsx:66
+msgid "Safari で、画面の下（または上）にある共有ボタン（□に↑）を押します。"
+msgstr "Safari で、画面の下（または上）にある共有ボタン（□に↑）を押します。"
+
 #: src/components/auth/AboutYou.tsx:103
 msgid "SNS"
 msgstr "SNS"
@@ -622,10 +639,6 @@ msgstr "あと{remaining}か所"
 msgid "あとからでも、「メニュー」の「見やすさの設定」で変えられます。"
 msgstr "あとからでも、「メニュー」の「見やすさの設定」で変えられます。"
 
-#: src/components/GuestNag.tsx:81
-msgid "あとで"
-msgstr "あとで"
-
 #: src/components/settings/PrefsForm.tsx:156
 msgid "あとで決める"
 msgstr "あとで決める"
@@ -687,7 +700,7 @@ msgstr "いまいる場所から、いちばん近いスタンプの場所まで
 msgid "いまのガイド点を通る道を、1回だけ探します"
 msgstr "いまのガイド点を通る道を、1回だけ探します"
 
-#: src/components/GuestNag.tsx:72
+#: src/components/GuestNag.tsx:76
 msgid "いまのスタンプは、このブラウザにしか残っていません。ブラウザのデータを消したり、スマホを変えたりすると、なくなります。登録すると、ずっと残り、コンプリート証ももらえます。"
 msgstr "いまのスタンプは、このブラウザにしか残っていません。ブラウザのデータを消したり、スマホを変えたりすると、なくなります。登録すると、ずっと残り、コンプリート証ももらえます。"
 
@@ -740,6 +753,10 @@ msgstr "いまは、パスキーだけでログインしています。メール
 #: src/components/SampleNotice.tsx:54
 msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 msgstr "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
+
+#: src/components/IntroFlow.tsx:58
+msgid "いま開いているのは、ほかのアプリの中のブラウザです。Safari や Chrome で開きなおしてから、追加してください。"
+msgstr "いま開いているのは、ほかのアプリの中のブラウザです。Safari や Chrome で開きなおしてから、追加してください。"
 
 #: src/components/navigation/NavigationHud.tsx:124
 msgid "うしろ"
@@ -892,7 +909,11 @@ msgstr "クリックで、この点を消します"
 msgid "くわしく見る"
 msgstr "くわしく見る"
 
-#: src/components/IntroFlow.tsx:138
+#: src/components/GuestNag.tsx:85
+msgid "ゲストのまま使う"
+msgstr "ゲストのまま使う"
+
+#: src/components/IntroFlow.tsx:203
 #: src/components/landing/Landing.tsx:137
 #: src/components/map/MapScreenCanvas.tsx:594
 msgid "コース"
@@ -984,7 +1005,7 @@ msgstr "このアカウントには、パスキーがありません。メール
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
 msgstr "このアカウントには、メールがありません。顔・指紋で確認してください。"
 
-#: src/components/IntroFlow.tsx:156
+#: src/components/IntroFlow.tsx:221
 msgid "このアプリでわかること"
 msgstr "このアプリでわかること"
 
@@ -1053,6 +1074,10 @@ msgstr "このリンクからは、スタンプをもどせませんでした。
 #: src/components/admin/PhotoSlot.tsx:17
 msgid "このリンクは使えません"
 msgstr "このリンクは使えません"
+
+#: src/components/blog/ShareButtons.tsx:27
+msgid "このリンクをコピーしてください"
+msgstr "このリンクをコピーしてください"
 
 #: src/components/admin/RouteImport.tsx:93
 msgid "このルートがまだありません"
@@ -1142,7 +1167,7 @@ msgid "この場所のページを開く"
 msgstr "この場所のページを開く"
 
 #: src/components/map/MapScreen.tsx:495
-#: src/components/map/PlacesPanel.tsx:262
+#: src/components/map/PlacesPanel.tsx:250
 #: src/components/map/StopCard.tsx:47
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
 msgstr "この場所の位置は仮のもので、まだ確認されていません。"
@@ -1259,6 +1284,15 @@ msgstr "この線は、経由地の順番や位置と合わないため、区間
 msgid "この考え方は、長野県の「信州 山のグレーディング」を参考にしています。説明は、このサイト独自の言葉です。"
 msgstr "この考え方は、長野県の「信州 山のグレーディング」を参考にしています。説明は、このサイト独自の言葉です。"
 
+#: src/app/(public)/blog/[id]/page.tsx:154
+msgid "この記事の場所"
+msgstr "この記事の場所"
+
+#: src/app/(public)/blog/[id]/page.tsx:194
+#: src/components/blog/ShareButtons.tsx:32
+msgid "この記事を共有する"
+msgstr "この記事を共有する"
+
 #: src/components/settings/PrefsForm.tsx:148
 msgid "この設定ではじめる"
 msgstr "この設定ではじめる"
@@ -1276,7 +1310,7 @@ msgstr "この説明は日本語のみです。"
 msgid "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 msgstr "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 
-#: src/components/IntroFlow.tsx:134
+#: src/components/IntroFlow.tsx:199
 msgid "この道すじには、法華経の二十八の章にちなむ「経塚」が並び、「葛城二十八宿」と呼ばれています。"
 msgstr "この道すじには、法華経の二十八の章にちなむ「経塚」が並び、「葛城二十八宿」と呼ばれています。"
 
@@ -1284,9 +1318,30 @@ msgstr "この道すじには、法華経の二十八の章にちなむ「経塚
 msgid "この道を見る"
 msgstr "この道を見る"
 
+#: src/components/blog/ShareButtons.tsx:39
 #: src/components/BrowserWarning.tsx:38
 msgid "コピーしました"
 msgstr "コピーしました"
+
+#: src/components/blog/CommentSection.tsx:54
+msgid "コメント"
+msgstr "コメント"
+
+#: src/components/blog/CommentSection.tsx:97
+msgid "コメントする"
+msgstr "コメントする"
+
+#: src/components/blog/CommentSection.tsx:40
+msgid "コメントを受け付けました。スタッフが確認すると、ここに表示されます。"
+msgstr "コメントを受け付けました。スタッフが確認すると、ここに表示されます。"
+
+#: src/components/blog/CommentSection.tsx:85
+msgid "コメントを書く"
+msgstr "コメントを書く"
+
+#: src/components/blog/CommentSection.tsx:109
+msgid "コメントを書くには、ログインが必要です。"
+msgstr "コメントを書くには、ログインが必要です。"
 
 #: src/components/settings/PasskeyManager.tsx:147
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
@@ -1316,7 +1371,7 @@ msgstr "ご案内"
 msgid "さあ、はじめましょう"
 msgstr "さあ、はじめましょう"
 
-#: src/components/IntroFlow.tsx:195
+#: src/components/IntroFlow.tsx:263
 msgid "さあ、歩きはじめましょう"
 msgstr "さあ、歩きはじめましょう"
 
@@ -1373,7 +1428,7 @@ msgstr "シート（CSV）から取り込む"
 msgid "シートの高さ（上下の矢印キーで変えられます）"
 msgstr "シートの高さ（上下の矢印キーで変えられます）"
 
-#: src/components/IntroFlow.tsx:88
+#: src/components/IntroFlow.tsx:153
 msgid "スキップ"
 msgstr "スキップ"
 
@@ -1399,7 +1454,7 @@ msgstr "スタンプ"
 #: src/components/landing/ContinueCard.tsx:23
 #: src/components/landing/Landing.tsx:241
 #: src/components/map/MapScreen.tsx:363
-#: src/components/RouteView.tsx:250
+#: src/components/RouteView.tsx:256
 #: src/components/TrailRibbon.tsx:62
 #: src/components/TripSummary.tsx:48
 msgid "スタンプ {stampedCount} / {spotCount}"
@@ -1445,7 +1500,7 @@ msgid "スタンプの場所の近くにいるか、たしかめるために、�
 msgstr "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 
 #: src/components/map/MapScreen.tsx:418
-#: src/components/RouteView.tsx:238
+#: src/components/RouteView.tsx:244
 msgid "スタンプの場所は、まだ準備中です。"
 msgstr "スタンプの場所は、まだ準備中です。"
 
@@ -1474,7 +1529,7 @@ msgstr "スタンプの進み具合"
 msgid "スタンプは押せません。場所のページは見られます。公開するには、現地の許可の確認が必要です。"
 msgstr "スタンプは押せません。場所のページは見られます。公開するには、現地の許可の確認が必要です。"
 
-#: src/components/IntroFlow.tsx:163
+#: src/components/IntroFlow.tsx:228
 #: src/components/RallyViews.tsx:91
 msgid "スタンプラリー"
 msgstr "スタンプラリー"
@@ -1650,7 +1705,7 @@ msgstr "つぎ"
 msgid "つぎの場所"
 msgstr "つぎの場所"
 
-#: src/components/IntroFlow.tsx:211
+#: src/components/IntroFlow.tsx:279
 #: src/components/settings/WelcomeFlow.tsx:75
 msgid "つぎへ"
 msgstr "つぎへ"
@@ -1741,6 +1796,11 @@ msgstr "ニックネームでもかまいません。"
 msgid "のぼり"
 msgstr "のぼり"
 
+#. placeholder {0}: route.elevationGainM
+#: src/components/blog/LinkedCards.tsx:30
+msgid "のぼり {0}m"
+msgstr "のぼり {0}m"
+
 #: src/components/admin/AdminListTable.tsx:157
 msgid "はい"
 msgstr "はい"
@@ -1765,7 +1825,7 @@ msgstr "はじめの説明と、手順（1、2、3…）です。"
 msgid "はじめの道を歩きませんか？"
 msgstr "はじめの道を歩きませんか？"
 
-#: src/components/IntroFlow.tsx:207
+#: src/components/IntroFlow.tsx:275
 msgid "はじめる"
 msgstr "はじめる"
 
@@ -1888,6 +1948,10 @@ msgstr "フッター"
 msgid "プライバシーポリシー"
 msgstr "プライバシーポリシー"
 
+#: src/components/IntroFlow.tsx:72
+msgid "ブラウザのメニュー（⋮ や ⋯）から、「ホーム画面に追加」または「アプリをインストール」をえらびます。"
+msgstr "ブラウザのメニュー（⋮ や ⋯）から、「ホーム画面に追加」または「アプリをインストール」をえらびます。"
+
 #: src/components/QuickActions.tsx:44
 msgid "ふりがな"
 msgstr "ふりがな"
@@ -1901,9 +1965,9 @@ msgstr "ふりがなをつける"
 msgid "プレビュー"
 msgstr "プレビュー"
 
-#: src/app/(public)/blog/[id]/page.tsx:69
-#: src/app/(public)/blog/page.tsx:17
-#: src/app/(public)/blog/page.tsx:36
+#: src/app/(public)/blog/[id]/page.tsx:96
+#: src/app/(public)/blog/page.tsx:13
+#: src/app/(public)/blog/page.tsx:39
 #: src/app/(public)/sitemap/page.tsx:76
 #: src/components/landing/BlogCard.tsx:22
 #: src/components/SiteFooter.tsx:18
@@ -1915,17 +1979,30 @@ msgstr "ブログ"
 msgid "ブログの一覧"
 msgstr "ブログの一覧"
 
+#: src/components/ProfilePhoto.tsx:36
+msgid "ブログの記事の、書いた人のところに表示されます。"
+msgstr "ブログの記事の、書いた人のところに表示されます。"
+
+#: src/app/(public)/blog/[id]/page.tsx:244
 #: src/components/landing/BlogCard.tsx:42
 msgid "ブログをすべて見る"
 msgstr "ブログをすべて見る"
 
-#: src/app/(public)/profile/page.tsx:16
+#: src/app/(public)/profile/page.tsx:17
 #: src/app/(public)/settings/passkeys/page.tsx:23
 #: src/app/(public)/sitemap/page.tsx:96
 #: src/components/ProfileCard.tsx:38
 #: src/components/ProfileSettings.tsx:149
 msgid "プロフィール"
 msgstr "プロフィール"
+
+#: src/components/ProfilePhoto.tsx:34
+msgid "プロフィール写真"
+msgstr "プロフィール写真"
+
+#: src/app/(public)/blog/page.tsx:75
+msgid "ページ"
+msgstr "ページ"
 
 #: src/app/(public)/not-found.tsx:11
 msgid "ページが見つかりません"
@@ -1953,7 +2030,7 @@ msgstr "ページの漢字すべてに、読みがなをつけます。"
 msgid "ベースの地図"
 msgstr "ベースの地図"
 
-#: src/app/(public)/blog/page.tsx:33
+#: src/app/(public)/blog/page.tsx:35
 #: src/app/(public)/faq/page.tsx:24
 #: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/licenses/page.tsx:21
@@ -1981,6 +2058,18 @@ msgstr "ホームにもどる"
 msgid "ホームへ戻る"
 msgstr "ホームへ戻る"
 
+#: src/components/IntroFlow.tsx:51
+msgid "ホーム画面に追加しましょう"
+msgstr "ホーム画面に追加しましょう"
+
+#: src/components/IntroFlow.tsx:62
+msgid "ホーム画面に追加する"
+msgstr "ホーム画面に追加する"
+
+#: src/components/IntroFlow.tsx:54
+msgid "ホーム画面に追加すると、アプリのようにすぐ開けます。山の中でも、探す手間がかかりません。"
+msgstr "ホーム画面に追加すると、アプリのようにすぐ開けます。山の中でも、探す手間がかかりません。"
+
 #: src/components/map/MapScreenCanvas.tsx:425
 msgid "ほか {more} 区間"
 msgstr "ほか {more} 区間"
@@ -1997,11 +2086,15 @@ msgstr "ほかの乗り物"
 msgid "ほかの言語（ドイツ語など）の訪問者には、English の文章が表示されます。"
 msgstr "ほかの言語（ドイツ語など）の訪問者には、English の文章が表示されます。"
 
+#: src/app/(public)/blog/[id]/page.tsx:234
+msgid "ほかの記事"
+msgstr "ほかの記事"
+
 #: src/components/admin/map-editor/MapEditor.tsx:884
 msgid "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。"
 msgstr "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。"
 
-#: src/components/IntroFlow.tsx:198
+#: src/components/IntroFlow.tsx:266
 msgid "まずは、歩きたい道をえらびます。登録しなくても、スタンプは押せます。"
 msgstr "まずは、歩きたい道をえらびます。登録しなくても、スタンプは押せます。"
 
@@ -2030,6 +2123,10 @@ msgstr "まだありません。"
 #: src/components/admin/PlaceTable.tsx:215
 msgid "まだありません。「＋ 行を追加」で、経由地を表に入れてください。"
 msgstr "まだありません。「＋ 行を追加」で、経由地を表に入れてください。"
+
+#: src/components/blog/CommentSection.tsx:58
+msgid "まだコメントはありません。"
+msgstr "まだコメントはありません。"
 
 #: src/components/GuestBackup.tsx:36
 msgid "まだスタンプがありません。"
@@ -2075,7 +2172,7 @@ msgstr "マップをひらく"
 msgid "まわりにあるもの"
 msgstr "まわりにあるもの"
 
-#: src/app/(public)/blog/[id]/page.tsx:131
+#: src/app/(public)/blog/[id]/page.tsx:186
 #: src/components/map/PlacesPanel.tsx:130
 #: src/components/map/PlacesPanel.tsx:131
 #: src/components/NearbyPlaces.tsx:22
@@ -2144,6 +2241,10 @@ msgstr "メインメニュー"
 msgid "メニュー"
 msgstr "メニュー"
 
+#: src/components/IntroFlow.tsx:67
+msgid "メニューを下へ動かして、「ホーム画面に追加」を押します。"
+msgstr "メニューを下へ動かして、「ホーム画面に追加」を押します。"
+
 #: src/components/admin/AdminFrame.tsx:82
 msgid "メニューを出す"
 msgstr "メニューを出す"
@@ -2194,7 +2295,7 @@ msgstr "もどすスタンプは、ありませんでした。（いま {0}個�
 msgid "もとの文章"
 msgstr "もとの文章"
 
-#: src/components/IntroFlow.tsx:216
+#: src/components/IntroFlow.tsx:284
 #: src/components/SiteHeader.tsx:160
 msgid "もどる"
 msgstr "もどる"
@@ -2362,6 +2463,10 @@ msgstr "リンクは [表示する文字](https://…) と書きます。脚注�
 msgid "リンクは [表示する文字](https://…) の形で書けます（下のボタンでも入れられます）。"
 msgstr "リンクは [表示する文字](https://…) の形で書けます（下のボタンでも入れられます）。"
 
+#: src/components/blog/ShareButtons.tsx:39
+msgid "リンクをコピー"
+msgstr "リンクをコピー"
+
 #: src/components/PrintShare.tsx:38
 msgid "リンクをコピーしました"
 msgstr "リンクをコピーしました"
@@ -2376,12 +2481,18 @@ msgstr "リンクを直接入れる"
 
 #: src/app/(admin)/admin/attention/page.tsx:54
 #: src/app/(admin)/admin/routes/page.tsx:22
+#: src/app/(public)/blog/[id]/page.tsx:102
 #: src/app/(public)/routes/page.tsx:18
 #: src/app/(public)/sitemap/page.tsx:65
 #: src/components/admin/AdminNav.tsx:31
 #: src/components/TabBar.tsx:24
 msgid "ルート"
 msgstr "ルート"
+
+#. placeholder {0}: route.order
+#: src/components/blog/LinkedCards.tsx:22
+msgid "ルート {0}"
+msgstr "ルート {0}"
 
 #. placeholder {0}: preview.routes.length
 #. placeholder {1}: preview.places.length
@@ -2425,7 +2536,7 @@ msgstr "ルートの最初の経由地に近い順です。"
 msgid "ルートの写真のリンク"
 msgstr "ルートの写真のリンク"
 
-#: src/components/RouteView.tsx:219
+#: src/components/RouteView.tsx:225
 msgid "ルートの動画"
 msgstr "ルートの動画"
 
@@ -2508,7 +2619,8 @@ msgstr "ログアウト"
 #: src/app/(public)/sitemap/page.tsx:102
 #: src/components/auth/LoginFlow.tsx:55
 #: src/components/auth/RegisterFlow.tsx:141
-#: src/components/GuestNag.tsx:78
+#: src/components/blog/CommentSection.tsx:111
+#: src/components/GuestNag.tsx:82
 #: src/components/landing/LandingHero.tsx:55
 #: src/components/ProfileSettings.tsx:179
 #: src/components/SignInPrompt.tsx:37
@@ -2623,7 +2735,7 @@ msgstr "交通の種類"
 msgid "今ある線を、経由地の順に区間へ切り分けます（経由地が線と合わないと、まっすぐな部分ができます）"
 msgstr "今ある線を、経由地の順に区間へ切り分けます（経由地が線と合わないと、まっすぐな部分ができます）"
 
-#: src/components/GuestNag.tsx:70
+#: src/components/GuestNag.tsx:74
 msgid "今すぐアカウントを作りましょう。記録が消えてしまうかもしれません！"
 msgstr "今すぐアカウントを作りましょう。記録が消えてしまうかもしれません！"
 
@@ -2635,7 +2747,7 @@ msgstr "今後はこの確認を表示しない"
 msgid "仮のルート・位置（未確認）"
 msgstr "仮のルート・位置（未確認）"
 
-#: src/components/map/PlacesPanel.tsx:245
+#: src/components/map/PlacesPanel.tsx:234
 msgid "休み"
 msgstr "休み"
 
@@ -2732,7 +2844,7 @@ msgstr "位置情報が許可されていません。ブラウザの設定で、
 msgid "低い"
 msgstr "低い"
 
-#: src/components/map/PlacesPanel.tsx:211
+#: src/components/map/PlacesPanel.tsx:218
 #: src/components/PlaceFacts.tsx:29
 msgid "住所"
 msgstr "住所"
@@ -2859,6 +2971,10 @@ msgstr "保存する"
 msgid "保存できません。赤く示した項目を直してください。"
 msgstr "保存できません。赤く示した項目を直してください。"
 
+#: src/components/ProfilePhoto.tsx:50
+msgid "保存できませんでした。もう一度お試しください。"
+msgstr "保存できませんでした。もう一度お試しください。"
+
 #: src/components/OfflineSave.tsx:49
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "保存できませんでした。電波の良い場所でもう一度お試しください。"
@@ -2929,7 +3045,7 @@ msgstr "入力に、まちがいがあるようです。見直して、もう一
 msgid "全{count}区間のある場所を示した図"
 msgstr "全{count}区間のある場所を示した図"
 
-#: src/components/IntroFlow.tsx:139
+#: src/components/IntroFlow.tsx:204
 #: src/components/landing/Landing.tsx:137
 msgid "全{TOTAL_ROUTES}区間"
 msgstr "全{TOTAL_ROUTES}区間"
@@ -2938,7 +3054,7 @@ msgstr "全{TOTAL_ROUTES}区間"
 msgid "全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）"
 msgstr "全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）"
 
-#: src/components/IntroFlow.tsx:160
+#: src/components/IntroFlow.tsx:225
 msgid "全{TOTAL_ROUTES}区間の道すじを、地図で見られます。距離、時間、きつさ、行き方もわかります。"
 msgstr "全{TOTAL_ROUTES}区間の道すじを、地図で見られます。距離、時間、きつさ、行き方もわかります。"
 
@@ -2987,7 +3103,7 @@ msgstr "公開できるようになったら、ここにスタンプのラリー
 msgid "公開できるようになったら、ここにルートが表示されます。"
 msgstr "公開できるようになったら、ここにルートが表示されます。"
 
-#: src/components/RouteView.tsx:239
+#: src/components/RouteView.tsx:245
 msgid "公開できるようになったら、ここに場所の一覧が表示されます。"
 msgstr "公開できるようになったら、ここに場所の一覧が表示されます。"
 
@@ -3068,6 +3184,10 @@ msgstr "公開前の経由地も、ここには表示されます。"
 msgid "共有"
 msgstr "共有"
 
+#: src/components/blog/ShareButtons.tsx:35
+msgid "共有する"
+msgstr "共有する"
+
 #: src/components/admin/AdminItemForm.tsx:272
 msgid "内容"
 msgstr "内容"
@@ -3089,7 +3209,7 @@ msgstr "最寄り"
 msgid "最後に押した日時　{when}"
 msgstr "最後に押した日時　{when}"
 
-#: src/components/IntroFlow.tsx:162
+#: src/components/IntroFlow.tsx:227
 msgid "最新のお知らせ"
 msgstr "最新のお知らせ"
 
@@ -3194,6 +3314,10 @@ msgstr "写真をアップロード"
 msgid "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 msgstr "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 
+#: src/components/ProfilePhoto.tsx:43
+msgid "写真を外す"
+msgstr "写真を外す"
+
 #: src/components/admin/GalleryEditor.tsx:62
 msgid "写真を探すサービスにつながりませんでした。しばらくしてから、もう一度お試しください。"
 msgstr "写真を探すサービスにつながりませんでした。しばらくしてから、もう一度お試しください。"
@@ -3213,7 +3337,7 @@ msgstr "出かける前に"
 #: src/app/(public)/rallies/page.tsx:77
 #: src/app/(public)/routes/page.tsx:87
 #: src/components/landing/Landing.tsx:186
-#: src/components/RouteView.tsx:271
+#: src/components/RouteView.tsx:272
 #: src/components/SpotSheet.tsx:180
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "出かける前に、公式の最新情報を確認してください。"
@@ -3338,6 +3462,10 @@ msgstr "前の番号の経由地がまだないので、作れません"
 #: src/components/admin/RouteTable.tsx:152
 msgid "前へ"
 msgstr "前へ"
+
+#: src/app/(public)/blog/[id]/page.tsx:200
+msgid "前後の記事"
+msgstr "前後の記事"
 
 #: src/components/QuickActions.tsx:56
 msgid "動きなし"
@@ -3487,6 +3615,10 @@ msgstr "右"
 msgid "右うしろ"
 msgstr "右うしろ"
 
+#: src/components/IntroFlow.tsx:68
+msgid "右上の「追加」を押すと、できあがりです。"
+msgstr "右上の「追加」を押すと、できあがりです。"
+
 #: src/components/navigation/NavigationHud.tsx:111
 msgid "右折"
 msgstr "右折"
@@ -3537,6 +3669,10 @@ msgstr "名前で絞る"
 msgid "名前と公開"
 msgstr "名前と公開"
 
+#: src/components/blog/CommentSection.tsx:65
+msgid "名前なし"
+msgstr "名前なし"
+
 #. placeholder {0}: waypoints.length
 #: src/components/admin/map-editor/MapEditor.tsx:1051
 msgid "名前のついた地点が{0}か所ありました。経由地として追加しますか？"
@@ -3584,7 +3720,7 @@ msgstr "周辺の場所（駐車場・自販機・トイレなど）"
 msgid "和歌山県"
 msgstr "和歌山県"
 
-#: src/components/IntroFlow.tsx:129
+#: src/components/IntroFlow.tsx:194
 #: src/components/landing/Landing.tsx:132
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
@@ -3611,13 +3747,13 @@ msgstr "国土地理院（地理院タイル）"
 msgid "地図"
 msgstr "地図"
 
-#: src/app/(public)/blog/[id]/page.tsx:122
+#: src/app/(public)/blog/[id]/page.tsx:175
 #: src/components/PlaceDialog.tsx:29
 #: src/components/SpotSheet.tsx:72
 msgid "地図で見る"
 msgstr "地図で見る"
 
-#: src/components/IntroFlow.tsx:160
+#: src/components/IntroFlow.tsx:225
 msgid "地図とルート"
 msgstr "地図とルート"
 
@@ -3753,7 +3889,7 @@ msgstr "場所の名前で探す"
 msgid "場所の名前で探す（例：西念寺）"
 msgstr "場所の名前で探す（例：西念寺）"
 
-#: src/components/IntroFlow.tsx:161
+#: src/components/IntroFlow.tsx:226
 msgid "場所の物語"
 msgstr "場所の物語"
 
@@ -4186,6 +4322,10 @@ msgstr "新しいルート（管理）"
 msgid "新しい点は、選んだ点（{chosenNo}番）のあとに入ります。もう一度クリックすると、選びなおせます。"
 msgstr "新しい点は、選んだ点（{chosenNo}番）のあとに入ります。もう一度クリックすると、選びなおせます。"
 
+#: src/app/(public)/blog/page.tsx:62
+msgid "新しい記事"
+msgstr "新しい記事"
+
 #: src/components/admin/PhotoLibrary.tsx:139
 msgid "新しい順"
 msgstr "新しい順"
@@ -4198,7 +4338,7 @@ msgstr "新しく作るには、名前（日本語）が必要です"
 #: src/app/(public)/register/page.tsx:31
 #: src/app/(public)/sitemap/page.tsx:105
 #: src/components/auth/LoginFlow.tsx:104
-#: src/components/GuestNag.tsx:75
+#: src/components/GuestNag.tsx:79
 #: src/components/landing/Landing.tsx:197
 #: src/components/landing/LandingHero.tsx:46
 #: src/components/SignInPrompt.tsx:31
@@ -4234,7 +4374,7 @@ msgstr "日本語の名前を入れてください。"
 msgid "日本語の字幕です。もう一度送ると、置き換わります。字幕は動画の横に保存され、動画を入れ替えたときは、字幕も送りなおしてください。"
 msgstr "日本語の字幕です。もう一度送ると、置き換わります。字幕は動画の横に保存され、動画を入れ替えたときは、字幕も送りなおしてください。"
 
-#: src/components/map/PlacesPanel.tsx:239
+#: src/components/map/PlacesPanel.tsx:233
 #: src/components/RouteStats.tsx:34
 msgid "時間"
 msgstr "時間"
@@ -4257,10 +4397,6 @@ msgstr "更新 {updated}（日本時間）"
 msgid "書いたファイル（.xlsx）"
 msgstr "書いたファイル（.xlsx）"
 
-#: src/app/(public)/blog/[id]/page.tsx:151
-msgid "書いた人"
-msgstr "書いた人"
-
 #: src/components/admin/RouteImport.tsx:85
 msgid "書いてありません"
 msgstr "書いてありません"
@@ -4277,7 +4413,7 @@ msgstr "書きかえ済み"
 msgid "書き方"
 msgstr "書き方"
 
-#: src/app/(public)/blog/page.tsx:45
+#: src/app/(public)/blog/page.tsx:49
 msgid "書けたら、ここに表示されます。"
 msgstr "書けたら、ここに表示されます。"
 
@@ -4380,11 +4516,19 @@ msgstr "次の写真"
 msgid "次の行は、まちがいがあるので取り込みません："
 msgstr "次の行は、まちがいがあるので取り込みません："
 
+#: src/app/(public)/blog/[id]/page.tsx:216
+msgid "次の記事 →"
+msgstr "次の記事 →"
+
+#: src/app/(public)/blog/page.tsx:88
+msgid "次へ →"
+msgstr "次へ →"
+
 #: src/components/map/TrailMap.tsx:552
 msgid "次へ ＞"
 msgstr "次へ ＞"
 
-#: src/components/IntroFlow.tsx:163
+#: src/components/IntroFlow.tsx:228
 msgid "歩いた場所で、スタンプを集められます。登録しなくても始められます。"
 msgstr "歩いた場所で、スタンプを集められます。登録しなくても始められます。"
 
@@ -4684,7 +4828,7 @@ msgstr "短い間に何度も操作されました。しばらくしてからお
 msgid "確認した情報源（サイト名やリンク）"
 msgstr "確認した情報源（サイト名やリンク）"
 
-#: src/components/map/PlacesPanel.tsx:255
+#: src/components/map/PlacesPanel.tsx:243
 msgid "確認した日：{checkedOn}"
 msgstr "確認した日：{checkedOn}"
 
@@ -4762,7 +4906,7 @@ msgstr "約{amount}km"
 msgid "約{amount}m"
 msgstr "約{amount}m"
 
-#: src/components/IntroFlow.tsx:143
+#: src/components/IntroFlow.tsx:208
 #: src/components/landing/Landing.tsx:138
 msgid "約{TRAIL_KM}km"
 msgstr "約{TRAIL_KM}km"
@@ -4776,7 +4920,7 @@ msgid "終了"
 msgstr "終了"
 
 #: src/components/admin/PlacePanel.tsx:37
-#: src/components/IntroFlow.tsx:146
+#: src/components/IntroFlow.tsx:211
 #: src/components/landing/Landing.tsx:139
 #: src/components/map/MapScreenCanvas.tsx:594
 #: src/components/PointKindName.tsx:9
@@ -4802,7 +4946,7 @@ msgstr "経度"
 
 #: src/app/(admin)/admin/attention/page.tsx:81
 #: src/components/admin/useChecklistLabels.ts:22
-#: src/components/RouteView.tsx:246
+#: src/components/RouteView.tsx:252
 msgid "経由地"
 msgstr "経由地"
 
@@ -4826,7 +4970,7 @@ msgstr "経由地が残っているルートは削除できません。"
 msgid "経由地が残っているルートは消せません。先に経由地を消してください。"
 msgstr "経由地が残っているルートは消せません。先に経由地を消してください。"
 
-#: src/components/IntroFlow.tsx:161
+#: src/components/IntroFlow.tsx:226
 msgid "経由地ごとに、写真と、名前の由来や歴史を読めます。近くの駅、バス停、駐車場もわかります。"
 msgstr "経由地ごとに、写真と、名前の由来や歴史を読めます。近くの駅、バス停、駐車場もわかります。"
 
@@ -5091,7 +5235,7 @@ msgstr "葛城修験"
 msgid "葛城修験 管理"
 msgstr "葛城修験 管理"
 
-#: src/components/IntroFlow.tsx:126
+#: src/components/IntroFlow.tsx:191
 #: src/components/landing/Landing.tsx:126
 msgid "葛城修験とは"
 msgstr "葛城修験とは"
@@ -5104,7 +5248,7 @@ msgstr "葛城修験の地図"
 msgid "葛城修験の道"
 msgstr "葛城修験の道"
 
-#: src/app/(public)/blog/page.tsx:39
+#: src/app/(public)/blog/page.tsx:42
 msgid "葛城修験の道のことや、歩いた日のことをお知らせします。"
 msgstr "葛城修験の道のことや、歩いた日のことをお知らせします。"
 
@@ -5198,7 +5342,7 @@ msgstr "言語"
 msgid "言語は{MAX_LANGUAGES}つまで（日本語を含む）。英語以外は、まだ訪れる人には表示されません。"
 msgstr "言語は{MAX_LANGUAGES}つまで（日本語を含む）。英語以外は、まだ訪れる人には表示されません。"
 
-#: src/app/(public)/blog/page.tsx:44
+#: src/app/(public)/blog/page.tsx:48
 msgid "記事は、まだありません。"
 msgstr "記事は、まだありません。"
 
@@ -5217,10 +5361,6 @@ msgstr "許可確認済み"
 #: src/components/admin/DirectoryPicker.tsx:168
 msgid "該当する場所はありません。"
 msgstr "該当する場所はありません。"
-
-#: src/app/(public)/blog/[id]/page.tsx:105
-msgid "詳しい情報"
-msgstr "詳しい情報"
 
 #: src/components/admin/PlacePanel.tsx:93
 #: src/components/SpotSheet.tsx:111
@@ -5311,6 +5451,7 @@ msgstr "送った内容が、読み取れませんでした。もう一度お試
 
 #: src/components/admin/PhotoUpload.tsx:76
 #: src/components/admin/SubtitleUpload.tsx:61
+#: src/components/blog/CommentSection.tsx:97
 msgid "送っています…"
 msgstr "送っています…"
 
@@ -5331,7 +5472,7 @@ msgstr "通常"
 msgid "通行止め"
 msgstr "通行止め"
 
-#: src/components/IntroFlow.tsx:162
+#: src/components/IntroFlow.tsx:227
 msgid "通行止めなどの知らせを、確認した日づけで見られます。"
 msgstr "通行止めなどの知らせを、確認した日づけで見られます。"
 
@@ -5495,7 +5636,7 @@ msgstr "重複しているように見える場所はありません。"
 msgid "重複している場所をさがす"
 msgstr "重複している場所をさがす"
 
-#: src/components/IntroFlow.tsx:142
+#: src/components/IntroFlow.tsx:207
 #: src/components/landing/Landing.tsx:138
 msgid "長さ"
 msgstr "長さ"
@@ -5510,7 +5651,7 @@ msgstr "長さ"
 #: src/components/GuestClaim.tsx:84
 #: src/components/map/MapPickList.tsx:36
 #: src/components/map/MapPopup.tsx:57
-#: src/components/map/PlacesPanel.tsx:199
+#: src/components/map/PlacesPanel.tsx:208
 #: src/components/map/TrailMap.tsx:460
 #: src/components/ProfileSettings.tsx:230
 #: src/components/SampleNotice.tsx:64
@@ -5545,7 +5686,7 @@ msgstr "隠す"
 msgid "難しさ"
 msgstr "難しさ"
 
-#: src/components/map/PlacesPanel.tsx:217
+#: src/components/map/PlacesPanel.tsx:220
 msgid "電話"
 msgstr "電話"
 

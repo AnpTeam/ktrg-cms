@@ -48,6 +48,8 @@ export const AUTH_LIMITS = {
   navigationPathUser: { name: "navigation-path-user", limit: 20, windowMs: 15 * MINUTE },
   // Keyed by user id, per day: one account cannot take most of the site's shared OpenRouteService allowance.
   navigationPathDaily: { name: "navigation-path-daily", limit: 200, windowMs: 24 * 60 * MINUTE },
+  // Keyed by user id: writing blog comments. A few a quarter hour is a reader; more is a script.
+  commentUser: { name: "comment-user", limit: 5, windowMs: 15 * MINUTE },
   // Keyed by user id: an admin saving routes and places. Generous, because the editor saves often.
   adminWriteUser: { name: "admin-write-user", limit: 300, windowMs: 15 * MINUTE },
   // Keyed by user id: photo uploads (each is at most 4 MB). Enough for a gallery, not for filling the bucket.

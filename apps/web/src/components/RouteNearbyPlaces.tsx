@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
-import { PlaceGroupIcon } from "@/components/icons";
+import { PlaceIcon } from "@/components/PlaceIcon";
 import { PlaceDialog } from "@/components/PlaceDialog";
 import { useCategoryNames } from "@/components/map/PlacesPanel";
-import { groupOf, type MapPlace } from "@/lib/places";
+import type { MapPlace } from "@/lib/places";
 
 /**
  * "Nearby places" of a route: the directory's places linked to it (parking, vending machines, toilets ...). They have no
@@ -28,9 +28,7 @@ export function RouteNearbyPlaces({ routeId, places }: { routeId: string; places
               onClick={() => setOpen(p)}
               className="tap-target flex w-full items-center gap-3 px-4 py-3 text-left"
             >
-              <span className="shrink-0 text-accent">
-                <PlaceGroupIcon group={groupOf(p.category)} />
-              </span>
+              <PlaceIcon category={p.category} />
               <span className="min-w-0 flex-1">
                 <span className="block text-lg font-bold leading-snug" lang={p.nameLang}>
                   {p.name}

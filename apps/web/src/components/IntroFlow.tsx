@@ -1,11 +1,12 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Trans, useLingui } from "@lingui/react/macro";
 import { rememberLocale } from "@/i18n/cookie";
 import { locales, type Locale } from "@/i18n/locales";
 import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
+import { isInAppBrowser } from "@/lib/browser-check";
 import { helpContent } from "@/lib/help-content";
 import { track } from "@/lib/track";
 
@@ -13,8 +14,67 @@ const INTRO_COOKIE = "intro";
 // Endonyms: each language names itself, so it is findable in a language the person cannot read.
 const names: Record<Locale, string> = { ja: "日本語", en: "English" };
 
-const STEPS = 5;
 const big = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl px-6 text-xl font-bold";
+
+// Already opened from the home screen: nothing to add.
+const standaloneQuery = "(display-mode: standalone)";
+const subscribeStandalone = (onChange: () => void) => {
+  const q = window.matchMedia(standaloneQuery);
+  q.addEventListener("change", onChange);
+  return () => q.removeEventListener("change", onChange);
+};
+const isStandalone = () => window.matchMedia(standaloneQuery).matches || (navigator as { standalone?: boolean }).standalone === true;
+
+type InstallPrompt = Event & { prompt: () => Promise<unknown> };
+
+/**
+ * How to put the app on the home screen (see MDN, "Making PWAs installable"). Where the browser offers an install prompt
+ * (Chrome and Edge, Android and desktop) a button asks for it; on an iPhone or iPad the way is Safari's share menu, which no
+ * page can open, so the steps are written out; a browser inside another app (LINE ...) cannot add it at all. Only drawn
+ * after the person has stepped to it, so it never runs on the server.
+ */
+function InstallStep() {
+  const [offer, setOffer] = useState<InstallPrompt | null>(null);
+  const [ua] = useState(() => navigator.userAgent);
+  const ios = /\b(iPhone|iPad|iPod)\b/.test(ua) || (/\bMacintosh\b/.test(ua) && navigator.maxTouchPoints > 1);
+  useEffect(() => {
+    const onOffer = (e: Event) => {
+      e.preventDefault(); // keep the browser's own mini bar away: the button below asks instead
+      setOffer(e as InstallPrompt);
+    };
+    window.addEventListener("beforeinstallprompt", onOffer);
+    return () => window.removeEventListener("beforeinstallprompt", onOffer);
+  }, []);
+  return (
+    <>
+      <h1 id="intro-title" className="text-3xl font-bold text-accent">
+        <Trans>ホーム画面に追加しましょう</Trans>
+      </h1>
+      <p className="text-lg leading-8">
+        <Trans>ホーム画面に追加すると、アプリのようにすぐ開けます。山の中でも、探す手間がかかりません。</Trans>
+      </p>
+      {isInAppBrowser(ua) ? (
+        <p className="rounded-3xl bg-surface p-4 text-lg leading-8">
+          <Trans>いま開いているのは、ほかのアプリの中のブラウザです。Safari や Chrome で開きなおしてから、追加してください。</Trans>
+        </p>
+      ) : offer ? (
+        <button type="button" onClick={() => void offer.prompt()} className={`${big} bg-ink text-paper`}>
+          <Trans>ホーム画面に追加する</Trans>
+        </button>
+      ) : ios ? (
+        <ol className="flex list-decimal flex-col gap-3 rounded-3xl bg-surface p-4 pl-9 text-lg leading-8">
+          <li><Trans>Safari で、画面の下（または上）にある共有ボタン（□に↑）を押します。</Trans></li>
+          <li><Trans>メニューを下へ動かして、「ホーム画面に追加」を押します。</Trans></li>
+          <li><Trans>右上の「追加」を押すと、できあがりです。</Trans></li>
+        </ol>
+      ) : (
+        <p className="rounded-3xl bg-surface p-4 text-lg leading-8">
+          <Trans>ブラウザのメニュー（⋮ や ⋯）から、「ホーム画面に追加」または「アプリをインストール」をえらびます。</Trans>
+        </p>
+      )}
+    </>
+  );
+}
 
 /**
  * What a new visitor meets on the home page, once: pick a language, what 葛城修験 is, how the app works in a few
@@ -30,6 +90,11 @@ export function IntroFlow({ seen }: { seen: boolean }) {
   const [dismissed, setDismissed] = useState(false);
   const [step, setStep] = useState(0);
   const help = helpContent(i18n.locale);
+  const installed = useSyncExternalStore(subscribeStandalone, isStandalone, () => true);
+  // The steps, in order; the home-screen step is left out once the app is opened from the home screen.
+  const steps = ["language", "about", "features", "play", ...(installed ? [] : ["install"]), "start"] as const;
+  const STEPS = steps.length;
+  const current = steps[step];
 
   const open = !seen && !dismissed && pathname === "/";
 
@@ -90,7 +155,7 @@ export function IntroFlow({ seen }: { seen: boolean }) {
         </div>
 
         <div className="flex flex-1 flex-col gap-5">
-          {step === 0 ? (
+          {current === "language" ? (
             <>
               <h1 id="intro-title" className="font-serif text-4xl font-bold leading-snug">
                 葛城修験 <span className="block text-2xl">Katsuragi Shugen</span>
@@ -120,7 +185,7 @@ export function IntroFlow({ seen }: { seen: boolean }) {
             </>
           ) : null}
 
-          {step === 1 ? (
+          {current === "about" ? (
             <>
               <h1 id="intro-title" className="text-3xl font-bold text-accent">
                 <Trans>葛城修験とは</Trans>
@@ -150,7 +215,7 @@ export function IntroFlow({ seen }: { seen: boolean }) {
             </>
           ) : null}
 
-          {step === 2 ? (
+          {current === "features" ? (
             <>
               <h1 id="intro-title" className="text-3xl font-bold text-accent">
                 <Trans>このアプリでわかること</Trans>
@@ -171,12 +236,13 @@ export function IntroFlow({ seen }: { seen: boolean }) {
             </>
           ) : null}
 
-          {step === 3 ? (
+          {current === "play" ? (
             <>
               <h1 id="intro-title" className="text-3xl font-bold text-accent">{help.guideTitle}</h1>
               <p className="text-lg leading-8">{help.guideIntro}</p>
               <ol className="flex flex-col gap-3">
-                {help.steps.map((s, i) => (
+                {/* The last step of the guide is "sign up": that waits until the visitor opens the rallies page. */}
+                {help.steps.slice(0, -1).map((s, i) => (
                   <li key={s.title} className="flex gap-4 rounded-3xl bg-surface p-4">
                     <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand text-xl font-bold text-on-brand">{i + 1}</span>
                     <div>
@@ -189,7 +255,9 @@ export function IntroFlow({ seen }: { seen: boolean }) {
             </>
           ) : null}
 
-          {step === 4 ? (
+          {current === "install" ? <InstallStep /> : null}
+
+          {current === "start" ? (
             <>
               <h1 id="intro-title" className="text-3xl font-bold text-accent">
                 <Trans>さあ、歩きはじめましょう</Trans>

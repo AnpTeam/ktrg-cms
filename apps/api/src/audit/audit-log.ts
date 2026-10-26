@@ -64,6 +64,13 @@ export const AUDIT_ACTIONS = {
   "place.create": "place",
   "place.update": "place",
   "place.delete": "place",
+  /** Blog writers (admin-lists): made, changed, deleted. */
+  "author.create": "author",
+  "author.update": "author",
+  "author.delete": "author",
+  /** Blog comments (admin-lists): status changed, deleted. */
+  "comment.update": "comment",
+  "comment.delete": "comment",
   /** The pages editors make (admin-lists): made, changed (including published or not), deleted. */
   "site_page.create": "site_page",
   "site_page.update": "site_page",

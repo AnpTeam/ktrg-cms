@@ -34,14 +34,17 @@ export function GuestNag({ hasStamps }: { hasStamps: boolean }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [open, setOpen] = useState(false);
   const quiet = /^\/(login|register|welcome)(\/|$)/.test(pathname);
+  // On a phone the reminder waits until the visitor opens the rallies page; nobody is asked to sign up before that.
+  const onRallies = /^\/rallies(\/|$)/.test(pathname);
+  const held = () => window.matchMedia("(max-width: 767px)").matches && !onRallies;
 
   const timer = useRef<number | undefined>(undefined);
   // After the "stamp collected" message has had a moment on screen. The page refreshes meanwhile, so the timer outlives the effects.
   const show = useCallback(() => {
-    if (Number(read(localStorage, SNOOZE_KEY) ?? 0) > Date.now()) return;
+    if (held() || Number(read(localStorage, SNOOZE_KEY) ?? 0) > Date.now()) return;
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => setOpen(true), 2200);
-  }, []);
+  }, [onRallies]); // eslint-disable-line react-hooks/exhaustive-deps -- `held` only reads `onRallies`
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
   useEffect(() => {
@@ -51,10 +54,11 @@ export function GuestNag({ hasStamps }: { hasStamps: boolean }) {
   }, [quiet, show]);
 
   useEffect(() => {
-    if (quiet || !hasStamps || read(sessionStorage, SEEN_KEY)) return;
+    // Held back on a phone away from the rallies page: it is not used up, so it opens when that page is.
+    if (quiet || !hasStamps || read(sessionStorage, SEEN_KEY) || held()) return;
     write(sessionStorage, SEEN_KEY, "1");
     show();
-  }, [hasStamps, quiet, show]);
+  }, [hasStamps, quiet, show, onRallies]); // eslint-disable-line react-hooks/exhaustive-deps -- `held` only reads `onRallies`
 
   useEffect(() => {
     const el = dialog.current;
@@ -78,7 +82,7 @@ export function GuestNag({ hasStamps }: { hasStamps: boolean }) {
           {t`ログイン`}
         </Link>
         <button type="button" className={later} onClick={() => setOpen(false)}>
-          {t`あとで`}
+          {t`ゲストのまま使う`}
         </button>
         <button
           type="button"

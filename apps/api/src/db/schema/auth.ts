@@ -54,6 +54,8 @@ export const users = pgTable(
     role: userRole("role").notNull().default("participant"),
     locale: userLocale("locale").notNull().default("ja"),
     displayName: text("display_name"),
+    // A photo of the person (an https link, uploaded by staff); shown as the byline of a blog post they wrote. Null when none.
+    avatarUrl: text("avatar_url"),
     // Where the person says they come from; null when they did not say.
     origin: userOrigin("origin"),
     // Asked once after registering; both optional and changeable on the profile.
