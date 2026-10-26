@@ -924,9 +924,11 @@ body.map-sheet-full .site-header {
   }
 }
 
-/* The installed iPhone app runs under the status bar (black-translucent, see layout.tsx). Its clock and battery are always
-   white, so every page starts below a dark strip; the map is the exception: it runs right up under the bar, with only a
-   soft shade behind the clock. Elsewhere (a browser tab) the safe-area inset is 0 and none of this applies. */
+/* The installed iPhone app runs under the status bar (black-translucent, see layout.tsx). iOS 27 draws a blur over the top of
+   such a page unless something is painted right at the top edge (found by experiment, not documented by Apple; see
+   the OJapp Tips article "Removing the Top Blur in iOS 27 PWAs"). So every page starts below a strip in the page colour; the map is the
+   exception: it runs right up under the bar, with an 11px strip that is painted but shows nothing (the text-clipped
+   background has no text to fill). Elsewhere (a browser tab) the safe-area inset is 0 and none of this applies. */
 @media (display-mode: standalone) {
   body {
     padding-top: env(safe-area-inset-top);
@@ -936,7 +938,7 @@ body.map-sheet-full .site-header {
     position: fixed;
     inset: 0 0 auto 0;
     height: env(safe-area-inset-top);
-    background: #000;
+    background: var(--color-paper);
     z-index: 60;
     pointer-events: none;
   }
@@ -944,8 +946,10 @@ body.map-sheet-full .site-header {
     padding-top: 0;
   }
   body.map-screen-active::before {
-    height: calc(env(safe-area-inset-top) + 0.5rem);
-    background: linear-gradient(to bottom, rgb(0 0 0 / 0.55), transparent);
+    height: 11px;
+    background: #fff;
+    -webkit-background-clip: text;
+    background-clip: text;
   }
 }
 

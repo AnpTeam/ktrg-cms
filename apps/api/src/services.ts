@@ -10,6 +10,7 @@ import type { MeServices } from "./me/me-routes";
 import { createListReader } from "./admin-lists/list-service";
 import type { ListReadStore } from "./admin-lists/list-types";
 import type { AuditListRow, AuditListServices } from "./audit/audit-list";
+import { createFuriganaService, type FuriganaServices, type FuriganaStore } from "./furigana/furigana-words";
 import { createBannerService, type BannerServices, type BannerStore } from "./banners/banner-list";
 import type { PlaceListRow, PlaceListServices } from "./content/place-list";
 import { createPlaceService, type PlaceServices, type PlaceStore } from "./places/place-directory";
@@ -37,7 +38,7 @@ import { createUploadService } from "./uploads/upload-service";
 import type { FileStorage } from "./uploads/upload-storage";
 
 /** Everything the routes use. */
-export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & BannerServices & PlaceServices & SiteSettingsServices & AuditListServices & PlaceListServices & UserListServices & GuestServices;
+export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & BannerServices & PlaceServices & SiteSettingsServices & AuditListServices & PlaceListServices & UserListServices & GuestServices & FuriganaServices;
 
 /** What the services are built from: the storage (database or in-memory) and the outside world. */
 export interface ServiceDeps {
@@ -53,6 +54,7 @@ export interface ServiceDeps {
     stampList: ListReadStore<StampListRow>;
     notices: NoticeStore;
     banners: BannerStore;
+    furigana: FuriganaStore;
     places: PlaceStore;
     siteSettings: SiteSettingsStore;
     auditList: ListReadStore<AuditListRow>;
@@ -109,6 +111,7 @@ export function createServices(deps: ServiceDeps): Services {
     notices: createNoticeService({ store: stores.notices, now }),
     // The other generated admin lists: home banners, the audit log, every place, accounts and their roles.
     banners: createBannerService({ store: stores.banners, photoHosts: deps.photoHosts }),
+    furigana: createFuriganaService({ store: stores.furigana }),
     places: createPlaceService({ store: stores.places, photoHosts: deps.photoHosts, routeExists: async (id) => (await stores.content.getRoute(id)) !== null }),
     siteSettings: createSiteSettingsService({ store: stores.siteSettings }),
     auditList: createListReader({ store: stores.auditList }),

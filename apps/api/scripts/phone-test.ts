@@ -23,6 +23,7 @@ import { createMemoryStampStore } from "../src/stamps/stamp-memory-store";
 import { createMemoryNoticeStore } from "../src/notices/notice-memory-store";
 import { createMemorySiteSettingsStore } from "../src/site-settings/site-settings";
 import { createMemoryPlaceStore } from "../src/places/place-directory";
+import { createMemoryFuriganaStore } from "../src/furigana/furigana-words";
 import { createMemoryBannerStore } from "../src/banners/banner-list";
 import { memoryReader } from "../src/admin-lists/list-memory-store";
 import { createMemoryUserListStore } from "../src/users/user-list";
@@ -82,6 +83,7 @@ const services = createServices({
     stampList: stampMem.listStore,
     notices: createMemoryNoticeStore(audit).store,
     banners: createMemoryBannerStore(audit).store,
+    furigana: createMemoryFuriganaStore(audit).store,
     places: createMemoryPlaceStore(audit).store,
     siteSettings: createMemorySiteSettingsStore(audit),
     auditList: memoryReader(new Map()),

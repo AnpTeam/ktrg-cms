@@ -8,8 +8,6 @@ import { createDrizzleContentStore } from "./content/content-store";
 import { createDrizzleRallyAdminStore } from "./rallies/rally-admin-store";
 import { rallyAdminRoutes } from "./rallies/rally-admin-routes";
 import { guestRoutes } from "./guest/guest-routes";
-import { createFuriganaService } from "./furigana/furigana";
-import { furiganaRoutes } from "./furigana/furigana-routes";
 import { rallyPublicRoutes } from "./rallies/rally-public-routes";
 import { navigationRoutes } from "./navigation/navigation-routes";
 import { stampAdminRoutes } from "./stamps/stamp-admin-routes";
@@ -31,6 +29,8 @@ import { ADMIN_LISTS } from "./admin-lists/lists";
 import { listMetaRoutes, listReadRoutes, listWriteRoutes } from "./admin-lists/list-routes";
 import { purgeRoutes } from "./internal/purge-routes";
 import { auditLogList, createDrizzleAuditListStore } from "./audit/audit-list";
+import { createDrizzleFuriganaStore } from "./furigana/furigana-store";
+import { furiganaList, publicFuriganaRoutes } from "./furigana/furigana-words";
 import { bannerList, publicBannerRoutes } from "./banners/banner-list";
 import { createDrizzleBannerStore } from "./banners/banner-store";
 import { placeDirectoryList, publicPlaceRoutes } from "./places/place-directory";
@@ -68,6 +68,7 @@ function getServices(): Services {
         stampList: createDrizzleStampListStore(db),
         notices: createDrizzleNoticeStore(db),
         banners: createDrizzleBannerStore(db),
+        furigana: createDrizzleFuriganaStore(db),
         places: createDrizzlePlaceStore(db),
         siteSettings: createDrizzleSiteSettingsStore(db),
         auditList: createDrizzleAuditListStore(db),
@@ -113,7 +114,6 @@ export function createApp(
   getServices: () => Services,
   opts: RouteOptions & { docs: boolean; cronSecret?: string; appOrigin?: () => string },
 ) {
-  const furigana = createFuriganaService();
   return new Elysia({ prefix: "/api/v1" })
     .use(apiBase({ allowedOrigin: opts.appOrigin })) // first: request ids, the Origin check and the one error shape
     .use(apiDocs({ enabled: opts.docs }))
@@ -132,7 +132,6 @@ export function createApp(
     .use(uploadRoutes(getServices, opts))
     .use(rallyAdminRoutes(getServices, opts))
     .use(rallyPublicRoutes(getServices, env.NODE_ENV === "production" ? 10_000 : 0))
-    .use(furiganaRoutes(furigana))
     .use(stampRoutes(getServices, opts))
     .use(guestRoutes(getServices, opts))
     .use(navigationRoutes(getServices, opts))
@@ -146,6 +145,9 @@ export function createApp(
     .use(listReadRoutes(bannerList, getServices, opts))
     .use(listWriteRoutes(bannerList, getServices, opts))
     .use(publicBannerRoutes(() => getServices().banners))
+    .use(listReadRoutes(furiganaList, getServices, opts))
+    .use(listWriteRoutes(furiganaList, getServices, opts))
+    .use(publicFuriganaRoutes(() => getServices().furigana))
     .use(listReadRoutes(placeDirectoryList, getServices, opts))
     .use(listWriteRoutes(placeDirectoryList, getServices, opts))
     .use(publicPlaceRoutes(() => getServices().places))

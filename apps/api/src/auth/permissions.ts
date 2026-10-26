@@ -38,6 +38,8 @@ export const PERMISSIONS = {
   "upload.read": ["editor", "admin"],
   /** The photos in the home page carousel. */
   "banner.manage": ["editor", "admin"],
+  /** The words furigana is drawn over, and their readings. */
+  "furigana.manage": ["editor", "admin"],
   /** Settings for the whole site (the map style): they change the live site at once. */
   "site.manage": ["admin"],
   /** Review flagged stamps and revoke them. */

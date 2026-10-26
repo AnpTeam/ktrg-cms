@@ -52,6 +52,10 @@ export const AUDIT_ACTIONS = {
   "banner.create": "banner",
   "banner.update": "banner",
   "banner.delete": "banner",
+  /** The furigana words (admin-lists): made, changed, deleted. */
+  "furigana.create": "furigana",
+  "furigana.update": "furigana",
+  "furigana.delete": "furigana",
   /** The places directory (admin-lists): made, changed (including published or not), deleted. */
   "place.create": "place",
   "place.update": "place",

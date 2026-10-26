@@ -30,6 +30,7 @@ describe("permission table", () => {
       [
         "audit.read",
         "banner.manage",
+        "furigana.manage",
         "site.manage",
         "me.manage",
         "me.sensitive",
@@ -66,7 +67,7 @@ describe("the editor role", () => {
     const forEditor: string[] = permissions.filter((p) => can("editor", p)).sort();
     const forAdmin: string[] = permissions.filter((p) => can("admin", p)).sort();
     expect(forAdmin.filter((p) => !forEditor.includes(p))).toEqual(ADMIN_ONLY);
-    for (const p of ["route.manage", "spot.manage", "spot.publish", "rally.manage", "notice.manage", "banner.manage", "upload.create", "upload.read", "me.manage", "stamp.create"]) {
+    for (const p of ["route.manage", "spot.manage", "spot.publish", "rally.manage", "notice.manage", "banner.manage", "furigana.manage", "upload.create", "upload.read", "me.manage", "stamp.create"]) {
       expect(can("editor", p as Permission)).toBe(true);
     }
   });

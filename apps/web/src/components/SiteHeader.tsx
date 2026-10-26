@@ -181,7 +181,7 @@ export function SiteHeader({
         <div
           ref={panelRef}
           id="site-menu"
-          className="menu-drop fixed inset-0 overflow-y-auto overscroll-contain bg-surface pb-28 md:inset-auto md:right-auto md:w-[26rem] md:max-h-[calc(100dvh-1.5rem)] md:rounded-2xl md:border-2 md:border-brand md:pb-0 md:shadow-xl"
+          className="menu-drop fixed inset-0 overflow-y-auto overscroll-contain bg-surface pb-28 pt-[env(safe-area-inset-top)] md:inset-auto md:right-auto md:w-[26rem] md:max-h-[calc(100dvh-1.5rem)] md:rounded-2xl md:border-2 md:border-brand md:pb-0 md:pt-0 md:shadow-xl"
         >
           <div className="mx-auto flex max-w-xl flex-col gap-5 px-4 py-5">
             {/* From 768 px the bar is not drawn (the rail has the menu button), so the top row of the popover holds both. */}
@@ -193,7 +193,6 @@ export function SiteHeader({
                 {t`閉じる`}
               </button>
             </div>
-            <QuickActions prefs={prefs} signedIn={signedIn} />
             {signedIn ? (
               <div className="flex flex-col gap-3">
                 {/* Who is signed in, for a glance; changing it is on the profile page (the account settings item below). */}
@@ -247,6 +246,7 @@ export function SiteHeader({
                 {t`見やすさの設定`}
               </Link>
               <p className="text-base text-muted">{t`文字やボタンの大きさ、地図の見せ方`}</p>
+              <QuickActions prefs={prefs} signedIn={signedIn} />
             </div>
             {/* From 1024 px these links are always in the sidebar's footer, so the menu leaves them out. */}
             <ul className="flex flex-col border-t-2 border-line pt-2 lg:hidden">
