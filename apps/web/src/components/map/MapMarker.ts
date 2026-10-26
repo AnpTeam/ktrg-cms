@@ -181,8 +181,8 @@ export function createPlaceMarkerElement({
 
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.setAttribute("viewBox", "0 0 24 24");
-  svg.setAttribute("width", "28");
-  svg.setAttribute("height", "28");
+  svg.setAttribute("width", "22");
+  svg.setAttribute("height", "22");
   svg.setAttribute("aria-hidden", "true");
   svg.innerHTML = placeIconSvg[category]; // fixed markup from lib/place-icons.ts
   el.appendChild(svg);
