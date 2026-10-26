@@ -23,9 +23,7 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
 
   return (
     <div className="flex flex-col gap-6 pt-2 lg:pt-0">
-      {/* From 1024 px: you and how to play on the left, the rallies on the right. On a phone, one column in this order. */}
-      <div className="flex flex-col gap-6 lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:items-start lg:gap-x-10">
-      <div className="flex flex-col gap-6">
+      {/* One column in this order, on a phone and on a desktop alike: the title, you, the rally you are in, then the rest as cards side by side. */}
       {/* The title, with the badges and how to play to its side ("?"): how to play lives here, with the stamps, and nowhere else. */}
       <div className="flex items-center gap-3 px-4">
         <h1 className="min-w-0 flex-1 text-3xl font-bold lg:text-4xl">
@@ -45,10 +43,6 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
 
       {/* Signed out: a reason to sign in and the rallies, never a false "0 stamps". */}
       {viewer.signedIn ? null : <SignInPrompt />}
-
-      </div>
-
-      <div className="flex flex-col gap-6">
       {rallies.length === 0 ? (
         <EmptyState title={<Trans>ラリーは、まだ準備中です。</Trans>}>
           <Trans>公開できるようになったら、ここにスタンプのラリーが表示されます。</Trans>
@@ -62,16 +56,13 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
           <SectionBanner>
             <Trans>ラリーの一覧</Trans>
           </SectionBanner>
-          <ul className="flex flex-col gap-3">
+          <ul className="grid gap-3 lg:grid-cols-2 lg:gap-4">
             {others.map((rally) => (
               <RallyCard key={rally.id} rally={rally} locale={i18n.locale} account={viewer.signedIn} />
             ))}
           </ul>
         </section>
       ) : null}
-
-      </div>
-      </div>
 
       <Notice>
         <Trans>出かける前に、公式の最新情報を確認してください。</Trans>

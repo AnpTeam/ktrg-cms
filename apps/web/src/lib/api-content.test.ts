@@ -119,7 +119,7 @@ describe("the visitor's stamps in the view-models", () => {
 });
 
 describe("placeItemFromApi", () => {
-  const place = { id: "p1", category: "toilet", routeId: "r1", nameJa: "トイレ", nameEn: null, descriptionJa: null, descriptionEn: null, hoursJa: null, hoursEn: null, closedDaysJa: null, closedDaysEn: null, lat: 34.2, lng: 135.1, address: null, phone: null, website: null, photoUrl: null, status: "open", lastVerified: "2026-10-17" };
+  const place = { id: "p1", category: "toilet", routeId: "r1", nameJa: "トイレ", nameEn: null, descriptionJa: null, descriptionEn: null, hoursJa: null, hoursEn: null, closedDaysJa: null, closedDaysEn: null, lat: 34.2, lng: 135.1, addressJa: null, addressEn: null, phone: null, website: null, photoUrl: null, status: "open", lastVerified: "2026-10-17" };
   test("carries the course number and the checked position", () => {
     expect(placeItemFromApi(place, 3)).toMatchObject({ category: "toilet", routes: [3], position: { lat: 34.2, lng: 135.1, verified: true }, status: "open" });
     expect(placeItemFromApi(place, null).routes).toEqual([]);

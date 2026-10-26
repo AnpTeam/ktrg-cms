@@ -94,7 +94,8 @@ export function placeItemFromApi(p: PublicPlace, order: number | null): PlaceIte
     lastVerified: p.lastVerified,
     photoUrl: p.photoUrl,
     photoCredit: p.photoCredit ?? null,
-    address: p.address,
+    addressJa: p.addressJa ?? null,
+    addressEn: p.addressEn ?? null,
     phone: p.phone,
     website: p.website,
   };

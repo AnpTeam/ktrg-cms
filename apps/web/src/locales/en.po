@@ -1167,7 +1167,7 @@ msgid "この場所のページを開く"
 msgstr "Open this place's page"
 
 #: src/components/map/MapScreen.tsx:495
-#: src/components/map/PlacesPanel.tsx:250
+#: src/components/map/PlacesPanel.tsx:253
 #: src/components/map/StopCard.tsx:47
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
 msgstr "The position of this place is a draft and has not been checked yet."
@@ -1379,7 +1379,7 @@ msgstr "Let's start walking"
 msgid "サイズ"
 msgstr "Size"
 
-#: src/components/map/PlacesPanel.tsx:227
+#: src/components/map/PlacesPanel.tsx:230
 msgid "サイト"
 msgstr "Website"
 
@@ -1867,7 +1867,7 @@ msgstr "Desktop width"
 #: src/app/(public)/badges/page.tsx:13
 #: src/app/(public)/badges/page.tsx:28
 #: src/app/(public)/page.tsx:74
-#: src/app/(public)/rallies/page.tsx:35
+#: src/app/(public)/rallies/page.tsx:33
 #: src/app/(public)/sitemap/page.tsx:87
 msgid "バッジ"
 msgstr "Badges"
@@ -2090,6 +2090,10 @@ msgstr "Visitors in other languages (such as German) see the English text."
 msgid "ほかの記事"
 msgstr "More posts"
 
+#: src/components/RouteNearbyPlaces.tsx:37
+msgid "ボタンを押して、見たい種類を選んでください。"
+msgstr "Press a button to choose the kinds you want to see."
+
 #: src/components/admin/map-editor/MapEditor.tsx:884
 msgid "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。"
 msgstr "Start by dragging a GPX file here or pressing \"Load a GPX file\". To enter by hand, place waypoints with \"Add waypoint\", then draw the path leg by leg with \"Draw path\"."
@@ -2173,8 +2177,8 @@ msgid "まわりにあるもの"
 msgstr "Around here"
 
 #: src/app/(public)/blog/[id]/page.tsx:186
-#: src/components/map/PlacesPanel.tsx:130
-#: src/components/map/PlacesPanel.tsx:131
+#: src/components/map/PlacesPanel.tsx:133
+#: src/components/map/PlacesPanel.tsx:134
 #: src/components/NearbyPlaces.tsx:22
 msgid "まわりの場所"
 msgstr "Places nearby"
@@ -2183,7 +2187,7 @@ msgstr "Places nearby"
 msgid "まわりの場所を最初から出す"
 msgstr "Show places nearby from the start"
 
-#: src/components/map/PlacesPanel.tsx:85
+#: src/components/map/PlacesPanel.tsx:88
 #: src/components/map/TrailMap.tsx:533
 msgid "まわりの場所を地図に出す"
 msgstr "Show places nearby on the map"
@@ -2278,7 +2282,7 @@ msgstr "Sent again. If it does not arrive, wait about a minute and try again."
 msgid "もっと見る"
 msgstr "Show more"
 
-#: src/components/map/PlacesPanel.tsx:163
+#: src/components/map/PlacesPanel.tsx:166
 msgid "もっと見る（あと{hidden}か所）"
 msgstr "Show more ({hidden} more)"
 
@@ -2356,7 +2360,7 @@ msgstr "Light"
 
 #: src/app/(admin)/admin/rallies/page.tsx:22
 #: src/app/(public)/page.tsx:70
-#: src/app/(public)/rallies/page.tsx:32
+#: src/app/(public)/rallies/page.tsx:30
 #: src/app/(public)/sitemap/page.tsx:82
 #: src/components/admin/AdminNav.tsx:32
 #: src/components/TabBar.tsx:25
@@ -2391,7 +2395,7 @@ msgstr "Courses to put in the rally"
 msgid "ラリーに入れる経由地"
 msgstr "Stamp waypoints to put in the rally"
 
-#: src/app/(public)/rallies/page.tsx:63
+#: src/app/(public)/rallies/page.tsx:57
 msgid "ラリーの一覧"
 msgstr "All rallies"
 
@@ -2416,7 +2420,7 @@ msgstr "Rally name"
 msgid "ラリーは、コースを集めてつくるか、経由地を集めてつくります。名前を押すと、名前・公開・中身を直せます。"
 msgstr "A rally is made from courses or from stamp waypoints. Open one to change its name, whether it is public, and what is in it."
 
-#: src/app/(public)/rallies/page.tsx:53
+#: src/app/(public)/rallies/page.tsx:47
 msgid "ラリーは、まだ準備中です。"
 msgstr "The rallies are not ready yet."
 
@@ -2747,7 +2751,7 @@ msgstr "Do not show this again"
 msgid "仮のルート・位置（未確認）"
 msgstr "Draft route and positions (unchecked)"
 
-#: src/components/map/PlacesPanel.tsx:234
+#: src/components/map/PlacesPanel.tsx:237
 msgid "休み"
 msgstr "Closed"
 
@@ -2844,7 +2848,7 @@ msgstr "Location is not allowed. Please allow location for this site in your bro
 msgid "低い"
 msgstr "low"
 
-#: src/components/map/PlacesPanel.tsx:218
+#: src/components/map/PlacesPanel.tsx:221
 #: src/components/PlaceFacts.tsx:29
 msgid "住所"
 msgstr "Address"
@@ -3095,7 +3099,7 @@ msgstr "Publish"
 msgid "公開できるようになったら、ここにコースのバッジが表示されます。"
 msgstr "When they can be published, the course badges will show here."
 
-#: src/app/(public)/rallies/page.tsx:54
+#: src/app/(public)/rallies/page.tsx:48
 msgid "公開できるようになったら、ここにスタンプのラリーが表示されます。"
 msgstr "When they are ready to publish, the stamp rallies will appear here."
 
@@ -3334,7 +3338,7 @@ msgstr "Working…"
 msgid "出かける前に"
 msgstr "Before you go"
 
-#: src/app/(public)/rallies/page.tsx:77
+#: src/app/(public)/rallies/page.tsx:68
 #: src/app/(public)/routes/page.tsx:87
 #: src/components/landing/Landing.tsx:186
 #: src/components/RouteView.tsx:272
@@ -3705,7 +3709,7 @@ msgid "周回（元の場所へ）"
 msgstr "Loop (back to the start)"
 
 #: src/components/admin/DirectoryPicker.tsx:123
-#: src/components/RouteNearbyPlaces.tsx:22
+#: src/components/RouteNearbyPlaces.tsx:33
 msgid "周辺の場所"
 msgstr "Nearby places"
 
@@ -4025,7 +4029,7 @@ msgstr "Temple or shrine"
 msgid "小さい順"
 msgstr "Smallest first"
 
-#: src/components/map/PlacesPanel.tsx:163
+#: src/components/map/PlacesPanel.tsx:166
 msgid "少なく表示"
 msgstr "Show less"
 
@@ -4374,7 +4378,7 @@ msgstr "Enter the Japanese name."
 msgid "日本語の字幕です。もう一度送ると、置き換わります。字幕は動画の横に保存され、動画を入れ替えたときは、字幕も送りなおしてください。"
 msgstr "Japanese subtitles. Sending again replaces them. They are stored beside the video, so when you replace the video, send the subtitles again."
 
-#: src/components/map/PlacesPanel.tsx:233
+#: src/components/map/PlacesPanel.tsx:236
 #: src/components/RouteStats.tsx:34
 msgid "時間"
 msgstr "Time"
@@ -4828,7 +4832,7 @@ msgstr "Too many attempts in a short time. Please try again in a little while."
 msgid "確認した情報源（サイト名やリンク）"
 msgstr "Source checked (site name or link)"
 
-#: src/components/map/PlacesPanel.tsx:243
+#: src/components/map/PlacesPanel.tsx:246
 msgid "確認した日：{checkedOn}"
 msgstr "Checked on: {checkedOn}"
 
@@ -5264,6 +5268,10 @@ msgstr "Enter many in a table"
 msgid "表示"
 msgstr "View"
 
+#: src/components/RouteNearbyPlaces.tsx:35
+msgid "表示する種類"
+msgstr "Kinds to show"
+
 #: src/components/admin/RouteEditor.tsx:473
 msgid "表示の切り替え"
 msgstr "Switch view"
@@ -5477,7 +5485,7 @@ msgid "通行止めなどの知らせを、確認した日づけで見られま�
 msgstr "See closures and other notices with the date they were checked."
 
 #: src/app/(admin)/admin/pages/page.tsx:27
-#: src/app/(public)/rallies/page.tsx:39
+#: src/app/(public)/rallies/page.tsx:37
 #: src/app/(public)/sitemap/page.tsx:90
 #: src/components/admin/PageTextEditor.tsx:37
 msgid "遊び方"
@@ -5651,7 +5659,7 @@ msgstr "Length"
 #: src/components/GuestClaim.tsx:84
 #: src/components/map/MapPickList.tsx:36
 #: src/components/map/MapPopup.tsx:57
-#: src/components/map/PlacesPanel.tsx:208
+#: src/components/map/PlacesPanel.tsx:211
 #: src/components/map/TrailMap.tsx:460
 #: src/components/ProfileSettings.tsx:230
 #: src/components/SampleNotice.tsx:64
@@ -5686,7 +5694,7 @@ msgstr "hidden"
 msgid "難しさ"
 msgstr "Difficulty"
 
-#: src/components/map/PlacesPanel.tsx:220
+#: src/components/map/PlacesPanel.tsx:223
 msgid "電話"
 msgstr "Phone"
 

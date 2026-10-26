@@ -36,7 +36,8 @@ export interface FacilityRow {
   lng: number | null;
   /** The sheet's own words for where the position came from. */
   coordSource: string;
-  address: string | null;
+  addressJa: string | null;
+  addressEn: string | null;
   phone: string | null;
   website: string | null;
   descriptionJa: string | null;
@@ -130,7 +131,8 @@ export function parseFacilities(csv: string): FacilityRow[] {
         lat: num(r[cLat!]),
         lng: num(r[cLng!]),
         coordSource: (r[cSrc!] ?? "").trim(),
-        address: maybe(r, "address_ja"),
+        addressJa: maybe(r, "address_ja"),
+        addressEn: maybe(r, "address_en"),
         phone: maybe(r, "phone"),
         website: maybe(r, "website"),
         descriptionJa: maybe(r, "description_ja"),
@@ -301,7 +303,8 @@ export interface PlannedPlace {
   lat: number | null;
   lng: number | null;
   positionSource: string | null;
-  address: string | null;
+  addressJa: string | null;
+  addressEn: string | null;
   phone: string | null;
   website: string | null;
   status: string;
@@ -341,7 +344,8 @@ export function planPlaces(rows: FacilityRow[], existing: ExistingPlace[]): { pl
       lat: f.lat,
       lng: f.lng,
       positionSource: f.lat === null ? null : `${f.coordSource || "地図アプリで確認"}（友人のシートでは確認済み）・未確認`,
-      address: f.address,
+      addressJa: f.addressJa,
+      addressEn: f.addressEn,
       phone: f.phone,
       website: f.website,
       status: STATUSES[f.statusJa] ?? "unknown",

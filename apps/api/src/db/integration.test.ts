@@ -1369,7 +1369,7 @@ describe.skipIf(!url)("places directory on real PostgreSQL", () => {
 
   const blank = {
     category: "cafe" as const, routeId: null, nameJa: "", nameEn: null, descriptionJa: null, descriptionEn: null, hoursJa: null, hoursEn: null, closedDaysJa: null, closedDaysEn: null,
-    lat: null, lng: null, positionVerified: false, positionSource: null, address: null, phone: null, website: null, photoUrl: null, status: "unknown" as const,
+    lat: null, lng: null, positionVerified: false, positionSource: null, addressJa: null, addressEn: null, phone: null, website: null, photoUrl: null, status: "unknown" as const,
     lastVerified: null, listingConfirmed: false, listingNote: null, published: false,
   };
 

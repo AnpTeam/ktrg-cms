@@ -250,7 +250,8 @@ export interface PlaceItem {
   /** A photo of the place (an address); null or left out when there is none. */
   photoUrl?: string | null;
   photoCredit?: string | null;
-  address?: string | null;
+  addressJa?: string | null;
+  addressEn?: string | null;
   phone?: string | null;
   website?: string | null;
 }
@@ -285,7 +286,7 @@ export function toMapPlace(locale: string, p: PlaceItem): MapPlace {
     position: { lat: p.position.lat, lng: p.position.lng },
     verified: p.position.verified,
     lastVerified: p.lastVerified,
-    address: p.address ?? null,
+    address: pickText(locale, p.addressJa ?? "", p.addressEn ?? null)?.text || null,
     phone: p.phone ?? null,
     website: p.website ?? null,
   };

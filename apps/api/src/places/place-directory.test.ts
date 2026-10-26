@@ -18,7 +18,8 @@ const place = (over: Record<string, unknown> = {}) => ({
   lng: null,
   positionVerified: false,
   positionSource: null,
-  address: null,
+  addressJa: null,
+  addressEn: null,
   phone: null,
   website: null,
   photoUrl: null,
@@ -105,7 +106,7 @@ describe("places directory", () => {
       return r.value;
     };
     const thin = await made({ nameJa: "Ｅｎ カフェ", lat: 34.275, lng: 135.0807 });
-    const full = await made({ nameJa: "enカフェ", lat: 34.2751, lng: 135.0807, address: "加太 1023", phone: "0734", positionVerified: true, positionSource: "map" });
+    const full = await made({ nameJa: "enカフェ", lat: 34.2751, lng: 135.0807, addressJa: "加太 1023", phone: "0734", positionVerified: true, positionSource: "map" });
     await made({ nameJa: "enカフェ", lat: 34.4, lng: 135.5 }); // the same name 20 km away: another branch
     await made({ nameJa: "enカフェ" }); // no position: nothing to say it is another place
     await made({ nameJa: "別の店" });

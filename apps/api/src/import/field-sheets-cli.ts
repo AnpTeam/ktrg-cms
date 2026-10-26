@@ -97,7 +97,6 @@ await db.transaction(async (tx) => {
         lng: p.lng,
         positionVerified: false,
         positionSource: p.positionSource,
-        address: p.address,
         phone: p.phone,
         website: p.website,
         status: p.status as (typeof places.$inferInsert)["status"],
@@ -107,9 +106,9 @@ await db.transaction(async (tx) => {
       })
       .returning({ id: places.id });
     await tx.insert(placeTranslations).values([
-      { placeId: made!.id, locale: "ja", name: p.nameJa, description: p.descriptionJa, hours: p.hoursJa, closedDays: p.closedDaysJa },
-      ...(p.nameEn || p.descriptionEn || p.hoursEn || p.closedDaysEn
-        ? [{ placeId: made!.id, locale: "en" as const, name: p.nameEn, description: p.descriptionEn, hours: p.hoursEn, closedDays: p.closedDaysEn }]
+      { placeId: made!.id, locale: "ja", name: p.nameJa, description: p.descriptionJa, hours: p.hoursJa, closedDays: p.closedDaysJa, address: p.addressJa },
+      ...(p.nameEn || p.descriptionEn || p.hoursEn || p.closedDaysEn || p.addressEn
+        ? [{ placeId: made!.id, locale: "en" as const, name: p.nameEn, description: p.descriptionEn, hours: p.hoursEn, closedDays: p.closedDaysEn, address: p.addressEn }]
         : []),
     ]);
   }

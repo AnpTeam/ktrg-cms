@@ -599,7 +599,7 @@ export const placeStatus = pgEnum("place_status", ["open", "closed", "seasonal",
 
 /**
  * A place along the courses that is not a waypoint of one: a shop, a cafe, a toilet, a vending machine. Its words
- * (name, description, opening hours, closed days) are in place_translations. Like a waypoint it is a draft until a
+ * (name, description, opening hours, closed days, address) are in place_translations. Like a waypoint it is a draft until a
  * person has checked its position and its owner's agreement to be listed (a public facility needs none: say so in the note).
  */
 export const places = pgTable(
@@ -613,7 +613,6 @@ export const places = pgTable(
     lng: doublePrecision("lng"),
     positionVerified: boolean("position_verified").notNull().default(false),
     positionSource: text("position_source"),
-    address: text("address"),
     phone: text("phone"),
     website: text("website"),
     photoUrl: text("photo_url"),
@@ -648,6 +647,7 @@ export const placeTranslations = pgTable(
     description: text("description"),
     hours: text("hours"),
     closedDays: text("closed_days"),
+    address: text("address"),
   },
   (t) => [primaryKey({ columns: [t.placeId, t.locale] }), check("place_translations_ja_name", jaRequires(t, t.name))],
 );
