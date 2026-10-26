@@ -19,6 +19,7 @@ export function MapSheet({
   available,
   tabPx,
   header,
+  contentKey,
   children,
 }: {
   /** A desktop: not a bottom sheet to pull, but a panel floating at the left of the map. */
@@ -30,6 +31,8 @@ export function MapSheet({
   tabPx: number;
   /** Null when the content brings its own top (a course's banner), which then scrolls with the rest. */
   header: ReactNode | null;
+  /** Changes when the sheet shows something else (another course or place): it starts from its top again. */
+  contentKey: string;
   children: ReactNode;
 }) {
   const { t } = useLingui();
@@ -38,10 +41,10 @@ export function MapSheet({
   const body = useRef<HTMLDivElement>(null);
   const restingPx = sheetHeightPx(snap, available);
 
-  // A new resting place starts the content from its top again.
+  // A new resting place, or other content, starts from the top again.
   useEffect(() => {
     body.current?.scrollTo({ top: 0 });
-  }, [snap]);
+  }, [snap, contentKey]);
 
   function down(e: PointerEvent<HTMLElement>) {
     e.currentTarget.setPointerCapture(e.pointerId);

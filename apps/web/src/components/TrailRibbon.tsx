@@ -64,7 +64,10 @@ function RouteCard({ route, state, locale }: { route: RouteSummary; state: NodeS
   return (
     <span className="block overflow-hidden rounded-3xl bg-surface">
       <span className="relative block aspect-[16/10] overflow-hidden">
-        <RoutePhoto src={route.photoUrl} alt={name?.text ?? route.nameJa} />
+        {/* A course that is not ready shows its photo blurred (the scale hides the soft edge), so it reads as unfinished at a glance. */}
+        <span className={`absolute inset-0 block ${state === "soon" ? "scale-110 blur-[6px] saturate-50" : ""}`}>
+          <RoutePhoto src={route.photoUrl} alt={name?.text ?? route.nameJa} />
+        </span>
         <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/5" />
         <span className="absolute left-2 top-2 block drop-shadow-md">
           <TrailNode state={state} order={route.order} share={progressShare(route.stampedCount, route.spotCount)} />

@@ -21,6 +21,8 @@ export interface Viewer {
   /** Age band and gender they answered after registering; null when not answered. */
   ageRange: AgeRange | null;
   gender: Gender | null;
+  /** The account's email; null when signed out or for an account made with a passkey alone. */
+  email: string | null;
   /** How they found the rally; null when not answered. */
   foundVia: FoundVia | null;
   /** The accessibility and map choices saved on the account; null when none were saved. */
@@ -29,7 +31,7 @@ export interface Viewer {
   bookmarks: string[];
 }
 
-export const signedOut: Viewer = { signedIn: false, role: null, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, foundVia: null, preferences: null, bookmarks: [] };
+export const signedOut: Viewer = { signedIn: false, role: null, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, email: null, foundVia: null, preferences: null, bookmarks: [] };
 
 /**
  * Development only: `?as=in` / `?as=out` forces a viewer so both screens can be reviewed without
@@ -37,7 +39,7 @@ export const signedOut: Viewer = { signedIn: false, role: null, publicId: null, 
  */
 export function resolveViewer(params: { as?: string }, env: { NODE_ENV?: string } = process.env): Viewer | null {
   if (env.NODE_ENV === "production") return null;
-  if (params.as === "in") return { signedIn: true, role: null, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, foundVia: null, preferences: null, bookmarks: [] };
+  if (params.as === "in") return { signedIn: true, role: null, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, email: null, foundVia: null, preferences: null, bookmarks: [] };
   if (params.as === "out") return signedOut;
   return null;
 }
@@ -48,7 +50,7 @@ export const devViewerCookie = "dev_as";
 /** Read the profile from GET /me's answer; anything unexpected is signed out. */
 export function viewerFromMe(status: number, body: unknown): Viewer {
   if (status !== 200) return signedOut;
-  const me = (body as { ok?: unknown; me?: { role?: unknown; publicId?: unknown; deletionDueAt?: unknown; displayName?: unknown; origin?: unknown; ageRange?: unknown; gender?: unknown; foundVia?: unknown; preferences?: unknown; bookmarks?: unknown } } | null)?.me;
+  const me = (body as { ok?: unknown; me?: { role?: unknown; publicId?: unknown; deletionDueAt?: unknown; displayName?: unknown; origin?: unknown; ageRange?: unknown; gender?: unknown; email?: unknown; foundVia?: unknown; preferences?: unknown; bookmarks?: unknown } } | null)?.me;
   if ((body as { ok?: unknown } | null)?.ok !== true || !me) return signedOut;
   return {
     signedIn: true,
@@ -59,6 +61,7 @@ export function viewerFromMe(status: number, body: unknown): Viewer {
     origin: origins.find((o) => o === me.origin) ?? null,
     ageRange: ageRanges.find((a) => a === me.ageRange) ?? null,
     gender: genders.find((g) => g === me.gender) ?? null,
+    email: typeof me.email === "string" && me.email ? me.email : null,
     foundVia: foundVias.find((f) => f === me.foundVia) ?? null,
     preferences: accountPrefs(me.preferences),
     bookmarks: Array.isArray(me.bookmarks) ? me.bookmarks.filter((b): b is string => typeof b === "string") : [],

@@ -99,7 +99,7 @@ msgstr "Connected {count} legs along trails. Check the shape, then save. Undo ta
 msgid "{direction} {distText}"
 msgstr "{distText} {direction}"
 
-#: src/components/ProfileCard.tsx:218
+#: src/components/ProfileSettings.tsx:141
 msgid "{due}（日本時間）に、アカウントとすべての記録が消えます。それまでは、取り消せます。"
 msgstr "Your account and all your records will be erased on {due} (Japan time). Until then, you can cancel."
 
@@ -160,7 +160,7 @@ msgstr "Move {name} one step later"
 msgid "{name}（終点）"
 msgstr "{name} (end)"
 
-#: src/app/(public)/page.tsx:64
+#: src/app/(public)/page.tsx:61
 msgid "{name}さん、こんにちは。"
 msgstr "Hello, {name}."
 
@@ -243,7 +243,7 @@ msgid "{title}を読み込めませんでした。しばらくしてから、ペ
 msgstr "{title} could not be loaded. Please reload the page in a little while."
 
 #: src/components/IntroFlow.tsx:138
-#: src/components/landing/Landing.tsx:126
+#: src/components/landing/Landing.tsx:133
 msgid "{TOTAL_STAMPS}か所"
 msgstr "{TOTAL_STAMPS} places"
 
@@ -369,7 +369,7 @@ msgstr "Use two fingers to move the map"
 msgid "30代"
 msgstr "30s"
 
-#: src/components/ProfileCard.tsx:132
+#: src/components/ProfileSettings.tsx:244
 msgid "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 msgstr "For 3 days you can sign in and cancel. After that, it cannot be undone."
 
@@ -451,7 +451,7 @@ msgid "https:// で始まるリンクを入れます。空にすると、動画�
 msgstr "Enter a link that starts with https://. If left empty, no video is shown."
 
 #. placeholder {0}: formatPublicId(publicId)
-#: src/components/ProfileCard.tsx:240
+#: src/components/ProfileCard.tsx:54
 msgid "ID: {0}"
 msgstr "ID: {0}"
 
@@ -487,23 +487,27 @@ msgstr "Outdoors"
 msgid "アカウント"
 msgstr "Account"
 
+#: src/components/ProfileSettings.tsx:190
+msgid "アカウントと、集めたスタンプなどの記録を、すべて消します。依頼から3日のあいだは、取り消せます。"
+msgstr "This erases your account and your records, such as collected stamps. You can cancel within 3 days of asking."
+
 #: src/components/GuestClaim.tsx:74
 msgid "アカウントのものだけにする"
 msgstr "Keep only the account's"
 
-#: src/components/ProfileCard.tsx:195
-msgid "アカウントの削除を依頼ずみです。"
-msgstr "You have already asked to delete this account."
+#: src/components/ProfileSettings.tsx:188
+msgid "アカウントの削除"
+msgstr "Delete account"
 
-#: src/components/ProfileCard.tsx:217
+#: src/components/ProfileSettings.tsx:140
 msgid "アカウントを削除します"
 msgstr "Your account will be deleted"
 
-#: src/components/ProfileCard.tsx:127
+#: src/components/ProfileSettings.tsx:241
 msgid "アカウントを削除しますか？"
 msgstr "Delete your account?"
 
-#: src/components/ProfileCard.tsx:202
+#: src/components/ProfileSettings.tsx:192
 msgid "アカウントを削除する"
 msgstr "Delete account"
 
@@ -673,6 +677,10 @@ msgstr "Complete when every chosen course is finished. A course is finished when
 msgid "えらんだ経由地のスタンプを全部押すと達成（経塚のラリーなど）。"
 msgstr "Complete when every chosen stamp waypoint is stamped (like the sutra mound rally)."
 
+#: src/app/(public)/page.tsx:61
+msgid "おかえりなさい。"
+msgstr "Welcome back."
+
 #: src/components/settings/PrefsForm.tsx:130
 msgid "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 msgstr "When off, every stamp place is shown on its own (recommended). When on, places close together are merged into a group such as \"3-5\"."
@@ -681,8 +689,13 @@ msgstr "When off, every stamp place is shown on its own (recommended). When on, 
 msgid "オフラインで使う"
 msgstr "Save for offline use"
 
+#: src/components/ProfileSettings.tsx:121
+msgid "お住まい"
+msgstr "Where from"
+
 #: src/components/auth/RegisterFlow.tsx:86
-#: src/components/ProfileCard.tsx:149
+#: src/components/ProfileSettings.tsx:120
+#: src/components/ProfileSettings.tsx:215
 msgid "お名前"
 msgstr "Your name"
 
@@ -690,7 +703,7 @@ msgstr "Your name"
 msgid "お名前に使えない文字が含まれているか、長すぎます（40文字まで）。"
 msgstr "The name has characters that cannot be used, or is too long (40 characters at most)."
 
-#: src/components/ProfileCard.tsx:230
+#: src/components/ProfileCard.tsx:43
 msgid "お名前は未設定です"
 msgstr "No name set"
 
@@ -800,7 +813,7 @@ msgid "くわしく見る"
 msgstr "Learn more"
 
 #: src/components/IntroFlow.tsx:129
-#: src/components/landing/Landing.tsx:124
+#: src/components/landing/Landing.tsx:131
 #: src/components/map/MapScreenCanvas.tsx:593
 msgid "コース"
 msgstr "Courses"
@@ -1203,7 +1216,7 @@ msgstr "Save or share your certificate"
 msgid "ご案内"
 msgstr "Information"
 
-#: src/components/landing/Landing.tsx:180
+#: src/components/landing/Landing.tsx:187
 msgid "さあ、はじめましょう"
 msgstr "Let's get started"
 
@@ -1250,7 +1263,7 @@ msgstr "Sub-course branches from (to this side trip)"
 msgid "サブコースの線を描く"
 msgstr "Draw the sub-course line"
 
-#: src/components/map/MapSheet.tsx:101
+#: src/components/map/MapSheet.tsx:104
 msgid "シートの高さ（上下の矢印キーで変えられます）"
 msgstr "Height of the sheet (change it with the up and down arrow keys)"
 
@@ -1278,7 +1291,7 @@ msgid "スタンプ"
 msgstr "Stamps"
 
 #: src/components/landing/ContinueCard.tsx:23
-#: src/components/landing/Landing.tsx:228
+#: src/components/landing/Landing.tsx:235
 #: src/components/map/MapScreen.tsx:363
 #: src/components/RouteView.tsx:250
 #: src/components/TrailRibbon.tsx:62
@@ -1293,10 +1306,6 @@ msgstr "{stamps} with a stamp, {others} other"
 #: src/components/admin/PlacePanel.tsx:181
 msgid "スタンプ・状態・許可の設定"
 msgstr "Stamp, status and permission settings"
-
-#: src/app/(public)/page.tsx:93
-msgid "スタンプカードを見る"
-msgstr "See your stamp card"
 
 #: src/components/useErrorMessages.ts:46
 msgid "スタンプが押されたことのある経由地は消せません。「公開をやめる」をお使いください。"
@@ -1574,7 +1583,7 @@ msgstr "Show toilets, shops and so on as soon as the map opens."
 msgid "どちらからお越しですか？"
 msgstr "Where are you visiting from?"
 
-#: src/components/ProfileCard.tsx:231
+#: src/components/ProfileCard.tsx:44
 msgid "どちらからかは未設定です"
 msgstr "Place not set"
 
@@ -1679,7 +1688,8 @@ msgstr "Desktop width"
 
 #: src/app/(public)/badges/page.tsx:13
 #: src/app/(public)/badges/page.tsx:28
-#: src/app/(public)/rallies/page.tsx:37
+#: src/app/(public)/page.tsx:74
+#: src/app/(public)/rallies/page.tsx:35
 #: src/app/(public)/sitemap/page.tsx:79
 msgid "バッジ"
 msgstr "Badges"
@@ -1687,10 +1697,6 @@ msgstr "Badges"
 #: src/app/(public)/badges/page.tsx:39
 msgid "バッジは、まだ準備中です。"
 msgstr "Badges are not ready yet."
-
-#: src/app/(public)/page.tsx:96
-msgid "バッジを見る"
-msgstr "See badges"
 
 #: src/components/admin/AccessPointsEditor.tsx:65
 msgid "ひとこと（English）"
@@ -1731,6 +1737,7 @@ msgid "ふつうの大きさです。"
 msgstr "The usual size."
 
 #: src/app/(public)/bookmarks/page.tsx:12
+#: src/app/(public)/page.tsx:78
 #: src/app/(public)/sitemap/page.tsx:91
 #: src/components/SiteHeader.tsx:231
 msgid "ブックマーク"
@@ -1756,7 +1763,7 @@ msgstr "Footer"
 
 #: src/app/(public)/sitemap/page.tsx:115
 #: src/components/SiteFooter.tsx:30
-#: src/components/SiteHeader.tsx:256
+#: src/components/SiteHeader.tsx:257
 msgid "プライバシーポリシー"
 msgstr "Privacy policy"
 
@@ -1777,10 +1784,11 @@ msgstr "Preview"
 msgid "ブログを見る"
 msgstr "Read the blog"
 
-#: src/app/(public)/profile/page.tsx:14
+#: src/app/(public)/profile/page.tsx:16
 #: src/app/(public)/settings/passkeys/page.tsx:23
 #: src/app/(public)/sitemap/page.tsx:88
-#: src/components/ProfileCard.tsx:225
+#: src/components/ProfileCard.tsx:38
+#: src/components/ProfileSettings.tsx:149
 msgid "プロフィール"
 msgstr "Profile"
 
@@ -2042,8 +2050,7 @@ msgstr "Earned"
 #: src/components/admin/PublishedEditDialog.tsx:63
 #: src/components/auth/ReauthDialog.tsx:62
 #: src/components/auth/ReauthDialog.tsx:84
-#: src/components/ProfileCard.tsx:138
-#: src/components/ProfileCard.tsx:182
+#: src/components/ProfileSettings.tsx:250
 #: src/components/settings/PasskeyManager.tsx:165
 #: src/components/StampHere.tsx:186
 msgid "やめる"
@@ -2070,7 +2077,7 @@ msgstr "Redo"
 
 #: src/app/(public)/sitemap/page.tsx:109
 #: src/components/SiteFooter.tsx:18
-#: src/components/SiteHeader.tsx:254
+#: src/components/SiteHeader.tsx:255
 msgid "よくあるご質問"
 msgstr "FAQ"
 
@@ -2080,7 +2087,7 @@ msgstr "Reading"
 
 #: src/app/(public)/sitemap/page.tsx:118
 #: src/components/SiteFooter.tsx:21
-#: src/components/SiteHeader.tsx:257
+#: src/components/SiteHeader.tsx:258
 msgid "ライセンス情報"
 msgstr "Licenses"
 
@@ -2089,7 +2096,8 @@ msgid "ライト"
 msgstr "Light"
 
 #: src/app/(admin)/admin/rallies/page.tsx:22
-#: src/app/(public)/rallies/page.tsx:30
+#: src/app/(public)/page.tsx:70
+#: src/app/(public)/rallies/page.tsx:32
 #: src/app/(public)/sitemap/page.tsx:74
 #: src/components/admin/AdminNav.tsx:32
 #: src/components/TabBar.tsx:25
@@ -2124,7 +2132,7 @@ msgstr "Courses to put in the rally"
 msgid "ラリーに入れる経由地"
 msgstr "Stamp waypoints to put in the rally"
 
-#: src/app/(public)/rallies/page.tsx:67
+#: src/app/(public)/rallies/page.tsx:63
 msgid "ラリーの一覧"
 msgstr "All rallies"
 
@@ -2149,7 +2157,7 @@ msgstr "Rally name"
 msgid "ラリーは、コースを集めてつくるか、経由地を集めてつくります。名前を押すと、名前・公開・中身を直せます。"
 msgstr "A rally is made from courses or from stamp waypoints. Open one to change its name, whether it is public, and what is in it."
 
-#: src/app/(public)/rallies/page.tsx:57
+#: src/app/(public)/rallies/page.tsx:53
 msgid "ラリーは、まだ準備中です。"
 msgstr "The rallies are not ready yet."
 
@@ -2289,7 +2297,7 @@ msgid "ルートの順番を変えた"
 msgstr "Reordered the routes"
 
 #: src/components/admin/RouteTable.tsx:61
-#: src/components/landing/Landing.tsx:187
+#: src/components/landing/Landing.tsx:194
 #: src/components/landing/LandingHero.tsx:49
 msgid "ルートをさがす"
 msgstr "Find a route"
@@ -2340,6 +2348,7 @@ msgstr "Log out"
 #: src/components/auth/RegisterFlow.tsx:141
 #: src/components/GuestNag.tsx:78
 #: src/components/landing/LandingHero.tsx:55
+#: src/components/ProfileSettings.tsx:179
 #: src/components/SignInPrompt.tsx:37
 #: src/components/SiteHeader.tsx:214
 msgid "ログイン"
@@ -2364,7 +2373,7 @@ msgstr "Could not log in. If this device has no passkey, log in with email."
 msgid "ログインの方法"
 msgstr "Ways to log in"
 
-#: src/components/ProfileCard.tsx:192
+#: src/components/ProfileSettings.tsx:181
 msgid "ログインの方法（パスキー）"
 msgstr "Ways to log in (passkeys)"
 
@@ -2544,7 +2553,7 @@ msgstr "Location isn't allowed. In your browser settings, allow location for thi
 msgid "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてください。"
 msgstr "Location is not allowed. Please allow location for this site in your browser settings."
 
-#: src/components/map/MapSheet.tsx:106
+#: src/components/map/MapSheet.tsx:109
 msgid "低い"
 msgstr "low"
 
@@ -2622,6 +2631,7 @@ msgstr "Saving…"
 #: src/components/admin/AdminItemForm.tsx:64
 #: src/components/admin/RallyEditor.tsx:66
 #: src/components/admin/RouteEditor.tsx:327
+#: src/components/ProfileSettings.tsx:172
 #: src/components/settings/PrefsForm.tsx:68
 msgid "保存しました。"
 msgstr "Saved."
@@ -2644,7 +2654,7 @@ msgstr "Saved (opens without a signal)"
 
 #: src/components/admin/RouteEditor.tsx:422
 #: src/components/admin/SiteSettingsForm.tsx:112
-#: src/components/ProfileCard.tsx:167
+#: src/components/ProfileSettings.tsx:220
 #: src/components/settings/PrefsForm.tsx:162
 msgid "保存する"
 msgstr "Save"
@@ -2713,7 +2723,7 @@ msgid "全{count}区間のある場所を示した図"
 msgstr "A diagram of where all {count} courses lie"
 
 #: src/components/IntroFlow.tsx:130
-#: src/components/landing/Landing.tsx:124
+#: src/components/landing/Landing.tsx:131
 msgid "全{TOTAL_ROUTES}区間"
 msgstr "{TOTAL_ROUTES} sections"
 
@@ -2725,7 +2735,7 @@ msgstr "{TOTAL_ROUTES} sections, about {TRAIL_KM} km"
 msgid "全{TOTAL_ROUTES}区間の道すじを、地図で見られます。距離、時間、きつさ、行き方もわかります。"
 msgstr "See the path of all {TOTAL_ROUTES} sections on a map, with distance, time, how hard it is, and how to get there."
 
-#: src/components/landing/Landing.tsx:104
+#: src/components/landing/Landing.tsx:111
 msgid "全{TOTAL_ROUTES}区間を見る"
 msgstr "See all {TOTAL_ROUTES} sections"
 
@@ -2761,7 +2771,7 @@ msgstr "Publish"
 msgid "公開できるようになったら、ここにコースのバッジが表示されます。"
 msgstr "When they can be published, the course badges will show here."
 
-#: src/app/(public)/rallies/page.tsx:58
+#: src/app/(public)/rallies/page.tsx:54
 msgid "公開できるようになったら、ここにスタンプのラリーが表示されます。"
 msgstr "When they are ready to publish, the stamp rallies will appear here."
 
@@ -2987,13 +2997,13 @@ msgstr "Choose a photo."
 msgid "処理しています…"
 msgstr "Working…"
 
-#: src/components/landing/Landing.tsx:149
+#: src/components/landing/Landing.tsx:156
 msgid "出かける前に"
 msgstr "Before you go"
 
-#: src/app/(public)/rallies/page.tsx:81
+#: src/app/(public)/rallies/page.tsx:77
 #: src/app/(public)/routes/page.tsx:87
-#: src/components/landing/Landing.tsx:173
+#: src/components/landing/Landing.tsx:180
 #: src/components/RouteView.tsx:271
 #: src/components/SpotSheet.tsx:180
 msgid "出かける前に、公式の最新情報を確認してください。"
@@ -3052,7 +3062,7 @@ msgstr "Someone else saved first. Reload the page and try again."
 
 #: src/app/(public)/sitemap/page.tsx:112
 #: src/components/SiteFooter.tsx:27
-#: src/components/SiteHeader.tsx:255
+#: src/components/SiteHeader.tsx:256
 msgid "利用規約"
 msgstr "Terms of use"
 
@@ -3069,11 +3079,11 @@ msgstr "Delete"
 msgid "削除する"
 msgstr "Delete"
 
-#: src/components/ProfileCard.tsx:135
+#: src/components/ProfileSettings.tsx:247
 msgid "削除を依頼する"
 msgstr "Ask to delete"
 
-#: src/components/ProfileCard.tsx:221
+#: src/components/ProfileSettings.tsx:143
 msgid "削除を取り消す"
 msgstr "Cancel deletion"
 
@@ -3128,7 +3138,7 @@ msgstr "Reduce motion"
 msgid "動画"
 msgstr "Video"
 
-#: src/components/landing/Landing.tsx:137
+#: src/components/landing/Landing.tsx:144
 msgid "動画で見る"
 msgstr "Watch the video"
 
@@ -3201,7 +3211,7 @@ msgstr "Choose a leg"
 msgid "区間を選ぶと、道とスタンプの場所が見えます。"
 msgstr "Choose a course to see its path and its stamp places."
 
-#: src/components/map/MapSheet.tsx:106
+#: src/components/map/MapSheet.tsx:109
 msgid "半分"
 msgstr "half"
 
@@ -3352,7 +3362,7 @@ msgid "和歌山県"
 msgstr "Wakayama"
 
 #: src/components/IntroFlow.tsx:120
-#: src/components/landing/Landing.tsx:119
+#: src/components/landing/Landing.tsx:126
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "From the Izumi range to the Kongo mountains, these ridges run along the borders of Osaka, Wakayama and Nara. They have long been called Katsuragi and revered as mountains where the gods dwell. It is said that En no Gyoja, who is believed to have founded Shugendo, the path of training in the mountains, first practised here."
 
@@ -3651,11 +3661,11 @@ msgstr "Show less"
 msgid "履歴を読み込めませんでした。"
 msgstr "Could not load the history."
 
-#: src/components/landing/Landing.tsx:163
+#: src/components/landing/Landing.tsx:170
 msgid "山の中は、電波がつながりにくいことがあります。"
 msgstr "Mobile signal can be weak in the mountains."
 
-#: src/components/landing/Landing.tsx:157
+#: src/components/landing/Landing.tsx:164
 msgid "山道です。天気と、水や食べ物、歩きやすい靴を用意してください。"
 msgstr "These are mountain paths. Check the weather and bring water, food and sturdy shoes."
 
@@ -3692,6 +3702,7 @@ msgid "帰りの方法は、下の交通の説明を見てください。"
 msgstr "For the way back, see the transport notes below."
 
 #: src/components/auth/AboutYou.tsx:76
+#: src/components/ProfileSettings.tsx:122
 msgid "年代"
 msgstr "Age"
 
@@ -3734,10 +3745,11 @@ msgid "急な登り下りや、わかりにくい所がある。はしごやく�
 msgstr "Steep climbs and descents and some hard-to-follow places. There may be ladders or chains."
 
 #: src/components/auth/AboutYou.tsx:91
+#: src/components/ProfileSettings.tsx:123
 msgid "性別"
 msgstr "Gender"
 
-#: src/components/map/MapSheet.tsx:89
+#: src/components/map/MapSheet.tsx:92
 msgid "情報"
 msgstr "Information"
 
@@ -3799,7 +3811,7 @@ msgstr "Stamped"
 msgid "押し方: 場所の近くで、ボタンを押します（位置情報）"
 msgstr "How: press the button near the place (uses your location)"
 
-#: src/components/ProfileCard.tsx:130
+#: src/components/ProfileSettings.tsx:243
 msgid "押すと、アカウントと、集めたスタンプなどの記録を、3日後にすべて消します。"
 msgstr "If you press this, your account and your records, such as your stamps, will all be erased after 3 days."
 
@@ -3892,11 +3904,11 @@ msgstr "Text and buttons become as big as they go."
 msgid "文字もボタンも、少し大きくなります。"
 msgstr "Text and buttons become a little bigger."
 
-#: src/components/SiteHeader.tsx:248
+#: src/components/SiteHeader.tsx:249
 msgid "文字やボタンの大きさ、地図の見せ方"
 msgstr "Size of text and buttons, how the map is shown"
 
-#: src/app/(public)/page.tsx:85
+#: src/app/(public)/page.tsx:95
 msgid "文字やボタンの大きさ、地図の見せ方を選べます。"
 msgstr "Choose the size of text and buttons and how the map is shown."
 
@@ -3947,7 +3959,7 @@ msgstr "A Japanese name is needed to create a new one"
 #: src/app/(public)/sitemap/page.tsx:97
 #: src/components/auth/LoginFlow.tsx:104
 #: src/components/GuestNag.tsx:75
-#: src/components/landing/Landing.tsx:184
+#: src/components/landing/Landing.tsx:191
 #: src/components/landing/LandingHero.tsx:46
 #: src/components/SignInPrompt.tsx:31
 #: src/components/SiteHeader.tsx:217
@@ -4008,6 +4020,10 @@ msgstr "Nothing is written"
 #: src/components/admin/PlacePanel.tsx:84
 msgid "未保存"
 msgstr "Unsaved"
+
+#: src/components/ProfileSettings.tsx:118
+msgid "未設定"
+msgstr "Not set"
 
 #: src/components/admin/MunicipalityField.tsx:57
 #: src/components/admin/RouteEditor.tsx:520
@@ -4092,10 +4108,6 @@ msgstr "These rows have a mistake and will not be imported:"
 msgid "次へ ＞"
 msgstr "Next >"
 
-#: src/app/(public)/page.tsx:68
-msgid "歩いた場所で、スタンプを押そう。"
-msgstr "Collect a stamp wherever you have walked."
-
 #: src/components/IntroFlow.tsx:154
 msgid "歩いた場所で、スタンプを集められます。登録しなくても始められます。"
 msgstr "Collect stamps where you walk. You can start without signing up."
@@ -4125,7 +4137,7 @@ msgstr "A guide to the stamina a route needs, from 1 (easy) to 10 (very demandin
 msgid "歩く時間、距離、登りと下りの高さから、「コース定数」という数字を出します。この数字が大きいほど、体力が必要です。"
 msgstr "From the walking time, distance and the height climbed and descended, we work out a number called the course constant. The bigger it is, the more stamina is needed."
 
-#: src/components/landing/Landing.tsx:88
+#: src/components/landing/Landing.tsx:95
 msgid "歩く道"
 msgstr "The path"
 
@@ -4197,7 +4209,7 @@ msgstr "Port or ferry"
 
 #: src/components/admin/AdminNav.tsx:75
 #: src/components/admin/RouteTable.tsx:30
-#: src/components/landing/Landing.tsx:218
+#: src/components/landing/Landing.tsx:225
 #: src/components/map/MapScreen.tsx:329
 #: src/components/RallyViews.tsx:99
 #: src/components/TrailRibbon.tsx:74
@@ -4366,6 +4378,10 @@ msgstr "Nothing to fix."
 msgid "直す場所を見る"
 msgstr "Show me what to fix"
 
+#: src/components/ProfileSettings.tsx:124
+msgid "知ったきっかけ"
+msgstr "How you found it"
+
 #: src/components/StampHere.tsx:109
 #: src/components/useErrorMessages.ts:16
 msgid "短い間に何度も操作されました。しばらくしてからお試しください。"
@@ -4454,7 +4470,7 @@ msgid "約{amount}m"
 msgstr "About {amount} m"
 
 #: src/components/IntroFlow.tsx:134
-#: src/components/landing/Landing.tsx:125
+#: src/components/landing/Landing.tsx:132
 msgid "約{TRAIL_KM}km"
 msgstr "About {TRAIL_KM} km"
 
@@ -4468,7 +4484,7 @@ msgstr "End"
 
 #: src/components/admin/PlacePanel.tsx:37
 #: src/components/IntroFlow.tsx:137
-#: src/components/landing/Landing.tsx:126
+#: src/components/landing/Landing.tsx:133
 #: src/components/map/MapScreenCanvas.tsx:593
 #: src/components/PointKindName.tsx:9
 msgid "経塚"
@@ -4663,10 +4679,6 @@ msgstr "Line not checked"
 msgid "線を道に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。"
 msgstr "The line now follows the paths. Check its shape, then save. \"Undo\" brings back the line you drew."
 
-#: src/components/ProfileCard.tsx:248
-msgid "編集"
-msgstr "Edit"
-
 #: src/components/admin/PublishedEditDialog.tsx:60
 msgid "編集して下書きに戻す"
 msgstr "Edit and return to draft"
@@ -4760,7 +4772,6 @@ msgstr "English name and description"
 msgid "英語は未入力です（日本語を表示します）"
 msgstr "English is empty (the Japanese text is shown)"
 
-#: src/app/(public)/page.tsx:59
 #: src/app/layout.tsx:33
 #: src/components/landing/LandingHero.tsx:37
 msgid "葛城修験"
@@ -4776,7 +4787,7 @@ msgid "葛城修験 管理"
 msgstr "Katsuragi Shugen Admin"
 
 #: src/components/IntroFlow.tsx:117
-#: src/components/landing/Landing.tsx:113
+#: src/components/landing/Landing.tsx:120
 msgid "葛城修験とは"
 msgstr "About Katsuragi Shugen"
 
@@ -4845,7 +4856,7 @@ msgstr "Quick readability settings"
 #: src/app/(public)/settings/page.tsx:12
 #: src/app/(public)/settings/page.tsx:29
 #: src/app/(public)/sitemap/page.tsx:100
-#: src/components/SiteHeader.tsx:246
+#: src/components/SiteHeader.tsx:247
 msgid "見やすさの設定"
 msgstr "Display settings"
 
@@ -4853,7 +4864,7 @@ msgstr "Display settings"
 msgid "見やすさを、あなたに合わせましょう。大きさは、選ぶとすぐに変わります。"
 msgstr "Let us make things easy for you to see. The size changes as soon as you choose it."
 
-#: src/app/(public)/page.tsx:82
+#: src/app/(public)/page.tsx:92
 msgid "見やすさを設定しませんか"
 msgstr "Set up how things look?"
 
@@ -5003,7 +5014,7 @@ msgstr "Closed"
 msgid "通行止めなどの知らせを、確認した日づけで見られます。"
 msgstr "See closures and other notices with the date they were checked."
 
-#: src/app/(public)/rallies/page.tsx:46
+#: src/app/(public)/rallies/page.tsx:39
 #: src/app/(public)/sitemap/page.tsx:82
 msgid "遊び方"
 msgstr "How to play"
@@ -5016,7 +5027,7 @@ msgstr "No trail was found."
 msgid "道が見つかりませんでした。ガイド点は残してあります。"
 msgstr "No way was found. The guide points are kept."
 
-#: src/components/landing/Landing.tsx:169
+#: src/components/landing/Landing.tsx:176
 msgid "道が通れないときは、無理をせず引き返してください。"
 msgstr "If the path is closed, do not push on. Turn back."
 
@@ -5144,7 +5155,7 @@ msgid "都道府県が未入力"
 msgstr "Prefecture not set"
 
 #: src/components/IntroFlow.tsx:133
-#: src/components/landing/Landing.tsx:125
+#: src/components/landing/Landing.tsx:132
 msgid "長さ"
 msgstr "Length"
 
@@ -5158,6 +5169,7 @@ msgstr "Length"
 #: src/components/map/MapPopup.tsx:57
 #: src/components/map/PlacesPanel.tsx:199
 #: src/components/map/TrailMap.tsx:459
+#: src/components/ProfileSettings.tsx:230
 #: src/components/SampleNotice.tsx:64
 #: src/components/SiteHeader.tsx:193
 msgid "閉じる"
@@ -5182,7 +5194,7 @@ msgstr "Open"
 msgid "陰影（やわらかい影）"
 msgstr "Shading (soft shadow)"
 
-#: src/components/map/MapSheet.tsx:106
+#: src/components/map/MapSheet.tsx:109
 msgid "隠す"
 msgstr "hidden"
 
@@ -5253,6 +5265,6 @@ msgstr "Station, bus, parking"
 msgid "駐車場"
 msgstr "Parking"
 
-#: src/components/map/MapSheet.tsx:106
+#: src/components/map/MapSheet.tsx:109
 msgid "高い"
 msgstr "high"

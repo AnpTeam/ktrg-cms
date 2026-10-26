@@ -768,11 +768,16 @@ html[data-size="xlarge"] {
   border-style: dashed;
 }
 
-/* The name beside the pin. Fixed colours, like the route line: the map tiles do not change with the theme. */
+/* The name above the pin, centred, so the next pin along cannot cover it; the pin that shows a name is lifted over the others.
+   Fixed colours, like the route line: the map tiles do not change with the theme. */
+.maplibregl-marker:has(.map-pin-name) {
+  z-index: 10;
+}
 .map-pin-name {
   position: absolute;
-  left: calc(100% + 0.25rem);
-  top: 0;
+  bottom: calc(100% + 0.25rem);
+  left: 50%;
+  transform: translateX(-50%);
   padding: 0.3rem 0.4rem;
   border-radius: 0.5rem;
   background: #8e2a21;
