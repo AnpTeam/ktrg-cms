@@ -22,15 +22,7 @@ import { failureFromApi, formatPublicId, hasName, NAME_MAX, type AgeRange, type 
 const dangerButton =
   "tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-danger px-6 text-xl font-bold text-on-brand disabled:opacity-60";
 
-export function ProfileCard({
-  publicId,
-  deletionDueAt,
-  locale,
-  name,
-  origin,
-  ageRange,
-  gender,
-}: {
+export interface ProfileCardProps {
   publicId: string | null;
   /** When a requested deletion will happen (ISO time); null with no request. */
   deletionDueAt: string | null;
@@ -39,7 +31,9 @@ export function ProfileCard({
   origin: Origin | null;
   ageRange: AgeRange | null;
   gender: Gender | null;
-}) {
+}
+
+export function ProfileCard({ publicId, deletionDueAt, locale, name, origin, ageRange, gender }: ProfileCardProps) {
   const { t } = useLingui();
   const router = useRouter();
   const originNames = useOriginNames();

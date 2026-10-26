@@ -914,3 +914,12 @@ body.map-sheet-full .site-header {
     display: none;
   }
 }
+
+/* On a phone the top bar has the back button, so the page's own back link (and a wrapper holding only it) is left out;
+   from 768 px the bar is not drawn and the link is the way back. */
+@media (max-width: 767px) {
+  .back-link,
+  :has(> .back-link:only-child) {
+    display: none;
+  }
+}

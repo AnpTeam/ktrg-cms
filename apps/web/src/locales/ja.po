@@ -99,7 +99,7 @@ msgstr "{count}つの区間を、道に沿ってつなぎました。形を確�
 msgid "{direction} {distText}"
 msgstr "{direction} {distText}"
 
-#: src/components/ProfileCard.tsx:217
+#: src/components/ProfileCard.tsx:211
 msgid "{due}（日本時間）に、アカウントとすべての記録が消えます。それまでは、取り消せます。"
 msgstr "{due}（日本時間）に、アカウントとすべての記録が消えます。それまでは、取り消せます。"
 
@@ -368,7 +368,7 @@ msgstr "2本の指で地図を動かします"
 msgid "30代"
 msgstr "30代"
 
-#: src/components/ProfileCard.tsx:133
+#: src/components/ProfileCard.tsx:127
 msgid "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 msgstr "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 
@@ -446,7 +446,7 @@ msgid "https:// で始まるリンクを入れます。空にすると、動画�
 msgstr "https:// で始まるリンクを入れます。空にすると、動画は表示されません。"
 
 #. placeholder {0}: formatPublicId(publicId)
-#: src/components/ProfileCard.tsx:238
+#: src/components/ProfileCard.tsx:232
 msgid "ID: {0}"
 msgstr "ID: {0}"
 
@@ -474,19 +474,19 @@ msgstr "アウトドア"
 msgid "アカウント"
 msgstr "アカウント"
 
-#: src/components/ProfileCard.tsx:194
+#: src/components/ProfileCard.tsx:188
 msgid "アカウントの削除を依頼ずみです。"
 msgstr "アカウントの削除を依頼ずみです。"
 
-#: src/components/ProfileCard.tsx:216
+#: src/components/ProfileCard.tsx:210
 msgid "アカウントを削除します"
 msgstr "アカウントを削除します"
 
-#: src/components/ProfileCard.tsx:128
+#: src/components/ProfileCard.tsx:122
 msgid "アカウントを削除しますか？"
 msgstr "アカウントを削除しますか？"
 
-#: src/components/ProfileCard.tsx:201
+#: src/components/ProfileCard.tsx:195
 msgid "アカウントを削除する"
 msgstr "アカウントを削除する"
 
@@ -641,7 +641,7 @@ msgid "オフラインで使う"
 msgstr "オフラインで使う"
 
 #: src/components/auth/RegisterFlow.tsx:86
-#: src/components/ProfileCard.tsx:150
+#: src/components/ProfileCard.tsx:144
 msgid "お名前"
 msgstr "お名前"
 
@@ -649,7 +649,7 @@ msgstr "お名前"
 msgid "お名前に使えない文字が含まれているか、長すぎます（40文字まで）。"
 msgstr "お名前に使えない文字が含まれているか、長すぎます（40文字まで）。"
 
-#: src/components/ProfileCard.tsx:229
+#: src/components/ProfileCard.tsx:223
 msgid "お名前は未設定です"
 msgstr "お名前は未設定です"
 
@@ -1442,7 +1442,7 @@ msgstr "トイレやお店などを、地図を開いたときから表示しま
 msgid "どちらからお越しですか？"
 msgstr "どちらからお越しですか？"
 
-#: src/components/ProfileCard.tsx:230
+#: src/components/ProfileCard.tsx:224
 msgid "どちらからかは未設定です"
 msgstr "どちらからかは未設定です"
 
@@ -1620,8 +1620,7 @@ msgstr "ブログを見る"
 #: src/app/(public)/profile/page.tsx:14
 #: src/app/(public)/settings/passkeys/page.tsx:23
 #: src/app/(public)/sitemap/page.tsx:85
-#: src/components/ProfileCard.tsx:224
-#: src/components/SiteHeader.tsx:196
+#: src/components/ProfileCard.tsx:218
 msgid "プロフィール"
 msgstr "プロフィール"
 
@@ -1648,7 +1647,7 @@ msgstr "ベースの地図"
 #: src/app/(public)/sitemap/page.tsx:51
 #: src/app/(public)/sitemap/page.tsx:53
 #: src/app/(public)/terms/page.tsx:23
-#: src/components/SiteHeader.tsx:162
+#: src/components/SiteHeader.tsx:165
 #: src/components/TabBar.tsx:22
 #: src/components/TabBar.tsx:34
 msgid "ホーム"
@@ -1808,6 +1807,7 @@ msgid "メインメニュー"
 msgstr "メインメニュー"
 
 #: src/components/admin/AdminNav.tsx:49
+#: src/components/SiteHeader.tsx:185
 #: src/components/TabBar.tsx:68
 msgid "メニュー"
 msgstr "メニュー"
@@ -1849,15 +1849,15 @@ msgstr "もっと見る"
 msgid "もっと見る（あと{hidden}か所）"
 msgstr "もっと見る（あと{hidden}か所）"
 
-#: src/components/SiteHeader.tsx:153
+#: src/components/SiteHeader.tsx:156
 msgid "もどる"
 msgstr "もどる"
 
 #: src/components/admin/PublishedEditDialog.tsx:63
 #: src/components/auth/ReauthDialog.tsx:62
 #: src/components/auth/ReauthDialog.tsx:84
-#: src/components/ProfileCard.tsx:139
-#: src/components/ProfileCard.tsx:181
+#: src/components/ProfileCard.tsx:133
+#: src/components/ProfileCard.tsx:175
 #: src/components/settings/PasskeyManager.tsx:165
 #: src/components/StampHere.tsx:175
 msgid "やめる"
@@ -2186,13 +2186,9 @@ msgstr "ログインできませんでした。この端末にパスキーがな
 msgid "ログインの方法"
 msgstr "ログインの方法"
 
-#: src/components/ProfileCard.tsx:191
+#: src/components/ProfileCard.tsx:185
 msgid "ログインの方法（パスキー）"
 msgstr "ログインの方法（パスキー）"
-
-#: src/components/SiteHeader.tsx:195
-msgid "ログイン中"
-msgstr "ログイン中"
 
 #: src/components/settings/PasskeyManager.tsx:150
 msgid "わかりました"
@@ -2462,7 +2458,7 @@ msgstr "保存しました（電波がなくても開けます）"
 
 #: src/components/admin/RouteEditor.tsx:422
 #: src/components/admin/SiteSettingsForm.tsx:112
-#: src/components/ProfileCard.tsx:167
+#: src/components/ProfileCard.tsx:161
 #: src/components/settings/PrefsForm.tsx:161
 msgid "保存する"
 msgstr "保存する"
@@ -2879,11 +2875,11 @@ msgstr "削除"
 msgid "削除する"
 msgstr "削除する"
 
-#: src/components/ProfileCard.tsx:136
+#: src/components/ProfileCard.tsx:130
 msgid "削除を依頼する"
 msgstr "削除を依頼する"
 
-#: src/components/ProfileCard.tsx:220
+#: src/components/ProfileCard.tsx:214
 msgid "削除を取り消す"
 msgstr "削除を取り消す"
 
@@ -3584,7 +3580,7 @@ msgstr "押した"
 msgid "押し方: 場所の近くで、ボタンを押します（位置情報）"
 msgstr "押し方: 場所の近くで、ボタンを押します（位置情報）"
 
-#: src/components/ProfileCard.tsx:131
+#: src/components/ProfileCard.tsx:125
 msgid "押すと、アカウントと、集めたスタンプなどの記録を、3日後にすべて消します。"
 msgstr "押すと、アカウントと、集めたスタンプなどの記録を、3日後にすべて消します。"
 
@@ -4409,7 +4405,7 @@ msgstr "線を確認していない"
 msgid "線を道に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。"
 msgstr "線を道に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。"
 
-#: src/components/ProfileCard.tsx:245
+#: src/components/ProfileCard.tsx:239
 msgid "編集"
 msgstr "編集"
 
@@ -4881,7 +4877,7 @@ msgstr "長さ"
 #: src/components/map/PlacesPanel.tsx:199
 #: src/components/map/TrailMap.tsx:459
 #: src/components/SampleNotice.tsx:64
-#: src/components/SiteHeader.tsx:185
+#: src/components/SiteHeader.tsx:189
 msgid "閉じる"
 msgstr "閉じる"
 

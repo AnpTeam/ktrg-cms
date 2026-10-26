@@ -5,7 +5,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { logOut } from "@/lib/auth-client";
-import { BookmarkIcon, ChevronIcon, ChevronLeftIcon, CloseIcon, UserIcon } from "./icons";
+import { BookmarkIcon, ChevronIcon, ChevronLeftIcon, CloseIcon } from "./icons";
+import { ProfileCard, type ProfileCardProps } from "./ProfileCard";
 import { KatsuragiLogo } from "./KatsuragiLogo";
 import { LocaleSelect } from "./LocaleSwitcher";
 import { useMenu } from "./MenuProvider";
@@ -39,11 +40,13 @@ const parentOf = (pathname: string) => (pathname.startsWith("/routes/") ? "/rout
  */
 export function SiteHeader({
   signedIn,
-  name,
+  profile,
+  locale,
   sample,
 }: {
   signedIn: boolean;
-  name: string | null;
+  profile: Omit<ProfileCardProps, "locale">;
+  locale: string;
   sample: boolean;
 }) {
   const { t } = useLingui();
@@ -174,11 +177,12 @@ export function SiteHeader({
         <div
           ref={panelRef}
           id="site-menu"
-          className={`menu-drop absolute inset-x-0 overflow-y-auto overscroll-contain border-b-2 border-brand bg-surface shadow-lg md:fixed md:right-auto md:w-[26rem] md:max-h-[calc(100dvh-1.5rem)] md:rounded-2xl md:border-2 md:shadow-xl ${onLanding ? "top-[4.75rem] max-h-[calc(100dvh-10rem)]" : "top-full max-h-[calc(100dvh-10rem)]"}`}
+          className="menu-drop fixed inset-0 overflow-y-auto overscroll-contain bg-surface pb-28 md:inset-auto md:right-auto md:w-[26rem] md:max-h-[calc(100dvh-1.5rem)] md:rounded-2xl md:border-2 md:border-brand md:pb-0 md:shadow-xl"
         >
           <div className="mx-auto flex max-w-xl flex-col gap-5 px-4 py-5">
             {/* From 768 px the bar is not drawn (the rail has the menu button), so the top row of the popover holds both. */}
-            <div className="hidden items-center justify-end gap-2 md:flex">
+            <div className="flex items-center justify-between gap-2 md:justify-end">
+              <span className="text-2xl font-bold md:hidden">{t`メニュー`}</span>
               <LocaleSelect />
               <button type="button" onClick={() => setOpen(false)} className="tap-target inline-flex items-center gap-2 rounded-lg border border-ink px-3 text-lg font-bold">
                 <CloseIcon />
@@ -187,14 +191,10 @@ export function SiteHeader({
             </div>
             {signedIn ? (
               <div className="flex flex-col gap-3">
-                <Link prefetch={false}
-                  href="/profile"
-                  className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface"
-                >
-                  <UserIcon />
-                  <span className="min-w-0 flex-1 break-words">{name ?? t`ログイン中`}</span>
-                  <span className="shrink-0 text-lg text-muted">{t`プロフィール`}</span>
-                </Link>
+                {/* The profile itself, editable here: the menu is where a person looks for it. */}
+                <div className="-mx-4">
+                  <ProfileCard {...profile} locale={locale} />
+                </div>
                 <button
                   type="button"
                   onClick={signOut}
