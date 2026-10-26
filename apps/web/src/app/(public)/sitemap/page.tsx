@@ -75,6 +75,9 @@ export default async function SitemapPage() {
         <LinkRow href="/rallies">
           <Trans>ラリーとスタンプ</Trans>
         </LinkRow>
+        <LinkRow href="/badges">
+          <Trans>バッジ</Trans>
+        </LinkRow>
         <LinkRow href="/guide">
           <Trans>遊び方</Trans>
         </LinkRow>

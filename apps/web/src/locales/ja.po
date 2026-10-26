@@ -160,7 +160,7 @@ msgstr "{name} を1つ後ろへ"
 msgid "{name}（終点）"
 msgstr "{name}（終点）"
 
-#: src/app/(public)/page.tsx:60
+#: src/app/(public)/page.tsx:64
 msgid "{name}さん、こんにちは。"
 msgstr "{name}さん、こんにちは。"
 
@@ -397,7 +397,7 @@ msgstr "7日間は表示しない"
 msgid "Ctrlキーを押しながら地図を動かします"
 msgstr "Ctrlキーを押しながら地図を動かします"
 
-#: src/components/StampHere.tsx:97
+#: src/components/StampHere.tsx:103
 msgid "GPSの電波が弱いようです。空の開けた場所に動いて、もう一度お試しください。"
 msgstr "GPSの電波が弱いようです。空の開けた場所に動いて、もう一度お試しください。"
 
@@ -475,7 +475,7 @@ msgstr "YouTube か Vimeo、またはアップロードした動画の、https:/
 msgid "アウトドア"
 msgstr "アウトドア"
 
-#: src/app/(public)/sitemap/page.tsx:83
+#: src/app/(public)/sitemap/page.tsx:86
 msgid "アカウント"
 msgstr "アカウント"
 
@@ -526,7 +526,7 @@ msgstr "アップロード済みの写真から選ぶ"
 msgid "アップロード済みの写真です。選んで「この写真を使う」を押すと、その写真のリンクが入ります。"
 msgstr "アップロード済みの写真です。選んで「この写真を使う」を押すと、その写真のリンクが入ります。"
 
-#: src/components/ProgressSummary.tsx:15
+#: src/components/ProgressSummary.tsx:34
 #: src/components/RallyViews.tsx:54
 msgid "あと{remaining}か所"
 msgstr "あと{remaining}か所"
@@ -600,23 +600,23 @@ msgstr "いまのラリー"
 msgid "いまの位置が、わかりません。空の開けた場所で、しばらくお待ちください。"
 msgstr "いまの位置が、わかりません。空の開けた場所で、しばらくお待ちください。"
 
-#: src/components/StampHere.tsx:94
+#: src/components/StampHere.tsx:100
 msgid "いまの位置が、わかりません。空の開けた場所で、もう一度お試しください。"
 msgstr "いまの位置が、わかりません。空の開けた場所で、もう一度お試しください。"
 
-#: src/components/StampHere.tsx:154
+#: src/components/StampHere.tsx:161
 msgid "いまの位置を調べています…"
 msgstr "いまの位置を調べています…"
 
-#: src/components/StampHere.tsx:170
+#: src/components/StampHere.tsx:177
 msgid "いまの位置を調べます"
 msgstr "いまの位置を調べます"
 
-#: src/components/StampHere.tsx:134
+#: src/components/StampHere.tsx:141
 msgid "いまの場所から、約{km}km"
 msgstr "いまの場所から、約{km}km"
 
-#: src/components/StampHere.tsx:134
+#: src/components/StampHere.tsx:141
 msgid "いまの場所から、約{m}m"
 msgstr "いまの場所から、約{m}m"
 
@@ -767,7 +767,7 @@ msgstr "ギャラリーの写真は、まだありません。"
 msgid "キャンプ場"
 msgstr "キャンプ場"
 
-#: src/components/QuickActions.tsx:50
+#: src/components/QuickActions.tsx:52
 msgid "くっきり"
 msgstr "くっきり"
 
@@ -805,6 +805,10 @@ msgstr "コースでつくったラリー：えらんだコースを全部終え
 #: src/components/admin/RallyCreate.tsx:70
 msgid "コースでつくる"
 msgstr "コースでつくる"
+
+#: src/app/(public)/badges/page.tsx:34
+msgid "コースのすべての場所でスタンプを押すと、そのコースのバッジがもらえます。"
+msgstr "コースのすべての場所でスタンプを押すと、そのコースのバッジがもらえます。"
 
 #: src/components/map/TrailMap.tsx:427
 msgid "コースの出発地点から近い順（まっすぐ測った距離です）"
@@ -867,7 +871,7 @@ msgstr "このアカウントには、メールがありません。顔・指紋
 msgid "このアプリでわかること"
 msgstr "このアプリでわかること"
 
-#: src/components/StampHere.tsx:115
+#: src/components/StampHere.tsx:122
 msgid "このスタンプは、もう押してあります。"
 msgstr "このスタンプは、もう押してあります。"
 
@@ -896,7 +900,7 @@ msgstr "このページを見る権限がありません"
 msgid "このメールアドレスは、使えません。すでに別のアカウントで使われているか、このアカウントにはメールが入っています。"
 msgstr "このメールアドレスは、使えません。すでに別のアカウントで使われているか、このアカウントにはメールが入っています。"
 
-#: src/components/StampHere.tsx:99
+#: src/components/StampHere.tsx:105
 msgid "このラリーは、いまは行われていません。"
 msgstr "このラリーは、いまは行われていません。"
 
@@ -1010,11 +1014,11 @@ msgstr "この場所のページを開く"
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
 msgstr "この場所の位置は仮のもので、まだ確認されていません。"
 
-#: src/components/StampHere.tsx:149
+#: src/components/StampHere.tsx:156
 msgid "この場所は、いまは閉鎖中です。"
 msgstr "この場所は、いまは閉鎖中です。"
 
-#: src/components/StampHere.tsx:98
+#: src/components/StampHere.tsx:104
 msgid "この場所は、いまは閉鎖中です。スタンプは押せません。"
 msgstr "この場所は、いまは閉鎖中です。スタンプは押せません。"
 
@@ -1048,7 +1052,7 @@ msgid "この次に追加"
 msgstr "この次に追加"
 
 #: src/components/navigation/NavigationHud.tsx:142
-#: src/components/StampHere.tsx:92
+#: src/components/StampHere.tsx:98
 msgid "この端末・ブラウザでは、位置情報を使えません。"
 msgstr "この端末・ブラウザでは、位置情報を使えません。"
 
@@ -1163,7 +1167,7 @@ msgstr "コンプリート証"
 msgid "コンプリート証を保存・共有"
 msgstr "コンプリート証を保存・共有"
 
-#: src/app/(public)/sitemap/page.tsx:104
+#: src/app/(public)/sitemap/page.tsx:107
 msgid "ご案内"
 msgstr "ご案内"
 
@@ -1237,7 +1241,7 @@ msgstr "スタート"
 
 #: src/components/admin/map-editor/PlaceList.tsx:106
 #: src/components/admin/PlaceTable.tsx:137
-#: src/components/ProgressSummary.tsx:19
+#: src/components/ProgressSummary.tsx:38
 msgid "スタンプ"
 msgstr "スタンプ"
 
@@ -1258,7 +1262,7 @@ msgstr "スタンプ {stamps}・そのほか {others}"
 msgid "スタンプ・状態・許可の設定"
 msgstr "スタンプ・状態・許可の設定"
 
-#: src/app/(public)/page.tsx:89
+#: src/app/(public)/page.tsx:93
 msgid "スタンプカードを見る"
 msgstr "スタンプカードを見る"
 
@@ -1281,7 +1285,7 @@ msgstr "スタンプの場所"
 msgid "スタンプの場所 {spotCount}か所"
 msgstr "スタンプの場所 {spotCount}か所"
 
-#: src/components/StampHere.tsx:172
+#: src/components/StampHere.tsx:179
 msgid "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 msgstr "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 
@@ -1305,7 +1309,7 @@ msgstr "スタンプの経由地 {0} / {1}"
 msgid "スタンプの記録を読めませんでした。"
 msgstr "スタンプの記録を読めませんでした。"
 
-#: src/components/ProgressSummary.tsx:27
+#: src/components/ProgressSummary.tsx:42
 #: src/components/RallyViews.tsx:57
 #: src/components/RallyViews.tsx:117
 msgid "スタンプの進み具合"
@@ -1325,7 +1329,7 @@ msgstr "スタンプラリー"
 msgid "スタンプを {0} 個、アカウントに移しました。"
 msgstr "スタンプを {0} 個、アカウントに移しました。"
 
-#: src/components/StampHere.tsx:156
+#: src/components/StampHere.tsx:163
 msgid "スタンプを押しています…"
 msgstr "スタンプを押しています…"
 
@@ -1334,16 +1338,16 @@ msgstr "スタンプを押しています…"
 msgid "スタンプを押しました"
 msgstr "スタンプを押しました"
 
-#: src/components/StampHere.tsx:115
+#: src/components/StampHere.tsx:122
 msgid "スタンプを押しました！"
 msgstr "スタンプを押しました！"
 
-#: src/components/StampHere.tsx:147
-#: src/components/StampHere.tsx:159
+#: src/components/StampHere.tsx:154
+#: src/components/StampHere.tsx:166
 msgid "スタンプを押す"
 msgstr "スタンプを押す"
 
-#: src/components/StampHere.tsx:100
+#: src/components/StampHere.tsx:106
 msgid "スタンプを押す機能は、まだ使えません。"
 msgstr "スタンプを押す機能は、まだ使えません。"
 
@@ -1380,7 +1384,7 @@ msgstr "すでに公開をやめた経由地があります（{names}）。「�
 msgid "すべて"
 msgstr "すべて"
 
-#: src/components/ProgressSummary.tsx:14
+#: src/components/ProgressSummary.tsx:33
 #: src/components/RallyViews.tsx:54
 msgid "すべてそろいました。"
 msgstr "すべてそろいました。"
@@ -1471,6 +1475,7 @@ msgid "つぎ"
 msgstr "つぎ"
 
 #: src/components/landing/ContinueCard.tsx:31
+#: src/components/ProgressSummary.tsx:72
 msgid "つぎの場所"
 msgstr "つぎの場所"
 
@@ -1616,6 +1621,21 @@ msgstr "バス停"
 msgid "パソコン幅"
 msgstr "パソコン幅"
 
+#: src/app/(public)/badges/page.tsx:13
+#: src/app/(public)/badges/page.tsx:28
+#: src/app/(public)/rallies/page.tsx:37
+#: src/app/(public)/sitemap/page.tsx:79
+msgid "バッジ"
+msgstr "バッジ"
+
+#: src/app/(public)/badges/page.tsx:39
+msgid "バッジは、まだ準備中です。"
+msgstr "バッジは、まだ準備中です。"
+
+#: src/app/(public)/page.tsx:96
+msgid "バッジを見る"
+msgstr "バッジを見る"
+
 #: src/components/admin/AccessPointsEditor.tsx:65
 msgid "ひとこと（English）"
 msgstr "ひとこと（English）"
@@ -1645,7 +1665,7 @@ msgstr "ファイルが大きすぎます（20MBまで）。"
 msgid "フェリー"
 msgstr "フェリー"
 
-#: src/components/QuickActions.tsx:36
+#: src/components/QuickActions.tsx:38
 #: src/components/settings/PrefsForm.tsx:44
 msgid "ふつう"
 msgstr "ふつう"
@@ -1655,7 +1675,7 @@ msgid "ふつうの大きさです。"
 msgstr "ふつうの大きさです。"
 
 #: src/app/(public)/bookmarks/page.tsx:12
-#: src/app/(public)/sitemap/page.tsx:88
+#: src/app/(public)/sitemap/page.tsx:91
 #: src/components/SiteHeader.tsx:231
 msgid "ブックマーク"
 msgstr "ブックマーク"
@@ -1678,13 +1698,13 @@ msgstr "ブックマークをはずす"
 msgid "フッター"
 msgstr "フッター"
 
-#: src/app/(public)/sitemap/page.tsx:112
+#: src/app/(public)/sitemap/page.tsx:115
 #: src/components/SiteFooter.tsx:30
 #: src/components/SiteHeader.tsx:256
 msgid "プライバシーポリシー"
 msgstr "プライバシーポリシー"
 
-#: src/components/QuickActions.tsx:42
+#: src/components/QuickActions.tsx:44
 msgid "ふりがな"
 msgstr "ふりがな"
 
@@ -1703,7 +1723,7 @@ msgstr "ブログを見る"
 
 #: src/app/(public)/profile/page.tsx:14
 #: src/app/(public)/settings/passkeys/page.tsx:23
-#: src/app/(public)/sitemap/page.tsx:85
+#: src/app/(public)/sitemap/page.tsx:88
 #: src/components/ProfileCard.tsx:220
 msgid "プロフィール"
 msgstr "プロフィール"
@@ -1776,7 +1796,7 @@ msgstr "まずは、歩きたい道をえらびます。登録しなくても、
 msgid "まだ"
 msgstr "まだ"
 
-#: src/components/StampHere.tsx:96
+#: src/components/StampHere.tsx:102
 msgid "まだ、この場所から遠いようです。場所の近くで、もう一度お試しください。"
 msgstr "まだ、この場所から遠いようです。場所の近くで、もう一度お試しください。"
 
@@ -1796,7 +1816,7 @@ msgstr "まだありません。"
 msgid "まだありません。「＋ 行を追加」で、経由地を表に入れてください。"
 msgstr "まだありません。「＋ 行を追加」で、経由地を表に入れてください。"
 
-#: src/components/ProgressSummary.tsx:12
+#: src/components/ProgressSummary.tsx:31
 #: src/components/RallyViews.tsx:54
 msgid "まだスタンプはありません。"
 msgstr "まだスタンプはありません。"
@@ -1924,7 +1944,7 @@ msgstr "もう一度ひらく"
 msgid "もう一度公開するときは、「経由地」タブで「公開する」を押してください。"
 msgstr "もう一度公開するときは、「経由地」タブで「公開する」を押してください。"
 
-#: src/components/StampHere.tsx:158
+#: src/components/StampHere.tsx:165
 msgid "もう一度試す"
 msgstr "もう一度試す"
 
@@ -1946,13 +1966,17 @@ msgstr "もっと見る（あと{hidden}か所）"
 msgid "もどる"
 msgstr "もどる"
 
+#: src/app/(public)/badges/page.tsx:63
+msgid "もらいました"
+msgstr "もらいました"
+
 #: src/components/admin/PublishedEditDialog.tsx:63
 #: src/components/auth/ReauthDialog.tsx:62
 #: src/components/auth/ReauthDialog.tsx:84
 #: src/components/ProfileCard.tsx:135
 #: src/components/ProfileCard.tsx:177
 #: src/components/settings/PasskeyManager.tsx:165
-#: src/components/StampHere.tsx:179
+#: src/components/StampHere.tsx:186
 msgid "やめる"
 msgstr "やめる"
 
@@ -1975,7 +1999,7 @@ msgstr "やり直し"
 msgid "やり直す"
 msgstr "やり直す"
 
-#: src/app/(public)/sitemap/page.tsx:106
+#: src/app/(public)/sitemap/page.tsx:109
 #: src/components/SiteFooter.tsx:18
 #: src/components/SiteHeader.tsx:254
 msgid "よくあるご質問"
@@ -1985,7 +2009,7 @@ msgstr "よくあるご質問"
 msgid "よみ"
 msgstr "よみ"
 
-#: src/app/(public)/sitemap/page.tsx:115
+#: src/app/(public)/sitemap/page.tsx:118
 #: src/components/SiteFooter.tsx:21
 #: src/components/SiteHeader.tsx:257
 msgid "ライセンス情報"
@@ -2031,7 +2055,7 @@ msgstr "ラリーに入れるコース"
 msgid "ラリーに入れる経由地"
 msgstr "ラリーに入れる経由地"
 
-#: src/app/(public)/rallies/page.tsx:59
+#: src/app/(public)/rallies/page.tsx:67
 msgid "ラリーの一覧"
 msgstr "ラリーの一覧"
 
@@ -2056,7 +2080,7 @@ msgstr "ラリーの名前"
 msgid "ラリーは、コースを集めてつくるか、経由地を集めてつくります。名前を押すと、名前・公開・中身を直せます。"
 msgstr "ラリーは、コースを集めてつくるか、経由地を集めてつくります。名前を押すと、名前・公開・中身を直せます。"
 
-#: src/app/(public)/rallies/page.tsx:49
+#: src/app/(public)/rallies/page.tsx:57
 msgid "ラリーは、まだ準備中です。"
 msgstr "ラリーは、まだ準備中です。"
 
@@ -2234,7 +2258,7 @@ msgstr "ログアウト"
 
 #: src/app/(public)/login/page.tsx:15
 #: src/app/(public)/login/page.tsx:32
-#: src/app/(public)/sitemap/page.tsx:91
+#: src/app/(public)/sitemap/page.tsx:94
 #: src/components/auth/LoginFlow.tsx:55
 #: src/components/auth/RegisterFlow.tsx:141
 #: src/components/GuestNag.tsx:78
@@ -2244,12 +2268,12 @@ msgstr "ログアウト"
 msgid "ログイン"
 msgstr "ログイン"
 
-#: src/components/StampHere.tsx:101
+#: src/components/StampHere.tsx:107
 #: src/components/useErrorMessages.ts:19
 msgid "ログインが切れたようです。ログインしなおしてください。"
 msgstr "ログインが切れたようです。ログインしなおしてください。"
 
-#: src/components/StampHere.tsx:138
+#: src/components/StampHere.tsx:145
 msgid "ログインする"
 msgstr "ログインする"
 
@@ -2259,7 +2283,7 @@ msgstr "ログインできませんでした。この端末にパスキーがな
 
 #: src/app/(public)/settings/passkeys/page.tsx:12
 #: src/app/(public)/settings/passkeys/page.tsx:26
-#: src/app/(public)/sitemap/page.tsx:100
+#: src/app/(public)/sitemap/page.tsx:103
 msgid "ログインの方法"
 msgstr "ログインの方法"
 
@@ -2383,7 +2407,7 @@ msgstr "位置"
 msgid "位置なし"
 msgstr "位置なし"
 
-#: src/components/StampHere.tsx:173
+#: src/components/StampHere.tsx:180
 msgid "位置は、保存しません。保存するのは、スタンプだけです。"
 msgstr "位置は、保存しません。保存するのは、スタンプだけです。"
 
@@ -2427,15 +2451,15 @@ msgstr "位置を確認した情報源（サイトの名前やリンク）を書
 msgid "位置を確認していない"
 msgstr "位置を確認していない"
 
-#: src/components/StampHere.tsx:176
+#: src/components/StampHere.tsx:183
 msgid "位置を調べてスタンプを押す"
 msgstr "位置を調べてスタンプを押す"
 
-#: src/components/StampHere.tsx:95
+#: src/components/StampHere.tsx:101
 msgid "位置を調べるのに、時間がかかっています。空の開けた場所で、もう一度お試しください。"
 msgstr "位置を調べるのに、時間がかかっています。空の開けた場所で、もう一度お試しください。"
 
-#: src/components/StampHere.tsx:93
+#: src/components/StampHere.tsx:99
 msgid "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてから、もう一度お試しください。"
 msgstr "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてから、もう一度お試しください。"
 
@@ -2656,7 +2680,11 @@ msgstr "公開しました。"
 msgid "公開する"
 msgstr "公開する"
 
-#: src/app/(public)/rallies/page.tsx:50
+#: src/app/(public)/badges/page.tsx:40
+msgid "公開できるようになったら、ここにコースのバッジが表示されます。"
+msgstr "公開できるようになったら、ここにコースのバッジが表示されます。"
+
+#: src/app/(public)/rallies/page.tsx:58
 msgid "公開できるようになったら、ここにスタンプのラリーが表示されます。"
 msgstr "公開できるようになったら、ここにスタンプのラリーが表示されます。"
 
@@ -2886,7 +2914,7 @@ msgstr "処理しています…"
 msgid "出かける前に"
 msgstr "出かける前に"
 
-#: src/app/(public)/rallies/page.tsx:73
+#: src/app/(public)/rallies/page.tsx:81
 #: src/app/(public)/routes/page.tsx:87
 #: src/components/landing/Landing.tsx:173
 #: src/components/RouteView.tsx:271
@@ -2945,7 +2973,7 @@ msgstr "別のルートにひもづいています"
 msgid "別の人が先に保存しました。読み込み直してから、もう一度お試しください。"
 msgstr "別の人が先に保存しました。読み込み直してから、もう一度お試しください。"
 
-#: src/app/(public)/sitemap/page.tsx:109
+#: src/app/(public)/sitemap/page.tsx:112
 #: src/components/SiteFooter.tsx:27
 #: src/components/SiteHeader.tsx:255
 msgid "利用規約"
@@ -3011,7 +3039,7 @@ msgstr "前の番号の経由地がまだないので、作れません"
 msgid "前へ"
 msgstr "前へ"
 
-#: src/components/QuickActions.tsx:54
+#: src/components/QuickActions.tsx:56
 msgid "動きなし"
 msgstr "動きなし"
 
@@ -3247,7 +3275,7 @@ msgstr "和歌山県"
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 
-#: src/components/StampHere.tsx:105
+#: src/components/StampHere.tsx:111
 #: src/components/useErrorMessages.ts:68
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "問題が発生しました。しばらくしてからもう一度お試しください。"
@@ -3426,7 +3454,7 @@ msgstr "場所一覧の場所を、このルートにひもづけます。ルー
 msgid "変更の履歴"
 msgstr "変更の履歴"
 
-#: src/components/QuickActions.tsx:36
+#: src/components/QuickActions.tsx:38
 msgid "大"
 msgstr "大"
 
@@ -3759,7 +3787,7 @@ msgstr "整備された道で、迷いにくく、転んでも大きな事故に
 msgid "整数で書いてください"
 msgstr "整数で書いてください"
 
-#: src/components/QuickActions.tsx:46
+#: src/components/QuickActions.tsx:48
 msgid "文字 {sizeName}"
 msgstr "文字 {sizeName}"
 
@@ -3771,7 +3799,7 @@ msgstr "文字とボタンの大きさ"
 msgid "文字と背景の差を大きくし、線を太く、リンクに下線をつけます。"
 msgstr "文字と背景の差を大きくし、線を太く、リンクに下線をつけます。"
 
-#: src/components/QuickActions.tsx:44
+#: src/components/QuickActions.tsx:46
 msgid "文字の大きさ: {sizeName}（押すと変わります）"
 msgstr "文字の大きさ: {sizeName}（押すと変わります）"
 
@@ -3787,7 +3815,7 @@ msgstr "文字もボタンも、少し大きくなります。"
 msgid "文字やボタンの大きさ、地図の見せ方"
 msgstr "文字やボタンの大きさ、地図の見せ方"
 
-#: src/app/(public)/page.tsx:81
+#: src/app/(public)/page.tsx:85
 msgid "文字やボタンの大きさ、地図の見せ方を選べます。"
 msgstr "文字やボタンの大きさ、地図の見せ方を選べます。"
 
@@ -3835,7 +3863,7 @@ msgstr "新しく作るには、名前（日本語）が必要です"
 
 #: src/app/(public)/register/page.tsx:15
 #: src/app/(public)/register/page.tsx:31
-#: src/app/(public)/sitemap/page.tsx:94
+#: src/app/(public)/sitemap/page.tsx:97
 #: src/components/auth/LoginFlow.tsx:104
 #: src/components/GuestNag.tsx:75
 #: src/components/landing/Landing.tsx:184
@@ -3979,7 +4007,7 @@ msgstr "次の行は、まちがいがあるので取り込みません："
 msgid "次へ ＞"
 msgstr "次へ ＞"
 
-#: src/app/(public)/page.tsx:64
+#: src/app/(public)/page.tsx:68
 msgid "歩いた場所で、スタンプを押そう。"
 msgstr "歩いた場所で、スタンプを押そう。"
 
@@ -4124,7 +4152,7 @@ msgstr "片道"
 msgid "片道（別の場所へ）"
 msgstr "片道（別の場所へ）"
 
-#: src/components/QuickActions.tsx:36
+#: src/components/QuickActions.tsx:38
 msgid "特大"
 msgstr "特大"
 
@@ -4214,7 +4242,7 @@ msgstr "登録する"
 msgid "登録できませんでした。もう一度お試しください。"
 msgstr "登録できませんでした。もう一度お試しください。"
 
-#: src/components/StampHere.tsx:102
+#: src/components/StampHere.tsx:108
 #: src/components/useErrorMessages.ts:45
 msgid "登録なしで残せるスタンプの数が、上限になりました。新規登録すると、続けて集められます。"
 msgstr "登録なしで残せるスタンプの数が、上限になりました。新規登録すると、続けて集められます。"
@@ -4253,7 +4281,7 @@ msgstr "直すところは、ありません。"
 msgid "直す場所を見る"
 msgstr "直す場所を見る"
 
-#: src/components/StampHere.tsx:103
+#: src/components/StampHere.tsx:109
 #: src/components/useErrorMessages.ts:16
 msgid "短い間に何度も操作されました。しばらくしてからお試しください。"
 msgstr "短い間に何度も操作されました。しばらくしてからお試しください。"
@@ -4643,7 +4671,7 @@ msgstr "英語の名前と説明"
 msgid "英語は未入力です（日本語を表示します）"
 msgstr "英語は未入力です（日本語を表示します）"
 
-#: src/app/(public)/page.tsx:55
+#: src/app/(public)/page.tsx:59
 #: src/app/layout.tsx:33
 #: src/components/landing/LandingHero.tsx:37
 msgid "葛城修験"
@@ -4721,13 +4749,13 @@ msgstr "見どころ"
 msgid "見やすさ"
 msgstr "見やすさ"
 
-#: src/components/QuickActions.tsx:39
+#: src/components/QuickActions.tsx:41
 msgid "見やすさのクイック設定"
 msgstr "見やすさのクイック設定"
 
 #: src/app/(public)/settings/page.tsx:12
 #: src/app/(public)/settings/page.tsx:29
-#: src/app/(public)/sitemap/page.tsx:97
+#: src/app/(public)/sitemap/page.tsx:100
 #: src/components/SiteHeader.tsx:246
 msgid "見やすさの設定"
 msgstr "見やすさの設定"
@@ -4736,7 +4764,7 @@ msgstr "見やすさの設定"
 msgid "見やすさを、あなたに合わせましょう。大きさは、選ぶとすぐに変わります。"
 msgstr "見やすさを、あなたに合わせましょう。大きさは、選ぶとすぐに変わります。"
 
-#: src/app/(public)/page.tsx:78
+#: src/app/(public)/page.tsx:82
 msgid "見やすさを設定しませんか"
 msgstr "見やすさを設定しませんか"
 
@@ -4865,7 +4893,7 @@ msgstr "送っています…"
 msgid "送っています… {percent}%"
 msgstr "送っています… {percent}%"
 
-#: src/components/StampHere.tsx:104
+#: src/components/StampHere.tsx:110
 #: src/components/useErrorMessages.ts:67
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "通信できませんでした。電波の良い場所でもう一度お試しください。"
@@ -4882,8 +4910,8 @@ msgstr "通行止め"
 msgid "通行止めなどの知らせを、確認した日づけで見られます。"
 msgstr "通行止めなどの知らせを、確認した日づけで見られます。"
 
-#: src/app/(public)/rallies/page.tsx:38
-#: src/app/(public)/sitemap/page.tsx:79
+#: src/app/(public)/rallies/page.tsx:46
+#: src/app/(public)/sitemap/page.tsx:82
 msgid "遊び方"
 msgstr "遊び方"
 
@@ -5076,6 +5104,10 @@ msgstr "電話"
 #: src/components/admin/map-editor/MapEditor.tsx:792
 msgid "電車"
 msgstr "電車"
+
+#: src/components/QuickActions.tsx:61
+msgid "音"
+msgstr "音"
 
 #: src/components/admin/GalleryEditor.tsx:88
 msgid "順番"

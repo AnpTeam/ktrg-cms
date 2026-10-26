@@ -6,7 +6,7 @@ import { Ruby } from "@/components/Ruby";
 import { ContinueCard } from "@/components/landing/ContinueCard";
 import { Landing } from "@/components/landing/Landing";
 import { listBanners, slidesToShow } from "@/lib/banners";
-import { getRoute, listRoutes, sampleContentEnabled, type RouteSummary } from "@/lib/content";
+import { getRoute, listRoutes, pickText, sampleContentEnabled, type RouteSummary } from "@/lib/content";
 import { listNotices } from "@/lib/notices";
 import { parseVideoUrl } from "@/lib/video";
 import { getPrefs } from "@/lib/server-prefs";
@@ -34,10 +34,11 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const blogUrl = process.env.BLOG_URL ?? null;
   const page = { locale: i18n.locale, routes, notices, introVideo, slides, blogUrl };
 
-  // Not signed in: the landing page for a first-time visitor. No progress is shown at all.
-  if (!viewer.signedIn) return <Landing {...page} />;
-
   const stamped = routes.reduce((n, r) => n + (r.stampedCount ?? 0), 0);
+  // Someone with no account and no stamp yet gets the landing page for a first-time visitor; anyone with progress (a guest's
+  // stamps are kept in the browser) gets it shown.
+  if (!viewer.signedIn && stamped === 0) return <Landing {...page} />;
+
   const total = routes.reduce((n, r) => n + r.spotCount, 0) || TOTAL_STAMPS;
   const name = viewer.name;
   const prefs = await getPrefs();
@@ -45,6 +46,9 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const found = target ? await getRoute(target.id) : undefined;
   // The next places to stamp on that course, in order (a side trip and a closed place are left out).
   const next = found ? found.spots.filter((s) => s.stamped === false && s.status !== "closed" && !s.stopBy).slice(0, 3) : [];
+
+  const first = next[0];
+  const nextPlace = first && target ? { id: first.id, name: pickText(i18n.locale, first.nameJa, first.nameEn)?.text ?? first.nameJa, routeName: pickText(i18n.locale, target.nameJa, target.nameEn)?.text ?? target.nameJa } : null;
 
   const top = (
     <div className="flex flex-col gap-8 pt-2 lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">
@@ -84,9 +88,12 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       )}
 
       <div className="lg:col-start-1 lg:row-start-2">
-        <ProgressSummary stamped={stamped} total={total}>
+        <ProgressSummary stamped={stamped} total={total} next={nextPlace}>
           <ButtonLink href="/rallies">
             <Trans>スタンプカードを見る</Trans>
+          </ButtonLink>
+          <ButtonLink href="/badges">
+            <Trans>バッジを見る</Trans>
           </ButtonLink>
         </ProgressSummary>
       </div>

@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { persistPrefs } from "@/lib/prefs-client";
+import { setSound, useSound } from "@/lib/stamp-feel";
 import { textSizes, type Prefs } from "@/lib/prefs";
 
 type Toggle = "furigana" | "contrast" | "calm";
@@ -16,6 +17,7 @@ export function QuickActions({ prefs, signedIn }: { prefs: Prefs; signedIn: bool
   const { t } = useLingui();
   const router = useRouter();
   const [current, setCurrent] = useState(prefs);
+  const sound = useSound();
 
   async function change(next: Prefs) {
     setCurrent(next);
@@ -52,6 +54,11 @@ export function QuickActions({ prefs, signedIn }: { prefs: Prefs; signedIn: bool
       <button type="button" aria-pressed={current.calm} onClick={() => flip("calm")} className={button(current.calm)}>
         <span aria-hidden="true" className="text-lg leading-none">≈</span>
         {t`動きなし`}
+      </button>
+      {/* The stamp sound: kept on this device only, off until chosen. */}
+      <button type="button" aria-pressed={sound} onClick={() => setSound(!sound)} className={button(sound)}>
+        <span aria-hidden="true" className="text-lg leading-none">♪</span>
+        {t`音`}
       </button>
     </div>
   );

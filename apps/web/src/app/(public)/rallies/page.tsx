@@ -30,6 +30,14 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
         <Trans>ラリー</Trans>
       </h1>
 
+      <Link
+        href="/badges"
+        className="tap-target mx-4 flex items-center justify-between rounded-2xl bg-surface px-5 text-xl font-bold text-accent"
+      >
+        <Trans>バッジ</Trans>
+        <ChevronIcon />
+      </Link>
+
       {/* How to play lives here, with the stamps, and nowhere else. */}
       <Link
         href="/guide"

@@ -985,3 +985,37 @@ html[data-calm] ::after {
 html[data-furigana] {
   line-height: 1.9;
 }
+
+/* The stamp-press moment (StampHere): the seal drops from large to its size and thumps, an ink ring spreads, all of it
+   fades away. Every animation ends invisible, and with calm on (animations off) it is never drawn. */
+@media (prefers-reduced-motion: no-preference) {
+  .stamp-press {
+    animation: stamp-press-overlay 1700ms ease-out both;
+  }
+  .stamp-press-seal {
+    animation: stamp-press-seal 1700ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  }
+  .stamp-press-ring {
+    animation: stamp-press-ring 1100ms ease-out 260ms both;
+  }
+}
+@keyframes stamp-press-overlay {
+  0% { opacity: 0; transform: translate(0, 0); }
+  10% { opacity: 1; }
+  /* the thump: the whole screen jolts once as the seal lands */
+  16% { transform: translate(0, 4px); }
+  20% { transform: translate(0, -2px); }
+  24% { transform: translate(0, 0); }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes stamp-press-seal {
+  0% { transform: scale(2.6) rotate(-10deg); opacity: 0; }
+  16% { transform: scale(0.94) rotate(-2deg); opacity: 1; }
+  22% { transform: scale(1) rotate(-2deg); }
+  100% { transform: scale(1) rotate(-2deg); }
+}
+@keyframes stamp-press-ring {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
