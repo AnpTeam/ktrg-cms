@@ -1150,7 +1150,7 @@ msgid "この場所のページを開く"
 msgstr "この場所のページを開く"
 
 #: src/components/map/MapScreen.tsx:495
-#: src/components/map/PlacesPanel.tsx:262
+#: src/components/map/PlacesPanel.tsx:250
 #: src/components/map/StopCard.tsx:47
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
 msgstr "この場所の位置は仮のもので、まだ確認されていません。"
@@ -1407,7 +1407,7 @@ msgstr "スタンプ"
 #: src/components/landing/ContinueCard.tsx:23
 #: src/components/landing/Landing.tsx:241
 #: src/components/map/MapScreen.tsx:363
-#: src/components/RouteView.tsx:250
+#: src/components/RouteView.tsx:256
 #: src/components/TrailRibbon.tsx:62
 #: src/components/TripSummary.tsx:48
 msgid "スタンプ {stampedCount} / {spotCount}"
@@ -1453,7 +1453,7 @@ msgid "スタンプの場所の近くにいるか、たしかめるために、�
 msgstr "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 
 #: src/components/map/MapScreen.tsx:418
-#: src/components/RouteView.tsx:238
+#: src/components/RouteView.tsx:244
 msgid "スタンプの場所は、まだ準備中です。"
 msgstr "スタンプの場所は、まだ準備中です。"
 
@@ -2453,7 +2453,7 @@ msgstr "ルートの最初の経由地に近い順です。"
 msgid "ルートの写真のリンク"
 msgstr "ルートの写真のリンク"
 
-#: src/components/RouteView.tsx:219
+#: src/components/RouteView.tsx:225
 msgid "ルートの動画"
 msgstr "ルートの動画"
 
@@ -2663,7 +2663,7 @@ msgstr "今後はこの確認を表示しない"
 msgid "仮のルート・位置（未確認）"
 msgstr "仮のルート・位置（未確認）"
 
-#: src/components/map/PlacesPanel.tsx:245
+#: src/components/map/PlacesPanel.tsx:234
 msgid "休み"
 msgstr "休み"
 
@@ -2760,7 +2760,7 @@ msgstr "位置情報が許可されていません。ブラウザの設定で、
 msgid "低い"
 msgstr "低い"
 
-#: src/components/map/PlacesPanel.tsx:211
+#: src/components/map/PlacesPanel.tsx:218
 #: src/components/PlaceFacts.tsx:29
 msgid "住所"
 msgstr "住所"
@@ -3015,7 +3015,7 @@ msgstr "公開できるようになったら、ここにスタンプのラリー
 msgid "公開できるようになったら、ここにルートが表示されます。"
 msgstr "公開できるようになったら、ここにルートが表示されます。"
 
-#: src/components/RouteView.tsx:239
+#: src/components/RouteView.tsx:245
 msgid "公開できるようになったら、ここに場所の一覧が表示されます。"
 msgstr "公開できるようになったら、ここに場所の一覧が表示されます。"
 
@@ -3241,7 +3241,7 @@ msgstr "出かける前に"
 #: src/app/(public)/rallies/page.tsx:77
 #: src/app/(public)/routes/page.tsx:87
 #: src/components/landing/Landing.tsx:186
-#: src/components/RouteView.tsx:271
+#: src/components/RouteView.tsx:272
 #: src/components/SpotSheet.tsx:180
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "出かける前に、公式の最新情報を確認してください。"
@@ -4266,7 +4266,7 @@ msgstr "日本語の名前を入れてください。"
 msgid "日本語の字幕です。もう一度送ると、置き換わります。字幕は動画の横に保存され、動画を入れ替えたときは、字幕も送りなおしてください。"
 msgstr "日本語の字幕です。もう一度送ると、置き換わります。字幕は動画の横に保存され、動画を入れ替えたときは、字幕も送りなおしてください。"
 
-#: src/components/map/PlacesPanel.tsx:239
+#: src/components/map/PlacesPanel.tsx:233
 #: src/components/RouteStats.tsx:34
 msgid "時間"
 msgstr "時間"
@@ -4716,7 +4716,7 @@ msgstr "短い間に何度も操作されました。しばらくしてからお
 msgid "確認した情報源（サイト名やリンク）"
 msgstr "確認した情報源（サイト名やリンク）"
 
-#: src/components/map/PlacesPanel.tsx:255
+#: src/components/map/PlacesPanel.tsx:243
 msgid "確認した日：{checkedOn}"
 msgstr "確認した日：{checkedOn}"
 
@@ -4834,7 +4834,7 @@ msgstr "経度"
 
 #: src/app/(admin)/admin/attention/page.tsx:81
 #: src/components/admin/useChecklistLabels.ts:22
-#: src/components/RouteView.tsx:246
+#: src/components/RouteView.tsx:252
 msgid "経由地"
 msgstr "経由地"
 
@@ -5542,7 +5542,7 @@ msgstr "長さ"
 #: src/components/GuestClaim.tsx:84
 #: src/components/map/MapPickList.tsx:36
 #: src/components/map/MapPopup.tsx:57
-#: src/components/map/PlacesPanel.tsx:199
+#: src/components/map/PlacesPanel.tsx:208
 #: src/components/map/TrailMap.tsx:460
 #: src/components/ProfileSettings.tsx:230
 #: src/components/SampleNotice.tsx:64
@@ -5577,7 +5577,7 @@ msgstr "隠す"
 msgid "難しさ"
 msgstr "難しさ"
 
-#: src/components/map/PlacesPanel.tsx:217
+#: src/components/map/PlacesPanel.tsx:220
 msgid "電話"
 msgstr "電話"
 

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
-import { PlaceGroupIcon, WarningIcon } from "@/components/icons";
-import { PlaceIcon } from "@/components/PlaceIcon";
+import { WarningIcon } from "@/components/icons";
+import { PlaceGroupPicture, PlaceIcon } from "@/components/PlaceIcon";
 import { RichText } from "@/components/RichText";
 import { formatDay } from "@/lib/format";
 import {
@@ -95,7 +95,7 @@ export function PlaceChips({
               on ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"
             }`}
           >
-            <PlaceGroupIcon group={group} />
+            <PlaceGroupPicture group={group} size={24} />
             <span className="min-w-0 flex-1">{names[group]}</span>
             <span className="tabular-nums">{counts[group]}</span>
           </button>
@@ -167,6 +167,15 @@ export function PlaceList({
   );
 }
 
+function PlaceRow({ term, children }: { term: string; children: React.ReactNode }) {
+  return (
+    <div className="grid grid-cols-[4.5rem_1fr] gap-x-3 py-2 text-lg leading-7">
+      <dt className="text-muted">{term}</dt>
+      <dd className="min-w-0 break-words">{children}</dd>
+    </div>
+  );
+}
+
 /** One place, in full: what it is, when it is open, and how sure we are. */
 export function PlaceCard({
   place,
@@ -183,7 +192,7 @@ export function PlaceCard({
   const distanceText = useDistanceText();
   const checkedOn = place.lastVerified ? formatDay(i18n.locale, place.lastVerified) : "";
   return (
-    <div className="flex flex-col gap-2 rounded-xl border-2 border-line bg-paper p-4" role="status">
+    <div className="flex flex-col gap-3 rounded-xl border-2 border-line bg-paper p-4" role="status">
       <div className="flex items-start justify-between gap-3">
         <p className="flex items-start gap-3 text-xl font-bold leading-snug">
           <span className="mt-0.5 shrink-0 text-accent">
@@ -204,47 +213,26 @@ export function PlaceCard({
         {meters !== null ? <span className="text-muted">　{distanceText(meters)}</span> : null}
       </p>
       <p className="text-lg font-bold">{statusNames[place.status]}</p>
-      {place.address || place.phone || place.website ? (
-        <dl className="flex flex-col gap-1 text-lg">
-          {place.address ? (
-            <div className="flex gap-3">
-              <dt className="w-16 shrink-0 text-muted">{t`住所`}</dt>
-              <dd className="min-w-0 break-words">{place.address}</dd>
-            </div>
-          ) : null}
+      {place.address || place.phone || place.website || place.hours || place.closedDays ? (
+        <dl className="mt-1 divide-y divide-line/40 border-y border-line/40">
+          {place.address ? <PlaceRow term={t`住所`}>{place.address}</PlaceRow> : null}
           {place.phone ? (
-            <div className="flex gap-3">
-              <dt className="w-16 shrink-0 text-muted">{t`電話`}</dt>
-              <dd>
-                <a href={`tel:${place.phone.replace(/[^\d+]/g, "")}`} className="underline underline-offset-4">
-                  {place.phone}
-                </a>
-              </dd>
-            </div>
+            <PlaceRow term={t`電話`}>
+              <a href={`tel:${place.phone.replace(/[^\d+]/g, "")}`} className="underline underline-offset-4">
+                {place.phone}
+              </a>
+            </PlaceRow>
           ) : null}
           {place.website && /^https:\/\//.test(place.website) ? (
-            <div className="flex gap-3">
-              <dt className="w-16 shrink-0 text-muted">{t`サイト`}</dt>
-              <dd className="min-w-0 break-all">
-                <a href={place.website} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
-                  {place.website}
-                </a>
-              </dd>
-            </div>
+            <PlaceRow term={t`サイト`}>
+              <a href={place.website} target="_blank" rel="noopener noreferrer" className="break-all underline underline-offset-4">
+                {place.website}
+              </a>
+            </PlaceRow>
           ) : null}
+          {place.hours ? <PlaceRow term={t`時間`}>{place.hours}</PlaceRow> : null}
+          {place.closedDays ? <PlaceRow term={t`休み`}>{place.closedDays}</PlaceRow> : null}
         </dl>
-      ) : null}
-      {place.hours ? (
-        <p className="text-lg">
-          <span className="text-muted">{t`時間`}　</span>
-          {place.hours}
-        </p>
-      ) : null}
-      {place.closedDays ? (
-        <p className="text-lg">
-          <span className="text-muted">{t`休み`}　</span>
-          {place.closedDays}
-        </p>
       ) : null}
       {place.description ? (
         <div className="whitespace-pre-line text-lg leading-8">

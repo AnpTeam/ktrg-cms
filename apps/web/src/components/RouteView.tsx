@@ -204,6 +204,12 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               ) : null}
             </section>
           ) : null}
+
+          {places.length > 0 ? (
+            <div className="order-5 @4xl:order-none">
+              <RouteNearbyPlaces routeId={route.id} places={places} />
+            </div>
+          ) : null}
         </div>
 
         <div className={SIDE}>
@@ -259,11 +265,6 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             </section>
           )}
 
-          {places.length > 0 ? (
-            <div className="order-5 @4xl:order-none">
-              <RouteNearbyPlaces routeId={route.id} places={places} />
-            </div>
-          ) : null}
         </div>
       </div>
 
