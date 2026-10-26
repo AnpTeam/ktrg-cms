@@ -8,6 +8,7 @@ import { Localized } from "@/components/Localized";
 import { SectionBanner } from "@/components/SectionBanner";
 import { initLingui } from "@/i18n/server";
 import { listRoutes, pickText } from "@/lib/content";
+import { customPageIn, customPages } from "@/lib/page-text-server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
@@ -38,6 +39,7 @@ function Group({ title, children }: { title: React.ReactNode; children: React.Re
 export default async function SitemapPage() {
   const i18n = await initLingui();
   const routes = [...(await listRoutes())].sort((a, b) => a.order - b.order);
+  const pages = await customPages();
 
   return (
     <div className="page-narrow flex flex-col gap-8 pt-2">
@@ -117,6 +119,11 @@ export default async function SitemapPage() {
         <LinkRow href="/licenses">
           <Trans>ライセンス情報</Trans>
         </LinkRow>
+        {pages.map((page) => (
+          <LinkRow key={page.slug} href={`/p/${page.slug}`}>
+            {customPageIn(page, i18n.locale).title}
+          </LinkRow>
+        ))}
       </Group>
     </div>
   );

@@ -18,6 +18,8 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
   const [next, setNext] = useState(initial.next);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // The rows ticked for deleting (only a list that can delete shows the boxes).
+  const [ticked, setTicked] = useState<Set<string>>(new Set());
   // What the list is narrowed by: the search words and "field value" choices (as typed, and as last applied).
   const [q, setQ] = useState("");
   const [picked, setPicked] = useState<Record<string, string>>({});
@@ -39,6 +41,7 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
     if (busy) return;
     setBusy(true);
     setError(null);
+    setTicked(new Set()); // what was ticked may no longer be on the page
     const query = queryOf(words, choices);
     const res = await listRequest<ListPage>("GET", query ? `${config.key}?${query}` : config.key);
     setBusy(false);
@@ -46,6 +49,27 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
     setItems(res.data.items);
     setNext(res.data.next);
     setApplied(query);
+  }
+
+  /** Delete rows one by one; the ones that went are dropped from the page, and what could not be deleted is reported. */
+  async function removeRows(ids: string[]) {
+    if (busy || ids.length === 0) return;
+    const one = ids.length === 1 ? items.find((i) => i.id === ids[0]) : undefined;
+    const ask = one ? (config.deleteWarning ? pick(config.deleteWarning, locale) : t`「${name(one)}」を削除します。元に戻せません。よろしいですか？`) : t`選んだ${ids.length}件を削除します。元に戻せません。よろしいですか？`;
+    if (!window.confirm(ask)) return;
+    setBusy(true);
+    setError(null);
+    const gone = new Set<string>();
+    let failure: string | null = null;
+    for (const id of ids) {
+      const res = await listRequest("DELETE", `${config.key}/${id}`);
+      if (res.ok) gone.add(id);
+      else failure = messages[res.key];
+    }
+    setBusy(false);
+    setItems((now) => now.filter((i) => !gone.has(i.id)));
+    setTicked(new Set());
+    if (failure) setError(gone.size > 0 ? t`${gone.size}件を削除しました。残りは削除できませんでした：${failure}` : failure);
   }
 
   async function more() {
@@ -58,6 +82,16 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
     setItems((now) => [...now, ...res.data.items]);
     setNext(res.data.next);
   }
+
+  const canDelete = config.ops.delete;
+  const activeFilters = Object.values(picked).filter((v) => v !== "").length;
+  const allTicked = items.length > 0 && items.every((i) => ticked.has(i.id));
+  const toggle = (id: string) =>
+    setTicked((now) => {
+      const next = new Set(now);
+      if (!next.delete(id)) next.add(id);
+      return next;
+    });
 
   return (
     <div className="flex flex-col gap-4">
@@ -73,68 +107,91 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
           e.preventDefault();
           void search(q, picked);
         }}
-        className="flex flex-wrap items-end gap-3"
+        className="flex flex-col gap-3 rounded-2xl bg-surface p-3"
       >
-        <label className="flex min-w-56 flex-1 flex-col gap-1 text-base font-bold">
-          {t`さがす`}
-          <input type="search" value={q} maxLength={100} onChange={(e) => setQ(e.target.value)} className={inputClass} />
-        </label>
-        {filterFields.map((f) => (
-          <label key={f.name} className="flex flex-col gap-1 text-base font-bold">
-            {pick(f.label, locale)}
-            <select
-              value={picked[f.name] ?? ""}
-              onChange={(e) => {
-                const next = { ...picked, [f.name]: e.target.value };
-                setPicked(next);
-                void search(q, next);
-              }}
-              className={`${inputClass} min-w-36`}
-            >
-              <option value="">{t`すべて`}</option>
-              {f.kind === "boolean" ? (
-                <>
-                  <option value="true">{t`はい`}</option>
-                  <option value="false">{t`いいえ`}</option>
-                </>
-              ) : f.kind === "select" ? (
-                (f.options ?? []).map((o) => (
-                  <option key={o.value} value={o.value}>
-                    {pick(o.label, locale)}
-                  </option>
-                ))
-              ) : (
-                (choices[f.name] ?? []).map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))
-              )}
-            </select>
-          </label>
-        ))}
-        <button type="submit" disabled={busy} className="tap-target rounded-xl border-2 border-line px-5 text-lg font-bold disabled:opacity-50">
-          {t`探す`}
-        </button>
-        {applied ? (
-          <button
-            type="button"
-            disabled={busy}
-            onClick={() => {
-              setQ("");
-              setPicked({});
-              void search("", {});
-            }}
-            className="tap-target rounded-xl px-3 text-lg font-bold text-accent underline underline-offset-4"
-          >
-            {t`条件をやめる`}
+        <div className="flex flex-wrap items-center gap-3">
+          <input type="search" aria-label={t`さがす`} placeholder={t`さがす`} value={q} maxLength={100} onChange={(e) => setQ(e.target.value)} className={`${inputClass} min-w-48 flex-1`} />
+          <button type="submit" disabled={busy} className="tap-target rounded-xl bg-ink px-5 text-lg font-bold text-paper disabled:opacity-50">
+            {t`探す`}
           </button>
+          {applied ? (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => {
+                setQ("");
+                setPicked({});
+                void search("", {});
+              }}
+              className="tap-target rounded-xl px-3 text-lg font-bold text-accent underline underline-offset-4"
+            >
+              {t`条件をやめる`}
+            </button>
+          ) : null}
+        </div>
+        {filterFields.length > 0 ? (
+          <details className="group" open={activeFilters > 0 || undefined}>
+            <summary className="tap-target flex w-fit cursor-pointer list-none items-center gap-2 text-base font-bold text-accent [&::-webkit-details-marker]:hidden">
+              <span aria-hidden="true" className="transition-transform group-open:rotate-90">▸</span>
+              {t`絞りこみ`}
+              {activeFilters > 0 ? <span className="rounded-full bg-ink px-2 text-sm text-paper">{activeFilters}</span> : null}
+            </summary>
+            <div className="mt-2 grid grid-cols-[repeat(auto-fill,minmax(11rem,1fr))] gap-3">
+              {filterFields.map((f) => (
+                <label key={f.name} className="flex flex-col gap-1 text-sm font-bold">
+                  {pick(f.label, locale)}
+                  <select
+                    value={picked[f.name] ?? ""}
+                    onChange={(e) => {
+                      const next = { ...picked, [f.name]: e.target.value };
+                      setPicked(next);
+                      void search(q, next);
+                    }}
+                    className={inputClass}
+                  >
+                    <option value="">{t`すべて`}</option>
+                    {f.kind === "boolean" ? (
+                      <>
+                        <option value="true">{t`はい`}</option>
+                        <option value="false">{t`いいえ`}</option>
+                      </>
+                    ) : f.kind === "select" ? (
+                      (f.options ?? []).map((o) => (
+                        <option key={o.value} value={o.value}>
+                          {pick(o.label, locale)}
+                        </option>
+                      ))
+                    ) : (
+                      (choices[f.name] ?? []).map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.name}
+                        </option>
+                      ))
+                    )}
+                  </select>
+                </label>
+              ))}
+            </div>
+          </details>
         ) : null}
       </form>
       {error ? (
         <p role="alert" className="rounded-xl bg-surface p-4 text-lg font-bold text-danger">
           {error}
         </p>
+      ) : null}
+      {canDelete && items.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="tap-target flex items-center gap-2 text-base font-bold">
+            <input type="checkbox" checked={allTicked} onChange={() => setTicked(allTicked ? new Set() : new Set(items.map((i) => i.id)))} className="size-5" />
+            {t`このページをすべて選ぶ`}
+          </label>
+          {ticked.size > 0 ? (
+            <button type="button" disabled={busy} onClick={() => void removeRows([...ticked])} className="tap-target rounded-xl border-2 border-danger px-4 text-base font-bold text-danger disabled:opacity-50">
+              {t`選んだ${ticked.size}件を削除`}
+            </button>
+          ) : null}
+        </div>
       ) : null}
       {items.length === 0 ? (
         <p className="rounded-2xl bg-surface p-6 text-lg">{applied ? t`条件に合う${title}はありません。` : t`${title}はまだありません。`}</p>
@@ -143,16 +200,24 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
           {items.map((item) => {
             const href = itemHref(config, item);
             return (
-            <li key={item.id} className="p-3">
-              {href ? (
-                <Link href={href} className="text-xl font-bold text-accent underline underline-offset-4">
-                  {name(item)}
-                </Link>
-              ) : (
-                <p className="text-xl font-bold">{name(item)}</p>
-              )}
-              <p className="text-base text-muted">{itemFacts(config, item, locale, (id, field) => choices[field]?.find((c) => c.id === id)?.name ?? null).join(" ・ ")}</p>
-            </li>
+              <li key={item.id} className="flex items-start gap-3 p-3">
+                {canDelete ? <input type="checkbox" aria-label={t`${name(item)}を選ぶ`} checked={ticked.has(item.id)} onChange={() => toggle(item.id)} className="mt-2 size-5 shrink-0" /> : null}
+                <div className="min-w-0 flex-1">
+                  {href ? (
+                    <Link href={href} className="text-xl font-bold text-accent underline underline-offset-4">
+                      {name(item)}
+                    </Link>
+                  ) : (
+                    <p className="text-xl font-bold">{name(item)}</p>
+                  )}
+                  <p className="text-base text-muted">{itemFacts(config, item, locale, (id, field) => choices[field]?.find((c) => c.id === id)?.name ?? null).join(" ・ ")}</p>
+                </div>
+                {canDelete ? (
+                  <button type="button" disabled={busy} onClick={() => void removeRows([item.id])} className="tap-target shrink-0 rounded-xl border-2 border-line px-3 text-base font-bold text-danger disabled:opacity-50">
+                    {t`削除`}
+                  </button>
+                ) : null}
+              </li>
             );
           })}
         </ul>

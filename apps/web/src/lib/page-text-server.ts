@@ -76,3 +76,39 @@ export function builtInPages(): Record<PageKey, PageText> {
   // The terms are written in Japanese only; the English box starts empty (the English page shows the Japanese text and says so).
   return { faq: { ja: faq("ja"), en: faq("en") }, guide: { ja: guide("ja"), en: guide("en") }, privacy: { ja: privacy("ja"), en: privacy("en") }, terms: { ja: terms, en: { title: "", body: "" } } };
 }
+
+export interface CustomPage {
+  slug: string;
+  titleJa: string;
+  titleEn: string | null;
+  bodyJa?: string;
+  bodyEn?: string | null;
+}
+
+/** The page's title and text in the visitor's language: English when it is written and the visitor is not Japanese, else Japanese. */
+export function customPageIn(page: CustomPage, locale: string): { title: string; doc: PageDoc } {
+  const en = locale !== "ja" && page.titleEn ? page : null;
+  return { title: en ? page.titleEn! : page.titleJa, doc: parsePageBody(en && page.bodyEn ? page.bodyEn : (page.bodyJa ?? "")) };
+}
+
+/** A published page made in the admin (/p/<slug>), or null. */
+export async function customPage(slug: string): Promise<CustomPage | null> {
+  try {
+    const res = await fetch(`${process.env.API_ORIGIN ?? "http://localhost:3001"}/api/v1/site-pages/${encodeURIComponent(slug)}`, { next: { revalidate: 15 }, signal: AbortSignal.timeout(3000) });
+    const json = (await res.json().catch(() => null)) as { ok?: unknown; page?: CustomPage | null } | null;
+    return res.ok && json?.ok === true ? (json.page ?? null) : null;
+  } catch {
+    return null;
+  }
+}
+
+/** The published pages made in the admin, oldest first, for links to them. */
+export async function customPages(): Promise<CustomPage[]> {
+  try {
+    const res = await fetch(`${process.env.API_ORIGIN ?? "http://localhost:3001"}/api/v1/site-pages`, { next: { revalidate: 15 }, signal: AbortSignal.timeout(3000) });
+    const json = (await res.json().catch(() => null)) as { ok?: unknown; pages?: CustomPage[] } | null;
+    return res.ok && json?.ok === true ? (json.pages ?? []) : [];
+  } catch {
+    return [];
+  }
+}

@@ -58,10 +58,20 @@ msgstr "Move {0} later"
 msgid "{0}を消す"
 msgstr "Delete {0}"
 
+#. placeholder {0}: name(item)
+#: src/components/admin/AdminListTable.tsx:204
+msgid "{0}を選ぶ"
+msgstr "Select {0}"
+
 #. placeholder {0}: labels.tab[i.tab]
 #: src/components/admin/RouteEditor.tsx:799
 msgid "{0}を開く"
 msgstr "Open {0}"
+
+#. placeholder {0}: gone.size
+#: src/components/admin/AdminListTable.tsx:72
+msgid "{0}件を削除しました。残りは削除できませんでした：{failure}"
+msgstr "{0} deleted. The rest could not be deleted: {failure}"
 
 #. placeholder {0}: done.added
 #: src/components/admin/PlaceImport.tsx:66
@@ -250,7 +260,7 @@ msgstr "Move {text} down"
 msgid "{title}（管理）"
 msgstr "{title} (admin)"
 
-#: src/components/admin/AdminListTable.tsx:140
+#: src/components/admin/AdminListTable.tsx:197
 msgid "{title}はまだありません。"
 msgstr "No {title} yet."
 
@@ -287,6 +297,11 @@ msgstr "{v} m"
 #: src/components/admin/PageTextEditor.tsx:101
 msgid "「---」だけの行から下は、いちばん下の注意書きになります。"
 msgstr "Everything below a line with only \"---\" becomes the note at the bottom."
+
+#. placeholder {0}: name(one)
+#: src/components/admin/AdminListTable.tsx:58
+msgid "「{0}」を削除します。元に戻せません。よろしいですか？"
+msgstr "Delete \"{0}\"? This cannot be undone."
 
 #: src/components/admin/PublishedEditDialog.tsx:52
 msgid "「{label}」は公開中です。編集すると、この経由地は下書きに戻ります。保存した時点から、利用者には表示されなくなります（スタンプの記録は残ります）。"
@@ -516,7 +531,7 @@ msgstr "Use an https:// link to YouTube or Vimeo, or to an uploaded video."
 msgid "アウトドア"
 msgstr "Outdoors"
 
-#: src/app/(public)/sitemap/page.tsx:86
+#: src/app/(public)/sitemap/page.tsx:88
 msgid "アカウント"
 msgstr "Account"
 
@@ -608,7 +623,7 @@ msgstr "Tell us a little about yourself. You don't have to answer, and you can c
 msgid "アニメーションや、ふわっと動く表示をやめます。"
 msgstr "Turns off animation and fading effects."
 
-#: src/app/(admin)/admin/pages/page.tsx:32
+#: src/app/(admin)/admin/pages/page.tsx:37
 msgid "アプリにもともと入っている固定のページの文章を、ここで書きかえられます。何も書かなければ、もとの文章が表示されます。"
 msgstr "Replace the text of the fixed pages built into the app. If nothing is written, the built-in text is shown."
 
@@ -625,7 +640,7 @@ msgstr "Nice to have"
 msgid "あるとよい：{0}"
 msgstr "Nice to have: {0}"
 
-#: src/components/admin/AdminListTable.tsx:98
+#: src/components/admin/AdminListTable.tsx:156
 msgid "いいえ"
 msgstr "No"
 
@@ -970,6 +985,10 @@ msgstr "This file could not be read. Choose a file (.xlsx) made from the templat
 msgid "このブラウザでは、スタンプが消えてしまうことがあります。"
 msgstr "Your stamps may be lost in this browser."
 
+#: src/components/admin/AdminListTable.tsx:187
+msgid "このページをすべて選ぶ"
+msgstr "Select everything on this page"
+
 #: src/app/(admin)/layout.tsx:33
 msgid "このページを見る権限がありません"
 msgstr "You do not have permission to view this page"
@@ -1253,7 +1272,7 @@ msgstr "Certificate of completion"
 msgid "コンプリート証を保存・共有"
 msgstr "Save or share your certificate"
 
-#: src/app/(public)/sitemap/page.tsx:107
+#: src/app/(public)/sitemap/page.tsx:109
 msgid "ご案内"
 msgstr "Information"
 
@@ -1277,8 +1296,8 @@ msgstr "Website"
 msgid "サイトの全体に関わる設定です。ここで変えたことは、すぐに訪問者の画面に反映されます。"
 msgstr "Settings that affect the whole site. What you change here shows on visitors' screens at once."
 
-#: src/app/(public)/sitemap/page.tsx:14
-#: src/app/(public)/sitemap/page.tsx:48
+#: src/app/(public)/sitemap/page.tsx:15
+#: src/app/(public)/sitemap/page.tsx:50
 #: src/components/SiteFooter.tsx:24
 msgid "サイトマップ"
 msgstr "Site map"
@@ -1292,7 +1311,8 @@ msgstr "Site-wide settings"
 msgid "サイト全体の設定（管理）"
 msgstr "Site-wide settings (admin)"
 
-#: src/components/admin/AdminListTable.tsx:79
+#: src/components/admin/AdminListTable.tsx:113
+#: src/components/admin/AdminListTable.tsx:113
 msgid "さがす"
 msgstr "Search"
 
@@ -1482,7 +1502,7 @@ msgstr "stamped"
 msgid "すでに公開をやめた経由地があります（{names}）。「経由地」タブで確かめてください。"
 msgstr "These waypoints were already unpublished: {names}. Check them in the Waypoints tab."
 
-#: src/components/admin/AdminListTable.tsx:94
+#: src/components/admin/AdminListTable.tsx:152
 #: src/components/admin/DirectoryPicker.tsx:153
 #: src/components/admin/RouteTable.tsx:77
 #: src/components/PrefectureFilter.tsx:36
@@ -1594,6 +1614,14 @@ msgstr "Next places"
 msgid "つぎへ"
 msgstr "Next"
 
+#: src/app/(admin)/admin/pages/page.tsx:62
+msgid "つくったページ"
+msgstr "Pages you made"
+
+#: src/app/(admin)/admin/pages/page.tsx:78
+msgid "つくったページはまだありません。"
+msgstr "No pages made yet."
+
 #: src/components/admin/RallyCreate.tsx:68
 msgid "つくり方"
 msgstr "How it is made"
@@ -1672,7 +1700,7 @@ msgstr "A nickname is fine."
 msgid "のぼり"
 msgstr "Climb"
 
-#: src/components/admin/AdminListTable.tsx:97
+#: src/components/admin/AdminListTable.tsx:155
 msgid "はい"
 msgstr "Yes"
 
@@ -1688,7 +1716,7 @@ msgstr "First-time set-up"
 msgid "はじめのラリー"
 msgstr "First rally"
 
-#: src/app/(admin)/admin/pages/page.tsx:22
+#: src/app/(admin)/admin/pages/page.tsx:27
 msgid "はじめの説明と、手順（1、2、3…）です。"
 msgstr "An introduction and the steps (1, 2, 3 ...)."
 
@@ -1739,7 +1767,7 @@ msgstr "Desktop width"
 #: src/app/(public)/badges/page.tsx:28
 #: src/app/(public)/page.tsx:74
 #: src/app/(public)/rallies/page.tsx:35
-#: src/app/(public)/sitemap/page.tsx:79
+#: src/app/(public)/sitemap/page.tsx:81
 msgid "バッジ"
 msgstr "Badges"
 
@@ -1787,7 +1815,7 @@ msgstr "The usual size."
 
 #: src/app/(public)/bookmarks/page.tsx:12
 #: src/app/(public)/page.tsx:78
-#: src/app/(public)/sitemap/page.tsx:91
+#: src/app/(public)/sitemap/page.tsx:93
 #: src/components/SiteHeader.tsx:231
 msgid "ブックマーク"
 msgstr "Bookmarks"
@@ -1810,8 +1838,8 @@ msgstr "Remove bookmark"
 msgid "フッター"
 msgstr "Footer"
 
-#: src/app/(admin)/admin/pages/page.tsx:24
-#: src/app/(public)/sitemap/page.tsx:115
+#: src/app/(admin)/admin/pages/page.tsx:29
+#: src/app/(public)/sitemap/page.tsx:117
 #: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:30
 #: src/components/SiteHeader.tsx:257
@@ -1837,7 +1865,7 @@ msgstr "Read the blog"
 
 #: src/app/(public)/profile/page.tsx:16
 #: src/app/(public)/settings/passkeys/page.tsx:23
-#: src/app/(public)/sitemap/page.tsx:88
+#: src/app/(public)/sitemap/page.tsx:90
 #: src/components/ProfileCard.tsx:38
 #: src/components/ProfileSettings.tsx:149
 msgid "プロフィール"
@@ -1847,13 +1875,13 @@ msgstr "Profile"
 msgid "ページが見つかりません"
 msgstr "Page not found"
 
-#: src/app/(admin)/admin/pages/page.tsx:29
+#: src/app/(admin)/admin/pages/page.tsx:34
 #: src/components/admin/AdminNav.tsx:35
 msgid "ページの文章"
 msgstr "Page text"
 
 #: src/app/(admin)/admin/pages/[key]/page.tsx:14
-#: src/app/(admin)/admin/pages/page.tsx:12
+#: src/app/(admin)/admin/pages/page.tsx:15
 msgid "ページの文章（管理）"
 msgstr "Page text (admin)"
 
@@ -1873,12 +1901,13 @@ msgstr "Base map"
 #: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/licenses/page.tsx:21
 #: src/app/(public)/login/page.tsx:29
+#: src/app/(public)/p/[slug]/page.tsx:32
 #: src/app/(public)/privacy/page.tsx:25
 #: src/app/(public)/register/page.tsx:28
 #: src/app/(public)/settings/page.tsx:26
-#: src/app/(public)/sitemap/page.tsx:46
-#: src/app/(public)/sitemap/page.tsx:51
+#: src/app/(public)/sitemap/page.tsx:48
 #: src/app/(public)/sitemap/page.tsx:53
+#: src/app/(public)/sitemap/page.tsx:55
 #: src/app/(public)/terms/page.tsx:26
 #: src/components/SiteHeader.tsx:169
 #: src/components/TabBar.tsx:22
@@ -1975,7 +2004,7 @@ msgid "まっすぐつなぐ"
 msgstr "Connect straight"
 
 #: src/app/(public)/map/page.tsx:17
-#: src/app/(public)/sitemap/page.tsx:57
+#: src/app/(public)/sitemap/page.tsx:59
 #: src/components/map/MapScreen.tsx:176
 #: src/components/TabBar.tsx:23
 msgid "マップ"
@@ -2085,7 +2114,7 @@ msgstr "Try again"
 msgid "もう一度送りました。届かないときは、1分ほど待ってからお試しください。"
 msgstr "Sent again. If it does not arrive, wait about a minute and try again."
 
-#: src/components/admin/AdminListTable.tsx:162
+#: src/components/admin/AdminListTable.tsx:227
 #: src/components/admin/PhotoLibrary.tsx:216
 msgid "もっと見る"
 msgstr "Show more"
@@ -2103,7 +2132,7 @@ msgstr "Restoring…"
 msgid "もどすスタンプは、ありませんでした。（いま {0}個）"
 msgstr "There were no stamps to restore ({0} now)."
 
-#: src/app/(admin)/admin/pages/page.tsx:46
+#: src/app/(admin)/admin/pages/page.tsx:51
 msgid "もとの文章"
 msgstr "Built-in text"
 
@@ -2144,8 +2173,8 @@ msgstr "Undo and redo"
 msgid "やり直す"
 msgstr "Redo"
 
-#: src/app/(admin)/admin/pages/page.tsx:21
-#: src/app/(public)/sitemap/page.tsx:109
+#: src/app/(admin)/admin/pages/page.tsx:26
+#: src/app/(public)/sitemap/page.tsx:111
 #: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:18
 #: src/components/SiteHeader.tsx:255
@@ -2156,7 +2185,7 @@ msgstr "FAQ"
 msgid "よみ"
 msgstr "Reading"
 
-#: src/app/(public)/sitemap/page.tsx:118
+#: src/app/(public)/sitemap/page.tsx:120
 #: src/components/SiteFooter.tsx:21
 #: src/components/SiteHeader.tsx:258
 msgid "ライセンス情報"
@@ -2169,7 +2198,7 @@ msgstr "Light"
 #: src/app/(admin)/admin/rallies/page.tsx:22
 #: src/app/(public)/page.tsx:70
 #: src/app/(public)/rallies/page.tsx:32
-#: src/app/(public)/sitemap/page.tsx:74
+#: src/app/(public)/sitemap/page.tsx:76
 #: src/components/admin/AdminNav.tsx:32
 #: src/components/TabBar.tsx:25
 msgid "ラリー"
@@ -2183,7 +2212,7 @@ msgstr "Rallies (admin)"
 msgid "ラリーがまだありません。「新しいラリー」から作ってください。"
 msgstr "There are no rallies yet. Create one with \"New rally\"."
 
-#: src/app/(public)/sitemap/page.tsx:76
+#: src/app/(public)/sitemap/page.tsx:78
 msgid "ラリーとスタンプ"
 msgstr "Rallies and stamps"
 
@@ -2290,7 +2319,7 @@ msgstr "Enter the link directly"
 #: src/app/(admin)/admin/attention/page.tsx:54
 #: src/app/(admin)/admin/routes/page.tsx:22
 #: src/app/(public)/routes/page.tsx:18
-#: src/app/(public)/sitemap/page.tsx:63
+#: src/app/(public)/sitemap/page.tsx:65
 #: src/components/admin/AdminNav.tsx:31
 #: src/components/TabBar.tsx:24
 msgid "ルート"
@@ -2326,7 +2355,7 @@ msgstr "The physical level and technical level of a route are a guide to how har
 msgid "ルートのページで、しおりのボタンを押すと、ここに保存されます。ログインしていれば、アカウントに保存されます。"
 msgstr "Press the bookmark button on a route page and it is saved here. When you are signed in, bookmarks are saved to your account."
 
-#: src/app/(public)/sitemap/page.tsx:65
+#: src/app/(public)/sitemap/page.tsx:67
 msgid "ルートの一覧"
 msgstr "All routes"
 
@@ -2418,7 +2447,7 @@ msgstr "Log out"
 
 #: src/app/(public)/login/page.tsx:15
 #: src/app/(public)/login/page.tsx:32
-#: src/app/(public)/sitemap/page.tsx:94
+#: src/app/(public)/sitemap/page.tsx:96
 #: src/components/auth/LoginFlow.tsx:55
 #: src/components/auth/RegisterFlow.tsx:141
 #: src/components/GuestNag.tsx:78
@@ -2444,7 +2473,7 @@ msgstr "Could not log in. If this device has no passkey, log in with email."
 
 #: src/app/(public)/settings/passkeys/page.tsx:12
 #: src/app/(public)/settings/passkeys/page.tsx:26
-#: src/app/(public)/sitemap/page.tsx:103
+#: src/app/(public)/sitemap/page.tsx:105
 msgid "ログインの方法"
 msgstr "Ways to log in"
 
@@ -2468,6 +2497,10 @@ msgstr "This is more than one import can do ({writes} saves are needed; the limi
 msgid "一覧"
 msgstr "List"
 
+#: src/app/(admin)/admin/pages/page.tsx:73
+msgid "一覧で見る・削除する"
+msgstr "See the list and delete"
+
 #: src/app/(admin)/admin/[list]/[id]/page.tsx:31
 #: src/app/(admin)/admin/[list]/new/page.tsx:26
 msgid "一覧へ戻る"
@@ -2490,6 +2523,7 @@ msgid "下へ"
 msgstr "Move down"
 
 #: src/app/(admin)/admin/attention/page.tsx:90
+#: src/app/(admin)/admin/pages/page.tsx:88
 #: src/components/admin/DirectoryPicker.tsx:139
 #: src/components/admin/PlacePanel.tsx:83
 #: src/components/admin/RallyEditor.tsx:100
@@ -2909,6 +2943,7 @@ msgstr "Unpublished."
 msgid "公開をやめる"
 msgstr "Unpublish"
 
+#: src/app/(admin)/admin/pages/page.tsx:88
 #: src/components/admin/map-editor/PlaceList.tsx:113
 #: src/components/admin/PlacePanel.tsx:83
 #: src/components/admin/RallyEditor.tsx:100
@@ -3167,8 +3202,8 @@ msgstr "Linked to another route"
 msgid "別の人が先に保存しました。読み込み直してから、もう一度お試しください。"
 msgstr "Someone else saved first. Reload the page and try again."
 
-#: src/app/(admin)/admin/pages/page.tsx:23
-#: src/app/(public)/sitemap/page.tsx:112
+#: src/app/(admin)/admin/pages/page.tsx:28
+#: src/app/(public)/sitemap/page.tsx:114
 #: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:27
 #: src/components/SiteHeader.tsx:256
@@ -3177,6 +3212,7 @@ msgstr "Terms of use"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
 #: src/components/admin/AdminItemForm.tsx:278
+#: src/components/admin/AdminListTable.tsx:217
 #: src/components/admin/fields.tsx:155
 #: src/components/admin/PlaceTable.tsx:140
 #: src/components/admin/PlaceTable.tsx:205
@@ -3957,7 +3993,7 @@ msgstr "Discard"
 msgid "探しています…"
 msgstr "Searching…"
 
-#: src/components/admin/AdminListTable.tsx:117
+#: src/components/admin/AdminListTable.tsx:115
 #: src/components/admin/map-editor/MapEditor.tsx:947
 msgid "探す"
 msgstr "Search"
@@ -4046,6 +4082,10 @@ msgstr "Text"
 msgid "文章の書式"
 msgstr "Text formatting"
 
+#: src/app/(admin)/admin/pages/page.tsx:65
+msgid "新しいページ"
+msgstr "New page"
+
 #: src/components/admin/RallyCreate.tsx:61
 #: src/components/admin/RallyList.tsx:41
 msgid "新しいラリー"
@@ -4078,7 +4118,7 @@ msgstr "A Japanese name is needed to create a new one"
 
 #: src/app/(public)/register/page.tsx:15
 #: src/app/(public)/register/page.tsx:31
-#: src/app/(public)/sitemap/page.tsx:97
+#: src/app/(public)/sitemap/page.tsx:99
 #: src/components/auth/LoginFlow.tsx:104
 #: src/components/GuestNag.tsx:75
 #: src/components/landing/Landing.tsx:191
@@ -4147,7 +4187,7 @@ msgstr "Nothing is written"
 msgid "書きかえると、「案です」の表示や更新日の表示は出なくなります。日付などは、本文に書いてください。"
 msgstr "Once rewritten, the \"this is a draft\" notice and the updated date are no longer shown. Put a date in the text yourself."
 
-#: src/app/(admin)/admin/pages/page.tsx:46
+#: src/app/(admin)/admin/pages/page.tsx:51
 msgid "書きかえ済み"
 msgstr "Rewritten"
 
@@ -4181,7 +4221,7 @@ msgstr "Text"
 msgid "本文へ移動"
 msgstr "Skip to main content"
 
-#: src/components/admin/AdminListTable.tsx:140
+#: src/components/admin/AdminListTable.tsx:197
 msgid "条件に合う{title}はありません。"
 msgstr "No {title} match the conditions."
 
@@ -4189,7 +4229,7 @@ msgstr "No {title} match the conditions."
 msgid "条件に合うルートがありません。"
 msgstr "No routes match."
 
-#: src/components/admin/AdminListTable.tsx:130
+#: src/components/admin/AdminListTable.tsx:128
 msgid "条件をやめる"
 msgstr "Clear the conditions"
 
@@ -4307,8 +4347,8 @@ msgstr "Separate paragraphs with a blank line."
 msgid "水場"
 msgstr "Drinking water"
 
-#: src/app/(admin)/admin/pages/page.tsx:23
-#: src/app/(admin)/admin/pages/page.tsx:24
+#: src/app/(admin)/admin/pages/page.tsx:28
+#: src/app/(admin)/admin/pages/page.tsx:29
 msgid "法的な文章です。管理者だけが直せます。"
 msgstr "A legal text. Only an admin can change it."
 
@@ -4755,6 +4795,10 @@ msgstr "Place a waypoint"
 msgid "経由地を置くと、近い順に並びます。"
 msgstr "Once there is a waypoint, they are listed nearest first."
 
+#: src/components/admin/AdminListTable.tsx:136
+msgid "絞りこみ"
+msgstr "Filters"
+
 #: src/components/admin/PlacePanel.tsx:154
 msgid "絵をはずす"
 msgstr "Remove the picture"
@@ -4871,6 +4915,10 @@ msgstr "Write both latitude and longitude"
 msgid "縮小"
 msgstr "Zoom out"
 
+#: src/app/(admin)/admin/pages/page.tsx:69
+msgid "自分でページをつくれます。公開すると、サイトの「/p/アドレス」で見られます。サイトマップにも載ります。"
+msgstr "You can make pages yourself. Once published they are at \"/p/<address>\" on the site and in the sitemap."
+
 #: src/components/GuestBackup.tsx:35
 msgid "自分に送っておくと、ブラウザのデータが消えても、このリンクからスタンプをもどせます。ほかの人には見せないでください。"
 msgstr "Send it to yourself, and if the browser's data is lost you can bring the stamps back from this link. Do not show it to other people."
@@ -4945,7 +4993,7 @@ msgstr "Katsuragi Shugen Admin"
 msgid "葛城修験とは"
 msgstr "About Katsuragi Shugen"
 
-#: src/app/(public)/sitemap/page.tsx:59
+#: src/app/(public)/sitemap/page.tsx:61
 msgid "葛城修験の地図"
 msgstr "Map of Katsuragi Shugen"
 
@@ -5009,7 +5057,7 @@ msgstr "Quick readability settings"
 
 #: src/app/(public)/settings/page.tsx:12
 #: src/app/(public)/settings/page.tsx:29
-#: src/app/(public)/sitemap/page.tsx:100
+#: src/app/(public)/sitemap/page.tsx:102
 #: src/components/SiteHeader.tsx:247
 msgid "見やすさの設定"
 msgstr "Display settings"
@@ -5088,7 +5136,7 @@ msgstr "Loading…"
 msgid "調べています…"
 msgstr "Searching…"
 
-#: src/app/(admin)/admin/pages/page.tsx:21
+#: src/app/(admin)/admin/pages/page.tsx:26
 msgid "質問と答えの一覧です。"
 msgstr "A list of questions and answers."
 
@@ -5172,9 +5220,9 @@ msgstr "Closed"
 msgid "通行止めなどの知らせを、確認した日づけで見られます。"
 msgstr "See closures and other notices with the date they were checked."
 
-#: src/app/(admin)/admin/pages/page.tsx:22
+#: src/app/(admin)/admin/pages/page.tsx:27
 #: src/app/(public)/rallies/page.tsx:39
-#: src/app/(public)/sitemap/page.tsx:82
+#: src/app/(public)/sitemap/page.tsx:84
 #: src/components/admin/PageTextEditor.tsx:37
 msgid "遊び方"
 msgstr "How to play"
@@ -5272,6 +5320,16 @@ msgstr "Choose"
 #: src/components/admin/map-editor/MapEditor.tsx:1009
 msgid "選ぶ・動かす"
 msgstr "Select / move"
+
+#. placeholder {0}: ticked.size
+#: src/components/admin/AdminListTable.tsx:191
+msgid "選んだ{0}件を削除"
+msgstr "Delete the {0} selected"
+
+#. placeholder {0}: ids.length
+#: src/components/admin/AdminListTable.tsx:58
+msgid "選んだ{0}件を削除します。元に戻せません。よろしいですか？"
+msgstr "Delete the {0} selected? This cannot be undone."
 
 #: src/components/admin/RouteImport.tsx:251
 msgid "選んだファイルの中にありません"
