@@ -54,13 +54,17 @@ const _ageCovered: Exclude<(typeof userAgeRange.enumValues)[number], Static<type
 const _genderCovered: Exclude<(typeof userGender.enumValues)[number], Static<typeof genderSchema>> extends never ? true : never = true;
 void [_ageCovered, _genderCovered];
 
-/** The accessibility and map choices (me/preferences.ts): every field is required, nothing else is allowed. */
+/** The accessibility and map choices (me/preferences.ts): the first five fields are required, nothing else is allowed. */
 export const preferencesSchema = t.Object(
   {
     size: t.Union([t.Literal("standard"), t.Literal("large"), t.Literal("xlarge")]),
     mergeStops: t.Boolean(),
     placesOnMap: t.Boolean(),
     setupDone: t.Boolean(),
+    // Added later, so older phones that do not send them still work: left out means off.
+    furigana: t.Optional(t.Boolean()),
+    contrast: t.Optional(t.Boolean()),
+    calm: t.Optional(t.Boolean()),
     // Milliseconds since 1970, up to the year 2100: a number, never a date string.
     updatedAt: t.Integer({ minimum: 0, maximum: 4102444800000 }),
   },

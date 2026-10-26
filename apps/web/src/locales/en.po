@@ -490,7 +490,7 @@ msgstr "Delete your account?"
 msgid "アカウントを削除する"
 msgstr "Delete account"
 
-#: src/components/SiteHeader.tsx:221
+#: src/components/SiteHeader.tsx:226
 msgid "アカウント設定"
 msgstr "Account settings"
 
@@ -522,11 +522,11 @@ msgstr "These are the photos already uploaded. Choose one and press \"Use this p
 msgid "あと{remaining}か所"
 msgstr "{remaining} left to go"
 
-#: src/components/settings/PrefsForm.tsx:157
+#: src/components/settings/PrefsForm.tsx:158
 msgid "あとからでも、「メニュー」の「見やすさの設定」で変えられます。"
 msgstr "You can change this later under \"Menu\", \"Display settings\"."
 
-#: src/components/settings/PrefsForm.tsx:155
+#: src/components/settings/PrefsForm.tsx:156
 msgid "あとで決める"
 msgstr "Decide later"
 
@@ -541,6 +541,10 @@ msgstr "The address may be wrong, or the page is not published."
 #: src/components/settings/WelcomeFlow.tsx:66
 msgid "あなたのことを、少しだけ教えてください。答えなくても大丈夫です。あとから変えられます。"
 msgstr "Tell us a little about yourself. You don't have to answer, and you can change it later."
+
+#: src/components/settings/PrefsForm.tsx:122
+msgid "アニメーションや、ふわっと動く表示をやめます。"
+msgstr "Turns off animation and fading effects."
 
 #: src/components/admin/RouteEditor.tsx:785
 msgid "あると、もっとよいこと"
@@ -636,7 +640,7 @@ msgstr "Complete when every chosen course is finished. A course is finished when
 msgid "えらんだ経由地のスタンプを全部押すと達成（経塚のラリーなど）。"
 msgstr "Complete when every chosen stamp waypoint is stamped (like the sutra mound rally)."
 
-#: src/components/settings/PrefsForm.tsx:129
+#: src/components/settings/PrefsForm.tsx:130
 msgid "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 msgstr "When off, every stamp place is shown on its own (recommended). When on, places close together are merged into a group such as \"3-5\"."
 
@@ -745,6 +749,14 @@ msgstr "There are no gallery photos yet."
 #: src/components/PointKindName.tsx:21
 msgid "キャンプ場"
 msgstr "Campsite"
+
+#: src/components/QuickActions.tsx:50
+msgid "くっきり"
+msgstr "Bold"
+
+#: src/components/settings/PrefsForm.tsx:121
+msgid "くっきり表示"
+msgstr "Bold display"
 
 #: src/components/admin/map-editor/MapEditor.tsx:450
 msgid "クリックで、この点を消します"
@@ -1038,7 +1050,7 @@ msgstr "This device can't show the map. You can choose a course from the list be
 msgid "この端末では地図を表示できません。下の一覧から場所を選べます。"
 msgstr "This device can't show the map. You can pick a place from the list below."
 
-#: src/components/settings/PrefsForm.tsx:60
+#: src/components/settings/PrefsForm.tsx:54
 msgid "この端末には保存しました。つながったときに、アカウントにも保存されます。"
 msgstr "Saved on this phone. It will be saved to your account when you are connected."
 
@@ -1070,7 +1082,7 @@ msgstr "This line does not match the order or positions of the waypoints, so it 
 msgid "この考え方は、長野県の「信州 山のグレーディング」を参考にしています。説明は、このサイト独自の言葉です。"
 msgstr "The idea follows the mountain grading used in Nagano Prefecture (信州 山のグレーディング). The explanations are in this site's own words."
 
-#: src/components/settings/PrefsForm.tsx:147
+#: src/components/settings/PrefsForm.tsx:148
 msgid "この設定ではじめる"
 msgstr "Start with these settings"
 
@@ -1438,7 +1450,7 @@ msgstr "Toilet"
 msgid "トイレ・休憩"
 msgstr "Toilets and rest"
 
-#: src/components/settings/PrefsForm.tsx:134
+#: src/components/settings/PrefsForm.tsx:135
 msgid "トイレやお店などを、地図を開いたときから表示します。"
 msgstr "Show toilets, shops and so on as soon as the map opens."
 
@@ -1450,7 +1462,7 @@ msgstr "Where are you visiting from?"
 msgid "どちらからかは未設定です"
 msgstr "Place not set"
 
-#: src/components/settings/PrefsForm.tsx:41
+#: src/components/settings/PrefsForm.tsx:46
 msgid "とても大きい"
 msgstr "Extra large"
 
@@ -1574,17 +1586,18 @@ msgstr "The file is too large (up to 20 MB)."
 msgid "フェリー"
 msgstr "Ferry"
 
-#: src/components/settings/PrefsForm.tsx:39
+#: src/components/QuickActions.tsx:36
+#: src/components/settings/PrefsForm.tsx:44
 msgid "ふつう"
 msgstr "Standard"
 
-#: src/components/settings/PrefsForm.tsx:39
+#: src/components/settings/PrefsForm.tsx:44
 msgid "ふつうの大きさです。"
 msgstr "The usual size."
 
 #: src/app/(public)/bookmarks/page.tsx:11
 #: src/app/(public)/sitemap/page.tsx:88
-#: src/components/SiteHeader.tsx:227
+#: src/components/SiteHeader.tsx:232
 msgid "ブックマーク"
 msgstr "Bookmarks"
 
@@ -1608,9 +1621,17 @@ msgstr "Footer"
 
 #: src/app/(public)/sitemap/page.tsx:112
 #: src/components/SiteFooter.tsx:30
-#: src/components/SiteHeader.tsx:251
+#: src/components/SiteHeader.tsx:256
 msgid "プライバシーポリシー"
 msgstr "Privacy policy"
+
+#: src/components/QuickActions.tsx:42
+msgid "ふりがな"
+msgstr "Furigana"
+
+#: src/components/settings/PrefsForm.tsx:120
+msgid "ふりがなをつける"
+msgstr "Show furigana"
 
 #: src/components/admin/LivePreview.tsx:37
 #: src/components/admin/RouteEditor.tsx:476
@@ -1636,6 +1657,10 @@ msgstr "Page not found"
 msgid "ページの文章"
 msgstr "Page text"
 
+#: src/components/settings/PrefsForm.tsx:120
+msgid "ページの漢字すべてに、読みがなをつけます。"
+msgstr "Adds a reading over every kanji on the page."
+
 #: src/components/admin/SiteSettingsForm.tsx:78
 msgid "ベースの地図"
 msgstr "Base map"
@@ -1651,7 +1676,7 @@ msgstr "Base map"
 #: src/app/(public)/sitemap/page.tsx:51
 #: src/app/(public)/sitemap/page.tsx:53
 #: src/app/(public)/terms/page.tsx:23
-#: src/components/SiteHeader.tsx:165
+#: src/components/SiteHeader.tsx:169
 #: src/components/TabBar.tsx:22
 #: src/components/TabBar.tsx:34
 msgid "ホーム"
@@ -1754,7 +1779,7 @@ msgstr "Around here"
 msgid "まわりの場所"
 msgstr "Places nearby"
 
-#: src/components/settings/PrefsForm.tsx:133
+#: src/components/settings/PrefsForm.tsx:134
 msgid "まわりの場所を最初から出す"
 msgstr "Show places nearby from the start"
 
@@ -1811,7 +1836,7 @@ msgid "メインメニュー"
 msgstr "Main menu"
 
 #: src/components/admin/AdminNav.tsx:49
-#: src/components/SiteHeader.tsx:185
+#: src/components/SiteHeader.tsx:189
 #: src/components/TabBar.tsx:68
 msgid "メニュー"
 msgstr "Menu"
@@ -1853,7 +1878,7 @@ msgstr "Show more"
 msgid "もっと見る（あと{hidden}か所）"
 msgstr "Show more ({hidden} more)"
 
-#: src/components/SiteHeader.tsx:156
+#: src/components/SiteHeader.tsx:160
 msgid "もどる"
 msgstr "Back"
 
@@ -1888,7 +1913,7 @@ msgstr "Redo"
 
 #: src/app/(public)/sitemap/page.tsx:106
 #: src/components/SiteFooter.tsx:18
-#: src/components/SiteHeader.tsx:249
+#: src/components/SiteHeader.tsx:254
 msgid "よくあるご質問"
 msgstr "FAQ"
 
@@ -1898,7 +1923,7 @@ msgstr "Reading"
 
 #: src/app/(public)/sitemap/page.tsx:115
 #: src/components/SiteFooter.tsx:21
-#: src/components/SiteHeader.tsx:252
+#: src/components/SiteHeader.tsx:257
 msgid "ライセンス情報"
 msgstr "Licenses"
 
@@ -2143,7 +2168,7 @@ msgstr "Back to the route list"
 msgid "ルート名（日本語）"
 msgstr "Route name (Japanese)"
 
-#: src/components/SiteHeader.tsx:204
+#: src/components/SiteHeader.tsx:209
 msgid "ログアウト"
 msgstr "Log out"
 
@@ -2155,7 +2180,7 @@ msgstr "Log out"
 #: src/components/landing/LandingHero.tsx:55
 #: src/components/map/MapScreen.tsx:354
 #: src/components/SignInPrompt.tsx:36
-#: src/components/SiteHeader.tsx:210
+#: src/components/SiteHeader.tsx:215
 msgid "ログイン"
 msgstr "Log in"
 
@@ -2440,7 +2465,7 @@ msgstr "Saving…"
 #: src/components/admin/AdminItemForm.tsx:64
 #: src/components/admin/RallyEditor.tsx:66
 #: src/components/admin/RouteEditor.tsx:327
-#: src/components/settings/PrefsForm.tsx:74
+#: src/components/settings/PrefsForm.tsx:68
 msgid "保存しました。"
 msgstr "Saved."
 
@@ -2463,7 +2488,7 @@ msgstr "Saved (opens without a signal)"
 #: src/components/admin/RouteEditor.tsx:422
 #: src/components/admin/SiteSettingsForm.tsx:112
 #: src/components/ProfileCard.tsx:163
-#: src/components/settings/PrefsForm.tsx:161
+#: src/components/settings/PrefsForm.tsx:162
 msgid "保存する"
 msgstr "Save"
 
@@ -2862,7 +2887,7 @@ msgstr "Someone else saved first. Reload the page and try again."
 
 #: src/app/(public)/sitemap/page.tsx:109
 #: src/components/SiteFooter.tsx:27
-#: src/components/SiteHeader.tsx:250
+#: src/components/SiteHeader.tsx:255
 msgid "利用規約"
 msgstr "Terms of use"
 
@@ -2925,6 +2950,14 @@ msgstr "The waypoint before it does not exist yet, so it cannot be created"
 #: src/components/admin/RouteTable.tsx:152
 msgid "前へ"
 msgstr "Earlier"
+
+#: src/components/QuickActions.tsx:54
+msgid "動きなし"
+msgstr "No motion"
+
+#: src/components/settings/PrefsForm.tsx:122
+msgid "動きをへらす"
+msgstr "Reduce motion"
 
 #: src/components/admin/useChecklistLabels.ts:20
 msgid "動画"
@@ -3197,7 +3230,7 @@ msgstr "The places on the map are not ready yet."
 msgid "地図の種類"
 msgstr "Map type"
 
-#: src/components/settings/PrefsForm.tsx:125
+#: src/components/settings/PrefsForm.tsx:126
 msgid "地図の見せ方"
 msgstr "How the map is shown"
 
@@ -3324,7 +3357,11 @@ msgstr "Links places of the directory to this route. They are listed on the rout
 msgid "変更の履歴"
 msgstr "Change history"
 
-#: src/components/settings/PrefsForm.tsx:40
+#: src/components/QuickActions.tsx:36
+msgid "大"
+msgstr "Large"
+
+#: src/components/settings/PrefsForm.tsx:45
 msgid "大きい"
 msgstr "Large"
 
@@ -3653,19 +3690,31 @@ msgstr "A well-kept path that is hard to lose, where a fall is unlikely to cause
 msgid "整数で書いてください"
 msgstr "Write a whole number"
 
-#: src/components/settings/PrefsForm.tsx:97
+#: src/components/QuickActions.tsx:46
+msgid "文字 {sizeName}"
+msgstr "Text: {sizeName}"
+
+#: src/components/settings/PrefsForm.tsx:91
 msgid "文字とボタンの大きさ"
 msgstr "Size of text and buttons"
 
-#: src/components/settings/PrefsForm.tsx:41
+#: src/components/settings/PrefsForm.tsx:121
+msgid "文字と背景の差を大きくし、線を太く、リンクに下線をつけます。"
+msgstr "Stronger contrast between text and background, thicker lines, underlined links."
+
+#: src/components/QuickActions.tsx:44
+msgid "文字の大きさ: {sizeName}（押すと変わります）"
+msgstr "Text size: {sizeName} (press to change)"
+
+#: src/components/settings/PrefsForm.tsx:46
 msgid "文字もボタンも、いちばん大きくなります。"
 msgstr "Text and buttons become as big as they go."
 
-#: src/components/settings/PrefsForm.tsx:40
+#: src/components/settings/PrefsForm.tsx:45
 msgid "文字もボタンも、少し大きくなります。"
 msgstr "Text and buttons become a little bigger."
 
-#: src/components/SiteHeader.tsx:244
+#: src/components/SiteHeader.tsx:249
 msgid "文字やボタンの大きさ、地図の見せ方"
 msgstr "Size of text and buttons, how the map is shown"
 
@@ -3723,7 +3772,7 @@ msgstr "A Japanese name is needed to create a new one"
 #: src/components/landing/LandingHero.tsx:46
 #: src/components/map/MapScreen.tsx:351
 #: src/components/SignInPrompt.tsx:30
-#: src/components/SiteHeader.tsx:213
+#: src/components/SiteHeader.tsx:218
 msgid "新規登録"
 msgstr "Register"
 
@@ -4002,6 +4051,10 @@ msgstr "One way"
 msgid "片道（別の場所へ）"
 msgstr "One way (to another place)"
 
+#: src/components/QuickActions.tsx:36
+msgid "特大"
+msgstr "Extra large"
+
 #: src/components/admin/PlacePanel.tsx:181
 msgid "状態・許可の設定"
 msgstr "Status and permission settings"
@@ -4046,7 +4099,7 @@ msgstr "Name of the town or village"
 msgid "画面が見えない間は、位置を止めています。"
 msgstr "Position is paused while the screen is hidden."
 
-#: src/components/SiteHeader.tsx:232
+#: src/components/SiteHeader.tsx:237
 msgid "画面の明るさ"
 msgstr "Screen brightness"
 
@@ -4575,10 +4628,18 @@ msgstr "Nothing found."
 msgid "見どころ"
 msgstr "Point of interest"
 
+#: src/components/settings/PrefsForm.tsx:119
+msgid "見やすさ"
+msgstr "Readability"
+
+#: src/components/QuickActions.tsx:39
+msgid "見やすさのクイック設定"
+msgstr "Quick readability settings"
+
 #: src/app/(public)/settings/page.tsx:12
 #: src/app/(public)/settings/page.tsx:29
 #: src/app/(public)/sitemap/page.tsx:97
-#: src/components/SiteHeader.tsx:242
+#: src/components/SiteHeader.tsx:247
 msgid "見やすさの設定"
 msgstr "Display settings"
 
@@ -4681,7 +4742,7 @@ msgstr "Car"
 msgid "転落・滑落の危険がある所がある。地図を読む力と、ミスをしない注意が必要。"
 msgstr "Some places where a fall is dangerous. Needs map-reading skill and care not to slip up."
 
-#: src/components/settings/PrefsForm.tsx:128
+#: src/components/settings/PrefsForm.tsx:129
 msgid "近い場所をまとめて表示する"
 msgstr "Merge places that are close together"
 
@@ -4881,7 +4942,7 @@ msgstr "Length"
 #: src/components/map/PlacesPanel.tsx:199
 #: src/components/map/TrailMap.tsx:459
 #: src/components/SampleNotice.tsx:64
-#: src/components/SiteHeader.tsx:189
+#: src/components/SiteHeader.tsx:193
 msgid "閉じる"
 msgstr "Close"
 

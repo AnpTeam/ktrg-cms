@@ -6,6 +6,8 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { logOut } from "@/lib/auth-client";
 import { BookmarkIcon, ChevronIcon, ChevronLeftIcon, CloseIcon, GearIcon } from "./icons";
+import { QuickActions } from "./QuickActions";
+import type { Prefs } from "@/lib/prefs";
 import { ProfileCard, type ProfileCardProps } from "./ProfileCard";
 import { KatsuragiLogo } from "./KatsuragiLogo";
 import { LocaleSelect } from "./LocaleSwitcher";
@@ -42,11 +44,13 @@ export function SiteHeader({
   signedIn,
   profile,
   locale,
+  prefs,
   sample,
 }: {
   signedIn: boolean;
   profile: Omit<ProfileCardProps, "locale">;
   locale: string;
+  prefs: Prefs;
   sample: boolean;
 }) {
   const { t } = useLingui();
@@ -189,6 +193,7 @@ export function SiteHeader({
                 {t`閉じる`}
               </button>
             </div>
+            <QuickActions prefs={prefs} signedIn={signedIn} />
             {signedIn ? (
               <div className="flex flex-col gap-3">
                 {/* Who is signed in, for a glance; changing it is on the profile page (the account settings item below). */}

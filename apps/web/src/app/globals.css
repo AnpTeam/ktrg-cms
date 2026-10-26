@@ -948,3 +948,36 @@ body.map-sheet-full .site-header {
     background: linear-gradient(to bottom, rgb(0 0 0 / 0.55), transparent);
   }
 }
+
+/* The visitor's own accessibility choices (settings, the menu's quick buttons): the same as the device's "more contrast" and
+   "reduce motion" settings, for people whose device does not say so. Stronger contrast also underlines every link. */
+html[data-contrast],
+html[data-contrast][data-theme] {
+  --color-line: var(--color-ink);
+  --color-muted: var(--color-ink);
+}
+html[data-contrast] a {
+  text-decoration: underline;
+}
+html[data-contrast] :focus-visible {
+  outline-width: 5px;
+}
+html[data-calm] *,
+html[data-calm] ::before,
+html[data-calm] ::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+/* Furigana drawn by components/FuriganaLayer.tsx: the reading sits over the kanji, and the line grows to hold it. */
+[data-furi] ruby {
+  ruby-position: over;
+}
+[data-furi] rt {
+  font-size: 0.5em;
+  font-weight: 500;
+}
+html[data-furigana] {
+  line-height: 1.9;
+}

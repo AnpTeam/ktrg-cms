@@ -6,6 +6,7 @@ import { OfflineNotice } from "@/components/OfflineNotice";
 import { SampleNoticeHost } from "@/components/SampleNotice";
 import { SiteFooter } from "@/components/SiteFooter";
 import { StampFilters } from "@/components/StampFilters";
+import { FuriganaLayer } from "@/components/FuriganaLayer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { TabBar } from "@/components/TabBar";
 import { PrefsSync } from "@/components/settings/PrefsSync";
@@ -37,6 +38,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
             signedIn={viewer.signedIn}
             locale={i18n.locale}
             profile={{ publicId: viewer.publicId, deletionDueAt: viewer.deletionDueAt, name: viewer.name, origin: viewer.origin, ageRange: viewer.ageRange, gender: viewer.gender }}
+            prefs={prefsState.effective}
             sample={sample}
           />
           <OfflineNotice />
@@ -50,6 +52,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           </main>
         </div>
       </div>
+      {prefsState.effective.furigana ? <FuriganaLayer /> : null}
       <NavigationToast />
       </NavigationProvider>
     </MenuProvider>

@@ -7,6 +7,8 @@ import { adminContentRoutes } from "./content/admin-routes";
 import { createDrizzleContentStore } from "./content/content-store";
 import { createDrizzleRallyAdminStore } from "./rallies/rally-admin-store";
 import { rallyAdminRoutes } from "./rallies/rally-admin-routes";
+import { createFuriganaService } from "./furigana/furigana";
+import { furiganaRoutes } from "./furigana/furigana-routes";
 import { rallyPublicRoutes } from "./rallies/rally-public-routes";
 import { navigationRoutes } from "./navigation/navigation-routes";
 import { stampAdminRoutes } from "./stamps/stamp-admin-routes";
@@ -110,6 +112,7 @@ export function createApp(
   getServices: () => Services,
   opts: RouteOptions & { docs: boolean; cronSecret?: string; appOrigin?: () => string },
 ) {
+  const furigana = createFuriganaService();
   return new Elysia({ prefix: "/api/v1" })
     .use(apiBase({ allowedOrigin: opts.appOrigin })) // first: request ids, the Origin check and the one error shape
     .use(apiDocs({ enabled: opts.docs }))
@@ -128,6 +131,7 @@ export function createApp(
     .use(uploadRoutes(getServices, opts))
     .use(rallyAdminRoutes(getServices, opts))
     .use(rallyPublicRoutes(getServices, env.NODE_ENV === "production" ? 10_000 : 0))
+    .use(furiganaRoutes(furigana))
     .use(stampRoutes(getServices, opts))
     .use(navigationRoutes(getServices, opts))
     .use(stampAdminRoutes(getServices, opts))

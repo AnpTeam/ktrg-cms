@@ -15,6 +15,12 @@ export interface Preferences {
   placesOnMap: boolean;
   /** The first-time set-up has been done (or skipped), so it is not offered again. */
   setupDone: boolean;
+  /** Furigana over every kanji of the page. Left out = off. */
+  furigana?: boolean;
+  /** Stronger contrast: black on white, thicker lines. Left out = off. */
+  contrast?: boolean;
+  /** Calm: no animation or movement. Left out = off. */
+  calm?: boolean;
   /**
    * When the person made this choice, in milliseconds since 1970, by the clock of the phone they
    * used. The phone and the account each keep a copy and the NEWER one wins, so a change that

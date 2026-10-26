@@ -308,6 +308,8 @@ describe("user B cannot touch user A", () => {
     "GET /api/v1/spots/:id",
     // Published stamp rallies (see rallies/rally-admin-routes.test.ts).
     "GET /api/v1/rallies",
+    // Readings for the page's Japanese text, for the furigana choice (see furigana/furigana.test.ts).
+    "POST /api/v1/furigana",
     // Published trail notices (see notices/notice-routes.test.ts).
     "GET /api/v1/notices",
     // Published home page banners (see banners/banner-list.test.ts).

@@ -13,7 +13,7 @@ import {
 
 describe("defaults", () => {
   test("the plain map, standard size, set-up not done", () => {
-    expect(defaultPrefs).toEqual({ size: "standard", mergeStops: false, placesOnMap: false, setupDone: false, updatedAt: 0 });
+    expect(defaultPrefs).toEqual({ size: "standard", mergeStops: false, placesOnMap: false, setupDone: false, furigana: false, contrast: false, calm: false, updatedAt: 0 });
   });
 
   test("each size has a percentage, growing", () => {
@@ -23,7 +23,7 @@ describe("defaults", () => {
 
 describe("sanitizePrefs", () => {
   test("a good value passes through", () => {
-    const p = { size: "large", mergeStops: true, placesOnMap: true, setupDone: true, updatedAt: 1760000000000 } as const;
+    const p = { size: "large", mergeStops: true, placesOnMap: true, setupDone: true, furigana: false, contrast: false, calm: false, updatedAt: 1760000000000 } as const;
     expect(sanitizePrefs(p)).toEqual(p);
   });
 
@@ -33,6 +33,9 @@ describe("sanitizePrefs", () => {
       mergeStops: false,
       placesOnMap: true,
       setupDone: false,
+      furigana: false,
+      contrast: false,
+      calm: false,
       updatedAt: 0,
     });
     expect(sanitizePrefs(null)).toEqual(defaultPrefs);
@@ -40,13 +43,13 @@ describe("sanitizePrefs", () => {
   });
 
   test("extra fields are dropped", () => {
-    expect(Object.keys(sanitizePrefs({ ...defaultPrefs, role: "admin" })).sort()).toEqual(["mergeStops", "placesOnMap", "setupDone", "size", "updatedAt"]);
+    expect(Object.keys(sanitizePrefs({ ...defaultPrefs, role: "admin" })).sort()).toEqual(["calm", "contrast", "furigana", "mergeStops", "placesOnMap", "setupDone", "size", "updatedAt"]);
   });
 });
 
 describe("the device cookie", () => {
   test("what is written can be read back", () => {
-    const p = { size: "xlarge", mergeStops: true, placesOnMap: false, setupDone: true, updatedAt: 1760000000000 } as const;
+    const p = { size: "xlarge", mergeStops: true, placesOnMap: false, setupDone: true, furigana: false, contrast: false, calm: false, updatedAt: 1760000000000 } as const;
     const cookie = prefsCookieString(p, false);
     expect(cookie).toContain("Max-Age=31536000");
     expect(cookie).not.toContain("Secure");

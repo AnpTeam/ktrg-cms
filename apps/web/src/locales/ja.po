@@ -490,7 +490,7 @@ msgstr "アカウントを削除しますか？"
 msgid "アカウントを削除する"
 msgstr "アカウントを削除する"
 
-#: src/components/SiteHeader.tsx:221
+#: src/components/SiteHeader.tsx:226
 msgid "アカウント設定"
 msgstr "アカウント設定"
 
@@ -522,11 +522,11 @@ msgstr "アップロード済みの写真です。選んで「この写真を使
 msgid "あと{remaining}か所"
 msgstr "あと{remaining}か所"
 
-#: src/components/settings/PrefsForm.tsx:157
+#: src/components/settings/PrefsForm.tsx:158
 msgid "あとからでも、「メニュー」の「見やすさの設定」で変えられます。"
 msgstr "あとからでも、「メニュー」の「見やすさの設定」で変えられます。"
 
-#: src/components/settings/PrefsForm.tsx:155
+#: src/components/settings/PrefsForm.tsx:156
 msgid "あとで決める"
 msgstr "あとで決める"
 
@@ -541,6 +541,10 @@ msgstr "アドレスがちがうか、ページが公開されていません。
 #: src/components/settings/WelcomeFlow.tsx:66
 msgid "あなたのことを、少しだけ教えてください。答えなくても大丈夫です。あとから変えられます。"
 msgstr "あなたのことを、少しだけ教えてください。答えなくても大丈夫です。あとから変えられます。"
+
+#: src/components/settings/PrefsForm.tsx:122
+msgid "アニメーションや、ふわっと動く表示をやめます。"
+msgstr "アニメーションや、ふわっと動く表示をやめます。"
 
 #: src/components/admin/RouteEditor.tsx:785
 msgid "あると、もっとよいこと"
@@ -636,7 +640,7 @@ msgstr "えらんだコースを全部歩き終えると達成。コースはス
 msgid "えらんだ経由地のスタンプを全部押すと達成（経塚のラリーなど）。"
 msgstr "えらんだ経由地のスタンプを全部押すと達成（経塚のラリーなど）。"
 
-#: src/components/settings/PrefsForm.tsx:129
+#: src/components/settings/PrefsForm.tsx:130
 msgid "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 msgstr "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 
@@ -745,6 +749,14 @@ msgstr "ギャラリーの写真は、まだありません。"
 #: src/components/PointKindName.tsx:21
 msgid "キャンプ場"
 msgstr "キャンプ場"
+
+#: src/components/QuickActions.tsx:50
+msgid "くっきり"
+msgstr "くっきり"
+
+#: src/components/settings/PrefsForm.tsx:121
+msgid "くっきり表示"
+msgstr "くっきり表示"
 
 #: src/components/admin/map-editor/MapEditor.tsx:450
 msgid "クリックで、この点を消します"
@@ -1038,7 +1050,7 @@ msgstr "この端末では地図を表示できません。下の一覧から区
 msgid "この端末では地図を表示できません。下の一覧から場所を選べます。"
 msgstr "この端末では地図を表示できません。下の一覧から場所を選べます。"
 
-#: src/components/settings/PrefsForm.tsx:60
+#: src/components/settings/PrefsForm.tsx:54
 msgid "この端末には保存しました。つながったときに、アカウントにも保存されます。"
 msgstr "この端末には保存しました。つながったときに、アカウントにも保存されます。"
 
@@ -1070,7 +1082,7 @@ msgstr "この線は、経由地の順番や位置と合わないため、区間
 msgid "この考え方は、長野県の「信州 山のグレーディング」を参考にしています。説明は、このサイト独自の言葉です。"
 msgstr "この考え方は、長野県の「信州 山のグレーディング」を参考にしています。説明は、このサイト独自の言葉です。"
 
-#: src/components/settings/PrefsForm.tsx:147
+#: src/components/settings/PrefsForm.tsx:148
 msgid "この設定ではじめる"
 msgstr "この設定ではじめる"
 
@@ -1438,7 +1450,7 @@ msgstr "トイレ"
 msgid "トイレ・休憩"
 msgstr "トイレ・休憩"
 
-#: src/components/settings/PrefsForm.tsx:134
+#: src/components/settings/PrefsForm.tsx:135
 msgid "トイレやお店などを、地図を開いたときから表示します。"
 msgstr "トイレやお店などを、地図を開いたときから表示します。"
 
@@ -1450,7 +1462,7 @@ msgstr "どちらからお越しですか？"
 msgid "どちらからかは未設定です"
 msgstr "どちらからかは未設定です"
 
-#: src/components/settings/PrefsForm.tsx:41
+#: src/components/settings/PrefsForm.tsx:46
 msgid "とても大きい"
 msgstr "とても大きい"
 
@@ -1574,17 +1586,18 @@ msgstr "ファイルが大きすぎます（20MBまで）。"
 msgid "フェリー"
 msgstr "フェリー"
 
-#: src/components/settings/PrefsForm.tsx:39
+#: src/components/QuickActions.tsx:36
+#: src/components/settings/PrefsForm.tsx:44
 msgid "ふつう"
 msgstr "ふつう"
 
-#: src/components/settings/PrefsForm.tsx:39
+#: src/components/settings/PrefsForm.tsx:44
 msgid "ふつうの大きさです。"
 msgstr "ふつうの大きさです。"
 
 #: src/app/(public)/bookmarks/page.tsx:11
 #: src/app/(public)/sitemap/page.tsx:88
-#: src/components/SiteHeader.tsx:227
+#: src/components/SiteHeader.tsx:232
 msgid "ブックマーク"
 msgstr "ブックマーク"
 
@@ -1608,9 +1621,17 @@ msgstr "フッター"
 
 #: src/app/(public)/sitemap/page.tsx:112
 #: src/components/SiteFooter.tsx:30
-#: src/components/SiteHeader.tsx:251
+#: src/components/SiteHeader.tsx:256
 msgid "プライバシーポリシー"
 msgstr "プライバシーポリシー"
+
+#: src/components/QuickActions.tsx:42
+msgid "ふりがな"
+msgstr "ふりがな"
+
+#: src/components/settings/PrefsForm.tsx:120
+msgid "ふりがなをつける"
+msgstr "ふりがなをつける"
 
 #: src/components/admin/LivePreview.tsx:37
 #: src/components/admin/RouteEditor.tsx:476
@@ -1636,6 +1657,10 @@ msgstr "ページが見つかりません"
 msgid "ページの文章"
 msgstr "ページの文章"
 
+#: src/components/settings/PrefsForm.tsx:120
+msgid "ページの漢字すべてに、読みがなをつけます。"
+msgstr "ページの漢字すべてに、読みがなをつけます。"
+
 #: src/components/admin/SiteSettingsForm.tsx:78
 msgid "ベースの地図"
 msgstr "ベースの地図"
@@ -1651,7 +1676,7 @@ msgstr "ベースの地図"
 #: src/app/(public)/sitemap/page.tsx:51
 #: src/app/(public)/sitemap/page.tsx:53
 #: src/app/(public)/terms/page.tsx:23
-#: src/components/SiteHeader.tsx:165
+#: src/components/SiteHeader.tsx:169
 #: src/components/TabBar.tsx:22
 #: src/components/TabBar.tsx:34
 msgid "ホーム"
@@ -1754,7 +1779,7 @@ msgstr "まわりにあるもの"
 msgid "まわりの場所"
 msgstr "まわりの場所"
 
-#: src/components/settings/PrefsForm.tsx:133
+#: src/components/settings/PrefsForm.tsx:134
 msgid "まわりの場所を最初から出す"
 msgstr "まわりの場所を最初から出す"
 
@@ -1811,7 +1836,7 @@ msgid "メインメニュー"
 msgstr "メインメニュー"
 
 #: src/components/admin/AdminNav.tsx:49
-#: src/components/SiteHeader.tsx:185
+#: src/components/SiteHeader.tsx:189
 #: src/components/TabBar.tsx:68
 msgid "メニュー"
 msgstr "メニュー"
@@ -1853,7 +1878,7 @@ msgstr "もっと見る"
 msgid "もっと見る（あと{hidden}か所）"
 msgstr "もっと見る（あと{hidden}か所）"
 
-#: src/components/SiteHeader.tsx:156
+#: src/components/SiteHeader.tsx:160
 msgid "もどる"
 msgstr "もどる"
 
@@ -1888,7 +1913,7 @@ msgstr "やり直す"
 
 #: src/app/(public)/sitemap/page.tsx:106
 #: src/components/SiteFooter.tsx:18
-#: src/components/SiteHeader.tsx:249
+#: src/components/SiteHeader.tsx:254
 msgid "よくあるご質問"
 msgstr "よくあるご質問"
 
@@ -1898,7 +1923,7 @@ msgstr "よみ"
 
 #: src/app/(public)/sitemap/page.tsx:115
 #: src/components/SiteFooter.tsx:21
-#: src/components/SiteHeader.tsx:252
+#: src/components/SiteHeader.tsx:257
 msgid "ライセンス情報"
 msgstr "ライセンス情報"
 
@@ -2143,7 +2168,7 @@ msgstr "ルート一覧にもどる"
 msgid "ルート名（日本語）"
 msgstr "ルート名（日本語）"
 
-#: src/components/SiteHeader.tsx:204
+#: src/components/SiteHeader.tsx:209
 msgid "ログアウト"
 msgstr "ログアウト"
 
@@ -2155,7 +2180,7 @@ msgstr "ログアウト"
 #: src/components/landing/LandingHero.tsx:55
 #: src/components/map/MapScreen.tsx:354
 #: src/components/SignInPrompt.tsx:36
-#: src/components/SiteHeader.tsx:210
+#: src/components/SiteHeader.tsx:215
 msgid "ログイン"
 msgstr "ログイン"
 
@@ -2440,7 +2465,7 @@ msgstr "保存しています…"
 #: src/components/admin/AdminItemForm.tsx:64
 #: src/components/admin/RallyEditor.tsx:66
 #: src/components/admin/RouteEditor.tsx:327
-#: src/components/settings/PrefsForm.tsx:74
+#: src/components/settings/PrefsForm.tsx:68
 msgid "保存しました。"
 msgstr "保存しました。"
 
@@ -2463,7 +2488,7 @@ msgstr "保存しました（電波がなくても開けます）"
 #: src/components/admin/RouteEditor.tsx:422
 #: src/components/admin/SiteSettingsForm.tsx:112
 #: src/components/ProfileCard.tsx:163
-#: src/components/settings/PrefsForm.tsx:161
+#: src/components/settings/PrefsForm.tsx:162
 msgid "保存する"
 msgstr "保存する"
 
@@ -2862,7 +2887,7 @@ msgstr "別の人が先に保存しました。読み込み直してから、も
 
 #: src/app/(public)/sitemap/page.tsx:109
 #: src/components/SiteFooter.tsx:27
-#: src/components/SiteHeader.tsx:250
+#: src/components/SiteHeader.tsx:255
 msgid "利用規約"
 msgstr "利用規約"
 
@@ -2925,6 +2950,14 @@ msgstr "前の番号の経由地がまだないので、作れません"
 #: src/components/admin/RouteTable.tsx:152
 msgid "前へ"
 msgstr "前へ"
+
+#: src/components/QuickActions.tsx:54
+msgid "動きなし"
+msgstr "動きなし"
+
+#: src/components/settings/PrefsForm.tsx:122
+msgid "動きをへらす"
+msgstr "動きをへらす"
 
 #: src/components/admin/useChecklistLabels.ts:20
 msgid "動画"
@@ -3197,7 +3230,7 @@ msgstr "地図の上の場所は、準備中です。"
 msgid "地図の種類"
 msgstr "地図の種類"
 
-#: src/components/settings/PrefsForm.tsx:125
+#: src/components/settings/PrefsForm.tsx:126
 msgid "地図の見せ方"
 msgstr "地図の見せ方"
 
@@ -3324,7 +3357,11 @@ msgstr "場所一覧の場所を、このルートにひもづけます。ルー
 msgid "変更の履歴"
 msgstr "変更の履歴"
 
-#: src/components/settings/PrefsForm.tsx:40
+#: src/components/QuickActions.tsx:36
+msgid "大"
+msgstr "大"
+
+#: src/components/settings/PrefsForm.tsx:45
 msgid "大きい"
 msgstr "大きい"
 
@@ -3653,19 +3690,31 @@ msgstr "整備された道で、迷いにくく、転んでも大きな事故に
 msgid "整数で書いてください"
 msgstr "整数で書いてください"
 
-#: src/components/settings/PrefsForm.tsx:97
+#: src/components/QuickActions.tsx:46
+msgid "文字 {sizeName}"
+msgstr "文字 {sizeName}"
+
+#: src/components/settings/PrefsForm.tsx:91
 msgid "文字とボタンの大きさ"
 msgstr "文字とボタンの大きさ"
 
-#: src/components/settings/PrefsForm.tsx:41
+#: src/components/settings/PrefsForm.tsx:121
+msgid "文字と背景の差を大きくし、線を太く、リンクに下線をつけます。"
+msgstr "文字と背景の差を大きくし、線を太く、リンクに下線をつけます。"
+
+#: src/components/QuickActions.tsx:44
+msgid "文字の大きさ: {sizeName}（押すと変わります）"
+msgstr "文字の大きさ: {sizeName}（押すと変わります）"
+
+#: src/components/settings/PrefsForm.tsx:46
 msgid "文字もボタンも、いちばん大きくなります。"
 msgstr "文字もボタンも、いちばん大きくなります。"
 
-#: src/components/settings/PrefsForm.tsx:40
+#: src/components/settings/PrefsForm.tsx:45
 msgid "文字もボタンも、少し大きくなります。"
 msgstr "文字もボタンも、少し大きくなります。"
 
-#: src/components/SiteHeader.tsx:244
+#: src/components/SiteHeader.tsx:249
 msgid "文字やボタンの大きさ、地図の見せ方"
 msgstr "文字やボタンの大きさ、地図の見せ方"
 
@@ -3723,7 +3772,7 @@ msgstr "新しく作るには、名前（日本語）が必要です"
 #: src/components/landing/LandingHero.tsx:46
 #: src/components/map/MapScreen.tsx:351
 #: src/components/SignInPrompt.tsx:30
-#: src/components/SiteHeader.tsx:213
+#: src/components/SiteHeader.tsx:218
 msgid "新規登録"
 msgstr "新規登録"
 
@@ -4002,6 +4051,10 @@ msgstr "片道"
 msgid "片道（別の場所へ）"
 msgstr "片道（別の場所へ）"
 
+#: src/components/QuickActions.tsx:36
+msgid "特大"
+msgstr "特大"
+
 #: src/components/admin/PlacePanel.tsx:181
 msgid "状態・許可の設定"
 msgstr "状態・許可の設定"
@@ -4046,7 +4099,7 @@ msgstr "町や村の名前"
 msgid "画面が見えない間は、位置を止めています。"
 msgstr "画面が見えない間は、位置を止めています。"
 
-#: src/components/SiteHeader.tsx:232
+#: src/components/SiteHeader.tsx:237
 msgid "画面の明るさ"
 msgstr "画面の明るさ"
 
@@ -4575,10 +4628,18 @@ msgstr "見つかりませんでした。"
 msgid "見どころ"
 msgstr "見どころ"
 
+#: src/components/settings/PrefsForm.tsx:119
+msgid "見やすさ"
+msgstr "見やすさ"
+
+#: src/components/QuickActions.tsx:39
+msgid "見やすさのクイック設定"
+msgstr "見やすさのクイック設定"
+
 #: src/app/(public)/settings/page.tsx:12
 #: src/app/(public)/settings/page.tsx:29
 #: src/app/(public)/sitemap/page.tsx:97
-#: src/components/SiteHeader.tsx:242
+#: src/components/SiteHeader.tsx:247
 msgid "見やすさの設定"
 msgstr "見やすさの設定"
 
@@ -4681,7 +4742,7 @@ msgstr "車"
 msgid "転落・滑落の危険がある所がある。地図を読む力と、ミスをしない注意が必要。"
 msgstr "転落・滑落の危険がある所がある。地図を読む力と、ミスをしない注意が必要。"
 
-#: src/components/settings/PrefsForm.tsx:128
+#: src/components/settings/PrefsForm.tsx:129
 msgid "近い場所をまとめて表示する"
 msgstr "近い場所をまとめて表示する"
 
@@ -4881,7 +4942,7 @@ msgstr "長さ"
 #: src/components/map/PlacesPanel.tsx:199
 #: src/components/map/TrailMap.tsx:459
 #: src/components/SampleNotice.tsx:64
-#: src/components/SiteHeader.tsx:189
+#: src/components/SiteHeader.tsx:193
 msgid "閉じる"
 msgstr "閉じる"
 

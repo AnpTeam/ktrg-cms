@@ -115,7 +115,7 @@ describe("viewerFromMe", () => {
     expect(about).toMatchObject({ publicId: "00048271", deletionDueAt: "2026-10-18T05:30:00.000Z", ageRange: "60s", gender: "unspecified" });
     expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana", ageRange: "teens", gender: "robot" } })).toMatchObject({ ageRange: null, gender: null });
     // The account's saved choices come with it.
-    const saved = { size: "large", mergeStops: true, placesOnMap: false, setupDone: true, updatedAt: 1760000000000 } as const;
+    const saved = { size: "large", mergeStops: true, placesOnMap: false, setupDone: true, furigana: false, contrast: false, calm: false, updatedAt: 1760000000000 } as const;
     expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana", preferences: saved } }).preferences).toEqual(saved);
   });
 

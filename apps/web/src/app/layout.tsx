@@ -52,10 +52,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   // Reading the cookie makes pages render per request; that is the price of no flash and no script.
   const theme = themeFromValue((await cookies()).get(themeCookie)?.value);
   // The text and component size the visitor chose, written the same way.
-  const { size } = await getPrefs();
+  const { size, contrast, calm, furigana } = await getPrefs();
 
   return (
-    <html lang={i18n.locale} data-theme={theme === "auto" ? undefined : theme} data-size={size}>
+    <html lang={i18n.locale} data-theme={theme === "auto" ? undefined : theme} data-size={size} data-contrast={contrast ? "" : undefined} data-calm={calm ? "" : undefined} data-furigana={furigana ? "" : undefined}>
       <body>
         <LinguiClientProvider initialLocale={i18n.locale} initialMessages={i18n.messages}>
           <a

@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
-import { api } from "@/lib/api";
-import { defaultPrefs, prefsCookieString, textSizes, type Prefs, type TextSize } from "@/lib/prefs";
+import { persistPrefs } from "@/lib/prefs-client";
+import { defaultPrefs, textSizes, type Prefs, type TextSize } from "@/lib/prefs";
 import { primaryButton, secondaryButton } from "@/components/auth/authUi";
 
 /**
@@ -32,8 +32,13 @@ export function PrefsForm({
 
   // Show the chosen size on the whole page straight away; the server writes it on the next page load.
   useEffect(() => {
-    document.documentElement.dataset.size = prefs.size;
-  }, [prefs.size]);
+    const { dataset } = document.documentElement;
+    dataset.size = prefs.size;
+    for (const key of ["contrast", "calm", "furigana"] as const) {
+      if (prefs[key]) dataset[key] = "";
+      else delete dataset[key];
+    }
+  }, [prefs]);
 
   const sizes: Record<TextSize, { name: string; hint: string }> = {
     standard: { name: t`ふつう`, hint: t`ふつうの大きさです。` },
@@ -44,18 +49,7 @@ export function PrefsForm({
   async function save(value: Prefs): Promise<boolean> {
     setSaving(true);
     setMessage(null);
-    // Stamped with the time of the choice: the newer copy (phone or account) is the one that applies.
-    const toSave: Prefs = { ...value, setupDone: true, updatedAt: Date.now() };
-    document.cookie = prefsCookieString(toSave, window.location.protocol === "https:");
-    let onAccount = true;
-    if (signedIn) {
-      try {
-        const res = await api.me.patch({ preferences: toSave });
-        onAccount = !res.error;
-      } catch {
-        onAccount = false;
-      }
-    }
+    const onAccount = await persistPrefs(value, signedIn);
     setSaving(false);
     if (!onAccount) setMessage(t`この端末には保存しました。つながったときに、アカウントにも保存されます。`);
     return onAccount;
@@ -75,7 +69,7 @@ export function PrefsForm({
     router.refresh();
   }
 
-  const switchRow = (key: "mergeStops" | "placesOnMap", title: string, hint: string) => (
+  const switchRow = (key: "mergeStops" | "placesOnMap" | "furigana" | "contrast" | "calm", title: string, hint: string) => (
     <label className="tap-target flex cursor-pointer items-start gap-4 rounded-xl border-2 border-line bg-surface p-4">
       <input
         type="checkbox"
@@ -119,6 +113,13 @@ export function PrefsForm({
             </label>
           );
         })}
+      </fieldset>
+
+      <fieldset className="flex flex-col gap-3">
+        <legend className="mb-1 text-2xl font-bold">{t`見やすさ`}</legend>
+        {switchRow("furigana", t`ふりがなをつける`, t`ページの漢字すべてに、読みがなをつけます。`)}
+        {switchRow("contrast", t`くっきり表示`, t`文字と背景の差を大きくし、線を太く、リンクに下線をつけます。`)}
+        {switchRow("calm", t`動きをへらす`, t`アニメーションや、ふわっと動く表示をやめます。`)}
       </fieldset>
 
       <fieldset className="flex flex-col gap-3">
