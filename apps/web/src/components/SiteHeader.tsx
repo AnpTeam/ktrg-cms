@@ -187,8 +187,8 @@ export function SiteHeader({
             {/* From 768 px the bar is not drawn (the rail has the menu button), so the top row of the popover holds both. */}
             <div className="flex items-center justify-between gap-2 md:justify-end">
               <span className="text-2xl font-bold md:hidden">{t`メニュー`}</span>
-              <LocaleSelect />
-              <button type="button" onClick={() => setOpen(false)} className="tap-target inline-flex items-center gap-2 rounded-lg border border-ink px-3 text-lg font-bold">
+              {/* On a phone the Menu tab below closes it; the popover has no tab to press. */}
+              <button type="button" onClick={() => setOpen(false)} className="tap-target hidden items-center gap-2 rounded-lg border border-ink px-3 text-lg font-bold md:inline-flex">
                 <CloseIcon />
                 {t`閉じる`}
               </button>
@@ -234,8 +234,9 @@ export function SiteHeader({
 
             <div className="flex flex-col gap-2 border-t-2 border-line pt-4">
               <p className="text-lg font-bold">{t`画面の明るさ`}</p>
-              <div>
+              <div className="flex flex-wrap items-center gap-3">
                 <ThemeSwitcher />
+                <LocaleSelect />
               </div>
             </div>
             <div className="flex flex-col gap-2 border-t-2 border-line pt-4">

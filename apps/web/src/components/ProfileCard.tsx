@@ -222,22 +222,22 @@ export function ProfileCard({ publicId, deletionDueAt, locale, name, origin, age
           </button>
         </section>
       ) : null}
-      <section aria-label={t`プロフィール`} className="mx-4 flex items-center gap-4 rounded-3xl bg-surface p-5">
-        <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-brand text-on-brand [&_svg]:size-7">
+      <section aria-label={t`プロフィール`} className={`mx-4 flex items-center rounded-3xl bg-surface ${readOnly ? "gap-3 p-3" : "gap-4 p-5"}`}>
+        <span className={`flex shrink-0 items-center justify-center rounded-full bg-brand text-on-brand ${readOnly ? "size-10 [&_svg]:size-5" : "size-14 [&_svg]:size-7"}`}>
           <UserIcon />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="break-words text-xl font-bold leading-snug">{name ?? t`お名前は未設定です`}</p>
-          <p className="text-lg text-muted">{origin ? originNames[origin] : t`どちらからかは未設定です`}</p>
+          <p className={`break-words font-bold leading-snug ${readOnly ? "text-lg" : "text-xl"}`}>{name ?? t`お名前は未設定です`}</p>
+          <p className={`text-muted ${readOnly ? "text-base" : "text-lg"}`}>{origin ? originNames[origin] : t`どちらからかは未設定です`}</p>
           {ageRange || gender ? (
-            <p className="text-lg text-muted">
+            <p className={`text-muted ${readOnly ? "text-base" : "text-lg"}`}>
               {ageRange ? ageNames[ageRange] : null}
               {ageRange && gender ? "　" : null}
               {gender ? genderNames[gender] : null}
             </p>
           ) : null}
-          {foundVia ? <p className="text-lg text-muted">{foundViaNames[foundVia]}</p> : null}
-          {publicId ? <p className="mt-1 text-base text-muted">{t`ID: ${formatPublicId(publicId)}`}</p> : null}
+          {foundVia ? <p className={`text-muted ${readOnly ? "text-base" : "text-lg"}`}>{foundViaNames[foundVia]}</p> : null}
+          {publicId ? <p className={`text-muted ${readOnly ? "text-sm" : "mt-1 text-base"}`}>{t`ID: ${formatPublicId(publicId)}`}</p> : null}
         </div>
         {readOnly ? null : (
         <button
