@@ -1,5 +1,5 @@
 import { pointIconSvg } from "./point-icons";
-import type { PlaceCategory } from "./places";
+import type { PlaceCategory, PlaceGroup } from "./places";
 
 /**
  * A small coloured picture for each kind of place in the directory (24 x 24 grid, flat colours, drawn for a white disc),
@@ -41,4 +41,13 @@ export const placeIconSvg: Record<PlaceCategory, string> = {
   bus_stop: pointIconSvg.bus_stop,
   parking: pointIconSvg.parking,
   other: pointIconSvg.other,
+};
+
+/** The picture that stands for a whole group of places (a chip that turns the group on or off). */
+export const groupPictureCategory: Record<PlaceGroup, PlaceCategory> = {
+  rest: "toilet",
+  shops: "restaurant",
+  vending: "vending_machine",
+  transport: "station",
+  other: "other",
 };

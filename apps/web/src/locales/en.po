@@ -1142,7 +1142,7 @@ msgid "この場所のページを開く"
 msgstr "Open this place's page"
 
 #: src/components/map/MapScreen.tsx:495
-#: src/components/map/PlacesPanel.tsx:262
+#: src/components/map/PlacesPanel.tsx:250
 #: src/components/map/StopCard.tsx:47
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
 msgstr "The position of this place is a draft and has not been checked yet."
@@ -1399,7 +1399,7 @@ msgstr "Stamps"
 #: src/components/landing/ContinueCard.tsx:23
 #: src/components/landing/Landing.tsx:241
 #: src/components/map/MapScreen.tsx:363
-#: src/components/RouteView.tsx:250
+#: src/components/RouteView.tsx:256
 #: src/components/TrailRibbon.tsx:62
 #: src/components/TripSummary.tsx:48
 msgid "スタンプ {stampedCount} / {spotCount}"
@@ -1445,7 +1445,7 @@ msgid "スタンプの場所の近くにいるか、たしかめるために、�
 msgstr "To check that you are near the stamp place, we look at your phone's location once."
 
 #: src/components/map/MapScreen.tsx:418
-#: src/components/RouteView.tsx:238
+#: src/components/RouteView.tsx:244
 msgid "スタンプの場所は、まだ準備中です。"
 msgstr "The stamp places are not ready yet."
 
@@ -2425,7 +2425,7 @@ msgstr "Nearest first from the route's first waypoint."
 msgid "ルートの写真のリンク"
 msgstr "Route photo link"
 
-#: src/components/RouteView.tsx:219
+#: src/components/RouteView.tsx:225
 msgid "ルートの動画"
 msgstr "Route video"
 
@@ -2635,7 +2635,7 @@ msgstr "Do not show this again"
 msgid "仮のルート・位置（未確認）"
 msgstr "Draft route and positions (unchecked)"
 
-#: src/components/map/PlacesPanel.tsx:245
+#: src/components/map/PlacesPanel.tsx:234
 msgid "休み"
 msgstr "Closed"
 
@@ -2732,7 +2732,7 @@ msgstr "Location is not allowed. Please allow location for this site in your bro
 msgid "低い"
 msgstr "low"
 
-#: src/components/map/PlacesPanel.tsx:211
+#: src/components/map/PlacesPanel.tsx:218
 #: src/components/PlaceFacts.tsx:29
 msgid "住所"
 msgstr "Address"
@@ -2987,7 +2987,7 @@ msgstr "When they are ready to publish, the stamp rallies will appear here."
 msgid "公開できるようになったら、ここにルートが表示されます。"
 msgstr "Routes will appear here once they are published."
 
-#: src/components/RouteView.tsx:239
+#: src/components/RouteView.tsx:245
 msgid "公開できるようになったら、ここに場所の一覧が表示されます。"
 msgstr "When they are ready to publish, the list of places will appear here."
 
@@ -3213,7 +3213,7 @@ msgstr "Before you go"
 #: src/app/(public)/rallies/page.tsx:77
 #: src/app/(public)/routes/page.tsx:87
 #: src/components/landing/Landing.tsx:186
-#: src/components/RouteView.tsx:271
+#: src/components/RouteView.tsx:272
 #: src/components/SpotSheet.tsx:180
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "Check official sources before you go."
@@ -4234,7 +4234,7 @@ msgstr "Enter the Japanese name."
 msgid "日本語の字幕です。もう一度送ると、置き換わります。字幕は動画の横に保存され、動画を入れ替えたときは、字幕も送りなおしてください。"
 msgstr "Japanese subtitles. Sending again replaces them. They are stored beside the video, so when you replace the video, send the subtitles again."
 
-#: src/components/map/PlacesPanel.tsx:239
+#: src/components/map/PlacesPanel.tsx:233
 #: src/components/RouteStats.tsx:34
 msgid "時間"
 msgstr "Time"
@@ -4684,7 +4684,7 @@ msgstr "Too many attempts in a short time. Please try again in a little while."
 msgid "確認した情報源（サイト名やリンク）"
 msgstr "Source checked (site name or link)"
 
-#: src/components/map/PlacesPanel.tsx:255
+#: src/components/map/PlacesPanel.tsx:243
 msgid "確認した日：{checkedOn}"
 msgstr "Checked on: {checkedOn}"
 
@@ -4802,7 +4802,7 @@ msgstr "Longitude"
 
 #: src/app/(admin)/admin/attention/page.tsx:81
 #: src/components/admin/useChecklistLabels.ts:22
-#: src/components/RouteView.tsx:246
+#: src/components/RouteView.tsx:252
 msgid "経由地"
 msgstr "Waypoints"
 
@@ -5510,7 +5510,7 @@ msgstr "Length"
 #: src/components/GuestClaim.tsx:84
 #: src/components/map/MapPickList.tsx:36
 #: src/components/map/MapPopup.tsx:57
-#: src/components/map/PlacesPanel.tsx:199
+#: src/components/map/PlacesPanel.tsx:208
 #: src/components/map/TrailMap.tsx:460
 #: src/components/ProfileSettings.tsx:230
 #: src/components/SampleNotice.tsx:64
@@ -5545,7 +5545,7 @@ msgstr "hidden"
 msgid "難しさ"
 msgstr "Difficulty"
 
-#: src/components/map/PlacesPanel.tsx:217
+#: src/components/map/PlacesPanel.tsx:220
 msgid "電話"
 msgstr "Phone"
 
