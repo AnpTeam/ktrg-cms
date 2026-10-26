@@ -172,6 +172,19 @@ export function MapEditor(props: MapEditorProps) {
 
   const container = useRef<HTMLDivElement>(null);
   const heightsInput = useRef<HTMLInputElement>(null);
+  const [gpxMenu, setGpxMenu] = useState(false);
+  useEffect(() => {
+    if (!gpxMenu) return;
+    const close = (e: Event) => {
+      if (e instanceof KeyboardEvent ? e.key === "Escape" : !(e.target as Element | null)?.closest?.('[aria-haspopup="menu"], [role="menu"]')) setGpxMenu(false);
+    };
+    document.addEventListener("click", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("click", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, [gpxMenu]);
   const fileInput = useRef<HTMLInputElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const mlRef = useRef<typeof import("maplibre-gl") | null>(null);
@@ -875,9 +888,39 @@ export function MapEditor(props: MapEditorProps) {
     <div className={`flex flex-col gap-3 ${props.places.length > 0 ? "xl:grid xl:grid-cols-[minmax(0,1fr)_25rem] xl:items-start xl:gap-x-5" : ""}`}>
       <div className="flex min-w-0 flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t`道すじ`}>
-        <button type="button" onClick={() => fileInput.current?.click()} className="inline-flex h-9 min-h-0 min-w-0 items-center justify-center rounded-lg border border-ink bg-ink px-3 text-sm font-bold text-paper">
-          {t`GPXファイルから読み込む`}
-        </button>
+        {/* One button for the GPX file; its arrow offers the other thing to do with one (take only the heights). */}
+        <div className="relative inline-flex">
+          <button type="button" onClick={() => fileInput.current?.click()} className="inline-flex h-9 min-h-0 min-w-0 items-center justify-center rounded-l-lg border border-ink bg-ink px-3 text-sm font-bold text-paper">
+            {t`GPXファイルから読み込む`}
+          </button>
+          <button
+            type="button"
+            aria-label={t`GPXの読み込みかた`}
+            aria-haspopup="menu"
+            aria-expanded={gpxMenu}
+            onClick={() => setGpxMenu((v) => !v)}
+            className="inline-flex h-9 min-h-0 min-w-0 items-center justify-center rounded-r-lg border border-l-paper/40 border-ink bg-ink px-2 text-sm font-bold text-paper"
+          >
+            ▾
+          </button>
+          {gpxMenu ? (
+            <div role="menu" className="absolute left-0 top-full z-30 mt-1 flex min-w-64 flex-col rounded-lg border border-ink bg-paper p-1 shadow-lg">
+              <button type="button" role="menuitem" onClick={() => { setGpxMenu(false); fileInput.current?.click(); }} className="rounded-md px-3 py-2 text-left text-sm font-bold hover:bg-surface">
+                {t`線と標高を読み込む`}
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                disabled={!hasLine}
+                onClick={() => { setGpxMenu(false); heightsInput.current?.click(); }}
+                className="rounded-md px-3 py-2 text-left text-sm font-bold hover:bg-surface disabled:opacity-50"
+                title={t`GPXファイルから標高だけを取り出して、今の線に入れます（線の形は変わりません）`}
+              >
+                {t`標高だけ取り込む（線は変えない）`}
+              </button>
+            </div>
+          ) : null}
+        </div>
         <input ref={fileInput} type="file" accept=".gpx,application/gpx+xml,text/xml,application/xml" onChange={onFile} className="sr-only" tabIndex={-1} aria-hidden="true" />
         <span className="text-sm text-muted">{activePair ? t`選んだ区間に` : t`すべての区間（線のない所）に`}</span>
         <div className="grid basis-full grid-cols-2 gap-2 sm:grid-cols-4">
@@ -892,9 +935,6 @@ export function MapEditor(props: MapEditorProps) {
         </button>
         <button type="button" disabled={!canWork || !hasLine} onClick={smooth} className={`${chipClass} w-full`} title={t`線の角を、丸くなめらかにします`}>
           {t`なめらかにする`}
-        </button>
-        <button type="button" disabled={!hasLine} onClick={() => heightsInput.current?.click()} className={`${chipClass} w-full`} title={t`GPXファイルから標高だけを取り出して、今の線に入れます（線の形は変わりません）`}>
-          {t`標高だけGPXから`}
         </button>
         <input
           ref={heightsInput}
