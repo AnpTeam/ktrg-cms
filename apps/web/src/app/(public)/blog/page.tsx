@@ -4,40 +4,44 @@ import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
 import { EmptyState } from "@/components/EmptyState";
-import { Localized } from "@/components/Localized";
-import { RoutePhoto } from "@/components/RoutePhoto";
+import { PostCard } from "@/components/blog/PostCard";
 import { initLingui } from "@/i18n/server";
-import { formatDay } from "@/lib/format";
-import { pickText } from "@/lib/pick-text";
 import { listPosts } from "@/lib/posts";
-import { plainBody } from "@/lib/rich-text";
 
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
   return { title: i18n._(msg`ブログ`) };
 }
 
-/** How much of a post the list shows under its heading. */
-const EXCERPT_CHARS = 120;
+/** Posts on a page after the big first one. */
+const PER_PAGE = 9;
 
-// The blog: posts written in the admin (/admin/posts). The API sends only what a visitor may read, so this page
-// never decides about drafts or posts dated ahead.
-export default async function BlogPage() {
+// The blog, as a magazine: the newest post large, then the rest as cards, a few pages of them. The API sends only what a
+// visitor may read, so this page never decides about drafts or posts dated ahead.
+export default async function BlogPage({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
   const i18n = await initLingui();
   const posts = await listPosts();
+  const [feature, ...rest] = posts;
+  const pages = Math.max(1, Math.ceil(rest.length / PER_PAGE));
+  const page = Math.min(pages, Math.max(1, Math.floor(Number((await searchParams).page)) || 1));
+  const shown = rest.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  const href = (n: number) => (n === 1 ? "/blog" : `/blog?page=${n}`);
+  const pager = "tap-target inline-flex items-center rounded-xl border-2 border-ink px-5 text-lg font-bold hover:bg-surface";
 
   return (
-    <div className="page-narrow flex flex-col gap-8 pt-2">
-      <div className="flex flex-col gap-6 px-4">
+    <div className="flex flex-col gap-8 pt-2">
+      <div className="flex flex-col gap-4 px-4 lg:px-0">
         <BackLink href="/">
           <Trans>ホーム</Trans>
         </BackLink>
-        <h1 className="text-3xl font-bold">
-          <Trans>ブログ</Trans>
-        </h1>
-        <p className="max-w-prose text-lg leading-8">
-          <Trans>葛城修験の道のことや、歩いた日のことをお知らせします。</Trans>
-        </p>
+        <div className="flex flex-col gap-2 border-b-2 border-ink pb-4">
+          <h1 className="font-serif text-4xl font-bold">
+            <Trans>ブログ</Trans>
+          </h1>
+          <p className="max-w-prose text-lg leading-8 text-muted">
+            <Trans>葛城修験の道のことや、歩いた日のことをお知らせします。</Trans>
+          </p>
+        </div>
       </div>
 
       {posts.length === 0 ? (
@@ -45,33 +49,50 @@ export default async function BlogPage() {
           <Trans>書けたら、ここに表示されます。</Trans>
         </EmptyState>
       ) : (
-        <ul className="flex flex-col gap-3 px-4">
-          {posts.map((post) => {
-            const title = pickText(i18n.locale, post.titleJa, post.titleEn);
-            const body = pickText(i18n.locale, post.bodyJa, post.bodyEn);
-            const excerpt = body ? plainBody(body.text).slice(0, EXCERPT_CHARS) : "";
-            return (
-              <li key={post.id}>
-                <Link href={`/blog/${post.id}`} className="tap-target flex flex-col gap-3 rounded-xl bg-surface p-4 hover:bg-paper">
-                  <div className="flex items-start gap-4">
-                    <span className="relative size-24 shrink-0 overflow-hidden rounded-lg">
-                      <RoutePhoto src={post.coverPhotoUrl} alt={title?.text ?? ""} />
-                    </span>
-                    <span className="flex min-w-0 flex-col gap-1">
-                      <span className="text-xl font-bold text-accent">
-                        <Localized value={title} />
-                      </span>
-                      <time dateTime={post.publishedOn} className="text-base text-muted">
-                        {formatDay(i18n.locale, post.publishedOn)}
-                      </time>
-                      {excerpt ? <span className="line-clamp-2 text-lg leading-8">{excerpt}</span> : null}
-                    </span>
-                  </div>
+        <>
+          {page === 1 && feature ? (
+            <div className="px-4 lg:px-0">
+              <PostCard post={feature} locale={i18n.locale} size="feature" />
+            </div>
+          ) : null}
+
+          {shown.length > 0 ? (
+            <section className="flex flex-col gap-4 px-4 lg:px-0">
+              <h2 className="text-2xl font-bold">
+                <Trans>新しい記事</Trans>
+              </h2>
+              <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {shown.map((post) => (
+                  <li key={post.id}>
+                    <PostCard post={post} locale={i18n.locale} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+
+          {pages > 1 ? (
+            <nav aria-label={i18n._(msg`ページ`)} className="flex items-center justify-between gap-3 px-4 lg:px-0">
+              {page > 1 ? (
+                <Link href={href(page - 1)} className={pager}>
+                  <Trans>← 前へ</Trans>
                 </Link>
-              </li>
-            );
-          })}
-        </ul>
+              ) : (
+                <span />
+              )}
+              <span className="text-lg tabular-nums text-muted">
+                {page} / {pages}
+              </span>
+              {page < pages ? (
+                <Link href={href(page + 1)} className={pager}>
+                  <Trans>次へ →</Trans>
+                </Link>
+              ) : (
+                <span />
+              )}
+            </nav>
+          ) : null}
+        </>
       )}
     </div>
   );

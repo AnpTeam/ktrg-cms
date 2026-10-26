@@ -263,6 +263,11 @@ export const fetchPublicPost = cache(async (id: string): Promise<BlogPost | null
   return okBody<{ post: BlogPost }>(await getJson(`/posts/${encodeURIComponent(id)}`))?.post ?? null;
 });
 
+/** The approved comments of a post, oldest first. */
+export const fetchPostComments = cache(async (id: string): Promise<{ id: string; body: string; authorName: string | null; createdAt: string }[]> => {
+  return okBody<{ comments: { id: string; body: string; authorName: string | null; createdAt: string }[] }>(await getJson(`/posts/${encodeURIComponent(id)}/comments`))?.comments ?? [];
+});
+
 /** Published home page banners, in order. */
 export async function fetchPublicBanners(): Promise<{ id: string; imageUrl: string; imageCredit?: string | null; altJa: string; altEn: string | null }[] | null> {
   return okBody<{ banners: { id: string; imageUrl: string; imageCredit?: string | null; altJa: string; altEn: string | null }[] }>(await getJson("/banners"))?.banners ?? null;

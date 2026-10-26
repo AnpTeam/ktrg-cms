@@ -39,6 +39,11 @@ msgstr "Move {0} down"
 msgid "{0}（{1}件）"
 msgstr "{0} ({1})"
 
+#. placeholder {0}: route.distanceKm
+#: src/components/blog/LinkedCards.tsx:28
+msgid "{0}km"
+msgstr "{0} km"
+
 #. placeholder {0}: waypoints.length
 #: src/components/admin/map-editor/MapEditor.tsx:801
 msgid "{0}か所を、経由地として追加しました。名前や種類は「経由地」で直せます。"
@@ -375,6 +380,14 @@ msgstr "Row {0} of the “経由地” sheet"
 #: src/components/admin/map-editor/MapEditor.tsx:823
 msgid "【サブコース】"
 msgstr "[Sub-course] "
+
+#: src/app/(public)/blog/[id]/page.tsx:204
+msgid "← 前の記事"
+msgstr "← Earlier post"
+
+#: src/app/(public)/blog/page.tsx:78
+msgid "← 前へ"
+msgstr "← Previous"
 
 #: src/components/admin/AccessPointsEditor.tsx:80
 msgid "＋ 交通を追加"
@@ -1062,6 +1075,10 @@ msgstr "The stamps could not be restored from this link. Check that the link was
 msgid "このリンクは使えません"
 msgstr "This link cannot be used"
 
+#: src/components/blog/ShareButtons.tsx:27
+msgid "このリンクをコピーしてください"
+msgstr "Copy this link"
+
 #: src/components/admin/RouteImport.tsx:93
 msgid "このルートがまだありません"
 msgstr "This route does not exist yet"
@@ -1267,6 +1284,15 @@ msgstr "This line does not match the order or positions of the waypoints, so it 
 msgid "この考え方は、長野県の「信州 山のグレーディング」を参考にしています。説明は、このサイト独自の言葉です。"
 msgstr "The idea follows the mountain grading used in Nagano Prefecture (信州 山のグレーディング). The explanations are in this site's own words."
 
+#: src/app/(public)/blog/[id]/page.tsx:154
+msgid "この記事の場所"
+msgstr "What this post is about"
+
+#: src/app/(public)/blog/[id]/page.tsx:194
+#: src/components/blog/ShareButtons.tsx:32
+msgid "この記事を共有する"
+msgstr "Share this post"
+
 #: src/components/settings/PrefsForm.tsx:148
 msgid "この設定ではじめる"
 msgstr "Start with these settings"
@@ -1292,9 +1318,30 @@ msgstr "Along this path stand sutra mounds (経塚) named after the 28 chapters 
 msgid "この道を見る"
 msgstr "See this route"
 
+#: src/components/blog/ShareButtons.tsx:39
 #: src/components/BrowserWarning.tsx:38
 msgid "コピーしました"
 msgstr "Copied"
+
+#: src/components/blog/CommentSection.tsx:54
+msgid "コメント"
+msgstr "Comments"
+
+#: src/components/blog/CommentSection.tsx:97
+msgid "コメントする"
+msgstr "Post comment"
+
+#: src/components/blog/CommentSection.tsx:40
+msgid "コメントを受け付けました。スタッフが確認すると、ここに表示されます。"
+msgstr "Thank you. Your comment will appear here once the staff have checked it."
+
+#: src/components/blog/CommentSection.tsx:85
+msgid "コメントを書く"
+msgstr "Write a comment"
+
+#: src/components/blog/CommentSection.tsx:109
+msgid "コメントを書くには、ログインが必要です。"
+msgstr "You need to log in to write a comment."
 
 #: src/components/settings/PasskeyManager.tsx:147
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
@@ -1749,6 +1796,11 @@ msgstr "A nickname is fine."
 msgid "のぼり"
 msgstr "Climb"
 
+#. placeholder {0}: route.elevationGainM
+#: src/components/blog/LinkedCards.tsx:30
+msgid "のぼり {0}m"
+msgstr "Climb {0} m"
+
 #: src/components/admin/AdminListTable.tsx:157
 msgid "はい"
 msgstr "Yes"
@@ -1913,9 +1965,9 @@ msgstr "Show furigana"
 msgid "プレビュー"
 msgstr "Preview"
 
-#: src/app/(public)/blog/[id]/page.tsx:69
-#: src/app/(public)/blog/page.tsx:17
-#: src/app/(public)/blog/page.tsx:36
+#: src/app/(public)/blog/[id]/page.tsx:96
+#: src/app/(public)/blog/page.tsx:13
+#: src/app/(public)/blog/page.tsx:39
 #: src/app/(public)/sitemap/page.tsx:76
 #: src/components/landing/BlogCard.tsx:22
 #: src/components/SiteFooter.tsx:18
@@ -1927,17 +1979,30 @@ msgstr "Blog"
 msgid "ブログの一覧"
 msgstr "All posts"
 
+#: src/components/ProfilePhoto.tsx:36
+msgid "ブログの記事の、書いた人のところに表示されます。"
+msgstr "Shown by the author's name on the blog posts you write."
+
+#: src/app/(public)/blog/[id]/page.tsx:244
 #: src/components/landing/BlogCard.tsx:42
 msgid "ブログをすべて見る"
 msgstr "See all posts"
 
-#: src/app/(public)/profile/page.tsx:16
+#: src/app/(public)/profile/page.tsx:17
 #: src/app/(public)/settings/passkeys/page.tsx:23
 #: src/app/(public)/sitemap/page.tsx:96
 #: src/components/ProfileCard.tsx:38
 #: src/components/ProfileSettings.tsx:149
 msgid "プロフィール"
 msgstr "Profile"
+
+#: src/components/ProfilePhoto.tsx:34
+msgid "プロフィール写真"
+msgstr "Profile photo"
+
+#: src/app/(public)/blog/page.tsx:75
+msgid "ページ"
+msgstr "Pages"
 
 #: src/app/(public)/not-found.tsx:11
 msgid "ページが見つかりません"
@@ -1965,7 +2030,7 @@ msgstr "Adds a reading over every kanji on the page."
 msgid "ベースの地図"
 msgstr "Base map"
 
-#: src/app/(public)/blog/page.tsx:33
+#: src/app/(public)/blog/page.tsx:35
 #: src/app/(public)/faq/page.tsx:24
 #: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/licenses/page.tsx:21
@@ -2021,6 +2086,10 @@ msgstr "Other vehicle"
 msgid "ほかの言語（ドイツ語など）の訪問者には、English の文章が表示されます。"
 msgstr "Visitors in other languages (such as German) see the English text."
 
+#: src/app/(public)/blog/[id]/page.tsx:234
+msgid "ほかの記事"
+msgstr "More posts"
+
 #: src/components/admin/map-editor/MapEditor.tsx:884
 msgid "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。"
 msgstr "Start by dragging a GPX file here or pressing \"Load a GPX file\". To enter by hand, place waypoints with \"Add waypoint\", then draw the path leg by leg with \"Draw path\"."
@@ -2054,6 +2123,10 @@ msgstr "None yet."
 #: src/components/admin/PlaceTable.tsx:215
 msgid "まだありません。「＋ 行を追加」で、経由地を表に入れてください。"
 msgstr "No waypoints yet. Use “+ Add a row” to put waypoints in the table."
+
+#: src/components/blog/CommentSection.tsx:58
+msgid "まだコメントはありません。"
+msgstr "No comments yet."
 
 #: src/components/GuestBackup.tsx:36
 msgid "まだスタンプがありません。"
@@ -2099,7 +2172,7 @@ msgstr "Open the map"
 msgid "まわりにあるもの"
 msgstr "Around here"
 
-#: src/app/(public)/blog/[id]/page.tsx:131
+#: src/app/(public)/blog/[id]/page.tsx:186
 #: src/components/map/PlacesPanel.tsx:130
 #: src/components/map/PlacesPanel.tsx:131
 #: src/components/NearbyPlaces.tsx:22
@@ -2390,6 +2463,10 @@ msgstr "A link is written [shown words](https://…). For a footnote, write [^1]
 msgid "リンクは [表示する文字](https://…) の形で書けます（下のボタンでも入れられます）。"
 msgstr "A link is written [shown words](https://…) (the button below can add one too)."
 
+#: src/components/blog/ShareButtons.tsx:39
+msgid "リンクをコピー"
+msgstr "Copy link"
+
 #: src/components/PrintShare.tsx:38
 msgid "リンクをコピーしました"
 msgstr "Link copied"
@@ -2404,12 +2481,18 @@ msgstr "Enter the link directly"
 
 #: src/app/(admin)/admin/attention/page.tsx:54
 #: src/app/(admin)/admin/routes/page.tsx:22
+#: src/app/(public)/blog/[id]/page.tsx:102
 #: src/app/(public)/routes/page.tsx:18
 #: src/app/(public)/sitemap/page.tsx:65
 #: src/components/admin/AdminNav.tsx:31
 #: src/components/TabBar.tsx:24
 msgid "ルート"
 msgstr "Routes"
+
+#. placeholder {0}: route.order
+#: src/components/blog/LinkedCards.tsx:22
+msgid "ルート {0}"
+msgstr "Route {0}"
 
 #. placeholder {0}: preview.routes.length
 #. placeholder {1}: preview.places.length
@@ -2536,6 +2619,7 @@ msgstr "Log out"
 #: src/app/(public)/sitemap/page.tsx:102
 #: src/components/auth/LoginFlow.tsx:55
 #: src/components/auth/RegisterFlow.tsx:141
+#: src/components/blog/CommentSection.tsx:111
 #: src/components/GuestNag.tsx:82
 #: src/components/landing/LandingHero.tsx:55
 #: src/components/ProfileSettings.tsx:179
@@ -2887,6 +2971,10 @@ msgstr "Save"
 msgid "保存できません。赤く示した項目を直してください。"
 msgstr "Cannot save. Fix the items marked in red."
 
+#: src/components/ProfilePhoto.tsx:50
+msgid "保存できませんでした。もう一度お試しください。"
+msgstr "It could not be saved. Please try again."
+
 #: src/components/OfflineSave.tsx:49
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not save. Please try again where the signal is good."
@@ -3096,6 +3184,10 @@ msgstr "Waypoints that are not published yet are shown here too."
 msgid "共有"
 msgstr "Share"
 
+#: src/components/blog/ShareButtons.tsx:35
+msgid "共有する"
+msgstr "Share"
+
 #: src/components/admin/AdminItemForm.tsx:272
 msgid "内容"
 msgstr "Content"
@@ -3221,6 +3313,10 @@ msgstr "Upload a photo"
 #: src/components/useErrorMessages.ts:59
 msgid "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 msgstr "The photo could not be saved. Please try again in a moment."
+
+#: src/components/ProfilePhoto.tsx:43
+msgid "写真を外す"
+msgstr "Remove the photo"
 
 #: src/components/admin/GalleryEditor.tsx:62
 msgid "写真を探すサービスにつながりませんでした。しばらくしてから、もう一度お試しください。"
@@ -3366,6 +3462,10 @@ msgstr "The waypoint before it does not exist yet, so it cannot be created"
 #: src/components/admin/RouteTable.tsx:152
 msgid "前へ"
 msgstr "Earlier"
+
+#: src/app/(public)/blog/[id]/page.tsx:200
+msgid "前後の記事"
+msgstr "Earlier and later posts"
 
 #: src/components/QuickActions.tsx:56
 msgid "動きなし"
@@ -3569,6 +3669,10 @@ msgstr "Filter by name"
 msgid "名前と公開"
 msgstr "Name and publishing"
 
+#: src/components/blog/CommentSection.tsx:65
+msgid "名前なし"
+msgstr "No name"
+
 #. placeholder {0}: waypoints.length
 #: src/components/admin/map-editor/MapEditor.tsx:1051
 msgid "名前のついた地点が{0}か所ありました。経由地として追加しますか？"
@@ -3643,7 +3747,7 @@ msgstr "Geospatial Information Authority of Japan (GSI Tiles)"
 msgid "地図"
 msgstr "Map"
 
-#: src/app/(public)/blog/[id]/page.tsx:122
+#: src/app/(public)/blog/[id]/page.tsx:175
 #: src/components/PlaceDialog.tsx:29
 #: src/components/SpotSheet.tsx:72
 msgid "地図で見る"
@@ -4218,6 +4322,10 @@ msgstr "New route (admin)"
 msgid "新しい点は、選んだ点（{chosenNo}番）のあとに入ります。もう一度クリックすると、選びなおせます。"
 msgstr "New points go after the chosen point (number {chosenNo}). Click it again to choose differently."
 
+#: src/app/(public)/blog/page.tsx:62
+msgid "新しい記事"
+msgstr "Newest posts"
+
 #: src/components/admin/PhotoLibrary.tsx:139
 msgid "新しい順"
 msgstr "Newest first"
@@ -4289,10 +4397,6 @@ msgstr "Updated {updated} (Japan time)"
 msgid "書いたファイル（.xlsx）"
 msgstr "Your filled-in file (.xlsx)"
 
-#: src/app/(public)/blog/[id]/page.tsx:151
-msgid "書いた人"
-msgstr "Written by"
-
 #: src/components/admin/RouteImport.tsx:85
 msgid "書いてありません"
 msgstr "Nothing is written"
@@ -4309,7 +4413,7 @@ msgstr "Rewritten"
 msgid "書き方"
 msgstr "How to write"
 
-#: src/app/(public)/blog/page.tsx:45
+#: src/app/(public)/blog/page.tsx:49
 msgid "書けたら、ここに表示されます。"
 msgstr "Once it is written, it will show up here."
 
@@ -4411,6 +4515,14 @@ msgstr "Next photo"
 #: src/components/admin/RouteImport.tsx:204
 msgid "次の行は、まちがいがあるので取り込みません："
 msgstr "These rows have a mistake and will not be imported:"
+
+#: src/app/(public)/blog/[id]/page.tsx:216
+msgid "次の記事 →"
+msgstr "Later post →"
+
+#: src/app/(public)/blog/page.tsx:88
+msgid "次へ →"
+msgstr "Next →"
 
 #: src/components/map/TrailMap.tsx:552
 msgid "次へ ＞"
@@ -5136,7 +5248,7 @@ msgstr "Map of Katsuragi Shugen"
 msgid "葛城修験の道"
 msgstr "The Katsuragi Shugen Trail"
 
-#: src/app/(public)/blog/page.tsx:39
+#: src/app/(public)/blog/page.tsx:42
 msgid "葛城修験の道のことや、歩いた日のことをお知らせします。"
 msgstr "News about the Katsuragi Shugen trail and the days we walked it."
 
@@ -5230,7 +5342,7 @@ msgstr "Language"
 msgid "言語は{MAX_LANGUAGES}つまで（日本語を含む）。英語以外は、まだ訪れる人には表示されません。"
 msgstr "Up to {MAX_LANGUAGES} languages (Japanese included). Languages other than English are not shown to visitors yet."
 
-#: src/app/(public)/blog/page.tsx:44
+#: src/app/(public)/blog/page.tsx:48
 msgid "記事は、まだありません。"
 msgstr "There are no posts yet."
 
@@ -5249,10 +5361,6 @@ msgstr "Permission confirmed"
 #: src/components/admin/DirectoryPicker.tsx:168
 msgid "該当する場所はありません。"
 msgstr "No matching places."
-
-#: src/app/(public)/blog/[id]/page.tsx:105
-msgid "詳しい情報"
-msgstr "Details"
 
 #: src/components/admin/PlacePanel.tsx:93
 #: src/components/SpotSheet.tsx:111
@@ -5343,6 +5451,7 @@ msgstr "We could not read what was sent. Please try again."
 
 #: src/components/admin/PhotoUpload.tsx:76
 #: src/components/admin/SubtitleUpload.tsx:61
+#: src/components/blog/CommentSection.tsx:97
 msgid "送っています…"
 msgstr "Uploading…"
 

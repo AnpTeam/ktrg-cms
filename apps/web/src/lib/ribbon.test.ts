@@ -107,7 +107,7 @@ describe("resolveViewer", () => {
 
 describe("viewerFromMe", () => {
   test("a good answer gives the name", () => {
-    expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana" } })).toEqual({ signedIn: true, role: null, publicId: null, deletionDueAt: null, name: "Hana", origin: null, ageRange: null, gender: null, email: null, foundVia: null, preferences: null, bookmarks: [] });
+    expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana" } })).toEqual({ signedIn: true, role: null, publicId: null, deletionDueAt: null, name: "Hana", avatarUrl: null, origin: null, ageRange: null, gender: null, email: null, foundVia: null, preferences: null, bookmarks: [] });
     expect(viewerFromMe(200, { ok: true, me: { displayName: null } })).toEqual({ signedIn: true, role: null, publicId: null, deletionDueAt: null, name: null, origin: null, ageRange: null, gender: null, email: null, foundVia: null, preferences: null, bookmarks: [] });
     expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana", origin: "nara" } }).origin).toBe("nara");
     expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana", origin: "mars" } }).origin).toBeNull();

@@ -171,9 +171,9 @@ export const postList: ListDef<"posts", typeof POST_FIELDS, PostRow, PostService
         name: "authorName",
         kind: "bilingual",
         label: { ja: "書いた人の名前", en: "Author's name" },
-        hint: { ja: "記事に表示されます。本人の了解を得てから入れてください。空でもかまいません。", en: "Shown on the post. Ask the person first. It may be left empty." },
+        hint: { ja: "空のままにすると、この記事をつくった人のプロフィールの名前が使われます。別の名前にしたいときだけ入れてください（本人の了解を得てから）。", en: "Left empty, the profile name of whoever made the post is used. Type a name only to use someone else's (ask them first)." },
       },
-      { name: "authorPhotoUrl", kind: "image", label: { ja: "書いた人の写真", en: "Author's photo" } },
+      { name: "authorPhotoUrl", kind: "image", label: { ja: "書いた人の写真", en: "Author's photo" }, hint: { ja: "空のままにすると、プロフィールの写真が使われます。", en: "Left empty, the profile photo is used." } },
       { name: "routeId", kind: "route", label: { ja: "この記事のルート", en: "The route this post is about" }, noneLabel: { ja: "（なし）", en: "(none)" } },
       {
         name: "spotId",

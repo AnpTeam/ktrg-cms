@@ -1,4 +1,4 @@
-import { fetchPublicPost, fetchPublicPosts } from "./api-content";
+import { fetchPostComments, fetchPublicPost, fetchPublicPosts } from "./api-content";
 
 /**
  * A blog post, written in the admin (/admin/posts). Japanese is required and English falls back to it. The body may
@@ -22,6 +22,9 @@ export interface BlogPost {
   authorPhotoUrl: string | null;
   /** The directory place the post is about (its details and nearby places show under the text), or null. */
   placeId: string | null;
+  /** The route and the waypoint (or sutra mound) it is about, or null: cards for them show under the text. */
+  routeId: string | null;
+  spotId: string | null;
   /** YYYY-MM-DD, Japan time: the day the post is dated. */
   publishedOn: string;
 }
@@ -34,4 +37,21 @@ export async function listPosts(): Promise<BlogPost[]> {
 /** One post, or null when it is a draft, dated ahead, or not there (the page then shows "not found"). */
 export async function getPost(id: string): Promise<BlogPost | null> {
   return fetchPublicPost(id);
+}
+
+export interface PostComment {
+  id: string;
+  body: string;
+  /** The writer's profile name; null when they have none. */
+  authorName: string | null;
+  createdAt: string;
+}
+
+/** The approved comments under a post, oldest first. */
+export const listComments = (id: string): Promise<PostComment[]> => fetchPostComments(id);
+
+/** The posts before and after this one in the blog (newer, older), for the links at the end of a post. */
+export function neighbours(posts: readonly BlogPost[], id: string): { newer: BlogPost | null; older: BlogPost | null } {
+  const at = posts.findIndex((p) => p.id === id);
+  return at < 0 ? { newer: null, older: null } : { newer: posts[at - 1] ?? null, older: posts[at + 1] ?? null };
 }

@@ -39,6 +39,11 @@ msgstr "{0} を1つ後ろへ"
 msgid "{0}（{1}件）"
 msgstr "{0}（{1}件）"
 
+#. placeholder {0}: route.distanceKm
+#: src/components/blog/LinkedCards.tsx:28
+msgid "{0}km"
+msgstr "{0}km"
+
 #. placeholder {0}: waypoints.length
 #: src/components/admin/map-editor/MapEditor.tsx:801
 msgid "{0}か所を、経由地として追加しました。名前や種類は「経由地」で直せます。"
@@ -375,6 +380,14 @@ msgstr "「経由地」シート {0} 行目"
 #: src/components/admin/map-editor/MapEditor.tsx:823
 msgid "【サブコース】"
 msgstr "【サブコース】"
+
+#: src/app/(public)/blog/[id]/page.tsx:204
+msgid "← 前の記事"
+msgstr "← 前の記事"
+
+#: src/app/(public)/blog/page.tsx:78
+msgid "← 前へ"
+msgstr "← 前へ"
 
 #: src/components/admin/AccessPointsEditor.tsx:80
 msgid "＋ 交通を追加"
@@ -1062,6 +1075,10 @@ msgstr "このリンクからは、スタンプをもどせませんでした。
 msgid "このリンクは使えません"
 msgstr "このリンクは使えません"
 
+#: src/components/blog/ShareButtons.tsx:27
+msgid "このリンクをコピーしてください"
+msgstr "このリンクをコピーしてください"
+
 #: src/components/admin/RouteImport.tsx:93
 msgid "このルートがまだありません"
 msgstr "このルートがまだありません"
@@ -1267,6 +1284,15 @@ msgstr "この線は、経由地の順番や位置と合わないため、区間
 msgid "この考え方は、長野県の「信州 山のグレーディング」を参考にしています。説明は、このサイト独自の言葉です。"
 msgstr "この考え方は、長野県の「信州 山のグレーディング」を参考にしています。説明は、このサイト独自の言葉です。"
 
+#: src/app/(public)/blog/[id]/page.tsx:154
+msgid "この記事の場所"
+msgstr "この記事の場所"
+
+#: src/app/(public)/blog/[id]/page.tsx:194
+#: src/components/blog/ShareButtons.tsx:32
+msgid "この記事を共有する"
+msgstr "この記事を共有する"
+
 #: src/components/settings/PrefsForm.tsx:148
 msgid "この設定ではじめる"
 msgstr "この設定ではじめる"
@@ -1292,9 +1318,30 @@ msgstr "この道すじには、法華経の二十八の章にちなむ「経塚
 msgid "この道を見る"
 msgstr "この道を見る"
 
+#: src/components/blog/ShareButtons.tsx:39
 #: src/components/BrowserWarning.tsx:38
 msgid "コピーしました"
 msgstr "コピーしました"
+
+#: src/components/blog/CommentSection.tsx:54
+msgid "コメント"
+msgstr "コメント"
+
+#: src/components/blog/CommentSection.tsx:97
+msgid "コメントする"
+msgstr "コメントする"
+
+#: src/components/blog/CommentSection.tsx:40
+msgid "コメントを受け付けました。スタッフが確認すると、ここに表示されます。"
+msgstr "コメントを受け付けました。スタッフが確認すると、ここに表示されます。"
+
+#: src/components/blog/CommentSection.tsx:85
+msgid "コメントを書く"
+msgstr "コメントを書く"
+
+#: src/components/blog/CommentSection.tsx:109
+msgid "コメントを書くには、ログインが必要です。"
+msgstr "コメントを書くには、ログインが必要です。"
 
 #: src/components/settings/PasskeyManager.tsx:147
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
@@ -1749,6 +1796,11 @@ msgstr "ニックネームでもかまいません。"
 msgid "のぼり"
 msgstr "のぼり"
 
+#. placeholder {0}: route.elevationGainM
+#: src/components/blog/LinkedCards.tsx:30
+msgid "のぼり {0}m"
+msgstr "のぼり {0}m"
+
 #: src/components/admin/AdminListTable.tsx:157
 msgid "はい"
 msgstr "はい"
@@ -1913,9 +1965,9 @@ msgstr "ふりがなをつける"
 msgid "プレビュー"
 msgstr "プレビュー"
 
-#: src/app/(public)/blog/[id]/page.tsx:69
-#: src/app/(public)/blog/page.tsx:17
-#: src/app/(public)/blog/page.tsx:36
+#: src/app/(public)/blog/[id]/page.tsx:96
+#: src/app/(public)/blog/page.tsx:13
+#: src/app/(public)/blog/page.tsx:39
 #: src/app/(public)/sitemap/page.tsx:76
 #: src/components/landing/BlogCard.tsx:22
 #: src/components/SiteFooter.tsx:18
@@ -1927,17 +1979,30 @@ msgstr "ブログ"
 msgid "ブログの一覧"
 msgstr "ブログの一覧"
 
+#: src/components/ProfilePhoto.tsx:36
+msgid "ブログの記事の、書いた人のところに表示されます。"
+msgstr "ブログの記事の、書いた人のところに表示されます。"
+
+#: src/app/(public)/blog/[id]/page.tsx:244
 #: src/components/landing/BlogCard.tsx:42
 msgid "ブログをすべて見る"
 msgstr "ブログをすべて見る"
 
-#: src/app/(public)/profile/page.tsx:16
+#: src/app/(public)/profile/page.tsx:17
 #: src/app/(public)/settings/passkeys/page.tsx:23
 #: src/app/(public)/sitemap/page.tsx:96
 #: src/components/ProfileCard.tsx:38
 #: src/components/ProfileSettings.tsx:149
 msgid "プロフィール"
 msgstr "プロフィール"
+
+#: src/components/ProfilePhoto.tsx:34
+msgid "プロフィール写真"
+msgstr "プロフィール写真"
+
+#: src/app/(public)/blog/page.tsx:75
+msgid "ページ"
+msgstr "ページ"
 
 #: src/app/(public)/not-found.tsx:11
 msgid "ページが見つかりません"
@@ -1965,7 +2030,7 @@ msgstr "ページの漢字すべてに、読みがなをつけます。"
 msgid "ベースの地図"
 msgstr "ベースの地図"
 
-#: src/app/(public)/blog/page.tsx:33
+#: src/app/(public)/blog/page.tsx:35
 #: src/app/(public)/faq/page.tsx:24
 #: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/licenses/page.tsx:21
@@ -2021,6 +2086,10 @@ msgstr "ほかの乗り物"
 msgid "ほかの言語（ドイツ語など）の訪問者には、English の文章が表示されます。"
 msgstr "ほかの言語（ドイツ語など）の訪問者には、English の文章が表示されます。"
 
+#: src/app/(public)/blog/[id]/page.tsx:234
+msgid "ほかの記事"
+msgstr "ほかの記事"
+
 #: src/components/admin/map-editor/MapEditor.tsx:884
 msgid "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。"
 msgstr "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。"
@@ -2054,6 +2123,10 @@ msgstr "まだありません。"
 #: src/components/admin/PlaceTable.tsx:215
 msgid "まだありません。「＋ 行を追加」で、経由地を表に入れてください。"
 msgstr "まだありません。「＋ 行を追加」で、経由地を表に入れてください。"
+
+#: src/components/blog/CommentSection.tsx:58
+msgid "まだコメントはありません。"
+msgstr "まだコメントはありません。"
 
 #: src/components/GuestBackup.tsx:36
 msgid "まだスタンプがありません。"
@@ -2099,7 +2172,7 @@ msgstr "マップをひらく"
 msgid "まわりにあるもの"
 msgstr "まわりにあるもの"
 
-#: src/app/(public)/blog/[id]/page.tsx:131
+#: src/app/(public)/blog/[id]/page.tsx:186
 #: src/components/map/PlacesPanel.tsx:130
 #: src/components/map/PlacesPanel.tsx:131
 #: src/components/NearbyPlaces.tsx:22
@@ -2390,6 +2463,10 @@ msgstr "リンクは [表示する文字](https://…) と書きます。脚注�
 msgid "リンクは [表示する文字](https://…) の形で書けます（下のボタンでも入れられます）。"
 msgstr "リンクは [表示する文字](https://…) の形で書けます（下のボタンでも入れられます）。"
 
+#: src/components/blog/ShareButtons.tsx:39
+msgid "リンクをコピー"
+msgstr "リンクをコピー"
+
 #: src/components/PrintShare.tsx:38
 msgid "リンクをコピーしました"
 msgstr "リンクをコピーしました"
@@ -2404,12 +2481,18 @@ msgstr "リンクを直接入れる"
 
 #: src/app/(admin)/admin/attention/page.tsx:54
 #: src/app/(admin)/admin/routes/page.tsx:22
+#: src/app/(public)/blog/[id]/page.tsx:102
 #: src/app/(public)/routes/page.tsx:18
 #: src/app/(public)/sitemap/page.tsx:65
 #: src/components/admin/AdminNav.tsx:31
 #: src/components/TabBar.tsx:24
 msgid "ルート"
 msgstr "ルート"
+
+#. placeholder {0}: route.order
+#: src/components/blog/LinkedCards.tsx:22
+msgid "ルート {0}"
+msgstr "ルート {0}"
 
 #. placeholder {0}: preview.routes.length
 #. placeholder {1}: preview.places.length
@@ -2536,6 +2619,7 @@ msgstr "ログアウト"
 #: src/app/(public)/sitemap/page.tsx:102
 #: src/components/auth/LoginFlow.tsx:55
 #: src/components/auth/RegisterFlow.tsx:141
+#: src/components/blog/CommentSection.tsx:111
 #: src/components/GuestNag.tsx:82
 #: src/components/landing/LandingHero.tsx:55
 #: src/components/ProfileSettings.tsx:179
@@ -2887,6 +2971,10 @@ msgstr "保存する"
 msgid "保存できません。赤く示した項目を直してください。"
 msgstr "保存できません。赤く示した項目を直してください。"
 
+#: src/components/ProfilePhoto.tsx:50
+msgid "保存できませんでした。もう一度お試しください。"
+msgstr "保存できませんでした。もう一度お試しください。"
+
 #: src/components/OfflineSave.tsx:49
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "保存できませんでした。電波の良い場所でもう一度お試しください。"
@@ -3096,6 +3184,10 @@ msgstr "公開前の経由地も、ここには表示されます。"
 msgid "共有"
 msgstr "共有"
 
+#: src/components/blog/ShareButtons.tsx:35
+msgid "共有する"
+msgstr "共有する"
+
 #: src/components/admin/AdminItemForm.tsx:272
 msgid "内容"
 msgstr "内容"
@@ -3221,6 +3313,10 @@ msgstr "写真をアップロード"
 #: src/components/useErrorMessages.ts:59
 msgid "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 msgstr "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
+
+#: src/components/ProfilePhoto.tsx:43
+msgid "写真を外す"
+msgstr "写真を外す"
 
 #: src/components/admin/GalleryEditor.tsx:62
 msgid "写真を探すサービスにつながりませんでした。しばらくしてから、もう一度お試しください。"
@@ -3366,6 +3462,10 @@ msgstr "前の番号の経由地がまだないので、作れません"
 #: src/components/admin/RouteTable.tsx:152
 msgid "前へ"
 msgstr "前へ"
+
+#: src/app/(public)/blog/[id]/page.tsx:200
+msgid "前後の記事"
+msgstr "前後の記事"
 
 #: src/components/QuickActions.tsx:56
 msgid "動きなし"
@@ -3569,6 +3669,10 @@ msgstr "名前で絞る"
 msgid "名前と公開"
 msgstr "名前と公開"
 
+#: src/components/blog/CommentSection.tsx:65
+msgid "名前なし"
+msgstr "名前なし"
+
 #. placeholder {0}: waypoints.length
 #: src/components/admin/map-editor/MapEditor.tsx:1051
 msgid "名前のついた地点が{0}か所ありました。経由地として追加しますか？"
@@ -3643,7 +3747,7 @@ msgstr "国土地理院（地理院タイル）"
 msgid "地図"
 msgstr "地図"
 
-#: src/app/(public)/blog/[id]/page.tsx:122
+#: src/app/(public)/blog/[id]/page.tsx:175
 #: src/components/PlaceDialog.tsx:29
 #: src/components/SpotSheet.tsx:72
 msgid "地図で見る"
@@ -4218,6 +4322,10 @@ msgstr "新しいルート（管理）"
 msgid "新しい点は、選んだ点（{chosenNo}番）のあとに入ります。もう一度クリックすると、選びなおせます。"
 msgstr "新しい点は、選んだ点（{chosenNo}番）のあとに入ります。もう一度クリックすると、選びなおせます。"
 
+#: src/app/(public)/blog/page.tsx:62
+msgid "新しい記事"
+msgstr "新しい記事"
+
 #: src/components/admin/PhotoLibrary.tsx:139
 msgid "新しい順"
 msgstr "新しい順"
@@ -4289,10 +4397,6 @@ msgstr "更新 {updated}（日本時間）"
 msgid "書いたファイル（.xlsx）"
 msgstr "書いたファイル（.xlsx）"
 
-#: src/app/(public)/blog/[id]/page.tsx:151
-msgid "書いた人"
-msgstr "書いた人"
-
 #: src/components/admin/RouteImport.tsx:85
 msgid "書いてありません"
 msgstr "書いてありません"
@@ -4309,7 +4413,7 @@ msgstr "書きかえ済み"
 msgid "書き方"
 msgstr "書き方"
 
-#: src/app/(public)/blog/page.tsx:45
+#: src/app/(public)/blog/page.tsx:49
 msgid "書けたら、ここに表示されます。"
 msgstr "書けたら、ここに表示されます。"
 
@@ -4411,6 +4515,14 @@ msgstr "次の写真"
 #: src/components/admin/RouteImport.tsx:204
 msgid "次の行は、まちがいがあるので取り込みません："
 msgstr "次の行は、まちがいがあるので取り込みません："
+
+#: src/app/(public)/blog/[id]/page.tsx:216
+msgid "次の記事 →"
+msgstr "次の記事 →"
+
+#: src/app/(public)/blog/page.tsx:88
+msgid "次へ →"
+msgstr "次へ →"
 
 #: src/components/map/TrailMap.tsx:552
 msgid "次へ ＞"
@@ -5136,7 +5248,7 @@ msgstr "葛城修験の地図"
 msgid "葛城修験の道"
 msgstr "葛城修験の道"
 
-#: src/app/(public)/blog/page.tsx:39
+#: src/app/(public)/blog/page.tsx:42
 msgid "葛城修験の道のことや、歩いた日のことをお知らせします。"
 msgstr "葛城修験の道のことや、歩いた日のことをお知らせします。"
 
@@ -5230,7 +5342,7 @@ msgstr "言語"
 msgid "言語は{MAX_LANGUAGES}つまで（日本語を含む）。英語以外は、まだ訪れる人には表示されません。"
 msgstr "言語は{MAX_LANGUAGES}つまで（日本語を含む）。英語以外は、まだ訪れる人には表示されません。"
 
-#: src/app/(public)/blog/page.tsx:44
+#: src/app/(public)/blog/page.tsx:48
 msgid "記事は、まだありません。"
 msgstr "記事は、まだありません。"
 
@@ -5249,10 +5361,6 @@ msgstr "許可確認済み"
 #: src/components/admin/DirectoryPicker.tsx:168
 msgid "該当する場所はありません。"
 msgstr "該当する場所はありません。"
-
-#: src/app/(public)/blog/[id]/page.tsx:105
-msgid "詳しい情報"
-msgstr "詳しい情報"
 
 #: src/components/admin/PlacePanel.tsx:93
 #: src/components/SpotSheet.tsx:111
@@ -5343,6 +5451,7 @@ msgstr "送った内容が、読み取れませんでした。もう一度お試
 
 #: src/components/admin/PhotoUpload.tsx:76
 #: src/components/admin/SubtitleUpload.tsx:61
+#: src/components/blog/CommentSection.tsx:97
 msgid "送っています…"
 msgstr "送っています…"
 

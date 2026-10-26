@@ -1,5 +1,6 @@
 import { Trans } from "@lingui/react/macro";
 import { ProfileCard } from "@/components/ProfileCard";
+import { ProfilePhoto } from "@/components/ProfilePhoto";
 import { ProfileSettings } from "@/components/ProfileSettings";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { getViewer } from "@/lib/viewer";
@@ -18,6 +19,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
       {viewer.signedIn ? (
         <>
           <ProfileCard publicId={viewer.publicId} deletionDueAt={viewer.deletionDueAt} locale={i18n.locale} name={viewer.name} origin={viewer.origin} ageRange={viewer.ageRange} gender={viewer.gender} foundVia={viewer.foundVia} email={viewer.email} />
+          {viewer.role === "editor" || viewer.role === "admin" ? <ProfilePhoto photoUrl={viewer.avatarUrl ?? null} name={viewer.name} /> : null}
           <ProfileSettings locale={i18n.locale} deletionDueAt={viewer.deletionDueAt} name={viewer.name} origin={viewer.origin} ageRange={viewer.ageRange} gender={viewer.gender} foundVia={viewer.foundVia} />
         </>
       ) : (
