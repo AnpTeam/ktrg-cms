@@ -232,8 +232,6 @@ export function MapScreen({
       data-dark={settings.dark}
       className={`trail-map relative h-dvh w-full overflow-hidden md:[--tab-room:0rem] ${chosen ? "[--tab-room:0rem]" : "[--tab-room:5.5rem]"}`}
     >
-      {/* Where the phone's status bar sits over the page (only when the page runs under it), a solid strip: no blurred map behind the clock. */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 z-30 h-[env(safe-area-inset-top)] bg-paper md:hidden" />
       <MapScreenCanvasLoader
         routes={routes}
         routeId={routeId}

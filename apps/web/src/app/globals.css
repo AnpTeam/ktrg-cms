@@ -923,3 +923,28 @@ body.map-sheet-full .site-header {
     display: none;
   }
 }
+
+/* The installed iPhone app runs under the status bar (black-translucent, see layout.tsx). Its clock and battery are always
+   white, so every page starts below a dark strip; the map is the exception: it runs right up under the bar, with only a
+   soft shade behind the clock. Elsewhere (a browser tab) the safe-area inset is 0 and none of this applies. */
+@media (display-mode: standalone) {
+  body {
+    padding-top: env(safe-area-inset-top);
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: env(safe-area-inset-top);
+    background: #000;
+    z-index: 60;
+    pointer-events: none;
+  }
+  body.map-screen-active {
+    padding-top: 0;
+  }
+  body.map-screen-active::before {
+    height: calc(env(safe-area-inset-top) + 0.5rem);
+    background: linear-gradient(to bottom, rgb(0 0 0 / 0.55), transparent);
+  }
+}

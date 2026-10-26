@@ -31,9 +31,11 @@ export interface ProfileCardProps {
   origin: Origin | null;
   ageRange: AgeRange | null;
   gender: Gender | null;
+  /** Only shows the details (the menu): changing them and deleting the account happen on the profile page. */
+  readOnly?: boolean;
 }
 
-export function ProfileCard({ publicId, deletionDueAt, locale, name, origin, ageRange, gender }: ProfileCardProps) {
+export function ProfileCard({ publicId, deletionDueAt, locale, name, origin, ageRange, gender, readOnly = false }: ProfileCardProps) {
   const { t } = useLingui();
   const router = useRouter();
   const originNames = useOriginNames();
@@ -231,6 +233,7 @@ export function ProfileCard({ publicId, deletionDueAt, locale, name, origin, age
           ) : null}
           {publicId ? <p className="mt-1 text-base text-muted">{t`ID: ${formatPublicId(publicId)}`}</p> : null}
         </div>
+        {readOnly ? null : (
         <button
           type="button"
           onClick={() => setEditing(true)}
@@ -238,6 +241,7 @@ export function ProfileCard({ publicId, deletionDueAt, locale, name, origin, age
         >
           {t`編集`}
         </button>
+        )}
       </section>
     </>
   );

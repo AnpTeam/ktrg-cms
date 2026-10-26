@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { logOut } from "@/lib/auth-client";
-import { BookmarkIcon, ChevronIcon, ChevronLeftIcon, CloseIcon } from "./icons";
+import { BookmarkIcon, ChevronIcon, ChevronLeftIcon, CloseIcon, GearIcon } from "./icons";
 import { ProfileCard, type ProfileCardProps } from "./ProfileCard";
 import { KatsuragiLogo } from "./KatsuragiLogo";
 import { LocaleSelect } from "./LocaleSwitcher";
@@ -140,7 +140,7 @@ export function SiteHeader({
         // The bar is as wide as the tab bar at the bottom (same side gaps), with the logo in the middle.
         className={
           onMap
-            ? "pointer-events-none absolute inset-x-3 top-3 md:hidden [&>*]:pointer-events-auto"
+            ? "pointer-events-none absolute inset-x-3 top-[calc(0.75rem+env(safe-area-inset-top))] md:hidden [&>*]:pointer-events-auto"
             : onLanding
               ? `absolute inset-x-3 top-3 transition-opacity md:hidden motion-reduce:transition-none ${hidden ? "pointer-events-none opacity-0" : ""}`
               : "relative px-3 pb-5 pt-3 md:hidden"
@@ -191,9 +191,9 @@ export function SiteHeader({
             </div>
             {signedIn ? (
               <div className="flex flex-col gap-3">
-                {/* The profile itself, editable here: the menu is where a person looks for it. */}
+                {/* Who is signed in, for a glance; changing it is on the profile page (the account settings item below). */}
                 <div className="-mx-4">
-                  <ProfileCard {...profile} locale={locale} />
+                  <ProfileCard {...profile} locale={locale} readOnly />
                 </div>
                 <button
                   type="button"
@@ -215,6 +215,13 @@ export function SiteHeader({
               </div>
             )}
 
+            {signedIn ? (
+              <Link prefetch={false} href="/profile" className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
+                <GearIcon />
+                <span className="min-w-0 flex-1">{t`アカウント設定`}</span>
+                <ChevronIcon />
+              </Link>
+            ) : null}
             <Link prefetch={false} href="/bookmarks" className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
               <BookmarkIcon />
               <span className="min-w-0 flex-1">{t`ブックマーク`}</span>
