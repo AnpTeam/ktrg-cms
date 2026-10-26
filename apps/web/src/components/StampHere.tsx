@@ -72,6 +72,7 @@ export function StampHere({
     const result = mock ? await mockStamp(mock) : await requestStamp(spotId, position.reading);
     if (result.ok) {
       setPhase({ name: "done", already: result.already });
+      window.dispatchEvent(new Event("ktrg:stamped")); // the sign-up reminder for a visitor with no account listens
       onStamped?.();
       router.refresh();
     } else {
@@ -96,6 +97,7 @@ export function StampHere({
     rally_not_active: t`このラリーは、いまは行われていません。`,
     not_ready: t`スタンプを押す機能は、まだ使えません。`,
     login_needed: t`ログインが切れたようです。ログインしなおしてください。`,
+    guest_full: t`登録なしで残せるスタンプの数が、上限になりました。新規登録すると、続けて集められます。`,
     too_many_requests: t`短い間に何度も操作されました。しばらくしてからお試しください。`,
     network: t`通信できませんでした。電波の良い場所でもう一度お試しください。`,
     failed: t`問題が発生しました。しばらくしてからもう一度お試しください。`,

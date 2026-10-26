@@ -6,7 +6,7 @@ import { Ruby } from "@/components/Ruby";
 import { ContinueCard } from "@/components/landing/ContinueCard";
 import { Landing } from "@/components/landing/Landing";
 import { listBanners, slidesToShow } from "@/lib/banners";
-import { forViewer, getRoute, listRoutes, sampleContentEnabled, type RouteSummary } from "@/lib/content";
+import { getRoute, listRoutes, sampleContentEnabled, type RouteSummary } from "@/lib/content";
 import { listNotices } from "@/lib/notices";
 import { parseVideoUrl } from "@/lib/video";
 import { getPrefs } from "@/lib/server-prefs";
@@ -27,7 +27,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const viewer = await getViewer(searchParams);
 
   const [all, notices, banners] = await Promise.all([listRoutes(), listNotices(), listBanners()]);
-  const routes = all.map((r) => forViewer(r, viewer));
+  const routes = all;
   // The intro video is set by the deployment (a YouTube or Vimeo link); with none, the section is left out.
   const introVideo = parseVideoUrl(process.env.INTRO_VIDEO_URL);
   const slides = slidesToShow(banners, sampleContentEnabled());
@@ -44,7 +44,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const target = courseToContinue(routes);
   const found = target ? await getRoute(target.id) : undefined;
   // The next places to stamp on that course, in order (a side trip and a closed place are left out).
-  const next = found ? forViewer(found, viewer).spots.filter((s) => s.stamped === false && s.status !== "closed" && !s.stopBy).slice(0, 3) : [];
+  const next = found ? found.spots.filter((s) => s.stamped === false && s.status !== "closed" && !s.stopBy).slice(0, 3) : [];
 
   const top = (
     <div className="flex flex-col gap-8 pt-2 lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-8">

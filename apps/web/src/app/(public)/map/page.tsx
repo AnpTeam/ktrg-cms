@@ -2,7 +2,7 @@ import { isGuidanceOnly, journeyOf, roleLabel, stopNumbers, stopRoles, trailStop
 import type { Metadata } from "next";
 import { msg } from "@lingui/core/macro";
 import { MapScreen } from "@/components/map/MapScreen";
-import { forViewer, getRoute, sampleContentEnabled, listPlaces, listRoutes, pickText, type PlaceItem, type RouteSummary } from "@/lib/content";
+import { getRoute, sampleContentEnabled, listPlaces, listRoutes, pickText, type PlaceItem, type RouteSummary } from "@/lib/content";
 import type { MapPhoto, MapScreenPoint, MapScreenRoute, MapScreenSpot, MapScreenStop } from "@/lib/map-screen";
 import { categoryOfKind } from "@/lib/point-kinds";
 import { getMapSettings } from "@/lib/site-settings";
@@ -50,7 +50,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
 
         if (r.status === "ready" && r.spotCount > 0) {
           const found = await getRoute(r.id);
-          const detail = found ? forViewer(found, viewer) : null;
+          const detail = found ?? null;
           const positioned = detail?.spots.filter((s) => s.position) ?? [];
           if (detail) {
             description = pickText(locale, detail.descriptionJa, detail.descriptionEn)?.text ?? null;
@@ -188,7 +188,7 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
   // Development only: `?stamp=far` and so on pretends the answers of the stamping API, which does not exist yet.
   const stampMock = process.env.NODE_ENV !== "production" && isStampMock(stamp) ? stamp : undefined;
 
-  const summaries = listed.map((r) => forViewer(r, viewer));
+  const summaries = listed;
   const routes = await mapRoutes(summaries, places, viewer, i18n.locale, { stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`), start: i18n._(msg`スタート`), goal: i18n._(msg`ゴール`) });
   const next = `?next=${encodeURIComponent("/map")}`;
   // "Show in the map" from a place page: only an existing course (and a stop of it) is taken over from the address.
@@ -205,10 +205,8 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
       routes={routes}
       settings={settings}
       mergeStops={prefs.mergeStops}
-      signedIn={viewer.signedIn}
       locale={i18n.locale}
       loginHref={`/login${next}`}
-      registerHref={`/register${next}`}
       stampMock={stampMock}
     />
   );

@@ -29,10 +29,9 @@ export async function locationAlreadyAllowed(): Promise<boolean> {
   }
 }
 
-/** Ask the server for the stamp (contract in stamp-flow.ts). Never throws. */
-export async function requestStamp(spotId: string, reading: Reading): Promise<StampResult> {
+async function postStamp(path: string, spotId: string, reading: Reading): Promise<StampResult> {
   try {
-    const res = await fetch("/api/v1/stamps", {
+    const res = await fetch(path, {
       method: "POST",
       credentials: "same-origin",
       headers: { "content-type": "application/json" },
@@ -50,20 +49,33 @@ export async function requestStamp(spotId: string, reading: Reading): Promise<St
   }
 }
 
-/** The ids of the places this visitor has stamped, or null if they could not be read (signed out, offline). Never throws. */
+/**
+ * Ask the server for the stamp (contract in stamp-flow.ts). Never throws. Signed out, the same request goes to the guest
+ * endpoint, which checks the same things and keeps the stamp in a signed cookie instead of an account.
+ */
+export async function requestStamp(spotId: string, reading: Reading): Promise<StampResult> {
+  const result = await postStamp("/api/v1/stamps", spotId, reading);
+  return !result.ok && result.failure === "login_needed" ? postStamp("/api/v1/guest/stamps", spotId, reading) : result;
+}
+
+/** The ids of the places this visitor has stamped (account or guest), or null if they could not be read. Never throws. */
 export async function fetchMyStamps(): Promise<Set<string> | null> {
-  try {
-    const res = await fetch("/api/v1/stamps", { credentials: "same-origin" });
-    let body: unknown = null;
+  for (const path of ["/api/v1/stamps", "/api/v1/guest/stamps"]) {
     try {
-      body = await res.json();
+      const res = await fetch(path, { credentials: "same-origin" });
+      let body: unknown = null;
+      try {
+        body = await res.json();
+      } catch {
+        // no readable body: the status alone decides
+      }
+      const stamps = parseMyStamps(res.status, body);
+      if (stamps) return stamps;
     } catch {
-      // no readable body: the status alone decides
+      return null;
     }
-    return parseMyStamps(res.status, body);
-  } catch {
-    return null;
   }
+  return null;
 }
 
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

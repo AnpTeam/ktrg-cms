@@ -1,6 +1,5 @@
 import { describe, expect, test } from "bun:test";
 import {
-  forRallyViewer,
   isSoon,
   nextSlot,
   otherRallies,
@@ -65,11 +64,10 @@ describe("otherRallies", () => {
 });
 
 describe("slots", () => {
-  test("the next place is the first one not stamped; none when all are, or signed out", () => {
+  test("the next place is the first one not stamped; none when all are", () => {
     const r = rally({ id: "x", stamped: 2, slots: slots([true, true, false]) });
     expect(nextSlot(r)?.number).toBe(3);
     expect(nextSlot(rally({ id: "y", stamped: 3, slots: slots([true, true, true]) }))).toBeUndefined();
-    expect(nextSlot(forRallyViewer(r, false))).toBeUndefined();
   });
 
   test("the stamped numbers, for the grid", () => {
@@ -79,20 +77,6 @@ describe("slots", () => {
   test("soon means no places", () => {
     expect(isSoon(c3)).toBe(true);
     expect(isSoon(c1)).toBe(false);
-  });
-});
-
-describe("forRallyViewer", () => {
-  test("signed in: unchanged", () => {
-    expect(forRallyViewer(c2, true)).toBe(c2);
-  });
-
-  test("signed out: no progress, no stamp state, no times", () => {
-    const r = forRallyViewer(rally({ id: "x", stamped: 2, lastStampedAt: "2026-10-15T00:00:00Z", slots: slots([true, true, false]) }), false);
-    expect(r.stamped).toBeNull();
-    expect(r.lastStampedAt).toBeNull();
-    expect(r.slots.every((s) => s.stamped === null)).toBe(true);
-    expect(r.slots.map((s) => s.nameJa)).toEqual(["場所1", "場所2", "場所3"]); // the names stay: they are public
   });
 });
 

@@ -7,7 +7,7 @@ import { FeaturedRally, RallyCard } from "@/components/RallyViews";
 import { SectionBanner } from "@/components/SectionBanner";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { listRallies } from "@/lib/content";
-import { forRallyViewer, otherRallies, pickFeatured } from "@/lib/rally-model";
+import { otherRallies, pickFeatured } from "@/lib/rally-model";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
 
@@ -17,7 +17,7 @@ import { initLingui } from "@/i18n/server";
 export default async function StampsPage({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
   const i18n = await initLingui();
   const viewer = await getViewer(searchParams);
-  const rallies = (await listRallies()).map((r) => forRallyViewer(r, viewer.signedIn));
+  const rallies = await listRallies();
   const featured = pickFeatured(rallies);
   const others = otherRallies(rallies, featured);
 
@@ -51,7 +51,7 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
         </EmptyState>
       ) : null}
 
-      {featured ? <FeaturedRally rally={featured} locale={i18n.locale} signedIn={viewer.signedIn} /> : null}
+      {featured ? <FeaturedRally rally={featured} locale={i18n.locale} account={viewer.signedIn} /> : null}
 
       {others.length > 0 ? (
         <section className="flex flex-col gap-3 px-4">
@@ -60,7 +60,7 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
           </SectionBanner>
           <ul className="flex flex-col gap-3">
             {others.map((rally) => (
-              <RallyCard key={rally.id} rally={rally} locale={i18n.locale} signedIn={viewer.signedIn} />
+              <RallyCard key={rally.id} rally={rally} locale={i18n.locale} account={viewer.signedIn} />
             ))}
           </ul>
         </section>

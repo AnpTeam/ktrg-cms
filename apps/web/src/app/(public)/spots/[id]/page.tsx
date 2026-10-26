@@ -3,11 +3,10 @@ import type { Metadata } from "next";
 import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
 import { SpotSheet } from "@/components/SpotSheet";
-import { forViewer, getSpot, listPlaces, listRoutes, pickText, toMapPlace } from "@/lib/content";
+import { getSpot, listPlaces, listRoutes, pickText, toMapPlace } from "@/lib/content";
 import type { NearestGroup } from "@/components/NearestPlaces";
 import { sortByDistance } from "@/lib/places";
 import type { Nearby } from "@/components/NearbyPlaces";
-import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
 import { isStampMock } from "@/lib/stamp-flow";
 
@@ -25,13 +24,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // Spot detail (WBS 3.2.5). A draft or unknown spot is a 404 (the API does the same).
 export default async function SpotPage({ params, searchParams }: Props) {
   const i18n = await initLingui();
-  const viewer = await getViewer(searchParams);
   // Development only: `?stamp=far` and so on pretends the answers of the stamping API, which does not exist yet.
   const { stamp } = await searchParams;
   const stampMock = process.env.NODE_ENV !== "production" && isStampMock(stamp) ? stamp : undefined;
   const found = await getSpot((await params).id);
   if (!found) notFound();
-  const spot = forViewer(found, viewer);
+  const spot = found;
   // Toilets, shops and the like within a few minutes' walk, nearest first (a straight line, not the walking distance).
   const near: Nearby[] = spot.position
     ? sortByDistance(await listPlaces(), spot.position)

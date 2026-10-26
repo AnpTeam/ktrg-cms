@@ -47,10 +47,8 @@ export function MapScreen({
   routes,
   settings,
   mergeStops,
-  signedIn,
   locale,
   loginHref,
-  registerHref,
   stampMock,
   initialRouteId = null,
   initialStopId = null,
@@ -64,10 +62,8 @@ export function MapScreen({
   routes: MapScreenRoute[];
   settings: MapSettings;
   mergeStops: boolean;
-  signedIn: boolean;
   locale: string;
   loginHref: string;
-  registerHref: string;
   /** Development only: pretend answers for the stamp button. */
   stampMock?: StampMock;
 }) {
@@ -208,16 +204,15 @@ export function MapScreen({
 
   const detailBody =
     stop && route ? (
-      <StopPanel route={route} stop={stop} showNumber={!viaMounds} signedIn={signedIn} locale={locale} loginHref={loginHref} registerHref={registerHref} stampMock={stampMock} />
+      <StopPanel route={route} stop={stop} showNumber={!viaMounds} locale={locale} loginHref={loginHref} stampMock={stampMock} />
     ) : route ? (
-      <RoutePanel route={route} signedIn={signedIn} loginHref={loginHref} registerHref={registerHref} onChooseStop={(id) => chooseStop(route.id, id)} />
+      <RoutePanel route={route} onChooseStop={(id) => chooseStop(route.id, id)} />
     ) : null;
   const hasDetail = route !== null;
 
   const homeBody = (
     <div className="flex flex-col gap-5 px-4 pb-4">
       <CourseList routes={routes} onChoose={chooseRoute} locale={locale} />
-      {signedIn ? null : <LockedNote loginHref={loginHref} registerHref={registerHref} />}
     </div>
   );
 
@@ -341,33 +336,11 @@ function CourseList({ routes, onChoose, locale }: { routes: MapScreenRoute[]; on
   );
 }
 
-/** Navigation and stamps need an account: a visitor who is not signed in is told so, and offered the way in. */
-function LockedNote({ loginHref, registerHref }: { loginHref: string; registerHref: string }) {
-  const { t } = useLingui();
-  return (
-    <section className="flex flex-col gap-3 rounded-3xl bg-surface p-4">
-      <p className="text-lg font-bold leading-snug">{t`ログインすると、ルート案内とスタンプが使えます。見るだけなら、このままどうぞ。`}</p>
-      <Link href={registerHref} className={primaryLink}>
-        {t`新規登録`}
-      </Link>
-      <Link href={loginHref} className={linkButton}>
-        {t`ログイン`}
-      </Link>
-    </section>
-  );
-}
-
 function RoutePanel({
   route,
-  signedIn,
-  loginHref,
-  registerHref,
   onChooseStop,
 }: {
   route: MapScreenRoute;
-  signedIn: boolean;
-  loginHref: string;
-  registerHref: string;
   onChooseStop: (id: string) => void;
 }) {
   const { t } = useLingui();
@@ -384,7 +357,7 @@ function RoutePanel({
 
       <RouteStats route={route} />
 
-      {signedIn && route.status === "ready" ? <NavigationStart route={route} /> : null}
+      {route.status === "ready" ? <NavigationStart route={route} /> : null}
 
       {stampedCount !== null && spotCount > 0 ? (
         <p className="text-xl font-bold tabular-nums">{t`スタンプ ${stampedCount} / ${spotCount}`}</p>
@@ -479,7 +452,6 @@ function RoutePanel({
         </section>
       ) : null}
 
-      {signedIn ? null : <LockedNote loginHref={loginHref} registerHref={registerHref} />}
     </div>
   );
 }
@@ -488,20 +460,16 @@ function StopPanel({
   route,
   stop,
   showNumber,
-  signedIn,
   locale,
   loginHref,
-  registerHref,
   stampMock,
 }: {
   route: MapScreenRoute;
   stop: MapScreenStop;
   /** False when the stop was opened from the sutra mound pins: the course's numbering means nothing there. */
   showNumber: boolean;
-  signedIn: boolean;
   locale: string;
   loginHref: string;
-  registerHref: string;
   stampMock?: StampMock;
 }) {
   const { t } = useLingui();
@@ -543,10 +511,8 @@ function StopPanel({
 
       {stop.noStamp ? (
         <p className="self-start rounded-lg border-2 border-dashed border-line px-2 text-base font-bold">{t`スタンプなし`}</p>
-      ) : signedIn && stop.stamped !== null ? (
-        <StampHere spotId={stop.id} status={stop.status} alreadyStamped={stop.stamped} loginHref={loginHref} mock={stampMock} inSheet />
       ) : (
-        <LockedNote loginHref={loginHref} registerHref={registerHref} />
+        <StampHere spotId={stop.id} status={stop.status} alreadyStamped={stop.stamped === true} loginHref={loginHref} mock={stampMock} inSheet />
       )}
 
       <Link href={stop.href} className={linkButton}>

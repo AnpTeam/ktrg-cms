@@ -31,6 +31,7 @@ export type StampFailure =
   | "rally_not_active"
   | "not_ready"
   | "login_needed"
+  | "guest_full"
   | "too_many_requests"
   | "network"
   | "failed";
@@ -81,6 +82,8 @@ export function parseStampResponse(status: number, body: unknown): StampResult {
       return { ok: false, failure: "low_accuracy" };
     case "spot_closed":
       return { ok: false, failure: "spot_closed" };
+    case "guest_full":
+      return { ok: false, failure: "guest_full" };
     case "rally_not_active":
       return { ok: false, failure: "rally_not_active" };
     default:

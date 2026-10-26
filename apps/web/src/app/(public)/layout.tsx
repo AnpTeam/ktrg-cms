@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 import { MenuProvider } from "@/components/MenuProvider";
 import { NavigationProvider } from "@/components/navigation/NavigationProvider";
@@ -6,6 +7,8 @@ import { OfflineNotice } from "@/components/OfflineNotice";
 import { SampleNoticeHost } from "@/components/SampleNotice";
 import { SiteFooter } from "@/components/SiteFooter";
 import { StampFilters } from "@/components/StampFilters";
+import { GuestClaim } from "@/components/GuestClaim";
+import { GuestNag } from "@/components/GuestNag";
 import { FuriganaLayer } from "@/components/FuriganaLayer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { TabBar } from "@/components/TabBar";
@@ -25,6 +28,9 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   const sample = sampleContentEnabled();
   const viewer = await getViewer();
   const prefsState = await getPrefsState();
+  // Stamps held without an account live in a signed cookie (guest/ in the API); the server only needs to know it is there.
+  const jar = await cookies();
+  const hasGuestStamps = jar.has("guest") || jar.has("__Host-guest");
 
   return (
     <MenuProvider>
@@ -52,6 +58,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           </main>
         </div>
       </div>
+      {viewer.signedIn ? (hasGuestStamps ? <GuestClaim /> : null) : <GuestNag hasStamps={hasGuestStamps} />}
       {prefsState.effective.furigana ? <FuriganaLayer /> : null}
       <NavigationToast />
       </NavigationProvider>
