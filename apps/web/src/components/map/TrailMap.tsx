@@ -173,6 +173,8 @@ export function TrailMap({
             "CooperativeGesturesHandler.MacHelpText": t`⌘キーを押しながら地図を動かします`,
           },
           attributionControl: { compact: false },
+          // Without this the map prints as a blank box (the browser prints what the canvas still holds).
+          canvasContextAttributes: { preserveDrawingBuffer: true },
         });
         map.touchZoomRotate.disableRotation();
         // A tile that cannot be fetched (weak signal) is normal, not an error to shout about: the
@@ -500,7 +502,7 @@ export function TrailMap({
           </p>
         ) : null}
 
-        <div className="absolute right-2 top-2 z-10 flex flex-col gap-2">
+        <div className="absolute right-2 top-2 z-10 flex flex-col gap-2 print:hidden">
           <button type="button" onClick={() => zoom(1)} aria-label={t`拡大`} className={`${buttonClass} text-2xl`}>
             ＋
           </button>
@@ -510,7 +512,7 @@ export function TrailMap({
         </div>
 
         {expanded ? null : (
-          <div className="absolute bottom-9 left-2 z-10">
+          <div className="absolute bottom-9 left-2 z-10 print:hidden">
             <button ref={expandRef} type="button" onClick={() => setExpanded(true)} className={buttonClass}>
               <ExpandIcon />
               {t`大きく表示`}

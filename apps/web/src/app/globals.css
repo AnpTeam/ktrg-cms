@@ -903,3 +903,14 @@ body.map-sheet-full .site-header {
     padding-inline: 0;
   }
 }
+
+/* On paper the map keeps to the page width, and its buttons (useless there) are left off. */
+@media print {
+  .trail-map .maplibregl-canvas {
+    max-width: 100%;
+    height: auto !important;
+  }
+  .trail-map .maplibregl-ctrl-top-left, .trail-map .maplibregl-ctrl-top-right {
+    display: none;
+  }
+}
