@@ -10,3 +10,9 @@ CREATE TABLE "site_pages" (
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "site_pages_slug_unique" UNIQUE("slug")
 );
+--> statement-breakpoint
+-- Supabase serves every public-schema table through PostgREST, guarded only by row level security, and 0019 turned it
+-- on for the tables that existed then. Tables made since need the same: on with no policies, so the outside API sees
+-- nothing while the app (connecting as the table owner) is unaffected. furigana_words (0032) missed it.
+ALTER TABLE "site_pages" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "furigana_words" ENABLE ROW LEVEL SECURITY;
