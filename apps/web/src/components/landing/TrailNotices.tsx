@@ -1,5 +1,4 @@
 import { Trans } from "@lingui/react/macro";
-import { ChevronIcon } from "@/components/icons";
 import { Localized } from "@/components/Localized";
 import { pickText } from "@/lib/content";
 import { formatDay } from "@/lib/format";
@@ -16,9 +15,8 @@ const BellIcon = () => (
  * News from the trail: closures and hazards, each dated, with where it came from. It looks different from
  * the plain grey panels on purpose (a warm tint, a bell, dated rows) so it reads as news and gets noticed.
  * Renders nothing when there are none: an empty block would only worry people, and we never invent one.
- * `blogUrl`, when set, adds a link to the blog (there is no blog in the app yet).
  */
-export function TrailNotices({ notices, locale, blogUrl }: { notices: TrailNotice[]; locale: string; blogUrl: string | null }) {
+export function TrailNotices({ notices, locale }: { notices: TrailNotice[]; locale: string }) {
   if (notices.length === 0) return null;
   return (
     <section className="mx-4 rounded-3xl bg-brand/10 p-5">
@@ -59,17 +57,6 @@ export function TrailNotices({ notices, locale, blogUrl }: { notices: TrailNotic
           );
         })}
       </ul>
-      {blogUrl && isWebUrl(blogUrl) ? (
-        <a
-          href={blogUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="tap-target mt-2 flex items-center justify-between gap-3 rounded-2xl bg-paper px-5 text-xl font-bold text-accent"
-        >
-          <Trans>ブログを見る</Trans>
-          <ChevronIcon />
-        </a>
-      ) : null}
     </section>
   );
 }

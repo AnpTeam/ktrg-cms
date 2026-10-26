@@ -44,6 +44,8 @@ import { createDrizzleUserListStore, userList } from "./users/user-list";
 import { userRoleRoutes } from "./users/user-routes";
 import { noticeList, publicNoticeRoutes } from "./notices/notice-routes";
 import { createDrizzleNoticeStore } from "./notices/notice-store";
+import { postList, publicPostRoutes } from "./posts/post-list";
+import { createDrizzlePostStore } from "./posts/post-store";
 import { meRoutes } from "./me/me-routes";
 import { createDrizzleMeStore } from "./me/me-store";
 import { apiDocs } from "./openapi";
@@ -69,6 +71,7 @@ function getServices(): Services {
         stamps: createDrizzleStampStore(db),
         stampList: createDrizzleStampListStore(db),
         notices: createDrizzleNoticeStore(db),
+        posts: createDrizzlePostStore(db),
         banners: createDrizzleBannerStore(db),
         furigana: createDrizzleFuriganaStore(db),
         sitePages: createDrizzleSitePageStore(db),
@@ -145,6 +148,9 @@ export function createApp(
     .use(listReadRoutes(noticeList, getServices, opts))
     .use(listWriteRoutes(noticeList, getServices, opts))
     .use(publicNoticeRoutes(() => getServices().notices))
+    .use(listReadRoutes(postList, getServices, opts))
+    .use(listWriteRoutes(postList, getServices, opts))
+    .use(publicPostRoutes(() => getServices().posts))
     .use(listReadRoutes(bannerList, getServices, opts))
     .use(listWriteRoutes(bannerList, getServices, opts))
     .use(publicBannerRoutes(() => getServices().banners))

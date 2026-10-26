@@ -20,6 +20,7 @@ import { createMemoryContentStore } from "./content/content-memory-store";
 import { createMemoryRallyAdminStore } from "./rallies/rally-admin-memory-store";
 import { createMemoryStampStore } from "./stamps/stamp-memory-store";
 import { createMemoryNoticeStore } from "./notices/notice-memory-store";
+import { createMemoryPostStore } from "./posts/post-list";
 import { createMemorySiteSettingsStore } from "./site-settings/site-settings";
 import { createMemoryPlaceStore } from "./places/place-directory";
 import { createMemorySitePageStore } from "./pages/site-pages";
@@ -29,6 +30,22 @@ import { memoryReader } from "./admin-lists/list-memory-store";
 import { createMemoryUserListStore } from "./users/user-list";
 import { createMemoryMeStore } from "./me/me-memory-store";
 import { createServices } from "./services";
+
+/** A well-formed blog post body (the admin list's create needs every field). */
+const samplePost = () => ({
+  titleJa: "x",
+  titleEn: null,
+  bodyJa: "x",
+  bodyEn: null,
+  authorNameJa: null,
+  authorNameEn: null,
+  coverPhotoUrl: null,
+  coverCredit: null,
+  placeId: null,
+  authorPhotoUrl: null,
+  publishedOn: "2026-10-20",
+  published: false,
+});
 
 /** A well-formed trail notice body (the admin list's create needs every field). */
 const sampleNotice = () => ({
@@ -74,6 +91,7 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       stamps: stampMem.store,
       stampList: stampMem.listStore,
       notices: createMemoryNoticeStore(audit.writer).store,
+      posts: createMemoryPostStore(audit.writer).store,
       banners: createMemoryBannerStore(audit.writer).store,
       furigana: createMemoryFuriganaStore(audit.writer).store,
       sitePages: createMemorySitePageStore(audit.writer).store,
@@ -324,6 +342,9 @@ describe("user B cannot touch user A", () => {
     // The pages editors make (see pages/site-pages.test.ts).
     "GET /api/v1/site-pages",
     "GET /api/v1/site-pages/:slug",
+    // Published blog posts (see posts/post-list.test.ts).
+    "GET /api/v1/posts",
+    "GET /api/v1/posts/:id",
     // Published home page banners (see banners/banner-list.test.ts).
     "GET /api/v1/banners",
     // Published places with a checked position (see places/place-directory.test.ts).
@@ -361,6 +382,8 @@ describe("user B cannot touch user A", () => {
     "PUT /api/v1/admin/rallies/:id/places": () => ({ updatedAt: new Date().toISOString(), spotIds: [] }),
     "PUT /api/v1/admin/rallies/:id/courses": () => ({ updatedAt: new Date().toISOString(), routeIds: [] }),
     "POST /api/v1/admin/lists/notices": () => sampleNotice(),
+    "POST /api/v1/admin/lists/posts": () => samplePost(),
+    "PATCH /api/v1/admin/lists/posts/:id": () => ({ updatedAt: new Date().toISOString() }),
     "PATCH /api/v1/admin/lists/notices/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/lists/banners": () => ({ imageUrl: "https://example.com/a.jpg", altJa: "x", altEn: null, sortOrder: 0, published: false }),
     "PATCH /api/v1/admin/lists/banners/:id": () => ({ updatedAt: new Date().toISOString() }),

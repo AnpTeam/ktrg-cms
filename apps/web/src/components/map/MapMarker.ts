@@ -3,7 +3,8 @@ import type { MarkerKind } from "@/lib/map";
 import type { StopRole } from "@/lib/route-stops";
 import type { PointKind } from "@/lib/point-kinds";
 import { pointIconSvg } from "@/lib/point-icons";
-import { placeIconPaths, type PlaceGroup } from "@/lib/places";
+import { placeIconSvg } from "@/lib/place-icons";
+import type { PlaceCategory, PlaceGroup } from "@/lib/places";
 
 // Everything on the map is a real <button>: it can be reached with the keyboard, has a big tap
 // target and a spoken name. The look is in globals.css (.map-marker, .place-marker, .map-cluster),
@@ -151,15 +152,18 @@ function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: Stop
   return svg;
 }
 
-/** A place (toilet, shop ...): a rounded square with the group's picture, so it never looks like a numbered stop. */
+/** A place (toilet, shop ...): a rounded square with its coloured picture, so it never looks like a numbered stop. */
 export function createPlaceMarkerElement({
   group,
+  category,
   label,
   closed,
   photo = false,
   onSelect,
 }: {
   group: PlaceGroup;
+  /** What the place is: its coloured picture. */
+  category: PlaceCategory;
   label: string;
   /** Closed or gone: a diagonal bar over the picture. */
   closed: boolean;
@@ -177,19 +181,10 @@ export function createPlaceMarkerElement({
 
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.setAttribute("viewBox", "0 0 24 24");
-  svg.setAttribute("width", "24");
-  svg.setAttribute("height", "24");
-  svg.setAttribute("fill", "none");
-  svg.setAttribute("stroke", "currentColor");
-  svg.setAttribute("stroke-width", "2");
-  svg.setAttribute("stroke-linecap", "round");
-  svg.setAttribute("stroke-linejoin", "round");
+  svg.setAttribute("width", "28");
+  svg.setAttribute("height", "28");
   svg.setAttribute("aria-hidden", "true");
-  for (const d of placeIconPaths[group]) {
-    const path = document.createElementNS(SVG_NS, "path");
-    path.setAttribute("d", d);
-    svg.appendChild(path);
-  }
+  svg.innerHTML = placeIconSvg[category]; // fixed markup from lib/place-icons.ts
   el.appendChild(svg);
   if (photo) {
     el.dataset.photo = "true";

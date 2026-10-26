@@ -2,7 +2,8 @@ import type { AuditWriter } from "./audit/audit-log";
 import { createOtpService, type OtpStore } from "./auth/otp-service";
 import { createPasskeyService, type PasskeyConfig, type PasskeyStore } from "./auth/passkey-service";
 import type { PasskeyServices } from "./auth/passkey-routes";
-import { createRateLimiter, type RateLimitStore } from "./auth/rate-limit";
+import { AUTH_LIMITS, createRateLimiter, type RateLimitStore } from "./auth/rate-limit";
+import type { NavigationServices } from "./navigation/navigation-routes";
 import type { AuthServices } from "./auth/routes";
 import { createSessionService, type SessionStore } from "./auth/session-service";
 import type { Mailer } from "./lib/mailer";
@@ -20,6 +21,7 @@ import { createUserListService, type UserListServices, type UserListStore } from
 import type { NoticeServices } from "./notices/notice-routes";
 import { createNoticeService } from "./notices/notice-service";
 import type { NoticeStore } from "./notices/notice-types";
+import { createPostService, type PostServices, type PostStore } from "./posts/post-list";
 import type { ContentServices } from "./content/admin-routes";
 import { createContentService } from "./content/content-service";
 import { createRoutingService, withDailyCap, type RoutingService } from "./routing/routing-service";
@@ -39,7 +41,7 @@ import { createUploadService } from "./uploads/upload-service";
 import type { FileStorage } from "./uploads/upload-storage";
 
 /** Everything the routes use. */
-export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & BannerServices & PlaceServices & SiteSettingsServices & AuditListServices & PlaceListServices & UserListServices & GuestServices & FuriganaServices & SitePageServices;
+export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & PostServices & BannerServices & PlaceServices & SiteSettingsServices & AuditListServices & PlaceListServices & UserListServices & GuestServices & FuriganaServices & SitePageServices & NavigationServices;
 
 /** What the services are built from: the storage (database or in-memory) and the outside world. */
 export interface ServiceDeps {
@@ -54,6 +56,7 @@ export interface ServiceDeps {
     stamps: StampStore;
     stampList: ListReadStore<StampListRow>;
     notices: NoticeStore;
+    posts: PostStore;
     banners: BannerStore;
     furigana: FuriganaStore;
     sitePages: SitePageStore;
@@ -91,6 +94,7 @@ export function createServices(deps: ServiceDeps): Services {
   const { stores, mailer, secret, now } = deps;
   const rateLimit = createRateLimiter({ store: stores.rateLimit, secret, now });
   const stamps = createStampService({ store: stores.stamps });
+  const routing = withDailyCap(deps.routing ?? createRoutingService({}), rateLimit);
   return {
     otp: createOtpService({ store: stores.otp, mailer, secret, adminEmails: deps.adminEmails, now }),
     session: createSessionService({ store: stores.session, now }),
@@ -111,6 +115,8 @@ export function createServices(deps: ServiceDeps): Services {
     guest: createGuestService({ stamps, secret, now }),
     // Trail notices: the admin list and what visitors read.
     notices: createNoticeService({ store: stores.notices, now }),
+    // Blog posts: the admin list and what visitors read.
+    posts: createPostService({ store: stores.posts, photoHosts: deps.photoHosts, now, placeExists: async (id) => (await stores.places.get(id)) !== null }),
     // The other generated admin lists: home banners, the audit log, every place, accounts and their roles.
     banners: createBannerService({ store: stores.banners, photoHosts: deps.photoHosts }),
     furigana: createFuriganaService({ store: stores.furigana }),
@@ -123,6 +129,8 @@ export function createServices(deps: ServiceDeps): Services {
     // Admin photo uploads.
     uploads: createUploadService({ ...deps.uploads }),
     // The route-finding service behind the map editor's "snap to trails" (no key: it answers "not set up").
-    routing: withDailyCap(deps.routing ?? createRoutingService({}), rateLimit),
+    routing,
+    // Visitors' navigation: the same service, held to its own share of the day so the admin's snap always keeps some.
+    navigationRouting: withDailyCap(routing, rateLimit, AUTH_LIMITS.navigationAllDaily),
   };
 }

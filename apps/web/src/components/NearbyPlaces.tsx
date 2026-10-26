@@ -2,6 +2,7 @@
 
 import { useLingui } from "@lingui/react/macro";
 import { useCategoryNames, useDistanceText } from "@/components/map/PlacesPanel";
+import { PlaceIcon } from "@/components/PlaceIcon";
 import type { PlaceCategory } from "@/lib/places";
 
 export interface Nearby {
@@ -20,8 +21,9 @@ export function NearbyPlaces({ places }: { places: Nearby[] }) {
   return (
     <ul aria-label={t`まわりの場所`} className="flex flex-col">
       {places.map((p) => (
-        <li key={p.id} className="flex items-baseline justify-between gap-3 border-t border-line/30 py-3 first:border-t-0">
-          <span className="min-w-0">
+        <li key={p.id} className="flex items-center justify-between gap-3 border-t border-line/30 py-3 first:border-t-0">
+          <PlaceIcon category={p.category} />
+          <span className="min-w-0 flex-1">
             <span lang={p.nameLang} className="block text-lg font-bold leading-snug">
               {p.name}
             </span>

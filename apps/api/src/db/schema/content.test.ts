@@ -18,6 +18,8 @@ import {
   stamps,
   trailNotices,
   trailNoticeTranslations,
+  blogPosts,
+  blogPostTranslations,
 } from "./content";
 
 type Table = Parameters<typeof getTableConfig>[0];
@@ -104,6 +106,7 @@ describe("content schema", () => {
       [spots, spotTranslations, "spot_id"],
       [rallies, rallyTranslations, "rally_id"],
       [trailNotices, trailNoticeTranslations, "trail_notice_id"],
+      [blogPosts, blogPostTranslations, "blog_post_id"],
     ] as const;
     for (const [owner, words, key] of owners) {
       expect(cols(owner).filter((c) => /_(ja|en)$/.test(c))).toEqual([]);
@@ -120,6 +123,7 @@ describe("content schema", () => {
     expect(getTableConfig(spotTranslations).checks.map((c) => c.name)).toEqual(["spot_translations_ja_name"]);
     expect(getTableConfig(rallyTranslations).checks.map((c) => c.name)).toEqual(["rally_translations_ja_name"]);
     expect(getTableConfig(trailNoticeTranslations).checks.map((c) => c.name)).toEqual(["trail_notice_translations_ja_body", "trail_notice_translations_ja_title"]);
+    expect(getTableConfig(blogPostTranslations).checks.map((c) => c.name)).toEqual(["blog_post_translations_ja_title", "blog_post_translations_ja_body"]);
   });
 
   test("a rally is made of places or of courses, and is a draft until published; no N-of-M rule and no dates", () => {

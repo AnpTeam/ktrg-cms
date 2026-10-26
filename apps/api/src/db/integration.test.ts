@@ -21,6 +21,7 @@ import { createDrizzleNoticeStore } from "../notices/notice-store";
 import { createDrizzleBannerStore } from "../banners/banner-store";
 import { createDrizzlePlaceStore } from "../places/place-store";
 import { createDrizzleSiteSettingsStore } from "../site-settings/site-settings-store";
+import { createDrizzlePostStore } from "../posts/post-store";
 import { createDrizzleUserListStore } from "../users/user-list";
 import {
   auditLog,
@@ -44,6 +45,8 @@ import {
   spotTranslations,
   stamps,
   trailNotices,
+  blogPosts,
+  blogPostTranslations,
   trailNoticeTranslations,
   users,
   webauthnChallenges,
@@ -173,6 +176,18 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
         expect(audits[0]).toMatchObject({ actorUserId: user.id, action: "user.role.bootstrap_admin", targetType: "user" });
 
         expect(await otp.promoteToAdmin(user.id)).toBe(false);
+      } finally {
+        await db.delete(auditLog).where(eq(auditLog.targetId, user.id));
+      }
+    });
+
+    test("promoteToAdmin: an account whose role an admin has set is not promoted", async () => {
+      const user = await otp.findOrCreateUser(email("otp-demoted"));
+      try {
+        await db.insert(auditLog).values({ actorUserId: null, action: "user.role.change", targetType: "user", targetId: user.id });
+        expect(await otp.promoteToAdmin(user.id)).toBe(false);
+        const [row] = await db.select({ role: users.role }).from(users).where(eq(users.id, user.id));
+        expect(row!.role).toBe("participant");
       } finally {
         await db.delete(auditLog).where(eq(auditLog.targetId, user.id));
       }
@@ -1404,5 +1419,81 @@ describe.skipIf(!url)("site settings on real PostgreSQL", () => {
     expect(await db.select().from(siteSettings).where(eq(siteSettings.key, "map_style"))).toHaveLength(1);
     const audits = await db.select().from(auditLog).where(eq(auditLog.actorUserId, actor));
     expect(audits.map((a) => a.action)).toEqual(["site_setting.update", "site_setting.update"]);
+  });
+});
+
+describe.skipIf(!url)("blog posts on real PostgreSQL", () => {
+  const { db, client } = connect();
+  const store = createDrizzlePostStore(db);
+  const otp = createDrizzleOtpStore(db);
+  const tag = `bp${randomUUID().slice(0, 8)}`;
+  const made: string[] = [];
+  const fields = (over: Record<string, unknown> = {}) => ({
+    titleJa: `${tag} 金剛山の秋`,
+    titleEn: null,
+    bodyJa: "本文",
+    bodyEn: "Text",
+    authorNameJa: "山田",
+    authorNameEn: null,
+    coverPhotoUrl: null,
+    coverCredit: null,
+    authorPhotoUrl: null, placeId: null,
+    publishedOn: "2026-10-20",
+    published: false,
+    ...over,
+  });
+
+  afterAll(async () => {
+    if (made.length) {
+      await db.delete(auditLog).where(inArray(auditLog.targetId, made));
+      await db.delete(blogPosts).where(inArray(blogPosts.id, made));
+    }
+    await db.delete(users).where(like(users.email, `${tag}-%`));
+    await client.end();
+  });
+
+  const add = async (actor: string, over: Record<string, unknown> = {}) => {
+    const row = await store.create(actor, fields(over));
+    made.push(row.id);
+    return row;
+  };
+
+  test("words go to the translation table and come back flat; a stale save is a conflict; delete takes the words", async () => {
+    const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
+    const row = await add(actor);
+    expect(row).toMatchObject({ titleJa: `${tag} 金剛山の秋`, bodyEn: "Text", authorNameJa: "山田", publishedOn: "2026-10-20", published: false });
+    const words = await db.select().from(blogPostTranslations).where(eq(blogPostTranslations.blogPostId, row.id));
+    expect(words.map((w) => w.locale).sort()).toEqual(["en", "ja"]);
+
+    const changed = await store.update(actor, row.id, row.updatedAt, { titleEn: "Autumn", published: true });
+    expect(changed).toMatchObject({ titleEn: "Autumn", titleJa: `${tag} 金剛山の秋`, published: true });
+    expect(await store.update(actor, row.id, row.updatedAt, { titleJa: "late" })).toBe("conflict");
+    expect(await store.update(actor, randomUUID(), row.updatedAt, { titleJa: "x" })).toBeNull();
+
+    expect(await store.remove(actor, row.id)).toBe(true);
+    expect(await db.select().from(blogPostTranslations).where(eq(blogPostTranslations.blogPostId, row.id))).toHaveLength(0);
+    expect((await db.select().from(auditLog).where(eq(auditLog.targetId, row.id))).map((a) => a.action)).toEqual(["post.create", "post.update", "post.delete"]);
+  });
+
+  test("the Japanese title and body are required by the database too", async () => {
+    const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
+    await expect(store.create(actor, fields({ titleJa: null as unknown as string }))).rejects.toThrow();
+    await expect(store.create(actor, fields({ bodyJa: null as unknown as string }))).rejects.toThrow();
+  });
+
+  test("visitors see published posts whose day has come, newest day first; one post by id follows the same rule", async () => {
+    const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
+    const today = "2026-10-21";
+    await add(actor, { titleJa: `${tag} 下書き`, published: false, publishedOn: "2026-10-19" });
+    await add(actor, { titleJa: `${tag} 明日`, published: true, publishedOn: "2026-10-22" });
+    const older = await add(actor, { titleJa: `${tag} 19日`, published: true, publishedOn: "2026-10-19" });
+    const newer = await add(actor, { titleJa: `${tag} 今日`, published: true, publishedOn: today });
+
+    const mine = (rows: { titleJa: string }[]) => rows.map((r) => r.titleJa).filter((t) => t.startsWith(tag));
+    expect(mine(await store.listPublic(today))).toEqual([`${tag} 今日`, `${tag} 19日`]);
+
+    expect((await store.getPublic(newer.id, today))?.titleJa).toBe(`${tag} 今日`);
+    expect(await store.getPublic(older.id, "2026-10-18")).toBeNull(); // dated after that day
+    expect(await store.getPublic(randomUUID(), today)).toBeNull();
   });
 });

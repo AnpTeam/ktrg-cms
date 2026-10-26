@@ -2,6 +2,7 @@ import { cache } from "react";
 import type { PublicPlace, PublicRally, PublicRoute, PublicSpot } from "./api-content-types";
 import type { RallyItem } from "./rally-model";
 import type { TrailNotice } from "./notices";
+import type { BlogPost } from "./posts";
 import type { PlaceItem, Prefecture, RouteDetail, RoutePoint, RouteSummary, SpotDetail, SpotListItem } from "./content";
 import { placeCategories, placeStatuses } from "./places";
 import { isPointKind } from "./point-kinds";
@@ -251,6 +252,16 @@ export const fetchPublicPlaces = cache(async (): Promise<PublicPlace[] | null> =
 export async function fetchPublicNotices(): Promise<TrailNotice[] | null> {
   return okBody<{ notices: TrailNotice[] }>(await getJson("/notices"))?.notices ?? null;
 }
+
+/** Published blog posts whose day has come, newest first (the API decides, in Japan time). */
+export const fetchPublicPosts = cache(async (): Promise<BlogPost[] | null> => {
+  return okBody<{ posts: BlogPost[] }>(await getJson("/posts"))?.posts ?? null;
+});
+
+/** One blog post, or null when it is a draft, dated ahead, or not there. */
+export const fetchPublicPost = cache(async (id: string): Promise<BlogPost | null> => {
+  return okBody<{ post: BlogPost }>(await getJson(`/posts/${encodeURIComponent(id)}`))?.post ?? null;
+});
 
 /** Published home page banners, in order. */
 export async function fetchPublicBanners(): Promise<{ id: string; imageUrl: string; imageCredit?: string | null; altJa: string; altEn: string | null }[] | null> {

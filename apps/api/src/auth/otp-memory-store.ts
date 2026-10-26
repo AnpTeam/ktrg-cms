@@ -11,6 +11,8 @@ export function createMemoryOtpStore(
   const users = new Map<string, AuthUser>();
   /** Ids promoted by promoteToAdmin, in order: stands in for the audit log. */
   const promotions: string[] = [];
+  /** Ids whose role an admin has set: stands in for their user.role.change audit rows. */
+  const roleSetByAdmin = new Set<string>();
   let nextId = 1;
 
   const store: OtpStore = {
@@ -55,12 +57,12 @@ export function createMemoryOtpStore(
     },
     async promoteToAdmin(userId) {
       const user = [...users.values()].find((u) => u.id === userId);
-      if (!user || user.role === "admin") return false;
+      if (!user || user.role === "admin" || roleSetByAdmin.has(userId)) return false;
       user.role = "admin";
       promotions.push(userId);
       return true;
     },
   };
 
-  return { store, rows, users, promotions, profiles };
+  return { store, rows, users, promotions, roleSetByAdmin, profiles };
 }

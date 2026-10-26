@@ -246,6 +246,13 @@
       "when": 1792998924209,
       "tag": "0034_site_pages",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1792999863140,
+      "tag": "0035_blog_posts",
+      "breakpoints": true
     }
   ]
 }

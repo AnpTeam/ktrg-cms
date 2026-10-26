@@ -5,7 +5,8 @@ import type { RoutingService } from "../routing/routing-service";
 import type { StampServices } from "../stamps/stamp-routes";
 
 export interface NavigationServices extends StampServices {
-  routing: RoutingService;
+  /** The routing service held to visitors' share of the day (services.ts). */
+  navigationRouting: RoutingService;
 }
 
 /**
@@ -22,7 +23,7 @@ export function navigationRoutes(getServices: () => NavigationServices, opts: Ro
     async ({ body, set }) => {
       const place = await getServices().stamps.stampPlace(body.spotId);
       if (!place) return fail(set, 404, "not_found");
-      const r = await getServices().routing.snap([{ lat: body.lat, lng: body.lng }, { lat: place.lat, lng: place.lng }]);
+      const r = await getServices().navigationRouting.snap([{ lat: body.lat, lng: body.lng }, { lat: place.lat, lng: place.lng }]);
       if (r.ok) return { ok: true as const, line: r.line, distanceM: r.distanceM };
       return fail(set, r.reason === "routing_unavailable" ? 503 : r.reason === "routing_no_route" ? 422 : 502, r.reason);
     },
