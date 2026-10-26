@@ -40,7 +40,7 @@ async function setup(answer: SnapResult = { ok: true, line: [[135.09, 34.31], [1
     rateLimit: createRateLimiter({ store: createMemoryRateLimitStore().store, secret: "m".repeat(32) }),
     audit: audit.writer,
     stamps: createStampService({ store: mem.store }),
-    routing,
+    navigationRouting: routing,
   };
   const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(navigationRoutes(() => services, { secureCookies: false }));
   const cookie = `session=${(await session.create(users.get(alice.id)!)).token}`;

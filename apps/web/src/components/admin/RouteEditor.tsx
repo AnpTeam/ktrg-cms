@@ -634,6 +634,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   onUndo={() => dispatch({ type: "undo" })}
                   onRedo={() => dispatch({ type: "redo" })}
                   onLine={(points) => dispatch({ type: "line", points })}
+                  onHeights={(points) => dispatch({ type: "elevations", points })}
                   onSetLeg={(leg) => dispatch({ type: "setLeg", leg })}
                   onSetLegs={(legs) => dispatch({ type: "setLegs", legs })}
                   onClearLeg={(from, to) => dispatch({ type: "clearLeg", from, to })}

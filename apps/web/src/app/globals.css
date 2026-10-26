@@ -476,14 +476,22 @@ rt {
   position: relative;
   display: grid;
   place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border-radius: 0.75rem;
-  border: 3px solid var(--color-ink);
-  background: var(--color-paper);
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--color-ink);
+  /* White in every theme: the pictures are drawn for it. */
+  background: #fff;
   color: var(--color-ink);
   box-shadow: 0 1px 4px rgb(0 0 0 / 0.45);
   cursor: pointer;
+}
+
+/* Smaller to leave the stop pins uncovered; an invisible margin keeps the tap target large. */
+.place-marker::before {
+  content: "";
+  position: absolute;
+  inset: -0.4rem;
 }
 
 .place-marker[data-closed="true"]::after {

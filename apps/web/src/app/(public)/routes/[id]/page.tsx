@@ -42,7 +42,7 @@ export default async function RouteDetailPage({ params }: Props) {
       <PrintShare route={{ id: route.id, nameJa: route.nameJa }} />
       {/* The offline save (components/OfflineSave.tsx, public/sw.js) is built but left off until it is ready:
           <OfflineSave area={route.area} tileTemplate={gsiTileUrl(settings.base === "photo" ? "seamlessphoto" : settings.base)} /> */}
-      <TrailNotices notices={notices} locale={i18n.locale} blogUrl={null} />
+      <TrailNotices notices={notices} locale={i18n.locale} />
       {notices.length > 0 ? (
         <a href={`/notices/feed.xml?route=${encodeURIComponent(route.id)}${i18n.locale === "en" ? "&lang=en" : ""}`} className="-mt-3 px-4 text-sm text-accent underline">
           <Trans>このルートのお知らせをフィードで受け取る</Trans>

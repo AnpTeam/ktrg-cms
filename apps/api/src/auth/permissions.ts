@@ -33,6 +33,8 @@ export const PERMISSIONS = {
   "rally.manage": ["editor", "admin"],
   /** Dated trail notices and spot status. */
   "notice.manage": ["editor", "admin"],
+  /** Write and publish blog posts. */
+  "post.manage": ["editor", "admin"],
   "upload.create": ["editor", "admin"],
   /** Browse the photos already uploaded (the photo library). */
   "upload.read": ["editor", "admin"],

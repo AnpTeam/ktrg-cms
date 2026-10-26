@@ -31,6 +31,7 @@ export const SPOT_TEXT = ["name", "description", "history", "statusNote", "sourc
 export const RALLY_TEXT = ["name"] as const;
 export const NOTICE_TEXT = ["title", "body", "sourceName"] as const;
 export const BANNER_TEXT = ["alt"] as const;
+export const POST_TEXT = ["title", "body", "authorName"] as const;
 export const PLACE_TEXT = ["name", "description", "hours", "closedDays"] as const;
 
 /** Every field null, no other languages: an owner with no translation rows. */

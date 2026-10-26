@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { PlaceGroupIcon, WarningIcon } from "@/components/icons";
+import { PlaceIcon } from "@/components/PlaceIcon";
 import { RichText } from "@/components/RichText";
 import { formatDay } from "@/lib/format";
 import {
   distanceLabel,
-  groupOf,
   placeGroups,
   type MapPlace,
   type PlaceCategory,
@@ -47,7 +47,7 @@ export function useCategoryNames(): Record<PlaceCategory, string> {
   };
 }
 
-function useStatusNames(): Record<PlaceStatus, string> {
+export function useStatusNames(): Record<PlaceStatus, string> {
   const { t } = useLingui();
   return {
     open: t`営業中・利用可`,
@@ -140,7 +140,7 @@ export function PlaceList({
               className={`tap-target flex w-full items-center gap-3 py-2 text-left ${place.id === selectedId ? "bg-surface" : ""}`}
             >
               <span className="shrink-0 text-accent">
-                <PlaceGroupIcon group={groupOf(place.category)} />
+                <PlaceIcon category={place.category} />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-lg font-bold leading-snug" lang={place.nameLang}>
@@ -187,7 +187,7 @@ export function PlaceCard({
       <div className="flex items-start justify-between gap-3">
         <p className="flex items-start gap-3 text-xl font-bold leading-snug">
           <span className="mt-0.5 shrink-0 text-accent">
-            <PlaceGroupIcon group={groupOf(place.category)} />
+            <PlaceIcon category={place.category} />
           </span>
           <span lang={place.nameLang}>{place.name}</span>
         </p>

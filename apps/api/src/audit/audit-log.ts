@@ -49,6 +49,10 @@ export const AUDIT_ACTIONS = {
   "notice.update": "notice",
   "notice.delete": "notice",
   /** Admin banners (admin-lists): made, changed (including published or not), deleted. */
+  /** Admin content: blog posts. */
+  "post.create": "post",
+  "post.update": "post",
+  "post.delete": "post",
   "banner.create": "banner",
   "banner.update": "banner",
   "banner.delete": "banner",
@@ -60,6 +64,10 @@ export const AUDIT_ACTIONS = {
   "place.create": "place",
   "place.update": "place",
   "place.delete": "place",
+  /** The pages editors make (admin-lists): made, changed (including published or not), deleted. */
+  "site_page.create": "site_page",
+  "site_page.update": "site_page",
+  "site_page.delete": "site_page",
   /** A site-wide setting was changed (the target is the setting's key, never its value). */
   "site_setting.update": "site_setting",
   /** An admin revoked a stamp (kept as a record, hidden from progress) or took the revoke back. */

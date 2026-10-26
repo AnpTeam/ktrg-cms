@@ -31,7 +31,7 @@ export function AdminNav({ lists, isAdmin }: { lists: { key: string; title: stri
     { key: "routes", href: `${base}/routes`, label: t`ルート`, icon: <RouteIcon /> },
     { key: "rallies", href: `${base}/rallies`, label: t`ラリー`, icon: <FlagIcon /> },
     { key: "attention", href: `${base}/attention`, label: t`直すところ`, icon: <WarningIcon /> },
-    ...lists.map((l) => ({ key: l.key, href: `${base}/${l.key}`, label: l.title, icon: LIST_ICONS[l.key] ?? <DocumentIcon /> })),
+    ...lists.filter((l) => l.key !== "site-pages").map((l) => ({ key: l.key, href: `${base}/${l.key}`, label: l.title, icon: LIST_ICONS[l.key] ?? <DocumentIcon /> })),
     { key: "pages", href: `${base}/pages`, label: t`ページの文章`, icon: <DocumentIcon /> },
     // The site settings are for an admin only (the API refuses an editor).
     ...(isAdmin ? [{ key: "settings", href: `${base}/settings`, label: t`サイト全体の設定`, icon: <GearIcon /> }] : []),

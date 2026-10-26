@@ -294,5 +294,14 @@ export function adminContentRoutes(getServices: () => ContentServices, opts: Rou
         return r.ok ? { ok: true as const } : fail(set, statusOf(r.reason), r.reason);
       },
       { auth: "spot.manage", rateLimit: { adminWriteUser: "user.id" }, params: idParams },
+    )
+    // The same delete, from the all-waypoints list (its rows are deleted through /admin/lists/places like the other lists').
+    .delete(
+      "/lists/places/:id",
+      async ({ user, params, set }) => {
+        const r = await svc().deleteSpot(user.id, params.id);
+        return r.ok ? { ok: true as const } : fail(set, statusOf(r.reason), r.reason);
+      },
+      { auth: "spot.manage", rateLimit: { adminWriteUser: "user.id" }, params: idParams },
     );
 }

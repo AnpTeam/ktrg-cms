@@ -64,6 +64,9 @@ export const AUTH_LIMITS = {
   // One count for everyone (see withDailyCap): OpenRouteService's free allowance is about 2,000 calls a day, shared by every
   // visitor's navigation and the admin's snap, so a busy day or a script making accounts cannot use it all up.
   routingDaily: { name: "routing-daily", limit: 1500, windowMs: 24 * 60 * MINUTE },
+  // One count for everyone: visitors' navigation may use at most this much of routingDaily, so accounts made to flood
+  // navigation cannot leave the admin's "snap to trails" with nothing (it always keeps the other 500).
+  navigationAllDaily: { name: "navigation-all-daily", limit: 1000, windowMs: 24 * 60 * MINUTE },
 } as const satisfies Record<string, RateLimitRule>;
 
 export type RateLimitResult = { allowed: true } | { allowed: false; retryAfterSec: number };

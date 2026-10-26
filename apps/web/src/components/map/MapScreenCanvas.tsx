@@ -537,6 +537,7 @@ export function MapScreenCanvas({
           put(
             createPlaceMarkerElement({
               group,
+              category: p.category,
               label: p.name,
               closed: false,
               photo: !!p.photo,

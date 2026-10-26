@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { logOut } from "@/lib/auth-client";
-import { BookmarkIcon, ChevronIcon, ChevronLeftIcon, CloseIcon, GearIcon } from "./icons";
+import { BookmarkIcon, ChevronIcon, DocumentIcon, ChevronLeftIcon, CloseIcon, GearIcon } from "./icons";
 import { QuickActions } from "./QuickActions";
 import type { Prefs } from "@/lib/prefs";
 import { ProfileCard, type ProfileCardProps } from "./ProfileCard";
@@ -229,6 +229,11 @@ export function SiteHeader({
             <Link prefetch={false} href="/bookmarks" className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
               <BookmarkIcon />
               <span className="min-w-0 flex-1">{t`ブックマーク`}</span>
+              <ChevronIcon />
+            </Link>
+            <Link prefetch={false} href="/blog" className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
+              <DocumentIcon />
+              <span className="min-w-0 flex-1">{t`ブログ`}</span>
               <ChevronIcon />
             </Link>
 
