@@ -7,6 +7,7 @@ import { adminContentRoutes } from "./content/admin-routes";
 import { createDrizzleContentStore } from "./content/content-store";
 import { createDrizzleRallyAdminStore } from "./rallies/rally-admin-store";
 import { rallyAdminRoutes } from "./rallies/rally-admin-routes";
+import { guestRoutes } from "./guest/guest-routes";
 import { createFuriganaService } from "./furigana/furigana";
 import { furiganaRoutes } from "./furigana/furigana-routes";
 import { rallyPublicRoutes } from "./rallies/rally-public-routes";
@@ -133,6 +134,7 @@ export function createApp(
     .use(rallyPublicRoutes(getServices, env.NODE_ENV === "production" ? 10_000 : 0))
     .use(furiganaRoutes(furigana))
     .use(stampRoutes(getServices, opts))
+    .use(guestRoutes(getServices, opts))
     .use(navigationRoutes(getServices, opts))
     .use(stampAdminRoutes(getServices, opts))
     .use(listReadRoutes(stampList, getServices, opts))

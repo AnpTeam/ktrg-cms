@@ -41,6 +41,8 @@ export const AUTH_LIMITS = {
   meDeletionUser: { name: "me-deletion-user", limit: 5, windowMs: 15 * MINUTE },
   // Keyed by user id: collecting stamps. Walkers stamp a handful of places an hour; this stops a script.
   stampUser: { name: "stamp-user", limit: 30, windowMs: 15 * MINUTE },
+  // Keyed by IP: stamps for visitors without an account (guest/). Looser than one account's, since a walking group can share an address.
+  stampGuestIp: { name: "stamp-guest-ip", limit: 60, windowMs: 15 * MINUTE },
   // Keyed by user id: walking paths for navigation off the course line. OpenRouteService has a daily allowance shared by
   // everyone; the screen asks at most every 30 s while off the line, so 20 per 15 minutes is a walker, not a script.
   navigationPathUser: { name: "navigation-path-user", limit: 20, windowMs: 15 * MINUTE },

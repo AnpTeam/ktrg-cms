@@ -32,6 +32,18 @@ type StampPlace = StampSpot & { lat: number; lng: number };
 const isStampPlace = (spot: StampSpot | null): spot is StampPlace =>
   !!spot && spot.published && spot.stampable && spot.positionVerified && spot.lat !== null && spot.lng !== null;
 
+/** The place checks of a stamp (open, close enough, accurate enough), shared by an account's stamp and a guest's. */
+async function check(r: Reading, store: StampStore): Promise<Result<{ spot: StampPlace; flagged: boolean }>> {
+  const spot = await store.findSpot(r.spotId);
+  if (!isStampPlace(spot)) return { ok: false, reason: "not_found" };
+  if (spot.status === "closed") return { ok: false, reason: "spot_closed" };
+  if (r.accuracyM > MAX_ACCURACY_M) return { ok: false, reason: "gps_accuracy_poor" };
+  if (distanceMeters({ lat: r.lat, lng: r.lng }, { lat: spot.lat, lng: spot.lng }) > spot.radiusM) {
+    return { ok: false, reason: "too_far" };
+  }
+  return { ok: true, value: { spot, flagged: r.accuracyM >= FLAG_ACCURACY_M } };
+}
+
 export function createStampService({ store }: { store: StampStore }) {
   return {
     /** The place, if visitors may head for it and stamp it (also used by navigation); null otherwise. */
@@ -40,15 +52,15 @@ export function createStampService({ store }: { store: StampStore }) {
       return isStampPlace(spot) ? spot : null;
     },
 
+    check: (r: Reading) => check(r, store),
+
+    /** Saves a stamp whose checks were already done (a guest's, once they sign up). */
+    award: (userId: string, spotId: string, flagged: boolean) => store.award(userId, spotId, { flagged, flagReason: flagged ? "low_accuracy" : null }),
+
     async collect(userId: string, r: Reading): Promise<Result<Collected>> {
-      const spot = await store.findSpot(r.spotId);
-      if (!isStampPlace(spot)) return { ok: false, reason: "not_found" };
-      if (spot.status === "closed") return { ok: false, reason: "spot_closed" };
-      if (r.accuracyM > MAX_ACCURACY_M) return { ok: false, reason: "gps_accuracy_poor" };
-      if (distanceMeters({ lat: r.lat, lng: r.lng }, { lat: spot.lat, lng: spot.lng }) > spot.radiusM) {
-        return { ok: false, reason: "too_far" };
-      }
-      const flagged = r.accuracyM >= FLAG_ACCURACY_M;
+      const checked = await check(r, store);
+      if (!checked.ok) return checked;
+      const { spot, flagged } = checked.value;
       const got = await store.award(userId, spot.id, { flagged, flagReason: flagged ? "low_accuracy" : null });
       // A revoked stamp stays on record and blocks a new one; say so instead of "already stamped" with nothing to show.
       if (got.revoked) return { ok: false, reason: "stamp_revoked" };

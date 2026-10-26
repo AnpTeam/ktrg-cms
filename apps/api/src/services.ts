@@ -28,6 +28,8 @@ import type { RallyAdminStore } from "./rallies/rally-admin-types";
 import type { StampListServices } from "./stamps/stamp-list";
 import type { StampServices } from "./stamps/stamp-routes";
 import { createStampService } from "./stamps/stamp-service";
+import type { GuestServices } from "./guest/guest-routes";
+import { createGuestService } from "./guest/guest-service";
 import type { StampListRow, StampStore } from "./stamps/stamp-types";
 import { createMeService, type MeStore } from "./me/me-service";
 import type { UploadServices } from "./uploads/upload-routes";
@@ -35,7 +37,7 @@ import { createUploadService } from "./uploads/upload-service";
 import type { FileStorage } from "./uploads/upload-storage";
 
 /** Everything the routes use. */
-export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & BannerServices & PlaceServices & SiteSettingsServices & AuditListServices & PlaceListServices & UserListServices;
+export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & BannerServices & PlaceServices & SiteSettingsServices & AuditListServices & PlaceListServices & UserListServices & GuestServices;
 
 /** What the services are built from: the storage (database or in-memory) and the outside world. */
 export interface ServiceDeps {
@@ -84,6 +86,7 @@ export interface ServiceDeps {
 export function createServices(deps: ServiceDeps): Services {
   const { stores, mailer, secret, now } = deps;
   const rateLimit = createRateLimiter({ store: stores.rateLimit, secret, now });
+  const stamps = createStampService({ store: stores.stamps });
   return {
     otp: createOtpService({ store: stores.otp, mailer, secret, adminEmails: deps.adminEmails, now }),
     session: createSessionService({ store: stores.session, now }),
@@ -98,8 +101,10 @@ export function createServices(deps: ServiceDeps): Services {
     // Rallies: names, dates, required count and which places they hold.
     rallyAdmin: createRallyAdminService({ store: stores.rallyAdmin }),
     // Collecting stamps near a place, reading your own, and the admin review of flagged ones.
-    stamps: createStampService({ store: stores.stamps }),
+    stamps,
     stampList: createListReader({ store: stores.stampList }),
+    // Stamps without an account (a signed cookie), and moving them to an account at sign-up.
+    guest: createGuestService({ stamps, secret, now }),
     // Trail notices: the admin list and what visitors read.
     notices: createNoticeService({ store: stores.notices, now }),
     // The other generated admin lists: home banners, the audit log, every place, accounts and their roles.
