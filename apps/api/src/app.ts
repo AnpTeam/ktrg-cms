@@ -33,7 +33,7 @@ import { createDrizzleFuriganaStore } from "./furigana/furigana-store";
 import { furiganaList, publicFuriganaRoutes } from "./furigana/furigana-words";
 import { bannerList, publicBannerRoutes } from "./banners/banner-list";
 import { createDrizzleBannerStore } from "./banners/banner-store";
-import { placeDirectoryList, publicPlaceRoutes } from "./places/place-directory";
+import { placeDirectoryList, placeImportRoutes, publicPlaceRoutes } from "./places/place-directory";
 import { publicSettingsRoutes, siteSettingsRoutes } from "./site-settings/site-settings";
 import { createDrizzleSiteSettingsStore } from "./site-settings/site-settings-store";
 import { createDrizzlePlaceStore } from "./places/place-store";
@@ -150,6 +150,7 @@ export function createApp(
     .use(publicFuriganaRoutes(() => getServices().furigana))
     .use(listReadRoutes(placeDirectoryList, getServices, opts))
     .use(listWriteRoutes(placeDirectoryList, getServices, opts))
+    .use(placeImportRoutes(getServices, opts))
     .use(publicPlaceRoutes(() => getServices().places))
     .use(siteSettingsRoutes(getServices, opts))
     .use(publicSettingsRoutes(() => getServices().siteSettings))
