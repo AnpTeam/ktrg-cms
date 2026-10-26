@@ -15,6 +15,7 @@ const profileColumns = {
   ageRange: users.ageRange,
   gender: users.gender,
   preferences: users.preferences,
+  bookmarks: users.bookmarks,
   deletionRequestedAt: users.deletionRequestedAt,
   createdAt: users.createdAt,
 };

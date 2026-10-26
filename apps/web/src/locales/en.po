@@ -164,7 +164,7 @@ msgstr "{name} (end)"
 msgid "{name}さん、こんにちは。"
 msgstr "Hello, {name}."
 
-#: src/components/BookmarkList.tsx:31
+#: src/components/BookmarkList.tsx:33
 msgid "{name}のブックマークをはずす"
 msgstr "Remove bookmark: {name}"
 
@@ -1630,7 +1630,7 @@ msgstr "Standard"
 msgid "ふつうの大きさです。"
 msgstr "The usual size."
 
-#: src/app/(public)/bookmarks/page.tsx:11
+#: src/app/(public)/bookmarks/page.tsx:12
 #: src/app/(public)/sitemap/page.tsx:88
 #: src/components/SiteHeader.tsx:232
 msgid "ブックマーク"
@@ -1641,7 +1641,7 @@ msgstr "Bookmarks"
 msgid "ブックマークする"
 msgstr "Bookmark this route"
 
-#: src/components/BookmarkList.tsx:16
+#: src/components/BookmarkList.tsx:18
 msgid "ブックマークは、まだありません。"
 msgstr "No bookmarks yet."
 
@@ -2109,9 +2109,9 @@ msgstr "Back to route"
 msgid "ルートの「体力度」と「技術度」は、歩く前に大変さを知るための目安です。公式の情報ではありません。天気や体調で、感じ方は変わります。"
 msgstr "The physical level and technical level of a route are a guide to how hard it is before you set out. They are not official information, and how it feels changes with the weather and how you feel."
 
-#: src/components/BookmarkList.tsx:17
-msgid "ルートのページで、しおりのボタンを押すと、ここに保存されます。この端末だけに保存されます。"
-msgstr "Press the bookmark button on a route page and it is saved here. Bookmarks stay on this device only."
+#: src/components/BookmarkList.tsx:19
+msgid "ルートのページで、しおりのボタンを押すと、ここに保存されます。ログインしていれば、アカウントに保存されます。"
+msgstr "Press the bookmark button on a route page and it is saved here. When you are signed in, bookmarks are saved to your account."
 
 #: src/app/(public)/sitemap/page.tsx:65
 msgid "ルートの一覧"

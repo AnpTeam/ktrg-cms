@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN "bookmarks" jsonb DEFAULT '[]'::jsonb NOT NULL;

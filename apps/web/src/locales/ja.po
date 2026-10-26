@@ -164,7 +164,7 @@ msgstr "{name}（終点）"
 msgid "{name}さん、こんにちは。"
 msgstr "{name}さん、こんにちは。"
 
-#: src/components/BookmarkList.tsx:31
+#: src/components/BookmarkList.tsx:33
 msgid "{name}のブックマークをはずす"
 msgstr "{name}のブックマークをはずす"
 
@@ -1630,7 +1630,7 @@ msgstr "ふつう"
 msgid "ふつうの大きさです。"
 msgstr "ふつうの大きさです。"
 
-#: src/app/(public)/bookmarks/page.tsx:11
+#: src/app/(public)/bookmarks/page.tsx:12
 #: src/app/(public)/sitemap/page.tsx:88
 #: src/components/SiteHeader.tsx:232
 msgid "ブックマーク"
@@ -1641,7 +1641,7 @@ msgstr "ブックマーク"
 msgid "ブックマークする"
 msgstr "ブックマークする"
 
-#: src/components/BookmarkList.tsx:16
+#: src/components/BookmarkList.tsx:18
 msgid "ブックマークは、まだありません。"
 msgstr "ブックマークは、まだありません。"
 
@@ -2109,9 +2109,9 @@ msgstr "ルートにもどる"
 msgid "ルートの「体力度」と「技術度」は、歩く前に大変さを知るための目安です。公式の情報ではありません。天気や体調で、感じ方は変わります。"
 msgstr "ルートの「体力度」と「技術度」は、歩く前に大変さを知るための目安です。公式の情報ではありません。天気や体調で、感じ方は変わります。"
 
-#: src/components/BookmarkList.tsx:17
-msgid "ルートのページで、しおりのボタンを押すと、ここに保存されます。この端末だけに保存されます。"
-msgstr "ルートのページで、しおりのボタンを押すと、ここに保存されます。この端末だけに保存されます。"
+#: src/components/BookmarkList.tsx:19
+msgid "ルートのページで、しおりのボタンを押すと、ここに保存されます。ログインしていれば、アカウントに保存されます。"
+msgstr "ルートのページで、しおりのボタンを押すと、ここに保存されます。ログインしていれば、アカウントに保存されます。"
 
 #: src/app/(public)/sitemap/page.tsx:65
 msgid "ルートの一覧"

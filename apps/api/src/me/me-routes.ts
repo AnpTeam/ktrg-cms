@@ -50,6 +50,8 @@ export function meRoutes(getServices: () => MeServices, opts: RouteOptions) {
               gender: t.Optional(t.Union([genderSchema, t.Null()])),
               // The whole set of choices, replaced at once.
               preferences: t.Optional(preferencesSchema),
+              // The bookmarked routes (ids), replaced at once.
+              bookmarks: t.Optional(t.Array(t.String({ format: "uuid" }), { maxItems: 100 })),
             },
             { additionalProperties: false, minProperties: 1 },
           ),

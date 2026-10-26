@@ -7,11 +7,11 @@ import { useBookmarks } from "./useBookmarks";
 
 // Print (the browser can save it as a PDF), share and bookmark the page, as icon buttons. Bookmark sits at the far
 // end of the row. The layout hides its menus when printing.
-export function PrintShare({ route }: { route: { id: string; nameJa: string; nameEn: string | null } }) {
+export function PrintShare({ route }: { route: { id: string; nameJa: string } }) {
   const { t } = useLingui();
   const { list, toggle } = useBookmarks();
   const [copied, setCopied] = useState(false);
-  const saved = list.some((b) => b.id === route.id);
+  const saved = list.includes(route.id);
   const share = async () => {
     const url = window.location.href;
     try {
@@ -43,7 +43,7 @@ export function PrintShare({ route }: { route: { id: string; nameJa: string; nam
         aria-pressed={saved}
         aria-label={saved ? t`ブックマークをはずす` : t`ブックマークする`}
         title={saved ? t`ブックマークをはずす` : t`ブックマークする`}
-        onClick={() => toggle(route)}
+        onClick={() => toggle(route.id)}
       >
         <BookmarkIcon filled={saved} />
       </button>

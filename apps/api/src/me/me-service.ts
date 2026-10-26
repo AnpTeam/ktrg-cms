@@ -26,6 +26,8 @@ export interface Profile {
   gender: Gender | null;
   /** Accessibility and map choices; null until the person has set them. */
   preferences: Preferences | null;
+  /** Route ids they bookmarked, newest first. */
+  bookmarks: string[];
   /** Set while a deletion request is pending; null otherwise. */
   deletionRequestedAt: Date | null;
   /** When the account will really be deleted (the request plus the grace period); null with no request. */
@@ -42,6 +44,8 @@ export interface ProfileChanges {
   displayName?: string | null;
   /** Replaces the stored choices as a whole. */
   preferences?: Preferences;
+  /** Replaces the bookmarks as a whole. */
+  bookmarks?: string[];
   /** Where they come from; null clears it. */
   origin?: Origin | null;
   /** Null clears it. */
@@ -76,6 +80,7 @@ export function present(profile: StoredProfile): Profile {
 }
 
 export const DISPLAY_NAME_MAX = 40;
+export const BOOKMARKS_MAX = 100;
 
 /**
  * Clean a typed display name: whitespace runs (including line breaks) become one space and
@@ -122,6 +127,7 @@ export function createMeService({
         changes.displayName = name;
       }
       if (input.preferences !== undefined) changes.preferences = input.preferences;
+      if (input.bookmarks !== undefined) changes.bookmarks = [...new Set(input.bookmarks)].slice(0, BOOKMARKS_MAX);
       if (input.origin !== undefined) changes.origin = input.origin;
       if (input.ageRange !== undefined) changes.ageRange = input.ageRange;
       if (input.gender !== undefined) changes.gender = input.gender;

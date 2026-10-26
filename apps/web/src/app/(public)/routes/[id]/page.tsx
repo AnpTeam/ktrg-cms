@@ -39,7 +39,7 @@ export default async function RouteDetailPage({ params }: Props) {
           <Trans>ルート一覧</Trans>
         </BackLink>
       </div>
-      <PrintShare route={{ id: route.id, nameJa: route.nameJa, nameEn: route.nameEn }} />
+      <PrintShare route={{ id: route.id, nameJa: route.nameJa }} />
       {/* The offline save (components/OfflineSave.tsx, public/sw.js) is built but left off until it is ready:
           <OfflineSave area={route.area} tileTemplate={gsiTileUrl(settings.base === "photo" ? "seamlessphoto" : settings.base)} /> */}
       <TrailNotices notices={notices} locale={i18n.locale} blogUrl={null} />

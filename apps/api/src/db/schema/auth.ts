@@ -59,6 +59,8 @@ export const users = pgTable(
     gender: userGender("gender"),
     // Accessibility and map choices (see me/preferences.ts); null until the person sets them.
     preferences: jsonb("preferences").$type<Preferences>(),
+    // Routes the person bookmarked (route ids, newest first), so they follow them to a new phone.
+    bookmarks: jsonb("bookmarks").$type<string[]>().notNull().default(sql`'[]'::jsonb`),
     // Set by DELETE /me: the owner asked for the account to be deleted. Nothing is deleted
     // yet; cleared again if they cancel. Null when no deletion is pending.
     deletionRequestedAt: timestamp("deletion_requested_at", { withTimezone: true }),

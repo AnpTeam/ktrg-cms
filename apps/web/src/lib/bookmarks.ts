@@ -1,28 +1,28 @@
-// Routes a visitor saved to come back to. Kept on the device (localStorage), not on the account: nothing to sign in for.
-
-export interface Bookmark {
-  id: string;
-  nameJa: string;
-  nameEn: string | null;
-}
+// Routes a visitor saved to come back to. Signed out they are kept on the device (localStorage); signed in, on the account
+// (PATCH /me), and what the device held is moved over at login. Only the route's id is kept: its name is looked up when shown.
 
 export const BOOKMARKS_KEY = "ktrg-bookmarks";
 
-/** What was stored, or none when it is missing or damaged (a bad value must never break the page). */
-export function parseBookmarks(raw: string | null): Bookmark[] {
+/** What was stored, or none when it is missing or damaged (a bad value must never break the page). Older copies held objects with an id. */
+export function parseBookmarks(raw: string | null): string[] {
   try {
     const list: unknown = JSON.parse(raw ?? "[]");
     if (!Array.isArray(list)) return [];
-    return list.flatMap((b): Bookmark[] => {
-      const { id, nameJa, nameEn } = (b ?? {}) as Record<string, unknown>;
-      return typeof id === "string" && typeof nameJa === "string" ? [{ id, nameJa, nameEn: typeof nameEn === "string" ? nameEn : null }] : [];
+    return list.flatMap((b): string[] => {
+      const id = typeof b === "string" ? b : typeof (b as { id?: unknown } | null)?.id === "string" ? (b as { id: string }).id : null;
+      return id ? [id] : [];
     });
   } catch {
     return [];
   }
 }
 
-/** Adds the route, or removes it when it is already there. Newest first. */
-export function toggleBookmark(list: readonly Bookmark[], item: Bookmark): Bookmark[] {
-  return list.some((b) => b.id === item.id) ? list.filter((b) => b.id !== item.id) : [item, ...list];
+/** Adds the route to the front, or removes it when it is already there. */
+export function toggleBookmark(list: readonly string[], id: string): string[] {
+  return list.includes(id) ? list.filter((b) => b !== id) : [id, ...list];
+}
+
+/** The device's bookmarks (newest) in front of the account's, each route once. */
+export function mergeBookmarks(account: readonly string[], device: readonly string[]): string[] {
+  return [...new Set([...device, ...account])];
 }

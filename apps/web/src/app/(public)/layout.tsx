@@ -7,6 +7,7 @@ import { OfflineNotice } from "@/components/OfflineNotice";
 import { SampleNoticeHost } from "@/components/SampleNotice";
 import { SiteFooter } from "@/components/SiteFooter";
 import { StampFilters } from "@/components/StampFilters";
+import { BookmarkProvider } from "@/components/useBookmarks";
 import { GuestClaim } from "@/components/GuestClaim";
 import { GuestNag } from "@/components/GuestNag";
 import { FuriganaLayer } from "@/components/FuriganaLayer";
@@ -34,6 +35,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
 
   return (
     <MenuProvider>
+      <BookmarkProvider signedIn={viewer.signedIn} ids={viewer.bookmarks}>
       <NavigationProvider signedIn={viewer.signedIn}>
       <StampFilters />
       <div className="mx-auto flex w-full max-w-5xl justify-center md:gap-6 lg:mx-0 lg:max-w-none lg:justify-start lg:gap-0">
@@ -62,6 +64,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
       {prefsState.effective.furigana ? <FuriganaLayer /> : null}
       <NavigationToast />
       </NavigationProvider>
+      </BookmarkProvider>
     </MenuProvider>
   );
 }
