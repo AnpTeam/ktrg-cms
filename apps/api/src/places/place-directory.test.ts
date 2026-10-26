@@ -96,4 +96,22 @@ describe("places directory", () => {
     expect(row).toMatchObject({ category: "toilet", positionVerified: false, published: false, listingConfirmed: true, lastVerified: "2026-10-16" });
     expect(await svc.importSheet(actor, csv, true)).toMatchObject({ added: 0, skipped: 1 });
   });
+
+  test("finds a place entered twice: same name by the comparison, near each other; the most complete is first", async () => {
+    const s = setup();
+    const made = async (over: Record<string, unknown>) => {
+      const r = await s.svc.create(actor, place(over));
+      if (!r.ok) throw new Error(`not made: ${r.reason}`);
+      return r.value;
+    };
+    const thin = await made({ nameJa: "Ｅｎ カフェ", lat: 34.275, lng: 135.0807 });
+    const full = await made({ nameJa: "enカフェ", lat: 34.2751, lng: 135.0807, address: "加太 1023", phone: "0734", positionVerified: true, positionSource: "map" });
+    await made({ nameJa: "enカフェ", lat: 34.4, lng: 135.5 }); // the same name 20 km away: another branch
+    await made({ nameJa: "enカフェ" }); // no position: nothing to say it is another place
+    await made({ nameJa: "別の店" });
+    const groups = await s.svc.duplicates();
+    expect(groups).toHaveLength(1);
+    expect(groups[0]!.map((p) => p.id).slice(0, 2)).toEqual([full.id, thin.id]);
+    expect(groups[0]).toHaveLength(3);
+  });
 });

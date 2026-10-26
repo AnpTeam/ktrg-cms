@@ -1,6 +1,7 @@
 import { Elysia, t, type Static } from "elysia";
 import { createMemoryListStore } from "../admin-lists/list-memory-store";
 import type { ListDef } from "../admin-lists/list-routes";
+import { rowOut } from "../admin-lists/list-routes";
 import { createListService } from "../admin-lists/list-service";
 import { bad, ok, type Label, type ListRow, type ListRules, type ListStore } from "../admin-lists/list-types";
 import type { AuditWriter } from "../audit/audit-log";
@@ -101,6 +102,49 @@ export const placeRules = (photoHosts: readonly string[] = [], routeExists?: (id
 
 export type PlaceService = ReturnType<typeof createPlaceService>;
 
+/** Names are compared without width, case, spaces or the middle dot, so "Ｅｎ" and "en" or "加太 駅" and "加太駅" are one. */
+const nameKey = (s: string) => s.normalize("NFKC").toLowerCase().replace(/[\s・･·]/g, "");
+
+/** Metres between two points (a flat approximation: fine for tens of metres). */
+const metres = (a: { lat: number; lng: number }, b: { lat: number; lng: number }) => Math.hypot((a.lat - b.lat) * 111_000, (a.lng - b.lng) * 111_000 * Math.cos((a.lat * Math.PI) / 180));
+
+/** The most a place and its twin can be apart (m) and still be called the same place. */
+export const SAME_PLACE_METRES = 150;
+
+/** How much of a place is filled in: the one to keep among twins is the most complete. */
+const completeness = (p: PlaceRow) =>
+  [p.published, p.positionVerified, p.listingConfirmed, p.photoUrl, p.descriptionJa, p.hoursJa, p.address, p.phone, p.website, p.lat !== null].filter(Boolean).length;
+
+/**
+ * Places that look like one place entered twice: the same name (as the names are compared above) and, where both have a
+ * position, within SAME_PLACE_METRES of each other (two branches of a chain far apart are not twins; a place with no
+ * position has nothing to say against it). Each group lists the most complete place first.
+ */
+export function findDuplicates(rows: readonly PlaceRow[]): PlaceRow[][] {
+  const byName = new Map<string, PlaceRow[]>();
+  for (const r of rows) {
+    const key = nameKey(r.nameJa);
+    if (key !== "") byName.set(key, [...(byName.get(key) ?? []), r]);
+  }
+  const at = (p: PlaceRow) => (p.lat !== null && p.lng !== null ? { lat: p.lat, lng: p.lng } : null);
+  const groups: PlaceRow[][] = [];
+  for (const same of byName.values()) {
+    // Places with a position are joined step by step (a chain of near ones is one group); one with no position has
+    // nothing to say against any of them, so it joins the biggest group, and a name with no positions at all is one group.
+    let open: PlaceRow[][] = [];
+    for (const r of same.filter((p) => at(p))) {
+      const joined = open.filter((g) => g.some((m) => metres(at(m)!, at(r)!) <= SAME_PLACE_METRES));
+      open = [...open.filter((g) => !joined.includes(g)), [r, ...joined.flat()]];
+    }
+    const unplaced = same.filter((p) => !at(p));
+    if (open.length === 0) open = [[]];
+    open.sort((x, y) => y.length - x.length);
+    open[0]!.push(...unplaced);
+    groups.push(...open.filter((g) => g.length > 1));
+  }
+  return groups.map((g) => g.sort((a, b) => completeness(b) - completeness(a) || a.createdAt.getTime() - b.createdAt.getTime())).sort((a, b) => b.length - a.length || a[0]!.nameJa.localeCompare(b[0]!.nameJa, "ja"));
+}
+
 export interface PlaceImportResult {
   /** Rows read from the sheet, how many are (or would be) new, and how many were already in the directory. */
   read: number;
@@ -112,8 +156,22 @@ export interface PlaceImportResult {
 
 export function createPlaceService(deps: { store: PlaceStore; photoHosts?: readonly string[]; routeExists?: (id: string) => Promise<boolean>; routeIds?: () => Promise<string[]> }) {
   const list = createListService({ store: deps.store, rules: placeRules(deps.photoHosts, deps.routeExists) });
+  /** Every place, read a page at a time. */
+  async function everyPlace(): Promise<PlaceRow[]> {
+    const all: PlaceRow[] = [];
+    for (let cursor = null as { createdAt: Date; id: string } | null; ; ) {
+      const rows = await deps.store.list(cursor, 500);
+      all.push(...rows);
+      if (rows.length < 500) return all;
+      cursor = { createdAt: rows[rows.length - 1]!.createdAt, id: rows[rows.length - 1]!.id };
+    }
+  }
   return {
     ...list,
+    /** Groups of places that look like one place entered twice (see findDuplicates). */
+    async duplicates(): Promise<PlaceRow[][]> {
+      return findDuplicates(await everyPlace());
+    },
     /**
      * Adds the places of a field sheet (see import/field-sheets.ts) as drafts: positions stay "not checked", nothing is
      * published, and a place already there (same course, category, name and position) is not added again. `apply: false`
@@ -122,13 +180,7 @@ export function createPlaceService(deps: { store: PlaceStore; photoHosts?: reado
     async importSheet(actor: string, csv: string, apply: boolean): Promise<PlaceImportResult> {
       const courses = (await deps.routeIds?.()) ?? [];
       const number = new Map(courses.map((id, i) => [id, i + 1]));
-      const existing: ExistingPlace[] = [];
-      for (let cursor = null as { createdAt: Date; id: string } | null; ; ) {
-        const rows = await deps.store.list(cursor, 500);
-        existing.push(...rows.map((r) => ({ id: r.id, route: r.routeId ? (number.get(r.routeId) ?? null) : null, category: r.category, nameJa: r.nameJa, lat: r.lat, lng: r.lng })));
-        if (rows.length < 500) break;
-        cursor = { createdAt: rows[rows.length - 1]!.createdAt, id: rows[rows.length - 1]!.id };
-      }
+      const existing: ExistingPlace[] = (await everyPlace()).map((r) => ({ id: r.id, route: r.routeId ? (number.get(r.routeId) ?? null) : null, category: r.category, nameJa: r.nameJa, lat: r.lat, lng: r.lng }));
       const facilities = parseFacilities(csv);
       const plan = planPlaces(facilities, existing);
       const failed: PlaceImportResult["failed"] = [];
@@ -333,7 +385,11 @@ export function publicPlaceRoutes(getPlaces: () => PlaceService, log: (message: 
 /** Import a field sheet into the directory (`spot.manage`): `apply: false` is the preview that only counts. */
 export function placeImportRoutes<S extends PlaceServices>(getServices: () => S, opts: RouteOptions) {
   const { plugins } = routeKit(getServices, opts);
-  return new Elysia({ prefix: "/admin/lists/directory", detail: { tags: ["Admin lists"] } }).use(plugins).post(
+  return new Elysia({ prefix: "/admin/lists/directory", detail: { tags: ["Admin lists"] } })
+    .use(plugins)
+    // Places that look entered twice, each group with the most complete one first (the one to keep).
+    .get("/duplicates", async () => ({ ok: true as const, groups: (await getServices().places.duplicates()).map((g) => g.map(rowOut)) }), { auth: placeDirectoryList.permission })
+    .post(
     "/import",
     async ({ user, body }) => ({ ok: true as const, ...(await getServices().places.importSheet(user.id, body.csv, body.apply)) }),
     { auth: placeDirectoryList.permission, rateLimit: { adminWriteUser: "user.id" }, body: t.Object({ csv: t.String({ maxLength: 2_000_000 }), apply: t.Boolean() }) },

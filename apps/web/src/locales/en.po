@@ -33,6 +33,12 @@ msgstr "Move {0} up"
 msgid "{0} を1つ後ろへ"
 msgstr "Move {0} down"
 
+#. placeholder {0}: itemName(meta, group[0]!, locale)
+#. placeholder {1}: group.length
+#: src/components/admin/DuplicateFinder.tsx:64
+msgid "{0}（{1}件）"
+msgstr "{0} ({1})"
+
 #. placeholder {0}: waypoints.length
 #: src/components/admin/map-editor/MapEditor.tsx:769
 msgid "{0}か所を、経由地として追加しました。名前や種類は「経由地」で直せます。"
@@ -59,7 +65,7 @@ msgid "{0}を消す"
 msgstr "Delete {0}"
 
 #. placeholder {0}: name(item)
-#: src/components/admin/AdminListTable.tsx:204
+#: src/components/admin/AdminListTable.tsx:206
 msgid "{0}を選ぶ"
 msgstr "Select {0}"
 
@@ -69,9 +75,14 @@ msgid "{0}を開く"
 msgstr "Open {0}"
 
 #. placeholder {0}: gone.size
-#: src/components/admin/AdminListTable.tsx:72
+#: src/components/admin/AdminListTable.tsx:73
 msgid "{0}件を削除しました。残りは削除できませんでした：{failure}"
 msgstr "{0} deleted. The rest could not be deleted: {failure}"
+
+#. placeholder {0}: ids.length
+#: src/components/admin/DuplicateFinder.tsx:30
+msgid "{0}件を削除します。元に戻せません。よろしいですか？"
+msgstr "Delete {0}? This cannot be undone."
 
 #. placeholder {0}: done.added
 #: src/components/admin/PlaceImport.tsx:66
@@ -260,7 +271,7 @@ msgstr "Move {text} down"
 msgid "{title}（管理）"
 msgstr "{title} (admin)"
 
-#: src/components/admin/AdminListTable.tsx:197
+#: src/components/admin/AdminListTable.tsx:199
 msgid "{title}はまだありません。"
 msgstr "No {title} yet."
 
@@ -299,7 +310,7 @@ msgid "「---」だけの行から下は、いちばん下の注意書きにな�
 msgstr "Everything below a line with only \"---\" becomes the note at the bottom."
 
 #. placeholder {0}: name(one)
-#: src/components/admin/AdminListTable.tsx:58
+#: src/components/admin/AdminListTable.tsx:59
 msgid "「{0}」を削除します。元に戻せません。よろしいですか？"
 msgstr "Delete \"{0}\"? This cannot be undone."
 
@@ -640,7 +651,7 @@ msgstr "Nice to have"
 msgid "あるとよい：{0}"
 msgstr "Nice to have: {0}"
 
-#: src/components/admin/AdminListTable.tsx:156
+#: src/components/admin/AdminListTable.tsx:158
 msgid "いいえ"
 msgstr "No"
 
@@ -985,7 +996,7 @@ msgstr "This file could not be read. Choose a file (.xlsx) made from the templat
 msgid "このブラウザでは、スタンプが消えてしまうことがあります。"
 msgstr "Your stamps may be lost in this browser."
 
-#: src/components/admin/AdminListTable.tsx:187
+#: src/components/admin/AdminListTable.tsx:189
 msgid "このページをすべて選ぶ"
 msgstr "Select everything on this page"
 
@@ -1126,6 +1137,10 @@ msgstr "This place is closed right now. You can't collect the stamp."
 #: src/components/useErrorMessages.ts:41
 msgid "この場所は今、通行止めなどで閉まっているため、スタンプを押せません。"
 msgstr "This place is closed right now, so you cannot collect a stamp here."
+
+#: src/components/admin/DuplicateFinder.tsx:30
+msgid "この場所を削除します。元に戻せません。よろしいですか？"
+msgstr "Delete this place? This cannot be undone."
 
 #: src/components/map/StopCard.tsx:54
 msgid "この場所を見る"
@@ -1311,8 +1326,13 @@ msgstr "Site-wide settings"
 msgid "サイト全体の設定（管理）"
 msgstr "Site-wide settings (admin)"
 
-#: src/components/admin/AdminListTable.tsx:113
-#: src/components/admin/AdminListTable.tsx:113
+#: src/components/admin/DuplicateFinder.tsx:53
+msgid "さがしています…"
+msgstr "Searching…"
+
+#: src/components/admin/AdminListTable.tsx:115
+#: src/components/admin/AdminListTable.tsx:115
+#: src/components/admin/DuplicateFinder.tsx:53
 msgid "さがす"
 msgstr "Search"
 
@@ -1502,7 +1522,7 @@ msgstr "stamped"
 msgid "すでに公開をやめた経由地があります（{names}）。「経由地」タブで確かめてください。"
 msgstr "These waypoints were already unpublished: {names}. Check them in the Waypoints tab."
 
-#: src/components/admin/AdminListTable.tsx:152
+#: src/components/admin/AdminListTable.tsx:154
 #: src/components/admin/DirectoryPicker.tsx:153
 #: src/components/admin/RouteTable.tsx:77
 #: src/components/PrefectureFilter.tsx:36
@@ -1700,7 +1720,7 @@ msgstr "A nickname is fine."
 msgid "のぼり"
 msgstr "Climb"
 
-#: src/components/admin/AdminListTable.tsx:155
+#: src/components/admin/AdminListTable.tsx:157
 msgid "はい"
 msgstr "Yes"
 
@@ -2114,7 +2134,7 @@ msgstr "Try again"
 msgid "もう一度送りました。届かないときは、1分ほど待ってからお試しください。"
 msgstr "Sent again. If it does not arrive, wait about a minute and try again."
 
-#: src/components/admin/AdminListTable.tsx:227
+#: src/components/admin/AdminListTable.tsx:229
 #: src/components/admin/PhotoLibrary.tsx:216
 msgid "もっと見る"
 msgstr "Show more"
@@ -2842,6 +2862,10 @@ msgstr "Choose a prefecture first."
 msgid "先に「保存」してください。"
 msgstr "Save first."
 
+#: src/components/admin/DuplicateFinder.tsx:66
+msgid "先頭だけ残して、ほかを削除"
+msgstr "Keep the first, delete the others"
+
 #: src/components/admin/RouteEditor.tsx:561
 msgid "入れた文字が、そのまま表示されます。体力度・技術度を選んだときは、そちらを先に表示します。"
 msgstr "Shown exactly as typed. When a physical or technical level is chosen, those are shown instead."
@@ -3212,7 +3236,8 @@ msgstr "Terms of use"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
 #: src/components/admin/AdminItemForm.tsx:278
-#: src/components/admin/AdminListTable.tsx:217
+#: src/components/admin/AdminListTable.tsx:219
+#: src/components/admin/DuplicateFinder.tsx:85
 #: src/components/admin/fields.tsx:155
 #: src/components/admin/PlaceTable.tsx:140
 #: src/components/admin/PlaceTable.tsx:205
@@ -3422,6 +3447,10 @@ msgstr "Back right"
 #: src/components/navigation/NavigationHud.tsx:111
 msgid "右折"
 msgstr "Right"
+
+#: src/components/admin/DuplicateFinder.tsx:51
+msgid "同じ名前で、位置が近い（150m以内、または位置が未入力）場所を、グループにして出します。各グループの先頭が、いちばん情報がそろっている場所です（残すのにおすすめ）。"
+msgstr "Places with the same name that are near each other (within 150 m, or with no position) are shown in groups. The first of each group is the most complete one (the one to keep)."
 
 #: src/components/map/MapPickList.tsx:22
 #: src/components/map/MapPickList.tsx:23
@@ -3993,7 +4022,7 @@ msgstr "Discard"
 msgid "探しています…"
 msgstr "Searching…"
 
-#: src/components/admin/AdminListTable.tsx:115
+#: src/components/admin/AdminListTable.tsx:117
 #: src/components/admin/map-editor/MapEditor.tsx:947
 msgid "探す"
 msgstr "Search"
@@ -4221,7 +4250,7 @@ msgstr "Text"
 msgid "本文へ移動"
 msgstr "Skip to main content"
 
-#: src/components/admin/AdminListTable.tsx:197
+#: src/components/admin/AdminListTable.tsx:199
 msgid "条件に合う{title}はありません。"
 msgstr "No {title} match the conditions."
 
@@ -4229,7 +4258,7 @@ msgstr "No {title} match the conditions."
 msgid "条件に合うルートがありません。"
 msgstr "No routes match."
 
-#: src/components/admin/AdminListTable.tsx:128
+#: src/components/admin/AdminListTable.tsx:130
 msgid "条件をやめる"
 msgstr "Clear the conditions"
 
@@ -4336,6 +4365,10 @@ msgstr "Routes are in walking order. Select a name to edit its text and map."
 #: src/components/SpotSheet.tsx:128
 msgid "歴史・由来"
 msgstr "History and background"
+
+#: src/components/admin/DuplicateFinder.tsx:75
+msgid "残すのにおすすめ"
+msgstr "Best to keep"
 
 #: src/components/admin/PageTextEditor.tsx:99
 msgid "段落は、空の行で区切ります。"
@@ -4795,7 +4828,7 @@ msgstr "Place a waypoint"
 msgid "経由地を置くと、近い順に並びます。"
 msgstr "Once there is a waypoint, they are listed nearest first."
 
-#: src/components/admin/AdminListTable.tsx:136
+#: src/components/admin/AdminListTable.tsx:138
 msgid "絞りこみ"
 msgstr "Filters"
 
@@ -5322,12 +5355,12 @@ msgid "選ぶ・動かす"
 msgstr "Select / move"
 
 #. placeholder {0}: ticked.size
-#: src/components/admin/AdminListTable.tsx:191
+#: src/components/admin/AdminListTable.tsx:193
 msgid "選んだ{0}件を削除"
 msgstr "Delete the {0} selected"
 
 #. placeholder {0}: ids.length
-#: src/components/admin/AdminListTable.tsx:58
+#: src/components/admin/AdminListTable.tsx:59
 msgid "選んだ{0}件を削除します。元に戻せません。よろしいですか？"
 msgstr "Delete the {0} selected? This cannot be undone."
 
@@ -5371,6 +5404,14 @@ msgstr "Prefecture"
 #: src/components/admin/RouteTable.tsx:121
 msgid "都道府県が未入力"
 msgstr "Prefecture not set"
+
+#: src/components/admin/DuplicateFinder.tsx:60
+msgid "重複しているように見える場所はありません。"
+msgstr "No places look duplicated."
+
+#: src/components/admin/DuplicateFinder.tsx:49
+msgid "重複している場所をさがす"
+msgstr "Find duplicate places"
 
 #: src/components/IntroFlow.tsx:142
 #: src/components/landing/Landing.tsx:132

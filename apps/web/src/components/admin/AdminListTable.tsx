@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
+import { DuplicateFinder } from "./DuplicateFinder";
 import { PlaceImport } from "./PlaceImport";
 import { inputClass } from "./fields";
 import { itemFacts, itemHref, itemName, pick, type ListMeta } from "@/lib/admin/lists/config";
@@ -101,6 +102,7 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
         </Link>
       ) : null}
       {config.key === "directory" ? <PlaceImport onDone={() => void search(q, picked)} /> : null}
+      {config.key === "directory" ? <DuplicateFinder meta={config} locale={locale} choices={choices} onChanged={() => void search(q, picked)} /> : null}
       <form
         role="search"
         onSubmit={(e) => {
