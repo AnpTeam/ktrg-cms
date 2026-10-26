@@ -56,10 +56,22 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
         e.stopPropagation();
       }
     };
+    // The Back button: next's router has no way to block it, so one extra history entry is added while there is unsaved
+    // work. Back then only removes that entry (and fires popstate), and the person is asked before going on or staying.
+    // shortcut: after saving, that one extra entry stays, so Back is pressed once more on the same page.
+    history.pushState(history.state, "", window.location.href);
+    const back = () => {
+      if (window.confirm(t`保存していない変更があります。このページを離れますか？`)) {
+        window.removeEventListener("popstate", back);
+        history.back();
+      } else history.pushState(history.state, "", window.location.href);
+    };
     window.addEventListener("beforeunload", warn);
+    window.addEventListener("popstate", back);
     document.addEventListener("click", follow, true);
     return () => {
       window.removeEventListener("beforeunload", warn);
+      window.removeEventListener("popstate", back);
       document.removeEventListener("click", follow, true);
     };
   }, [dirty, t]);
