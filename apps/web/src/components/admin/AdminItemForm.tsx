@@ -1,18 +1,19 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useReauth } from "@/components/auth/ReauthDialog";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { displayValue, pick, type FieldUi, type ListItem, type ListMeta } from "@/lib/admin/lists/config";
 import { changedFields, formValues, missingRequired, toPayload, type FormValues } from "@/lib/admin/lists/form";
-import { listRequest, type ListAnswer, type OneItem } from "@/lib/admin/lists/list-client";
+import { listRequest, type ListAnswer, type ListPage, type OneItem } from "@/lib/admin/lists/list-client";
 import { translationsChange, type Translations } from "@/lib/admin/content-locales";
 import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoLinkDetails } from "./PhotoLinkDetails";
 import { PhotoUpload } from "./PhotoUpload";
+import { PositionMap } from "./PositionMap";
 
 type Notice = { kind: "saved" | "error"; text: string } | null;
 
@@ -37,11 +38,56 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
   const changes = saved ? { ...changedFields(config, values, saved), ...(wordChange ? { translations: wordChange } : {}) } : null;
   const editable = config.fields.some((f) => !f.readOnly) && (saved ? config.ops.edit : config.ops.create);
   const canSave = !busy && editable && missing.length === 0 && (changes === null || Object.keys(changes).length > 0);
+  // Unsaved work: a change to a saved row, or anything typed into a new one.
+  const dirty = saved ? Object.keys(changes ?? {}).length > 0 : JSON.stringify(values) !== JSON.stringify(formValues(config, null)) || Object.keys(words).length > 0;
   const set = (name: string) => (v: string | boolean) => setValues((now) => ({ ...now, [name]: v }));
   const text = (name: string) => String(values[name] ?? "");
   const routeName = (id: string, field: string) => choices[field]?.find((r) => r.id === id)?.name ?? null;
 
-  async function save() {
+  // ---- leaving with unsaved work: closing the tab, or following a link inside the admin ---------------------------------
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    const follow = (e: MouseEvent) => {
+      const a = (e.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
+      if (!a || a.target === "_blank" || a.origin !== window.location.origin || a.pathname === window.location.pathname) return;
+      if (!window.confirm(t`保存していない変更があります。このページを離れますか？`)) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+    window.addEventListener("beforeunload", warn);
+    document.addEventListener("click", follow, true);
+    return () => {
+      window.removeEventListener("beforeunload", warn);
+      document.removeEventListener("click", follow, true);
+    };
+  }, [dirty, t]);
+
+  // Ctrl+S / ⌘S saves, even from inside a box. The latest save is kept in a ref so the listener is added once.
+  const saveNow = useRef<() => void>(() => {});
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        saveNow.current();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  /** After saving a place, open the next one still waiting for its position to be checked. */
+  async function openNext(currentId: string) {
+    const res = await listRequest<ListPage>("GET", `${config.key}?filter=positionVerified:false`);
+    if (!res.ok) return setNotice({ kind: "error", text: messages[res.key] });
+    const at = res.data.items.findIndex((i) => i.id === currentId);
+    const target = res.data.items[at + 1] ?? res.data.items.find((i) => i.id !== currentId);
+    if (target) router.push(`/admin/${config.key}/${target.id}`);
+    else setNotice({ kind: "saved", text: t`保存しました。次に確認する場所はありません。` });
+  }
+
+  async function save(andNext = false) {
     setBusy(true);
     setNotice(null);
     const got: { item: ListItem | null } = { item: null };
@@ -62,6 +108,7 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
     setValues(formValues(config, item));
     setWords((item.translations ?? {}) as Translations);
     setNotice({ kind: "saved", text: t`保存しました。` });
+    if (andNext) await openNext(item.id);
   }
 
   async function remove() {
@@ -72,6 +119,13 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
     if (!res.ok) return setNotice({ kind: "error", text: messages[res.key] });
     router.push(`/admin/${config.key}`);
   }
+
+  useEffect(() => {
+    saveNow.current = () => {
+      if (canSave) void save();
+    };
+  });
+  const reviewable = config.fields.some((f) => f.name === "positionVerified");
 
   function input(f: FieldUi) {
     const id = `${config.key}-${f.name}`;
@@ -130,12 +184,20 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
           </Field>
         );
       case "number":
-      case "decimal":
-        return (
+      case "decimal": {
+        const field = (
           <Field key={f.name} label={label} hint={hint} htmlFor={id} required={f.required}>
             <NumberInput id={id} integer={f.kind === "number"} value={text(f.name) === "" ? null : Number(text(f.name))} onChange={(v) => set(f.name)(v === null ? "" : String(v))} />
           </Field>
         );
+        if (f.name !== "lng" || !config.fields.some((x) => x.name === "lat")) return field;
+        const lat = text("lat") === "" ? null : Number(text("lat"));
+        const lng = text("lng") === "" ? null : Number(text("lng"));
+        return [
+          field,
+          <PositionMap key="position-map" lat={lat} lng={lng} onChange={(la, ln) => setValues((now) => ({ ...now, lat: String(la), lng: String(ln) }))} />,
+        ];
+      }
       case "date":
         return (
           <Field key={f.name} label={label} hint={hint} htmlFor={id} required={f.required}>
@@ -167,8 +229,16 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
     <div className="flex flex-col gap-5">
       {/* The save button stays in reach, and its answer is a toast over the page (like the route editor's). */}
       {editable ? (
-        <div className="sticky top-0 z-20 -mx-4 flex items-center justify-end gap-3 border-b border-line bg-paper px-4 py-3 lg:-mx-8 lg:px-8">
-          <button type="button" onClick={save} disabled={!canSave} className="tap-target rounded-xl bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
+        <div className="sticky top-0 z-20 -mx-4 flex flex-wrap items-center justify-end gap-3 border-b border-line bg-paper px-4 py-3 lg:-mx-8 lg:px-8">
+          <p className="mr-auto text-base text-muted" aria-live="polite">
+            {dirty ? t`保存していない変更があります` : saved ? t`保存済み` : ""}
+          </p>
+          {saved && reviewable ? (
+            <button type="button" onClick={() => void save(true)} disabled={!canSave} className="tap-target rounded-xl border-2 border-ink px-6 text-lg font-bold disabled:opacity-40">
+              {t`保存して次へ`}
+            </button>
+          ) : null}
+          <button type="button" onClick={() => void save()} disabled={!canSave} className="tap-target rounded-xl bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
             {busy ? t`保存中…` : saved ? t`保存` : t`作成`}
           </button>
         </div>

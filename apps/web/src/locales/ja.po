@@ -317,7 +317,7 @@ msgstr "「地形」ボタンで重ねるもの"
 msgid "「地形」ボタンを押した状態で見る"
 msgstr "「地形」ボタンを押した状態で見る"
 
-#: src/components/admin/AdminItemForm.tsx:192
+#: src/components/admin/AdminItemForm.tsx:262
 msgid "「必須」の欄をすべて入れると保存できます。"
 msgstr "「必須」の欄をすべて入れると保存できます。"
 
@@ -413,6 +413,10 @@ msgstr "7日間は表示しない"
 #: src/components/map/TrailMap.tsx:172
 msgid "Ctrlキーを押しながら地図を動かします"
 msgstr "Ctrlキーを押しながら地図を動かします"
+
+#: src/components/admin/PositionMap.tsx:84
+msgid "Google マップで開く"
+msgstr "Google マップで開く"
 
 #: src/components/StampHere.tsx:103
 msgid "GPSの電波が弱いようです。空の開けた場所に動いて、もう一度お試しください。"
@@ -2514,6 +2518,10 @@ msgstr "位置"
 msgid "位置なし"
 msgstr "位置なし"
 
+#: src/components/admin/PositionMap.tsx:79
+msgid "位置の地図"
+msgstr "位置の地図"
+
 #: src/components/StampHere.tsx:180
 msgid "位置は、保存しません。保存するのは、スタンプだけです。"
 msgstr "位置は、保存しません。保存するのは、スタンプだけです。"
@@ -2612,7 +2620,7 @@ msgstr "体力度と技術度について"
 msgid "作っています…"
 msgstr "作っています…"
 
-#: src/components/admin/AdminItemForm.tsx:172
+#: src/components/admin/AdminItemForm.tsx:242
 msgid "作成"
 msgstr "作成"
 
@@ -2624,7 +2632,7 @@ msgstr "使える写真は見つかりませんでした。"
 msgid "例：山田太郎, CC BY-SA 4.0"
 msgstr "例：山田太郎, CC BY-SA 4.0"
 
-#: src/components/admin/AdminItemForm.tsx:172
+#: src/components/admin/AdminItemForm.tsx:242
 msgid "保存"
 msgstr "保存"
 
@@ -2632,9 +2640,14 @@ msgstr "保存"
 msgid "保存していない内容も含めて調べています。"
 msgstr "保存していない内容も含めて調べています。"
 
+#: src/components/admin/AdminItemForm.tsx:234
 #: src/components/admin/RouteEditor.tsx:419
 msgid "保存していない変更があります"
 msgstr "保存していない変更があります"
+
+#: src/components/admin/AdminItemForm.tsx:54
+msgid "保存していない変更があります。このページを離れますか？"
+msgstr "保存していない変更があります。このページを離れますか？"
 
 #: src/components/admin/RallyEditor.tsx:138
 msgid "保存していない変更があります。先に保存してから公開を切りかえてください。"
@@ -2649,7 +2662,11 @@ msgstr "保存していない編集が、このブラウザに残っています
 msgid "保存しています…"
 msgstr "保存しています…"
 
-#: src/components/admin/AdminItemForm.tsx:64
+#: src/components/admin/AdminItemForm.tsx:238
+msgid "保存して次へ"
+msgstr "保存して次へ"
+
+#: src/components/admin/AdminItemForm.tsx:110
 #: src/components/admin/RallyEditor.tsx:66
 #: src/components/admin/RouteEditor.tsx:327
 #: src/components/ProfileSettings.tsx:172
@@ -2668,6 +2685,10 @@ msgstr "保存しました。ただし、情報源が空のため、線は「確
 #: src/components/admin/RouteEditor.tsx:328
 msgid "保存しました。ただし、未完成の経由地が{heldCount}件あり、まだ保存していません（赤く示した項目）。"
 msgstr "保存しました。ただし、未完成の経由地が{heldCount}件あり、まだ保存していません（赤く示した項目）。"
+
+#: src/components/admin/AdminItemForm.tsx:87
+msgid "保存しました。次に確認する場所はありません。"
+msgstr "保存しました。次に確認する場所はありません。"
 
 #: src/components/OfflineSave.tsx:47
 msgid "保存しました（電波がなくても開けます）"
@@ -2688,10 +2709,14 @@ msgstr "保存できません。赤く示した項目を直してください。
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "保存できませんでした。電波の良い場所でもう一度お試しください。"
 
-#: src/components/admin/AdminItemForm.tsx:172
+#: src/components/admin/AdminItemForm.tsx:242
 #: src/components/admin/RouteEditor.tsx:422
 msgid "保存中…"
 msgstr "保存中…"
+
+#: src/components/admin/AdminItemForm.tsx:234
+msgid "保存済み"
+msgstr "保存済み"
 
 #. placeholder {0}: formatUpdated(locale, draft.updatedAt ?? new Date().toISOString())
 #: src/components/admin/RouteEditor.tsx:419
@@ -2881,7 +2906,7 @@ msgstr "公開前の経由地も、ここには表示されます。"
 msgid "共有"
 msgstr "共有"
 
-#: src/components/admin/AdminItemForm.tsx:190
+#: src/components/admin/AdminItemForm.tsx:260
 msgid "内容"
 msgstr "内容"
 
@@ -3089,7 +3114,7 @@ msgid "利用規約"
 msgstr "利用規約"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
-#: src/components/admin/AdminItemForm.tsx:196
+#: src/components/admin/AdminItemForm.tsx:266
 #: src/components/admin/fields.tsx:155
 #: src/components/admin/PlaceTable.tsx:140
 #: src/components/admin/PlaceTable.tsx:205
@@ -3097,7 +3122,7 @@ msgstr "利用規約"
 msgid "削除"
 msgstr "削除"
 
-#: src/components/admin/AdminItemForm.tsx:198
+#: src/components/admin/AdminItemForm.tsx:268
 msgid "削除する"
 msgstr "削除する"
 
@@ -3465,6 +3490,10 @@ msgstr "地図をクリックして、この区間に点を置いていきます
 msgid "地図をクリックして、この経由地のすぐ次に新しい経由地を入れます"
 msgstr "地図をクリックして、この経由地のすぐ次に新しい経由地を入れます"
 
+#: src/components/admin/PositionMap.tsx:81
+msgid "地図をクリックするか、ピンを動かすと、緯度・経度が入ります。"
+msgstr "地図をクリックするか、ピンを動かすと、緯度・経度が入ります。"
+
 #: src/components/admin/map-editor/MapEditor.tsx:830
 msgid "地図をクリックすると、「{afterName}」のすぐ次に経由地を置きます。"
 msgstr "地図をクリックすると、「{afterName}」のすぐ次に経由地を置きます。"
@@ -3480,6 +3509,10 @@ msgstr "地図をクリックすると、道を探すときの目印（ガイド
 #: src/components/admin/map-editor/MapEditor.tsx:956
 msgid "地図を動かす"
 msgstr "地図を動かす"
+
+#: src/components/admin/PositionMap.tsx:77
+msgid "地図を表示できませんでした。"
+msgstr "地図を表示できませんでした。"
 
 #: src/components/admin/SiteSettingsForm.tsx:102
 msgid "地図を見やすくする"
@@ -5190,7 +5223,7 @@ msgstr "都道府県が未入力"
 msgid "長さ"
 msgstr "長さ"
 
-#: src/components/admin/AdminItemForm.tsx:184
+#: src/components/admin/AdminItemForm.tsx:254
 #: src/components/admin/map-editor/MapEditor.tsx:965
 #: src/components/admin/PhotoLibrary.tsx:124
 #: src/components/admin/RouteEditor.tsx:438
