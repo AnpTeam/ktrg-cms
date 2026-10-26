@@ -367,6 +367,7 @@ describe("user B cannot touch user A", () => {
     }),
     "PUT /api/v1/admin/settings/map-style": () => ({ base: "pale", terrain: "hillshade", terrainOpacity: 0.5, saturation: 0, contrast: 0 }),
     "PATCH /api/v1/admin/lists/directory/:id": () => ({ updatedAt: new Date().toISOString() }),
+    "POST /api/v1/admin/lists/directory/import": () => ({ csv: "", apply: false }),
     "PATCH /api/v1/admin/lists/users/:id": () => ({ updatedAt: new Date().toISOString(), role: "admin" }),
     "POST /api/v1/auth/reauth/verify": () => ({ code: "123456" }),
     "POST /api/v1/auth/email/request": () => ({ email: "new@example.com" }),
