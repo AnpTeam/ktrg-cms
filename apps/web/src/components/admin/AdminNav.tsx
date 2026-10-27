@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { ReactNode } from "react";
-import { ArticleIcon, BellIcon, ClockIcon, CommentIcon, DocumentIcon, FuriganaIcon, FlagIcon, GearIcon, ImageIcon, PencilIcon, PinIcon, RouteIcon, ShopIcon, StampIcon, UserIcon, WarningIcon } from "@/components/icons";
+import { ArticleIcon, BellIcon, ClockIcon, CommentIcon, DocumentIcon, FuriganaIcon, GlobeIcon, FlagIcon, GearIcon, ImageIcon, PencilIcon, PinIcon, RouteIcon, ShopIcon, StampIcon, UserIcon, WarningIcon } from "@/components/icons";
 
 /** The picture beside each list in the menu; a list the app does not know yet gets a plain document. */
 const LIST_ICONS: Record<string, ReactNode> = {
@@ -34,6 +34,7 @@ export function AdminNav({ lists, isAdmin }: { lists: { key: string; title: stri
   const ready = [
     { key: "routes", href: `${base}/routes`, label: t`ルート`, icon: <RouteIcon /> },
     { key: "rallies", href: `${base}/rallies`, label: t`ラリー`, icon: <FlagIcon /> },
+    { key: "visits", href: `${base}/visits`, label: t`アクセスの地域`, icon: <GlobeIcon /> },
     { key: "attention", href: `${base}/attention`, label: t`直すところ`, icon: <WarningIcon /> },
     ...lists.filter((l) => l.key !== "site-pages").map((l) => ({ key: l.key, href: `${base}/${l.key}`, label: l.title, icon: LIST_ICONS[l.key] ?? <DocumentIcon /> })),
     { key: "pages", href: `${base}/pages`, label: t`ページの文章`, icon: <DocumentIcon /> },
@@ -41,7 +42,7 @@ export function AdminNav({ lists, isAdmin }: { lists: { key: string; title: stri
     ...(isAdmin ? [{ key: "settings", href: `${base}/settings`, label: t`サイト全体の設定`, icon: <GearIcon /> }] : []),
   ];
   // Menu sections, split by a line. A list the app does not know yet joins the section of notices and banners.
-  const SECTIONS = [["routes", "rallies", "places", "directory"], ["attention"], ["notices", "banners", "furigana", "pages"], ["stamps", "users", "audit"], ["settings"]];
+  const SECTIONS = [["routes", "rallies", "places", "directory"], ["attention"], ["notices", "banners", "furigana", "pages"], ["visits", "stamps", "users", "audit"], ["settings"]];
   const known = new Set(SECTIONS.flat());
   const sections = SECTIONS.map((keys, i) => [...keys.flatMap((k) => ready.filter((r) => r.key === k)), ...(i === 2 ? ready.filter((r) => !known.has(r.key)) : [])]).filter((g) => g.length > 0);
 

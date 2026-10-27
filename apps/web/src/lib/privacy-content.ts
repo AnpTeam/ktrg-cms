@@ -57,6 +57,14 @@ const ja: Policy = {
       ],
     },
     {
+      heading: "どちらの地域からのアクセスか",
+      paragraphs: [
+        "ページが開かれるたびに、接続元から分かるおおよその地域（国・都道府県・市や町）と、開かれたページを数えます。どの地域の方がこのプロジェクトに関心を持っているかを知り、広報や運営に生かすためです。",
+        "IPアドレスそのものは、保存も記録もしません。保存するのは「日ごと・地域ごと・ページごとの回数」だけで、あなたのアカウントやスタンプとは結びつけず、個人を特定できる形では扱いません。地域は接続元から推定するため、実際にいる場所と違うことがあります。",
+        "ブラウザで「トラッキングしない（Do Not Track）」や「Global Privacy Control」を有効にしている場合は、数えません。人数が少ない市や町は、名前を出さず合計だけにして、集計を見る人にも個人が分からないようにしています。",
+      ],
+    },
+    {
       heading: "Cookieなどの保存",
       paragraphs: [
         "ログインを保つため、言語や見やすさの設定を覚えておくために、お使いの端末に小さな情報（Cookie）を保存します。広告や、行動を追いかけるためのものは使いません。",
@@ -68,7 +76,7 @@ const ja: Policy = {
         { term: "地図", text: "地図を表示すると、国土地理院の地図データを読み込むため、お使いの端末の通信先情報（IPアドレスなど）がそこに伝わります。" },
         { term: "動画", text: "動画は、再生ボタンを押したときだけ、YouTubeまたはVimeoから読み込みます。" },
         { term: "道案内", text: "道案内の間、位置をOpenRouteServiceへ送って道順を描きます。位置は保存しません。" },
-        { term: "利用状況の集計", text: "Vercel Analyticsで、ページの閲覧数などを個人が分からない形で数えます。Cookieは使いません。" },
+        { term: "利用状況の集計", text: "このアプリの運営に使っているホスティング事業者（Vercel）の集計機能と、上の「どちらの地域からのアクセスか」の集計で、ページの閲覧数などを個人が分からない形で数えます。Cookieは使いません。" },
         { term: "メールの送信", text: "ログイン用の番号は、メール配信を行う事業者を通して送ります。事業者名は公開までに書きます。" },
       ],
     },
@@ -134,6 +142,14 @@ const en: Policy = {
       ],
     },
     {
+      heading: "Which regions visits come from",
+      paragraphs: [
+        "Each time a page is opened, we count the approximate region the connection appears to come from (country, prefecture or state, and city or town) together with the page that was opened. We do this to learn which regions are interested in the project, and to use that for outreach and planning.",
+        "We do not store or log the IP address itself. What we keep is only a count per day, per region and per page. It is not linked to your account or your stamps, and it is not handled in a way that identifies you. The region is estimated from the connection, so it can differ from where you really are.",
+        "If your browser has \"Do Not Track\" or \"Global Privacy Control\" turned on, the visit is not counted. Cities and towns with only a few visits are shown as a total without their name, so that nobody reading the totals can pick out a person.",
+      ],
+    },
+    {
       heading: "Cookies and similar storage",
       paragraphs: [
         "We save small pieces of information (cookies) on your device to keep you signed in and to remember your language and display settings. We do not use advertising or tracking.",
@@ -148,7 +164,7 @@ const en: Policy = {
         },
         { term: "Video", text: "Videos load from YouTube or Vimeo only when you press play." },
         { term: "Navigation", text: "While you navigate, your position is sent to OpenRouteService to draw a path. It is not stored." },
-        { term: "Usage counts", text: "Vercel Analytics counts page views and similar events in a form that does not identify anyone. It does not use cookies." },
+        { term: "Usage counts", text: "The hosting provider's analytics (Vercel) and our own regional count described above tally page views and similar events in a form that does not identify anyone. Neither uses cookies." },
         {
           term: "Sending email",
           text: "Sign-in codes are sent through an email delivery company. Its name will be written here before the app is published.",
