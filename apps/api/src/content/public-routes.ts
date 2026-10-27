@@ -1,3 +1,4 @@
+import { publicCache } from "../lib/public-cache";
 import { createHash } from "node:crypto";
 import { Elysia, t } from "elysia";
 import { fail } from "../auth/http";
@@ -13,11 +14,15 @@ const idParams = t.Object({ id: t.String({ format: "uuid" }) });
  */
 export function publicContentRoutes(getContent: () => ContentService) {
   return new Elysia({ detail: { tags: ["Content"] } })
-    .get("/routes", async () => ({ ok: true as const, routes: await getContent().publicRoutes() }))
+    .get("/routes", async ({ set }) => {
+      publicCache(set);
+      return { ok: true as const, routes: await getContent().publicRoutes() };
+    })
     .get(
       "/routes/:id",
       async ({ params, set }) => {
         const found = await getContent().publicRoute(params.id);
+        if (found) publicCache(set);
         return found ? { ok: true as const, route: found.route, spots: found.spots.map(spotOut), points: found.points.map(spotOut) } : fail(set, 404, "not_found");
       },
       { params: idParams },

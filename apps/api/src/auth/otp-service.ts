@@ -1,7 +1,7 @@
 import type { AuthUser, Locale, NewAccountProfile } from "./user";
 import { buildOtpEmail } from "../emails/otp-code";
 import { buildReauthEmail } from "../emails/reauth-code";
-import type { Mailer } from "../lib/mailer";
+import { mailFailure, type Mailer } from "../lib/mailer";
 import {
   OTP_COOLDOWN_MS,
   OTP_MAX_ATTEMPTS,
@@ -133,7 +133,7 @@ export function createOtpService({
         await mailer.send(build({ to: email, locale, code, ttlMinutes: OTP_TTL_MS / 60_000 }));
       } catch (err) {
         // Never surface mail failures: it would tell a caller more than "ok".
-        log(`[otp] mail send failed: ${err instanceof Error ? err.message : String(err)}`);
+        log(`[otp] mail send failed: ${mailFailure(err)}`);
       }
     },
 

@@ -1,3 +1,4 @@
+import { publicCache } from "../lib/public-cache";
 import { Elysia } from "elysia";
 import type { ListDef } from "../admin-lists/list-routes";
 import type { KitServices } from "../auth/route-kit";
@@ -82,8 +83,8 @@ const publicOut = ({ published: _p, createdAt: _c, updatedAt: _u, translations: 
 
 /** What visitors read, no login: published notices that have not expired (Japan time), the most recently checked first. */
 export function publicNoticeRoutes(getNotices: () => NoticeService) {
-  return new Elysia({ detail: { tags: ["Content"] } }).get("/notices", async () => ({
-    ok: true as const,
-    notices: (await getNotices().publicNotices()).map(publicOut),
-  }));
+  return new Elysia({ detail: { tags: ["Content"] } }).get("/notices", async ({ set }) => {
+    publicCache(set, 30); // hazards and closures: a shorter wait than the rest
+    return { ok: true as const, notices: (await getNotices().publicNotices()).map(publicOut) };
+  });
 }

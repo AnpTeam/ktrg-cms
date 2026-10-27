@@ -3,7 +3,7 @@ import { can } from "../auth/permissions";
 import { isPhotoUrl } from "../lib/https-url";
 import { buildDeletionRequestEmail } from "../emails/deletion-request";
 import type { Preferences } from "./preferences";
-import type { Mailer } from "../lib/mailer";
+import { mailFailure, type Mailer } from "../lib/mailer";
 
 export type { Locale };
 
@@ -169,7 +169,7 @@ export function createMeService({
           await mailer.send(buildDeletionRequestEmail({ to: result.profile.email, locale: result.profile.locale, at, deleteOn: new Date(at.getTime() + DELETION_GRACE_DAYS * DAY_MS) }));
         } catch (err) {
           // The request still stands; the email is a courtesy, not the record.
-          log(`[me] deletion email failed: ${err instanceof Error ? err.message : String(err)}`);
+          log(`[me] deletion email failed: ${mailFailure(err)}`);
         }
       }
       return present(result.profile);

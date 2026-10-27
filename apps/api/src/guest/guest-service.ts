@@ -16,12 +16,12 @@ export function createGuestService({ stamps, secret, now = () => new Date() }: {
 
     /** The guest's stamps with the course each belongs to; a place that is no longer a stamp place is left out. */
     async listWithRoutes(cookie: string | null | undefined) {
-      const rows = [];
-      for (const s of list(cookie)) {
-        const place = await stamps.stampPlace(s.spotId);
-        if (place) rows.push({ spotId: s.spotId, routeId: place.routeId, createdAt: new Date(s.at * 1000) });
-      }
-      return rows;
+      const held = list(cookie);
+      const places = await stamps.stampPlaces(held.map((s) => s.spotId));
+      return held.flatMap((s) => {
+        const place = places.get(s.spotId);
+        return place ? [{ spotId: s.spotId, routeId: place.routeId, createdAt: new Date(s.at * 1000) }] : [];
+      });
     },
 
     async collect(cookie: string | null | undefined, r: Reading): Promise<Result<{ spotId: string; createdAt: Date; flagged: boolean; alreadyStamped: boolean; finished: Finished; cookie: string }>> {
@@ -60,15 +60,9 @@ export function createGuestService({ stamps, secret, now = () => new Date() }: {
 
     /** Moves the guest's stamps to the account (a place the account already holds is left as it is). Returns how many were new. */
     async claim(userId: string, cookie: string | null | undefined): Promise<{ added: number; already: number }> {
-      let added = 0;
-      let already = 0;
-      for (const s of list(cookie)) {
-        if (!(await stamps.stampPlace(s.spotId))) continue;
-        const got = await stamps.award(userId, s.spotId, s.flagged);
-        if (got.created) added++;
-        else already++;
-      }
-      return { added, already };
+      const held = list(cookie);
+      const places = await stamps.stampPlaces(held.map((s) => s.spotId));
+      return stamps.awardMany(userId, held.filter((s) => places.has(s.spotId)));
     },
   };
 }

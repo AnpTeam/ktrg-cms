@@ -14,7 +14,7 @@ export const genders = ["female", "male", "other", "unspecified"] as const;
 export type Gender = (typeof genders)[number];
 
 /** How they found the rally, asked after registering; the keys match the API's `user_found_via`. */
-export const foundVias = ["qr_or_sign", "flyer", "tourism_site", "sns", "search", "friend", "other"] as const;
+export const foundVias = ["qr_or_sign", "tourism_site", "sns", "search", "friend", "other"] as const;
 export type FoundVia = (typeof foundVias)[number];
 
 /**

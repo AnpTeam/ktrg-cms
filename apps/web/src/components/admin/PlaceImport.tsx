@@ -10,6 +10,7 @@ interface Counts {
   added: number;
   skipped: number;
   failed: { name: string; reason: string }[];
+  remaining: number;
 }
 
 // Import the field team's places sheet (CSV) into the directory: choose it, see the counts, then import. Every place
@@ -26,15 +27,34 @@ export function PlaceImport({ onDone }: { onDone: () => void }) {
   async function run(text: string, apply: boolean) {
     setBusy(true);
     setError(null);
-    const res = await listRequest<Counts>("POST", "directory/import", { csv: text, apply });
+    if (!apply) {
+      const res = await listRequest<Counts>("POST", "directory/import", { csv: text, apply });
+      setBusy(false);
+      return res.ok ? setPreview(res.data) : setError(messages[res.key]);
+    }
+    // The server adds a hundred places per request (one request must not outlast the host's time limit): ask again until
+    // none are left. Places already added are skipped each time; the ones it refused stay at the front of its list, so
+    // `skip` passes them by.
+    const total: Counts = { read: 0, added: 0, skipped: 0, failed: [], remaining: 0 };
+    for (;;) {
+      const res = await listRequest<Counts>("POST", "directory/import", { csv: text, apply, skip: total.failed.length });
+      if (!res.ok) {
+        setBusy(false);
+        setDone(total.added > 0 ? total : null);
+        setPreview(null);
+        onDone();
+        return setError(messages[res.key]);
+      }
+      total.read = res.data.read;
+      total.added += res.data.added;
+      total.failed.push(...res.data.failed);
+      if (res.data.remaining === 0 || res.data.added + res.data.failed.length === 0) break; // nothing moved: do not ask forever
+    }
     setBusy(false);
-    if (!res.ok) return setError(messages[res.key]);
-    if (apply) {
-      setDone(res.data);
-      setPreview(null);
-      setCsv(null);
-      onDone();
-    } else setPreview(res.data);
+    setDone(total);
+    setPreview(null);
+    setCsv(null);
+    onDone();
   }
 
   async function choose(file: File | undefined) {

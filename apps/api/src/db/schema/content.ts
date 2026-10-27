@@ -379,8 +379,8 @@ export const blogComments = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     postId: uuid("post_id").notNull().references(() => blogPosts.id, { onDelete: "cascade" }),
-    // Kept as none (shown as "a deleted account") if the writer's account is deleted.
-    userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+    // Deleting the account deletes its comments: a comment can hold a name or a phone number the writer meant to take back.
+    userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
     body: text("body").notNull(),
     status: text("status", { enum: ["pending", "approved", "hidden"] }).notNull().default("pending"),
     createdAt: createdAt(),

@@ -21,7 +21,7 @@ export interface Policy {
 const ja: Policy = {
   title: "プライバシーポリシー",
   draftNotice: "この文章は案です。公開の前に、内容を確認します。",
-  updated: "2026年10月17日（案）",
+  updated: "2026年10月27日（案）",
   sections: [
     {
       heading: "このページについて",
@@ -50,7 +50,8 @@ const ja: Policy = {
     {
       heading: "位置情報",
       paragraphs: [
-        "位置情報は、スタンプを押すときに一度だけ使い、その場所の近くにいるかを確かめます。送られた位置そのものは保存しません。保存するのは、スタンプの記録だけです。",
+        "位置情報は、スタンプを押すときに使い、その場所の近くにいるかを確かめます。送られた位置そのものは保存しません。保存するのは、スタンプの記録だけです。",
+        "道案内を使うと、コースから外れている間、数十秒おきにあなたの位置を、道順を描くための外部サービス（OpenRouteService）へ送ります。保存はせず、道順を描いたらすぐに捨てます。",
         "電波がつながらないときは、押したスタンプを端末の中に一時的にしまい、つながってから送ります。送り終わったら、端末から消します。",
         "アプリが、あなたの動きを続けて記録することはありません。",
       ],
@@ -66,6 +67,8 @@ const ja: Policy = {
       items: [
         { term: "地図", text: "地図を表示すると、国土地理院の地図データを読み込むため、お使いの端末の通信先情報（IPアドレスなど）がそこに伝わります。" },
         { term: "動画", text: "動画は、再生ボタンを押したときだけ、YouTubeまたはVimeoから読み込みます。" },
+        { term: "道案内", text: "道案内の間、位置をOpenRouteServiceへ送って道順を描きます。位置は保存しません。" },
+        { term: "利用状況の集計", text: "Vercel Analyticsで、ページの閲覧数などを個人が分からない形で数えます。Cookieは使いません。" },
         { term: "メールの送信", text: "ログイン用の番号は、メール配信を行う事業者を通して送ります。事業者名は公開までに書きます。" },
       ],
     },
@@ -92,7 +95,7 @@ const ja: Policy = {
 const en: Policy = {
   title: "Privacy policy",
   draftNotice: "This text is a draft. It will be checked before the app is published.",
-  updated: "October 17, 2026 (draft)",
+  updated: "October 27, 2026 (draft)",
   sections: [
     {
       heading: "About this page",
@@ -124,7 +127,8 @@ const en: Policy = {
     {
       heading: "Location",
       paragraphs: [
-        "Your location is used once, when you press the stamp button, to check that you are near the place. The position itself is not saved. Only the stamp record is.",
+        "Your location is used when you press the stamp button, to check that you are near the place. The position itself is not saved. Only the stamp record is.",
+        "When you use navigation and you are off the course line, your position is sent about every 30 seconds to an outside service (OpenRouteService) to draw a path. We do not store it, and it is dropped once the path is drawn.",
         "With no signal, the stamp is kept briefly on your device and sent when you are connected again. It is removed from your device once it has been sent.",
         "The app never records your movements continuously.",
       ],
@@ -143,6 +147,8 @@ const en: Policy = {
           text: "Showing the map loads map data from the Geospatial Information Authority of Japan, so your device's connection details (such as its IP address) reach that service.",
         },
         { term: "Video", text: "Videos load from YouTube or Vimeo only when you press play." },
+        { term: "Navigation", text: "While you navigate, your position is sent to OpenRouteService to draw a path. It is not stored." },
+        { term: "Usage counts", text: "Vercel Analytics counts page views and similar events in a form that does not identify anyone. It does not use cookies." },
         {
           term: "Sending email",
           text: "Sign-in codes are sent through an email delivery company. Its name will be written here before the app is published.",

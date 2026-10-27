@@ -1,3 +1,4 @@
+import { publicCache } from "../lib/public-cache";
 import { Elysia, t, type Static } from "elysia";
 import { createMemoryListStore } from "../admin-lists/list-memory-store";
 import type { ListDef } from "../admin-lists/list-routes";
@@ -167,7 +168,7 @@ export function publicFuriganaRoutes(getFurigana: () => FuriganaService) {
   return new Elysia({ detail: { tags: ["Content"] } }).get(
     "/furigana/words",
     async ({ set }) => {
-      set.headers["cache-control"] = "public, max-age=300";
+      publicCache(set, 300);
       return { ok: true as const, words: await getFurigana().words() };
     },
     { detail: { summary: "The words furigana is drawn over, with their readings" } },

@@ -14,7 +14,7 @@ function setup(opts: { mailFails?: boolean } = {}) {
 
   const mailer: Mailer = {
     async send(m) {
-      if (opts.mailFails) throw new Error("smtp down");
+      if (opts.mailFails) throw new Error("<a@example.com>: Recipient address rejected");
       sent.push(m);
     },
   };
@@ -84,7 +84,8 @@ describe("otp request", () => {
   test("a mail failure is logged, not thrown", async () => {
     const { service, logs } = setup({ mailFails: true });
     await expect(service.request("a@example.com")).resolves.toBeUndefined();
-    expect(logs[0]).toContain("smtp down");
+    expect(logs[0]).toContain("Error");
+    expect(logs.join(" ")).not.toContain("example.com"); // the mail server's message can echo the address
   });
 
   test("the email is in the requested language, Japanese by default", async () => {

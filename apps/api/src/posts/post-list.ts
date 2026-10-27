@@ -1,3 +1,4 @@
+import { publicCache } from "../lib/public-cache";
 import { Elysia, t, type Static } from "elysia";
 import { createMemoryListStore } from "../admin-lists/list-memory-store";
 import type { ListDef } from "../admin-lists/list-routes";
@@ -232,14 +233,28 @@ const publicOut = ({ published: _p, createdAt: _c, updatedAt: _u, translations: 
   authorPhotoUrl: post.authorPhotoUrl ?? (writer ? writer.photoUrl : (accountPhotoUrl ?? null)),
 });
 
+/**
+ * The list is for cards, which show a few lines: the start of the text is enough, and a whole blog of full bodies would
+ * pass the size Next.js will cache. The post's own page asks for the full text.
+ */
+export const LIST_BODY_CHARS = 600;
+const listOut = (post: PostRow) => {
+  const out = publicOut(post);
+  return { ...out, bodyJa: out.bodyJa.slice(0, LIST_BODY_CHARS), bodyEn: out.bodyEn === null ? null : out.bodyEn.slice(0, LIST_BODY_CHARS) };
+};
+
 /** What visitors read, no login: published posts whose day has come, newest first, and one post by its id. */
 export function publicPostRoutes(getPosts: () => PostService) {
   return new Elysia({ detail: { tags: ["Content"] } })
-    .get("/posts", async () => ({ ok: true as const, posts: (await getPosts().publicPosts()).map(publicOut) }))
+    .get("/posts", async ({ set }) => {
+      publicCache(set);
+      return { ok: true as const, posts: (await getPosts().publicPosts()).map(listOut) };
+    })
     .get(
       "/posts/:id",
       async ({ params, set }) => {
         const post = await getPosts().publicPost(params.id);
+        if (post) publicCache(set);
         return post ? { ok: true as const, post: publicOut(post) } : fail(set, 404, "not_found");
       },
       { params: uuidParams },

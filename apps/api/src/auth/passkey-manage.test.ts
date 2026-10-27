@@ -25,7 +25,7 @@ function setup(opts: { mailFails?: boolean } = {}) {
     log: (m) => logs.push(m),
     mailer: {
       async send(m) {
-        if (opts.mailFails) throw new Error("smtp down");
+        if (opts.mailFails) throw new Error("<a@example.com>: Recipient address rejected");
         sent.push(m);
       },
     },
@@ -100,7 +100,8 @@ describe("alert email on add", () => {
     const { service, addPasskey, logs } = setup({ mailFails: true });
     await addPasskey(alice, "My iPhone");
     expect(await service.list(alice)).toHaveLength(1);
-    expect(logs[0]).toContain("smtp down");
+    expect(logs[0]).toContain("Error");
+    expect(logs.join(" ")).not.toContain("example.com"); // the mail server's message can echo the address
   });
 
   test("a failed registration sends no alert", async () => {

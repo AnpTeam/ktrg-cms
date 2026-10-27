@@ -1,3 +1,4 @@
+import { publicCache } from "../lib/public-cache";
 import { Elysia, t, type Static } from "elysia";
 import { createMemoryListStore } from "../admin-lists/list-memory-store";
 import type { ListDef } from "../admin-lists/list-routes";
@@ -128,10 +129,14 @@ export const sitePageList: ListDef<"site-pages", typeof SITE_PAGE_FIELDS, SitePa
 /** What visitors get: a published page by its address, and the list of published pages (for links to them). */
 export function publicSitePageRoutes(getPages: () => SitePageService) {
   return new Elysia({ detail: { tags: ["Content"] } })
-    .get("/site-pages", async () => ({ ok: true as const, pages: (await getPages().listPublished()).map((p) => ({ slug: p.slug, titleJa: p.titleJa, titleEn: p.titleEn })) }))
+    .get("/site-pages", async ({ set }) => {
+      publicCache(set);
+      return { ok: true as const, pages: (await getPages().listPublished()).map((p) => ({ slug: p.slug, titleJa: p.titleJa, titleEn: p.titleEn })) };
+    })
     .get(
       "/site-pages/:slug",
-      async ({ params }) => {
+      async ({ params, set }) => {
+        publicCache(set);
         const p = await getPages().published(params.slug);
         return { ok: true as const, page: p ? { slug: p.slug, titleJa: p.titleJa, titleEn: p.titleEn, bodyJa: p.bodyJa, bodyEn: p.bodyEn } : null };
       },
