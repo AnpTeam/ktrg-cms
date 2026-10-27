@@ -9,7 +9,7 @@ import { listRequest } from "@/lib/admin/lists/list-client";
 
 // Places that look entered twice (same name, near each other), in groups. The first of a group is the most complete one,
 // and is the one to keep; each place can be deleted here, or all but the first at once.
-export function DuplicateFinder({ meta, locale, choices, onChanged }: { meta: ListMeta; locale: string; choices: Record<string, { id: string; name: string }[]>; onChanged: () => void }) {
+export function DuplicateFinder({ meta, locale, choices, onChanged }: { meta: ListMeta; locale: string; choices: Record<string, { id: string; name: string; detail?: string }[]>; onChanged: () => void }) {
   const { t } = useLingui();
   const messages = useErrorMessages();
   const [groups, setGroups] = useState<ListItem[][] | null>(null);

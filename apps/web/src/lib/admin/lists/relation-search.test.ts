@@ -14,6 +14,16 @@ describe("matchChoices", () => {
     expect(matchChoices(names, "駅").map((c) => c.id)).toEqual(["0"]);
   });
 
+  test("the second line (the route) is searched too, so two same-named places can be told apart", () => {
+    const toilets = [
+      { id: "a", name: "公衆トイレ", detail: "金剛山コース" },
+      { id: "b", name: "公衆トイレ", detail: "友ヶ島コース" },
+    ];
+    expect(matchChoices(toilets, "トイレ").map((c) => c.id)).toEqual(["a", "b"]);
+    expect(matchChoices(toilets, "トイレ 友ヶ島").map((c) => c.id)).toEqual(["b"]); // the name, a space, then the route
+    expect(matchChoices(toilets, "友ヶ島").map((c) => c.id)).toEqual(["b"]);
+  });
+
   test("no match is an empty list", () => {
     expect(matchChoices(names, "温泉")).toEqual([]);
   });

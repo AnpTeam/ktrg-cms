@@ -12,7 +12,7 @@ import { listRequest, type ListPage } from "@/lib/admin/lists/list-client";
 
 // Any generic admin list, drawn from its description (GET /admin/lists) like the rally list: a button for a new row,
 // then each row's name (a link to its form) with a short line of facts. Newest first; "もっと見る" loads the next 50.
-export function AdminListTable({ meta: config, initial, locale, choices }: { meta: ListMeta; initial: ListPage; locale: string; choices: Record<string, { id: string; name: string }[]> }) {
+export function AdminListTable({ meta: config, initial, locale, choices }: { meta: ListMeta; initial: ListPage; locale: string; choices: Record<string, { id: string; name: string; detail?: string }[]> }) {
   const { t } = useLingui();
   const messages = useErrorMessages();
   const [items, setItems] = useState(initial.items);
