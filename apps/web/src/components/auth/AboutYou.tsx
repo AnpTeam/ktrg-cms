@@ -1,7 +1,14 @@
 "use client";
 
 import { useLingui } from "@lingui/react/macro";
-import { ageRanges, foundVias, genders, type AgeRange, type FoundVia, type Gender } from "@/lib/auth-flow";
+import {
+  ageRanges,
+  foundVias,
+  genders,
+  type AgeRange,
+  type FoundVia,
+  type Gender,
+} from "@/lib/auth-flow";
 
 export function useAgeRangeNames(): Record<AgeRange, string> {
   const { t } = useLingui();
@@ -45,11 +52,16 @@ function Tiles<K extends string>({
   columns: 2 | 3;
 }) {
   return (
-    <div className={`grid gap-2 ${columns === 3 ? "grid-cols-3" : "grid-cols-2"}`}>
+    <div
+      className={`grid gap-2 ${columns === 3 ? "grid-cols-3" : "grid-cols-2"}`}
+    >
       {keys.map((key) => {
         const on = value === key;
         return (
-          <label key={key} className={`${tile} ${on ? "border-brand bg-brand text-on-brand" : "border-line bg-paper text-ink"}`}>
+          <label
+            key={key}
+            className={`${tile} ${on ? "border-brand bg-brand text-on-brand" : "border-line bg-paper text-ink"}`}
+          >
             <input
               type="radio"
               name={name}
@@ -68,13 +80,26 @@ function Tiles<K extends string>({
 }
 
 /** "Your age": big tiles; tapping the chosen one again clears it (optional). */
-export function AgeRangePicker({ value, onChange }: { value: AgeRange | null; onChange: (value: AgeRange | null) => void }) {
+export function AgeRangePicker({
+  value,
+  onChange,
+}: {
+  value: AgeRange | null;
+  onChange: (value: AgeRange | null) => void;
+}) {
   const { t } = useLingui();
   const names = useAgeRangeNames();
   return (
     <fieldset className="flex flex-col gap-3">
       <legend className="text-lg font-bold">{t`年代`}</legend>
-      <Tiles name="ageRange" keys={ageRanges} names={names} value={value} onChange={onChange} columns={2} />
+      <Tiles
+        name="ageRange"
+        keys={ageRanges}
+        names={names}
+        value={value}
+        onChange={onChange}
+        columns={2}
+      />
     </fieldset>
   );
 }
@@ -83,13 +108,26 @@ export function AgeRangePicker({ value, onChange }: { value: AgeRange | null; on
  * "Your gender": "答えたくない" is a real choice, so nobody has to say. Tapping the chosen tile again
  * clears it (which means "not answered yet").
  */
-export function GenderPicker({ value, onChange }: { value: Gender | null; onChange: (value: Gender | null) => void }) {
+export function GenderPicker({
+  value,
+  onChange,
+}: {
+  value: Gender | null;
+  onChange: (value: Gender | null) => void;
+}) {
   const { t } = useLingui();
   const names = useGenderNames();
   return (
     <fieldset className="flex flex-col gap-3">
       <legend className="text-lg font-bold">{t`性別`}</legend>
-      <Tiles name="gender" keys={genders} names={names} value={value} onChange={onChange} columns={2} />
+      <Tiles
+        name="gender"
+        keys={genders}
+        names={names}
+        value={value}
+        onChange={onChange}
+        columns={2}
+      />
     </fieldset>
   );
 }
@@ -98,7 +136,6 @@ export function useFoundViaNames(): Record<FoundVia, string> {
   const { t } = useLingui();
   return {
     qr_or_sign: t`QRコード・看板`,
-    flyer: t`チラシ・ポスター`,
     tourism_site: t`観光サイト`,
     sns: t`SNS`,
     search: t`検索`,
@@ -108,13 +145,26 @@ export function useFoundViaNames(): Record<FoundVia, string> {
 }
 
 /** "How did you find out about this?": big tiles, optional; tapping the chosen one again clears it. */
-export function FoundViaPicker({ value, onChange }: { value: FoundVia | null; onChange: (value: FoundVia | null) => void }) {
+export function FoundViaPicker({
+  value,
+  onChange,
+}: {
+  value: FoundVia | null;
+  onChange: (value: FoundVia | null) => void;
+}) {
   const { t } = useLingui();
   const names = useFoundViaNames();
   return (
     <fieldset className="flex flex-col gap-3">
       <legend className="text-lg font-bold">{t`このアプリを知ったきっかけ`}</legend>
-      <Tiles name="foundVia" keys={foundVias} names={names} value={value} onChange={onChange} columns={2} />
+      <Tiles
+        name="foundVia"
+        keys={foundVias}
+        names={names}
+        value={value}
+        onChange={onChange}
+        columns={2}
+      />
     </fieldset>
   );
 }
