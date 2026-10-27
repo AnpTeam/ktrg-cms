@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { ReactNode } from "react";
-import { BellIcon, ClockIcon, DocumentIcon, FlagIcon, GearIcon, ImageIcon, PinIcon, RouteIcon, ShopIcon, StampIcon, UserIcon, WarningIcon } from "@/components/icons";
+import { ArticleIcon, BellIcon, ClockIcon, CommentIcon, DocumentIcon, FuriganaIcon, FlagIcon, GearIcon, ImageIcon, PencilIcon, PinIcon, RouteIcon, ShopIcon, StampIcon, UserIcon, WarningIcon } from "@/components/icons";
 
 /** The picture beside each list in the menu; a list the app does not know yet gets a plain document. */
 const LIST_ICONS: Record<string, ReactNode> = {
@@ -16,6 +16,10 @@ const LIST_ICONS: Record<string, ReactNode> = {
   stamps: <StampIcon />,
   users: <UserIcon />,
   audit: <ClockIcon />,
+  posts: <ArticleIcon />,
+  authors: <PencilIcon />,
+  comments: <CommentIcon />,
+  furigana: <FuriganaIcon />,
 };
 
 // The side menu of the admin area. The screens that exist are links (the generic lists come from the API, see
