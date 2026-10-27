@@ -185,7 +185,7 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
         // A row of another list (a waypoint, a place, a writer): found by typing, not by scrolling a drop-down.
         return (
           <Field key={f.name} label={label} hint={hint} htmlFor={id} required={f.required}>
-            <RelationPicker id={id} value={text(f.name)} choices={choices[f.name] ?? []} max={MAX_RELATION_CHOICES} noneLabel={f.noneLabel ? pick(f.noneLabel, locale) : "—"} onChange={set(f.name)} />
+            <RelationPicker id={id} to={f.to ?? ""} locale={locale} value={text(f.name)} choices={choices[f.name] ?? []} max={MAX_RELATION_CHOICES} noneLabel={f.noneLabel ? pick(f.noneLabel, locale) : "—"} onChange={set(f.name)} />
           </Field>
         );
       case "select":

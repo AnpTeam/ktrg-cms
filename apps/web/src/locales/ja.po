@@ -1909,7 +1909,7 @@ msgid "パスキーは、顔や指紋でログインするための鍵です。�
 msgstr "パスキーは、顔や指紋でログインするための鍵です。この端末のものを追加すると、メールを待たずにログインできます。"
 
 #: src/components/admin/DirectoryPicker.tsx:147
-#: src/components/admin/RelationPicker.tsx:53
+#: src/components/admin/RelationPicker.tsx:87
 msgid "はずす"
 msgstr "はずす"
 
@@ -2136,7 +2136,7 @@ msgstr "ホーム画面に追加すると、アプリのようにすぐ開けま
 msgid "ほか {more} 区間"
 msgstr "ほか {more} 区間"
 
-#: src/components/admin/RelationPicker.tsx:104
+#: src/components/admin/RelationPicker.tsx:138
 msgid "ほかにもあります。もう少し入れて絞ってください。"
 msgstr "ほかにもあります。もう少し入れて絞ってください。"
 
@@ -3771,7 +3771,7 @@ msgstr "名前のついた地点が{0}か所ありました。経由地として
 msgid "名前のない経由地"
 msgstr "名前のない経由地"
 
-#: src/components/admin/RelationPicker.tsx:67
+#: src/components/admin/RelationPicker.tsx:101
 msgid "名前の一部を入れて探す"
 msgstr "名前の一部を入れて探す"
 
@@ -4300,6 +4300,7 @@ msgstr "捨てる"
 #: src/components/admin/GalleryEditor.tsx:121
 #: src/components/admin/map-editor/MapEditor.tsx:1021
 #: src/components/admin/map-editor/MapEditor.tsx:1105
+#: src/components/admin/RelationPicker.tsx:139
 msgid "探しています…"
 msgstr "探しています…"
 
@@ -4307,10 +4308,6 @@ msgstr "探しています…"
 #: src/components/admin/map-editor/MapEditor.tsx:1021
 msgid "探す"
 msgstr "探す"
-
-#: src/components/admin/RelationPicker.tsx:105
-msgid "探せるのは、最初の{max}件までです。"
-msgstr "探せるのは、最初の{max}件までです。"
 
 #: src/components/admin/map-editor/MapEditor.tsx:933
 msgid "描いた線を、地図の道に沿わせます"
@@ -5404,7 +5401,7 @@ msgid "見つからない写真（その写真だけ入りません）：{0}"
 msgstr "見つからない写真（その写真だけ入りません）：{0}"
 
 #: src/components/admin/PhotoLibrary.tsx:164
-#: src/components/admin/RelationPicker.tsx:103
+#: src/components/admin/RelationPicker.tsx:137
 msgid "見つかりませんでした。"
 msgstr "見つかりませんでした。"
 
