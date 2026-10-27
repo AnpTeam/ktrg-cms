@@ -2088,7 +2088,6 @@ msgid "ベースの地図"
 msgstr "ベースの地図"
 
 #: src/app/(public)/blog/page.tsx:35
-#: src/app/(public)/faq/page.tsx:24
 #: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/licenses/page.tsx:21
 #: src/app/(public)/login/page.tsx:29
@@ -5595,6 +5594,7 @@ msgid "通行止めなどの知らせを、確認した日づけで見られま�
 msgstr "通行止めなどの知らせを、確認した日づけで見られます。"
 
 #: src/app/(admin)/admin/pages/page.tsx:27
+#: src/app/(public)/faq/page.tsx:24
 #: src/app/(public)/rallies/page.tsx:37
 #: src/app/(public)/sitemap/page.tsx:90
 #: src/components/admin/PageTextEditor.tsx:37
