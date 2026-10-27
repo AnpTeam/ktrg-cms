@@ -254,6 +254,15 @@ export const PrintIcon = () => (
   </Icon>
 );
 
+/** An arrow down into a tray: a file to save (the route's GPX). */
+export const DownloadIcon = () => (
+  <Icon>
+    <path d="M12 4v11" />
+    <path d="m8 11 4 4 4-4" />
+    <path d="M5 19h14" />
+  </Icon>
+);
+
 export const ShareIcon = () => (
   <Icon>
     <path d="M12 15V4" />

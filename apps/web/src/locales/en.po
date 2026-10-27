@@ -524,10 +524,15 @@ msgstr "The GPX file had no path. Only named points were found."
 msgid "GPXファイルをここで離すと、読み込みます"
 msgstr "Drop the GPX file here to import it"
 
-#: src/components/GpxDownload.tsx:16
-#: src/components/GpxDownload.tsx:21
+#: src/components/PrintShare.tsx:40
+#: src/components/PrintShare.tsx:40
 msgid "GPXファイルをダウンロード"
 msgstr "Download the GPX file"
+
+#: src/components/PrintShare.tsx:44
+#: src/components/PrintShare.tsx:44
+msgid "GPXファイルをダウンロード（ログインが必要です）"
+msgstr "Download the GPX file (sign-in needed)"
 
 #: src/components/admin/map-editor/MapEditor.tsx:648
 msgid "GPXファイルを読み込み、経由地ごとの区間に分けました（最初の経由地より前と、最後の経由地より後は入りません）。形を確かめてから、保存してください。"
@@ -987,7 +992,7 @@ msgid "コース定数 ＝ 1.8 × 時間（h） ＋ 0.3 × 距離（km） ＋ 10
 msgstr "Course constant = 1.8 × hours + 0.3 × distance (km) + 10 × climb (km) + 0.6 × descent (km)"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:62
+#: src/app/(public)/routes/[id]/page.tsx:60
 #: src/components/admin/LivePreview.tsx:72
 #: src/components/RouteJourney.tsx:34
 #: src/components/RouteJourney.tsx:96
@@ -1130,7 +1135,7 @@ msgstr "This route does not exist yet"
 msgid "このルートに追加"
 msgstr "Add to this route"
 
-#: src/app/(public)/routes/[id]/page.tsx:52
+#: src/app/(public)/routes/[id]/page.tsx:50
 msgid "このルートのお知らせをフィードで受け取る"
 msgstr "Follow this route's notices in a feed reader"
 
@@ -1480,7 +1485,7 @@ msgid "すぐ{turnWord}"
 msgstr "{turnWord} now"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:62
+#: src/app/(public)/routes/[id]/page.tsx:60
 #: src/components/admin/LivePreview.tsx:72
 #: src/components/RouteJourney.tsx:31
 #: src/components/RouteJourney.tsx:92
@@ -1641,7 +1646,7 @@ msgid "スタンプ場所 {spotCount}か所"
 msgstr "{spotCount} stamp locations"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:62
+#: src/app/(public)/routes/[id]/page.tsx:60
 #: src/components/admin/LivePreview.tsx:72
 msgid "スタンプ済み"
 msgstr "stamped"
@@ -1976,8 +1981,8 @@ msgstr "The usual size."
 msgid "ブックマーク"
 msgstr "Bookmarks"
 
-#: src/components/PrintShare.tsx:44
-#: src/components/PrintShare.tsx:45
+#: src/components/PrintShare.tsx:56
+#: src/components/PrintShare.tsx:57
 #: src/components/RallyBookmark.tsx:20
 msgid "ブックマークする"
 msgstr "Bookmark this route"
@@ -1986,8 +1991,8 @@ msgstr "Bookmark this route"
 msgid "ブックマークは、まだありません。"
 msgstr "No bookmarks yet."
 
-#: src/components/PrintShare.tsx:44
-#: src/components/PrintShare.tsx:45
+#: src/components/PrintShare.tsx:56
+#: src/components/PrintShare.tsx:57
 msgid "ブックマークをはずす"
 msgstr "Remove bookmark"
 
@@ -2540,7 +2545,7 @@ msgstr "A link is written [shown words](https://…) (the button below can add o
 msgid "リンクをコピー"
 msgstr "Copy link"
 
-#: src/components/PrintShare.tsx:38
+#: src/components/PrintShare.tsx:50
 msgid "リンクをコピーしました"
 msgstr "Link copied"
 
@@ -2671,7 +2676,7 @@ msgid "ルートを読み込めませんでした。しばらくしてから、�
 msgstr "Could not load the routes. Please wait a moment and reopen the page."
 
 #: src/app/(public)/grading/page.tsx:39
-#: src/app/(public)/routes/[id]/page.tsx:42
+#: src/app/(public)/routes/[id]/page.tsx:41
 msgid "ルート一覧"
 msgstr "All routes"
 
@@ -2710,10 +2715,6 @@ msgstr "You seem to have been logged out. Please log in again."
 #: src/components/StampHere.tsx:131
 msgid "ログインする"
 msgstr "Log in"
-
-#: src/components/GpxDownload.tsx:24
-msgid "ログインすると、ダウンロードできます。"
-msgstr "Sign in to download."
 
 #: src/components/useErrorMessages.ts:27
 msgid "ログインできませんでした。この端末にパスキーがないときは、メールでログインしてください。"
@@ -3257,8 +3258,8 @@ msgstr "Check before publishing"
 msgid "公開前の経由地も、ここには表示されます。"
 msgstr "Waypoints that are not published yet are shown here too."
 
-#: src/components/PrintShare.tsx:34
-#: src/components/PrintShare.tsx:34
+#: src/components/PrintShare.tsx:35
+#: src/components/PrintShare.tsx:35
 msgid "共有"
 msgstr "Share"
 
@@ -3655,8 +3656,8 @@ msgstr "Southeast"
 msgid "南西"
 msgstr "Southwest"
 
-#: src/components/PrintShare.tsx:31
-#: src/components/PrintShare.tsx:31
+#: src/components/PrintShare.tsx:32
+#: src/components/PrintShare.tsx:32
 msgid "印刷・PDF"
 msgstr "Print or save as PDF"
 
@@ -5797,7 +5798,7 @@ msgid "閉店・撤去"
 msgstr "Closed for good"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:62
+#: src/app/(public)/routes/[id]/page.tsx:60
 #: src/components/admin/LivePreview.tsx:72
 #: src/components/StatusWord.tsx:13
 msgid "閉鎖中"
