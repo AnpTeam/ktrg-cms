@@ -36,7 +36,7 @@ Posts can link to a route, a waypoint, a mound or a place. "Written by" is you b
 
 ## Pages
 
-Pages has the built-in texts (privacy policy, terms and so on) and **New page** for your own, shown at `/p/<address>` once published. The address cannot be reused.
+Pages has the built-in texts (privacy policy, terms and so on). The **how to play** text (遊び方) is also what new visitors read in the welcome screen, as plain words: its steps are shown there in order, **except the last one** (sign up), which waits until the visitor opens the rallies page. Keep "sign up" as the last step and **New page** for your own, shown at `/p/<address>` once published. The address cannot be reused.
 
 ## Stamps
 

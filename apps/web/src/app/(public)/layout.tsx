@@ -19,6 +19,8 @@ import { PrefsSync } from "@/components/settings/PrefsSync";
 import { getPrefsState } from "@/lib/server-prefs";
 import { getViewer } from "@/lib/viewer";
 import { sampleContentEnabled } from "@/lib/content";
+import { helpFor } from "@/lib/page-text-server";
+import { plainBody } from "@/lib/rich-text";
 import { initLingui } from "@/i18n/server";
 
 // Participant side: mobile first. A slim bar on top (menu), the page, and a tab bar at the bottom.
@@ -34,6 +36,9 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   // Stamps held without an account live in a signed cookie (guest/ in the API); the server only needs to know it is there.
   const jar = await cookies();
   const hasGuestStamps = jar.has("guest") || jar.has("__Host-guest");
+  // The intro's how-to-play step shows the same text as the 遊び方 page (the editor's, else the built-in), as plain words.
+  const introSeen = jar.has("intro");
+  const guide = viewer.signedIn || introSeen ? null : await helpFor(i18n.locale).then((h) => ({ title: h.guideTitle, intro: plainBody(h.guideIntro), steps: h.steps.map((s) => ({ title: s.title, text: plainBody(s.text) })) }));
 
   return (
     <MenuProvider>
@@ -65,7 +70,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           </main>
         </div>
       </div>
-      {viewer.signedIn ? null : <IntroFlow seen={jar.has("intro")} />}
+      {viewer.signedIn ? null : <IntroFlow seen={introSeen} guide={guide} />}
       {viewer.signedIn ? (hasGuestStamps ? <GuestClaim /> : null) : <GuestNag hasStamps={hasGuestStamps} />}
       {prefsState.effective.furigana ? <FuriganaLayer /> : null}
       <NavigationToast />
