@@ -5,6 +5,8 @@
   "workspaces": ["apps/*"],
   "scripts": {
     "ktrg": "bun apps/api/scripts/ktrg.ts",
+    "setup:git": "git config merge.po-catalog.name \"Lingui catalogs\" && git config merge.po-catalog.driver \"bun apps/web/scripts/merge-po.ts %O %A %B\"",
+    "prepare": "bun run setup:git || true",
     "dev:api": "bun run --cwd apps/api dev",
     "dev:web": "bun run --cwd apps/web dev",
     "db:generate": "bun run --cwd apps/api db:generate",

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { fillEmpty, hasConflictMarkers, translationsOf } from "./resolve-catalogs-lib";
+import { fillEmpty, hasConflictMarkers, mergeCatalogs, translationsOf } from "./resolve-catalogs-lib";
 
 const header = 'msgid ""\nmsgstr ""\n"Language: en\\n"';
 const po = (...blocks: string[]) => [header, ...blocks].join("\n\n") + "\n";
@@ -34,5 +34,21 @@ describe("hasConflictMarkers", () => {
   test("finds the markers git leaves, not text that merely contains arrows", () => {
     expect(hasConflictMarkers('a\n<<<<<<< HEAD\nb\n=======\nc\n>>>>>>> main\n')).toBe(true);
     expect(hasConflictMarkers('msgid "a <<<<<<< b"\nmsgstr "x"\n')).toBe(false);
+  });
+});
+
+describe("mergeCatalogs", () => {
+  const m = (...blocks: string[]) => po(...blocks);
+  const base = m('msgid "共通"\nmsgstr "Common"', 'msgid "消える"\nmsgstr "Gone"');
+  const theirs = m('msgid "共通"\nmsgstr "Common"', 'msgid "主"\nmsgstr ""'); // main: dropped 消える, added 主 (not translated yet)
+  const ours = m('msgid "共通"\nmsgstr "Common"', 'msgid "消える"\nmsgstr "Gone"', 'msgid "枝"\nmsgstr "Branch"', 'msgid "主"\nmsgstr "Main (mine)"');
+
+  test("keeps main's messages, adds the branch's new ones, does not bring back what main dropped, fills English", () => {
+    const out = mergeCatalogs(base, ours, theirs);
+    expect(out).toContain('msgid "枝"\nmsgstr "Branch"');
+    expect(out).toContain('msgid "主"\nmsgstr "Main (mine)"');
+    expect(out).not.toContain("消える");
+    expect(out.match(/msgid "共通"/g)).toHaveLength(1);
+    expect(hasConflictMarkers(out)).toBe(false);
   });
 });
