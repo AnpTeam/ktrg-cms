@@ -2090,7 +2090,6 @@ msgstr "Base map"
 
 #: src/app/(public)/blog/page.tsx:35
 #: src/app/(public)/faq/page.tsx:24
-#: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/licenses/page.tsx:21
 #: src/app/(public)/login/page.tsx:29
 #: src/app/(public)/p/[slug]/page.tsx:32
@@ -2426,6 +2425,7 @@ msgid "ライト"
 msgstr "Light"
 
 #: src/app/(admin)/admin/rallies/page.tsx:22
+#: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/page.tsx:70
 #: src/app/(public)/rallies/[id]/page.tsx:57
 #: src/app/(public)/rallies/page.tsx:30
