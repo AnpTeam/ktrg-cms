@@ -23,18 +23,23 @@ function sortValue(f: FieldUi | null, meta: ListMeta, item: ListItem, locale: st
   return text === "" || text === "—" ? null : text;
 }
 
-/** A sorted copy; rows with nothing in the column go last either way, and equal rows keep the list's own order. */
-export function sortItems(items: ListItem[], meta: ListMeta, sort: Sort, locale: string, routeName: (id: string, field: string) => string | null): ListItem[] {
-  if (sort === null) return items;
-  const f = sort.key === "name" ? null : (meta.fields.find((x) => x.name === sort.key) ?? null);
+/** A sorted copy by any value of a row; rows with nothing go last either way, and equal rows keep the list's own order. */
+export function sortBy<T>(rows: T[], dir: "asc" | "desc", value: (row: T) => string | number | null, locale: string): T[] {
   const collator = new Intl.Collator(locale === "en" ? "en" : "ja", { numeric: true });
-  const sign = sort.dir === "asc" ? 1 : -1;
-  return items
-    .map((item, index) => ({ item, index, v: sortValue(f, meta, item, locale, routeName) }))
+  const sign = dir === "asc" ? 1 : -1;
+  return rows
+    .map((row, index) => ({ row, index, v: value(row) }))
     .sort((a, b) => {
       if (a.v === null || b.v === null) return a.v === b.v ? a.index - b.index : a.v === null ? 1 : -1;
       const c = typeof a.v === "number" && typeof b.v === "number" ? a.v - b.v : collator.compare(String(a.v), String(b.v));
       return c !== 0 ? c * sign : a.index - b.index;
     })
-    .map((x) => x.item);
+    .map((x) => x.row);
+}
+
+/** A sorted copy of a list's rows; rows with nothing in the column go last either way, and equal rows keep the list's own order. */
+export function sortItems(items: ListItem[], meta: ListMeta, sort: Sort, locale: string, routeName: (id: string, field: string) => string | null): ListItem[] {
+  if (sort === null) return items;
+  const f = sort.key === "name" ? null : (meta.fields.find((x) => x.name === sort.key) ?? null);
+  return sortBy(items, sort.dir, (item) => sortValue(f, meta, item, locale, routeName), locale);
 }

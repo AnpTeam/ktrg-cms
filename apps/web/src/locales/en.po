@@ -43,16 +43,6 @@ msgstr " (until an admin lifts it)"
 msgid "{0} から {1} まで：{2} 回"
 msgstr "{0} to {1}: {2} views"
 
-#. placeholder {0}: name(r)
-#: src/components/admin/RallyList.tsx:70
-msgid "{0} を1つ前へ"
-msgstr "Move {0} up"
-
-#. placeholder {0}: name(r)
-#: src/components/admin/RallyList.tsx:73
-msgid "{0} を1つ後ろへ"
-msgstr "Move {0} down"
-
 #. placeholder {0}: itemName(meta, group[0]!, locale)
 #. placeholder {1}: group.length
 #: src/components/admin/DuplicateFinder.tsx:64
@@ -95,8 +85,8 @@ msgid "{0}を消す"
 msgstr "Delete {0}"
 
 #. placeholder {0}: name(item)
-#: src/components/admin/AdminListTable.tsx:254
-#: src/components/admin/AdminListTable.tsx:311
+#: src/components/admin/AdminListTable.tsx:245
+#: src/components/admin/AdminListTable.tsx:302
 msgid "{0}を選ぶ"
 msgstr "Select {0}"
 
@@ -106,17 +96,20 @@ msgid "{0}を開く"
 msgstr "Open {0}"
 
 #. placeholder {0}: items.length
-#: src/components/admin/AdminListTable.tsx:227
+#. placeholder {0}: shown.length
+#: src/components/admin/AdminListTable.tsx:218
+#: src/components/admin/RallyList.tsx:96
+#: src/components/admin/RouteTable.tsx:134
 msgid "{0}件"
 msgstr "{0} items"
 
 #. placeholder {0}: items.length
-#: src/components/admin/AdminListTable.tsx:227
+#: src/components/admin/AdminListTable.tsx:218
 msgid "{0}件（まだあります）"
 msgstr "{0} items (more to load)"
 
 #. placeholder {0}: gone.size
-#: src/components/admin/AdminListTable.tsx:84
+#: src/components/admin/AdminListTable.tsx:85
 msgid "{0}件を削除しました。残りは削除できませんでした：{failure}"
 msgstr "{0} deleted. The rest could not be deleted: {failure}"
 
@@ -247,11 +240,11 @@ msgstr "{name}, opening time of period {0}"
 msgid "{name} さんでログイン中"
 msgstr "Signed in as {name}"
 
-#: src/components/admin/RouteTable.tsx:149
+#: src/components/admin/list-parts.tsx:46
 msgid "{name} を1つ前へ"
 msgstr "Move {name} one step earlier"
 
-#: src/components/admin/RouteTable.tsx:158
+#: src/components/admin/list-parts.tsx:49
 msgid "{name} を1つ後ろへ"
 msgstr "Move {name} one step later"
 
@@ -328,7 +321,7 @@ msgstr "Move {text} down"
 msgid "{title}（管理）"
 msgstr "{title} (admin)"
 
-#: src/components/admin/AdminListTable.tsx:231
+#: src/components/admin/AdminListTable.tsx:222
 msgid "{title}はまだありません。"
 msgstr "No {title} yet."
 
@@ -377,7 +370,7 @@ msgid "「{0}」のスタンプを押しました！"
 msgstr "Stamped \"{0}\"!"
 
 #. placeholder {0}: name(one)
-#: src/components/admin/AdminListTable.tsx:70
+#: src/components/admin/AdminListTable.tsx:71
 msgid "「{0}」を削除します。元に戻せません。よろしいですか？"
 msgstr "Delete \"{0}\"? This cannot be undone."
 
@@ -779,7 +772,7 @@ msgid "あると、もっとよいこと"
 msgstr "Nice to have"
 
 #. placeholder {0}: labels.item[i.id]
-#: src/components/admin/RouteTable.tsx:138
+#: src/components/admin/RouteTable.tsx:88
 msgid "あるとよい：{0}"
 msgstr "Nice to have: {0}"
 
@@ -1028,7 +1021,7 @@ msgid "コース"
 msgstr "Courses"
 
 #. placeholder {0}: r.memberCount
-#: src/components/admin/RallyList.tsx:62
+#: src/components/admin/RallyList.tsx:31
 msgid "コース {0}"
 msgstr "{0} courses"
 
@@ -1047,6 +1040,11 @@ msgstr "Make it from courses"
 #: src/app/(public)/badges/page.tsx:34
 msgid "コースのすべての場所でスタンプを押すと、そのコースのバッジがもらえます。"
 msgstr "Press a stamp at every place of a course to get that course's badge."
+
+#: src/components/admin/RallyList.tsx:30
+#: src/components/admin/RallyList.tsx:80
+msgid "コースのラリー"
+msgstr "Course rally"
 
 #: src/components/map/TrailMap.tsx:428
 msgid "コースの出発地点から近い順（まっすぐ測った距離です）"
@@ -1150,7 +1148,7 @@ msgstr "This file could not be read. Choose a file (.xlsx) made from the templat
 msgid "このブラウザでは、スタンプが消えてしまうことがあります。"
 msgstr "Your stamps may be lost in this browser."
 
-#: src/components/admin/AdminListTable.tsx:216
+#: src/components/admin/AdminListTable.tsx:207
 msgid "このページをすべて選ぶ"
 msgstr "Select everything on this page"
 
@@ -1543,8 +1541,8 @@ msgstr "Site-wide settings (admin)"
 msgid "さがしています…"
 msgstr "Searching…"
 
-#: src/components/admin/AdminListTable.tsx:125
-#: src/components/admin/AdminListTable.tsx:125
+#: src/components/admin/AdminListTable.tsx:126
+#: src/components/admin/AdminListTable.tsx:126
 #: src/components/admin/DuplicateFinder.tsx:53
 msgid "さがす"
 msgstr "Search"
@@ -1653,12 +1651,6 @@ msgstr "The stamp places are not ready yet."
 msgid "スタンプの経由地 {0}"
 msgstr "{0} stamp waypoints"
 
-#. placeholder {0}: r.publishedSpotCount
-#. placeholder {1}: r.spotCount
-#: src/components/admin/RouteTable.tsx:125
-msgid "スタンプの経由地 {0} / {1}"
-msgstr "Stamp waypoints {0} / {1}"
-
 #: src/components/navigation/NavigationHud.tsx:155
 msgid "スタンプの記録を読めませんでした。"
 msgstr "Your stamps could not be read."
@@ -1744,10 +1736,9 @@ msgstr "stamped"
 msgid "すでに公開をやめた経由地があります（{names}）。「経由地」タブで確かめてください。"
 msgstr "These waypoints were already unpublished: {names}. Check them in the Waypoints tab."
 
-#: src/components/admin/AdminListTable.tsx:147
-#: src/components/admin/AdminListTable.tsx:188
+#: src/components/admin/AdminListTable.tsx:179
 #: src/components/admin/DirectoryPicker.tsx:158
-#: src/components/admin/RouteTable.tsx:77
+#: src/components/admin/list-parts.tsx:29
 #: src/components/PrefectureFilter.tsx:36
 msgid "すべて"
 msgstr "All"
@@ -2254,7 +2245,7 @@ msgstr "This passkey can't be removed because it is your only way to log in. Set
 msgid "ほかの乗り物"
 msgstr "Other vehicle"
 
-#: src/components/admin/AdminListTable.tsx:172
+#: src/components/admin/AdminListTable.tsx:163
 msgid "ほかの絞りこみ"
 msgstr "More filters"
 
@@ -2462,7 +2453,7 @@ msgstr "Sent again. If it does not arrive, wait about a minute and try again."
 msgid "もっと広げる"
 msgstr "Show more"
 
-#: src/components/admin/AdminListTable.tsx:353
+#: src/components/admin/AdminListTable.tsx:344
 #: src/components/admin/PhotoLibrary.tsx:216
 msgid "もっと見る"
 msgstr "Show more"
@@ -2563,7 +2554,7 @@ msgstr "Rallies"
 msgid "ラリー（管理）"
 msgstr "Rallies (admin)"
 
-#: src/components/admin/RallyList.tsx:49
+#: src/components/admin/RallyList.tsx:90
 msgid "ラリーがまだありません。「新しいラリー」から作ってください。"
 msgstr "There are no rallies yet. Create one with \"New rally\"."
 
@@ -2705,7 +2696,7 @@ msgstr "Routes (admin)"
 msgid "ルートがまだありません。"
 msgstr "There are no routes yet."
 
-#: src/components/admin/RouteTable.tsx:103
+#: src/components/admin/RouteTable.tsx:128
 msgid "ルートがまだありません。「新しいルート」から作ってください。"
 msgstr "There are no routes yet. Create one with \"New route\"."
 
@@ -2766,7 +2757,7 @@ msgstr "Reordered the routes"
 msgid "ルートやラリーのページで、しおりのボタンを押すと、ここに保存されます。ログインしていれば、アカウントに保存されます。"
 msgstr "Press the bookmark button on a route or rally page and it is saved here. When you are signed in, it is saved to your account."
 
-#: src/components/admin/RouteTable.tsx:61
+#: src/components/admin/RouteTable.tsx:99
 #: src/components/landing/Landing.tsx:200
 #: src/components/landing/LandingHero.tsx:49
 msgid "ルートをさがす"
@@ -2894,9 +2885,10 @@ msgstr "Move down"
 #: src/components/admin/DirectoryPicker.tsx:144
 #: src/components/admin/PlacePanel.tsx:86
 #: src/components/admin/RallyEditor.tsx:100
-#: src/components/admin/RallyList.tsx:64
+#: src/components/admin/RallyList.tsx:50
+#: src/components/admin/RallyList.tsx:81
 #: src/components/admin/RallyMemberPicker.tsx:72
-#: src/components/admin/RouteTable.tsx:30
+#: src/components/admin/RouteTable.tsx:38
 msgid "下書き"
 msgstr "Draft"
 
@@ -2916,7 +2908,7 @@ msgstr "Unknown"
 msgid "両方を合わせる（おすすめ）"
 msgstr "Combine both (recommended)"
 
-#: src/components/admin/AdminListTable.tsx:289
+#: src/components/admin/AdminListTable.tsx:280
 msgid "並べかえ"
 msgstr "Sort"
 
@@ -2924,9 +2916,22 @@ msgstr "Sort"
 msgid "並べ方"
 msgstr "Sort by"
 
-#: src/components/admin/RouteTable.tsx:169
-msgid "並べ替えは、検索や絞り込みを外してからできます。"
-msgstr "You can reorder once the search and filter are cleared."
+#: src/components/admin/RallyList.tsx:110
+#: src/components/admin/RouteTable.tsx:150
+msgid "並べ替え"
+msgstr "Reorder"
+
+#: src/components/admin/RouteTable.tsx:217
+msgid "並べ替えは、検索・絞り込み・並べかえを外してからできます。"
+msgstr "Reordering is possible only with no search, filter or sort on."
+
+#: src/components/admin/RallyList.tsx:159
+msgid "並べ替えは、絞り込み・並べかえを外してからできます。"
+msgstr "Reordering is possible only with no filter or sort on."
+
+#: src/components/admin/RallyList.tsx:105
+msgid "中身"
+msgstr "Contents"
 
 #: src/components/useErrorMessages.ts:52
 msgid "中身のないラリーは公開できません。公開中のラリーを空にすることもできません。"
@@ -3357,8 +3362,9 @@ msgstr "Unpublish"
 #: src/components/admin/map-editor/PlaceList.tsx:113
 #: src/components/admin/PlacePanel.tsx:86
 #: src/components/admin/RallyEditor.tsx:100
-#: src/components/admin/RallyList.tsx:64
-#: src/components/admin/RouteTable.tsx:30
+#: src/components/admin/RallyList.tsx:50
+#: src/components/admin/RallyList.tsx:81
+#: src/components/admin/RouteTable.tsx:38
 msgid "公開中"
 msgstr "Published"
 
@@ -3373,6 +3379,11 @@ msgstr "Published stamp waypoints"
 #: src/components/admin/RallyMemberPicker.tsx:88
 msgid "公開中のスタンプの経由地なし（達成できません）"
 msgstr "No published stamp waypoints (cannot be finished)"
+
+#: src/components/admin/RouteTable.tsx:144
+#: src/components/admin/RouteTable.tsx:202
+msgid "公開中の経由地"
+msgstr "Published waypoints"
 
 #: src/components/admin/PlacePanel.tsx:258
 msgid "公開中の経由地は、先に「公開をやめる」と、削除できます。"
@@ -3659,9 +3670,9 @@ msgstr "Restricted"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
 #: src/components/admin/AdminItemForm.tsx:293
-#: src/components/admin/AdminListTable.tsx:244
-#: src/components/admin/AdminListTable.tsx:278
-#: src/components/admin/AdminListTable.tsx:342
+#: src/components/admin/AdminListTable.tsx:235
+#: src/components/admin/AdminListTable.tsx:269
+#: src/components/admin/AdminListTable.tsx:333
 #: src/components/admin/DuplicateFinder.tsx:85
 #: src/components/admin/fields.tsx:155
 #: src/components/admin/HoursInput.tsx:35
@@ -3740,9 +3751,8 @@ msgid "前の番号の経由地がまだないので、作れません"
 msgstr "The waypoint before it does not exist yet, so it cannot be created"
 
 #: src/components/admin/GalleryEditor.tsx:90
-#: src/components/admin/RallyList.tsx:71
+#: src/components/admin/list-parts.tsx:47
 #: src/components/admin/RallyMemberPicker.tsx:110
-#: src/components/admin/RouteTable.tsx:152
 msgid "前へ"
 msgstr "Earlier"
 
@@ -3927,11 +3937,13 @@ msgstr "An earlier row has the same number"
 msgid "同じ道を行って、同じ道を戻ります。"
 msgstr "You go out along the same path and come back the same way."
 
-#: src/components/admin/AdminListTable.tsx:240
-#: src/components/admin/AdminListTable.tsx:299
+#: src/components/admin/AdminListTable.tsx:231
+#: src/components/admin/AdminListTable.tsx:290
 #: src/components/admin/map-editor/PlaceList.tsx:79
 #: src/components/admin/PhotoLibrary.tsx:169
 #: src/components/admin/RallyCreate.tsx:76
+#: src/components/admin/RallyList.tsx:103
+#: src/components/admin/RouteTable.tsx:141
 #: src/components/PlaceFacts.tsx:27
 msgid "名前"
 msgstr "Name"
@@ -3972,7 +3984,7 @@ msgstr "Unnamed waypoint"
 msgid "名前の一部を入れて探す"
 msgstr "Type part of a name to search"
 
-#: src/components/admin/RouteTable.tsx:66
+#: src/components/admin/RouteTable.tsx:100
 msgid "名前の一部を入力"
 msgstr "Part of the name"
 
@@ -4003,7 +4015,7 @@ msgid "周辺の場所（駐車場・自販機・トイレなど）"
 msgstr "Nearby places (parking, vending machines, toilets ...)"
 
 #: src/components/admin/RouteEditor.tsx:440
-#: src/components/admin/RouteTable.tsx:31
+#: src/components/admin/RouteTable.tsx:39
 #: src/components/auth/authUi.tsx:78
 #: src/components/PrefectureName.tsx:9
 msgid "和歌山県"
@@ -4255,7 +4267,7 @@ msgid "大阪・和歌山・奈良にまたがる、葛城修験の山の古道�
 msgstr "A trail guide and stamp rally for the ancient mountain paths of Katsuragi Shugen, across Osaka, Wakayama and Nara."
 
 #: src/components/admin/RouteEditor.tsx:440
-#: src/components/admin/RouteTable.tsx:31
+#: src/components/admin/RouteTable.tsx:39
 #: src/components/auth/authUi.tsx:77
 #: src/components/PrefectureName.tsx:7
 msgid "大阪府"
@@ -4266,7 +4278,7 @@ msgid "大阪府・和歌山県・奈良県のどれかで書いてください"
 msgstr "Write one of 大阪府, 和歌山県 or 奈良県"
 
 #: src/components/admin/RouteEditor.tsx:440
-#: src/components/admin/RouteTable.tsx:31
+#: src/components/admin/RouteTable.tsx:39
 #: src/components/auth/authUi.tsx:79
 #: src/components/PrefectureName.tsx:11
 msgid "奈良県"
@@ -4405,9 +4417,8 @@ msgid "往復（同じ道）"
 msgstr "Out and back (same path)"
 
 #: src/components/admin/GalleryEditor.tsx:93
-#: src/components/admin/RallyList.tsx:74
+#: src/components/admin/list-parts.tsx:50
 #: src/components/admin/RallyMemberPicker.tsx:113
-#: src/components/admin/RouteTable.tsx:161
 msgid "後ろへ"
 msgstr "Later"
 
@@ -4416,7 +4427,7 @@ msgid "徒歩"
 msgstr "On foot"
 
 #. placeholder {0}: labels.item[i.id]
-#: src/components/admin/RouteTable.tsx:138
+#: src/components/admin/RouteTable.tsx:88
 msgid "必要：{0}"
 msgstr "Required: {0}"
 
@@ -4463,7 +4474,7 @@ msgstr "Typed by hand (empty = from the line)"
 msgid "手入力（空にすると、距離と登りから自動）"
 msgstr "Typed by hand (empty = from distance and climb)"
 
-#: src/components/admin/RouteTable.tsx:87
+#: src/components/admin/RouteTable.tsx:115
 msgid "手直しが必要なルートだけ（{needsWorkCount}）"
 msgstr "Only routes that need work ({needsWorkCount})"
 
@@ -4525,7 +4536,7 @@ msgstr "Discard"
 msgid "探しています…"
 msgstr "Searching…"
 
-#: src/components/admin/AdminListTable.tsx:127
+#: src/components/admin/AdminListTable.tsx:128
 #: src/components/admin/map-editor/MapEditor.tsx:1021
 msgid "探す"
 msgstr "Search"
@@ -4619,7 +4630,7 @@ msgid "新しいページ"
 msgstr "New page"
 
 #: src/components/admin/RallyCreate.tsx:61
-#: src/components/admin/RallyList.tsx:41
+#: src/components/admin/RallyList.tsx:76
 msgid "新しいラリー"
 msgstr "New rally"
 
@@ -4628,7 +4639,7 @@ msgid "新しいラリー（管理）"
 msgstr "New rally (admin)"
 
 #: src/components/admin/RouteEditor.tsx:467
-#: src/components/admin/RouteTable.tsx:90
+#: src/components/admin/RouteTable.tsx:103
 msgid "新しいルート"
 msgstr "New route"
 
@@ -4644,7 +4655,7 @@ msgstr "New points go after the chosen point (number {chosenNo}). Click it again
 msgid "新しい記事"
 msgstr "Newest posts"
 
-#: src/components/admin/AdminListTable.tsx:298
+#: src/components/admin/AdminListTable.tsx:289
 #: src/components/admin/PhotoLibrary.tsx:139
 msgid "新しい順"
 msgstr "Newest first"
@@ -4707,8 +4718,13 @@ msgstr "Time"
 msgid "曲がり角"
 msgstr "Turn"
 
+#: src/components/admin/RallyList.tsx:108
+#: src/components/admin/RouteTable.tsx:148
+msgid "更新"
+msgstr "Updated"
+
 #. placeholder {0}: formatUpdated(locale, r.updatedAt)
-#: src/components/admin/RouteTable.tsx:127
+#: src/components/admin/RouteTable.tsx:205
 msgid "更新 {0}"
 msgstr "Updated {0}"
 
@@ -4752,6 +4768,10 @@ msgstr "Thursday"
 msgid "未保存"
 msgstr "Unsaved"
 
+#: src/components/admin/RouteTable.tsx:167
+msgid "未入力"
+msgstr "Not entered"
+
 #: src/components/ProfileSettings.tsx:118
 msgid "未設定"
 msgstr "Not set"
@@ -4774,15 +4794,19 @@ msgstr "Text"
 msgid "本文へ移動"
 msgstr "Skip to main content"
 
-#: src/components/admin/AdminListTable.tsx:231
+#: src/components/admin/AdminListTable.tsx:222
 msgid "条件に合う{title}はありません。"
 msgstr "No {title} match the conditions."
 
-#: src/components/admin/RouteTable.tsx:105
+#: src/components/admin/RallyList.tsx:92
+msgid "条件に合うラリーがありません。"
+msgstr "No rallies match."
+
+#: src/components/admin/RouteTable.tsx:130
 msgid "条件に合うルートがありません。"
 msgstr "No routes match."
 
-#: src/components/admin/AdminListTable.tsx:140
+#: src/components/admin/AdminListTable.tsx:141
 msgid "条件をやめる"
 msgstr "Clear the conditions"
 
@@ -4976,7 +5000,7 @@ msgid "港・フェリー乗り場"
 msgstr "Port or ferry"
 
 #: src/app/(public)/rallies/[id]/page.tsx:65
-#: src/components/admin/RouteTable.tsx:30
+#: src/components/admin/RouteTable.tsx:38
 #: src/components/BookmarkList.tsx:49
 #: src/components/landing/Landing.tsx:231
 #: src/components/map/MapScreen.tsx:329
@@ -5029,6 +5053,13 @@ msgstr "One way (to another place)"
 #: src/components/QuickActions.tsx:38
 msgid "特大"
 msgstr "Extra large"
+
+#: src/components/admin/RallyList.tsx:81
+#: src/components/admin/RallyList.tsx:106
+#: src/components/admin/RouteTable.tsx:108
+#: src/components/admin/RouteTable.tsx:143
+msgid "状態"
+msgstr "Status"
 
 #: src/components/admin/PlacePanel.tsx:184
 msgid "状態・許可の設定"
@@ -5224,6 +5255,8 @@ msgstr "Way of travelling"
 #: src/components/admin/map-editor/PlaceList.tsx:98
 #: src/components/admin/PlacePanel.tsx:101
 #: src/components/admin/PlaceTable.tsx:136
+#: src/components/admin/RallyList.tsx:80
+#: src/components/admin/RallyList.tsx:104
 #: src/components/PlaceFacts.tsx:28
 msgid "種類"
 msgstr "Type"
@@ -5337,7 +5370,7 @@ msgid "経由地"
 msgstr "Waypoints"
 
 #. placeholder {0}: r.memberCount
-#: src/components/admin/RallyList.tsx:62
+#: src/components/admin/RallyList.tsx:31
 msgid "経由地 {0}"
 msgstr "{0} waypoints"
 
@@ -5379,6 +5412,11 @@ msgstr "Connect the waypoints with straight lines"
 #: src/components/admin/map-editor/MapEditor.tsx:927
 msgid "経由地のあいだを、地図の道でつなぎます（寄り道は通りません）"
 msgstr "Connect the waypoints along map trails (side trips are skipped)"
+
+#: src/components/admin/RallyList.tsx:30
+#: src/components/admin/RallyList.tsx:80
+msgid "経由地のラリー"
+msgstr "Waypoint rally"
 
 #: src/components/admin/map-editor/PlaceList.tsx:37
 msgid "経由地の一覧"
@@ -5807,7 +5845,9 @@ msgstr "Searching…"
 msgid "質問と答えの一覧です。"
 msgstr "A list of questions and answers."
 
-#: src/components/admin/RouteTable.tsx:129
+#: src/components/admin/RouteTable.tsx:146
+#: src/components/admin/RouteTable.tsx:173
+#: src/components/admin/RouteTable.tsx:207
 msgid "足りないもの"
 msgstr "What is missing"
 
@@ -5980,10 +6020,14 @@ msgstr "Looking for trails… ({step}/{total})"
 msgid "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 msgstr "Could not look up the paths. Please try again in a little while."
 
+#: src/components/admin/RallyList.tsx:107
+msgid "達成した人"
+msgstr "Finished by"
+
 #. placeholder {0}: r.completionCount
 #. placeholder {0}: saved.completionCount
 #: src/components/admin/RallyEditor.tsx:102
-#: src/components/admin/RallyList.tsx:66
+#: src/components/admin/RallyList.tsx:151
 msgid "達成した人 {0}"
 msgstr "{0} finished"
 
@@ -5992,7 +6036,7 @@ msgstr "{0} finished"
 msgid "選ばない"
 msgstr "Not set"
 
-#: src/components/admin/AdminListTable.tsx:239
+#: src/components/admin/AdminListTable.tsx:230
 #: src/components/admin/map-editor/PlaceList.tsx:55
 msgid "選ぶ"
 msgstr "Choose"
@@ -6002,12 +6046,12 @@ msgid "選ぶ・動かす"
 msgstr "Select / move"
 
 #. placeholder {0}: ticked.size
-#: src/components/admin/AdminListTable.tsx:220
+#: src/components/admin/AdminListTable.tsx:211
 msgid "選んだ{0}件を削除"
 msgstr "Delete the {0} selected"
 
 #. placeholder {0}: ids.length
-#: src/components/admin/AdminListTable.tsx:70
+#: src/components/admin/AdminListTable.tsx:71
 msgid "選んだ{0}件を削除します。元に戻せません。よろしいですか？"
 msgstr "Delete the {0} selected? This cannot be undone."
 
@@ -6043,12 +6087,13 @@ msgid "選択をやめる"
 msgstr "Clear choice"
 
 #: src/components/admin/RouteEditor.tsx:563
-#: src/components/admin/RouteTable.tsx:71
+#: src/components/admin/RouteTable.tsx:107
+#: src/components/admin/RouteTable.tsx:142
 #: src/components/admin/useChecklistLabels.ts:15
 msgid "都道府県"
 msgstr "Prefecture"
 
-#: src/components/admin/RouteTable.tsx:121
+#: src/components/admin/RouteTable.tsx:200
 msgid "都道府県が未入力"
 msgstr "Prefecture not set"
 
@@ -6134,6 +6179,11 @@ msgstr "Train"
 #: src/components/QuickActions.tsx:61
 msgid "音"
 msgstr "Sound"
+
+#: src/components/admin/RallyList.tsx:102
+#: src/components/admin/RouteTable.tsx:140
+msgid "順"
+msgstr "No."
 
 #: src/components/admin/GalleryEditor.tsx:88
 msgid "順番"

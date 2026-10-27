@@ -17,7 +17,7 @@ export default async function AdminRoutesPage() {
   const routes = status === 200 && body?.ok ? body.routes : null;
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-5">
+    <div className="mx-auto flex max-w-6xl flex-col gap-5">
       <h1 className="text-3xl font-bold">
         <Trans>ルート</Trans>
       </h1>
