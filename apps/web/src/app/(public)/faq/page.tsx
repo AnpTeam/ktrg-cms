@@ -20,8 +20,8 @@ export default async function FaqPage() {
   return (
     <div className="page-narrow flex flex-col gap-6 pt-2">
       <div className="flex flex-col gap-6 px-4">
-        <BackLink href="/">
-          <Trans>ホーム</Trans>
+        <BackLink href="/guide">
+          <Trans>遊び方</Trans>
         </BackLink>
         <h1 className="text-3xl font-bold">{help.faqTitle}</h1>
       </div>

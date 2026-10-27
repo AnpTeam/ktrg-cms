@@ -1903,7 +1903,7 @@ msgid "パスキーは、顔や指紋でログインするための鍵です。�
 msgstr "パスキーは、顔や指紋でログインするための鍵です。この端末のものを追加すると、メールを待たずにログインできます。"
 
 #: src/components/admin/DirectoryPicker.tsx:147
-#: src/components/admin/RelationPicker.tsx:58
+#: src/components/admin/RelationPicker.tsx:53
 msgid "はずす"
 msgstr "はずす"
 
@@ -2089,7 +2089,6 @@ msgid "ベースの地図"
 msgstr "ベースの地図"
 
 #: src/app/(public)/blog/page.tsx:35
-#: src/app/(public)/faq/page.tsx:24
 #: src/app/(public)/licenses/page.tsx:21
 #: src/app/(public)/login/page.tsx:29
 #: src/app/(public)/p/[slug]/page.tsx:32
@@ -2131,7 +2130,7 @@ msgstr "ホーム画面に追加すると、アプリのようにすぐ開けま
 msgid "ほか {more} 区間"
 msgstr "ほか {more} 区間"
 
-#: src/components/admin/RelationPicker.tsx:108
+#: src/components/admin/RelationPicker.tsx:103
 msgid "ほかにもあります。もう少し入れて絞ってください。"
 msgstr "ほかにもあります。もう少し入れて絞ってください。"
 
@@ -3770,7 +3769,7 @@ msgstr "名前のついた地点が{0}か所ありました。経由地として
 msgid "名前のない経由地"
 msgstr "名前のない経由地"
 
-#: src/components/admin/RelationPicker.tsx:72
+#: src/components/admin/RelationPicker.tsx:67
 msgid "名前の一部を入れて探す"
 msgstr "名前の一部を入れて探す"
 
@@ -4307,7 +4306,7 @@ msgstr "探しています…"
 msgid "探す"
 msgstr "探す"
 
-#: src/components/admin/RelationPicker.tsx:109
+#: src/components/admin/RelationPicker.tsx:104
 msgid "探せるのは、最初の{max}件までです。"
 msgstr "探せるのは、最初の{max}件までです。"
 
@@ -5403,7 +5402,7 @@ msgid "見つからない写真（その写真だけ入りません）：{0}"
 msgstr "見つからない写真（その写真だけ入りません）：{0}"
 
 #: src/components/admin/PhotoLibrary.tsx:164
-#: src/components/admin/RelationPicker.tsx:107
+#: src/components/admin/RelationPicker.tsx:102
 msgid "見つかりませんでした。"
 msgstr "見つかりませんでした。"
 
@@ -5609,6 +5608,7 @@ msgid "通行止めなどの知らせを、確認した日づけで見られま�
 msgstr "通行止めなどの知らせを、確認した日づけで見られます。"
 
 #: src/app/(admin)/admin/pages/page.tsx:27
+#: src/app/(public)/faq/page.tsx:24
 #: src/app/(public)/rallies/page.tsx:37
 #: src/app/(public)/sitemap/page.tsx:90
 #: src/components/admin/PageTextEditor.tsx:37

@@ -1903,7 +1903,7 @@ msgid "パスキーは、顔や指紋でログインするための鍵です。�
 msgstr "A passkey lets you log in with your face or fingerprint. Add one for this device and you can log in without waiting for an email."
 
 #: src/components/admin/DirectoryPicker.tsx:147
-#: src/components/admin/RelationPicker.tsx:58
+#: src/components/admin/RelationPicker.tsx:53
 msgid "はずす"
 msgstr "Unlink"
 
@@ -2089,7 +2089,6 @@ msgid "ベースの地図"
 msgstr "Base map"
 
 #: src/app/(public)/blog/page.tsx:35
-#: src/app/(public)/faq/page.tsx:24
 #: src/app/(public)/licenses/page.tsx:21
 #: src/app/(public)/login/page.tsx:29
 #: src/app/(public)/p/[slug]/page.tsx:32
@@ -2131,7 +2130,7 @@ msgstr "Add it to your home screen to open it like an app, right away, even on t
 msgid "ほか {more} 区間"
 msgstr "{more} more courses"
 
-#: src/components/admin/RelationPicker.tsx:108
+#: src/components/admin/RelationPicker.tsx:103
 msgid "ほかにもあります。もう少し入れて絞ってください。"
 msgstr "There are more. Type a little more to narrow them down."
 
@@ -3770,7 +3769,7 @@ msgstr "Found {0} named points. Add them as waypoints?"
 msgid "名前のない経由地"
 msgstr "Unnamed waypoint"
 
-#: src/components/admin/RelationPicker.tsx:72
+#: src/components/admin/RelationPicker.tsx:67
 msgid "名前の一部を入れて探す"
 msgstr "Type part of a name to search"
 
@@ -4307,7 +4306,7 @@ msgstr "Searching…"
 msgid "探す"
 msgstr "Search"
 
-#: src/components/admin/RelationPicker.tsx:109
+#: src/components/admin/RelationPicker.tsx:104
 msgid "探せるのは、最初の{max}件までです。"
 msgstr "Only the first {max} can be searched."
 
@@ -5403,7 +5402,7 @@ msgid "見つからない写真（その写真だけ入りません）：{0}"
 msgstr "Photos not found (only those photos are left out): {0}"
 
 #: src/components/admin/PhotoLibrary.tsx:164
-#: src/components/admin/RelationPicker.tsx:107
+#: src/components/admin/RelationPicker.tsx:102
 msgid "見つかりませんでした。"
 msgstr "Nothing found."
 
@@ -5609,6 +5608,7 @@ msgid "通行止めなどの知らせを、確認した日づけで見られま�
 msgstr "See closures and other notices with the date they were checked."
 
 #: src/app/(admin)/admin/pages/page.tsx:27
+#: src/app/(public)/faq/page.tsx:24
 #: src/app/(public)/rallies/page.tsx:37
 #: src/app/(public)/sitemap/page.tsx:90
 #: src/components/admin/PageTextEditor.tsx:37
