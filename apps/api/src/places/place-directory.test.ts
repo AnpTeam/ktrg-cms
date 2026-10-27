@@ -106,6 +106,24 @@ describe("places directory", () => {
     expect(await svc.importSheet(actor, csv, true)).toMatchObject({ added: 0, skipped: 1 });
   });
 
+  test("an import links the named waypoint when the course has exactly one of that name", async () => {
+    const course = "22222222-2222-4222-8222-222222222222";
+    const stop = "55555555-5555-4555-8555-555555555555";
+    const svc = createPlaceService({
+      store: createMemoryPlaceStore(createMemoryAuditWriter().writer).store,
+      routeIds: async () => [course],
+      routeSpots: async () => [{ id: stop, nameJa: "桟橋" }, { id: "x", nameJa: "駅" }, { id: "y", nameJa: "駅" }],
+    });
+    const head = "sample,place_id,category,name_ja,name_en,course_no,index,near_spot_ja,prefecture,municipality,address_ja,lat,lng,coord_source,status,last_verified,listing_permission";
+    const row = (id: number, near: string) => `,${id},トイレ,場所${id},Toilets,1,4,${near},和歌山県,和歌山市,住所,34.2${id},135.0${id},地図アプリで確認,営業中・利用可,2026/10/16,不要（公共施設）`;
+    const csv = [head, "見本,場所ID,種類,名前,名前,コース,#,近い,府県,市,住所,緯度,経度,出どころ,状態,日,了承", row(1, "桟橋"), row(2, "駅"), row(3, "どこか")].join("\n");
+    await svc.importSheet(actor, csv, true);
+    const byName = new Map((await svc.list()).items.map((p) => [p.nameJa, p.nearSpotId]));
+    expect(byName.get("場所1")).toBe(stop);
+    expect(byName.get("場所2")).toBeNull();
+    expect(byName.get("場所3")).toBeNull();
+  });
+
   test("an import in slices adds a few per call and says how many are left; a refused row is passed by with skip", async () => {
     const audit = createMemoryAuditWriter();
     const svc = createPlaceService({ store: createMemoryPlaceStore(audit.writer).store, routeIds: async () => ["22222222-2222-4222-8222-222222222222"] });

@@ -24,7 +24,7 @@ The menu has sections; "Back" and "Hide menu" are at the top of the left column.
 
 ## Places (the directory)
 
-Shops, rest areas, toilets, vending machines and so on. A place needs a checked position and its listing permission ticked before it can be published. Use **Import from a sheet (CSV)** for the field team's sheet: it shows the counts first, adds places as drafts, and skips places already there. **Find duplicates** lists places that look entered twice; keep the most complete one and delete the others.
+Shops, rest areas, toilets, vending machines and so on. Each place can name a nearby route and a nearby waypoint. A place needs a checked position and its listing permission ticked before it can be published. Use **Import from a sheet (CSV)** for the field team's sheet: it shows the counts first, adds places as drafts, and skips places already there. The sheet's nearby-stop name (近いスタンプ場所) is linked to the waypoint of that exact name on the same route; if the name matches none or several, the field stays empty and you pick it by hand. **Find duplicates** lists places that look entered twice; keep the most complete one and delete the others.
 
 ## Notices (closures and hazards)
 

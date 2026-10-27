@@ -163,7 +163,7 @@ export interface PlaceImportResult {
 /** A request imports this many places at most, so one request stays inside a serverless function's time limit. */
 export const IMPORT_SLICE = 100;
 
-export function createPlaceService(deps: { store: PlaceStore; photoHosts?: readonly string[]; routeExists?: (id: string) => Promise<boolean>; spotExists?: (id: string) => Promise<boolean>; routeIds?: () => Promise<string[]> }) {
+export function createPlaceService(deps: { store: PlaceStore; photoHosts?: readonly string[]; routeExists?: (id: string) => Promise<boolean>; spotExists?: (id: string) => Promise<boolean>; routeSpots?: (routeId: string) => Promise<{ id: string; nameJa: string }[]>; routeIds?: () => Promise<string[]> }) {
   const list = createListService({ store: deps.store, rules: placeRules(deps.photoHosts, deps.routeExists, deps.spotExists) });
   /** Every place, read a page at a time. */
   async function everyPlace(): Promise<PlaceRow[]> {
@@ -194,6 +194,7 @@ export function createPlaceService(deps: { store: PlaceStore; photoHosts?: reado
       const facilities = parseFacilities(csv);
       const plan = planPlaces(facilities, existing);
       const failed: PlaceImportResult["failed"] = [];
+      const spotsOf = new Map<string, { id: string; nameJa: string }[]>();
       let added = 0;
       const skip = slice.skip ?? 0;
       const todo = slice.limit === undefined ? plan.places : plan.places.slice(skip, skip + slice.limit);
@@ -207,10 +208,13 @@ export function createPlaceService(deps: { store: PlaceStore; photoHosts?: reado
           added++;
           continue;
         }
+        // The sheet names the waypoint; it is linked only when the course has exactly one waypoint of that name.
+        if (p.nearNameJa && !spotsOf.has(routeId)) spotsOf.set(routeId, (await deps.routeSpots?.(routeId)) ?? []);
+        const named = p.nearNameJa ? (spotsOf.get(routeId) ?? []).filter((s) => s.nameJa === p.nearNameJa) : [];
         const r = await list.create(actor, {
           category: p.category as PlaceFields["category"],
           routeId,
-          nearSpotId: null,
+          nearSpotId: named.length === 1 ? named[0]!.id : null,
           nameJa: p.nameJa,
           nameEn: p.nameEn,
           descriptionJa: p.descriptionJa,
