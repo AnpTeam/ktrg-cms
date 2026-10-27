@@ -1,7 +1,7 @@
 import { and, asc, count, desc, eq, getTableColumns, inArray, isNotNull, max, ne, or, sql } from "drizzle-orm";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
-import { auditLog, rallySpots, routes, routeTranslations, spots, spotTranslations, stamps } from "../db/schema";
+import { auditLog, rallySpots, routes, routeTranslations, routeVideoHistory, spots, spotTranslations, stamps } from "../db/schema";
 import { emptyTexts, flattenTexts, ROUTE_TEXT, SPOT_TEXT, splitTexts, type Texts } from "../db/translations";
 import type { ContentStore, RouteRow, RouteSummaryRow, SpotRow } from "./content-types";
 
@@ -145,6 +145,11 @@ export function createDrizzleContentStore(db: Db): ContentStore {
     async updateRoute(actor, id, expected, changes) {
       const { rest, texts } = splitTexts(ROUTE_TEXT, changes);
       return db.transaction(async (tx) => {
+        // A video link that is replaced or removed is kept, so it can be put back.
+        if (rest.videoUrl !== undefined) {
+          const [before] = await tx.select({ videoUrl: routes.videoUrl }).from(routes).where(eq(routes.id, id)).limit(1);
+          if (before?.videoUrl && before.videoUrl !== rest.videoUrl) await tx.insert(routeVideoHistory).values({ routeId: id, videoUrl: before.videoUrl });
+        }
         const [row] = await tx
           .update(routes)
           .set({ ...rest, updatedAt: sql`clock_timestamp()` })
@@ -158,6 +163,11 @@ export function createDrizzleContentStore(db: Db): ContentStore {
         await writeAudit(tx, { actorUserId: actor, action: "route.update", targetId: id });
         return routeFromDb(tx, row);
       });
+    },
+
+    async videoHistory(routeId, limit) {
+      const rows = await db.select({ url: routeVideoHistory.videoUrl }).from(routeVideoHistory).where(eq(routeVideoHistory.routeId, routeId)).orderBy(desc(routeVideoHistory.replacedAt)).limit(limit * 3);
+      return [...new Set(rows.map((r) => r.url))].slice(0, limit);
     },
 
     async reorderRoutes(actor, ids) {

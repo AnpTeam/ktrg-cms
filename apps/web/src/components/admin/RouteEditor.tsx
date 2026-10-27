@@ -47,6 +47,7 @@ import { RouteHistory } from "./RouteHistory";
 import { NearbyPlacesManager } from "./DirectoryPicker";
 import { SubtitleUpload } from "./SubtitleUpload";
 import { VideoUpload } from "./VideoUpload";
+import { VideoHistory } from "./VideoHistory";
 import { parseVideoFile } from "@/lib/video";
 import { PlacePanel } from "./PlacePanel";
 import { PlaceTable } from "./PlaceTable";
@@ -581,6 +582,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     <TextInput id="route-video" value={draft.videoUrl} onChange={text("videoUrl")} maxLength={500} invalid={problemOf("video_link")} />
                   </Field>
                   <VideoUpload onUploaded={text("videoUrl")} />
+                  {draft.id ? <VideoHistory routeId={draft.id} onPick={text("videoUrl")} /> : null}
                   {parseVideoFile(draft.videoUrl) ? <SubtitleUpload videoUrl={draft.videoUrl} uploaded={draft.videoSubtitles} onUploaded={() => dispatch({ type: "videoSubtitles", value: true })} /> : null}
                   {problemOf("video_link") ? <p role="alert" className="text-base font-bold text-danger">{t`YouTube か Vimeo、またはアップロードした動画の、https:// で始まるリンクにしてください。`}</p> : null}
                 </Section>

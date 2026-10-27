@@ -911,6 +911,24 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       });
     });
 
+    test("a video link that is replaced or removed goes to the route's video history, once each", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const [route] = await store.listRoutes();
+          const A = "https://www.youtube.com/watch?v=aaaaaaaaaaa";
+          const B = "https://www.youtube.com/watch?v=bbbbbbbbbbb";
+          let at = route!.updatedAt;
+          for (const url of [A, B, A, null]) {
+            const r = await store.updateRoute(actor, route!.id, at, { videoUrl: url });
+            if (r === null || r === "conflict") throw new Error("not saved");
+            at = r.updatedAt;
+          }
+          // (inside one rolled-back transaction every row has the same time, so the order is not asserted here)
+          expect((await store.videoHistory(route!.id, 10)).sort()).toEqual([A, B].sort());
+        });
+      });
+    });
+
     test("creating a place puts it on its course (and so in its course's rallies) but in no rally of places; it is audited", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {
