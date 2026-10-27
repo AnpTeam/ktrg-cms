@@ -5,11 +5,13 @@ import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
 import { TrailNotices } from "@/components/landing/TrailNotices";
 import { listNotices } from "@/lib/notices";
+import { GpxDownload } from "@/components/GpxDownload";
 import { PrintShare } from "@/components/PrintShare";
 import { RouteView } from "@/components/RouteView";
 import { getRoute, listPlacesForRoute, pickText, toMapPlace } from "@/lib/content";
 import { initLingui } from "@/i18n/server";
 import { getMapSettings } from "@/lib/site-settings";
+import { getViewer } from "@/lib/viewer";
 import { getPrefs } from "@/lib/server-prefs";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ as?: string }> };
@@ -30,6 +32,7 @@ export default async function RouteDetailPage({ params }: Props) {
   const settings = await getMapSettings();
   const places = (await listPlacesForRoute(route.order)).map((p) => toMapPlace(i18n.locale, p));
 
+  const viewer = await getViewer();
   const notices = (await listNotices()).filter((n) => n.routeId === null || n.routeId === route.id);
 
   return (
@@ -40,6 +43,7 @@ export default async function RouteDetailPage({ params }: Props) {
         </BackLink>
       </div>
       <PrintShare route={{ id: route.id, nameJa: route.nameJa }} />
+      {route.line ? <GpxDownload routeId={route.id} signedIn={viewer.signedIn} /> : null}
       {/* The offline save (components/OfflineSave.tsx, public/sw.js) is built but left off until it is ready:
           <OfflineSave area={route.area} tileTemplate={gsiTileUrl(settings.base === "photo" ? "seamlessphoto" : settings.base)} /> */}
       <TrailNotices notices={notices} locale={i18n.locale} />

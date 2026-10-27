@@ -22,6 +22,8 @@ export const PERMISSIONS = {
   "me.sensitive": ["participant", "editor", "admin"],
   /** Collect a stamp at a spot. */
   "stamp.create": ["participant", "editor", "admin"],
+  /** Download a route as a GPX file. */
+  "route.gpx": ["participant", "editor", "admin"],
   /** Ask for a walking path to a stamp place while off the course line (navigation; the server calls OpenRouteService). */
   "navigation.path": ["participant", "editor", "admin"],
 
