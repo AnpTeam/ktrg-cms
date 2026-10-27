@@ -60,6 +60,21 @@ export interface PublicRally {
   courses: { routeId: string; nameJa: string; nameEn: string | null; spots: { id: string; status: string }[] }[];
 }
 
+/** One rally as GET /rallies/:id sends it, for the rally's own page: every stamp place with its checked position. */
+export interface PublicRallyDetail {
+  id: string;
+  kind: "places" | "course";
+  nameJa: string;
+  nameEn: string | null;
+  /** ISO time the rally was last changed. */
+  updatedAt: string;
+  photoUrl: string | null;
+  photoCredit: string | null;
+  /** The stamp places, in order (for a rally of courses: those of every course). lat and lng are null until a person has checked the position. */
+  places: { id: string; routeId: string; nameJa: string; nameEn: string | null; status: "open" | "caution" | "closed"; radiusM: number; lat: number | null; lng: number | null }[];
+  courses: { routeId: string; nameJa: string; nameEn: string | null }[];
+}
+
 export interface PublicSpot {
   id: string;
   routeId: string;

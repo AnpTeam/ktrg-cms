@@ -53,6 +53,11 @@ msgstr "{0} km"
 msgid "{0}か所を、経由地として追加しました。名前や種類は「経由地」で直せます。"
 msgstr "Added {0} waypoints. You can change their names and kinds in the Waypoints tab."
 
+#. placeholder {0}: b.name
+#: src/components/BookmarkList.tsx:53
+msgid "{0}のブックマークをはずす"
+msgstr "Remove the bookmark for {0}"
+
 #. placeholder {0}: LOCALE_NAMES[l]
 #: src/components/admin/fields.tsx:152
 msgid "{0}を削除"
@@ -215,10 +220,6 @@ msgstr "{name} (end)"
 msgid "{name}さん、こんにちは。"
 msgstr "Hello, {name}."
 
-#: src/components/BookmarkList.tsx:38
-msgid "{name}のブックマークをはずす"
-msgstr "Remove bookmark: {name}"
-
 #: src/components/admin/PageTextEditor.tsx:118
 msgid "{name}を空にして、もとの文章に戻す"
 msgstr "Empty {name} and go back to the built-in text"
@@ -321,6 +322,16 @@ msgstr "{v} m"
 #: src/components/admin/PageTextEditor.tsx:101
 msgid "「---」だけの行から下は、いちばん下の注意書きになります。"
 msgstr "Everything below a line with only \"---\" becomes the note at the bottom."
+
+#. placeholder {0}: phase.place
+#: src/components/RallyNearbyStamp.tsx:76
+msgid "「{0}」のスタンプは、もう押してあります。"
+msgstr "You already have the stamp for \"{0}\"."
+
+#. placeholder {0}: phase.place
+#: src/components/RallyNearbyStamp.tsx:76
+msgid "「{0}」のスタンプを押しました！"
+msgstr "Stamped \"{0}\"!"
 
 #. placeholder {0}: name(one)
 #: src/components/admin/AdminListTable.tsx:59
@@ -477,7 +488,7 @@ msgstr "Hold the Ctrl key to move the map"
 msgid "Google マップで開く"
 msgstr "Open in Google Maps"
 
-#: src/components/StampHere.tsx:103
+#: src/components/useStampMessages.ts:15
 msgid "GPSの電波が弱いようです。空の開けた場所に動いて、もう一度お試しください。"
 msgstr "The GPS signal looks weak. Move to open sky and try again."
 
@@ -642,6 +653,11 @@ msgstr "Choose from uploaded photos"
 msgid "アップロード済みの写真です。選んで「この写真を使う」を押すと、その写真のリンクが入ります。"
 msgstr "These are the photos already uploaded. Choose one and press \"Use this photo\" to fill in its link."
 
+#. placeholder {0}: rally.total - stamped
+#: src/app/(public)/rallies/[id]/page.tsx:81
+msgid "あと{0}か所"
+msgstr "{0} to go"
+
 #: src/components/ProgressSummary.tsx:34
 #: src/components/RallyViews.tsx:54
 msgid "あと{remaining}か所"
@@ -708,6 +724,10 @@ msgstr "You are offline right now. It will work again when the signal returns."
 msgid "いまいる場所から、いちばん近いスタンプの場所まで案内します。位置は、この端末の中だけで使います。"
 msgstr "Guides you from where you are to the nearest stamp place. Your position is used on this device only."
 
+#: src/app/(public)/rallies/[id]/page.tsx:90
+msgid "いますぐはじめる"
+msgstr "Start now"
+
 #: src/components/admin/map-editor/MapEditor.tsx:1104
 msgid "いまのガイド点を通る道を、1回だけ探します"
 msgstr "Search once for a way through the current guide points"
@@ -724,23 +744,24 @@ msgstr "Current rally"
 msgid "いまの位置が、わかりません。空の開けた場所で、しばらくお待ちください。"
 msgstr "Your position is not known yet. Please wait a moment in open sky."
 
-#: src/components/StampHere.tsx:100
+#: src/components/useStampMessages.ts:12
 msgid "いまの位置が、わかりません。空の開けた場所で、もう一度お試しください。"
 msgstr "We can't tell where you are. Try again in an open place."
 
-#: src/components/StampHere.tsx:161
+#: src/components/RallyNearbyStamp.tsx:71
+#: src/components/StampHere.tsx:147
 msgid "いまの位置を調べています…"
 msgstr "Checking your location…"
 
-#: src/components/StampHere.tsx:177
+#: src/components/StampHere.tsx:163
 msgid "いまの位置を調べます"
 msgstr "We will check your location"
 
-#: src/components/StampHere.tsx:141
+#: src/components/StampHere.tsx:127
 msgid "いまの場所から、約{km}km"
 msgstr "About {km} km from where you are"
 
-#: src/components/StampHere.tsx:141
+#: src/components/StampHere.tsx:127
 msgid "いまの場所から、約{m}m"
 msgstr "About {m} m from where you are"
 
@@ -936,7 +957,7 @@ msgstr "Courses"
 msgid "コース {0}"
 msgstr "{0} courses"
 
-#: src/components/RallyViews.tsx:91
+#: src/components/RallyViews.tsx:122
 msgid "コース{order}"
 msgstr "Course {order}"
 
@@ -956,7 +977,7 @@ msgstr "Press a stamp at every place of a course to get that course's badge."
 msgid "コースの出発地点から近い順（まっすぐ測った距離です）"
 msgstr "Nearest first from the start of the course (straight-line distance)"
 
-#: src/components/RallyViews.tsx:171
+#: src/components/RallyViews.tsx:189
 msgid "コースを見る"
 msgstr "See the courses"
 
@@ -1025,7 +1046,7 @@ msgstr "What you will find here"
 msgid "このアプリを知ったきっかけ"
 msgstr "How did you find out about this?"
 
-#: src/components/StampHere.tsx:122
+#: src/components/StampHere.tsx:108
 msgid "このスタンプは、もう押してあります。"
 msgstr "You already have this stamp."
 
@@ -1062,7 +1083,12 @@ msgstr "You do not have permission to view this page"
 msgid "このメールアドレスは、使えません。すでに別のアカウントで使われているか、このアカウントにはメールが入っています。"
 msgstr "This email address can't be used. It belongs to another account, or this account already has an email."
 
-#: src/components/StampHere.tsx:105
+#: src/components/RallyViews.tsx:82
+#: src/components/RallyViews.tsx:173
+msgid "このラリーのページを開く"
+msgstr "Open this rally's page"
+
+#: src/components/useStampMessages.ts:17
 msgid "このラリーは、いまは行われていません。"
 msgstr "This rally is not running right now."
 
@@ -1188,11 +1214,11 @@ msgstr "Open this place's page"
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
 msgstr "The position of this place is a draft and has not been checked yet."
 
-#: src/components/StampHere.tsx:156
+#: src/components/StampHere.tsx:142
 msgid "この場所は、いまは閉鎖中です。"
 msgstr "This place is closed right now."
 
-#: src/components/StampHere.tsx:104
+#: src/components/useStampMessages.ts:16
 msgid "この場所は、いまは閉鎖中です。スタンプは押せません。"
 msgstr "This place is closed right now. You can't collect the stamp."
 
@@ -1234,7 +1260,7 @@ msgid "この次に追加"
 msgstr "Add after this"
 
 #: src/components/navigation/NavigationHud.tsx:142
-#: src/components/StampHere.tsx:98
+#: src/components/useStampMessages.ts:10
 msgid "この端末・ブラウザでは、位置情報を使えません。"
 msgstr "This device or browser can't use location."
 
@@ -1461,15 +1487,16 @@ msgstr "{turnWord} now"
 msgid "スタート"
 msgstr "Start"
 
+#: src/app/(public)/rallies/[id]/page.tsx:100
 #: src/components/admin/map-editor/PlaceList.tsx:106
 #: src/components/admin/PlaceTable.tsx:137
 #: src/components/ProgressSummary.tsx:38
 msgid "スタンプ"
 msgstr "Stamps"
 
-#. placeholder {0}: b.stampedCount ?? 0
-#. placeholder {1}: b.spotCount
-#: src/components/BookmarkList.tsx:33
+#. placeholder {0}: b.stamped
+#. placeholder {1}: b.total
+#: src/components/BookmarkList.tsx:49
 msgid "スタンプ {0} / {1}"
 msgstr "Stamps {0} / {1}"
 
@@ -1517,7 +1544,7 @@ msgstr "Stamp locations"
 msgid "スタンプの場所 {spotCount}か所"
 msgstr "{spotCount} stamp places"
 
-#: src/components/StampHere.tsx:179
+#: src/components/StampHere.tsx:165
 msgid "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 msgstr "To check that you are near the stamp place, we look at your phone's location once."
 
@@ -1541,9 +1568,10 @@ msgstr "Stamp waypoints {0} / {1}"
 msgid "スタンプの記録を読めませんでした。"
 msgstr "Your stamps could not be read."
 
+#: src/app/(public)/rallies/[id]/page.tsx:79
 #: src/components/ProgressSummary.tsx:42
 #: src/components/RallyViews.tsx:57
-#: src/components/RallyViews.tsx:117
+#: src/components/RallyViews.tsx:148
 msgid "スタンプの進み具合"
 msgstr "Stamp progress"
 
@@ -1552,7 +1580,7 @@ msgid "スタンプは押せません。場所のページは見られます。�
 msgstr "No stamp can be collected here, but visitors can open the place's page. To publish it, the site's permission must be confirmed."
 
 #: src/components/IntroFlow.tsx:228
-#: src/components/RallyViews.tsx:91
+#: src/components/RallyViews.tsx:122
 msgid "スタンプラリー"
 msgstr "Stamp rally"
 
@@ -1572,7 +1600,8 @@ msgstr "Restored {0} stamps ({1} now)."
 msgid "スタンプをもどす"
 msgstr "Restore stamps"
 
-#: src/components/StampHere.tsx:163
+#: src/components/RallyNearbyStamp.tsx:71
+#: src/components/StampHere.tsx:149
 msgid "スタンプを押しています…"
 msgstr "Collecting the stamp…"
 
@@ -1581,16 +1610,16 @@ msgstr "Collecting the stamp…"
 msgid "スタンプを押しました"
 msgstr "You collected this stamp"
 
-#: src/components/StampHere.tsx:122
+#: src/components/StampHere.tsx:108
 msgid "スタンプを押しました！"
 msgstr "Stamp collected!"
 
-#: src/components/StampHere.tsx:154
-#: src/components/StampHere.tsx:166
+#: src/components/StampHere.tsx:140
+#: src/components/StampHere.tsx:152
 msgid "スタンプを押す"
 msgstr "Stamp here"
 
-#: src/components/StampHere.tsx:106
+#: src/components/useStampMessages.ts:18
 msgid "スタンプを押す機能は、まだ使えません。"
 msgstr "Collecting stamps isn't available yet."
 
@@ -1627,6 +1656,7 @@ msgstr "These waypoints were already unpublished: {names}. Check them in the Way
 msgid "すべて"
 msgstr "All"
 
+#: src/app/(public)/rallies/[id]/page.tsx:81
 #: src/components/ProgressSummary.tsx:33
 #: src/components/RallyViews.tsx:54
 msgid "すべてそろいました。"
@@ -1743,6 +1773,10 @@ msgstr "How it is made"
 #: src/components/admin/RallyCreate.tsx:73
 msgid "つくり方は、あとから変えられません。"
 msgstr "This cannot be changed later."
+
+#: src/app/(public)/rallies/[id]/page.tsx:90
+msgid "つづきをはじめる"
+msgstr "Continue"
 
 #: src/components/admin/RubyEditor.tsx:49
 msgid "つなぐ"
@@ -1942,10 +1976,11 @@ msgstr "Bookmarks"
 
 #: src/components/PrintShare.tsx:44
 #: src/components/PrintShare.tsx:45
+#: src/components/RallyBookmark.tsx:20
 msgid "ブックマークする"
 msgstr "Bookmark this route"
 
-#: src/components/BookmarkList.tsx:18
+#: src/components/BookmarkList.tsx:36
 msgid "ブックマークは、まだありません。"
 msgstr "No bookmarks yet."
 
@@ -1953,6 +1988,10 @@ msgstr "No bookmarks yet."
 #: src/components/PrintShare.tsx:45
 msgid "ブックマークをはずす"
 msgstr "Remove bookmark"
+
+#: src/components/RallyBookmark.tsx:20
+msgid "ブックマーク済み"
+msgstr "Bookmarked"
 
 #: src/components/SiteFooter.tsx:16
 msgid "フッター"
@@ -2121,12 +2160,12 @@ msgid "まずは、歩きたい道をえらびます。登録しなくても、�
 msgstr "First, pick a route to walk. You can collect stamps without signing up."
 
 #: src/components/admin/RouteEditor.tsx:798
-#: src/components/RallyViews.tsx:154
+#: src/components/RallyViews.tsx:108
 #: src/components/StampLegend.tsx:9
 msgid "まだ"
 msgstr "Not yet"
 
-#: src/components/StampHere.tsx:102
+#: src/components/useStampMessages.ts:14
 msgid "まだ、この場所から遠いようです。場所の近くで、もう一度お試しください。"
 msgstr "You still seem to be far from this place. Try again when you are near it."
 
@@ -2154,6 +2193,7 @@ msgstr "No comments yet."
 msgid "まだスタンプがありません。"
 msgstr "No stamps yet."
 
+#: src/app/(public)/rallies/[id]/page.tsx:81
 #: src/components/ProgressSummary.tsx:31
 #: src/components/RallyViews.tsx:54
 msgid "まだスタンプはありません。"
@@ -2257,6 +2297,10 @@ msgstr "Add email"
 msgid "メインメニュー"
 msgstr "Main menu"
 
+#: src/app/(public)/rallies/[id]/page.tsx:112
+msgid "めぐる場所"
+msgstr "Places to visit"
+
 #: src/components/admin/AdminNav.tsx:53
 #: src/components/SiteHeader.tsx:189
 #: src/components/TabBar.tsx:68
@@ -2287,7 +2331,7 @@ msgstr "Open it again"
 msgid "もう一度公開するときは、「経由地」タブで「公開する」を押してください。"
 msgstr "To publish it again, press \"Publish\" in the Waypoints tab."
 
-#: src/components/StampHere.tsx:165
+#: src/components/StampHere.tsx:151
 msgid "もう一度試す"
 msgstr "Try again"
 
@@ -2331,7 +2375,7 @@ msgstr "Earned"
 #: src/components/auth/ReauthDialog.tsx:84
 #: src/components/ProfileSettings.tsx:250
 #: src/components/settings/PasskeyManager.tsx:165
-#: src/components/StampHere.tsx:186
+#: src/components/StampHere.tsx:172
 msgid "やめる"
 msgstr "Cancel"
 
@@ -2378,9 +2422,11 @@ msgstr "Light"
 
 #: src/app/(admin)/admin/rallies/page.tsx:22
 #: src/app/(public)/page.tsx:70
+#: src/app/(public)/rallies/[id]/page.tsx:57
 #: src/app/(public)/rallies/page.tsx:30
 #: src/app/(public)/sitemap/page.tsx:82
 #: src/components/admin/AdminNav.tsx:32
+#: src/components/BookmarkList.tsx:47
 #: src/components/TabBar.tsx:25
 msgid "ラリー"
 msgstr "Rallies"
@@ -2507,6 +2553,7 @@ msgstr "Enter the link directly"
 #: src/app/(public)/routes/page.tsx:18
 #: src/app/(public)/sitemap/page.tsx:65
 #: src/components/admin/AdminNav.tsx:31
+#: src/components/BookmarkList.tsx:47
 #: src/components/TabBar.tsx:24
 msgid "ルート"
 msgstr "Routes"
@@ -2541,10 +2588,6 @@ msgstr "Back to route"
 #: src/app/(public)/grading/page.tsx:45
 msgid "ルートの「体力度」と「技術度」は、歩く前に大変さを知るための目安です。公式の情報ではありません。天気や体調で、感じ方は変わります。"
 msgstr "The physical level and technical level of a route are a guide to how hard it is before you set out. They are not official information, and how it feels changes with the weather and how you feel."
-
-#: src/components/BookmarkList.tsx:19
-msgid "ルートのページで、しおりのボタンを押すと、ここに保存されます。ログインしていれば、アカウントに保存されます。"
-msgstr "Press the bookmark button on a route page and it is saved here. When you are signed in, bookmarks are saved to your account."
 
 #: src/app/(public)/sitemap/page.tsx:67
 msgid "ルートの一覧"
@@ -2590,6 +2633,10 @@ msgstr "Route description"
 #: src/components/admin/RouteHistory.tsx:24
 msgid "ルートの順番を変えた"
 msgstr "Reordered the routes"
+
+#: src/components/BookmarkList.tsx:37
+msgid "ルートやラリーのページで、しおりのボタンを押すと、ここに保存されます。ログインしていれば、アカウントに保存されます。"
+msgstr "Press the bookmark button on a route or rally page and it is saved here. When you are signed in, it is saved to your account."
 
 #: src/components/admin/RouteTable.tsx:61
 #: src/components/landing/Landing.tsx:200
@@ -2650,12 +2697,12 @@ msgstr "Log out"
 msgid "ログイン"
 msgstr "Log in"
 
-#: src/components/StampHere.tsx:107
 #: src/components/useErrorMessages.ts:19
+#: src/components/useStampMessages.ts:19
 msgid "ログインが切れたようです。ログインしなおしてください。"
 msgstr "You seem to have been logged out. Please log in again."
 
-#: src/components/StampHere.tsx:145
+#: src/components/StampHere.tsx:131
 msgid "ログインする"
 msgstr "Log in"
 
@@ -2806,7 +2853,7 @@ msgstr "No position"
 msgid "位置の地図"
 msgstr "Map of the position"
 
-#: src/components/StampHere.tsx:180
+#: src/components/StampHere.tsx:166
 msgid "位置は、保存しません。保存するのは、スタンプだけです。"
 msgstr "We don't save your location. We only save the stamp."
 
@@ -2850,15 +2897,15 @@ msgstr "Write the source you checked the position against (a site name or link).
 msgid "位置を確認していない"
 msgstr "Position not checked"
 
-#: src/components/StampHere.tsx:183
+#: src/components/StampHere.tsx:169
 msgid "位置を調べてスタンプを押す"
 msgstr "Check my location and collect the stamp"
 
-#: src/components/StampHere.tsx:101
+#: src/components/useStampMessages.ts:13
 msgid "位置を調べるのに、時間がかかっています。空の開けた場所で、もう一度お試しください。"
 msgstr "Checking your location is taking a while. Try again in an open place."
 
-#: src/components/StampHere.tsx:99
+#: src/components/useStampMessages.ts:11
 msgid "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてから、もう一度お試しください。"
 msgstr "Location isn't allowed. In your browser settings, allow location for this site, then try again."
 
@@ -3760,8 +3807,8 @@ msgstr "Wakayama"
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "From the Izumi range to the Kongo mountains, these ridges run along the borders of Osaka, Wakayama and Nara. They have long been called Katsuragi and revered as mountains where the gods dwell. It is said that En no Gyoja, who is believed to have founded Shugendo, the path of training in the mountains, first practised here."
 
-#: src/components/StampHere.tsx:111
 #: src/components/useErrorMessages.ts:68
+#: src/components/useStampMessages.ts:23
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "Something went wrong. Please try again in a little while."
 
@@ -3931,6 +3978,10 @@ msgstr "Stories of the places"
 #: src/components/admin/RouteEditor.tsx:717
 msgid "場所の見せ方"
 msgstr "How places are shown"
+
+#: src/components/RallyNearbyStamp.tsx:73
+msgid "場所の近くで押してください。位置は1回だけ調べ、保存しません。"
+msgstr "Press it near a place. Your position is checked once and never saved."
 
 #: src/components/admin/map-editor/MapEditor.tsx:776
 msgid "場所を探すサービスにつながりませんでした。しばらくしてから、もう一度お試しください。"
@@ -4208,7 +4259,7 @@ msgid "折り返し"
 msgstr "Turnaround"
 
 #: src/components/map/MapScreen.tsx:393
-#: src/components/RallyViews.tsx:154
+#: src/components/RallyViews.tsx:108
 #: src/components/StampLegend.tsx:8
 #: src/components/StopList.tsx:157
 msgid "押した"
@@ -4675,11 +4726,12 @@ msgstr "Pale"
 msgid "港・フェリー乗り場"
 msgstr "Port or ferry"
 
+#: src/app/(public)/rallies/[id]/page.tsx:65
 #: src/components/admin/RouteTable.tsx:30
-#: src/components/BookmarkList.tsx:33
+#: src/components/BookmarkList.tsx:49
 #: src/components/landing/Landing.tsx:231
 #: src/components/map/MapScreen.tsx:329
-#: src/components/RallyViews.tsx:99
+#: src/components/RallyViews.tsx:130
 #: src/components/TrailRibbon.tsx:77
 msgid "準備中"
 msgstr "Coming soon"
@@ -4811,8 +4863,8 @@ msgstr "Register"
 msgid "登録できませんでした。もう一度お試しください。"
 msgstr "Could not register. Please try again."
 
-#: src/components/StampHere.tsx:108
 #: src/components/useErrorMessages.ts:45
+#: src/components/useStampMessages.ts:20
 msgid "登録なしで残せるスタンプの数が、上限になりました。新規登録すると、続けて集められます。"
 msgstr "You have reached the most stamps that can be kept without an account. Sign up to keep collecting."
 
@@ -4854,8 +4906,8 @@ msgstr "Show me what to fix"
 msgid "知ったきっかけ"
 msgstr "How you found it"
 
-#: src/components/StampHere.tsx:109
 #: src/components/useErrorMessages.ts:16
+#: src/components/useStampMessages.ts:21
 msgid "短い間に何度も操作されました。しばらくしてからお試しください。"
 msgstr "Too many attempts in a short time. Please try again in a little while."
 
@@ -4942,12 +4994,20 @@ msgstr "About {amount} km"
 msgid "約{amount}m"
 msgstr "About {amount} m"
 
+#: src/components/RallyNearbyStamp.tsx:59
+msgid "約{n}km"
+msgstr "about {n} km"
+
+#: src/components/RallyNearbyStamp.tsx:59
+msgid "約{n}m"
+msgstr "about {n} m"
+
 #: src/components/IntroFlow.tsx:208
 #: src/components/landing/Landing.tsx:138
 msgid "約{TRAIL_KM}km"
 msgstr "About {TRAIL_KM} km"
 
-#: src/components/RallyViews.tsx:128
+#: src/components/RallyViews.tsx:159
 msgid "納経帳"
 msgstr "Pilgrim’s stamp book"
 
@@ -4971,7 +5031,7 @@ msgstr "{count} sutra mounds are gathered here. Press to zoom in"
 msgid "経塚 {name}"
 msgstr "Sutra mound {name}"
 
-#: src/components/RallyViews.tsx:91
+#: src/components/RallyViews.tsx:122
 msgid "経塚ラリー"
 msgstr "Sutra mound rally"
 
@@ -5480,6 +5540,16 @@ msgstr "Merge places that are close together"
 msgid "近くに{category}はありません。"
 msgstr "No {category} nearby."
 
+#. placeholder {0}: phase.place
+#. placeholder {1}: away(phase.distanceM)
+#: src/components/RallyNearbyStamp.tsx:81
+msgid "近くにスタンプの場所がありません。いちばん近いのは「{0}」で、{1}です。"
+msgstr "There is no stamp place nearby. The nearest is \"{0}\", {1} away."
+
+#: src/components/RallyNearbyStamp.tsx:71
+msgid "近くのスタンプを押す"
+msgstr "Stamp the place near me"
+
 #: src/components/admin/map-editor/MapEditor.tsx:1063
 msgid "追加しない"
 msgstr "Do not add"
@@ -5507,8 +5577,8 @@ msgstr "Uploading…"
 msgid "送っています… {percent}%"
 msgstr "Sending… {percent}%"
 
-#: src/components/StampHere.tsx:110
 #: src/components/useErrorMessages.ts:67
+#: src/components/useStampMessages.ts:22
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not connect. Please try again where the signal is better."
 

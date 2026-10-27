@@ -9,6 +9,7 @@ import { distanceParts, type Problem, type StampMock } from "@/lib/stamp-flow";
 import { buzz, playThud, unlockAudio } from "@/lib/stamp-feel";
 import { track } from "@/lib/track";
 import { StampFace } from "./StampFace";
+import { useStampMessages } from "./useStampMessages";
 
 // The "stamp here" button of a spot page (WBS 3.3.1). One tap: explain why the position is needed (before the
 // browser asks), read ONE position, send it, and show the answer in plain words. The server decides; every way it
@@ -94,22 +95,7 @@ export function StampHere({
     else setPhase({ name: "explain" });
   }
 
-  const messages: Record<Problem, string> = {
-    unsupported: t`この端末・ブラウザでは、位置情報を使えません。`,
-    denied: t`位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてから、もう一度お試しください。`,
-    unavailable: t`いまの位置が、わかりません。空の開けた場所で、もう一度お試しください。`,
-    timeout: t`位置を調べるのに、時間がかかっています。空の開けた場所で、もう一度お試しください。`,
-    too_far: t`まだ、この場所から遠いようです。場所の近くで、もう一度お試しください。`,
-    low_accuracy: t`GPSの電波が弱いようです。空の開けた場所に動いて、もう一度お試しください。`,
-    spot_closed: t`この場所は、いまは閉鎖中です。スタンプは押せません。`,
-    rally_not_active: t`このラリーは、いまは行われていません。`,
-    not_ready: t`スタンプを押す機能は、まだ使えません。`,
-    login_needed: t`ログインが切れたようです。ログインしなおしてください。`,
-    guest_full: t`登録なしで残せるスタンプの数が、上限になりました。新規登録すると、続けて集められます。`,
-    too_many_requests: t`短い間に何度も操作されました。しばらくしてからお試しください。`,
-    network: t`通信できませんでした。電波の良い場所でもう一度お試しください。`,
-    failed: t`問題が発生しました。しばらくしてからもう一度お試しください。`,
-  };
+  const messages = useStampMessages();
 
   const wrapper = inSheet ? "sticky bottom-[var(--tab-room)] z-10 flex flex-col gap-2 bg-paper/95 py-2" : "sticky bottom-[calc(6rem+env(safe-area-inset-bottom))] z-10 flex flex-col gap-2 px-4 md:bottom-6";
 

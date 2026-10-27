@@ -1,0 +1,92 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useLingui } from "@lingui/react/macro";
+import { pickText } from "@/lib/pick-text";
+import { distanceParts, type Problem } from "@/lib/stamp-flow";
+import { nearestToStamp, type RallyPlace } from "@/lib/rally-nearby";
+import { buzz, playThud, unlockAudio } from "@/lib/stamp-feel";
+import { readPosition, requestStamp } from "@/lib/stamp-client";
+import { track } from "@/lib/track";
+import { useStampMessages } from "./useStampMessages";
+
+type Phase =
+  | { name: "idle" }
+  | { name: "working"; what: "locating" | "sending" }
+  | { name: "done"; place: string; already: boolean }
+  | { name: "none"; place: string; distanceM: number }
+  | { name: "problem"; problem: Problem; distanceM?: number };
+
+/**
+ * "Stamp here" for a whole rally: when the visitor is at one of its places they can press it from the rally page, without
+ * opening the place first. One tap reads ONE position, picks the nearest place they do not hold yet, and asks the server
+ * for that stamp: the server still decides (distance, accuracy, closed). The position is used once and never kept.
+ */
+export function RallyNearbyStamp({ places, held, locale }: { places: RallyPlace[]; held: string[]; locale: string }) {
+  const { t, i18n } = useLingui();
+  const router = useRouter();
+  const messages = useStampMessages();
+  const [phase, setPhase] = useState<Phase>({ name: "idle" });
+  const busy = phase.name === "working";
+  const nameOf = (p: RallyPlace) => pickText(locale, p.nameJa, p.nameEn)?.text ?? p.nameJa;
+  const format = new Intl.NumberFormat(i18n.locale === "ja" ? "ja-JP" : "en-US", { maximumFractionDigits: 1 });
+
+  async function press() {
+    unlockAudio();
+    setPhase({ name: "working", what: "locating" });
+    const position = await readPosition();
+    if (!position.ok) return setPhase({ name: "problem", problem: position.reason });
+    const found = nearestToStamp(position.reading, places, new Set(held));
+    if (!found) return setPhase({ name: "idle" });
+    if (!found.near) return setPhase({ name: "none", place: nameOf(found.place), distanceM: found.distanceM });
+    setPhase({ name: "working", what: "sending" });
+    const result = await requestStamp(found.place.id, position.reading);
+    if (!result.ok) return setPhase({ name: "problem", problem: result.failure, distanceM: result.distanceM });
+    setPhase({ name: "done", place: nameOf(found.place), already: result.already });
+    if (!result.already) {
+      playThud();
+      buzz();
+    }
+    track("stamp", { already: result.already, finishedCourse: (result.finished?.routeIds.length ?? 0) > 0, from: "rally" });
+    window.dispatchEvent(new Event("ktrg:stamped"));
+    router.refresh();
+  }
+
+  const away = (metres: number) => {
+    const d = distanceParts(metres);
+    const n = format.format(d.value);
+    return d.unit === "km" ? t`約${n}km` : t`約${n}m`;
+  };
+
+  return (
+    <div className="flex flex-col gap-2">
+      <button
+        type="button"
+        disabled={busy}
+        onClick={() => void press()}
+        aria-live="polite"
+        className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper disabled:opacity-60"
+      >
+        {phase.name === "working" ? (phase.what === "locating" ? t`いまの位置を調べています…` : t`スタンプを押しています…`) : t`近くのスタンプを押す`}
+      </button>
+      <p className="text-base text-muted">{t`場所の近くで押してください。位置は1回だけ調べ、保存しません。`}</p>
+      {phase.name === "done" ? (
+        <p role="status" className="rounded-2xl bg-surface p-4 text-xl font-bold leading-snug">
+          {phase.already ? t`「${phase.place}」のスタンプは、もう押してあります。` : t`「${phase.place}」のスタンプを押しました！`}
+        </p>
+      ) : null}
+      {phase.name === "none" ? (
+        <p role="alert" className="rounded-2xl border-2 border-caution bg-paper p-4 text-lg font-bold leading-7">
+          {t`近くにスタンプの場所がありません。いちばん近いのは「${phase.place}」で、${away(phase.distanceM)}です。`}
+        </p>
+      ) : null}
+      {phase.name === "problem" ? (
+        <p role="alert" className="rounded-2xl border-2 border-caution bg-paper p-4 text-lg font-bold leading-7">
+          {messages[phase.problem]}
+          {phase.problem === "too_far" && phase.distanceM !== undefined ? ` ${away(phase.distanceM)}` : ""}
+        </p>
+      ) : null}
+    </div>
+  );
+}
