@@ -86,6 +86,10 @@ Desktop.ini
 **.pdf
 *.docx
 *.md
+# ...except the maintainers' docs
+!MAINTAINING.md
+!docs/
+!docs/*.md
 
 # Database dumps
 sql/
