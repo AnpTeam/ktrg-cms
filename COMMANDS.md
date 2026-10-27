@@ -77,6 +77,9 @@ bun run --cwd apps/web resolve:catalogs  # in the middle of a merge or rebase th
 `resolve:catalogs` takes main's catalogs, extracts again so the branch's new messages are added, and puts the branch's own
 English back. It marks the files resolved; then run `check:catalogs` and commit. Works for a merge and for a rebase.
 
+A git merge driver does the same job on its own: `bun install` registers it (`bun run setup:git` if you skipped install), and after that a merge or rebase
+never shows a conflict in `en.po` / `ja.po`. It keeps main's catalog and adds the branch's new messages and English; run `check:catalogs` after a merge.
+
 ## Git
 
 ```bash

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { endOfJstDay } from "./UserActions";
+import { endOfJstDay } from "./jst";
 
 describe("restriction end", () => {
   test("a chosen day lasts to the end of that day in Japan", () => {

@@ -52,3 +52,24 @@ export function fillEmpty(po: string, known: ReadonlyMap<string, string[]>): { t
 
 /** True when the text still has merge conflict markers. */
 export const hasConflictMarkers = (text: string) => /^(<{7}|={7}|>{7})( |$)/m.test(LF(text));
+
+/**
+ * A three-way merge of one catalog, for the git merge driver: the `theirs` file, plus the messages `ours` added (not in `base`,
+ * not already in `theirs`), with every empty msgstr filled from a translation either side has. Never conflicts. Order and
+ * `#:` places are not exact; the next `lingui extract` puts them right.
+ */
+export function mergeCatalogs(base: string, ours: string, theirs: string): string {
+  const keyOf = (block: string) => entryOf(block)?.key ?? null;
+  const keys = (po: string) => new Set(LF(po).split(/\n\s*\n/).flatMap((b) => keyOf(b) ?? []));
+  const [inBase, inTheirs] = [keys(base), keys(theirs)];
+  const added = LF(ours)
+    .split(/\n\s*\n/)
+    .filter((b) => {
+      const k = keyOf(b);
+      return k !== null && !inBase.has(k) && !inTheirs.has(k);
+    })
+    .map((b) => b.replace(/\n+$/, ""));
+  const joined = [LF(theirs).replace(/\n+$/, ""), ...added].join("\n\n") + "\n";
+  const known = new Map([...translationsOf(theirs), ...translationsOf(ours)]);
+  return fillEmpty(joined, known).text;
+}
