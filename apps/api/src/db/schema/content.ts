@@ -621,6 +621,8 @@ export const places = pgTable(
     category: placeCategory("category").notNull().default("other"),
     // The course it is on or near; a place may be on none.
     routeId: uuid("route_id").references(() => routes.id, { onDelete: "set null" }),
+    // The waypoint it is closest to (the course alone is too wide to say where on the trail).
+    nearSpotId: uuid("near_spot_id").references(() => spots.id, { onDelete: "set null" }),
     lat: doublePrecision("lat"),
     lng: doublePrecision("lng"),
     positionVerified: boolean("position_verified").notNull().default(false),
@@ -640,6 +642,7 @@ export const places = pgTable(
   },
   (t) => [
     index("places_route_idx").on(t.routeId),
+    index("places_near_spot_idx").on(t.nearSpotId),
     check("places_lat_range", sql`${t.lat} is null or ${t.lat} between -90 and 90`),
     check("places_lng_range", sql`${t.lng} is null or ${t.lng} between -180 and 180`),
     check("places_coordinates_together", sql`(${t.lat} is null) = (${t.lng} is null)`),

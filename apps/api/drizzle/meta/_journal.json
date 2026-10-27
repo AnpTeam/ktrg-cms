@@ -288,6 +288,13 @@
       "when": 1793064226259,
       "tag": "0040_nice_living_lightning",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1793068470537,
+      "tag": "0041_common_ser_duncan",
+      "breakpoints": true
     }
   ]
 }

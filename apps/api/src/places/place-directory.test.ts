@@ -6,6 +6,7 @@ const actor = "11111111-1111-4111-8111-111111111111";
 const place = (over: Record<string, unknown> = {}) => ({
   category: "cafe" as const,
   routeId: null,
+  nearSpotId: null,
   nameJa: " 喫茶 ",
   nameEn: "  ",
   descriptionJa: null,
@@ -73,6 +74,13 @@ describe("places directory", () => {
     expect((await s.svc.publicPlaces(course)).map((p) => p.nameJa)).toEqual(["一"]);
   });
 
+
+  test("a nearby waypoint must exist", async () => {
+    const known = "44444444-4444-4444-8444-444444444444";
+    const svc = createPlaceService({ store: createMemoryPlaceStore(createMemoryAuditWriter().writer).store, spotExists: async (id) => id === known });
+    expect(await svc.create(actor, place({ nearSpotId: "33333333-3333-4333-8333-333333333333" }))).toEqual({ ok: false, reason: "validation_failed" });
+    expect((await svc.create(actor, place({ nearSpotId: known }))).ok).toBe(true);
+  });
   test("a route that does not exist is refused instead of failing in the database", async () => {
     const known = "22222222-2222-4222-8222-222222222222";
     const svc = createPlaceService({ store: createMemoryPlaceStore(createMemoryAuditWriter().writer).store, routeExists: async (id) => id === known });
