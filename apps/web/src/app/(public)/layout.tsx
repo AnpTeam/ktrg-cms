@@ -1,3 +1,4 @@
+import { VisitBeacon } from "@/components/VisitBeacon";
 import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 import { MenuProvider } from "@/components/MenuProvider";
@@ -44,6 +45,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
     <MenuProvider>
       <BookmarkProvider signedIn={viewer.signedIn} ids={viewer.bookmarks}>
       <NavigationProvider signedIn={viewer.signedIn}>
+      <VisitBeacon />
       <StampFilters />
       <div className="mx-auto flex w-full max-w-5xl justify-center md:gap-6 lg:mx-0 lg:max-w-none lg:justify-start lg:gap-0">
         {/* The footer lives in the sidebar on a desktop (and is hidden on the map, whose page has no room for it). */}

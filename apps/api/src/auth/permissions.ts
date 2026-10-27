@@ -50,6 +50,8 @@ export const PERMISSIONS = {
   "site.manage": ["admin"],
   /** Review flagged stamps and revoke them. */
   "stamp.review": ["admin"],
+  /** Where the page views came from (counts only, no person). */
+  "visit.read": ["editor", "admin"],
   "audit.read": ["admin"],
   /** See the list of accounts (the users screen). No fresh login: only changing a role needs one. */
   "user.read": ["admin"],

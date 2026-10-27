@@ -16,6 +16,7 @@ import { createFuriganaService, type FuriganaServices, type FuriganaStore } from
 import { createBannerService, type BannerServices, type BannerStore } from "./banners/banner-list";
 import type { PlaceListRow, PlaceListServices } from "./content/place-list";
 import { createPlaceService, type PlaceServices, type PlaceStore } from "./places/place-directory";
+import { createVisitService, type VisitServices, type VisitStore } from "./visits/visits";
 import { createSiteSettingsService, type SiteSettingsServices, type SiteSettingsStore } from "./site-settings/site-settings";
 import { createUserListService, type UserListServices, type UserListStore } from "./users/user-list";
 import type { NoticeServices } from "./notices/notice-routes";
@@ -43,7 +44,7 @@ import { createUploadService } from "./uploads/upload-service";
 import type { FileStorage } from "./uploads/upload-storage";
 
 /** Everything the routes use. */
-export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & PostServices & CommentServices & AuthorServices & BannerServices & PlaceServices & SiteSettingsServices & AuditListServices & PlaceListServices & UserListServices & GuestServices & FuriganaServices & SitePageServices & NavigationServices;
+export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & PostServices & CommentServices & AuthorServices & BannerServices & PlaceServices & SiteSettingsServices & VisitServices & AuditListServices & PlaceListServices & UserListServices & GuestServices & FuriganaServices & SitePageServices & NavigationServices;
 
 /** What the services are built from: the storage (database or in-memory) and the outside world. */
 export interface ServiceDeps {
@@ -66,6 +67,7 @@ export interface ServiceDeps {
     authors: AuthorStore;
     places: PlaceStore;
     siteSettings: SiteSettingsStore;
+    visits: VisitStore;
     auditList: ListReadStore<AuditListRow>;
     placeList: ListReadStore<PlaceListRow>;
     userList: UserListStore;
@@ -130,6 +132,7 @@ export function createServices(deps: ServiceDeps): Services {
     comments: createCommentService({ store: stores.comments, postVisible: async (id) => (await posts.publicPost(id)) !== null }),
     places: createPlaceService({ store: stores.places, photoHosts: deps.photoHosts, routeExists: async (id) => (await stores.content.getRoute(id)) !== null, spotExists: async (id) => (await stores.content.getSpot(id)) !== null, routeSpots: async (id) => (await stores.content.getRoute(id))?.spots ?? [], routeIds: async () => (await stores.content.listRoutes()).map((r) => r.id) }),
     siteSettings: createSiteSettingsService({ store: stores.siteSettings }),
+    visits: createVisitService({ store: stores.visits, now }),
     auditList: createListReader({ store: stores.auditList }),
     placeList: createListReader({ store: stores.placeList }),
     userList: createUserListService({ store: stores.userList }),

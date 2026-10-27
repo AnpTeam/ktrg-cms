@@ -49,6 +49,7 @@ describe("permission table", () => {
         "upload.read",
         "user.read",
         "user.manage_roles",
+        "visit.read",
       ].sort(),
     );
   });

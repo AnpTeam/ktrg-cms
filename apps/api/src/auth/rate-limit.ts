@@ -39,6 +39,8 @@ export const AUTH_LIMITS = {
   // Keyed by user id: deletion requests and cancels. Each request emails the owner, so a
   // request/cancel loop must not be able to flood their inbox.
   meDeletionUser: { name: "me-deletion-user", limit: 5, windowMs: 15 * MINUTE },
+  // Keyed by IP: the page-view count. A person opens a page every few seconds at most; a script would be inflating the numbers.
+  visitIp: { name: "visit-ip", limit: 120, windowMs: 15 * MINUTE },
   // Keyed by user id: collecting stamps. Walkers stamp a handful of places an hour; this stops a script.
   stampUser: { name: "stamp-user", limit: 30, windowMs: 15 * MINUTE },
   // Keyed by IP: stamps for visitors without an account (guest/). Looser than one account's, since a walking group can share an address.

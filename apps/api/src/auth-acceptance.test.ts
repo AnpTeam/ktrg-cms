@@ -21,6 +21,7 @@ import { createMemoryRallyAdminStore } from "./rallies/rally-admin-memory-store"
 import { createMemoryStampStore } from "./stamps/stamp-memory-store";
 import { createMemoryNoticeStore } from "./notices/notice-memory-store";
 import { createMemoryPostStore } from "./posts/post-list";
+import { createMemoryVisitStore } from "./visits/visits";
 import { createMemorySiteSettingsStore } from "./site-settings/site-settings";
 import { createMemoryPlaceStore } from "./places/place-directory";
 import { createMemoryAuthorStore } from "./posts/author-list";
@@ -101,6 +102,7 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       authors: createMemoryAuthorStore(audit.writer).store,
       places: createMemoryPlaceStore(audit.writer).store,
       siteSettings: createMemorySiteSettingsStore(audit.writer),
+      visits: createMemoryVisitStore(),
       auditList: memoryReader(new Map()),
       placeList: memoryReader(new Map()),
       userList: createMemoryUserListStore(audit.writer).store,
@@ -358,6 +360,8 @@ describe("user B cannot touch user A", () => {
     // The site-wide settings visitors read: the map style (see site-settings/site-settings.test.ts).
     "GET /api/v1/settings",
     "GET /api/v1/pages/:key",
+    // One page view, counted by approximate region only (see visits/visits.test.ts).
+    "POST /api/v1/visits",
     "POST /api/v1/auth/otp/request",
     "POST /api/v1/auth/otp/verify",
     "POST /api/v1/auth/logout",
