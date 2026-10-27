@@ -524,9 +524,15 @@ msgstr "GPXファイルに道すじはありませんでした。名前のつい
 msgid "GPXファイルをここで離すと、読み込みます"
 msgstr "GPXファイルをここで離すと、読み込みます"
 
-#: src/components/GpxDownload.tsx:13
+#: src/components/PrintShare.tsx:40
+#: src/components/PrintShare.tsx:40
 msgid "GPXファイルをダウンロード"
 msgstr "GPXファイルをダウンロード"
+
+#: src/components/PrintShare.tsx:44
+#: src/components/PrintShare.tsx:44
+msgid "GPXファイルをダウンロード（ログインが必要です）"
+msgstr "GPXファイルをダウンロード（ログインが必要です）"
 
 #: src/components/admin/map-editor/MapEditor.tsx:648
 msgid "GPXファイルを読み込み、経由地ごとの区間に分けました（最初の経由地より前と、最後の経由地より後は入りません）。形を確かめてから、保存してください。"
@@ -986,7 +992,7 @@ msgid "コース定数 ＝ 1.8 × 時間（h） ＋ 0.3 × 距離（km） ＋ 10
 msgstr "コース定数 ＝ 1.8 × 時間（h） ＋ 0.3 × 距離（km） ＋ 10 × 登り（km） ＋ 0.6 × 下り（km）"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:62
+#: src/app/(public)/routes/[id]/page.tsx:60
 #: src/components/admin/LivePreview.tsx:72
 #: src/components/RouteJourney.tsx:34
 #: src/components/RouteJourney.tsx:96
@@ -1129,7 +1135,7 @@ msgstr "このルートがまだありません"
 msgid "このルートに追加"
 msgstr "このルートに追加"
 
-#: src/app/(public)/routes/[id]/page.tsx:52
+#: src/app/(public)/routes/[id]/page.tsx:50
 msgid "このルートのお知らせをフィードで受け取る"
 msgstr "このルートのお知らせをフィードで受け取る"
 
@@ -1479,7 +1485,7 @@ msgid "すぐ{turnWord}"
 msgstr "すぐ{turnWord}"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:62
+#: src/app/(public)/routes/[id]/page.tsx:60
 #: src/components/admin/LivePreview.tsx:72
 #: src/components/RouteJourney.tsx:31
 #: src/components/RouteJourney.tsx:92
@@ -1640,7 +1646,7 @@ msgid "スタンプ場所 {spotCount}か所"
 msgstr "スタンプ場所 {spotCount}か所"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:62
+#: src/app/(public)/routes/[id]/page.tsx:60
 #: src/components/admin/LivePreview.tsx:72
 msgid "スタンプ済み"
 msgstr "スタンプ済み"
@@ -1975,8 +1981,8 @@ msgstr "ふつうの大きさです。"
 msgid "ブックマーク"
 msgstr "ブックマーク"
 
-#: src/components/PrintShare.tsx:44
-#: src/components/PrintShare.tsx:45
+#: src/components/PrintShare.tsx:56
+#: src/components/PrintShare.tsx:57
 #: src/components/RallyBookmark.tsx:20
 msgid "ブックマークする"
 msgstr "ブックマークする"
@@ -1985,8 +1991,8 @@ msgstr "ブックマークする"
 msgid "ブックマークは、まだありません。"
 msgstr "ブックマークは、まだありません。"
 
-#: src/components/PrintShare.tsx:44
-#: src/components/PrintShare.tsx:45
+#: src/components/PrintShare.tsx:56
+#: src/components/PrintShare.tsx:57
 msgid "ブックマークをはずす"
 msgstr "ブックマークをはずす"
 
@@ -2539,7 +2545,7 @@ msgstr "リンクは [表示する文字](https://…) の形で書けます（�
 msgid "リンクをコピー"
 msgstr "リンクをコピー"
 
-#: src/components/PrintShare.tsx:38
+#: src/components/PrintShare.tsx:50
 msgid "リンクをコピーしました"
 msgstr "リンクをコピーしました"
 
@@ -2670,7 +2676,7 @@ msgid "ルートを読み込めませんでした。しばらくしてから、�
 msgstr "ルートを読み込めませんでした。しばらくしてから、ページを開き直してください。"
 
 #: src/app/(public)/grading/page.tsx:39
-#: src/app/(public)/routes/[id]/page.tsx:42
+#: src/app/(public)/routes/[id]/page.tsx:41
 msgid "ルート一覧"
 msgstr "ルート一覧"
 
@@ -2709,10 +2715,6 @@ msgstr "ログインが切れたようです。ログインしなおしてくだ
 #: src/components/StampHere.tsx:131
 msgid "ログインする"
 msgstr "ログインする"
-
-#: src/components/GpxDownload.tsx:17
-msgid "ログインすると、GPXファイルをダウンロードできます"
-msgstr "ログインすると、GPXファイルをダウンロードできます"
 
 #: src/components/useErrorMessages.ts:27
 msgid "ログインできませんでした。この端末にパスキーがないときは、メールでログインしてください。"
@@ -3256,8 +3258,8 @@ msgstr "公開前のチェック"
 msgid "公開前の経由地も、ここには表示されます。"
 msgstr "公開前の経由地も、ここには表示されます。"
 
-#: src/components/PrintShare.tsx:34
-#: src/components/PrintShare.tsx:34
+#: src/components/PrintShare.tsx:35
+#: src/components/PrintShare.tsx:35
 msgid "共有"
 msgstr "共有"
 
@@ -3654,8 +3656,8 @@ msgstr "南東"
 msgid "南西"
 msgstr "南西"
 
-#: src/components/PrintShare.tsx:31
-#: src/components/PrintShare.tsx:31
+#: src/components/PrintShare.tsx:32
+#: src/components/PrintShare.tsx:32
 msgid "印刷・PDF"
 msgstr "印刷・PDF"
 
@@ -5796,7 +5798,7 @@ msgid "閉店・撤去"
 msgstr "閉店・撤去"
 
 #: src/app/(public)/map/page.tsx:192
-#: src/app/(public)/routes/[id]/page.tsx:62
+#: src/app/(public)/routes/[id]/page.tsx:60
 #: src/components/admin/LivePreview.tsx:72
 #: src/components/StatusWord.tsx:13
 msgid "閉鎖中"

@@ -1,13 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
-import { BookmarkIcon, PrintIcon, ShareIcon } from "./icons";
+import { BookmarkIcon, DownloadIcon, PrintIcon, ShareIcon } from "./icons";
 import { useBookmarks } from "./useBookmarks";
 
-// Print (the browser can save it as a PDF), share and bookmark the page, as icon buttons. Bookmark sits at the far
-// end of the row. The layout hides its menus when printing.
-export function PrintShare({ route }: { route: { id: string; nameJa: string } }) {
+// Print (the browser can save it as a PDF), share, download the route as GPX and bookmark the page, as icon buttons. Bookmark sits at the far
+// end of the row. `gpx` is given only when the route has a checked line: signed in it saves the file; signed out the same icon leads to sign-in and back. The layout hides its menus when printing.
+export function PrintShare({ route, gpx }: { route: { id: string; nameJa: string }; gpx?: { signedIn: boolean } }) {
   const { t } = useLingui();
   const { list, toggle } = useBookmarks();
   const [copied, setCopied] = useState(false);
@@ -34,6 +35,17 @@ export function PrintShare({ route }: { route: { id: string; nameJa: string } })
       <button type="button" className={button} aria-label={t`共有`} title={t`共有`} onClick={share}>
         <ShareIcon />
       </button>
+      {gpx ? (
+        gpx.signedIn ? (
+          <a href={`/api/v1/routes/${encodeURIComponent(route.id)}/gpx`} download className={button} aria-label={t`GPXファイルをダウンロード`} title={t`GPXファイルをダウンロード`}>
+            <DownloadIcon />
+          </a>
+        ) : (
+          <Link href={`/login?next=${encodeURIComponent(`/routes/${route.id}`)}`} className={button} aria-label={t`GPXファイルをダウンロード（ログインが必要です）`} title={t`GPXファイルをダウンロード（ログインが必要です）`}>
+            <DownloadIcon />
+          </Link>
+        )
+      ) : null}
       <span role="status" className="text-base font-bold text-muted">
         {copied ? t`リンクをコピーしました` : ""}
       </span>
