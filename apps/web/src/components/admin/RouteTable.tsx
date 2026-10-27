@@ -7,22 +7,30 @@ import { useErrorMessages } from "@/components/useErrorMessages";
 import { api } from "@/lib/api";
 import { outcome } from "@/lib/admin/admin-client";
 import { checklist, factsFromSummary, progress } from "@/lib/admin/checklist";
+import { nextSort, sortBy, type Sort } from "@/lib/admin/lists/sort";
 import { filterRoutes, moveId, routeState, type RouteState } from "@/lib/admin/route-list";
+import { Chip } from "./Chip";
+import { FilterGroup, MoveButtons, OrderBadge, SortHeader } from "./list-parts";
 import { RouteImport } from "./RouteImport";
 import { useChecklistLabels } from "./useChecklistLabels";
 import type { AdminRouteSummary, Prefecture } from "@/lib/admin/types";
 import { formatUpdated } from "@/lib/format";
 
 const PREFECTURES: Prefecture[] = ["osaka", "wakayama", "nara"];
+const STATES: RouteState[] = ["published", "draft", "soon"];
 
-// The list of routes in walking order: search, narrow by prefecture, move a route earlier or later, open one.
+// The list of routes in walking order, as a table (a card per route on a phone): search, narrow by prefecture and state,
+// sort by a column, move a route earlier or later, open one. Moving is only possible in the walking order itself, so it is
+// off while a filter or a sort is on.
 export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; locale: string }) {
   const { t } = useLingui();
   const messages = useErrorMessages();
   const [routes, setRoutes] = useState(initial);
   const [query, setQuery] = useState("");
   const [prefecture, setPrefecture] = useState<Prefecture | null>(null);
+  const [state, setState] = useState<RouteState | null>(null);
   const [needsWorkOnly, setNeedsWorkOnly] = useState(false);
+  const [sort, setSort] = useState<Sort>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const labels = useChecklistLabels();
@@ -32,11 +40,28 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
   const items = useMemo(() => new Map(routes.map((r) => [r.id, checklist(factsFromSummary(r))])), [routes]);
   const needsWork = (id: string) => progress(items.get(id) ?? []).needsWork;
   const needsWorkCount = routes.filter((r) => needsWork(r.id)).length;
-  const shown = useMemo(
-    () => filterRoutes(routes, query, prefecture).filter((r) => !needsWorkOnly || progress(items.get(r.id) ?? []).needsWork),
-    [routes, query, prefecture, needsWorkOnly, items],
+  const name = (r: AdminRouteSummary) => (locale === "en" && r.nameEn ? r.nameEn : r.nameJa);
+  const order = useMemo(() => new Map(routes.map((r, i) => [r.id, i + 1])), [routes]);
+
+  const filtered = useMemo(
+    () => filterRoutes(routes, query, prefecture).filter((r) => (state === null || routeState(r) === state) && (!needsWorkOnly || progress(items.get(r.id) ?? []).needsWork)),
+    [routes, query, prefecture, state, needsWorkOnly, items],
   );
-  const filtering = query.trim() !== "" || prefecture !== null || needsWorkOnly;
+  const shown = useMemo(() => {
+    if (sort === null) return filtered;
+    const value: Record<string, (r: AdminRouteSummary) => string | number | null> = {
+      order: (r) => order.get(r.id) ?? null,
+      name: (r) => name(r),
+      prefecture: (r) => (r.prefecture ? prefName[r.prefecture] : null),
+      state: (r) => STATES.indexOf(routeState(r)),
+      spots: (r) => r.publishedSpotCount,
+      updated: (r) => r.updatedAt,
+    };
+    return sortBy(filtered, sort.dir, value[sort.key] ?? (() => null), locale);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- name and prefName only read the locale
+  }, [filtered, sort, order, locale]);
+  const filtering = query.trim() !== "" || prefecture !== null || state !== null || needsWorkOnly;
+  const canMove = !filtering && sort === null;
 
   async function move(id: string, step: -1 | 1) {
     if (busy) return;
@@ -54,41 +79,41 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
     setBusy(false);
   }
 
+  const missing = (r: AdminRouteSummary) =>
+    (items.get(r.id) ?? [])
+      .filter((i) => !i.done)
+      .map((i) => (
+        <li key={i.id}>
+          <Link href={`/admin/routes/${r.id}?tab=${i.tab}`} className={`inline-flex items-center rounded-md px-3 py-1 text-base ${i.required ? "bg-danger font-bold text-white" : "bg-surface text-ink"}`}>
+            {i.required ? t`必要：${labels.item[i.id]}` : t`あるとよい：${labels.item[i.id]}`}
+          </Link>
+        </li>
+      ));
+  const stateChip = (r: AdminRouteSummary) => <Chip tone={routeState(r) === "published" ? "good" : "neutral"}>{stateLabel[routeState(r)]}</Chip>;
+  const onSort = (key: string) => setSort(nextSort(sort, key));
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-end gap-3">
         <label className="flex min-w-60 flex-1 flex-col gap-1 text-base font-bold">
           {t`ルートをさがす`}
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={t`名前の一部を入力`}
-            className="tap-target rounded-xl border-2 border-line bg-paper px-4 text-lg font-normal"
-          />
-        </label>
-        <label className="flex flex-col gap-1 text-base font-bold">
-          {t`都道府県`}
-          <select
-            value={prefecture ?? ""}
-            onChange={(e) => setPrefecture((e.target.value || null) as Prefecture | null)}
-            className="tap-target rounded-xl border-2 border-line bg-paper px-3 text-lg font-normal"
-          >
-            <option value="">{t`すべて`}</option>
-            {PREFECTURES.map((p) => (
-              <option key={p} value={p}>
-                {prefName[p]}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="tap-target flex items-center gap-2 text-base font-bold">
-          <input type="checkbox" checked={needsWorkOnly} onChange={(e) => setNeedsWorkOnly(e.target.checked)} className="size-6" />
-          {t`手直しが必要なルートだけ（${needsWorkCount}）`}
+          <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`名前の一部を入力`} className="tap-target rounded-xl border-2 border-line bg-paper px-4 text-lg font-normal" />
         </label>
         <Link href="/admin/routes/new" className="tap-target inline-flex items-center rounded-xl bg-ink px-5 text-lg font-bold text-paper">
           {t`新しいルート`}
         </Link>
+      </div>
+      <div className="flex flex-col gap-3 rounded-2xl bg-surface p-3">
+        <FilterGroup label={t`都道府県`} options={PREFECTURES.map((p) => ({ value: p, text: prefName[p] }))} value={prefecture ?? ""} onChange={(v) => setPrefecture((v || null) as Prefecture | null)} />
+        <FilterGroup label={t`状態`} options={STATES.map((s) => ({ value: s, text: stateLabel[s] }))} value={state ?? ""} onChange={(v) => setState((v || null) as RouteState | null)} />
+        <button
+          type="button"
+          aria-pressed={needsWorkOnly}
+          onClick={() => setNeedsWorkOnly(!needsWorkOnly)}
+          className={`tap-target w-fit rounded-full border-2 px-4 text-base font-bold ${needsWorkOnly ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink"}`}
+        >
+          {t`手直しが必要なルートだけ（${needsWorkCount}）`}
+        </button>
       </div>
 
       <RouteImport routes={routes} onImported={setRoutes} />
@@ -104,69 +129,92 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
       ) : shown.length === 0 ? (
         <p className="rounded-2xl bg-surface p-6 text-lg">{t`条件に合うルートがありません。`}</p>
       ) : (
-        <ol className="flex flex-col divide-y divide-line rounded-2xl border border-line">
-          {shown.map((r) => {
-            const index = routes.findIndex((x) => x.id === r.id);
-            const name = locale === "en" && r.nameEn ? r.nameEn : r.nameJa;
-            return (
-              <li key={r.id} className="flex flex-wrap items-center gap-3 p-3 sm:flex-nowrap">
-                <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand text-lg font-bold text-on-brand">
-                  {index + 1}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <Link href={`/admin/routes/${r.id}`} className="text-xl font-bold text-accent underline underline-offset-4">
-                    {name}
-                  </Link>
-                  <p className="text-base text-muted">
-                    {r.prefecture ? prefName[r.prefecture] : t`都道府県が未入力`}
-                    {" ・ "}
-                    {stateLabel[routeState(r)]}
-                    {" ・ "}
-                    {t`スタンプの経由地 ${r.publishedSpotCount} / ${r.spotCount}`}
-                    {" ・ "}
-                    {t`更新 ${formatUpdated(locale, r.updatedAt)}`}
-                  </p>
-                  <ul className="mt-1 flex flex-wrap gap-1.5" aria-label={t`足りないもの`}>
-                    {(items.get(r.id) ?? [])
-                      .filter((i) => !i.done)
-                      .map((i) => (
-                        <li key={i.id}>
-                          <Link
-                            href={`/admin/routes/${r.id}?tab=${i.tab}`}
-                            className={`inline-flex items-center rounded-md px-3 py-1 text-base ${i.required ? "bg-danger font-bold text-white" : "bg-surface text-ink"}`}
-                          >
-                            {i.required ? t`必要：${labels.item[i.id]}` : t`あるとよい：${labels.item[i.id]}`}
-                          </Link>
-                        </li>
-                      ))}
+        <>
+          <p className="text-base font-bold text-muted" aria-live="polite">
+            {t`${shown.length}件`}
+          </p>
+          <div className="hidden overflow-x-auto rounded-2xl border border-line md:block">
+            <table className="w-full border-collapse text-left">
+              <thead className="bg-surface text-base">
+                <tr>
+                  <SortHeader label={t`順`} sortKey="order" sort={sort} onSort={onSort} />
+                  <SortHeader label={t`名前`} sortKey="name" sort={sort} onSort={onSort} />
+                  <SortHeader label={t`都道府県`} sortKey="prefecture" sort={sort} onSort={onSort} />
+                  <SortHeader label={t`状態`} sortKey="state" sort={sort} onSort={onSort} />
+                  <SortHeader label={t`公開中の経由地`} sortKey="spots" sort={sort} onSort={onSort} />
+                  <th scope="col" className="p-3 font-bold">
+                    {t`足りないもの`}
+                  </th>
+                  <SortHeader label={t`更新`} sortKey="updated" sort={sort} onSort={onSort} />
+                  <th scope="col" className="w-40 p-3">
+                    <span className="sr-only">{t`並べ替え`}</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {shown.map((r) => {
+                  const index = order.get(r.id)! - 1;
+                  return (
+                    <tr key={r.id} className="align-top hover:bg-surface/60">
+                      <td className="p-3">
+                        <OrderBadge n={index + 1} />
+                      </td>
+                      <td className="max-w-72 p-3">
+                        <Link href={`/admin/routes/${r.id}`} className="break-words text-lg font-bold text-accent underline underline-offset-4">
+                          {name(r)}
+                        </Link>
+                      </td>
+                      <td className="p-3 text-lg">{r.prefecture ? prefName[r.prefecture] : <span className="text-muted">{t`未入力`}</span>}</td>
+                      <td className="p-3">{stateChip(r)}</td>
+                      <td className="p-3 text-lg tabular-nums">
+                        {r.publishedSpotCount} / {r.spotCount}
+                      </td>
+                      <td className="p-3">
+                        <ul className="flex flex-wrap gap-1.5" aria-label={t`足りないもの`}>
+                          {missing(r)}
+                        </ul>
+                      </td>
+                      <td className="p-3 text-base text-muted">{formatUpdated(locale, r.updatedAt)}</td>
+                      <td className="p-3">
+                        <MoveButtons name={name(r)} canEarlier={canMove && index > 0} canLater={canMove && index < routes.length - 1} onMove={(step) => void move(r.id, step)} busy={busy} />
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <ol className="flex flex-col divide-y divide-line rounded-2xl border border-line md:hidden">
+            {shown.map((r) => {
+              const index = order.get(r.id)! - 1;
+              return (
+                <li key={r.id} className="flex flex-col gap-2 p-3">
+                  <div className="flex items-center gap-3">
+                    <OrderBadge n={index + 1} />
+                    <Link href={`/admin/routes/${r.id}`} className="min-w-0 flex-1 break-words text-xl font-bold text-accent underline underline-offset-4">
+                      {name(r)}
+                    </Link>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                    {stateChip(r)}
+                    <span className="text-base">{r.prefecture ? prefName[r.prefecture] : t`都道府県が未入力`}</span>
+                    <span className="text-base">
+                      <span className="text-muted">{t`公開中の経由地`}: </span>
+                      {r.publishedSpotCount} / {r.spotCount}
+                    </span>
+                    <span className="text-base text-muted">{t`更新 ${formatUpdated(locale, r.updatedAt)}`}</span>
+                  </div>
+                  <ul className="flex flex-wrap gap-1.5" aria-label={t`足りないもの`}>
+                    {missing(r)}
                   </ul>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    disabled={busy || filtering || index === 0}
-                    onClick={() => move(r.id, -1)}
-                    aria-label={t`${name} を1つ前へ`}
-                    className="tap-target min-w-14 rounded-xl border-2 border-line px-3 text-base font-bold disabled:opacity-40"
-                  >
-                    {t`前へ`}
-                  </button>
-                  <button
-                    type="button"
-                    disabled={busy || filtering || index === routes.length - 1}
-                    onClick={() => move(r.id, 1)}
-                    aria-label={t`${name} を1つ後ろへ`}
-                    className="tap-target min-w-14 rounded-xl border-2 border-line px-3 text-base font-bold disabled:opacity-40"
-                  >
-                    {t`後ろへ`}
-                  </button>
-                </div>
-              </li>
-            );
-          })}
-        </ol>
+                  <MoveButtons name={name(r)} canEarlier={canMove && index > 0} canLater={canMove && index < routes.length - 1} onMove={(step) => void move(r.id, step)} busy={busy} />
+                </li>
+              );
+            })}
+          </ol>
+        </>
       )}
-      {filtering && routes.length > 0 ? <p className="text-base text-muted">{t`並べ替えは、検索や絞り込みを外してからできます。`}</p> : null}
+      {!canMove && routes.length > 0 ? <p className="text-base text-muted">{t`並べ替えは、検索・絞り込み・並べかえを外してからできます。`}</p> : null}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { Chip } from "./Chip";
+import { FilterGroup, SortHeader } from "./list-parts";
 import { DuplicateFinder } from "./DuplicateFinder";
 import { PlaceImport } from "./PlaceImport";
 import { inputClass } from "./fields";
@@ -142,28 +143,18 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
           ) : null}
         </div>
         {shownFilters.map((f) => (
-          <div key={f.name} role="group" aria-label={pick(f.label, locale)} className="flex flex-wrap items-center gap-2">
-            <span className="text-base font-bold">{pick(f.label, locale)}</span>
-            {[{ value: "", text: t`すべて` }, ...filterChoices(f, locale)].map((o) => {
-              const on = (picked[f.name] ?? "") === o.value;
-              return (
-                <button
-                  key={o.value}
-                  type="button"
-                  aria-pressed={on}
-                  disabled={busy}
-                  onClick={() => {
-                    const next = { ...picked, [f.name]: o.value };
-                    setPicked(next);
-                    void search(q, next);
-                  }}
-                  className={`tap-target rounded-full border-2 px-4 text-base font-bold ${on ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink"}`}
-                >
-                  {o.text}
-                </button>
-              );
-            })}
-          </div>
+          <FilterGroup
+            key={f.name}
+            label={pick(f.label, locale)}
+            options={filterChoices(f, locale)}
+            value={picked[f.name] ?? ""}
+            disabled={busy}
+            onChange={(value) => {
+              const next = { ...picked, [f.name]: value };
+              setPicked(next);
+              void search(q, next);
+            }}
+          />
         ))}
         {moreFilters.length > 0 ? (
           <details className="group" open={moreFilters.some((f) => (picked[f.name] ?? "") !== "") || undefined}>
@@ -361,19 +352,4 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
 function filterChoices(f: FieldUi, locale: string): { value: string; text: string }[] {
   if (f.kind === "boolean") return [{ value: "true", text: f.inList?.yes ? pick(f.inList.yes, locale) : pick({ ja: "はい", en: "Yes" }, locale) }, { value: "false", text: f.inList?.no ? pick(f.inList.no, locale) : pick({ ja: "いいえ", en: "No" }, locale) }];
   return (f.options ?? []).map((o) => ({ value: o.value, text: pick(o.label, locale) }));
-}
-
-/** A column header that sorts when pressed; it says which way it is sorted (aria-sort and an arrow). */
-function SortHeader({ label, sortKey, sort, onSort }: { label: string; sortKey: string; sort: Sort; onSort: (key: string) => void }) {
-  const on = sort?.key === sortKey ? sort.dir : null;
-  return (
-    <th scope="col" aria-sort={on === "asc" ? "ascending" : on === "desc" ? "descending" : "none"} className="p-0 font-bold">
-      <button type="button" onClick={() => onSort(sortKey)} className="tap-target flex w-full items-center gap-1 px-3 text-left font-bold hover:bg-line/30">
-        {label}
-        <span aria-hidden="true" className={on ? "text-ink" : "text-muted"}>
-          {on === "asc" ? "↑" : on === "desc" ? "↓" : "↕"}
-        </span>
-      </button>
-    </th>
-  );
 }
