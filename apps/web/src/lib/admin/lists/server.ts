@@ -20,7 +20,8 @@ export async function listMetaOr404(key: string): Promise<ListMeta> {
   return meta;
 }
 
-export type Choice = { id: string; name: string };
+/** A row a relation field offers: its name, and a second line that tells same-named rows apart (the route it is on). */
+export type Choice = { id: string; name: string; detail?: string };
 
 // shortcut: a relation field offers at most this many rows of the other list (read 50 at a time); a list with more
 // than that needs a search-as-you-type picker instead.
@@ -49,12 +50,19 @@ async function choicesOf(target: string, locale: string): Promise<Choice[]> {
   }
   const meta = (await adminLists())?.find((l) => l.key === target);
   if (!meta) return [];
+  // Waypoints and places on a route say which one, so two "公衆トイレ" can be told apart.
+  const routeNames = meta.fields.some((f) => f.name === "routeId") ? new Map((await choicesOf("routes", locale)).map((r) => [r.id, r.name])) : null;
   const out: Choice[] = [];
   let cursor: string | null = null;
   do {
     const { status, body }: { status: number; body: ({ ok: true } & ListPage) | null } = await adminGet(`/lists/${target}${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`);
     if (status !== 200 || !body?.ok) break;
-    out.push(...body.items.map((item) => ({ id: item.id, name: itemName(meta, item, locale) })));
+    out.push(
+      ...body.items.map((item) => {
+        const route = routeNames && typeof item.routeId === "string" ? routeNames.get(item.routeId) : undefined;
+        return { id: item.id, name: itemName(meta, item, locale), ...(route ? { detail: route } : {}) };
+      }),
+    );
     cursor = body.next;
   } while (cursor && out.length < MAX_RELATION_CHOICES);
   return out;

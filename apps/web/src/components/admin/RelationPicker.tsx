@@ -21,7 +21,7 @@ export function RelationPicker({
 }: {
   id: string;
   value: string;
-  choices: { id: string; name: string }[];
+  choices: { id: string; name: string; detail?: string }[];
   max: number;
   noneLabel: string;
   onChange: (id: string) => void;
@@ -47,7 +47,7 @@ export function RelationPicker({
   return (
     <div className="relative flex flex-col gap-2">
       <p className="text-base">
-        {selected ? <span className="font-bold">{selected.name}</span> : <span className="text-muted">{noneLabel}</span>}
+        {selected ? <span className="font-bold">{selected.name}{selected.detail ? <span className="font-normal text-muted">　{selected.detail}</span> : null}</span> : <span className="text-muted">{noneLabel}</span>}
         {selected ? (
           <button type="button" onClick={() => pick("")} className="ml-3 text-base font-bold text-accent underline underline-offset-4">
             {t`はずす`}
@@ -97,6 +97,7 @@ export function RelationPicker({
           {shown.map((c, i) => (
             <li key={c.id} role="option" aria-selected={c.id === value} className={`cursor-pointer px-4 py-3 text-base ${active === i + 1 ? "bg-surface" : ""} ${c.id === value ? "font-bold" : ""}`} onMouseDown={() => pick(c.id)}>
               {c.name}
+              {c.detail ? <span className="ml-3 text-muted">{c.detail}</span> : null}
             </li>
           ))}
           {matches.length === 0 ? <li className="px-4 py-3 text-base text-muted">{t`見つかりませんでした。`}</li> : null}

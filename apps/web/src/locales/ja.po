@@ -2130,7 +2130,7 @@ msgstr "ホーム画面に追加すると、アプリのようにすぐ開けま
 msgid "ほか {more} 区間"
 msgstr "ほか {more} 区間"
 
-#: src/components/admin/RelationPicker.tsx:103
+#: src/components/admin/RelationPicker.tsx:104
 msgid "ほかにもあります。もう少し入れて絞ってください。"
 msgstr "ほかにもあります。もう少し入れて絞ってください。"
 
@@ -4306,7 +4306,7 @@ msgstr "探しています…"
 msgid "探す"
 msgstr "探す"
 
-#: src/components/admin/RelationPicker.tsx:104
+#: src/components/admin/RelationPicker.tsx:105
 msgid "探せるのは、最初の{max}件までです。"
 msgstr "探せるのは、最初の{max}件までです。"
 
@@ -5402,7 +5402,7 @@ msgid "見つからない写真（その写真だけ入りません）：{0}"
 msgstr "見つからない写真（その写真だけ入りません）：{0}"
 
 #: src/components/admin/PhotoLibrary.tsx:164
-#: src/components/admin/RelationPicker.tsx:102
+#: src/components/admin/RelationPicker.tsx:103
 msgid "見つかりませんでした。"
 msgstr "見つかりませんでした。"
 
