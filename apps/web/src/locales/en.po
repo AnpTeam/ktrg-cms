@@ -379,7 +379,7 @@ msgstr "What the \"Terrain\" button adds"
 msgid "「地形」ボタンを押した状態で見る"
 msgstr "Show it as when \"Terrain\" is pressed"
 
-#: src/components/admin/AdminItemForm.tsx:274
+#: src/components/admin/AdminItemForm.tsx:281
 msgid "「必須」の欄をすべて入れると保存できます。"
 msgstr "Fill in every field marked “Required” to save."
 
@@ -1903,6 +1903,7 @@ msgid "パスキーは、顔や指紋でログインするための鍵です。�
 msgstr "A passkey lets you log in with your face or fingerprint. Add one for this device and you can log in without waiting for an email."
 
 #: src/components/admin/DirectoryPicker.tsx:147
+#: src/components/admin/RelationPicker.tsx:58
 msgid "はずす"
 msgstr "Unlink"
 
@@ -2130,6 +2131,10 @@ msgstr "Add it to your home screen to open it like an app, right away, even on t
 #: src/components/map/MapScreenCanvas.tsx:425
 msgid "ほか {more} 区間"
 msgstr "{more} more courses"
+
+#: src/components/admin/RelationPicker.tsx:108
+msgid "ほかにもあります。もう少し入れて絞ってください。"
+msgstr "There are more. Type a little more to narrow them down."
 
 #: src/components/useErrorMessages.ts:30
 msgid "ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。"
@@ -2952,7 +2957,7 @@ msgstr "About the physical and technical levels"
 msgid "作っています…"
 msgstr "Creating…"
 
-#: src/components/admin/AdminItemForm.tsx:254
+#: src/components/admin/AdminItemForm.tsx:261
 msgid "作成"
 msgstr "Create"
 
@@ -2964,7 +2969,7 @@ msgstr "No usable photos were found."
 msgid "例：山田太郎, CC BY-SA 4.0"
 msgstr "e.g. Jane Doe, CC BY-SA 4.0"
 
-#: src/components/admin/AdminItemForm.tsx:254
+#: src/components/admin/AdminItemForm.tsx:261
 #: src/components/admin/PageTextEditor.tsx:76
 msgid "保存"
 msgstr "Save"
@@ -2973,14 +2978,14 @@ msgstr "Save"
 msgid "保存していない内容も含めて調べています。"
 msgstr "This includes changes you have not saved yet."
 
-#: src/components/admin/AdminItemForm.tsx:246
+#: src/components/admin/AdminItemForm.tsx:253
 #: src/components/admin/PageTextEditor.tsx:70
 #: src/components/admin/RouteEditor.tsx:420
 msgid "保存していない変更があります"
 msgstr "You have unsaved changes"
 
-#: src/components/admin/AdminItemForm.tsx:54
-#: src/components/admin/AdminItemForm.tsx:64
+#: src/components/admin/AdminItemForm.tsx:55
+#: src/components/admin/AdminItemForm.tsx:65
 msgid "保存していない変更があります。このページを離れますか？"
 msgstr "You have unsaved changes. Leave this page?"
 
@@ -2997,11 +3002,11 @@ msgstr "Unsaved edits were kept in this browser ({offeredAt}). Restore them?"
 msgid "保存しています…"
 msgstr "Saving…"
 
-#: src/components/admin/AdminItemForm.tsx:250
+#: src/components/admin/AdminItemForm.tsx:257
 msgid "保存して次へ"
 msgstr "Save and next"
 
-#: src/components/admin/AdminItemForm.tsx:122
+#: src/components/admin/AdminItemForm.tsx:123
 #: src/components/admin/RallyEditor.tsx:66
 #: src/components/admin/RouteEditor.tsx:328
 #: src/components/ProfileSettings.tsx:172
@@ -3025,7 +3030,7 @@ msgstr "Saved. The source was empty, so the line was saved as not checked. Enter
 msgid "保存しました。ただし、未完成の経由地が{heldCount}件あり、まだ保存していません（赤く示した項目）。"
 msgstr "Saved. {heldCount} unfinished waypoint(s) were not saved yet (the red items)."
 
-#: src/components/admin/AdminItemForm.tsx:99
+#: src/components/admin/AdminItemForm.tsx:100
 msgid "保存しました。次に確認する場所はありません。"
 msgstr "Saved. No more places waiting to be checked."
 
@@ -3052,13 +3057,13 @@ msgstr "It could not be saved. Please try again."
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not save. Please try again where the signal is good."
 
-#: src/components/admin/AdminItemForm.tsx:254
+#: src/components/admin/AdminItemForm.tsx:261
 #: src/components/admin/PageTextEditor.tsx:76
 #: src/components/admin/RouteEditor.tsx:423
 msgid "保存中…"
 msgstr "Saving…"
 
-#: src/components/admin/AdminItemForm.tsx:246
+#: src/components/admin/AdminItemForm.tsx:253
 #: src/components/admin/PageTextEditor.tsx:70
 msgid "保存済み"
 msgstr "Saved"
@@ -3261,7 +3266,7 @@ msgstr "Share"
 msgid "共有する"
 msgstr "Share"
 
-#: src/components/admin/AdminItemForm.tsx:272
+#: src/components/admin/AdminItemForm.tsx:279
 msgid "内容"
 msgstr "Content"
 
@@ -3476,7 +3481,7 @@ msgid "利用規約"
 msgstr "Terms of use"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
-#: src/components/admin/AdminItemForm.tsx:278
+#: src/components/admin/AdminItemForm.tsx:285
 #: src/components/admin/AdminListTable.tsx:219
 #: src/components/admin/DuplicateFinder.tsx:85
 #: src/components/admin/fields.tsx:155
@@ -3486,7 +3491,7 @@ msgstr "Terms of use"
 msgid "削除"
 msgstr "Delete"
 
-#: src/components/admin/AdminItemForm.tsx:280
+#: src/components/admin/AdminItemForm.tsx:287
 msgid "削除する"
 msgstr "Delete"
 
@@ -3764,6 +3769,10 @@ msgstr "Found {0} named points. Add them as waypoints?"
 #: src/components/admin/RouteEditor.tsx:409
 msgid "名前のない経由地"
 msgstr "Unnamed waypoint"
+
+#: src/components/admin/RelationPicker.tsx:72
+msgid "名前の一部を入れて探す"
+msgstr "Type part of a name to search"
 
 #: src/components/admin/RouteTable.tsx:66
 msgid "名前の一部を入力"
@@ -4297,6 +4306,10 @@ msgstr "Searching…"
 #: src/components/admin/map-editor/MapEditor.tsx:1021
 msgid "探す"
 msgstr "Search"
+
+#: src/components/admin/RelationPicker.tsx:109
+msgid "探せるのは、最初の{max}件までです。"
+msgstr "Only the first {max} can be searched."
 
 #: src/components/admin/map-editor/MapEditor.tsx:933
 msgid "描いた線を、地図の道に沿わせます"
@@ -5390,6 +5403,7 @@ msgid "見つからない写真（その写真だけ入りません）：{0}"
 msgstr "Photos not found (only those photos are left out): {0}"
 
 #: src/components/admin/PhotoLibrary.tsx:164
+#: src/components/admin/RelationPicker.tsx:107
 msgid "見つかりませんでした。"
 msgstr "Nothing found."
 
@@ -5759,7 +5773,7 @@ msgstr "Find duplicate places"
 msgid "長さ"
 msgstr "Length"
 
-#: src/components/admin/AdminItemForm.tsx:266
+#: src/components/admin/AdminItemForm.tsx:273
 #: src/components/admin/map-editor/MapEditor.tsx:1039
 #: src/components/admin/PageTextEditor.tsx:86
 #: src/components/admin/PhotoLibrary.tsx:124

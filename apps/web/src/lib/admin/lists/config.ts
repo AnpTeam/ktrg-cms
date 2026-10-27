@@ -72,3 +72,6 @@ export function itemFacts(meta: ListMeta, item: ListItem, locale: string, routeN
     return [show.text ? pick(show.text, locale).replace("{value}", text) : text];
   });
 }
+
+/** How many rows of another list a relation field offers to pick from (the page loads that many; the picker says so when it is reached). */
+export const MAX_RELATION_CHOICES = 500;
