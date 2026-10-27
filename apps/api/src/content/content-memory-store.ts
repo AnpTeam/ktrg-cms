@@ -10,6 +10,7 @@ import type { ContentStore, RouteRow, RouteSummaryRow, SpotFields, SpotRow, Stor
 export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () => Date } = {}) {
   const now = opts.now ?? (() => new Date());
   const routes = new Map<string, RouteRow>();
+  const videoOld = new Map<string, string[]>(); // route id -> video links it had, newest first
   const spots = new Map<string, SpotRow>();
   /** place id -> the rallies of places that list it (rally_spots). */
   const placeRallies = new Map<string, Set<string>>();
@@ -61,6 +62,7 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       const cur = routes.get(id);
       if (!cur) return null;
       if (cur.updatedAt.getTime() !== expected.getTime()) return "conflict";
+      if (changes.videoUrl !== undefined && cur.videoUrl && changes.videoUrl !== cur.videoUrl) videoOld.set(id, [cur.videoUrl, ...(videoOld.get(id) ?? [])]);
       const next: RouteRow = { ...cur, ...changes, translations: mergeTranslations(cur.translations, changes.translations), updatedAt: stampTime() };
       routes.set(id, next);
       await audit.record({ actorUserId: actor, action: "route.update", targetId: id });
@@ -118,6 +120,9 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       return next;
     },
     // The in-memory audit writer keeps its rows to itself, so the history is empty here (the real store is tested on PostgreSQL).
+    async videoHistory(routeId, limit) {
+      return [...new Set(videoOld.get(routeId) ?? [])].slice(0, limit);
+    },
     async routeHistory() {
       return [];
     },

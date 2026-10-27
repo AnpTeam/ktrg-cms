@@ -39,6 +39,25 @@ describe("photo hosts and distance", () => {
     expect((await svc.createRoute(ADMIN, { nameJa: "甲山", photoUrl: "https://elsewhere.example/a.jpg" })).ok).toBe(true);
   });
 
+  test("a video link that is replaced or removed is kept in the route's video history, newest first, each once", async () => {
+    const r = await route();
+    const A = "https://www.youtube.com/watch?v=aaaaaaaaaaa";
+    const B = "https://www.youtube.com/watch?v=bbbbbbbbbbb";
+    const set = async (url: string | null) => {
+      const cur = await svc.getRoute(r.id);
+      if (!cur) throw new Error("no route");
+      const res = await svc.updateRoute(ADMIN, r.id, cur.route.updatedAt, { videoUrl: url });
+      expect(res.ok).toBe(true);
+    };
+    expect(await svc.videoHistory(r.id)).toEqual([]);
+    await set(A); // the first link replaces nothing
+    expect(await svc.videoHistory(r.id)).toEqual([]);
+    await set(B);
+    await set(A);
+    await set(null);
+    expect(await svc.videoHistory(r.id)).toEqual([A, B]);
+  });
+
   test("with PHOTO_HOSTS set, Wikimedia photos are accepted too, for the main photo and the video; other hosts are not", async () => {
     const limited = createContentService({ store: mem.store, photoHosts: ["photos.example.com"] });
     const made = await limited.createRoute(ADMIN, { nameJa: "甲山", photoUrl: "https://upload.wikimedia.org/wikipedia/commons/a/ab/Koyama.jpg" });

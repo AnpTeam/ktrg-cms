@@ -271,6 +271,11 @@ export function adminContentRoutes(getServices: () => ContentServices, opts: Rou
       async ({ params }) => ({ ok: true as const, history: (await svc().routeHistory(params.id)).map((h) => ({ ...h, createdAt: h.createdAt.toISOString() })) }),
       { auth: "route.manage", params: idParams, detail: { summary: "What was done to a route and its places (ids only), newest first" } },
     )
+    .get(
+      "/routes/:id/video-history",
+      async ({ params }) => ({ ok: true as const, urls: await svc().videoHistory(params.id) }),
+      { auth: "route.manage", params: idParams, detail: { summary: "The video links a route had before, newest first" } },
+    )
     .post(
       "/routes/:id/unpublish-spots",
       async ({ user, params, set }) => {

@@ -373,6 +373,18 @@ export const blogAuthors = pgTable("blog_authors", {
   updatedAt: updatedAt(),
 });
 
+/** The video links a route used to have, one row each time the link is replaced or removed (newest last), so a mistake can be put back. */
+export const routeVideoHistory = pgTable(
+  "route_video_history",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    routeId: uuid("route_id").notNull().references(() => routes.id, { onDelete: "cascade" }),
+    videoUrl: text("video_url").notNull(),
+    replacedAt: timestamp("replaced_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("route_video_history_route_idx").on(t.routeId, t.replacedAt)],
+);
+
 /** A visitor's comment under a post. Held (`pending`) until a staff member approves it; `hidden` is kept but not shown. */
 export const blogComments = pgTable(
   "blog_comments",

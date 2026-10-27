@@ -196,6 +196,8 @@ export interface ContentStore {
   updateRoute(actor: string, id: string, expected: Date, changes: Partial<StoredRouteFields>): Promise<RouteRow | "conflict" | null>;
   reorderRoutes(actor: string, ids: string[]): Promise<boolean>;
   deleteRoute(actor: string, id: string): Promise<"ok" | "has_places" | "not_found">;
+  /** The video links the route had before, newest first, each once. */
+  videoHistory(routeId: string, limit: number): Promise<string[]>;
 
   /** Also adds the place to its route's course rally (never to the mound rally). */
   createSpot(actor: string, routeId: string, fields: Partial<SpotFields> & { nameJa: string }): Promise<SpotRow | null>;

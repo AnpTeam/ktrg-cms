@@ -430,6 +430,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
 
     /** The latest 50 things done to a route or its places: what, when, and by whom (an account id). */
     routeHistory: (routeId: string) => store.routeHistory(routeId, 50),
+    videoHistory: (routeId: string) => store.videoHistory(routeId, 20),
 
     /** Takes every published place of a route off the site at once; the route stays in the list as coming soon. */
     async unpublishRouteSpots(actor: string, routeId: string): Promise<Result<SpotRow[]>> {
