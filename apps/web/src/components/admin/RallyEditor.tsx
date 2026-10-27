@@ -19,12 +19,15 @@ export function RallyEditor({
   initial,
   memberIds,
   candidates,
+  otherCandidates,
   routeNames,
   locale,
 }: {
   initial: AdminRally;
   memberIds: string[];
   candidates: RallyCandidates;
+  /** What the other kind of rally could hold: offered when the way it is made is changed. */
+  otherCandidates: RallyCandidates;
   routeNames: Record<string, string>;
   locale: string;
 }) {
@@ -37,6 +40,9 @@ export function RallyEditor({
   const [ids, setIds] = useState(memberIds);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
+  const [cands, setCands] = useState({ mine: candidates, other: otherCandidates });
+  const [switching, setSwitching] = useState(false);
+  const [newIds, setNewIds] = useState<string[]>([]);
 
   const changes = nameChanges(saved, names);
   const namesChanged = Object.keys(changes).length > 0;
@@ -79,6 +85,22 @@ export function RallyEditor({
         ? await outcome(one().places.put({ updatedAt: saved.updatedAt, spotIds: ids }))
         : await outcome(one().courses.put({ updatedAt: saved.updatedAt, routeIds: ids }));
     if (finish(asResult(res), t`ラリーの中身を保存しました。`)) setSavedIds(ids);
+  }
+
+  /** The other way of making it: the old members go, the ticked ones come in, in one step. Visitors' finishes stay. */
+  async function changeKind() {
+    const to = cands.other.kind;
+    const unfinished = saved.completionCount > 0 ? t`達成した ${saved.completionCount} 人の記録は残ります。` : "";
+    if (!window.confirm(t`つくり方を変えます。いまの中身は外れ、えらんだものが入ります。${unfinished}よろしいですか？`)) return;
+    start();
+    const res = await outcome(one().kind.put({ updatedAt: saved.updatedAt, kind: to, ...(to === "places" ? { spotIds: newIds } : { routeIds: newIds }) }));
+    if (finish(asResult(res), t`つくり方を変えました。`)) {
+      setCands({ mine: cands.other, other: cands.mine });
+      setSavedIds(newIds);
+      setIds(newIds);
+      setNewIds([]);
+      setSwitching(false);
+    }
   }
 
   async function remove() {
@@ -139,11 +161,45 @@ export function RallyEditor({
       </Section>
 
       <Section title={saved.kind === "places" ? t`ラリーに入る経由地` : t`ラリーに入るコース`}>
-        <RallyMemberPicker candidates={candidates} selected={ids} onChange={setIds} routeNames={routeNames} locale={locale} disabled={busy} />
+        <RallyMemberPicker candidates={cands.mine} selected={ids} onChange={setIds} routeNames={routeNames} locale={locale} disabled={busy} />
         <button type="button" onClick={saveMembers} disabled={busy || !membersChanged} className="tap-target w-fit rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50">
           {t`ラリーの中身を保存`}
         </button>
         <p className="text-base text-muted">{t`下書きの経由地は、公開されるまで数に入りません。スタンプの記録は変わりません。`}</p>
+      </Section>
+
+      <Section title={t`つくり方`}>
+        <p className="text-base">{saved.kind === "places" ? t`いまは「経由地でつくる」です。` : t`いまは「コースでつくる」です。`}</p>
+        {switching ? (
+          <div className="flex flex-col gap-4">
+            <p className="text-base text-muted">
+              {cands.other.kind === "course"
+                ? t`「コースでつくる」に変えます。えらんだコースを全部歩き終えると達成になります。いまの経由地は外れるので、入れるコースをえらんでください。`
+                : t`「経由地でつくる」に変えます。えらんだ経由地のスタンプを全部押すと達成になります。いまのコースは外れるので、入れる経由地をえらんでください。`}
+            </p>
+            <RallyMemberPicker candidates={cands.other} selected={newIds} onChange={setNewIds} routeNames={routeNames} locale={locale} disabled={busy} />
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={changeKind}
+                disabled={busy || namesChanged || membersChanged || (saved.published && newIds.length === 0)}
+                className="tap-target rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50"
+              >
+                {t`つくり方を変える`}
+              </button>
+              <button type="button" onClick={() => { setSwitching(false); setNewIds([]); }} disabled={busy} className="tap-target rounded-xl border-2 border-line px-6 text-lg font-bold disabled:opacity-50">
+                {t`やめる`}
+              </button>
+            </div>
+            {namesChanged || membersChanged ? <p className="text-base text-muted">{t`保存していない変更があります。先に保存してください。`}</p> : null}
+            {saved.published && newIds.length === 0 ? <p className="text-base text-muted">{t`公開中のラリーは、からにできません。1つ以上えらんでください。`}</p> : null}
+          </div>
+        ) : (
+          <button type="button" onClick={() => setSwitching(true)} disabled={busy} className="tap-target w-fit rounded-xl border-2 border-line px-6 text-lg font-bold disabled:opacity-50">
+            {t`つくり方を変える…`}
+          </button>
+        )}
+        <p className="text-base text-muted">{t`達成した人の記録は残ります。スタンプは変わりません。`}</p>
       </Section>
 
       <Section title={t`削除`}>

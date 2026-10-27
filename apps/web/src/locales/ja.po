@@ -398,6 +398,10 @@ msgstr "「{stopName}」から近い順"
 msgid "「## 」で始まる行は、見出しです（よくあるご質問では質問、遊び方では手順の名前）。その下に、本文を書きます。"
 msgstr "「## 」で始まる行は、見出しです（よくあるご質問では質問、遊び方では手順の名前）。その下に、本文を書きます。"
 
+#: src/components/admin/RallyEditor.tsx:177
+msgid "「コースでつくる」に変えます。えらんだコースを全部歩き終えると達成になります。いまの経由地は外れるので、入れるコースをえらんでください。"
+msgstr "「コースでつくる」に変えます。えらんだコースを全部歩き終えると達成になります。いまの経由地は外れるので、入れるコースをえらんでください。"
+
 #: src/components/admin/RouteEditor.tsx:579
 msgid "「スタート・ゴール」の見せ方が変わります。"
 msgstr "「スタート・ゴール」の見せ方が変わります。"
@@ -439,6 +443,10 @@ msgstr "「祈り」を見つめる再発見の旅"
 #: src/components/admin/RouteImport.tsx:75
 msgid "「経由地」シート {0} 行目"
 msgstr "「経由地」シート {0} 行目"
+
+#: src/components/admin/RallyEditor.tsx:178
+msgid "「経由地でつくる」に変えます。えらんだ経由地のスタンプを全部押すと達成になります。いまのコースは外れるので、入れる経由地をえらんでください。"
+msgstr "「経由地でつくる」に変えます。えらんだ経由地のスタンプを全部押すと達成になります。いまのコースは外れるので、入れる経由地をえらんでください。"
 
 #: src/components/admin/map-editor/MapEditor.tsx:823
 msgid "【サブコース】"
@@ -705,7 +713,7 @@ msgstr "アカウント設定"
 msgid "アクセス"
 msgstr "アクセス"
 
-#: src/components/admin/RouteEditor.tsx:603
+#: src/components/admin/RouteEditor.tsx:652
 #: src/components/admin/useChecklistLabels.ts:18
 #: src/components/map/MapScreen.tsx:432
 #: src/components/RouteView.tsx:189
@@ -874,6 +882,14 @@ msgstr "いまは、ここでスタンプを押せません。"
 #: src/components/settings/LoginMethods.tsx:48
 msgid "いまは、パスキーだけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
 msgstr "いまは、パスキーだけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
+
+#: src/components/admin/RallyEditor.tsx:172
+msgid "いまは「コースでつくる」です。"
+msgstr "いまは「コースでつくる」です。"
+
+#: src/components/admin/RallyEditor.tsx:172
+msgid "いまは「経由地でつくる」です。"
+msgstr "いまは「経由地でつくる」です。"
 
 #: src/components/SampleNotice.tsx:54
 msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
@@ -1053,7 +1069,7 @@ msgstr "コース {0}"
 msgid "コース{order}"
 msgstr "コース{order}"
 
-#: src/components/admin/RallyEditor.tsx:98
+#: src/components/admin/RallyEditor.tsx:120
 msgid "コースでつくったラリー：えらんだコースを全部終えると達成。"
 msgstr "コースでつくったラリー：えらんだコースを全部終えると達成。"
 
@@ -1197,16 +1213,16 @@ msgstr "このラリーのページを開く"
 msgid "このラリーは、いまは行われていません。"
 msgstr "このラリーは、いまは行われていません。"
 
-#: src/components/admin/RallyEditor.tsx:152
+#: src/components/admin/RallyEditor.tsx:208
 msgid "このラリーを削除"
 msgstr "このラリーを削除"
 
-#: src/components/admin/RallyEditor.tsx:85
+#: src/components/admin/RallyEditor.tsx:107
 msgid "このラリーを削除します。よろしいですか？"
 msgstr "このラリーを削除します。よろしいですか？"
 
 #. placeholder {0}: saved.completionCount
-#: src/components/admin/RallyEditor.tsx:85
+#: src/components/admin/RallyEditor.tsx:107
 msgid "このラリーを削除します。達成した {0} 人の達成記録も消えます（スタンプは残ります）。よろしいですか？"
 msgstr "このラリーを削除します。達成した {0} 人の達成記録も消えます（スタンプは残ります）。よろしいですか？"
 
@@ -1908,12 +1924,29 @@ msgid "つくったページはまだありません。"
 msgstr "つくったページはまだありません。"
 
 #: src/components/admin/RallyCreate.tsx:68
+#: src/components/admin/RallyEditor.tsx:171
 msgid "つくり方"
 msgstr "つくり方"
 
 #: src/components/admin/RallyCreate.tsx:73
-msgid "つくり方は、あとから変えられません。"
-msgstr "つくり方は、あとから変えられません。"
+msgid "つくり方は、あとからラリーの画面で変えられます。"
+msgstr "つくり方は、あとからラリーの画面で変えられます。"
+
+#: src/components/admin/RallyEditor.tsx:97
+msgid "つくり方を変えました。"
+msgstr "つくり方を変えました。"
+
+#: src/components/admin/RallyEditor.tsx:94
+msgid "つくり方を変えます。いまの中身は外れ、えらんだものが入ります。{unfinished}よろしいですか？"
+msgstr "つくり方を変えます。いまの中身は外れ、えらんだものが入ります。{unfinished}よろしいですか？"
+
+#: src/components/admin/RallyEditor.tsx:188
+msgid "つくり方を変える"
+msgstr "つくり方を変える"
+
+#: src/components/admin/RallyEditor.tsx:199
+msgid "つくり方を変える…"
+msgstr "つくり方を変える…"
 
 #: src/app/(public)/rallies/[id]/page.tsx:90
 msgid "つづきをはじめる"
@@ -2539,6 +2572,7 @@ msgid "もらいました"
 msgstr "もらいました"
 
 #: src/components/admin/PublishedEditDialog.tsx:63
+#: src/components/admin/RallyEditor.tsx:191
 #: src/components/auth/ReauthDialog.tsx:62
 #: src/components/auth/ReauthDialog.tsx:84
 #: src/components/ProfileSettings.tsx:250
@@ -2616,11 +2650,11 @@ msgstr "ラリーがまだありません。「新しいラリー」から作っ
 msgid "ラリーとスタンプ"
 msgstr "ラリーとスタンプ"
 
-#: src/components/admin/RallyEditor.tsx:141
+#: src/components/admin/RallyEditor.tsx:163
 msgid "ラリーに入るコース"
 msgstr "ラリーに入るコース"
 
-#: src/components/admin/RallyEditor.tsx:141
+#: src/components/admin/RallyEditor.tsx:163
 msgid "ラリーに入る経由地"
 msgstr "ラリーに入る経由地"
 
@@ -2640,16 +2674,16 @@ msgstr "ラリーの一覧"
 msgid "ラリーの中の順番"
 msgstr "ラリーの中の順番"
 
-#: src/components/admin/RallyEditor.tsx:144
+#: src/components/admin/RallyEditor.tsx:166
 msgid "ラリーの中身を保存"
 msgstr "ラリーの中身を保存"
 
-#: src/components/admin/RallyEditor.tsx:81
+#: src/components/admin/RallyEditor.tsx:87
 msgid "ラリーの中身を保存しました。"
 msgstr "ラリーの中身を保存しました。"
 
 #: src/components/admin/RallyCreate.tsx:77
-#: src/components/admin/RallyEditor.tsx:114
+#: src/components/admin/RallyEditor.tsx:136
 msgid "ラリーの名前"
 msgstr "ラリーの名前"
 
@@ -2661,7 +2695,7 @@ msgstr "ラリーは、コースを集めてつくるか、経由地を集めて
 msgid "ラリーは、まだ準備中です。"
 msgstr "ラリーは、まだ準備中です。"
 
-#: src/components/admin/RallyEditor.tsx:150
+#: src/components/admin/RallyEditor.tsx:206
 msgid "ラリーを削除しても、スタンプやコースの達成は消えません。このラリーの達成記録だけが消えます。"
 msgstr "ラリーを削除しても、スタンプやコースの達成は消えません。このラリーの達成記録だけが消えます。"
 
@@ -2673,7 +2707,7 @@ msgstr "ラリーを直す（管理）"
 msgid "ラリーを見る"
 msgstr "ラリーを見る"
 
-#: src/app/(admin)/admin/rallies/[id]/page.tsx:32
+#: src/app/(admin)/admin/rallies/[id]/page.tsx:35
 #: src/app/(admin)/admin/rallies/new/page.tsx:27
 #: src/app/(admin)/admin/rallies/page.tsx:31
 msgid "ラリーを読み込めませんでした。しばらくしてから、ページを開き直してください。"
@@ -2687,7 +2721,7 @@ msgstr "ラリーを達成した人・回数"
 msgid "ラリーを達成した人と回数です。同じ人が二つのラリーを達成すると、2と数えます。"
 msgstr "ラリーを達成した人と回数です。同じ人が二つのラリーを達成すると、2と数えます。"
 
-#: src/app/(admin)/admin/rallies/[id]/page.tsx:46
+#: src/app/(admin)/admin/rallies/[id]/page.tsx:52
 #: src/app/(admin)/admin/rallies/new/page.tsx:36
 msgid "ラリー一覧にもどる"
 msgstr "ラリー一覧にもどる"
@@ -2950,7 +2984,7 @@ msgstr "下へ"
 #: src/app/(admin)/admin/pages/page.tsx:88
 #: src/components/admin/DirectoryPicker.tsx:144
 #: src/components/admin/PlacePanel.tsx:86
-#: src/components/admin/RallyEditor.tsx:100
+#: src/components/admin/RallyEditor.tsx:122
 #: src/components/admin/RallyList.tsx:50
 #: src/components/admin/RallyList.tsx:81
 #: src/components/admin/RallyMemberPicker.tsx:72
@@ -2962,7 +2996,7 @@ msgstr "下書き"
 msgid "下書きとして作る"
 msgstr "下書きとして作る"
 
-#: src/components/admin/RallyEditor.tsx:146
+#: src/components/admin/RallyEditor.tsx:168
 msgid "下書きの経由地は、公開されるまで数に入りません。スタンプの記録は変わりません。"
 msgstr "下書きの経由地は、公開されるまで数に入りません。スタンプの記録は変わりません。"
 
@@ -3196,9 +3230,13 @@ msgstr "保存していない変更があります"
 msgid "保存していない変更があります。このページを離れますか？"
 msgstr "保存していない変更があります。このページを離れますか？"
 
-#: src/components/admin/RallyEditor.tsx:138
+#: src/components/admin/RallyEditor.tsx:160
 msgid "保存していない変更があります。先に保存してから公開を切りかえてください。"
 msgstr "保存していない変更があります。先に保存してから公開を切りかえてください。"
+
+#: src/components/admin/RallyEditor.tsx:194
+msgid "保存していない変更があります。先に保存してください。"
+msgstr "保存していない変更があります。先に保存してください。"
 
 #: src/components/admin/RouteEditor.tsx:497
 msgid "保存していない編集が、このブラウザに残っています（{offeredAt}）。戻しますか？"
@@ -3215,7 +3253,7 @@ msgstr "保存して次へ"
 
 #: src/components/admin/AdminItemForm.tsx:125
 #: src/components/admin/GoalsForm.tsx:50
-#: src/components/admin/RallyEditor.tsx:66
+#: src/components/admin/RallyEditor.tsx:72
 #: src/components/admin/RouteEditor.tsx:328
 #: src/components/ProfileSettings.tsx:172
 #: src/components/settings/PrefsForm.tsx:68
@@ -3384,13 +3422,13 @@ msgstr "全体を見る"
 msgid "公開サイトで見る"
 msgstr "公開サイトで見る"
 
-#: src/components/admin/RallyEditor.tsx:72
+#: src/components/admin/RallyEditor.tsx:78
 #: src/components/admin/RouteEditor.tsx:424
 msgid "公開しました。"
 msgstr "公開しました。"
 
 #: src/components/admin/PlacePanel.tsx:234
-#: src/components/admin/RallyEditor.tsx:135
+#: src/components/admin/RallyEditor.tsx:157
 msgid "公開する"
 msgstr "公開する"
 
@@ -3419,20 +3457,20 @@ msgstr "公開は、作ったあとのラリーの画面からできます。"
 msgid "公開まで、あと{0}つ"
 msgstr "公開まで、あと{0}つ"
 
-#: src/components/admin/RallyEditor.tsx:72
+#: src/components/admin/RallyEditor.tsx:78
 #: src/components/admin/RouteEditor.tsx:424
 msgid "公開をやめました。"
 msgstr "公開をやめました。"
 
 #: src/components/admin/PlacePanel.tsx:228
-#: src/components/admin/RallyEditor.tsx:135
+#: src/components/admin/RallyEditor.tsx:157
 msgid "公開をやめる"
 msgstr "公開をやめる"
 
 #: src/app/(admin)/admin/pages/page.tsx:88
 #: src/components/admin/map-editor/PlaceList.tsx:113
 #: src/components/admin/PlacePanel.tsx:86
-#: src/components/admin/RallyEditor.tsx:100
+#: src/components/admin/RallyEditor.tsx:122
 #: src/components/admin/RallyList.tsx:50
 #: src/components/admin/RallyList.tsx:81
 #: src/components/admin/RouteTable.tsx:38
@@ -3450,6 +3488,10 @@ msgstr "公開中のスタンプの経由地"
 #: src/components/admin/RallyMemberPicker.tsx:88
 msgid "公開中のスタンプの経由地なし（達成できません）"
 msgstr "公開中のスタンプの経由地なし（達成できません）"
+
+#: src/components/admin/RallyEditor.tsx:195
+msgid "公開中のラリーは、からにできません。1つ以上えらんでください。"
+msgstr "公開中のラリーは、からにできません。1つ以上えらんでください。"
 
 #: src/components/admin/RouteTable.tsx:144
 #: src/components/admin/RouteTable.tsx:202
@@ -3749,7 +3791,7 @@ msgstr "制限中"
 #: src/components/admin/HoursInput.tsx:35
 #: src/components/admin/PlaceTable.tsx:140
 #: src/components/admin/PlaceTable.tsx:205
-#: src/components/admin/RallyEditor.tsx:149
+#: src/components/admin/RallyEditor.tsx:205
 msgid "削除"
 msgstr "削除"
 
@@ -4033,7 +4075,7 @@ msgstr "名前でさがす"
 msgid "名前で絞る"
 msgstr "名前で絞る"
 
-#: src/components/admin/RallyEditor.tsx:111
+#: src/components/admin/RallyEditor.tsx:133
 msgid "名前と公開"
 msgstr "名前と公開"
 
@@ -4059,7 +4101,7 @@ msgstr "名前の一部を入れて探す"
 msgid "名前の一部を入力"
 msgstr "名前の一部を入力"
 
-#: src/components/admin/RallyEditor.tsx:127
+#: src/components/admin/RallyEditor.tsx:149
 msgid "名前を保存"
 msgstr "名前を保存"
 
@@ -4086,7 +4128,7 @@ msgid "周辺の場所（駐車場・自販機・トイレなど）"
 msgstr "周辺の場所（駐車場・自販機・トイレなど）"
 
 #: src/app/(admin)/admin/page.tsx:34
-#: src/components/admin/RouteEditor.tsx:391
+#: src/components/admin/RouteEditor.tsx:440
 #: src/components/admin/RouteTable.tsx:39
 #: src/components/auth/authUi.tsx:78
 #: src/components/PrefectureName.tsx:9
@@ -4343,7 +4385,7 @@ msgid "大阪・和歌山・奈良にまたがる、葛城修験の山の古道�
 msgstr "大阪・和歌山・奈良にまたがる、葛城修験の山の古道を歩くための道案内とスタンプラリーです。"
 
 #: src/app/(admin)/admin/page.tsx:33
-#: src/components/admin/RouteEditor.tsx:391
+#: src/components/admin/RouteEditor.tsx:440
 #: src/components/admin/RouteTable.tsx:39
 #: src/components/auth/authUi.tsx:77
 #: src/components/PrefectureName.tsx:7
@@ -4355,7 +4397,7 @@ msgid "大阪府・和歌山県・奈良県のどれかで書いてください"
 msgstr "大阪府・和歌山県・奈良県のどれかで書いてください"
 
 #: src/app/(admin)/admin/page.tsx:35
-#: src/components/admin/RouteEditor.tsx:391
+#: src/components/admin/RouteEditor.tsx:440
 #: src/components/admin/RouteTable.tsx:39
 #: src/components/auth/authUi.tsx:79
 #: src/components/PrefectureName.tsx:11
@@ -5337,8 +5379,8 @@ msgstr "短い間に何度も操作されました。しばらくしてからお
 msgid "確認が必要なスタンプ：{flagged}件"
 msgstr "確認が必要なスタンプ：{flagged}件"
 
-#: src/components/admin/PlacePanel.tsx:175
-#: src/components/admin/RouteEditor.tsx:699
+#: src/components/admin/PlacePanel.tsx:178
+#: src/components/admin/RouteEditor.tsx:748
 msgid "確認した情報源（サイト名やリンク）"
 msgstr "確認した情報源（サイト名やリンク）"
 
@@ -5522,7 +5564,7 @@ msgstr "経由地が残っているルートは消せません。先に経由地
 msgid "経由地ごとに、写真と、名前の由来や歴史を読めます。近くの駅、バス停、駐車場もわかります。"
 msgstr "経由地ごとに、写真と、名前の由来や歴史を読めます。近くの駅、バス停、駐車場もわかります。"
 
-#: src/components/admin/RallyEditor.tsx:98
+#: src/components/admin/RallyEditor.tsx:120
 msgid "経由地でつくったラリー：えらんだ経由地のスタンプを全部押すと達成。"
 msgstr "経由地でつくったラリー：えらんだ経由地のスタンプを全部押すと達成。"
 
@@ -6150,16 +6192,25 @@ msgstr "道を調べています…（{step}/{total}）"
 msgid "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 msgstr "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 
+#. placeholder {0}: saved.completionCount
+#: src/components/admin/RallyEditor.tsx:93
+msgid "達成した {0} 人の記録は残ります。"
+msgstr "達成した {0} 人の記録は残ります。"
+
 #: src/components/admin/RallyList.tsx:107
 msgid "達成した人"
 msgstr "達成した人"
 
 #. placeholder {0}: r.completionCount
 #. placeholder {0}: saved.completionCount
-#: src/components/admin/RallyEditor.tsx:102
+#: src/components/admin/RallyEditor.tsx:124
 #: src/components/admin/RallyList.tsx:151
 msgid "達成した人 {0}"
 msgstr "達成した人 {0}"
+
+#: src/components/admin/RallyEditor.tsx:202
+msgid "達成した人の記録は残ります。スタンプは変わりません。"
+msgstr "達成した人の記録は残ります。スタンプは変わりません。"
 
 #: src/components/admin/GradingFields.tsx:63
 #: src/components/admin/GradingFields.tsx:90

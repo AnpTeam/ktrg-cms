@@ -36,7 +36,8 @@ const kindSchema = t.Union([t.Literal("places"), t.Literal("course")]);
 
 /**
  * The admin side of rallies (`rally.manage`, admin only). A rally is made of PLACES (a list of stamp places, such as
- * the sutra-mound rally) or of COURSES (a list of courses), chosen when it is created and fixed afterwards. Create,
+ * the sutra-mound rally) or of COURSES (a list of courses), chosen when it is created and changeable later (with the new
+ * members). Create,
  * rename, publish, reorder, set what is in it, delete. Writes are rate limited and audited by the store; an edit
  * carries the `updatedAt` it loaded (409 `conflict` when someone saved first). Visitors' stamps are never touched;
  * deleting a rally removes visitors' finishes of that rally only.
@@ -128,6 +129,22 @@ export function rallyAdminRoutes(getServices: () => RallyAdminServices, opts: Ro
         return r.ok ? { ok: true as const, rally: rallyOut(r.value) } : fail(set, statusOf(r.reason), r.reason);
       },
       { auth: "rally.manage", rateLimit: { adminWriteUser: "user.id" }, params: idParams, body: t.Object({ updatedAt, routeIds: t.Array(uuid, { maxItems: 1000 }) }) },
+    )
+    // To the other kind: spotIds for "places", routeIds for "course". The old members go; visitors' finishes stay.
+    .put(
+      "/:id/kind",
+      async ({ user, params, body, set }) => {
+        const memberIds = body.kind === "places" ? (body.spotIds ?? []) : (body.routeIds ?? []);
+        if ((body.kind === "places" ? body.routeIds : body.spotIds)?.length) return fail(set, 400, "invalid_rally_members");
+        const r = await svc().changeKind(user.id, params.id, body.updatedAt, body.kind, memberIds);
+        return r.ok ? { ok: true as const, rally: rallyOut(r.value) } : fail(set, statusOf(r.reason), r.reason);
+      },
+      {
+        auth: "rally.manage",
+        rateLimit: { adminWriteUser: "user.id" },
+        params: idParams,
+        body: t.Object({ updatedAt, kind: kindSchema, spotIds: t.Optional(t.Array(uuid, { maxItems: 2000 })), routeIds: t.Optional(t.Array(uuid, { maxItems: 1000 })) }),
+      },
     )
     .delete(
       "/:id",

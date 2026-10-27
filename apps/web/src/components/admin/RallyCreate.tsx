@@ -11,7 +11,7 @@ import type { Translations } from "@/lib/admin/content-locales";
 import { MultilingualField, Section } from "./fields";
 import { RallyMemberPicker } from "./RallyMemberPicker";
 
-// A new rally: choose how it is made (places or courses: fixed afterwards), name it, tick what is in it, save once.
+// A new rally: choose how it is made (places or courses; changeable later on its own page), name it, tick what is in it, save once.
 // It is saved as a draft; it is published from its own page.
 export function RallyCreate({
   places,
@@ -70,7 +70,7 @@ export function RallyCreate({
           {choice("course", t`コースでつくる`, t`えらんだコースを全部歩き終えると達成。コースはスタンプの経由地を全部押すと完了。`)}
           {choice("places", t`経由地でつくる`, t`えらんだ経由地のスタンプを全部押すと達成（経塚のラリーなど）。`)}
         </div>
-        <p className="text-base text-muted">{t`つくり方は、あとから変えられません。`}</p>
+        <p className="text-base text-muted">{t`つくり方は、あとからラリーの画面で変えられます。`}</p>
       </Section>
 
       <Section title={t`名前`}>

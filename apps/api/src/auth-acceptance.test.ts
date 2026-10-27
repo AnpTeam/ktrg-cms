@@ -393,6 +393,7 @@ describe("user B cannot touch user A", () => {
     "PATCH /api/v1/admin/rallies/:id": () => ({ updatedAt: new Date().toISOString() }),
     "PUT /api/v1/admin/rallies/:id/places": () => ({ updatedAt: new Date().toISOString(), spotIds: [] }),
     "PUT /api/v1/admin/rallies/:id/courses": () => ({ updatedAt: new Date().toISOString(), routeIds: [] }),
+    "PUT /api/v1/admin/rallies/:id/kind": () => ({ updatedAt: new Date().toISOString(), kind: "course", routeIds: [] }),
     "POST /api/v1/admin/lists/notices": () => sampleNotice(),
     "POST /api/v1/admin/lists/posts": () => samplePost(),
     "POST /api/v1/posts/:id/comments": () => ({ body: "x" }),
