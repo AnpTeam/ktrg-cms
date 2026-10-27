@@ -16,33 +16,27 @@ export function rallyPublicRoutes(getServices: () => { rallyAdmin: RallyAdminSer
   const build = async () => {
     const { rallyAdmin, content } = getServices();
     const published = (await rallyAdmin.listRallies()).filter((r) => r.published).sort((a, b) => a.sortOrder - b.sortOrder);
-    // All rallies at once (the connection pool lines the queries up): one after another took about 8 s when the answer was not kept.
-    const rallies = (
-      await Promise.all(
-        published.map(async (r) => {
-          const found = await rallyAdmin.getRally(r.id);
-          if (!found) return null;
-          const base = { id: r.id, nameJa: r.nameJa, nameEn: r.nameEn, sortOrder: r.sortOrder };
-          if ("places" in found) {
-            const places = found.places
-              .filter((p) => p.published)
-              .sort((a, b) => a.position - b.position)
-              .map((p) => ({ id: p.spotId, routeId: p.routeId, nameJa: p.nameJa, nameEn: p.nameEn }));
-            return { ...base, kind: "places" as const, places, courses: [] };
-          }
-          const courses = await Promise.all(
-            [...found.courses]
-              .sort((a, b) => a.position - b.position)
-              .map(async (c) => {
-                const route = await content.publicRoute(c.routeId);
-                // The status travels with each place: a closed place that nobody stamped counts as done (rallies/progress.ts).
-                return { routeId: c.routeId, nameJa: c.nameJa, nameEn: c.nameEn, spots: (route?.spots ?? []).map((s) => ({ id: s.id, status: s.status })) };
-              }),
-          );
-          return { ...base, kind: "course" as const, places: [], courses };
-        }),
-      )
-    ).flatMap((r) => (r ? [r] : []));
+    const rallies = [];
+    for (const r of published) {
+      const found = await rallyAdmin.getRally(r.id);
+      if (!found) continue;
+      const base = { id: r.id, nameJa: r.nameJa, nameEn: r.nameEn, sortOrder: r.sortOrder };
+      if ("places" in found) {
+        const places = found.places
+          .filter((p) => p.published)
+          .sort((a, b) => a.position - b.position)
+          .map((p) => ({ id: p.spotId, routeId: p.routeId, nameJa: p.nameJa, nameEn: p.nameEn }));
+        rallies.push({ ...base, kind: "places" as const, places, courses: [] });
+      } else {
+        const courses = [];
+        for (const c of [...found.courses].sort((a, b) => a.position - b.position)) {
+          const route = await content.publicRoute(c.routeId);
+          // The status travels with each place: a closed place that nobody stamped counts as done (rallies/progress.ts).
+          courses.push({ routeId: c.routeId, nameJa: c.nameJa, nameEn: c.nameEn, spots: (route?.spots ?? []).map((s) => ({ id: s.id, status: s.status })) });
+        }
+        rallies.push({ ...base, kind: "course" as const, places: [], courses });
+      }
+    }
     return { ok: true as const, rallies };
   };
 
