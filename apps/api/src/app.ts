@@ -42,6 +42,8 @@ import { bannerList, publicBannerRoutes } from "./banners/banner-list";
 import { createDrizzleBannerStore } from "./banners/banner-store";
 import { placeDirectoryList, placeImportRoutes, publicPlaceRoutes } from "./places/place-directory";
 import { publicSettingsRoutes, siteSettingsRoutes } from "./site-settings/site-settings";
+import { createDrizzleDashboardStore } from "./dashboard/dashboard-store";
+import { dashboardRoutes } from "./dashboard/dashboard";
 import { createDrizzleVisitStore } from "./visits/visit-store";
 import { visitRoutes } from "./visits/visits";
 import { createDrizzleSiteSettingsStore } from "./site-settings/site-settings-store";
@@ -87,6 +89,7 @@ function getServices(): Services {
         places: createDrizzlePlaceStore(db),
         siteSettings: createDrizzleSiteSettingsStore(db),
         visits: createDrizzleVisitStore(db),
+        dashboard: createDrizzleDashboardStore(db),
         auditList: createDrizzleAuditListStore(db),
         placeList: createDrizzlePlaceListStore(db),
         userList: createDrizzleUserListStore(db),
@@ -181,6 +184,7 @@ export function createApp(
     .use(placeImportRoutes(getServices, opts))
     .use(publicPlaceRoutes(() => getServices().places))
     .use(visitRoutes(getServices, opts))
+    .use(dashboardRoutes(getServices, opts))
     .use(siteSettingsRoutes(getServices, opts))
     .use(publicSettingsRoutes(() => getServices().siteSettings))
     .use(listReadRoutes(auditLogList, getServices, opts))

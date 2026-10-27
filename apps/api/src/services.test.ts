@@ -1,3 +1,4 @@
+import { createMemoryDashboardStore } from "./dashboard/dashboard";
 import { describe, expect, test } from "bun:test";
 import { createMemoryAuditWriter } from "./audit/audit-log";
 import { createMemoryOtpStore } from "./auth/otp-memory-store";
@@ -47,6 +48,7 @@ function build(photoHosts?: string[]) {
       places: createMemoryPlaceStore(audit.writer).store,
       siteSettings: createMemorySiteSettingsStore(audit.writer),
       visits: createMemoryVisitStore(),
+      dashboard: createMemoryDashboardStore(),
       auditList: memoryReader(new Map()),
       placeList: memoryReader(new Map()),
       userList: createMemoryUserListStore(audit.writer).store,

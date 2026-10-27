@@ -311,6 +311,13 @@ export const FuriganaIcon = () => (
   </Icon>
 );
 
+/** Bars rising: the dashboard. */
+export const ChartIcon = () => (
+  <Icon>
+    <path d="M4 20V10M10 20V4M16 20v-8M21 20H3" />
+  </Icon>
+);
+
 /** A globe: where visitors come from. */
 export const GlobeIcon = () => (
   <Icon>

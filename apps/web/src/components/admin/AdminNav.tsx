@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { ReactNode } from "react";
-import { ArticleIcon, BellIcon, ClockIcon, CommentIcon, DocumentIcon, FuriganaIcon, GlobeIcon, FlagIcon, GearIcon, ImageIcon, PencilIcon, PinIcon, RouteIcon, ShopIcon, StampIcon, UserIcon, WarningIcon } from "@/components/icons";
+import { ArticleIcon, ChartIcon, BellIcon, ClockIcon, CommentIcon, DocumentIcon, FuriganaIcon, GlobeIcon, FlagIcon, GearIcon, ImageIcon, PencilIcon, PinIcon, RouteIcon, ShopIcon, StampIcon, UserIcon, WarningIcon } from "@/components/icons";
 
 /** The picture beside each list in the menu; a list the app does not know yet gets a plain document. */
 const LIST_ICONS: Record<string, ReactNode> = {
@@ -32,6 +32,8 @@ export function AdminNav({ lists, isAdmin }: { lists: { key: string; title: stri
   const [open, setOpen] = useState(false);
 
   const ready = [
+    // The dashboard is the admin's home (an editor's home is the route list); its page and the API are for an admin only.
+    ...(isAdmin ? [{ key: "dashboard", href: base, label: t`ダッシュボード`, icon: <ChartIcon /> }] : []),
     { key: "routes", href: `${base}/routes`, label: t`ルート`, icon: <RouteIcon /> },
     { key: "rallies", href: `${base}/rallies`, label: t`ラリー`, icon: <FlagIcon /> },
     { key: "visits", href: `${base}/visits`, label: t`アクセスの地域`, icon: <GlobeIcon /> },
@@ -42,9 +44,9 @@ export function AdminNav({ lists, isAdmin }: { lists: { key: string; title: stri
     ...(isAdmin ? [{ key: "settings", href: `${base}/settings`, label: t`サイト全体の設定`, icon: <GearIcon /> }] : []),
   ];
   // Menu sections, split by a line. A list the app does not know yet joins the section of notices and banners.
-  const SECTIONS = [["routes", "rallies", "places", "directory"], ["attention"], ["notices", "banners", "furigana", "pages"], ["visits", "stamps", "users", "audit"], ["settings"]];
+  const SECTIONS = [["dashboard"], ["routes", "rallies", "places", "directory"], ["attention"], ["notices", "banners", "furigana", "pages"], ["visits", "stamps", "users", "audit"], ["settings"]];
   const known = new Set(SECTIONS.flat());
-  const sections = SECTIONS.map((keys, i) => [...keys.flatMap((k) => ready.filter((r) => r.key === k)), ...(i === 2 ? ready.filter((r) => !known.has(r.key)) : [])]).filter((g) => g.length > 0);
+  const sections = SECTIONS.map((keys, i) => [...keys.flatMap((k) => ready.filter((r) => r.key === k)), ...(i === 3 ? ready.filter((r) => !known.has(r.key)) : [])]).filter((g) => g.length > 0);
 
   return (
     <nav aria-label={t`管理メニュー`} className="flex flex-col gap-1">
@@ -62,7 +64,7 @@ export function AdminNav({ lists, isAdmin }: { lists: { key: string; title: stri
         {sections.map((group, i) => (
           <div key={i} className={`flex flex-col gap-1 ${i > 0 ? "mt-2 border-t border-line pt-3" : ""}`}>
             {group.map((item) => {
-              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+              const active = item.key === "dashboard" ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <Link
                   key={item.href}

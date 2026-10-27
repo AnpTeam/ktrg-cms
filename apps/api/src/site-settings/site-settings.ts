@@ -24,7 +24,7 @@ export const MAP_STYLE = t.Object({
 });
 export type MapStyleSetting = Static<typeof MAP_STYLE>;
 
-export const SETTING_KEYS = { mapStyle: "map_style" } as const;
+export const SETTING_KEYS = { mapStyle: "map_style", dashboardGoals: "dashboard_goals" } as const;
 
 /**
  * The fixed pages whose text an editor can replace (管理 > ページの文章): the FAQ and how to play, and the terms and
@@ -47,6 +47,9 @@ export interface SiteSettingsStore {
   set(actor: string, key: string, value: unknown): Promise<void>;
 }
 
+/** What the dashboard keeps as its goals (validated by GOALS in dashboard/dashboard.ts). */
+export type DashboardGoals = { visits: number | null; stamps: number | null; signups: number | null; completions: number | null };
+
 export type SiteSettingsService = ReturnType<typeof createSiteSettingsService>;
 
 export function createSiteSettingsService(deps: { store: SiteSettingsStore }) {
@@ -54,6 +57,9 @@ export function createSiteSettingsService(deps: { store: SiteSettingsStore }) {
     /** The saved map style, or null (the site then uses its built-in default). */
     mapStyle: async () => (await deps.store.get(SETTING_KEYS.mapStyle)) as MapStyleSetting | null,
     setMapStyle: (actor: string, value: MapStyleSetting) => deps.store.set(actor, SETTING_KEYS.mapStyle, value),
+    /** The goals the dashboard measures its four numbers against (see dashboard/), or null when none were set. */
+    dashboardGoals: async () => (await deps.store.get(SETTING_KEYS.dashboardGoals)) as DashboardGoals | null,
+    setDashboardGoals: (actor: string, value: DashboardGoals) => deps.store.set(actor, SETTING_KEYS.dashboardGoals, value),
     pageText: async (key: PageKey) => (await deps.store.get(pageSetting(key))) as PageText | null,
     setPageText: (actor: string, key: PageKey, value: PageText) => deps.store.set(actor, pageSetting(key), value),
   };
@@ -66,6 +72,7 @@ export const SETTING_TARGET: Record<string, string> = {
   "page:guide": "00000000-0000-4000-8000-000000000003",
   "page:terms": "00000000-0000-4000-8000-000000000004",
   "page:privacy": "00000000-0000-4000-8000-000000000005",
+  [SETTING_KEYS.dashboardGoals]: "00000000-0000-4000-8000-000000000006",
 };
 
 export const SETTING_AUDIT = "site_setting.update" as const;
