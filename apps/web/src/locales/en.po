@@ -1472,7 +1472,7 @@ msgstr "Draw the sub-course line"
 msgid "シート（CSV）から取り込む"
 msgstr "Import from a sheet (CSV)"
 
-#: src/components/map/MapSheet.tsx:113
+#: src/components/map/MapSheet.tsx:118
 msgid "シートの高さ（上下の矢印キーで変えられます）"
 msgstr "Height of the sheet (change it with the up and down arrow keys)"
 
@@ -2348,6 +2348,10 @@ msgstr "Try again"
 msgid "もう一度送りました。届かないときは、1分ほど待ってからお試しください。"
 msgstr "Sent again. If it does not arrive, wait about a minute and try again."
 
+#: src/components/map/MapSheet.tsx:100
+msgid "もっと広げる"
+msgstr "Show more"
+
 #: src/components/admin/AdminListTable.tsx:229
 #: src/components/admin/PhotoLibrary.tsx:216
 msgid "もっと見る"
@@ -2919,7 +2923,7 @@ msgstr "Location isn't allowed. In your browser settings, allow location for thi
 msgid "位置情報が許可されていません。ブラウザの設定で、このサイトの位置情報を「許可」にしてください。"
 msgstr "Location is not allowed. Please allow location for this site in your browser settings."
 
-#: src/components/map/MapSheet.tsx:118
+#: src/components/map/MapSheet.tsx:123
 msgid "低い"
 msgstr "low"
 
@@ -3640,7 +3644,7 @@ msgstr "Choose a leg"
 msgid "区間を選ぶと、道とスタンプの場所が見えます。"
 msgstr "Choose a course to see its path and its stamp places."
 
-#: src/components/map/MapSheet.tsx:118
+#: src/components/map/MapSheet.tsx:123
 msgid "半分"
 msgstr "half"
 
@@ -4121,6 +4125,10 @@ msgstr "Temple or shrine"
 msgid "小さい順"
 msgstr "Smallest first"
 
+#: src/components/map/MapSheet.tsx:100
+msgid "小さくして地図を見る"
+msgstr "Make smaller and see the map"
+
 #: src/components/map/PlacesPanel.tsx:166
 msgid "少なく表示"
 msgstr "Show less"
@@ -4174,6 +4182,10 @@ msgstr "For the way back, see the transport notes below."
 msgid "年代"
 msgstr "Age"
 
+#: src/components/map/MapSheet.tsx:100
+msgid "広げる"
+msgstr "Expand"
+
 #: src/components/RouteJourney.tsx:22
 #: src/components/RouteStats.tsx:21
 msgid "往復"
@@ -4217,7 +4229,7 @@ msgstr "Steep climbs and descents and some hard-to-follow places. There may be l
 msgid "性別"
 msgstr "Gender"
 
-#: src/components/map/MapSheet.tsx:101
+#: src/components/map/MapSheet.tsx:106
 msgid "情報"
 msgstr "Information"
 
@@ -5809,7 +5821,7 @@ msgstr "Open"
 msgid "陰影（やわらかい影）"
 msgstr "Shading (soft shadow)"
 
-#: src/components/map/MapSheet.tsx:118
+#: src/components/map/MapSheet.tsx:123
 msgid "隠す"
 msgstr "hidden"
 
@@ -5892,6 +5904,6 @@ msgstr "Station, bus, parking"
 msgid "駐車場"
 msgstr "Parking"
 
-#: src/components/map/MapSheet.tsx:118
+#: src/components/map/MapSheet.tsx:123
 msgid "高い"
 msgstr "high"
