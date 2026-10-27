@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import type { Mailer } from "../lib/mailer";
+import { mailFailure, type Mailer } from "../lib/mailer";
 import { buildPasskeyAlertEmail, type PasskeyAlertAction } from "../emails/passkey-alert";
 import {
   generateAuthenticationOptions,
@@ -131,7 +131,7 @@ export function createPasskeyService({
     try {
       await mailer.send(buildPasskeyAlertEmail({ to: user.email, locale: user.locale, action, label, at: now() }));
     } catch (err) {
-      log(`[passkey] alert email failed: ${err instanceof Error ? err.message : String(err)}`);
+      log(`[passkey] alert email failed: ${mailFailure(err)}`);
     }
   }
 

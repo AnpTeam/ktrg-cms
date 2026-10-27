@@ -22,10 +22,16 @@ import { createDrizzleBannerStore } from "../banners/banner-store";
 import { createDrizzlePlaceStore } from "../places/place-store";
 import { createDrizzleSiteSettingsStore } from "../site-settings/site-settings-store";
 import { createDrizzlePostStore } from "../posts/post-store";
+import { createDrizzleCommentStore } from "../posts/comment-store";
+import { createDrizzleAuthorStore } from "../posts/author-store";
+import { createDrizzleSitePageStore } from "../pages/site-page-store";
 import { createDrizzleUserListStore } from "../users/user-list";
 import {
   auditLog,
   banners,
+  blogAuthors,
+  blogComments,
+  sitePages,
   bannerTranslations,
   courseCompletions,
   otpCodes,
@@ -796,6 +802,9 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       expect(await store.setRevoked(admin!.id, queued!.id, true)).toBe("ok");
       expect((await store.listMine(me!.id)).map((s) => s.spotId)).toEqual([b!.id]);
       expect((await createDrizzleStampListStore(tx as unknown as typeof db).get(queued.id))!.revoked).toBe(true);
+      // The course and rally finishes that stamp earned are taken back with it.
+      expect(await tx.select().from(courseCompletions).where(eq(courseCompletions.userId, me!.id))).toHaveLength(0);
+      expect(await tx.select().from(rallyCompletions).where(eq(rallyCompletions.userId, me!.id))).toHaveLength(0);
       expect(await store.setRevoked(admin!.id, queued!.id, false)).toBe("ok");
       expect(await store.listMine(me!.id)).toHaveLength(2);
       expect(await store.setRevoked(admin!.id, randomUUID(), true)).toBe("not_found");
@@ -1383,6 +1392,10 @@ describe.skipIf(!url)("places directory on real PostgreSQL", () => {
     const live = await add(`${tag} 公開`, { lat: 34.2, lng: 135.1, positionVerified: true, positionSource: "地図アプリ", listingConfirmed: true, published: true, lastVerified: "2026-10-17" });
     await add(`${tag} 下書き`);
     expect(live).toMatchObject({ nameJa: `${tag} 公開`, nameEn: null, hoursEn: "9:00 - 17:00", lastVerified: "2026-10-17" });
+    // The address is a word like the name: one per language, in the translation table.
+    const withAddress = await store.update(actor, live.id, live.updatedAt, { addressJa: "奈良県御所市", addressEn: "Gose, Nara" });
+    expect(withAddress).toMatchObject({ addressJa: "奈良県御所市", addressEn: "Gose, Nara" });
+    live.updatedAt = (withAddress as { updatedAt: Date }).updatedAt;
     expect((await store.listPublic()).map((p) => p.nameJa).filter((n) => n.startsWith(tag))).toEqual([`${tag} 公開`]);
 
     const changed = await store.update(actor, live.id, live.updatedAt, { nameEn: "Open", closedDaysJa: "月" });
@@ -1495,5 +1508,94 @@ describe.skipIf(!url)("blog posts on real PostgreSQL", () => {
     expect((await store.getPublic(newer.id, today))?.titleJa).toBe(`${tag} 今日`);
     expect(await store.getPublic(older.id, "2026-10-18")).toBeNull(); // dated after that day
     expect(await store.getPublic(randomUUID(), today)).toBeNull();
+  });
+});
+
+describe.skipIf(!url)("blog comments, writers and pages on real PostgreSQL", () => {
+  const { db, client } = connect();
+  const otp = createDrizzleOtpStore(db);
+  const posts = createDrizzlePostStore(db);
+  const comments = createDrizzleCommentStore(db);
+  const authors = createDrizzleAuthorStore(db);
+  const pages = createDrizzleSitePageStore(db);
+  const tag = `cm${randomUUID().slice(0, 8)}`;
+  const postIds: string[] = [];
+  const authorIds: string[] = [];
+  const pageIds: string[] = [];
+
+  afterAll(async () => {
+    const all = [...postIds, ...authorIds, ...pageIds];
+    if (all.length) await db.delete(auditLog).where(inArray(auditLog.targetId, all));
+    if (postIds.length) await db.delete(blogPosts).where(inArray(blogPosts.id, postIds));
+    if (authorIds.length) await db.delete(blogAuthors).where(inArray(blogAuthors.id, authorIds));
+    if (pageIds.length) await db.delete(sitePages).where(inArray(sitePages.id, pageIds));
+    await db.delete(users).where(like(users.email, `${tag}-%`));
+    await client.end();
+  });
+
+  const post = async (actor: string, over: Record<string, unknown> = {}) => {
+    const row = await posts.create(actor, {
+      titleJa: `${tag} 記事`, titleEn: null, bodyJa: "本文", bodyEn: null, authorNameJa: null, authorNameEn: null, coverPhotoUrl: null, coverCredit: null,
+      authorPhotoUrl: null, placeId: null, routeId: null, spotId: null, authorId: null, publishedOn: "2026-10-20", published: true, ...over,
+    });
+    postIds.push(row.id);
+    return row;
+  };
+
+  test("a comment is held until approved, shows the writer's profile name, and goes with the account", async () => {
+    const editor = (await otp.findOrCreateUser(`${tag}-editor@example.test`)).id;
+    const writer = (await otp.findOrCreateUser(`${tag}-writer@example.test`)).id;
+    await db.update(users).set({ displayName: "山田" }).where(eq(users.id, writer));
+    const p = await post(editor);
+
+    const held = await comments.create(writer, p.id, "良い道でした", "pending");
+    expect(held).toMatchObject({ postId: p.id, status: "pending", authorName: "山田", postTitle: `${tag} 記事` });
+    expect(await comments.listApproved(p.id, 10)).toHaveLength(0);
+
+    const approved = await comments.setStatus(editor, held.id, held.updatedAt, "approved");
+    expect(approved).toMatchObject({ status: "approved" });
+    expect(await comments.setStatus(editor, held.id, held.updatedAt, "hidden")).toBe("conflict"); // a stale copy
+    expect(await comments.setStatus(editor, randomUUID(), held.updatedAt, "hidden")).toBeNull();
+    expect((await comments.listApproved(p.id, 10)).map((c) => c.body)).toEqual(["良い道でした"]);
+
+    // Deleting the account takes its comments with it.
+    await db.delete(users).where(eq(users.id, writer));
+    expect(await db.select().from(blogComments).where(eq(blogComments.postId, p.id))).toHaveLength(0);
+    // Removing a comment by hand works once.
+    const other = (await otp.findOrCreateUser(`${tag}-other@example.test`)).id;
+    const second = await comments.create(other, p.id, "もう一つ", "approved");
+    expect(await comments.remove(editor, second.id)).toBe(true);
+    expect(await comments.remove(editor, second.id)).toBe(false);
+  });
+
+  test("a post shows the picked writer, else the account's profile name, else nothing", async () => {
+    const editor = (await otp.findOrCreateUser(`${tag}-byline@example.test`)).id;
+    await db.update(users).set({ displayName: "編集者" }).where(eq(users.id, editor));
+    const writer = await authors.create(editor, { nameJa: `${tag} 筆者`, nameEn: "Writer", photoUrl: null });
+    authorIds.push(writer.id);
+    const byWriter = await post(editor, { authorId: writer.id });
+    const byAccount = await post(editor);
+    expect(await posts.getPublic(byWriter.id, "2026-10-21")).toMatchObject({ writer: { nameJa: `${tag} 筆者`, nameEn: "Writer" } });
+    expect(await posts.getPublic(byAccount.id, "2026-10-21")).toMatchObject({ writer: null, accountName: "編集者" });
+
+    // A writer who is deleted leaves the post, and the post falls back to the account.
+    expect(await authors.remove(editor, writer.id)).toBe(true);
+    expect(await posts.getPublic(byWriter.id, "2026-10-21")).toMatchObject({ writer: null, accountName: "編集者" });
+  });
+
+  test("a page's address is unique; taking another page's address is a conflict, and delete removes it", async () => {
+    const editor = (await otp.findOrCreateUser(`${tag}-pages@example.test`)).id;
+    const make = async (slug: string) => {
+      const row = await pages.create(editor, { slug, titleJa: `${tag} ${slug}`, titleEn: null, bodyJa: "本文", bodyEn: null, published: true });
+      pageIds.push(row.id);
+      return row;
+    };
+    const a = await make(`${tag}-a`);
+    const b = await make(`${tag}-b`);
+    await expect(make(`${tag}-a`)).rejects.toThrow(); // the database holds the address unique
+    expect(await pages.update(editor, b.id, b.updatedAt, { slug: a.slug })).toBe("conflict");
+    expect(await pages.update(editor, b.id, b.updatedAt, { titleEn: "B" })).toMatchObject({ titleEn: "B" });
+    expect(await pages.remove(editor, a.id)).toBe(true);
+    expect(await pages.get(a.id)).toBeNull();
   });
 });

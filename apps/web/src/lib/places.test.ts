@@ -6,14 +6,12 @@ import {
   groupOf,
   placeCategories,
   placeGroups,
-  placeIconPaths,
   sortByDistance,
 } from "./places";
 
 describe("groups", () => {
-  test("every category belongs to a group, and every group has a picture", () => {
+  test("every category belongs to a group", () => {
     for (const category of placeCategories) expect(placeGroups).toContain(groupOf(category));
-    for (const group of placeGroups) expect(placeIconPaths[group].length).toBeGreaterThan(0);
   });
 
   test("toilets and rest come first, as the thing people look for most", () => {

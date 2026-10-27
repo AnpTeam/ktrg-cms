@@ -105,22 +105,3 @@ export function groupCounts(places: readonly { category: PlaceCategory }[]): Par
   }
   return counts;
 }
-
-/** SVG path data (24 x 24 grid, stroked) for each group's picture: the chips and the map markers share it. */
-export const placeIconPaths: Record<PlaceGroup, string[]> = {
-  rest: [
-    "M7.5 4.2a1.3 1.3 0 1 0 .01 0",
-    "M5 8h5",
-    "M7.5 8v6",
-    "M7.5 14l-1.8 6",
-    "M7.5 14l1.8 6",
-    "M16.5 4.2a1.3 1.3 0 1 0 .01 0",
-    "M16.5 8l-3 8h6z",
-    "M15.3 16v4",
-    "M17.7 16v4",
-  ],
-  shops: ["M6 8h12l-1 12H7z", "M9 8a3 3 0 0 1 6 0"],
-  vending: ["M7 4h10v16H7z", "M10 8h4", "M10 12h4", "M9.5 17h5"],
-  transport: ["M5 4h14v12H5z", "M5 11h14", "M8 20v-4", "M16 20v-4"],
-  other: ["M12 21s-6-5.5-6-10a6 6 0 0 1 12 0c0 4.5-6 10-6 10z", "M12 9.5a1.5 1.5 0 1 0 .01 0"],
-};

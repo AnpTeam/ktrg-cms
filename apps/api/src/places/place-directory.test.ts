@@ -98,6 +98,18 @@ describe("places directory", () => {
     expect(await svc.importSheet(actor, csv, true)).toMatchObject({ added: 0, skipped: 1 });
   });
 
+  test("an import in slices adds a few per call and says how many are left; a refused row is passed by with skip", async () => {
+    const audit = createMemoryAuditWriter();
+    const svc = createPlaceService({ store: createMemoryPlaceStore(audit.writer).store, routeIds: async () => ["22222222-2222-4222-8222-222222222222"] });
+    const head = "sample,place_id,category,name_ja,name_en,course_no,index,near_spot_ja,prefecture,municipality,address_ja,lat,lng,coord_source,status,last_verified,listing_permission";
+    const row = (id: number, name: string, course: number) => `,${id},トイレ,${name},Toilets,${course},4,桟橋,和歌山県,和歌山市,住所,34.2${id},135.0${id},地図アプリで確認,営業中・利用可,2026/10/16,不要（公共施設）`;
+    const csv = [head, "見本,場所ID,種類,名前,名前,コース,#,近い,府県,市,住所,緯度,経度,出どころ,状態,日,了承", row(1, "甲", 9), row(2, "乙", 1), row(3, "丙", 1)].join("\n");
+    // The first row names a course that does not exist: it fails and stays at the front, so the next call skips it.
+    expect(await svc.importSheet(actor, csv, true, { limit: 2, skip: 0 })).toMatchObject({ added: 1, failed: [{ name: "甲" }], remaining: 1 });
+    expect(await svc.importSheet(actor, csv, true, { limit: 2, skip: 1 })).toMatchObject({ added: 1, failed: [], remaining: 0 });
+    expect((await svc.list()).items).toHaveLength(2);
+  });
+
   test("finds a place entered twice: same name by the comparison, near each other; the most complete is first", async () => {
     const s = setup();
     const made = async (over: Record<string, unknown>) => {

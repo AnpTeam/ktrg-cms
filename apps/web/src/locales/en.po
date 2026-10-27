@@ -90,19 +90,19 @@ msgid "{0}件を削除します。元に戻せません。よろしいですか�
 msgstr "Delete {0}? This cannot be undone."
 
 #. placeholder {0}: done.added
-#: src/components/admin/PlaceImport.tsx:66
+#: src/components/admin/PlaceImport.tsx:86
 msgid "{0}件を取り込みました（下書き）。"
 msgstr "{0} places imported (as drafts)."
 
 #. placeholder {0}: preview.added
-#: src/components/admin/PlaceImport.tsx:60
+#: src/components/admin/PlaceImport.tsx:80
 msgid "{0}件を取り込む"
 msgstr "Import {0} places"
 
 #. placeholder {0}: preview.read
 #. placeholder {1}: preview.added
 #. placeholder {2}: preview.skipped
-#: src/components/admin/PlaceImport.tsx:57
+#: src/components/admin/PlaceImport.tsx:77
 msgid "{0}件を読みました。新しい場所：{1}件、すでにある場所：{2}件"
 msgstr "{0} rows read. New places: {1}. Already there: {2}"
 
@@ -1420,7 +1420,7 @@ msgstr "Sub-course branches from (to this side trip)"
 msgid "サブコースの線を描く"
 msgstr "Draw the sub-course line"
 
-#: src/components/admin/PlaceImport.tsx:51
+#: src/components/admin/PlaceImport.tsx:71
 msgid "シート（CSV）から取り込む"
 msgstr "Import from a sheet (CSV)"
 
@@ -3603,7 +3603,7 @@ msgid "取り込み中… {0} / {1}"
 msgstr "Importing… {0} / {1}"
 
 #. placeholder {0}: items.length
-#: src/components/admin/PlaceImport.tsx:84
+#: src/components/admin/PlaceImport.tsx:104
 msgid "取り込めなかった場所（{0}件）"
 msgstr "Places that could not be imported ({0})"
 
@@ -4721,7 +4721,7 @@ msgstr "Permission from the site has not been confirmed yet. Once you have it, t
 msgid "現地の許可を確認し、「許可確認済み」にチェックを入れてください。"
 msgstr "Confirm permission from the site and tick \"Permission confirmed\"."
 
-#: src/components/admin/PlaceImport.tsx:53
+#: src/components/admin/PlaceImport.tsx:73
 msgid "現地調査のシート（CSV）を選ぶと、まず件数を表示します。取り込んだ場所はすべて下書きで、位置は「未確認」のままです。すでにある場所は追加しません。"
 msgstr "Choose the field survey sheet (CSV) and the counts are shown first. Every imported place is a draft and its position stays \"not checked\". Places already there are not added again."
 

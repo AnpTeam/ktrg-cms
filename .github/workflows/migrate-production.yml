@@ -10,7 +10,9 @@ name: Migrate production database
 on:
   # Automatic: every merge to main that changes a migration applies it right away. Vercel starts deploying the same merge at
   # the same moment, so the gap in which new pages meet an old database is a minute or two; migrations only ever ADD (a
-  # column, a value), so the old pages keep working in that gap.
+  # column, a value), so the old pages keep working in that gap. A change that removes or renames a column is done in two
+  # merges: first add the new column and copy the data, and drop the old one in a later merge once the new pages are live
+  # (0038 dropped places.address in one step: for a minute or two the old pages failed, and that is not to be repeated).
   push:
     branches: [main]
     paths: ["apps/api/drizzle/**"]

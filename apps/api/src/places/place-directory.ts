@@ -1,3 +1,4 @@
+import { publicCache } from "../lib/public-cache";
 import { Elysia, t, type Static } from "elysia";
 import { createMemoryListStore } from "../admin-lists/list-memory-store";
 import type { ListDef } from "../admin-lists/list-routes";
@@ -153,7 +154,12 @@ export interface PlaceImportResult {
   skipped: number;
   /** Rows the rules refused (or whose course does not exist), by name and line-free reason. */
   failed: { name: string; reason: string }[];
+  /** With a `limit`: how many new places are still waiting after this slice (0 when the sheet is done). */
+  remaining: number;
 }
+
+/** A request imports this many places at most, so one request stays inside a serverless function's time limit. */
+export const IMPORT_SLICE = 100;
 
 export function createPlaceService(deps: { store: PlaceStore; photoHosts?: readonly string[]; routeExists?: (id: string) => Promise<boolean>; routeIds?: () => Promise<string[]> }) {
   const list = createListService({ store: deps.store, rules: placeRules(deps.photoHosts, deps.routeExists) });
@@ -176,9 +182,10 @@ export function createPlaceService(deps: { store: PlaceStore; photoHosts?: reado
     /**
      * Adds the places of a field sheet (see import/field-sheets.ts) as drafts: positions stay "not checked", nothing is
      * published, and a place already there (same course, category, name and position) is not added again. `apply: false`
-     * only counts.
+     * only counts. With `limit`, only that many are added per call: send the same sheet again (with `skip` = the failures
+     * so far, which stay at the front of the plan) until `remaining` is 0. Places already added are skipped each time.
      */
-    async importSheet(actor: string, csv: string, apply: boolean): Promise<PlaceImportResult> {
+    async importSheet(actor: string, csv: string, apply: boolean, slice: { limit?: number; skip?: number } = {}): Promise<PlaceImportResult> {
       const courses = (await deps.routeIds?.()) ?? [];
       const number = new Map(courses.map((id, i) => [id, i + 1]));
       const existing: ExistingPlace[] = (await everyPlace()).map((r) => ({ id: r.id, route: r.routeId ? (number.get(r.routeId) ?? null) : null, category: r.category, nameJa: r.nameJa, lat: r.lat, lng: r.lng }));
@@ -186,7 +193,9 @@ export function createPlaceService(deps: { store: PlaceStore; photoHosts?: reado
       const plan = planPlaces(facilities, existing);
       const failed: PlaceImportResult["failed"] = [];
       let added = 0;
-      for (const p of plan.places) {
+      const skip = slice.skip ?? 0;
+      const todo = slice.limit === undefined ? plan.places : plan.places.slice(skip, skip + slice.limit);
+      for (const p of todo) {
         const routeId = courses[p.route - 1] ?? null;
         if (routeId === null) {
           failed.push({ name: p.nameJa, reason: `course ${p.route}` });
@@ -225,7 +234,8 @@ export function createPlaceService(deps: { store: PlaceStore; photoHosts?: reado
         if (r.ok) added++;
         else failed.push({ name: p.nameJa, reason: r.reason });
       }
-      return { read: facilities.length, added, skipped: plan.skipped, failed };
+      const remaining = slice.limit === undefined ? 0 : Math.max(0, plan.places.length - skip - slice.limit);
+      return { read: facilities.length, added, skipped: plan.skipped, failed, remaining };
     },
     /** What visitors see: published places with a checked position (the database also refuses to publish others). */
     async publicPlaces(routeId?: string): Promise<PlaceRow[]> {
@@ -347,7 +357,8 @@ export function publicPlaceRoutes(getPlaces: () => PlaceService, log: (message: 
   let warned = false;
   return new Elysia({ detail: { tags: ["Content"] } }).get(
     "/places",
-    async ({ query }) => {
+    async ({ query, set }) => {
+      publicCache(set);
       const all = await getPlaces().publicPlaces(query.route);
       if (all.length > MAX_PUBLIC_PLACES && !warned) {
         warned = true;
@@ -394,7 +405,7 @@ export function placeImportRoutes<S extends PlaceServices>(getServices: () => S,
     .get("/duplicates", async () => ({ ok: true as const, groups: (await getServices().places.duplicates()).map((g) => g.map(rowOut)) }), { auth: placeDirectoryList.permission })
     .post(
     "/import",
-    async ({ user, body }) => ({ ok: true as const, ...(await getServices().places.importSheet(user.id, body.csv, body.apply)) }),
-    { auth: placeDirectoryList.permission, rateLimit: { adminWriteUser: "user.id" }, body: t.Object({ csv: t.String({ maxLength: 2_000_000 }), apply: t.Boolean() }) },
+    async ({ user, body }) => ({ ok: true as const, ...(await getServices().places.importSheet(user.id, body.csv, body.apply, body.apply ? { limit: IMPORT_SLICE, skip: body.skip } : {})) }),
+    { auth: placeDirectoryList.permission, rateLimit: { adminWriteUser: "user.id" }, body: t.Object({ csv: t.String({ maxLength: 2_000_000 }), apply: t.Boolean(), skip: t.Optional(t.Integer({ minimum: 0, maximum: 100_000 })) }) },
   );
 }

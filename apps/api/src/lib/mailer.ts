@@ -8,6 +8,16 @@ export interface MailMessage {
   html?: string;
 }
 
+/**
+ * What may be logged about a failed send: the error's name and SMTP code, never its message (a mail server may echo the
+ * recipient in it, for example "<user@host>: Recipient address rejected").
+ */
+export function mailFailure(err: unknown): string {
+  if (!(err instanceof Error)) return "unknown";
+  const code = (err as { responseCode?: unknown }).responseCode;
+  return typeof code === "number" ? `${err.name} ${code}` : err.name;
+}
+
 export interface Mailer {
   send(message: MailMessage): Promise<void>;
 }

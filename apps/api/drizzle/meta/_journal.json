@@ -274,6 +274,13 @@
       "when": 1793004439968,
       "tag": "0038_place_address_words",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1793059951250,
+      "tag": "0039_strong_lilandra",
+      "breakpoints": true
     }
   ]
 }

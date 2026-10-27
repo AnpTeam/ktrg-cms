@@ -1,3 +1,4 @@
+import { publicCache } from "../lib/public-cache";
 import { Elysia, t, type Static } from "elysia";
 import { createMemoryListStore } from "../admin-lists/list-memory-store";
 import type { ListDef } from "../admin-lists/list-routes";
@@ -138,8 +139,11 @@ export const bannerList: ListDef<"banners", typeof BANNER_FIELDS, BannerRow, Ban
 
 /** What visitors get: published banners in order, without the admin's fields. */
 export function publicBannerRoutes(getBanners: () => BannerService) {
-  return new Elysia({ detail: { tags: ["Content"] } }).get("/banners", async () => ({
-    ok: true as const,
-    banners: (await getBanners().publicBanners()).map(({ id, imageUrl, imageCredit, altJa, altEn }) => ({ id, imageUrl, imageCredit, altJa, altEn })),
-  }));
+  return new Elysia({ detail: { tags: ["Content"] } }).get("/banners", async ({ set }) => {
+    publicCache(set);
+    return {
+      ok: true as const,
+      banners: (await getBanners().publicBanners()).map(({ id, imageUrl, imageCredit, altJa, altEn }) => ({ id, imageUrl, imageCredit, altJa, altEn })),
+    };
+  });
 }

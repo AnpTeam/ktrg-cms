@@ -17,7 +17,7 @@ function setup(opts: { mailFails?: boolean } = {}) {
   const logs: string[] = [];
   const mailer: Mailer = {
     async send(m) {
-      if (opts.mailFails) throw new Error("smtp down");
+      if (opts.mailFails) throw new Error("<alice@example.com>: Recipient address rejected");
       sent.push(m);
     },
   };
@@ -118,7 +118,7 @@ describe("deletion request", () => {
   test("a mail failure is logged and the request still stands", async () => {
     const { service, logs } = setup({ mailFails: true });
     expect((await service.requestDeletion(alice))!.deletionRequestedAt).not.toBeNull();
-    expect(logs).toEqual(["[me] deletion email failed: smtp down"]);
+    expect(logs).toEqual(["[me] deletion email failed: Error"]); // the name only: a mail server may echo the address in its message
   });
 
   test("cancel clears it (audited); cancelling with nothing pending changes nothing", async () => {

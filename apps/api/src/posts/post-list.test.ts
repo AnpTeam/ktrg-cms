@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { createMemoryAuditWriter } from "../audit/audit-log";
-import { createMemoryPostStore, createPostService, PUBLIC_POSTS_LIMIT } from "./post-list";
+import { createMemoryPostStore, createPostService, LIST_BODY_CHARS, PUBLIC_POSTS_LIMIT } from "./post-list";
 
 const actor = "11111111-1111-4111-8111-111111111111";
 
@@ -141,5 +141,24 @@ describe("blog posts", () => {
     expect(await read()).toMatchObject({ authorNameJa: "取材班", authorNameEn: "Survey team", authorPhotoUrl: "https://example.com/team.jpg" });
     set({ writer: { nameJa: "取材班", nameEn: null, photoUrl: null }, authorNameJa: "ゲスト" });
     expect(await read()).toMatchObject({ authorNameJa: "ゲスト", authorPhotoUrl: null });
+  });
+
+  test("the list carries only the start of each text and is cached for a minute; one post carries all of it", async () => {
+    const audit = createMemoryAuditWriter();
+    const svc = createPostService({ store: createMemoryPostStore(audit.writer).store, now: () => NOW });
+    const long = "あ".repeat(LIST_BODY_CHARS + 500);
+    const made = await svc.create(actor, post({ published: true, bodyJa: long, bodyEn: long }));
+    if (!made.ok) throw new Error("not made");
+    const { publicPostRoutes } = await import("./post-list");
+    const { Elysia } = await import("elysia");
+    const { apiBase } = await import("../lib/api-errors");
+    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(publicPostRoutes(() => svc));
+    const list = await app.handle(new Request("http://localhost/api/v1/posts"));
+    expect(list.headers.get("cache-control")).toBe("public, max-age=60");
+    const { posts } = (await list.json()) as { posts: { bodyJa: string; bodyEn: string | null }[] };
+    expect(posts[0]!.bodyJa).toHaveLength(LIST_BODY_CHARS);
+    expect(posts[0]!.bodyEn).toHaveLength(LIST_BODY_CHARS);
+    const one = (await (await app.handle(new Request(`http://localhost/api/v1/posts/${made.value.id}`))).json()) as { post: { bodyJa: string } };
+    expect(one.post.bodyJa).toHaveLength(long.length);
   });
 });

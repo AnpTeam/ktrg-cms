@@ -52,9 +52,16 @@ export function createStampService({ store }: { store: StampStore }) {
       return isStampPlace(spot) ? spot : null;
     },
 
+    /** The stamp places among these ids, in one query; an id that is not (or no longer) a stamp place is left out. */
+    async stampPlaces(spotIds: string[]): Promise<Map<string, StampPlace>> {
+      const found = (await store.findSpots([...new Set(spotIds)])).filter(isStampPlace);
+      return new Map(found.map((s) => [s.id, s]));
+    },
+
     check: (r: Reading) => check(r, store),
 
     /** Saves a stamp whose checks were already done (a guest's, once they sign up). */
+    awardMany: (userId: string, items: { spotId: string; flagged: boolean }[]) => store.awardMany(userId, items),
     award: (userId: string, spotId: string, flagged: boolean) => store.award(userId, spotId, { flagged, flagReason: flagged ? "low_accuracy" : null }),
 
     async collect(userId: string, r: Reading): Promise<Result<Collected>> {
