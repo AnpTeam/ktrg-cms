@@ -1,0 +1,62 @@
+name: Dump content from production
+
+# Copies the production database's CONTENT (routes, waypoints, places, posts, rallies, settings) into a file you can
+# download, to load into a local database. Run by hand: Actions -> "Dump content from production" -> Run workflow.
+# Needs the repository secret PRODUCTION_DATABASE_URL (the same one the migrate job uses).
+# Why here: some networks (an office intranet) block the Postgres port, but GitHub's servers can reach Supabase.
+# The file has the table structure for everything but the ROWS of the tables that hold personal data (accounts,
+# sessions, passkeys, sign-in codes, stamps, completions, comments, audit log, rate limits) are left out.
+# It is kept for one day and only people with access to this repository can download it.
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "dump" to copy the production content into a downloadable file'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  dump:
+    if: github.event.inputs.confirm == 'dump'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check the secret is set
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::Add the repository secret PRODUCTION_DATABASE_URL first."
+            exit 1
+          fi
+
+      # postgres:18 so pg_dump is not older than the server. Only reads.
+      - name: Dump
+        env:
+          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+        run: |
+          mkdir out
+          docker run --rm -e DATABASE_URL -v "$PWD/out:/out" postgres:18 sh -c '
+            pg_dump "$DATABASE_URL" --no-owner --no-privileges -Fc -n public -n drizzle \
+              --exclude-table-data=public.users \
+              --exclude-table-data=public.sessions \
+              --exclude-table-data=public.passkeys \
+              --exclude-table-data=public.otp_codes \
+              --exclude-table-data=public.webauthn_challenges \
+              --exclude-table-data=public.stamps \
+              --exclude-table-data=public.course_completions \
+              --exclude-table-data=public.rally_completions \
+              --exclude-table-data=public.blog_comments \
+              --exclude-table-data=public.audit_log \
+              --exclude-table-data=public.rate_limits \
+              -f /out/content.dump'
+          ls -l out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: content-dump
+          path: out/content.dump
+          retention-days: 1
+          if-no-files-found: error
