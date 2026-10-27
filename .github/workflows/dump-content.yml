@@ -38,8 +38,10 @@ jobs:
           DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
         run: |
           mkdir out
-          docker run --rm -e DATABASE_URL -v "$PWD/out:/out" postgres:18 sh -c '
-            pg_dump "$DATABASE_URL" --no-owner --no-privileges -Fc -n public -n drizzle \
+          # Supabase's pooler URL can end in ?supa=...; pg_dump refuses parameters it does not know, so keep only sslmode.
+          export DUMP_URL="${DATABASE_URL%%\?*}?sslmode=require"
+          docker run --rm -e DUMP_URL -v "$PWD/out:/out" postgres:18 sh -c '
+            pg_dump "$DUMP_URL" --no-owner --no-privileges -Fc -n public -n drizzle \
               --exclude-table-data=public.users \
               --exclude-table-data=public.sessions \
               --exclude-table-data=public.passkeys \
