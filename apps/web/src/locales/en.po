@@ -12,7 +12,7 @@ msgid "　{until} まで"
 msgstr "  Until {until}"
 
 #. placeholder {0}: formatMoment(locale, String(item.restrictedUntil))
-#: src/components/admin/UserActions.tsx:69
+#: src/components/admin/UserActions.tsx:67
 msgid "（{0} まで）"
 msgstr " (until {0})"
 
@@ -32,7 +32,7 @@ msgstr "(no name)"
 msgid "（外部サイトが新しいタブで開きます）"
 msgstr "(opens an external site in a new tab)"
 
-#: src/components/admin/UserActions.tsx:69
+#: src/components/admin/UserActions.tsx:67
 msgid "（解除するまで）"
 msgstr " (until an admin lifts it)"
 
@@ -500,11 +500,11 @@ msgstr "30s"
 msgid "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 msgstr "For 3 days you can sign in and cancel. After that, it cannot be undone."
 
-#: src/components/admin/UserActions.tsx:109
+#: src/components/admin/UserActions.tsx:107
 msgid "3日後に削除する"
 msgstr "Delete in 3 days"
 
-#: src/components/admin/UserActions.tsx:108
+#: src/components/admin/UserActions.tsx:106
 msgid "3日後の削除を予約しました。"
 msgstr "Deletion in 3 days is scheduled."
 
@@ -664,11 +664,11 @@ msgstr "This erases your account and your records, such as collected stamps. You
 msgid "アカウントのものだけにする"
 msgstr "Keep only the account's"
 
-#: src/components/admin/UserActions.tsx:55
+#: src/components/admin/UserActions.tsx:53
 msgid "アカウントの制限・削除"
 msgstr "Restrict or delete the account"
 
-#: src/components/admin/UserActions.tsx:97
+#: src/components/admin/UserActions.tsx:95
 #: src/components/ProfileSettings.tsx:188
 msgid "アカウントの削除"
 msgstr "Delete account"
@@ -780,7 +780,7 @@ msgstr "Nice to have: {0}"
 msgid "いただいた情報は、どんな方がこのアプリを使っているかを知るためだけに使います。個人が分からない形でまとめます。くわしくは<0>プライバシーポリシー</0>をご覧ください。"
 msgstr "We use what you tell us only to understand who uses this app, and we put it together in a form that does not identify anyone. For details, see the <0>privacy policy</0>."
 
-#: src/components/admin/UserActions.tsx:82
+#: src/components/admin/UserActions.tsx:80
 msgid "いつまで（空なら、解除するまで）"
 msgstr "Until (empty: until you lift it)"
 
@@ -1873,7 +1873,7 @@ msgstr "Join"
 msgid "できた"
 msgstr "Done"
 
-#: src/components/admin/UserActions.tsx:114
+#: src/components/admin/UserActions.tsx:112
 msgid "テスト用のアカウントなどは、今すぐ消せます。元に戻せません。スタンプ・コメント・ログインの情報もすべて消えます。"
 msgstr "A test account, for example, can be deleted at once. This cannot be undone: its stamps, comments and sign-in details are all removed."
 
@@ -2059,7 +2059,7 @@ msgstr "Standard"
 msgid "ふつうの大きさです。"
 msgstr "The usual size."
 
-#: src/components/admin/UserActions.tsx:107
+#: src/components/admin/UserActions.tsx:105
 msgid "ふつうは、3日後に削除する方法を使います。その間は、取り消せます。"
 msgstr "Usually use the 3-day way. It can be cancelled until then."
 
@@ -2949,7 +2949,7 @@ msgstr "Cut the existing line into legs in waypoint order (where the waypoints d
 msgid "今すぐアカウントを作りましょう。記録が消えてしまうかもしれません！"
 msgstr "Create an account now, or you may lose your record!"
 
-#: src/components/admin/UserActions.tsx:124
+#: src/components/admin/UserActions.tsx:122
 msgid "今すぐ削除する"
 msgstr "Delete now"
 
@@ -3640,31 +3640,31 @@ msgstr "Someone else saved first. Reload the page and try again."
 msgid "利用規約"
 msgstr "Terms of use"
 
-#: src/components/admin/UserActions.tsx:63
+#: src/components/admin/UserActions.tsx:61
 msgid "制限"
 msgstr "Restriction"
 
-#: src/components/admin/UserActions.tsx:64
+#: src/components/admin/UserActions.tsx:62
 msgid "制限されたアカウントは、ログインと閲覧はできますが、スタンプを押すこととコメントを書くことはできません。自分のデータを見たり、削除を頼んだりはできます。"
 msgstr "A restricted account can sign in and look around, but cannot collect stamps or write comments. It can still see its own data and ask to be deleted."
 
-#: src/components/admin/UserActions.tsx:88
+#: src/components/admin/UserActions.tsx:86
 msgid "制限しました。"
 msgstr "Restricted."
 
-#: src/components/admin/UserActions.tsx:91
+#: src/components/admin/UserActions.tsx:89
 msgid "制限する"
 msgstr "Restrict"
 
-#: src/components/admin/UserActions.tsx:73
+#: src/components/admin/UserActions.tsx:71
 msgid "制限を解除しました。"
 msgstr "Restriction lifted."
 
-#: src/components/admin/UserActions.tsx:74
+#: src/components/admin/UserActions.tsx:72
 msgid "制限を解除する"
 msgstr "Lift the restriction"
 
-#: src/components/admin/UserActions.tsx:68
+#: src/components/admin/UserActions.tsx:66
 msgid "制限中"
 msgstr "Restricted"
 
@@ -3682,11 +3682,11 @@ msgstr "Restricted"
 msgid "削除"
 msgstr "Delete"
 
-#: src/components/admin/UserActions.tsx:100
+#: src/components/admin/UserActions.tsx:98
 msgid "削除が予約されています。3日たつと、アカウントとスタンプが消えます。"
 msgstr "Deletion is scheduled. After 3 days the account and its stamps are removed."
 
-#: src/components/admin/UserActions.tsx:121
+#: src/components/admin/UserActions.tsx:119
 msgid "削除しました。"
 msgstr "Deleted."
 
@@ -3694,11 +3694,11 @@ msgstr "Deleted."
 msgid "削除する"
 msgstr "Delete"
 
-#: src/components/admin/UserActions.tsx:101
+#: src/components/admin/UserActions.tsx:99
 msgid "削除の予約を取り消しました。"
 msgstr "The scheduled deletion was cancelled."
 
-#: src/components/admin/UserActions.tsx:102
+#: src/components/admin/UserActions.tsx:100
 msgid "削除の予約を取り消す"
 msgstr "Cancel the scheduled deletion"
 
@@ -5098,11 +5098,11 @@ msgid "現地調査のシート（CSV）を選ぶと、まず件数を表示し�
 msgstr "Choose the field survey sheet (CSV) and the counts are shown first. Every imported place is a draft and its position stays \"not checked\". Places already there are not added again."
 
 #. placeholder {0}: String(item.restrictionReason ?? "")
-#: src/components/admin/UserActions.tsx:71
+#: src/components/admin/UserActions.tsx:69
 msgid "理由：{0}"
 msgstr "Reason: {0}"
 
-#: src/components/admin/UserActions.tsx:79
+#: src/components/admin/UserActions.tsx:77
 msgid "理由（管理者だけに見えます）"
 msgstr "Reason (only admins see it)"
 
@@ -5229,7 +5229,7 @@ msgstr "Confirm"
 msgid "確認できませんでした。もう一度お試しください。"
 msgstr "We could not confirm it. Please try again."
 
-#: src/components/admin/UserActions.tsx:115
+#: src/components/admin/UserActions.tsx:113
 msgid "確認のため、会員番号（{memberId}）を入れてください"
 msgstr "To confirm, enter the member ID ({memberId})"
 
@@ -5297,7 +5297,7 @@ msgstr "Signed in as an administrator"
 msgid "管理者のアカウントは、制限したり削除したりできません。先に権限を変えてください。"
 msgstr "An admin account cannot be restricted or deleted. Change its permission first."
 
-#: src/components/admin/UserActions.tsx:56
+#: src/components/admin/UserActions.tsx:54
 msgid "管理者のアカウントは、制限や削除ができません。先に「権限」を変えてください。"
 msgstr "An admin account cannot be restricted or deleted. Change its \"Permission\" first."
 

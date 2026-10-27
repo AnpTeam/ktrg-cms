@@ -210,7 +210,7 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
 
       await sessions.create({ userId: user.id, tokenHash, expiresAt, absoluteExpiresAt, now });
       const found = await sessions.find(tokenHash);
-      expect(found?.user).toEqual(user);
+      expect(found?.user).toEqual({ ...user, restricted: false });
       expect(found?.session.absoluteExpiresAt.getTime()).toBe(absoluteExpiresAt.getTime());
 
       const slid = new Date(now.getTime() + 20 * 86_400_000);
