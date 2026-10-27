@@ -51,6 +51,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
         <div className="min-w-0 max-w-xl flex-1 md:border-x md:border-surface lg:max-w-none lg:border-x-0">
           <SiteHeader
             signedIn={viewer.signedIn}
+            staff={viewer.role === "editor" || viewer.role === "admin"}
             locale={i18n.locale}
             profile={{ publicId: viewer.publicId, deletionDueAt: viewer.deletionDueAt, name: viewer.name, origin: viewer.origin, ageRange: viewer.ageRange, gender: viewer.gender, foundVia: viewer.foundVia }}
             prefs={prefsState.effective}

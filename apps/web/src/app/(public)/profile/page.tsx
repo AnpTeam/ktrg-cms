@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Trans } from "@lingui/react/macro";
 import { ProfileCard } from "@/components/ProfileCard";
 import { ProfilePhoto } from "@/components/ProfilePhoto";
@@ -19,7 +20,14 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
       {viewer.signedIn ? (
         <>
           <ProfileCard publicId={viewer.publicId} deletionDueAt={viewer.deletionDueAt} locale={i18n.locale} name={viewer.name} origin={viewer.origin} ageRange={viewer.ageRange} gender={viewer.gender} foundVia={viewer.foundVia} email={viewer.email} />
-          {viewer.role === "editor" || viewer.role === "admin" ? <ProfilePhoto photoUrl={viewer.avatarUrl ?? null} name={viewer.name} /> : null}
+          {viewer.role === "editor" || viewer.role === "admin" ? (
+            <>
+              <Link prefetch={false} href="/admin" className="tap-target mx-4 flex items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper">
+                <Trans>管理画面を開く</Trans>
+              </Link>
+              <ProfilePhoto photoUrl={viewer.avatarUrl ?? null} name={viewer.name} />
+            </>
+          ) : null}
           <ProfileSettings locale={i18n.locale} deletionDueAt={viewer.deletionDueAt} name={viewer.name} origin={viewer.origin} ageRange={viewer.ageRange} gender={viewer.gender} foundVia={viewer.foundVia} />
         </>
       ) : (

@@ -42,12 +42,15 @@ const parentOf = (pathname: string) => (pathname.startsWith("/routes/") ? "/rout
  */
 export function SiteHeader({
   signedIn,
+  staff = false,
   profile,
   locale,
   prefs,
   sample,
 }: {
   signedIn: boolean;
+  /** An editor or admin: the menu has a link to the admin area (the server still checks the role there). */
+  staff?: boolean;
   profile: Omit<ProfileCardProps, "locale">;
   locale: string;
   prefs: Prefs;
@@ -223,6 +226,13 @@ export function SiteHeader({
               <Link prefetch={false} href="/profile" className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
                 <GearIcon />
                 <span className="min-w-0 flex-1">{t`アカウント設定`}</span>
+                <ChevronIcon />
+              </Link>
+            ) : null}
+            {staff ? (
+              <Link prefetch={false} href="/admin" className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
+                <GearIcon />
+                <span className="min-w-0 flex-1">{t`管理画面`}</span>
                 <ChevronIcon />
               </Link>
             ) : null}
