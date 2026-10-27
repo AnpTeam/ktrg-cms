@@ -20,8 +20,8 @@ export default async function GuidePage() {
   return (
     <div className="page-narrow flex flex-col gap-6 pt-2">
       <div className="flex flex-col gap-6 px-4">
-        <BackLink href="/">
-          <Trans>ホーム</Trans>
+        <BackLink href="/rallies">
+          <Trans>ラリー</Trans>
         </BackLink>
         <h1 className="text-3xl font-bold">{help.guideTitle}</h1>
         <div className="max-w-prose whitespace-pre-line text-lg leading-8">
