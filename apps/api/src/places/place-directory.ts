@@ -11,6 +11,7 @@ import { parseFacilities, planPlaces, type ExistingPlace } from "../import/field
 import { routeKit, type RouteOptions } from "../auth/route-kit";
 import { cleanTranslations } from "../db/translations";
 import { placeCategories } from "../db/schema";
+import { cleanHours, closedDaysText, hasBackwardPeriod, hoursText, OPENING_HOURS } from "./opening-hours";
 import { isPhotoUrl } from "../lib/https-url";
 import { oneOf, translationsSchema } from "../lib/schemas";
 
@@ -24,6 +25,7 @@ export const PLACE_FIELDS = {
   category: oneOf(placeCategories),
   routeId: t.Union([t.String({ format: "uuid" }), t.Null()]),
   nearSpotId: t.Union([t.String({ format: "uuid" }), t.Null()]),
+  openingHours: t.Union([OPENING_HOURS, t.Null()]),
   nameJa: t.String({ minLength: 1, maxLength: 200 }),
   nameEn: maybe(200),
   descriptionJa: maybe(2000),
@@ -88,6 +90,10 @@ export const placeRules = (photoHosts: readonly string[] = [], routeExists?: (id
   // A shop's own site is often plain http; it is only a link out, never loaded into our pages.
   if (typeof f.website === "string" && !isWebLink(f.website)) return bad("invalid_source_url");
   if (typeof f.photoUrl === "string" && !isPhotoUrl(f.photoUrl, photoHosts)) return bad("invalid_photo_url");
+  if (f.openingHours) {
+    if (hasBackwardPeriod(f.openingHours)) return bad("validation_failed");
+    out.openingHours = cleanHours(f.openingHours);
+  }
   if (f.lat !== undefined && f.lng !== undefined && (f.lat === null) !== (f.lng === null)) return bad("validation_failed");
   // An unknown route would fail the foreign key inside the write and answer 500.
   if (typeof f.routeId === "string" && routeExists && !(await routeExists(f.routeId))) return bad("validation_failed");
@@ -117,7 +123,7 @@ export const SAME_PLACE_METRES = 150;
 
 /** How much of a place is filled in: the one to keep among twins is the most complete. */
 const completeness = (p: PlaceRow) =>
-  [p.published, p.positionVerified, p.listingConfirmed, p.photoUrl, p.descriptionJa, p.hoursJa, p.addressJa, p.phone, p.website, p.lat !== null].filter(Boolean).length;
+  [p.published, p.positionVerified, p.listingConfirmed, p.photoUrl, p.descriptionJa, p.hoursJa ?? p.openingHours, p.addressJa, p.phone, p.website, p.lat !== null].filter(Boolean).length;
 
 /**
  * Places that look like one place entered twice: the same name (as the names are compared above) and, where both have a
@@ -215,6 +221,7 @@ export function createPlaceService(deps: { store: PlaceStore; photoHosts?: reado
           category: p.category as PlaceFields["category"],
           routeId,
           nearSpotId: named.length === 1 ? named[0]!.id : null,
+          openingHours: null,
           nameJa: p.nameJa,
           nameEn: p.nameEn,
           descriptionJa: p.descriptionJa,
@@ -317,8 +324,14 @@ export const placeDirectoryList: ListDef<"directory", typeof PLACE_FIELDS, Place
         noneLabel: { ja: "（なし）", en: "(none)" },
       },
       { name: "description", kind: "bilingual-long", label: { ja: "説明", en: "Description" } },
-      { name: "hours", kind: "bilingual", label: { ja: "営業時間・利用時間", en: "Opening hours" } },
-      { name: "closedDays", kind: "bilingual", label: { ja: "休業日", en: "Closed days" } },
+      {
+        name: "openingHours",
+        kind: "hours",
+        label: { ja: "営業時間・休業日", en: "Opening hours and closed days" },
+        hint: { ja: "曜日ごとに時間を選びます。昼休みなどで一日に二回開く店は「時間を追加」で足します。休みの日は「休み」にします。", en: "Pick the times for each day. For a shop open twice in a day (a lunch break), add a second period. Mark closed days as closed." },
+      },
+      { name: "hours", kind: "bilingual", label: { ja: "営業時間（旧・文章）", en: "Opening hours (older text)" }, hint: { ja: "上の表が空のときだけ、訪問者に表示されます。", en: "Shown to visitors only while the table above is empty." } },
+      { name: "closedDays", kind: "bilingual", label: { ja: "休業日（旧・文章）", en: "Closed days (older text)" }, hint: { ja: "上の表が空のときだけ、訪問者に表示されます。", en: "Shown to visitors only while the table above is empty." } },
       {
         name: "status",
         kind: "select",
@@ -391,10 +404,11 @@ export function publicPlaceRoutes(getPlaces: () => PlaceService, log: (message: 
         nameEn: p.nameEn,
         descriptionJa: p.descriptionJa,
         descriptionEn: p.descriptionEn,
-        hoursJa: p.hoursJa,
-        hoursEn: p.hoursEn,
-        closedDaysJa: p.closedDaysJa,
-        closedDaysEn: p.closedDaysEn,
+        // Hours entered as data win; a place with only the older text keeps showing that.
+        hoursJa: hoursText(p.openingHours, "ja") ?? p.hoursJa,
+        hoursEn: hoursText(p.openingHours, "en") ?? p.hoursEn,
+        closedDaysJa: p.openingHours ? closedDaysText(p.openingHours, "ja") : p.closedDaysJa,
+        closedDaysEn: p.openingHours ? closedDaysText(p.openingHours, "en") : p.closedDaysEn,
         lat: p.lat!,
         lng: p.lng!,
         addressJa: p.addressJa,

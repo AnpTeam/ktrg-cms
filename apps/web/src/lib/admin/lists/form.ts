@@ -1,3 +1,4 @@
+import { hoursPayload } from "../opening-hours";
 import type { ListItem, ListMeta } from "./config";
 
 // What the generic form holds and sends. The form keeps text ("" for empty) and ticks; the API takes null for an
@@ -19,6 +20,7 @@ export function formValues(config: ListMeta, item: ListItem | null): FormValues 
   const out: FormValues = {};
   for (const f of sent(config)) {
     if (f.kind === "boolean") out[f.name] = item?.[f.name] === true;
+    else if (f.kind === "hours") out[f.name] = item?.[f.name] ? JSON.stringify(item[f.name]) : "";
     else if (f.kind === "select" && !item) out[f.name] = f.options?.[0]?.value ?? "";
     else for (const name of apiNames({ ...config, fields: [f] })) {
       const v = item?.[name];
@@ -42,6 +44,9 @@ export function toPayload(config: ListMeta, values: FormValues): Record<string, 
       case "boolean":
         out[f.name] = values[f.name] === true;
         break;
+      case "hours":
+        out[f.name] = hoursPayload(text(f.name));
+        break;
       case "number":
       case "decimal":
         out[f.name] = text(f.name) === "" ? null : Number(text(f.name));
@@ -57,7 +62,7 @@ export function toPayload(config: ListMeta, values: FormValues): Record<string, 
 export function changedFields(config: ListMeta, values: FormValues, saved: ListItem): Record<string, unknown> {
   const now = toPayload(config, values);
   const before = toPayload(config, formValues(config, saved));
-  return Object.fromEntries(Object.entries(now).filter(([k, v]) => v !== before[k]));
+  return Object.fromEntries(Object.entries(now).filter(([k, v]) => JSON.stringify(v) !== JSON.stringify(before[k])));
 }
 
 /** The required fields that are still empty (Japanese, for a bilingual field). */

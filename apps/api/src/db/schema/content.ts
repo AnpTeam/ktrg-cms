@@ -16,6 +16,7 @@ import {
   uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
+import type { OpeningHours } from "../../places/opening-hours";
 import { users } from "./auth";
 
 // Table definitions follow section 9.4 of the system design document.
@@ -623,6 +624,8 @@ export const places = pgTable(
     routeId: uuid("route_id").references(() => routes.id, { onDelete: "set null" }),
     // The waypoint it is closest to (the course alone is too wide to say where on the trail).
     nearSpotId: uuid("near_spot_id").references(() => spots.id, { onDelete: "set null" }),
+    // Structured hours (places/opening-hours.ts); when set, visitors read the text built from it instead of the older hours text.
+    openingHours: jsonb("opening_hours").$type<OpeningHours>(),
     lat: doublePrecision("lat"),
     lng: doublePrecision("lng"),
     positionVerified: boolean("position_verified").notNull().default(false),

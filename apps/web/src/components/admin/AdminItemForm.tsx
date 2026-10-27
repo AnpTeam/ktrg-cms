@@ -10,6 +10,7 @@ import { changedFields, formValues, missingRequired, toPayload, type FormValues 
 import { listRequest, type ListAnswer, type ListPage, type OneItem } from "@/lib/admin/lists/list-client";
 import { translationsChange, type Translations } from "@/lib/admin/content-locales";
 import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
+import { HoursInput } from "./HoursInput";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoLinkDetails } from "./PhotoLinkDetails";
 import { PhotoUpload } from "./PhotoUpload";
@@ -186,6 +187,12 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
         return (
           <Field key={f.name} label={label} hint={hint} htmlFor={id} required={f.required}>
             <RelationPicker id={id} to={f.to ?? ""} locale={locale} value={text(f.name)} choices={choices[f.name] ?? []} max={MAX_RELATION_CHOICES} noneLabel={f.noneLabel ? pick(f.noneLabel, locale) : "—"} onChange={set(f.name)} />
+          </Field>
+        );
+      case "hours":
+        return (
+          <Field key={f.name} label={label} hint={hint} htmlFor={id}>
+            <HoursInput id={id} value={text(f.name)} onChange={set(f.name)} disabled={busy} />
           </Field>
         );
       case "select":

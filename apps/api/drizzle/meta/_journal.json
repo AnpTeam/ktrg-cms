@@ -295,6 +295,13 @@
       "when": 1793068470537,
       "tag": "0041_common_ser_duncan",
       "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "7",
+      "when": 1793074534396,
+      "tag": "0042_mysterious_magus",
+      "breakpoints": true
     }
   ]
 }
