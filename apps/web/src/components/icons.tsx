@@ -310,3 +310,12 @@ export const FuriganaIcon = () => (
     <path d="M8 16h8" />
   </Icon>
 );
+
+/** A globe: where visitors come from. */
+export const GlobeIcon = () => (
+  <Icon>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M3 12h18" />
+    <path d="M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9S9.5 5.5 12 3Z" />
+  </Icon>
+);

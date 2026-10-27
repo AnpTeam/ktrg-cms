@@ -55,6 +55,10 @@ cmd /c "docker compose exec -T db pg_restore --clean --if-exists --no-owner -U k
 
 This overwrites the local content. To keep accounts and stamps too, upgrade to the Supabase Pro plan (7 days of backups) or take a full `pg_dump` from a network that allows port 5432. A backup that has never been restored is not a backup: restore it once into a local database and look at the row counts.
 
+## Region counts
+
+The "Where visits come from" screen reads the place from the headers Vercel adds to each request. The API only believes them when `TRUST_PROXY=true`, so set that in Vercel (Environment Variables) for production; without it every visit is counted as "Unknown". On a laptop there are no such headers, so the screen shows only "Unknown" there. The counts hold no IP address (table `visit_counts`: day, country, region, city, page, views).
+
 ## Rotating secrets
 
 | Secret            | Effect of changing it                                                                                             |

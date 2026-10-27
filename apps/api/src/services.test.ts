@@ -4,6 +4,7 @@ import { createMemoryOtpStore } from "./auth/otp-memory-store";
 import { createMemoryPasskeyStore } from "./auth/passkey-memory-store";
 import { createMemoryRateLimitStore } from "./auth/rate-limit-memory-store";
 import { createMemorySessionStore } from "./auth/session-memory-store";
+import { createMemoryVisitStore } from "./visits/visits";
 import { createMemorySiteSettingsStore } from "./site-settings/site-settings";
 import { createMemoryPlaceStore } from "./places/place-directory";
 import { createMemoryAuthorStore } from "./posts/author-list";
@@ -45,6 +46,7 @@ function build(photoHosts?: string[]) {
       authors: createMemoryAuthorStore(audit.writer).store,
       places: createMemoryPlaceStore(audit.writer).store,
       siteSettings: createMemorySiteSettingsStore(audit.writer),
+      visits: createMemoryVisitStore(),
       auditList: memoryReader(new Map()),
       placeList: memoryReader(new Map()),
       userList: createMemoryUserListStore(audit.writer).store,

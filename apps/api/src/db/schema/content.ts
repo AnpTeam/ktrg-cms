@@ -669,3 +669,21 @@ export const placeTranslations = pgTable(
   },
   (t) => [primaryKey({ columns: [t.placeId, t.locale] }), check("place_translations_ja_name", jaRequires(t, t.name))],
 );
+
+/**
+ * Page views counted per day, per place the visit came from (see visits/): an approximate country, region and city taken
+ * from the connection, and the page. Only counts: no IP address, no account, no time of day, nothing about one person.
+ * Empty text means "unknown".
+ */
+export const visitCounts = pgTable(
+  "visit_counts",
+  {
+    day: date("day").notNull(),
+    country: text("country").notNull(),
+    region: text("region").notNull(),
+    city: text("city").notNull(),
+    path: text("path").notNull(),
+    views: integer("views").notNull().default(0),
+  },
+  (t) => [primaryKey({ columns: [t.day, t.country, t.region, t.city, t.path] }), index("visit_counts_path_idx").on(t.path, t.day)],
+);

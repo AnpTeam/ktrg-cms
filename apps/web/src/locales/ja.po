@@ -27,6 +27,13 @@ msgstr "（名前なし）"
 msgid "（外部サイトが新しいタブで開きます）"
 msgstr "（外部サイトが新しいタブで開きます）"
 
+#. placeholder {0}: data.from
+#. placeholder {1}: data.to
+#. placeholder {2}: data.total.toLocaleString()
+#: src/app/(admin)/admin/visits/page.tsx:91
+msgid "{0} から {1} まで：{2} 回"
+msgstr "{0} から {1} まで：{2} 回"
+
 #. placeholder {0}: name(r)
 #: src/components/admin/RallyList.tsx:70
 msgid "{0} を1つ前へ"
@@ -125,6 +132,12 @@ msgstr "{0}件を取り込む"
 #: src/components/admin/PlaceImport.tsx:77
 msgid "{0}件を読みました。新しい場所：{1}件、すでにある場所：{2}件"
 msgstr "{0}件を読みました。新しい場所：{1}件、すでにある場所：{2}件"
+
+#. placeholder {0}: data.minCityViews
+#. placeholder {1}: data.hiddenCityViews
+#: src/app/(admin)/admin/visits/page.tsx:109
+msgid "{0}回に満たない市・町は、名前を出さず合計だけにしています（{1}回）。"
+msgstr "{0}回に満たない市・町は、名前を出さず合計だけにしています（{1}回）。"
 
 #: src/components/settings/PasskeyManager.tsx:110
 msgid "{added} に追加"
@@ -671,6 +684,15 @@ msgstr "アクセス・交通"
 #: src/components/admin/RouteEditor.tsx:605
 msgid "アクセス・交通の補足"
 msgstr "アクセス・交通の補足"
+
+#: src/app/(admin)/admin/visits/page.tsx:62
+#: src/components/admin/AdminNav.tsx:37
+msgid "アクセスの地域"
+msgstr "アクセスの地域"
+
+#: src/app/(admin)/admin/visits/page.tsx:10
+msgid "アクセスの地域（管理）"
+msgstr "アクセスの地域（管理）"
 
 #: src/components/useErrorMessages.ts:58
 msgid "アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。"
@@ -1286,6 +1308,10 @@ msgstr "この文章は、本番のサイトにすぐ反映されます。保存
 msgid "この文章は日本語のみです。"
 msgstr "この文章は日本語のみです。"
 
+#: src/app/(admin)/admin/visits/page.tsx:97
+msgid "この期間の記録は、まだありません。"
+msgstr "この期間の記録は、まだありません。"
+
 #: src/components/admin/map-editor/PlaceList.tsx:131
 msgid "この次に追加"
 msgstr "この次に追加"
@@ -1467,7 +1493,7 @@ msgid "サイトマップ"
 msgstr "サイトマップ"
 
 #: src/app/(admin)/admin/settings/page.tsx:21
-#: src/components/admin/AdminNav.tsx:41
+#: src/components/admin/AdminNav.tsx:42
 msgid "サイト全体の設定"
 msgstr "サイト全体の設定"
 
@@ -1900,6 +1926,10 @@ msgstr "はじめての設定"
 msgid "はじめのラリー"
 msgstr "はじめのラリー"
 
+#: src/app/(admin)/admin/visits/page.tsx:69
+msgid "はじめの日"
+msgstr "はじめの日"
+
 #: src/app/(admin)/admin/pages/page.tsx:27
 msgid "はじめの説明と、手順（1、2、3…）です。"
 msgstr "はじめの説明と、手順（1、2、3…）です。"
@@ -2093,12 +2123,20 @@ msgstr "プロフィール写真"
 msgid "ページ"
 msgstr "ページ"
 
+#: src/app/(admin)/admin/visits/page.tsx:77
+msgid "ページ（例：/routes や /rallies。空なら全部）"
+msgstr "ページ（例：/routes や /rallies。空なら全部）"
+
 #: src/app/(public)/not-found.tsx:11
 msgid "ページが見つかりません"
 msgstr "ページが見つかりません"
 
+#: src/app/(admin)/admin/visits/page.tsx:65
+msgid "ページが開かれた回数を、接続元のおおよその地域（国・都道府県・市）ごとに数えています。IPアドレスや個人は記録しません。市や町の位置は、実際の場所とずれることがあります。"
+msgstr "ページが開かれた回数を、接続元のおおよその地域（国・都道府県・市）ごとに数えています。IPアドレスや個人は記録しません。市や町の位置は、実際の場所とずれることがあります。"
+
 #: src/app/(admin)/admin/pages/page.tsx:34
-#: src/components/admin/AdminNav.tsx:39
+#: src/components/admin/AdminNav.tsx:40
 msgid "ページの文章"
 msgstr "ページの文章"
 
@@ -2335,7 +2373,7 @@ msgstr "メインメニュー"
 msgid "めぐる場所"
 msgstr "めぐる場所"
 
-#: src/components/admin/AdminNav.tsx:57
+#: src/components/admin/AdminNav.tsx:58
 #: src/components/SiteHeader.tsx:192
 #: src/components/TabBar.tsx:68
 msgid "メニュー"
@@ -2443,6 +2481,10 @@ msgstr "やり直す"
 #: src/components/SiteHeader.tsx:270
 msgid "よくあるご質問"
 msgstr "よくあるご質問"
+
+#: src/app/(admin)/admin/visits/page.tsx:113
+msgid "よく見られたページ"
+msgstr "よく見られたページ"
 
 #: src/components/admin/RubyEditor.tsx:35
 msgid "よみ"
@@ -2818,6 +2860,10 @@ msgstr "下書きとして作る"
 #: src/components/admin/RallyEditor.tsx:146
 msgid "下書きの経由地は、公開されるまで数に入りません。スタンプの記録は変わりません。"
 msgstr "下書きの経由地は、公開されるまで数に入りません。スタンプの記録は変わりません。"
+
+#: src/app/(admin)/admin/visits/page.tsx:55
+msgid "不明"
+msgstr "不明"
 
 #: src/components/GuestClaim.tsx:71
 msgid "両方を合わせる（おすすめ）"
@@ -3868,6 +3914,10 @@ msgstr "営業中・利用可"
 msgid "営業時間"
 msgstr "営業時間"
 
+#: src/app/(admin)/admin/visits/page.tsx:101
+msgid "国"
+msgstr "国"
+
 #: src/components/landing/LandingMap.tsx:79
 msgid "国土地理院（地理院タイル）"
 msgstr "国土地理院（地理院タイル）"
@@ -3972,6 +4022,10 @@ msgstr "地図を見やすくする"
 #: src/components/map/TrailMapLoader.tsx:12
 msgid "地図を読み込み中…"
 msgstr "地図を読み込み中…"
+
+#: src/app/(admin)/admin/visits/page.tsx:104
+msgid "地域（日本は都道府県）"
+msgstr "地域（日本は都道府県）"
 
 #: src/components/PrefectureFilter.tsx:30
 msgid "地域でしぼる"
@@ -4198,6 +4252,10 @@ msgstr "左うしろ"
 #: src/components/navigation/NavigationHud.tsx:108
 msgid "左折"
 msgstr "左折"
+
+#: src/app/(admin)/admin/visits/page.tsx:108
+msgid "市・町"
+msgstr "市・町"
 
 #: src/components/admin/MunicipalityField.tsx:39
 msgid "市の名前を選びます。町や村は「その他」を選んで入力します。"
@@ -4971,7 +5029,7 @@ msgid "目安を使う"
 msgstr "目安を使う"
 
 #: src/app/(admin)/admin/attention/page.tsx:36
-#: src/components/admin/AdminNav.tsx:37
+#: src/components/admin/AdminNav.tsx:38
 msgid "直すところ"
 msgstr "直すところ"
 
@@ -5055,7 +5113,7 @@ msgstr "答えたくない"
 msgid "答えなくても大丈夫です。"
 msgstr "答えなくても大丈夫です。"
 
-#: src/components/admin/AdminNav.tsx:49
+#: src/components/admin/AdminNav.tsx:50
 msgid "管理メニュー"
 msgstr "管理メニュー"
 
@@ -5103,6 +5161,10 @@ msgstr "約{TRAIL_KM}km"
 #: src/components/RallyViews.tsx:159
 msgid "納経帳"
 msgstr "納経帳"
+
+#: src/app/(admin)/admin/visits/page.tsx:73
+msgid "終わりの日"
+msgstr "終わりの日"
 
 #: src/components/navigation/NavigationHud.tsx:206
 msgid "終了"
@@ -5453,6 +5515,10 @@ msgstr "表でまとめて入力"
 msgid "表示"
 msgstr "表示"
 
+#: src/app/(admin)/admin/visits/page.tsx:81
+msgid "表示する"
+msgstr "表示する"
+
 #: src/components/RouteNearbyPlaces.tsx:35
 msgid "表示する種類"
 msgstr "表示する種類"
@@ -5590,6 +5656,7 @@ msgid "読み込めませんでした。"
 msgstr "読み込めませんでした。"
 
 #: src/app/(admin)/admin/attention/page.tsx:43
+#: src/app/(admin)/admin/visits/page.tsx:86
 msgid "読み込めませんでした。しばらくしてから、ページを開き直してください。"
 msgstr "読み込めませんでした。しばらくしてから、ページを開き直してください。"
 

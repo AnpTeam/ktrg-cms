@@ -302,6 +302,13 @@
       "when": 1793074534396,
       "tag": "0042_mysterious_magus",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "7",
+      "when": 1793081208895,
+      "tag": "0043_bored_tombstone",
+      "breakpoints": true
     }
   ]
 }
