@@ -27,6 +27,8 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
           email: users.email,
           role: users.role,
           locale: users.locale,
+          restrictedAt: users.restrictedAt,
+          restrictedUntil: users.restrictedUntil,
         })
         .from(sessions)
         .innerJoin(users, eq(users.id, sessions.userId))
@@ -40,7 +42,7 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
           absoluteExpiresAt: row.absoluteExpiresAt,
           lastLoginAt: row.lastLoginAt,
         },
-        user: { id: row.userId, email: row.email, role: row.role, locale: row.locale },
+        user: { id: row.userId, email: row.email, role: row.role, locale: row.locale, restricted: row.restrictedAt !== null && (row.restrictedUntil === null || row.restrictedUntil > new Date()) },
       };
     },
 

@@ -8,7 +8,7 @@ import type { ListItem } from "./config";
 
 export type ListAnswer<T> = { ok: true; data: T } | { ok: false; key: ErrorKey };
 
-export async function listRequest<T>(method: "GET" | "POST" | "PATCH" | "DELETE", path: string, body?: unknown): Promise<ListAnswer<T>> {
+export async function listRequest<T>(method: "GET" | "POST" | "PATCH" | "PUT" | "DELETE", path: string, body?: unknown): Promise<ListAnswer<T>> {
   try {
     const res = await fetch(`/api/v1/admin/lists/${path}`, {
       method,

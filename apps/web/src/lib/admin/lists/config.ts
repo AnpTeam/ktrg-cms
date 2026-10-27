@@ -1,11 +1,11 @@
-import type { FieldUi, Label, ListMeta } from "@ktrg/api"; // type only: nothing from the API is bundled
+import type { FieldUi, Label, ListMeta, Tone } from "@ktrg/api"; // type only: nothing from the API is bundled
 import { formatDay } from "@/lib/format";
 
 // The web half of the generic admin list (the API half is apps/api/src/admin-lists). The web app has no code per
 // table: GET /admin/lists says what each list looks like (labels in both languages, field kinds, the facts shown
 // in the list), and AdminNav, AdminListTable and AdminItemForm draw every list from that.
 
-export type { FieldUi, Label, ListMeta };
+export type { FieldUi, Label, ListMeta, Tone };
 
 /** A row as the API sends it: its flat fields (`titleJa`, `titleEn`, ...) plus id and times. */
 export type ListItem = { id: string; createdAt: string; updatedAt: string } & Record<string, unknown>;
@@ -15,6 +15,11 @@ export const pick = (label: Label, locale: string): string => (locale === "en" &
 
 /** What names a row in the list: its title field (bilingual or text), in the page's language. */
 export function itemName(meta: ListMeta, item: ListItem, locale: string): string {
+  // A list can name its rows by the first of several fields that has a value (a member: name, else email, else ID).
+  for (const field of meta.titleFrom ?? []) {
+    const v = item[field];
+    if (typeof v === "string" && v.trim() !== "") return v;
+  }
   if (`${meta.titleField}Ja` in item) {
     const ja = String(item[`${meta.titleField}Ja`] ?? "");
     const en = item[`${meta.titleField}En`];
@@ -77,3 +82,35 @@ export function itemFacts(meta: ListMeta, item: ListItem, locale: string, routeN
 
 /** How many rows of another list a relation field offers to pick from (the page loads that many; the picker says so when it is reached). */
 export const MAX_RELATION_CHOICES = 500;
+
+/** True when the row's name came from `titleFrom`, so its own title field (the member ID) is worth showing small beneath it. */
+export const nameIsFallback = (meta: ListMeta, item: ListItem): boolean => (meta.titleFrom ?? []).some((f) => typeof item[f] === "string" && String(item[f]).trim() !== "");
+
+/** The list's columns: the fields marked `inList`, in order, except the ones that make up the row's name. */
+export function listColumns(meta: ListMeta): FieldUi[] {
+  const naming = new Set([meta.titleField, ...(meta.titleFrom ?? [])]);
+  return meta.fields.filter((f) => f.inList && !naming.has(f.name));
+}
+
+/** What one cell shows: a chip (a choice or a yes/no) with its tone, or plain text; `text` is "" for nothing to show. */
+export interface Cell {
+  text: string;
+  chip: boolean;
+  tone: Tone;
+}
+
+export function cellOf(f: FieldUi, item: ListItem, locale: string, routeName: (id: string, field: string) => string | null): Cell {
+  const show = f.inList ?? {};
+  if (f.kind === "boolean") {
+    const yes = item[f.name] === true;
+    const label = yes ? show.yes : show.no;
+    return { text: label ? pick(label, locale) : "", chip: true, tone: show.tone?.[yes ? "yes" : "no"] ?? (yes ? "good" : "neutral") };
+  }
+  if (f.kind === "select") {
+    const value = item[f.name];
+    const option = f.options?.find((o) => o.value === value);
+    if (option) return { text: pick(option.label, locale), chip: true, tone: option.tone ?? "neutral" };
+  }
+  const text = displayValue(f, item, locale, routeName);
+  return { text: text ?? (show.empty ? pick(show.empty, locale) : "—"), chip: false, tone: "neutral" };
+}

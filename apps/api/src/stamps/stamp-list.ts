@@ -76,9 +76,9 @@ export const stampList: ReadDef<"stamps", StampListRow, StampListServices> & { f
     fields: [
       { name: "spotName", kind: "text", label: { ja: "場所", en: "Place" }, readOnly: true, inList: {} },
       { name: "memberId", kind: "text", label: { ja: "会員番号", en: "Member ID" }, readOnly: true, inList: {} },
-      { name: "flagged", kind: "boolean", label: { ja: "確認が必要", en: "Needs a look" }, readOnly: true, inList: yesNo },
+      { name: "flagged", kind: "boolean", label: { ja: "確認が必要", en: "Needs a look" }, readOnly: true, inList: { ...yesNo, tone: { yes: "warn" } } },
       { name: "flagReason", kind: "text", label: { ja: "理由", en: "Reason" }, readOnly: true },
-      { name: "revoked", kind: "boolean", label: { ja: "取り消す", en: "Revoked" }, inList: yesNo },
+      { name: "revoked", kind: "boolean", label: { ja: "取り消す", en: "Revoked" }, inList: { ...yesNo, tone: { yes: "bad" } } },
       { name: "createdAt", kind: "datetime", label: { ja: "押した日時", en: "Collected" }, readOnly: true },
     ],
   },

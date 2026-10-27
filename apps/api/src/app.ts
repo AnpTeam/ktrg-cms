@@ -211,4 +211,4 @@ export type App = typeof app;
 /** The `{ ok: false, error }` body of every failure, for the web app's error handling. */
 export type { ApiError, ErrorCode, ValidationIssue } from "./lib/api-errors";
 /** How the admin screens draw each list (GET /admin/lists). */
-export type { FieldUi, Label, ListMeta } from "./admin-lists/list-types";
+export type { FieldUi, Label, ListMeta, Tone } from "./admin-lists/list-types";

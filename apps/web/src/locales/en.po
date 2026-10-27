@@ -11,6 +11,11 @@ msgstr ""
 msgid "　{until} まで"
 msgstr "  Until {until}"
 
+#. placeholder {0}: formatMoment(locale, String(item.restrictedUntil))
+#: src/components/admin/UserActions.tsx:69
+msgid "（{0} まで）"
+msgstr " (until {0})"
+
 #: src/components/admin/map-editor/MapEditor.tsx:218
 #: src/components/admin/map-editor/PlaceList.tsx:59
 #: src/components/admin/map-editor/PlaceList.tsx:80
@@ -26,6 +31,10 @@ msgstr "(no name)"
 #: src/components/AccessList.tsx:29
 msgid "（外部サイトが新しいタブで開きます）"
 msgstr "(opens an external site in a new tab)"
+
+#: src/components/admin/UserActions.tsx:69
+msgid "（解除するまで）"
+msgstr " (until an admin lifts it)"
 
 #: src/components/admin/DashboardTile.tsx:31
 msgid "（達成）"
@@ -90,7 +99,8 @@ msgid "{0}を消す"
 msgstr "Delete {0}"
 
 #. placeholder {0}: name(item)
-#: src/components/admin/AdminListTable.tsx:206
+#: src/components/admin/AdminListTable.tsx:254
+#: src/components/admin/AdminListTable.tsx:311
 msgid "{0}を選ぶ"
 msgstr "Select {0}"
 
@@ -99,8 +109,18 @@ msgstr "Select {0}"
 msgid "{0}を開く"
 msgstr "Open {0}"
 
+#. placeholder {0}: items.length
+#: src/components/admin/AdminListTable.tsx:227
+msgid "{0}件"
+msgstr "{0} items"
+
+#. placeholder {0}: items.length
+#: src/components/admin/AdminListTable.tsx:227
+msgid "{0}件（まだあります）"
+msgstr "{0} items (more to load)"
+
 #. placeholder {0}: gone.size
-#: src/components/admin/AdminListTable.tsx:73
+#: src/components/admin/AdminListTable.tsx:84
 msgid "{0}件を削除しました。残りは削除できませんでした：{failure}"
 msgstr "{0} deleted. The rest could not be deleted: {failure}"
 
@@ -316,7 +336,7 @@ msgstr "Move {text} down"
 msgid "{title}（管理）"
 msgstr "{title} (admin)"
 
-#: src/components/admin/AdminListTable.tsx:199
+#: src/components/admin/AdminListTable.tsx:231
 msgid "{title}はまだありません。"
 msgstr "No {title} yet."
 
@@ -365,7 +385,7 @@ msgid "「{0}」のスタンプを押しました！"
 msgstr "Stamped \"{0}\"!"
 
 #. placeholder {0}: name(one)
-#: src/components/admin/AdminListTable.tsx:59
+#: src/components/admin/AdminListTable.tsx:70
 msgid "「{0}」を削除します。元に戻せません。よろしいですか？"
 msgstr "Delete \"{0}\"? This cannot be undone."
 
@@ -410,7 +430,7 @@ msgstr "What the \"Terrain\" button adds"
 msgid "「地形」ボタンを押した状態で見る"
 msgstr "Show it as when \"Terrain\" is pressed"
 
-#: src/components/admin/AdminItemForm.tsx:288
+#: src/components/admin/AdminItemForm.tsx:289
 msgid "「必須」の欄をすべて入れると保存できます。"
 msgstr "Fill in every field marked “Required” to save."
 
@@ -498,6 +518,14 @@ msgstr "30s"
 #: src/components/ProfileSettings.tsx:244
 msgid "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 msgstr "For 3 days you can sign in and cancel. After that, it cannot be undone."
+
+#: src/components/admin/UserActions.tsx:109
+msgid "3日後に削除する"
+msgstr "Delete in 3 days"
+
+#: src/components/admin/UserActions.tsx:108
+msgid "3日後の削除を予約しました。"
+msgstr "Deletion in 3 days is scheduled."
 
 #: src/components/auth/AboutYou.tsx:19
 msgid "40代"
@@ -655,6 +683,11 @@ msgstr "This erases your account and your records, such as collected stamps. You
 msgid "アカウントのものだけにする"
 msgstr "Keep only the account's"
 
+#: src/components/admin/UserActions.tsx:55
+msgid "アカウントの制限・削除"
+msgstr "Restrict or delete the account"
+
+#: src/components/admin/UserActions.tsx:97
 #: src/components/ProfileSettings.tsx:188
 msgid "アカウントの削除"
 msgstr "Delete account"
@@ -703,7 +736,7 @@ msgstr "Where visits come from (admin)"
 msgid "アクセス数"
 msgstr "Visits"
 
-#: src/components/useErrorMessages.ts:58
+#: src/components/useErrorMessages.ts:61
 msgid "アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。"
 msgstr "Only photos (JPEG, PNG or WebP, up to 4 MB) and videos (MP4 or WebM, up to 200 MB) can be uploaded."
 
@@ -770,10 +803,6 @@ msgstr "Nice to have"
 msgid "あるとよい：{0}"
 msgstr "Nice to have: {0}"
 
-#: src/components/admin/AdminListTable.tsx:158
-msgid "いいえ"
-msgstr "No"
-
 #: src/components/PrivacyNote.tsx:13
 msgid "いただいた情報は、どんな方がこのアプリを使っているかを知るためだけに使います。個人が分からない形でまとめます。くわしくは<0>プライバシーポリシー</0>をご覧ください。"
 msgstr "We use what you tell us only to understand who uses this app, and we put it together in a form that does not identify anyone. For details, see the <0>privacy policy</0>."
@@ -781,6 +810,10 @@ msgstr "We use what you tell us only to understand who uses this app, and we put
 #: src/app/(admin)/admin/page.tsx:69
 msgid "いちばん多い地域"
 msgstr "Top region"
+
+#: src/components/admin/UserActions.tsx:82
+msgid "いつまで（空なら、解除するまで）"
+msgstr "Until (empty: until you lift it)"
 
 #: src/components/OfflineNotice.tsx:26
 msgid "いま、通信がつながっていません。つながると、また使えます。"
@@ -1108,6 +1141,10 @@ msgstr "This account has no passkey. Confirm with the number sent to your email.
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
 msgstr "This account has no email. Confirm with your face or fingerprint."
 
+#: src/components/useErrorMessages.ts:58
+msgid "このアカウントは、いま制限されています。スタンプを押すことと、コメントを書くことはできません。"
+msgstr "This account is restricted right now. It cannot collect stamps or write comments."
+
 #: src/components/IntroFlow.tsx:221
 msgid "このアプリでわかること"
 msgstr "What you will find here"
@@ -1141,7 +1178,7 @@ msgstr "This file could not be read. Choose a file (.xlsx) made from the templat
 msgid "このブラウザでは、スタンプが消えてしまうことがあります。"
 msgstr "Your stamps may be lost in this browser."
 
-#: src/components/admin/AdminListTable.tsx:189
+#: src/components/admin/AdminListTable.tsx:216
 msgid "このページをすべて選ぶ"
 msgstr "Select everything on this page"
 
@@ -1346,7 +1383,7 @@ msgstr "This device or browser can't use location."
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "This device or browser can't use passkeys."
 
-#: src/components/useErrorMessages.ts:65
+#: src/components/useErrorMessages.ts:68
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "Passkeys cannot be used on this device or browser. Please try email instead."
 
@@ -1426,7 +1463,7 @@ msgstr "This goes live at once and changes the map for every visitor. Save it?"
 msgid "この説明は日本語のみです。"
 msgstr "This description is in Japanese only."
 
-#: src/components/useErrorMessages.ts:62
+#: src/components/useErrorMessages.ts:65
 msgid "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 msgstr "No walkable path was found near here. Move the points of the line closer to a path and try again."
 
@@ -1526,8 +1563,8 @@ msgstr "Site-wide settings (admin)"
 msgid "さがしています…"
 msgstr "Searching…"
 
-#: src/components/admin/AdminListTable.tsx:115
-#: src/components/admin/AdminListTable.tsx:115
+#: src/components/admin/AdminListTable.tsx:125
+#: src/components/admin/AdminListTable.tsx:125
 #: src/components/admin/DuplicateFinder.tsx:53
 msgid "さがす"
 msgstr "Search"
@@ -1740,7 +1777,8 @@ msgstr "stamped"
 msgid "すでに公開をやめた経由地があります（{names}）。「経由地」タブで確かめてください。"
 msgstr "These waypoints were already unpublished: {names}. Check them in the Waypoints tab."
 
-#: src/components/admin/AdminListTable.tsx:154
+#: src/components/admin/AdminListTable.tsx:147
+#: src/components/admin/AdminListTable.tsx:188
 #: src/components/admin/DirectoryPicker.tsx:158
 #: src/components/admin/RouteTable.tsx:77
 #: src/components/PrefectureFilter.tsx:36
@@ -1886,6 +1924,10 @@ msgstr "Join"
 msgid "できた"
 msgstr "Done"
 
+#: src/components/admin/UserActions.tsx:114
+msgid "テスト用のアカウントなどは、今すぐ消せます。元に戻せません。スタンプ・コメント・ログインの情報もすべて消えます。"
+msgstr "A test account, for example, can be deleted at once. This cannot be undone: its stamps, comments and sign-in details are all removed."
+
 #: src/components/admin/PlacePanel.tsx:41
 #: src/components/map/PlacesPanel.tsx:39
 #: src/components/PointKindName.tsx:13
@@ -1953,10 +1995,6 @@ msgstr "Climb"
 msgid "のぼり {0}m"
 msgstr "Climb {0} m"
 
-#: src/components/admin/AdminListTable.tsx:157
-msgid "はい"
-msgstr "Yes"
-
 #: src/components/auth/LoginFlow.tsx:102
 msgid "はじめての方は"
 msgstr "First time here?"
@@ -1994,7 +2032,7 @@ msgstr "Bus"
 msgid "パスキー {number}"
 msgstr "Passkey {number}"
 
-#: src/components/useErrorMessages.ts:66
+#: src/components/useErrorMessages.ts:69
 msgid "パスキーの確認が中止されました。もう一度お試しください。"
 msgstr "The passkey check was cancelled. Please try again."
 
@@ -2071,6 +2109,10 @@ msgstr "Standard"
 #: src/components/settings/PrefsForm.tsx:44
 msgid "ふつうの大きさです。"
 msgstr "The usual size."
+
+#: src/components/admin/UserActions.tsx:107
+msgid "ふつうは、3日後に削除する方法を使います。その間は、取り消せます。"
+msgstr "Usually use the 3-day way. It can be cancelled until then."
 
 #: src/app/(public)/bookmarks/page.tsx:12
 #: src/app/(public)/page.tsx:78
@@ -2253,6 +2295,10 @@ msgstr "This passkey can't be removed because it is your only way to log in. Set
 #: src/components/admin/map-editor/MapEditor.tsx:824
 msgid "ほかの乗り物"
 msgstr "Other vehicle"
+
+#: src/components/admin/AdminListTable.tsx:172
+msgid "ほかの絞りこみ"
+msgstr "More filters"
 
 #: src/components/admin/PageTextEditor.tsx:123
 msgid "ほかの言語（ドイツ語など）の訪問者には、English の文章が表示されます。"
@@ -2458,7 +2504,7 @@ msgstr "Sent again. If it does not arrive, wait about a minute and try again."
 msgid "もっと広げる"
 msgstr "Show more"
 
-#: src/components/admin/AdminListTable.tsx:229
+#: src/components/admin/AdminListTable.tsx:353
 #: src/components/admin/PhotoLibrary.tsx:216
 msgid "もっと見る"
 msgstr "Show more"
@@ -2924,6 +2970,10 @@ msgstr "Unknown"
 msgid "両方を合わせる（おすすめ）"
 msgstr "Combine both (recommended)"
 
+#: src/components/admin/AdminListTable.tsx:289
+msgid "並べかえ"
+msgstr "Sort"
+
 #: src/components/admin/PhotoLibrary.tsx:130
 msgid "並べ方"
 msgstr "Sort by"
@@ -2947,6 +2997,10 @@ msgstr "Cut the existing line into legs in waypoint order (where the waypoints d
 #: src/components/GuestNag.tsx:74
 msgid "今すぐアカウントを作りましょう。記録が消えてしまうかもしれません！"
 msgstr "Create an account now, or you may lose your record!"
+
+#: src/components/admin/UserActions.tsx:124
+msgid "今すぐ削除する"
+msgstr "Delete now"
 
 #: src/components/admin/PublishedEditDialog.tsx:56
 msgid "今後はこの確認を表示しない"
@@ -3089,7 +3143,7 @@ msgstr "About the physical and technical levels"
 msgid "作っています…"
 msgstr "Creating…"
 
-#: src/components/admin/AdminItemForm.tsx:268
+#: src/components/admin/AdminItemForm.tsx:269
 msgid "作成"
 msgstr "Create"
 
@@ -3105,7 +3159,7 @@ msgstr "e.g. Jane Doe, CC BY-SA 4.0"
 msgid "例：祝日は休み／ラストオーダーは閉店30分前"
 msgstr "e.g. Closed on public holidays / last order 30 minutes before closing"
 
-#: src/components/admin/AdminItemForm.tsx:268
+#: src/components/admin/AdminItemForm.tsx:269
 #: src/components/admin/PageTextEditor.tsx:76
 msgid "保存"
 msgstr "Save"
@@ -3114,14 +3168,14 @@ msgstr "Save"
 msgid "保存していない内容も含めて調べています。"
 msgstr "This includes changes you have not saved yet."
 
-#: src/components/admin/AdminItemForm.tsx:260
+#: src/components/admin/AdminItemForm.tsx:261
 #: src/components/admin/PageTextEditor.tsx:70
 #: src/components/admin/RouteEditor.tsx:420
 msgid "保存していない変更があります"
 msgstr "You have unsaved changes"
 
-#: src/components/admin/AdminItemForm.tsx:56
-#: src/components/admin/AdminItemForm.tsx:66
+#: src/components/admin/AdminItemForm.tsx:57
+#: src/components/admin/AdminItemForm.tsx:67
 msgid "保存していない変更があります。このページを離れますか？"
 msgstr "You have unsaved changes. Leave this page?"
 
@@ -3138,11 +3192,11 @@ msgstr "Unsaved edits were kept in this browser ({offeredAt}). Restore them?"
 msgid "保存しています…"
 msgstr "Saving…"
 
-#: src/components/admin/AdminItemForm.tsx:264
+#: src/components/admin/AdminItemForm.tsx:265
 msgid "保存して次へ"
 msgstr "Save and next"
 
-#: src/components/admin/AdminItemForm.tsx:124
+#: src/components/admin/AdminItemForm.tsx:125
 #: src/components/admin/GoalsForm.tsx:50
 #: src/components/admin/RallyEditor.tsx:66
 #: src/components/admin/RouteEditor.tsx:328
@@ -3167,7 +3221,7 @@ msgstr "Saved. The source was empty, so the line was saved as not checked. Enter
 msgid "保存しました。ただし、未完成の経由地が{heldCount}件あり、まだ保存していません（赤く示した項目）。"
 msgstr "Saved. {heldCount} unfinished waypoint(s) were not saved yet (the red items)."
 
-#: src/components/admin/AdminItemForm.tsx:101
+#: src/components/admin/AdminItemForm.tsx:102
 msgid "保存しました。次に確認する場所はありません。"
 msgstr "Saved. No more places waiting to be checked."
 
@@ -3198,13 +3252,13 @@ msgstr "It could not be saved. Please try again."
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not save. Please try again where the signal is good."
 
-#: src/components/admin/AdminItemForm.tsx:268
+#: src/components/admin/AdminItemForm.tsx:269
 #: src/components/admin/PageTextEditor.tsx:76
 #: src/components/admin/RouteEditor.tsx:423
 msgid "保存中…"
 msgstr "Saving…"
 
-#: src/components/admin/AdminItemForm.tsx:260
+#: src/components/admin/AdminItemForm.tsx:261
 #: src/components/admin/PageTextEditor.tsx:70
 msgid "保存済み"
 msgstr "Saved"
@@ -3407,7 +3461,7 @@ msgstr "Share"
 msgid "共有する"
 msgstr "Share"
 
-#: src/components/admin/AdminItemForm.tsx:286
+#: src/components/admin/AdminItemForm.tsx:287
 msgid "内容"
 msgstr "Content"
 
@@ -3529,7 +3583,7 @@ msgstr "Photo library"
 msgid "写真をアップロード"
 msgstr "Upload a photo"
 
-#: src/components/useErrorMessages.ts:59
+#: src/components/useErrorMessages.ts:62
 msgid "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 msgstr "The photo could not be saved. Please try again in a moment."
 
@@ -3580,7 +3634,7 @@ msgstr "Source"
 msgid "出典: {0}"
 msgstr "Source: {0}"
 
-#: src/components/useErrorMessages.ts:56
+#: src/components/useErrorMessages.ts:59
 msgid "出典のリンクは https:// で始まるアドレスを入れてください。"
 msgstr "The source link must be an address starting with https://."
 
@@ -3621,9 +3675,39 @@ msgstr "Someone else saved first. Reload the page and try again."
 msgid "利用規約"
 msgstr "Terms of use"
 
+#: src/components/admin/UserActions.tsx:63
+msgid "制限"
+msgstr "Restriction"
+
+#: src/components/admin/UserActions.tsx:64
+msgid "制限されたアカウントは、ログインと閲覧はできますが、スタンプを押すこととコメントを書くことはできません。自分のデータを見たり、削除を頼んだりはできます。"
+msgstr "A restricted account can sign in and look around, but cannot collect stamps or write comments. It can still see its own data and ask to be deleted."
+
+#: src/components/admin/UserActions.tsx:88
+msgid "制限しました。"
+msgstr "Restricted."
+
+#: src/components/admin/UserActions.tsx:91
+msgid "制限する"
+msgstr "Restrict"
+
+#: src/components/admin/UserActions.tsx:73
+msgid "制限を解除しました。"
+msgstr "Restriction lifted."
+
+#: src/components/admin/UserActions.tsx:74
+msgid "制限を解除する"
+msgstr "Lift the restriction"
+
+#: src/components/admin/UserActions.tsx:68
+msgid "制限中"
+msgstr "Restricted"
+
 #: src/components/admin/AccessPointsEditor.tsx:51
-#: src/components/admin/AdminItemForm.tsx:292
-#: src/components/admin/AdminListTable.tsx:219
+#: src/components/admin/AdminItemForm.tsx:293
+#: src/components/admin/AdminListTable.tsx:244
+#: src/components/admin/AdminListTable.tsx:278
+#: src/components/admin/AdminListTable.tsx:342
 #: src/components/admin/DuplicateFinder.tsx:85
 #: src/components/admin/fields.tsx:155
 #: src/components/admin/HoursInput.tsx:35
@@ -3633,9 +3717,25 @@ msgstr "Terms of use"
 msgid "削除"
 msgstr "Delete"
 
-#: src/components/admin/AdminItemForm.tsx:294
+#: src/components/admin/UserActions.tsx:100
+msgid "削除が予約されています。3日たつと、アカウントとスタンプが消えます。"
+msgstr "Deletion is scheduled. After 3 days the account and its stamps are removed."
+
+#: src/components/admin/UserActions.tsx:121
+msgid "削除しました。"
+msgstr "Deleted."
+
+#: src/components/admin/AdminItemForm.tsx:295
 msgid "削除する"
 msgstr "Delete"
+
+#: src/components/admin/UserActions.tsx:101
+msgid "削除の予約を取り消しました。"
+msgstr "The scheduled deletion was cancelled."
+
+#: src/components/admin/UserActions.tsx:102
+msgid "削除の予約を取り消す"
+msgstr "Cancel the scheduled deletion"
 
 #: src/components/ProfileSettings.tsx:247
 msgid "削除を依頼する"
@@ -3873,6 +3973,8 @@ msgstr "An earlier row has the same number"
 msgid "同じ道を行って、同じ道を戻ります。"
 msgstr "You go out along the same path and come back the same way."
 
+#: src/components/admin/AdminListTable.tsx:240
+#: src/components/admin/AdminListTable.tsx:299
 #: src/components/admin/map-editor/PlaceList.tsx:79
 #: src/components/admin/PhotoLibrary.tsx:169
 #: src/components/admin/RallyCreate.tsx:76
@@ -3959,7 +4061,7 @@ msgstr "Wakayama"
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "From the Izumi range to the Kongo mountains, these ridges run along the borders of Osaka, Wakayama and Nara. They have long been called Katsuragi and revered as mountains where the gods dwell. It is said that En no Gyoja, who is believed to have founded Shugendo, the path of training in the mountains, first practised here."
 
-#: src/components/useErrorMessages.ts:68
+#: src/components/useErrorMessages.ts:71
 #: src/components/useStampMessages.ts:23
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "Something went wrong. Please try again in a little while."
@@ -4476,7 +4578,7 @@ msgstr "Discard"
 msgid "探しています…"
 msgstr "Searching…"
 
-#: src/components/admin/AdminListTable.tsx:117
+#: src/components/admin/AdminListTable.tsx:127
 #: src/components/admin/map-editor/MapEditor.tsx:1021
 msgid "探す"
 msgstr "Search"
@@ -4599,6 +4701,7 @@ msgstr "New points go after the chosen point (number {chosenNo}). Click it again
 msgid "新しい記事"
 msgstr "Newest posts"
 
+#: src/components/admin/AdminListTable.tsx:298
 #: src/components/admin/PhotoLibrary.tsx:139
 msgid "新しい順"
 msgstr "Newest first"
@@ -4745,7 +4848,7 @@ msgstr "Text"
 msgid "本文へ移動"
 msgstr "Skip to main content"
 
-#: src/components/admin/AdminListTable.tsx:199
+#: src/components/admin/AdminListTable.tsx:231
 msgid "条件に合う{title}はありません。"
 msgstr "No {title} match the conditions."
 
@@ -4753,7 +4856,7 @@ msgstr "No {title} match the conditions."
 msgid "条件に合うルートがありません。"
 msgstr "No routes match."
 
-#: src/components/admin/AdminListTable.tsx:130
+#: src/components/admin/AdminListTable.tsx:140
 msgid "条件をやめる"
 msgstr "Clear the conditions"
 
@@ -5038,6 +5141,15 @@ msgstr "Confirm permission from the site and tick \"Permission confirmed\"."
 msgid "現地調査のシート（CSV）を選ぶと、まず件数を表示します。取り込んだ場所はすべて下書きで、位置は「未確認」のままです。すでにある場所は追加しません。"
 msgstr "Choose the field survey sheet (CSV) and the counts are shown first. Every imported place is a draft and its position stays \"not checked\". Places already there are not added again."
 
+#. placeholder {0}: String(item.restrictionReason ?? "")
+#: src/components/admin/UserActions.tsx:71
+msgid "理由：{0}"
+msgstr "Reason: {0}"
+
+#: src/components/admin/UserActions.tsx:79
+msgid "理由（管理者だけに見えます）"
+msgstr "Reason (only admins see it)"
+
 #: src/components/auth/AboutYou.tsx:30
 msgid "男性"
 msgstr "Male"
@@ -5190,6 +5302,10 @@ msgstr "Confirm"
 msgid "確認できませんでした。もう一度お試しください。"
 msgstr "We could not confirm it. Please try again."
 
+#: src/components/admin/UserActions.tsx:115
+msgid "確認のため、会員番号（{memberId}）を入れてください"
+msgstr "To confirm, enter the member ID ({memberId})"
+
 #: src/components/settings/LoginMethods.tsx:77
 msgid "確認の番号を送る"
 msgstr "Send a confirmation code"
@@ -5247,6 +5363,14 @@ msgstr "Open the admin area"
 #: src/components/admin/AdminShell.tsx:28
 msgid "管理者としてログイン中"
 msgstr "Signed in as an administrator"
+
+#: src/components/useErrorMessages.ts:57
+msgid "管理者のアカウントは、制限したり削除したりできません。先に権限を変えてください。"
+msgstr "An admin account cannot be restricted or deleted. Change its permission first."
+
+#: src/components/admin/UserActions.tsx:56
+msgid "管理者のアカウントは、制限や削除ができません。先に「権限」を変えてください。"
+msgstr "An admin account cannot be restricted or deleted. Change its \"Permission\" first."
 
 #: src/components/admin/RouteImport.tsx:82
 msgid "範囲をこえています"
@@ -5404,10 +5528,6 @@ msgstr "Place a waypoint"
 msgid "経由地を置くと、近い順に並びます。"
 msgstr "Once there is a waypoint, they are listed nearest first."
 
-#: src/components/admin/AdminListTable.tsx:138
-msgid "絞りこみ"
-msgstr "Filters"
-
 #: src/components/admin/PlacePanel.tsx:154
 msgid "絵をはずす"
 msgstr "Remove the picture"
@@ -5535,6 +5655,10 @@ msgstr "You can make pages yourself. Once published they are at \"/p/<address>\"
 #: src/components/GuestBackup.tsx:35
 msgid "自分に送っておくと、ブラウザのデータが消えても、このリンクからスタンプをもどせます。ほかの人には見せないでください。"
 msgstr "Send it to yourself, and if the browser's data is lost you can bring the stamps back from this link. Do not show it to other people."
+
+#: src/components/useErrorMessages.ts:56
+msgid "自分のアカウントは、制限したり削除したりできません。"
+msgstr "You cannot restrict or delete your own account."
 
 #: src/components/useErrorMessages.ts:55
 msgid "自分の権限は変えられません。ほかの管理者に頼んでください。"
@@ -5862,7 +5986,7 @@ msgstr "Uploading…"
 msgid "送っています… {percent}%"
 msgstr "Sending… {percent}%"
 
-#: src/components/useErrorMessages.ts:67
+#: src/components/useErrorMessages.ts:70
 #: src/components/useStampMessages.ts:22
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not connect. Please try again where the signal is better."
@@ -5915,7 +6039,7 @@ msgstr "Follow the path"
 msgid "道に沿わせる"
 msgstr "Snap to trails"
 
-#: src/components/useErrorMessages.ts:61
+#: src/components/useErrorMessages.ts:64
 msgid "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 msgstr "Snapping to trails is not available yet. Ask whoever manages the site to set up the route-finding service. You can still draw the line by hand."
 
@@ -5957,7 +6081,7 @@ msgstr "Looking up the paths…"
 msgid "道を調べています…（{step}/{total}）"
 msgstr "Looking for trails… ({step}/{total})"
 
-#: src/components/useErrorMessages.ts:63
+#: src/components/useErrorMessages.ts:66
 msgid "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 msgstr "Could not look up the paths. Please try again in a little while."
 
@@ -5973,6 +6097,7 @@ msgstr "{0} finished"
 msgid "選ばない"
 msgstr "Not set"
 
+#: src/components/admin/AdminListTable.tsx:239
 #: src/components/admin/map-editor/PlaceList.tsx:55
 msgid "選ぶ"
 msgstr "Choose"
@@ -5982,12 +6107,12 @@ msgid "選ぶ・動かす"
 msgstr "Select / move"
 
 #. placeholder {0}: ticked.size
-#: src/components/admin/AdminListTable.tsx:193
+#: src/components/admin/AdminListTable.tsx:220
 msgid "選んだ{0}件を削除"
 msgstr "Delete the {0} selected"
 
 #. placeholder {0}: ids.length
-#: src/components/admin/AdminListTable.tsx:59
+#: src/components/admin/AdminListTable.tsx:70
 msgid "選んだ{0}件を削除します。元に戻せません。よろしいですか？"
 msgstr "Delete the {0} selected? This cannot be undone."
 
@@ -6049,7 +6174,7 @@ msgstr "Friday"
 msgid "長さ"
 msgstr "Length"
 
-#: src/components/admin/AdminItemForm.tsx:280
+#: src/components/admin/AdminItemForm.tsx:281
 #: src/components/admin/map-editor/MapEditor.tsx:1039
 #: src/components/admin/PageTextEditor.tsx:86
 #: src/components/admin/PhotoLibrary.tsx:124

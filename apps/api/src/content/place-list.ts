@@ -114,7 +114,7 @@ export const placeList: ReadDef<"places", PlaceListRow, PlaceListServices> = {
         kind: "boolean",
         label: { ja: "位置を確認した", en: "Position checked" },
         readOnly: true,
-        inList: { yes: { ja: "位置を確認した", en: "Position checked" }, no: { ja: "位置は未確認", en: "Position not checked" } },
+        inList: { yes: { ja: "位置を確認した", en: "Position checked" }, no: { ja: "位置は未確認", en: "Position not checked" }, tone: { no: "warn" } },
       },
       {
         name: "stampable",

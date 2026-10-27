@@ -417,6 +417,7 @@ describe("user B cannot touch user A", () => {
     "PUT /api/v1/admin/settings/pages/:key": () => ({ ja: { title: "", body: "" }, en: { title: "", body: "" } }),
     "PATCH /api/v1/admin/lists/directory/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/lists/directory/import": () => ({ csv: "", apply: false }),
+    "PUT /api/v1/admin/lists/users/:id/restriction": () => ({ reason: "spam", until: null }),
     "PATCH /api/v1/admin/lists/users/:id": () => ({ updatedAt: new Date().toISOString(), role: "admin" }),
     "POST /api/v1/auth/reauth/verify": () => ({ code: "123456" }),
     "POST /api/v1/auth/email/request": () => ({ email: "new@example.com" }),
