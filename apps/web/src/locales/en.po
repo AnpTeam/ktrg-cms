@@ -570,7 +570,7 @@ msgstr "MP4 (H.264) or WebM, up to 200 MB. For phones, export at about 720p and 
 msgid "QRコード・看板"
 msgstr "QR code or sign"
 
-#: src/components/IntroFlow.tsx:66
+#: src/components/IntroFlow.tsx:65
 msgid "Safari で、画面の下（または上）にある共有ボタン（□に↑）を押します。"
 msgstr "In Safari, tap the Share button (a square with an arrow) at the bottom or top of the screen."
 
@@ -787,7 +787,7 @@ msgstr "You currently sign in with a passkey only. If you add an email, you can 
 msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 msgstr "What you see now is sample and draft data. It includes information that has not been checked."
 
-#: src/components/IntroFlow.tsx:58
+#: src/components/IntroFlow.tsx:57
 msgid "いま開いているのは、ほかのアプリの中のブラウザです。Safari や Chrome で開きなおしてから、追加してください。"
 msgstr "You are in a browser inside another app. Open this page again in Safari or Chrome, then add it."
 
@@ -2005,7 +2005,7 @@ msgstr "Footer"
 msgid "プライバシーポリシー"
 msgstr "Privacy policy"
 
-#: src/components/IntroFlow.tsx:72
+#: src/components/IntroFlow.tsx:71
 msgid "ブラウザのメニュー（⋮ や ⋯）から、「ホーム画面に追加」または「アプリをインストール」をえらびます。"
 msgstr "From the browser's menu (⋮ or ⋯), choose \"Add to Home screen\" or \"Install app\"."
 
@@ -2115,15 +2115,15 @@ msgstr "Back to Home"
 msgid "ホームへ戻る"
 msgstr "Back to home"
 
-#: src/components/IntroFlow.tsx:51
+#: src/components/IntroFlow.tsx:50
 msgid "ホーム画面に追加しましょう"
 msgstr "Add it to your home screen"
 
-#: src/components/IntroFlow.tsx:62
+#: src/components/IntroFlow.tsx:61
 msgid "ホーム画面に追加する"
 msgstr "Add to home screen"
 
-#: src/components/IntroFlow.tsx:54
+#: src/components/IntroFlow.tsx:53
 msgid "ホーム画面に追加すると、アプリのようにすぐ開けます。山の中でも、探す手間がかかりません。"
 msgstr "Add it to your home screen to open it like an app, right away, even on the mountain."
 
@@ -2307,7 +2307,7 @@ msgstr "Places to visit"
 msgid "メニュー"
 msgstr "Menu"
 
-#: src/components/IntroFlow.tsx:67
+#: src/components/IntroFlow.tsx:66
 msgid "メニューを下へ動かして、「ホーム画面に追加」を押します。"
 msgstr "Scroll down the menu and tap \"Add to Home Screen\"."
 
@@ -3697,7 +3697,7 @@ msgstr "Right"
 msgid "右うしろ"
 msgstr "Back right"
 
-#: src/components/IntroFlow.tsx:68
+#: src/components/IntroFlow.tsx:67
 msgid "右上の「追加」を押すと、できあがりです。"
 msgstr "Tap \"Add\" at the top right, and you are done."
 
