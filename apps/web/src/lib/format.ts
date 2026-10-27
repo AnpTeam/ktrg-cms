@@ -22,6 +22,9 @@ export function formatUpdated(locale: string, iso: string): string {
   return locale === "ja" ? `${month}月${get("day")}日${NBSP}${time}` : `${monthsEn[month - 1]} ${get("day")},${NBSP}${time}`;
 }
 
+/** Whole days from one YYYY-MM-DD day to another (0 for the same day, never negative). */
+export const daysBetween = (from: string, to: string): number => Math.max(0, Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000));
+
 /** The day in Japan time as YYYY-MM-DD, for `formatDay`. */
 export const japanDay = (iso: string) => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tokyo" }).format(new Date(iso));
 
