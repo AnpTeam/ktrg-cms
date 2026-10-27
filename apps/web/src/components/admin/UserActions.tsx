@@ -7,10 +7,8 @@ import { useReauth } from "@/components/auth/ReauthDialog";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { formatMoment, type ListItem } from "@/lib/admin/lists/config";
 import { listRequest, type ListAnswer } from "@/lib/admin/lists/list-client";
+import { endOfJstDay } from "@/lib/admin/lists/jst";
 import { Field, inputClass, Section, TextInput } from "./fields";
-
-/** The end of a Japan day, as the moment the API takes. */
-export const endOfJstDay = (day: string) => new Date(`${day}T23:59:59+09:00`).toISOString();
 
 /**
  * What an admin can do to an account besides changing its role: restrict it (it can look but not take part), ask for its
