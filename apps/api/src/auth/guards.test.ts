@@ -45,6 +45,26 @@ function setup(opts: { secureCookies?: boolean } = {}) {
   };
 }
 
+describe("a restricted account", () => {
+  test("can look and manage its own account, but cannot take part (stamps, comments)", async () => {
+    const users = new Map<string, AuthUser>([[alice.id, { ...alice, restricted: true }]]);
+    const session = createSessionService({ store: createMemorySessionStore(users).store });
+    const app = new Elysia({ prefix: "/api/v1" })
+      .use(authGuards({ getSession: () => session, secureCookies: false }))
+      .get("/me", () => ({ ok: true }), { auth: "me.manage" })
+      .post("/stamps", () => ({ ok: true }), { auth: "stamp.create" })
+      .post("/comments", () => ({ ok: true }), { auth: "comment.create" });
+    const cookie = `session=${(await session.create(users.get(alice.id)!)).token}`;
+    const call = async (method: string, path: string) => app.handle(new Request(`http://localhost/api/v1${path}`, { method, headers: { cookie } }));
+    expect((await call("GET", "/me")).status).toBe(200);
+    for (const path of ["/stamps", "/comments"]) {
+      const res = await call("POST", path);
+      expect(res.status).toBe(403);
+      expect(await res.json()).toEqual({ ok: false, error: "account_restricted" });
+    }
+  });
+});
+
 describe("a route with no guard", () => {
   test("is open to everyone", async () => {
     const { call } = setup();

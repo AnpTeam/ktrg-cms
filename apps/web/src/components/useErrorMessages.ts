@@ -53,6 +53,9 @@ export function useErrorMessages(): Record<ErrorKey, string> {
     invalid_rally_members: t`経由地でつくったラリーにはスタンプを押せる経由地を、コースでつくったラリーにはコースを入れてください。同じものは一度だけです。`,
     // Admin: lists (trail notices, ...)
     cannot_change_own_role: t`自分の権限は変えられません。ほかの管理者に頼んでください。`,
+    cannot_manage_self: t`自分のアカウントは、制限したり削除したりできません。`,
+    cannot_manage_admin: t`管理者のアカウントは、制限したり削除したりできません。先に権限を変えてください。`,
+    account_restricted: t`このアカウントは、いま制限されています。スタンプを押すことと、コメントを書くことはできません。`,
     invalid_source_url: t`出典のリンクは https:// で始まるアドレスを入れてください。`,
     // Admin: photo uploads
     invalid_file: t`アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。`,

@@ -57,6 +57,10 @@ export const PERMISSIONS = {
   "user.read": ["admin"],
   /** Change another account's role. Also needs a fresh login (below). */
   "user.manage_roles": ["admin"],
+  /** Restrict an account (it can look but not take part) or lift that. Also needs a fresh login (below). */
+  "user.restrict": ["admin"],
+  /** Delete an account, now or after the usual 3 days. Also needs a fresh login (below). */
+  "user.delete": ["admin"],
 } as const satisfies Record<string, readonly Role[]>;
 
 export type Permission = keyof typeof PERMISSIONS;
@@ -65,7 +69,13 @@ export type Permission = keyof typeof PERMISSIONS;
  * Permissions that also need a fresh login: a login or POST /auth/reauth/verify within
  * FRESH_LOGIN_MS. The guard enforces this, so a route only names the permission.
  */
-export const FRESH_LOGIN_REQUIRED: readonly Permission[] = ["user.manage_roles", "me.sensitive"];
+export const FRESH_LOGIN_REQUIRED: readonly Permission[] = ["user.manage_roles", "user.restrict", "user.delete", "me.sensitive"];
+
+/**
+ * What a restricted account may not do: taking part. Signing in, reading, its own profile and asking for its own deletion
+ * stay, so a restriction never locks anyone out of their own data.
+ */
+export const BLOCKED_WHEN_RESTRICTED: readonly Permission[] = ["stamp.create", "comment.create"];
 
 export function needsFreshLogin(permission: Permission): boolean {
   return FRESH_LOGIN_REQUIRED.includes(permission);
