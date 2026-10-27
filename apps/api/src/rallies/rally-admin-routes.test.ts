@@ -63,6 +63,7 @@ describe("rally admin routes need an admin", () => {
     ["PATCH", `/admin/rallies/${someId}`, { updatedAt: at }],
     ["PUT", `/admin/rallies/${someId}/places`, { updatedAt: at, spotIds: [] }],
     ["PUT", `/admin/rallies/${someId}/courses`, { updatedAt: at, routeIds: [] }],
+    ["PUT", `/admin/rallies/${someId}/kind`, { updatedAt: at, kind: "course", routeIds: [] }],
     ["DELETE", `/admin/rallies/${someId}`],
   ];
 
@@ -298,6 +299,56 @@ describe("what is in a rally", () => {
     const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(rallyPublicRoutes(() => ({ rallyAdmin: createRallyAdminService({ store: s.mem.store }), content: content as never }), 60_000));
     for (let i = 0; i < 3; i++) await app.handle(new Request("http://localhost/api/v1/rallies"));
     expect(reads).toBe(1); // one course rally, read once for three requests
+  });
+});
+
+describe("changing how a rally is made", () => {
+  const put = (s: ReturnType<typeof setup>, cookie: string, r: { id: string; updatedAt: Date }, body: Json) =>
+    s.call("PUT", `/admin/rallies/${r.id}/kind`, { cookie, body: { updatedAt: r.updatedAt.toISOString(), ...body } });
+
+  test("a rally of places becomes a rally of courses, with the new members in order; the old ones go; it is recorded", async () => {
+    const s = setup();
+    const cookie = await s.login(admin);
+    const res = await put(s, cookie, s.mounds, { kind: "course", routeIds: [ROUTE_B, ROUTE_A] });
+    expect(res.status).toBe(200);
+    expect(((await res.json()) as Json).rally).toMatchObject({ kind: "course", memberCount: 2, published: true });
+    expect(s.mem.membersOf(s.mounds.id)).toEqual([ROUTE_B, ROUTE_A]);
+    expect(s.audit.rows.map((r) => [r.action, r.targetId])).toEqual([["rally.kind.change", s.mounds.id]]);
+    const read = (await (await s.call("GET", `/admin/rallies/${s.mounds.id}`, { cookie })).json()) as Json;
+    expect(read.courses.map((c: Json) => c.routeId)).toEqual([ROUTE_B, ROUTE_A]);
+    expect(read.places).toBeNull();
+  });
+
+  test("and back: a rally of courses becomes a rally of places", async () => {
+    const s = setup();
+    const cookie = await s.login(admin);
+    const res = await put(s, cookie, s.courses, { kind: "places", spotIds: [A2, A1] });
+    expect(((await res.json()) as Json).rally).toMatchObject({ kind: "places", memberCount: 2 });
+    expect(s.mem.membersOf(s.courses.id)).toEqual([A2, A1]);
+  });
+
+  test("refused: the same kind, members of the wrong kind, a navigation point, a repeat, an empty published rally, a stale copy; nothing changes", async () => {
+    const s = setup();
+    const cookie = await s.login(admin);
+    const err = async (r: Promise<Response>) => ((await (await r).json()) as Json).error;
+    expect(await err(put(s, cookie, s.mounds, { kind: "places", spotIds: [A1] }))).toBe("invalid_rally_members");
+    expect(await err(put(s, cookie, s.mounds, { kind: "course", spotIds: [A1], routeIds: [ROUTE_A] }))).toBe("invalid_rally_members");
+    expect(await err(put(s, cookie, s.courses, { kind: "places", spotIds: [A_TURN] }))).toBe("invalid_rally_members");
+    expect(await err(put(s, cookie, s.courses, { kind: "places", spotIds: [A1, A1] }))).toBe("invalid_rally_members");
+    expect(await err(put(s, cookie, s.courses, { kind: "places", spotIds: [] }))).toBe("rally_empty");
+    expect((await put(s, cookie, { id: s.courses.id, updatedAt: new Date(0) }, { kind: "places", spotIds: [A1] })).status).toBe(409);
+    expect((await s.call("PUT", `/admin/rallies/${crypto.randomUUID()}/kind`, { cookie, body: { updatedAt: new Date().toISOString(), kind: "course", routeIds: [] } })).status).toBe(404);
+    expect(s.mem.membersOf(s.courses.id)).toEqual([ROUTE_A]);
+    expect(s.mem.membersOf(s.mounds.id)).toEqual([A1, B1]);
+    expect(s.audit.rows).toHaveLength(0);
+  });
+
+  test("visitors' finishes of the rally stay", async () => {
+    const s = setup();
+    const cookie = await s.login(admin);
+    s.mem.setFinished(s.mounds.id, 3);
+    const res = (await (await put(s, cookie, s.mounds, { kind: "course", routeIds: [ROUTE_A] })).json()) as Json;
+    expect(res.rally.completionCount).toBe(3);
   });
 });
 

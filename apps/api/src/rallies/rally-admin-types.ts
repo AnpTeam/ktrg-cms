@@ -1,5 +1,5 @@
-// The admin side of rallies (the user's model, 2026-10-19). When an admin creates a rally they choose how it is made,
-// and it stays that way: a rally of PLACES (a list of stamp places, such as the sutra-mound rally) or a rally of
+// The admin side of rallies (the user's model, 2026-10-19). When an admin creates a rally they choose how it is made;
+// they may change it later, picking the new members in the same step: a rally of PLACES (a list of stamp places, such as the sutra-mound rally) or a rally of
 // COURSES (a list of courses; a course is finished when all its stamp places are stamped). Visitors' stamps and
 // finishes are never touched here.
 
@@ -50,7 +50,7 @@ export type RallyDetail =
   | { rally: RallyRow & { kind: "places" }; places: (RallyPlace & { position: number })[] }
   | { rally: RallyRow & { kind: "course" }; courses: (RallyCourse & { position: number })[] };
 
-/** What an admin may change after creating a rally (the kind never changes). */
+/** What an admin may change in a rally besides its kind and members (those have their own calls). */
 export interface RallyFields {
   nameJa: string;
   nameEn: string | null;
@@ -81,6 +81,11 @@ export interface RallyAdminStore {
   setPlaces(actor: string, id: string, expected: Date, spotIds: string[]): Promise<RallyRow | "conflict" | null>;
   /** Replaces the courses of a rally of courses, in this order. The caller has checked they are allowed. */
   setCourses(actor: string, id: string, expected: Date, routeIds: string[]): Promise<RallyRow | "conflict" | null>;
+  /**
+   * Makes it a rally of the other kind: every old member goes, and these come in (places for "places", courses for "course"), in
+   * this order, in one step. Visitors' finishes of it stay, as when a course gets another place later. The caller has checked them.
+   */
+  changeKind(actor: string, id: string, expected: Date, kind: RallyKind, memberIds: string[]): Promise<RallyRow | "conflict" | null>;
   /** Its links and visitors' finishes of it go too; stamps and course finishes stay. */
   deleteRally(actor: string, id: string): Promise<"ok" | "not_found">;
 }

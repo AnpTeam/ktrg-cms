@@ -207,6 +207,22 @@ export function createDrizzleRallyAdminStore(db: Db): RallyAdminStore {
       });
     },
 
+    async changeKind(actor, id, expected, kind, memberIds) {
+      return db.transaction(async (tx) => {
+        const claimed = await claim(tx, id, expected);
+        if (claimed === null || claimed === "conflict") return claimed;
+        await tx.delete(rallySpots).where(eq(rallySpots.rallyId, id));
+        await tx.delete(rallyRoutes).where(eq(rallyRoutes.rallyId, id));
+        const [row] = await tx.update(rallies).set({ kind }).where(eq(rallies.id, id)).returning();
+        if (memberIds.length) {
+          if (kind === "places") await tx.insert(rallySpots).values(memberIds.map((spotId, i) => ({ rallyId: id, spotId, position: i + 1 })));
+          else await tx.insert(rallyRoutes).values(memberIds.map((routeId, i) => ({ rallyId: id, routeId, position: i + 1 })));
+        }
+        await writeAudit(tx, { actorUserId: actor, action: "rally.kind.change", targetId: id });
+        return (await withRallyDetails(tx, [row!]))[0]!;
+      });
+    },
+
     async deleteRally(actor, id) {
       return db.transaction(async (tx) => {
         const [gone] = await tx.delete(rallies).where(eq(rallies.id, id)).returning({ id: rallies.id }); // links and finishes by cascade

@@ -43,6 +43,7 @@ export const AUDIT_ACTIONS = {
   "rally.unpublish": "rally",
   "rally.reorder": "rally",
   "rally.members.update": "rally",
+  "rally.kind.change": "rally",
   "rally.delete": "rally",
   /** Admin trail notices (admin-lists): made, changed (including published or not), deleted. */
   "notice.create": "notice",

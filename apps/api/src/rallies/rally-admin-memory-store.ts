@@ -103,6 +103,14 @@ export function createMemoryRallyAdminStore(audit: AuditWriter, opts: { now?: ()
       await audit.record({ actorUserId: actor, action: "rally.members.update", targetId: id });
       return row(id);
     },
+    async changeKind(actor, id, expected, kind, memberIds) {
+      const c = claim(id, expected);
+      if (c !== true) return c;
+      rallies.set(id, { ...rallies.get(id)!, kind });
+      members.set(id, [...memberIds]);
+      await audit.record({ actorUserId: actor, action: "rally.kind.change", targetId: id });
+      return row(id);
+    },
     async deleteRally(actor, id) {
       if (!rallies.delete(id)) return "not_found";
       members.delete(id);

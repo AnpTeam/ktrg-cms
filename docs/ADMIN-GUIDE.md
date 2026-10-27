@@ -25,6 +25,7 @@ The menu has sections; "Back" and "Hide menu" are at the top of the left column.
 - The video link has an **Earlier video links** list under it: replaced or removed links are kept, and "Put this link back" fills the field again (save as usual).
 - A route that has a checked line shows a **GPX download** to signed-in visitors.
 - Every rally has its own page at `/rallies/<id>`: photo, progress, the stamps to unlock, the places in order, and buttons to bookmark it, start (opens the next place on the map) and stamp the place the visitor is standing at. Nothing to enter: it is built from the rally and its places.
+- **Change how a rally is made** (rally page, "つくり方"): a rally made from courses can become one made from waypoints, and back. The old members come out and you pick the new ones in the same step (a published rally cannot be left empty). Save any other edits first. People who already finished it keep their record; stamps never change.
 
 ## Places (the directory)
 
