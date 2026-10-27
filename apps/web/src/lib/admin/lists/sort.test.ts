@@ -43,3 +43,14 @@ describe("sorting a list's rows", () => {
     expect(ids(items)).toEqual(["1", "2", "3", "4"]);
   });
 });
+
+describe("sorting any rows", () => {
+  const rows = [{ n: 3, s: "b" }, { n: 1, s: null }, { n: 2, s: "a" }];
+  test("by a number or by words, with empty values last either way", async () => {
+    const { sortBy } = await import("./sort");
+    expect(sortBy(rows, "asc", (r) => r.n, "ja").map((r) => r.n)).toEqual([1, 2, 3]);
+    expect(sortBy(rows, "desc", (r) => r.n, "ja").map((r) => r.n)).toEqual([3, 2, 1]);
+    expect(sortBy(rows, "asc", (r) => r.s, "ja").map((r) => r.n)).toEqual([2, 3, 1]);
+    expect(sortBy(rows, "desc", (r) => r.s, "ja").map((r) => r.n)).toEqual([3, 2, 1]);
+  });
+});
