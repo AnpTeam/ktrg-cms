@@ -28,7 +28,7 @@ describe("changing one field of a place", () => {
       return { status: res.status, body: (await res.json()) as Record<string, any> }; // eslint-disable-line -- test helper
     };
     const made = await call("POST", "/admin/lists/directory", {
-      category: "parking", routeId: null, nearSpotId: null, nameJa: "加太港駐車場", nameEn: null, descriptionJa: null, descriptionEn: null, hoursJa: null, hoursEn: null, closedDaysJa: null, closedDaysEn: null,
+      category: "parking", routeId: null, nearSpotId: null, openingHours: null, nameJa: "加太港駐車場", nameEn: null, descriptionJa: null, descriptionEn: null, hoursJa: null, hoursEn: null, closedDaysJa: null, closedDaysEn: null,
       lat: 34.27, lng: 135.07, positionVerified: false, positionSource: null, addressJa: null, addressEn: null, phone: null, website: null, photoUrl: null, status: "seasonal", lastVerified: null, listingConfirmed: false, listingNote: null, published: false,
     });
     expect(made.status).toBe(201);
@@ -42,7 +42,7 @@ describe("changing one field of a place", () => {
 describe("the public places answer", () => {
   test("more than the limit are cut, and the cut is logged once", async () => {
     const { MAX_PUBLIC_PLACES, publicPlaceRoutes } = await import("./place-directory");
-    const rows = Array.from({ length: MAX_PUBLIC_PLACES + 5 }, (_, i) => ({ id: crypto.randomUUID(), category: "toilet", routeId: null, nearSpotId: null, nameJa: `p${i}`, nameEn: null, descriptionJa: null, descriptionEn: null, hoursJa: null, hoursEn: null, closedDaysJa: null, closedDaysEn: null, lat: 34, lng: 135, addressJa: null, addressEn: null, phone: null, website: null, photoUrl: null, photoCredit: null, status: "open", lastVerified: null }));
+    const rows = Array.from({ length: MAX_PUBLIC_PLACES + 5 }, (_, i) => ({ id: crypto.randomUUID(), category: "toilet", routeId: null, nearSpotId: null, openingHours: null, nameJa: `p${i}`, nameEn: null, descriptionJa: null, descriptionEn: null, hoursJa: null, hoursEn: null, closedDaysJa: null, closedDaysEn: null, lat: 34, lng: 135, addressJa: null, addressEn: null, phone: null, website: null, photoUrl: null, photoCredit: null, status: "open", lastVerified: null }));
     const logs: string[] = [];
     const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(publicPlaceRoutes(() => ({ publicPlaces: async () => rows }) as never, (m) => logs.push(m)));
     for (let i = 0; i < 2; i++) {
@@ -50,5 +50,13 @@ describe("the public places answer", () => {
       expect(body.places).toHaveLength(MAX_PUBLIC_PLACES);
     }
     expect(logs).toHaveLength(1);
+  });
+  test("hours entered as data are shown as text and win over the older text", async () => {
+    const { publicPlaceRoutes } = await import("./place-directory");
+    const days = Array.from({ length: 7 }, (_, d) => (d === 5 ? [] : [{ open: "10:00", close: "17:00" }]));
+    const row = { id: crypto.randomUUID(), category: "cafe", routeId: null, nearSpotId: null, openingHours: { days, noteJa: null, noteEn: null }, nameJa: "喫茶", nameEn: null, descriptionJa: null, descriptionEn: null, hoursJa: "古い文章", hoursEn: null, closedDaysJa: "古い", closedDaysEn: null, lat: 34, lng: 135, addressJa: null, addressEn: null, phone: null, website: null, photoUrl: null, photoCredit: null, status: "open", lastVerified: null };
+    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(publicPlaceRoutes(() => ({ publicPlaces: async () => [row] }) as never, () => {}));
+    const body = (await (await app.handle(new Request("http://localhost/api/v1/places"))).json()) as { places: { hoursJa: string; hoursEn: string; closedDaysJa: string }[] };
+    expect(body.places[0]).toMatchObject({ hoursJa: "月〜金 10時〜17時｜日 10時〜17時", closedDaysJa: "土" });
   });
 });

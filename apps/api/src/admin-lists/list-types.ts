@@ -62,11 +62,12 @@ export type Label = { ja: string; en: string };
  * - datetime: a moment (ISO text), shown in Japan time; read only
  * - boolean: a tick box
  * - select: one of `options`
+ * - hours: weekly opening hours (`openingHours`, a JSON object: seven days of periods and a note); the form draws a table
  * - route: one of the routes, or none (null)
  * - relation: one row of another list (`to`: that list's key), or none (null). Stored as its id; the list's own rules check
  *   that the row exists, as they do for a route. `route` is the same thing aimed at the routes.
  */
-export type FieldKind = "bilingual" | "bilingual-long" | "text" | "url" | "image" | "number" | "decimal" | "date" | "datetime" | "boolean" | "select" | "route" | "relation";
+export type FieldKind = "bilingual" | "bilingual-long" | "text" | "url" | "image" | "number" | "decimal" | "date" | "datetime" | "boolean" | "select" | "route" | "relation" | "hours";
 
 export interface FieldUi {
   /** The API field; for a bilingual field the stem ("title" → titleJa / titleEn). */

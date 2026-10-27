@@ -46,6 +46,8 @@ export function displayValue(f: FieldUi, item: ListItem, locale: string, routeNa
       return formatDay(locale, String(value));
     case "datetime":
       return formatMoment(locale, String(value));
+    case "hours":
+      return "…";
     case "route":
     case "relation":
       return routeName(String(value), f.name);

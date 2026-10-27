@@ -402,7 +402,7 @@ describe("user B cannot touch user A", () => {
     "POST /api/v1/admin/lists/furigana": () => ({ word: "葛城", reading: "かつらぎ" }),
     "PATCH /api/v1/admin/lists/furigana/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/lists/directory": () => ({
-      category: "cafe", routeId: null, nearSpotId: null, nameJa: "x", nameEn: null, descriptionJa: null, descriptionEn: null, hoursJa: null, hoursEn: null, closedDaysJa: null, closedDaysEn: null,
+      category: "cafe", routeId: null, nearSpotId: null, openingHours: null, nameJa: "x", nameEn: null, descriptionJa: null, descriptionEn: null, hoursJa: null, hoursEn: null, closedDaysJa: null, closedDaysEn: null,
       lat: null, lng: null, positionVerified: false, positionSource: null, addressJa: null, addressEn: null, phone: null, website: null, photoUrl: null, status: "unknown", lastVerified: null,
       listingConfirmed: false, listingNote: null, published: false,
     }),

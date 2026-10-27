@@ -6,7 +6,7 @@ const actor = "11111111-1111-4111-8111-111111111111";
 const place = (over: Record<string, unknown> = {}) => ({
   category: "cafe" as const,
   routeId: null,
-  nearSpotId: null,
+  nearSpotId: null, openingHours: null,
   nameJa: " 喫茶 ",
   nameEn: "  ",
   descriptionJa: null,
@@ -75,6 +75,13 @@ describe("places directory", () => {
   });
 
 
+
+  test("structured hours replace the older text for visitors, and a backward period is refused", async () => {
+    const s = setup();
+    const days = Array.from({ length: 7 }, (_, i) => (i === 5 ? [] : [{ open: "10:00", close: "17:00" }]));
+    expect(await s.svc.create(actor, place({ openingHours: { days: days.map((d, i) => (i === 0 ? [{ open: "18:00", close: "09:00" }] : d)), noteJa: null, noteEn: null } }))).toEqual({ ok: false, reason: "validation_failed" });
+    expect((await s.svc.create(actor, place({ openingHours: { days, noteJa: null, noteEn: null } }))).ok).toBe(true);
+  });
   test("a nearby waypoint must exist", async () => {
     const known = "44444444-4444-4444-8444-444444444444";
     const svc = createPlaceService({ store: createMemoryPlaceStore(createMemoryAuditWriter().writer).store, spotExists: async (id) => id === known });

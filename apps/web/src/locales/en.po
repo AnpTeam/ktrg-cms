@@ -200,6 +200,16 @@ msgstr "{minutes} min ({km} km)"
 msgid "{mode} {minutes}分"
 msgstr "{mode} {minutes} min"
 
+#. placeholder {0}: i + 1
+#: src/components/admin/HoursInput.tsx:33
+msgid "{name} {0}つ目の閉まる時間"
+msgstr "{name}, closing time of period {0}"
+
+#. placeholder {0}: i + 1
+#: src/components/admin/HoursInput.tsx:31
+msgid "{name} {0}つ目の開く時間"
+msgstr "{name}, opening time of period {0}"
+
 #: src/components/admin/AdminShell.tsx:28
 msgid "{name} さんでログイン中"
 msgstr "Signed in as {name}"
@@ -379,7 +389,7 @@ msgstr "What the \"Terrain\" button adds"
 msgid "「地形」ボタンを押した状態で見る"
 msgstr "Show it as when \"Terrain\" is pressed"
 
-#: src/components/admin/AdminItemForm.tsx:281
+#: src/components/admin/AdminItemForm.tsx:288
 msgid "「必須」の欄をすべて入れると保存できます。"
 msgstr "Fill in every field marked “Required” to save."
 
@@ -411,6 +421,10 @@ msgstr "← Previous"
 #: src/components/admin/AccessPointsEditor.tsx:80
 msgid "＋ 交通を追加"
 msgstr "+ Add a way to get there"
+
+#: src/components/admin/HoursInput.tsx:42
+msgid "＋ 時間を追加（昼休みなど）"
+msgstr "+ Add hours (for a lunch break, etc.)"
 
 #: src/components/admin/PlaceTable.tsx:218
 msgid "＋ 行を追加"
@@ -2826,6 +2840,7 @@ msgstr "Do not show this again"
 msgid "仮のルート・位置（未確認）"
 msgstr "Draft route and positions (unchecked)"
 
+#: src/components/admin/HoursInput.tsx:26
 #: src/components/map/PlacesPanel.tsx:237
 msgid "休み"
 msgstr "Closed"
@@ -2958,7 +2973,7 @@ msgstr "About the physical and technical levels"
 msgid "作っています…"
 msgstr "Creating…"
 
-#: src/components/admin/AdminItemForm.tsx:261
+#: src/components/admin/AdminItemForm.tsx:268
 msgid "作成"
 msgstr "Create"
 
@@ -2970,7 +2985,11 @@ msgstr "No usable photos were found."
 msgid "例：山田太郎, CC BY-SA 4.0"
 msgstr "e.g. Jane Doe, CC BY-SA 4.0"
 
-#: src/components/admin/AdminItemForm.tsx:261
+#: src/components/admin/HoursInput.tsx:63
+msgid "例：祝日は休み／ラストオーダーは閉店30分前"
+msgstr "e.g. Closed on public holidays / last order 30 minutes before closing"
+
+#: src/components/admin/AdminItemForm.tsx:268
 #: src/components/admin/PageTextEditor.tsx:76
 msgid "保存"
 msgstr "Save"
@@ -2979,14 +2998,14 @@ msgstr "Save"
 msgid "保存していない内容も含めて調べています。"
 msgstr "This includes changes you have not saved yet."
 
-#: src/components/admin/AdminItemForm.tsx:253
+#: src/components/admin/AdminItemForm.tsx:260
 #: src/components/admin/PageTextEditor.tsx:70
 #: src/components/admin/RouteEditor.tsx:420
 msgid "保存していない変更があります"
 msgstr "You have unsaved changes"
 
-#: src/components/admin/AdminItemForm.tsx:55
-#: src/components/admin/AdminItemForm.tsx:65
+#: src/components/admin/AdminItemForm.tsx:56
+#: src/components/admin/AdminItemForm.tsx:66
 msgid "保存していない変更があります。このページを離れますか？"
 msgstr "You have unsaved changes. Leave this page?"
 
@@ -3003,11 +3022,11 @@ msgstr "Unsaved edits were kept in this browser ({offeredAt}). Restore them?"
 msgid "保存しています…"
 msgstr "Saving…"
 
-#: src/components/admin/AdminItemForm.tsx:257
+#: src/components/admin/AdminItemForm.tsx:264
 msgid "保存して次へ"
 msgstr "Save and next"
 
-#: src/components/admin/AdminItemForm.tsx:123
+#: src/components/admin/AdminItemForm.tsx:124
 #: src/components/admin/RallyEditor.tsx:66
 #: src/components/admin/RouteEditor.tsx:328
 #: src/components/ProfileSettings.tsx:172
@@ -3031,7 +3050,7 @@ msgstr "Saved. The source was empty, so the line was saved as not checked. Enter
 msgid "保存しました。ただし、未完成の経由地が{heldCount}件あり、まだ保存していません（赤く示した項目）。"
 msgstr "Saved. {heldCount} unfinished waypoint(s) were not saved yet (the red items)."
 
-#: src/components/admin/AdminItemForm.tsx:100
+#: src/components/admin/AdminItemForm.tsx:101
 msgid "保存しました。次に確認する場所はありません。"
 msgstr "Saved. No more places waiting to be checked."
 
@@ -3058,13 +3077,13 @@ msgstr "It could not be saved. Please try again."
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not save. Please try again where the signal is good."
 
-#: src/components/admin/AdminItemForm.tsx:261
+#: src/components/admin/AdminItemForm.tsx:268
 #: src/components/admin/PageTextEditor.tsx:76
 #: src/components/admin/RouteEditor.tsx:423
 msgid "保存中…"
 msgstr "Saving…"
 
-#: src/components/admin/AdminItemForm.tsx:253
+#: src/components/admin/AdminItemForm.tsx:260
 #: src/components/admin/PageTextEditor.tsx:70
 msgid "保存済み"
 msgstr "Saved"
@@ -3267,7 +3286,7 @@ msgstr "Share"
 msgid "共有する"
 msgstr "Share"
 
-#: src/components/admin/AdminItemForm.tsx:279
+#: src/components/admin/AdminItemForm.tsx:286
 msgid "内容"
 msgstr "Content"
 
@@ -3482,17 +3501,18 @@ msgid "利用規約"
 msgstr "Terms of use"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
-#: src/components/admin/AdminItemForm.tsx:285
+#: src/components/admin/AdminItemForm.tsx:292
 #: src/components/admin/AdminListTable.tsx:219
 #: src/components/admin/DuplicateFinder.tsx:85
 #: src/components/admin/fields.tsx:155
+#: src/components/admin/HoursInput.tsx:35
 #: src/components/admin/PlaceTable.tsx:140
 #: src/components/admin/PlaceTable.tsx:205
 #: src/components/admin/RallyEditor.tsx:149
 msgid "削除"
 msgstr "Delete"
 
-#: src/components/admin/AdminItemForm.tsx:287
+#: src/components/admin/AdminItemForm.tsx:294
 msgid "削除する"
 msgstr "Delete"
 
@@ -3833,6 +3853,10 @@ msgstr "Opening hours"
 #: src/components/landing/LandingMap.tsx:79
 msgid "国土地理院（地理院タイル）"
 msgstr "Geospatial Information Authority of Japan (GSI Tiles)"
+
+#: src/components/admin/HoursInput.tsx:14
+msgid "土曜日"
+msgstr "Saturday"
 
 #: src/components/map/TrailMap.tsx:448
 #: src/components/navigation/NavigationHud.tsx:202
@@ -4447,6 +4471,10 @@ msgstr "Register"
 msgid "日付"
 msgstr "Date"
 
+#: src/components/admin/HoursInput.tsx:14
+msgid "日曜日"
+msgstr "Sunday"
+
 #: src/components/auth/authUi.tsx:80
 msgid "日本のほかの地域"
 msgstr "Elsewhere in Japan"
@@ -4513,6 +4541,14 @@ msgstr "How to write"
 #: src/app/(public)/blog/page.tsx:49
 msgid "書けたら、ここに表示されます。"
 msgstr "Once it is written, it will show up here."
+
+#: src/components/admin/HoursInput.tsx:14
+msgid "月曜日"
+msgstr "Monday"
+
+#: src/components/admin/HoursInput.tsx:14
+msgid "木曜日"
+msgstr "Thursday"
 
 #: src/components/admin/PlacePanel.tsx:84
 msgid "未保存"
@@ -4686,6 +4722,10 @@ msgstr "Separate paragraphs with a blank line."
 msgid "水場"
 msgstr "Drinking water"
 
+#: src/components/admin/HoursInput.tsx:14
+msgid "水曜日"
+msgstr "Wednesday"
+
 #: src/app/(admin)/admin/pages/page.tsx:28
 #: src/app/(admin)/admin/pages/page.tsx:29
 msgid "法的な文章です。管理者だけが直せます。"
@@ -4750,6 +4790,14 @@ msgstr "Coming soon"
 #: src/components/admin/RubyEditor.tsx:27
 msgid "漢字ごとの読み"
 msgstr "Reading for each kanji"
+
+#: src/components/admin/HoursInput.tsx:47
+msgid "火〜金に同じ時間を入れる"
+msgstr "Copy Monday's hours to Tuesday–Friday"
+
+#: src/components/admin/HoursInput.tsx:14
+msgid "火曜日"
+msgstr "Tuesday"
 
 #: src/components/admin/map-editor/MapEditor.tsx:1135
 msgid "点 {pointCount}"
@@ -5379,6 +5427,14 @@ msgstr "Kinds to show"
 msgid "表示の切り替え"
 msgstr "Switch view"
 
+#: src/components/admin/HoursInput.tsx:65
+msgid "補足（English）"
+msgstr "Note (English)"
+
+#: src/components/admin/HoursInput.tsx:61
+msgid "補足（日本語）"
+msgstr "Note (Japanese)"
+
 #: src/components/navigation/NavigationHud.tsx:127
 msgid "西"
 msgstr "west"
@@ -5767,12 +5823,16 @@ msgstr "No places look duplicated."
 msgid "重複している場所をさがす"
 msgstr "Find duplicate places"
 
+#: src/components/admin/HoursInput.tsx:14
+msgid "金曜日"
+msgstr "Friday"
+
 #: src/components/IntroFlow.tsx:207
 #: src/components/landing/Landing.tsx:138
 msgid "長さ"
 msgstr "Length"
 
-#: src/components/admin/AdminItemForm.tsx:273
+#: src/components/admin/AdminItemForm.tsx:280
 #: src/components/admin/map-editor/MapEditor.tsx:1039
 #: src/components/admin/PageTextEditor.tsx:86
 #: src/components/admin/PhotoLibrary.tsx:124
@@ -5789,6 +5849,10 @@ msgstr "Length"
 #: src/components/SiteHeader.tsx:193
 msgid "閉じる"
 msgstr "Close"
+
+#: src/components/admin/HoursInput.tsx:56
+msgid "閉まる時間が開く時間より前になっている行があります。日をまたぐ営業は、その日の分と次の日の分に分けて入れてください。"
+msgstr "A period closes before it opens. For hours past midnight, enter one period on that day and another on the next."
 
 #: src/components/map/PlacesPanel.tsx:56
 msgid "閉店・撤去"
