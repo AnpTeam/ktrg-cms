@@ -16,6 +16,7 @@ import { PhotoLinkDetails } from "./PhotoLinkDetails";
 import { PhotoUpload } from "./PhotoUpload";
 import { PositionMap } from "./PositionMap";
 import { RelationPicker } from "./RelationPicker";
+import { UserActions } from "./UserActions";
 
 type Notice = { kind: "saved" | "error"; text: string } | null;
 
@@ -294,6 +295,16 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
             {t`削除する`}
           </button>
         </Section>
+      ) : null}
+      {saved && config.key === "users" ? (
+        <UserActions
+          item={saved}
+          locale={locale}
+          onItem={(item) => {
+            setSaved(item);
+            setValues(formValues(config, item));
+          }}
+        />
       ) : null}
       {dialog}
     </div>

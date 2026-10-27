@@ -33,4 +33,6 @@ export interface AuthUser {
   email: string | null;
   role: Role;
   locale: Locale;
+  /** An admin restricted the account (and not yet lifted or ended): see BLOCKED_WHEN_RESTRICTED. Left out means not restricted. */
+  restricted?: boolean;
 }

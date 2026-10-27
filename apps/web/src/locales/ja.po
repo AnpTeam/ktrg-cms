@@ -11,6 +11,11 @@ msgstr ""
 msgid "　{until} まで"
 msgstr "　{until} まで"
 
+#. placeholder {0}: formatMoment(locale, String(item.restrictedUntil))
+#: src/components/admin/UserActions.tsx:69
+msgid "（{0} まで）"
+msgstr "（{0} まで）"
+
 #: src/components/admin/map-editor/MapEditor.tsx:218
 #: src/components/admin/map-editor/PlaceList.tsx:59
 #: src/components/admin/map-editor/PlaceList.tsx:80
@@ -26,6 +31,10 @@ msgstr "（名前なし）"
 #: src/components/AccessList.tsx:29
 msgid "（外部サイトが新しいタブで開きます）"
 msgstr "（外部サイトが新しいタブで開きます）"
+
+#: src/components/admin/UserActions.tsx:69
+msgid "（解除するまで）"
+msgstr "（解除するまで）"
 
 #. placeholder {0}: data.from
 #. placeholder {1}: data.to
@@ -406,7 +415,7 @@ msgstr "「地形」ボタンで重ねるもの"
 msgid "「地形」ボタンを押した状態で見る"
 msgstr "「地形」ボタンを押した状態で見る"
 
-#: src/components/admin/AdminItemForm.tsx:288
+#: src/components/admin/AdminItemForm.tsx:289
 msgid "「必須」の欄をすべて入れると保存できます。"
 msgstr "「必須」の欄をすべて入れると保存できます。"
 
@@ -490,6 +499,14 @@ msgstr "30代"
 #: src/components/ProfileSettings.tsx:244
 msgid "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 msgstr "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
+
+#: src/components/admin/UserActions.tsx:109
+msgid "3日後に削除する"
+msgstr "3日後に削除する"
+
+#: src/components/admin/UserActions.tsx:108
+msgid "3日後の削除を予約しました。"
+msgstr "3日後の削除を予約しました。"
 
 #: src/components/auth/AboutYou.tsx:19
 msgid "40代"
@@ -647,6 +664,11 @@ msgstr "アカウントと、集めたスタンプなどの記録を、すべて
 msgid "アカウントのものだけにする"
 msgstr "アカウントのものだけにする"
 
+#: src/components/admin/UserActions.tsx:55
+msgid "アカウントの制限・削除"
+msgstr "アカウントの制限・削除"
+
+#: src/components/admin/UserActions.tsx:97
 #: src/components/ProfileSettings.tsx:188
 msgid "アカウントの削除"
 msgstr "アカウントの削除"
@@ -687,7 +709,7 @@ msgstr "アクセスの地域"
 msgid "アクセスの地域（管理）"
 msgstr "アクセスの地域（管理）"
 
-#: src/components/useErrorMessages.ts:58
+#: src/components/useErrorMessages.ts:61
 msgid "アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。"
 msgstr "アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。"
 
@@ -757,6 +779,10 @@ msgstr "あるとよい：{0}"
 #: src/components/PrivacyNote.tsx:13
 msgid "いただいた情報は、どんな方がこのアプリを使っているかを知るためだけに使います。個人が分からない形でまとめます。くわしくは<0>プライバシーポリシー</0>をご覧ください。"
 msgstr "いただいた情報は、どんな方がこのアプリを使っているかを知るためだけに使います。個人が分からない形でまとめます。くわしくは<0>プライバシーポリシー</0>をご覧ください。"
+
+#: src/components/admin/UserActions.tsx:82
+msgid "いつまで（空なら、解除するまで）"
+msgstr "いつまで（空なら、解除するまで）"
 
 #: src/components/OfflineNotice.tsx:26
 msgid "いま、通信がつながっていません。つながると、また使えます。"
@@ -1085,6 +1111,10 @@ msgstr "このアカウントには、パスキーがありません。メール
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
 msgstr "このアカウントには、メールがありません。顔・指紋で確認してください。"
 
+#: src/components/useErrorMessages.ts:58
+msgid "このアカウントは、いま制限されています。スタンプを押すことと、コメントを書くことはできません。"
+msgstr "このアカウントは、いま制限されています。スタンプを押すことと、コメントを書くことはできません。"
+
 #: src/components/IntroFlow.tsx:221
 msgid "このアプリでわかること"
 msgstr "このアプリでわかること"
@@ -1319,7 +1349,7 @@ msgstr "この端末・ブラウザでは、位置情報を使えません。"
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "この端末・ブラウザではパスキーを使えません。"
 
-#: src/components/useErrorMessages.ts:65
+#: src/components/useErrorMessages.ts:68
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 
@@ -1399,7 +1429,7 @@ msgstr "この設定は、本番のサイトにすぐ反映されます。すべ
 msgid "この説明は日本語のみです。"
 msgstr "この説明は日本語のみです。"
 
-#: src/components/useErrorMessages.ts:62
+#: src/components/useErrorMessages.ts:65
 msgid "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 msgstr "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 
@@ -1831,6 +1861,10 @@ msgstr "つなぐ"
 msgid "できた"
 msgstr "できた"
 
+#: src/components/admin/UserActions.tsx:114
+msgid "テスト用のアカウントなどは、今すぐ消せます。元に戻せません。スタンプ・コメント・ログインの情報もすべて消えます。"
+msgstr "テスト用のアカウントなどは、今すぐ消せます。元に戻せません。スタンプ・コメント・ログインの情報もすべて消えます。"
+
 #: src/components/admin/PlacePanel.tsx:41
 #: src/components/map/PlacesPanel.tsx:39
 #: src/components/PointKindName.tsx:13
@@ -1935,7 +1969,7 @@ msgstr "バス"
 msgid "パスキー {number}"
 msgstr "パスキー {number}"
 
-#: src/components/useErrorMessages.ts:66
+#: src/components/useErrorMessages.ts:69
 msgid "パスキーの確認が中止されました。もう一度お試しください。"
 msgstr "パスキーの確認が中止されました。もう一度お試しください。"
 
@@ -2012,6 +2046,10 @@ msgstr "ふつう"
 #: src/components/settings/PrefsForm.tsx:44
 msgid "ふつうの大きさです。"
 msgstr "ふつうの大きさです。"
+
+#: src/components/admin/UserActions.tsx:107
+msgid "ふつうは、3日後に削除する方法を使います。その間は、取り消せます。"
+msgstr "ふつうは、3日後に削除する方法を使います。その間は、取り消せます。"
 
 #: src/app/(public)/bookmarks/page.tsx:12
 #: src/app/(public)/page.tsx:78
@@ -2899,6 +2937,10 @@ msgstr "今ある線を、経由地の順に区間へ切り分けます（経由
 msgid "今すぐアカウントを作りましょう。記録が消えてしまうかもしれません！"
 msgstr "今すぐアカウントを作りましょう。記録が消えてしまうかもしれません！"
 
+#: src/components/admin/UserActions.tsx:124
+msgid "今すぐ削除する"
+msgstr "今すぐ削除する"
+
 #: src/components/admin/PublishedEditDialog.tsx:56
 msgid "今後はこの確認を表示しない"
 msgstr "今後はこの確認を表示しない"
@@ -3040,7 +3082,7 @@ msgstr "体力度と技術度について"
 msgid "作っています…"
 msgstr "作っています…"
 
-#: src/components/admin/AdminItemForm.tsx:268
+#: src/components/admin/AdminItemForm.tsx:269
 msgid "作成"
 msgstr "作成"
 
@@ -3056,7 +3098,7 @@ msgstr "例：山田太郎, CC BY-SA 4.0"
 msgid "例：祝日は休み／ラストオーダーは閉店30分前"
 msgstr "例：祝日は休み／ラストオーダーは閉店30分前"
 
-#: src/components/admin/AdminItemForm.tsx:268
+#: src/components/admin/AdminItemForm.tsx:269
 #: src/components/admin/PageTextEditor.tsx:76
 msgid "保存"
 msgstr "保存"
@@ -3065,14 +3107,14 @@ msgstr "保存"
 msgid "保存していない内容も含めて調べています。"
 msgstr "保存していない内容も含めて調べています。"
 
-#: src/components/admin/AdminItemForm.tsx:260
+#: src/components/admin/AdminItemForm.tsx:261
 #: src/components/admin/PageTextEditor.tsx:70
 #: src/components/admin/RouteEditor.tsx:420
 msgid "保存していない変更があります"
 msgstr "保存していない変更があります"
 
-#: src/components/admin/AdminItemForm.tsx:56
-#: src/components/admin/AdminItemForm.tsx:66
+#: src/components/admin/AdminItemForm.tsx:57
+#: src/components/admin/AdminItemForm.tsx:67
 msgid "保存していない変更があります。このページを離れますか？"
 msgstr "保存していない変更があります。このページを離れますか？"
 
@@ -3089,11 +3131,11 @@ msgstr "保存していない編集が、このブラウザに残っています
 msgid "保存しています…"
 msgstr "保存しています…"
 
-#: src/components/admin/AdminItemForm.tsx:264
+#: src/components/admin/AdminItemForm.tsx:265
 msgid "保存して次へ"
 msgstr "保存して次へ"
 
-#: src/components/admin/AdminItemForm.tsx:124
+#: src/components/admin/AdminItemForm.tsx:125
 #: src/components/admin/RallyEditor.tsx:66
 #: src/components/admin/RouteEditor.tsx:328
 #: src/components/ProfileSettings.tsx:172
@@ -3117,7 +3159,7 @@ msgstr "保存しました。ただし、情報源が空のため、線は「確
 msgid "保存しました。ただし、未完成の経由地が{heldCount}件あり、まだ保存していません（赤く示した項目）。"
 msgstr "保存しました。ただし、未完成の経由地が{heldCount}件あり、まだ保存していません（赤く示した項目）。"
 
-#: src/components/admin/AdminItemForm.tsx:101
+#: src/components/admin/AdminItemForm.tsx:102
 msgid "保存しました。次に確認する場所はありません。"
 msgstr "保存しました。次に確認する場所はありません。"
 
@@ -3144,13 +3186,13 @@ msgstr "保存できませんでした。もう一度お試しください。"
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "保存できませんでした。電波の良い場所でもう一度お試しください。"
 
-#: src/components/admin/AdminItemForm.tsx:268
+#: src/components/admin/AdminItemForm.tsx:269
 #: src/components/admin/PageTextEditor.tsx:76
 #: src/components/admin/RouteEditor.tsx:423
 msgid "保存中…"
 msgstr "保存中…"
 
-#: src/components/admin/AdminItemForm.tsx:260
+#: src/components/admin/AdminItemForm.tsx:261
 #: src/components/admin/PageTextEditor.tsx:70
 msgid "保存済み"
 msgstr "保存済み"
@@ -3359,7 +3401,7 @@ msgstr "共有"
 msgid "共有する"
 msgstr "共有する"
 
-#: src/components/admin/AdminItemForm.tsx:286
+#: src/components/admin/AdminItemForm.tsx:287
 msgid "内容"
 msgstr "内容"
 
@@ -3481,7 +3523,7 @@ msgstr "写真ライブラリ"
 msgid "写真をアップロード"
 msgstr "写真をアップロード"
 
-#: src/components/useErrorMessages.ts:59
+#: src/components/useErrorMessages.ts:62
 msgid "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 msgstr "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 
@@ -3532,7 +3574,7 @@ msgstr "出典"
 msgid "出典: {0}"
 msgstr "出典: {0}"
 
-#: src/components/useErrorMessages.ts:56
+#: src/components/useErrorMessages.ts:59
 msgid "出典のリンクは https:// で始まるアドレスを入れてください。"
 msgstr "出典のリンクは https:// で始まるアドレスを入れてください。"
 
@@ -3573,8 +3615,36 @@ msgstr "別の人が先に保存しました。読み込み直してから、も
 msgid "利用規約"
 msgstr "利用規約"
 
+#: src/components/admin/UserActions.tsx:63
+msgid "制限"
+msgstr "制限"
+
+#: src/components/admin/UserActions.tsx:64
+msgid "制限されたアカウントは、ログインと閲覧はできますが、スタンプを押すこととコメントを書くことはできません。自分のデータを見たり、削除を頼んだりはできます。"
+msgstr "制限されたアカウントは、ログインと閲覧はできますが、スタンプを押すこととコメントを書くことはできません。自分のデータを見たり、削除を頼んだりはできます。"
+
+#: src/components/admin/UserActions.tsx:88
+msgid "制限しました。"
+msgstr "制限しました。"
+
+#: src/components/admin/UserActions.tsx:91
+msgid "制限する"
+msgstr "制限する"
+
+#: src/components/admin/UserActions.tsx:73
+msgid "制限を解除しました。"
+msgstr "制限を解除しました。"
+
+#: src/components/admin/UserActions.tsx:74
+msgid "制限を解除する"
+msgstr "制限を解除する"
+
+#: src/components/admin/UserActions.tsx:68
+msgid "制限中"
+msgstr "制限中"
+
 #: src/components/admin/AccessPointsEditor.tsx:51
-#: src/components/admin/AdminItemForm.tsx:292
+#: src/components/admin/AdminItemForm.tsx:293
 #: src/components/admin/AdminListTable.tsx:235
 #: src/components/admin/AdminListTable.tsx:269
 #: src/components/admin/AdminListTable.tsx:333
@@ -3587,9 +3657,25 @@ msgstr "利用規約"
 msgid "削除"
 msgstr "削除"
 
-#: src/components/admin/AdminItemForm.tsx:294
+#: src/components/admin/UserActions.tsx:100
+msgid "削除が予約されています。3日たつと、アカウントとスタンプが消えます。"
+msgstr "削除が予約されています。3日たつと、アカウントとスタンプが消えます。"
+
+#: src/components/admin/UserActions.tsx:121
+msgid "削除しました。"
+msgstr "削除しました。"
+
+#: src/components/admin/AdminItemForm.tsx:295
 msgid "削除する"
 msgstr "削除する"
+
+#: src/components/admin/UserActions.tsx:101
+msgid "削除の予約を取り消しました。"
+msgstr "削除の予約を取り消しました。"
+
+#: src/components/admin/UserActions.tsx:102
+msgid "削除の予約を取り消す"
+msgstr "削除の予約を取り消す"
 
 #: src/components/ProfileSettings.tsx:247
 msgid "削除を依頼する"
@@ -3915,7 +4001,7 @@ msgstr "和歌山県"
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 
-#: src/components/useErrorMessages.ts:68
+#: src/components/useErrorMessages.ts:71
 #: src/components/useStampMessages.ts:23
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "問題が発生しました。しばらくしてからもう一度お試しください。"
@@ -4986,6 +5072,15 @@ msgstr "現地の許可を確認し、「許可確認済み」にチェックを
 msgid "現地調査のシート（CSV）を選ぶと、まず件数を表示します。取り込んだ場所はすべて下書きで、位置は「未確認」のままです。すでにある場所は追加しません。"
 msgstr "現地調査のシート（CSV）を選ぶと、まず件数を表示します。取り込んだ場所はすべて下書きで、位置は「未確認」のままです。すでにある場所は追加しません。"
 
+#. placeholder {0}: String(item.restrictionReason ?? "")
+#: src/components/admin/UserActions.tsx:71
+msgid "理由：{0}"
+msgstr "理由：{0}"
+
+#: src/components/admin/UserActions.tsx:79
+msgid "理由（管理者だけに見えます）"
+msgstr "理由（管理者だけに見えます）"
+
 #: src/components/auth/AboutYou.tsx:30
 msgid "男性"
 msgstr "男性"
@@ -5109,6 +5204,10 @@ msgstr "確認する"
 msgid "確認できませんでした。もう一度お試しください。"
 msgstr "確認できませんでした。もう一度お試しください。"
 
+#: src/components/admin/UserActions.tsx:115
+msgid "確認のため、会員番号（{memberId}）を入れてください"
+msgstr "確認のため、会員番号（{memberId}）を入れてください"
+
 #: src/components/settings/LoginMethods.tsx:77
 msgid "確認の番号を送る"
 msgstr "確認の番号を送る"
@@ -5168,6 +5267,14 @@ msgstr "管理画面を開く"
 #: src/components/admin/AdminShell.tsx:28
 msgid "管理者としてログイン中"
 msgstr "管理者としてログイン中"
+
+#: src/components/useErrorMessages.ts:57
+msgid "管理者のアカウントは、制限したり削除したりできません。先に権限を変えてください。"
+msgstr "管理者のアカウントは、制限したり削除したりできません。先に権限を変えてください。"
+
+#: src/components/admin/UserActions.tsx:56
+msgid "管理者のアカウントは、制限や削除ができません。先に「権限」を変えてください。"
+msgstr "管理者のアカウントは、制限や削除ができません。先に「権限」を変えてください。"
 
 #: src/components/admin/RouteImport.tsx:82
 msgid "範囲をこえています"
@@ -5457,6 +5564,10 @@ msgstr "自分でページをつくれます。公開すると、サイトの「
 #: src/components/GuestBackup.tsx:35
 msgid "自分に送っておくと、ブラウザのデータが消えても、このリンクからスタンプをもどせます。ほかの人には見せないでください。"
 msgstr "自分に送っておくと、ブラウザのデータが消えても、このリンクからスタンプをもどせます。ほかの人には見せないでください。"
+
+#: src/components/useErrorMessages.ts:56
+msgid "自分のアカウントは、制限したり削除したりできません。"
+msgstr "自分のアカウントは、制限したり削除したりできません。"
 
 #: src/components/useErrorMessages.ts:55
 msgid "自分の権限は変えられません。ほかの管理者に頼んでください。"
@@ -5785,7 +5896,7 @@ msgstr "送っています…"
 msgid "送っています… {percent}%"
 msgstr "送っています… {percent}%"
 
-#: src/components/useErrorMessages.ts:67
+#: src/components/useErrorMessages.ts:70
 #: src/components/useStampMessages.ts:22
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "通信できませんでした。電波の良い場所でもう一度お試しください。"
@@ -5838,7 +5949,7 @@ msgstr "道なり"
 msgid "道に沿わせる"
 msgstr "道に沿わせる"
 
-#: src/components/useErrorMessages.ts:61
+#: src/components/useErrorMessages.ts:64
 msgid "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 msgstr "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 
@@ -5880,7 +5991,7 @@ msgstr "道を調べています…"
 msgid "道を調べています…（{step}/{total}）"
 msgstr "道を調べています…（{step}/{total}）"
 
-#: src/components/useErrorMessages.ts:63
+#: src/components/useErrorMessages.ts:66
 msgid "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 msgstr "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 
@@ -5978,7 +6089,7 @@ msgstr "金曜日"
 msgid "長さ"
 msgstr "長さ"
 
-#: src/components/admin/AdminItemForm.tsx:280
+#: src/components/admin/AdminItemForm.tsx:281
 #: src/components/admin/map-editor/MapEditor.tsx:1039
 #: src/components/admin/PageTextEditor.tsx:86
 #: src/components/admin/PhotoLibrary.tsx:124

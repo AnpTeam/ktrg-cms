@@ -82,6 +82,14 @@ export const AUDIT_ACTIONS = {
   "stamp.restore": "stamp",
   /** An admin changed another account's role (that account's sessions are ended in the same step). */
   "user.role.change": "user",
+  /** An admin restricted an account (it can look but not take part), or lifted that. */
+  "user.restrict": "user",
+  "user.restriction_lift": "user",
+  /** An admin asked for an account to be deleted after the usual 3 days, or cancelled that. */
+  "user.deletion_request_by_admin": "user",
+  "user.deletion_cancel_by_admin": "user",
+  /** An admin deleted an account at once (a test account). */
+  "user.deleted_by_admin": "user",
   /** An admin uploaded a photo (the target is the file's UUID in storage). */
   "upload.create": "upload",
 } as const satisfies Record<string, string>;
