@@ -277,3 +277,36 @@ export const BookmarkIcon = ({ filled = false }: { filled?: boolean }) => (
     <path d="M6 4h12v16l-6-4-6 4z" />
   </svg>
 );
+
+/** A speech bubble: comments. */
+export const CommentIcon = () => (
+  <Icon>
+    <path d="M4 5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-8l-5 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" />
+    <path d="M8 10h8M8 13h5" />
+  </Icon>
+);
+
+/** A pencil: the writers. */
+export const PencilIcon = () => (
+  <Icon>
+    <path d="m4 20 1-4L16.5 4.5a2.1 2.1 0 0 1 3 3L8 19l-4 1Z" />
+    <path d="m14 7 3 3" />
+  </Icon>
+);
+
+/** A page with a headline and lines: blog posts. */
+export const ArticleIcon = () => (
+  <Icon>
+    <rect x="4" y="3" width="16" height="18" rx="2" />
+    <path d="M8 8h8M8 12h8M8 16h5" />
+  </Icon>
+);
+
+/** Small marks above a character: furigana (readings above kanji). */
+export const FuriganaIcon = () => (
+  <Icon>
+    <path d="M6 4h2M11 4h2M16 4h2" />
+    <path d="M5 20 12 9l7 11" />
+    <path d="M8 16h8" />
+  </Icon>
+);
