@@ -93,6 +93,11 @@ export function MapSheet({
 
   // `height` is the part above the tab bar; the sheet itself is that much taller, so it runs under the bar.
   const height = dragPx ?? restingPx;
+  // At its top the sheet runs under the phone's status bar / camera island: its first row starts below it, so the handle
+  // (and the back button under it) can still be reached.
+  const atTop = !panel && height >= sheetHeightPx("full", available) - 1;
+  // The handle says in words what a tap does (a thin grey bar alone is not understood by everyone).
+  const tapLabel = snap === "full" ? t`小さくして地図を見る` : snap === "half" ? t`もっと広げる` : t`広げる`;
   // Hidden (and not being pulled): nothing is drawn; the map screen shows a button to bring it back.
   if (!panel && snap === "hidden" && dragPx === null) return null;
 
@@ -104,7 +109,7 @@ export function MapSheet({
           ? "absolute bottom-3 left-3 top-3 z-[5] flex w-[26rem] flex-col rounded-3xl bg-paper shadow-[0_4px_24px_rgb(0_0_0/0.28)]"
           : "absolute inset-x-0 bottom-0 z-[5] flex flex-col rounded-t-3xl bg-paper shadow-[0_-4px_24px_rgb(0_0_0/0.28)] motion-reduce:transition-none"
       }
-      style={panel ? undefined : { height: height + tabPx, transition: dragPx === null ? "height 240ms ease-out" : "none" }}
+      style={panel ? undefined : { height: height + tabPx, paddingTop: atTop ? "env(safe-area-inset-top)" : undefined, transition: dragPx === null ? "height 240ms ease-out" : "none" }}
     >
       {panel ? <div className="h-4 shrink-0" aria-hidden="true" /> : null}
       <div
@@ -121,9 +126,13 @@ export function MapSheet({
         onPointerUp={up}
         onPointerCancel={up}
         onKeyDown={key}
-        className={`h-8 shrink-0 cursor-grab touch-none items-center justify-center rounded-t-3xl active:cursor-grabbing ${panel ? "hidden" : "flex"}`}
+        className={`min-h-14 shrink-0 cursor-grab touch-none flex-col items-center justify-center gap-1 rounded-t-3xl pt-2 active:cursor-grabbing ${panel ? "hidden" : "flex"}`}
       >
-        <span aria-hidden="true" className="h-1.5 w-12 rounded-full bg-line/60" />
+        <span aria-hidden="true" className="h-1.5 w-12 rounded-full bg-muted/60" />
+        <span className="inline-flex items-center gap-2 rounded-full bg-surface px-4 py-1 text-base font-bold text-ink">
+          <span aria-hidden="true">{snap === "full" ? "▼" : "▲"}</span>
+          {tapLabel}
+        </span>
       </div>
       {header ? <div className="shrink-0 px-4 pb-2">{header}</div> : null}
       <div ref={body} className="min-h-0 flex-1 overflow-y-auto overscroll-contain" style={{ paddingBottom: tabPx + 24 }}>
