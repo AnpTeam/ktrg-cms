@@ -51,6 +51,9 @@ export interface ListStore<R extends ListRow, F> extends ListReadStore<R> {
 
 export type Label = { ja: string; en: string };
 
+/** How a chip in the list is coloured (and marked, so colour is never the only cue): good, warn and bad are for a state. */
+export type Tone = "neutral" | "good" | "warn" | "bad" | "info";
+
 /**
  * - bilingual / bilingual-long: Japanese and English side by side (`<name>Ja`, `<name>En`); one line / several lines
  * - text: one line of plain text
@@ -84,14 +87,14 @@ export interface FieldUi {
   /** For a route or relation field: what "none" means. */
   noneLabel?: Label;
   /** For a select field: the values it offers. */
-  options?: { value: string; label: Label }[];
+  options?: { value: string; label: Label; tone?: Tone }[];
   /** Shown on the form but never sent (the API does not take it). */
   readOnly?: boolean;
   /**
    * Shown in the list's line of facts under each row's name. `text` wraps the value ("{value}" is replaced; a day is
    * written out, a route by its name); `empty` is shown when there is no value; a boolean shows `yes` or `no`.
    */
-  inList?: { text?: Label; empty?: Label; yes?: Label; no?: Label };
+  inList?: { text?: Label; empty?: Label; yes?: Label; no?: Label; tone?: { yes?: Tone; no?: Tone } };
 }
 
 export interface ListUi {
@@ -103,6 +106,8 @@ export interface ListUi {
   deleteWarning?: Label;
   /** The field that names a row in the list (a bilingual or a text field). */
   titleField: string;
+  /** Fields tried in this order for the name shown in the list; `titleField` is the last resort (a member's name, else email, else ID). */
+  titleFrom?: string[];
   fields: FieldUi[];
   /**
    * Where a row in the list leads, under /<locale>/admin/, when not to its own form: "{name}" is replaced by the

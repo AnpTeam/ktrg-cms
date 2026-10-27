@@ -138,10 +138,11 @@ export const userList: ReadDef<"users", UserListRow, UserListServices> & { field
       en: "Registered accounts. Changing a permission asks you to confirm it is you again. You cannot change your own. The account is signed out when its permission changes.",
     },
     titleField: "publicId",
+    titleFrom: ["displayName", "email"],
     fields: [
       { name: "publicId", kind: "text", label: { ja: "会員番号", en: "Member ID" }, readOnly: true },
-      { name: "email", kind: "text", label: { ja: "メール", en: "Email" }, readOnly: true, inList: { empty: { ja: "メールなし", en: "No email" } } },
-      { name: "displayName", kind: "text", label: { ja: "名前", en: "Name" }, readOnly: true, inList: {} },
+      { name: "email", kind: "text", label: { ja: "メール", en: "Email" }, readOnly: true },
+      { name: "displayName", kind: "text", label: { ja: "名前", en: "Name" }, readOnly: true },
       {
         name: "role",
         kind: "select",
@@ -149,7 +150,7 @@ export const userList: ReadDef<"users", UserListRow, UserListServices> & { field
         options: [
           { value: "participant", label: { ja: "参加者", en: "Participant" } },
           { value: "editor", label: { ja: "編集者", en: "Editor" } },
-          { value: "admin", label: { ja: "管理者", en: "Administrator" } },
+          { value: "admin", label: { ja: "管理者", en: "Administrator" }, tone: "info" },
         ],
         required: true,
         inList: {},
@@ -160,7 +161,7 @@ export const userList: ReadDef<"users", UserListRow, UserListServices> & { field
         { value: "nara", label: { ja: "奈良県", en: "Nara" } },
         { value: "other_japan", label: { ja: "日本のほかの地域", en: "Elsewhere in Japan" } },
         { value: "overseas", label: { ja: "海外", en: "Overseas" } },
-      ], inList: { empty: { ja: "お住まい：未回答", en: "Where from: not answered" } } },
+      ], inList: { empty: { ja: "未回答", en: "Not answered" } } },
       { name: "ageRange", kind: "select", readOnly: true, label: { ja: "年代", en: "Age" }, options: [
         { value: "under20", label: { ja: "20歳未満", en: "Under 20" } },
         { value: "20s", label: { ja: "20代", en: "20s" } },
@@ -175,7 +176,7 @@ export const userList: ReadDef<"users", UserListRow, UserListServices> & { field
         { value: "male", label: { ja: "男性", en: "Male" } },
         { value: "other", label: { ja: "その他", en: "Other" } },
         { value: "unspecified", label: { ja: "答えたくない", en: "Prefer not to say" } },
-      ], inList: {} },
+      ] },
       { name: "foundVia", kind: "select", readOnly: true, label: { ja: "知ったきっかけ", en: "How they found it" }, options: [
         { value: "qr_or_sign", label: { ja: "QRコード・看板", en: "QR code or sign" } },
         { value: "flyer", label: { ja: "チラシ・ポスター", en: "Flyer or poster" } },
@@ -184,8 +185,8 @@ export const userList: ReadDef<"users", UserListRow, UserListServices> & { field
         { value: "search", label: { ja: "検索", en: "Web search" } },
         { value: "friend", label: { ja: "友人・知人", en: "Friend or acquaintance" } },
         { value: "other", label: { ja: "その他", en: "Other" } },
-      ], inList: {} },
-      { name: "createdAt", kind: "datetime", label: { ja: "登録した日時", en: "Registered" }, readOnly: true },
+      ] },
+      { name: "createdAt", kind: "datetime", label: { ja: "登録した日", en: "Registered" }, readOnly: true, inList: {} },
     ],
   },
 };

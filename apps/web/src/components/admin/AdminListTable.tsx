@@ -4,14 +4,16 @@ import Link from "next/link";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
+import { Chip } from "./Chip";
 import { DuplicateFinder } from "./DuplicateFinder";
 import { PlaceImport } from "./PlaceImport";
 import { inputClass } from "./fields";
-import { itemFacts, itemHref, itemName, pick, type ListMeta } from "@/lib/admin/lists/config";
+import { cellOf, itemHref, itemName, listColumns, nameIsFallback, pick, type ListMeta } from "@/lib/admin/lists/config";
 import { listRequest, type ListPage } from "@/lib/admin/lists/list-client";
 
 // Any generic admin list, drawn from its description (GET /admin/lists) like the rally list: a button for a new row,
-// then each row's name (a link to its form) with a short line of facts. Newest first; "もっと見る" loads the next 50.
+// then a table (a card per row on a phone) with each row's name (a link to its form) and one column per `inList` field.
+// Newest first; "もっと見る" loads the next 50.
 export function AdminListTable({ meta: config, initial, locale, choices }: { meta: ListMeta; initial: ListPage; locale: string; choices: Record<string, { id: string; name: string; detail?: string }[]> }) {
   const { t } = useLingui();
   const messages = useErrorMessages();
@@ -29,6 +31,8 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
   const base = `/admin/${config.key}`;
   const name = (item: (typeof items)[number]) => itemName(config, item, locale);
   const title = pick(config.title, locale);
+  const columns = listColumns(config);
+  const lookup = (id: string, field: string) => choices[field]?.find((c) => c.id === id)?.name ?? null;
 
   const queryOf = (words: string, choices: Record<string, string>) => {
     const params = new URLSearchParams();
@@ -195,34 +199,116 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
           ) : null}
         </div>
       ) : null}
+      {items.length > 0 ? (
+        <p className="text-base font-bold text-muted" aria-live="polite">
+          {next ? t`${items.length}件（まだあります）` : t`${items.length}件`}
+        </p>
+      ) : null}
       {items.length === 0 ? (
         <p className="rounded-2xl bg-surface p-6 text-lg">{applied ? t`条件に合う${title}はありません。` : t`${title}はまだありません。`}</p>
       ) : (
-        <ul className="flex flex-col divide-y divide-line rounded-2xl border border-line">
-          {items.map((item) => {
-            const href = itemHref(config, item);
-            return (
-              <li key={item.id} className="flex items-start gap-3 p-3">
-                {canDelete ? <input type="checkbox" aria-label={t`${name(item)}を選ぶ`} checked={ticked.has(item.id)} onChange={() => toggle(item.id)} className="mt-2 size-5 shrink-0" /> : null}
-                <div className="min-w-0 flex-1">
-                  {href ? (
-                    <Link href={href} className="text-xl font-bold text-accent underline underline-offset-4">
-                      {name(item)}
-                    </Link>
-                  ) : (
-                    <p className="text-xl font-bold">{name(item)}</p>
-                  )}
-                  <p className="text-base text-muted">{itemFacts(config, item, locale, (id, field) => choices[field]?.find((c) => c.id === id)?.name ?? null).join(" ・ ")}</p>
-                </div>
-                {canDelete ? (
-                  <button type="button" disabled={busy} onClick={() => void removeRows([item.id])} className="tap-target shrink-0 rounded-xl border-2 border-line px-3 text-base font-bold text-danger disabled:opacity-50">
-                    {t`削除`}
-                  </button>
-                ) : null}
-              </li>
-            );
-          })}
-        </ul>
+        <>
+          {/* A table on a wide screen: one column per fact, so a column can be read from top to bottom. */}
+          <div className="hidden overflow-x-auto rounded-2xl border border-line md:block">
+            <table className="w-full border-collapse text-left">
+              <thead className="bg-surface text-base">
+                <tr>
+                  {canDelete ? <th scope="col" className="w-12 p-3"><span className="sr-only">{t`選ぶ`}</span></th> : null}
+                  <th scope="col" className="p-3 font-bold">{t`名前`}</th>
+                  {columns.map((f) => (
+                    <th key={f.name} scope="col" className="p-3 font-bold">
+                      {pick(f.label, locale)}
+                    </th>
+                  ))}
+                  {canDelete ? <th scope="col" className="w-24 p-3"><span className="sr-only">{t`削除`}</span></th> : null}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-line">
+                {items.map((item) => {
+                  const href = itemHref(config, item);
+                  return (
+                    <tr key={item.id} className="align-top hover:bg-surface/60">
+                      {canDelete ? (
+                        <td className="p-3">
+                          <input type="checkbox" aria-label={t`${name(item)}を選ぶ`} checked={ticked.has(item.id)} onChange={() => toggle(item.id)} className="size-5" />
+                        </td>
+                      ) : null}
+                      <td className="max-w-80 p-3">
+                        {href ? (
+                          <Link href={href} className="break-words text-lg font-bold text-accent underline underline-offset-4">
+                            {name(item) || "—"}
+                          </Link>
+                        ) : (
+                          <p className="break-words text-lg font-bold">{name(item) || "—"}</p>
+                        )}
+                        {nameIsFallback(config, item) ? <p className="text-base text-muted">{String(item[config.titleField] ?? "")}</p> : null}
+                      </td>
+                      {columns.map((f) => {
+                        const cell = cellOf(f, item, locale, lookup);
+                        return (
+                          <td key={f.name} className="p-3 text-lg">
+                            {cell.chip ? cell.text ? <Chip tone={cell.tone}>{cell.text}</Chip> : null : <span className={cell.text === "—" ? "text-muted" : undefined}>{cell.text}</span>}
+                          </td>
+                        );
+                      })}
+                      {canDelete ? (
+                        <td className="p-3 text-right">
+                          <button type="button" disabled={busy} onClick={() => void removeRows([item.id])} className="tap-target rounded-xl border-2 border-line px-3 text-base font-bold text-danger disabled:opacity-50">
+                            {t`削除`}
+                          </button>
+                        </td>
+                      ) : null}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          {/* A card per row on a phone: the name, then the facts as labelled chips and lines. */}
+          <ul className="flex flex-col divide-y divide-line rounded-2xl border border-line md:hidden">
+            {items.map((item) => {
+              const href = itemHref(config, item);
+              return (
+                <li key={item.id} className="flex items-start gap-3 p-3">
+                  {canDelete ? <input type="checkbox" aria-label={t`${name(item)}を選ぶ`} checked={ticked.has(item.id)} onChange={() => toggle(item.id)} className="mt-2 size-5 shrink-0" /> : null}
+                  <div className="flex min-w-0 flex-1 flex-col gap-2">
+                    <div>
+                      {href ? (
+                        <Link href={href} className="break-words text-xl font-bold text-accent underline underline-offset-4">
+                          {name(item) || "—"}
+                        </Link>
+                      ) : (
+                        <p className="break-words text-xl font-bold">{name(item) || "—"}</p>
+                      )}
+                      {nameIsFallback(config, item) ? <p className="text-base text-muted">{String(item[config.titleField] ?? "")}</p> : null}
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                      {columns.map((f) => {
+                        const cell = cellOf(f, item, locale, lookup);
+                        if (cell.text === "") return null;
+                        return cell.chip ? (
+                          <Chip key={f.name} tone={cell.tone}>
+                            {cell.text}
+                          </Chip>
+                        ) : cell.text === "—" ? null : (
+                          <span key={f.name} className="text-base">
+                            <span className="text-muted">{pick(f.label, locale)}: </span>
+                            {cell.text}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  {canDelete ? (
+                    <button type="button" disabled={busy} onClick={() => void removeRows([item.id])} className="tap-target shrink-0 rounded-xl border-2 border-line px-3 text-base font-bold text-danger disabled:opacity-50">
+                      {t`削除`}
+                    </button>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        </>
       )}
       {next ? (
         <button type="button" onClick={more} disabled={busy} className="tap-target w-fit rounded-xl border-2 border-line px-6 text-lg font-bold disabled:opacity-50">

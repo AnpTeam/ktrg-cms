@@ -64,7 +64,7 @@ describe("GET /admin/lists", () => {
     expect(forEditor).not.toContain("users");
     expect(forEditor).not.toContain("audit");
     for (const l of lists) {
-      expect(Object.keys(l).filter((k) => !["deleteWarning", "fields", "intro", "key", "newLabel", "ops", "title", "titleField", "linkTo"].includes(k))).toEqual([]);
+      expect(Object.keys(l).filter((k) => !["deleteWarning", "fields", "intro", "key", "newLabel", "ops", "title", "titleField", "titleFrom", "linkTo"].includes(k))).toEqual([]);
     }
   });
 });
