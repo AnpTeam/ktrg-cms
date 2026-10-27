@@ -325,3 +325,42 @@ describe("what visitors read about rallies", () => {
     expect(reads).toBe(1); // one course rally, read once for three requests
   });
 });
+
+describe("one rally for its own page", () => {
+  const spot = (id: string, routeId: string, lat: number | null) => ({ id, routeId, nameJa: id, nameEn: null, status: "open", radiusM: 40, position: lat === null ? null : { lat, lng: 135.1, verified: true } });
+  const content = {
+    publicRoute: async (id: string) =>
+      id === ROUTE_A
+        ? { route: { photoUrl: "https://example.com/a.jpg", photoCredit: "x" }, spots: [spot(A1, ROUTE_A, 34.2)], points: [] }
+        : id === ROUTE_B
+          ? { route: { photoUrl: null, photoCredit: null }, spots: [spot(B1, ROUTE_B, null)], points: [] }
+          : null,
+  };
+  const appFor = (s: ReturnType<typeof setup>) => new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(rallyPublicRoutes(() => ({ rallyAdmin: createRallyAdminService({ store: s.mem.store }), content: content as never })));
+
+  test("a rally of places lists its places with their checked positions, a route photo and when it changed", async () => {
+    const s = setup();
+    const res = await appFor(s).handle(new Request(`http://localhost/api/v1/rallies/${s.mounds.id}`));
+    expect(res.status).toBe(200);
+    expect(res.headers.get("cache-control")).toBe("public, max-age=60");
+    const { rally } = (await res.json()) as Json;
+    expect(rally).toMatchObject({ id: s.mounds.id, kind: "places", nameJa: "経塚ラリー", photoUrl: "https://example.com/a.jpg" });
+    expect(rally.places.map((p: Json) => [p.id, p.lat])).toEqual([[A1, 34.2]]); // B1 is a draft place: not named
+    expect(typeof rally.updatedAt).toBe("string");
+  });
+
+  test("a rally of courses lists every stamp place of its courses, and its courses", async () => {
+    const s = setup();
+    const { rally } = (await (await appFor(s).handle(new Request(`http://localhost/api/v1/rallies/${s.courses.id}`))).json()) as Json;
+    expect(rally.courses).toEqual([{ routeId: ROUTE_A, nameJa: "ルートA", nameEn: "Route A" }]);
+    expect(rally.places.map((p: Json) => p.id)).toEqual([A1]);
+  });
+
+  test("a draft rally and one that is not there are both 404", async () => {
+    const s = setup();
+    const draft = s.mem.addRally({ kind: "places", nameJa: "下書き", sortOrder: 3, published: false }, [A1]);
+    for (const id of [draft.id, "99999999-9999-4999-8999-999999999999"]) {
+      expect((await appFor(s).handle(new Request(`http://localhost/api/v1/rallies/${id}`))).status).toBe(404);
+    }
+  });
+});

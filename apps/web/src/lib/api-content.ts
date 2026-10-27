@@ -1,5 +1,5 @@
 import { cache } from "react";
-import type { PublicPlace, PublicRally, PublicRoute, PublicSpot } from "./api-content-types";
+import type { PublicPlace, PublicRally, PublicRallyDetail, PublicRoute, PublicSpot } from "./api-content-types";
 import type { RallyItem } from "./rally-model";
 import type { TrailNotice } from "./notices";
 import type { BlogPost } from "./posts";
@@ -242,6 +242,11 @@ export function ralliesFromApi(rallies: readonly PublicRally[], stamped: Readonl
 /** The published stamp rallies, in order. */
 export const fetchPublicRallies = cache(async (): Promise<PublicRally[] | null> => {
   return okBody<{ rallies: PublicRally[] }>(await getJson("/rallies"))?.rallies ?? null;
+});
+
+/** One published rally with the positions of its places, or null when it is a draft, not there, or the API cannot be reached. */
+export const fetchPublicRally = cache(async (id: string): Promise<PublicRallyDetail | null> => {
+  return okBody<{ rally: PublicRallyDetail }>(await getJson(`/rallies/${encodeURIComponent(id)}`))?.rally ?? null;
 });
 
 /** Published places of the directory (the API keeps back the ones without a checked position). */

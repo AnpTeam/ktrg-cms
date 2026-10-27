@@ -13,7 +13,7 @@ import { StampLegend } from "./StampLegend";
 const nameOf = (locale: string, ja: string, en: string | null) => pickText(locale, ja, en)?.text ?? ja;
 
 /** A bar showing how far along a rally is. The numbers beside it say it all; the bar is a bonus. */
-function Bar({ stamped, total, label }: { stamped: number; total: number; label: string }) {
+export function Bar({ stamped, total, label }: { stamped: number; total: number; label: string }) {
   return (
     <div
       role="progressbar"
@@ -78,8 +78,39 @@ export function FeaturedRally({ rally, locale, account }: { rally: RallyItem; lo
           />
         </div>
         {account && rally.total > 0 && stamped === rally.total ? <CertificateButton title={nameOf(locale, rally.nameJa, rally.nameEn)} total={rally.total} locale={locale} /> : null}
+        <Link href={`/rallies/${rally.id}`} className="tap-target mt-3 inline-flex items-center gap-1 text-lg font-bold text-accent underline underline-offset-4">
+          <Trans>このラリーのページを開く</Trans>
+          <ChevronIcon />
+        </Link>
       </div>
     </section>
+  );
+}
+
+/** The places of a rally in order, each with its number and whether the visitor holds its stamp. */
+export function SlotList({ rally, locale }: { rally: RallyItem; locale: string }) {
+  const { t } = useLingui();
+  return (
+    <ol className="border-t-2 border-line">
+      {rally.slots.map((slot) => (
+        <li key={slot.id} className="flex items-center gap-3 border-b-2 border-line px-4 py-3 last:border-b-0">
+          <span
+            aria-hidden="true"
+            className={`flex size-9 shrink-0 items-center justify-center rounded-full text-lg font-bold tabular-nums ${
+              slot.stamped ? "bg-shu text-on-shu" : "border-2 border-dashed border-line text-muted"
+            }`}
+          >
+            {slot.number}
+          </span>
+          <span className="min-w-0 flex-1 text-lg leading-snug">{nameOf(locale, slot.nameJa, slot.nameEn)}</span>
+          {slot.stamped === null ? null : (
+            <span className={`shrink-0 text-lg font-bold ${slot.stamped ? "text-moss" : "text-muted"}`}>
+              {slot.stamped ? t`押した` : t`まだ`}
+            </span>
+          )}
+        </li>
+      ))}
+    </ol>
   );
 }
 
@@ -137,26 +168,13 @@ export function RallyCard({ rally, locale, account }: { rally: RallyItem; locale
             />
           </div>
         ) : null}
-        <ol className="border-t-2 border-line">
-          {rally.slots.map((slot) => (
-            <li key={slot.id} className="flex items-center gap-3 border-b-2 border-line px-4 py-3 last:border-b-0">
-              <span
-                aria-hidden="true"
-                className={`flex size-9 shrink-0 items-center justify-center rounded-full text-lg font-bold tabular-nums ${
-                  slot.stamped ? "bg-shu text-on-shu" : "border-2 border-dashed border-line text-muted"
-                }`}
-              >
-                {slot.number}
-              </span>
-              <span className="min-w-0 flex-1 text-lg leading-snug">{nameOf(locale, slot.nameJa, slot.nameEn)}</span>
-              {slot.stamped === null ? null : (
-                <span className={`shrink-0 text-lg font-bold ${slot.stamped ? "text-moss" : "text-muted"}`}>
-                  {slot.stamped ? t`押した` : t`まだ`}
-                </span>
-              )}
-            </li>
-          ))}
-        </ol>
+        <div className="border-t-2 border-line px-4 py-3">
+          <Link href={`/rallies/${rally.id}`} className="tap-target inline-flex items-center gap-1 text-lg font-bold text-accent underline underline-offset-4">
+            <Trans>このラリーのページを開く</Trans>
+            <ChevronIcon />
+          </Link>
+        </div>
+        <SlotList rally={rally} locale={locale} />
         {account && rally.total > 0 && stamped === rally.total ? (
           <div className="border-t-2 border-line px-4 pb-4">
             <CertificateButton title={name} total={rally.total} locale={locale} />
