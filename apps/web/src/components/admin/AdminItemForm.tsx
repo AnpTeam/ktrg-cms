@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useReauth } from "@/components/auth/ReauthDialog";
 import { useErrorMessages } from "@/components/useErrorMessages";
-import { displayValue, pick, type FieldUi, type ListItem, type ListMeta } from "@/lib/admin/lists/config";
+import { displayValue, MAX_RELATION_CHOICES, pick, type FieldUi, type ListItem, type ListMeta } from "@/lib/admin/lists/config";
 import { changedFields, formValues, missingRequired, toPayload, type FormValues } from "@/lib/admin/lists/form";
 import { listRequest, type ListAnswer, type ListPage, type OneItem } from "@/lib/admin/lists/list-client";
 import { translationsChange, type Translations } from "@/lib/admin/content-locales";
@@ -14,6 +14,7 @@ import { PhotoSlot } from "./PhotoSlot";
 import { PhotoLinkDetails } from "./PhotoLinkDetails";
 import { PhotoUpload } from "./PhotoUpload";
 import { PositionMap } from "./PositionMap";
+import { RelationPicker } from "./RelationPicker";
 
 type Notice = { kind: "saved" | "error"; text: string } | null;
 
@@ -180,14 +181,20 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
             {label}
           </Check>
         );
+      case "relation":
+        // A row of another list (a waypoint, a place, a writer): found by typing, not by scrolling a drop-down.
+        return (
+          <Field key={f.name} label={label} hint={hint} htmlFor={id} required={f.required}>
+            <RelationPicker id={id} value={text(f.name)} choices={choices[f.name] ?? []} max={MAX_RELATION_CHOICES} noneLabel={f.noneLabel ? pick(f.noneLabel, locale) : "—"} onChange={set(f.name)} />
+          </Field>
+        );
       case "select":
       case "route":
-      case "relation":
         return (
           <Field key={f.name} label={label} hint={hint} htmlFor={id} required={f.required}>
             <select id={id} value={text(f.name)} onChange={(e) => set(f.name)(e.target.value)} className={inputClass}>
-              {f.kind === "route" || f.kind === "relation" ? <option value="">{f.noneLabel ? pick(f.noneLabel, locale) : "—"}</option> : null}
-              {(f.kind === "route" || f.kind === "relation" ? (choices[f.name] ?? []).map((r) => ({ value: r.id, text: r.name })) : (f.options ?? []).map((o) => ({ value: o.value, text: pick(o.label, locale) }))).map((o) => (
+              {f.kind === "route" ? <option value="">{f.noneLabel ? pick(f.noneLabel, locale) : "—"}</option> : null}
+              {(f.kind === "route" ? (choices[f.name] ?? []).map((r) => ({ value: r.id, text: r.name })) : (f.options ?? []).map((o) => ({ value: o.value, text: pick(o.label, locale) }))).map((o) => (
                 <option key={o.value} value={o.value}>
                   {o.text}
                 </option>

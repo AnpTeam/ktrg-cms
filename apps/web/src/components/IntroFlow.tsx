@@ -7,7 +7,6 @@ import { rememberLocale } from "@/i18n/cookie";
 import { locales, type Locale } from "@/i18n/locales";
 import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
 import { isInAppBrowser } from "@/lib/browser-check";
-import { helpContent } from "@/lib/help-content";
 import { track } from "@/lib/track";
 
 const INTRO_COOKIE = "intro";
@@ -82,14 +81,15 @@ function InstallStep() {
  * real home page for search engines and for anyone who skips it. Shown only to someone signed out who has not seen
  * it (the `intro` cookie, which the server reads); skipping counts as seeing it.
  */
-export function IntroFlow({ seen }: { seen: boolean }) {
+export function IntroFlow({ seen, guide }: { seen: boolean; guide: { title: string; intro: string; steps: { title: string; text: string }[] } | null }) {
   const { i18n } = useLingui();
   const router = useRouter();
   const pathname = usePathname();
   const dialog = useRef<HTMLDialogElement>(null);
   const [dismissed, setDismissed] = useState(false);
   const [step, setStep] = useState(0);
-  const help = helpContent(i18n.locale);
+  // The how-to-play words come from the server (the page text an editor wrote, else the built-in one); null only once the intro is seen.
+  const help = { guideTitle: guide?.title ?? "", guideIntro: guide?.intro ?? "", steps: guide?.steps ?? [] };
   const installed = useSyncExternalStore(subscribeStandalone, isStandalone, () => true);
   // The steps, in order; the home-screen step is left out once the app is opened from the home screen.
   const steps = ["language", "about", "features", "play", ...(installed ? [] : ["install"]), "start"] as const;

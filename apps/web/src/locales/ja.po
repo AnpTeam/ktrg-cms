@@ -379,7 +379,7 @@ msgstr "「地形」ボタンで重ねるもの"
 msgid "「地形」ボタンを押した状態で見る"
 msgstr "「地形」ボタンを押した状態で見る"
 
-#: src/components/admin/AdminItemForm.tsx:274
+#: src/components/admin/AdminItemForm.tsx:281
 msgid "「必須」の欄をすべて入れると保存できます。"
 msgstr "「必須」の欄をすべて入れると保存できます。"
 
@@ -570,7 +570,7 @@ msgstr "MP4（H.264）かWebM、200MBまで。スマホで見やすいよう、�
 msgid "QRコード・看板"
 msgstr "QRコード・看板"
 
-#: src/components/IntroFlow.tsx:66
+#: src/components/IntroFlow.tsx:65
 msgid "Safari で、画面の下（または上）にある共有ボタン（□に↑）を押します。"
 msgstr "Safari で、画面の下（または上）にある共有ボタン（□に↑）を押します。"
 
@@ -787,7 +787,7 @@ msgstr "いまは、パスキーだけでログインしています。メール
 msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 msgstr "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 
-#: src/components/IntroFlow.tsx:58
+#: src/components/IntroFlow.tsx:57
 msgid "いま開いているのは、ほかのアプリの中のブラウザです。Safari や Chrome で開きなおしてから、追加してください。"
 msgstr "いま開いているのは、ほかのアプリの中のブラウザです。Safari や Chrome で開きなおしてから、追加してください。"
 
@@ -1903,6 +1903,7 @@ msgid "パスキーは、顔や指紋でログインするための鍵です。�
 msgstr "パスキーは、顔や指紋でログインするための鍵です。この端末のものを追加すると、メールを待たずにログインできます。"
 
 #: src/components/admin/DirectoryPicker.tsx:147
+#: src/components/admin/RelationPicker.tsx:53
 msgid "はずす"
 msgstr "はずす"
 
@@ -2005,7 +2006,7 @@ msgstr "フッター"
 msgid "プライバシーポリシー"
 msgstr "プライバシーポリシー"
 
-#: src/components/IntroFlow.tsx:72
+#: src/components/IntroFlow.tsx:71
 msgid "ブラウザのメニュー（⋮ や ⋯）から、「ホーム画面に追加」または「アプリをインストール」をえらびます。"
 msgstr "ブラウザのメニュー（⋮ や ⋯）から、「ホーム画面に追加」または「アプリをインストール」をえらびます。"
 
@@ -2088,7 +2089,6 @@ msgid "ベースの地図"
 msgstr "ベースの地図"
 
 #: src/app/(public)/blog/page.tsx:35
-#: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/licenses/page.tsx:21
 #: src/app/(public)/login/page.tsx:29
 #: src/app/(public)/p/[slug]/page.tsx:32
@@ -2114,21 +2114,25 @@ msgstr "ホームにもどる"
 msgid "ホームへ戻る"
 msgstr "ホームへ戻る"
 
-#: src/components/IntroFlow.tsx:51
+#: src/components/IntroFlow.tsx:50
 msgid "ホーム画面に追加しましょう"
 msgstr "ホーム画面に追加しましょう"
 
-#: src/components/IntroFlow.tsx:62
+#: src/components/IntroFlow.tsx:61
 msgid "ホーム画面に追加する"
 msgstr "ホーム画面に追加する"
 
-#: src/components/IntroFlow.tsx:54
+#: src/components/IntroFlow.tsx:53
 msgid "ホーム画面に追加すると、アプリのようにすぐ開けます。山の中でも、探す手間がかかりません。"
 msgstr "ホーム画面に追加すると、アプリのようにすぐ開けます。山の中でも、探す手間がかかりません。"
 
 #: src/components/map/MapScreenCanvas.tsx:425
 msgid "ほか {more} 区間"
 msgstr "ほか {more} 区間"
+
+#: src/components/admin/RelationPicker.tsx:103
+msgid "ほかにもあります。もう少し入れて絞ってください。"
+msgstr "ほかにもあります。もう少し入れて絞ってください。"
 
 #: src/components/useErrorMessages.ts:30
 msgid "ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。"
@@ -2306,7 +2310,7 @@ msgstr "めぐる場所"
 msgid "メニュー"
 msgstr "メニュー"
 
-#: src/components/IntroFlow.tsx:67
+#: src/components/IntroFlow.tsx:66
 msgid "メニューを下へ動かして、「ホーム画面に追加」を押します。"
 msgstr "メニューを下へ動かして、「ホーム画面に追加」を押します。"
 
@@ -2420,6 +2424,7 @@ msgid "ライト"
 msgstr "ライト"
 
 #: src/app/(admin)/admin/rallies/page.tsx:22
+#: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/page.tsx:70
 #: src/app/(public)/rallies/[id]/page.tsx:57
 #: src/app/(public)/rallies/page.tsx:30
@@ -2951,7 +2956,7 @@ msgstr "体力度と技術度について"
 msgid "作っています…"
 msgstr "作っています…"
 
-#: src/components/admin/AdminItemForm.tsx:254
+#: src/components/admin/AdminItemForm.tsx:261
 msgid "作成"
 msgstr "作成"
 
@@ -2963,7 +2968,7 @@ msgstr "使える写真は見つかりませんでした。"
 msgid "例：山田太郎, CC BY-SA 4.0"
 msgstr "例：山田太郎, CC BY-SA 4.0"
 
-#: src/components/admin/AdminItemForm.tsx:254
+#: src/components/admin/AdminItemForm.tsx:261
 #: src/components/admin/PageTextEditor.tsx:76
 msgid "保存"
 msgstr "保存"
@@ -2972,14 +2977,14 @@ msgstr "保存"
 msgid "保存していない内容も含めて調べています。"
 msgstr "保存していない内容も含めて調べています。"
 
-#: src/components/admin/AdminItemForm.tsx:246
+#: src/components/admin/AdminItemForm.tsx:253
 #: src/components/admin/PageTextEditor.tsx:70
 #: src/components/admin/RouteEditor.tsx:420
 msgid "保存していない変更があります"
 msgstr "保存していない変更があります"
 
-#: src/components/admin/AdminItemForm.tsx:54
-#: src/components/admin/AdminItemForm.tsx:64
+#: src/components/admin/AdminItemForm.tsx:55
+#: src/components/admin/AdminItemForm.tsx:65
 msgid "保存していない変更があります。このページを離れますか？"
 msgstr "保存していない変更があります。このページを離れますか？"
 
@@ -2996,11 +3001,11 @@ msgstr "保存していない編集が、このブラウザに残っています
 msgid "保存しています…"
 msgstr "保存しています…"
 
-#: src/components/admin/AdminItemForm.tsx:250
+#: src/components/admin/AdminItemForm.tsx:257
 msgid "保存して次へ"
 msgstr "保存して次へ"
 
-#: src/components/admin/AdminItemForm.tsx:122
+#: src/components/admin/AdminItemForm.tsx:123
 #: src/components/admin/RallyEditor.tsx:66
 #: src/components/admin/RouteEditor.tsx:328
 #: src/components/ProfileSettings.tsx:172
@@ -3024,7 +3029,7 @@ msgstr "保存しました。ただし、情報源が空のため、線は「確
 msgid "保存しました。ただし、未完成の経由地が{heldCount}件あり、まだ保存していません（赤く示した項目）。"
 msgstr "保存しました。ただし、未完成の経由地が{heldCount}件あり、まだ保存していません（赤く示した項目）。"
 
-#: src/components/admin/AdminItemForm.tsx:99
+#: src/components/admin/AdminItemForm.tsx:100
 msgid "保存しました。次に確認する場所はありません。"
 msgstr "保存しました。次に確認する場所はありません。"
 
@@ -3051,13 +3056,13 @@ msgstr "保存できませんでした。もう一度お試しください。"
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "保存できませんでした。電波の良い場所でもう一度お試しください。"
 
-#: src/components/admin/AdminItemForm.tsx:254
+#: src/components/admin/AdminItemForm.tsx:261
 #: src/components/admin/PageTextEditor.tsx:76
 #: src/components/admin/RouteEditor.tsx:423
 msgid "保存中…"
 msgstr "保存中…"
 
-#: src/components/admin/AdminItemForm.tsx:246
+#: src/components/admin/AdminItemForm.tsx:253
 #: src/components/admin/PageTextEditor.tsx:70
 msgid "保存済み"
 msgstr "保存済み"
@@ -3260,7 +3265,7 @@ msgstr "共有"
 msgid "共有する"
 msgstr "共有する"
 
-#: src/components/admin/AdminItemForm.tsx:272
+#: src/components/admin/AdminItemForm.tsx:279
 msgid "内容"
 msgstr "内容"
 
@@ -3475,7 +3480,7 @@ msgid "利用規約"
 msgstr "利用規約"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
-#: src/components/admin/AdminItemForm.tsx:278
+#: src/components/admin/AdminItemForm.tsx:285
 #: src/components/admin/AdminListTable.tsx:219
 #: src/components/admin/DuplicateFinder.tsx:85
 #: src/components/admin/fields.tsx:155
@@ -3485,7 +3490,7 @@ msgstr "利用規約"
 msgid "削除"
 msgstr "削除"
 
-#: src/components/admin/AdminItemForm.tsx:280
+#: src/components/admin/AdminItemForm.tsx:287
 msgid "削除する"
 msgstr "削除する"
 
@@ -3696,7 +3701,7 @@ msgstr "右"
 msgid "右うしろ"
 msgstr "右うしろ"
 
-#: src/components/IntroFlow.tsx:68
+#: src/components/IntroFlow.tsx:67
 msgid "右上の「追加」を押すと、できあがりです。"
 msgstr "右上の「追加」を押すと、できあがりです。"
 
@@ -3763,6 +3768,10 @@ msgstr "名前のついた地点が{0}か所ありました。経由地として
 #: src/components/admin/RouteEditor.tsx:409
 msgid "名前のない経由地"
 msgstr "名前のない経由地"
+
+#: src/components/admin/RelationPicker.tsx:67
+msgid "名前の一部を入れて探す"
+msgstr "名前の一部を入れて探す"
 
 #: src/components/admin/RouteTable.tsx:66
 msgid "名前の一部を入力"
@@ -4296,6 +4305,10 @@ msgstr "探しています…"
 #: src/components/admin/map-editor/MapEditor.tsx:1021
 msgid "探す"
 msgstr "探す"
+
+#: src/components/admin/RelationPicker.tsx:104
+msgid "探せるのは、最初の{max}件までです。"
+msgstr "探せるのは、最初の{max}件までです。"
 
 #: src/components/admin/map-editor/MapEditor.tsx:933
 msgid "描いた線を、地図の道に沿わせます"
@@ -5389,6 +5402,7 @@ msgid "見つからない写真（その写真だけ入りません）：{0}"
 msgstr "見つからない写真（その写真だけ入りません）：{0}"
 
 #: src/components/admin/PhotoLibrary.tsx:164
+#: src/components/admin/RelationPicker.tsx:102
 msgid "見つかりませんでした。"
 msgstr "見つかりませんでした。"
 
@@ -5759,7 +5773,7 @@ msgstr "重複している場所をさがす"
 msgid "長さ"
 msgstr "長さ"
 
-#: src/components/admin/AdminItemForm.tsx:266
+#: src/components/admin/AdminItemForm.tsx:273
 #: src/components/admin/map-editor/MapEditor.tsx:1039
 #: src/components/admin/PageTextEditor.tsx:86
 #: src/components/admin/PhotoLibrary.tsx:124

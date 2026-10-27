@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import { adminGet } from "../admin-fetch";
 import type { AdminRouteSummary } from "../types";
-import { itemName, type ListMeta } from "./config";
+import { itemName, MAX_RELATION_CHOICES, type ListMeta } from "./config";
 import type { ListPage } from "./list-client";
 
 // Server side of the generic admin pages and menu. Server code only (it forwards the admin's cookie).
@@ -24,7 +24,6 @@ export type Choice = { id: string; name: string };
 
 // shortcut: a relation field offers at most this many rows of the other list (read 50 at a time); a list with more
 // than that needs a search-as-you-type picker instead.
-const MAX_CHOICES = 500;
 
 /**
  * The rows each relation field of a list offers, by field name, named in the page's language: a `route` field offers the
@@ -57,6 +56,6 @@ async function choicesOf(target: string, locale: string): Promise<Choice[]> {
     if (status !== 200 || !body?.ok) break;
     out.push(...body.items.map((item) => ({ id: item.id, name: itemName(meta, item, locale) })));
     cursor = body.next;
-  } while (cursor && out.length < MAX_CHOICES);
+  } while (cursor && out.length < MAX_RELATION_CHOICES);
   return out;
 }
