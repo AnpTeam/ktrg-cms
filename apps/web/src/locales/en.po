@@ -524,7 +524,8 @@ msgstr "The GPX file had no path. Only named points were found."
 msgid "GPXファイルをここで離すと、読み込みます"
 msgstr "Drop the GPX file here to import it"
 
-#: src/components/GpxDownload.tsx:13
+#: src/components/GpxDownload.tsx:16
+#: src/components/GpxDownload.tsx:21
 msgid "GPXファイルをダウンロード"
 msgstr "Download the GPX file"
 
@@ -2710,9 +2711,9 @@ msgstr "You seem to have been logged out. Please log in again."
 msgid "ログインする"
 msgstr "Log in"
 
-#: src/components/GpxDownload.tsx:17
-msgid "ログインすると、GPXファイルをダウンロードできます"
-msgstr "Sign in to download the GPX file"
+#: src/components/GpxDownload.tsx:24
+msgid "ログインすると、ダウンロードできます。"
+msgstr "Sign in to download."
 
 #: src/components/useErrorMessages.ts:27
 msgid "ログインできませんでした。この端末にパスキーがないときは、メールでログインしてください。"

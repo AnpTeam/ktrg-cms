@@ -524,7 +524,8 @@ msgstr "GPXファイルに道すじはありませんでした。名前のつい
 msgid "GPXファイルをここで離すと、読み込みます"
 msgstr "GPXファイルをここで離すと、読み込みます"
 
-#: src/components/GpxDownload.tsx:13
+#: src/components/GpxDownload.tsx:16
+#: src/components/GpxDownload.tsx:21
 msgid "GPXファイルをダウンロード"
 msgstr "GPXファイルをダウンロード"
 
@@ -2710,9 +2711,9 @@ msgstr "ログインが切れたようです。ログインしなおしてくだ
 msgid "ログインする"
 msgstr "ログインする"
 
-#: src/components/GpxDownload.tsx:17
-msgid "ログインすると、GPXファイルをダウンロードできます"
-msgstr "ログインすると、GPXファイルをダウンロードできます"
+#: src/components/GpxDownload.tsx:24
+msgid "ログインすると、ダウンロードできます。"
+msgstr "ログインすると、ダウンロードできます。"
 
 #: src/components/useErrorMessages.ts:27
 msgid "ログインできませんでした。この端末にパスキーがないときは、メールでログインしてください。"
