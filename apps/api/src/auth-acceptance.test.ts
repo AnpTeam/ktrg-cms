@@ -1,3 +1,4 @@
+import { createMemoryDashboardStore } from "./dashboard/dashboard";
 // Auth acceptance tests: the whole API (createApp, every route file, the real service wiring)
 // on memory stores, with one clock the tests move. The unit tests next to each module check the
 // rules one by one; these check that they hold end to end, over HTTP:
@@ -103,6 +104,7 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       places: createMemoryPlaceStore(audit.writer).store,
       siteSettings: createMemorySiteSettingsStore(audit.writer),
       visits: createMemoryVisitStore(),
+      dashboard: createMemoryDashboardStore(),
       auditList: memoryReader(new Map()),
       placeList: memoryReader(new Map()),
       userList: createMemoryUserListStore(audit.writer).store,
@@ -410,6 +412,7 @@ describe("user B cannot touch user A", () => {
       lat: null, lng: null, positionVerified: false, positionSource: null, addressJa: null, addressEn: null, phone: null, website: null, photoUrl: null, status: "unknown", lastVerified: null,
       listingConfirmed: false, listingNote: null, published: false,
     }),
+    "PUT /api/v1/admin/dashboard/goals": () => ({ visits: null, stamps: 500, signups: null, completions: null }),
     "PUT /api/v1/admin/settings/map-style": () => ({ base: "pale", terrain: "hillshade", terrainOpacity: 0.5, saturation: 0, contrast: 0 }),
     "PUT /api/v1/admin/settings/pages/:key": () => ({ ja: { title: "", body: "" }, en: { title: "", body: "" } }),
     "PATCH /api/v1/admin/lists/directory/:id": () => ({ updatedAt: new Date().toISOString() }),

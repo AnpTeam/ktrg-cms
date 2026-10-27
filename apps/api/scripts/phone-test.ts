@@ -1,3 +1,4 @@
+import { createMemoryDashboardStore } from "../src/dashboard/dashboard";
 // Dev-only test page for login, cookies and passkeys.
 //   bun run phone:test
 // In-memory stores and the console mailer: no database, no real email. The 6-digit
@@ -96,6 +97,7 @@ const services = createServices({
     places: createMemoryPlaceStore(audit).store,
     siteSettings: createMemorySiteSettingsStore(audit),
     visits: createMemoryVisitStore(),
+    dashboard: createMemoryDashboardStore(),
     auditList: memoryReader(new Map()),
     placeList: memoryReader(new Map()),
     userList: createMemoryUserListStore(audit).store,

@@ -29,6 +29,7 @@ describe("permission table", () => {
     expect(forAdmin).toEqual(
       [
         "audit.read",
+        "dashboard.read",
         "banner.manage",
         "comment.create",
         "furigana.manage",
@@ -67,7 +68,7 @@ describe("permission table", () => {
 });
 
 describe("the editor role", () => {
-  const ADMIN_ONLY = ["audit.read", "site.manage", "stamp.review", "user.delete", "user.manage_roles", "user.read", "user.restrict"];
+  const ADMIN_ONLY = ["audit.read", "dashboard.read", "site.manage", "stamp.review", "user.delete", "user.manage_roles", "user.read", "user.restrict"];
 
   test("an editor does the content work and the participant things, and nothing about accounts, settings, history or revoking stamps", () => {
     const forEditor: string[] = permissions.filter((p) => can("editor", p)).sort();
