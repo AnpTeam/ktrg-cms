@@ -10,6 +10,7 @@ import { rallyAdminRoutes } from "./rallies/rally-admin-routes";
 import { guestRoutes } from "./guest/guest-routes";
 import { rallyPublicRoutes } from "./rallies/rally-public-routes";
 import { navigationRoutes } from "./navigation/navigation-routes";
+import { gpxExportRoutes } from "./content/gpx-export";
 import { stampAdminRoutes } from "./stamps/stamp-admin-routes";
 import { stampRoutes } from "./stamps/stamp-routes";
 import { createDrizzleStampListStore, stampList } from "./stamps/stamp-list";
@@ -141,6 +142,7 @@ export function createApp(
     .use(meRoutes(getServices, opts))
     .use(adminContentRoutes(getServices, opts))
     .use(publicContentRoutes(() => getServices().content))
+    .use(gpxExportRoutes(getServices, opts))
     .use(uploadRoutes(getServices, opts))
     .use(rallyAdminRoutes(getServices, opts))
     .use(rallyPublicRoutes(getServices, env.NODE_ENV === "production" ? 10_000 : 0))
