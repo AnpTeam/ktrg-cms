@@ -570,7 +570,7 @@ msgstr "MP4（H.264）かWebM、200MBまで。スマホで見やすいよう、�
 msgid "QRコード・看板"
 msgstr "QRコード・看板"
 
-#: src/components/IntroFlow.tsx:66
+#: src/components/IntroFlow.tsx:65
 msgid "Safari で、画面の下（または上）にある共有ボタン（□に↑）を押します。"
 msgstr "Safari で、画面の下（または上）にある共有ボタン（□に↑）を押します。"
 
@@ -787,7 +787,7 @@ msgstr "いまは、パスキーだけでログインしています。メール
 msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 msgstr "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 
-#: src/components/IntroFlow.tsx:58
+#: src/components/IntroFlow.tsx:57
 msgid "いま開いているのは、ほかのアプリの中のブラウザです。Safari や Chrome で開きなおしてから、追加してください。"
 msgstr "いま開いているのは、ほかのアプリの中のブラウザです。Safari や Chrome で開きなおしてから、追加してください。"
 
@@ -2006,7 +2006,7 @@ msgstr "フッター"
 msgid "プライバシーポリシー"
 msgstr "プライバシーポリシー"
 
-#: src/components/IntroFlow.tsx:72
+#: src/components/IntroFlow.tsx:71
 msgid "ブラウザのメニュー（⋮ や ⋯）から、「ホーム画面に追加」または「アプリをインストール」をえらびます。"
 msgstr "ブラウザのメニュー（⋮ や ⋯）から、「ホーム画面に追加」または「アプリをインストール」をえらびます。"
 
@@ -2089,8 +2089,6 @@ msgid "ベースの地図"
 msgstr "ベースの地図"
 
 #: src/app/(public)/blog/page.tsx:35
-#: src/app/(public)/faq/page.tsx:24
-#: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/licenses/page.tsx:21
 #: src/app/(public)/login/page.tsx:29
 #: src/app/(public)/p/[slug]/page.tsx:32
@@ -2116,15 +2114,15 @@ msgstr "ホームにもどる"
 msgid "ホームへ戻る"
 msgstr "ホームへ戻る"
 
-#: src/components/IntroFlow.tsx:51
+#: src/components/IntroFlow.tsx:50
 msgid "ホーム画面に追加しましょう"
 msgstr "ホーム画面に追加しましょう"
 
-#: src/components/IntroFlow.tsx:62
+#: src/components/IntroFlow.tsx:61
 msgid "ホーム画面に追加する"
 msgstr "ホーム画面に追加する"
 
-#: src/components/IntroFlow.tsx:54
+#: src/components/IntroFlow.tsx:53
 msgid "ホーム画面に追加すると、アプリのようにすぐ開けます。山の中でも、探す手間がかかりません。"
 msgstr "ホーム画面に追加すると、アプリのようにすぐ開けます。山の中でも、探す手間がかかりません。"
 
@@ -2312,7 +2310,7 @@ msgstr "めぐる場所"
 msgid "メニュー"
 msgstr "メニュー"
 
-#: src/components/IntroFlow.tsx:67
+#: src/components/IntroFlow.tsx:66
 msgid "メニューを下へ動かして、「ホーム画面に追加」を押します。"
 msgstr "メニューを下へ動かして、「ホーム画面に追加」を押します。"
 
@@ -2426,6 +2424,7 @@ msgid "ライト"
 msgstr "ライト"
 
 #: src/app/(admin)/admin/rallies/page.tsx:22
+#: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/page.tsx:70
 #: src/app/(public)/rallies/[id]/page.tsx:57
 #: src/app/(public)/rallies/page.tsx:30
@@ -3702,7 +3701,7 @@ msgstr "右"
 msgid "右うしろ"
 msgstr "右うしろ"
 
-#: src/components/IntroFlow.tsx:68
+#: src/components/IntroFlow.tsx:67
 msgid "右上の「追加」を押すと、できあがりです。"
 msgstr "右上の「追加」を押すと、できあがりです。"
 
@@ -5609,6 +5608,7 @@ msgid "通行止めなどの知らせを、確認した日づけで見られま�
 msgstr "通行止めなどの知らせを、確認した日づけで見られます。"
 
 #: src/app/(admin)/admin/pages/page.tsx:27
+#: src/app/(public)/faq/page.tsx:24
 #: src/app/(public)/rallies/page.tsx:37
 #: src/app/(public)/sitemap/page.tsx:90
 #: src/components/admin/PageTextEditor.tsx:37
