@@ -4,14 +4,14 @@ How to do the routine jobs. Nothing here needs a developer unless it says so. Co
 
 ## Where things live
 
-| What | Where |
-|---|---|
-| Website and API | Vercel (the web app and the API are deployed from `main`) |
-| Database | Supabase (Postgres). Free plan: no automatic backups, see "Backups" |
-| Photos and uploaded videos | Cloudflare R2 (needs the five `R2_*` settings) |
-| Sign-in emails | SMTP (`SMTP_*` and `MAIL_FROM`) |
-| Scheduled jobs | GitHub Actions: purge deleted accounts (hourly), keep the site warm, migrate, dump content |
-| Admin screens | `/admin` on the site (editors and admins) |
+| What                       | Where                                                                                      |
+| -------------------------- | ------------------------------------------------------------------------------------------ |
+| Website and API            | Vercel (the web app and the API are deployed from `main`)                                  |
+| Database                   | Supabase (Postgres). Free plan: no automatic backups, see "Backups"                        |
+| Photos and uploaded videos | Cloudflare R2 (needs the five `R2_*` settings)                                             |
+| Sign-in emails             | SMTP (`SMTP_*` and `MAIL_FROM`)                                                            |
+| Scheduled jobs             | GitHub Actions: purge deleted accounts (hourly), keep the site warm, migrate, dump content |
+| Admin screens              | `/admin` on the site (editors and admins)                                                  |
 
 Settings the API reads are listed in `.env.example`. Real values live in Vercel (Settings, Environment Variables) and, for the jobs, in GitHub (Settings, Secrets and variables). Never commit or paste a real value.
 
@@ -57,13 +57,13 @@ This overwrites the local content. To keep accounts and stamps too, upgrade to t
 
 ## Rotating secrets
 
-| Secret | Effect of changing it |
-|---|---|
-| `OTP_HMAC_SECRET` | Sign-in codes already sent stop working (people ask for a new one). Safe. |
-| `CRON_SECRET` | Change it in Vercel and in the GitHub secret together, or the hourly purge job is refused. |
-| `SMTP_PASS` | Change in Vercel; test with `cd apps/api && bun run mail:test you@example.com`. |
-| `R2_*` | Change all five together; until then uploads are off. |
-| `ORS_API_KEY` | Only the "snap to trails" button and navigation need it. |
+| Secret            | Effect of changing it                                                                                             |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `OTP_HMAC_SECRET` | Sign-in codes already sent stop working (people ask for a new one). Safe.                                         |
+| `CRON_SECRET`     | Change it in Vercel and in the GitHub secret together, or the hourly purge job is refused.                        |
+| `SMTP_PASS`       | Change in Vercel; test with `cd apps/api && bun run mail:test you@example.com`.                                   |
+| `R2_*`            | Change all five together; until then uploads are off.                                                             |
+| `ORS_API_KEY`     | Only the "snap to trails" button and navigation need it.                                                          |
 | Database password | Change in Supabase, then in Vercel `DATABASE_URL` and the GitHub secret `PRODUCTION_DATABASE_URL`, then redeploy. |
 
 After changing a value in Vercel, redeploy (the old value stays until the next deploy).
@@ -72,10 +72,10 @@ After changing a value in Vercel, redeploy (the old value stays until the next d
 
 Set up once, in the UptimeRobot account (the free plan checks every 5 minutes and emails you when a check fails). Use the live site's address in place of `https://SITE`.
 
-| Monitor | Type | What it checks | Settings |
-|---|---|---|---|
-| Site | HTTP(s) | The home page answers | URL `https://SITE/` |
-| API | HTTP(s) | The API is up | URL `https://SITE/api/v1/health` |
+| Monitor  | Type    | What it checks                | Settings                                                                                         |
+| -------- | ------- | ----------------------------- | ------------------------------------------------------------------------------------------------ |
+| Site     | HTTP(s) | The home page answers         | URL `https://SITE/`                                                                              |
+| API      | HTTP(s) | The API is up                 | URL `https://SITE/api/v1/health`                                                                 |
 | Database | Keyword | The API can read the database | URL `https://SITE/api/v1/routes`, keyword `"ok":true`, alert when the keyword does **not** exist |
 
 Add the people who should be told as alert contacts (email). When the Database monitor fails but API is fine, the database is unreachable or paused: look at the Supabase project first. The keep-warm workflow also visits the site, so a failing monitor and a slow first visit are different things. There is no error tracking tool yet; the Vercel function logs are the record of errors.
@@ -90,4 +90,7 @@ Add the people who should be told as alert contacts (email). When the Database m
 
 ## Who to ask
 
-Fill in before launch: the person who owns the Vercel and Supabase accounts, the person who owns the Cloudflare account, and the person to call for the domain and email.
+Vercel and Supabase Accounts:
+Anupap (mailto:anupap@ndr.co.jp) @AnpTeam
+Domain and email:
+Anupap (mailto:anupap@ndr.co.jp) @AnpTeam

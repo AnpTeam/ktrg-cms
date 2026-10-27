@@ -29,6 +29,8 @@ export interface FacilityRow {
   route: number;
   /** Which stop it is near: the "#" label of that stop (S, 1, +3 ...). */
   near: string;
+  /** The "near_spot_ja" column: the name of the waypoint it is next to. */
+  nearNameJa: string | null;
   categoryJa: string;
   nameJa: string;
   nameEn: string | null;
@@ -125,6 +127,7 @@ export function parseFacilities(csv: string): FacilityRow[] {
       {
         route,
         near: (r[cRoute + 1] ?? "").trim(),
+        nearNameJa: maybe(r, "near_spot_ja"),
         categoryJa: (r[cCat!] ?? "").trim(),
         nameJa,
         nameEn: (r[cEn!] ?? "").trim() || null,
@@ -291,6 +294,7 @@ export interface ExistingPlace {
 }
 export interface PlannedPlace {
   route: number;
+  nearNameJa: string | null;
   category: string;
   nameJa: string;
   nameEn: string | null;
@@ -332,6 +336,7 @@ export function planPlaces(rows: FacilityRow[], existing: ExistingPlace[]): { pl
     const free = f.listing.startsWith("不要");
     places.push({
       route: f.route,
+      nearNameJa: f.nearNameJa,
       category,
       nameJa: f.nameJa,
       nameEn: f.nameEn,

@@ -23,6 +23,7 @@ const maybe = (max: number) => t.Union([t.String({ maxLength: max }), t.Null()])
 export const PLACE_FIELDS = {
   category: oneOf(placeCategories),
   routeId: t.Union([t.String({ format: "uuid" }), t.Null()]),
+  nearSpotId: t.Union([t.String({ format: "uuid" }), t.Null()]),
   nameJa: t.String({ minLength: 1, maxLength: 200 }),
   nameEn: maybe(200),
   descriptionJa: maybe(2000),
@@ -75,7 +76,7 @@ const NULLABLE_TEXT = ["nameEn", "descriptionJa", "descriptionEn", "hoursJa", "h
  * Trims every text and clears a blank one; a link must be https; a position needs both numbers; "checked" needs a
  * position and the source named; publishing needs a checked position and the owner's agreement to be listed.
  */
-export const placeRules = (photoHosts: readonly string[] = [], routeExists?: (id: string) => Promise<boolean>): ListRules<PlaceFields> => async (fields) => {
+export const placeRules = (photoHosts: readonly string[] = [], routeExists?: (id: string) => Promise<boolean>, spotExists?: (id: string) => Promise<boolean>): ListRules<PlaceFields> => async (fields) => {
   const out: Record<string, unknown> = { ...fields };
   for (const name of NULLABLE_TEXT) if (typeof out[name] === "string") out[name] = (out[name] as string).trim() || null;
   if (typeof out.nameJa === "string") {
@@ -90,6 +91,7 @@ export const placeRules = (photoHosts: readonly string[] = [], routeExists?: (id
   if (f.lat !== undefined && f.lng !== undefined && (f.lat === null) !== (f.lng === null)) return bad("validation_failed");
   // An unknown route would fail the foreign key inside the write and answer 500.
   if (typeof f.routeId === "string" && routeExists && !(await routeExists(f.routeId))) return bad("validation_failed");
+  if (typeof f.nearSpotId === "string" && spotExists && !(await spotExists(f.nearSpotId))) return bad("validation_failed");
   if (f.positionVerified) {
     if (f.lat === null) return bad("no_coordinates");
     if (f.positionSource === null) return bad("source_required");
@@ -161,8 +163,8 @@ export interface PlaceImportResult {
 /** A request imports this many places at most, so one request stays inside a serverless function's time limit. */
 export const IMPORT_SLICE = 100;
 
-export function createPlaceService(deps: { store: PlaceStore; photoHosts?: readonly string[]; routeExists?: (id: string) => Promise<boolean>; routeIds?: () => Promise<string[]> }) {
-  const list = createListService({ store: deps.store, rules: placeRules(deps.photoHosts, deps.routeExists) });
+export function createPlaceService(deps: { store: PlaceStore; photoHosts?: readonly string[]; routeExists?: (id: string) => Promise<boolean>; spotExists?: (id: string) => Promise<boolean>; routeSpots?: (routeId: string) => Promise<{ id: string; nameJa: string }[]>; routeIds?: () => Promise<string[]> }) {
+  const list = createListService({ store: deps.store, rules: placeRules(deps.photoHosts, deps.routeExists, deps.spotExists) });
   /** Every place, read a page at a time. */
   async function everyPlace(): Promise<PlaceRow[]> {
     const all: PlaceRow[] = [];
@@ -192,6 +194,7 @@ export function createPlaceService(deps: { store: PlaceStore; photoHosts?: reado
       const facilities = parseFacilities(csv);
       const plan = planPlaces(facilities, existing);
       const failed: PlaceImportResult["failed"] = [];
+      const spotsOf = new Map<string, { id: string; nameJa: string }[]>();
       let added = 0;
       const skip = slice.skip ?? 0;
       const todo = slice.limit === undefined ? plan.places : plan.places.slice(skip, skip + slice.limit);
@@ -205,9 +208,13 @@ export function createPlaceService(deps: { store: PlaceStore; photoHosts?: reado
           added++;
           continue;
         }
+        // The sheet names the waypoint; it is linked only when the course has exactly one waypoint of that name.
+        if (p.nearNameJa && !spotsOf.has(routeId)) spotsOf.set(routeId, (await deps.routeSpots?.(routeId)) ?? []);
+        const named = p.nearNameJa ? (spotsOf.get(routeId) ?? []).filter((s) => s.nameJa === p.nearNameJa) : [];
         const r = await list.create(actor, {
           category: p.category as PlaceFields["category"],
           routeId,
+          nearSpotId: named.length === 1 ? named[0]!.id : null,
           nameJa: p.nameJa,
           nameEn: p.nameEn,
           descriptionJa: p.descriptionJa,
@@ -301,6 +308,14 @@ export const placeDirectoryList: ListDef<"directory", typeof PLACE_FIELDS, Place
       },
       { name: "name", kind: "bilingual", label: { ja: "名前", en: "Name" }, required: true },
       { name: "routeId", kind: "route", label: { ja: "近いルート", en: "Nearby route" }, noneLabel: { ja: "（なし）", en: "(none)" }, inList: {} },
+      {
+        name: "nearSpotId",
+        kind: "relation",
+        to: "places",
+        label: { ja: "近い経由地", en: "Nearby waypoint" },
+        hint: { ja: "経由地の一覧から選びます（経塚も経由地です）。", en: "Choose from the waypoints list (a sutra mound is a waypoint)." },
+        noneLabel: { ja: "（なし）", en: "(none)" },
+      },
       { name: "description", kind: "bilingual-long", label: { ja: "説明", en: "Description" } },
       { name: "hours", kind: "bilingual", label: { ja: "営業時間・利用時間", en: "Opening hours" } },
       { name: "closedDays", kind: "bilingual", label: { ja: "休業日", en: "Closed days" } },
@@ -371,6 +386,7 @@ export function publicPlaceRoutes(getPlaces: () => PlaceService, log: (message: 
         id: p.id,
         category: p.category,
         routeId: p.routeId,
+        nearSpotId: p.nearSpotId,
         nameJa: p.nameJa,
         nameEn: p.nameEn,
         descriptionJa: p.descriptionJa,
