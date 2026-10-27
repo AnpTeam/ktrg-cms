@@ -86,8 +86,8 @@ msgid "{0}を消す"
 msgstr "Delete {0}"
 
 #. placeholder {0}: name(item)
-#: src/components/admin/AdminListTable.tsx:233
-#: src/components/admin/AdminListTable.tsx:273
+#: src/components/admin/AdminListTable.tsx:254
+#: src/components/admin/AdminListTable.tsx:311
 msgid "{0}を選ぶ"
 msgstr "Select {0}"
 
@@ -97,17 +97,17 @@ msgid "{0}を開く"
 msgstr "Open {0}"
 
 #. placeholder {0}: items.length
-#: src/components/admin/AdminListTable.tsx:204
+#: src/components/admin/AdminListTable.tsx:227
 msgid "{0}件"
 msgstr "{0} items"
 
 #. placeholder {0}: items.length
-#: src/components/admin/AdminListTable.tsx:204
+#: src/components/admin/AdminListTable.tsx:227
 msgid "{0}件（まだあります）"
 msgstr "{0} items (more to load)"
 
 #. placeholder {0}: gone.size
-#: src/components/admin/AdminListTable.tsx:77
+#: src/components/admin/AdminListTable.tsx:84
 msgid "{0}件を削除しました。残りは削除できませんでした：{failure}"
 msgstr "{0} deleted. The rest could not be deleted: {failure}"
 
@@ -319,7 +319,7 @@ msgstr "Move {text} down"
 msgid "{title}（管理）"
 msgstr "{title} (admin)"
 
-#: src/components/admin/AdminListTable.tsx:208
+#: src/components/admin/AdminListTable.tsx:231
 msgid "{title}はまだありません。"
 msgstr "No {title} yet."
 
@@ -368,7 +368,7 @@ msgid "「{0}」のスタンプを押しました！"
 msgstr "Stamped \"{0}\"!"
 
 #. placeholder {0}: name(one)
-#: src/components/admin/AdminListTable.tsx:63
+#: src/components/admin/AdminListTable.tsx:70
 msgid "「{0}」を削除します。元に戻せません。よろしいですか？"
 msgstr "Delete \"{0}\"? This cannot be undone."
 
@@ -761,10 +761,6 @@ msgstr "Nice to have"
 msgid "あるとよい：{0}"
 msgstr "Nice to have: {0}"
 
-#: src/components/admin/AdminListTable.tsx:162
-msgid "いいえ"
-msgstr "No"
-
 #: src/components/PrivacyNote.tsx:13
 msgid "いただいた情報は、どんな方がこのアプリを使っているかを知るためだけに使います。個人が分からない形でまとめます。くわしくは<0>プライバシーポリシー</0>をご覧ください。"
 msgstr "We use what you tell us only to understand who uses this app, and we put it together in a form that does not identify anyone. For details, see the <0>privacy policy</0>."
@@ -1124,7 +1120,7 @@ msgstr "This file could not be read. Choose a file (.xlsx) made from the templat
 msgid "このブラウザでは、スタンプが消えてしまうことがあります。"
 msgstr "Your stamps may be lost in this browser."
 
-#: src/components/admin/AdminListTable.tsx:193
+#: src/components/admin/AdminListTable.tsx:216
 msgid "このページをすべて選ぶ"
 msgstr "Select everything on this page"
 
@@ -1505,8 +1501,8 @@ msgstr "Site-wide settings (admin)"
 msgid "さがしています…"
 msgstr "Searching…"
 
-#: src/components/admin/AdminListTable.tsx:119
-#: src/components/admin/AdminListTable.tsx:119
+#: src/components/admin/AdminListTable.tsx:125
+#: src/components/admin/AdminListTable.tsx:125
 #: src/components/admin/DuplicateFinder.tsx:53
 msgid "さがす"
 msgstr "Search"
@@ -1706,7 +1702,8 @@ msgstr "stamped"
 msgid "すでに公開をやめた経由地があります（{names}）。「経由地」タブで確かめてください。"
 msgstr "These waypoints were already unpublished: {names}. Check them in the Waypoints tab."
 
-#: src/components/admin/AdminListTable.tsx:158
+#: src/components/admin/AdminListTable.tsx:147
+#: src/components/admin/AdminListTable.tsx:188
 #: src/components/admin/DirectoryPicker.tsx:158
 #: src/components/admin/RouteTable.tsx:77
 #: src/components/PrefectureFilter.tsx:36
@@ -1909,10 +1906,6 @@ msgstr "Climb"
 #: src/components/blog/LinkedCards.tsx:30
 msgid "のぼり {0}m"
 msgstr "Climb {0} m"
-
-#: src/components/admin/AdminListTable.tsx:161
-msgid "はい"
-msgstr "Yes"
 
 #: src/components/auth/LoginFlow.tsx:102
 msgid "はじめての方は"
@@ -2211,6 +2204,10 @@ msgstr "This passkey can't be removed because it is your only way to log in. Set
 msgid "ほかの乗り物"
 msgstr "Other vehicle"
 
+#: src/components/admin/AdminListTable.tsx:172
+msgid "ほかの絞りこみ"
+msgstr "More filters"
+
 #: src/components/admin/PageTextEditor.tsx:123
 msgid "ほかの言語（ドイツ語など）の訪問者には、English の文章が表示されます。"
 msgstr "Visitors in other languages (such as German) see the English text."
@@ -2415,7 +2412,7 @@ msgstr "Sent again. If it does not arrive, wait about a minute and try again."
 msgid "もっと広げる"
 msgstr "Show more"
 
-#: src/components/admin/AdminListTable.tsx:315
+#: src/components/admin/AdminListTable.tsx:353
 #: src/components/admin/PhotoLibrary.tsx:216
 msgid "もっと見る"
 msgstr "Show more"
@@ -2868,6 +2865,10 @@ msgstr "Unknown"
 #: src/components/GuestClaim.tsx:71
 msgid "両方を合わせる（おすすめ）"
 msgstr "Combine both (recommended)"
+
+#: src/components/admin/AdminListTable.tsx:289
+msgid "並べかえ"
+msgstr "Sort"
 
 #: src/components/admin/PhotoLibrary.tsx:130
 msgid "並べ方"
@@ -3563,9 +3564,9 @@ msgstr "Terms of use"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
 #: src/components/admin/AdminItemForm.tsx:292
-#: src/components/admin/AdminListTable.tsx:223
-#: src/components/admin/AdminListTable.tsx:257
-#: src/components/admin/AdminListTable.tsx:304
+#: src/components/admin/AdminListTable.tsx:244
+#: src/components/admin/AdminListTable.tsx:278
+#: src/components/admin/AdminListTable.tsx:342
 #: src/components/admin/DuplicateFinder.tsx:85
 #: src/components/admin/fields.tsx:155
 #: src/components/admin/HoursInput.tsx:35
@@ -3815,7 +3816,8 @@ msgstr "An earlier row has the same number"
 msgid "同じ道を行って、同じ道を戻ります。"
 msgstr "You go out along the same path and come back the same way."
 
-#: src/components/admin/AdminListTable.tsx:217
+#: src/components/admin/AdminListTable.tsx:240
+#: src/components/admin/AdminListTable.tsx:299
 #: src/components/admin/map-editor/PlaceList.tsx:79
 #: src/components/admin/PhotoLibrary.tsx:169
 #: src/components/admin/RallyCreate.tsx:76
@@ -4412,7 +4414,7 @@ msgstr "Discard"
 msgid "探しています…"
 msgstr "Searching…"
 
-#: src/components/admin/AdminListTable.tsx:121
+#: src/components/admin/AdminListTable.tsx:127
 #: src/components/admin/map-editor/MapEditor.tsx:1021
 msgid "探す"
 msgstr "Search"
@@ -4531,6 +4533,7 @@ msgstr "New points go after the chosen point (number {chosenNo}). Click it again
 msgid "新しい記事"
 msgstr "Newest posts"
 
+#: src/components/admin/AdminListTable.tsx:298
 #: src/components/admin/PhotoLibrary.tsx:139
 msgid "新しい順"
 msgstr "Newest first"
@@ -4660,7 +4663,7 @@ msgstr "Text"
 msgid "本文へ移動"
 msgstr "Skip to main content"
 
-#: src/components/admin/AdminListTable.tsx:208
+#: src/components/admin/AdminListTable.tsx:231
 msgid "条件に合う{title}はありません。"
 msgstr "No {title} match the conditions."
 
@@ -4668,7 +4671,7 @@ msgstr "No {title} match the conditions."
 msgid "条件に合うルートがありません。"
 msgstr "No routes match."
 
-#: src/components/admin/AdminListTable.tsx:134
+#: src/components/admin/AdminListTable.tsx:140
 msgid "条件をやめる"
 msgstr "Clear the conditions"
 
@@ -5289,10 +5292,6 @@ msgstr "Place a waypoint"
 msgid "経由地を置くと、近い順に並びます。"
 msgstr "Once there is a waypoint, they are listed nearest first."
 
-#: src/components/admin/AdminListTable.tsx:142
-msgid "絞りこみ"
-msgstr "Filters"
-
 #: src/components/admin/PlacePanel.tsx:154
 msgid "絵をはずす"
 msgstr "Remove the picture"
@@ -5857,7 +5856,7 @@ msgstr "{0} finished"
 msgid "選ばない"
 msgstr "Not set"
 
-#: src/components/admin/AdminListTable.tsx:216
+#: src/components/admin/AdminListTable.tsx:239
 #: src/components/admin/map-editor/PlaceList.tsx:55
 msgid "選ぶ"
 msgstr "Choose"
@@ -5867,12 +5866,12 @@ msgid "選ぶ・動かす"
 msgstr "Select / move"
 
 #. placeholder {0}: ticked.size
-#: src/components/admin/AdminListTable.tsx:197
+#: src/components/admin/AdminListTable.tsx:220
 msgid "選んだ{0}件を削除"
 msgstr "Delete the {0} selected"
 
 #. placeholder {0}: ids.length
-#: src/components/admin/AdminListTable.tsx:63
+#: src/components/admin/AdminListTable.tsx:70
 msgid "選んだ{0}件を削除します。元に戻せません。よろしいですか？"
 msgstr "Delete the {0} selected? This cannot be undone."
 
