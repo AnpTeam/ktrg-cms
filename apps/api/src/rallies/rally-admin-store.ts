@@ -3,7 +3,7 @@ import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
 import { rallies, rallyCompletions, rallyRoutes, rallySpots, rallyTranslations, routes, routeTranslations, spots, spotTranslations } from "../db/schema";
 import { emptyTexts, extraToTexts, flattenTexts, RALLY_TEXT, ROUTE_TEXT, SPOT_TEXT, splitTexts, type Texts } from "../db/translations";
-import type { RallyAdminStore, RallyCourse, RallyPlace, RallyRow } from "./rally-admin-types";
+import type { PublicRally, RallyAdminStore, RallyCourse, RallyPlace, RallyRow } from "./rally-admin-types";
 
 type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
 type Reader = Pick<Db, "select">;
@@ -112,6 +112,58 @@ export function createDrizzleRallyAdminStore(db: Db): RallyAdminStore {
   return {
     async listRallies() {
       return withRallyDetails(db, await db.select().from(rallies).orderBy(asc(rallies.sortOrder)));
+    },
+
+    async publicRallies() {
+      const rows = await db.select().from(rallies).where(eq(rallies.published, true)).orderBy(asc(rallies.sortOrder));
+      if (rows.length === 0) return [];
+      const ids = rows.map((r) => r.id);
+      const [names, spotLinks, routeLinks] = await Promise.all([
+        db.select().from(rallyTranslations).where(inArray(rallyTranslations.rallyId, ids)),
+        db
+          .select({ rallyId: rallySpots.rallyId, spotId: spots.id, routeId: spots.routeId })
+          .from(rallySpots)
+          .innerJoin(spots, eq(spots.id, rallySpots.spotId))
+          .where(and(inArray(rallySpots.rallyId, ids), eq(spots.published, true)))
+          .orderBy(asc(rallySpots.position)),
+        db.select().from(rallyRoutes).where(inArray(rallyRoutes.rallyId, ids)).orderBy(asc(rallyRoutes.position)),
+      ]);
+      const spotIds = [...new Set(spotLinks.map((l) => l.spotId))];
+      const routeIds = [...new Set(routeLinks.map((l) => l.routeId))];
+      const [spotNames, routeNames, stampSpots] = await Promise.all([
+        spotIds.length ? db.select().from(spotTranslations).where(inArray(spotTranslations.spotId, spotIds)) : [],
+        routeIds.length ? db.select().from(routeTranslations).where(inArray(routeTranslations.routeId, routeIds)) : [],
+        routeIds.length
+          ? db
+              .select({ id: spots.id, routeId: spots.routeId, status: spots.status })
+              .from(spots)
+              .where(and(inArray(spots.routeId, routeIds), eq(spots.published, true), eq(spots.stampable, true)))
+              .orderBy(asc(spots.sortOrder))
+          : [],
+      ]);
+      const rallyText = flattenTexts(RALLY_TEXT, names, (t) => t.rallyId);
+      const spotText = flattenTexts(SPOT_TEXT, spotNames, (t) => t.spotId);
+      const routeText = flattenTexts(ROUTE_TEXT, routeNames, (t) => t.routeId);
+      const stampsOf = new Map<string, { id: string; status: "open" | "caution" | "closed" }[]>();
+      for (const s of stampSpots) stampsOf.set(s.routeId, [...(stampsOf.get(s.routeId) ?? []), { id: s.id, status: s.status }]);
+      return rows.map((r): PublicRally => {
+        const t = rallyText.get(r.id) ?? emptyTexts(RALLY_TEXT);
+        const base = { id: r.id, kind: r.kind, nameJa: t.nameJa ?? "", nameEn: t.nameEn, sortOrder: r.sortOrder };
+        const places = spotLinks
+          .filter((l) => l.rallyId === r.id)
+          .map((l) => {
+            const n = spotText.get(l.spotId) ?? emptyTexts(SPOT_TEXT);
+            return { id: l.spotId, routeId: l.routeId, nameJa: n.nameJa ?? "", nameEn: n.nameEn };
+          });
+        const courses = routeLinks
+          .filter((l) => l.rallyId === r.id)
+          .map((l) => {
+            const n = routeText.get(l.routeId) ?? emptyTexts(ROUTE_TEXT);
+            return { routeId: l.routeId, nameJa: n.nameJa ?? "", nameEn: n.nameEn, spots: stampsOf.get(l.routeId) ?? [] };
+          });
+        // What the rally is made of decides which list it has (a rally never holds both).
+        return r.kind === "places" ? { ...base, places, courses: [] } : { ...base, places: [], courses };
+      });
     },
 
     async getRally(id) {

@@ -1,6 +1,6 @@
 import { cleanTranslations } from "../db/translations";
 import type { ErrorCode } from "../lib/api-errors";
-import type { RallyAdminStore, RallyCourse, RallyDetail, RallyFields, RallyKind, RallyPlace, RallyRow } from "./rally-admin-types";
+import type { PublicRally, RallyAdminStore, RallyCourse, RallyDetail, RallyFields, RallyKind, RallyPlace, RallyRow } from "./rally-admin-types";
 
 type Result<T> = { ok: true; value: T } | { ok: false; reason: ErrorCode };
 const ok = <T>(value: T): Result<T> => ({ ok: true, value });
@@ -32,6 +32,7 @@ export function createRallyAdminService(deps: { store: RallyAdminStore }) {
 
   return {
     listRallies: () => store.listRallies(),
+    publicRallies: (): Promise<PublicRally[]> => store.publicRallies(),
 
     async getRally(id: string): Promise<(RallyDetail & { candidates: RallyPlace[] | RallyCourse[] }) | null> {
       const found = await store.getRally(id);

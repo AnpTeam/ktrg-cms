@@ -1205,6 +1205,27 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       });
     });
 
+    test("the visitors' list is built in a few queries and agrees with the admin's view: published places only, courses with their stamp places and status", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store) => {
+          await tx.execute(sql`update spots set lat = 34.3, lng = 135.1, position_verified = true, position_source = 'test', permission_confirmed = true, published = true where id in (select id from spots order by sort_order limit 5)`);
+          await tx.execute(sql`update spots set status = 'closed' where id = (select id from spots where published order by id limit 1)`);
+          const list = await store.publicRallies();
+          expect(list).toHaveLength(20);
+          const mounds = list.find((r) => r.kind === "places")!;
+          const admin = await store.getRally(mounds.id);
+          if (!admin || !("places" in admin)) throw new Error("expected a rally of places");
+          expect(mounds.places.map((p) => p.id)).toEqual(admin.places.filter((p) => p.published).map((p) => p.spotId));
+          expect(mounds.places.length).toBeGreaterThan(0);
+          expect(mounds.courses).toEqual([]);
+          const withStamps = list.filter((r) => r.kind === "course").flatMap((r) => r.courses.flatMap((c) => c.spots));
+          expect(withStamps.length).toBeGreaterThan(0);
+          expect(withStamps.filter((s) => s.status === "closed")).toHaveLength(1);
+          expect(list.every((r) => (r.kind === "places" ? r.courses.length === 0 : r.places.length === 0))).toBe(true);
+        });
+      });
+    });
+
     test("reordering takes every rally; deleting takes its links and finishes, and is recorded", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {
