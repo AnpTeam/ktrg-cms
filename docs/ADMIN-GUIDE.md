@@ -40,7 +40,7 @@ Pages has the built-in texts (privacy policy, terms and so on). The **how to pla
 
 ## Where visits come from
 
-**Where visits come from** (アクセスの地域, in the menu; editors and admins) counts page views by the approximate region of the connection: country, prefecture (in Japan) and city. Pick the days, and optionally a page to look at (type `/routes`, `/rallies` or `/` for the landing page). Cities with fewer than 5 views are not named, only counted in the total. The count has no IP address and no person in it, and visitors who turn on Do Not Track are not counted. City-level places can be wrong (mobile networks route through other cities), so read prefecture and country as reliable and city as a rough guide. It does not show where visitors live, only where their connection appears to come from.
+**Where visits come from** (アクセスの地域, in the menu; editors and admins) counts page views by the approximate region of the connection: country, prefecture (in Japan) and city. Pick the days, and optionally a page to look at (type `/routes`, `/rallies` or `/` for the landing page). Cities with fewer than 5 views are not named, only counted in the total. The count has no IP address and no person in it, and visitors who turn on Do Not Track or Global Privacy Control are counted with no place (they show as Unknown). City-level places can be wrong (mobile networks route through other cities), so read prefecture and country as reliable and city as a rough guide. It does not show where visitors live, only where their connection appears to come from.
 
 ## Stamps
 

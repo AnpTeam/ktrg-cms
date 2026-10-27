@@ -60,10 +60,12 @@ export function placeFrom(headers: Headers, trusted: boolean): Place {
   } catch {
     city = "";
   }
-  return { country: upper(headers.get("x-vercel-ip-country"), 2), region: upper(headers.get("x-vercel-ip-country-region"), 3), city: city.trim().slice(0, 100) };
+  // The region is the part after the country ("27"); some sources send the whole code ("JP-27").
+  const region = (headers.get("x-vercel-ip-country-region") ?? "").split("-").pop() ?? "";
+  return { country: upper(headers.get("x-vercel-ip-country"), 2), region: upper(region, 3), city: city.trim().slice(0, 100) };
 }
 
-/** A visitor who asks not to be tracked (Do Not Track, Global Privacy Control) is not counted. */
+/** A visitor who asks not to be tracked (Do Not Track, Global Privacy Control) is counted, but with no place at all. */
 export const optedOut = (headers: Headers) => headers.get("dnt") === "1" || headers.get("sec-gpc") === "1";
 
 export type VisitService = ReturnType<typeof createVisitService>;
@@ -71,12 +73,12 @@ export type VisitService = ReturnType<typeof createVisitService>;
 export function createVisitService(deps: { store: VisitStore; now?: () => Date }) {
   const now = deps.now ?? (() => new Date());
   return {
-    /** Counts one page view; returns false when it was not counted (a bot, an opt-out, a page that is not counted). */
+    /** Counts one page view; returns false when it was not counted (a bot, a page that is not counted). An opt-out is counted with no place. */
     async record(path: string, headers: Headers, trusted: boolean): Promise<boolean> {
       const counted = visitPath(path);
       const agent = headers.get("user-agent") ?? "";
-      if (counted === null || optedOut(headers) || agent === "" || BOT.test(agent)) return false;
-      await deps.store.add(todayInJapan(now()), placeFrom(headers, trusted), counted);
+      if (counted === null || agent === "" || BOT.test(agent)) return false;
+      await deps.store.add(todayInJapan(now()), optedOut(headers) ? { country: "", region: "", city: "" } : placeFrom(headers, trusted), counted);
       return true;
     },
     summary: (from: string, to: string, pathPrefix: string | null) => deps.store.summary(from, to, pathPrefix),

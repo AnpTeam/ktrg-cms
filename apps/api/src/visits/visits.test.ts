@@ -35,6 +35,9 @@ describe("where a visit came from", () => {
     expect(placeFrom(from("御所市"), true)).toEqual({ country: "JP", region: "29", city: "御所市" });
     expect(placeFrom(new Headers(), true)).toEqual({ country: "", region: "", city: "" });
     expect(placeFrom(new Headers({ "x-vercel-ip-city": "%E0%A4%A" }), true).city).toBe("");
+    // Both ways of writing the region: "27" and "JP-27".
+    expect(placeFrom(from("大阪市", "JP-27"), true).region).toBe("27");
+    expect(placeFrom(from("大阪市", "27"), true).region).toBe("27");
   });
 
   test("the headers are not believed when the proxy is not trusted", () => {
@@ -66,13 +69,23 @@ describe("counting", () => {
     expect(s.topPages[0]).toEqual({ path: "/", views: 2 });
   });
 
-  test("bots, a missing user agent, opt-outs and uncounted pages are not counted", async () => {
+  test("bots, a missing user agent and uncounted pages are not counted", async () => {
     const { svc } = setup();
     expect(await svc.record("/", from("x", "29", "JP", { "user-agent": "Googlebot/2.1" }), true)).toBe(false);
     expect(await svc.record("/", new Headers(), true)).toBe(false);
-    expect(await svc.record("/", from("x", "29", "JP", { dnt: "1" }), true)).toBe(false);
     expect(await svc.record("/profile", from("x"), true)).toBe(false);
     expect((await svc.summary("2026-10-27", "2026-10-27", null)).total).toBe(0);
+  });
+
+  test("a visitor who opted out is counted, with no place at all", async () => {
+    const { svc } = setup();
+    expect(await svc.record("/", from("御所市", "29", "JP", { dnt: "1" }), true)).toBe(true);
+    expect(await svc.record("/", from("御所市", "29", "JP", { "sec-gpc": "1" }), true)).toBe(true);
+    const s = await svc.summary("2026-10-27", "2026-10-27", null);
+    expect(s.total).toBe(2);
+    expect(s.byCountry).toEqual([{ country: "", views: 2 }]);
+    expect(s.byRegion).toEqual([{ country: "", region: "", views: 2 }]);
+    expect(s.byCity).toEqual([]);
   });
 
   test("a city is named only from the minimum number of views; the rest are counted, not named", async () => {

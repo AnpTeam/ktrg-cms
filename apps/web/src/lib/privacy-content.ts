@@ -61,7 +61,7 @@ const ja: Policy = {
       paragraphs: [
         "ページが開かれるたびに、接続元から分かるおおよその地域（国・都道府県・市や町）と、開かれたページを数えます。どの地域の方がこのプロジェクトに関心を持っているかを知り、広報や運営に生かすためです。",
         "IPアドレスそのものは、保存も記録もしません。保存するのは「日ごと・地域ごと・ページごとの回数」だけで、あなたのアカウントやスタンプとは結びつけず、個人を特定できる形では扱いません。地域は接続元から推定するため、実際にいる場所と違うことがあります。",
-        "ブラウザで「トラッキングしない（Do Not Track）」や「Global Privacy Control」を有効にしている場合は、数えません。人数が少ない市や町は、名前を出さず合計だけにして、集計を見る人にも個人が分からないようにしています。",
+        "ブラウザで「トラッキングしない（Do Not Track）」や「Global Privacy Control」を有効にしている場合は、開かれた回数だけを数え、地域は一切調べません。人数が少ない市や町は、名前を出さず合計だけにして、集計を見る人にも個人が分からないようにしています。",
       ],
     },
     {
@@ -146,7 +146,7 @@ const en: Policy = {
       paragraphs: [
         "Each time a page is opened, we count the approximate region the connection appears to come from (country, prefecture or state, and city or town) together with the page that was opened. We do this to learn which regions are interested in the project, and to use that for outreach and planning.",
         "We do not store or log the IP address itself. What we keep is only a count per day, per region and per page. It is not linked to your account or your stamps, and it is not handled in a way that identifies you. The region is estimated from the connection, so it can differ from where you really are.",
-        "If your browser has \"Do Not Track\" or \"Global Privacy Control\" turned on, the visit is not counted. Cities and towns with only a few visits are shown as a total without their name, so that nobody reading the totals can pick out a person.",
+        "If your browser has \"Do Not Track\" or \"Global Privacy Control\" turned on, we only count that a page was opened and do not look up any region at all. Cities and towns with only a few visits are shown as a total without their name, so that nobody reading the totals can pick out a person.",
       ],
     },
     {
