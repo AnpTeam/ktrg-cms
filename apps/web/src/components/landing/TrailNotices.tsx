@@ -1,7 +1,7 @@
 import { Trans } from "@lingui/react/macro";
 import { Localized } from "@/components/Localized";
 import { pickText } from "@/lib/content";
-import { formatDay } from "@/lib/format";
+import { daysBetween, formatDay, japanDay } from "@/lib/format";
 import { isWebUrl, type TrailNotice } from "@/lib/notices";
 
 const BellIcon = () => (
@@ -18,6 +18,7 @@ const BellIcon = () => (
  */
 export function TrailNotices({ notices, locale }: { notices: TrailNotice[]; locale: string }) {
   if (notices.length === 0) return null;
+  const today = japanDay(new Date().toISOString());
   return (
     <section className="mx-4 rounded-3xl bg-brand/10 p-5">
       <div className="flex items-center gap-3">
@@ -31,11 +32,14 @@ export function TrailNotices({ notices, locale }: { notices: TrailNotice[]; loca
       <ul className="mt-3 divide-y divide-brand/25">
         {notices.map((n) => {
           const checked = formatDay(locale, n.verifiedOn);
+          const age = daysBetween(n.verifiedOn, today);
+          const until = n.expiresOn ? formatDay(locale, n.expiresOn) : null;
           const source = pickText(locale, n.sourceNameJa, n.sourceNameEn);
           return (
             <li key={n.id} className="py-4 first:pt-2 last:pb-1">
               <p className="text-base font-bold text-accent">
-                <Trans>{checked} に確認</Trans>
+                {age === 0 ? <Trans>{checked} に確認（今日）</Trans> : <Trans>{checked} に確認（{age}日前）</Trans>}
+                {until ? <Trans>　{until} まで</Trans> : null}
               </p>
               <p className="mt-1 text-xl font-bold leading-snug">
                 <Localized value={pickText(locale, n.titleJa, n.titleEn)} />
@@ -57,6 +61,9 @@ export function TrailNotices({ notices, locale }: { notices: TrailNotice[]; loca
           );
         })}
       </ul>
+      <p className="mt-2 text-base text-muted">
+        <Trans>出かける前に、公式の最新情報を確認してください。</Trans>
+      </p>
     </section>
   );
 }

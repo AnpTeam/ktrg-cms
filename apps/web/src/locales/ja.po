@@ -7,6 +7,10 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: ja\n"
 
+#: src/components/landing/TrailNotices.tsx:42
+msgid "　{until} まで"
+msgstr "　{until} まで"
+
 #: src/components/admin/map-editor/MapEditor.tsx:218
 #: src/components/admin/map-editor/PlaceList.tsx:59
 #: src/components/admin/map-editor/PlaceList.tsx:80
@@ -114,9 +118,13 @@ msgstr "{added} に追加"
 msgid "{amount}{unit}"
 msgstr "{amount}{unit}"
 
-#: src/components/landing/TrailNotices.tsx:38
-msgid "{checked} に確認"
-msgstr "{checked} に確認"
+#: src/components/landing/TrailNotices.tsx:41
+msgid "{checked} に確認（{age}日前）"
+msgstr "{checked} に確認（{age}日前）"
+
+#: src/components/landing/TrailNotices.tsx:41
+msgid "{checked} に確認（今日）"
+msgstr "{checked} に確認（今日）"
 
 #: src/components/admin/RouteEditor.tsx:359
 msgid "{count}か所の公開をやめました。ルートは「準備中」として一覧に残ります。"
@@ -207,7 +215,7 @@ msgstr "{name}（終点）"
 msgid "{name}さん、こんにちは。"
 msgstr "{name}さん、こんにちは。"
 
-#: src/components/BookmarkList.tsx:33
+#: src/components/BookmarkList.tsx:38
 msgid "{name}のブックマークをはずす"
 msgstr "{name}のブックマークをはずす"
 
@@ -421,11 +429,11 @@ msgstr "1文字ずつ"
 msgid "1文字ずつ、別の読みを入れます"
 msgstr "1文字ずつ、別の読みを入れます"
 
-#: src/components/auth/AboutYou.tsx:10
+#: src/components/auth/AboutYou.tsx:17
 msgid "20代"
 msgstr "20代"
 
-#: src/components/auth/AboutYou.tsx:9
+#: src/components/auth/AboutYou.tsx:16
 msgid "20歳未満"
 msgstr "20歳未満"
 
@@ -433,7 +441,7 @@ msgstr "20歳未満"
 msgid "2本の指で地図を動かします"
 msgstr "2本の指で地図を動かします"
 
-#: src/components/auth/AboutYou.tsx:11
+#: src/components/auth/AboutYou.tsx:18
 msgid "30代"
 msgstr "30代"
 
@@ -441,19 +449,19 @@ msgstr "30代"
 msgid "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 msgstr "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 
-#: src/components/auth/AboutYou.tsx:12
+#: src/components/auth/AboutYou.tsx:19
 msgid "40代"
 msgstr "40代"
 
-#: src/components/auth/AboutYou.tsx:13
+#: src/components/auth/AboutYou.tsx:20
 msgid "50代"
 msgstr "50代"
 
-#: src/components/auth/AboutYou.tsx:14
+#: src/components/auth/AboutYou.tsx:21
 msgid "60代"
 msgstr "60代"
 
-#: src/components/auth/AboutYou.tsx:15
+#: src/components/auth/AboutYou.tsx:22
 msgid "70歳以上"
 msgstr "70歳以上"
 
@@ -543,7 +551,7 @@ msgstr "ID: {0}"
 msgid "MP4（H.264）かWebM、200MBまで。スマホで見やすいよう、書き出しは720p・1.5〜2Mbps程度（8分で100MB前後）がおすすめです。ffmpegなら：ffmpeg -i 元.mp4 -vf scale=-2:720 -c:v libx264 -b:v 1800k -c:a aac -b:a 96k -movflags +faststart 出力.mp4"
 msgstr "MP4（H.264）かWebM、200MBまで。スマホで見やすいよう、書き出しは720p・1.5〜2Mbps程度（8分で100MB前後）がおすすめです。ffmpegなら：ffmpeg -i 元.mp4 -vf scale=-2:720 -c:v libx264 -b:v 1800k -c:a aac -b:a 96k -movflags +faststart 出力.mp4"
 
-#: src/components/auth/AboutYou.tsx:100
+#: src/components/auth/AboutYou.tsx:138
 msgid "QRコード・看板"
 msgstr "QRコード・看板"
 
@@ -551,7 +559,7 @@ msgstr "QRコード・看板"
 msgid "Safari で、画面の下（または上）にある共有ボタン（□に↑）を押します。"
 msgstr "Safari で、画面の下（または上）にある共有ボタン（□に↑）を押します。"
 
-#: src/components/auth/AboutYou.tsx:103
+#: src/components/auth/AboutYou.tsx:140
 msgid "SNS"
 msgstr "SNS"
 
@@ -816,7 +824,7 @@ msgstr "お店・食事"
 msgid "お探しのものは、見つかりませんでした。"
 msgstr "お探しのものは、見つかりませんでした。"
 
-#: src/components/landing/TrailNotices.tsx:28
+#: src/components/landing/TrailNotices.tsx:29
 msgid "お知らせ"
 msgstr "お知らせ"
 
@@ -1009,7 +1017,7 @@ msgstr "このアカウントには、メールがありません。顔・指紋
 msgid "このアプリでわかること"
 msgstr "このアプリでわかること"
 
-#: src/components/auth/AboutYou.tsx:116
+#: src/components/auth/AboutYou.tsx:159
 msgid "このアプリを知ったきっかけ"
 msgstr "このアプリを知ったきっかけ"
 
@@ -1451,6 +1459,12 @@ msgstr "スタート"
 msgid "スタンプ"
 msgstr "スタンプ"
 
+#. placeholder {0}: b.stampedCount ?? 0
+#. placeholder {1}: b.spotCount
+#: src/components/BookmarkList.tsx:33
+msgid "スタンプ {0} / {1}"
+msgstr "スタンプ {0} / {1}"
+
 #: src/components/landing/ContinueCard.tsx:23
 #: src/components/landing/Landing.tsx:241
 #: src/components/map/MapScreen.tsx:363
@@ -1648,8 +1662,8 @@ msgstr "そのまま"
 
 #: src/components/AccessList.tsx:9
 #: src/components/admin/PlacePanel.tsx:50
-#: src/components/auth/AboutYou.tsx:24
-#: src/components/auth/AboutYou.tsx:106
+#: src/components/auth/AboutYou.tsx:31
+#: src/components/auth/AboutYou.tsx:143
 #: src/components/map/PlacesPanel.tsx:28
 #: src/components/map/PlacesPanel.tsx:46
 #: src/components/PointKindName.tsx:22
@@ -1687,10 +1701,6 @@ msgstr "チェック"
 #: src/components/admin/PlacePanel.tsx:130
 msgid "チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。代わりに、一つ前の経由地から、この場所までの寄り道の線（青い細い点線）を、地図で描けます。分かれ道に経由地を置き、その次にこの場所を並べてください。"
 msgstr "チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。代わりに、一つ前の経由地から、この場所までの寄り道の線（青い細い点線）を、地図で描けます。分かれ道に経由地を置き、その次にこの場所を並べてください。"
-
-#: src/components/auth/AboutYou.tsx:101
-msgid "チラシ・ポスター"
-msgstr "チラシ・ポスター"
 
 #: src/components/RallyViews.tsx:61
 #: src/components/StampGrid.tsx:75
@@ -3341,6 +3351,7 @@ msgstr "出かける前に"
 #: src/app/(public)/rallies/page.tsx:68
 #: src/app/(public)/routes/page.tsx:87
 #: src/components/landing/Landing.tsx:186
+#: src/components/landing/TrailNotices.tsx:65
 #: src/components/RouteView.tsx:272
 #: src/components/SpotSheet.tsx:180
 msgid "出かける前に、公式の最新情報を確認してください。"
@@ -3360,7 +3371,7 @@ msgid "出典"
 msgstr "出典"
 
 #. placeholder {0}: source?.text ?? n.sourceNameJa
-#: src/components/landing/TrailNotices.tsx:53
+#: src/components/landing/TrailNotices.tsx:57
 msgid "出典: {0}"
 msgstr "出典: {0}"
 
@@ -3585,7 +3596,7 @@ msgstr "危険な所"
 msgid "厳しい岩場や藪こぎが続く。道を自分で見つける技術と、高い判断力が必要。"
 msgstr "厳しい岩場や藪こぎが続く。道を自分で見つける技術と、高い判断力が必要。"
 
-#: src/components/auth/AboutYou.tsx:105
+#: src/components/auth/AboutYou.tsx:142
 msgid "友人・知人"
 msgstr "友人・知人"
 
@@ -3971,7 +3982,7 @@ msgstr "大阪府・和歌山県・奈良県のどれかで書いてください
 msgid "奈良県"
 msgstr "奈良県"
 
-#: src/components/auth/AboutYou.tsx:22
+#: src/components/auth/AboutYou.tsx:29
 msgid "女性"
 msgstr "女性"
 
@@ -4077,7 +4088,7 @@ msgstr "帰り"
 msgid "帰りの方法は、下の交通の説明を見てください。"
 msgstr "帰りの方法は、下の交通の説明を見てください。"
 
-#: src/components/auth/AboutYou.tsx:76
+#: src/components/auth/AboutYou.tsx:94
 #: src/components/ProfileSettings.tsx:122
 msgid "年代"
 msgstr "年代"
@@ -4120,7 +4131,7 @@ msgstr "必須"
 msgid "急な登り下りや、わかりにくい所がある。はしごやくさりが出ることもある。"
 msgstr "急な登り下りや、わかりにくい所がある。はしごやくさりが出ることもある。"
 
-#: src/components/auth/AboutYou.tsx:91
+#: src/components/auth/AboutYou.tsx:122
 #: src/components/ProfileSettings.tsx:123
 msgid "性別"
 msgstr "性別"
@@ -4463,7 +4474,7 @@ msgstr "条件をやめる"
 msgid "東"
 msgstr "東"
 
-#: src/components/auth/AboutYou.tsx:104
+#: src/components/auth/AboutYou.tsx:141
 msgid "検索"
 msgstr "検索"
 
@@ -4645,6 +4656,7 @@ msgid "港・フェリー乗り場"
 msgstr "港・フェリー乗り場"
 
 #: src/components/admin/RouteTable.tsx:30
+#: src/components/BookmarkList.tsx:33
 #: src/components/landing/Landing.tsx:231
 #: src/components/map/MapScreen.tsx:329
 #: src/components/RallyViews.tsx:99
@@ -4725,7 +4737,7 @@ msgstr "現地の許可を確認し、「許可確認済み」にチェックを
 msgid "現地調査のシート（CSV）を選ぶと、まず件数を表示します。取り込んだ場所はすべて下書きで、位置は「未確認」のままです。すでにある場所は追加しません。"
 msgstr "現地調査のシート（CSV）を選ぶと、まず件数を表示します。取り込んだ場所はすべて下書きで、位置は「未確認」のままです。すでにある場所は追加しません。"
 
-#: src/components/auth/AboutYou.tsx:23
+#: src/components/auth/AboutYou.tsx:30
 msgid "男性"
 msgstr "男性"
 
@@ -4878,7 +4890,7 @@ msgstr "種類"
 msgid "空から撮った写真の地図です。"
 msgstr "空から撮った写真の地図です。"
 
-#: src/components/auth/AboutYou.tsx:25
+#: src/components/auth/AboutYou.tsx:32
 msgid "答えたくない"
 msgstr "答えたくない"
 
@@ -5337,7 +5349,7 @@ msgstr "見やすさを選びましょう"
 msgid "見本の位置（目安です）"
 msgstr "見本の位置（目安です）"
 
-#: src/components/auth/AboutYou.tsx:102
+#: src/components/auth/AboutYou.tsx:139
 msgid "観光サイト"
 msgstr "観光サイト"
 
