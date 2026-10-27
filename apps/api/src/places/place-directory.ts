@@ -363,7 +363,7 @@ export const placeDirectoryList: ListDef<"directory", typeof PLACE_FIELDS, Place
         name: "positionVerified",
         kind: "boolean",
         label: { ja: "位置を確認した", en: "Position checked" },
-        inList: { yes: { ja: "位置を確認した", en: "Position checked" }, no: { ja: "位置は未確認", en: "Position not checked" } },
+        inList: { yes: { ja: "位置を確認した", en: "Position checked" }, no: { ja: "位置は未確認", en: "Position not checked" }, tone: { no: "warn" } },
       },
       {
         name: "listingConfirmed",
