@@ -19,7 +19,7 @@ Settings the API reads are listed in `.env.example`. Real values live in Vercel 
 
 All of this is in `/admin`. See `docs/ADMIN-GUIDE.md` for the screens.
 
-- **Replace a route's video:** Routes, open the route, the photos and video section. Paste a YouTube or Vimeo link, or upload an MP4/WebM. An empty link hides the video.
+- **Replace a route's video:** Routes, open the route, the photos and video section. Paste a YouTube or Vimeo link, or upload an MP4/WebM. An empty link hides the video. The links it had before are listed under the field ("Earlier video links"); "Put this link back" fills the field again, and you save as usual.
 - **Add a route:** Routes, new route. It shows as 準備中 until it has published waypoints.
 - **Publish a waypoint or a place:** its position must be ticked as checked against a named source, and (for places) the listing permission ticked. The database refuses to publish otherwise.
 - **A closure or hazard:** Notices. Enter the source link, the date you checked it, and an end date. Old notices disappear on their end date.
@@ -67,6 +67,18 @@ This overwrites the local content. To keep accounts and stamps too, upgrade to t
 | Database password | Change in Supabase, then in Vercel `DATABASE_URL` and the GitHub secret `PRODUCTION_DATABASE_URL`, then redeploy. |
 
 After changing a value in Vercel, redeploy (the old value stays until the next deploy).
+
+## Monitoring (UptimeRobot)
+
+Set up once, in the UptimeRobot account (the free plan checks every 5 minutes and emails you when a check fails). Use the live site's address in place of `https://SITE`.
+
+| Monitor | Type | What it checks | Settings |
+|---|---|---|---|
+| Site | HTTP(s) | The home page answers | URL `https://SITE/` |
+| API | HTTP(s) | The API is up | URL `https://SITE/api/v1/health` |
+| Database | Keyword | The API can read the database | URL `https://SITE/api/v1/routes`, keyword `"ok":true`, alert when the keyword does **not** exist |
+
+Add the people who should be told as alert contacts (email). When the Database monitor fails but API is fine, the database is unreachable or paused: look at the Supabase project first. The keep-warm workflow also visits the site, so a failing monitor and a slow first visit are different things. There is no error tracking tool yet; the Vercel function logs are the record of errors.
 
 ## When something is wrong
 

@@ -18,6 +18,9 @@ The menu has sections; "Back" and "Hide menu" are at the top of the left column.
 - A route line is hidden from visitors until "line checked" is ticked.
 - A draft stays hidden until you **publish** it (公開する). **Stop publishing** (公開をやめる) returns it to a draft.
 - A route with no published waypoints still shows in the list as 準備中.
+- The video link has an **Earlier video links** list under it: replaced or removed links are kept, and "Put this link back" fills the field again (save as usual).
+- A route that has a checked line shows a **GPX download** to signed-in visitors.
+- Every rally has its own page at `/rallies/<id>`: photo, progress, the stamps to unlock, the places in order, and buttons to bookmark it, start (opens the next place on the map) and stamp the place the visitor is standing at. Nothing to enter: it is built from the rally and its places.
 
 ## Places (the directory)
 
