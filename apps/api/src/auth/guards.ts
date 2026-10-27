@@ -2,11 +2,13 @@ import { Elysia } from "elysia";
 import type { ApiError } from "../lib/api-errors";
 import { createHttpHelpers } from "./http";
 import { SESSION_SECURITY } from "../openapi";
-import { can, needsFreshLogin, type Permission } from "./permissions";
+import { BLOCKED_WHEN_RESTRICTED, can, needsFreshLogin, type Permission } from "./permissions";
 import type { SessionService } from "./session-service";
 
 export const UNAUTHENTICATED = { ok: false, error: "unauthenticated" } as const satisfies ApiError;
 export const FORBIDDEN = { ok: false, error: "forbidden" } as const satisfies ApiError;
+/** An admin restricted this account: it can look but not take part. */
+export const ACCOUNT_RESTRICTED = { ok: false, error: "account_restricted" } as const satisfies ApiError;
 /** The role is allowed, but this permission needs a fresh login: run POST /auth/reauth/request + verify. */
 export const REAUTH_REQUIRED = { ok: false, error: "reauth_required" } as const satisfies ApiError;
 
@@ -50,6 +52,7 @@ export function authGuards(opts: { getSession: () => SessionService; secureCooki
         if (!auth) return status(401, UNAUTHENTICATED);
         const { user } = auth;
         if (!can(user.role, permission)) return status(403, FORBIDDEN);
+        if (user.restricted && BLOCKED_WHEN_RESTRICTED.includes(permission)) return status(403, ACCOUNT_RESTRICTED);
         if (needsFreshLogin(permission) && !auth.fresh) {
           return status(403, REAUTH_REQUIRED);
         }

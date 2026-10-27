@@ -48,6 +48,8 @@ describe("permission table", () => {
         "upload.create",
         "upload.read",
         "user.read",
+        "user.restrict",
+        "user.delete",
         "user.manage_roles",
         "visit.read",
       ].sort(),
@@ -65,7 +67,7 @@ describe("permission table", () => {
 });
 
 describe("the editor role", () => {
-  const ADMIN_ONLY = ["audit.read", "site.manage", "stamp.review", "user.manage_roles", "user.read"];
+  const ADMIN_ONLY = ["audit.read", "site.manage", "stamp.review", "user.delete", "user.manage_roles", "user.read", "user.restrict"];
 
   test("an editor does the content work and the participant things, and nothing about accounts, settings, history or revoking stamps", () => {
     const forEditor: string[] = permissions.filter((p) => can("editor", p)).sort();

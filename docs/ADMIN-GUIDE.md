@@ -48,4 +48,4 @@ Stamps are only ever given by the server. A flagged stamp (weak GPS, or impossib
 
 ## Users and the audit log (admin only)
 
-Changing a role asks you to sign in again first. The audit log lists who changed what, by id; it never holds emails.
+Changing a role asks you to sign in again first. Open an account to **restrict** it (it can still sign in and look, but cannot collect stamps or write comments; give a reason and, if you like, an end day) or to **delete** it. Deleting is by default **in 3 days** (until then it can be cancelled); **delete now** is for test accounts and asks you to type the member ID. All of these ask you to sign in again first, are refused for your own account and for other admins (change the role first), and are written to the audit log by account number only. The restriction reason is visible to admins only. The audit log lists who changed what, by id; it never holds emails.
