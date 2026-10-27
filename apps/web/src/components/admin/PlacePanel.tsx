@@ -25,6 +25,9 @@ export interface PlacePanelProps {
   onChange: (patch: Partial<PlaceDraft>) => void;
   onRemove: () => void;
   onMove: (step: -1 | 1) => void;
+  /** The route must be saved once before a waypoint can be saved on its own. */
+  canSave: boolean;
+  onSave: () => void;
   onPublish: () => void;
   onUnpublish: () => void;
 }
@@ -62,7 +65,7 @@ export function PlacePanel(p: PlacePanelProps) {
   const kindName = useKindLabels();
   const isStamp = place.stampable;
   const blockerText: Record<PublishBlocker, string> = {
-    unsaved: t`先に「保存」してください。`,
+    unsaved: t`先に「この経由地を保存」してください。`,
     no_coordinates: t`位置を決めてください（地図に置くか、緯度と経度を入れます）。`,
     position_not_verified: t`位置を公式の情報で確認し、「位置を確認した」にチェックを入れて情報源を書いてください。`,
     permission_required: t`現地の許可を確認し、「許可確認済み」にチェックを入れてください。`,
@@ -212,6 +215,12 @@ export function PlacePanel(p: PlacePanelProps) {
           </details>
 
           <div className="flex flex-col gap-3 rounded-xl bg-surface p-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <button type="button" disabled={p.busy || !p.dirty || !p.canSave} onClick={p.onSave} className="tap-target w-fit rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-40">
+                {t`この経由地を保存`}
+              </button>
+              {!p.canSave ? <p className="text-base text-muted">{t`先にルートを保存してください。`}</p> : place.published && p.dirty ? <p className="text-base text-muted">{t`保存すると、この経由地は下書きに戻ります。`}</p> : null}
+            </div>
             {place.published ? (
               <div className="flex flex-wrap items-center gap-3">
                 <p className="text-lg font-bold">{t`この経由地は公開されています。`}</p>

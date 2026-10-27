@@ -333,6 +333,55 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     if (snapshot.id === null) router.replace(`/admin/routes/${routeId}`);
   }
 
+  /**
+   * Saves one waypoint on its own: the rest of the draft (the route's fields, the other waypoints, the order) stays as typed.
+   * The same steps as a full save, planned against a copy of the saved route that has only this waypoint edited.
+   */
+  async function savePlace(key: string) {
+    const place = draft.places.find((p) => p.key === key);
+    const before = savedRef.current;
+    if (!place || !before.id || saving || busyKey) return;
+    const found = draftProblems({ ...before, places: [place] }).filter((p) => "key" in p && p.key === key);
+    if (found.length > 0) {
+      setProblems((old) => [...old.filter((p) => !("key" in p && p.key === key)), ...found]);
+      setMessage({ kind: "error", text: t`保存できません。赤く示した項目を直してください。` });
+      return;
+    }
+    setProblems((old) => old.filter((p) => !("key" in p && p.key === key)));
+    const isNew = !before.places.some((p) => p.key === key);
+    const target: RouteDraft = { ...before, places: isNew ? [...before.places, place] : before.places.map((p) => (p.key === key ? place : p)) };
+    setBusyKey(key);
+    setMessage(null);
+    let current = before.places.find((p) => p.key === key) ?? null;
+    let failure: string | null = null;
+    let wasPublished = false;
+    for (const step of planSave(target, before)) {
+      if (step.op === "unpublishSpot") {
+        const res = await outcome(api.admin.spots({ id: step.id }).unpublish.post());
+        if (!res.ok) { failure = messages[res.key]; break; }
+        current = { ...placeFromServer(res.data.spot), key };
+        wasPublished = true;
+      } else if (step.op === "createSpot") {
+        const res = await outcome(api.admin.routes({ id: before.id }).spots.post(step.body));
+        if (!res.ok) { failure = messages[res.key]; break; }
+        current = { ...placeFromServer(res.data.spot), key };
+      } else if (step.op === "updateSpot") {
+        const res = await outcome(api.admin.spots({ id: step.id }).patch({ updatedAt: current!.updatedAt!, ...step.body }));
+        if (!res.ok) { failure = messages[res.key]; break; }
+        current = { ...placeFromServer(res.data.spot), key };
+      }
+    }
+    if (current && current !== (before.places.find((p) => p.key === key) ?? null)) {
+      // Whatever was saved before a failure is on the server: take it over, so the next try has fresh times.
+      const saved = current;
+      dispatch({ type: "savedPlace", key, place: saved });
+      setSavedCopy({ ...savedRef.current, places: isNew && !savedRef.current.places.some((p) => p.key === key) ? [...savedRef.current.places, saved] : savedRef.current.places.map((p) => (p.key === key ? saved : p)) });
+    }
+    if (failure) setMessage({ kind: "error", text: wasPublished ? `${failure} ${t`この経由地は公開をやめました。`}` : failure });
+    else setMessage({ kind: "ok", text: wasPublished ? t`保存しました。この経由地は下書きに戻っています。もう一度「公開する」を押してください。` : t`この経由地を保存しました。` });
+    setBusyKey(null);
+  }
+
   // Takes every published waypoint off the site at once. The route itself stays in the list, shown as "coming soon" (準備中).
   async function unpublishAll() {
     const live = draft.places.filter((p) => p.id && p.published);
@@ -769,6 +818,8 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                           [keys[i], keys[j]] = [keys[j]!, keys[i]!];
                           dispatch({ type: "reorderPlaces", keys });
                         }}
+                        canSave={draft.id !== null}
+                        onSave={() => void savePlace(p.key)}
                         onPublish={() => setPublished(p.key, true)}
                         onUnpublish={() => setPublished(p.key, false)}
                       />
