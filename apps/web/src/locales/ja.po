@@ -12,7 +12,7 @@ msgid "　{until} まで"
 msgstr "　{until} まで"
 
 #. placeholder {0}: formatMoment(locale, String(item.restrictedUntil))
-#: src/components/admin/UserActions.tsx:69
+#: src/components/admin/UserActions.tsx:67
 msgid "（{0} まで）"
 msgstr "（{0} まで）"
 
@@ -32,7 +32,7 @@ msgstr "（名前なし）"
 msgid "（外部サイトが新しいタブで開きます）"
 msgstr "（外部サイトが新しいタブで開きます）"
 
-#: src/components/admin/UserActions.tsx:69
+#: src/components/admin/UserActions.tsx:67
 msgid "（解除するまで）"
 msgstr "（解除するまで）"
 
@@ -500,11 +500,11 @@ msgstr "30代"
 msgid "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 msgstr "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 
-#: src/components/admin/UserActions.tsx:109
+#: src/components/admin/UserActions.tsx:107
 msgid "3日後に削除する"
 msgstr "3日後に削除する"
 
-#: src/components/admin/UserActions.tsx:108
+#: src/components/admin/UserActions.tsx:106
 msgid "3日後の削除を予約しました。"
 msgstr "3日後の削除を予約しました。"
 
@@ -664,11 +664,11 @@ msgstr "アカウントと、集めたスタンプなどの記録を、すべて
 msgid "アカウントのものだけにする"
 msgstr "アカウントのものだけにする"
 
-#: src/components/admin/UserActions.tsx:55
+#: src/components/admin/UserActions.tsx:53
 msgid "アカウントの制限・削除"
 msgstr "アカウントの制限・削除"
 
-#: src/components/admin/UserActions.tsx:97
+#: src/components/admin/UserActions.tsx:95
 #: src/components/ProfileSettings.tsx:188
 msgid "アカウントの削除"
 msgstr "アカウントの削除"
@@ -780,7 +780,7 @@ msgstr "あるとよい：{0}"
 msgid "いただいた情報は、どんな方がこのアプリを使っているかを知るためだけに使います。個人が分からない形でまとめます。くわしくは<0>プライバシーポリシー</0>をご覧ください。"
 msgstr "いただいた情報は、どんな方がこのアプリを使っているかを知るためだけに使います。個人が分からない形でまとめます。くわしくは<0>プライバシーポリシー</0>をご覧ください。"
 
-#: src/components/admin/UserActions.tsx:82
+#: src/components/admin/UserActions.tsx:80
 msgid "いつまで（空なら、解除するまで）"
 msgstr "いつまで（空なら、解除するまで）"
 
@@ -1861,7 +1861,7 @@ msgstr "つなぐ"
 msgid "できた"
 msgstr "できた"
 
-#: src/components/admin/UserActions.tsx:114
+#: src/components/admin/UserActions.tsx:112
 msgid "テスト用のアカウントなどは、今すぐ消せます。元に戻せません。スタンプ・コメント・ログインの情報もすべて消えます。"
 msgstr "テスト用のアカウントなどは、今すぐ消せます。元に戻せません。スタンプ・コメント・ログインの情報もすべて消えます。"
 
@@ -2047,7 +2047,7 @@ msgstr "ふつう"
 msgid "ふつうの大きさです。"
 msgstr "ふつうの大きさです。"
 
-#: src/components/admin/UserActions.tsx:107
+#: src/components/admin/UserActions.tsx:105
 msgid "ふつうは、3日後に削除する方法を使います。その間は、取り消せます。"
 msgstr "ふつうは、3日後に削除する方法を使います。その間は、取り消せます。"
 
@@ -2937,7 +2937,7 @@ msgstr "今ある線を、経由地の順に区間へ切り分けます（経由
 msgid "今すぐアカウントを作りましょう。記録が消えてしまうかもしれません！"
 msgstr "今すぐアカウントを作りましょう。記録が消えてしまうかもしれません！"
 
-#: src/components/admin/UserActions.tsx:124
+#: src/components/admin/UserActions.tsx:122
 msgid "今すぐ削除する"
 msgstr "今すぐ削除する"
 
@@ -3615,31 +3615,31 @@ msgstr "別の人が先に保存しました。読み込み直してから、も
 msgid "利用規約"
 msgstr "利用規約"
 
-#: src/components/admin/UserActions.tsx:63
+#: src/components/admin/UserActions.tsx:61
 msgid "制限"
 msgstr "制限"
 
-#: src/components/admin/UserActions.tsx:64
+#: src/components/admin/UserActions.tsx:62
 msgid "制限されたアカウントは、ログインと閲覧はできますが、スタンプを押すこととコメントを書くことはできません。自分のデータを見たり、削除を頼んだりはできます。"
 msgstr "制限されたアカウントは、ログインと閲覧はできますが、スタンプを押すこととコメントを書くことはできません。自分のデータを見たり、削除を頼んだりはできます。"
 
-#: src/components/admin/UserActions.tsx:88
+#: src/components/admin/UserActions.tsx:86
 msgid "制限しました。"
 msgstr "制限しました。"
 
-#: src/components/admin/UserActions.tsx:91
+#: src/components/admin/UserActions.tsx:89
 msgid "制限する"
 msgstr "制限する"
 
-#: src/components/admin/UserActions.tsx:73
+#: src/components/admin/UserActions.tsx:71
 msgid "制限を解除しました。"
 msgstr "制限を解除しました。"
 
-#: src/components/admin/UserActions.tsx:74
+#: src/components/admin/UserActions.tsx:72
 msgid "制限を解除する"
 msgstr "制限を解除する"
 
-#: src/components/admin/UserActions.tsx:68
+#: src/components/admin/UserActions.tsx:66
 msgid "制限中"
 msgstr "制限中"
 
@@ -3657,11 +3657,11 @@ msgstr "制限中"
 msgid "削除"
 msgstr "削除"
 
-#: src/components/admin/UserActions.tsx:100
+#: src/components/admin/UserActions.tsx:98
 msgid "削除が予約されています。3日たつと、アカウントとスタンプが消えます。"
 msgstr "削除が予約されています。3日たつと、アカウントとスタンプが消えます。"
 
-#: src/components/admin/UserActions.tsx:121
+#: src/components/admin/UserActions.tsx:119
 msgid "削除しました。"
 msgstr "削除しました。"
 
@@ -3669,11 +3669,11 @@ msgstr "削除しました。"
 msgid "削除する"
 msgstr "削除する"
 
-#: src/components/admin/UserActions.tsx:101
+#: src/components/admin/UserActions.tsx:99
 msgid "削除の予約を取り消しました。"
 msgstr "削除の予約を取り消しました。"
 
-#: src/components/admin/UserActions.tsx:102
+#: src/components/admin/UserActions.tsx:100
 msgid "削除の予約を取り消す"
 msgstr "削除の予約を取り消す"
 
@@ -5073,11 +5073,11 @@ msgid "現地調査のシート（CSV）を選ぶと、まず件数を表示し�
 msgstr "現地調査のシート（CSV）を選ぶと、まず件数を表示します。取り込んだ場所はすべて下書きで、位置は「未確認」のままです。すでにある場所は追加しません。"
 
 #. placeholder {0}: String(item.restrictionReason ?? "")
-#: src/components/admin/UserActions.tsx:71
+#: src/components/admin/UserActions.tsx:69
 msgid "理由：{0}"
 msgstr "理由：{0}"
 
-#: src/components/admin/UserActions.tsx:79
+#: src/components/admin/UserActions.tsx:77
 msgid "理由（管理者だけに見えます）"
 msgstr "理由（管理者だけに見えます）"
 
@@ -5204,7 +5204,7 @@ msgstr "確認する"
 msgid "確認できませんでした。もう一度お試しください。"
 msgstr "確認できませんでした。もう一度お試しください。"
 
-#: src/components/admin/UserActions.tsx:115
+#: src/components/admin/UserActions.tsx:113
 msgid "確認のため、会員番号（{memberId}）を入れてください"
 msgstr "確認のため、会員番号（{memberId}）を入れてください"
 
@@ -5272,7 +5272,7 @@ msgstr "管理者としてログイン中"
 msgid "管理者のアカウントは、制限したり削除したりできません。先に権限を変えてください。"
 msgstr "管理者のアカウントは、制限したり削除したりできません。先に権限を変えてください。"
 
-#: src/components/admin/UserActions.tsx:56
+#: src/components/admin/UserActions.tsx:54
 msgid "管理者のアカウントは、制限や削除ができません。先に「権限」を変えてください。"
 msgstr "管理者のアカウントは、制限や削除ができません。先に「権限」を変えてください。"
 
