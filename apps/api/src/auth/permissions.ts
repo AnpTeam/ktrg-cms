@@ -52,6 +52,8 @@ export const PERMISSIONS = {
   "stamp.review": ["admin"],
   /** Where the page views came from (counts only, no person). */
   "visit.read": ["editor", "admin"],
+  /** The dashboard: the headline numbers and their goals. */
+  "dashboard.read": ["admin"],
   "audit.read": ["admin"],
   /** See the list of accounts (the users screen). No fresh login: only changing a role needs one. */
   "user.read": ["admin"],

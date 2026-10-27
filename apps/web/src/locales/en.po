@@ -27,6 +27,10 @@ msgstr "(no name)"
 msgid "（外部サイトが新しいタブで開きます）"
 msgstr "(opens an external site in a new tab)"
 
+#: src/components/admin/DashboardTile.tsx:31
+msgid "（達成）"
+msgstr "(reached)"
+
 #. placeholder {0}: data.from
 #. placeholder {1}: data.to
 #. placeholder {2}: data.total.toLocaleString()
@@ -268,6 +272,10 @@ msgstr "No. {number}, not stamped yet"
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
 
+#: src/app/(admin)/admin/page.tsx:52
+msgid "{r}日"
+msgstr "{r} days"
+
 #: src/components/admin/PlaceTable.tsx:186
 msgid "{row}行目：スタンプを押せる"
 msgstr "Row {row}: visitors can stamp here"
@@ -458,6 +466,10 @@ msgstr "Hold the ⌘ key to move the map"
 #: src/components/admin/RouteEditor.tsx:726
 msgid "1か所ずつ詳しく"
 msgstr "One place at a time"
+
+#: src/components/admin/GoalsForm.tsx:50
+msgid "1以上の整数を入れてください。"
+msgstr "Enter a whole number, 1 or more."
 
 #: src/components/admin/RubyEditor.tsx:44
 msgid "1文字ずつ"
@@ -663,6 +675,10 @@ msgstr "Delete account"
 msgid "アカウント設定"
 msgstr "Account settings"
 
+#: src/app/(admin)/admin/page.tsx:66
+msgid "アクセス"
+msgstr "Visits"
+
 #: src/components/admin/RouteEditor.tsx:603
 #: src/components/admin/useChecklistLabels.ts:18
 #: src/components/map/MapScreen.tsx:432
@@ -675,13 +691,17 @@ msgid "アクセス・交通の補足"
 msgstr "Getting there: extra notes"
 
 #: src/app/(admin)/admin/visits/page.tsx:62
-#: src/components/admin/AdminNav.tsx:37
+#: src/components/admin/AdminNav.tsx:39
 msgid "アクセスの地域"
 msgstr "Where visits come from"
 
 #: src/app/(admin)/admin/visits/page.tsx:10
 msgid "アクセスの地域（管理）"
 msgstr "Where visits come from (admin)"
+
+#: src/components/admin/GoalsForm.tsx:15
+msgid "アクセス数"
+msgstr "Visits"
 
 #: src/components/useErrorMessages.ts:58
 msgid "アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。"
@@ -757,6 +777,10 @@ msgstr "No"
 #: src/components/PrivacyNote.tsx:13
 msgid "いただいた情報は、どんな方がこのアプリを使っているかを知るためだけに使います。個人が分からない形でまとめます。くわしくは<0>プライバシーポリシー</0>をご覧ください。"
 msgstr "We use what you tell us only to understand who uses this app, and we put it together in a form that does not identify anyone. For details, see the <0>privacy policy</0>."
+
+#: src/app/(admin)/admin/page.tsx:69
+msgid "いちばん多い地域"
+msgstr "Top region"
 
 #: src/components/OfflineNotice.tsx:26
 msgid "いま、通信がつながっていません。つながると、また使えます。"
@@ -1064,6 +1088,10 @@ msgstr "It is a problem on our side. Please try again in a little while."
 msgid "こちらの問題です。もう一度お試しください。それでも直らないときは、しばらくしてからお試しください。"
 msgstr "It is a problem on our side. Please try again. If it still does not work, try again in a little while."
 
+#: src/app/(admin)/admin/page.tsx:40
+msgid "この{days}日間"
+msgstr "in the last {days} days"
+
 #: src/components/admin/map-editor/MapEditor.tsx:666
 msgid "このGPXファイルには、標高のある道すじがないか、今の線とほとんど重なっていません。"
 msgstr "This GPX file has no track with elevations, or it hardly overlaps the current line."
@@ -1297,6 +1325,10 @@ msgstr "This text goes live at once. Save it?"
 msgid "この文章は日本語のみです。"
 msgstr "This text is only available in Japanese."
 
+#: src/app/(admin)/admin/page.tsx:105
+msgid "この期間のスタンプは、まだありません。"
+msgstr "There are no stamps in this period yet."
+
 #: src/app/(admin)/admin/visits/page.tsx:97
 msgid "この期間の記録は、まだありません。"
 msgstr "There are no records for this period yet."
@@ -1482,7 +1514,7 @@ msgid "サイトマップ"
 msgstr "Site map"
 
 #: src/app/(admin)/admin/settings/page.tsx:21
-#: src/components/admin/AdminNav.tsx:42
+#: src/components/admin/AdminNav.tsx:44
 msgid "サイト全体の設定"
 msgstr "Site-wide settings"
 
@@ -1533,6 +1565,7 @@ msgstr "{turnWord} now"
 msgid "スタート"
 msgstr "Start"
 
+#: src/app/(admin)/admin/page.tsx:76
 #: src/app/(public)/rallies/[id]/page.tsx:100
 #: src/components/admin/map-editor/PlaceList.tsx:106
 #: src/components/admin/PlaceTable.tsx:137
@@ -1562,6 +1595,10 @@ msgstr "{stamps} with a stamp, {others} other"
 #: src/components/admin/PlacePanel.tsx:181
 msgid "スタンプ・状態・許可の設定"
 msgstr "Stamp, status and permission settings"
+
+#: src/app/(admin)/admin/page.tsx:101
+msgid "スタンプが多いルート"
+msgstr "Routes with the most stamps"
 
 #: src/components/useErrorMessages.ts:46
 msgid "スタンプが押されたことのある経由地は消せません。「公開をやめる」をお使いください。"
@@ -1646,6 +1683,10 @@ msgstr "Restored {0} stamps ({1} now)."
 msgid "スタンプをもどす"
 msgstr "Restore stamps"
 
+#: src/app/(admin)/admin/page.tsx:78
+msgid "スタンプを押した人"
+msgstr "People with a stamp"
+
 #: src/components/RallyNearbyStamp.tsx:71
 #: src/components/StampHere.tsx:149
 msgid "スタンプを押しています…"
@@ -1684,6 +1725,10 @@ msgstr "There are no stamp waypoints yet. Create waypoints on a route first."
 #: src/components/TrailRibbon.tsx:62
 msgid "スタンプ場所 {spotCount}か所"
 msgstr "{spotCount} stamp locations"
+
+#: src/components/admin/GoalsForm.tsx:15
+msgid "スタンプ数"
+msgstr "Stamps"
 
 #: src/app/(public)/map/page.tsx:192
 #: src/app/(public)/routes/[id]/page.tsx:60
@@ -1773,6 +1818,15 @@ msgstr "Tiles"
 #: src/components/SignInPrompt.tsx:22
 msgid "ただし、この端末にしか残りません。登録すると、なくならず、コンプリート証ももらえます。"
 msgstr "But they stay only on this device. Sign up and they are never lost, and you can get a certificate."
+
+#: src/app/(admin)/admin/page.tsx:47
+#: src/components/admin/AdminNav.tsx:36
+msgid "ダッシュボード"
+msgstr "Dashboard"
+
+#: src/app/(admin)/admin/page.tsx:16
+msgid "ダッシュボード（管理）"
+msgstr "Dashboard (admin)"
 
 #: src/app/(public)/grading/page.tsx:60
 msgid "たとえば、4時間・距離8km・登り500m・下り500mなら、1.8×4 ＋ 0.3×8 ＋ 10×0.5 ＋ 0.6×0.5 ＝ 14.9 で、体力度は2です。"
@@ -2125,7 +2179,7 @@ msgid "ページが開かれた回数を、接続元のおおよその地域（�
 msgstr "Page views counted by the approximate region of the connection (country, prefecture, city). No IP address or person is recorded. A city or town can differ from where the visitor really is."
 
 #: src/app/(admin)/admin/pages/page.tsx:34
-#: src/components/admin/AdminNav.tsx:40
+#: src/components/admin/AdminNav.tsx:42
 msgid "ページの文章"
 msgstr "Page text"
 
@@ -2362,7 +2416,7 @@ msgstr "Main menu"
 msgid "めぐる場所"
 msgstr "Places to visit"
 
-#: src/components/admin/AdminNav.tsx:58
+#: src/components/admin/AdminNav.tsx:60
 #: src/components/SiteHeader.tsx:192
 #: src/components/TabBar.tsx:68
 msgid "メニュー"
@@ -2495,7 +2549,7 @@ msgstr "Light"
 #: src/app/(public)/rallies/[id]/page.tsx:57
 #: src/app/(public)/rallies/page.tsx:30
 #: src/app/(public)/sitemap/page.tsx:82
-#: src/components/admin/AdminNav.tsx:36
+#: src/components/admin/AdminNav.tsx:38
 #: src/components/BookmarkList.tsx:47
 #: src/components/TabBar.tsx:25
 msgid "ラリー"
@@ -2576,10 +2630,22 @@ msgstr "See the rallies"
 msgid "ラリーを読み込めませんでした。しばらくしてから、ページを開き直してください。"
 msgstr "The rallies could not be loaded. Please open the page again in a moment."
 
+#: src/components/admin/GoalsForm.tsx:15
+msgid "ラリーを達成した人・回数"
+msgstr "Rally completions"
+
+#: src/app/(admin)/admin/page.tsx:95
+msgid "ラリーを達成した人と回数です。同じ人が二つのラリーを達成すると、2と数えます。"
+msgstr "Rallies finished, counted per person and rally: someone who finishes two rallies counts as 2."
+
 #: src/app/(admin)/admin/rallies/[id]/page.tsx:46
 #: src/app/(admin)/admin/rallies/new/page.tsx:36
 msgid "ラリー一覧にもどる"
 msgstr "Back to the rallies"
+
+#: src/app/(admin)/admin/page.tsx:93
+msgid "ラリー達成"
+msgstr "Rally completions"
 
 #: src/components/admin/RichTextToolbar.tsx:29
 msgid "リンク"
@@ -2622,7 +2688,7 @@ msgstr "Enter the link directly"
 #: src/app/(public)/blog/[id]/page.tsx:102
 #: src/app/(public)/routes/page.tsx:18
 #: src/app/(public)/sitemap/page.tsx:65
-#: src/components/admin/AdminNav.tsx:35
+#: src/components/admin/AdminNav.tsx:37
 #: src/components/BookmarkList.tsx:47
 #: src/components/TabBar.tsx:24
 msgid "ルート"
@@ -3077,6 +3143,7 @@ msgid "保存して次へ"
 msgstr "Save and next"
 
 #: src/components/admin/AdminItemForm.tsx:124
+#: src/components/admin/GoalsForm.tsx:50
 #: src/components/admin/RallyEditor.tsx:66
 #: src/components/admin/RouteEditor.tsx:328
 #: src/components/ProfileSettings.tsx:172
@@ -3118,6 +3185,10 @@ msgstr "Save"
 #: src/components/admin/RouteEditor.tsx:207
 msgid "保存できません。赤く示した項目を直してください。"
 msgstr "Cannot save. Fix the items marked in red."
+
+#: src/components/admin/GoalsForm.tsx:50
+msgid "保存できませんでした。"
+msgstr "Could not save."
 
 #: src/components/ProfilePhoto.tsx:50
 msgid "保存できませんでした。もう一度お試しください。"
@@ -3875,6 +3946,7 @@ msgstr "Nearby places"
 msgid "周辺の場所（駐車場・自販機・トイレなど）"
 msgstr "Nearby places (parking, vending machines, toilets ...)"
 
+#: src/app/(admin)/admin/page.tsx:34
 #: src/components/admin/RouteEditor.tsx:391
 #: src/components/admin/RouteTable.tsx:31
 #: src/components/auth/authUi.tsx:78
@@ -4013,6 +4085,10 @@ msgstr "Loading the map…"
 msgid "地域（日本は都道府県）"
 msgstr "Region (prefecture in Japan)"
 
+#: src/app/(admin)/admin/page.tsx:73
+msgid "地域ごとに見る"
+msgstr "See by region"
+
 #: src/components/PrefectureFilter.tsx:30
 msgid "地域でしぼる"
 msgstr "Filter by area"
@@ -4127,6 +4203,7 @@ msgstr "This is an important action, so we confirm it is you once more."
 msgid "大阪・和歌山・奈良にまたがる、葛城修験の山の古道を歩くための道案内とスタンプラリーです。"
 msgstr "A trail guide and stamp rally for the ancient mountain paths of Katsuragi Shugen, across Osaka, Wakayama and Nara."
 
+#: src/app/(admin)/admin/page.tsx:33
 #: src/components/admin/RouteEditor.tsx:391
 #: src/components/admin/RouteTable.tsx:31
 #: src/components/auth/authUi.tsx:77
@@ -4138,6 +4215,7 @@ msgstr "Osaka"
 msgid "大阪府・和歌山県・奈良県のどれかで書いてください"
 msgstr "Write one of 大阪府, 和歌山県 or 奈良県"
 
+#: src/app/(admin)/admin/page.tsx:35
 #: src/components/admin/RouteEditor.tsx:391
 #: src/components/admin/RouteTable.tsx:31
 #: src/components/auth/authUi.tsx:79
@@ -4435,6 +4513,10 @@ msgstr "Drag a numbered circle to move a waypoint. Add the path with \"Draw line
 msgid "数字は目安です。保存される体力度は、ルートを作った人が、この計算を見て決めています。"
 msgstr "The numbers are a guide. The saved physical level is chosen by whoever made the route, looking at this calculation."
 
+#: src/components/admin/GoalsForm.tsx:37
+msgid "数字を空にすると、その目標はなしになります。保存すると、ページを開き直したときに反映されます。"
+msgstr "Leave a number empty for no goal. Saved goals show when the page is opened again."
+
 #: src/components/admin/GradingFields.tsx:38
 msgid "整備された道で、迷いにくく、転んでも大きな事故になりにくい。"
 msgstr "A well-kept path that is hard to lose, where a fall is unlikely to cause a serious accident."
@@ -4537,6 +4619,14 @@ msgstr "A Japanese name is needed to create a new one"
 msgid "新規登録"
 msgstr "Register"
 
+#: src/components/admin/DashboardTile.tsx:51
+msgid "日ごとの数"
+msgstr "Daily numbers"
+
+#: src/components/admin/DashboardTile.tsx:46
+msgid "日ごとの数の推移"
+msgstr "Daily numbers over the period"
+
 #: src/components/admin/PhotoLibrary.tsx:170
 msgid "日付"
 msgstr "Date"
@@ -4545,6 +4635,7 @@ msgstr "Date"
 msgid "日曜日"
 msgstr "Sunday"
 
+#: src/app/(admin)/admin/page.tsx:36
 #: src/components/auth/authUi.tsx:80
 msgid "日本のほかの地域"
 msgstr "Elsewhere in Japan"
@@ -4616,6 +4707,10 @@ msgstr "Once it is written, it will show up here."
 msgid "月曜日"
 msgstr "Monday"
 
+#: src/app/(admin)/admin/page.tsx:49
+msgid "期間"
+msgstr "Period"
+
 #: src/components/admin/HoursInput.tsx:14
 msgid "木曜日"
 msgstr "Thursday"
@@ -4623,6 +4718,10 @@ msgstr "Thursday"
 #: src/components/admin/PlacePanel.tsx:84
 msgid "未保存"
 msgstr "Unsaved"
+
+#: src/app/(admin)/admin/page.tsx:39
+msgid "未回答"
+msgstr "Not answered"
 
 #: src/components/ProfileSettings.tsx:118
 msgid "未設定"
@@ -4814,6 +4913,7 @@ msgstr "Caution spot"
 msgid "注釈"
 msgstr "Footnote"
 
+#: src/app/(admin)/admin/page.tsx:37
 #: src/components/auth/authUi.tsx:81
 msgid "海外"
 msgstr "Overseas"
@@ -4980,6 +5080,11 @@ msgstr "Climb (elevation gain)"
 msgid "登録ありがとうございます"
 msgstr "Thank you for registering"
 
+#: src/app/(admin)/admin/page.tsx:86
+#: src/components/admin/GoalsForm.tsx:15
+msgid "登録した人"
+msgstr "Sign-ups"
+
 #: src/components/SignInPrompt.tsx:19
 msgid "登録しなくても、スタンプは押せます。"
 msgstr "You can collect stamps without signing up."
@@ -5014,8 +5119,28 @@ msgstr "Guide: course constant {constant} → {level}"
 msgid "目安を使う"
 msgstr "Use guide"
 
+#: src/components/admin/DashboardTile.tsx:25
+msgid "目標 {goalText} の {pct}%"
+msgstr "{pct}% of the goal of {goalText}"
+
+#: src/components/admin/DashboardTile.tsx:38
+msgid "目標は、まだ決めていません。"
+msgstr "No goal set yet."
+
+#: src/components/admin/DashboardTile.tsx:21
+msgid "目標までの進み具合"
+msgstr "Progress toward the goal"
+
+#: src/components/admin/GoalsForm.tsx:47
+msgid "目標を保存"
+msgstr "Save goals"
+
+#: src/app/(admin)/admin/page.tsx:127
+msgid "目標を決める・変える"
+msgstr "Set or change the goals"
+
 #: src/app/(admin)/admin/attention/page.tsx:36
-#: src/components/admin/AdminNav.tsx:38
+#: src/components/admin/AdminNav.tsx:40
 msgid "直すところ"
 msgstr "To fix"
 
@@ -5039,6 +5164,10 @@ msgstr "How you found it"
 #: src/components/useStampMessages.ts:21
 msgid "短い間に何度も操作されました。しばらくしてからお試しください。"
 msgstr "Too many attempts in a short time. Please try again in a little while."
+
+#: src/app/(admin)/admin/page.tsx:82
+msgid "確認が必要なスタンプ：{flagged}件"
+msgstr "Stamps that need a look: {flagged}"
 
 #: src/components/admin/PlacePanel.tsx:175
 #: src/components/admin/RouteEditor.tsx:699
@@ -5099,7 +5228,7 @@ msgstr "Prefer not to say"
 msgid "答えなくても大丈夫です。"
 msgstr "You can skip this."
 
-#: src/components/admin/AdminNav.tsx:50
+#: src/components/admin/AdminNav.tsx:52
 msgid "管理メニュー"
 msgstr "Admin menu"
 
@@ -5642,6 +5771,7 @@ msgid "読み込めませんでした。"
 msgstr "Could not load."
 
 #: src/app/(admin)/admin/attention/page.tsx:43
+#: src/app/(admin)/admin/page.tsx:58
 #: src/app/(admin)/admin/visits/page.tsx:86
 msgid "読み込めませんでした。しばらくしてから、ページを開き直してください。"
 msgstr "Could not load. Please reload the page in a moment."

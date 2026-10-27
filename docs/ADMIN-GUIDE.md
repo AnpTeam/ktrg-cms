@@ -11,6 +11,10 @@ The menu has sections; "Back" and "Hide menu" are at the top of the left column.
 - Leaving with unsaved changes asks first, including the browser's back button.
 - Everything is written in Japanese and English side by side. Japanese is required; a missing English text falls back to Japanese and is marked.
 
+## Dashboard (admin only)
+
+**ダッシュボード** is the admin's home. It shows four numbers: visits, stamps, sign-ups and rally completions. Each has its total, a bar toward the goal you set, what the chosen period (7, 30 or 90 days) added, and a small daily line (its numbers are under "Daily numbers"). Below them are the routes with the most stamps. **Set or change the goals** at the bottom: leave a box empty for no goal. Rally completions are counted per person and rally (someone who finishes two rallies counts as 2). The numbers are refreshed at most once a minute. Editors do not see this page; they land on the route list.
+
 ## Routes and waypoints
 
 - A route has five tabs. Each **waypoint** has a kind and a switch for "can be stamped".

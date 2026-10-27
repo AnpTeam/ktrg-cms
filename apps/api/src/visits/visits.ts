@@ -31,6 +31,8 @@ export interface VisitStore {
   /** Adds one view to the day's count for this place and page. */
   add(day: string, place: Place, path: string): Promise<void>;
   summary(from: string, to: string, pathPrefix: string | null): Promise<VisitSummary>;
+  /** Views per day, for a range (days with none are left out). */
+  daily(from: string, to: string): Promise<{ day: string; views: number }[]>;
 }
 
 // Pages that are about one person or one sign-in step are not counted at all.
@@ -82,6 +84,7 @@ export function createVisitService(deps: { store: VisitStore; now?: () => Date }
       return true;
     },
     summary: (from: string, to: string, pathPrefix: string | null) => deps.store.summary(from, to, pathPrefix),
+    daily: (from: string, to: string) => deps.store.daily(from, to),
     today: () => todayInJapan(now()),
   };
 }
@@ -95,6 +98,11 @@ export function createMemoryVisitStore(): VisitStore {
       const row = rows.get(key) ?? { day, place, path, views: 0 };
       row.views++;
       rows.set(key, row);
+    },
+    async daily(from, to) {
+      const m = new Map<string, number>();
+      for (const r of rows.values()) if (r.day >= from && r.day <= to) m.set(r.day, (m.get(r.day) ?? 0) + r.views);
+      return [...m].map(([day, views]) => ({ day, views })).sort((a, b) => a.day.localeCompare(b.day));
     },
     async summary(from, to, prefix) {
       const inRange = [...rows.values()].filter((r) => r.day >= from && r.day <= to && (prefix === null || r.path.startsWith(prefix)));
