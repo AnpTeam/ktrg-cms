@@ -9,36 +9,11 @@ import type { RallyAdminService } from "./rally-admin-service";
  * published stamp places; a rally of courses lists its courses, each with its published stamp places and their status (so
  * the page can tell, from the visitor's own stamps, how far along they are). Drafts are never named.
  *
- * Building the answer reads every rally and every course in it (dozens of queries), so it is kept for `ttlMs` (like the
+ * Building the answer takes a handful of queries however many rallies there are, and it is kept for `ttlMs` (like the
  * public route list): a change in the admin shows after at most that long.
  */
 export function rallyPublicRoutes(getServices: () => { rallyAdmin: RallyAdminService; content: ContentService }, ttlMs = 0) {
-  const build = async () => {
-    const { rallyAdmin, content } = getServices();
-    const published = (await rallyAdmin.listRallies()).filter((r) => r.published).sort((a, b) => a.sortOrder - b.sortOrder);
-    const rallies = [];
-    for (const r of published) {
-      const found = await rallyAdmin.getRally(r.id);
-      if (!found) continue;
-      const base = { id: r.id, nameJa: r.nameJa, nameEn: r.nameEn, sortOrder: r.sortOrder };
-      if ("places" in found) {
-        const places = found.places
-          .filter((p) => p.published)
-          .sort((a, b) => a.position - b.position)
-          .map((p) => ({ id: p.spotId, routeId: p.routeId, nameJa: p.nameJa, nameEn: p.nameEn }));
-        rallies.push({ ...base, kind: "places" as const, places, courses: [] });
-      } else {
-        const courses = [];
-        for (const c of [...found.courses].sort((a, b) => a.position - b.position)) {
-          const route = await content.publicRoute(c.routeId);
-          // The status travels with each place: a closed place that nobody stamped counts as done (rallies/progress.ts).
-          courses.push({ routeId: c.routeId, nameJa: c.nameJa, nameEn: c.nameEn, spots: (route?.spots ?? []).map((s) => ({ id: s.id, status: s.status })) });
-        }
-        rallies.push({ ...base, kind: "course" as const, places: [], courses });
-      }
-    }
-    return { ok: true as const, rallies };
-  };
+  const build = async () => ({ ok: true as const, rallies: await getServices().rallyAdmin.publicRallies() });
 
   /**
    * One published rally with what its own page needs: every stamp place with its checked position, radius and status (so a

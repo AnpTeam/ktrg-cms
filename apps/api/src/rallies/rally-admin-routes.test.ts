@@ -83,10 +83,10 @@ describe("rally admin routes need an admin", () => {
   test("the answer is kept for the time given, and rebuilt after it", async () => {
     const s = setup();
     let reads = 0;
-    const content = { publicRoute: async () => { reads++; return { route: {}, spots: [], points: [] }; } };
-    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(rallyPublicRoutes(() => ({ rallyAdmin: createRallyAdminService({ store: s.mem.store }), content: content as never }), 60_000));
+    const store = { ...s.mem.store, publicRallies: async () => (reads++, s.mem.store.publicRallies()) };
+    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(rallyPublicRoutes(() => ({ rallyAdmin: createRallyAdminService({ store }), content: {} as never }), 60_000));
     for (let i = 0; i < 3; i++) await app.handle(new Request("http://localhost/api/v1/rallies"));
-    expect(reads).toBe(1); // one course rally, read once for three requests
+    expect(reads).toBe(1); // the list is built once for three requests
   });
 });
 
@@ -125,10 +125,10 @@ describe("listing and reading", () => {
   test("the answer is kept for the time given, and rebuilt after it", async () => {
     const s = setup();
     let reads = 0;
-    const content = { publicRoute: async () => { reads++; return { route: {}, spots: [], points: [] }; } };
-    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(rallyPublicRoutes(() => ({ rallyAdmin: createRallyAdminService({ store: s.mem.store }), content: content as never }), 60_000));
+    const store = { ...s.mem.store, publicRallies: async () => (reads++, s.mem.store.publicRallies()) };
+    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(rallyPublicRoutes(() => ({ rallyAdmin: createRallyAdminService({ store }), content: {} as never }), 60_000));
     for (let i = 0; i < 3; i++) await app.handle(new Request("http://localhost/api/v1/rallies"));
-    expect(reads).toBe(1); // one course rally, read once for three requests
+    expect(reads).toBe(1); // the list is built once for three requests
   });
 });
 
@@ -238,10 +238,10 @@ describe("creating, changing, ordering and deleting", () => {
   test("the answer is kept for the time given, and rebuilt after it", async () => {
     const s = setup();
     let reads = 0;
-    const content = { publicRoute: async () => { reads++; return { route: {}, spots: [], points: [] }; } };
-    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(rallyPublicRoutes(() => ({ rallyAdmin: createRallyAdminService({ store: s.mem.store }), content: content as never }), 60_000));
+    const store = { ...s.mem.store, publicRallies: async () => (reads++, s.mem.store.publicRallies()) };
+    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(rallyPublicRoutes(() => ({ rallyAdmin: createRallyAdminService({ store }), content: {} as never }), 60_000));
     for (let i = 0; i < 3; i++) await app.handle(new Request("http://localhost/api/v1/rallies"));
-    expect(reads).toBe(1); // one course rally, read once for three requests
+    expect(reads).toBe(1); // the list is built once for three requests
   });
 });
 
@@ -295,10 +295,10 @@ describe("what is in a rally", () => {
   test("the answer is kept for the time given, and rebuilt after it", async () => {
     const s = setup();
     let reads = 0;
-    const content = { publicRoute: async () => { reads++; return { route: {}, spots: [], points: [] }; } };
-    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(rallyPublicRoutes(() => ({ rallyAdmin: createRallyAdminService({ store: s.mem.store }), content: content as never }), 60_000));
+    const store = { ...s.mem.store, publicRallies: async () => (reads++, s.mem.store.publicRallies()) };
+    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(rallyPublicRoutes(() => ({ rallyAdmin: createRallyAdminService({ store }), content: {} as never }), 60_000));
     for (let i = 0; i < 3; i++) await app.handle(new Request("http://localhost/api/v1/rallies"));
-    expect(reads).toBe(1); // one course rally, read once for three requests
+    expect(reads).toBe(1); // the list is built once for three requests
   });
 });
 
@@ -356,8 +356,8 @@ describe("what visitors read about rallies", () => {
   test("only published rallies, in order; a rally of places lists its published places, a rally of courses its courses with their stamp places", async () => {
     const s = setup();
     s.mem.addRally({ kind: "places", nameJa: "下書き", sortOrder: 3, published: false }, [A1]);
-    const content = { publicRoute: async (id: string) => (id === ROUTE_A ? { route: {}, spots: [{ id: A1, status: "closed" }], points: [] } : null) };
-    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(rallyPublicRoutes(() => ({ rallyAdmin: createRallyAdminService({ store: s.mem.store }), content: content as never })));
+    s.mem.addPlace({ spotId: A1, routeId: ROUTE_A, nameJa: "A一", stampable: true, sortOrder: 1, published: true, status: "closed" });
+    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(rallyPublicRoutes(() => ({ rallyAdmin: createRallyAdminService({ store: s.mem.store }), content: {} as never })));
     const res = await app.handle(new Request("http://localhost/api/v1/rallies"));
     expect(res.status).toBe(200);
     const body = (await res.json()) as Json;
@@ -370,10 +370,10 @@ describe("what visitors read about rallies", () => {
   test("the answer is kept for the time given, and rebuilt after it", async () => {
     const s = setup();
     let reads = 0;
-    const content = { publicRoute: async () => { reads++; return { route: {}, spots: [], points: [] }; } };
-    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(rallyPublicRoutes(() => ({ rallyAdmin: createRallyAdminService({ store: s.mem.store }), content: content as never }), 60_000));
+    const store = { ...s.mem.store, publicRallies: async () => (reads++, s.mem.store.publicRallies()) };
+    const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(rallyPublicRoutes(() => ({ rallyAdmin: createRallyAdminService({ store }), content: {} as never }), 60_000));
     for (let i = 0; i < 3; i++) await app.handle(new Request("http://localhost/api/v1/rallies"));
-    expect(reads).toBe(1); // one course rally, read once for three requests
+    expect(reads).toBe(1); // the list is built once for three requests
   });
 });
 

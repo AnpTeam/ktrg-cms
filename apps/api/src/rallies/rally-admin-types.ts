@@ -27,6 +27,17 @@ export interface RallyRow {
   updatedAt: Date;
 }
 
+/** One published rally as visitors see it in the list: its published stamp places, or its courses with each course's published stamp places and their status. */
+export interface PublicRally {
+  id: string;
+  kind: RallyKind;
+  nameJa: string;
+  nameEn: string | null;
+  sortOrder: number;
+  places: { id: string; routeId: string; nameJa: string; nameEn: string | null }[];
+  courses: { routeId: string; nameJa: string; nameEn: string | null; spots: { id: string; status: "open" | "caution" | "closed" }[] }[];
+}
+
 /** A stamp place that is, or could be, in a rally of places. */
 export interface RallyPlace {
   spotId: string;
@@ -65,6 +76,8 @@ export interface RallyFields {
 export interface RallyAdminStore {
   listRallies(): Promise<RallyRow[]>;
   getRally(id: string): Promise<RallyDetail | null>;
+  /** Every published rally for the visitors' list, in order, built in a few queries (not a round of queries for each rally and course). */
+  publicRallies(): Promise<PublicRally[]>;
   /** Every stamp place, in trail order: what a rally of places may hold. */
   candidatePlaces(): Promise<RallyPlace[]>;
   /** Every course, in trail order: what a rally of courses may hold. */

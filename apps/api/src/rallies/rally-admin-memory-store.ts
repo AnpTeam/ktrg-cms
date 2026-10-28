@@ -1,11 +1,13 @@
 import type { AuditWriter } from "../audit/audit-log";
 import { mergeTranslations } from "../db/translations";
-import type { RallyAdminStore, RallyCourse, RallyPlace, RallyRow } from "./rally-admin-types";
+import type { PublicRally, RallyAdminStore, RallyCourse, RallyPlace, RallyRow } from "./rally-admin-types";
 
 /** A place the memory store knows: a waypoint with a stamp (stampable) or without. */
 export interface MemoryPlace extends RallyPlace {
   stampable: boolean;
   sortOrder: number;
+  /** Shown to visitors with the rally's courses; open when not given. */
+  status?: "open" | "caution" | "closed";
 }
 
 /**
@@ -47,6 +49,24 @@ export function createMemoryRallyAdminStore(audit: AuditWriter, opts: { now?: ()
   const store: RallyAdminStore = {
     async listRallies() {
       return [...rallies.values()].sort((a, b) => a.sortOrder - b.sortOrder).map((r) => row(r.id));
+    },
+    async publicRallies() {
+      return [...rallies.values()]
+        .filter((r) => r.published)
+        .sort((a, b) => a.sortOrder - b.sortOrder)
+        .map((r): PublicRally => {
+          const base = { id: r.id, kind: r.kind, nameJa: r.nameJa, nameEn: r.nameEn, sortOrder: r.sortOrder };
+          const ids = members.get(r.id) ?? [];
+          if (r.kind === "places") {
+            const named = ids.flatMap((s) => (places.get(s)?.published ? [places.get(s)!] : []));
+            return { ...base, places: named.map((p) => ({ id: p.spotId, routeId: p.routeId, nameJa: p.nameJa, nameEn: p.nameEn })), courses: [] };
+          }
+          const courses = ids.map((c) => {
+            const stamps = [...places.values()].filter((p) => p.routeId === c && p.stampable && p.published).sort((a, b) => a.sortOrder - b.sortOrder);
+            return { routeId: c, nameJa: routes.get(c)!.nameJa, nameEn: routes.get(c)!.nameEn, spots: stamps.map((p) => ({ id: p.spotId, status: p.status ?? ("open" as const) })) };
+          });
+          return { ...base, places: [], courses };
+        });
     },
     async getRally(id) {
       const r = rallies.get(id);
