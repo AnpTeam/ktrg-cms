@@ -636,6 +636,14 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   {problemOf("video_link") ? <p role="alert" className="text-base font-bold text-danger">{t`YouTube か Vimeo、またはアップロードした動画の、https:// で始まるリンクにしてください。`}</p> : null}
                 </Section>
 
+                <Section title={t`英語版の動画`}>
+                  <Field label={t`英語版の動画のリンク（YouTube、またはアップロードした動画）`} htmlFor="route-video-en" hint={t`英語でサイトを見ている人に、日本語の動画のかわりに表示されます。空にすると、日本語の動画がそのまま表示されます。字幕は、日本語の動画にだけ付けられます。`}>
+                    <TextInput id="route-video-en" value={draft.videoUrlEn} onChange={text("videoUrlEn")} maxLength={500} invalid={problemOf("video_link_en")} />
+                  </Field>
+                  <VideoUpload onUploaded={text("videoUrlEn")} />
+                  {problemOf("video_link_en") ? <p role="alert" className="text-base font-bold text-danger">{t`YouTube、またはアップロードした動画の、https:// で始まるリンクにしてください。`}</p> : null}
+                </Section>
+
                 {draft.id ? <RouteHistory routeId={draft.id} locale={locale} /> : null}
               </>
             ) : null}

@@ -160,7 +160,7 @@ export function PlaceList({
         ))}
       </ul>
       <div className="mt-2">
-        <Pager page={here} pages={pages} onPage={setPage} />
+        <Pager page={here} pages={pages} onPage={setPage} hideWhenSingle />
       </div>
     </section>
   );

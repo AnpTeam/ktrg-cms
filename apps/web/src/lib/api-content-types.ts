@@ -26,6 +26,8 @@ export interface PublicRoute {
   videoUpdatedAt?: string | null;
   /** The video has subtitles beside it. */
   videoSubtitles?: boolean;
+  /** The English-language video, shown instead of `videoUrl` on the English site. */
+  videoUrlEn?: string | null;
   /** When the route was last saved (ISO). */
   updatedAt?: string;
   historyJa: string | null;

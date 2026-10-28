@@ -95,6 +95,8 @@ export interface RouteDraft {
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   videoUrl: string;
+  /** The English video's link (empty: the English site shows the Japanese video). */
+  videoUrlEn: string;
   /** Subtitles were uploaded for the video. */
   videoSubtitles: boolean;
   /** The whole line: the legs joined in order. Only a track imported before there are two stops to cut it at is held here alone. */
@@ -110,7 +112,7 @@ export const emptyDraft = (): RouteDraft => ({
   id: null, updatedAt: null, nameJa: "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
   accessJa: "", accessEn: "", translations: {}, photoUrl: "", photoCredit: "", sourceJa: "", sourceEn: "", prefecture: null, walkStyle: null, municipality: "",
   distanceKm: null, distanceManual: false, elevationGainM: null, climbManual: false, expectedTimeMin: null, timeManual: false,
-  difficulty: "", nameKana: "", accessPoints: [], physicalLevel: null, technicalLevel: null, videoUrl: "", videoSubtitles: false, line: [], legs: [], lineVerified: false, lineSource: "", places: [],
+  difficulty: "", nameKana: "", accessPoints: [], physicalLevel: null, technicalLevel: null, videoUrl: "", videoUrlEn: "", videoSubtitles: false, line: [], legs: [], lineVerified: false, lineSource: "", places: [],
 });
 
 const s = (v: string | null | undefined) => v ?? "";
@@ -163,7 +165,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
     expectedTimeMin: route.expectedTimeMin,
     // A saved time that is not what the distance and climb give was typed by hand.
     timeManual: route.expectedTimeMin !== null && route.expectedTimeMin !== estimateWalkMinutes(route.distanceKm, route.elevationGainM),
-    difficulty: s(route.difficulty), nameKana: s(route.nameKana), accessPoints: route.accessPoints ?? [], physicalLevel: route.physicalLevel, technicalLevel: route.technicalLevel, videoUrl: s(route.videoUrl), videoSubtitles: route.videoSubtitles === true,
+    difficulty: s(route.difficulty), nameKana: s(route.nameKana), accessPoints: route.accessPoints ?? [], physicalLevel: route.physicalLevel, technicalLevel: route.technicalLevel, videoUrl: s(route.videoUrl), videoUrlEn: s(route.videoUrlEn), videoSubtitles: route.videoSubtitles === true,
     line: legs.length > 0 ? joinLegs(pathStops(places), legs).line : line, legs, lineVerified: route.lineVerified, lineSource: s(route.lineSource),
     places,
   };
@@ -208,6 +210,7 @@ export type TextField =
   | "difficulty"
   | "nameKana"
   | "videoUrl"
+  | "videoUrlEn"
   | "lineSource";
 
 export type DraftAction =
@@ -542,6 +545,7 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
     line: d.line.length >= 2 ? d.line.map(([lng, lat]) => ({ lat, lng })) : null,
     sideLines: d.legs.filter((l) => l.side).map((l) => ({ spotId: l.to, line: l.points.map(([lng, lat]) => ({ lat, lng })) })),
     videoUrl: nz(d.videoUrl),
+    videoUrlEn: nz(d.videoUrlEn),
     videoSubtitles: d.videoSubtitles,
     photoUrl: nz(d.photoUrl),
     photoCredit: nz(d.photoCredit),

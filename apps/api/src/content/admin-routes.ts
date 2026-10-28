@@ -105,6 +105,7 @@ const routeProps = {
   lineSource: nullable(t.String({ maxLength: 500 })),
   videoUrl: nullable(t.String({ maxLength: 500 })),
   videoSubtitles: t.Boolean(),
+  videoUrlEn: nullable(t.String({ maxLength: 500 })),
   historyJa: nullable(t.String({ maxLength: 20000 })),
   historyEn: nullable(t.String({ maxLength: 20000 })),
   accessJa: nullable(t.String({ maxLength: 20000 })),

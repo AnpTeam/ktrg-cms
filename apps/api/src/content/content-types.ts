@@ -41,6 +41,8 @@ export interface RouteRow {
   videoUpdatedAt: Date | null;
   /** Subtitles were uploaded for this video (they sit beside it as a .vtt). */
   videoSubtitles: boolean;
+  /** The English video, shown in place of `videoUrl` on the English site; null for none. */
+  videoUrlEn: string | null;
   historyJa: string | null;
   historyEn: string | null;
   accessJa: string | null;
@@ -131,6 +133,7 @@ export interface RouteFields {
   lineSource: string | null;
   videoUrl: string | null;
   videoSubtitles: boolean;
+  videoUrlEn: string | null;
   historyJa: string | null;
   historyEn: string | null;
   accessJa: string | null;

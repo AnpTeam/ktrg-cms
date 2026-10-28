@@ -75,6 +75,7 @@ export interface PublicRoute {
   videoUrl: string | null;
   videoUpdatedAt: Date | null;
   videoSubtitles: boolean;
+  videoUrlEn: string | null;
   updatedAt: Date;
   historyJa: string | null;
   historyEn: string | null;
@@ -137,6 +138,7 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     videoUrl: r.videoUrl,
     videoUpdatedAt: r.videoUpdatedAt,
     videoSubtitles: r.videoSubtitles,
+    videoUrlEn: r.videoUrlEn,
     updatedAt: r.updatedAt,
     historyJa: r.historyJa,
     historyEn: r.historyEn,
@@ -244,6 +246,11 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       out.videoUrl = v;
     }
     if (input.videoSubtitles !== undefined) out.videoSubtitles = input.videoSubtitles;
+    if (input.videoUrlEn !== undefined) {
+      const v = text(input.videoUrlEn);
+      if (v && !isAllowedVideoUrl(v, photoHosts)) return bad("invalid_video_url");
+      out.videoUrlEn = v;
+    }
     if (input.photoUrl !== undefined) {
       const v = text(input.photoUrl);
       if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");

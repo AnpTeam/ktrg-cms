@@ -26,7 +26,7 @@ type TextRow<F extends string> = { locale: ContentLocale } & { [K in F]: string 
 export type Texts<F extends string> = { locale: ContentLocale; values: Partial<Record<F, string | null>> }[];
 
 /** Which text fields each owner has. */
-export const ROUTE_TEXT = ["name", "description", "history", "access", "source"] as const;
+export const ROUTE_TEXT = ["name", "description", "history", "access", "source", "videoUrl"] as const;
 export const SPOT_TEXT = ["name", "description", "history", "statusNote", "source"] as const;
 export const RALLY_TEXT = ["name"] as const;
 export const NOTICE_TEXT = ["title", "body", "sourceName"] as const;

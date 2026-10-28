@@ -108,6 +108,20 @@ describe("routes", () => {
     expect((await svc.updateRoute(ADMIN, r.id, r.updatedAt, { videoUrl: "https://youtu.be/dQw4w9WgXcQ" })).ok).toBe(true);
   });
 
+  test("the English video is checked like the Japanese one, saved separately, and can be removed", async () => {
+    const r = await route();
+    for (const url of ["https://example.com/v", "http://youtu.be/dQw4w9WgXcQ"]) {
+      expect(await svc.updateRoute(ADMIN, r.id, r.updatedAt, { videoUrlEn: url })).toEqual({ ok: false, reason: "invalid_video_url" });
+    }
+    const jp = await svc.updateRoute(ADMIN, r.id, r.updatedAt, { videoUrl: "https://youtu.be/dQw4w9WgXcQ" });
+    if (!jp.ok) throw new Error("expected the Japanese video to save");
+    const en = await svc.updateRoute(ADMIN, r.id, jp.value.updatedAt, { videoUrlEn: "https://youtu.be/abcdefghijk" });
+    expect(en.ok && [en.value.videoUrl, en.value.videoUrlEn]).toEqual(["https://youtu.be/dQw4w9WgXcQ", "https://youtu.be/abcdefghijk"]);
+    if (!en.ok) throw new Error("expected the English video to save");
+    const gone = await svc.updateRoute(ADMIN, r.id, en.value.updatedAt, { videoUrlEn: null });
+    expect(gone.ok && [gone.value.videoUrl, gone.value.videoUrlEn]).toEqual(["https://youtu.be/dQw4w9WgXcQ", null]);
+  });
+
   test("with PHOTO_HOSTS set, an uploaded video must be on one of those hosts", async () => {
     const limited = createContentService({ store: mem.store, photoHosts: ["photos.example.com"] });
     const r = await route();

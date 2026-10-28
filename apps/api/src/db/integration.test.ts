@@ -881,6 +881,19 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       await body(createDrizzleContentStore(tx as unknown as typeof db), u!.id);
     }
 
+    test("the English video is kept in the route's English translation row, apart from the Japanese video, and can be cleared", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const [first] = await store.listRoutes();
+          const a = (await store.updateRoute(actor, first!.id, first!.updatedAt, { videoUrl: "https://youtu.be/dQw4w9WgXcQ", videoUrlEn: "https://youtu.be/abcdefghijk" })) as { updatedAt: Date };
+          expect(a).toMatchObject({ videoUrl: "https://youtu.be/dQw4w9WgXcQ", videoUrlEn: "https://youtu.be/abcdefghijk" });
+          expect((await store.getRoute(first!.id))?.route).toMatchObject({ videoUrl: "https://youtu.be/dQw4w9WgXcQ", videoUrlEn: "https://youtu.be/abcdefghijk" });
+          const cleared = await store.updateRoute(actor, first!.id, a.updatedAt, { videoUrlEn: null });
+          expect(cleared).toMatchObject({ videoUrl: "https://youtu.be/dQw4w9WgXcQ", videoUrlEn: null });
+        });
+      });
+    });
+
     test("a save with the loaded updatedAt works once; the same stale value is a conflict (microseconds do not break it)", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {
