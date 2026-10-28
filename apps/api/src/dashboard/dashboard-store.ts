@@ -9,9 +9,9 @@ export function createDrizzleDashboardStore(db: Db): DashboardStore {
   const jst = (column: typeof stamps.createdAt | typeof users.createdAt) => sql<string>`to_char(timezone('Asia/Tokyo', ${column}), 'YYYY-MM-DD')`;
   return {
     async totals() {
-      const [s, p, u, c, f] = await Promise.all([
-        db.select({ n: count() }).from(stamps).where(liveStamps),
-        db.select({ n: countDistinct(stamps.userId) }).from(stamps).where(liveStamps),
+      // Two at a time: see the note in dashboard.ts about the pool.
+      const [s, p] = await Promise.all([db.select({ n: count() }).from(stamps).where(liveStamps), db.select({ n: countDistinct(stamps.userId) }).from(stamps).where(liveStamps)]);
+      const [u, c, f] = await Promise.all([
         db.select({ n: count() }).from(users),
         db.select({ n: count() }).from(rallyCompletions),
         db.select({ n: count() }).from(stamps).where(and(liveStamps, eq(stamps.flagged, true))),
