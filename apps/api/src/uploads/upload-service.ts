@@ -146,8 +146,11 @@ export function createUploadService(deps: {
   publicBaseUrl?: string;
   log?: (message: string) => void;
   now?: () => number;
+  /** How a stored file is read back (tests give their own). */
+  fetcher?: typeof fetch;
 }) {
   const log = deps.log ?? console.error;
+  const fetcher = deps.fetcher ?? fetch;
   const now = deps.now ?? Date.now;
   // The library list is kept for a minute (and dropped after an upload): opening it reads the bucket, which costs time and money.
   let cached: { at: number; photos: LibraryPhoto[] } | null = null;
@@ -195,6 +198,25 @@ export function createUploadService(deps: {
       } catch (err) {
         log(`signing a subtitle upload failed: ${err instanceof Error ? err.message : String(err)}`);
         return { ok: false, reason: "uploads_unavailable" };
+      }
+    },
+    /**
+     * The subtitles (WebVTT text) that sit beside one of our videos, read from the bucket here so the page can load them from its
+     * own address: a browser fetches a subtitle file from another site only with CORS set up on both sides, and the video would
+     * then depend on it too. null when the address is not one of our videos, there are no subtitles, or the file is not small text.
+     */
+    async readSubtitles(videoUrl: string): Promise<string | null> {
+      if (!deps.publicBaseUrl) return null;
+      const key = subtitleKeyFor(videoUrl, deps.publicBaseUrl);
+      if (!key) return null;
+      try {
+        const res = await fetcher(publicUrl(deps.publicBaseUrl, key), { signal: AbortSignal.timeout(5000) });
+        if (!res.ok) return null;
+        const text = await res.text();
+        return text.length > 0 && text.length <= MAX_SUBTITLE_BYTES && text.trimStart().startsWith("WEBVTT") ? text : null;
+      } catch (err) {
+        log(`reading subtitles failed: ${err instanceof Error ? err.message : String(err)}`);
+        return null;
       }
     },
     async uploadPhoto(file: Blob): Promise<UploadResult> {

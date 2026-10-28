@@ -48,9 +48,10 @@ describe("parseVideoFile", () => {
 
 describe("subtitle address", () => {
   const video = { src: "https://pub.example.dev/videos/walk-ab12.mp4" };
-  test("sits beside the video; a version is added so replaced subtitles are fetched again", () => {
-    expect(subtitleUrl(video)).toBe("https://pub.example.dev/videos/walk-ab12.vtt");
-    expect(subtitleUrl(video, "2026-10-28T02:00:00.000Z")).toBe("https://pub.example.dev/videos/walk-ab12.vtt?v=2026-10-28T02%3A00%3A00.000Z");
-    expect(subtitleUrl(video, null)).toBe("https://pub.example.dev/videos/walk-ab12.vtt");
+  test("is the site's own address for the video's subtitles; a version is added so replaced subtitles are fetched again", () => {
+    const own = "/api/v1/subtitles?video=" + encodeURIComponent(video.src);
+    expect(subtitleUrl(video)).toBe(own);
+    expect(subtitleUrl(video, null)).toBe(own);
+    expect(subtitleUrl(video, "2026-10-28T02:00:00.000Z")).toBe(own + "&v=2026-10-28T02%3A00%3A00.000Z");
   });
 });

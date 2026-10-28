@@ -155,3 +155,32 @@ describe("subtitles", () => {
     expect(await service.createSubtitleUpload({ videoUrl: `${BASE}/videos/a-abc123.mp4`, size: MAX_SUBTITLE_BYTES + 1 })).toEqual({ ok: false, reason: "invalid_file" });
   });
 });
+
+describe("readSubtitles", () => {
+  const VTT = ["WEBVTT", "", "1", "00:00:00.000 --> 00:00:02.000", "Hello", ""].join("\n");
+  const make = (fetcher: typeof fetch) => createUploadService({ storage: createMemoryStorage().storage, publicBaseUrl: BASE, log: () => {}, fetcher });
+  const answer = (body: string, status = 200) => (async () => new Response(body, { status })) as unknown as typeof fetch;
+
+  test("reads the .vtt beside one of our videos", async () => {
+    const asked: string[] = [];
+    const service = make((async (url: string) => (asked.push(url), new Response(VTT))) as unknown as typeof fetch);
+    expect(await service.readSubtitles(`${BASE}/videos/walk-ab12.mp4`)).toBe(VTT);
+    expect(asked).toEqual([`${BASE}/videos/walk-ab12.vtt`]);
+  });
+
+  test("anything that is not one of our videos is refused without reading anything", async () => {
+    const asked: string[] = [];
+    const service = make((async (url: string) => (asked.push(url), new Response(VTT))) as unknown as typeof fetch);
+    for (const url of ["https://evil.example/videos/a.mp4", `${BASE}/photos/a.jpg`, `${BASE}/videos/../secret.mp4`, `${BASE}.evil.example/videos/a.mp4`, "not a url"]) {
+      expect(await service.readSubtitles(url)).toBeNull();
+    }
+    expect(asked).toEqual([]);
+  });
+
+  test("a missing file, a failing storage and text that is not WebVTT give nothing", async () => {
+    expect(await make(answer("", 404)).readSubtitles(`${BASE}/videos/a.mp4`)).toBeNull();
+    expect(await make(answer("<html>nope</html>")).readSubtitles(`${BASE}/videos/a.mp4`)).toBeNull();
+    expect(await make((async () => { throw new Error("down"); }) as unknown as typeof fetch).readSubtitles(`${BASE}/videos/a.mp4`)).toBeNull();
+    expect(await make(answer("WEBVTT" + "x".repeat(MAX_SUBTITLE_BYTES))).readSubtitles(`${BASE}/videos/a.mp4`)).toBeNull();
+  });
+});

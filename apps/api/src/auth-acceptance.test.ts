@@ -364,6 +364,7 @@ describe("user B cannot touch user A", () => {
     "GET /api/v1/pages/:key",
     // One page view, counted by approximate region only (see visits/visits.test.ts).
     "POST /api/v1/visits",
+    "GET /api/v1/subtitles",
     "POST /api/v1/auth/otp/request",
     "POST /api/v1/auth/otp/verify",
     "POST /api/v1/auth/logout",
