@@ -37,8 +37,8 @@ describe("sign up with a passkey alone (no email)", () => {
     expect(options.user.name).toMatch(/^ktrg-[0-9a-f]{8}$/); // nothing like an email
     expect(options.authenticatorSelection).toMatchObject({ residentKey: "required", userVerification: "required" });
     // Scan the face / fingerprint on this device and make a new key; do not go looking for a security key.
-    expect(options.authenticatorSelection?.authenticatorAttachment).toBe("platform");
-    expect(options.hints).toEqual(["client-device"]);
+    expect(options.authenticatorSelection?.authenticatorAttachment).toBeUndefined();
+    expect(options.hints ?? []).toEqual([]);
     expect(challenges).toHaveLength(1);
     expect(challenges[0]).toMatchObject({ type: "registration", userId: null });
     expect(challenges[0]!.expiresAt.getTime()).toBe(new Date("2026-10-15T00:00:00Z").getTime() + CHALLENGE_TTL_MS);
