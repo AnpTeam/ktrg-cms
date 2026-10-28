@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { Pager } from "@/components/Pager";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode, type ErrorKey } from "@/lib/api-error";
+import { pageCount, pageSlice } from "@/lib/pager";
 import { fileName, filterPhotos, formatSize, sortPhotos, type LibraryPhoto, type SortDir, type SortKey } from "@/lib/admin/photo-library";
 import { inputClass } from "./fields";
 
@@ -68,7 +70,7 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
   const [view, setView] = useState<"table" | "tiles">("table");
   const [selected, setSelected] = useState<string | null>(null);
   // The photos are full-size files, so only a page of them is drawn at a time (a long list would pull a lot of data).
-  const [shown, setShown] = useState(PAGE);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const dialog = ref.current;
@@ -85,6 +87,8 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
   const day = new Intl.DateTimeFormat(i18n.locale === "en" ? "en-GB" : "ja-JP", { dateStyle: "medium" });
   const all = loaded.state === "ready" ? loaded.photos : [];
   const rows = sortPhotos(filterPhotos(all, query), sort.key, sort.dir);
+  const pages = pageCount(rows.length, PAGE);
+  const here = Math.min(page, pages); // a search or a deletion can leave fewer pages than the one we were on
   const chosen = all.find((p) => p.key === selected) ?? null;
 
   const heading = (key: SortKey, label: string) => (
@@ -125,7 +129,7 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
           </button>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <input type="search" value={query} onChange={(e) => (setQuery(e.target.value), setShown(PAGE))} placeholder={t`名前でさがす`} aria-label={t`名前でさがす`} className={`${inputClass} min-w-48 flex-1`} />
+          <input type="search" value={query} onChange={(e) => (setQuery(e.target.value), setPage(1))} placeholder={t`名前でさがす`} aria-label={t`名前でさがす`} className={`${inputClass} min-w-48 flex-1`} />
           <label className="flex items-center gap-2 text-base font-bold">
             {t`並べ方`}
             <select
@@ -172,7 +176,7 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
               </tr>
             </thead>
             <tbody>
-              {rows.slice(0, shown).map((p) => (
+              {pageSlice(rows, here, PAGE).map((p) => (
                 <tr
                   key={p.key}
                   aria-selected={selected === p.key}
@@ -195,7 +199,7 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
         ) : null}
         {rows.length > 0 && view === "tiles" ? (
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-            {rows.slice(0, shown).map((p) => (
+            {pageSlice(rows, here, PAGE).map((p) => (
               <li key={p.key}>
                 <button
                   type="button"
@@ -211,11 +215,9 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
             ))}
           </ul>
         ) : null}
-        {rows.length > shown ? (
-          <button type="button" onClick={() => setShown((n) => n + PAGE)} className="tap-target mt-4 rounded-xl border-2 border-line px-5 text-lg font-bold">
-            {t`もっと見る`}
-          </button>
-        ) : null}
+        <div className="mt-4">
+          <Pager page={here} pages={pages} onPage={setPage} />
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line p-4">

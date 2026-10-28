@@ -153,6 +153,20 @@ describe("an admin manages notices", () => {
     expect((await s.call("GET", "/admin/lists/notices?cursor=nonsense", { cookie })).status).toBe(422);
   });
 
+  test("?page=N gives numbered pages with their count; a bad page number is refused", async () => {
+    const s = setup();
+    const cookie = await s.login(admin);
+    for (let i = 0; i < 53; i++) await s.call("POST", "/admin/lists/notices", { cookie, body: notice({ titleJa: `n${i}` }) });
+    const one = await s.call("GET", "/admin/lists/notices?page=1", { cookie });
+    expect(one.body).toMatchObject({ page: 1, pages: 2, total: 53, next: null });
+    expect(one.body.items).toHaveLength(50);
+    const two = await s.call("GET", "/admin/lists/notices?page=2", { cookie });
+    expect(two.body.items.map((n: Json) => n.titleJa)).toEqual(["n2", "n1", "n0"]);
+    expect((await s.call("GET", "/admin/lists/notices?page=9", { cookie })).body.page).toBe(2);
+    expect((await s.call("GET", "/admin/lists/notices?page=0", { cookie })).status).toBe(422);
+    expect((await s.call("GET", "/admin/lists/notices?page=abc", { cookie })).status).toBe(422);
+  });
+
   test("?q= searches the text fields and ?filter=field:value narrows by a field", async () => {
     const s = setup();
     const cookie = await s.login(admin);

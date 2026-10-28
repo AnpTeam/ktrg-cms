@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { Pager } from "@/components/Pager";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { Chip } from "./Chip";
 import { FilterGroup, SortHeader } from "./list-parts";
@@ -15,12 +16,15 @@ import { nextSort, sortItems, type Sort } from "@/lib/admin/lists/sort";
 
 // Any generic admin list, drawn from its description (GET /admin/lists) like the rally list: a button for a new row,
 // then a table (a card per row on a phone) with each row's name (a link to its form) and one column per `inList` field.
-// Newest first; "もっと見る" loads the next 50.
+// Newest first, 50 to a page; the pager goes to the next or previous page or to a page typed in.
 export function AdminListTable({ meta: config, initial, locale, choices }: { meta: ListMeta; initial: ListPage; locale: string; choices: Record<string, { id: string; name: string; detail?: string }[]> }) {
   const { t } = useLingui();
   const messages = useErrorMessages();
   const [items, setItems] = useState(initial.items);
-  const [next, setNext] = useState(initial.next);
+  const [page, setPage] = useState(initial.page ?? 1);
+  const [pages, setPages] = useState(initial.pages ?? 1);
+  const [total, setTotal] = useState(initial.total ?? initial.items.length);
+  const [capped, setCapped] = useState(initial.capped ?? false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // The rows ticked for deleting (only a list that can delete shows the boxes).
@@ -56,12 +60,36 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
     setError(null);
     setTicked(new Set()); // what was ticked may no longer be on the page
     const query = queryOf(words, choices);
-    const res = await listRequest<ListPage>("GET", query ? `${config.key}?${query}` : config.key);
+    const res = await listRequest<ListPage>("GET", `${config.key}?${query ? `${query}&` : ""}page=1`);
     setBusy(false);
     if (!res.ok) return setError(messages[res.key]);
-    setItems(res.data.items);
-    setNext(res.data.next);
+    show(res.data);
     setApplied(query);
+  }
+
+  /** Put a page the API sent on the screen. */
+  function show(data: ListPage) {
+    setItems(data.items);
+    setPage(data.page ?? 1);
+    setPages(data.pages ?? 1);
+    setTotal(data.total ?? data.items.length);
+    setCapped(data.capped ?? false);
+  }
+
+  /** Go to a page of the list as it is narrowed now. Returns false when it could not be read. */
+  async function goTo(n: number): Promise<boolean> {
+    if (busy) return false;
+    setBusy(true);
+    setError(null);
+    setTicked(new Set());
+    const res = await listRequest<ListPage>("GET", `${config.key}?${applied ? `${applied}&` : ""}page=${n}`);
+    setBusy(false);
+    if (!res.ok) {
+      setError(messages[res.key]);
+      return false;
+    }
+    show(res.data);
+    return true;
   }
 
   /** Delete rows one by one; the ones that went are dropped from the page, and what could not be deleted is reported. */
@@ -80,20 +108,9 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
       else failure = messages[res.key];
     }
     setBusy(false);
-    setItems((now) => now.filter((i) => !gone.has(i.id)));
     setTicked(new Set());
+    if (gone.size > 0) await goTo(page); // the counts and the page change when rows go
     if (failure) setError(gone.size > 0 ? t`${gone.size}件を削除しました。残りは削除できませんでした：${failure}` : failure);
-  }
-
-  async function more() {
-    if (!next || busy) return;
-    setBusy(true);
-    setError(null);
-    const res = await listRequest<ListPage>("GET", `${config.key}?${applied ? `${applied}&` : ""}cursor=${encodeURIComponent(next)}`);
-    setBusy(false);
-    if (!res.ok) return setError(messages[res.key]);
-    setItems((now) => [...now, ...res.data.items]);
-    setNext(res.data.next);
   }
 
   const canDelete = config.ops.delete;
@@ -215,7 +232,7 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
       ) : null}
       {items.length > 0 ? (
         <p className="text-base font-bold text-muted" aria-live="polite">
-          {next ? t`${items.length}件（まだあります）` : t`${items.length}件`}
+          {capped ? t`先頭の${total}件を表示しています。` : t`${total}件`}
         </p>
       ) : null}
       {items.length === 0 ? (
@@ -339,11 +356,7 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
           </ul>
         </>
       )}
-      {next ? (
-        <button type="button" onClick={more} disabled={busy} className="tap-target w-fit rounded-xl border-2 border-line px-6 text-lg font-bold disabled:opacity-50">
-          {t`もっと見る`}
-        </button>
-      ) : null}
+      <Pager page={page} pages={pages} disabled={busy} onPage={(n) => void goTo(n)} />
     </div>
   );
 }

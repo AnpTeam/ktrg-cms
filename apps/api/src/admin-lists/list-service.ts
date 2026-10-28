@@ -52,6 +52,30 @@ export function createListReader<R extends ListRow>(deps: { store: ListReadStore
       const items = rows.slice(0, size);
       return { items, next: rows.length > size ? cursorText(items[items.length - 1]!) : null };
     },
+    /**
+     * Page number `n` (1 is the newest), with how many pages and rows there are. The rows are read from the start in
+     * batches, one query at a time, and counted as they are kept; a page past the end is the last one.
+     * shortcut: reads up to MAX_SCAN rows per request, so a table past that shows only its first MAX_SCAN rows (`capped`);
+     * give the stores a count query and an offset if one grows that big.
+     */
+    async page(n: number, narrow?: { filter: ListFilter | undefined; fields: readonly FieldUi[] }): Promise<{ items: R[]; page: number; pages: number; total: number; capped: boolean }> {
+      const filter = narrow && isFiltering(narrow.filter) ? narrow : null;
+      const kept: R[] = [];
+      let at: Cursor | null = null;
+      let scanned = 0;
+      let more = true;
+      while (more && scanned < MAX_SCAN) {
+        const rows: R[] = await store.list(at, SCAN_BATCH);
+        more = rows.length === SCAN_BATCH;
+        scanned += rows.length;
+        const last = rows[rows.length - 1];
+        if (last) at = { createdAt: last.createdAt, id: last.id };
+        kept.push(...(filter ? rows.filter((r) => rowMatches(r as unknown as Record<string, unknown>, filter.fields, filter.filter!)) : rows));
+      }
+      const pages = Math.max(1, Math.ceil(kept.length / size));
+      const page = Math.min(Math.max(1, Math.floor(n)), pages);
+      return { items: kept.slice((page - 1) * size, page * size), page, pages, total: kept.length, capped: more };
+    },
     get: (id: string) => store.get(id),
   };
 }

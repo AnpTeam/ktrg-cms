@@ -53,6 +53,45 @@ describe("a filtered page", () => {
   });
 });
 
+describe("numbered pages", () => {
+  const audit = createMemoryAuditWriter();
+  const actions = { create: "banner.create", update: "banner.update", delete: "banner.delete" } as never;
+  const setup = async () => {
+    const mem = createMemoryListStore<{ titleJa: string; kind: string }>(audit.writer, actions);
+    for (let i = 0; i < 8; i++) await mem.store.create("11111111-1111-4111-8111-111111111111", { titleJa: `row ${i}`, kind: i % 2 === 0 ? "a" : "b" });
+    return createListReader({ store: mem.store, pageSize: 3 });
+  };
+  const kindField = [{ name: "kind", kind: "select", label: { ja: "", en: "" } } as FieldUi];
+
+  test("gives the page asked for, how many pages there are, and the same rows as paging by cursor", async () => {
+    const reader = await setup();
+    const one = await reader.page(1);
+    const two = await reader.page(2);
+    const three = await reader.page(3);
+    expect([one.items.length, two.items.length, three.items.length]).toEqual([3, 3, 2]);
+    expect(one).toMatchObject({ page: 1, pages: 3, total: 8, capped: false });
+    const byCursor = await reader.list(undefined);
+    expect(one.items.map((r) => r.id)).toEqual(byCursor.items.map((r) => r.id));
+    expect(new Set([...one.items, ...two.items, ...three.items].map((r) => r.id)).size).toBe(8);
+  });
+
+  test("a page past the end is the last one, and an empty list has one empty page", async () => {
+    const reader = await setup();
+    expect(await reader.page(99)).toMatchObject({ page: 3, pages: 3 });
+    expect(await reader.page(0)).toMatchObject({ page: 1 });
+    const empty = createListReader({ store: createMemoryListStore<{ titleJa: string }>(audit.writer, actions).store, pageSize: 3 });
+    expect(await empty.page(1)).toEqual({ items: [], page: 1, pages: 1, total: 0, capped: false });
+  });
+
+  test("counts only the rows that match the search and the filters", async () => {
+    const reader = await setup();
+    const narrow = { filter: { eq: { kind: "a" } }, fields: kindField };
+    const p = await reader.page(2, narrow);
+    expect(p).toMatchObject({ page: 2, pages: 2, total: 4 });
+    expect(p.items).toHaveLength(1);
+  });
+});
+
 describe("the after-save hook", () => {
   const actor = "11111111-1111-4111-8111-111111111111";
   const actions = { create: "banner.create", update: "banner.update", delete: "banner.delete" } as never;

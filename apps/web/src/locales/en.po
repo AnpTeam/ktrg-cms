@@ -89,8 +89,8 @@ msgid "{0}を消す"
 msgstr "Delete {0}"
 
 #. placeholder {0}: name(item)
-#: src/components/admin/AdminListTable.tsx:245
-#: src/components/admin/AdminListTable.tsx:302
+#: src/components/admin/AdminListTable.tsx:262
+#: src/components/admin/AdminListTable.tsx:319
 msgid "{0}を選ぶ"
 msgstr "Select {0}"
 
@@ -99,21 +99,14 @@ msgstr "Select {0}"
 msgid "{0}を開く"
 msgstr "Open {0}"
 
-#. placeholder {0}: items.length
 #. placeholder {0}: shown.length
-#: src/components/admin/AdminListTable.tsx:218
 #: src/components/admin/RallyList.tsx:96
 #: src/components/admin/RouteTable.tsx:134
 msgid "{0}件"
 msgstr "{0} items"
 
-#. placeholder {0}: items.length
-#: src/components/admin/AdminListTable.tsx:218
-msgid "{0}件（まだあります）"
-msgstr "{0} items (more to load)"
-
 #. placeholder {0}: gone.size
-#: src/components/admin/AdminListTable.tsx:85
+#: src/components/admin/AdminListTable.tsx:113
 msgid "{0}件を削除しました。残りは削除できませんでした：{failure}"
 msgstr "{0} deleted. The rest could not be deleted: {failure}"
 
@@ -329,7 +322,7 @@ msgstr "Move {text} down"
 msgid "{title}（管理）"
 msgstr "{title} (admin)"
 
-#: src/components/admin/AdminListTable.tsx:222
+#: src/components/admin/AdminListTable.tsx:239
 msgid "{title}はまだありません。"
 msgstr "No {title} yet."
 
@@ -346,6 +339,10 @@ msgstr "{title} could not be loaded. Please reload the page in a little while."
 #: src/components/landing/Landing.tsx:139
 msgid "{TOTAL_STAMPS}か所"
 msgstr "{TOTAL_STAMPS} places"
+
+#: src/components/admin/AdminListTable.tsx:235
+msgid "{total}件"
+msgstr "{total} items"
 
 #: src/components/navigation/NavigationHud.tsx:171
 msgid "{turnIn}先 {turnWord}"
@@ -378,7 +375,7 @@ msgid "「{0}」のスタンプを押しました！"
 msgstr "Stamped \"{0}\"!"
 
 #. placeholder {0}: name(one)
-#: src/components/admin/AdminListTable.tsx:71
+#: src/components/admin/AdminListTable.tsx:99
 msgid "「{0}」を削除します。元に戻せません。よろしいですか？"
 msgstr "Delete \"{0}\"? This cannot be undone."
 
@@ -741,11 +738,11 @@ msgstr "Visits"
 msgid "アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。"
 msgstr "Only photos (JPEG, PNG or WebP, up to 4 MB) and videos (MP4 or WebM, up to 200 MB) can be uploaded."
 
-#: src/components/admin/PhotoLibrary.tsx:41
+#: src/components/admin/PhotoLibrary.tsx:43
 msgid "アップロード済みの写真から選ぶ"
 msgstr "Choose from uploaded photos"
 
-#: src/components/admin/PhotoLibrary.tsx:121
+#: src/components/admin/PhotoLibrary.tsx:125
 msgid "アップロード済みの写真です。選んで「この写真を使う」を押すと、その写真のリンクが入ります。"
 msgstr "These are the photos already uploaded. Choose one and press \"Use this photo\" to fill in its link."
 
@@ -945,11 +942,11 @@ msgstr "The name has characters that cannot be used, or is too long (40 characte
 msgid "お名前は未設定です"
 msgstr "No name set"
 
-#: src/components/map/PlacesPanel.tsx:35
+#: src/components/map/PlacesPanel.tsx:37
 msgid "お土産店"
 msgstr "Souvenir shop"
 
-#: src/components/map/PlacesPanel.tsx:25
+#: src/components/map/PlacesPanel.tsx:27
 msgid "お店・食事"
 msgstr "Shops and food"
 
@@ -1017,7 +1014,7 @@ msgstr "Finding the way through the guide points…"
 msgid "かかる時間（分）"
 msgstr "Time taken (minutes)"
 
-#: src/components/map/PlacesPanel.tsx:37
+#: src/components/map/PlacesPanel.tsx:39
 msgid "カフェ・喫茶"
 msgstr "Cafe"
 
@@ -1192,7 +1189,7 @@ msgstr "This file could not be read. Choose a file (.xlsx) made from the templat
 msgid "このブラウザでは、スタンプが消えてしまうことがあります。"
 msgstr "Your stamps may be lost in this browser."
 
-#: src/components/admin/AdminListTable.tsx:207
+#: src/components/admin/AdminListTable.tsx:224
 msgid "このページをすべて選ぶ"
 msgstr "Select everything on this page"
 
@@ -1270,7 +1267,7 @@ msgstr "This route will be deleted and cannot be restored. Continue?"
 msgid "この内容で取り込む"
 msgstr "Import this"
 
-#: src/components/admin/PhotoLibrary.tsx:229
+#: src/components/admin/PhotoLibrary.tsx:231
 msgid "この写真を使う"
 msgstr "Use this photo"
 
@@ -1330,7 +1327,7 @@ msgid "この場所のページを開く"
 msgstr "Open this place's page"
 
 #: src/components/map/MapScreen.tsx:495
-#: src/components/map/PlacesPanel.tsx:253
+#: src/components/map/PlacesPanel.tsx:249
 #: src/components/map/StopCard.tsx:47
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
 msgstr "The position of this place is a draft and has not been checked yet."
@@ -1534,7 +1531,7 @@ msgstr "This is the only way to sign in to this account. If you remove it, you w
 msgid "コントラスト"
 msgstr "Contrast"
 
-#: src/components/map/PlacesPanel.tsx:38
+#: src/components/map/PlacesPanel.tsx:40
 msgid "コンビニ・商店"
 msgstr "Convenience store / local shop"
 
@@ -1558,11 +1555,11 @@ msgstr "Let's get started"
 msgid "さあ、歩きはじめましょう"
 msgstr "Let's start walking"
 
-#: src/components/admin/PhotoLibrary.tsx:171
+#: src/components/admin/PhotoLibrary.tsx:175
 msgid "サイズ"
 msgstr "Size"
 
-#: src/components/map/PlacesPanel.tsx:230
+#: src/components/map/PlacesPanel.tsx:226
 msgid "サイト"
 msgstr "Website"
 
@@ -1589,8 +1586,8 @@ msgstr "Site-wide settings (admin)"
 msgid "さがしています…"
 msgstr "Searching…"
 
-#: src/components/admin/AdminListTable.tsx:126
-#: src/components/admin/AdminListTable.tsx:126
+#: src/components/admin/AdminListTable.tsx:143
+#: src/components/admin/AdminListTable.tsx:143
 #: src/components/admin/DuplicateFinder.tsx:53
 msgid "さがす"
 msgstr "Search"
@@ -1797,7 +1794,7 @@ msgstr "stamped"
 msgid "すでに公開をやめた経由地があります（{names}）。「経由地」タブで確かめてください。"
 msgstr "These waypoints were already unpublished: {names}. Check them in the Waypoints tab."
 
-#: src/components/admin/AdminListTable.tsx:179
+#: src/components/admin/AdminListTable.tsx:196
 #: src/components/admin/DirectoryPicker.tsx:158
 #: src/components/admin/list-parts.tsx:29
 #: src/components/PrefectureFilter.tsx:36
@@ -1850,8 +1847,8 @@ msgstr "As is"
 #: src/components/admin/PlacePanel.tsx:53
 #: src/components/auth/AboutYou.tsx:31
 #: src/components/auth/AboutYou.tsx:143
-#: src/components/map/PlacesPanel.tsx:28
-#: src/components/map/PlacesPanel.tsx:46
+#: src/components/map/PlacesPanel.tsx:30
+#: src/components/map/PlacesPanel.tsx:48
 #: src/components/PointKindName.tsx:22
 msgid "その他"
 msgstr "Other"
@@ -1868,7 +1865,7 @@ msgstr "No place with that name was found."
 msgid "ダーク"
 msgstr "Dark"
 
-#: src/components/admin/PhotoLibrary.tsx:149
+#: src/components/admin/PhotoLibrary.tsx:153
 msgid "タイル"
 msgstr "Tiles"
 
@@ -1965,12 +1962,12 @@ msgid "テスト用のアカウントなどは、今すぐ消せます。元に�
 msgstr "A test account, for example, can be deleted at once. This cannot be undone: its stamps, comments and sign-in details are all removed."
 
 #: src/components/admin/PlacePanel.tsx:44
-#: src/components/map/PlacesPanel.tsx:39
+#: src/components/map/PlacesPanel.tsx:41
 #: src/components/PointKindName.tsx:13
 msgid "トイレ"
 msgstr "Toilet"
 
-#: src/components/map/PlacesPanel.tsx:24
+#: src/components/map/PlacesPanel.tsx:26
 msgid "トイレ・休憩"
 msgstr "Toilets and rest"
 
@@ -2086,7 +2083,7 @@ msgid "はずす"
 msgstr "Unlink"
 
 #: src/components/admin/PlacePanel.tsx:48
-#: src/components/map/PlacesPanel.tsx:44
+#: src/components/map/PlacesPanel.tsx:46
 #: src/components/PointKindName.tsx:17
 msgid "バス停"
 msgstr "Bus stop"
@@ -2241,6 +2238,7 @@ msgid "プロフィール写真"
 msgstr "Profile photo"
 
 #: src/app/(public)/blog/page.tsx:75
+#: src/components/Pager.tsx:19
 msgid "ページ"
 msgstr "Pages"
 
@@ -2273,6 +2271,10 @@ msgstr "Back to page text"
 #: src/components/settings/PrefsForm.tsx:120
 msgid "ページの漢字すべてに、読みがなをつけます。"
 msgstr "Adds a reading over every kanji on the page."
+
+#: src/components/Pager.tsx:24
+msgid "ページ番号"
+msgstr "Page number"
 
 #: src/components/admin/SiteSettingsForm.tsx:78
 msgid "ベースの地図"
@@ -2332,7 +2334,7 @@ msgstr "This passkey can't be removed because it is your only way to log in. Set
 msgid "ほかの乗り物"
 msgstr "Other vehicle"
 
-#: src/components/admin/AdminListTable.tsx:163
+#: src/components/admin/AdminListTable.tsx:180
 msgid "ほかの絞りこみ"
 msgstr "More filters"
 
@@ -2404,7 +2406,7 @@ msgstr "You haven't collected this stamp yet"
 msgid "まだ保存していません。"
 msgstr "Not saved yet."
 
-#: src/components/admin/PhotoLibrary.tsx:163
+#: src/components/admin/PhotoLibrary.tsx:167
 msgid "まだ写真がありません。"
 msgstr "There are no photos yet."
 
@@ -2432,8 +2434,8 @@ msgid "まわりにあるもの"
 msgstr "Around here"
 
 #: src/app/(public)/blog/[id]/page.tsx:186
-#: src/components/map/PlacesPanel.tsx:133
-#: src/components/map/PlacesPanel.tsx:134
+#: src/components/map/PlacesPanel.tsx:136
+#: src/components/map/PlacesPanel.tsx:137
 #: src/components/NearbyPlaces.tsx:22
 msgid "まわりの場所"
 msgstr "Places nearby"
@@ -2442,7 +2444,7 @@ msgstr "Places nearby"
 msgid "まわりの場所を最初から出す"
 msgstr "Show places nearby from the start"
 
-#: src/components/map/PlacesPanel.tsx:88
+#: src/components/map/PlacesPanel.tsx:90
 #: src/components/map/TrailMap.tsx:533
 msgid "まわりの場所を地図に出す"
 msgstr "Show places nearby on the map"
@@ -2539,15 +2541,6 @@ msgstr "Sent again. If it does not arrive, wait about a minute and try again."
 #: src/components/map/MapSheet.tsx:100
 msgid "もっと広げる"
 msgstr "Show more"
-
-#: src/components/admin/AdminListTable.tsx:344
-#: src/components/admin/PhotoLibrary.tsx:216
-msgid "もっと見る"
-msgstr "Show more"
-
-#: src/components/map/PlacesPanel.tsx:166
-msgid "もっと見る（あと{hidden}か所）"
-msgstr "Show more ({hidden} more)"
 
 #: src/components/RestoreStamps.tsx:34
 msgid "もどしています…"
@@ -2951,7 +2944,7 @@ msgstr "For a route that comes back here: adds an end point, not a stamp place, 
 msgid "一度に取り込める数をこえています（{writes} 回の保存が必要で、上限は {IMPORT_WRITE_LIMIT} 回です）。ファイルを分けて、時間をおいて取り込んでください。"
 msgstr "This is more than one import can do ({writes} saves are needed; the limit is {IMPORT_WRITE_LIMIT}). Split the file and import the parts a little apart."
 
-#: src/components/admin/PhotoLibrary.tsx:149
+#: src/components/admin/PhotoLibrary.tsx:153
 msgid "一覧"
 msgstr "List"
 
@@ -3008,11 +3001,11 @@ msgstr "Unknown"
 msgid "両方を合わせる（おすすめ）"
 msgstr "Combine both (recommended)"
 
-#: src/components/admin/AdminListTable.tsx:280
+#: src/components/admin/AdminListTable.tsx:297
 msgid "並べかえ"
 msgstr "Sort"
 
-#: src/components/admin/PhotoLibrary.tsx:130
+#: src/components/admin/PhotoLibrary.tsx:134
 msgid "並べ方"
 msgstr "Sort by"
 
@@ -3062,7 +3055,7 @@ msgid "仮のルート・位置（未確認）"
 msgstr "Draft route and positions (unchecked)"
 
 #: src/components/admin/HoursInput.tsx:26
-#: src/components/map/PlacesPanel.tsx:237
+#: src/components/map/PlacesPanel.tsx:233
 msgid "休み"
 msgstr "Closed"
 
@@ -3070,12 +3063,12 @@ msgstr "Closed"
 msgid "休憩所"
 msgstr "Rest area"
 
-#: src/components/map/PlacesPanel.tsx:40
+#: src/components/map/PlacesPanel.tsx:42
 #: src/components/PointKindName.tsx:14
 msgid "休憩所・東屋"
 msgstr "Rest area / shelter"
 
-#: src/components/map/PlacesPanel.tsx:54
+#: src/components/map/PlacesPanel.tsx:56
 msgid "休業中"
 msgstr "Closed now"
 
@@ -3159,7 +3152,7 @@ msgstr "Location is not allowed. Please allow location for this site in your bro
 msgid "低い"
 msgstr "low"
 
-#: src/components/map/PlacesPanel.tsx:221
+#: src/components/map/PlacesPanel.tsx:217
 #: src/components/PlaceFacts.tsx:29
 msgid "住所"
 msgstr "Address"
@@ -3365,6 +3358,10 @@ msgstr "Save the route first."
 #: src/components/admin/DuplicateFinder.tsx:66
 msgid "先頭だけ残して、ほかを削除"
 msgstr "Keep the first, delete the others"
+
+#: src/components/admin/AdminListTable.tsx:235
+msgid "先頭の{total}件を表示しています。"
+msgstr "Showing the first {total} only."
 
 #: src/components/admin/RouteEditor.tsx:611
 msgid "入れた文字が、そのまま表示されます。体力度・技術度を選んだときは、そちらを先に表示します。"
@@ -3653,7 +3650,7 @@ msgstr "Up to {MAX_PHOTOS} photos."
 msgid "写真はまだありません"
 msgstr "No photo yet"
 
-#: src/components/admin/PhotoLibrary.tsx:119
+#: src/components/admin/PhotoLibrary.tsx:123
 msgid "写真ライブラリ"
 msgstr "Photo library"
 
@@ -3673,7 +3670,7 @@ msgstr "Remove the photo"
 msgid "写真を探すサービスにつながりませんでした。しばらくしてから、もう一度お試しください。"
 msgstr "Could not reach the photo search. Please try again in a moment."
 
-#: src/components/admin/PhotoLibrary.tsx:222
+#: src/components/admin/PhotoLibrary.tsx:224
 msgid "写真を選んでください。"
 msgstr "Choose a photo."
 
@@ -3783,9 +3780,9 @@ msgstr "Restricted"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
 #: src/components/admin/AdminItemForm.tsx:293
-#: src/components/admin/AdminListTable.tsx:235
-#: src/components/admin/AdminListTable.tsx:269
-#: src/components/admin/AdminListTable.tsx:333
+#: src/components/admin/AdminListTable.tsx:252
+#: src/components/admin/AdminListTable.tsx:286
+#: src/components/admin/AdminListTable.tsx:350
 #: src/components/admin/DuplicateFinder.tsx:85
 #: src/components/admin/fields.tsx:155
 #: src/components/admin/HoursInput.tsx:35
@@ -3866,6 +3863,7 @@ msgstr "The waypoint before it does not exist yet, so it cannot be created"
 #: src/components/admin/GalleryEditor.tsx:90
 #: src/components/admin/list-parts.tsx:47
 #: src/components/admin/RallyMemberPicker.tsx:110
+#: src/components/Pager.tsx:21
 msgid "前へ"
 msgstr "Earlier"
 
@@ -4009,7 +4007,7 @@ msgstr "Importing… {0} / {1}"
 msgid "取り込めなかった場所（{0}件）"
 msgstr "Places that could not be imported ({0})"
 
-#: src/components/admin/PhotoLibrary.tsx:140
+#: src/components/admin/PhotoLibrary.tsx:144
 msgid "古い順"
 msgstr "Oldest first"
 
@@ -4050,10 +4048,10 @@ msgstr "An earlier row has the same number"
 msgid "同じ道を行って、同じ道を戻ります。"
 msgstr "You go out along the same path and come back the same way."
 
-#: src/components/admin/AdminListTable.tsx:231
-#: src/components/admin/AdminListTable.tsx:290
+#: src/components/admin/AdminListTable.tsx:248
+#: src/components/admin/AdminListTable.tsx:307
 #: src/components/admin/map-editor/PlaceList.tsx:79
-#: src/components/admin/PhotoLibrary.tsx:169
+#: src/components/admin/PhotoLibrary.tsx:173
 #: src/components/admin/RallyCreate.tsx:76
 #: src/components/admin/RallyList.tsx:103
 #: src/components/admin/RouteTable.tsx:141
@@ -4065,8 +4063,8 @@ msgstr "Name"
 msgid "名前（日本語）"
 msgstr "Name (Japanese)"
 
-#: src/components/admin/PhotoLibrary.tsx:128
-#: src/components/admin/PhotoLibrary.tsx:128
+#: src/components/admin/PhotoLibrary.tsx:132
+#: src/components/admin/PhotoLibrary.tsx:132
 msgid "名前でさがす"
 msgstr "Search by name"
 
@@ -4105,7 +4103,7 @@ msgstr "Part of the name"
 msgid "名前を保存"
 msgstr "Save the name"
 
-#: src/components/admin/PhotoLibrary.tsx:141
+#: src/components/admin/PhotoLibrary.tsx:145
 msgid "名前順"
 msgstr "Name"
 
@@ -4145,7 +4143,7 @@ msgstr "From the Izumi range to the Kongo mountains, these ridges run along the 
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "Something went wrong. Please try again in a little while."
 
-#: src/components/map/PlacesPanel.tsx:53
+#: src/components/map/PlacesPanel.tsx:55
 msgid "営業中・利用可"
 msgstr "Open / available"
 
@@ -4360,7 +4358,7 @@ msgstr "Large"
 msgid "大きい"
 msgstr "Large"
 
-#: src/components/admin/PhotoLibrary.tsx:142
+#: src/components/admin/PhotoLibrary.tsx:146
 msgid "大きい順"
 msgstr "Largest first"
 
@@ -4424,7 +4422,7 @@ msgstr "Upload subtitles (.srt / .vtt)"
 msgid "字幕を入れました。動画を再生して確かめてください。"
 msgstr "Subtitles added. Play the video to check them."
 
-#: src/components/map/PlacesPanel.tsx:55
+#: src/components/map/PlacesPanel.tsx:57
 msgid "季節営業"
 msgstr "Seasonal"
 
@@ -4458,17 +4456,13 @@ msgstr "Show side trips"
 msgid "寺社"
 msgstr "Temple or shrine"
 
-#: src/components/admin/PhotoLibrary.tsx:143
+#: src/components/admin/PhotoLibrary.tsx:147
 msgid "小さい順"
 msgstr "Smallest first"
 
 #: src/components/map/MapSheet.tsx:100
 msgid "小さくして地図を見る"
 msgstr "Make smaller and see the map"
-
-#: src/components/map/PlacesPanel.tsx:166
-msgid "少なく表示"
-msgstr "Show less"
 
 #: src/components/admin/RouteHistory.tsx:50
 msgid "履歴を読み込めませんでした。"
@@ -4656,7 +4650,7 @@ msgstr "Discard"
 msgid "探しています…"
 msgstr "Searching…"
 
-#: src/components/admin/AdminListTable.tsx:128
+#: src/components/admin/AdminListTable.tsx:145
 #: src/components/admin/map-editor/MapEditor.tsx:1021
 msgid "探す"
 msgstr "Search"
@@ -4779,8 +4773,8 @@ msgstr "New points go after the chosen point (number {chosenNo}). Click it again
 msgid "新しい記事"
 msgstr "Newest posts"
 
-#: src/components/admin/AdminListTable.tsx:289
-#: src/components/admin/PhotoLibrary.tsx:139
+#: src/components/admin/AdminListTable.tsx:306
+#: src/components/admin/PhotoLibrary.tsx:143
 msgid "新しい順"
 msgstr "Newest first"
 
@@ -4808,7 +4802,7 @@ msgstr "Daily numbers"
 msgid "日ごとの数の推移"
 msgstr "Daily numbers over the period"
 
-#: src/components/admin/PhotoLibrary.tsx:170
+#: src/components/admin/PhotoLibrary.tsx:174
 msgid "日付"
 msgstr "Date"
 
@@ -4841,7 +4835,7 @@ msgstr "Enter the Japanese name."
 msgid "日本語の字幕です。もう一度送ると、置き換わります。字幕は動画の横に保存され、動画を入れ替えたときは、字幕も送りなおしてください。"
 msgstr "Japanese subtitles. Sending again replaces them. They are stored beside the video, so when you replace the video, send the subtitles again."
 
-#: src/components/map/PlacesPanel.tsx:236
+#: src/components/map/PlacesPanel.tsx:232
 #: src/components/RouteStats.tsx:34
 msgid "時間"
 msgstr "Time"
@@ -4935,7 +4929,7 @@ msgstr "Text"
 msgid "本文へ移動"
 msgstr "Skip to main content"
 
-#: src/components/admin/AdminListTable.tsx:222
+#: src/components/admin/AdminListTable.tsx:239
 msgid "条件に合う{title}はありません。"
 msgstr "No {title} match the conditions."
 
@@ -4947,7 +4941,7 @@ msgstr "No rallies match."
 msgid "条件に合うルートがありません。"
 msgstr "No routes match."
 
-#: src/components/admin/AdminListTable.tsx:141
+#: src/components/admin/AdminListTable.tsx:158
 msgid "条件をやめる"
 msgstr "Clear the conditions"
 
@@ -5016,6 +5010,10 @@ msgstr "These rows have a mistake and will not be imported:"
 msgid "次の記事 →"
 msgstr "Later post →"
 
+#: src/components/Pager.tsx:44
+msgid "次へ"
+msgstr "Next"
+
 #: src/app/(public)/blog/page.tsx:88
 msgid "次へ →"
 msgstr "Next →"
@@ -5080,7 +5078,7 @@ msgid "段落は、空の行で区切ります。"
 msgstr "Separate paragraphs with a blank line."
 
 #: src/components/admin/PlacePanel.tsx:46
-#: src/components/map/PlacesPanel.tsx:41
+#: src/components/map/PlacesPanel.tsx:43
 #: src/components/PointKindName.tsx:15
 msgid "水場"
 msgstr "Drinking water"
@@ -5211,7 +5209,7 @@ msgstr "Status and permission settings"
 msgid "状態のひとこと"
 msgstr "Status note"
 
-#: src/components/map/PlacesPanel.tsx:57
+#: src/components/map/PlacesPanel.tsx:59
 msgid "状態は未確認"
 msgstr "Status not checked"
 
@@ -5384,7 +5382,7 @@ msgstr "Stamps that need a look: {flagged}"
 msgid "確認した情報源（サイト名やリンク）"
 msgstr "Source checked (site name or link)"
 
-#: src/components/map/PlacesPanel.tsx:246
+#: src/components/map/PlacesPanel.tsx:242
 msgid "確認した日：{checkedOn}"
 msgstr "Checked on: {checkedOn}"
 
@@ -5476,11 +5474,11 @@ msgstr "An admin account cannot be restricted or deleted. Change its \"Permissio
 msgid "範囲をこえています"
 msgstr "Out of range"
 
-#: src/components/map/PlacesPanel.tsx:66
+#: src/components/map/PlacesPanel.tsx:68
 msgid "約{amount}km"
 msgstr "About {amount} km"
 
-#: src/components/map/PlacesPanel.tsx:66
+#: src/components/map/PlacesPanel.tsx:68
 msgid "約{amount}m"
 msgstr "About {amount} m"
 
@@ -5774,8 +5772,8 @@ msgid "自動"
 msgstr "Auto"
 
 #: src/components/admin/PlacePanel.tsx:47
-#: src/components/map/PlacesPanel.tsx:26
-#: src/components/map/PlacesPanel.tsx:42
+#: src/components/map/PlacesPanel.tsx:28
+#: src/components/map/PlacesPanel.tsx:44
 #: src/components/PointKindName.tsx:16
 msgid "自動販売機"
 msgstr "Vending machines"
@@ -5855,7 +5853,7 @@ msgstr "Out"
 msgid "表でまとめて入力"
 msgstr "Enter many in a table"
 
-#: src/components/admin/PhotoLibrary.tsx:146
+#: src/components/admin/PhotoLibrary.tsx:150
 msgid "表示"
 msgstr "View"
 
@@ -5900,7 +5898,7 @@ msgstr "Places found"
 msgid "見つからない写真（その写真だけ入りません）：{0}"
 msgstr "Photos not found (only those photos are left out): {0}"
 
-#: src/components/admin/PhotoLibrary.tsx:164
+#: src/components/admin/PhotoLibrary.tsx:168
 #: src/components/admin/RelationPicker.tsx:137
 msgid "見つかりませんでした。"
 msgstr "Nothing found."
@@ -6005,7 +6003,7 @@ msgstr "Could not load."
 msgid "読み込めませんでした。しばらくしてから、ページを開き直してください。"
 msgstr "Could not load. Please reload the page in a moment."
 
-#: src/components/admin/PhotoLibrary.tsx:157
+#: src/components/admin/PhotoLibrary.tsx:161
 msgid "読み込んでいます…"
 msgstr "Loading…"
 
@@ -6217,7 +6215,7 @@ msgstr "The records of people who finished stay. Stamps do not change."
 msgid "選ばない"
 msgstr "Not set"
 
-#: src/components/admin/AdminListTable.tsx:230
+#: src/components/admin/AdminListTable.tsx:247
 #: src/components/admin/map-editor/PlaceList.tsx:55
 msgid "選ぶ"
 msgstr "Choose"
@@ -6227,12 +6225,12 @@ msgid "選ぶ・動かす"
 msgstr "Select / move"
 
 #. placeholder {0}: ticked.size
-#: src/components/admin/AdminListTable.tsx:211
+#: src/components/admin/AdminListTable.tsx:228
 msgid "選んだ{0}件を削除"
 msgstr "Delete the {0} selected"
 
 #. placeholder {0}: ids.length
-#: src/components/admin/AdminListTable.tsx:71
+#: src/components/admin/AdminListTable.tsx:99
 msgid "選んだ{0}件を削除します。元に戻せません。よろしいですか？"
 msgstr "Delete the {0} selected? This cannot be undone."
 
@@ -6298,14 +6296,14 @@ msgstr "Length"
 #: src/components/admin/AdminItemForm.tsx:281
 #: src/components/admin/map-editor/MapEditor.tsx:1039
 #: src/components/admin/PageTextEditor.tsx:86
-#: src/components/admin/PhotoLibrary.tsx:124
+#: src/components/admin/PhotoLibrary.tsx:128
 #: src/components/admin/RouteEditor.tsx:488
 #: src/components/BrowserWarning.tsx:41
 #: src/components/ExpandableText.tsx:32
 #: src/components/GuestClaim.tsx:84
 #: src/components/map/MapPickList.tsx:36
 #: src/components/map/MapPopup.tsx:57
-#: src/components/map/PlacesPanel.tsx:211
+#: src/components/map/PlacesPanel.tsx:207
 #: src/components/map/TrailMap.tsx:460
 #: src/components/ProfileSettings.tsx:230
 #: src/components/SampleNotice.tsx:64
@@ -6317,7 +6315,7 @@ msgstr "Close"
 msgid "閉まる時間が開く時間より前になっている行があります。日をまたぐ営業は、その日の分と次の日の分に分けて入れてください。"
 msgstr "A period closes before it opens. For hours past midnight, enter one period on that day and another on the next."
 
-#: src/components/map/PlacesPanel.tsx:56
+#: src/components/map/PlacesPanel.tsx:58
 msgid "閉店・撤去"
 msgstr "Closed for good"
 
@@ -6344,7 +6342,7 @@ msgstr "hidden"
 msgid "難しさ"
 msgstr "Difficulty"
 
-#: src/components/map/PlacesPanel.tsx:223
+#: src/components/map/PlacesPanel.tsx:219
 msgid "電話"
 msgstr "Phone"
 
@@ -6404,22 +6402,22 @@ msgstr "Face or fingerprint"
 msgid "顔・指紋で登録する"
 msgstr "Continue"
 
-#: src/components/map/PlacesPanel.tsx:36
+#: src/components/map/PlacesPanel.tsx:38
 msgid "飲食店"
 msgstr "Restaurant"
 
 #: src/components/admin/PlacePanel.tsx:49
-#: src/components/map/PlacesPanel.tsx:43
+#: src/components/map/PlacesPanel.tsx:45
 #: src/components/PointKindName.tsx:18
 msgid "駅"
 msgstr "Station"
 
-#: src/components/map/PlacesPanel.tsx:27
+#: src/components/map/PlacesPanel.tsx:29
 msgid "駅・バス・駐車場"
 msgstr "Station, bus, parking"
 
 #: src/components/admin/PlacePanel.tsx:50
-#: src/components/map/PlacesPanel.tsx:45
+#: src/components/map/PlacesPanel.tsx:47
 #: src/components/PointKindName.tsx:19
 msgid "駐車場"
 msgstr "Parking"
