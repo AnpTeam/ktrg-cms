@@ -18,9 +18,9 @@ export function createDrizzleVisitStore(db: Db): VisitStore {
       // starts_with() takes the prefix as a value, so a % or _ in it is not a pattern.
       const where = and(between(visitCounts.day, from, to), prefix === null ? undefined : sql`starts_with(${visitCounts.path}, ${prefix})`);
       const views = sql<number>`sum(${visitCounts.views})::int`;
-      const [totals, byCountry, byRegion, cities, topPages] = await Promise.all([
-        db.select({ n: views }).from(visitCounts).where(where),
-        db.select({ country: visitCounts.country, views }).from(visitCounts).where(where).groupBy(visitCounts.country).orderBy(desc(views)),
+      // Two groups, so no more than 3 queries are waiting on the pool at once.
+      const [totals, byCountry] = await Promise.all([db.select({ n: views }).from(visitCounts).where(where), db.select({ country: visitCounts.country, views }).from(visitCounts).where(where).groupBy(visitCounts.country).orderBy(desc(views))]);
+      const [byRegion, cities, topPages] = await Promise.all([
         db.select({ country: visitCounts.country, region: visitCounts.region, views }).from(visitCounts).where(where).groupBy(visitCounts.country, visitCounts.region).orderBy(desc(views)),
         db.select({ country: visitCounts.country, region: visitCounts.region, city: visitCounts.city, views }).from(visitCounts).where(where).groupBy(visitCounts.country, visitCounts.region, visitCounts.city).orderBy(desc(views)),
         db.select({ path: visitCounts.path, views }).from(visitCounts).where(where).groupBy(visitCounts.path).orderBy(desc(views)).limit(20),

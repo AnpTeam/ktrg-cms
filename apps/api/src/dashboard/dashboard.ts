@@ -99,7 +99,9 @@ export function createDashboardService(deps: { store: DashboardStore; visits: Vi
           if (ms > 500) log(`dashboard step slow: ${name} ${ms}ms`);
         }
       };
-      const [goals, totals] = await Promise.all([step("goals", () => deps.settings.dashboardGoals()), step("totals", () => deps.store.totals())]);
+      // Never more than 4 queries at once: the pool holds 5, and a request that asked for more than that hung for the full 5 minutes.
+      const goals = await step("goals", () => deps.settings.dashboardGoals());
+      const totals = await step("totals", () => deps.store.totals());
       const added = await step("since", () => deps.store.since(start));
       const daily = await step("daily", () => deps.store.daily(start));
       const origins = await step("origins", () => deps.store.originSplit());
