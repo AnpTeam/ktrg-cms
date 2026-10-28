@@ -18,8 +18,9 @@ export function FileVideoPlayer({ video, title, subtitles = false, language = "j
       <div className="aspect-video w-full overflow-hidden rounded-xl border-2 border-line bg-ink">
         {playing ? (
           // No download button and no right-click menu: this only stops casual saving, the file's address stays public.
-          // The subtitles are the .vtt beside the video; a video without them simply shows none.
-          <video src={video.src} title={title} controls controlsList="nodownload" disablePictureInPicture onContextMenu={(e) => e.preventDefault()} autoPlay playsInline preload="auto" className="h-full w-full">
+          // The subtitles are the .vtt beside the video; a video without them simply shows none. crossOrigin: the browser loads a
+          // cross-origin subtitle file only when the video asks for CORS too (the bucket's CORS rule must allow GET from this site).
+          <video src={video.src} crossOrigin="anonymous" title={title} controls controlsList="nodownload" disablePictureInPicture onContextMenu={(e) => e.preventDefault()} autoPlay playsInline preload="auto" className="h-full w-full">
             {subtitles ? <track kind="subtitles" src={subtitleUrl(video, version)} srcLang={language} label={t`字幕`} default /> : null}
           </video>
         ) : (
