@@ -103,7 +103,8 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
       </button>
     </th>
   );
-  const select = (p: LibraryPhoto) => setSelected(p.key);
+  // A second click on the chosen photo clears the choice.
+  const select = (p: LibraryPhoto) => setSelected((cur) => (cur === p.key ? null : p.key));
   const thumb = (p: LibraryPhoto, className: string) => (
     // eslint-disable-next-line @next/next/no-img-element -- a thumbnail of a file in the photo bucket
     <img src={p.url} alt="" loading="lazy" referrerPolicy="no-referrer" className={className} />
@@ -185,7 +186,7 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
                   className={`cursor-pointer border-b border-line ${selected === p.key ? "bg-surface outline outline-2 -outline-offset-2 outline-accent" : "hover:bg-surface"}`}
                 >
                   <td className="px-3 py-2">
-                    <button type="button" aria-pressed={selected === p.key} onFocus={() => select(p)} className="flex w-full items-center gap-3 text-left text-lg font-bold">
+                    <button type="button" aria-pressed={selected === p.key} onFocus={(e) => e.currentTarget.matches(":focus-visible") && setSelected(p.key)} className="flex w-full items-center gap-3 text-left text-lg font-bold">
                       {thumb(p, "h-12 w-16 shrink-0 rounded-lg bg-surface object-cover")}
                       <span className="min-w-0 break-all">{fileName(p.key)}</span>
                     </button>
