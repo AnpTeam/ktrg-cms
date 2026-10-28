@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
-import { passkeysSupported, reauthWithPasskey, requestReauthCode, verifyReauthCode, type AuthResult } from "@/lib/auth-client";
+import { listPasskeys, passkeysSupported, reauthWithPasskey, requestReauthCode, verifyReauthCode, type AuthResult } from "@/lib/auth-client";
 import type { AuthFailure } from "@/lib/auth-flow";
 import { AuthError, inputClass, primaryButton, secondaryButton } from "./authUi";
 
@@ -17,7 +17,17 @@ function ReauthSteps({ onDone, onCancel }: { onDone: () => void; onCancel: () =>
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<AuthFailure | null>(null);
-  const supported = passkeysSupported();
+  // The passkey check is offered only to someone who has a passkey; anyone else (adding their first one) gets the email code.
+  const [hasPasskey, setHasPasskey] = useState(false);
+  const supported = passkeysSupported() && hasPasskey;
+
+  useEffect(() => {
+    let live = true;
+    if (passkeysSupported()) void listPasskeys().then((res) => live && res.ok && setHasPasskey(res.passkeys.length > 0));
+    return () => {
+      live = false;
+    };
+  }, []);
 
   async function run(action: () => Promise<AuthResult>, then: () => void) {
     if (busy) return;
