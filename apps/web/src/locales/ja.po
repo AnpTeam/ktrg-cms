@@ -2526,7 +2526,7 @@ msgstr "メニューを隠す"
 msgid "もう一度、本人かどうかの確認が必要です。"
 msgstr "もう一度、本人かどうかの確認が必要です。"
 
-#: src/components/FileVideo.tsx:55
+#: src/components/FileVideo.tsx:57
 msgid "もう一度ためす"
 msgstr "もう一度ためす"
 
@@ -3911,11 +3911,12 @@ msgstr "動画のリンクは、https:// で始まるYouTube・Vimeo、または
 msgid "動画をアップロード"
 msgstr "動画をアップロード"
 
+#. placeholder {0}: failed.code
 #: src/components/FileVideo.tsx:45
-msgid "動画を再生できませんでした。（エラー {failed}）"
-msgstr "動画を再生できませんでした。（エラー {failed}）"
+msgid "動画を再生できませんでした。（エラー {0}）"
+msgstr "動画を再生できませんでした。（エラー {0}）"
 
-#: src/components/FileVideo.tsx:58
+#: src/components/FileVideo.tsx:60
 msgid "動画を直接開く"
 msgstr "動画を直接開く"
 
