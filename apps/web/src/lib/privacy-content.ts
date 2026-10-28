@@ -21,7 +21,7 @@ export interface Policy {
 const ja: Policy = {
   title: "プライバシーポリシー",
   draftNotice: "この文章は案です。公開の前に、内容を確認します。",
-  updated: "2026年10月27日（案）",
+  updated: "2026年10月28日（案）",
   sections: [
     {
       heading: "このページについて",
@@ -65,6 +65,14 @@ const ja: Policy = {
       ],
     },
     {
+      heading: "アカウントの制限と、確認が必要なスタンプ",
+      paragraphs: [
+        "ほかの方に迷惑がかかる使い方や、スタンプの不正が疑われるときは、運営者がアカウントを制限することがあります。制限されたアカウントは、見ることはできますが、スタンプを押すなどの参加はできません。期限を決めることも、解除するまでとすることもできます。",
+        "そのために、制限した日時、期限、運営者が書いた理由のメモを保存します。メモは管理者だけが見られ、ほかの利用者には見えません。制限を解除するか、アカウントを削除すると、この三つは消えます。制限をしたことそのものは、管理者用の変更の記録に残ります。",
+        "不正が疑われるスタンプは、自動では止めません。運営者が確認できるように印をつけ、確認のうえで取り消すことがあります。印を見られるのは管理者だけです。",
+      ],
+    },
+    {
       heading: "Cookieなどの保存",
       paragraphs: [
         "ログインを保つため、言語や見やすさの設定を覚えておくために、お使いの端末に小さな情報（Cookie）を保存します。広告や、行動を追いかけるためのものは使いません。",
@@ -103,7 +111,7 @@ const ja: Policy = {
 const en: Policy = {
   title: "Privacy policy",
   draftNotice: "This text is a draft. It will be checked before the app is published.",
-  updated: "October 27, 2026 (draft)",
+  updated: "October 28, 2026 (draft)",
   sections: [
     {
       heading: "About this page",
@@ -147,6 +155,14 @@ const en: Policy = {
         "Each time a page is opened, we count the approximate region the connection appears to come from (country, prefecture or state, and city or town) together with the page that was opened. We do this to learn which regions are interested in the project, and to use that for outreach and planning.",
         "We do not store or log the IP address itself. What we keep is only a count per day, per region and per page. It is not linked to your account or your stamps, and it is not handled in a way that identifies you. The region is estimated from the connection, so it can differ from where you really are.",
         "If your browser has \"Do Not Track\" or \"Global Privacy Control\" turned on, we only count that a page was opened and do not look up any region at all. Cities and towns with only a few visits are shown as a total without their name, so that nobody reading the totals can pick out a person.",
+      ],
+    },
+    {
+      heading: "Account restrictions and stamps to review",
+      paragraphs: [
+        "If an account is used in a way that troubles others, or a stamp looks dishonest, the operator may restrict the account. A restricted account can look around but cannot take part, for example by stamping. The restriction can have an end date or last until it is lifted.",
+        "For this we store when the restriction began, its end date, and a short note the operator wrote as the reason. Only administrators can see the note. Other users cannot. When the restriction is lifted, or the account is deleted, these three are erased. The fact that a restriction was made stays in the administrators' change log.",
+        "A stamp that looks dishonest is not stopped automatically. It is marked so the operator can review it, and the operator may cancel it after checking. Only administrators can see the mark.",
       ],
     },
     {
