@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { Pager } from "@/components/Pager";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { api } from "@/lib/api";
 import { outcome } from "@/lib/admin/admin-client";
@@ -15,9 +16,12 @@ import { RouteImport } from "./RouteImport";
 import { useChecklistLabels } from "./useChecklistLabels";
 import type { AdminRouteSummary, Prefecture } from "@/lib/admin/types";
 import { formatUpdated } from "@/lib/format";
+import { pageCount, pageSlice } from "@/lib/pager";
 
 const PREFECTURES: Prefecture[] = ["osaka", "wakayama", "nara"];
 const STATES: RouteState[] = ["published", "draft", "soon"];
+// How many routes fit on one page; the pager is hidden while they all do.
+const PAGE = 25;
 
 // The list of routes in walking order, as a table (a card per route on a phone): search, narrow by prefecture and state,
 // sort by a column, move a route earlier or later, open one. Moving is only possible in the walking order itself, so it is
@@ -31,6 +35,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
   const [state, setState] = useState<RouteState | null>(null);
   const [needsWorkOnly, setNeedsWorkOnly] = useState(false);
   const [sort, setSort] = useState<Sort>(null);
+  const [page, setPage] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const labels = useChecklistLabels();
@@ -62,6 +67,9 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
   }, [filtered, sort, order, locale]);
   const filtering = query.trim() !== "" || prefecture !== null || state !== null || needsWorkOnly;
   const canMove = !filtering && sort === null;
+  const pages = pageCount(shown.length, PAGE);
+  const here = Math.min(page, pages); // a filter can leave fewer pages than the one we were on
+  const visible = pageSlice(shown, here, PAGE);
 
   async function move(id: string, step: -1 | 1) {
     if (busy) return;
@@ -90,26 +98,32 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
         </li>
       ));
   const stateChip = (r: AdminRouteSummary) => <Chip tone={routeState(r) === "published" ? "good" : "neutral"}>{stateLabel[routeState(r)]}</Chip>;
-  const onSort = (key: string) => setSort(nextSort(sort, key));
+  const onSort = (key: string) => {
+    setSort(nextSort(sort, key));
+    setPage(1);
+  };
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-end gap-3">
         <label className="flex min-w-60 flex-1 flex-col gap-1 text-base font-bold">
           {t`ルートをさがす`}
-          <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`名前の一部を入力`} className="tap-target rounded-xl border-2 border-line bg-paper px-4 text-lg font-normal" />
+          <input type="search" value={query} onChange={(e) => { setQuery(e.target.value); setPage(1); }} placeholder={t`名前の一部を入力`} className="tap-target rounded-xl border-2 border-line bg-paper px-4 text-lg font-normal" />
         </label>
         <Link href="/admin/routes/new" className="tap-target inline-flex items-center rounded-xl bg-ink px-5 text-lg font-bold text-paper">
           {t`新しいルート`}
         </Link>
       </div>
       <div className="flex flex-col gap-3 rounded-2xl bg-surface p-3">
-        <FilterGroup label={t`都道府県`} options={PREFECTURES.map((p) => ({ value: p, text: prefName[p] }))} value={prefecture ?? ""} onChange={(v) => setPrefecture((v || null) as Prefecture | null)} />
-        <FilterGroup label={t`状態`} options={STATES.map((s) => ({ value: s, text: stateLabel[s] }))} value={state ?? ""} onChange={(v) => setState((v || null) as RouteState | null)} />
+        <FilterGroup label={t`都道府県`} options={PREFECTURES.map((p) => ({ value: p, text: prefName[p] }))} value={prefecture ?? ""} onChange={(v) => { setPrefecture((v || null) as Prefecture | null); setPage(1); }} />
+        <FilterGroup label={t`状態`} options={STATES.map((s) => ({ value: s, text: stateLabel[s] }))} value={state ?? ""} onChange={(v) => { setState((v || null) as RouteState | null); setPage(1); }} />
         <button
           type="button"
           aria-pressed={needsWorkOnly}
-          onClick={() => setNeedsWorkOnly(!needsWorkOnly)}
+          onClick={() => {
+            setNeedsWorkOnly(!needsWorkOnly);
+            setPage(1);
+          }}
           className={`tap-target w-fit rounded-full border-2 px-4 text-base font-bold ${needsWorkOnly ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink"}`}
         >
           {t`手直しが必要なルートだけ（${needsWorkCount}）`}
@@ -152,7 +166,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
-                {shown.map((r) => {
+                {visible.map((r) => {
                   const index = order.get(r.id)! - 1;
                   return (
                     <tr key={r.id} className="align-top hover:bg-surface/60">
@@ -185,7 +199,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
             </table>
           </div>
           <ol className="flex flex-col divide-y divide-line rounded-2xl border border-line md:hidden">
-            {shown.map((r) => {
+            {visible.map((r) => {
               const index = order.get(r.id)! - 1;
               return (
                 <li key={r.id} className="flex flex-col gap-2 p-3">
@@ -214,6 +228,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
           </ol>
         </>
       )}
+      <Pager page={here} pages={pages} onPage={setPage} disabled={busy} hideWhenSingle />
       {!canMove && routes.length > 0 ? <p className="text-base text-muted">{t`並べ替えは、検索・絞り込み・並べかえを外してからできます。`}</p> : null}
     </div>
   );

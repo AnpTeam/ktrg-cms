@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { Pager } from "@/components/Pager";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { api } from "@/lib/api";
 import { outcome } from "@/lib/admin/admin-client";
@@ -10,8 +11,12 @@ import { nextSort, sortBy, type Sort } from "@/lib/admin/lists/sort";
 import { moveId } from "@/lib/admin/route-list";
 import type { AdminRally } from "@/lib/admin/types";
 import { formatUpdated } from "@/lib/format";
+import { pageCount, pageSlice } from "@/lib/pager";
 import { Chip } from "./Chip";
 import { FilterGroup, MoveButtons, OrderBadge, SortHeader } from "./list-parts";
+
+// How many rallies fit on one page; the pager is hidden while they all do.
+const PAGE = 25;
 
 // Every rally in the order visitors see them, as a table (a card per rally on a phone): its type, whether it is public, how
 // much is in it, how many finished. 前へ / 後ろへ save the order at once (only while no filter or sort is on); 新しいラリー
@@ -23,6 +28,7 @@ export function RallyList({ initial, locale }: { initial: AdminRally[]; locale: 
   const [kind, setKind] = useState("");
   const [published, setPublished] = useState("");
   const [sort, setSort] = useState<Sort>(null);
+  const [page, setPage] = useState(1);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const name = (r: AdminRally) => (locale === "en" && r.nameEn ? r.nameEn : r.nameJa);
@@ -46,7 +52,13 @@ export function RallyList({ initial, locale }: { initial: AdminRally[]; locale: 
     // eslint-disable-next-line react-hooks/exhaustive-deps -- `name` only reads the locale
   }, [filtered, sort, order, locale]);
   const canMove = kind === "" && published === "" && sort === null;
-  const onSort = (key: string) => setSort(nextSort(sort, key));
+  const pages = pageCount(shown.length, PAGE);
+  const here = Math.min(page, pages); // a filter can leave fewer pages than the one we were on
+  const visible = pageSlice(shown, here, PAGE);
+  const onSort = (key: string) => {
+    setSort(nextSort(sort, key));
+    setPage(1);
+  };
   const stateChip = (r: AdminRally) => <Chip tone={r.published ? "good" : "neutral"}>{r.published ? t`公開中` : t`下書き`}</Chip>;
 
   async function move(id: string, step: -1 | 1) {
@@ -77,8 +89,8 @@ export function RallyList({ initial, locale }: { initial: AdminRally[]; locale: 
       </Link>
       {rallies.length > 1 ? (
         <div className="flex flex-col gap-3 rounded-2xl bg-surface p-3">
-          <FilterGroup label={t`種類`} options={[{ value: "places", text: t`経由地のラリー` }, { value: "course", text: t`コースのラリー` }]} value={kind} onChange={setKind} />
-          <FilterGroup label={t`状態`} options={[{ value: "true", text: t`公開中` }, { value: "false", text: t`下書き` }]} value={published} onChange={setPublished} />
+          <FilterGroup label={t`種類`} options={[{ value: "places", text: t`経由地のラリー` }, { value: "course", text: t`コースのラリー` }]} value={kind} onChange={(v) => { setKind(v); setPage(1); }} />
+          <FilterGroup label={t`状態`} options={[{ value: "true", text: t`公開中` }, { value: "false", text: t`下書き` }]} value={published} onChange={(v) => { setPublished(v); setPage(1); }} />
         </div>
       ) : null}
       {error ? (
@@ -112,7 +124,7 @@ export function RallyList({ initial, locale }: { initial: AdminRally[]; locale: 
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
-                {shown.map((r) => (
+                {visible.map((r) => (
                   <tr key={r.id} className="align-top hover:bg-surface/60">
                     <td className="p-3">
                       <OrderBadge n={order.get(r.id)!} />
@@ -136,7 +148,7 @@ export function RallyList({ initial, locale }: { initial: AdminRally[]; locale: 
             </table>
           </div>
           <ol className="flex flex-col divide-y divide-line rounded-2xl border border-line md:hidden">
-            {shown.map((r) => (
+            {visible.map((r) => (
               <li key={r.id} className="flex flex-col gap-2 p-3">
                 <div className="flex items-center gap-3">
                   <OrderBadge n={order.get(r.id)!} />
@@ -156,6 +168,7 @@ export function RallyList({ initial, locale }: { initial: AdminRally[]; locale: 
           </ol>
         </>
       )}
+      <Pager page={here} pages={pages} onPage={setPage} disabled={busy} hideWhenSingle />
       {!canMove && rallies.length > 0 ? <p className="text-base text-muted">{t`並べ替えは、絞り込み・並べかえを外してからできます。`}</p> : null}
     </div>
   );
