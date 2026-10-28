@@ -60,7 +60,7 @@ import { createDrizzleMeStore } from "./me/me-store";
 import { apiDocs } from "./openapi";
 import { createRoutingService } from "./routing/routing-service";
 import { createServices, type Services } from "./services";
-import { uploadRoutes } from "./uploads/upload-routes";
+import { subtitleRoutes, uploadRoutes } from "./uploads/upload-routes";
 import { createR2Storage } from "./uploads/upload-storage";
 
 // Built on first use, so importing the app never opens a database connection.
@@ -150,6 +150,7 @@ export function createApp(
     .use(publicContentRoutes(() => getServices().content))
     .use(gpxExportRoutes(getServices, opts))
     .use(uploadRoutes(getServices, opts))
+    .use(subtitleRoutes(getServices, opts))
     .use(rallyAdminRoutes(getServices, opts))
     .use(rallyPublicRoutes(getServices, env.NODE_ENV === "production" ? 10_000 : 0))
     .use(stampRoutes(getServices, opts))

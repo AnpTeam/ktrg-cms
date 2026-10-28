@@ -7,7 +7,7 @@ import { createMemorySessionStore } from "../auth/session-memory-store";
 import { createSessionService } from "../auth/session-service";
 import type { AuthUser } from "../auth/user";
 import { apiBase } from "../lib/api-errors";
-import { uploadRoutes } from "./upload-routes";
+import { subtitleRoutes, uploadRoutes } from "./upload-routes";
 import { createUploadService } from "./upload-service";
 import { createMemoryStorage } from "./upload-storage";
 
@@ -15,18 +15,18 @@ const admin: AuthUser = { id: "11111111-1111-4111-8111-111111111111", email: "ad
 const alice: AuthUser = { id: "22222222-2222-4222-8222-222222222222", email: "alice@example.com", role: "participant", locale: "ja" };
 const JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3]);
 
-function setup(opts: { storage?: boolean } = {}) {
+function setup(opts: { storage?: boolean; fetcher?: typeof fetch } = {}) {
   const users = new Map<string, AuthUser>([[admin.id, { ...admin }], [alice.id, { ...alice }]]);
   const session = createSessionService({ store: createMemorySessionStore(users).store });
   const audit = createMemoryAuditWriter();
   const mem = createMemoryStorage();
   const quiet = () => {}; // the storage-failure test logs on purpose
   const uploads = createUploadService(
-    opts.storage === false ? { log: quiet } : { storage: mem.storage, publicBaseUrl: "https://photos.example.com", log: quiet },
+    opts.storage === false ? { log: quiet } : { storage: mem.storage, publicBaseUrl: "https://photos.example.com", log: quiet, ...(opts.fetcher ? { fetcher: opts.fetcher } : {}) },
   );
   const rateLimit = createRateLimiter({ store: createMemoryRateLimitStore().store, secret: "m".repeat(32) });
   const services = { session, rateLimit, audit: audit.writer, uploads };
-  const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(uploadRoutes(() => services, { secureCookies: false }));
+  const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(uploadRoutes(() => services, { secureCookies: false })).use(subtitleRoutes(() => services, { secureCookies: false }));
   const upload = (file: Blob | null, cookie?: string) => {
     const form = new FormData();
     if (file) form.set("file", file);
@@ -45,7 +45,7 @@ function setup(opts: { storage?: boolean } = {}) {
   const library = (cookie?: string) =>
     app.handle(new Request("http://localhost/api/v1/admin/uploads", { headers: cookie ? { cookie } : {} }));
   const login = async (u: AuthUser) => `session=${(await session.create(users.get(u.id)!)).token}`;
-  return { upload, video, library, login, audit, mem };
+  return { app, upload, video, library, login, audit, mem };
 }
 
 describe("POST /admin/uploads", () => {
@@ -192,5 +192,28 @@ describe("uploads have their own limits", () => {
     expect((await s.upload(new File([JPEG], "late.jpg"), cookie)).status).toBe(429);
     expect((await s.video({ name: "a.mp4", contentType: "video/mp4", size: MB }, cookie)).status).toBe(201);
     expect((await s.library(cookie)).status).toBe(200);
+  });
+});
+
+describe("GET /subtitles (public)", () => {
+  const VTT = ["WEBVTT", "", "1", "00:00:00.000 --> 00:00:02.000", "Hello", ""].join("\n");
+  const video = encodeURIComponent("https://photos.example.com/videos/walk-ab12.mp4");
+
+  test("serves the subtitles of one of our videos as text/vtt, with no sign-in and a short cache", async () => {
+    const s = setup({ fetcher: (async () => new Response(VTT)) as unknown as typeof fetch });
+    const res = await s.app.handle(new Request(`http://localhost/api/v1/subtitles?video=${video}&v=2026-10-28`));
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("text/vtt");
+    expect(res.headers.get("cache-control")).toContain("max-age=300");
+    expect(await res.text()).toBe(VTT);
+  });
+
+  test("404 when there are none, and for an address that is not one of our videos (nothing is fetched for it)", async () => {
+    const asked: string[] = [];
+    const s = setup({ fetcher: (async (u: string) => (asked.push(u), new Response("", { status: 404 }))) as unknown as typeof fetch });
+    expect((await s.app.handle(new Request(`http://localhost/api/v1/subtitles?video=${video}`))).status).toBe(404);
+    expect((await s.app.handle(new Request(`http://localhost/api/v1/subtitles?video=${encodeURIComponent("https://evil.example/videos/a.mp4")}`))).status).toBe(404);
+    expect(asked).toEqual(["https://photos.example.com/videos/walk-ab12.vtt"]);
+    expect((await s.app.handle(new Request("http://localhost/api/v1/subtitles"))).status).toBe(422);
   });
 });
