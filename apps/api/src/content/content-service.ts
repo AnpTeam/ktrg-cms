@@ -325,7 +325,10 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
     /** Routes and waypoints with something missing (an unchecked line, no English name, no photo ...). Reads each route once. */
     async attention() {
       const rows = await store.listRoutes();
-      const full = await Promise.all(rows.map(async (r) => ({ ...r, spots: (await store.getRoute(r.id))?.spots ?? [] })));
+      // One route at a time: reading all of them at once (19 routes, a few queries each) used up the connection pool and hung.
+      // shortcut: ~50 queries in a row, upgrade to one batched query if this page gets slow.
+      const full: (typeof rows[number] & { spots: NonNullable<Awaited<ReturnType<typeof store.getRoute>>>["spots"] })[] = [];
+      for (const r of rows) full.push({ ...r, spots: (await store.getRoute(r.id))?.spots ?? [] });
       return attention(full);
     },
     getRoute: (id: string) => store.getRoute(id),
