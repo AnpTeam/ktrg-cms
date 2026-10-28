@@ -8,7 +8,7 @@ const apiOrigin = process.env.API_ORIGIN ?? "http://localhost:3001";
 
 const isProd = process.env.NODE_ENV === "production";
 
-const csp = buildCsp({ isProd, r2UploadHost: process.env.R2_UPLOAD_HOST });
+const csp = buildCsp({ isProd, r2UploadHost: process.env.R2_UPLOAD_HOST, r2PublicHost: process.env.R2_PUBLIC_HOST });
 
 const securityHeaders = [
   { key: "Content-Security-Policy", value: csp },
