@@ -39,6 +39,41 @@ const withoutNulls = <T>(value: T): T => JSON.parse(JSON.stringify(value, (_k, v
 
 export const passkeysSupported = () => typeof window !== "undefined" && browserSupportsWebAuthn();
 
+/**
+ * A name for a new passkey from the browser it was made in, like "iPhone · Safari". The provider (iCloud Keychain,
+ * Google Password Manager) is not visible to a web page, so this says where it was made, not where it is kept.
+ */
+export function passkeyLabel(userAgent: string, touchPoints = 0): string {
+  const ua = userAgent;
+  const device = /iPhone/.test(ua)
+    ? "iPhone"
+    : /iPad/.test(ua) || (/Macintosh/.test(ua) && touchPoints > 1)
+      ? "iPad"
+      : /Android/.test(ua)
+        ? "Android"
+        : /Windows/.test(ua)
+          ? "Windows"
+          : /Mac OS X|Macintosh/.test(ua)
+            ? "Mac"
+            : /Linux|X11/.test(ua)
+              ? "Linux"
+              : "";
+  const browser = /Edg(e|A|iOS)?\//.test(ua)
+    ? "Edge"
+    : /OPR\/|Opera/.test(ua)
+      ? "Opera"
+      : /FxiOS|Firefox/.test(ua)
+        ? "Firefox"
+        : /CriOS|Chrome\//.test(ua)
+          ? "Chrome"
+          : /Safari\//.test(ua)
+            ? "Safari"
+            : "";
+  return [device, browser].filter(Boolean).join(" · ");
+}
+
+const ownLabel = () => (typeof navigator === "undefined" ? undefined : passkeyLabel(navigator.userAgent, navigator.maxTouchPoints) || undefined);
+
 const profileBody = (profile: SignupProfile) => ({
   displayName: profile.displayName,
   origin: profile.origin ?? undefined,
@@ -61,6 +96,7 @@ export async function signUpWithPasskey(profile: SignupProfile): Promise<AuthRes
 
     const verified = await api.auth.passkeys.signup.verify.post({
       response: withoutNulls(attestation) as never,
+      label: ownLabel(),
       profile: profileBody(profile),
     });
     return verified.error ? fail(apiFailure(verified.error)) : done;
@@ -172,7 +208,7 @@ export async function addPasskey(): Promise<AuthResult> {
       return fail(ceremonyFailure(err, "registration_failed"));
     }
 
-    const verified = await api.auth.passkeys.register.verify.post({ response: withoutNulls(attestation) as never });
+    const verified = await api.auth.passkeys.register.verify.post({ response: withoutNulls(attestation) as never, label: ownLabel() });
     return verified.error ? fail(apiFailure(verified.error)) : done;
   } catch {
     return fail("network");
