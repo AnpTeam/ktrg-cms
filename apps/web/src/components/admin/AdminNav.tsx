@@ -72,7 +72,7 @@ export function AdminNav({ lists, isAdmin }: { lists: { key: string; title: stri
                   aria-current={active ? "page" : undefined}
                   className={`tap-target flex items-center gap-3 rounded-xl px-4 text-lg font-bold ${active ? "bg-brand text-on-brand" : "text-ink hover:bg-surface"}`}
                 >
-                  {item.icon}
+                  <span className="shrink-0">{item.icon}</span>
                   {item.label}
                 </Link>
               );
