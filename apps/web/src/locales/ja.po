@@ -1177,11 +1177,11 @@ msgstr "このスタンプは、もう押してあります。"
 msgid "このデータについて"
 msgstr "このデータについて"
 
-#: src/components/settings/PasskeyManager.tsx:145
+#: src/components/settings/PasskeyManager.tsx:146
 msgid "このパスキーは、消せません"
 msgstr "このパスキーは、消せません"
 
-#: src/components/settings/PasskeyManager.tsx:157
+#: src/components/settings/PasskeyManager.tsx:158
 msgid "このパスキーを消しますか？"
 msgstr "このパスキーを消しますか？"
 
@@ -1394,7 +1394,7 @@ msgstr "この次に追加"
 msgid "この端末・ブラウザでは、位置情報を使えません。"
 msgstr "この端末・ブラウザでは、位置情報を使えません。"
 
-#: src/components/settings/PasskeyManager.tsx:133
+#: src/components/settings/PasskeyManager.tsx:134
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "この端末・ブラウザではパスキーを使えません。"
 
@@ -1427,10 +1427,6 @@ msgstr "この端末に {0} 個、アカウントに {1} 個のスタンプが�
 #: src/components/settings/PrefsForm.tsx:54
 msgid "この端末には保存しました。つながったときに、アカウントにも保存されます。"
 msgstr "この端末には保存しました。つながったときに、アカウントにも保存されます。"
-
-#: src/components/settings/PasskeyManager.tsx:130
-msgid "この端末のパスキーを追加する"
-msgstr "この端末のパスキーを追加する"
 
 #: src/components/admin/PlacePanel.tsx:187
 msgid "この経由地から、この距離の中にいるとスタンプを押せます。"
@@ -1527,7 +1523,7 @@ msgstr "コメントを書く"
 msgid "コメントを書くには、ログインが必要です。"
 msgstr "コメントを書くには、ログインが必要です。"
 
-#: src/components/settings/PasskeyManager.tsx:147
+#: src/components/settings/PasskeyManager.tsx:148
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 msgstr "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 
@@ -2081,6 +2077,10 @@ msgstr "パスキーは、これ以上ふやせません。使わないものを
 msgid "パスキーは、顔や指紋でログインするための鍵です。この端末のものを追加すると、メールを待たずにログインできます。"
 msgstr "パスキーは、顔や指紋でログインするための鍵です。この端末のものを追加すると、メールを待たずにログインできます。"
 
+#: src/components/settings/PasskeyManager.tsx:130
+msgid "パスキーを追加する"
+msgstr "パスキーを追加する"
+
 #: src/components/admin/DirectoryPicker.tsx:147
 #: src/components/admin/RelationPicker.tsx:87
 msgid "はずす"
@@ -2334,6 +2334,11 @@ msgstr "ほかにもあります。もう少し入れて絞ってください。
 msgid "ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。"
 msgstr "ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。"
 
+#: src/components/auth/RegisterFlow.tsx:115
+#: src/components/settings/PasskeyManager.tsx:133
+msgid "ほかのパスキーアプリを使うときは、表示される画面で選んでください。"
+msgstr "ほかのパスキーアプリを使うときは、表示される画面で選んでください。"
+
 #: src/components/admin/map-editor/MapEditor.tsx:824
 msgid "ほかの乗り物"
 msgstr "ほかの乗り物"
@@ -2480,7 +2485,7 @@ msgstr "メールアドレスを追加する"
 msgid "メールでログイン"
 msgstr "メールでログイン"
 
-#: src/components/auth/RegisterFlow.tsx:137
+#: src/components/auth/RegisterFlow.tsx:138
 msgid "メールで登録"
 msgstr "メールで登録"
 
@@ -2577,7 +2582,7 @@ msgstr "もらいました"
 #: src/components/auth/ReauthDialog.tsx:72
 #: src/components/auth/ReauthDialog.tsx:94
 #: src/components/ProfileSettings.tsx:250
-#: src/components/settings/PasskeyManager.tsx:165
+#: src/components/settings/PasskeyManager.tsx:166
 #: src/components/StampHere.tsx:172
 msgid "やめる"
 msgstr "やめる"
@@ -2907,7 +2912,7 @@ msgstr "ログアウト"
 #: src/app/(public)/login/page.tsx:32
 #: src/app/(public)/sitemap/page.tsx:102
 #: src/components/auth/LoginFlow.tsx:55
-#: src/components/auth/RegisterFlow.tsx:141
+#: src/components/auth/RegisterFlow.tsx:142
 #: src/components/blog/CommentSection.tsx:111
 #: src/components/GuestNag.tsx:82
 #: src/components/landing/LandingHero.tsx:55
@@ -2940,7 +2945,7 @@ msgstr "ログインの方法"
 msgid "ログインの方法（パスキー）"
 msgstr "ログインの方法（パスキー）"
 
-#: src/components/settings/PasskeyManager.tsx:150
+#: src/components/settings/PasskeyManager.tsx:151
 msgid "わかりました"
 msgstr "わかりました"
 
@@ -4589,7 +4594,7 @@ msgid "情報源を入れないと、「確認した」は保存されません�
 msgstr "情報源を入れないと、「確認した」は保存されません。"
 
 #: src/components/auth/LoginFlow.tsx:89
-#: src/components/auth/RegisterFlow.tsx:127
+#: src/components/auth/RegisterFlow.tsx:128
 msgid "戻る"
 msgstr "戻る"
 
@@ -5138,11 +5143,11 @@ msgstr "消したい点をクリックします。"
 #: src/components/admin/map-editor/PlaceList.tsx:92
 #: src/components/admin/RubyEditor.tsx:59
 #: src/components/settings/PasskeyManager.tsx:118
-#: src/components/settings/PasskeyManager.tsx:162
+#: src/components/settings/PasskeyManager.tsx:163
 msgid "消す"
 msgstr "消す"
 
-#: src/components/settings/PasskeyManager.tsx:159
+#: src/components/settings/PasskeyManager.tsx:160
 msgid "消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。"
 msgstr "消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。"
 
@@ -5327,7 +5332,7 @@ msgstr "登録できませんでした。もう一度お試しください。"
 msgid "登録なしで残せるスタンプの数が、上限になりました。新規登録すると、続けて集められます。"
 msgstr "登録なしで残せるスタンプの数が、上限になりました。新規登録すると、続けて集められます。"
 
-#: src/components/auth/RegisterFlow.tsx:139
+#: src/components/auth/RegisterFlow.tsx:140
 #: src/components/landing/LandingHero.tsx:53
 msgid "登録済みの方は"
 msgstr "登録済みの方は"
@@ -5429,7 +5434,7 @@ msgid "確認番号"
 msgstr "確認番号"
 
 #: src/components/auth/LoginFlow.tsx:86
-#: src/components/auth/RegisterFlow.tsx:123
+#: src/components/auth/RegisterFlow.tsx:124
 msgid "確認番号を送る"
 msgstr "確認番号を送る"
 
@@ -6431,11 +6436,11 @@ msgstr "顔・指紋・ロック番号で確認"
 msgid "顔・指紋でログイン"
 msgstr "顔・指紋でログイン"
 
-#: src/components/auth/RegisterFlow.tsx:136
+#: src/components/auth/RegisterFlow.tsx:137
 msgid "顔・指紋で登録"
 msgstr "顔・指紋で登録"
 
-#: src/components/auth/RegisterFlow.tsx:120
+#: src/components/auth/RegisterFlow.tsx:121
 msgid "顔・指紋で登録する"
 msgstr "顔・指紋で登録する"
 
