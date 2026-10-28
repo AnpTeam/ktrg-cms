@@ -230,7 +230,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               {video ? (
                 <IntroVideo video={video} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
               ) : videoFile ? (
-                <FileVideoPlayer video={videoFile} subtitles={englishVideo ? route.videoSubtitlesEn === true : route.videoSubtitles === true} language={englishVideo ? "en" : "ja"} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
+                <FileVideoPlayer video={videoFile} subtitles={englishVideo ? route.videoSubtitlesEn === true : route.videoSubtitles === true} language={englishVideo ? "en" : "ja"} version={route.updatedAt ?? null} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
               ) : null}
               {englishVideo ? null : <LastUpdated iso={route.videoUpdatedAt} locale={locale} />}
             </section>

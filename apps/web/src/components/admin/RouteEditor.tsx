@@ -26,7 +26,7 @@ import {
 import { RubyEditor } from "./RubyEditor";
 import type { StopRole } from "@/lib/route-stops";
 import { backupKey, parseBackup, worthRestoring, writeBackup } from "@/lib/admin/draft-backup";
-import { draftProblems, placeChanged, planSave, restoreHeld, withLegIds, type DraftProblem } from "@/lib/admin/save-plan";
+import { draftProblems, keepLaterEdits, placeChanged, planSave, restoreHeld, withLegIds, type DraftProblem } from "@/lib/admin/save-plan";
 import type { Prefecture } from "@/lib/admin/types";
 import { formatUpdated } from "@/lib/format";
 import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
@@ -70,6 +70,8 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
   const draft = state.present;
   const [saved, setSaved] = useState<RouteDraft>(initial);
   const savedRef = useRef<RouteDraft>(initial);
+  // The draft as it is now, for a save that has been running a while (see keepLaterEdits).
+  const draftRef = useRef<RouteDraft>(initial);
   const [saving, setSaving] = useState(false);
   const [busyKey, setBusyKey] = useState<string | null>(null);
   const [message, setMessage] = useState<{ kind: "error" | "ok"; text: string } | null>(null);
@@ -108,6 +110,10 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     const timer = setTimeout(() => setMessage(null), 5000);
     return () => clearTimeout(timer);
   }, [message]);
+
+  useEffect(() => {
+    draftRef.current = draft;
+  }, [draft]);
 
   const dirty = isDirty(draft, saved);
   const isNew = draft.id === null;
@@ -317,7 +323,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
     if (fresh.ok) {
       const next = draftFromServer(fresh.data.route, fresh.data.spots);
       const index = snapshot.places.findIndex((p) => p.key === selectedKey);
-      dispatch({ type: "loaded", draft: restoreHeld(next, draft, held) });
+      dispatch({ type: "loaded", draft: keepLaterEdits(restoreHeld(next, draft, held), draft, draftRef.current) });
       setSavedCopy(next);
       setSelectedKey(index >= 0 ? (next.places[index]?.key ?? null) : null);
       attempted.current = null;
