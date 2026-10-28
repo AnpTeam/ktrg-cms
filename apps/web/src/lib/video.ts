@@ -49,8 +49,15 @@ export interface FileVideo {
   src: string;
 }
 
-/** Where the subtitles of an uploaded video are: beside it, with ".vtt" in place of ".mp4" / ".webm" (the admin uploads them there). */
-export const subtitleUrl = (video: FileVideo): string => video.src.replace(/\.(mp4|webm)(?=$|\?)/i, ".vtt");
+/**
+ * Where the subtitles of an uploaded video are: beside it, with ".vtt" in place of ".mp4" / ".webm" (the admin uploads them there).
+ * Sending subtitles again replaces the file under the same name, so `version` (the route's last save time) is added to the address:
+ * a browser or the storage's cache then never keeps showing the old file.
+ */
+export const subtitleUrl = (video: FileVideo, version?: string | null): string => {
+  const url = video.src.replace(/\.(mp4|webm)(?=$|\?)/i, ".vtt");
+  return version ? `${url}${url.includes("?") ? "&" : "?"}v=${encodeURIComponent(version)}` : url;
+};
 
 export function parseVideoFile(raw: string | null | undefined): FileVideo | null {
   if (!raw) return null;

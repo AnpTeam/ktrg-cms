@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { draftFromServer, draftReducer, emptyDraft, initialState, isDirty, placeFromServer, previewRoute, publishBlockers, type DraftAction, type DraftState } from "./route-draft";
-import { draftProblems, placeChanged, planSave, placeBody, restoreHeld, routeBody, videoLinkLooksValid, withLegIds } from "./save-plan";
+import { draftProblems, placeChanged, planSave, placeBody, keepLaterEdits, restoreHeld, routeBody, videoLinkLooksValid, withLegIds } from "./save-plan";
 import type { AdminRoute, AdminSpot } from "./types";
 import { estimateWalkMinutes } from "./walk-time";
 
@@ -468,5 +468,19 @@ describe("how the route is walked", () => {
     expect(routeBody(edited.present).walkStyle).toBe("out_and_back");
     expect(previewRoute(edited.present, 1).walkStyle).toBe("out_and_back");
     expect(draftFromServer(serverRoute({ walkStyle: "loop" }), []).walkStyle).toBe("loop");
+  });
+});
+
+describe("what is on the screen when a save finishes", () => {
+  test("a change made while the save was running is kept on top of what the server holds, and the draft stays unsaved", () => {
+    const atStart = draftFromServer(serverRoute({ videoUrl: "https://x.test/videos/a.mp4", videoSubtitles: true }), []);
+    const fromServer = { ...atStart, updatedAt: "2026-10-28T02:00:00.000Z" };
+    // While the save ran, a new video finished uploading and its subtitles were added.
+    const now = { ...atStart, videoUrl: "https://x.test/videos/b.mp4", videoSubtitles: true, nameEn: "While saving" };
+    const merged = keepLaterEdits(fromServer, atStart, now);
+    expect(merged).toMatchObject({ videoUrl: "https://x.test/videos/b.mp4", nameEn: "While saving", updatedAt: "2026-10-28T02:00:00.000Z" });
+    expect(isDirty(merged, fromServer)).toBe(true);
+    // Nothing changed meanwhile: exactly what the server holds.
+    expect(keepLaterEdits(fromServer, atStart, atStart)).toEqual(fromServer);
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { parseVideoFile, parseVideoUrl } from "./video";
+import { parseVideoFile, parseVideoUrl, subtitleUrl } from "./video";
 
 describe("parseVideoUrl", () => {
   test("accepts the usual YouTube forms and embeds them without cookies", () => {
@@ -43,5 +43,14 @@ describe("parseVideoFile", () => {
     for (const bad of ["http://photos.example.com/v.mp4", "https://photos.example.com/v.mov", "https://youtu.be/dQw4w9WgXcQ", "", null, "nope"]) {
       expect(parseVideoFile(bad)).toBeNull();
     }
+  });
+});
+
+describe("subtitle address", () => {
+  const video = { src: "https://pub.example.dev/videos/walk-ab12.mp4" };
+  test("sits beside the video; a version is added so replaced subtitles are fetched again", () => {
+    expect(subtitleUrl(video)).toBe("https://pub.example.dev/videos/walk-ab12.vtt");
+    expect(subtitleUrl(video, "2026-10-28T02:00:00.000Z")).toBe("https://pub.example.dev/videos/walk-ab12.vtt?v=2026-10-28T02%3A00%3A00.000Z");
+    expect(subtitleUrl(video, null)).toBe("https://pub.example.dev/videos/walk-ab12.vtt");
   });
 });

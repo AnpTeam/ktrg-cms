@@ -285,6 +285,20 @@ export function restoreHeld(fromServer: RouteDraft, edited: RouteDraft, held: Re
   };
 }
 
+/**
+ * After a save, the screen is replaced by what the server now holds. A change made on the screen while the save was running
+ * (a video that finished uploading, subtitles added) would be lost and the Save button would stay dark: this puts the route's
+ * own fields that changed since the save began back on top. Waypoints and the line are not merged (they are saved in the steps).
+ */
+export function keepLaterEdits(fromServer: RouteDraft, atStart: RouteDraft, now: RouteDraft): RouteDraft {
+  const out: Record<string, unknown> = { ...fromServer };
+  for (const key of Object.keys(now) as (keyof RouteDraft)[]) {
+    if (key === "id" || key === "updatedAt" || key === "places" || key === "legs" || key === "line") continue;
+    if (JSON.stringify(now[key]) !== JSON.stringify(atStart[key])) out[key] = now[key];
+  }
+  return out as unknown as RouteDraft;
+}
+
 // ---- checks before saving ------------------------------------------------------------------------------------
 
 export type DraftProblem =

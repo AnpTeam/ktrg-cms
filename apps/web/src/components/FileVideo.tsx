@@ -9,7 +9,7 @@ import { subtitleUrl, type FileVideo } from "@/lib/video";
  * visitor taps it, so a long video costs no mobile data (and nothing on a weak signal) before they choose to watch.
  * After the tap the player streams the file as it plays.
  */
-export function FileVideoPlayer({ video, title, subtitles = false, language = "ja" }: { video: FileVideo; title: string; /** The language the subtitles are in. */ language?: "ja" | "en"; /** Ask for the .vtt beside the video (only when one was uploaded). */ subtitles?: boolean }) {
+export function FileVideoPlayer({ video, title, subtitles = false, language = "ja", version = null }: { video: FileVideo; title: string; /** When the route was last saved: part of the subtitles' address, so replaced subtitles are fetched again. */ version?: string | null; /** The language the subtitles are in. */ language?: "ja" | "en"; /** Ask for the .vtt beside the video (only when one was uploaded). */ subtitles?: boolean }) {
   const { t } = useLingui();
   const [playing, setPlaying] = useState(false);
 
@@ -20,7 +20,7 @@ export function FileVideoPlayer({ video, title, subtitles = false, language = "j
           // No download button and no right-click menu: this only stops casual saving, the file's address stays public.
           // The subtitles are the .vtt beside the video; a video without them simply shows none.
           <video src={video.src} title={title} controls controlsList="nodownload" disablePictureInPicture onContextMenu={(e) => e.preventDefault()} autoPlay playsInline preload="auto" className="h-full w-full">
-            {subtitles ? <track kind="subtitles" src={subtitleUrl(video)} srcLang={language} label={t`字幕`} default /> : null}
+            {subtitles ? <track kind="subtitles" src={subtitleUrl(video, version)} srcLang={language} label={t`字幕`} default /> : null}
           </video>
         ) : (
           <button
