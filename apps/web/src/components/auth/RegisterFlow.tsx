@@ -112,6 +112,7 @@ export function RegisterFlow({ next, loginHref }: { next?: string; loginHref: st
           </label>
         ) : null}
         <AuthError code={error} />
+        {method === "passkey" ? <p className="text-base text-muted">{t`ほかのパスキーアプリを使うときは、表示される画面で選んでください。`}</p> : null}
         <div className="flex flex-col gap-3">
           <button type="submit" disabled={busy || !ready} className={primaryButton}>
             {method === "passkey" ? (

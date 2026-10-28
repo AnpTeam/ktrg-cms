@@ -127,9 +127,10 @@ export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail:
 
       {supported === true ? (
         <button type="button" onClick={add} disabled={busy} className={primaryButton}>
-          {t`この端末のパスキーを追加する`}
+          {t`パスキーを追加する`}
         </button>
       ) : null}
+      {supported === true ? <p className="text-base text-muted">{t`ほかのパスキーアプリを使うときは、表示される画面で選んでください。`}</p> : null}
       {supported === false ? <p className="rounded-2xl bg-surface p-4 text-lg">{t`この端末・ブラウザではパスキーを使えません。`}</p> : null}
 
       {reauthDialog}
