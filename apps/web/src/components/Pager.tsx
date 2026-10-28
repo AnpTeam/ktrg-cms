@@ -3,10 +3,10 @@
 import { useLingui } from "@lingui/react/macro";
 import { clampPage } from "@/lib/pager";
 
-/** Previous / next and "page [ 3 ] of 12": type a page number and press Enter (or leave the box) to go there. Hidden when there is one page. */
-export function Pager({ page, pages, onPage, disabled = false }: { page: number; pages: number; onPage: (page: number) => void; disabled?: boolean }) {
+/** Previous / next and "page [ 3 ] of 12": type a page number and press Enter (or leave the box) to go there. With one page it stays, greyed out, unless `hideWhenSingle`. */
+export function Pager({ page, pages, onPage, disabled = false, hideWhenSingle = false }: { page: number; pages: number; onPage: (page: number) => void; disabled?: boolean; hideWhenSingle?: boolean }) {
   const { t } = useLingui();
-  if (pages <= 1) return null;
+  if (pages <= 1 && hideWhenSingle) return null;
 
   // The box is not controlled: it starts from the page (a new page gives it a new key) and is read when committed.
   const go = (box: HTMLInputElement) => {
@@ -28,7 +28,7 @@ export function Pager({ page, pages, onPage, disabled = false }: { page: number;
           pattern="[0-9]*"
           key={page}
           defaultValue={page}
-          disabled={disabled}
+          disabled={disabled || pages <= 1}
           onBlur={(e) => go(e.currentTarget)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
