@@ -13,6 +13,15 @@ export function createDrizzlePasskeyStore(db: Db): PasskeyStore {
         .orderBy(asc(passkeys.createdAt));
     },
 
+    async rename(userId, passkeyId, label) {
+      const rows = await db
+        .update(passkeys)
+        .set({ label })
+        .where(and(eq(passkeys.id, passkeyId), eq(passkeys.userId, userId)))
+        .returning({ id: passkeys.id });
+      return rows.length > 0;
+    },
+
     async remove(userId, passkeyId, opts): Promise<RemoveStoreResult> {
       return db.transaction(async (tx): Promise<RemoveStoreResult> => {
         // Lock the user row so two removals at once cannot both take what looks like "not the last one".

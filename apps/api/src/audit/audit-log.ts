@@ -17,6 +17,7 @@ export const AUDIT_ACTIONS = {
   "email.add": "user",
   "passkey.add": "passkey",
   "passkey.remove": "passkey",
+  "passkey.rename": "passkey",
   /** DELETE /me: the owner asked for their account to be deleted. */
   "user.deletion_request": "user",
   /** The owner cancelled a pending deletion request. */

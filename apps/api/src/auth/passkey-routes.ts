@@ -77,6 +77,23 @@ export function passkeyRoutes(getServices: () => PasskeyServices, opts: RouteOpt
       .get("/", async ({ user }) => ({ ok: true as const, passkeys: await getServices().passkeys.list(user) }), {
         auth: "me.manage",
       })
+      // Rename one of your own passkeys. A name is only a label, so no fresh login is asked for.
+      .patch(
+        "/:id",
+        async ({ user, set, params, body }) => {
+          const label = body.label.trim();
+          if (!label) return fail(set, 400, "bad_request");
+          // Someone else's passkey looks exactly like one that does not exist.
+          return (await getServices().passkeys.rename(user, params.id, label)) ? { ok: true as const } : fail(set, 404, "not_found");
+        },
+        {
+          auth: "me.manage",
+          rateLimit: { passkeyRenameUser: "user.id" },
+          audit: "passkey.rename",
+          params: uuidParams,
+          body: t.Object({ label: t.String({ maxLength: 64 }) }),
+        },
+      )
       // Remove one of your own passkeys. The owner is emailed.
       .delete(
         "/:id",
