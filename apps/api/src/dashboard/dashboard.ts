@@ -86,17 +86,16 @@ export function createDashboardService(deps: { store: DashboardStore; visits: Vi
       if (hit && now().getTime() - hit.at < ttl) return hit.value;
       const from = addDays(to, -(days - 1));
       const start = startOfJstDay(from);
-      const [goals, totals, added, daily, origins, byRoute, visitRange, visitAll, visitDaily] = await Promise.all([
-        deps.settings.dashboardGoals(),
-        deps.store.totals(),
-        deps.store.since(start),
-        deps.store.daily(start),
-        deps.store.originSplit(),
-        deps.store.stampsByRoute(start, 10),
-        deps.visits.summary(from, to, null),
-        deps.visits.summary("2000-01-01", to, null),
-        deps.visits.daily(from, to),
-      ]);
+      // One group at a time: every store method already runs a few queries side by side, and starting all of them at once
+      // (about 24) used up the whole connection pool, so every other admin page waited behind the dashboard and timed out.
+      const [goals, totals] = await Promise.all([deps.settings.dashboardGoals(), deps.store.totals()]);
+      const added = await deps.store.since(start);
+      const daily = await deps.store.daily(start);
+      const origins = await deps.store.originSplit();
+      const byRoute = await deps.store.stampsByRoute(start, 10);
+      const visitRange = await deps.visits.summary(from, to, null);
+      const visitAll = await deps.visits.summary("2000-01-01", to, null);
+      const visitDaily = await deps.visits.daily(from, to);
       const value: Overview = {
         range: { from, to, days },
         goals: goals ?? NO_GOALS,

@@ -71,7 +71,7 @@ export function viewerFromMe(status: number, body: unknown): Viewer {
   };
 }
 
-/** Ask the API who the session cookie belongs to. No cookie, no API or a slow one all mean signed out. */
+/** Ask the API who the session cookie belongs to. No cookie, no API or a very slow one all mean signed out. */
 const sessionViewer = cache(async (): Promise<Viewer> => {
   const { headers } = await import("next/headers");
   const cookie = (await headers()).get("cookie");
@@ -80,7 +80,7 @@ const sessionViewer = cache(async (): Promise<Viewer> => {
     const res = await fetch(`${process.env.API_ORIGIN ?? "http://localhost:3001"}/api/v1/me`, {
       headers: { cookie },
       cache: "no-store",
-      signal: AbortSignal.timeout(2500),
+      signal: AbortSignal.timeout(6000), // a slow API must not look like a signed-out visitor
     });
     return viewerFromMe(res.status, await res.json().catch(() => null));
   } catch {
