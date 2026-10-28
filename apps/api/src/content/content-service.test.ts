@@ -118,6 +118,14 @@ describe("routes", () => {
     const en = await svc.updateRoute(ADMIN, r.id, jp.value.updatedAt, { videoUrlEn: "https://youtu.be/abcdefghijk" });
     expect(en.ok && [en.value.videoUrl, en.value.videoUrlEn]).toEqual(["https://youtu.be/dQw4w9WgXcQ", "https://youtu.be/abcdefghijk"]);
     if (!en.ok) throw new Error("expected the English video to save");
+    // Subtitles belong to the English file: set them, and another English video starts without.
+    const subs = await svc.updateRoute(ADMIN, r.id, en.value.updatedAt, { videoSubtitlesEn: true });
+    if (!subs.ok) throw new Error("expected the subtitles flag to save");
+    expect([subs.value.videoSubtitlesEn, subs.value.videoSubtitles]).toEqual([true, false]);
+    const swapped = await svc.updateRoute(ADMIN, r.id, subs.value.updatedAt, { videoUrlEn: "https://youtu.be/zzzzzzzzzzz" });
+    if (!swapped.ok) throw new Error("expected the swap to save");
+    expect(swapped.value.videoSubtitlesEn).toBe(false);
+    en.value.updatedAt = swapped.value.updatedAt;
     const gone = await svc.updateRoute(ADMIN, r.id, en.value.updatedAt, { videoUrlEn: null });
     expect(gone.ok && [gone.value.videoUrl, gone.value.videoUrlEn]).toEqual(["https://youtu.be/dQw4w9WgXcQ", null]);
   });

@@ -139,6 +139,7 @@ export interface RouteDetail extends RouteSummary {
   videoSubtitles?: boolean;
   /** The English-language video; the English site shows it instead of `videoUrl` (and falls back to `videoUrl` when there is none). */
   videoUrlEn?: string | null;
+  videoSubtitlesEn?: boolean;
   /** When the route was last saved (ISO). */
   updatedAt?: string | null;
   /** How the route is walked, as an admin saved it; null/left out when nobody has said. */

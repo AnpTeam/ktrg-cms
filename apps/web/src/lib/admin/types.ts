@@ -41,6 +41,7 @@ export interface AdminRoute {
   lineSource: string | null;
   videoUrl: string | null;
   videoUrlEn: string | null;
+  videoSubtitlesEn: boolean;
   videoSubtitles: boolean;
   historyJa: string | null;
   historyEn: string | null;

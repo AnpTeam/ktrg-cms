@@ -153,6 +153,7 @@ export function routeDetailFromApi(
     videoUpdatedAt: r.videoUpdatedAt ?? null,
     videoSubtitles: r.videoSubtitles === true,
     videoUrlEn: r.videoUrlEn ?? null,
+    videoSubtitlesEn: r.videoSubtitlesEn === true,
     updatedAt: r.updatedAt ?? null,
     photoUrl: r.photoUrl,
     photoCredit: r.photoCredit ?? null,

@@ -76,6 +76,7 @@ export interface PublicRoute {
   videoUpdatedAt: Date | null;
   videoSubtitles: boolean;
   videoUrlEn: string | null;
+  videoSubtitlesEn: boolean;
   updatedAt: Date;
   historyJa: string | null;
   historyEn: string | null;
@@ -139,6 +140,7 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     videoUpdatedAt: r.videoUpdatedAt,
     videoSubtitles: r.videoSubtitles,
     videoUrlEn: r.videoUrlEn,
+    videoSubtitlesEn: r.videoSubtitlesEn,
     updatedAt: r.updatedAt,
     historyJa: r.historyJa,
     historyEn: r.historyEn,
@@ -251,6 +253,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (v && !isAllowedVideoUrl(v, photoHosts)) return bad("invalid_video_url");
       out.videoUrlEn = v;
     }
+    if (input.videoSubtitlesEn !== undefined) out.videoSubtitlesEn = input.videoSubtitlesEn;
     if (input.photoUrl !== undefined) {
       const v = text(input.photoUrl);
       if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");
@@ -364,6 +367,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
         // Subtitles belong to the file: another video has none until they are uploaded for it.
         if (changes.videoSubtitles === undefined) changes.videoSubtitles = false;
       }
+      if (changes.videoUrlEn !== undefined && changes.videoUrlEn !== current.route.videoUrlEn && changes.videoSubtitlesEn === undefined) changes.videoSubtitlesEn = false;
       const r = await store.updateRoute(actor, id, date(expected), changes);
       if (r === null) return bad("not_found");
       if (r === "conflict") return bad("conflict");

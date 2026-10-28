@@ -97,6 +97,8 @@ export interface RouteDraft {
   videoUrl: string;
   /** The English video's link (empty: the English site shows the Japanese video). */
   videoUrlEn: string;
+  /** Subtitles were uploaded for the English video. */
+  videoSubtitlesEn: boolean;
   /** Subtitles were uploaded for the video. */
   videoSubtitles: boolean;
   /** The whole line: the legs joined in order. Only a track imported before there are two stops to cut it at is held here alone. */
@@ -112,7 +114,7 @@ export const emptyDraft = (): RouteDraft => ({
   id: null, updatedAt: null, nameJa: "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
   accessJa: "", accessEn: "", translations: {}, photoUrl: "", photoCredit: "", sourceJa: "", sourceEn: "", prefecture: null, walkStyle: null, municipality: "",
   distanceKm: null, distanceManual: false, elevationGainM: null, climbManual: false, expectedTimeMin: null, timeManual: false,
-  difficulty: "", nameKana: "", accessPoints: [], physicalLevel: null, technicalLevel: null, videoUrl: "", videoUrlEn: "", videoSubtitles: false, line: [], legs: [], lineVerified: false, lineSource: "", places: [],
+  difficulty: "", nameKana: "", accessPoints: [], physicalLevel: null, technicalLevel: null, videoUrl: "", videoUrlEn: "", videoSubtitlesEn: false, videoSubtitles: false, line: [], legs: [], lineVerified: false, lineSource: "", places: [],
 });
 
 const s = (v: string | null | undefined) => v ?? "";
@@ -165,7 +167,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
     expectedTimeMin: route.expectedTimeMin,
     // A saved time that is not what the distance and climb give was typed by hand.
     timeManual: route.expectedTimeMin !== null && route.expectedTimeMin !== estimateWalkMinutes(route.distanceKm, route.elevationGainM),
-    difficulty: s(route.difficulty), nameKana: s(route.nameKana), accessPoints: route.accessPoints ?? [], physicalLevel: route.physicalLevel, technicalLevel: route.technicalLevel, videoUrl: s(route.videoUrl), videoUrlEn: s(route.videoUrlEn), videoSubtitles: route.videoSubtitles === true,
+    difficulty: s(route.difficulty), nameKana: s(route.nameKana), accessPoints: route.accessPoints ?? [], physicalLevel: route.physicalLevel, technicalLevel: route.technicalLevel, videoUrl: s(route.videoUrl), videoUrlEn: s(route.videoUrlEn), videoSubtitlesEn: route.videoSubtitlesEn === true, videoSubtitles: route.videoSubtitles === true,
     line: legs.length > 0 ? joinLegs(pathStops(places), legs).line : line, legs, lineVerified: route.lineVerified, lineSource: s(route.lineSource),
     places,
   };
@@ -227,6 +229,7 @@ export type DraftAction =
   | { type: "time"; value: number | null }
   | { type: "lineVerified"; value: boolean }
   | { type: "videoSubtitles"; value: boolean }
+  | { type: "videoSubtitlesEn"; value: boolean }
   /** A whole line (an imported track): cut into legs at the stops when there are two or more. */
   | { type: "line"; points: LngLatEle[] }
   /** One leg drawn, found on trails or made straight; it replaces that pair's leg and no other. */
@@ -330,9 +333,11 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
   switch (a.type) {
     case "text":
       // Another video has no subtitles until they are uploaded for it.
-      return { ...d, [a.field]: a.value, ...(a.field === "videoUrl" && a.value !== d.videoUrl ? { videoSubtitles: false } : {}) };
+      return { ...d, [a.field]: a.value, ...(a.field === "videoUrl" && a.value !== d.videoUrl ? { videoSubtitles: false } : {}), ...(a.field === "videoUrlEn" && a.value !== d.videoUrlEn ? { videoSubtitlesEn: false } : {}) };
     case "videoSubtitles":
       return { ...d, videoSubtitles: a.value };
+    case "videoSubtitlesEn":
+      return { ...d, videoSubtitlesEn: a.value };
     case "translations":
       return { ...d, translations: a.value };
     case "accessPoints":
@@ -546,6 +551,7 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
     sideLines: d.legs.filter((l) => l.side).map((l) => ({ spotId: l.to, line: l.points.map(([lng, lat]) => ({ lat, lng })) })),
     videoUrl: nz(d.videoUrl),
     videoUrlEn: nz(d.videoUrlEn),
+    videoSubtitlesEn: d.videoSubtitlesEn,
     videoSubtitles: d.videoSubtitles,
     photoUrl: nz(d.photoUrl),
     photoCredit: nz(d.photoCredit),

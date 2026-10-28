@@ -19,6 +19,7 @@ async function withRouteTexts(q: Reader, rows: (typeof routes.$inferSelect)[]): 
       ...r,
       ...t,
       nameJa: t.nameJa ?? "",
+      videoSubtitlesEn: texts.some((x) => x.routeId === r.id && x.locale === "en" && x.videoSubtitles),
       prefecture: r.prefecture as RouteRow["prefecture"],
       walkStyle: r.walkStyle as RouteRow["walkStyle"],
       technicalLevel: r.technicalLevel as RouteRow["technicalLevel"],
@@ -53,6 +54,17 @@ async function saveRouteTexts(tx: Tx, routeId: string, texts: Texts<(typeof ROUT
       .returning({ locale: routeTranslations.locale });
     if (updated.length === 0) await tx.insert(routeTranslations).values({ routeId, locale, ...values });
   }
+}
+
+/** The English video's subtitle flag lives in the English translation row beside its video link (not a word, so it is written apart from the texts). */
+async function saveEnglishSubtitles(tx: Tx, routeId: string, value: boolean | undefined) {
+  if (value === undefined) return;
+  const updated = await tx
+    .update(routeTranslations)
+    .set({ videoSubtitles: value })
+    .where(and(eq(routeTranslations.routeId, routeId), eq(routeTranslations.locale, "en")))
+    .returning({ locale: routeTranslations.locale });
+  if (updated.length === 0 && value) await tx.insert(routeTranslations).values({ routeId, locale: "en", videoSubtitles: value });
 }
 
 async function saveSpotTexts(tx: Tx, spotId: string, texts: Texts<(typeof SPOT_TEXT)[number]>) {
@@ -129,7 +141,8 @@ export function createDrizzleContentStore(db: Db): ContentStore {
       return withSpotTexts(db, await db.select().from(spots).where(eq(spots.published, true)));
     },
 
-    async createRoute(actor, fields) {
+    async createRoute(actor, input) {
+      const { videoSubtitlesEn, ...fields } = input;
       const { rest, texts } = splitTexts(ROUTE_TEXT, fields);
       return db.transaction(async (tx) => {
         const [row] = await tx
@@ -137,12 +150,14 @@ export function createDrizzleContentStore(db: Db): ContentStore {
           .values({ ...rest, sortOrder: await nextRouteOrder(tx) })
           .returning();
         await saveRouteTexts(tx, row!.id, texts);
+        await saveEnglishSubtitles(tx, row!.id, videoSubtitlesEn);
         await writeAudit(tx, { actorUserId: actor, action: "route.create", targetId: row!.id });
         return routeFromDb(tx, row!);
       });
     },
 
-    async updateRoute(actor, id, expected, changes) {
+    async updateRoute(actor, id, expected, input) {
+      const { videoSubtitlesEn, ...changes } = input;
       const { rest, texts } = splitTexts(ROUTE_TEXT, changes);
       return db.transaction(async (tx) => {
         // A video link that is replaced or removed is kept, so it can be put back.
@@ -160,6 +175,7 @@ export function createDrizzleContentStore(db: Db): ContentStore {
           return exists ? "conflict" : null;
         }
         await saveRouteTexts(tx, id, texts);
+        await saveEnglishSubtitles(tx, id, videoSubtitlesEn);
         await writeAudit(tx, { actorUserId: actor, action: "route.update", targetId: id });
         return routeFromDb(tx, row);
       });
