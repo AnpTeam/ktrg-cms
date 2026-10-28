@@ -73,7 +73,8 @@ export function fillDays(from: string, to: string, rows: { day: string; n: numbe
 
 export type DashboardService = ReturnType<typeof createDashboardService>;
 
-export function createDashboardService(deps: { store: DashboardStore; visits: VisitService; settings: SiteSettingsService; now?: () => Date; ttlMs?: number }) {
+export function createDashboardService(deps: { store: DashboardStore; visits: VisitService; settings: SiteSettingsService; now?: () => Date; ttlMs?: number; log?: (line: string) => void }) {
+  const log = deps.log ?? console.error;
   const now = deps.now ?? (() => new Date());
   const ttl = deps.ttlMs ?? 60_000;
   // A minute is fresh enough for numbers like these, and it keeps a reload from running every query again.
@@ -88,14 +89,24 @@ export function createDashboardService(deps: { store: DashboardStore; visits: Vi
       const start = startOfJstDay(from);
       // One group at a time: every store method already runs a few queries side by side, and starting all of them at once
       // (about 24) used up the whole connection pool, so every other admin page waited behind the dashboard and timed out.
-      const [goals, totals] = await Promise.all([deps.settings.dashboardGoals(), deps.store.totals()]);
-      const added = await deps.store.since(start);
-      const daily = await deps.store.daily(start);
-      const origins = await deps.store.originSplit();
-      const byRoute = await deps.store.stampsByRoute(start, 10);
-      const visitRange = await deps.visits.summary(from, to, null);
-      const visitAll = await deps.visits.summary("2000-01-01", to, null);
-      const visitDaily = await deps.visits.daily(from, to);
+      // A step slower than half a second is logged by name (no data in it), to find which query is the slow one.
+      const step = async <T>(name: string, run: () => Promise<T>): Promise<T> => {
+        const t0 = Date.now();
+        try {
+          return await run();
+        } finally {
+          const ms = Date.now() - t0;
+          if (ms > 500) log(`dashboard step slow: ${name} ${ms}ms`);
+        }
+      };
+      const [goals, totals] = await Promise.all([step("goals", () => deps.settings.dashboardGoals()), step("totals", () => deps.store.totals())]);
+      const added = await step("since", () => deps.store.since(start));
+      const daily = await step("daily", () => deps.store.daily(start));
+      const origins = await step("origins", () => deps.store.originSplit());
+      const byRoute = await step("byRoute", () => deps.store.stampsByRoute(start, 10));
+      const visitRange = await step("visitRange", () => deps.visits.summary(from, to, null));
+      const visitAll = await step("visitAll", () => deps.visits.summary("2000-01-01", to, null));
+      const visitDaily = await step("visitDaily", () => deps.visits.daily(from, to));
       const value: Overview = {
         range: { from, to, days },
         goals: goals ?? NO_GOALS,
