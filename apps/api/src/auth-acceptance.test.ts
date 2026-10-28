@@ -377,6 +377,7 @@ describe("user B cannot touch user A", () => {
   ]);
   /** A well-formed body for each logged-in route that needs one (validation runs before the guard). */
   const BODIES: Record<string, () => unknown> = {
+    "PATCH /api/v1/auth/passkeys/:id": () => ({ label: "x" }),
     "PATCH /api/v1/me": () => ({ locale: "en" }),
     "POST /api/v1/guest/claim": () => ({ mode: "merge" }),
     "POST /api/v1/admin/routes": () => ({ nameJa: "x" }),
@@ -447,6 +448,7 @@ describe("user B cannot touch user A", () => {
     // Catches the inventory itself going stale.
     expect(routes).toContain("GET /api/v1/me");
     expect(routes).toContain("DELETE /api/v1/auth/passkeys/:id");
+    expect(routes).toContain("PATCH /api/v1/auth/passkeys/:id");
 
     for (const key of routes) {
       const [method, path] = key.split(" ") as [string, string];

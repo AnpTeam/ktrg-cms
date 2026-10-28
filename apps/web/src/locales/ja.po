@@ -138,7 +138,7 @@ msgstr "{0}件を読みました。新しい場所：{1}件、すでにある場
 msgid "{0}回に満たない市・町は、名前を出さず合計だけにしています（{1}回）。"
 msgstr "{0}回に満たない市・町は、名前を出さず合計だけにしています（{1}回）。"
 
-#: src/components/settings/PasskeyManager.tsx:110
+#: src/components/settings/PasskeyManager.tsx:146
 msgid "{added} に追加"
 msgstr "{added} に追加"
 
@@ -706,7 +706,7 @@ msgstr "アカウントを削除しますか？"
 msgid "アカウントを削除する"
 msgstr "アカウントを削除する"
 
-#: src/components/SiteHeader.tsx:228
+#: src/components/SiteHeader.tsx:230
 msgid "アカウント設定"
 msgstr "アカウント設定"
 
@@ -1144,7 +1144,7 @@ msgstr "この{days}日間"
 msgid "このGPXファイルには、標高のある道すじがないか、今の線とほとんど重なっていません。"
 msgstr "このGPXファイルには、標高のある道すじがないか、今の線とほとんど重なっていません。"
 
-#: src/components/settings/PasskeyManager.tsx:96
+#: src/components/settings/PasskeyManager.tsx:110
 msgid "このアカウントに、パスキーはまだありません。"
 msgstr "このアカウントに、パスキーはまだありません。"
 
@@ -1177,11 +1177,11 @@ msgstr "このスタンプは、もう押してあります。"
 msgid "このデータについて"
 msgstr "このデータについて"
 
-#: src/components/settings/PasskeyManager.tsx:146
+#: src/components/settings/PasskeyManager.tsx:192
 msgid "このパスキーは、消せません"
 msgstr "このパスキーは、消せません"
 
-#: src/components/settings/PasskeyManager.tsx:158
+#: src/components/settings/PasskeyManager.tsx:204
 msgid "このパスキーを消しますか？"
 msgstr "このパスキーを消しますか？"
 
@@ -1394,7 +1394,7 @@ msgstr "この次に追加"
 msgid "この端末・ブラウザでは、位置情報を使えません。"
 msgstr "この端末・ブラウザでは、位置情報を使えません。"
 
-#: src/components/settings/PasskeyManager.tsx:134
+#: src/components/settings/PasskeyManager.tsx:180
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "この端末・ブラウザではパスキーを使えません。"
 
@@ -1523,7 +1523,7 @@ msgstr "コメントを書く"
 msgid "コメントを書くには、ログインが必要です。"
 msgstr "コメントを書くには、ログインが必要です。"
 
-#: src/components/settings/PasskeyManager.tsx:148
+#: src/components/settings/PasskeyManager.tsx:194
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 msgstr "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 
@@ -2061,9 +2061,13 @@ msgstr "はじめる"
 msgid "バス"
 msgstr "バス"
 
-#: src/components/settings/PasskeyManager.tsx:109
+#: src/components/settings/PasskeyManager.tsx:145
 msgid "パスキー {number}"
 msgstr "パスキー {number}"
+
+#: src/components/settings/PasskeyManager.tsx:124
+msgid "パスキーの名前"
+msgstr "パスキーの名前"
 
 #: src/components/useErrorMessages.ts:69
 msgid "パスキーの確認が中止されました。もう一度お試しください。"
@@ -2077,7 +2081,7 @@ msgstr "パスキーは、これ以上ふやせません。使わないものを
 msgid "パスキーは、顔や指紋でログインするための鍵です。この端末のものを追加すると、メールを待たずにログインできます。"
 msgstr "パスキーは、顔や指紋でログインするための鍵です。この端末のものを追加すると、メールを待たずにログインできます。"
 
-#: src/components/settings/PasskeyManager.tsx:130
+#: src/components/settings/PasskeyManager.tsx:176
 msgid "パスキーを追加する"
 msgstr "パスキーを追加する"
 
@@ -2154,7 +2158,7 @@ msgstr "ふつうは、3日後に削除する方法を使います。その間�
 #: src/app/(public)/bookmarks/page.tsx:12
 #: src/app/(public)/page.tsx:78
 #: src/app/(public)/sitemap/page.tsx:99
-#: src/components/SiteHeader.tsx:241
+#: src/components/SiteHeader.tsx:243
 msgid "ブックマーク"
 msgstr "ブックマーク"
 
@@ -2185,7 +2189,7 @@ msgstr "フッター"
 #: src/app/(public)/sitemap/page.tsx:123
 #: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:33
-#: src/components/SiteHeader.tsx:272
+#: src/components/SiteHeader.tsx:274
 msgid "プライバシーポリシー"
 msgstr "プライバシーポリシー"
 
@@ -2212,7 +2216,7 @@ msgstr "プレビュー"
 #: src/app/(public)/sitemap/page.tsx:76
 #: src/components/landing/BlogCard.tsx:22
 #: src/components/SiteFooter.tsx:18
-#: src/components/SiteHeader.tsx:246
+#: src/components/SiteHeader.tsx:248
 msgid "ブログ"
 msgstr "ブログ"
 
@@ -2335,7 +2339,7 @@ msgid "ほかにログインの方法がないので、このパスキーは消�
 msgstr "ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。"
 
 #: src/components/auth/RegisterFlow.tsx:115
-#: src/components/settings/PasskeyManager.tsx:133
+#: src/components/settings/PasskeyManager.tsx:179
 msgid "ほかのパスキーアプリを使うときは、表示される画面で選んでください。"
 msgstr "ほかのパスキーアプリを使うときは、表示される画面で選んでください。"
 
@@ -2510,7 +2514,7 @@ msgid "めぐる場所"
 msgstr "めぐる場所"
 
 #: src/components/admin/AdminNav.tsx:60
-#: src/components/SiteHeader.tsx:192
+#: src/components/SiteHeader.tsx:194
 #: src/components/TabBar.tsx:69
 msgid "メニュー"
 msgstr "メニュー"
@@ -2582,7 +2586,8 @@ msgstr "もらいました"
 #: src/components/auth/ReauthDialog.tsx:72
 #: src/components/auth/ReauthDialog.tsx:94
 #: src/components/ProfileSettings.tsx:250
-#: src/components/settings/PasskeyManager.tsx:166
+#: src/components/settings/PasskeyManager.tsx:138
+#: src/components/settings/PasskeyManager.tsx:212
 #: src/components/StampHere.tsx:172
 msgid "やめる"
 msgstr "やめる"
@@ -2610,7 +2615,7 @@ msgstr "やり直す"
 #: src/app/(public)/sitemap/page.tsx:117
 #: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:21
-#: src/components/SiteHeader.tsx:270
+#: src/components/SiteHeader.tsx:272
 msgid "よくあるご質問"
 msgstr "よくあるご質問"
 
@@ -2624,7 +2629,7 @@ msgstr "よみ"
 
 #: src/app/(public)/sitemap/page.tsx:126
 #: src/components/SiteFooter.tsx:24
-#: src/components/SiteHeader.tsx:273
+#: src/components/SiteHeader.tsx:275
 msgid "ライセンス情報"
 msgstr "ライセンス情報"
 
@@ -2904,7 +2909,7 @@ msgstr "ルート一覧にもどる"
 msgid "ルート名（日本語）"
 msgstr "ルート名（日本語）"
 
-#: src/components/SiteHeader.tsx:211
+#: src/components/SiteHeader.tsx:213
 msgid "ログアウト"
 msgstr "ログアウト"
 
@@ -2918,7 +2923,7 @@ msgstr "ログアウト"
 #: src/components/landing/LandingHero.tsx:55
 #: src/components/ProfileSettings.tsx:179
 #: src/components/SignInPrompt.tsx:37
-#: src/components/SiteHeader.tsx:217
+#: src/components/SiteHeader.tsx:219
 msgid "ログイン"
 msgstr "ログイン"
 
@@ -2945,7 +2950,7 @@ msgstr "ログインの方法"
 msgid "ログインの方法（パスキー）"
 msgstr "ログインの方法（パスキー）"
 
-#: src/components/settings/PasskeyManager.tsx:151
+#: src/components/settings/PasskeyManager.tsx:197
 msgid "わかりました"
 msgstr "わかりました"
 
@@ -3297,6 +3302,7 @@ msgstr "保存しました（電波がなくても開けます）"
 #: src/components/admin/RouteEditor.tsx:478
 #: src/components/admin/SiteSettingsForm.tsx:112
 #: src/components/ProfileSettings.tsx:220
+#: src/components/settings/PasskeyManager.tsx:135
 #: src/components/settings/PrefsForm.tsx:162
 msgid "保存する"
 msgstr "保存する"
@@ -3759,7 +3765,7 @@ msgstr "別の人が先に保存しました。読み込み直してから、も
 #: src/app/(public)/sitemap/page.tsx:120
 #: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:30
-#: src/components/SiteHeader.tsx:271
+#: src/components/SiteHeader.tsx:273
 msgid "利用規約"
 msgstr "利用規約"
 
@@ -4124,6 +4130,10 @@ msgstr "名前の一部を入力"
 #: src/components/admin/RallyEditor.tsx:149
 msgid "名前を保存"
 msgstr "名前を保存"
+
+#: src/components/settings/PasskeyManager.tsx:153
+msgid "名前を変える"
+msgstr "名前を変える"
 
 #: src/components/admin/PhotoLibrary.tsx:145
 msgid "名前順"
@@ -4745,7 +4755,7 @@ msgstr "文字もボタンも、いちばん大きくなります。"
 msgid "文字もボタンも、少し大きくなります。"
 msgstr "文字もボタンも、少し大きくなります。"
 
-#: src/components/SiteHeader.tsx:264
+#: src/components/SiteHeader.tsx:266
 msgid "文字やボタンの大きさ、地図の見せ方"
 msgstr "文字やボタンの大きさ、地図の見せ方"
 
@@ -4812,7 +4822,7 @@ msgstr "新しく作るには、名前（日本語）が必要です"
 #: src/components/landing/Landing.tsx:197
 #: src/components/landing/LandingHero.tsx:46
 #: src/components/SignInPrompt.tsx:31
-#: src/components/SiteHeader.tsx:220
+#: src/components/SiteHeader.tsx:222
 msgid "新規登録"
 msgstr "新規登録"
 
@@ -5142,12 +5152,12 @@ msgstr "消したい点をクリックします。"
 
 #: src/components/admin/map-editor/PlaceList.tsx:92
 #: src/components/admin/RubyEditor.tsx:59
-#: src/components/settings/PasskeyManager.tsx:118
-#: src/components/settings/PasskeyManager.tsx:163
+#: src/components/settings/PasskeyManager.tsx:162
+#: src/components/settings/PasskeyManager.tsx:209
 msgid "消す"
 msgstr "消す"
 
-#: src/components/settings/PasskeyManager.tsx:160
+#: src/components/settings/PasskeyManager.tsx:206
 msgid "消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。"
 msgstr "消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。"
 
@@ -5280,7 +5290,7 @@ msgstr "町や村の名前"
 msgid "画面が見えない間は、位置を止めています。"
 msgstr "画面が見えない間は、位置を止めています。"
 
-#: src/components/SiteHeader.tsx:251
+#: src/components/SiteHeader.tsx:253
 msgid "画面の明るさ"
 msgstr "画面の明るさ"
 
@@ -5468,7 +5478,7 @@ msgstr "答えなくても大丈夫です。"
 msgid "管理メニュー"
 msgstr "管理メニュー"
 
-#: src/components/SiteHeader.tsx:235
+#: src/components/SiteHeader.tsx:237
 msgid "管理画面"
 msgstr "管理画面"
 
@@ -5957,7 +5967,7 @@ msgstr "見やすさのクイック設定"
 #: src/app/(public)/settings/page.tsx:12
 #: src/app/(public)/settings/page.tsx:29
 #: src/app/(public)/sitemap/page.tsx:108
-#: src/components/SiteHeader.tsx:262
+#: src/components/SiteHeader.tsx:264
 msgid "見やすさの設定"
 msgstr "見やすさの設定"
 
@@ -6023,7 +6033,7 @@ msgstr "説明文（日本語）"
 msgid "読みを入れた漢字の上に、小さく表示されます（ひらがな）。"
 msgstr "読みを入れた漢字の上に、小さく表示されます（ひらがな）。"
 
-#: src/components/settings/PasskeyManager.tsx:92
+#: src/components/settings/PasskeyManager.tsx:106
 msgid "読み込み中"
 msgstr "読み込み中"
 
@@ -6349,7 +6359,7 @@ msgstr "長さ"
 #: src/components/map/TrailMap.tsx:460
 #: src/components/ProfileSettings.tsx:230
 #: src/components/SampleNotice.tsx:64
-#: src/components/SiteHeader.tsx:196
+#: src/components/SiteHeader.tsx:198
 msgid "閉じる"
 msgstr "閉じる"
 

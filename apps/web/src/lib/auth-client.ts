@@ -179,6 +179,16 @@ export async function addPasskey(): Promise<AuthResult> {
   }
 }
 
+/** Give one of the account's own passkeys a new name. */
+export async function renamePasskey(id: string, label: string): Promise<AuthResult> {
+  try {
+    const res = await api.auth.passkeys({ id }).patch({ label });
+    return res.error ? fail(apiFailure(res.error)) : done;
+  } catch {
+    return fail("network");
+  }
+}
+
 /** Remove one of the account's own passkeys (the API refuses to remove the last way to log in). */
 export async function removePasskey(id: string): Promise<AuthResult> {
   try {

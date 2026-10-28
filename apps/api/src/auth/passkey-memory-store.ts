@@ -32,6 +32,11 @@ export function createMemoryPasskeyStore(
         .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
         .map((p) => ({ id: p.id, label: p.label, createdAt: p.createdAt }));
     },
+    async rename(userId, passkeyId, label) {
+      const target = passkeys.find((p) => p.userId === userId && p.id === passkeyId);
+      if (target) target.label = label;
+      return target !== undefined;
+    },
     async remove(userId, passkeyId, opts) {
       const mine = passkeys.filter((p) => p.userId === userId);
       const target = mine.find((p) => p.id === passkeyId);

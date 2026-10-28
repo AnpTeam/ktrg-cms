@@ -85,6 +85,46 @@ describe("GET /auth/passkeys", () => {
   });
 });
 
+describe("PATCH /auth/passkeys/:id", () => {
+  test("needs a login", async () => {
+    const { call } = setup();
+    expect((await call("PATCH", "/33333333-3333-3333-3333-333333333333", { label: "x" })).status).toBe(401);
+  });
+
+  test("renames your own passkey and records it", async () => {
+    const { call, cookieFor, addPasskey, auditRows } = setup();
+    await addPasskey(alice, "iPhone · Safari");
+    const cookie = await cookieFor(alice);
+    const id = ((await (await call("GET", "/", undefined, cookie)).json()) as ListBody).passkeys[0]!.id;
+
+    const res = await call("PATCH", `/${id}`, { label: "  My phone  " }, cookie);
+
+    expect(res.status).toBe(200);
+    expect(((await (await call("GET", "/", undefined, cookie)).json()) as ListBody).passkeys[0]!.label).toBe("My phone");
+    expect(auditRows).toEqual([{ actorUserId: alice.id, action: "passkey.rename", targetType: "passkey", targetId: id }]);
+  });
+
+  test("an empty name is refused", async () => {
+    const { call, cookieFor, addPasskey } = setup();
+    await addPasskey(alice, "Old");
+    const cookie = await cookieFor(alice);
+    const id = ((await (await call("GET", "/", undefined, cookie)).json()) as ListBody).passkeys[0]!.id;
+    expect((await call("PATCH", `/${id}`, { label: "   " }, cookie)).status).toBe(400);
+  });
+
+  test("someone else's passkey looks like one that does not exist, and stays as it was", async () => {
+    const { call, cookieFor, addPasskey, auditRows } = setup();
+    await addPasskey(alice, "Alice's");
+    const aliceId = ((await (await call("GET", "/", undefined, await cookieFor(alice))).json()) as ListBody).passkeys[0]!.id;
+
+    const res = await call("PATCH", `/${aliceId}`, { label: "Hacked" }, await cookieFor(bob));
+
+    expect(res.status).toBe(404);
+    expect(((await (await call("GET", "/", undefined, await cookieFor(alice))).json()) as ListBody).passkeys[0]!.label).toBe("Alice's");
+    expect(auditRows).toEqual([]);
+  });
+});
+
 describe("DELETE /auth/passkeys/:id", () => {
   test("needs a login", async () => {
     const { call } = setup();

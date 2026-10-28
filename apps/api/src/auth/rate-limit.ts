@@ -32,6 +32,8 @@ export const AUTH_LIMITS = {
   passkeyLoginIp: { name: "passkey-login-ip", limit: 30, windowMs: 15 * MINUTE },
   // Keyed by user id: removing passkeys.
   passkeyRemoveUser: { name: "passkey-remove-user", limit: 10, windowMs: 15 * MINUTE },
+  // Keyed by user id: renaming passkeys.
+  passkeyRenameUser: { name: "passkey-rename-user", limit: 30, windowMs: 15 * MINUTE },
   // Keyed by user id: adding a passkey needs a login, so this just caps abuse.
   passkeyRegisterUser: { name: "passkey-register-user", limit: 10, windowMs: 15 * MINUTE },
   // Keyed by user id: proving it is you again with a passkey (each try asks the phone for a face or fingerprint).

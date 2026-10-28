@@ -56,6 +56,8 @@ export interface PasskeyStore {
    * cannot both slip past that rule.
    */
   remove(userId: string, passkeyId: string, opts: { keepAtLeastOne: boolean }): Promise<RemoveStoreResult>;
+  /** Give one of the user's own passkeys a new name. False when it is not theirs. */
+  rename(userId: string, passkeyId: string, label: string): Promise<boolean>;
   /** The stored passkey for a credential id, or null. */
   findCredential(credentialId: string): Promise<StoredPasskey | null>;
   /** Remember how many times the authenticator says it has been used (clone detection). */
@@ -203,6 +205,11 @@ export function createPasskeyService({
     /** The account's passkeys, for the settings screen. */
     list(user: AuthUser): Promise<PasskeySummary[]> {
       return store.list(user.id);
+    },
+
+    /** Rename one of the user's own passkeys; false when it is not theirs (or does not exist). */
+    rename(user: AuthUser, passkeyId: string, label: string): Promise<boolean> {
+      return store.rename(user.id, passkeyId, label);
     },
 
     /**

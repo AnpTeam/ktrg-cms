@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import { useLingui } from "@lingui/react/macro";
-import { AuthError, primaryButton, secondaryButton } from "@/components/auth/authUi";
+import { AuthError, inputClass, primaryButton, secondaryButton } from "@/components/auth/authUi";
 import { useReauth } from "@/components/auth/ReauthDialog";
 import { KeyIcon } from "@/components/icons";
-import { addPasskey, listPasskeys, passkeysSupported, removePasskey, type PasskeyItem } from "@/lib/auth-client";
+import { addPasskey, listPasskeys, renamePasskey, passkeysSupported, removePasskey, type PasskeyItem } from "@/lib/auth-client";
 import type { AuthFailure } from "@/lib/auth-flow";
 import { formatDay, japanDay } from "@/lib/format";
 
@@ -21,6 +21,7 @@ export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail:
   const [error, setError] = useState<AuthFailure | null>(null);
   const [busy, setBusy] = useState(false);
   const [removing, setRemoving] = useState<PasskeyItem | null>(null);
+  const [renaming, setRenaming] = useState<{ id: string; label: string } | null>(null);
   const dialog = useRef<HTMLDialogElement>(null);
   // The server refuses it too; saying so before asking "are you sure" saves a confirm-it-is-you step for nothing.
   const lastWay = !hasEmail && items !== null && items.length <= 1;
@@ -71,6 +72,19 @@ export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail:
     setBusy(false);
   }
 
+  async function saveName(e: FormEvent) {
+    e.preventDefault();
+    if (busy || !renaming || !renaming.label.trim()) return;
+    setBusy(true);
+    setError(null);
+    const res = await renamePasskey(renaming.id, renaming.label.trim());
+    if (res.ok) {
+      setRenaming(null);
+      await load();
+    } else setError(res.code);
+    setBusy(false);
+  }
+
   async function confirmRemove() {
     if (busy || !removing) return;
     setBusy(true);
@@ -105,18 +119,50 @@ export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail:
               <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-brand text-on-brand [&_svg]:size-6">
                 <KeyIcon />
               </span>
-              <span className="min-w-0 flex-1">
-                <span className="block break-words text-xl font-bold leading-snug">{item.label ?? t`パスキー ${number}`}</span>
-                <span className="block text-lg text-muted">{t`${added} に追加`}</span>
-              </span>
-              <button
+              {renaming?.id === item.id ? (
+                <form onSubmit={saveName} className="flex min-w-0 flex-1 flex-col gap-2">
+                  <label className="sr-only" htmlFor="passkey-name">{t`パスキーの名前`}</label>
+                  <input
+                    id="passkey-name"
+                    value={renaming.label}
+                    onChange={(e) => setRenaming({ id: item.id, label: e.target.value })}
+                    maxLength={64}
+                    autoFocus
+                    className={inputClass}
+                  />
+                  <span className="flex gap-2">
+                    <button type="submit" disabled={busy || !renaming.label.trim()} className={primaryButton}>
+                      {t`保存する`}
+                    </button>
+                    <button type="button" disabled={busy} onClick={() => setRenaming(null)} className={secondaryButton}>
+                      {t`やめる`}
+                    </button>
+                  </span>
+                </form>
+              ) : (
+                <>
+                  <span className="min-w-0 flex-1">
+                    <span className="block break-words text-xl font-bold leading-snug">{item.label ?? t`パスキー ${number}`}</span>
+                    <span className="block text-lg text-muted">{t`${added} に追加`}</span>
+                    <button
+                      type="button"
+                      onClick={() => setRenaming({ id: item.id, label: item.label ?? "" })}
+                      disabled={busy}
+                      className="tap-target mt-1 text-lg font-bold text-accent underline underline-offset-4"
+                    >
+                      {t`名前を変える`}
+                    </button>
+                  </span>
+                  <button
                 type="button"
                 onClick={() => setRemoving(item)}
                 disabled={busy}
                 className="tap-target shrink-0 rounded-lg border-2 border-danger px-4 text-lg font-bold text-danger hover:bg-paper disabled:opacity-60"
               >
-                {t`消す`}
-              </button>
+                    {t`消す`}
+                  </button>
+                </>
+              )}
             </li>
             );
           })}
