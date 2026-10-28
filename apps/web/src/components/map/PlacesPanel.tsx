@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { WarningIcon } from "@/components/icons";
+import { Pager } from "@/components/Pager";
 import { PlaceGroupPicture, PlaceIcon } from "@/components/PlaceIcon";
 import { RichText } from "@/components/RichText";
 import { formatDay } from "@/lib/format";
+import { pageCount, pageSlice } from "@/lib/pager";
 import {
   distanceLabel,
   placeGroups,
@@ -126,9 +128,10 @@ export function PlaceList({
   const { t } = useLingui();
   const categoryNames = useCategoryNames();
   const distanceText = useDistanceText();
-  const [all, setAll] = useState(false);
-  const shown = all ? items : items.slice(0, FIRST_ROWS);
-  const hidden = items.length - FIRST_ROWS;
+  const [page, setPage] = useState(1);
+  const pages = pageCount(items.length, FIRST_ROWS);
+  const here = Math.min(page, pages);
+  const shown = pageSlice(items, here, FIRST_ROWS);
   return (
     <section aria-label={t`まわりの場所`}>
       <h3 className="text-xl font-bold">{t`まわりの場所`}</h3>
@@ -156,16 +159,9 @@ export function PlaceList({
           </li>
         ))}
       </ul>
-      {items.length > FIRST_ROWS ? (
-        <button
-          type="button"
-          onClick={() => setAll((v) => !v)}
-          aria-expanded={all}
-          className="tap-target mt-2 inline-flex items-center rounded-lg border border-ink px-4 text-lg font-bold hover:bg-surface"
-        >
-          {all ? t`少なく表示` : t`もっと見る（あと${hidden}か所）`}
-        </button>
-      ) : null}
+      <div className="mt-2">
+        <Pager page={here} pages={pages} onPage={setPage} />
+      </div>
     </section>
   );
 }

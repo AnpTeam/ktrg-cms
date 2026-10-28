@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: Promise<{ list: str
 export default async function AdminListPage({ params }: { params: Promise<{ list: string }> }) {
   const i18n = await initLingui();
   const meta = await listMetaOr404((await params).list);
-  const [{ status, body }, choices] = await Promise.all([adminGet<{ ok: true } & ListPage>(`/lists/${meta.key}`), relationChoices(meta, i18n.locale)]);
+  const [{ status, body }, choices] = await Promise.all([adminGet<{ ok: true } & ListPage>(`/lists/${meta.key}?page=1`), relationChoices(meta, i18n.locale)]);
   const page = status === 200 && body?.ok ? { items: body.items, next: body.next } : null;
   const title = pick(meta.title, i18n.locale);
 

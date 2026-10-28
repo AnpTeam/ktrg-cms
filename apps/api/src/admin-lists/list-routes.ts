@@ -63,13 +63,20 @@ export function listReadRoutes<K extends string, R extends ListRow, S extends Ki
     .get(
       "/",
       async ({ query }) => {
-        const page = await svc().list(query.cursor, { filter: { q: query.q?.trim(), eq: eqFromQuery(query.filter) }, fields: def.ui.fields });
+        const narrow = { filter: { q: query.q?.trim(), eq: eqFromQuery(query.filter) }, fields: def.ui.fields };
+        // `?page=3` gives numbered pages (with how many there are); `?cursor=` is the older "the page after this row".
+        if (query.page !== undefined) {
+          const p = await svc().page(query.page, narrow);
+          return { ok: true as const, items: p.items.map(rowOut), next: null, page: p.page, pages: p.pages, total: p.total, capped: p.capped };
+        }
+        const page = await svc().list(query.cursor, narrow);
         return { ok: true as const, items: page.items.map(rowOut), next: page.next };
       },
       {
         auth: def.permission,
         query: t.Object({
           cursor: t.Optional(t.String({ pattern: CURSOR_PATTERN })),
+          page: t.Optional(t.Numeric({ minimum: 1, maximum: 100_000 })),
           // Search words, and "field:value" filters (repeat the parameter for several).
           q: t.Optional(t.String({ maxLength: 100 })),
           filter: t.Optional(t.Union([t.String({ maxLength: 200 }), t.Array(t.String({ maxLength: 200 }), { maxItems: 10 })])),

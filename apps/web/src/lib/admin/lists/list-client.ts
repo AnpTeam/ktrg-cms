@@ -25,5 +25,6 @@ export async function listRequest<T>(method: "GET" | "POST" | "PATCH" | "PUT" | 
   }
 }
 
-export type ListPage = { items: ListItem[]; next: string | null };
+/** One page of a list; `page`, `pages`, `total` and `capped` come with `?page=N` (capped: the list is longer than the API reads). */
+export type ListPage = { items: ListItem[]; next: string | null; page?: number; pages?: number; total?: number; capped?: boolean };
 export type OneItem = { item: ListItem };

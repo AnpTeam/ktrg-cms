@@ -89,8 +89,8 @@ msgid "{0}を消す"
 msgstr "{0}を消す"
 
 #. placeholder {0}: name(item)
-#: src/components/admin/AdminListTable.tsx:245
-#: src/components/admin/AdminListTable.tsx:302
+#: src/components/admin/AdminListTable.tsx:262
+#: src/components/admin/AdminListTable.tsx:319
 msgid "{0}を選ぶ"
 msgstr "{0}を選ぶ"
 
@@ -99,21 +99,14 @@ msgstr "{0}を選ぶ"
 msgid "{0}を開く"
 msgstr "{0}を開く"
 
-#. placeholder {0}: items.length
 #. placeholder {0}: shown.length
-#: src/components/admin/AdminListTable.tsx:218
 #: src/components/admin/RallyList.tsx:96
 #: src/components/admin/RouteTable.tsx:134
 msgid "{0}件"
 msgstr "{0}件"
 
-#. placeholder {0}: items.length
-#: src/components/admin/AdminListTable.tsx:218
-msgid "{0}件（まだあります）"
-msgstr "{0}件（まだあります）"
-
 #. placeholder {0}: gone.size
-#: src/components/admin/AdminListTable.tsx:85
+#: src/components/admin/AdminListTable.tsx:113
 msgid "{0}件を削除しました。残りは削除できませんでした：{failure}"
 msgstr "{0}件を削除しました。残りは削除できませんでした：{failure}"
 
@@ -329,7 +322,7 @@ msgstr "{text} を1つ後ろへ"
 msgid "{title}（管理）"
 msgstr "{title}（管理）"
 
-#: src/components/admin/AdminListTable.tsx:222
+#: src/components/admin/AdminListTable.tsx:239
 msgid "{title}はまだありません。"
 msgstr "{title}はまだありません。"
 
@@ -346,6 +339,10 @@ msgstr "{title}を読み込めませんでした。しばらくしてから、�
 #: src/components/landing/Landing.tsx:139
 msgid "{TOTAL_STAMPS}か所"
 msgstr "{TOTAL_STAMPS}か所"
+
+#: src/components/admin/AdminListTable.tsx:235
+msgid "{total}件"
+msgstr "{total}件"
 
 #: src/components/navigation/NavigationHud.tsx:171
 msgid "{turnIn}先 {turnWord}"
@@ -378,7 +375,7 @@ msgid "「{0}」のスタンプを押しました！"
 msgstr "「{0}」のスタンプを押しました！"
 
 #. placeholder {0}: name(one)
-#: src/components/admin/AdminListTable.tsx:71
+#: src/components/admin/AdminListTable.tsx:99
 msgid "「{0}」を削除します。元に戻せません。よろしいですか？"
 msgstr "「{0}」を削除します。元に戻せません。よろしいですか？"
 
@@ -741,11 +738,11 @@ msgstr "アクセス数"
 msgid "アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。"
 msgstr "アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。"
 
-#: src/components/admin/PhotoLibrary.tsx:41
+#: src/components/admin/PhotoLibrary.tsx:43
 msgid "アップロード済みの写真から選ぶ"
 msgstr "アップロード済みの写真から選ぶ"
 
-#: src/components/admin/PhotoLibrary.tsx:121
+#: src/components/admin/PhotoLibrary.tsx:125
 msgid "アップロード済みの写真です。選んで「この写真を使う」を押すと、その写真のリンクが入ります。"
 msgstr "アップロード済みの写真です。選んで「この写真を使う」を押すと、その写真のリンクが入ります。"
 
@@ -945,11 +942,11 @@ msgstr "お名前に使えない文字が含まれているか、長すぎます
 msgid "お名前は未設定です"
 msgstr "お名前は未設定です"
 
-#: src/components/map/PlacesPanel.tsx:35
+#: src/components/map/PlacesPanel.tsx:37
 msgid "お土産店"
 msgstr "お土産店"
 
-#: src/components/map/PlacesPanel.tsx:25
+#: src/components/map/PlacesPanel.tsx:27
 msgid "お店・食事"
 msgstr "お店・食事"
 
@@ -1017,7 +1014,7 @@ msgstr "ガイド点を通る道を調べています…"
 msgid "かかる時間（分）"
 msgstr "かかる時間（分）"
 
-#: src/components/map/PlacesPanel.tsx:37
+#: src/components/map/PlacesPanel.tsx:39
 msgid "カフェ・喫茶"
 msgstr "カフェ・喫茶"
 
@@ -1192,7 +1189,7 @@ msgstr "このファイルは読み取れませんでした。「ひな形」か
 msgid "このブラウザでは、スタンプが消えてしまうことがあります。"
 msgstr "このブラウザでは、スタンプが消えてしまうことがあります。"
 
-#: src/components/admin/AdminListTable.tsx:207
+#: src/components/admin/AdminListTable.tsx:224
 msgid "このページをすべて選ぶ"
 msgstr "このページをすべて選ぶ"
 
@@ -1270,7 +1267,7 @@ msgstr "このルートを削除します。元に戻せません。よろしい
 msgid "この内容で取り込む"
 msgstr "この内容で取り込む"
 
-#: src/components/admin/PhotoLibrary.tsx:229
+#: src/components/admin/PhotoLibrary.tsx:231
 msgid "この写真を使う"
 msgstr "この写真を使う"
 
@@ -1330,7 +1327,7 @@ msgid "この場所のページを開く"
 msgstr "この場所のページを開く"
 
 #: src/components/map/MapScreen.tsx:495
-#: src/components/map/PlacesPanel.tsx:253
+#: src/components/map/PlacesPanel.tsx:249
 #: src/components/map/StopCard.tsx:47
 msgid "この場所の位置は仮のもので、まだ確認されていません。"
 msgstr "この場所の位置は仮のもので、まだ確認されていません。"
@@ -1534,7 +1531,7 @@ msgstr "これが、このアカウントに入るための、ただ一つの方
 msgid "コントラスト"
 msgstr "コントラスト"
 
-#: src/components/map/PlacesPanel.tsx:38
+#: src/components/map/PlacesPanel.tsx:40
 msgid "コンビニ・商店"
 msgstr "コンビニ・商店"
 
@@ -1558,11 +1555,11 @@ msgstr "さあ、はじめましょう"
 msgid "さあ、歩きはじめましょう"
 msgstr "さあ、歩きはじめましょう"
 
-#: src/components/admin/PhotoLibrary.tsx:171
+#: src/components/admin/PhotoLibrary.tsx:175
 msgid "サイズ"
 msgstr "サイズ"
 
-#: src/components/map/PlacesPanel.tsx:230
+#: src/components/map/PlacesPanel.tsx:226
 msgid "サイト"
 msgstr "サイト"
 
@@ -1589,8 +1586,8 @@ msgstr "サイト全体の設定（管理）"
 msgid "さがしています…"
 msgstr "さがしています…"
 
-#: src/components/admin/AdminListTable.tsx:126
-#: src/components/admin/AdminListTable.tsx:126
+#: src/components/admin/AdminListTable.tsx:143
+#: src/components/admin/AdminListTable.tsx:143
 #: src/components/admin/DuplicateFinder.tsx:53
 msgid "さがす"
 msgstr "さがす"
@@ -1797,7 +1794,7 @@ msgstr "スタンプ済み"
 msgid "すでに公開をやめた経由地があります（{names}）。「経由地」タブで確かめてください。"
 msgstr "すでに公開をやめた経由地があります（{names}）。「経由地」タブで確かめてください。"
 
-#: src/components/admin/AdminListTable.tsx:179
+#: src/components/admin/AdminListTable.tsx:196
 #: src/components/admin/DirectoryPicker.tsx:158
 #: src/components/admin/list-parts.tsx:29
 #: src/components/PrefectureFilter.tsx:36
@@ -1850,8 +1847,8 @@ msgstr "そのまま"
 #: src/components/admin/PlacePanel.tsx:53
 #: src/components/auth/AboutYou.tsx:31
 #: src/components/auth/AboutYou.tsx:143
-#: src/components/map/PlacesPanel.tsx:28
-#: src/components/map/PlacesPanel.tsx:46
+#: src/components/map/PlacesPanel.tsx:30
+#: src/components/map/PlacesPanel.tsx:48
 #: src/components/PointKindName.tsx:22
 msgid "その他"
 msgstr "その他"
@@ -1868,7 +1865,7 @@ msgstr "その名前の場所は見つかりませんでした。"
 msgid "ダーク"
 msgstr "ダーク"
 
-#: src/components/admin/PhotoLibrary.tsx:149
+#: src/components/admin/PhotoLibrary.tsx:153
 msgid "タイル"
 msgstr "タイル"
 
@@ -1965,12 +1962,12 @@ msgid "テスト用のアカウントなどは、今すぐ消せます。元に�
 msgstr "テスト用のアカウントなどは、今すぐ消せます。元に戻せません。スタンプ・コメント・ログインの情報もすべて消えます。"
 
 #: src/components/admin/PlacePanel.tsx:44
-#: src/components/map/PlacesPanel.tsx:39
+#: src/components/map/PlacesPanel.tsx:41
 #: src/components/PointKindName.tsx:13
 msgid "トイレ"
 msgstr "トイレ"
 
-#: src/components/map/PlacesPanel.tsx:24
+#: src/components/map/PlacesPanel.tsx:26
 msgid "トイレ・休憩"
 msgstr "トイレ・休憩"
 
@@ -2086,7 +2083,7 @@ msgid "はずす"
 msgstr "はずす"
 
 #: src/components/admin/PlacePanel.tsx:48
-#: src/components/map/PlacesPanel.tsx:44
+#: src/components/map/PlacesPanel.tsx:46
 #: src/components/PointKindName.tsx:17
 msgid "バス停"
 msgstr "バス停"
@@ -2241,6 +2238,7 @@ msgid "プロフィール写真"
 msgstr "プロフィール写真"
 
 #: src/app/(public)/blog/page.tsx:75
+#: src/components/Pager.tsx:19
 msgid "ページ"
 msgstr "ページ"
 
@@ -2273,6 +2271,10 @@ msgstr "ページの文章へ戻る"
 #: src/components/settings/PrefsForm.tsx:120
 msgid "ページの漢字すべてに、読みがなをつけます。"
 msgstr "ページの漢字すべてに、読みがなをつけます。"
+
+#: src/components/Pager.tsx:24
+msgid "ページ番号"
+msgstr "ページ番号"
 
 #: src/components/admin/SiteSettingsForm.tsx:78
 msgid "ベースの地図"
@@ -2332,7 +2334,7 @@ msgstr "ほかにログインの方法がないので、このパスキーは消
 msgid "ほかの乗り物"
 msgstr "ほかの乗り物"
 
-#: src/components/admin/AdminListTable.tsx:163
+#: src/components/admin/AdminListTable.tsx:180
 msgid "ほかの絞りこみ"
 msgstr "ほかの絞りこみ"
 
@@ -2404,7 +2406,7 @@ msgstr "まだスタンプを押していません"
 msgid "まだ保存していません。"
 msgstr "まだ保存していません。"
 
-#: src/components/admin/PhotoLibrary.tsx:163
+#: src/components/admin/PhotoLibrary.tsx:167
 msgid "まだ写真がありません。"
 msgstr "まだ写真がありません。"
 
@@ -2432,8 +2434,8 @@ msgid "まわりにあるもの"
 msgstr "まわりにあるもの"
 
 #: src/app/(public)/blog/[id]/page.tsx:186
-#: src/components/map/PlacesPanel.tsx:133
-#: src/components/map/PlacesPanel.tsx:134
+#: src/components/map/PlacesPanel.tsx:136
+#: src/components/map/PlacesPanel.tsx:137
 #: src/components/NearbyPlaces.tsx:22
 msgid "まわりの場所"
 msgstr "まわりの場所"
@@ -2442,7 +2444,7 @@ msgstr "まわりの場所"
 msgid "まわりの場所を最初から出す"
 msgstr "まわりの場所を最初から出す"
 
-#: src/components/map/PlacesPanel.tsx:88
+#: src/components/map/PlacesPanel.tsx:90
 #: src/components/map/TrailMap.tsx:533
 msgid "まわりの場所を地図に出す"
 msgstr "まわりの場所を地図に出す"
@@ -2539,15 +2541,6 @@ msgstr "もう一度送りました。届かないときは、1分ほど待っ�
 #: src/components/map/MapSheet.tsx:100
 msgid "もっと広げる"
 msgstr "もっと広げる"
-
-#: src/components/admin/AdminListTable.tsx:344
-#: src/components/admin/PhotoLibrary.tsx:216
-msgid "もっと見る"
-msgstr "もっと見る"
-
-#: src/components/map/PlacesPanel.tsx:166
-msgid "もっと見る（あと{hidden}か所）"
-msgstr "もっと見る（あと{hidden}か所）"
 
 #: src/components/RestoreStamps.tsx:34
 msgid "もどしています…"
@@ -2951,7 +2944,7 @@ msgstr "一周して、ここに戻るルートのとき: 同じ位置に、ス�
 msgid "一度に取り込める数をこえています（{writes} 回の保存が必要で、上限は {IMPORT_WRITE_LIMIT} 回です）。ファイルを分けて、時間をおいて取り込んでください。"
 msgstr "一度に取り込める数をこえています（{writes} 回の保存が必要で、上限は {IMPORT_WRITE_LIMIT} 回です）。ファイルを分けて、時間をおいて取り込んでください。"
 
-#: src/components/admin/PhotoLibrary.tsx:149
+#: src/components/admin/PhotoLibrary.tsx:153
 msgid "一覧"
 msgstr "一覧"
 
@@ -3008,11 +3001,11 @@ msgstr "不明"
 msgid "両方を合わせる（おすすめ）"
 msgstr "両方を合わせる（おすすめ）"
 
-#: src/components/admin/AdminListTable.tsx:280
+#: src/components/admin/AdminListTable.tsx:297
 msgid "並べかえ"
 msgstr "並べかえ"
 
-#: src/components/admin/PhotoLibrary.tsx:130
+#: src/components/admin/PhotoLibrary.tsx:134
 msgid "並べ方"
 msgstr "並べ方"
 
@@ -3062,7 +3055,7 @@ msgid "仮のルート・位置（未確認）"
 msgstr "仮のルート・位置（未確認）"
 
 #: src/components/admin/HoursInput.tsx:26
-#: src/components/map/PlacesPanel.tsx:237
+#: src/components/map/PlacesPanel.tsx:233
 msgid "休み"
 msgstr "休み"
 
@@ -3070,12 +3063,12 @@ msgstr "休み"
 msgid "休憩所"
 msgstr "休憩所"
 
-#: src/components/map/PlacesPanel.tsx:40
+#: src/components/map/PlacesPanel.tsx:42
 #: src/components/PointKindName.tsx:14
 msgid "休憩所・東屋"
 msgstr "休憩所・東屋"
 
-#: src/components/map/PlacesPanel.tsx:54
+#: src/components/map/PlacesPanel.tsx:56
 msgid "休業中"
 msgstr "休業中"
 
@@ -3159,7 +3152,7 @@ msgstr "位置情報が許可されていません。ブラウザの設定で、
 msgid "低い"
 msgstr "低い"
 
-#: src/components/map/PlacesPanel.tsx:221
+#: src/components/map/PlacesPanel.tsx:217
 #: src/components/PlaceFacts.tsx:29
 msgid "住所"
 msgstr "住所"
@@ -3365,6 +3358,10 @@ msgstr "先にルートを保存してください。"
 #: src/components/admin/DuplicateFinder.tsx:66
 msgid "先頭だけ残して、ほかを削除"
 msgstr "先頭だけ残して、ほかを削除"
+
+#: src/components/admin/AdminListTable.tsx:235
+msgid "先頭の{total}件を表示しています。"
+msgstr "先頭の{total}件を表示しています。"
 
 #: src/components/admin/RouteEditor.tsx:611
 msgid "入れた文字が、そのまま表示されます。体力度・技術度を選んだときは、そちらを先に表示します。"
@@ -3653,7 +3650,7 @@ msgstr "写真は{MAX_PHOTOS}枚までです。"
 msgid "写真はまだありません"
 msgstr "写真はまだありません"
 
-#: src/components/admin/PhotoLibrary.tsx:119
+#: src/components/admin/PhotoLibrary.tsx:123
 msgid "写真ライブラリ"
 msgstr "写真ライブラリ"
 
@@ -3673,7 +3670,7 @@ msgstr "写真を外す"
 msgid "写真を探すサービスにつながりませんでした。しばらくしてから、もう一度お試しください。"
 msgstr "写真を探すサービスにつながりませんでした。しばらくしてから、もう一度お試しください。"
 
-#: src/components/admin/PhotoLibrary.tsx:222
+#: src/components/admin/PhotoLibrary.tsx:224
 msgid "写真を選んでください。"
 msgstr "写真を選んでください。"
 
@@ -3783,9 +3780,9 @@ msgstr "制限中"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
 #: src/components/admin/AdminItemForm.tsx:293
-#: src/components/admin/AdminListTable.tsx:235
-#: src/components/admin/AdminListTable.tsx:269
-#: src/components/admin/AdminListTable.tsx:333
+#: src/components/admin/AdminListTable.tsx:252
+#: src/components/admin/AdminListTable.tsx:286
+#: src/components/admin/AdminListTable.tsx:350
 #: src/components/admin/DuplicateFinder.tsx:85
 #: src/components/admin/fields.tsx:155
 #: src/components/admin/HoursInput.tsx:35
@@ -3866,6 +3863,7 @@ msgstr "前の番号の経由地がまだないので、作れません"
 #: src/components/admin/GalleryEditor.tsx:90
 #: src/components/admin/list-parts.tsx:47
 #: src/components/admin/RallyMemberPicker.tsx:110
+#: src/components/Pager.tsx:21
 msgid "前へ"
 msgstr "前へ"
 
@@ -4009,7 +4007,7 @@ msgstr "取り込み中… {0} / {1}"
 msgid "取り込めなかった場所（{0}件）"
 msgstr "取り込めなかった場所（{0}件）"
 
-#: src/components/admin/PhotoLibrary.tsx:140
+#: src/components/admin/PhotoLibrary.tsx:144
 msgid "古い順"
 msgstr "古い順"
 
@@ -4050,10 +4048,10 @@ msgstr "同じ番号の行が、前にもあります"
 msgid "同じ道を行って、同じ道を戻ります。"
 msgstr "同じ道を行って、同じ道を戻ります。"
 
-#: src/components/admin/AdminListTable.tsx:231
-#: src/components/admin/AdminListTable.tsx:290
+#: src/components/admin/AdminListTable.tsx:248
+#: src/components/admin/AdminListTable.tsx:307
 #: src/components/admin/map-editor/PlaceList.tsx:79
-#: src/components/admin/PhotoLibrary.tsx:169
+#: src/components/admin/PhotoLibrary.tsx:173
 #: src/components/admin/RallyCreate.tsx:76
 #: src/components/admin/RallyList.tsx:103
 #: src/components/admin/RouteTable.tsx:141
@@ -4065,8 +4063,8 @@ msgstr "名前"
 msgid "名前（日本語）"
 msgstr "名前（日本語）"
 
-#: src/components/admin/PhotoLibrary.tsx:128
-#: src/components/admin/PhotoLibrary.tsx:128
+#: src/components/admin/PhotoLibrary.tsx:132
+#: src/components/admin/PhotoLibrary.tsx:132
 msgid "名前でさがす"
 msgstr "名前でさがす"
 
@@ -4105,7 +4103,7 @@ msgstr "名前の一部を入力"
 msgid "名前を保存"
 msgstr "名前を保存"
 
-#: src/components/admin/PhotoLibrary.tsx:141
+#: src/components/admin/PhotoLibrary.tsx:145
 msgid "名前順"
 msgstr "名前順"
 
@@ -4145,7 +4143,7 @@ msgstr "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境に
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "問題が発生しました。しばらくしてからもう一度お試しください。"
 
-#: src/components/map/PlacesPanel.tsx:53
+#: src/components/map/PlacesPanel.tsx:55
 msgid "営業中・利用可"
 msgstr "営業中・利用可"
 
@@ -4360,7 +4358,7 @@ msgstr "大"
 msgid "大きい"
 msgstr "大きい"
 
-#: src/components/admin/PhotoLibrary.tsx:142
+#: src/components/admin/PhotoLibrary.tsx:146
 msgid "大きい順"
 msgstr "大きい順"
 
@@ -4424,7 +4422,7 @@ msgstr "字幕をアップロード（.srt / .vtt）"
 msgid "字幕を入れました。動画を再生して確かめてください。"
 msgstr "字幕を入れました。動画を再生して確かめてください。"
 
-#: src/components/map/PlacesPanel.tsx:55
+#: src/components/map/PlacesPanel.tsx:57
 msgid "季節営業"
 msgstr "季節営業"
 
@@ -4458,17 +4456,13 @@ msgstr "寄り道の線を見る"
 msgid "寺社"
 msgstr "寺社"
 
-#: src/components/admin/PhotoLibrary.tsx:143
+#: src/components/admin/PhotoLibrary.tsx:147
 msgid "小さい順"
 msgstr "小さい順"
 
 #: src/components/map/MapSheet.tsx:100
 msgid "小さくして地図を見る"
 msgstr "小さくして地図を見る"
-
-#: src/components/map/PlacesPanel.tsx:166
-msgid "少なく表示"
-msgstr "少なく表示"
 
 #: src/components/admin/RouteHistory.tsx:50
 msgid "履歴を読み込めませんでした。"
@@ -4656,7 +4650,7 @@ msgstr "捨てる"
 msgid "探しています…"
 msgstr "探しています…"
 
-#: src/components/admin/AdminListTable.tsx:128
+#: src/components/admin/AdminListTable.tsx:145
 #: src/components/admin/map-editor/MapEditor.tsx:1021
 msgid "探す"
 msgstr "探す"
@@ -4779,8 +4773,8 @@ msgstr "新しい点は、選んだ点（{chosenNo}番）のあとに入りま�
 msgid "新しい記事"
 msgstr "新しい記事"
 
-#: src/components/admin/AdminListTable.tsx:289
-#: src/components/admin/PhotoLibrary.tsx:139
+#: src/components/admin/AdminListTable.tsx:306
+#: src/components/admin/PhotoLibrary.tsx:143
 msgid "新しい順"
 msgstr "新しい順"
 
@@ -4808,7 +4802,7 @@ msgstr "日ごとの数"
 msgid "日ごとの数の推移"
 msgstr "日ごとの数の推移"
 
-#: src/components/admin/PhotoLibrary.tsx:170
+#: src/components/admin/PhotoLibrary.tsx:174
 msgid "日付"
 msgstr "日付"
 
@@ -4841,7 +4835,7 @@ msgstr "日本語の名前を入れてください。"
 msgid "日本語の字幕です。もう一度送ると、置き換わります。字幕は動画の横に保存され、動画を入れ替えたときは、字幕も送りなおしてください。"
 msgstr "日本語の字幕です。もう一度送ると、置き換わります。字幕は動画の横に保存され、動画を入れ替えたときは、字幕も送りなおしてください。"
 
-#: src/components/map/PlacesPanel.tsx:236
+#: src/components/map/PlacesPanel.tsx:232
 #: src/components/RouteStats.tsx:34
 msgid "時間"
 msgstr "時間"
@@ -4935,7 +4929,7 @@ msgstr "本文"
 msgid "本文へ移動"
 msgstr "本文へ移動"
 
-#: src/components/admin/AdminListTable.tsx:222
+#: src/components/admin/AdminListTable.tsx:239
 msgid "条件に合う{title}はありません。"
 msgstr "条件に合う{title}はありません。"
 
@@ -4947,7 +4941,7 @@ msgstr "条件に合うラリーがありません。"
 msgid "条件に合うルートがありません。"
 msgstr "条件に合うルートがありません。"
 
-#: src/components/admin/AdminListTable.tsx:141
+#: src/components/admin/AdminListTable.tsx:158
 msgid "条件をやめる"
 msgstr "条件をやめる"
 
@@ -5016,6 +5010,10 @@ msgstr "次の行は、まちがいがあるので取り込みません："
 msgid "次の記事 →"
 msgstr "次の記事 →"
 
+#: src/components/Pager.tsx:44
+msgid "次へ"
+msgstr "次へ"
+
 #: src/app/(public)/blog/page.tsx:88
 msgid "次へ →"
 msgstr "次へ →"
@@ -5080,7 +5078,7 @@ msgid "段落は、空の行で区切ります。"
 msgstr "段落は、空の行で区切ります。"
 
 #: src/components/admin/PlacePanel.tsx:46
-#: src/components/map/PlacesPanel.tsx:41
+#: src/components/map/PlacesPanel.tsx:43
 #: src/components/PointKindName.tsx:15
 msgid "水場"
 msgstr "水場"
@@ -5211,7 +5209,7 @@ msgstr "状態・許可の設定"
 msgid "状態のひとこと"
 msgstr "状態のひとこと"
 
-#: src/components/map/PlacesPanel.tsx:57
+#: src/components/map/PlacesPanel.tsx:59
 msgid "状態は未確認"
 msgstr "状態は未確認"
 
@@ -5384,7 +5382,7 @@ msgstr "確認が必要なスタンプ：{flagged}件"
 msgid "確認した情報源（サイト名やリンク）"
 msgstr "確認した情報源（サイト名やリンク）"
 
-#: src/components/map/PlacesPanel.tsx:246
+#: src/components/map/PlacesPanel.tsx:242
 msgid "確認した日：{checkedOn}"
 msgstr "確認した日：{checkedOn}"
 
@@ -5476,11 +5474,11 @@ msgstr "管理者のアカウントは、制限や削除ができません。先
 msgid "範囲をこえています"
 msgstr "範囲をこえています"
 
-#: src/components/map/PlacesPanel.tsx:66
+#: src/components/map/PlacesPanel.tsx:68
 msgid "約{amount}km"
 msgstr "約{amount}km"
 
-#: src/components/map/PlacesPanel.tsx:66
+#: src/components/map/PlacesPanel.tsx:68
 msgid "約{amount}m"
 msgstr "約{amount}m"
 
@@ -5774,8 +5772,8 @@ msgid "自動"
 msgstr "自動"
 
 #: src/components/admin/PlacePanel.tsx:47
-#: src/components/map/PlacesPanel.tsx:26
-#: src/components/map/PlacesPanel.tsx:42
+#: src/components/map/PlacesPanel.tsx:28
+#: src/components/map/PlacesPanel.tsx:44
 #: src/components/PointKindName.tsx:16
 msgid "自動販売機"
 msgstr "自動販売機"
@@ -5855,7 +5853,7 @@ msgstr "行き"
 msgid "表でまとめて入力"
 msgstr "表でまとめて入力"
 
-#: src/components/admin/PhotoLibrary.tsx:146
+#: src/components/admin/PhotoLibrary.tsx:150
 msgid "表示"
 msgstr "表示"
 
@@ -5900,7 +5898,7 @@ msgstr "見つかった場所"
 msgid "見つからない写真（その写真だけ入りません）：{0}"
 msgstr "見つからない写真（その写真だけ入りません）：{0}"
 
-#: src/components/admin/PhotoLibrary.tsx:164
+#: src/components/admin/PhotoLibrary.tsx:168
 #: src/components/admin/RelationPicker.tsx:137
 msgid "見つかりませんでした。"
 msgstr "見つかりませんでした。"
@@ -6005,7 +6003,7 @@ msgstr "読み込めませんでした。"
 msgid "読み込めませんでした。しばらくしてから、ページを開き直してください。"
 msgstr "読み込めませんでした。しばらくしてから、ページを開き直してください。"
 
-#: src/components/admin/PhotoLibrary.tsx:157
+#: src/components/admin/PhotoLibrary.tsx:161
 msgid "読み込んでいます…"
 msgstr "読み込んでいます…"
 
@@ -6217,7 +6215,7 @@ msgstr "達成した人の記録は残ります。スタンプは変わりませ
 msgid "選ばない"
 msgstr "選ばない"
 
-#: src/components/admin/AdminListTable.tsx:230
+#: src/components/admin/AdminListTable.tsx:247
 #: src/components/admin/map-editor/PlaceList.tsx:55
 msgid "選ぶ"
 msgstr "選ぶ"
@@ -6227,12 +6225,12 @@ msgid "選ぶ・動かす"
 msgstr "選ぶ・動かす"
 
 #. placeholder {0}: ticked.size
-#: src/components/admin/AdminListTable.tsx:211
+#: src/components/admin/AdminListTable.tsx:228
 msgid "選んだ{0}件を削除"
 msgstr "選んだ{0}件を削除"
 
 #. placeholder {0}: ids.length
-#: src/components/admin/AdminListTable.tsx:71
+#: src/components/admin/AdminListTable.tsx:99
 msgid "選んだ{0}件を削除します。元に戻せません。よろしいですか？"
 msgstr "選んだ{0}件を削除します。元に戻せません。よろしいですか？"
 
@@ -6298,14 +6296,14 @@ msgstr "長さ"
 #: src/components/admin/AdminItemForm.tsx:281
 #: src/components/admin/map-editor/MapEditor.tsx:1039
 #: src/components/admin/PageTextEditor.tsx:86
-#: src/components/admin/PhotoLibrary.tsx:124
+#: src/components/admin/PhotoLibrary.tsx:128
 #: src/components/admin/RouteEditor.tsx:488
 #: src/components/BrowserWarning.tsx:41
 #: src/components/ExpandableText.tsx:32
 #: src/components/GuestClaim.tsx:84
 #: src/components/map/MapPickList.tsx:36
 #: src/components/map/MapPopup.tsx:57
-#: src/components/map/PlacesPanel.tsx:211
+#: src/components/map/PlacesPanel.tsx:207
 #: src/components/map/TrailMap.tsx:460
 #: src/components/ProfileSettings.tsx:230
 #: src/components/SampleNotice.tsx:64
@@ -6317,7 +6315,7 @@ msgstr "閉じる"
 msgid "閉まる時間が開く時間より前になっている行があります。日をまたぐ営業は、その日の分と次の日の分に分けて入れてください。"
 msgstr "閉まる時間が開く時間より前になっている行があります。日をまたぐ営業は、その日の分と次の日の分に分けて入れてください。"
 
-#: src/components/map/PlacesPanel.tsx:56
+#: src/components/map/PlacesPanel.tsx:58
 msgid "閉店・撤去"
 msgstr "閉店・撤去"
 
@@ -6344,7 +6342,7 @@ msgstr "隠す"
 msgid "難しさ"
 msgstr "難しさ"
 
-#: src/components/map/PlacesPanel.tsx:223
+#: src/components/map/PlacesPanel.tsx:219
 msgid "電話"
 msgstr "電話"
 
@@ -6404,22 +6402,22 @@ msgstr "顔・指紋で登録"
 msgid "顔・指紋で登録する"
 msgstr "顔・指紋で登録する"
 
-#: src/components/map/PlacesPanel.tsx:36
+#: src/components/map/PlacesPanel.tsx:38
 msgid "飲食店"
 msgstr "飲食店"
 
 #: src/components/admin/PlacePanel.tsx:49
-#: src/components/map/PlacesPanel.tsx:43
+#: src/components/map/PlacesPanel.tsx:45
 #: src/components/PointKindName.tsx:18
 msgid "駅"
 msgstr "駅"
 
-#: src/components/map/PlacesPanel.tsx:27
+#: src/components/map/PlacesPanel.tsx:29
 msgid "駅・バス・駐車場"
 msgstr "駅・バス・駐車場"
 
 #: src/components/admin/PlacePanel.tsx:50
-#: src/components/map/PlacesPanel.tsx:45
+#: src/components/map/PlacesPanel.tsx:47
 #: src/components/PointKindName.tsx:19
 msgid "駐車場"
 msgstr "駐車場"
