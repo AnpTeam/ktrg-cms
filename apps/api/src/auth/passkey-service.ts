@@ -136,21 +136,11 @@ export function createPasskeyService({
   }
 
   /**
-   * Make a NEW key on this device by scanning a face or fingerprint (Face ID, Touch ID,
-   * Windows Hello), instead of asking the user to find a security key or another device.
-   * It is a discoverable passkey, so login needs no email.
+   * Make a NEW discoverable passkey (login needs no email). No device is forced: the browser lists this device's
+   * face or fingerprint, a phone reached by scanning a QR code, and security keys, and phones go straight to their own.
    */
-  const registrationPrefs = {
-    authenticatorSelection: { residentKey: "required", userVerification: "required", authenticatorAttachment: "platform" },
-    // Also tells browsers that support it to go straight to the built-in scanner.
-    preferredAuthenticatorType: "localDevice",
-  } as const;
   // The library edits the object it is given, so every call gets its own copy.
-  const registrationSettings = () =>
-    ({
-      authenticatorSelection: { ...registrationPrefs.authenticatorSelection },
-      preferredAuthenticatorType: registrationPrefs.preferredAuthenticatorType,
-    }) as const;
+  const registrationSettings = () => ({ authenticatorSelection: { residentKey: "required", userVerification: "required" } }) as const;
 
   async function newChallenge(row: {
     challenge: string;
