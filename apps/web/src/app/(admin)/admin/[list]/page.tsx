@@ -19,7 +19,8 @@ export default async function AdminListPage({ params }: { params: Promise<{ list
   const i18n = await initLingui();
   const meta = await listMetaOr404((await params).list);
   const [{ status, body }, choices] = await Promise.all([adminGet<{ ok: true } & ListPage>(`/lists/${meta.key}?page=1`), relationChoices(meta, i18n.locale)]);
-  const page = status === 200 && body?.ok ? { items: body.items, next: body.next } : null;
+  // The whole answer, not just the rows: it carries which page this is, how many there are and the total the pager needs.
+  const page: ListPage | null = status === 200 && body?.ok ? body : null;
   const title = pick(meta.title, i18n.locale);
 
   return (
