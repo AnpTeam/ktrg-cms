@@ -1226,6 +1226,30 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       });
     });
 
+    test("changing the way a rally is made swaps its members in one step, keeps visitors' finishes, and is recorded", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const list = await store.listRallies();
+          const mounds = list.find((r) => r.kind === "places")!;
+          const [visitor] = await tx.insert(users).values({}).returning({ id: users.id });
+          await tx.insert(rallyCompletions).values({ userId: visitor!.id, rallyId: mounds.id });
+          const courses = (await store.candidateCourses()).slice(0, 2).map((c) => c.routeId);
+          const changed = await store.changeKind(actor, mounds.id, mounds.updatedAt, "course", courses);
+          expect(changed).toMatchObject({ kind: "course", memberCount: 2, completionCount: 1 });
+          const read = await store.getRally(mounds.id);
+          if (!read || !("courses" in read)) throw new Error("expected a rally of courses");
+          expect(read.courses.map((c) => [c.routeId, c.position])).toEqual(courses.map((id, i) => [id, i + 1]));
+          expect(await tx.select().from(rallySpots).where(eq(rallySpots.rallyId, mounds.id))).toHaveLength(0);
+          expect(await store.changeKind(actor, mounds.id, mounds.updatedAt, "places", [])).toBe("conflict"); // the old copy
+          const back = (await store.getRally(mounds.id))!.rally;
+          const places = (await store.candidatePlaces()).slice(0, 3).map((p) => p.spotId);
+          expect(await store.changeKind(actor, mounds.id, back.updatedAt, "places", places)).toMatchObject({ kind: "places", memberCount: 3 });
+          expect(await tx.select().from(rallyRoutes).where(eq(rallyRoutes.rallyId, mounds.id))).toHaveLength(0);
+          expect(await tx.select().from(auditLog).where(eq(auditLog.action, "rally.kind.change"))).toHaveLength(2);
+        });
+      });
+    });
+
     test("reordering takes every rally; deleting takes its links and finishes, and is recorded", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {

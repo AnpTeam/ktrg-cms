@@ -21,9 +21,12 @@ type RallyAnswer = { ok: true; rally: AdminRally } & (
 export default async function EditRallyPage({ params }: { params: Promise<{ id: string }> }) {
   const i18n = await initLingui();
   const { id } = await params;
-  const [one, routes] = await Promise.all([
+  const [one, routes, places, courses] = await Promise.all([
     adminGet<RallyAnswer>(`/rallies/${encodeURIComponent(id)}`),
     adminGet<{ ok: true; routes: AdminRouteSummary[] }>("/routes"),
+    // Both kinds, so the editor can offer the other way of making the rally.
+    adminGet<{ ok: true; candidates: AdminRallyPlace[] }>("/rallies/candidates?kind=places"),
+    adminGet<{ ok: true; candidates: AdminRallyCourse[] }>("/rallies/candidates?kind=course"),
   ]);
   if (one.status === 404 || one.status === 422) notFound();
   if (one.status !== 200 || !one.body?.ok) {
@@ -39,13 +42,16 @@ export default async function EditRallyPage({ params }: { params: Promise<{ id: 
   const candidates = body.places
     ? { kind: "places" as const, items: body.candidates as AdminRallyPlace[] }
     : { kind: "course" as const, items: body.candidates as AdminRallyCourse[] };
+  const other = body.places
+    ? { kind: "course" as const, items: courses.body?.ok ? courses.body.candidates : [] }
+    : { kind: "places" as const, items: places.body?.ok ? places.body.candidates : [] };
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4">
       <Link href="/admin/rallies" className="tap-target inline-flex w-fit items-center text-lg font-bold text-accent underline underline-offset-4">
         <Trans>ラリー一覧にもどる</Trans>
       </Link>
-      <RallyEditor initial={body.rally} memberIds={memberIds} candidates={candidates} routeNames={routeNames} locale={i18n.locale} />
+      <RallyEditor initial={body.rally} memberIds={memberIds} candidates={candidates} otherCandidates={other} routeNames={routeNames} locale={i18n.locale} />
     </div>
   );
 }

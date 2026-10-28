@@ -10,7 +10,7 @@ export type RallyAdminService = ReturnType<typeof createRallyAdminService>;
 
 /**
  * The rules of the rally admin:
- * - a rally is made of places or of courses, chosen at creation and never changed;
+ * - a rally is made of places or of courses, chosen at creation; it can be changed to the other kind, with its new members;
  * - the Japanese name is required (English may be cleared);
  * - a rally of places holds stamp places only, each once; a rally of courses holds courses, each once;
  * - a rally with nothing in it cannot be published, and a published rally cannot be emptied (it could never be
@@ -98,6 +98,15 @@ export function createRallyAdminService(deps: { store: RallyAdminStore }) {
       if (current.rally.kind !== "course" || !(await allowedMembers("course", routeIds))) return bad("invalid_rally_members");
       if (routeIds.length === 0 && current.rally.published) return bad("rally_empty");
       return done(await store.setCourses(actor, id, date(expected), routeIds));
+    },
+
+    /** Places become courses or the other way round. The new members are required (checked like a new rally's); a published rally cannot be left empty. */
+    async changeKind(actor: string, id: string, expected: Date | string, kind: RallyKind, memberIds: string[]): Promise<Result<RallyRow>> {
+      const current = await store.getRally(id);
+      if (!current) return bad("not_found");
+      if (current.rally.kind === kind || !(await allowedMembers(kind, memberIds))) return bad("invalid_rally_members");
+      if (memberIds.length === 0 && current.rally.published) return bad("rally_empty");
+      return done(await store.changeKind(actor, id, date(expected), kind, memberIds));
     },
 
     async deleteRally(actor: string, id: string): Promise<Result<true>> {
