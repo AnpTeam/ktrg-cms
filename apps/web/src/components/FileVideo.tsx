@@ -12,6 +12,9 @@ import { subtitleUrl, type FileVideo } from "@/lib/video";
 export function FileVideoPlayer({ video, title, subtitles = false, language = "ja", version = null }: { video: FileVideo; title: string; /** When the route was last saved: part of the subtitles' address, so replaced subtitles are fetched again. */ version?: string | null; /** The language the subtitles are in. */ language?: "ja" | "en"; /** Ask for the .vtt beside the video (only when one was uploaded). */ subtitles?: boolean }) {
   const { t } = useLingui();
   const [playing, setPlaying] = useState(false);
+  // The browser's own reason when the video cannot be played (MediaError.code: 1 stopped, 2 network, 3 could not be decoded, 4 not supported); 0 when it did not say.
+  const [failed, setFailed] = useState<number | null>(null);
+  const [attempt, setAttempt] = useState(0);
 
   return (
     <div className="flex flex-col gap-3">
@@ -19,7 +22,7 @@ export function FileVideoPlayer({ video, title, subtitles = false, language = "j
         {playing ? (
           // No download button and no right-click menu: this only stops casual saving, the file's address stays public.
           // The subtitles come from the site's own address (see subtitleUrl); a video without them simply shows none.
-          <video src={video.src} title={title} controls controlsList="nodownload" disablePictureInPicture onContextMenu={(e) => e.preventDefault()} autoPlay playsInline preload="auto" className="h-full w-full">
+          <video key={attempt} src={video.src} onError={(e) => setFailed(e.currentTarget.error?.code ?? 0)} title={title} controls controlsList="nodownload" disablePictureInPicture onContextMenu={(e) => e.preventDefault()} autoPlay playsInline preload="auto" className="h-full w-full">
             {subtitles ? <track kind="subtitles" src={subtitleUrl(video, version)} srcLang={language} label={t`字幕`} default /> : null}
           </video>
         ) : (
@@ -37,6 +40,26 @@ export function FileVideoPlayer({ video, title, subtitles = false, language = "j
           </button>
         )}
       </div>
+      {failed !== null ? (
+        <div role="alert" className="flex flex-col items-start gap-2 rounded-xl bg-surface p-4">
+          <p className="text-lg font-bold">{t`動画を再生できませんでした。（エラー ${failed}）`}</p>
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                setFailed(null);
+                setAttempt((n) => n + 1);
+              }}
+              className="tap-target rounded-xl bg-ink px-5 text-lg font-bold text-paper"
+            >
+              {t`もう一度ためす`}
+            </button>
+            <a href={video.src} target="_blank" rel="noopener noreferrer" className="tap-target inline-flex items-center text-lg font-bold text-accent underline underline-offset-4">
+              {t`動画を直接開く`}
+            </a>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
