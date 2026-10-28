@@ -47,7 +47,11 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
               <Link
                 href={path}
                 aria-current={active ? "page" : undefined}
-                onClick={() => setOpen(false)}
+                onClick={(e) => {
+                  // With the menu open, the first tap on the tab you are in only closes it (you stay on this page); a second tap goes to the tab's own page.
+                  if (open && active) e.preventDefault();
+                  setOpen(false);
+                }}
                 className={`${item} ${active ? "bg-brand text-on-brand" : "text-ink hover:bg-paper"}`}
               >
                 {icon}
