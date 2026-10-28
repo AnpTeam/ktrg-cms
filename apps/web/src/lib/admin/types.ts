@@ -40,6 +40,7 @@ export interface AdminRoute {
   lineVerified: boolean;
   lineSource: string | null;
   videoUrl: string | null;
+  videoUrlEn: string | null;
   videoSubtitles: boolean;
   historyJa: string | null;
   historyEn: string | null;

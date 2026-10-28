@@ -98,8 +98,11 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
   const perKanji = rubyOn ? parseRuby(route.nameKana!) : null;
   const rubyParts = perKanji && title && textOfRuby(perKanji) === title.text ? perKanji : null;
   const ruby = rubyOn && !perKanji && !route.nameKana!.includes("{") ? { text: title!.text, reading: route.nameKana! } : null;
-  const video = parseVideoUrl(route.videoUrl);
-  const videoFile = video ? null : parseVideoFile(route.videoUrl);
+  // The English site shows the English video when the route has one, and the Japanese video otherwise.
+  const englishVideo = locale === "en" && !!route.videoUrlEn;
+  const videoSource = englishVideo ? (route.videoUrlEn ?? null) : route.videoUrl;
+  const video = parseVideoUrl(videoSource);
+  const videoFile = video ? null : parseVideoFile(videoSource);
   const { stampedCount, spotCount } = route;
   const history = pickText(locale, route.historyJa, route.historyEn);
   const access = pickText(locale, route.accessJa, route.accessEn);
@@ -227,9 +230,9 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               {video ? (
                 <IntroVideo video={video} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
               ) : videoFile ? (
-                <FileVideoPlayer video={videoFile} subtitles={route.videoSubtitles === true} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
+                <FileVideoPlayer video={videoFile} subtitles={!englishVideo && route.videoSubtitles === true} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
               ) : null}
-              <LastUpdated iso={route.videoUpdatedAt} locale={locale} />
+              {englishVideo ? null : <LastUpdated iso={route.videoUpdatedAt} locale={locale} />}
             </section>
           ) : null}
 

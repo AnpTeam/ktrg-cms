@@ -504,6 +504,8 @@ export const routeTranslations = pgTable(
     access: text("access"),
     // Where the words come from (出典), in this language.
     source: text("source"),
+    // The video for this language (YouTube / Vimeo / an uploaded file). The Japanese video stays in routes.video_url; the English site shows this one when the English row has it, and the Japanese video otherwise.
+    videoUrl: text("video_url"),
   },
   (t) => [primaryKey({ columns: [t.routeId, t.locale] }), check("route_translations_ja_name", jaRequires(t, t.name))],
 );

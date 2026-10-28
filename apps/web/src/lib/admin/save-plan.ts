@@ -39,6 +39,7 @@ export interface RouteBody {
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   videoUrl: string | null;
+  videoUrlEn: string | null;
   videoSubtitles: boolean;
   historyJa: string | null;
   historyEn: string | null;
@@ -118,6 +119,7 @@ export function routeBody(d: RouteDraft): RouteBody {
     physicalLevel: d.physicalLevel,
     technicalLevel: d.technicalLevel,
     videoUrl: nullIfEmpty(d.videoUrl),
+    videoUrlEn: nullIfEmpty(d.videoUrlEn),
     videoSubtitles: d.videoSubtitles,
     historyJa: nullIfEmpty(d.historyJa),
     historyEn: nullIfEmpty(d.historyEn),
@@ -288,6 +290,7 @@ export type DraftProblem =
   | { kind: "place_name"; key: string }
   | { kind: "place_position"; key: string }
   | { kind: "video_link" }
+  | { kind: "video_link_en" }
   | { kind: "photo_link" }
   | { kind: "place_photo_link"; key: string };
 
@@ -320,6 +323,7 @@ export function draftProblems(d: RouteDraft): DraftProblem[] {
   const out: DraftProblem[] = [];
   if (d.nameJa.trim() === "") out.push({ kind: "route_name" });
   if (!videoLinkLooksValid(d.videoUrl)) out.push({ kind: "video_link" });
+  if (!videoLinkLooksValid(d.videoUrlEn)) out.push({ kind: "video_link_en" });
   if (!photoLinkLooksValid(d.photoUrl)) out.push({ kind: "photo_link" });
   for (const p of d.places) {
     if (p.nameJa.trim() === "") out.push({ kind: "place_name", key: p.key });
