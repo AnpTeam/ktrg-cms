@@ -47,6 +47,7 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
               <Link
                 href={path}
                 aria-current={active ? "page" : undefined}
+                onClick={() => setOpen(false)}
                 className={`${item} ${active ? "bg-brand text-on-brand" : "text-ink hover:bg-paper"}`}
               >
                 {icon}

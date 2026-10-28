@@ -221,7 +221,14 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line p-4">
-        <p className="min-w-0 break-all text-base text-muted">{chosen ? `${fileName(chosen.key)}（${formatSize(chosen.size)}）` : t`写真を選んでください。`}</p>
+        <p className="flex min-w-0 items-center gap-2 break-all text-base text-muted">
+          {chosen ? `${fileName(chosen.key)}（${formatSize(chosen.size)}）` : t`写真を選んでください。`}
+          {chosen ? (
+            <button type="button" onClick={() => setSelected(null)} aria-label={t`選ぶのをやめる`} className="tap-target inline-flex shrink-0 items-center justify-center rounded-full bg-surface px-3 text-xl font-bold text-ink">
+              <span aria-hidden="true">✕</span>
+            </button>
+          ) : null}
+        </p>
         <button
           type="button"
           disabled={!chosen}
