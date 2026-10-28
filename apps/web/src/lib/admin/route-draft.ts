@@ -551,6 +551,7 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
     sideLines: d.legs.filter((l) => l.side).map((l) => ({ spotId: l.to, line: l.points.map(([lng, lat]) => ({ lat, lng })) })),
     videoUrl: nz(d.videoUrl),
     videoUrlEn: nz(d.videoUrlEn),
+    videoSubtitlesEn: d.videoSubtitlesEn,
     videoSubtitles: d.videoSubtitles,
     photoUrl: nz(d.photoUrl),
     photoCredit: nz(d.photoCredit),
