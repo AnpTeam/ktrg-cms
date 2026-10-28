@@ -888,7 +888,10 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
           const a = (await store.updateRoute(actor, first!.id, first!.updatedAt, { videoUrl: "https://youtu.be/dQw4w9WgXcQ", videoUrlEn: "https://youtu.be/abcdefghijk" })) as { updatedAt: Date };
           expect(a).toMatchObject({ videoUrl: "https://youtu.be/dQw4w9WgXcQ", videoUrlEn: "https://youtu.be/abcdefghijk" });
           expect((await store.getRoute(first!.id))?.route).toMatchObject({ videoUrl: "https://youtu.be/dQw4w9WgXcQ", videoUrlEn: "https://youtu.be/abcdefghijk" });
-          const cleared = await store.updateRoute(actor, first!.id, a.updatedAt, { videoUrlEn: null });
+          const withSubs = (await store.updateRoute(actor, first!.id, a.updatedAt, { videoSubtitlesEn: true })) as { updatedAt: Date };
+          expect(withSubs).toMatchObject({ videoSubtitlesEn: true, videoSubtitles: false, videoUrlEn: "https://youtu.be/abcdefghijk" });
+          expect((await store.getRoute(first!.id))?.route.videoSubtitlesEn).toBe(true);
+          const cleared = await store.updateRoute(actor, first!.id, withSubs.updatedAt, { videoUrlEn: null });
           expect(cleared).toMatchObject({ videoUrl: "https://youtu.be/dQw4w9WgXcQ", videoUrlEn: null });
         });
       });

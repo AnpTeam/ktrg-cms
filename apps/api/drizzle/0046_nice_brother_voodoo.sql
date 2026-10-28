@@ -1,0 +1,1 @@
+ALTER TABLE "route_translations" ADD COLUMN "video_subtitles" boolean DEFAULT false NOT NULL;

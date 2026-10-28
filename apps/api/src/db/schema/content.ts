@@ -506,6 +506,8 @@ export const routeTranslations = pgTable(
     source: text("source"),
     // The video for this language (YouTube / Vimeo / an uploaded file). The Japanese video stays in routes.video_url; the English site shows this one when the English row has it, and the Japanese video otherwise.
     videoUrl: text("video_url"),
+    // Subtitles were uploaded beside this language's video (a .vtt named like it); the player asks for them only then. Used by the English row; the Japanese video's flag is routes.video_subtitles.
+    videoSubtitles: boolean("video_subtitles").notNull().default(false),
   },
   (t) => [primaryKey({ columns: [t.routeId, t.locale] }), check("route_translations_ja_name", jaRequires(t, t.name))],
 );

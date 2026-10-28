@@ -43,6 +43,8 @@ export interface RouteRow {
   videoSubtitles: boolean;
   /** The English video, shown in place of `videoUrl` on the English site; null for none. */
   videoUrlEn: string | null;
+  /** Subtitles were uploaded for the English video. */
+  videoSubtitlesEn: boolean;
   historyJa: string | null;
   historyEn: string | null;
   accessJa: string | null;
@@ -134,6 +136,7 @@ export interface RouteFields {
   videoUrl: string | null;
   videoSubtitles: boolean;
   videoUrlEn: string | null;
+  videoSubtitlesEn: boolean;
   historyJa: string | null;
   historyEn: string | null;
   accessJa: string | null;

@@ -40,6 +40,7 @@ export interface RouteBody {
   technicalLevel: TechnicalLevel | null;
   videoUrl: string | null;
   videoUrlEn: string | null;
+  videoSubtitlesEn: boolean;
   videoSubtitles: boolean;
   historyJa: string | null;
   historyEn: string | null;
@@ -120,6 +121,7 @@ export function routeBody(d: RouteDraft): RouteBody {
     technicalLevel: d.technicalLevel,
     videoUrl: nullIfEmpty(d.videoUrl),
     videoUrlEn: nullIfEmpty(d.videoUrlEn),
+    videoSubtitlesEn: d.videoSubtitlesEn,
     videoSubtitles: d.videoSubtitles,
     historyJa: nullIfEmpty(d.historyJa),
     historyEn: nullIfEmpty(d.historyEn),

@@ -106,6 +106,7 @@ const routeProps = {
   videoUrl: nullable(t.String({ maxLength: 500 })),
   videoSubtitles: t.Boolean(),
   videoUrlEn: nullable(t.String({ maxLength: 500 })),
+  videoSubtitlesEn: t.Boolean(),
   historyJa: nullable(t.String({ maxLength: 20000 })),
   historyEn: nullable(t.String({ maxLength: 20000 })),
   accessJa: nullable(t.String({ maxLength: 20000 })),
