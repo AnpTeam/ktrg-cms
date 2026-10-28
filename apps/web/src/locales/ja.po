@@ -662,9 +662,12 @@ msgid "WikipediaやWikimedia Commonsから探す"
 msgstr "WikipediaやWikimedia Commonsから探す"
 
 #: src/components/admin/RouteEditor.tsx:636
-#: src/components/admin/RouteEditor.tsx:644
 msgid "YouTube か Vimeo、またはアップロードした動画の、https:// で始まるリンクにしてください。"
 msgstr "YouTube か Vimeo、またはアップロードした動画の、https:// で始まるリンクにしてください。"
+
+#: src/components/admin/RouteEditor.tsx:644
+msgid "YouTube、またはアップロードした動画の、https:// で始まるリンクにしてください。"
+msgstr "YouTube、またはアップロードした動画の、https:// で始まるリンクにしてください。"
 
 #: src/components/admin/map-editor/MapEditor.tsx:1162
 msgid "アウトドア"
@@ -5824,8 +5827,8 @@ msgid "英語版の動画"
 msgstr "英語版の動画"
 
 #: src/components/admin/RouteEditor.tsx:640
-msgid "英語版の動画のリンク（YouTube・Vimeo、またはアップロードした動画）"
-msgstr "英語版の動画のリンク（YouTube・Vimeo、またはアップロードした動画）"
+msgid "英語版の動画のリンク（YouTube、またはアップロードした動画）"
+msgstr "英語版の動画のリンク（YouTube、またはアップロードした動画）"
 
 #: src/app/layout.tsx:33
 #: src/components/landing/LandingHero.tsx:37
