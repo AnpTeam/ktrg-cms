@@ -1,0 +1,403 @@
+- generic [active] [ref=e1]:
+  - link "本文へ移動" [ref=e2] [cursor=pointer]:
+    - /url: "#main"
+  - generic [ref=e3]:
+    - navigation "メインメニュー" [ref=e5]:
+      - list [ref=e6]:
+        - listitem [ref=e7]:
+          - link "ホーム" [ref=e8] [cursor=pointer]:
+            - /url: /
+        - listitem [ref=e13]:
+          - link "マップ" [ref=e14] [cursor=pointer]:
+            - /url: /map
+        - listitem [ref=e17]:
+          - link "ルート" [ref=e18] [cursor=pointer]:
+            - /url: /routes
+        - listitem [ref=e23]:
+          - link "ラリー" [ref=e24] [cursor=pointer]:
+            - /url: /rallies
+        - listitem [ref=e28]:
+          - button "メニュー" [ref=e29]
+    - generic [ref=e31]:
+      - banner
+      - main [ref=e32]:
+        - generic [ref=e34]:
+          - link "ルート一覧" [ref=e36] [cursor=pointer]:
+            - /url: /routes
+          - generic [ref=e39]:
+            - button "印刷・PDF" [ref=e40]
+            - button "共有" [ref=e45]
+            - link "GPXファイルをダウンロード（ログインが必要です）" [ref=e49] [cursor=pointer]:
+              - /url: /login?next=%2Froutes%2Fffb2d002-fd99-4c1b-89f1-41efacba9281
+            - status
+            - button "ブックマークする" [ref=e52]
+          - generic [ref=e55]:
+            - generic [ref=e56]:
+              - generic [ref=e57]:
+                - img "葛城の道" [ref=e60]
+                - generic [ref=e61]:
+                  - heading "葛 かつ 城 らぎ の 道 みち" [level=1] [ref=e62]:
+                    - generic [ref=e63]:
+                      - text: 葛
+                      - generic [ref=e64]: かつ
+                    - generic [ref=e65]:
+                      - text: 城
+                      - generic [ref=e66]: らぎ
+                    - text: の
+                    - generic [ref=e67]:
+                      - text: 道
+                      - generic [ref=e68]: みち
+                  - paragraph [ref=e69]: 奈良県 御所市
+                - generic [ref=e71]:
+                  - generic [ref=e72]:
+                    - paragraph [ref=e73]:
+                      - generic [ref=e74]: スタート
+                      - generic [ref=e75]: 寺田橋バス停
+                    - paragraph [ref=e76]:
+                      - generic [ref=e77]: ゴール
+                      - generic [ref=e78]: 玉手駅 (JR西日本）
+                  - generic [ref=e80]:
+                    - generic [ref=e81]:
+                      - term [ref=e82]: 歩き方
+                      - definition [ref=e83]: 片道
+                    - generic [ref=e84]:
+                      - term [ref=e85]: 距離
+                      - definition [ref=e86]: 14.3km
+                    - generic [ref=e87]:
+                      - term [ref=e88]: のぼり
+                      - definition [ref=e89]: 313m
+                    - generic [ref=e90]:
+                      - term [ref=e91]: 時間
+                      - definition [ref=e92]: 5時間20分
+                    - generic [ref=e93]:
+                      - term [ref=e94]:
+                        - text: 体力度
+                        - button "体力度とは" [ref=e95] [cursor=pointer]
+                      - definition [ref=e99]: "2"
+                    - generic [ref=e100]:
+                      - term [ref=e101]:
+                        - text: 技術度
+                        - button "技術度とは" [ref=e102] [cursor=pointer]
+                      - definition [ref=e106]: A
+                  - paragraph [ref=e107]: スタンプ 0 / 12
+                - generic [ref=e111]: 大和葛城山麓の「葛城の道」を歩き、名柄バス停から葛城水分神社へ向かって第22経塚を遥拝します。その後、道標に従って一言の願いを叶える葛城一言主神社や千体石仏の九品寺、第23経塚がある六体地蔵石仏へと田園風景の中を巡ります。最後は鴨山口神社を経て近鉄御所駅方面へ下り、御所まちの古い町並みを抜けて役行者ゆかりの吉祥草寺へ至り、玉手駅から帰路につく散策ルートです。
+                - generic [ref=e115]:
+                  - heading "歴史・由来" [level=2] [ref=e116]
+                  - generic [ref=e117]: 葛城の道は、大和朝廷が成立する以前の神話と古代王朝の足跡を辿る道であり、山の辺の道と並び、奈良盆地をめぐる古道として知られ、山容と田んぼのある風景をそこここに見ることができる。 葛城の道歴史文化館ではこの地方の古くからの風土やその歴史を知ることができる。また、この館は葛城の道の優れた歴史や自然の財産を、地域の人たちとともに守っていくための拠点としても機能している。
+                - generic [ref=e121]:
+                  - heading "アクセス・交通" [level=2] [ref=e122]
+                  - generic [ref=e123]:
+                    - generic [ref=e124]:
+                      - generic [ref=e125]: スタート
+                      - generic [ref=e126]: 寺田橋バス停
+                    - generic [ref=e129]:
+                      - generic [ref=e130]: ゴール
+                      - generic [ref=e131]: 玉手駅 (JR西日本）
+                    - paragraph [ref=e132]:
+                      - generic [ref=e133]: 片道
+                      - text: 帰りの方法は、下の交通の説明を見てください。
+                  - list [ref=e134]:
+                    - listitem [ref=e135]:
+                      - generic [ref=e136]: バス
+                      - generic [ref=e146]:
+                        - link "高田五條線 （外部サイトが新しいタブで開きます）" [ref=e148] [cursor=pointer]:
+                          - /url: https://www.navitime.co.jp/bus/diagram/direction/00031808/
+                          - text: 高田五條線 ↗
+                          - generic [ref=e149]: （外部サイトが新しいタブで開きます）
+                        - generic [ref=e150]: 60・62・66・70・76
+                    - listitem [ref=e151]:
+                      - generic [ref=e152]: バス
+                      - generic [ref=e162]:
+                        - link "八木新宮線 （外部サイトが新しいタブで開きます）" [ref=e164] [cursor=pointer]:
+                          - /url: https://www.narakotsu.co.jp/temporary/yagi-shingu/
+                          - text: 八木新宮線 ↗
+                          - generic [ref=e165]: （外部サイトが新しいタブで開きます）
+                        - generic [ref=e166]: 特急301・302
+                    - listitem [ref=e167]:
+                      - generic [ref=e168]: 電車
+                      - generic [ref=e177]:
+                        - link "近鉄御所駅 （外部サイトが新しいタブで開きます）" [ref=e179] [cursor=pointer]:
+                          - /url: https://www.kintetsu.co.jp/station/station_info/station15008.html
+                          - text: 近鉄御所駅 ↗
+                          - generic [ref=e180]: （外部サイトが新しいタブで開きます）
+                        - generic [ref=e181]: 御所線
+                - generic [ref=e183]:
+                  - heading "周辺の場所" [level=2] [ref=e184]
+                  - group "表示する種類" [ref=e186]:
+                    - button "トイレ・休憩 5" [pressed] [ref=e187]:
+                      - generic [ref=e199]: トイレ・休憩
+                      - generic [ref=e200]: "5"
+                    - button "お店・食事 7" [pressed] [ref=e201]:
+                      - generic [ref=e209]: お店・食事
+                      - generic [ref=e210]: "7"
+                    - button "自動販売機 1" [pressed] [ref=e211]:
+                      - generic [ref=e220]: 自動販売機
+                      - generic [ref=e221]: "1"
+                  - list [ref=e222]:
+                    - listitem [ref=e223]:
+                      - button "ケーキハウスアドレ 飲食店" [ref=e224]:
+                        - generic [ref=e232]:
+                          - generic [ref=e233]: ケーキハウスアドレ
+                          - generic [ref=e234]: 飲食店
+                        - generic [aria-hidden] [ref=e235]: ›
+                    - listitem [ref=e236]:
+                      - button "鴨山口神社トイレ トイレ" [ref=e237]:
+                        - generic [ref=e249]:
+                          - generic [ref=e250]: 鴨山口神社トイレ
+                          - generic [ref=e251]: トイレ
+                        - generic [aria-hidden] [ref=e252]: ›
+                    - listitem [ref=e253]:
+                      - button "自販機 自動販売機" [ref=e254]:
+                        - generic [ref=e263]:
+                          - generic [ref=e264]: 自販機
+                          - generic [ref=e265]: 自動販売機
+                        - generic [aria-hidden] [ref=e266]: ›
+                    - listitem [ref=e267]:
+                      - button "JR御所駅 トイレ トイレ" [ref=e268]:
+                        - generic [ref=e280]:
+                          - generic [ref=e281]: JR御所駅 トイレ
+                          - generic [ref=e282]: トイレ
+                        - generic [aria-hidden] [ref=e283]: ›
+                    - listitem [ref=e284]:
+                      - button "近鉄御所駅トイレ トイレ" [ref=e285]:
+                        - generic [ref=e297]:
+                          - generic [ref=e298]: 近鉄御所駅トイレ
+                          - generic [ref=e299]: トイレ
+                        - generic [aria-hidden] [ref=e300]: ›
+                    - listitem [ref=e301]:
+                      - button "葛木一言主神社トイレ トイレ" [ref=e302]:
+                        - generic [ref=e314]:
+                          - generic [ref=e315]: 葛木一言主神社トイレ
+                          - generic [ref=e316]: トイレ
+                        - generic [aria-hidden] [ref=e317]: ›
+                    - listitem [ref=e318]:
+                      - button "梅本とうふ店 飲食店" [ref=e319]:
+                        - generic [ref=e327]:
+                          - generic [ref=e328]: 梅本とうふ店
+                          - generic [ref=e329]: 飲食店
+                        - generic [aria-hidden] [ref=e330]: ›
+                    - listitem [ref=e331]:
+                      - button "葛城一言主神社 一の鳥居前公衆トイレ トイレ" [ref=e332]:
+                        - generic [ref=e344]:
+                          - generic [ref=e345]: 葛城一言主神社 一の鳥居前公衆トイレ
+                          - generic [ref=e346]: トイレ
+                        - generic [aria-hidden] [ref=e347]: ›
+                    - listitem [ref=e348]:
+                      - button "虎屋菓舗 奈良県御所市の和生菓子処 飲食店" [ref=e349]:
+                        - generic [ref=e357]:
+                          - generic [ref=e358]: 虎屋菓舗 奈良県御所市の和生菓子処
+                          - generic [ref=e359]: 飲食店
+                        - generic [aria-hidden] [ref=e360]: ›
+                    - listitem [ref=e361]:
+                      - button "ローソン 御所茅原店 コンビニ・商店" [ref=e362]:
+                        - generic [ref=e370]:
+                          - generic [ref=e371]: ローソン 御所茅原店
+                          - generic [ref=e372]: コンビニ・商店
+                        - generic [aria-hidden] [ref=e373]: ›
+                    - listitem [ref=e374]:
+                      - button "茶舗里 珈琲専門店 カフェ・喫茶" [ref=e375]:
+                        - generic [ref=e383]:
+                          - generic [ref=e384]: 茶舗里 珈琲専門店
+                          - generic [ref=e385]: カフェ・喫茶
+                        - generic [aria-hidden] [ref=e386]: ›
+                    - listitem [ref=e387]:
+                      - button "新地 『入船』 飲食店" [ref=e388]:
+                        - generic [ref=e396]:
+                          - generic [ref=e397]: 新地 『入船』
+                          - generic [ref=e398]: 飲食店
+                        - generic [aria-hidden] [ref=e399]: ›
+                    - listitem [ref=e400]:
+                      - button "東川酒店 コンビニ・商店" [ref=e401]:
+                        - generic [ref=e409]:
+                          - generic [ref=e410]: 東川酒店
+                          - generic [ref=e411]: コンビニ・商店
+                        - generic [aria-hidden] [ref=e412]: ›
+              - generic [ref=e413]:
+                - figure "標高のようす 最高 294m 最低 82m" [ref=e415]:
+                  - generic [ref=e416]:
+                    - generic [ref=e417]: 標高のようす
+                    - generic [ref=e418]:
+                      - generic [ref=e419]: 最高 294m
+                      - generic [ref=e420]: 最低 82m
+                  - img "標高は82mから294mまで" [ref=e421]
+                  - generic [aria-hidden] [ref=e425]:
+                    - generic [ref=e426]: 0km
+                    - generic [ref=e427]: 14.3km
+                - generic [ref=e428]:
+                  - heading "ルートの動画" [level=2] [ref=e429]
+                  - button "動画を見る" [ref=e432]
+                  - paragraph [ref=e437]: 最終更新：2026年10月28日 11:24
+                - generic [ref=e438]: 地図を読み込み中…
+                - generic [ref=e440]:
+                  - generic [ref=e441]:
+                    - heading "経由地" [level=2] [ref=e442]
+                    - paragraph [ref=e443]: スタンプ 0 / 12
+                  - list [ref=e445]:
+                    - listitem [ref=e446]:
+                      - link "寺田橋バス停 寺田橋バス停 神話の時代から続く大和朝廷の舞台となった、葛城古道への旅がここから始まります。 開放中" [ref=e448] [cursor=pointer]:
+                        - /url: /spots/e6527217-1749-437c-8297-e456b702eea2
+                        - img [aria-hidden] [ref=e450]:
+                          - generic [ref=e453]: "1"
+                        - generic [ref=e454]:
+                          - img "寺田橋バス停" [ref=e456]
+                          - generic [ref=e458]:
+                            - generic [ref=e459]: 寺田橋バス停
+                            - generic [ref=e460]: 神話の時代から続く大和朝廷の舞台となった、葛城古道への旅がここから始まります。
+                            - generic [ref=e461]: 開放中
+                    - listitem [ref=e469]:
+                      - link "葛木水分神社 （葛城水分神社） 葛木水分神社 （葛城水分神社） 崇神天皇の時代から続く歴史ある古社です。かつては農耕の水を配る神でしたが、のちに子授けの神として広く信仰を集めました。 前の場所から、歩いて約70分（3.39 km） 開放中" [ref=e472] [cursor=pointer]:
+                        - /url: /spots/363ab1fb-4d25-4e4f-b696-ea8c6f03b19a
+                        - img [aria-hidden] [ref=e474]:
+                          - generic [ref=e477]: "2"
+                        - generic [ref=e478]:
+                          - img "葛木水分神社 （葛城水分神社）" [ref=e480]
+                          - generic [ref=e482]:
+                            - generic [ref=e483]: 葛木水分神社 （葛城水分神社）
+                            - generic [ref=e484]: 崇神天皇の時代から続く歴史ある古社です。かつては農耕の水を配る神でしたが、のちに子授けの神として広く信仰を集めました。
+                            - generic [ref=e485]: 前の場所から、歩いて約70分（3.39 km）
+                            - generic [ref=e486]: 開放中
+                    - listitem [ref=e494]:
+                      - link "葛城第二十二経塚 水越多和・嘱累品 葛城第二十二経塚 水越多和・嘱累品 寄り道 修験道の原点である葛城第二十二経塚は、千年以上の歴史と深い静寂に包まれた神聖な祈りの場です。第二十二経塚への直接のご参拝は道中が険しく危険なため、葛木水分神社（葛城水分神社）から遥拝されるのをお勧めいたします。 開放中" [ref=e497] [cursor=pointer]:
+                        - /url: /spots/02493e36-2e05-4cc0-8309-dbb246463551
+                        - generic [ref=e501]:
+                          - img "葛城第二十二経塚 水越多和・嘱累品" [ref=e503]
+                          - generic [ref=e505]:
+                            - generic [ref=e506]: 葛城第二十二経塚 水越多和・嘱累品
+                            - generic [ref=e507]: 寄り道
+                            - generic [ref=e509]: 修験道の原点である葛城第二十二経塚は、千年以上の歴史と深い静寂に包まれた神聖な祈りの場です。第二十二経塚への直接のご参拝は道中が険しく危険なため、葛木水分神社（葛城水分神社）から遥拝されるのをお勧めいたします。
+                            - generic [ref=e510]: 開放中
+                    - listitem [ref=e518]:
+                      - 'link "中村家住宅 (奈良県御所市名柄) 中村家住宅 (奈良県御所市名柄) 奈良県 江戸前期／1632 桁行22.1m、梁間11.2m、切妻造段違、北面庇付、本瓦葺 1棟 奈良県御所市大字名柄339番地 重文指定年月日:19680425 国宝指定年月日: 重要文化財 前の場所から、歩いて約45分（2.32 km） 開放中" [ref=e521] [cursor=pointer]':
+                        - /url: /spots/2ecf9b98-ff67-49d9-9f22-d5cd0d1e9c33
+                        - img [aria-hidden] [ref=e523]:
+                          - generic [ref=e526]: "3"
+                        - generic [ref=e527]:
+                          - img "中村家住宅 (奈良県御所市名柄)" [ref=e529]
+                          - generic [ref=e531]:
+                            - generic [ref=e532]: 中村家住宅 (奈良県御所市名柄)
+                            - generic [ref=e533]: "奈良県 江戸前期／1632 桁行22.1m、梁間11.2m、切妻造段違、北面庇付、本瓦葺 1棟 奈良県御所市大字名柄339番地 重文指定年月日:19680425 国宝指定年月日: 重要文化財"
+                            - generic [ref=e534]: 前の場所から、歩いて約45分（2.32 km）
+                            - generic [ref=e535]: 開放中
+                    - listitem [ref=e543]:
+                      - link "郵便名柄館 テガミカフェ 郵便名柄館 テガミカフェ 店内には敷地内から出てきた郵便物を運んでいた人車や家具古い絵はがきなども展示しており、タイムスリップしたようです。 この空間で楽しい会話と食べると元気になる料理や自家製スイーツをお楽しみください。 前の場所から、歩いて約5分（0.2 km） 開放中" [ref=e546] [cursor=pointer]:
+                        - /url: /spots/9d7c8376-b167-4007-b206-735f6f3bf694
+                        - img [aria-hidden] [ref=e548]:
+                          - generic [ref=e551]: "4"
+                        - generic [ref=e552]:
+                          - img "郵便名柄館 テガミカフェ" [ref=e554]
+                          - generic [ref=e556]:
+                            - generic [ref=e557]: 郵便名柄館 テガミカフェ
+                            - generic [ref=e558]: 店内には敷地内から出てきた郵便物を運んでいた人車や家具古い絵はがきなども展示しており、タイムスリップしたようです。 この空間で楽しい会話と食べると元気になる料理や自家製スイーツをお楽しみください。
+                            - generic [ref=e559]: 前の場所から、歩いて約5分（0.2 km）
+                            - generic [ref=e560]: 開放中
+                    - listitem [ref=e568]:
+                      - link "葛城一言主神社 葛城一言主神社 前の場所から、歩いて約25分（1.17 km） 開放中" [ref=e571] [cursor=pointer]:
+                        - /url: /spots/2eed8c09-40ab-4b5a-b2da-4eeb211f65ad
+                        - img [aria-hidden] [ref=e573]:
+                          - generic [ref=e576]: "5"
+                        - generic [ref=e577]:
+                          - img "葛城一言主神社" [ref=e579]
+                          - generic [ref=e581]:
+                            - generic [ref=e582]: 葛城一言主神社
+                            - generic [ref=e583]: 前の場所から、歩いて約25分（1.17 km）
+                            - generic [ref=e584]: 開放中
+                    - listitem [ref=e592]:
+                      - link "九品寺 九品寺 前の場所から、歩いて約25分（1.32 km） 開放中" [ref=e595] [cursor=pointer]:
+                        - /url: /spots/478c6630-d868-4509-a52a-450acab2b982
+                        - img [aria-hidden] [ref=e597]:
+                          - generic [ref=e600]: "6"
+                        - generic [ref=e601]:
+                          - img "九品寺" [ref=e603]
+                          - generic [ref=e605]:
+                            - generic [ref=e606]: 九品寺
+                            - generic [ref=e607]: 前の場所から、歩いて約25分（1.32 km）
+                            - generic [ref=e608]: 開放中
+                    - listitem [ref=e616]:
+                      - link "六地蔵石仏 六地蔵石仏 御所市大字櫛羅の山麓沿いに鎮座する、鴨山口神社から旧道の坂道を、葛城山に向かって少し歩くと、集落のはずれに行く手を阻むように、大きな石がどっかりと腰をおろしています。 この地域は古代から中世にかけて、兄川の出水等により、度々災害が発生し、伝承によれば、六地蔵が彫られた大きな石も、室町時代に土石流が発生し、現在の場所に流れ着いたと言われ、その大災害に対し、村人は仏教の六道をもって衆生を救うという、仏法の精神に照らし極楽浄土を願い、その頃に彫ったと思われます。 現在の櫛羅は中世には、倶尸羅を用い、葛城山を急激に下る土砂崩れが度々発生したため、（大和志にも白砂がある）崩れが語源となっています。村人の強い信仰心から大きな石に刻んだものと考えられ、向かって右から天上道（日光菩薩）人間道（除蓋障菩薩）修羅道（持地菩薩）畜生道（宝印菩薩）餓鬼道（宝珠菩薩）地獄道（壇蛇菩薩）となっています。 前の場所から、歩いて約20分（1.07 km） 開放中" [ref=e619] [cursor=pointer]:
+                        - /url: /spots/317a17f5-c1e2-4351-8321-720e1f4d578a
+                        - img [aria-hidden] [ref=e621]:
+                          - generic [ref=e624]: "7"
+                        - generic [ref=e625]:
+                          - img "六地蔵石仏" [ref=e627]
+                          - generic [ref=e629]:
+                            - generic [ref=e630]: 六地蔵石仏
+                            - generic [ref=e631]: 御所市大字櫛羅の山麓沿いに鎮座する、鴨山口神社から旧道の坂道を、葛城山に向かって少し歩くと、集落のはずれに行く手を阻むように、大きな石がどっかりと腰をおろしています。 この地域は古代から中世にかけて、兄川の出水等により、度々災害が発生し、伝承によれば、六地蔵が彫られた大きな石も、室町時代に土石流が発生し、現在の場所に流れ着いたと言われ、その大災害に対し、村人は仏教の六道をもって衆生を救うという、仏法の精神に照らし極楽浄土を願い、その頃に彫ったと思われます。 現在の櫛羅は中世には、倶尸羅を用い、葛城山を急激に下る土砂崩れが度々発生したため、（大和志にも白砂がある）崩れが語源となっています。村人の強い信仰心から大きな石に刻んだものと考えられ、向かって右から天上道（日光菩薩）人間道（除蓋障菩薩）修羅道（持地菩薩）畜生道（宝印菩薩）餓鬼道（宝珠菩薩）地獄道（壇蛇菩薩）となっています。
+                            - generic [ref=e632]: 前の場所から、歩いて約20分（1.07 km）
+                            - generic [ref=e633]: 開放中
+                    - listitem [ref=e641]:
+                      - link "葛城第二十三経塚 俱尸羅・薬王菩薩本事品 葛城第二十三経塚 俱尸羅・薬王菩薩本事品 よみ： くしら・やくおうぼさつほんじほん 前の場所から、歩いて約5分（0.16 km） 開放中" [ref=e644] [cursor=pointer]:
+                        - /url: /spots/f1d50034-c3ed-4dc0-9807-c5a08e8dcd9a
+                        - img [aria-hidden] [ref=e646]:
+                          - generic [ref=e649]: "8"
+                        - generic [ref=e650]:
+                          - img "葛城第二十三経塚 俱尸羅・薬王菩薩本事品" [ref=e652]
+                          - generic [ref=e654]:
+                            - generic [ref=e655]: 葛城第二十三経塚 俱尸羅・薬王菩薩本事品
+                            - generic [ref=e656]: よみ： くしら・やくおうぼさつほんじほん
+                            - generic [ref=e657]: 前の場所から、歩いて約5分（0.16 km）
+                            - generic [ref=e658]: 開放中
+                    - listitem [ref=e666]:
+                      - link "鴨山口神社 鴨山口神社 スタンプなし 寺社 寄り道" [ref=e669] [cursor=pointer]:
+                        - /url: /spots/aebedea7-bd1a-42b1-bfd4-19adcc8ef2b2
+                        - generic [ref=e673]:
+                          - img "鴨山口神社" [ref=e675]
+                          - generic [ref=e677]:
+                            - generic [ref=e678]: 鴨山口神社
+                            - generic [ref=e679]:
+                              - generic [ref=e680]: スタンプなし
+                              - generic [ref=e681]: 寺社
+                              - generic [ref=e682]: 寄り道
+                    - listitem [ref=e686]:
+                      - link "近鉄御所駅 近鉄御所駅 時間に余裕があれば立ち寄れる地点、近鉄御所駅です。古くから地域の交通の要所として親しまれてきた近鉄御所駅です。ここに自由に休憩することができます。 開放中" [ref=e689] [cursor=pointer]:
+                        - /url: /spots/1fbb153c-9fda-494b-b605-6037fa666c04
+                        - img [aria-hidden] [ref=e691]:
+                          - generic [ref=e694]: "9"
+                        - generic [ref=e695]:
+                          - img "近鉄御所駅" [ref=e697]
+                          - generic [ref=e699]:
+                            - generic [ref=e700]: 近鉄御所駅
+                            - generic [ref=e701]: 時間に余裕があれば立ち寄れる地点、近鉄御所駅です。古くから地域の交通の要所として親しまれてきた近鉄御所駅です。ここに自由に休憩することができます。
+                            - generic [ref=e702]: 開放中
+                    - listitem [ref=e710]:
+                      - link "吉祥草寺 吉祥草寺 飛鳥時代に創建された古刹で、修験道の開祖である役行者が生まれた場所とされています。自然と調和した美しい本堂が、訪れる人を静かに迎えます。 前の場所から、歩いて約40分（1.91 km） 開放中" [ref=e713] [cursor=pointer]:
+                        - /url: /spots/6e585e4f-31e6-4ba3-908e-dd58aaf76576
+                        - img [aria-hidden] [ref=e715]:
+                          - generic [ref=e718]: "10"
+                        - generic [ref=e719]:
+                          - img "吉祥草寺" [ref=e721]
+                          - generic [ref=e723]:
+                            - generic [ref=e724]: 吉祥草寺
+                            - generic [ref=e725]: 飛鳥時代に創建された古刹で、修験道の開祖である役行者が生まれた場所とされています。自然と調和した美しい本堂が、訪れる人を静かに迎えます。
+                            - generic [ref=e726]: 前の場所から、歩いて約40分（1.91 km）
+                            - generic [ref=e727]: 開放中
+                    - listitem [ref=e735]:
+                      - link "玉手駅 (JR西日本） 玉手駅 (JR西日本） 本の最も古い歴史書である『日本書紀』に登場する歴史深い場所です。古代の有力な一族「葛城氏」の玉田宿禰という人物が住んでいた地だと伝えられています。 前の場所から、歩いて約15分（0.68 km） 開放中" [ref=e737] [cursor=pointer]:
+                        - /url: /spots/bfbba4a4-9d76-4363-a1b8-22b1915182ce
+                        - img [aria-hidden] [ref=e739]:
+                          - generic [ref=e742]: "11"
+                        - generic [ref=e743]:
+                          - img "玉手駅 (JR西日本）" [ref=e745]
+                          - generic [ref=e747]:
+                            - generic [ref=e748]: 玉手駅 (JR西日本）
+                            - generic [ref=e749]: 本の最も古い歴史書である『日本書紀』に登場する歴史深い場所です。古代の有力な一族「葛城氏」の玉田宿禰という人物が住んでいた地だと伝えられています。
+                            - generic [ref=e750]: 前の場所から、歩いて約15分（0.68 km）
+                            - generic [ref=e751]: 開放中
+            - paragraph [ref=e759]:
+              - generic [ref=e763]: 出かける前に、公式の最新情報を確認してください。
+            - paragraph [ref=e764]: 最終更新：2026年10月28日 12:59
+        - generic [ref=e766]:
+          - navigation "フッター" [ref=e767]:
+            - link "ブログ" [ref=e768] [cursor=pointer]:
+              - /url: /blog
+            - link "よくあるご質問" [ref=e769] [cursor=pointer]:
+              - /url: /faq
+            - link "ライセンス情報" [ref=e770] [cursor=pointer]:
+              - /url: /licenses
+            - link "サイトマップ" [ref=e771] [cursor=pointer]:
+              - /url: /sitemap
+            - link "利用規約" [ref=e772] [cursor=pointer]:
+              - /url: /terms
+            - link "プライバシーポリシー" [ref=e773] [cursor=pointer]:
+              - /url: /privacy
+          - paragraph [ref=e774]: 一般財団法人奈良遺跡文化財保存活性化財団
+  - alert [ref=e775]

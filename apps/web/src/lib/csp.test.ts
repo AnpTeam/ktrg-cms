@@ -15,6 +15,17 @@ describe("buildCsp", () => {
     expect(connect(buildCsp({ isProd: true, r2UploadHost: "  " }))).toContain("https://*.r2.cloudflarestorage.com");
   });
 
+  test("the bucket's public host may be read from (a video's subtitles load as a connection): any r2.dev by default, only R2_PUBLIC_HOST when set", () => {
+    expect(connect(buildCsp({ isProd: true }))).toContain("https://*.r2.dev");
+    const c = connect(buildCsp({ isProd: true, r2PublicHost: "pub-1234abcd.r2.dev" }));
+    expect(c).toContain("https://pub-1234abcd.r2.dev");
+    expect(c).not.toContain("*.r2.dev");
+    expect(connect(buildCsp({ isProd: true, r2PublicHost: "media.example.org" }))).toContain("https://media.example.org");
+    for (const bad of ["https://x.r2.dev", "x.com; script-src *", "x.com/path", "*.r2.dev"]) {
+      expect(() => buildCsp({ isProd: true, r2PublicHost: bad })).toThrow(/R2_PUBLIC_HOST/);
+    }
+  });
+
   test("a value that is not a plain host name stops the build instead of widening or breaking the policy", () => {
     for (const bad of ["https://x.r2.cloudflarestorage.com", "x.com; script-src *", "x.com/path", "*.r2.cloudflarestorage.com", "localhost"]) {
       expect(() => buildCsp({ isProd: true, r2UploadHost: bad })).toThrow(/R2_UPLOAD_HOST/);
