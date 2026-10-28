@@ -13,7 +13,7 @@ export function FileVideoPlayer({ video, title, subtitles = false, language = "j
   const { t } = useLingui();
   const [playing, setPlaying] = useState(false);
   // The browser's own reason when the video cannot be played (MediaError.code: 1 stopped, 2 network, 3 could not be decoded, 4 not supported); 0 when it did not say.
-  const [failed, setFailed] = useState<number | null>(null);
+  const [failed, setFailed] = useState<{ code: number; message: string; network: number; ready: number } | null>(null);
   const [attempt, setAttempt] = useState(0);
 
   return (
@@ -22,7 +22,7 @@ export function FileVideoPlayer({ video, title, subtitles = false, language = "j
         {playing ? (
           // No download button and no right-click menu: this only stops casual saving, the file's address stays public.
           // The subtitles come from the site's own address (see subtitleUrl); a video without them simply shows none.
-          <video key={attempt} src={video.src} onError={(e) => setFailed(e.currentTarget.error?.code ?? 0)} title={title} controls controlsList="nodownload" disablePictureInPicture onContextMenu={(e) => e.preventDefault()} autoPlay playsInline preload="auto" className="h-full w-full">
+          <video key={attempt} src={video.src} onError={(e) => setFailed({ code: e.currentTarget.error?.code ?? 0, message: (e.currentTarget.error?.message ?? "").slice(0, 200), network: e.currentTarget.networkState, ready: e.currentTarget.readyState })} title={title} controls controlsList="nodownload" disablePictureInPicture onContextMenu={(e) => e.preventDefault()} autoPlay playsInline preload="auto" className="h-full w-full">
             {subtitles ? <track kind="subtitles" src={subtitleUrl(video, version)} srcLang={language} label={t`字幕`} default /> : null}
           </video>
         ) : (
@@ -42,7 +42,9 @@ export function FileVideoPlayer({ video, title, subtitles = false, language = "j
       </div>
       {failed !== null ? (
         <div role="alert" className="flex flex-col items-start gap-2 rounded-xl bg-surface p-4">
-          <p className="text-lg font-bold">{t`動画を再生できませんでした。（エラー ${failed}）`}</p>
+          <p className="text-lg font-bold">{t`動画を再生できませんでした。（エラー ${failed.code}）`}</p>
+          {/* What the browser itself reports, for whoever has to find the cause (kept small and in the browser's own words). */}
+          <p className="break-all text-base text-muted">{`${failed.message || "-"} [network ${failed.network}, ready ${failed.ready}]`}</p>
           <div className="flex flex-wrap gap-3">
             <button
               type="button"

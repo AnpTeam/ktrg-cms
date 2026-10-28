@@ -2526,7 +2526,7 @@ msgstr "Hide menu"
 msgid "もう一度、本人かどうかの確認が必要です。"
 msgstr "We need to confirm it is you again."
 
-#: src/components/FileVideo.tsx:55
+#: src/components/FileVideo.tsx:57
 msgid "もう一度ためす"
 msgstr "Try again"
 
@@ -3911,11 +3911,12 @@ msgstr "Video links must start with https:// and point to YouTube, Vimeo or an u
 msgid "動画をアップロード"
 msgstr "Upload a video"
 
+#. placeholder {0}: failed.code
 #: src/components/FileVideo.tsx:45
-msgid "動画を再生できませんでした。（エラー {failed}）"
-msgstr "The video could not be played. (Error {failed})"
+msgid "動画を再生できませんでした。（エラー {0}）"
+msgstr "The video could not be played. (Error {0})"
 
-#: src/components/FileVideo.tsx:58
+#: src/components/FileVideo.tsx:60
 msgid "動画を直接開く"
 msgstr "Open the video directly"
 
