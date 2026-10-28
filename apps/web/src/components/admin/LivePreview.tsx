@@ -14,19 +14,21 @@ import { defaultMapSettings } from "@/lib/map-settings";
  */
 export function LivePreview({ draft, order, locale: adminLocale }: { draft: RouteDraft; order: number; locale: string }) {
   const { t } = useLingui();
-  // Which language's texts (and which width) the frame shows. The page's own labels follow it too.
-  const [english, setEnglish] = useState(false);
-  // The page's own words in English too, so the frame shows what an English visitor sees (loaded when first asked for).
-  const [enI18n, setEnI18n] = useState<I18n | null>(null);
-  const toggleEnglish = async () => {
-    if (!english && !enI18n) {
-      const { messages } = await import(`../../locales/${"en"}.po`);
-      setEnI18n(setupI18n({ locale: "en", messages: { en: messages } }));
+  // The frame starts in the language the admin is using; the button offers the other one. The page's own labels follow the frame's
+  // language too, so a Japanese route is never shown with English labels (or the other way round).
+  const adminLang = adminLocale === "en" ? "en" : "ja";
+  const [locale, setLocale] = useState<"ja" | "en">(adminLang);
+  // The page's own words in the other language (loaded when first asked for); in the admin's own language the admin's words are used.
+  const [otherI18n, setOtherI18n] = useState<I18n | null>(null);
+  const toggleLanguage = async () => {
+    const next = locale === "en" ? "ja" : "en";
+    if (next !== adminLang && !otherI18n) {
+      const { messages } = await import(`../../locales/${next}.po`);
+      setOtherI18n(setupI18n({ locale: next, messages: { [next]: messages } }));
     }
-    setEnglish(!english);
+    setLocale(next);
   };
   const [wide, setWide] = useState(false);
-  const locale = english ? "en" : adminLocale === "en" ? "ja" : adminLocale;
   // Typing stays quick: the preview catches up a moment later.
   const shown = useDeferredValue(draft);
   const route = previewRoute(shown, order);
@@ -35,8 +37,9 @@ export function LivePreview({ draft, order, locale: adminLocale }: { draft: Rout
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap items-center gap-2">
         <p className="mr-auto text-base font-bold">{t`プレビュー`}</p>
-        <button type="button" aria-pressed={english} onClick={toggleEnglish} className="rounded-full bg-surface px-3 py-1 text-sm font-bold aria-pressed:bg-brand aria-pressed:text-on-brand">
-          English
+        {/* The button names the language it switches to (a language's own name, never translated). */}
+        <button type="button" onClick={toggleLanguage} lang={locale === "en" ? "ja" : "en"} className="rounded-full bg-surface px-3 py-1 text-sm font-bold">
+          {locale === "en" ? "日本語" : "English"}
         </button>
         <button type="button" aria-pressed={wide} onClick={() => setWide(!wide)} className="rounded-full bg-surface px-3 py-1 text-sm font-bold aria-pressed:bg-brand aria-pressed:text-on-brand">
           {t`パソコン幅`}
@@ -44,8 +47,8 @@ export function LivePreview({ draft, order, locale: adminLocale }: { draft: Rout
       </div>
       <div className={`mx-auto w-full ${wide ? "max-w-5xl" : "max-w-[26rem]"} overflow-hidden rounded-[2rem] border-4 border-ink bg-paper shadow-sm`}>
         <div className="relative flex max-h-[min(44rem,calc(100dvh-14rem))] flex-col gap-6 overflow-y-auto overflow-x-hidden py-6" data-testid="live-preview">
-          {english && enI18n ? (
-            <I18nProvider i18n={enI18n}>
+          {locale !== adminLang && otherI18n ? (
+            <I18nProvider i18n={otherI18n}>
               <PreviewBody route={route} locale={locale} />
             </I18nProvider>
           ) : (
