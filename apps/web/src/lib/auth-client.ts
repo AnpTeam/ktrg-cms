@@ -39,6 +39,16 @@ const withoutNulls = <T>(value: T): T => JSON.parse(JSON.stringify(value, (_k, v
 
 export const passkeysSupported = () => typeof window !== "undefined" && browserSupportsWebAuthn();
 
+/** Where the passkey is made: on this device, or on a phone the browser reaches by showing a QR code to scan. */
+export type PasskeyPlace = "here" | "phone";
+
+/** The server asks for this device's own scanner; for a phone, lift that limit so the browser offers the QR code. */
+export function optionsFor(place: PasskeyPlace, options: PublicKeyCredentialCreationOptionsJSON): PublicKeyCredentialCreationOptionsJSON {
+  if (place === "here") return options;
+  const { authenticatorAttachment: _attachment, ...selection } = options.authenticatorSelection ?? {};
+  return { ...options, authenticatorSelection: selection, hints: ["hybrid"] };
+}
+
 const profileBody = (profile: SignupProfile) => ({
   displayName: profile.displayName,
   origin: profile.origin ?? undefined,
@@ -46,7 +56,7 @@ const profileBody = (profile: SignupProfile) => ({
 });
 
 /** Create an account with a passkey alone: needs a name; the face or fingerprint scan is the sign-up. */
-export async function signUpWithPasskey(profile: SignupProfile): Promise<AuthResult> {
+export async function signUpWithPasskey(profile: SignupProfile, place: PasskeyPlace = "here"): Promise<AuthResult> {
   if (!passkeysSupported()) return fail("unsupported");
   try {
     const opts = await api.auth.passkeys.signup.options.post();
@@ -54,7 +64,7 @@ export async function signUpWithPasskey(profile: SignupProfile): Promise<AuthRes
 
     let attestation;
     try {
-      attestation = await startRegistration({ optionsJSON: opts.data.options as unknown as PublicKeyCredentialCreationOptionsJSON });
+      attestation = await startRegistration({ optionsJSON: optionsFor(place, opts.data.options as unknown as PublicKeyCredentialCreationOptionsJSON) });
     } catch (err) {
       return fail(ceremonyFailure(err, "registration_failed"));
     }
@@ -158,7 +168,7 @@ export async function listPasskeys(): Promise<{ ok: true; passkeys: PasskeyItem[
 }
 
 /** Add a passkey for this phone to the signed-in account: the face or fingerprint prompt is the confirmation. */
-export async function addPasskey(): Promise<AuthResult> {
+export async function addPasskey(place: PasskeyPlace = "here"): Promise<AuthResult> {
   if (!passkeysSupported()) return fail("unsupported");
   try {
     const opts = await api.auth.passkeys.register.options.post();
@@ -167,7 +177,7 @@ export async function addPasskey(): Promise<AuthResult> {
 
     let attestation;
     try {
-      attestation = await startRegistration({ optionsJSON: opts.data.options as unknown as PublicKeyCredentialCreationOptionsJSON });
+      attestation = await startRegistration({ optionsJSON: optionsFor(place, opts.data.options as unknown as PublicKeyCredentialCreationOptionsJSON) });
     } catch (err) {
       return fail(ceremonyFailure(err, "registration_failed"));
     }

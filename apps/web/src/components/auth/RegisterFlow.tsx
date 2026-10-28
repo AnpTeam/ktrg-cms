@@ -11,7 +11,7 @@ import { PrivacyNote } from "@/components/PrivacyNote";
 import { AuthError, ChoiceCard, inputClass, OriginPicker, primaryButton, secondaryButton } from "./authUi";
 import { EmailCodeStep } from "./EmailCodeStep";
 
-type Method = "passkey" | "email";
+type Method = "passkey" | "phone" | "email";
 type Step = "choose" | "details" | "code";
 
 /**
@@ -49,8 +49,8 @@ export function RegisterFlow({ next, loginHref }: { next?: string; loginHref: st
     if (busy || !hasName(name)) return;
     setBusy(true);
     setError(null);
-    if (method === "passkey") {
-      const result = await signUpWithPasskey(profile());
+    if (method !== "email") {
+      const result = await signUpWithPasskey(profile(), method === "phone" ? "phone" : "here");
       if (result.ok) return finish();
       setError(result.code);
       setBusy(false);
@@ -79,7 +79,7 @@ export function RegisterFlow({ next, loginHref }: { next?: string; loginHref: st
   }
 
   if (step === "details") {
-    const ready = hasName(name) && (method === "passkey" || email.includes("@"));
+    const ready = hasName(name) && (method !== "email" || email.includes("@"));
     return (
       <form onSubmit={submitDetails} className="flex flex-col gap-6" noValidate>
         <label className="flex flex-col gap-2 text-lg font-bold">
@@ -119,6 +119,11 @@ export function RegisterFlow({ next, loginHref }: { next?: string; loginHref: st
                 <KeyIcon />
                 {t`顔・指紋で登録する`}
               </>
+            ) : method === "phone" ? (
+              <>
+                <KeyIcon />
+                {t`スマートフォンで登録する`}
+              </>
             ) : (
               t`確認番号を送る`
             )}
@@ -134,6 +139,7 @@ export function RegisterFlow({ next, loginHref }: { next?: string; loginHref: st
   return (
     <div className="flex flex-col gap-4">
       <ChoiceCard primary icon={<KeyIcon />} title={t`顔・指紋で登録`} onClick={() => choose("passkey")} />
+      <ChoiceCard icon={<KeyIcon />} title={t`スマートフォンのQRコードで登録`} onClick={() => choose("phone")} />
       <ChoiceCard icon={<MailIcon />} title={t`メールで登録`} onClick={() => choose("email")} />
       <p className="mt-2 text-lg">
         {t`登録済みの方は`}{" "}

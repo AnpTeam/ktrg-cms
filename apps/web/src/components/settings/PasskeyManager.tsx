@@ -5,7 +5,7 @@ import { useLingui } from "@lingui/react/macro";
 import { AuthError, primaryButton, secondaryButton } from "@/components/auth/authUi";
 import { useReauth } from "@/components/auth/ReauthDialog";
 import { KeyIcon } from "@/components/icons";
-import { addPasskey, listPasskeys, passkeysSupported, removePasskey, type PasskeyItem } from "@/lib/auth-client";
+import { addPasskey, listPasskeys, type PasskeyPlace, passkeysSupported, removePasskey, type PasskeyItem } from "@/lib/auth-client";
 import type { AuthFailure } from "@/lib/auth-flow";
 import { formatDay, japanDay } from "@/lib/format";
 
@@ -61,11 +61,11 @@ export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail:
     if (!removing && el.open) el.close();
   }, [removing]);
 
-  async function add() {
+  async function add(place: PasskeyPlace) {
     if (busy) return;
     setBusy(true);
     setError(null);
-    const res = await guard(addPasskey);
+    const res = await guard(() => addPasskey(place));
     if (!res.ok) setError(res.code === "cancelled" ? null : res.code);
     else await load();
     setBusy(false);
@@ -126,9 +126,15 @@ export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail:
       <AuthError code={error} />
 
       {supported === true ? (
-        <button type="button" onClick={add} disabled={busy} className={primaryButton}>
-          {t`この端末のパスキーを追加する`}
-        </button>
+        <>
+          <button type="button" onClick={() => void add("here")} disabled={busy} className={primaryButton}>
+            {t`この端末のパスキーを追加する`}
+          </button>
+          <button type="button" onClick={() => void add("phone")} disabled={busy} className={secondaryButton}>
+            {t`スマートフォンのQRコードで追加する`}
+          </button>
+          <p className="text-base text-muted">{t`パソコンの画面に出るQRコードを、スマートフォンで読み取ります。パスキーはスマートフォンに保存されます。`}</p>
+        </>
       ) : null}
       {supported === false ? <p className="rounded-2xl bg-surface p-4 text-lg">{t`この端末・ブラウザではパスキーを使えません。`}</p> : null}
 
