@@ -184,6 +184,8 @@ export function SiteHeader({
         <div
           ref={panelRef}
           id="site-menu"
+          // A link to the page we are already on does not change the path, so close here to show the tap worked.
+          onClick={(e) => e.target instanceof Element && e.target.closest("a") && setOpen(false)}
           className="menu-drop fixed inset-0 overflow-y-auto overscroll-contain bg-surface pb-28 pt-[env(safe-area-inset-top)] md:inset-auto md:right-auto md:w-[26rem] md:max-h-[calc(100dvh-1.5rem)] md:rounded-2xl md:border-2 md:border-brand md:pb-0 md:pt-0 md:shadow-xl"
         >
           <div className="mx-auto flex max-w-xl flex-col gap-5 px-4 py-5">
