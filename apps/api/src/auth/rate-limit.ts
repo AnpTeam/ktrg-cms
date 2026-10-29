@@ -96,8 +96,8 @@ export function createRateLimiter({
   async function check(rule: RateLimitRule, identifier: string): Promise<RateLimitResult> {
     const t = now().getTime();
     const windowStart = Math.floor(t / rule.windowMs) * rule.windowMs;
-    // Hash the identifier so no email or IP address is stored in clear.
-    const key = `${rule.name}:${createHmac("sha256", secret).update(identifier).digest("hex")}`;
+    // Hash the identifier so no email or IP address is stored in clear. The prefix keeps this hash apart from the login codes', which use the same secret.
+    const key = `${rule.name}:${createHmac("sha256", secret).update(`rate-limit:${identifier}`).digest("hex")}`;
 
     const count = await store.hit(key, new Date(windowStart));
 
