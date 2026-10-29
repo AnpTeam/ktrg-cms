@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { pointKinds, stampableByDefault, type PointKind } from "@/lib/point-kinds";
 import { publishBlockers, type PlaceDraft, type PublishBlocker } from "@/lib/admin/route-draft";
@@ -58,6 +59,16 @@ export function useKindLabels(): Record<PointKind, string> {
  * One place on the route. The short form (name, text, photo, position, kind) is what most edits need; the stamp
  * settings (range, status, permission) are folded away. What still stops it being published is always visible.
  */
+/** A block of the place form, set off by a rule above it (and a heading, when it has none of its own). */
+function Group({ title, first = false, children }: { title?: string; first?: boolean; children: ReactNode }) {
+  return (
+    <section className={`flex flex-col gap-5 ${first ? "" : "border-t-2 border-line pt-6"}`}>
+      {title ? <h4 className="text-xl font-bold">{title}</h4> : null}
+      {children}
+    </section>
+  );
+}
+
 export function PlacePanel(p: PlacePanelProps) {
   const { t } = useLingui();
   const { place } = p;
@@ -91,13 +102,17 @@ export function PlacePanel(p: PlacePanelProps) {
       </div>
 
       {p.selected ? (
-        <div className="flex flex-col gap-5 border-t border-line p-4">
+        <div className="flex flex-col gap-6 border-t border-line p-4">
+          <Group title={t`文章`} first>
           <MultilingualField id={`${id}-name`} label={t`経由地の名前`} field="name" ja={place.nameJa} en={place.nameEn} translations={place.translations} onJa={(v) => p.onChange({ nameJa: v })} onEn={(v) => p.onChange({ nameEn: v })} onTranslations={(v) => p.onChange({ translations: v })} required invalid={p.invalidName} />
           <MultilingualField id={`${id}-desc`} label={t`説明`} field="description" ja={place.descriptionJa} en={place.descriptionEn} translations={place.translations} onJa={(v) => p.onChange({ descriptionJa: v })} onEn={(v) => p.onChange({ descriptionEn: v })} onTranslations={(v) => p.onChange({ translations: v })} multiline />
           <MultilingualField id={`${id}-history`} label={t`歴史・由来`} field="history" ja={place.historyJa} en={place.historyEn} translations={place.translations} onJa={(v) => p.onChange({ historyJa: v })} onEn={(v) => p.onChange({ historyEn: v })} onTranslations={(v) => p.onChange({ translations: v })} multiline />
           <p className="-mt-3 text-base text-muted">{t`リンクは [表示する文字](https://…) と書きます。脚注は、本文に [^1] と書き、別の行に [^1]: 注の内容 と書きます。`}</p>
           <MultilingualField id={`${id}-source`} label={t`出典`} field="source" ja={place.sourceJa} en={place.sourceEn} translations={place.translations} onJa={(v) => p.onChange({ sourceJa: v })} onEn={(v) => p.onChange({ sourceEn: v })} onTranslations={(v) => p.onChange({ translations: v })} multiline />
 
+          </Group>
+
+          <Group title={t`種類とスタンプ`}>
           <Field label={t`種類`} htmlFor={`${id}-kind`}>
             <select
               id={`${id}-kind`}
@@ -133,7 +148,9 @@ export function PlacePanel(p: PlacePanelProps) {
             <p className="pl-9 text-base text-muted">{t`チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。代わりに、一つ前の経由地から、この場所までの寄り道の線（青い細い点線）を、地図で描けます。分かれ道に経由地を置き、その次にこの場所を並べてください。`}</p>
           </div>
 
-          <div className="flex flex-col gap-2">
+          </Group>
+
+          <Group title={t`写真`}>
             <PhotoUpload onUploaded={(url) => p.onChange({ photoUrl: url })} />
             <PhotoLinkDetails open={p.invalidPhoto}>
               <Field label={t`写真のリンク`} htmlFor={`${id}-photo`} hint={t`https:// で始まるリンクを入れます。空にすると、写真は表示されません。`}>
@@ -145,9 +162,9 @@ export function PlacePanel(p: PlacePanelProps) {
             </Field>
             {p.invalidPhoto ?<p role="alert" className="text-base font-bold text-danger">{t`写真のリンクは、https:// で始まるものだけ使えます。`}</p> : null}
             <PhotoSlot url={place.photoUrl} className="max-w-md" />
-          </div>
+          </Group>
 
-          <div className="flex flex-col gap-2">
+          <Group>
             <p className="text-base font-bold">{t`この場所のスタンプの絵`}</p>
             <p className="text-base text-muted">{t`入れると、この場所のスタンプが、ふつうの赤い印の代わりにこの絵になります。正方形で、背景が透明な画像がきれいです。`}</p>
             <PhotoUpload onUploaded={(url) => p.onChange({ stampImageUrl: url })} />
@@ -157,11 +174,13 @@ export function PlacePanel(p: PlacePanelProps) {
                 {t`絵をはずす`}
               </button>
             ) : null}
-          </div>
+          </Group>
 
-          <GalleryEditor photos={place.photos} onChange={(photos) => p.onChange({ photos })} name={place.nameJa} lat={place.lat} lng={place.lng} />
+          <Group>
+            <GalleryEditor photos={place.photos} onChange={(photos) => p.onChange({ photos })} name={place.nameJa} lat={place.lat} lng={place.lng} />
+          </Group>
 
-          <fieldset className="flex flex-col gap-3">
+          <fieldset className="flex flex-col gap-3 border-t-2 border-line pt-6">
             <legend className="text-base font-bold">{t`位置`}</legend>
             <div className="flex flex-wrap gap-4">
               <Field label={t`緯度`} htmlFor={`${id}-lat`}>
