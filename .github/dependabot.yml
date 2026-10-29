@@ -1,0 +1,19 @@
+# Weekly update PRs, so a vulnerable dependency does not sit unnoticed. CI runs on each; nothing merges by itself.
+version: 2
+updates:
+  - package-ecosystem: bun
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    ignore:
+      # The TypeScript aliases are pinned on purpose (see CLAUDE.md, Commands).
+      - dependency-name: typescript
+      - dependency-name: "@typescript/*"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
