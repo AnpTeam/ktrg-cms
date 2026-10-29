@@ -820,9 +820,19 @@ body.map-screen-active {
 body.map-screen-active .site-footer {
   display: none;
 }
-/* The map's sheet at its top resting place covers the whole page, so the site's own top bar steps aside. */
-body.map-sheet-full .site-header {
-  display: none;
+/* The map's sheet at its top resting place covers the whole page, so the site's own top bar steps aside. Only on a phone:
+   from 768 px the bar is not drawn, and this header also holds the menu popover, which must stay. */
+@media (max-width: 767px) {
+  body.map-sheet-full .site-header {
+    display: none;
+  }
+}
+/* An installed app (PWA): a long press on a link must not open iOS's link preview and "open in new tab" menu, which pops a
+   second browser view over the app and shifts the tab bar. */
+@media (display-mode: standalone) {
+  a {
+    -webkit-touch-callout: none;
+  }
 }
 /* On a phone, a chosen course or stop takes the whole screen: the bottom tab bar steps aside (the sheet's back button
    brings the map home, and the tabs with it). From 768 px the tabs are a side rail and stay. */
