@@ -90,14 +90,23 @@ export function SiteHeader({
     const panel = panelRef.current;
     const anchor = railButton.current;
     if (!open || !panel || !anchor || !wide()) return;
-    const r = anchor.getBoundingClientRect();
-    const top = Math.max(12, Math.min(r.top - 8, window.innerHeight - panel.offsetHeight - 12));
-    panel.style.left = `${r.right + 12}px`;
-    panel.style.top = `${top}px`;
-    panel.style.transformOrigin = `left ${r.top + r.height / 2 - top}px`;
+    const place = () => {
+      const r = anchor.getBoundingClientRect();
+      const top = Math.max(12, Math.min(r.top - 8, window.innerHeight - panel.offsetHeight - 12));
+      panel.style.left = `${r.right + 12}px`;
+      panel.style.top = `${top}px`;
+      panel.style.transformOrigin = `left ${r.top + r.height / 2 - top}px`;
+    };
+    place();
+    // The menu fills in after it opens (the account block, the settings), so it is placed again whenever its height changes.
+    const watch = new ResizeObserver(place);
+    watch.observe(panel);
     const close = () => setOpen(false);
     window.addEventListener("resize", close);
-    return () => window.removeEventListener("resize", close);
+    return () => {
+      watch.disconnect();
+      window.removeEventListener("resize", close);
+    };
   }, [open, railButton, setOpen]);
 
   // While the menu is open on a phone the page behind it must not scroll: only the menu does.
