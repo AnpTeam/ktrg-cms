@@ -1889,7 +1889,7 @@ msgstr "ダーク"
 msgid "タイル"
 msgstr "タイル"
 
-#: src/components/SignInPrompt.tsx:22
+#: src/components/SignInPrompt.tsx:41
 msgid "ただし、この端末にしか残りません。登録すると、なくならず、コンプリート証ももらえます。"
 msgstr "ただし、この端末にしか残りません。登録すると、なくならず、コンプリート証ももらえます。"
 
@@ -2960,7 +2960,8 @@ msgstr "ログアウト"
 #: src/components/GuestNag.tsx:82
 #: src/components/landing/LandingHero.tsx:55
 #: src/components/ProfileSettings.tsx:180
-#: src/components/SignInPrompt.tsx:37
+#: src/components/SignInPrompt.tsx:26
+#: src/components/SignInPrompt.tsx:56
 #: src/components/SiteHeader.tsx:228
 msgid "ログイン"
 msgstr "ログイン"
@@ -4870,7 +4871,8 @@ msgstr "新しく作るには、名前（日本語）が必要です"
 #: src/components/GuestNag.tsx:79
 #: src/components/landing/Landing.tsx:197
 #: src/components/landing/LandingHero.tsx:46
-#: src/components/SignInPrompt.tsx:31
+#: src/components/SignInPrompt.tsx:23
+#: src/components/SignInPrompt.tsx:50
 #: src/components/SiteHeader.tsx:231
 msgid "新規登録"
 msgstr "新規登録"
@@ -5375,6 +5377,7 @@ msgid "登録した人"
 msgstr "登録した人"
 
 #: src/components/SignInPrompt.tsx:19
+#: src/components/SignInPrompt.tsx:38
 msgid "登録しなくても、スタンプは押せます。"
 msgstr "登録しなくても、スタンプは押せます。"
 

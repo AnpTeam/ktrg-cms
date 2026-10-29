@@ -48,7 +48,7 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
       </div>
 
       {/* Signed out: a reason to sign in and the rallies, never a false "0 stamps". */}
-      {viewer.signedIn ? null : <SignInPrompt />}
+      {viewer.signedIn ? null : <SignInPrompt compact />}
       {rallies.length === 0 ? (
         <EmptyState title={<Trans>ラリーは、まだ準備中です。</Trans>}>
           <Trans>公開できるようになったら、ここにスタンプのラリーが表示されます。</Trans>

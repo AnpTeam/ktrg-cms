@@ -12,8 +12,8 @@
 @theme {
   --color-ink: #1f1b1a; /* body text */
   --color-muted: #4f4845; /* secondary text */
-  --color-paper: #f8f4ea; /* page background: warm washi paper (和紙) */
-  --color-surface: #f3eee3; /* panels, rows, empty slots: a deeper paper tone */
+  --color-paper: #fcfaf5; /* page background: warm washi paper (和紙) */
+  --color-surface: #f6f2ea; /* panels, rows, empty slots: a deeper paper tone */
   --color-brand: #cc6256; /* the brand red: buttons, the active tab, icons, the bar beside headings. Not for text on white */
   --color-on-brand: #ffffff; /* the words on the brand red (large bold text only) */
   --color-accent: #8e2a21; /* red you can READ: links, headings, focus ring (deep red) */
@@ -195,8 +195,8 @@
 :root[data-theme="light"] {
   --color-ink: #1f1b1a; /* body text */
   --color-muted: #4f4845; /* secondary text */
-  --color-paper: #f8f4ea; /* page background: warm washi paper (和紙) */
-  --color-surface: #f3eee3; /* panels, rows, empty slots: a deeper paper tone */
+  --color-paper: #fcfaf5; /* page background: warm washi paper (和紙) */
+  --color-surface: #f6f2ea; /* panels, rows, empty slots: a deeper paper tone */
   --color-brand: #cc6256; /* the brand red: buttons, the active tab, icons, the bar beside headings. Not for text on white */
   --color-on-brand: #ffffff; /* the words on the brand red (large bold text only) */
   --color-accent: #8e2a21; /* red you can READ: links, headings, focus ring (deep red) */

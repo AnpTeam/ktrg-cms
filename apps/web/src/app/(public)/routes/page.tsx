@@ -67,7 +67,7 @@ export default async function RoutesPage({
       </div>
       </div>
 
-      {viewer.signedIn ? null : <SignInPrompt />}
+      {viewer.signedIn ? null : <SignInPrompt compact />}
 
       {all.length === 0 ? (
         <EmptyState title={<Trans>ルートの案内は準備中です。</Trans>}>
