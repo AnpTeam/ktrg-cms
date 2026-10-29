@@ -19,7 +19,7 @@ type Found = { id: string; name: string; routeId: string };
  * place (one stamp, one set of words). Added and removed here are saved at once, like the nearby places, not with the
  * route form. Editing the place itself is done on its home course.
  */
-export function SharedPlaces({ routeId, initial, routeNames, locale }: { routeId: string; initial: AdminSharedSpot[]; routeNames: Record<string, string>; locale: string }) {
+export function SharedPlaces({ routeId, initial, lent, routeNames, locale }: { routeId: string; initial: AdminSharedSpot[]; lent: { key: string; name: string; routeIds: string[] }[]; routeNames: Record<string, string>; locale: string }) {
   const { t } = useLingui();
   const messages = useErrorMessages();
   const [shared, setShared] = useState(initial);
@@ -94,6 +94,27 @@ export function SharedPlaces({ routeId, initial, routeNames, locale }: { routeId
     <section aria-label={t`ほかのコースと共有する経由地`} className="flex flex-col gap-3 rounded-xl border border-line bg-paper p-4">
       <h3 className="text-lg font-bold">{t`ほかのコースと共有する経由地`}</h3>
       <p className="text-base text-muted">{t`コースの終わりが次のコースの始まりのときは、同じ場所を二つのコースに置けます。スタンプは1つで、両方のコースに数えられます。内容を直すときは、もとのコースで直します。`}</p>
+      {lent.length > 0 ? (
+        <div className="flex flex-col gap-1 rounded-xl bg-surface p-3 text-base">
+          <p className="font-bold">{t`このコースの経由地で、ほかのコースにも置いているもの`}</p>
+          <ul className="list-disc pl-6">
+            {lent.map((l) => (
+              <li key={l.key}>
+                {l.name}
+                {" — "}
+                {l.routeIds.map((id, i) => (
+                  <span key={id}>
+                    {i > 0 ? "、" : ""}
+                    <Link href={`/admin/routes/${id}`} className="text-accent underline underline-offset-4">
+                      {routeNames[id] ?? t`もとのコース`}
+                    </Link>
+                  </span>
+                ))}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
       {shared.length > 0 ? (
         <ul className="flex flex-col gap-2">
           {shared.map((s) => (

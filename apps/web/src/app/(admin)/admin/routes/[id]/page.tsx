@@ -18,7 +18,7 @@ export default async function EditRoutePage({ params }: { params: Promise<{ id: 
   const i18n = await initLingui();
   const { id } = await params;
   const [one, all] = await Promise.all([
-    adminGet<{ ok: true; route: AdminRoute; spots: AdminSpot[]; shared: AdminSharedSpot[] }>(`/routes/${encodeURIComponent(id)}`),
+    adminGet<{ ok: true; route: AdminRoute; spots: AdminSpot[]; shared: AdminSharedSpot[]; sharedWith: Record<string, string[]> }>(`/routes/${encodeURIComponent(id)}`),
     adminGet<{ ok: true; routes: AdminRouteSummary[] }>("/routes"),
   ]);
   if (one.status === 404) notFound();
@@ -38,6 +38,7 @@ export default async function EditRoutePage({ params }: { params: Promise<{ id: 
       <RouteEditor initial={draftFromServer(one.body.route, one.body.spots)} order={order || 1}
         locale={i18n.locale}
         shared={one.body.shared ?? []}
+        sharedWith={one.body.sharedWith ?? {}}
         routeNames={Object.fromEntries((all.body?.ok ? all.body.routes : []).map((r) => [r.id, i18n.locale === "en" && r.nameEn ? r.nameEn : r.nameJa]))}
       />
     </div>

@@ -40,7 +40,12 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
     async getRoute(id) {
       const route = routes.get(id);
       const shared = [...shares].filter(([k]) => k.endsWith(`|${id}`)).map(([k, position]) => ({ ...spots.get(k.split("|")[0]!)!, position }));
-      return route ? { route, spots: sortedSpots(id), shared } : null;
+      const sharedWith: Record<string, string[]> = {};
+      for (const k of shares.keys()) {
+        const [spotId, to] = k.split("|") as [string, string];
+        if (spots.get(spotId)?.routeId === id) (sharedWith[spotId] ??= []).push(to);
+      }
+      return route ? { route, spots: sortedSpots(id), shared, sharedWith } : null;
     },
     async getSpot(id) {
       return spots.get(id) ?? null;

@@ -530,6 +530,8 @@ describe("a place on two courses", () => {
     expect(found!.spots).toEqual([]);
     expect(found!.shared.map((s) => ({ id: s.id, routeId: s.routeId, position: s.position }))).toEqual([{ id: eki.id, routeId: home.id, position: 0 }]);
     expect((await svc.getRoute(home.id))!.shared).toEqual([]);
+    expect((await svc.getRoute(home.id))!.sharedWith).toEqual({ [eki.id]: [next.id] }); // the home course can see it is lent
+    expect((await svc.getRoute(next.id))!.sharedWith).toEqual({});
 
     expect(await svc.unshareSpot(ADMIN, eki.id, next.id)).toEqual({ ok: true, value: true });
     expect(await svc.unshareSpot(ADMIN, eki.id, next.id)).toEqual({ ok: false, reason: "not_found" });

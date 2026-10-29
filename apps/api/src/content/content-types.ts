@@ -196,7 +196,8 @@ export type Result<T> = { ok: true; value: T } | { ok: false; reason: ErrorCode 
 export interface ContentStore {
   listRoutes(): Promise<RouteSummaryRow[]>;
   /** `spots` are the course's own places; `shared` are places of other courses it also holds (see SharedSpotRow). */
-  getRoute(id: string): Promise<{ route: RouteRow; spots: SpotRow[]; shared: SharedSpotRow[] } | null>;
+  /** `sharedWith`: for each of the course's own places that is also on other courses, those courses' ids. */
+  getRoute(id: string): Promise<{ route: RouteRow; spots: SpotRow[]; shared: SharedSpotRow[]; sharedWith: Record<string, string[]> } | null>;
   getSpot(id: string): Promise<SpotRow | null>;
   /** Every published place of every route (for the status poll). */
   listPublishedSpots(): Promise<SpotRow[]>;

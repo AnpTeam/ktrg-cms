@@ -175,7 +175,7 @@ export function adminContentRoutes(getServices: () => ContentServices, opts: Rou
       "/routes/:id",
       async ({ params, set }) => {
         const found = await svc().getRoute(params.id);
-        return found ? { ok: true as const, route: routeOut(found.route), spots: found.spots.map(spotOut), shared: found.shared.map((s) => ({ ...spotOut(s), position: s.position })) } : fail(set, 404, "not_found");
+        return found ? { ok: true as const, route: routeOut(found.route), spots: found.spots.map(spotOut), shared: found.shared.map((s) => ({ ...spotOut(s), position: s.position })), sharedWith: found.sharedWith } : fail(set, 404, "not_found");
       },
       { auth: "route.manage", params: idParams },
     )

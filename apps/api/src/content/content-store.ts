@@ -136,10 +136,15 @@ export function createDrizzleContentStore(db: Db): ContentStore {
         .innerJoin(spots, eq(spots.id, spotRoutes.spotId))
         .where(eq(spotRoutes.routeId, id))
         .orderBy(asc(spotRoutes.position), asc(spotRoutes.createdAt));
+      const lent = list.length
+        ? await db.select({ spotId: spotRoutes.spotId, routeId: spotRoutes.routeId }).from(spotRoutes).where(inArray(spotRoutes.spotId, list.map((s) => s.id))).orderBy(asc(spotRoutes.createdAt))
+        : [];
+      const sharedWith: Record<string, string[]> = {};
+      for (const l of lent) (sharedWith[l.spotId] ??= []).push(l.routeId);
       const texts = await withSpotTexts(db, [...list, ...links.map((l) => l.spot)]);
       const own = texts.slice(0, list.length);
       const shared = texts.slice(list.length).map((spot, i) => ({ ...spot, position: links[i]!.position }));
-      return { route: await routeFromDb(db, route), spots: own, shared };
+      return { route: await routeFromDb(db, route), spots: own, shared, sharedWith };
     },
 
     async getSpot(id) {
