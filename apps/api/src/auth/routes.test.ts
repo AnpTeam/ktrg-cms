@@ -274,6 +274,19 @@ describe("rate limits", () => {
     expect(other.status).toBe(200);
   });
 
+  test("one IP burning an address's limits does not lock the address's owner out from another IP", async () => {
+    const { post, codes } = setup({ trustProxy: true });
+    const from = (ip: string) => ({ "x-forwarded-for": ip });
+    for (let i = 0; i < 6; i++) await post("otp/request", { email: "a@example.com" }, undefined, from("203.0.113.9"));
+    for (let i = 0; i < 10; i++) await post("otp/verify", { email: "a@example.com", code: "000000" }, undefined, from("203.0.113.9"));
+    expect((await post("otp/request", { email: "a@example.com" }, undefined, from("203.0.113.9"))).status).toBe(429);
+    expect((await post("otp/verify", { email: "a@example.com", code: "000000" }, undefined, from("203.0.113.9"))).status).toBe(429);
+
+    expect((await post("otp/request", { email: "a@example.com" }, undefined, from("198.51.100.7"))).status).toBe(200);
+    expect((await post("otp/verify", { email: "a@example.com", code: "000000" }, undefined, from("198.51.100.7"))).status).toBe(401); // wrong code, but not 429
+    void codes;
+  });
+
   test("malformed requests are rejected before they count", async () => {
     const { post } = setup();
     for (let i = 0; i < 30; i++) await post("otp/request", { email: "not-an-email" });
@@ -379,8 +392,8 @@ describe("fresh login: POST /auth/reauth/request and /auth/reauth/verify", () =>
 
   test("guessing is capped by the same per-email limit as login: 429 after 10 tries", async () => {
     const t = setup();
-    const cookie = await loggedIn(t); // the login used 1 of the 10 verify tries for this email
-    for (let i = 0; i < 9; i++) {
+    const cookie = await loggedIn(t); // the login's tries are counted apart (per email and IP), so all 10 are left here
+    for (let i = 0; i < 10; i++) {
       expect((await t.post("reauth/verify", { code: "000000" }, cookie)).status).not.toBe(429);
     }
     const res = await t.post("reauth/verify", { code: "000000" }, cookie);

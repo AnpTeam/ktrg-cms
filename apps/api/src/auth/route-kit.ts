@@ -26,8 +26,9 @@ export interface KitServices {
  * - "user.id"     the logged-in user (needs `auth` on the route)
  * - "user.email"  the logged-in user's email (needs `auth`)
  * - "body.email"  the `email` field of the request body, normalized
+ * - "body.email+ip" that email as asked from this IP: so one person burning the limit cannot lock the address's owner out
  */
-export type LimitKey = "ip" | "user.id" | "user.email" | "body.email";
+export type LimitKey = "ip" | "user.id" | "user.email" | "body.email" | "body.email+ip";
 
 /** `{ rateLimit: { otpVerifyEmail: "body.email", otpVerifyIp: "ip" } }`: which AUTH_LIMITS rule counts what. */
 export type RateLimitSpec = Partial<Record<keyof typeof AUTH_LIMITS, LimitKey>>;
@@ -52,6 +53,10 @@ function identifier(key: LimitKey, ctx: LimitContext, http: HttpHelpers): string
     case "body.email": {
       const email = (ctx.body as { email?: unknown } | undefined)?.email;
       return typeof email === "string" ? normalizeEmail(email) : null;
+    }
+    case "body.email+ip": {
+      const email = identifier("body.email", ctx, http);
+      return email === null ? null : `${email}|${http.ipOf(ctx)}`;
     }
   }
 }

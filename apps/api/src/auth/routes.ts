@@ -21,6 +21,8 @@ export function authRoutes(getServices: () => AuthServices, opts: RouteOptions) 
 
   return new Elysia({ prefix: "/auth", detail: { tags: ["Auth"] } })
     .use(plugins)
+    // The email limits are per email AND IP, so nobody can use up an address's limits from far away and lock its owner out.
+    // Guessing stays capped without a per-email count: 5 guesses per code, and a new code at most once a minute.
     .post(
       "/otp/request",
       async ({ body }) => {
@@ -30,7 +32,7 @@ export function authRoutes(getServices: () => AuthServices, opts: RouteOptions) 
       },
       {
         body: t.Object({ email: emailSchema, locale: t.Optional(localeSchema) }),
-        rateLimit: { otpRequestEmail: "body.email", otpRequestIp: "ip" },
+        rateLimit: { otpRequestEmail: "body.email+ip", otpRequestIp: "ip" },
       },
     )
     .post(
@@ -51,7 +53,7 @@ export function authRoutes(getServices: () => AuthServices, opts: RouteOptions) 
       },
       {
         body: t.Object({ email: emailSchema, code: otpCodeSchema, profile: t.Optional(signupProfileSchema) }),
-        rateLimit: { otpVerifyEmail: "body.email", otpVerifyIp: "ip" },
+        rateLimit: { otpVerifyEmail: "body.email+ip", otpVerifyIp: "ip" },
       },
     )
     // Minimal "who am I" (from the session). The full profile is GET /me.
@@ -107,23 +109,27 @@ export function authRoutes(getServices: () => AuthServices, opts: RouteOptions) 
       {
         auth: "me.sensitive",
         body: t.Object({ email: emailSchema }),
-        rateLimit: { otpRequestEmail: "body.email", otpRequestIp: "ip" },
+        rateLimit: { otpRequestEmail: "body.email+ip", otpRequestIp: "ip" },
       },
     )
     // Step 2: the right code from the new mailbox becomes the account's email.
     .post(
       "/email/verify",
-      async ({ user, body, set }) => {
+      async ({ user, authSession, body, set }) => {
         if (user.email) return fail(set, 409, "email_in_use");
         const result = await getServices().otp.attachEmail(user.id, body.email, body.code);
-        if (result === "ok") return { ok: true as const };
+        if (result === "ok") {
+          // The account's way back in changed: every other device is signed out, this one stays.
+          await getServices().session.endOthers(user.id, authSession.id);
+          return { ok: true as const };
+        }
         // "taken" is only said after the code was right, so only the mailbox's owner can learn it.
         return result === "taken" ? fail(set, 409, "email_in_use") : fail(set, 400, "invalid_code");
       },
       {
         auth: "me.sensitive",
         body: t.Object({ email: emailSchema, code: otpCodeSchema }),
-        rateLimit: { otpVerifyEmail: "body.email", otpVerifyIp: "ip" },
+        rateLimit: { otpVerifyEmail: "body.email+ip", otpVerifyIp: "ip" },
         // The audit row is written by the store, in the same transaction as the change.
       },
     )
