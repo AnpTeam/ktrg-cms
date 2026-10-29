@@ -17,7 +17,8 @@ export function InfoTip({ label, href, children }: { label: string; href: string
         type="button"
         popoverTarget={id}
         aria-label={label}
-        className="ml-1 -my-1.5 inline-flex size-5 min-h-0 min-w-0 cursor-pointer items-center justify-center rounded-full p-0 align-middle text-muted hover:text-ink"
+        // The ring is 20 px; the invisible ::before makes the tap area 44 px.
+        className="relative ml-1 -my-1.5 inline-flex size-5 min-h-0 min-w-0 cursor-pointer before:absolute before:-inset-3 before:content-[''] items-center justify-center rounded-full p-0 align-middle text-muted hover:text-ink"
       >
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
           <circle cx="12" cy="12" r="9.5" />

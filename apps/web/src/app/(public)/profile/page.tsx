@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { ProfileCard } from "@/components/ProfileCard";
 import { ProfilePhoto } from "@/components/ProfilePhoto";
@@ -6,6 +8,11 @@ import { ProfileSettings } from "@/components/ProfileSettings";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const i18n = await initLingui();
+  return { title: i18n._(msg`プロフィール`) };
+}
 
 // The profile, reached from the menu: who is signed in, the answers they gave (changed one at a time), the ways to log in,
 // and deleting the account.
