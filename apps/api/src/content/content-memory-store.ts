@@ -15,6 +15,8 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
   /** place id -> the rallies of places that list it (rally_spots). */
   const placeRallies = new Map<string, Set<string>>();
   const stamped = new Set<string>();
+  /** `${place id}|${course id}` -> where the place sits on that course (spot_routes). */
+  const shares = new Map<string, number>();
   let n = 0;
   // Unique, valid UUIDs (the audit log insists on them).
   const uuid = () => `00000000-0000-4000-8000-${String(++n).padStart(12, "0")}`;
@@ -37,7 +39,8 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
     },
     async getRoute(id) {
       const route = routes.get(id);
-      return route ? { route, spots: sortedSpots(id) } : null;
+      const shared = [...shares].filter(([k]) => k.endsWith(`|${id}`)).map(([k, position]) => ({ ...spots.get(k.split("|")[0]!)!, position }));
+      return route ? { route, spots: sortedSpots(id), shared } : null;
     },
     async getSpot(id) {
       return spots.get(id) ?? null;
@@ -144,8 +147,22 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       if (stamped.has(id)) return "has_stamps";
       spots.delete(id);
       placeRallies.delete(id);
+      for (const k of [...shares.keys()]) if (k.startsWith(`${id}|`)) shares.delete(k);
       await audit.record({ actorUserId: actor, action: "spot.delete", targetId: id });
       return "ok";
+    },
+    async shareSpot(actor, spotId, routeId, position) {
+      const spot = spots.get(spotId);
+      if (!spot || !routes.has(routeId)) return "not_found";
+      if (spot.routeId === routeId) return "same_route";
+      shares.set(`${spotId}|${routeId}`, position);
+      await audit.record({ actorUserId: actor, action: "spot.share", targetId: spotId });
+      return "ok";
+    },
+    async unshareSpot(actor, spotId, routeId) {
+      if (!shares.delete(`${spotId}|${routeId}`)) return false;
+      await audit.record({ actorUserId: actor, action: "spot.unshare", targetId: spotId });
+      return true;
     },
     async reorderSpots(actor, routeId, ids) {
       const cur = sortedSpots(routeId);

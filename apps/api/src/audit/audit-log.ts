@@ -37,6 +37,9 @@ export const AUDIT_ACTIONS = {
   "spot.unpublish": "spot",
   "spot.status.change": "spot",
   "spot.reorder": "route",
+  /** A place was put on another course too, or moved there. */
+  "spot.share": "spot",
+  "spot.unshare": "spot",
   /** Admin rallies: made, renamed, published or not, reordered (no single target), what is in it set, deleted. */
   "rally.create": "rally",
   "rally.update": "rally",

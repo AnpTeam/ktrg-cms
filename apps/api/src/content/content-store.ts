@@ -1,7 +1,7 @@
 import { and, asc, count, desc, eq, getTableColumns, inArray, isNotNull, max, ne, or, sql } from "drizzle-orm";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
-import { auditLog, rallySpots, routes, routeTranslations, routeVideoHistory, spots, spotTranslations, stamps } from "../db/schema";
+import { auditLog, rallySpots, routeSpots, routes, routeTranslations, routeVideoHistory, spots, spotRoutes, spotTranslations, stamps } from "../db/schema";
 import { emptyTexts, flattenTexts, ROUTE_TEXT, SPOT_TEXT, splitTexts, type Texts } from "../db/translations";
 import type { ContentStore, RouteRow, RouteSummaryRow, SpotRow } from "./content-types";
 
@@ -108,14 +108,15 @@ export function createDrizzleContentStore(db: Db): ContentStore {
         .orderBy(asc(routes.sortOrder));
       const counts = await db
         .select({
-          routeId: spots.routeId,
-          // Waypoints with a stamp and the route's other waypoints are counted apart.
+          routeId: routeSpots.routeId,
+          // Waypoints with a stamp and the route's other waypoints are counted apart (a place shared with this course counts here too).
           total: sql<number>`count(*) filter (where ${spots.stampable})`.mapWith(Number),
           published: sql<number>`count(*) filter (where ${spots.published} and ${spots.stampable})`.mapWith(Number),
           points: sql<number>`count(*) filter (where not ${spots.stampable})`.mapWith(Number),
         })
-        .from(spots)
-        .groupBy(spots.routeId);
+        .from(routeSpots)
+        .innerJoin(spots, eq(spots.id, routeSpots.spotId))
+        .groupBy(routeSpots.routeId);
       const byRoute = new Map(counts.map((c) => [c.routeId, c]));
       return (await withRouteTexts(db, rows)).map<RouteSummaryRow>((r) => ({
         ...r,
@@ -129,7 +130,16 @@ export function createDrizzleContentStore(db: Db): ContentStore {
       const [route] = await db.select().from(routes).where(eq(routes.id, id)).limit(1);
       if (!route) return null;
       const list = await db.select().from(spots).where(eq(spots.routeId, id)).orderBy(asc(spots.sortOrder));
-      return { route: await routeFromDb(db, route), spots: await withSpotTexts(db, list) };
+      const links = await db
+        .select({ spot: spots, position: spotRoutes.position })
+        .from(spotRoutes)
+        .innerJoin(spots, eq(spots.id, spotRoutes.spotId))
+        .where(eq(spotRoutes.routeId, id))
+        .orderBy(asc(spotRoutes.position), asc(spotRoutes.createdAt));
+      const texts = await withSpotTexts(db, [...list, ...links.map((l) => l.spot)]);
+      const own = texts.slice(0, list.length);
+      const shared = texts.slice(list.length).map((spot, i) => ({ ...spot, position: links[i]!.position }));
+      return { route: await routeFromDb(db, route), spots: own, shared };
     },
 
     async getSpot(id) {
@@ -309,6 +319,27 @@ export function createDrizzleContentStore(db: Db): ContentStore {
         await tx.delete(spots).where(eq(spots.id, id)); // its rally links go by cascade
         await writeAudit(tx, { actorUserId: actor, action: "spot.delete", targetId: id });
         return "ok";
+      });
+    },
+
+    async shareSpot(actor, spotId, routeId, position) {
+      return db.transaction(async (tx) => {
+        const [spot] = await tx.select({ routeId: spots.routeId }).from(spots).where(eq(spots.id, spotId)).limit(1);
+        const [route] = await tx.select({ id: routes.id }).from(routes).where(eq(routes.id, routeId)).limit(1);
+        if (!spot || !route) return "not_found";
+        if (spot.routeId === routeId) return "same_route";
+        await tx.insert(spotRoutes).values({ spotId, routeId, position }).onConflictDoUpdate({ target: [spotRoutes.spotId, spotRoutes.routeId], set: { position } });
+        await writeAudit(tx, { actorUserId: actor, action: "spot.share", targetId: spotId });
+        return "ok";
+      });
+    },
+
+    async unshareSpot(actor, spotId, routeId) {
+      return db.transaction(async (tx) => {
+        const gone = await tx.delete(spotRoutes).where(and(eq(spotRoutes.spotId, spotId), eq(spotRoutes.routeId, routeId))).returning({ id: spotRoutes.spotId });
+        if (gone.length === 0) return false;
+        await writeAudit(tx, { actorUserId: actor, action: "spot.unshare", targetId: spotId });
+        return true;
       });
     },
 

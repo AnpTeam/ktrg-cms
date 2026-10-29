@@ -89,7 +89,7 @@ export function createDrizzleStampStore(db: Db): StampStore {
           // A saved finish only ever grows, so a revoked stamp would leave "complete" standing: drop the finishes it was part of.
           // They are saved again the next time the visitor stamps or their progress is read, if they still hold every stamp.
           const touched = await ralliesForPlace(tx, row.spotId);
-          if (touched.routeId) await tx.delete(courseCompletions).where(and(eq(courseCompletions.userId, row.userId), eq(courseCompletions.routeId, touched.routeId)));
+          if (touched.routeIds.length) await tx.delete(courseCompletions).where(and(eq(courseCompletions.userId, row.userId), inArray(courseCompletions.routeId, touched.routeIds)));
           if (touched.rallyIds.length) await tx.delete(rallyCompletions).where(and(eq(rallyCompletions.userId, row.userId), inArray(rallyCompletions.rallyId, touched.rallyIds)));
         }
         await writeAudit(tx, { actorUserId: actor, action: revoked ? "stamp.revoke" : "stamp.restore", targetId: id });

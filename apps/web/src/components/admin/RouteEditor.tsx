@@ -27,7 +27,7 @@ import { RubyEditor } from "./RubyEditor";
 import type { StopRole } from "@/lib/route-stops";
 import { backupKey, parseBackup, worthRestoring, writeBackup } from "@/lib/admin/draft-backup";
 import { draftProblems, keepLaterEdits, placeChanged, planSave, restoreHeld, withLegIds, type DraftProblem } from "@/lib/admin/save-plan";
-import type { Prefecture } from "@/lib/admin/types";
+import type { AdminSharedSpot, Prefecture } from "@/lib/admin/types";
 import { formatUpdated } from "@/lib/format";
 import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
 import { LivePreview } from "./LivePreview";
@@ -51,6 +51,7 @@ import { VideoHistory } from "./VideoHistory";
 import { parseVideoFile } from "@/lib/video";
 import { PlacePanel } from "./PlacePanel";
 import { PlaceTable } from "./PlaceTable";
+import { SharedPlaces } from "./SharedPlaces";
 import { useChecklistLabels } from "./useChecklistLabels";
 
 const TABS: EditorTab[] = ["overview", "text", "map", "places", "check"];
@@ -62,7 +63,7 @@ const isTyping = (target: EventTarget | null) => target instanceof HTMLElement &
 /** A short fingerprint of where a line's points are (not their heights), to tell whether it has changed. */
 const lineSignature = (line: RouteDraft["line"]) => `${line.length}:${line.reduce((s, p, i) => s + (p[0] * 31 + p[1] * 17) * ((i % 7) + 1), 0).toFixed(6)}`;
 
-export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; order: number; locale: string }) {
+export function RouteEditor({ initial, order, locale, shared = [], routeNames = {} }: { initial: RouteDraft; order: number; locale: string; shared?: AdminSharedSpot[]; routeNames?: Record<string, string> }) {
   const { t } = useLingui();
   const router = useRouter();
   const messages = useErrorMessages();
@@ -778,6 +779,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     <p className="min-w-0 flex-1 text-base text-muted">{t`公開中の経由地をまとめて下書きに戻します。ルートは「準備中」として、一覧に残ります。`}</p>
                   </div>
                 ) : null}
+                {draft.id ? <SharedPlaces routeId={draft.id} initial={shared} routeNames={routeNames} locale={locale} /> : null}
                 <div role="group" aria-label={t`場所の見せ方`} className="flex flex-wrap gap-2">
                   {(["table", "detail"] as const).map((v) => (
                     <button

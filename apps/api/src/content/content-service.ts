@@ -15,6 +15,7 @@ import type {
   RouteRow,
   RouteSummaryRow,
   SpotFields,
+  SharedSpotRow,
   SpotRow,
   StoredRouteFields,
 } from "./content-types";
@@ -159,6 +160,20 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     rides: withLine && shown ? ridesOf(shown, visibleSpotIds) : [],
     bounds: boundsOf(shown),
   };
+}
+
+/**
+ * A course's own places in order with the places it shares with other courses put in at their `position` (after that
+ * many of its own; past the end means last), numbered 1..n so every reader sees one order.
+ */
+export function withShared(own: SpotRow[], shared: SharedSpotRow[]): SpotRow[] {
+  const sorted = [...own].sort((a, b) => a.sortOrder - b.sortOrder);
+  const out: SpotRow[] = [];
+  for (let i = 0; i <= sorted.length; i++) {
+    out.push(...shared.filter((s) => Math.min(s.position, sorted.length) === i));
+    if (i < sorted.length) out.push(sorted[i]!);
+  }
+  return out.map((s, i) => ({ ...s, sortOrder: i + 1 }));
 }
 
 function toPublicSpot(s: SpotRow): PublicSpot {
@@ -457,6 +472,16 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       return r === "ok" ? ok(true) : bad(r === "has_stamps" ? "spot_has_stamps" : "not_found");
     },
 
+    /** Put a place of another course on this one too (`position`: after that many of this course's own places; 0 = first). */
+    async shareSpot(actor: string, spotId: string, routeId: string, position = 0): Promise<Result<true>> {
+      const r = await store.shareSpot(actor, spotId, routeId, position);
+      return r === "ok" ? ok(true) : bad(r === "not_found" ? "not_found" : "validation_failed");
+    },
+
+    async unshareSpot(actor: string, spotId: string, routeId: string): Promise<Result<true>> {
+      return (await store.unshareSpot(actor, spotId, routeId)) ? ok(true) : bad("not_found");
+    },
+
     async reorderSpots(actor: string, routeId: string, ids: string[]): Promise<Result<true>> {
       return (await store.reorderSpots(actor, routeId, ids)) ? ok(true) : bad("validation_failed");
     },
@@ -478,7 +503,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
     async publicRoute(id: string): Promise<{ route: PublicRoute; spots: PublicSpot[]; points: PublicSpot[] } | null> {
       const found = await store.getRoute(id);
       if (!found) return null;
-      const published = found.spots.filter((s) => s.published).sort((a, b) => a.sortOrder - b.sortOrder);
+      const published = withShared(found.spots, found.shared).filter((s) => s.published);
       const stamps = published.filter((s) => s.stampable);
       const points = published.filter((s) => !s.stampable);
       // A side trip is shown only once the place it leads to is published, like the place itself.
