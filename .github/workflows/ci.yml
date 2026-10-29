@@ -37,7 +37,7 @@ jobs:
       # Turns on the real-PostgreSQL tests (they skip when this is unset).
       TEST_DATABASE_URL: postgres://ktrg:ci_password@localhost:5432/ktrg_test
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: oven-sh/setup-bun@v2
         with:
