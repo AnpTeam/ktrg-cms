@@ -1,7 +1,7 @@
 import { and, asc, count, eq, inArray, max, sql } from "drizzle-orm";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
-import { rallies, rallyCompletions, rallyRoutes, rallySpots, rallyTranslations, routes, routeTranslations, spots, spotTranslations } from "../db/schema";
+import { rallies, rallyCompletions, rallyRoutes, rallySpots, rallyTranslations, routes, routeSpots, routeTranslations, spots, spotTranslations } from "../db/schema";
 import { emptyTexts, extraToTexts, flattenTexts, RALLY_TEXT, ROUTE_TEXT, SPOT_TEXT, splitTexts, type Texts } from "../db/translations";
 import type { PublicRally, RallyAdminStore, RallyCourse, RallyPlace, RallyRow } from "./rally-admin-types";
 
@@ -62,13 +62,14 @@ async function courseList(q: Reader, onlyIds?: string[]): Promise<RallyCourse[]>
   const names = flattenTexts(ROUTE_TEXT, await q.select().from(routeTranslations).where(inArray(routeTranslations.routeId, ids)), (t) => t.routeId);
   const counts = await q
     .select({
-      routeId: spots.routeId,
+      routeId: routeSpots.routeId,
       total: sql<number>`count(*)`.mapWith(Number),
       published: sql<number>`count(*) filter (where ${spots.published})`.mapWith(Number),
     })
-    .from(spots)
-    .where(and(inArray(spots.routeId, ids), eq(spots.stampable, true)))
-    .groupBy(spots.routeId);
+    .from(routeSpots)
+    .innerJoin(spots, eq(spots.id, routeSpots.spotId))
+    .where(and(inArray(routeSpots.routeId, ids), eq(spots.stampable, true)))
+    .groupBy(routeSpots.routeId);
   const byRoute = new Map(counts.map((c) => [c.routeId, c]));
   return rows.map((r) => {
     const t = names.get(r.id) ?? emptyTexts(ROUTE_TEXT);
@@ -135,9 +136,10 @@ export function createDrizzleRallyAdminStore(db: Db): RallyAdminStore {
         routeIds.length ? db.select().from(routeTranslations).where(inArray(routeTranslations.routeId, routeIds)) : [],
         routeIds.length
           ? db
-              .select({ id: spots.id, routeId: spots.routeId, status: spots.status })
-              .from(spots)
-              .where(and(inArray(spots.routeId, routeIds), eq(spots.published, true), eq(spots.stampable, true)))
+              .select({ id: spots.id, routeId: routeSpots.routeId, status: spots.status })
+              .from(routeSpots)
+              .innerJoin(spots, eq(spots.id, routeSpots.spotId))
+              .where(and(inArray(routeSpots.routeId, routeIds), eq(spots.published, true), eq(spots.stampable, true)))
               .orderBy(asc(spots.sortOrder))
           : [],
       ]);

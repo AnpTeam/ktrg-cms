@@ -330,6 +330,13 @@
       "when": 1793153692855,
       "tag": "0046_nice_brother_voodoo",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1793232759816,
+      "tag": "0047_hesitant_exiles",
+      "breakpoints": true
     }
   ]
 }

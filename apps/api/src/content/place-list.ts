@@ -94,7 +94,7 @@ export const placeList: ReadDef<"places", PlaceListRow, PlaceListServices> = {
       ja: "すべてのルートの経由地です。名前を押すと、そのルートの地図の画面で直せます。公開するには、位置の確認（スタンプを押せる経由地は現地の許可も）が必要です。",
       en: "Every waypoint on every route. Select a name to edit it in that route's map editor. To publish a waypoint its position must be checked (and, if visitors can stamp there, the site's permission confirmed).",
     },
-    deleteWarning: { ja: "この経由地を削除します。ルートの地図からも消えます。元に戻せません。よろしいですか？", en: "Delete this waypoint? It disappears from the route and its map. This cannot be undone." },
+    deleteWarning: { ja: "この経由地を削除します。ルートの地図からも消えます。ほかのコースにも置いてある場合は、そこからも消えます。元に戻せません。よろしいですか？", en: "Delete this waypoint? It disappears from the route and its map, and from any other course it is shared with. This cannot be undone." },
     titleField: "name",
     linkTo: "routes/{routeId}",
     fields: [

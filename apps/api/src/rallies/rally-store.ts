@@ -7,6 +7,7 @@ import {
   rallyRoutes,
   rallySpots,
   rallyTranslations,
+  routeSpots,
   spots,
   stamps,
 } from "../db/schema";
@@ -20,15 +21,15 @@ type Writer = Pick<Db, "select" | "insert">;
 /**
  * Which rallies one place counts in, through the foreign keys:
  * - rallies of PLACES that list it (rally_spots.spot_id → spots.id), for example the sutra-mound rally;
- * - rallies of COURSES that hold its course (spots.route_id → rally_routes.route_id).
+ * - rallies of COURSES that hold any course it is on (route_spots: its home course and the courses it is shared with).
  * A sutra mound in two rallies of places, on a course that is in a third rally, is found in all three.
  */
-export async function ralliesForPlace(q: Reader, spotId: string): Promise<{ routeId: string | null; rallyIds: string[] }> {
-  const [place] = await q.select({ routeId: spots.routeId }).from(spots).where(eq(spots.id, spotId)).limit(1);
-  if (!place) return { routeId: null, rallyIds: [] };
+export async function ralliesForPlace(q: Reader, spotId: string): Promise<{ routeIds: string[]; rallyIds: string[] }> {
+  const routeIds = (await q.select({ routeId: routeSpots.routeId }).from(routeSpots).where(eq(routeSpots.spotId, spotId))).map((r) => r.routeId);
+  if (routeIds.length === 0) return { routeIds: [], rallyIds: [] };
   const byPlace = await q.select({ id: rallySpots.rallyId }).from(rallySpots).where(eq(rallySpots.spotId, spotId));
-  const byCourse = await q.select({ id: rallyRoutes.rallyId }).from(rallyRoutes).where(eq(rallyRoutes.routeId, place.routeId));
-  return { routeId: place.routeId, rallyIds: [...new Set([...byPlace, ...byCourse].map((r) => r.id))] };
+  const byCourse = await q.select({ id: rallyRoutes.rallyId }).from(rallyRoutes).where(inArray(rallyRoutes.routeId, routeIds));
+  return { routeIds, rallyIds: [...new Set([...byPlace, ...byCourse].map((r) => r.id))] };
 }
 
 /** One visitor's stamps (revoked ones included; the progress rules ignore them). Only their own rows are read. */
@@ -40,9 +41,10 @@ async function courseMembers(q: Reader, routeIds: readonly string[]): Promise<Ma
   const out = new Map<string, PlaceMember[]>(routeIds.map((id) => [id, []]));
   if (routeIds.length === 0) return out;
   const rows = await q
-    .select({ routeId: spots.routeId, spotId: spots.id, published: spots.published, status: spots.status })
-    .from(spots)
-    .where(and(inArray(spots.routeId, [...routeIds]), eq(spots.stampable, true)));
+    .select({ routeId: routeSpots.routeId, spotId: spots.id, published: spots.published, status: spots.status })
+    .from(routeSpots)
+    .innerJoin(spots, eq(spots.id, routeSpots.spotId))
+    .where(and(inArray(routeSpots.routeId, [...routeIds]), eq(spots.stampable, true)));
   for (const r of rows) out.get(r.routeId)!.push({ spotId: r.spotId, published: r.published, status: r.status });
   return out;
 }
@@ -94,12 +96,12 @@ export async function recordFinished(
   let rallyRows: { id: string; kind: "places" | "course" }[];
   if (opts.spotId) {
     const touched = await ralliesForPlace(q, opts.spotId);
-    routeIds = touched.routeId ? [touched.routeId] : [];
+    routeIds = touched.routeIds;
     rallyRows = touched.rallyIds.length
       ? await q.select({ id: rallies.id, kind: rallies.kind }).from(rallies).where(and(inArray(rallies.id, touched.rallyIds), eq(rallies.published, true)))
       : [];
   } else {
-    routeIds = [...new Set((await q.select({ routeId: spots.routeId }).from(spots).where(eq(spots.stampable, true))).map((r) => r.routeId))];
+    routeIds = [...new Set((await q.select({ routeId: routeSpots.routeId }).from(routeSpots).innerJoin(spots, eq(spots.id, routeSpots.spotId)).where(eq(spots.stampable, true))).map((r) => r.routeId))];
     rallyRows = await q.select({ id: rallies.id, kind: rallies.kind }).from(rallies).where(eq(rallies.published, true));
   }
 

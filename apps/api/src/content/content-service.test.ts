@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, test } from "bun:test";
 import { createMemoryAuditWriter } from "../audit/audit-log";
 import { createMemoryContentStore } from "./content-memory-store";
-import { createContentService } from "./content-service";
+import { createContentService, withShared } from "./content-service";
 import { lineLengthKm } from "./line";
 import type { RouteRow, SpotRow } from "./content-types";
 
@@ -500,5 +500,41 @@ describe("public route list cache", () => {
     await route({ nameJa: "もう一つ" });
     expect(await cached.publicRoutes()).toHaveLength(1); // the copy from a moment ago
     expect(await svc.publicRoutes()).toHaveLength(2); // no ttl: always fresh
+  });
+});
+
+describe("a place on two courses", () => {
+  const at = (id: string, sortOrder: number) => ({ id, sortOrder }) as SpotRow;
+  const sharedAt = (id: string, position: number) => ({ id, sortOrder: 99, position }) as SpotRow & { position: number };
+
+  test("withShared puts a shared place first by default, in the middle or last, and numbers them 1..n", () => {
+    const own = [at("b", 7), at("a", 2), at("c", 9)]; // gaps and disorder in the course's own numbers
+    expect(withShared(own, [sharedAt("x", 0)]).map((s) => s.id)).toEqual(["x", "a", "b", "c"]);
+    expect(withShared(own, [sharedAt("x", 1)]).map((s) => s.id)).toEqual(["a", "x", "b", "c"]);
+    expect(withShared(own, [sharedAt("x", 3)]).map((s) => s.id)).toEqual(["a", "b", "c", "x"]);
+    expect(withShared(own, [sharedAt("x", 50)]).map((s) => s.id)).toEqual(["a", "b", "c", "x"]);
+    expect(withShared(own, [sharedAt("x", 0), sharedAt("y", 0)]).map((s) => s.sortOrder)).toEqual([1, 2, 3, 4, 5]);
+    expect(withShared([], [sharedAt("x", 0)]).map((s) => s.id)).toEqual(["x"]);
+  });
+
+  test("a place is shared with another course, listed there apart from its own places, and unshared again", async () => {
+    const home = await route({ nameJa: "甲山から孝子越え" });
+    const next = await route({ nameJa: "孝子越えから先" });
+    const eki = await spot(home.id, { nameJa: "孝子駅" });
+
+    expect(await svc.shareSpot(ADMIN, eki.id, home.id)).toEqual({ ok: false, reason: "validation_failed" }); // its own course
+    expect(await svc.shareSpot(ADMIN, "00000000-0000-4000-8000-00000000dead", next.id)).toEqual({ ok: false, reason: "not_found" });
+    expect(await svc.shareSpot(ADMIN, eki.id, next.id)).toEqual({ ok: true, value: true });
+
+    const found = await svc.getRoute(next.id);
+    expect(found!.spots).toEqual([]);
+    expect(found!.shared.map((s) => ({ id: s.id, routeId: s.routeId, position: s.position }))).toEqual([{ id: eki.id, routeId: home.id, position: 0 }]);
+    expect((await svc.getRoute(home.id))!.shared).toEqual([]);
+    expect((await svc.getRoute(home.id))!.sharedWith).toEqual({ [eki.id]: [next.id] }); // the home course can see it is lent
+    expect((await svc.getRoute(next.id))!.sharedWith).toEqual({});
+
+    expect(await svc.unshareSpot(ADMIN, eki.id, next.id)).toEqual({ ok: true, value: true });
+    expect(await svc.unshareSpot(ADMIN, eki.id, next.id)).toEqual({ ok: false, reason: "not_found" });
+    expect((await svc.getRoute(next.id))!.shared).toEqual([]);
   });
 });

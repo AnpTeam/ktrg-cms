@@ -68,6 +68,9 @@ export interface RouteSummaryRow extends RouteRow {
   pointCount: number;
 }
 
+/** A place of another course that a course also holds: the place as it is (its `routeId` is its home course), and where it sits here. */
+export type SharedSpotRow = SpotRow & { position: number };
+
 /** A waypoint of a route as the admin sees it (a stamp can be collected there when `stampable`). */
 export interface SpotRow {
   id: string;
@@ -192,7 +195,9 @@ export type Result<T> = { ok: true; value: T } | { ok: false; reason: ErrorCode 
  */
 export interface ContentStore {
   listRoutes(): Promise<RouteSummaryRow[]>;
-  getRoute(id: string): Promise<{ route: RouteRow; spots: SpotRow[] } | null>;
+  /** `spots` are the course's own places; `shared` are places of other courses it also holds (see SharedSpotRow). */
+  /** `sharedWith`: for each of the course's own places that is also on other courses, those courses' ids. */
+  getRoute(id: string): Promise<{ route: RouteRow; spots: SpotRow[]; shared: SharedSpotRow[]; sharedWith: Record<string, string[]> } | null>;
   getSpot(id: string): Promise<SpotRow | null>;
   /** Every published place of every route (for the status poll). */
   listPublishedSpots(): Promise<SpotRow[]>;
@@ -215,4 +220,8 @@ export interface ContentStore {
   unpublishRouteSpots(actor: string, routeId: string): Promise<SpotRow[] | null>;
   deleteSpot(actor: string, id: string): Promise<"ok" | "has_stamps" | "not_found">;
   reorderSpots(actor: string, routeId: string, ids: string[]): Promise<boolean>;
+  /** Also put a place of another course on this course, after `position` of this course's own places (0 = first); again moves it. */
+  shareSpot(actor: string, spotId: string, routeId: string, position: number): Promise<"ok" | "not_found" | "same_route">;
+  /** Take the place off this course (it stays on its home course); false when it was not shared here. */
+  unshareSpot(actor: string, spotId: string, routeId: string): Promise<boolean>;
 }

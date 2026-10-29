@@ -145,3 +145,6 @@ export interface AdminRallyCourse {
   stampPlaceCount: number;
   publishedStampPlaceCount: number;
 }
+
+/** A place of another course that this course also holds (`routeId` is its home course); `position`: after that many of this course's own places (0 = first). */
+export type AdminSharedSpot = AdminSpot & { position: number };

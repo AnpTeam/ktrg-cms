@@ -27,7 +27,7 @@ import { RubyEditor } from "./RubyEditor";
 import type { StopRole } from "@/lib/route-stops";
 import { backupKey, parseBackup, worthRestoring, writeBackup } from "@/lib/admin/draft-backup";
 import { draftProblems, keepLaterEdits, placeChanged, planSave, restoreHeld, withLegIds, type DraftProblem } from "@/lib/admin/save-plan";
-import type { Prefecture } from "@/lib/admin/types";
+import type { AdminSharedSpot, Prefecture } from "@/lib/admin/types";
 import { formatUpdated } from "@/lib/format";
 import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
 import { LivePreview } from "./LivePreview";
@@ -51,6 +51,7 @@ import { VideoHistory } from "./VideoHistory";
 import { parseVideoFile } from "@/lib/video";
 import { PlacePanel } from "./PlacePanel";
 import { PlaceTable } from "./PlaceTable";
+import { SharedPlaces } from "./SharedPlaces";
 import { useChecklistLabels } from "./useChecklistLabels";
 
 const TABS: EditorTab[] = ["overview", "text", "map", "places", "check"];
@@ -62,7 +63,7 @@ const isTyping = (target: EventTarget | null) => target instanceof HTMLElement &
 /** A short fingerprint of where a line's points are (not their heights), to tell whether it has changed. */
 const lineSignature = (line: RouteDraft["line"]) => `${line.length}:${line.reduce((s, p, i) => s + (p[0] * 31 + p[1] * 17) * ((i % 7) + 1), 0).toFixed(6)}`;
 
-export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; order: number; locale: string }) {
+export function RouteEditor({ initial, order, locale, shared = [], sharedWith = {}, routeNames = {} }: { initial: RouteDraft; order: number; locale: string; shared?: AdminSharedSpot[]; sharedWith?: Record<string, string[]>; routeNames?: Record<string, string> }) {
   const { t } = useLingui();
   const router = useRouter();
   const messages = useErrorMessages();
@@ -442,6 +443,15 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
 
   // ---- what the form needs -------------------------------------------------------------------------------
   const savedByKey = useMemo(() => new Map(saved.places.map((p) => [p.key, p])), [saved.places]);
+  // Places of this course that other courses hold too: listed in the shared block, and removing one asks first.
+  const lent = draft.places.flatMap((p) => (p.id && sharedWith[p.id] ? [{ key: p.key, name: locale === "en" && p.nameEn ? p.nameEn : p.nameJa, routeIds: sharedWith[p.id]! }] : []));
+  const confirmRemoval = (key: string) => {
+    const one = lent.find((x) => x.key === key);
+    if (!one) return true;
+    const name = one.name;
+    const where = one.routeIds.map((id) => routeNames[id]).filter(Boolean).join(", ");
+    return window.confirm(t`「${name}」は、ほかのコース（${where}）にも置いてあります。消すと、そこからも消えます。よろしいですか？`);
+  };
   const problemOf = (kind: DraftProblem["kind"], key?: string) => problems.some((p) => p.kind === kind && (!("key" in p) || p.key === key));
   const prefName: Record<Prefecture, string> = { osaka: t`大阪府`, wakayama: t`和歌山県`, nara: t`奈良県` };
   // The numbers on the map are the stamp numbers visitors see; a waypoint without a stamp has none.
@@ -740,7 +750,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                   onRemovePlace={(key) => {
                     const p = draft.places.find((x) => x.key === key);
                     if (p?.published) setMessage({ kind: "error", text: t`公開中の経由地は消せません。先に「公開をやめる」を押してください。` });
-                    else dispatch({ type: "removePlace", key });
+                    else if (confirmRemoval(key)) dispatch({ type: "removePlace", key });
                   }}
                   onSelectPlace={setSelectedKey}
                   onPatchPlace={(key, patch) => {
@@ -778,6 +788,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     <p className="min-w-0 flex-1 text-base text-muted">{t`公開中の経由地をまとめて下書きに戻します。ルートは「準備中」として、一覧に残ります。`}</p>
                   </div>
                 ) : null}
+                {draft.id ? <SharedPlaces routeId={draft.id} initial={shared} lent={lent} routeNames={routeNames} locale={locale} /> : null}
                 <div role="group" aria-label={t`場所の見せ方`} className="flex flex-wrap gap-2">
                   {(["table", "detail"] as const).map((v) => (
                     <button
@@ -797,7 +808,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                     busy={busyKey !== null || saving}
                     invalidName={(key) => problemOf("place_name", key)}
                     onChange={(key, patch) => guarded(key, { type: "place", key, patch })}
-                    onRemove={(key) => dispatch({ type: "removePlace", key })}
+                    onRemove={(key) => confirmRemoval(key) && dispatch({ type: "removePlace", key })}
                     onAdd={() => dispatch({ type: "addRow", key: crypto.randomUUID() })}
                   />
                 ) : draft.places.length === 0 ? (
@@ -824,6 +835,7 @@ export function RouteEditor({ initial, order, locale }: { initial: RouteDraft; o
                         onSelect={() => setSelectedKey(p.key === selectedKey ? null : p.key)}
                         onChange={(patch) => guarded(p.key, { type: "place", key: p.key, patch })}
                         onRemove={() => {
+                          if (!confirmRemoval(p.key)) return;
                           dispatch({ type: "removePlace", key: p.key });
                           setSelectedKey(null);
                         }}

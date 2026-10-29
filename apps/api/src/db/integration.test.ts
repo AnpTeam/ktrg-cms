@@ -730,7 +730,7 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       ]);
 
       const found = await ralliesForPlace(tx, a.id);
-      expect(found.routeId).toBe(course4);
+      expect(found.routeIds).toEqual([course4]);
       expect(new Set(found.rallyIds)).toEqual(new Set([mounds!.id, extra!.id, course4Rally!.id, big!.id]));
 
       const [me] = await tx.insert(users).values({}).returning({ id: users.id });
@@ -957,6 +957,32 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
           const rows = await tx.select().from(auditLog).where(eq(auditLog.targetId, s!.id));
           expect(rows.map((r) => r.action)).toEqual(["spot.create"]);
           expect(rows[0]!.actorUserId).toBe(actor);
+        });
+      });
+    });
+
+    test("a place shared with another course is one place on both: counted and found on both courses, audited, and unshared again", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const list = await store.listRoutes();
+          const [home, other] = [list[2]!, list[3]!];
+          const s = await store.createSpot(actor, home.id, { nameJa: "孝子駅", stampable: true });
+          expect(await store.shareSpot(actor, s!.id, home.id, 0)).toBe("same_route");
+          expect(await store.shareSpot(actor, s!.id, other.id, 0)).toBe("ok");
+
+          const onOther = await store.getRoute(other.id);
+          expect(onOther!.spots.map((x) => x.id)).not.toContain(s!.id);
+          expect(onOther!.shared.map((x) => ({ id: x.id, routeId: x.routeId, position: x.position }))).toEqual([{ id: s!.id, routeId: home.id, position: 0 }]);
+          const counts = new Map((await store.listRoutes()).map((r) => [r.id, r.spotCount]));
+          expect(counts.get(other.id)).toBe(list[3]!.spotCount + 1);
+          expect(counts.get(home.id)).toBe(list[2]!.spotCount + 1);
+          expect(new Set((await ralliesForPlace(tx, s!.id)).routeIds)).toEqual(new Set([home.id, other.id]));
+
+          expect(await store.unshareSpot(actor, s!.id, other.id)).toBe(true);
+          expect(await store.unshareSpot(actor, s!.id, other.id)).toBe(false);
+          expect((await ralliesForPlace(tx, s!.id)).routeIds).toEqual([home.id]);
+          const rows = await tx.select().from(auditLog).where(eq(auditLog.targetId, s!.id));
+          expect(rows.map((r) => r.action).sort()).toEqual(["spot.create", "spot.share", "spot.unshare"]);
         });
       });
     });

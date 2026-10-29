@@ -10,6 +10,7 @@ import {
   numeric,
   pgEnum,
   pgTable,
+  pgView,
   primaryKey,
   text,
   timestamp,
@@ -200,6 +201,35 @@ export const spots = pgTable(
     ),
   ],
 );
+
+/**
+ * A place that is also on another course (the end of one course and the start of the next). The place keeps ONE row in
+ * `spots` (its home course is `spots.route_id`; its words, position, status and stamp are shared); each extra course is a
+ * row here. `position` = how many of that course's own places come before it (0 = first).
+ */
+export const spotRoutes = pgTable(
+  "spot_routes",
+  {
+    spotId: uuid("spot_id")
+      .notNull()
+      .references(() => spots.id, { onDelete: "cascade" }),
+    routeId: uuid("route_id")
+      .notNull()
+      .references(() => routes.id, { onDelete: "cascade" }),
+    position: integer("position").notNull().default(0),
+    createdAt: createdAt(),
+  },
+  (t) => [primaryKey({ columns: [t.spotId, t.routeId] }), index("spot_routes_route_idx").on(t.routeId), check("spot_routes_position_not_negative", sql`${t.position} >= 0`)],
+);
+
+/**
+ * Every (course, place) pair: the home course of each place plus its extra courses. Created by migration 0047; read
+ * wherever "which places are on this course" is asked (course rallies, stamp progress, counts).
+ */
+export const routeSpots = pgView("route_spots", {
+  routeId: uuid("route_id").notNull(),
+  spotId: uuid("spot_id").notNull(),
+}).existing();
 
 /**
  * How a rally is made, chosen when it is created and fixed afterwards: "places" = a list of stamp places

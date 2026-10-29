@@ -59,6 +59,8 @@ describe("admin routes need an admin", () => {
     ["DELETE", `/admin/routes/${someId}`],
     ["POST", `/admin/routes/${someId}/spots`, { nameJa: "x" }],
     ["PUT", `/admin/routes/${someId}/spots/order`, { ids: [] }],
+    ["PUT", `/admin/routes/${someId}/shared-spots/${someId}`, { position: 0 }],
+    ["DELETE", `/admin/routes/${someId}/shared-spots/${someId}`],
     ["PATCH", `/admin/spots/${someId}`, { updatedAt: new Date().toISOString() }],
     ["POST", `/admin/spots/${someId}/publish`],
     ["POST", `/admin/spots/${someId}/unpublish`],
@@ -111,6 +113,23 @@ describe("an admin edits a route and its places", () => {
     expect(unknown.translations).toEqual(second.translations);
     const visitor = (await (await call("GET", `/routes/${route.id}`)).json()) as Json;
     expect(Object.keys(visitor.route as Json)).not.toContain("translations");
+  });
+
+  test("a place is shared with another course (first by default), shown there apart from its own places, and unshared", async () => {
+    const { call, cookie, route } = await created();
+    const next = (((await (await call("POST", "/admin/routes", { cookie, body: { nameJa: "孝子越えから先" } })).json()) as Json).route as Json).id as string;
+    const eki = (((await (await call("POST", `/admin/routes/${route.id}/spots`, { cookie, body: { nameJa: "孝子駅" } })).json()) as Json).spot as Json).id as string;
+
+    expect((await call("PUT", `/admin/routes/${route.id}/shared-spots/${eki}`, { cookie, body: {} })).status).toBe(422); // its own course
+    expect((await call("PUT", `/admin/routes/${next}/shared-spots/${crypto.randomUUID()}`, { cookie, body: {} })).status).toBe(404);
+    expect((await call("PUT", `/admin/routes/${next}/shared-spots/${eki}`, { cookie, body: {} })).status).toBe(200);
+
+    const there = (await (await call("GET", `/admin/routes/${next}`, { cookie })).json()) as Json;
+    expect(there.spots).toEqual([]);
+    expect((there.shared as Json[]).map((s) => ({ id: s.id, routeId: s.routeId, position: s.position }))).toEqual([{ id: eki, routeId: route.id, position: 0 }]);
+
+    expect((await call("DELETE", `/admin/routes/${next}/shared-spots/${eki}`, { cookie })).status).toBe(200);
+    expect((await call("DELETE", `/admin/routes/${next}/shared-spots/${eki}`, { cookie })).status).toBe(404);
   });
 
   test("create, read back, save with updatedAt, and a stale save is 409 conflict", async () => {

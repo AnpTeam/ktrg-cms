@@ -175,7 +175,7 @@ export function adminContentRoutes(getServices: () => ContentServices, opts: Rou
       "/routes/:id",
       async ({ params, set }) => {
         const found = await svc().getRoute(params.id);
-        return found ? { ok: true as const, route: routeOut(found.route), spots: found.spots.map(spotOut) } : fail(set, 404, "not_found");
+        return found ? { ok: true as const, route: routeOut(found.route), spots: found.spots.map(spotOut), shared: found.shared.map((s) => ({ ...spotOut(s), position: s.position })), sharedWith: found.sharedWith } : fail(set, 404, "not_found");
       },
       { auth: "route.manage", params: idParams },
     )
@@ -250,6 +250,28 @@ export function adminContentRoutes(getServices: () => ContentServices, opts: Rou
         return r.ok ? { ok: true as const } : fail(set, statusOf(r.reason), r.reason);
       },
       { auth: "spot.manage", rateLimit: { adminWriteUser: "user.id" }, params: idParams, body: orderBody },
+    )
+    // A place that is also on this course (the end of one course, the start of the next): saved straight away, not with the route form.
+    .put(
+      "/routes/:id/shared-spots/:spotId",
+      async ({ user, params, body, set }) => {
+        const r = await svc().shareSpot(user.id, params.spotId, params.id, body.position ?? 0);
+        return r.ok ? { ok: true as const } : fail(set, statusOf(r.reason), r.reason);
+      },
+      {
+        auth: "spot.manage",
+        rateLimit: { adminWriteUser: "user.id" },
+        params: t.Object({ id: uuid, spotId: uuid }),
+        body: t.Object({ position: t.Optional(t.Integer({ minimum: 0, maximum: 1000 })) }),
+      },
+    )
+    .delete(
+      "/routes/:id/shared-spots/:spotId",
+      async ({ user, params, set }) => {
+        const r = await svc().unshareSpot(user.id, params.spotId, params.id);
+        return r.ok ? { ok: true as const } : fail(set, statusOf(r.reason), r.reason);
+      },
+      { auth: "spot.manage", rateLimit: { adminWriteUser: "user.id" }, params: t.Object({ id: uuid, spotId: uuid }) },
     )
     .patch(
       "/spots/:id",

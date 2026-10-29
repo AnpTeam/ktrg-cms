@@ -378,6 +378,7 @@ describe("user B cannot touch user A", () => {
   /** A well-formed body for each logged-in route that needs one (validation runs before the guard). */
   const BODIES: Record<string, () => unknown> = {
     "PATCH /api/v1/auth/passkeys/:id": () => ({ label: "x" }),
+    "PUT /api/v1/admin/routes/:id/shared-spots/:spotId": () => ({ position: 0 }),
     "PATCH /api/v1/me": () => ({ locale: "en" }),
     "POST /api/v1/guest/claim": () => ({ mode: "merge" }),
     "POST /api/v1/admin/routes": () => ({ nameJa: "x" }),
@@ -452,7 +453,7 @@ describe("user B cannot touch user A", () => {
 
     for (const key of routes) {
       const [method, path] = key.split(" ") as [string, string];
-      const url = path.replace("/api/v1", "").replace(":id", crypto.randomUUID()).replace(":key", "faq");
+      const url = path.replace("/api/v1", "").replace(":id", crypto.randomUUID()).replace(":spotId", crypto.randomUUID()).replace(":key", "faq");
       for (const cookie of [undefined, "session=made-up-token"]) {
         const res = await s.call(method, url, { cookie, body: BODIES[key]?.() });
         expect({ key, status: res.status, body: await res.json() }).toEqual({ key, status: 401, body: UNAUTHENTICATED });
