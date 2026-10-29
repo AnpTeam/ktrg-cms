@@ -71,7 +71,7 @@ export function PlaceImport({ onDone }: { onDone: () => void }) {
       <summary className="cursor-pointer text-lg font-bold">{t`シート（CSV）から取り込む`}</summary>
       <div className="mt-3 flex flex-col gap-3">
         <p className="text-base text-muted">{t`現地調査のシート（CSV）を選ぶと、まず件数を表示します。取り込んだ場所はすべて下書きで、位置は「未確認」のままです。すでにある場所は追加しません。`}</p>
-        <input type="file" accept=".csv,text/csv" disabled={busy} onChange={(e) => void choose(e.target.files?.[0])} className="text-base" />
+        <input type="file" accept=".csv,text/csv" disabled={busy} onChange={(e) => void choose(e.target.files?.[0])} aria-label={t`取り込むCSVファイル`} className="text-base" />
         {preview && csv ? (
           <div className="flex flex-col gap-2">
             <p className="text-lg font-bold">{t`${preview.read}件を読みました。新しい場所：${preview.added}件、すでにある場所：${preview.skipped}件`}</p>

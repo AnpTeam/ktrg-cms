@@ -121,8 +121,8 @@ export function PlaceTable({
   return (
     <div className="flex flex-col gap-3">
       {places.length > 0 ? (
-        // The table may be wider than a phone: it scrolls on its own, the page does not.
-        <div className="overflow-x-auto rounded-2xl border border-line">
+        // The table may be wider than a phone: it scrolls on its own, the page does not (relative: its visually hidden inputs are clipped with it).
+        <div className="relative overflow-x-auto rounded-2xl border border-line">
           <table style={{ width: widths.reduce((a, b) => a + b, 0), tableLayout: "fixed" }} className="border-collapse text-left">
             <colgroup>
               {widths.map((w, i) => (

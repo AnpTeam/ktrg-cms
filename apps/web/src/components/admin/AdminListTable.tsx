@@ -240,7 +240,7 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
       ) : (
         <>
           {/* A table on a wide screen: one column per fact, so a column can be read from top to bottom. */}
-          <div className="hidden overflow-x-auto rounded-2xl border border-line md:block">
+          <div className="relative hidden overflow-x-auto rounded-2xl border border-line md:block">
             <table className="w-full border-collapse text-left">
               <thead className="bg-surface text-base">
                 <tr>

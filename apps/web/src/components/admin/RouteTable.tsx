@@ -147,7 +147,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
           <p className="text-base font-bold text-muted" aria-live="polite">
             {t`${shown.length}件`}
           </p>
-          <div className="hidden overflow-x-auto rounded-2xl border border-line md:block">
+          <div className="relative hidden overflow-x-auto rounded-2xl border border-line md:block">
             <table className="w-full border-collapse text-left">
               <thead className="bg-surface text-base">
                 <tr>

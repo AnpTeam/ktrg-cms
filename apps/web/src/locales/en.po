@@ -178,7 +178,7 @@ msgstr "Connected {count} legs along trails. Check the shape, then save. Undo ta
 msgid "{direction} {distText}"
 msgstr "{distText} {direction}"
 
-#: src/components/ProfileSettings.tsx:141
+#: src/components/ProfileSettings.tsx:142
 msgid "{due}（日本時間）に、アカウントとすべての記録が消えます。それまでは、取り消せます。"
 msgstr "Your account and all your records will be erased on {due} (Japan time). Until then, you can cancel."
 
@@ -517,7 +517,7 @@ msgstr "Use two fingers to move the map"
 msgid "30代"
 msgstr "30s"
 
-#: src/components/ProfileSettings.tsx:244
+#: src/components/ProfileSettings.tsx:245
 msgid "3日のあいだは、ログインして取り消せます。3日をすぎると、もとにもどせません。"
 msgstr "For 3 days you can sign in and cancel. After that, it cannot be undone."
 
@@ -681,7 +681,7 @@ msgstr "Outdoors"
 msgid "アカウント"
 msgstr "Account"
 
-#: src/components/ProfileSettings.tsx:190
+#: src/components/ProfileSettings.tsx:191
 msgid "アカウントと、集めたスタンプなどの記録を、すべて消します。依頼から3日のあいだは、取り消せます。"
 msgstr "This erases your account and your records, such as collected stamps. You can cancel within 3 days of asking."
 
@@ -694,23 +694,23 @@ msgid "アカウントの制限・削除"
 msgstr "Restrict or delete the account"
 
 #: src/components/admin/UserActions.tsx:95
-#: src/components/ProfileSettings.tsx:188
+#: src/components/ProfileSettings.tsx:189
 msgid "アカウントの削除"
 msgstr "Delete account"
 
-#: src/components/ProfileSettings.tsx:140
+#: src/components/ProfileSettings.tsx:141
 msgid "アカウントを削除します"
 msgstr "Your account will be deleted"
 
-#: src/components/ProfileSettings.tsx:241
+#: src/components/ProfileSettings.tsx:242
 msgid "アカウントを削除しますか？"
 msgstr "Delete your account?"
 
-#: src/components/ProfileSettings.tsx:192
+#: src/components/ProfileSettings.tsx:193
 msgid "アカウントを削除する"
 msgstr "Delete account"
 
-#: src/components/SiteHeader.tsx:230
+#: src/components/SiteHeader.tsx:239
 msgid "アカウント設定"
 msgstr "Account settings"
 
@@ -932,13 +932,13 @@ msgstr "When off, every stamp place is shown on its own (recommended). When on, 
 msgid "オフラインで使う"
 msgstr "Save for offline use"
 
-#: src/components/ProfileSettings.tsx:121
+#: src/components/ProfileSettings.tsx:122
 msgid "お住まい"
 msgstr "Where from"
 
 #: src/components/auth/RegisterFlow.tsx:86
-#: src/components/ProfileSettings.tsx:120
-#: src/components/ProfileSettings.tsx:215
+#: src/components/ProfileSettings.tsx:121
+#: src/components/ProfileSettings.tsx:216
 msgid "お名前"
 msgstr "Your name"
 
@@ -1051,7 +1051,7 @@ msgstr "Bold display"
 msgid "クリックで、この点を消します"
 msgstr "Click to remove this point"
 
-#: src/components/InfoTip.tsx:31
+#: src/components/InfoTip.tsx:32
 msgid "くわしく見る"
 msgstr "Learn more"
 
@@ -2124,7 +2124,7 @@ msgstr "Desktop width"
 #: src/app/(public)/badges/page.tsx:13
 #: src/app/(public)/badges/page.tsx:28
 #: src/app/(public)/page.tsx:74
-#: src/app/(public)/rallies/page.tsx:33
+#: src/app/(public)/rallies/page.tsx:39
 #: src/app/(public)/sitemap/page.tsx:87
 msgid "バッジ"
 msgstr "Badges"
@@ -2176,10 +2176,11 @@ msgstr "The usual size."
 msgid "ふつうは、3日後に削除する方法を使います。その間は、取り消せます。"
 msgstr "Usually use the 3-day way. It can be cancelled until then."
 
-#: src/app/(public)/bookmarks/page.tsx:12
+#: src/app/(public)/bookmarks/page.tsx:10
+#: src/app/(public)/bookmarks/page.tsx:19
 #: src/app/(public)/page.tsx:78
 #: src/app/(public)/sitemap/page.tsx:99
-#: src/components/SiteHeader.tsx:243
+#: src/components/SiteHeader.tsx:252
 msgid "ブックマーク"
 msgstr "Bookmarks"
 
@@ -2210,7 +2211,7 @@ msgstr "Footer"
 #: src/app/(public)/sitemap/page.tsx:123
 #: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:33
-#: src/components/SiteHeader.tsx:274
+#: src/components/SiteHeader.tsx:283
 msgid "プライバシーポリシー"
 msgstr "Privacy policy"
 
@@ -2237,7 +2238,7 @@ msgstr "Preview"
 #: src/app/(public)/sitemap/page.tsx:76
 #: src/components/landing/BlogCard.tsx:22
 #: src/components/SiteFooter.tsx:18
-#: src/components/SiteHeader.tsx:248
+#: src/components/SiteHeader.tsx:257
 msgid "ブログ"
 msgstr "Blog"
 
@@ -2254,11 +2255,12 @@ msgstr "Shown by the author's name on the blog posts you write."
 msgid "ブログをすべて見る"
 msgstr "See all posts"
 
-#: src/app/(public)/profile/page.tsx:18
+#: src/app/(public)/profile/page.tsx:14
+#: src/app/(public)/profile/page.tsx:25
 #: src/app/(public)/settings/passkeys/page.tsx:23
 #: src/app/(public)/sitemap/page.tsx:96
 #: src/components/ProfileCard.tsx:38
-#: src/components/ProfileSettings.tsx:149
+#: src/components/ProfileSettings.tsx:150
 msgid "プロフィール"
 msgstr "Profile"
 
@@ -2320,7 +2322,7 @@ msgstr "Base map"
 #: src/app/(public)/sitemap/page.tsx:53
 #: src/app/(public)/sitemap/page.tsx:55
 #: src/app/(public)/terms/page.tsx:26
-#: src/components/SiteHeader.tsx:172
+#: src/components/SiteHeader.tsx:181
 #: src/components/TabBar.tsx:22
 #: src/components/TabBar.tsx:34
 msgid "ホーム"
@@ -2544,7 +2546,7 @@ msgid "めぐる場所"
 msgstr "Places to visit"
 
 #: src/components/admin/AdminNav.tsx:60
-#: src/components/SiteHeader.tsx:194
+#: src/components/SiteHeader.tsx:203
 #: src/components/TabBar.tsx:73
 msgid "メニュー"
 msgstr "Menu"
@@ -2608,7 +2610,7 @@ msgid "もとの文章"
 msgstr "Built-in text"
 
 #: src/components/IntroFlow.tsx:284
-#: src/components/SiteHeader.tsx:163
+#: src/components/SiteHeader.tsx:172
 msgid "もどる"
 msgstr "Back"
 
@@ -2620,7 +2622,7 @@ msgstr "Earned"
 #: src/components/admin/RallyEditor.tsx:191
 #: src/components/auth/ReauthDialog.tsx:72
 #: src/components/auth/ReauthDialog.tsx:94
-#: src/components/ProfileSettings.tsx:250
+#: src/components/ProfileSettings.tsx:251
 #: src/components/settings/PasskeyManager.tsx:138
 #: src/components/settings/PasskeyManager.tsx:212
 #: src/components/StampHere.tsx:172
@@ -2650,7 +2652,7 @@ msgstr "Redo"
 #: src/app/(public)/sitemap/page.tsx:117
 #: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:21
-#: src/components/SiteHeader.tsx:272
+#: src/components/SiteHeader.tsx:281
 msgid "よくあるご質問"
 msgstr "FAQ"
 
@@ -2664,7 +2666,7 @@ msgstr "Reading"
 
 #: src/app/(public)/sitemap/page.tsx:126
 #: src/components/SiteFooter.tsx:24
-#: src/components/SiteHeader.tsx:275
+#: src/components/SiteHeader.tsx:284
 msgid "ライセンス情報"
 msgstr "Licenses"
 
@@ -2676,7 +2678,8 @@ msgstr "Light"
 #: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/page.tsx:70
 #: src/app/(public)/rallies/[id]/page.tsx:57
-#: src/app/(public)/rallies/page.tsx:30
+#: src/app/(public)/rallies/page.tsx:20
+#: src/app/(public)/rallies/page.tsx:36
 #: src/app/(public)/sitemap/page.tsx:82
 #: src/components/admin/AdminNav.tsx:38
 #: src/components/BookmarkList.tsx:47
@@ -2712,7 +2715,7 @@ msgstr "Courses to put in the rally"
 msgid "ラリーに入れる経由地"
 msgstr "Stamp waypoints to put in the rally"
 
-#: src/app/(public)/rallies/page.tsx:57
+#: src/app/(public)/rallies/page.tsx:63
 msgid "ラリーの一覧"
 msgstr "All rallies"
 
@@ -2737,7 +2740,7 @@ msgstr "Rally name"
 msgid "ラリーは、コースを集めてつくるか、経由地を集めてつくります。名前を押すと、名前・公開・中身を直せます。"
 msgstr "A rally is made from courses or from stamp waypoints. Open one to change its name, whether it is public, and what is in it."
 
-#: src/app/(public)/rallies/page.tsx:47
+#: src/app/(public)/rallies/page.tsx:53
 msgid "ラリーは、まだ準備中です。"
 msgstr "The rallies are not ready yet."
 
@@ -2944,7 +2947,7 @@ msgstr "Back to the route list"
 msgid "ルート名（日本語）"
 msgstr "Route name (Japanese)"
 
-#: src/components/SiteHeader.tsx:213
+#: src/components/SiteHeader.tsx:222
 msgid "ログアウト"
 msgstr "Log out"
 
@@ -2956,9 +2959,9 @@ msgstr "Log out"
 #: src/components/blog/CommentSection.tsx:111
 #: src/components/GuestNag.tsx:82
 #: src/components/landing/LandingHero.tsx:55
-#: src/components/ProfileSettings.tsx:179
+#: src/components/ProfileSettings.tsx:180
 #: src/components/SignInPrompt.tsx:37
-#: src/components/SiteHeader.tsx:219
+#: src/components/SiteHeader.tsx:228
 msgid "ログイン"
 msgstr "Log in"
 
@@ -2981,7 +2984,7 @@ msgstr "Could not log in. If this device has no passkey, log in with email."
 msgid "ログインの方法"
 msgstr "Ways to log in"
 
-#: src/components/ProfileSettings.tsx:181
+#: src/components/ProfileSettings.tsx:182
 msgid "ログインの方法（パスキー）"
 msgstr "Ways to log in (passkeys)"
 
@@ -3301,7 +3304,7 @@ msgstr "Save and next"
 #: src/components/admin/GoalsForm.tsx:50
 #: src/components/admin/RallyEditor.tsx:72
 #: src/components/admin/RouteEditor.tsx:335
-#: src/components/ProfileSettings.tsx:172
+#: src/components/ProfileSettings.tsx:173
 #: src/components/settings/PrefsForm.tsx:68
 msgid "保存しました。"
 msgstr "Saved."
@@ -3336,7 +3339,7 @@ msgstr "Saved (opens without a signal)"
 
 #: src/components/admin/RouteEditor.tsx:488
 #: src/components/admin/SiteSettingsForm.tsx:112
-#: src/components/ProfileSettings.tsx:220
+#: src/components/ProfileSettings.tsx:221
 #: src/components/settings/PasskeyManager.tsx:135
 #: src/components/settings/PrefsForm.tsx:162
 msgid "保存する"
@@ -3487,7 +3490,7 @@ msgstr "Publish"
 msgid "公開できるようになったら、ここにコースのバッジが表示されます。"
 msgstr "When they can be published, the course badges will show here."
 
-#: src/app/(public)/rallies/page.tsx:48
+#: src/app/(public)/rallies/page.tsx:54
 msgid "公開できるようになったら、ここにスタンプのラリーが表示されます。"
 msgstr "When they are ready to publish, the stamp rallies will appear here."
 
@@ -3737,7 +3740,7 @@ msgstr "Working…"
 msgid "出かける前に"
 msgstr "Before you go"
 
-#: src/app/(public)/rallies/page.tsx:68
+#: src/app/(public)/rallies/page.tsx:74
 #: src/app/(public)/routes/page.tsx:87
 #: src/components/landing/Landing.tsx:186
 #: src/components/landing/TrailNotices.tsx:65
@@ -3801,7 +3804,7 @@ msgstr "Someone else saved first. Reload the page and try again."
 #: src/app/(public)/sitemap/page.tsx:120
 #: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:30
-#: src/components/SiteHeader.tsx:273
+#: src/components/SiteHeader.tsx:282
 msgid "利用規約"
 msgstr "Terms of use"
 
@@ -3867,11 +3870,11 @@ msgstr "The scheduled deletion was cancelled."
 msgid "削除の予約を取り消す"
 msgstr "Cancel the scheduled deletion"
 
-#: src/components/ProfileSettings.tsx:247
+#: src/components/ProfileSettings.tsx:248
 msgid "削除を依頼する"
 msgstr "Ask to delete"
 
-#: src/components/ProfileSettings.tsx:143
+#: src/components/ProfileSettings.tsx:144
 msgid "削除を取り消す"
 msgstr "Cancel deletion"
 
@@ -4065,6 +4068,10 @@ msgstr "Imported: {0} created, {1} updated, {2} rows not imported"
 #: src/components/admin/RouteImport.tsx:232
 msgid "取り込み中… {0} / {1}"
 msgstr "Importing… {0} / {1}"
+
+#: src/components/admin/PlaceImport.tsx:74
+msgid "取り込むCSVファイル"
+msgstr "CSV file to import"
 
 #. placeholder {0}: items.length
 #: src/components/admin/PlaceImport.tsx:104
@@ -4586,7 +4593,7 @@ msgid "帰りの方法は、下の交通の説明を見てください。"
 msgstr "For the way back, see the transport notes below."
 
 #: src/components/auth/AboutYou.tsx:94
-#: src/components/ProfileSettings.tsx:122
+#: src/components/ProfileSettings.tsx:123
 msgid "年代"
 msgstr "Age"
 
@@ -4632,7 +4639,7 @@ msgid "急な登り下りや、わかりにくい所がある。はしごやく�
 msgstr "Steep climbs and descents and some hard-to-follow places. There may be ladders or chains."
 
 #: src/components/auth/AboutYou.tsx:122
-#: src/components/ProfileSettings.tsx:123
+#: src/components/ProfileSettings.tsx:124
 msgid "性別"
 msgstr "Gender"
 
@@ -4698,7 +4705,7 @@ msgstr "Stamped"
 msgid "押し方: 場所の近くで、ボタンを押します（位置情報）"
 msgstr "How: press the button near the place (uses your location)"
 
-#: src/components/ProfileSettings.tsx:243
+#: src/components/ProfileSettings.tsx:244
 msgid "押すと、アカウントと、集めたスタンプなどの記録を、3日後にすべて消します。"
 msgstr "If you press this, your account and your records, such as your stamps, will all be erased after 3 days."
 
@@ -4796,7 +4803,7 @@ msgstr "Text and buttons become as big as they go."
 msgid "文字もボタンも、少し大きくなります。"
 msgstr "Text and buttons become a little bigger."
 
-#: src/components/SiteHeader.tsx:266
+#: src/components/SiteHeader.tsx:275
 msgid "文字やボタンの大きさ、地図の見せ方"
 msgstr "Size of text and buttons, how the map is shown"
 
@@ -4864,7 +4871,7 @@ msgstr "A Japanese name is needed to create a new one"
 #: src/components/landing/Landing.tsx:197
 #: src/components/landing/LandingHero.tsx:46
 #: src/components/SignInPrompt.tsx:31
-#: src/components/SiteHeader.tsx:222
+#: src/components/SiteHeader.tsx:231
 msgid "新規登録"
 msgstr "Register"
 
@@ -4981,7 +4988,7 @@ msgstr "Not entered"
 msgid "未回答"
 msgstr "Not answered"
 
-#: src/components/ProfileSettings.tsx:118
+#: src/components/ProfileSettings.tsx:119
 msgid "未設定"
 msgstr "Not set"
 
@@ -5332,7 +5339,7 @@ msgstr "Name of the town or village"
 msgid "画面が見えない間は、位置を止めています。"
 msgstr "Position is paused while the screen is hidden."
 
-#: src/components/SiteHeader.tsx:253
+#: src/components/SiteHeader.tsx:262
 msgid "画面の明るさ"
 msgstr "Screen brightness"
 
@@ -5438,7 +5445,7 @@ msgstr "Nothing to fix."
 msgid "直す場所を見る"
 msgstr "Show me what to fix"
 
-#: src/components/ProfileSettings.tsx:124
+#: src/components/ProfileSettings.tsx:125
 msgid "知ったきっかけ"
 msgstr "How you found it"
 
@@ -5524,7 +5531,7 @@ msgstr "You can skip this."
 msgid "管理メニュー"
 msgstr "Admin menu"
 
-#: src/components/SiteHeader.tsx:237
+#: src/components/SiteHeader.tsx:246
 msgid "管理画面"
 msgstr "Admin area"
 
@@ -5532,7 +5539,7 @@ msgstr "Admin area"
 msgid "管理画面は、管理者だけが使えます。権限が必要な場合は、管理者にお知らせください。"
 msgstr "Only administrators can use the admin area. If you need access, tell an administrator."
 
-#: src/app/(public)/profile/page.tsx:26
+#: src/app/(public)/profile/page.tsx:33
 msgid "管理画面を開く"
 msgstr "Open the admin area"
 
@@ -6014,7 +6021,7 @@ msgstr "Quick readability settings"
 #: src/app/(public)/settings/page.tsx:12
 #: src/app/(public)/settings/page.tsx:29
 #: src/app/(public)/sitemap/page.tsx:108
-#: src/components/SiteHeader.tsx:264
+#: src/components/SiteHeader.tsx:273
 msgid "見やすさの設定"
 msgstr "Display settings"
 
@@ -6205,7 +6212,7 @@ msgstr "See closures and other notices with the date they were checked."
 
 #: src/app/(admin)/admin/pages/page.tsx:27
 #: src/app/(public)/faq/page.tsx:24
-#: src/app/(public)/rallies/page.tsx:37
+#: src/app/(public)/rallies/page.tsx:43
 #: src/app/(public)/sitemap/page.tsx:90
 #: src/components/admin/PageTextEditor.tsx:37
 msgid "遊び方"
@@ -6405,9 +6412,9 @@ msgstr "Length"
 #: src/components/map/MapPopup.tsx:57
 #: src/components/map/PlacesPanel.tsx:207
 #: src/components/map/TrailMap.tsx:460
-#: src/components/ProfileSettings.tsx:230
+#: src/components/ProfileSettings.tsx:231
 #: src/components/SampleNotice.tsx:64
-#: src/components/SiteHeader.tsx:198
+#: src/components/SiteHeader.tsx:207
 msgid "閉じる"
 msgstr "Close"
 

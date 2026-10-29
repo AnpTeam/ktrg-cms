@@ -17,7 +17,8 @@ import { formatUpdated } from "@/lib/format";
 type Field = "displayName" | "origin" | "ageRange" | "gender" | "foundVia";
 
 const dangerButton = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-danger px-6 text-xl font-bold text-on-brand disabled:opacity-60";
-const row = "tap-target flex w-full items-center justify-between gap-3 px-4 py-3 text-left";
+const rowBox = "tap-target flex items-center justify-between gap-3 px-4 py-3 text-left";
+const row = `w-full ${rowBox}`;
 
 /**
  * The profile page's settings, as a list like a phone's settings: each answer is a row, tapping it opens a small sheet,
@@ -177,7 +178,7 @@ export function ProfileSettings({
 
       <section className="flex flex-col gap-2">
         <h2 className="px-4 text-xl font-bold text-accent">{t`ログイン`}</h2>
-        <Link href="/settings/passkeys" className={`mx-4 flex items-center justify-between rounded-3xl bg-surface ${row}`}>
+        <Link href="/settings/passkeys" className={`mx-4 flex items-center justify-between rounded-3xl bg-surface ${rowBox}`}>
           <span className="text-lg font-bold">{t`ログインの方法（パスキー）`}</span>
           <ChevronIcon />
         </Link>
