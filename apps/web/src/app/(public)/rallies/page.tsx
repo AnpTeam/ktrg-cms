@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
@@ -14,6 +15,11 @@ import { initLingui } from "@/i18n/server";
 // The rally page (the stamps live inside each rally): the rally you stamped in most recently (with how many
 // are left), and below it every other published rally. The rallies come from GET /rallies; sample content stands in only
 // in development when none are published.
+export async function generateMetadata(): Promise<Metadata> {
+  const i18n = await initLingui();
+  return { title: i18n._(msg`ラリー`) };
+}
+
 export default async function StampsPage({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
   const i18n = await initLingui();
   const viewer = await getViewer(searchParams);

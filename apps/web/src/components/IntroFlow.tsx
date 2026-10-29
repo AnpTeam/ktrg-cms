@@ -46,9 +46,9 @@ function InstallStep() {
   }, []);
   return (
     <>
-      <h1 id="intro-title" className="text-3xl font-bold text-accent">
+      <h2 id="intro-title" className="text-3xl font-bold text-accent">
         <Trans>ホーム画面に追加しましょう</Trans>
-      </h1>
+      </h2>
       <p className="text-lg leading-8">
         <Trans>ホーム画面に追加すると、アプリのようにすぐ開けます。山の中でも、探す手間がかかりません。</Trans>
       </p>
@@ -157,9 +157,9 @@ export function IntroFlow({ seen, guide }: { seen: boolean; guide: { title: stri
         <div className="flex flex-1 flex-col gap-5">
           {current === "language" ? (
             <>
-              <h1 id="intro-title" className="font-serif text-4xl font-bold leading-snug">
+              <h2 id="intro-title" className="font-serif text-4xl font-bold leading-snug">
                 葛城修験 <span className="block text-2xl">Katsuragi Shugen</span>
-              </h1>
+              </h2>
               <p className="text-xl font-bold">言語 / Language</p>
               <div className="flex flex-col gap-3">
                 {locales.map((locale) => (
@@ -187,9 +187,9 @@ export function IntroFlow({ seen, guide }: { seen: boolean; guide: { title: stri
 
           {current === "about" ? (
             <>
-              <h1 id="intro-title" className="text-3xl font-bold text-accent">
+              <h2 id="intro-title" className="text-3xl font-bold text-accent">
                 <Trans>葛城修験とは</Trans>
-              </h1>
+              </h2>
               <p className="max-w-prose text-lg leading-8">
                 <Trans>
                   和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。
@@ -217,9 +217,9 @@ export function IntroFlow({ seen, guide }: { seen: boolean; guide: { title: stri
 
           {current === "features" ? (
             <>
-              <h1 id="intro-title" className="text-3xl font-bold text-accent">
+              <h2 id="intro-title" className="text-3xl font-bold text-accent">
                 <Trans>このアプリでわかること</Trans>
-              </h1>
+              </h2>
               <ul className="flex flex-col gap-3">
                 {[
                   { title: <Trans>地図とルート</Trans>, text: <Trans>全{TOTAL_ROUTES}区間の道すじを、地図で見られます。距離、時間、きつさ、行き方もわかります。</Trans> },
@@ -238,7 +238,7 @@ export function IntroFlow({ seen, guide }: { seen: boolean; guide: { title: stri
 
           {current === "play" ? (
             <>
-              <h1 id="intro-title" className="text-3xl font-bold text-accent">{help.guideTitle}</h1>
+              <h2 id="intro-title" className="text-3xl font-bold text-accent">{help.guideTitle}</h2>
               <p className="text-lg leading-8">{help.guideIntro}</p>
               <ol className="flex flex-col gap-3">
                 {/* The last step of the guide is "sign up": that waits until the visitor opens the rallies page. */}
@@ -259,9 +259,9 @@ export function IntroFlow({ seen, guide }: { seen: boolean; guide: { title: stri
 
           {current === "start" ? (
             <>
-              <h1 id="intro-title" className="text-3xl font-bold text-accent">
+              <h2 id="intro-title" className="text-3xl font-bold text-accent">
                 <Trans>さあ、歩きはじめましょう</Trans>
-              </h1>
+              </h2>
               <p className="text-lg leading-8">
                 <Trans>まずは、歩きたい道をえらびます。登録しなくても、スタンプは押せます。</Trans>
               </p>
