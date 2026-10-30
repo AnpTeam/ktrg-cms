@@ -968,6 +968,33 @@ body.map-screen-active .site-footer {
   }
 }
 
+/* iOS 27 draws a blur over the top of an installed web app unless WebKit finds a visible fixed or sticky box at the top edge
+   (about 90% of the viewport wide, over 10 px tall, with a background colour): it then extends that colour into the status bar
+   instead. A real-device report: a sticky header with a background removed the blur; a relative one with none did not
+   (yetone/magpie #3515). Our header is relative on a phone, so a strip in the page colour stands there for it; the page starts
+   below it. It sits under the header, the menu and, on the map, the chips (z-index), so nothing is covered. Installed app only.
+   (The status-bar-style tag is left out on purpose: black-translucent disables this colour extension.) */
+@media (display-mode: standalone) {
+  body {
+    padding-top: 12px;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 12px;
+    background: var(--color-paper);
+    z-index: 20;
+    pointer-events: none;
+  }
+  body.map-screen-active {
+    padding-top: 0;
+  }
+  body.map-screen-active::before {
+    z-index: 3;
+  }
+}
+
 /* The visitor's own accessibility choices (settings, the menu's quick buttons): the same as the device's "more contrast" and
    "reduce motion" settings, for people whose device does not say so. Stronger contrast also underlines every link. */
 html[data-contrast],
