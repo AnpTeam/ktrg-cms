@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "葛城修験",
     start_url: "/",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#ffffff",
+    background_color: "#fcfaf5",
+    theme_color: "#fcfaf5",
     icons: [
       // Chrome offers "Install" only with a 192 px and a 512 px PNG; the maskable one has the picture inside the safe zone so Android can crop it to any shape.
       { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
