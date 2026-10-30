@@ -114,6 +114,7 @@ export function MapScreen({
   // The page behind does not scroll: the map and the sheet are the screen.
   useEffect(() => {
     document.body.classList.add("map-screen-active");
+    window.scrollTo(0, 0); // a swipe while it was loading may have scrolled the page; the lock above keeps it from being scrolled back
     return () => document.body.classList.remove("map-screen-active");
   }, []);
 
