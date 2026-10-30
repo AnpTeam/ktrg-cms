@@ -140,7 +140,7 @@ export function IntroFlow({ seen, guide }: { seen: boolean; guide: { title: stri
         e.preventDefault();
         finish("skipped");
       }}
-      className="m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto overscroll-contain bg-paper p-0 text-ink backdrop:bg-black/60 md:m-auto md:h-auto md:max-h-[88dvh] md:w-[38rem] md:max-w-[calc(100%-2rem)] md:rounded-3xl md:shadow-2xl"
+      className="m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto overscroll-contain bg-paper p-0 text-ink backdrop:bg-black/60 md:m-auto md:h-fit md:max-h-[88dvh] md:w-[38rem] md:max-w-[calc(100%-2rem)] md:rounded-3xl md:shadow-2xl"
     >
       <div className="mx-auto flex min-h-dvh max-w-xl flex-col gap-6 px-5 pb-8 pt-[calc(1.5rem+env(safe-area-inset-top))] md:min-h-[30rem] md:px-8 md:pt-8">
         <div className="flex items-center justify-between gap-3">
