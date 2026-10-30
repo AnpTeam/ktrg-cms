@@ -438,7 +438,7 @@ msgstr "Write one of the kind names listed on the 書き方 sheet"
 
 #: src/components/landing/LandingHero.tsx:42
 msgid "「祈り」を見つめる再発見の旅"
-msgstr "A journey of rediscovery, looking at \"prayer\""
+msgstr "A journey of rediscovery, looking at “prayer”"
 
 #. placeholder {0}: p.line
 #: src/components/admin/RouteImport.tsx:75
