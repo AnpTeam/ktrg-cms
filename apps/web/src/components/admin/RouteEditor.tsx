@@ -781,15 +781,6 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
 
             {section === "places" ? (
               <Section title={t`経由地（${draft.places.length}か所）`}>
-                {draft.places.some((p) => p.id && p.published) ? (
-                  <div className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-paper p-3">
-                    <button type="button" disabled={busyKey !== null} onClick={() => void unpublishAll()} className="tap-target rounded-xl border-2 border-danger px-5 text-lg font-bold text-danger disabled:opacity-40">
-                      {busyKey === "all" ? t`処理しています…` : t`すべての公開をやめる`}
-                    </button>
-                    <p className="min-w-0 flex-1 text-base text-muted">{t`公開中の経由地をまとめて下書きに戻します。ルートは「準備中」として、一覧に残ります。`}</p>
-                  </div>
-                ) : null}
-                {draft.id ? <SharedPlaces routeId={draft.id} initial={shared} lent={lent} routeNames={routeNames} locale={locale} /> : null}
                 <div role="group" aria-label={t`場所の見せ方`} className="flex flex-wrap gap-2">
                   {(["table", "detail"] as const).map((v) => (
                     <button
@@ -855,6 +846,15 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                   </ol>
                 )}
                 {problems.some((p) => p.kind === "place_position") ? <p role="alert" className="text-base font-bold text-danger">{t`緯度と経度は、両方入れるか、両方空にしてください。`}</p> : null}
+                {draft.id ? <SharedPlaces routeId={draft.id} initial={shared} lent={lent} routeNames={routeNames} locale={locale} /> : null}
+                {draft.places.some((p) => p.id && p.published) ? (
+                  <div className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-paper p-3">
+                    <button type="button" disabled={busyKey !== null} onClick={() => void unpublishAll()} className="tap-target rounded-xl border-2 border-danger px-5 text-lg font-bold text-danger disabled:opacity-40">
+                      {busyKey === "all" ? t`処理しています…` : t`すべての公開をやめる`}
+                    </button>
+                    <p className="min-w-0 flex-1 text-base text-muted">{t`公開中の経由地をまとめて下書きに戻します。ルートは「準備中」として、一覧に残ります。`}</p>
+                  </div>
+                ) : null}
               </Section>
             ) : null}
 
