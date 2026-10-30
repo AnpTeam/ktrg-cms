@@ -30,7 +30,7 @@ const segmentClass: Record<Kind, string> = {
 
 function Segment({ kind, from, to }: { kind: Kind; from: string; to: string }) {
   return (
-    <span aria-hidden="true" className={`absolute -translate-x-1/2 border-l-4 lg:hidden ${segmentClass[kind]}`} style={{ left: LINE_X, top: from, bottom: to }} />
+    <span aria-hidden="true" className={`absolute -translate-x-1/2 border-l-4 md:hidden ${segmentClass[kind]}`} style={{ left: LINE_X, top: from, bottom: to }} />
   );
 }
 
@@ -108,13 +108,13 @@ function StopRow({ stop, href, locale }: { stop: Stop; href: string; locale: str
   const card = <RouteCard route={route} state={state} locale={locale} />;
 
   return (
-    <li className="relative pb-4 pl-10 pr-4 lg:p-0">
+    <li className="relative pb-4 pl-10 pr-4 md:p-0">
       {/* The progress line: down the left edge, with a small mark by the middle of the card. */}
       {stop.above ? <Segment kind={stop.above} from="0" to="50%" /> : null}
       {stop.below ? <Segment kind={stop.below} from="50%" to="0" /> : null}
       <span
         aria-hidden="true"
-        className={`absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] bg-paper lg:hidden ${
+        className={`absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] bg-paper md:hidden ${
           state === "complete" ? "border-shu bg-shu" : state === "inProgress" ? "border-moss" : state === "soon" ? "border-dashed border-line" : "border-line"
         }`}
         style={{ left: LINE_X, top: "calc(50% - 0.5rem)" }}
@@ -132,9 +132,9 @@ function StopRow({ stop, href, locale }: { stop: Stop; href: string; locale: str
 
 function GroupHeading({ prefecture, next, first }: { prefecture: Prefecture; next: Kind | null; first: boolean }) {
   return (
-    <li className="relative lg:col-span-full" role="presentation">
+    <li className="relative md:col-span-full" role="presentation">
       {next ? <Segment kind={next} from={first ? "50%" : "0"} to="0" /> : null}
-      <h2 className="flex items-center gap-2 py-3 pl-10 pr-4 text-lg font-bold text-muted lg:px-1 lg:pb-2 lg:pt-6">
+      <h2 className="flex items-center gap-2 py-3 pl-10 pr-4 text-lg font-bold text-muted md:px-1 md:pb-2 md:pt-6">
         <PrefectureIcon value={prefecture} />
         <PrefectureName value={prefecture} />
       </h2>
@@ -147,9 +147,9 @@ export function TrailRibbon({ routes, hrefFor, locale }: { routes: RouteSummary[
   const grouped = canGroupByPrefecture(routes);
 
   return (
-    // On a phone and a tablet one column with the progress line down its left; from 1024 px the cards sit in a grid of
+    // On a phone one column with the progress line down its left; from 768 px the cards sit in a grid of
     // two (three from 1280 px) and the line gives way to the numbers on the photos.
-    <ol className="lg:grid lg:grid-cols-2 lg:gap-x-6 lg:gap-y-6 lg:px-4 xl:grid-cols-3">
+    <ol className="md:grid md:grid-cols-2 md:gap-x-6 md:gap-y-6 md:px-4 xl:grid-cols-3">
       {stops.map((stop, i) => {
         const prev = stops[i - 1]?.route.prefecture;
         const heading =
