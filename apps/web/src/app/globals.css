@@ -568,6 +568,16 @@ rt {
  * scales text and components (buttons, tap targets, icons) together. Outside any @layer on purpose,
  * so it beats the base 100%.
  */
+html[data-size="small"] {
+  font-size: 87.5%;
+}
+
+/* Small text is a choice, not a smaller target: a tap target keeps about the same size in pixels (3.5rem x 14px = 49px). */
+html[data-size="small"] .tap-target {
+  min-height: 3.5rem;
+  min-width: 3.5rem;
+}
+
 html[data-size="large"] {
   font-size: 112.5%;
 }

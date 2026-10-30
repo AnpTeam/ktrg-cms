@@ -60,7 +60,7 @@ void [_ageCovered, _genderCovered, _foundViaCovered];
 /** The accessibility and map choices (me/preferences.ts): the first five fields are required, nothing else is allowed. */
 export const preferencesSchema = t.Object(
   {
-    size: t.Union([t.Literal("standard"), t.Literal("large"), t.Literal("xlarge")]),
+    size: t.Union([t.Literal("small"), t.Literal("standard"), t.Literal("large"), t.Literal("xlarge")]),
     mergeStops: t.Boolean(),
     placesOnMap: t.Boolean(),
     setupDone: t.Boolean(),
