@@ -23,7 +23,7 @@ export const viewport: Viewport = {
   viewportFit: "cover",
   colorScheme: "light dark",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: light)", color: "#fcfaf5" },
     { media: "(prefers-color-scheme: dark)", color: "#0b0908" },
   ],
 };
@@ -40,8 +40,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: home, template: `%s | ${site}` },
     description,
     openGraph: { type: "website", siteName: site, title: home, description },
-    // Added to the iPhone's home screen it opens like an app; the page runs under the status bar (globals.css paints the top edge, which also stops iOS 27's blur there; the map shows through).
-    appleWebApp: { capable: true, title: site, statusBarStyle: "black-translucent" },
+    // Added to the iPhone's home screen it opens like an app. The status bar is the opaque default one: iOS 26.1 and 27 draw their own blur over a black-translucent bar (the strip workarounds did not remove it on a real phone), and WebKit's answer to that bug (317153) is to not use it. iOS reads this when the app is added, so an installed copy must be deleted and added again.
+    appleWebApp: { capable: true, title: site, statusBarStyle: "default" },
   };
 }
 
