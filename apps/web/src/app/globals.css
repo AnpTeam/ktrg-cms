@@ -844,6 +844,17 @@ body.map-screen-active .site-footer {
     -webkit-touch-callout: none;
   }
 }
+/* iOS installed app, short pages: the tab bar floated about a safe-area above the bottom and jumped back and forth with the
+   rubber-band swipe, so `bottom: 0` (the layout viewport, which iOS shrinks when the page does not scroll) is not the screen's
+   bottom there. Other projects report the same and that 100dvh stays the full screen in standalone. So the bar hangs from the
+   dvh line instead: top at 100dvh, moved up by its own height. In a normal browser both put it in the same place. */
+@media (display-mode: standalone) and (max-width: 767px) {
+  [data-tabbar] {
+    bottom: auto;
+    top: 100dvh;
+    transform: translateY(-100%);
+  }
+}
 /* On a phone, a chosen course or stop takes the whole screen: the bottom tab bar steps aside (the sheet's back button
    brings the map home, and the tabs with it). From 768 px the tabs are a side rail and stay. */
 @media (max-width: 767px) {
