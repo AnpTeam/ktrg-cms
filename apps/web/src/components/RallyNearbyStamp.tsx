@@ -24,7 +24,7 @@ type Phase =
  * opening the place first. One tap reads ONE position, picks the nearest place they do not hold yet, and asks the server
  * for that stamp: the server still decides (distance, accuracy, closed). The position is used once and never kept.
  */
-export function RallyNearbyStamp({ places, held, locale }: { places: RallyPlace[]; held: string[]; locale: string }) {
+export function RallyNearbyStamp({ places, held, locale, quiet = false }: { places: RallyPlace[]; held: string[]; locale: string; quiet?: boolean }) {
   const { t, i18n } = useLingui();
   const router = useRouter();
   const messages = useStampMessages();
@@ -82,7 +82,7 @@ export function RallyNearbyStamp({ places, held, locale }: { places: RallyPlace[
         disabled={busy}
         onClick={() => void press()}
         aria-live="polite"
-        className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper disabled:opacity-60"
+        className={`tap-target flex min-h-14 w-full items-center justify-center rounded-xl px-6 text-xl font-bold disabled:opacity-60 ${quiet ? "border border-ink bg-paper text-ink hover:bg-surface" : "bg-ink text-paper"}`}
       >
         {phase.name === "working" ? (phase.what === "locating" ? t`いまの位置を調べています…` : t`スタンプを押しています…`) : t`近くのスタンプを押す`}
       </button>

@@ -49,6 +49,8 @@ export default async function RallyPage({ params, searchParams }: Props) {
   const startHref = start ? `/map?route=${encodeURIComponent(start.routeId)}&stop=${encodeURIComponent(start.id)}` : "/map";
   const canStampHere = !done && detail.places.some((p) => p.lat !== null && p.status !== "closed" && !heldSet.has(p.id));
   const button = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper";
+  const quietButton = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl border border-ink bg-paper px-6 text-xl font-bold text-ink hover:bg-surface";
+  // One main button at a time: the way to the first place until something is stamped, then the stamp button for the place you are at.
 
   return (
     <div className="flex flex-col gap-6 pt-2 lg:pt-0">
@@ -86,10 +88,10 @@ export default async function RallyPage({ params, searchParams }: Props) {
 
       {!isSoon(rally) ? (
         <section className="mx-4 flex flex-col gap-3">
-          <Link href={startHref} className={button}>
+          <Link href={startHref} className={stamped === 0 ? button : quietButton}>
             {stamped === 0 ? <Trans>いますぐはじめる</Trans> : <Trans>つづきをはじめる</Trans>}
           </Link>
-          {canStampHere ? <RallyNearbyStamp places={detail.places} held={held} locale={i18n.locale} /> : null}
+          {canStampHere ? <RallyNearbyStamp places={detail.places} held={held} locale={i18n.locale} quiet={stamped === 0} /> : null}
           <RallyBookmark rallyId={rally.id} />
         </section>
       ) : null}
