@@ -8,7 +8,8 @@ export function nextStamp(stamped: ReadonlySet<number>, total: number) {
 }
 
 /**
- * The stamps of one rally. By default two big round seals to a row, each with its number and, when the names
+ * The stamps of one rally. By default two big round seals to a row (three or more when only the numbers are shown, so a course
+ * of a dozen places is not a long scroll), each with its number and, when the names
  * are given, the name of the place, so a seal says what it is without opening anything. `columns={4}` is the
  * small version (the example on the home page). Never by colour alone: stamped is a filled seal, the next one
  * a thick ring with the word つぎ, the rest a dashed outline.
@@ -40,7 +41,7 @@ export function StampGrid({
   const big = columns === 2;
 
   return (
-    <ol className={`grid ${big ? "grid-cols-2 gap-4 lg:grid-cols-3" : "grid-cols-4 gap-2"} ${className}`}>
+    <ol className={`grid ${big ? (names || art ? "grid-cols-2 gap-4 lg:grid-cols-3" : "grid-cols-3 gap-3 md:grid-cols-4 lg:grid-cols-5") : "grid-cols-4 gap-2"} ${className}`}>
       {Array.from({ length: total }, (_, i) => i + 1).map((number) => {
         const state: StampState = stamped.has(number) ? "stamped" : number === next ? "next" : "empty";
         const name = names?.get(number);
