@@ -34,11 +34,11 @@ export function QuickActions({ prefs, signedIn }: { prefs: Prefs; signedIn: bool
   const bigger = () => change({ ...current, size: textSizes[(textSizes.indexOf(current.size) + 1) % textSizes.length]! });
 
   const button = (on: boolean) =>
-    `flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center rounded-lg border px-0.5 py-0.5 text-center text-sm font-bold leading-tight ${on ? "border-brand bg-brand text-on-brand" : "border-line bg-paper text-ink"}`;
+    `flex min-h-14 min-w-0 flex-col items-center justify-center rounded-lg border px-1 py-1 text-center text-base font-bold leading-tight ${on ? "border-brand bg-brand text-on-brand" : "border-line bg-paper text-ink"}`;
   const sizeName = { standard: t`ふつう`, large: t`大`, xlarge: t`特大` }[current.size];
 
   return (
-    <div role="group" aria-label={t`見やすさのクイック設定`} className="flex gap-2">
+    <div role="group" aria-label={t`見やすさのクイック設定`} className="grid grid-cols-3 gap-2">
       <button type="button" aria-pressed={current.furigana} onClick={() => flip("furigana")} className={button(current.furigana)}>
         <span aria-hidden="true" className="text-base leading-none">あ</span>
         {t`ふりがな`}

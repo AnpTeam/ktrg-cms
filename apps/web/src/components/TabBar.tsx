@@ -52,7 +52,7 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
                   if (open && active) e.preventDefault();
                   setOpen(false);
                 }}
-                className={`${item} ${active ? "bg-brand text-on-brand" : "text-ink hover:bg-paper"}`}
+                className={`${item} ${active && !open ? "bg-brand text-on-brand" : "text-ink hover:bg-paper"}`}
               >
                 {icon}
                 {label}
