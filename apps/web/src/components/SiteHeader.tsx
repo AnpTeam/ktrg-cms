@@ -162,7 +162,7 @@ export function SiteHeader({
               : "relative mb-3 border-b border-line/30 bg-paper px-3 py-1 md:hidden"
         }
       >
-        <div className={`mx-auto grid max-w-xl items-center gap-2 ${onMap ? "grid-cols-[auto_1fr_auto]" : "grid-cols-[1fr_auto_1fr]"}`}>
+        <div className={`mx-auto grid max-w-xl items-center gap-2 ${onMap ? "pointer-events-none grid-cols-[auto_1fr_auto] [&>*]:pointer-events-auto" : "grid-cols-[1fr_auto_1fr]"}`}>
           {TOP_LEVEL.test(pathname) ? (
             <span />
           ) : (
