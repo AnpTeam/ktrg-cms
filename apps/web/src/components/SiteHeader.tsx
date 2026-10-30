@@ -162,7 +162,7 @@ export function SiteHeader({
               : "relative mb-3 border-b border-line/30 bg-paper px-3 py-1 md:hidden"
         }
       >
-        <div className="mx-auto grid max-w-xl grid-cols-[1fr_auto_1fr] items-center gap-2">
+        <div className={`mx-auto grid max-w-xl items-center gap-2 ${onMap ? "grid-cols-[auto_1fr_auto]" : "grid-cols-[1fr_auto_1fr]"}`}>
           {TOP_LEVEL.test(pathname) ? (
             <span />
           ) : (
@@ -178,7 +178,7 @@ export function SiteHeader({
           {/* The logo is a link home. It is drawn in the page (inline SVG, not an image), so there is nothing to long-press and
               save. On the map the bar has no background, so the logo gets a halo in the page colour to stay readable. */}
           {!open ? (
-            <Link href="/" aria-label={t`ホーム`} className="rounded-lg p-1">
+            <Link href="/" aria-label={t`ホーム`} className={`rounded-lg p-1 ${onMap ? "justify-self-start" : ""}`}>
               <KatsuragiLogo compact className={`h-9 w-auto ${onMap ? "[filter:drop-shadow(0_0_1px_var(--color-paper))_drop-shadow(0_0_3px_var(--color-paper))_drop-shadow(0_0_6px_var(--color-paper))]" : ""}`} />
             </Link>
           ) : (
