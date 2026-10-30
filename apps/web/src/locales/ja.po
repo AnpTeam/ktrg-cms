@@ -365,12 +365,12 @@ msgid "「---」だけの行から下は、いちばん下の注意書きにな�
 msgstr "「---」だけの行から下は、いちばん下の注意書きになります。"
 
 #. placeholder {0}: phase.place
-#: src/components/RallyNearbyStamp.tsx:76
+#: src/components/RallyNearbyStamp.tsx:112
 msgid "「{0}」のスタンプは、もう押してあります。"
 msgstr "「{0}」のスタンプは、もう押してあります。"
 
 #. placeholder {0}: phase.place
-#: src/components/RallyNearbyStamp.tsx:76
+#: src/components/RallyNearbyStamp.tsx:112
 msgid "「{0}」のスタンプを押しました！"
 msgstr "「{0}」のスタンプを押しました！"
 
@@ -853,11 +853,12 @@ msgstr "いまの位置が、わかりません。空の開けた場所で、し
 msgid "いまの位置が、わかりません。空の開けた場所で、もう一度お試しください。"
 msgstr "いまの位置が、わかりません。空の開けた場所で、もう一度お試しください。"
 
-#: src/components/RallyNearbyStamp.tsx:71
+#: src/components/RallyNearbyStamp.tsx:87
 #: src/components/StampHere.tsx:147
 msgid "いまの位置を調べています…"
 msgstr "いまの位置を調べています…"
 
+#: src/components/RallyNearbyStamp.tsx:97
 #: src/components/StampHere.tsx:163
 msgid "いまの位置を調べます"
 msgstr "いまの位置を調べます"
@@ -1707,6 +1708,7 @@ msgstr "スタンプの場所"
 msgid "スタンプの場所 {spotCount}か所"
 msgstr "スタンプの場所 {spotCount}か所"
 
+#: src/components/RallyNearbyStamp.tsx:99
 #: src/components/StampHere.tsx:165
 msgid "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 msgstr "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
@@ -1761,7 +1763,7 @@ msgstr "スタンプをもどす"
 msgid "スタンプを押した人"
 msgstr "スタンプを押した人"
 
-#: src/components/RallyNearbyStamp.tsx:71
+#: src/components/RallyNearbyStamp.tsx:87
 #: src/components/StampHere.tsx:149
 msgid "スタンプを押しています…"
 msgstr "スタンプを押しています…"
@@ -2623,6 +2625,7 @@ msgstr "もらいました"
 #: src/components/auth/ReauthDialog.tsx:72
 #: src/components/auth/ReauthDialog.tsx:94
 #: src/components/ProfileSettings.tsx:251
+#: src/components/RallyNearbyStamp.tsx:106
 #: src/components/settings/PasskeyManager.tsx:138
 #: src/components/settings/PasskeyManager.tsx:212
 #: src/components/StampHere.tsx:172
@@ -3145,6 +3148,7 @@ msgstr "位置なし"
 msgid "位置の地図"
 msgstr "位置の地図"
 
+#: src/components/RallyNearbyStamp.tsx:100
 #: src/components/StampHere.tsx:166
 msgid "位置は、保存しません。保存するのは、スタンプだけです。"
 msgstr "位置は、保存しません。保存するのは、スタンプだけです。"
@@ -3189,6 +3193,7 @@ msgstr "位置を確認した情報源（サイトの名前やリンク）を書
 msgid "位置を確認していない"
 msgstr "位置を確認していない"
 
+#: src/components/RallyNearbyStamp.tsx:103
 #: src/components/StampHere.tsx:169
 msgid "位置を調べてスタンプを押す"
 msgstr "位置を調べてスタンプを押す"
@@ -4407,7 +4412,7 @@ msgstr "場所の物語"
 msgid "場所の見せ方"
 msgstr "場所の見せ方"
 
-#: src/components/RallyNearbyStamp.tsx:73
+#: src/components/RallyNearbyStamp.tsx:89
 msgid "場所の近くで押してください。位置は1回だけ調べ、保存しません。"
 msgstr "場所の近くで押してください。位置は1回だけ調べ、保存しません。"
 
@@ -5578,11 +5583,11 @@ msgstr "約{amount}km"
 msgid "約{amount}m"
 msgstr "約{amount}m"
 
-#: src/components/RallyNearbyStamp.tsx:59
+#: src/components/RallyNearbyStamp.tsx:75
 msgid "約{n}km"
 msgstr "約{n}km"
 
-#: src/components/RallyNearbyStamp.tsx:59
+#: src/components/RallyNearbyStamp.tsx:75
 msgid "約{n}m"
 msgstr "約{n}m"
 
@@ -6173,11 +6178,11 @@ msgstr "近くに{category}はありません。"
 
 #. placeholder {0}: phase.place
 #. placeholder {1}: away(phase.distanceM)
-#: src/components/RallyNearbyStamp.tsx:81
+#: src/components/RallyNearbyStamp.tsx:117
 msgid "近くにスタンプの場所がありません。いちばん近いのは「{0}」で、{1}です。"
 msgstr "近くにスタンプの場所がありません。いちばん近いのは「{0}」で、{1}です。"
 
-#: src/components/RallyNearbyStamp.tsx:71
+#: src/components/RallyNearbyStamp.tsx:87
 msgid "近くのスタンプを押す"
 msgstr "近くのスタンプを押す"
 
