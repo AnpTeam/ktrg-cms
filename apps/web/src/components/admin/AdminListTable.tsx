@@ -140,6 +140,40 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
     />
   ));
 
+  const moreGrid = (
+    <div className="mt-2 grid grid-cols-[repeat(auto-fill,minmax(11rem,1fr))] gap-3">
+      {moreFilters.map((f) => (
+        <label key={f.name} className="flex flex-col gap-1 text-sm font-bold">
+          {pick(f.label, locale)}
+          <select
+            value={picked[f.name] ?? ""}
+            onChange={(e) => {
+              const next = { ...picked, [f.name]: e.target.value };
+              setPicked(next);
+              void search(q, next);
+            }}
+            className={inputClass}
+          >
+            <option value="">{t`すべて`}</option>
+            {f.kind === "select" || f.kind === "boolean"
+              ? filterChoices(f, locale).map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.text}
+                  </option>
+                ))
+              : (choices[f.name] ?? []).map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                  </option>
+                ))}
+          </select>
+        </label>
+      ))}
+    </div>
+  );
+
+  const pickedCount = [...shownFilters, ...moreFilters].filter((f) => (picked[f.name] ?? "") !== "").length;
+
   return (
     <div className="flex flex-col gap-4">
       {config.ops.create && config.newLabel ? (
@@ -178,55 +212,33 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
           ) : null}
         </div>
         {shownFilters.length > 2 ? (
-          <details className="group" open={shownFilters.some((f) => (picked[f.name] ?? "") !== "") || undefined}>
+          // One fold for every filter: the buttons, then the lists.
+          <details className="group" open={pickedCount > 0 || undefined}>
             <summary className="tap-target flex w-fit cursor-pointer list-none items-center gap-2 text-base font-bold text-accent [&::-webkit-details-marker]:hidden">
               <span aria-hidden="true" className="transition-transform group-open:rotate-90">▸</span>
               {t`絞りこみ`}
-              {shownFilters.filter((f) => (picked[f.name] ?? "") !== "").length > 0 ? <span className="rounded-full bg-ink px-2 text-sm text-paper">{shownFilters.filter((f) => (picked[f.name] ?? "") !== "").length}</span> : null}
+              {pickedCount > 0 ? <span className="rounded-full bg-ink px-2 text-sm text-paper">{pickedCount}</span> : null}
             </summary>
-            <div className="mt-2 flex flex-col gap-3">{shownFilterGroups}</div>
-          </details>
-        ) : (
-          shownFilterGroups
-        )}
-        {moreFilters.length > 0 ? (
-          <details className="group" open={moreFilters.some((f) => (picked[f.name] ?? "") !== "") || undefined}>
-            <summary className="tap-target flex w-fit cursor-pointer list-none items-center gap-2 text-base font-bold text-accent [&::-webkit-details-marker]:hidden">
-              <span aria-hidden="true" className="transition-transform group-open:rotate-90">▸</span>
-              {t`ほかの絞りこみ`}
-              {moreFilters.filter((f) => (picked[f.name] ?? "") !== "").length > 0 ? <span className="rounded-full bg-ink px-2 text-sm text-paper">{moreFilters.filter((f) => (picked[f.name] ?? "") !== "").length}</span> : null}
-            </summary>
-            <div className="mt-2 grid grid-cols-[repeat(auto-fill,minmax(11rem,1fr))] gap-3">
-              {moreFilters.map((f) => (
-                <label key={f.name} className="flex flex-col gap-1 text-sm font-bold">
-                  {pick(f.label, locale)}
-                  <select
-                    value={picked[f.name] ?? ""}
-                    onChange={(e) => {
-                      const next = { ...picked, [f.name]: e.target.value };
-                      setPicked(next);
-                      void search(q, next);
-                    }}
-                    className={inputClass}
-                  >
-                    <option value="">{t`すべて`}</option>
-                    {f.kind === "select" || f.kind === "boolean"
-                      ? filterChoices(f, locale).map((o) => (
-                          <option key={o.value} value={o.value}>
-                            {o.text}
-                          </option>
-                        ))
-                      : (choices[f.name] ?? []).map((c) => (
-                          <option key={c.id} value={c.id}>
-                            {c.name}
-                          </option>
-                        ))}
-                  </select>
-                </label>
-              ))}
+            <div className="mt-2 flex flex-col gap-3">
+              {shownFilterGroups}
+              {moreFilters.length > 0 ? moreGrid : null}
             </div>
           </details>
-        ) : null}
+        ) : (
+          <>
+            {shownFilterGroups}
+            {moreFilters.length > 0 ? (
+              <details className="group" open={moreFilters.some((f) => (picked[f.name] ?? "") !== "") || undefined}>
+                <summary className="tap-target flex w-fit cursor-pointer list-none items-center gap-2 text-base font-bold text-accent [&::-webkit-details-marker]:hidden">
+                  <span aria-hidden="true" className="transition-transform group-open:rotate-90">▸</span>
+                  {t`ほかの絞りこみ`}
+                  {moreFilters.filter((f) => (picked[f.name] ?? "") !== "").length > 0 ? <span className="rounded-full bg-ink px-2 text-sm text-paper">{moreFilters.filter((f) => (picked[f.name] ?? "") !== "").length}</span> : null}
+                </summary>
+                {moreGrid}
+              </details>
+            ) : null}
+          </>
+        )}
       </form>
       {error ? (
         <p role="alert" className="rounded-xl bg-surface p-4 text-lg font-bold text-danger">

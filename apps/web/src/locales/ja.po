@@ -89,8 +89,8 @@ msgid "{0}を消す"
 msgstr "{0}を消す"
 
 #. placeholder {0}: name(item)
-#: src/components/admin/AdminListTable.tsx:278
-#: src/components/admin/AdminListTable.tsx:335
+#: src/components/admin/AdminListTable.tsx:290
+#: src/components/admin/AdminListTable.tsx:347
 msgid "{0}を選ぶ"
 msgstr "{0}を選ぶ"
 
@@ -322,7 +322,7 @@ msgstr "{text} を1つ後ろへ"
 msgid "{title}（管理）"
 msgstr "{title}（管理）"
 
-#: src/components/admin/AdminListTable.tsx:255
+#: src/components/admin/AdminListTable.tsx:267
 msgid "{title}はまだありません。"
 msgstr "{title}はまだありません。"
 
@@ -340,7 +340,7 @@ msgstr "{title}を読み込めませんでした。しばらくしてから、�
 msgid "{TOTAL_STAMPS}か所"
 msgstr "{TOTAL_STAMPS}か所"
 
-#: src/components/admin/AdminListTable.tsx:251
+#: src/components/admin/AdminListTable.tsx:263
 msgid "{total}件"
 msgstr "{total}件"
 
@@ -1209,7 +1209,7 @@ msgstr "このファイルは読み取れませんでした。「ひな形」か
 msgid "このブラウザでは、スタンプが消えてしまうことがあります。"
 msgstr "このブラウザでは、スタンプが消えてしまうことがあります。"
 
-#: src/components/admin/AdminListTable.tsx:240
+#: src/components/admin/AdminListTable.tsx:252
 msgid "このページをすべて選ぶ"
 msgstr "このページをすべて選ぶ"
 
@@ -1606,8 +1606,8 @@ msgstr "サイト全体の設定（管理）"
 msgid "さがしています…"
 msgstr "さがしています…"
 
-#: src/components/admin/AdminListTable.tsx:161
-#: src/components/admin/AdminListTable.tsx:161
+#: src/components/admin/AdminListTable.tsx:195
+#: src/components/admin/AdminListTable.tsx:195
 #: src/components/admin/DuplicateFinder.tsx:53
 msgid "さがす"
 msgstr "さがす"
@@ -1814,7 +1814,7 @@ msgstr "スタンプ済み"
 msgid "すでに公開をやめた経由地があります（{names}）。「経由地」タブで確かめてください。"
 msgstr "すでに公開をやめた経由地があります（{names}）。「経由地」タブで確かめてください。"
 
-#: src/components/admin/AdminListTable.tsx:212
+#: src/components/admin/AdminListTable.tsx:157
 #: src/components/admin/DirectoryPicker.tsx:158
 #: src/components/admin/list-parts.tsx:29
 #: src/components/PrefectureFilter.tsx:36
@@ -2379,7 +2379,7 @@ msgstr "ほかのパスキーアプリを使うときは、表示される画面
 msgid "ほかの乗り物"
 msgstr "ほかの乗り物"
 
-#: src/components/admin/AdminListTable.tsx:196
+#: src/components/admin/AdminListTable.tsx:234
 msgid "ほかの絞りこみ"
 msgstr "ほかの絞りこみ"
 
@@ -3058,7 +3058,7 @@ msgstr "不明"
 msgid "両方を合わせる（おすすめ）"
 msgstr "両方を合わせる（おすすめ）"
 
-#: src/components/admin/AdminListTable.tsx:313
+#: src/components/admin/AdminListTable.tsx:325
 msgid "並べかえ"
 msgstr "並べかえ"
 
@@ -3417,7 +3417,7 @@ msgstr "先にルートを保存してください。"
 msgid "先頭だけ残して、ほかを削除"
 msgstr "先頭だけ残して、ほかを削除"
 
-#: src/components/admin/AdminListTable.tsx:251
+#: src/components/admin/AdminListTable.tsx:263
 msgid "先頭の{total}件を表示しています。"
 msgstr "先頭の{total}件を表示しています。"
 
@@ -3839,9 +3839,9 @@ msgstr "制限中"
 
 #: src/components/admin/AccessPointsEditor.tsx:51
 #: src/components/admin/AdminItemForm.tsx:293
-#: src/components/admin/AdminListTable.tsx:268
-#: src/components/admin/AdminListTable.tsx:302
-#: src/components/admin/AdminListTable.tsx:366
+#: src/components/admin/AdminListTable.tsx:280
+#: src/components/admin/AdminListTable.tsx:314
+#: src/components/admin/AdminListTable.tsx:378
 #: src/components/admin/DuplicateFinder.tsx:85
 #: src/components/admin/fields.tsx:155
 #: src/components/admin/HoursInput.tsx:35
@@ -4120,8 +4120,8 @@ msgstr "同じ番号の行が、前にもあります"
 msgid "同じ道を行って、同じ道を戻ります。"
 msgstr "同じ道を行って、同じ道を戻ります。"
 
-#: src/components/admin/AdminListTable.tsx:264
-#: src/components/admin/AdminListTable.tsx:323
+#: src/components/admin/AdminListTable.tsx:276
+#: src/components/admin/AdminListTable.tsx:335
 #: src/components/admin/map-editor/PlaceList.tsx:79
 #: src/components/admin/PhotoLibrary.tsx:173
 #: src/components/admin/RallyCreate.tsx:76
@@ -4731,7 +4731,7 @@ msgstr "捨てる"
 msgid "探しています…"
 msgstr "探しています…"
 
-#: src/components/admin/AdminListTable.tsx:163
+#: src/components/admin/AdminListTable.tsx:197
 #: src/components/admin/map-editor/MapEditor.tsx:1021
 msgid "探す"
 msgstr "探す"
@@ -4855,7 +4855,7 @@ msgstr "新しい点は、選んだ点（{chosenNo}番）のあとに入りま�
 msgid "新しい記事"
 msgstr "新しい記事"
 
-#: src/components/admin/AdminListTable.tsx:322
+#: src/components/admin/AdminListTable.tsx:334
 #: src/components/admin/PhotoLibrary.tsx:143
 msgid "新しい順"
 msgstr "新しい順"
@@ -5012,7 +5012,7 @@ msgstr "本文"
 msgid "本文へ移動"
 msgstr "本文へ移動"
 
-#: src/components/admin/AdminListTable.tsx:255
+#: src/components/admin/AdminListTable.tsx:267
 msgid "条件に合う{title}はありません。"
 msgstr "条件に合う{title}はありません。"
 
@@ -5024,7 +5024,7 @@ msgstr "条件に合うラリーがありません。"
 msgid "条件に合うルートがありません。"
 msgstr "条件に合うルートがありません。"
 
-#: src/components/admin/AdminListTable.tsx:176
+#: src/components/admin/AdminListTable.tsx:210
 msgid "条件をやめる"
 msgstr "条件をやめる"
 
@@ -5719,7 +5719,7 @@ msgstr "経由地を置く"
 msgid "経由地を置くと、近い順に並びます。"
 msgstr "経由地を置くと、近い順に並びます。"
 
-#: src/components/admin/AdminListTable.tsx:184
+#: src/components/admin/AdminListTable.tsx:219
 msgid "絞りこみ"
 msgstr "絞りこみ"
 
@@ -6324,7 +6324,7 @@ msgstr "達成した人の記録は残ります。スタンプは変わりませ
 msgid "選ばない"
 msgstr "選ばない"
 
-#: src/components/admin/AdminListTable.tsx:263
+#: src/components/admin/AdminListTable.tsx:275
 #: src/components/admin/map-editor/PlaceList.tsx:55
 msgid "選ぶ"
 msgstr "選ぶ"
@@ -6338,7 +6338,7 @@ msgid "選ぶのをやめる"
 msgstr "選ぶのをやめる"
 
 #. placeholder {0}: ticked.size
-#: src/components/admin/AdminListTable.tsx:244
+#: src/components/admin/AdminListTable.tsx:256
 msgid "選んだ{0}件を削除"
 msgstr "選んだ{0}件を削除"
 
