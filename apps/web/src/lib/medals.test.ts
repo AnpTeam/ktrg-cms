@@ -7,9 +7,9 @@ describe("medalLayout", () => {
     expect(medalLayout(3, 10)).toEqual({ shown: 3, more: 0 });
   });
 
-  test("when it does not fit, the last space becomes the +n", () => {
-    expect(medalLayout(12, 8)).toEqual({ shown: 7, more: 5 });
-    expect(medalLayout(9, 8)).toEqual({ shown: 7, more: 2 });
+  test("when it does not fit, the last two spaces become the +n", () => {
+    expect(medalLayout(12, 8)).toEqual({ shown: 6, more: 6 });
+    expect(medalLayout(9, 8)).toEqual({ shown: 6, more: 3 });
   });
 
   test("no stamps: nothing; a very narrow line still shows one medal", () => {
