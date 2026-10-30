@@ -63,7 +63,7 @@ const isTyping = (target: EventTarget | null) => target instanceof HTMLElement &
 /** A short fingerprint of where a line's points are (not their heights), to tell whether it has changed. */
 const lineSignature = (line: RouteDraft["line"]) => `${line.length}:${line.reduce((s, p, i) => s + (p[0] * 31 + p[1] * 17) * ((i % 7) + 1), 0).toFixed(6)}`;
 
-export function RouteEditor({ initial, order, locale, shared = [], sharedWith = {}, routeNames = {} }: { initial: RouteDraft; order: number; locale: string; shared?: AdminSharedSpot[]; sharedWith?: Record<string, string[]>; routeNames?: Record<string, string> }) {
+export function RouteEditor({ initial, order, locale, shared = [], sharedWith = {}, routeNames = {}, back }: { back?: ReactNode; initial: RouteDraft; order: number; locale: string; shared?: AdminSharedSpot[]; sharedWith?: Record<string, string[]>; routeNames?: Record<string, string> }) {
   const { t } = useLingui();
   const router = useRouter();
   const messages = useErrorMessages();
@@ -480,6 +480,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
       />
       {/* Title bar: always in reach, with the one button that matters. */}
       <div className="sticky top-0 z-20 -mx-4 flex flex-wrap items-center gap-3 border-b border-line bg-paper px-4 py-3 lg:-mx-8 lg:px-8">
+        {back}
         <h1 className="min-w-0 flex-1 break-words text-2xl font-bold">{isNew ? t`新しいルート` : draft.nameJa || t`（名前がありません）`}</h1>
         <p className="text-base text-muted" aria-live="polite">
           {dirty ? t`保存していない変更があります` : isNew ? "" : t`保存済み（更新 ${formatUpdated(locale, draft.updatedAt ?? new Date().toISOString())}）`}

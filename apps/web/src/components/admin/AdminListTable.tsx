@@ -14,6 +14,9 @@ import { cellOf, itemHref, itemName, listColumns, nameIsFallback, pick, type Fie
 import { listRequest, type ListPage } from "@/lib/admin/lists/list-client";
 import { nextSort, sortItems, type Sort } from "@/lib/admin/lists/sort";
 
+// A soft shadow on the right edge while more columns wait to be scrolled to (the cover is `local`, so it moves away at the end).
+const edgeShadow = { background: "linear-gradient(to left, var(--color-paper) 30%, transparent) right / 2.5rem 100% local no-repeat, linear-gradient(to left, rgb(0 0 0 / 0.18), transparent) right / 0.9rem 100% scroll no-repeat" };
+
 // Any generic admin list, drawn from its description (GET /admin/lists) like the rally list: a button for a new row,
 // then a table (a card per row on a phone) with each row's name (a link to its form) and one column per `inList` field.
 // Newest first, 50 to a page; the pager goes to the next or previous page or to a page typed in.
@@ -122,6 +125,21 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
       return next;
     });
 
+  const shownFilterGroups = shownFilters.map((f) => (
+    <FilterGroup
+      key={f.name}
+      label={pick(f.label, locale)}
+      options={filterChoices(f, locale)}
+      value={picked[f.name] ?? ""}
+      disabled={busy}
+      onChange={(value) => {
+        const next = { ...picked, [f.name]: value };
+        setPicked(next);
+        void search(q, next);
+      }}
+    />
+  ));
+
   return (
     <div className="flex flex-col gap-4">
       {config.ops.create && config.newLabel ? (
@@ -159,20 +177,18 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
             </button>
           ) : null}
         </div>
-        {shownFilters.map((f) => (
-          <FilterGroup
-            key={f.name}
-            label={pick(f.label, locale)}
-            options={filterChoices(f, locale)}
-            value={picked[f.name] ?? ""}
-            disabled={busy}
-            onChange={(value) => {
-              const next = { ...picked, [f.name]: value };
-              setPicked(next);
-              void search(q, next);
-            }}
-          />
-        ))}
+        {shownFilters.length > 2 ? (
+          <details className="group" open={shownFilters.some((f) => (picked[f.name] ?? "") !== "") || undefined}>
+            <summary className="tap-target flex w-fit cursor-pointer list-none items-center gap-2 text-base font-bold text-accent [&::-webkit-details-marker]:hidden">
+              <span aria-hidden="true" className="transition-transform group-open:rotate-90">▸</span>
+              {t`絞りこみ`}
+              {shownFilters.filter((f) => (picked[f.name] ?? "") !== "").length > 0 ? <span className="rounded-full bg-ink px-2 text-sm text-paper">{shownFilters.filter((f) => (picked[f.name] ?? "") !== "").length}</span> : null}
+            </summary>
+            <div className="mt-2 flex flex-col gap-3">{shownFilterGroups}</div>
+          </details>
+        ) : (
+          shownFilterGroups
+        )}
         {moreFilters.length > 0 ? (
           <details className="group" open={moreFilters.some((f) => (picked[f.name] ?? "") !== "") || undefined}>
             <summary className="tap-target flex w-fit cursor-pointer list-none items-center gap-2 text-base font-bold text-accent [&::-webkit-details-marker]:hidden">
@@ -240,7 +256,7 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
       ) : (
         <>
           {/* A table on a wide screen: one column per fact, so a column can be read from top to bottom. */}
-          <div className="relative hidden overflow-x-auto rounded-2xl border border-line md:block">
+          <div className="relative hidden overflow-x-auto rounded-2xl border border-line md:block" style={edgeShadow}>
             <table className="w-full border-collapse text-left">
               <thead className="bg-surface text-base">
                 <tr>

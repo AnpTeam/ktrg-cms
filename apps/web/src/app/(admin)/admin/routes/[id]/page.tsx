@@ -34,8 +34,7 @@ export default async function EditRoutePage({ params }: { params: Promise<{ id: 
 
   return (
     <div className="flex flex-col gap-4">
-      <AdminBack href="/admin/routes"><Trans>ルート一覧にもどる</Trans></AdminBack>
-      <RouteEditor initial={draftFromServer(one.body.route, one.body.spots)} order={order || 1}
+      <RouteEditor back={<AdminBack href="/admin/routes"><Trans>ルート一覧にもどる</Trans></AdminBack>} initial={draftFromServer(one.body.route, one.body.spots)} order={order || 1}
         locale={i18n.locale}
         shared={one.body.shared ?? []}
         sharedWith={one.body.sharedWith ?? {}}

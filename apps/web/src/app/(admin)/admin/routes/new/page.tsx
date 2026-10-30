@@ -20,8 +20,7 @@ export default async function NewRoutePage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <AdminBack href="/admin/routes"><Trans>ルート一覧にもどる</Trans></AdminBack>
-      <RouteEditor initial={emptyDraft()} order={order} locale={i18n.locale} />
+      <RouteEditor back={<AdminBack href="/admin/routes"><Trans>ルート一覧にもどる</Trans></AdminBack>} initial={emptyDraft()} order={order} locale={i18n.locale} />
     </div>
   );
 }
