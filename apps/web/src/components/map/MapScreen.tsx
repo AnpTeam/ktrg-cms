@@ -226,7 +226,7 @@ export function MapScreen({
     <div
       ref={wrap}
       data-dark={settings.dark}
-      className={`trail-map relative h-dvh w-full overflow-hidden md:[--tab-room:0rem] ${chosen ? "[--tab-room:0rem]" : "[--tab-room:calc(5.5rem+env(safe-area-inset-bottom))]"}`}
+      className={`trail-map map-screen relative h-dvh w-full overflow-hidden md:[--tab-room:0rem] ${chosen ? "[--tab-room:0rem]" : "[--tab-room:calc(5.5rem+env(safe-area-inset-bottom))]"}`}
     >
       <MapScreenCanvasLoader
         routes={routes}
