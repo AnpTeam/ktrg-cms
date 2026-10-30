@@ -585,6 +585,29 @@ export function MapScreenCanvas({
         role="group"
         aria-label={t`地図に出すもの`}
         style={{ marginLeft: coveredLeftPx }}
+        // A mouse has no swipe and the bar is hidden: the wheel and a drag move the row too (touch scrolls it natively).
+        onWheel={(e) => {
+          if (e.deltaX === 0) e.currentTarget.scrollLeft += e.deltaY;
+        }}
+        onPointerDown={(e) => {
+          if (e.pointerType !== "mouse") return;
+          const row = e.currentTarget;
+          const from = { x: e.clientX, left: row.scrollLeft, moved: false };
+          const move = (m: PointerEvent) => {
+            if (Math.abs(m.clientX - from.x) > 5) from.moved = true;
+            if (from.moved) row.scrollLeft = from.left - (m.clientX - from.x);
+          };
+          const up = () => {
+            window.removeEventListener("pointermove", move);
+            // The click that ends a drag must not flip the chip it ended on.
+            if (!from.moved) return;
+            const stop = (c: Event) => c.stopPropagation();
+            row.addEventListener("click", stop, { capture: true });
+            setTimeout(() => row.removeEventListener("click", stop, { capture: true }), 0); // the click, if any, comes right after pointerup
+          };
+          window.addEventListener("pointermove", move);
+          window.addEventListener("pointerup", up, { once: true });
+        }}
         // A row that scrolls sideways under the finger: no scrollbar, the page's edges fade where there is more, and a swipe on it
         // moves the row, not the map.
         className="absolute inset-x-0 top-[calc(4.5rem+env(safe-area-inset-top))] z-[4] flex touch-pan-x snap-x scroll-px-3 gap-2 overflow-x-auto overscroll-x-contain px-3 pb-1 [scrollbar-width:none] md:top-[calc(4rem+env(safe-area-inset-top))] [&::-webkit-scrollbar]:hidden [mask-image:linear-gradient(to_right,#000_calc(100%-2.5rem),transparent)]"
