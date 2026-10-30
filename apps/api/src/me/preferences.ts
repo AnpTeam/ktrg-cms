@@ -3,11 +3,11 @@
 // person to a new phone; the web app also keeps a copy on the device for visitors who are not
 // signed in. A full replacement each time, never a partial merge.
 
-export const TEXT_SIZES = ["standard", "large", "xlarge"] as const;
+export const TEXT_SIZES = ["small", "standard", "large", "xlarge"] as const;
 export type TextSize = (typeof TEXT_SIZES)[number];
 
 export interface Preferences {
-  /** Text and components together: standard 100%, large 112.5%, extra large 125% of the base size. */
+  /** Text and components together: small 87.5%, standard 100%, large 112.5%, extra large 125% of the base size. */
   size: TextSize;
   /** Merge stops that sit close together on the map into one numbered group. Off is the plain map. */
   mergeStops: boolean;

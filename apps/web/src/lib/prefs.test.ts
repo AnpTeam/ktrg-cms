@@ -17,7 +17,7 @@ describe("defaults", () => {
   });
 
   test("each size has a percentage, growing", () => {
-    expect(textSizes.map((s) => sizePercent[s])).toEqual([100, 112.5, 125]);
+    expect(textSizes.map((s) => sizePercent[s])).toEqual([87.5, 100, 112.5, 125]);
   });
 });
 

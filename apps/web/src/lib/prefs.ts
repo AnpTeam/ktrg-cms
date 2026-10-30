@@ -4,11 +4,11 @@
 // also on the account (PATCH /me, `preferences`) so they follow the person to a new phone.
 // Pure functions, unit-tested; the same shape as apps/api/src/me/preferences.ts.
 
-export const textSizes = ["standard", "large", "xlarge"] as const;
+export const textSizes = ["small", "standard", "large", "xlarge"] as const;
 export type TextSize = (typeof textSizes)[number];
 
 export interface Prefs {
-  /** Text and components together (everything is in rem): 100%, 112.5% or 125% of the base size. */
+  /** Text and components together (everything is in rem): 87.5% (small, a choice for people who like it; buttons keep their size), 100%, 112.5% or 125% of the base size. */
   size: TextSize;
   /** Merge stops that sit close together on the map into one numbered group. */
   mergeStops: boolean;
@@ -32,7 +32,7 @@ export const defaultPrefs: Prefs = { size: "standard", mergeStops: false, places
 export const prefsCookie = "prefs";
 
 /** The root font size each step stands for (also written in globals.css as html[data-size]). */
-export const sizePercent: Record<TextSize, number> = { standard: 100, large: 112.5, xlarge: 125 };
+export const sizePercent: Record<TextSize, number> = { small: 87.5, standard: 100, large: 112.5, xlarge: 125 };
 
 const isSize = (v: unknown): v is TextSize => typeof v === "string" && (textSizes as readonly string[]).includes(v);
 

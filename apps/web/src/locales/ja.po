@@ -416,7 +416,7 @@ msgstr "「はい」か「いいえ」で書いてください"
 msgid "「ルート」シート {0} 行目"
 msgstr "「ルート」シート {0} 行目"
 
-#: src/components/admin/RouteEditor.tsx:819
+#: src/components/admin/RouteEditor.tsx:810
 msgid "「地図と線」で経由地を置く"
 msgstr "「地図と線」で経由地を置く"
 
@@ -485,7 +485,7 @@ msgstr "＜ 前へ"
 msgid "⌘キーを押しながら地図を動かします"
 msgstr "⌘キーを押しながら地図を動かします"
 
-#: src/components/admin/RouteEditor.tsx:802
+#: src/components/admin/RouteEditor.tsx:793
 msgid "1か所ずつ詳しく"
 msgstr "1か所ずつ詳しく"
 
@@ -764,11 +764,11 @@ msgstr "あと{0}か所"
 msgid "あと{remaining}か所"
 msgstr "あと{remaining}か所"
 
-#: src/components/settings/PrefsForm.tsx:158
+#: src/components/settings/PrefsForm.tsx:159
 msgid "あとからでも、「メニュー」の「見やすさの設定」で変えられます。"
 msgstr "あとからでも、「メニュー」の「見やすさの設定」で変えられます。"
 
-#: src/components/settings/PrefsForm.tsx:156
+#: src/components/settings/PrefsForm.tsx:157
 msgid "あとで決める"
 msgstr "あとで決める"
 
@@ -788,7 +788,7 @@ msgstr "アドレスをコピー"
 msgid "あなたのことを、少しだけ教えてください。答えなくても大丈夫です。あとから変えられます。"
 msgstr "あなたのことを、少しだけ教えてください。答えなくても大丈夫です。あとから変えられます。"
 
-#: src/components/settings/PrefsForm.tsx:122
+#: src/components/settings/PrefsForm.tsx:123
 msgid "アニメーションや、ふわっと動く表示をやめます。"
 msgstr "アニメーションや、ふわっと動く表示をやめます。"
 
@@ -924,7 +924,7 @@ msgstr "えらんだ経由地のスタンプを全部押すと達成（経塚の
 msgid "おかえりなさい。"
 msgstr "おかえりなさい。"
 
-#: src/components/settings/PrefsForm.tsx:130
+#: src/components/settings/PrefsForm.tsx:131
 msgid "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 msgstr "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 
@@ -1043,7 +1043,7 @@ msgstr "キャンプ場"
 msgid "くっきり"
 msgstr "くっきり"
 
-#: src/components/settings/PrefsForm.tsx:121
+#: src/components/settings/PrefsForm.tsx:122
 msgid "くっきり表示"
 msgstr "くっきり表示"
 
@@ -1061,7 +1061,7 @@ msgstr "ゲストのまま使う"
 
 #: src/components/IntroFlow.tsx:203
 #: src/components/landing/Landing.tsx:137
-#: src/components/map/MapScreenCanvas.tsx:594
+#: src/components/map/MapScreenCanvas.tsx:617
 msgid "コース"
 msgstr "コース"
 
@@ -1444,7 +1444,7 @@ msgstr "この端末と、アカウントの、どちらのスタンプを残し
 msgid "この端末に {0} 個、アカウントに {1} 個のスタンプがあります。"
 msgstr "この端末に {0} 個、アカウントに {1} 個のスタンプがあります。"
 
-#: src/components/settings/PrefsForm.tsx:54
+#: src/components/settings/PrefsForm.tsx:55
 msgid "この端末には保存しました。つながったときに、アカウントにも保存されます。"
 msgstr "この端末には保存しました。つながったときに、アカウントにも保存されます。"
 
@@ -1493,7 +1493,7 @@ msgstr "この記事の場所"
 msgid "この記事を共有する"
 msgstr "この記事を共有する"
 
-#: src/components/settings/PrefsForm.tsx:148
+#: src/components/settings/PrefsForm.tsx:149
 msgid "この設定ではじめる"
 msgstr "この設定ではじめる"
 
@@ -1835,7 +1835,7 @@ msgstr "すべてなめらか"
 msgid "すべてのルートを見る"
 msgstr "すべてのルートを見る"
 
-#: src/components/admin/RouteEditor.tsx:787
+#: src/components/admin/RouteEditor.tsx:853
 msgid "すべての公開をやめる"
 msgstr "すべての公開をやめる"
 
@@ -1991,7 +1991,7 @@ msgstr "トイレ"
 msgid "トイレ・休憩"
 msgstr "トイレ・休憩"
 
-#: src/components/settings/PrefsForm.tsx:135
+#: src/components/settings/PrefsForm.tsx:136
 msgid "トイレやお店などを、地図を開いたときから表示します。"
 msgstr "トイレやお店などを、地図を開いたときから表示します。"
 
@@ -2003,7 +2003,7 @@ msgstr "どちらからお越しですか？"
 msgid "どちらからかは未設定です"
 msgstr "どちらからかは未設定です"
 
-#: src/components/settings/PrefsForm.tsx:46
+#: src/components/settings/PrefsForm.tsx:47
 msgid "とても大きい"
 msgstr "とても大きい"
 
@@ -2164,11 +2164,11 @@ msgid "フェリー"
 msgstr "フェリー"
 
 #: src/components/QuickActions.tsx:38
-#: src/components/settings/PrefsForm.tsx:44
+#: src/components/settings/PrefsForm.tsx:45
 msgid "ふつう"
 msgstr "ふつう"
 
-#: src/components/settings/PrefsForm.tsx:44
+#: src/components/settings/PrefsForm.tsx:45
 msgid "ふつうの大きさです。"
 msgstr "ふつうの大きさです。"
 
@@ -2223,7 +2223,7 @@ msgstr "ブラウザのメニュー（⋮ や ⋯）から、「ホーム画面�
 msgid "ふりがな"
 msgstr "ふりがな"
 
-#: src/components/settings/PrefsForm.tsx:120
+#: src/components/settings/PrefsForm.tsx:121
 msgid "ふりがなをつける"
 msgstr "ふりがなをつける"
 
@@ -2299,7 +2299,7 @@ msgstr "ページの文章（管理）"
 msgid "ページの文章へ戻る"
 msgstr "ページの文章へ戻る"
 
-#: src/components/settings/PrefsForm.tsx:120
+#: src/components/settings/PrefsForm.tsx:121
 msgid "ページの漢字すべてに、読みがなをつけます。"
 msgstr "ページの漢字すべてに、読みがなをつけます。"
 
@@ -2421,7 +2421,7 @@ msgstr "まだ、ひもづけた場所はありません。"
 msgid "まだ、履歴はありません。"
 msgstr "まだ、履歴はありません。"
 
-#: src/components/admin/RouteEditor.tsx:817
+#: src/components/admin/RouteEditor.tsx:808
 msgid "まだありません。"
 msgstr "まだありません。"
 
@@ -2485,7 +2485,7 @@ msgstr "まわりにあるもの"
 msgid "まわりの場所"
 msgstr "まわりの場所"
 
-#: src/components/settings/PrefsForm.tsx:134
+#: src/components/settings/PrefsForm.tsx:135
 msgid "まわりの場所を最初から出す"
 msgstr "まわりの場所を最初から出す"
 
@@ -3306,7 +3306,7 @@ msgstr "保存して次へ"
 #: src/components/admin/RallyEditor.tsx:72
 #: src/components/admin/RouteEditor.tsx:335
 #: src/components/ProfileSettings.tsx:173
-#: src/components/settings/PrefsForm.tsx:68
+#: src/components/settings/PrefsForm.tsx:69
 msgid "保存しました。"
 msgstr "保存しました。"
 
@@ -3342,7 +3342,7 @@ msgstr "保存しました（電波がなくても開けます）"
 #: src/components/admin/SiteSettingsForm.tsx:112
 #: src/components/ProfileSettings.tsx:221
 #: src/components/settings/PasskeyManager.tsx:135
-#: src/components/settings/PrefsForm.tsx:162
+#: src/components/settings/PrefsForm.tsx:163
 msgid "保存する"
 msgstr "保存する"
 
@@ -3569,7 +3569,7 @@ msgstr "公開中の経由地は削除できません。編集すると下書き
 msgid "公開中の経由地は消せません。先に「公開をやめる」を押してください。"
 msgstr "公開中の経由地は消せません。先に「公開をやめる」を押してください。"
 
-#: src/components/admin/RouteEditor.tsx:789
+#: src/components/admin/RouteEditor.tsx:855
 msgid "公開中の経由地をまとめて下書きに戻します。ルートは「準備中」として、一覧に残ります。"
 msgstr "公開中の経由地をまとめて下書きに戻します。ルートは「準備中」として、一覧に残ります。"
 
@@ -3733,7 +3733,7 @@ msgstr "写真を探すサービスにつながりませんでした。しばら
 msgid "写真を選んでください。"
 msgstr "写真を選んでください。"
 
-#: src/components/admin/RouteEditor.tsx:787
+#: src/components/admin/RouteEditor.tsx:853
 msgid "処理しています…"
 msgstr "処理しています…"
 
@@ -3934,7 +3934,7 @@ msgstr "前後の記事"
 msgid "動きなし"
 msgstr "動きなし"
 
-#: src/components/settings/PrefsForm.tsx:122
+#: src/components/settings/PrefsForm.tsx:123
 msgid "動きをへらす"
 msgstr "動きをへらす"
 
@@ -4280,7 +4280,7 @@ msgstr "地図の上の場所は、準備中です。"
 msgid "地図の種類"
 msgstr "地図の種類"
 
-#: src/components/settings/PrefsForm.tsx:126
+#: src/components/settings/PrefsForm.tsx:127
 msgid "地図の見せ方"
 msgstr "地図の見せ方"
 
@@ -4403,7 +4403,7 @@ msgstr "場所の名前で探す（例：西念寺）"
 msgid "場所の物語"
 msgstr "場所の物語"
 
-#: src/components/admin/RouteEditor.tsx:793
+#: src/components/admin/RouteEditor.tsx:784
 msgid "場所の見せ方"
 msgstr "場所の見せ方"
 
@@ -4435,7 +4435,7 @@ msgstr "変更の履歴"
 msgid "大"
 msgstr "大"
 
-#: src/components/settings/PrefsForm.tsx:45
+#: src/components/settings/PrefsForm.tsx:46
 msgid "大きい"
 msgstr "大きい"
 
@@ -4524,7 +4524,7 @@ msgstr "寄り道（道すじから少しはずれた、任意の立ち寄り先
 msgid "寄り道の点を選んでいます。サブコースの線（{legName}）は、右の一覧の「サブコースの線を描く」か、「線を描く」で描けます。本線の点をクリックする必要はありません。"
 msgstr "寄り道の点を選んでいます。サブコースの線（{legName}）は、右の一覧の「サブコースの線を描く」か、「線を描く」で描けます。本線の点をクリックする必要はありません。"
 
-#: src/components/map/MapScreenCanvas.tsx:594
+#: src/components/map/MapScreenCanvas.tsx:617
 msgid "寄り道の線"
 msgstr "寄り道の線"
 
@@ -4536,6 +4536,14 @@ msgstr "寄り道の線を見る"
 #: src/components/PointKindName.tsx:8
 msgid "寺社"
 msgstr "寺社"
+
+#: src/components/QuickActions.tsx:38
+msgid "小"
+msgstr "小"
+
+#: src/components/settings/PrefsForm.tsx:44
+msgid "小さい"
+msgstr "小さい"
 
 #: src/components/admin/PhotoLibrary.tsx:147
 msgid "小さい順"
@@ -4715,7 +4723,7 @@ msgstr "押すと、アカウントと、集めたスタンプなどの記録を
 msgid "担当 {0}"
 msgstr "担当 {0}"
 
-#: src/components/map/MapScreenCanvas.tsx:638
+#: src/components/map/MapScreenCanvas.tsx:661
 #: src/components/map/TrailMap.tsx:507
 msgid "拡大"
 msgstr "拡大"
@@ -4784,11 +4792,15 @@ msgstr "整数で書いてください"
 msgid "文字 {sizeName}"
 msgstr "文字 {sizeName}"
 
-#: src/components/settings/PrefsForm.tsx:91
+#: src/components/settings/PrefsForm.tsx:44
+msgid "文字だけ小さくなります。ボタンの大きさは、ふつうのままです。"
+msgstr "文字だけ小さくなります。ボタンの大きさは、ふつうのままです。"
+
+#: src/components/settings/PrefsForm.tsx:92
 msgid "文字とボタンの大きさ"
 msgstr "文字とボタンの大きさ"
 
-#: src/components/settings/PrefsForm.tsx:121
+#: src/components/settings/PrefsForm.tsx:122
 msgid "文字と背景の差を大きくし、線を太く、リンクに下線をつけます。"
 msgstr "文字と背景の差を大きくし、線を太く、リンクに下線をつけます。"
 
@@ -4796,11 +4808,11 @@ msgstr "文字と背景の差を大きくし、線を太く、リンクに下線
 msgid "文字の大きさ: {sizeName}（押すと変わります）"
 msgstr "文字の大きさ: {sizeName}（押すと変わります）"
 
-#: src/components/settings/PrefsForm.tsx:46
+#: src/components/settings/PrefsForm.tsx:47
 msgid "文字もボタンも、いちばん大きくなります。"
 msgstr "文字もボタンも、いちばん大きくなります。"
 
-#: src/components/settings/PrefsForm.tsx:45
+#: src/components/settings/PrefsForm.tsx:46
 msgid "文字もボタンも、少し大きくなります。"
 msgstr "文字もボタンも、少し大きくなります。"
 
@@ -5296,7 +5308,7 @@ msgstr "状態のひとこと"
 msgid "状態は未確認"
 msgstr "状態は未確認"
 
-#: src/components/map/MapScreenCanvas.tsx:649
+#: src/components/map/MapScreenCanvas.tsx:672
 msgid "現在地を真ん中にする（進む向きが上）"
 msgstr "現在地を真ん中にする（進む向きが上）"
 
@@ -5598,7 +5610,7 @@ msgstr "終了"
 #: src/components/admin/PlacePanel.tsx:41
 #: src/components/IntroFlow.tsx:211
 #: src/components/landing/Landing.tsx:139
-#: src/components/map/MapScreenCanvas.tsx:594
+#: src/components/map/MapScreenCanvas.tsx:617
 #: src/components/PointKindName.tsx:9
 msgid "経塚"
 msgstr "経塚"
@@ -5830,7 +5842,7 @@ msgstr "緯度"
 msgid "緯度・経度は、公式の情報で確かめてから、場所ごとに「位置を確認した」にチェックを入れてください。それまで訪れる人には表示されません。"
 msgstr "緯度・経度は、公式の情報で確かめてから、場所ごとに「位置を確認した」にチェックを入れてください。それまで訪れる人には表示されません。"
 
-#: src/components/admin/RouteEditor.tsx:857
+#: src/components/admin/RouteEditor.tsx:848
 msgid "緯度と経度は、両方入れるか、両方空にしてください。"
 msgstr "緯度と経度は、両方入れるか、両方空にしてください。"
 
@@ -5838,7 +5850,7 @@ msgstr "緯度と経度は、両方入れるか、両方空にしてください
 msgid "緯度と経度は、両方書いてください"
 msgstr "緯度と経度は、両方書いてください"
 
-#: src/components/map/MapScreenCanvas.tsx:638
+#: src/components/map/MapScreenCanvas.tsx:661
 #: src/components/map/TrailMap.tsx:510
 msgid "縮小"
 msgstr "縮小"
@@ -5957,7 +5969,7 @@ msgstr "葛城修験の道のことや、歩いた日のことをお知らせし
 msgid "行き"
 msgstr "行き"
 
-#: src/components/admin/RouteEditor.tsx:802
+#: src/components/admin/RouteEditor.tsx:793
 msgid "表でまとめて入力"
 msgstr "表でまとめて入力"
 
@@ -6017,7 +6029,7 @@ msgstr "見つかりませんでした。"
 msgid "見どころ"
 msgstr "見どころ"
 
-#: src/components/settings/PrefsForm.tsx:119
+#: src/components/settings/PrefsForm.tsx:120
 msgid "見やすさ"
 msgstr "見やすさ"
 
@@ -6044,7 +6056,7 @@ msgstr "見やすさを設定しませんか"
 msgid "見やすさを選びましょう"
 msgstr "見やすさを選びましょう"
 
-#: src/components/map/MapScreenCanvas.tsx:628
+#: src/components/map/MapScreenCanvas.tsx:651
 msgid "見本の位置（目安です）"
 msgstr "見本の位置（目安です）"
 
@@ -6155,7 +6167,7 @@ msgstr "車"
 msgid "転落・滑落の危険がある所がある。地図を読む力と、ミスをしない注意が必要。"
 msgstr "転落・滑落の危険がある所がある。地図を読む力と、ミスをしない注意が必要。"
 
-#: src/components/settings/PrefsForm.tsx:129
+#: src/components/settings/PrefsForm.tsx:130
 msgid "近い場所をまとめて表示する"
 msgstr "近い場所をまとめて表示する"
 
