@@ -92,7 +92,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
       .filter((i) => !i.done)
       .map((i) => (
         <li key={i.id}>
-          <Link href={`/admin/routes/${r.id}?tab=${i.tab}`} className={`inline-flex items-center rounded-md px-3 py-1 text-base ${i.required ? "bg-danger font-bold text-white" : "bg-surface text-ink"}`}>
+          <Link href={`/admin/routes/${r.id}?tab=${i.tab}`} className={`inline-flex items-center rounded-md px-3 py-2.5 text-base ${i.required ? "bg-danger font-bold text-white" : "bg-surface text-ink"}`}>
             {i.required ? t`必要：${labels.item[i.id]}` : t`あるとよい：${labels.item[i.id]}`}
           </Link>
         </li>

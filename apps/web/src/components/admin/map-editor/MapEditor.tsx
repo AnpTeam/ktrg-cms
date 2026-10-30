@@ -104,9 +104,9 @@ const anchorClass =
 // A guide point of the chosen leg: a dashed orange ring. Visitors never see it; it only steers the route-finding service.
 const guideClass =
   "block size-4 min-h-0 min-w-0 cursor-grab rounded-full border-[3px] border-dashed border-[var(--color-goal)] bg-paper p-0 shadow-md active:cursor-grabbing";
-const chipClass = "inline-flex h-9 min-h-0 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-line bg-paper px-3 text-sm font-bold hover:bg-surface disabled:opacity-40 disabled:hover:bg-paper";
+const chipClass = "inline-flex h-11 min-h-0 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-line bg-paper px-3 text-sm font-bold hover:bg-surface disabled:opacity-40 disabled:hover:bg-paper";
 const floatClass = "flex items-center gap-0.5 rounded-xl border border-line bg-paper/95 p-1 shadow-md backdrop-blur-sm";
-const iconBtn = "inline-flex shrink-0 whitespace-nowrap h-8 min-h-0 min-w-8 items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-bold [&:not([aria-pressed=true])]:hover:bg-surface disabled:opacity-40 disabled:hover:bg-transparent";
+const iconBtn = "inline-flex shrink-0 whitespace-nowrap h-11 min-h-0 min-w-11 items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-bold [&:not([aria-pressed=true])]:hover:bg-surface disabled:opacity-40 disabled:hover:bg-transparent";
 const toolClass = "tap-target inline-flex items-center justify-center rounded-xl border-2 px-3 text-base font-bold disabled:opacity-40";
 
 type Actions = {
@@ -890,7 +890,7 @@ export function MapEditor(props: MapEditorProps) {
       <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t`道すじ`}>
         {/* One button for the GPX file; its arrow offers the other thing to do with one (take only the heights). */}
         <div className="relative inline-flex">
-          <button type="button" onClick={() => fileInput.current?.click()} className="inline-flex h-9 min-h-0 min-w-0 items-center justify-center rounded-l-lg border border-ink bg-ink px-3 text-sm font-bold text-paper">
+          <button type="button" onClick={() => fileInput.current?.click()} className="inline-flex h-11 min-h-0 min-w-0 items-center justify-center rounded-l-lg border border-ink bg-ink px-3 text-sm font-bold text-paper">
             {t`GPXファイルから読み込む`}
           </button>
           <button
@@ -899,7 +899,7 @@ export function MapEditor(props: MapEditorProps) {
             aria-haspopup="menu"
             aria-expanded={gpxMenu}
             onClick={() => setGpxMenu((v) => !v)}
-            className="inline-flex h-9 min-h-0 min-w-0 items-center justify-center rounded-r-lg border border-l-paper/40 border-ink bg-ink px-2 text-sm font-bold text-paper"
+            className="inline-flex h-11 min-h-0 min-w-0 items-center justify-center rounded-r-lg border border-l-paper/40 border-ink bg-ink px-2 text-sm font-bold text-paper"
           >
             ▾
           </button>
@@ -967,7 +967,7 @@ export function MapEditor(props: MapEditorProps) {
               aria-label={t`移動の手段`}
               value={activeLeg?.ride?.mode ?? "walk"}
               onChange={(e) => setRide(e.target.value as RideMode | "walk", activeLeg?.ride?.minutes ?? 20)}
-              className="h-9 min-h-0 rounded-lg border border-line bg-paper px-2 text-sm font-bold"
+              className="h-11 min-h-0 rounded-lg border border-line bg-paper px-2 text-sm font-bold"
             >
               <option value="walk">{t`歩く`}</option>
               {RIDE_MODES.map((m) => (
@@ -985,7 +985,7 @@ export function MapEditor(props: MapEditorProps) {
                   aria-label={t`かかる時間（分）`}
                   value={activeLeg.ride.minutes}
                   onChange={(e) => setRide(activeLeg.ride!.mode, Number(e.target.value) || 1)}
-                  className="h-9 min-h-0 w-20 rounded-lg border border-line bg-paper px-2 text-sm font-bold"
+                  className="h-11 min-h-0 w-20 rounded-lg border border-line bg-paper px-2 text-sm font-bold"
                 />
                 <span className="text-sm">{t`分`}</span>
               </>
@@ -1090,7 +1090,7 @@ export function MapEditor(props: MapEditorProps) {
               <label htmlFor="leg-pick" className="sr-only">
                 {t`描く区間`}
               </label>
-              <select id="leg-pick" value={activeId ?? ""} onChange={(e) => pickLeg(e.target.value)} className="h-8 min-h-0 max-w-64 truncate rounded-lg border border-line bg-paper px-2 text-sm font-bold">
+              <select id="leg-pick" value={activeId ?? ""} onChange={(e) => pickLeg(e.target.value)} className="h-11 min-h-0 max-w-64 truncate rounded-lg border border-line bg-paper px-2 text-sm font-bold">
                 <option value="">{t`区間を選ぶ`}</option>
                 {pairs.map((pair) => (
                   <option key={pair.to.key} value={pair.to.key}>
