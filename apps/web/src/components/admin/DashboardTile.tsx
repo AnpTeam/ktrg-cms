@@ -33,11 +33,7 @@ export async function DashboardTile({ title, total, goal, added, addedLabel, dai
             ) : null}
           </p>
         </div>
-      ) : (
-        <p className="text-base text-muted">
-          <Trans>目標は、まだ決めていません。</Trans>
-        </p>
-      )}
+      ) : null}
       <p className="text-lg font-bold">
         +{added.toLocaleString()} <span className="text-base font-normal text-muted">{addedLabel}</span>
       </p>

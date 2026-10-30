@@ -4889,11 +4889,11 @@ msgstr "A Japanese name is needed to create a new one"
 msgid "新規登録"
 msgstr "Register"
 
-#: src/components/admin/DashboardTile.tsx:51
+#: src/components/admin/DashboardTile.tsx:47
 msgid "日ごとの数"
 msgstr "Daily numbers"
 
-#: src/components/admin/DashboardTile.tsx:46
+#: src/components/admin/DashboardTile.tsx:42
 msgid "日ごとの数の推移"
 msgstr "Daily numbers over the period"
 
@@ -5426,10 +5426,6 @@ msgstr "Use guide"
 #: src/components/admin/DashboardTile.tsx:25
 msgid "目標 {goalText} の {pct}%"
 msgstr "{pct}% of the goal of {goalText}"
-
-#: src/components/admin/DashboardTile.tsx:38
-msgid "目標は、まだ決めていません。"
-msgstr "No goal set yet."
 
 #: src/components/admin/DashboardTile.tsx:21
 msgid "目標までの進み具合"
