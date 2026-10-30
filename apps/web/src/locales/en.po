@@ -365,12 +365,12 @@ msgid "「---」だけの行から下は、いちばん下の注意書きにな�
 msgstr "Everything below a line with only \"---\" becomes the note at the bottom."
 
 #. placeholder {0}: phase.place
-#: src/components/RallyNearbyStamp.tsx:76
+#: src/components/RallyNearbyStamp.tsx:112
 msgid "「{0}」のスタンプは、もう押してあります。"
 msgstr "You already have the stamp for \"{0}\"."
 
 #. placeholder {0}: phase.place
-#: src/components/RallyNearbyStamp.tsx:76
+#: src/components/RallyNearbyStamp.tsx:112
 msgid "「{0}」のスタンプを押しました！"
 msgstr "Stamped \"{0}\"!"
 
@@ -853,11 +853,12 @@ msgstr "Your position is not known yet. Please wait a moment in open sky."
 msgid "いまの位置が、わかりません。空の開けた場所で、もう一度お試しください。"
 msgstr "We can't tell where you are. Try again in an open place."
 
-#: src/components/RallyNearbyStamp.tsx:71
+#: src/components/RallyNearbyStamp.tsx:87
 #: src/components/StampHere.tsx:147
 msgid "いまの位置を調べています…"
 msgstr "Checking your location…"
 
+#: src/components/RallyNearbyStamp.tsx:97
 #: src/components/StampHere.tsx:163
 msgid "いまの位置を調べます"
 msgstr "We will check your location"
@@ -1707,6 +1708,7 @@ msgstr "Stamp locations"
 msgid "スタンプの場所 {spotCount}か所"
 msgstr "{spotCount} stamp places"
 
+#: src/components/RallyNearbyStamp.tsx:99
 #: src/components/StampHere.tsx:165
 msgid "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 msgstr "To check that you are near the stamp place, we look at your phone's location once."
@@ -1761,7 +1763,7 @@ msgstr "Restore stamps"
 msgid "スタンプを押した人"
 msgstr "People with a stamp"
 
-#: src/components/RallyNearbyStamp.tsx:71
+#: src/components/RallyNearbyStamp.tsx:87
 #: src/components/StampHere.tsx:149
 msgid "スタンプを押しています…"
 msgstr "Collecting the stamp…"
@@ -2623,6 +2625,7 @@ msgstr "Earned"
 #: src/components/auth/ReauthDialog.tsx:72
 #: src/components/auth/ReauthDialog.tsx:94
 #: src/components/ProfileSettings.tsx:251
+#: src/components/RallyNearbyStamp.tsx:106
 #: src/components/settings/PasskeyManager.tsx:138
 #: src/components/settings/PasskeyManager.tsx:212
 #: src/components/StampHere.tsx:172
@@ -3145,6 +3148,7 @@ msgstr "No position"
 msgid "位置の地図"
 msgstr "Map of the position"
 
+#: src/components/RallyNearbyStamp.tsx:100
 #: src/components/StampHere.tsx:166
 msgid "位置は、保存しません。保存するのは、スタンプだけです。"
 msgstr "We don't save your location. We only save the stamp."
@@ -3189,6 +3193,7 @@ msgstr "Write the source you checked the position against (a site name or link).
 msgid "位置を確認していない"
 msgstr "Position not checked"
 
+#: src/components/RallyNearbyStamp.tsx:103
 #: src/components/StampHere.tsx:169
 msgid "位置を調べてスタンプを押す"
 msgstr "Check my location and collect the stamp"
@@ -4407,7 +4412,7 @@ msgstr "Stories of the places"
 msgid "場所の見せ方"
 msgstr "How places are shown"
 
-#: src/components/RallyNearbyStamp.tsx:73
+#: src/components/RallyNearbyStamp.tsx:89
 msgid "場所の近くで押してください。位置は1回だけ調べ、保存しません。"
 msgstr "Press it near a place. Your position is checked once and never saved."
 
@@ -5578,11 +5583,11 @@ msgstr "About {amount} km"
 msgid "約{amount}m"
 msgstr "About {amount} m"
 
-#: src/components/RallyNearbyStamp.tsx:59
+#: src/components/RallyNearbyStamp.tsx:75
 msgid "約{n}km"
 msgstr "about {n} km"
 
-#: src/components/RallyNearbyStamp.tsx:59
+#: src/components/RallyNearbyStamp.tsx:75
 msgid "約{n}m"
 msgstr "about {n} m"
 
@@ -6173,11 +6178,11 @@ msgstr "No {category} nearby."
 
 #. placeholder {0}: phase.place
 #. placeholder {1}: away(phase.distanceM)
-#: src/components/RallyNearbyStamp.tsx:81
+#: src/components/RallyNearbyStamp.tsx:117
 msgid "近くにスタンプの場所がありません。いちばん近いのは「{0}」で、{1}です。"
 msgstr "There is no stamp place nearby. The nearest is \"{0}\", {1} away."
 
-#: src/components/RallyNearbyStamp.tsx:71
+#: src/components/RallyNearbyStamp.tsx:87
 msgid "近くのスタンプを押す"
 msgstr "Stamp the place near me"
 

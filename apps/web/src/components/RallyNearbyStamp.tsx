@@ -1,18 +1,19 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { pickText } from "@/lib/pick-text";
 import { distanceParts, type Problem } from "@/lib/stamp-flow";
 import { nearestToStamp, type RallyPlace } from "@/lib/rally-nearby";
 import { buzz, playThud, unlockAudio } from "@/lib/stamp-feel";
-import { readPosition, requestStamp } from "@/lib/stamp-client";
+import { locationAlreadyAllowed, readPosition, requestStamp } from "@/lib/stamp-client";
 import { track } from "@/lib/track";
 import { useStampMessages } from "./useStampMessages";
 
 type Phase =
   | { name: "idle" }
+  | { name: "explain" }
   | { name: "working"; what: "locating" | "sending" }
   | { name: "done"; place: string; already: boolean }
   | { name: "none"; place: string; distanceM: number }
@@ -32,7 +33,22 @@ export function RallyNearbyStamp({ places, held, locale }: { places: RallyPlace[
   const nameOf = (p: RallyPlace) => pickText(locale, p.nameJa, p.nameEn)?.text ?? p.nameJa;
   const format = new Intl.NumberFormat(i18n.locale === "ja" ? "ja-JP" : "en-US", { maximumFractionDigits: 1 });
 
+  // Say why the position is needed before the browser asks (the same explanation as a place's own button), unless location is already allowed.
+  // The explanation is a native modal dialog: focus is trapped in it and Escape closes it.
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const el = dialog.current;
+    if (!el) return;
+    if (phase.name === "explain" && !el.open) el.showModal();
+    if (phase.name !== "explain" && el.open) el.close();
+  }, [phase.name]);
+
   async function press() {
+    if (await locationAlreadyAllowed()) void start();
+    else setPhase({ name: "explain" });
+  }
+
+  async function start() {
     unlockAudio();
     setPhase({ name: "working", what: "locating" });
     const position = await readPosition();
@@ -71,6 +87,26 @@ export function RallyNearbyStamp({ places, held, locale }: { places: RallyPlace[
         {phase.name === "working" ? (phase.what === "locating" ? t`いまの位置を調べています…` : t`スタンプを押しています…`) : t`近くのスタンプを押す`}
       </button>
       <p className="text-base text-muted">{t`場所の近くで押してください。位置は1回だけ調べ、保存しません。`}</p>
+      <dialog
+        ref={dialog}
+        aria-labelledby="rally-explain-title"
+        onClose={() => setPhase((p) => (p.name === "explain" ? { name: "idle" } : p))}
+        className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-3xl bg-paper p-6 text-ink backdrop:bg-black/60"
+      >
+        <h2 id="rally-explain-title" className="text-2xl font-bold">
+          {t`いまの位置を調べます`}
+        </h2>
+        <p className="mt-3 text-lg leading-8">{t`スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。`}</p>
+        <p className="mt-2 text-lg leading-8">{t`位置は、保存しません。保存するのは、スタンプだけです。`}</p>
+        <div className="mt-6 flex flex-col gap-3">
+          <button type="button" onClick={() => void start()} className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper shadow-lg">
+            {t`位置を調べてスタンプを押す`}
+          </button>
+          <button type="button" onClick={() => setPhase({ name: "idle" })} className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl border border-ink bg-paper px-6 text-xl font-bold text-ink hover:bg-surface">
+            {t`やめる`}
+          </button>
+        </div>
+      </dialog>
       {phase.name === "done" ? (
         <p role="status" className="rounded-2xl bg-surface p-4 text-xl font-bold leading-snug">
           {phase.already ? t`「${phase.place}」のスタンプは、もう押してあります。` : t`「${phase.place}」のスタンプを押しました！`}
