@@ -829,11 +829,11 @@ html[data-size="xlarge"] {
   }
 }
 
-/* On the home map the map is the screen: the page behind it does not scroll, and the footer lives in the sheet. `:has(.trail-map)`
+/* On the home map the map is the screen: the page behind it does not scroll, and the footer lives in the sheet. `:has(.map-screen)`
    is true from the first paint (the class is only added once the script has run, and a swipe before that scrolled the page
    for good: the filter pills ended up above the screen). */
 body.map-screen-active,
-body:has(.trail-map) {
+body:has(.map-screen) {
   overflow: hidden;
 }
 body.map-screen-active .site-footer {
@@ -997,11 +997,11 @@ body.map-screen-active .site-footer {
     pointer-events: none;
   }
   body.map-screen-active,
-  body:has(.trail-map) {
+  body:has(.map-screen) {
     padding-top: 0;
   }
   body.map-screen-active::before,
-  body:has(.trail-map)::before {
+  body:has(.map-screen)::before {
     z-index: 3;
   }
 }
