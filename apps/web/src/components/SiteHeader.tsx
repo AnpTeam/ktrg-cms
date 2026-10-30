@@ -156,7 +156,7 @@ export function SiteHeader({
         // The bar is as wide as the tab bar at the bottom (same side gaps), with the logo in the middle.
         className={
           onMap
-            ? "pointer-events-none absolute inset-x-3 top-[calc(0.75rem+env(safe-area-inset-top))] md:hidden [&>*]:pointer-events-auto"
+            ? "pointer-events-none absolute inset-x-3 top-[calc(0.75rem+env(safe-area-inset-top))] md:hidden"
             : onLanding
               ? `absolute inset-x-0 top-0 border-b border-line/30 bg-paper px-3 py-1 transition-opacity md:hidden motion-reduce:transition-none ${hidden ? "pointer-events-none opacity-0" : ""}`
               : "relative mb-3 border-b border-line/30 bg-paper px-3 py-1 md:hidden"
