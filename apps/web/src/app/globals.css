@@ -578,6 +578,12 @@ html[data-size="small"] .tap-target {
   min-width: 3.5rem;
 }
 
+/* The tab bar's own height (3.25rem) comes to about 46 px on the small size, under the 49 px of the other targets. */
+html[data-size="small"] [data-tabbar] a,
+html[data-size="small"] [data-tabbar] button {
+  min-height: 3.5rem;
+}
+
 html[data-size="large"] {
   font-size: 112.5%;
 }
