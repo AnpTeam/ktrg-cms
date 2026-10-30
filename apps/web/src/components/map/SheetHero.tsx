@@ -47,10 +47,10 @@ export function SheetHero({
       </button>
       <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 p-4 text-white [text-shadow:0_1px_6px_rgb(0_0_0/0.7)]">
         {eyebrow ? <p className="text-lg leading-snug">{eyebrow}</p> : null}
-        {/* Headings are red by default; on the banner the title is white. */}
-        <h2 lang={lang} className="text-3xl font-bold leading-tight text-white">
+        {/* The page's one h1 while a course or stop is chosen (the home header, which has it otherwise, is not drawn then). Headings are red by default; on the banner the title is white. */}
+        <h1 lang={lang} className="text-3xl font-bold leading-tight text-white">
           {title}
-        </h2>
+        </h1>
       </div>
       {photo ? <span className="sr-only">{photo.alt}</span> : null}
     </div>
