@@ -22,6 +22,9 @@ function courseToContinue(routes: RouteSummary[]): RouteSummary | undefined {
 
 // The home page. Everyone sees the same sections (banners, notices, the courses, about, map, before you go); a signed-in
 // visitor gets a greeting, where to go on, and their progress in place of the sign-up hero.
+// The council's own promotional video, shown until the deployment sets INTRO_VIDEO_URL.
+const OFFICIAL_PR_VIDEO = "https://www.youtube.com/watch?v=fd-i0SqyhP0";
+
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
   const i18n = await initLingui();
   const viewer = await getViewer(searchParams);
@@ -29,7 +32,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const [all, notices, banners, posts] = await Promise.all([listRoutes(), listNotices(), listBanners(), listPosts()]);
   const routes = all;
   // The intro video is set by the deployment (a YouTube or Vimeo link); with none, the section is left out.
-  const introVideo = parseVideoUrl(process.env.INTRO_VIDEO_URL);
+  const introVideo = parseVideoUrl(process.env.INTRO_VIDEO_URL ?? OFFICIAL_PR_VIDEO);
   const slides = slidesToShow(banners, sampleContentEnabled());
   const page = { locale: i18n.locale, routes, notices, introVideo, slides, posts };
 
