@@ -89,6 +89,37 @@ export function Landing({
         </div>
       ) : null}
 
+      {/* Where to eat, buy and stay: the council's own pages, so the lists stay current without us (reused with their permission). */}
+      <section aria-labelledby="tourism-title" className="flex flex-col gap-3 lg:col-span-2">
+        <div className="px-4">
+          <SectionBanner>
+            <span id="tourism-title">
+              <Trans>観光情報</Trans>
+            </span>
+          </SectionBanner>
+        </div>
+        <ul className="grid grid-cols-2 gap-3 px-4 md:grid-cols-5">
+          {[
+            { cat: "cat01", img: "/home/tourism_1.jpg", label: <Trans>観光</Trans> },
+            { cat: "cat02", img: "/home/tourism_2.jpg", label: <Trans>グルメ</Trans> },
+            { cat: "cat03", img: "/home/tourism_3.jpg", label: <Trans>お土産</Trans> },
+            { cat: "cat04", img: "/home/tourism_4.jpg", label: <Trans>体験</Trans> },
+            { cat: "cat05", img: "/home/tourism_5.jpg", label: <Trans>宿泊</Trans> },
+          ].map((c, i) => (
+            <li key={c.cat} className={i === 4 ? "col-span-2 md:col-span-1 [&>a]:aspect-[2.4/1] md:[&>a]:aspect-square" : ""}>
+              <a href={`${OFFICIAL}/tourism/${c.cat}/`} target="_blank" rel="noopener noreferrer" className="tap-target relative block aspect-[594/366] overflow-hidden rounded-lg md:aspect-square">
+                <Image src={c.img} alt="" fill sizes="(min-width: 768px) 20vw, 50vw" className="object-cover" />
+                <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                <span className="absolute inset-x-0 bottom-0 px-3 pb-2 font-serif text-2xl font-bold text-white [text-shadow:0_1px_6px_rgb(0_0_0/0.7)]">{c.label}</span>
+                <span className="sr-only">
+                  <Trans>（公式サイト、新しいタブで開きます）</Trans>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       <div className="lg:col-span-2">
         <TrailNotices notices={notices} locale={locale} />
       </div>
