@@ -991,7 +991,8 @@ body.map-screen-active .site-footer {
     content: "";
     position: fixed;
     inset: 0 0 auto 0;
-    height: 12px;
+    /* As tall as the status bar, so scrolled content never shows (and gets blurred) under it. */
+    height: max(12px, env(safe-area-inset-top));
     background: var(--color-paper);
     z-index: 20;
     pointer-events: none;
@@ -1002,6 +1003,7 @@ body.map-screen-active .site-footer {
   }
   body.map-screen-active::before,
   body:has(.map-screen)::before {
+    height: 12px; /* the map runs up under the status bar */
     z-index: 3;
   }
 }
