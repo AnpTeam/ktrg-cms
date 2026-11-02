@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
@@ -30,6 +31,8 @@ const secondary =
 // Panels have no outline: a light grey fill with round corners, and room around them.
 const panel = "mx-4 rounded-3xl bg-surface p-5";
 const PREVIEW_ROUTES = 5;
+// The Japan Heritage council's site: its text and photos are reused here with their permission (decisions log 2026-11-02).
+const OFFICIAL = "https://katsuragisyugen-nihonisan.com";
 
 /**
  * The home page. From the top: the drawn hero (or, for a signed-in visitor, `top`: the greeting and where to go on),
@@ -37,8 +40,8 @@ const PREVIEW_ROUTES = 5;
  * map of every course, an intro video (only when one is set), what to know before leaving, and a footer with the source.
  * The stamp rally is not a section of its own here (a banner can carry it).
  *
- * No photos (none are cleared for use yet) and no invented facts: the numbers come from `lib/rally`, the
- * course names from the course list, the Katsuragi text from the official Japan Heritage site.
+ * The photos and the story text are the Japan Heritage council's, reused with their permission (decisions log
+ * 2026-11-02). No invented facts: the numbers come from `lib/rally`, the course names from the course list.
  */
 export function Landing({
   locale,
@@ -86,6 +89,37 @@ export function Landing({
         </div>
       ) : null}
 
+      {/* Where to eat, buy and stay: the council's own pages, so the lists stay current without us (reused with their permission). */}
+      <section aria-labelledby="tourism-title" className="flex flex-col gap-3 lg:col-span-2">
+        <div className="px-4">
+          <SectionBanner>
+            <span id="tourism-title">
+              <Trans>観光情報</Trans>
+            </span>
+          </SectionBanner>
+        </div>
+        <ul className="grid grid-cols-2 gap-3 px-4 md:grid-cols-5">
+          {[
+            { cat: "cat01", img: "/home/tourism_1.jpg", label: <Trans>観光</Trans> },
+            { cat: "cat02", img: "/home/tourism_2.jpg", label: <Trans>グルメ</Trans> },
+            { cat: "cat03", img: "/home/tourism_3.jpg", label: <Trans>お土産</Trans> },
+            { cat: "cat04", img: "/home/tourism_4.jpg", label: <Trans>体験</Trans> },
+            { cat: "cat05", img: "/home/tourism_5.jpg", label: <Trans>宿泊</Trans> },
+          ].map((c, i) => (
+            <li key={c.cat} className={i === 4 ? "col-span-2 md:col-span-1 [&>a]:aspect-[2.4/1] md:[&>a]:aspect-square" : ""}>
+              <a href={`${OFFICIAL}/tourism/${c.cat}/`} target="_blank" rel="noopener noreferrer" className="tap-target relative block aspect-[594/366] overflow-hidden rounded-lg md:aspect-square">
+                <Image src={c.img} alt="" fill sizes="(min-width: 768px) 20vw, 50vw" className="object-cover" />
+                <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                <span className="absolute inset-x-0 bottom-0 px-3 pb-2 font-serif text-2xl font-bold text-white [text-shadow:0_1px_6px_rgb(0_0_0/0.7)]">{c.label}</span>
+                <span className="sr-only">
+                  <Trans>（公式サイト、新しいタブで開きます）</Trans>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       <div className="lg:col-span-2">
         <TrailNotices notices={notices} locale={locale} />
       </div>
@@ -120,28 +154,59 @@ export function Landing({
         </section>
       ) : null}
 
-      <section className="flex flex-col gap-3">
+      <section aria-labelledby="story-title" className="flex flex-col gap-4 lg:col-span-2">
         <div className="px-4">
           <SectionBanner>
-            <Trans>葛城修験とは</Trans>
+            <span id="story-title">
+              <Trans>日本遺産 葛城修験ストーリー</Trans>
+            </span>
           </SectionBanner>
         </div>
-        <div className={panel}>
-          {/* Our own wording of well-known facts (the official site's text is protected; see CLAUDE.md, 2026-10-17). */}
-          <p className="max-w-prose text-lg leading-8">
-            <Trans>
-              和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。
-            </Trans>
-          </p>
-          <dl className="mt-4">
-            <Fact term={<Trans>コース</Trans>} value={<Trans>全{TOTAL_ROUTES}区間</Trans>} />
-            <Fact term={<Trans>長さ</Trans>} value={<Trans>約{TRAIL_KM}km</Trans>} />
-            <Fact term={<Trans>経塚</Trans>} value={<Trans>{TOTAL_STAMPS}か所</Trans>} />
-          </dl>
+        <div className={`${panel} grid gap-5 lg:grid-cols-2 lg:items-center lg:gap-8`}>
+          <div>
+            {/* The council's own words, reused with their permission (decisions log 2026-11-02). */}
+            <p className="max-w-prose text-lg leading-8">
+              <Trans>大阪と和歌山の府県境を東西に走る和泉山脈。</Trans>
+              <br />
+              <Trans>
+                大阪と奈良の府県境に南北に聳える金剛山地－この峰々一帯は「葛城」と呼ばれ、多くの神々が住まう山として人々に崇められておりました。
+              </Trans>
+              <br />
+              <Trans>そして修験道の開祖である役行者が最初の修行を積んだのがこの地です。</Trans>
+            </p>
+            <dl className="mt-4">
+              <Fact term={<Trans>コース</Trans>} value={<Trans>全{TOTAL_ROUTES}区間</Trans>} />
+              <Fact term={<Trans>長さ</Trans>} value={<Trans>約{TRAIL_KM}km</Trans>} />
+              <Fact term={<Trans>経塚</Trans>} value={<Trans>{TOTAL_STAMPS}か所</Trans>} />
+            </dl>
+            <a href={`${OFFICIAL}/story/`} target="_blank" rel="noopener noreferrer" className={`${secondary} mt-4`}>
+              <Trans>詳しくは公式サイトへ</Trans>
+            </a>
+          </div>
+          <figure className="flex flex-col items-center gap-2">
+            <Image src="/home/story_img.png" alt="" width={834} height={547} sizes="(min-width: 1024px) 560px, 100vw" className="h-auto w-full rounded-lg" />
+            <figcaption className="text-base text-muted">
+              <Trans>役小角（役行者）</Trans>
+            </figcaption>
+          </figure>
         </div>
+        <ul className="grid gap-4 px-4 md:grid-cols-2">
+          {[
+            { path: "/about/", src: "/home/about_katsuragi.jpg", label: <Trans>葛城修験の基礎知識</Trans> },
+            { path: "/cultural_property/", src: "/home/cultural_property.jpg", label: <Trans>構成文化財</Trans> },
+          ].map((card) => (
+            <li key={card.path}>
+              <a href={`${OFFICIAL}${card.path}`} target="_blank" rel="noopener noreferrer" className="tap-target relative block overflow-hidden rounded-lg">
+                <Image src={card.src} alt="" width={800} height={195} sizes="(min-width: 768px) 50vw, 100vw" className="h-auto w-full" />
+                <span className="absolute inset-0 flex items-center justify-center bg-black/45 px-3 text-center font-serif text-2xl font-bold text-white [text-shadow:0_1px_6px_rgb(0_0_0/0.7)]">{card.label}</span>
+                <span className="sr-only">
+                  <Trans>（公式サイト、新しいタブで開きます）</Trans>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
       </section>
-
-      <LandingMap routes={routes} />
 
       {introVideo ? (
         <section className="flex flex-col gap-3 lg:col-span-2">
@@ -152,9 +217,25 @@ export function Landing({
           </div>
           <div className="px-4">
             <IntroVideo video={introVideo} title={locale === "ja" ? "葛城修験の紹介動画" : "Katsuragi Shugen introduction video"} />
+            <p className="mt-2 text-base text-muted">
+              <Trans>日本遺産「葛城修験」PR動画（180秒）</Trans>
+            </p>
           </div>
         </section>
       ) : null}
+
+      <section className="flex flex-col gap-3 lg:col-span-2">
+        <div className="px-4">
+          <SectionBanner>
+            <Trans>周遊マップ＆モデルコース</Trans>
+          </SectionBanner>
+        </div>
+        <div className="px-4">
+          <Image src="/home/map.jpg" alt={locale === "ja" ? "葛城修験 全体マップ" : "Overall map of Katsuragi Shugen"} width={1180} height={598} sizes="(min-width: 1280px) 1200px, 100vw" className="h-auto w-full rounded-lg" />
+        </div>
+      </section>
+
+      <LandingMap routes={routes} />
 
       <section className="flex flex-col gap-3 lg:col-span-2">
         <div className="px-4">
@@ -204,6 +285,13 @@ export function Landing({
       )}
 
       <footer className="flex flex-col gap-4 border-t-2 border-line px-4 pb-6 pt-6 lg:col-span-2">
+        <p className="text-base text-muted">
+          <Trans>写真と文章の一部は、</Trans>
+          <a href={OFFICIAL} target="_blank" rel="noopener noreferrer" className="font-bold underline">
+            <Trans>葛城修験日本遺産活用推進協議会の公式サイト</Trans>
+          </a>
+          <Trans>のものです。</Trans>
+        </p>
         <LocaleSwitcher />
       </footer>
     </div>
