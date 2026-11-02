@@ -11,6 +11,7 @@ import type { Prefs } from "@/lib/prefs";
 import { ProfileCard, type ProfileCardProps } from "./ProfileCard";
 import { KatsuragiLogo } from "./KatsuragiLogo";
 import { LocaleSelect } from "./LocaleSwitcher";
+import { foundationEn, foundationJa } from "@/lib/terms-content";
 import { useMenu } from "./MenuProvider";
 import { SampleNoticeButton } from "./SampleNotice";
 import { ThemeSwitcher } from "./ThemeSwitcher";
@@ -282,6 +283,7 @@ export function SiteHeader({
                 { path: "/terms", label: t`利用規約` },
                 { path: "/privacy", label: t`プライバシーポリシー` },
                 { path: "/licenses", label: t`ライセンス情報` },
+                { path: "/sitemap", label: t`サイトマップ` },
               ].map(({ path, label }) => (
                 <li key={path}>
                   <Link prefetch={false} href={path} className="tap-target flex items-center justify-between py-1 text-lg font-bold">
@@ -291,6 +293,9 @@ export function SiteHeader({
                 </li>
               ))}
             </ul>
+            <p lang={locale === "ja" ? "ja" : "en"} className="text-sm text-muted lg:hidden">
+              {locale === "ja" ? foundationJa : foundationEn}
+            </p>
           </div>
         </div>
       ) : null}
