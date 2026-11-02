@@ -3,7 +3,7 @@
 import { useLingui } from "@lingui/react/macro";
 import { isKanji, isPerKanji, partsFor, serializeRuby, type RubyPart } from "@/lib/ruby";
 
-const tiny = "inline-flex h-7 min-h-0 min-w-0 items-center justify-center rounded-md border border-line px-2 text-xs font-bold hover:bg-surface";
+const tiny = "inline-flex h-11 min-h-0 min-w-0 items-center justify-center rounded-md border border-line px-3 text-sm font-bold hover:bg-surface";
 const box = "h-11 min-h-0 min-w-0 rounded-lg border-2 border-line bg-paper px-2 text-base";
 
 /**
