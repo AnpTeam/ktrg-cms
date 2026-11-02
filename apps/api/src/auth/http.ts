@@ -1,3 +1,4 @@
+import type { AuditWriter } from "../audit/audit-log";
 import type { ErrorCode } from "../lib/api-errors";
 import { clientIp } from "../lib/client-ip";
 import type { RateLimitResult } from "./rate-limit";
@@ -23,6 +24,8 @@ export function createHttpHelpers(opts: {
   secureCookies: boolean;
   trustProxy: boolean;
   getSession: () => SessionService;
+  /** When given, editor and admin logins and logouts are written to the audit log. */
+  getAudit?: () => AuditWriter;
 }) {
   const cookieName = sessionCookieName(opts.secureCookies);
 
@@ -43,7 +46,19 @@ export function createHttpHelpers(opts: {
     return auth;
   }
 
+  /** Editors and admins only: their sign-ins are worth a record; every participant visit is not. */
+  async function auditStaff(user: AuthUser, action: "session.login" | "session.logout") {
+    if (user.role === "participant" || !opts.getAudit) return;
+    try {
+      await opts.getAudit().record({ actorUserId: user.id, action, targetId: user.id });
+    } catch {
+      // A failed record must not lock the person out; the message names no one.
+      console.error(`[api] could not write the ${action} audit entry`);
+    }
+  }
+
   return {
+    auditStaff,
     cookieName,
     cookieFor,
     clearCookie: () => clearSessionCookie(cookieName, opts.secureCookies),
@@ -72,6 +87,7 @@ export function createHttpHelpers(opts: {
     async startSession(set: SetLike, user: AuthUser): Promise<void> {
       const { token, expiresAt } = await opts.getSession().create(user);
       set.headers["set-cookie"] = cookieFor(token, expiresAt);
+      await auditStaff(user, "session.login");
     },
 
     /** The user behind the request's session cookie, re-issuing the cookie if the expiry slid. */
