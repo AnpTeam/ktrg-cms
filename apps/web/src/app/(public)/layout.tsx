@@ -67,9 +67,6 @@ export default async function PublicLayout({ children }: { children: ReactNode }
               {viewer.signedIn ? null : <BrowserWarning />}
               {children}
             </div>
-            <div className="lg:hidden">
-              <SiteFooter locale={i18n.locale} />
-            </div>
           </main>
         </div>
       </div>

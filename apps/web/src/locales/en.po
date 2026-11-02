@@ -715,7 +715,7 @@ msgstr "Delete your account?"
 msgid "アカウントを削除する"
 msgstr "Delete account"
 
-#: src/components/SiteHeader.tsx:239
+#: src/components/SiteHeader.tsx:240
 msgid "アカウント設定"
 msgstr "Account settings"
 
@@ -1604,6 +1604,7 @@ msgstr "Settings that affect the whole site. What you change here shows on visit
 #: src/app/(public)/sitemap/page.tsx:15
 #: src/app/(public)/sitemap/page.tsx:50
 #: src/components/SiteFooter.tsx:27
+#: src/components/SiteHeader.tsx:286
 msgid "サイトマップ"
 msgstr "Site map"
 
@@ -2203,7 +2204,7 @@ msgstr "Usually use the 3-day way. It can be cancelled until then."
 #: src/app/(public)/bookmarks/page.tsx:19
 #: src/app/(public)/page.tsx:81
 #: src/app/(public)/sitemap/page.tsx:99
-#: src/components/SiteHeader.tsx:252
+#: src/components/SiteHeader.tsx:253
 msgid "ブックマーク"
 msgstr "Bookmarks"
 
@@ -2234,7 +2235,7 @@ msgstr "Footer"
 #: src/app/(public)/sitemap/page.tsx:123
 #: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:33
-#: src/components/SiteHeader.tsx:283
+#: src/components/SiteHeader.tsx:284
 msgid "プライバシーポリシー"
 msgstr "Privacy policy"
 
@@ -2261,7 +2262,7 @@ msgstr "Preview"
 #: src/app/(public)/sitemap/page.tsx:76
 #: src/components/landing/BlogCard.tsx:22
 #: src/components/SiteFooter.tsx:18
-#: src/components/SiteHeader.tsx:257
+#: src/components/SiteHeader.tsx:258
 msgid "ブログ"
 msgstr "Blog"
 
@@ -2345,7 +2346,7 @@ msgstr "Base map"
 #: src/app/(public)/sitemap/page.tsx:53
 #: src/app/(public)/sitemap/page.tsx:55
 #: src/app/(public)/terms/page.tsx:26
-#: src/components/SiteHeader.tsx:181
+#: src/components/SiteHeader.tsx:182
 #: src/components/TabBar.tsx:22
 #: src/components/TabBar.tsx:34
 msgid "ホーム"
@@ -2565,7 +2566,7 @@ msgid "めぐる場所"
 msgstr "Places to visit"
 
 #: src/components/admin/AdminNav.tsx:60
-#: src/components/SiteHeader.tsx:203
+#: src/components/SiteHeader.tsx:204
 #: src/components/TabBar.tsx:73
 msgid "メニュー"
 msgstr "Menu"
@@ -2629,7 +2630,7 @@ msgid "もとの文章"
 msgstr "Built-in text"
 
 #: src/components/IntroFlow.tsx:284
-#: src/components/SiteHeader.tsx:172
+#: src/components/SiteHeader.tsx:173
 msgid "もどる"
 msgstr "Back"
 
@@ -2672,7 +2673,7 @@ msgstr "Redo"
 #: src/app/(public)/sitemap/page.tsx:117
 #: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:21
-#: src/components/SiteHeader.tsx:281
+#: src/components/SiteHeader.tsx:282
 msgid "よくあるご質問"
 msgstr "FAQ"
 
@@ -2686,7 +2687,7 @@ msgstr "Reading"
 
 #: src/app/(public)/sitemap/page.tsx:126
 #: src/components/SiteFooter.tsx:24
-#: src/components/SiteHeader.tsx:284
+#: src/components/SiteHeader.tsx:285
 msgid "ライセンス情報"
 msgstr "Licenses"
 
@@ -2967,7 +2968,7 @@ msgstr "Back to the route list"
 msgid "ルート名（日本語）"
 msgstr "Route name (Japanese)"
 
-#: src/components/SiteHeader.tsx:222
+#: src/components/SiteHeader.tsx:223
 msgid "ログアウト"
 msgstr "Log out"
 
@@ -2982,7 +2983,7 @@ msgstr "Log out"
 #: src/components/ProfileSettings.tsx:180
 #: src/components/SignInPrompt.tsx:26
 #: src/components/SignInPrompt.tsx:56
-#: src/components/SiteHeader.tsx:228
+#: src/components/SiteHeader.tsx:229
 msgid "ログイン"
 msgstr "Log in"
 
@@ -3835,7 +3836,7 @@ msgstr "Someone else saved first. Reload the page and try again."
 #: src/app/(public)/sitemap/page.tsx:120
 #: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:30
-#: src/components/SiteHeader.tsx:282
+#: src/components/SiteHeader.tsx:283
 msgid "利用規約"
 msgstr "Terms of use"
 
@@ -4864,7 +4865,7 @@ msgstr "Text and buttons become as big as they go."
 msgid "文字もボタンも、少し大きくなります。"
 msgstr "Text and buttons become a little bigger."
 
-#: src/components/SiteHeader.tsx:275
+#: src/components/SiteHeader.tsx:276
 msgid "文字やボタンの大きさ、地図の見せ方"
 msgstr "Size of text and buttons, how the map is shown"
 
@@ -4933,7 +4934,7 @@ msgstr "A Japanese name is needed to create a new one"
 #: src/components/landing/LandingHero.tsx:31
 #: src/components/SignInPrompt.tsx:23
 #: src/components/SignInPrompt.tsx:50
-#: src/components/SiteHeader.tsx:231
+#: src/components/SiteHeader.tsx:232
 msgid "新規登録"
 msgstr "Register"
 
@@ -5417,7 +5418,7 @@ msgstr "Name of the town or village"
 msgid "画面が見えない間は、位置を止めています。"
 msgstr "Position is paused while the screen is hidden."
 
-#: src/components/SiteHeader.tsx:262
+#: src/components/SiteHeader.tsx:263
 msgid "画面の明るさ"
 msgstr "Screen brightness"
 
@@ -5606,7 +5607,7 @@ msgstr "You can skip this."
 msgid "管理メニュー"
 msgstr "Admin menu"
 
-#: src/components/SiteHeader.tsx:246
+#: src/components/SiteHeader.tsx:247
 msgid "管理画面"
 msgstr "Admin area"
 
@@ -6102,7 +6103,7 @@ msgstr "Quick readability settings"
 #: src/app/(public)/settings/page.tsx:12
 #: src/app/(public)/settings/page.tsx:29
 #: src/app/(public)/sitemap/page.tsx:108
-#: src/components/SiteHeader.tsx:273
+#: src/components/SiteHeader.tsx:274
 msgid "見やすさの設定"
 msgstr "Display settings"
 
@@ -6507,7 +6508,7 @@ msgstr "Length"
 #: src/components/map/TrailMap.tsx:460
 #: src/components/ProfileSettings.tsx:231
 #: src/components/SampleNotice.tsx:64
-#: src/components/SiteHeader.tsx:207
+#: src/components/SiteHeader.tsx:208
 msgid "閉じる"
 msgstr "Close"
 
