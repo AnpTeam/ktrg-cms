@@ -467,7 +467,7 @@ export function TrailMap({
         className={
           expanded
             ? "relative min-h-0 flex-1 overflow-hidden rounded-xl border-2 border-line"
-            : "relative -mx-4 h-[min(72svh,36rem)] min-h-[22rem] overflow-hidden rounded-none border-x-0 border-y-2 border-line @4xl:mx-0 @4xl:rounded-xl @4xl:border-x-2"
+            : "relative -mx-4 h-[min(46svh,36rem)] min-h-[18rem] overflow-hidden rounded-none border-x-0 border-y-2 border-line @4xl:mx-0 @4xl:rounded-xl @4xl:border-x-2"
         }
       >
         {/* MapLibre's own CSS makes its container position: relative, which would cancel an
