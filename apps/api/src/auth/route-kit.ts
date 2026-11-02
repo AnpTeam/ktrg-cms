@@ -80,6 +80,7 @@ export function routeKit<S extends KitServices>(getServices: () => S, opts: Rout
     secureCookies: opts.secureCookies,
     trustProxy: opts.trustProxy ?? false,
     getSession: () => getServices().session,
+    getAudit: () => getServices().audit,
   });
 
   // Not named: a named plugin is shared between route files, closures and all.

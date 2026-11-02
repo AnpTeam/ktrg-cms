@@ -11,6 +11,10 @@ import { auditLog } from "../db/schema";
 export const AUDIT_ACTIONS = {
   /** ADMIN_EMAILS made this account an admin on an email-code login. */
   "user.role.bootstrap_admin": "user",
+  /** An editor or admin logged in (email code or passkey). Participants are not recorded. */
+  "session.login": "user",
+  /** An editor or admin logged out on purpose (a session that just expires leaves no entry). */
+  "session.logout": "user",
   /** A fresh-login re-check passed (needed before role changes). */
   "session.reauth": "user",
   /** A passkey-only account added its first email. */

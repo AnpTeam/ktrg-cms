@@ -135,7 +135,11 @@ export function authRoutes(getServices: () => AuthServices, opts: RouteOptions) 
     )
     .post("/logout",async ({ headers, set }) => {
       const token = http.tokenFrom(headers);
-      if (token) await getServices().session.destroy(token);
+      if (token) {
+        const user = await http.authenticate(headers, set);
+        if (user) await http.auditStaff(user, "session.logout");
+        await getServices().session.destroy(token);
+      }
       set.headers["set-cookie"] = http.clearCookie();
       return { ok: true as const };
     });

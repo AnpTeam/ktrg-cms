@@ -205,6 +205,23 @@ describe("session cookie", () => {
     const { post } = setup();
     expect((await post("logout")).status).toBe(200);
   });
+
+  test("an admin's login and logout are recorded; a participant's are not", async () => {
+    const t = setup();
+    const first = await t.login(); // creates the account as a participant
+    await t.post("logout", undefined, first.cookie);
+    expect(t.auditRows).toEqual([]);
+
+    const me = [...t.users.values()][0]!;
+    me.role = "admin";
+    t.advanceOtp(61_000); // past the 60 s resend cooldown, so a new code is sent
+    const again = await t.login();
+    await t.post("logout", undefined, again.cookie);
+    expect(t.auditRows).toEqual([
+      { actorUserId: me.id, action: "session.login", targetType: "user", targetId: me.id },
+      { actorUserId: me.id, action: "session.logout", targetType: "user", targetId: me.id },
+    ]);
+  });
 });
 
 describe("rate limits", () => {
