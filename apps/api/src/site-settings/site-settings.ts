@@ -2,6 +2,7 @@ import { Elysia, t, type Static } from "elysia";
 import type { AuditWriter } from "../audit/audit-log";
 import { fail } from "../auth/http";
 import { can } from "../auth/permissions";
+import { oneOf } from "../lib/schemas";
 import { routeKit, type KitServices, type RouteOptions } from "../auth/route-kit";
 
 // Settings for the whole site, kept as one named value each. Changing one changes the live site at once, so only
@@ -16,8 +17,8 @@ export const TERRAIN_LAYERS = ["hillshade", "relief"] as const;
  * button adds, and two calming adjustments of the base tiles (saturation: colour strength, contrast).
  */
 export const MAP_STYLE = t.Object({
-  base: t.UnionEnum([...BASE_LAYERS]),
-  terrain: t.UnionEnum([...TERRAIN_LAYERS]),
+  base: oneOf(BASE_LAYERS),
+  terrain: oneOf(TERRAIN_LAYERS),
   terrainOpacity: t.Number({ minimum: 0.2, maximum: 0.8 }),
   saturation: t.Number({ minimum: -1, maximum: 0.5 }),
   contrast: t.Number({ minimum: -0.5, maximum: 0.5 }),
@@ -127,7 +128,7 @@ export function siteSettingsRoutes(getServices: () => SiteSettingsServices, opts
         await getServices().siteSettings.setPageText(user.id, params.key, body);
         return { ok: true as const, page: body };
       },
-      { auth: "notice.manage", rateLimit: { adminWriteUser: "user.id" }, params: t.Object({ key: t.UnionEnum([...PAGE_KEYS]) }), body: PAGE_TEXT },
+      { auth: "notice.manage", rateLimit: { adminWriteUser: "user.id" }, params: t.Object({ key: oneOf(PAGE_KEYS) }), body: PAGE_TEXT },
     );
 }
 
@@ -135,5 +136,5 @@ export function siteSettingsRoutes(getServices: () => SiteSettingsServices, opts
 export function publicSettingsRoutes(getSettings: () => SiteSettingsService) {
   return new Elysia({ detail: { tags: ["Content"] } })
     .get("/settings", async () => ({ ok: true as const, mapStyle: await getSettings().mapStyle() }))
-    .get("/pages/:key", async ({ params }) => ({ ok: true as const, page: await getSettings().pageText(params.key) }), { params: t.Object({ key: t.UnionEnum([...PAGE_KEYS]) }) });
+    .get("/pages/:key", async ({ params }) => ({ ok: true as const, page: await getSettings().pageText(params.key) }), { params: t.Object({ key: oneOf(PAGE_KEYS) }) });
 }
