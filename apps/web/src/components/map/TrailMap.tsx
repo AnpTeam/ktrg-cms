@@ -528,13 +528,6 @@ export function TrailMap({
         </button>
       ) : null}
 
-      {anyPlaces ? (
-        <div className="flex flex-col gap-2">
-          {expanded ? null : <p className="text-lg font-bold">{t`まわりの場所を地図に出す`}</p>}
-          <PlaceChips counts={counts} active={active} onToggle={toggleGroup} />
-        </div>
-      ) : null}
-
       {!mergeStops && stops.length > 1 ? (
         <div role="group" aria-label={t`場所を順に見る`} className="flex items-stretch gap-2">
           <button type="button" onClick={() => goToStop(-1)} disabled={stopIndex === 0} className={`${buttonClass} flex-1`}>
@@ -571,6 +564,13 @@ export function TrailMap({
           meters={origin ? sortByDistance([selectedPlace], origin)[0]!.meters : null}
           onClose={() => setSelected(null)}
         />
+      ) : null}
+
+      {anyPlaces ? (
+        <div className="flex flex-col gap-2">
+          {expanded ? null : <p className="text-lg font-bold">{t`まわりの場所を地図に出す`}</p>}
+          <PlaceChips counts={counts} active={active} onToggle={toggleGroup} />
+        </div>
       ) : null}
 
       {!expanded && sortedPlaces.length > 0 ? (

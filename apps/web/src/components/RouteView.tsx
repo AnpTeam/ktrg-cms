@@ -11,7 +11,6 @@ import { Localized } from "@/components/Localized";
 import { Notice } from "@/components/Notice";
 import { PlaceLine } from "@/components/PlaceLine";
 import { RichText } from "@/components/RichText";
-import { RouteNearbyPlaces } from "@/components/RouteNearbyPlaces";
 import { RouteJourney } from "@/components/RouteJourney";
 import { RouteStats } from "@/components/RouteStats";
 import { StopList } from "@/components/StopList";
@@ -208,11 +207,6 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             </section>
           ) : null}
 
-          {places.length > 0 ? (
-            <div className="order-5 @4xl:order-none">
-              <RouteNearbyPlaces routeId={route.id} places={places} />
-            </div>
-          ) : null}
         </div>
 
         <div className={SIDE}>
