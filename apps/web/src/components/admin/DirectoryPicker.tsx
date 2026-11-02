@@ -10,7 +10,7 @@ import type { ErrorKey } from "@/lib/api-error";
 import { distanceLabel, placeCategories, type Coord } from "@/lib/places";
 
 const MAX_PAGES = 10;
-const chip = "inline-flex h-9 min-h-0 min-w-0 items-center justify-center rounded-lg border border-line bg-paper px-3 text-sm font-bold hover:bg-surface disabled:opacity-40";
+const chip = "inline-flex h-11 min-h-0 min-w-0 items-center justify-center rounded-lg border border-line bg-paper px-3 text-sm font-bold hover:bg-surface disabled:opacity-40";
 
 /** A directory row as the admin list sends it, with what the manager needs. */
 interface Row extends DirectoryPlace {
@@ -154,7 +154,7 @@ export function NearbyPlacesManager({ routeId, from }: { routeId: string; from: 
         <summary className="cursor-pointer text-base font-bold">{t`場所一覧から追加する`}</summary>
         <div className="mt-3 flex flex-col gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <select aria-label={t`種類`} value={category} onChange={(e) => setCategory(e.target.value)} className="h-9 min-h-0 rounded-lg border border-line bg-paper px-2 text-sm font-bold">
+            <select aria-label={t`種類`} value={category} onChange={(e) => setCategory(e.target.value)} className="h-11 min-h-0 rounded-lg border border-line bg-paper px-2 text-sm font-bold">
               <option value="">{t`すべて`}</option>
               {placeCategories.map((c) => (
                 <option key={c} value={c}>
@@ -162,7 +162,7 @@ export function NearbyPlacesManager({ routeId, from }: { routeId: string; from: 
                 </option>
               ))}
             </select>
-            <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`名前で絞る`} aria-label={t`名前で絞る`} className="h-9 min-h-0 min-w-0 flex-1 rounded-lg border border-line bg-paper px-3 text-sm" />
+            <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`名前で絞る`} aria-label={t`名前で絞る`} className="h-11 min-h-0 min-w-0 flex-1 rounded-lg border border-line bg-paper px-3 text-sm" />
           </div>
           <p className="text-sm text-muted">{from ? t`ルートの最初の経由地に近い順です。` : t`経由地を置くと、近い順に並びます。`}</p>
           {all && rows.length === 0 ? <p className="text-base">{t`該当する場所はありません。`}</p> : null}

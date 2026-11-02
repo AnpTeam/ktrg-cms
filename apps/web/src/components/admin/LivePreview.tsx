@@ -38,10 +38,10 @@ export function LivePreview({ draft, order, locale: adminLocale }: { draft: Rout
       <div className="flex flex-wrap items-center gap-2">
         <p className="mr-auto text-base font-bold">{t`プレビュー`}</p>
         {/* The button names the language it switches to (a language's own name, never translated). */}
-        <button type="button" onClick={toggleLanguage} lang={locale === "en" ? "ja" : "en"} className="rounded-full bg-surface px-3 py-1 text-sm font-bold">
+        <button type="button" onClick={toggleLanguage} lang={locale === "en" ? "ja" : "en"} className="rounded-full bg-surface px-3 py-2.5 text-sm font-bold">
           {locale === "en" ? "日本語" : "English"}
         </button>
-        <button type="button" aria-pressed={wide} onClick={() => setWide(!wide)} className="rounded-full bg-surface px-3 py-1 text-sm font-bold aria-pressed:bg-brand aria-pressed:text-on-brand">
+        <button type="button" aria-pressed={wide} onClick={() => setWide(!wide)} className="rounded-full bg-surface px-3 py-2.5 text-sm font-bold aria-pressed:bg-brand aria-pressed:text-on-brand">
           {t`パソコン幅`}
         </button>
       </div>

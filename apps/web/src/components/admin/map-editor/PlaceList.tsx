@@ -6,9 +6,9 @@ import { useKindLabels } from "../PlacePanel";
 import { TrashIcon } from "./icons";
 import type { MapEditorProps } from "./MapEditor";
 
-const fieldClass = "h-9 min-h-0 min-w-36 rounded-lg border border-line bg-paper px-2 text-base";
+const fieldClass = "h-11 min-h-0 min-w-36 rounded-lg border border-line bg-paper px-2 text-base";
 const chipToggle = (on: boolean) =>
-  `inline-flex h-8 min-h-0 min-w-0 items-center justify-center rounded-full border px-3 text-sm font-bold ${on ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"}`;
+  `inline-flex h-11 min-h-0 min-w-0 items-center justify-center rounded-full border px-3 text-sm font-bold ${on ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"}`;
 
 /** Every waypoint of the route in one list: its name, its kind and its two switches can all be changed here. */
 export function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchPlace, onAddEndAt, onReorderPlaces, insertAfter, onInsertAfter, onDrawSubCourse }: Pick<MapEditorProps, "places" | "selectedKey" | "onSelectPlace" | "onRemovePlace" | "onPatchPlace" | "onAddEndAt" | "onReorderPlaces"> & { insertAfter: string | null; onInsertAfter: (key: string) => void; onDrawSubCourse: (key: string) => void }) {
