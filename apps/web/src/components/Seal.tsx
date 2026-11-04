@@ -44,8 +44,10 @@ const MOTIFS = [
   </g>,
 ];
 
-export function Seal({ state, number, rough = false, className = "" }: { state: StampState; number: number; rough?: boolean; className?: string }) {
-  const motif = MOTIFS[(number - 1) % MOTIFS.length];
+/** `number` is left out for a sample seal (the legend): the first motif and no number plate. */
+export function Seal({ state, number, rough = false, className = "" }: { state: StampState; number?: number; rough?: boolean; className?: string }) {
+  const n = number ?? 1;
+  const motif = MOTIFS[(n - 1) % MOTIFS.length];
   const stamped = state === "stamped";
   const line = stamped ? "stroke-on-shu" : state === "next" ? "stroke-accent" : "stroke-muted";
   const dim = state === "empty" ? "opacity-50" : "";
@@ -54,7 +56,7 @@ export function Seal({ state, number, rough = false, className = "" }: { state: 
       viewBox="0 0 100 100"
       aria-hidden="true"
       className={className}
-      style={stamped ? { transform: `rotate(${tilt(number)}deg)`, ...(rough ? { filter: `url(#stamp-ink-${(number % 3) + 1})` } : null) } : undefined}
+      style={stamped ? { transform: `rotate(${tilt(n)}deg)`, ...(rough ? { filter: `url(#stamp-ink-${(n % 3) + 1})` } : null) } : undefined}
     >
       {stamped ? (
         <circle cx="50" cy="50" r="48" className="fill-shu" />
@@ -70,10 +72,14 @@ export function Seal({ state, number, rough = false, className = "" }: { state: 
         {motif}
       </g>
       {/* The number on its own plate: white with the seal's red when pressed, so it reads at any size. */}
+      {number === undefined ? null : (
+        <>
       <rect x="33" y="66" width="34" height="19" rx="9.5" className={stamped ? "fill-on-shu" : "fill-paper stroke-muted"} strokeWidth={stamped ? 0 : 1.5} opacity={state === "empty" ? 0.7 : 1} />
       <text x="50" y="80.5" textAnchor="middle" fontWeight="700" fontSize="15" className={`font-serif ${stamped ? "fill-shu" : state === "next" ? "fill-accent" : "fill-muted"}`} style={{ fontVariantNumeric: "tabular-nums" }}>
         {number}
       </text>
+        </>
+      )}
     </svg>
   );
 }
