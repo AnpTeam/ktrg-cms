@@ -1524,8 +1524,8 @@ msgstr "This goes live at once and changes the map for every visitor. Save it?"
 msgid "この設定は、本番のサイトにすぐ反映されます。保存しますか？"
 msgstr "This setting takes effect on the live site at once. Save it?"
 
-#: src/components/SpotSheet.tsx:119
-#: src/components/SpotSheet.tsx:135
+#: src/components/SpotSheet.tsx:123
+#: src/components/SpotSheet.tsx:139
 msgid "この説明は日本語のみです。"
 msgstr "This description is in Japanese only."
 
@@ -1727,7 +1727,7 @@ msgid "スタンプのバックアップリンク"
 msgstr "Stamp backup link"
 
 #: src/components/map/MapScreen.tsx:377
-#: src/components/SpotSheet.tsx:90
+#: src/components/SpotSheet.tsx:94
 msgid "スタンプの場所"
 msgstr "Stamp locations"
 
@@ -1797,7 +1797,7 @@ msgid "スタンプを押しています…"
 msgstr "Collecting the stamp…"
 
 #: src/components/map/MapScreen.tsx:509
-#: src/components/SpotSheet.tsx:103
+#: src/components/SpotSheet.tsx:107
 msgid "スタンプを押しました"
 msgstr "You collected this stamp"
 
@@ -2481,7 +2481,7 @@ msgstr "No stamps yet."
 msgid "まだスタンプはありません。"
 msgstr "No stamps yet."
 
-#: src/components/SpotSheet.tsx:103
+#: src/components/SpotSheet.tsx:107
 msgid "まだスタンプを押していません"
 msgstr "You haven't collected this stamp yet"
 
@@ -2513,7 +2513,7 @@ msgstr "Map"
 msgid "マップをひらく"
 msgstr "Open the map"
 
-#: src/components/SpotSheet.tsx:164
+#: src/components/SpotSheet.tsx:168
 msgid "まわりにあるもの"
 msgstr "Around here"
 
@@ -2895,7 +2895,7 @@ msgstr "There are no routes yet."
 msgid "ルートがまだありません。「新しいルート」から作ってください。"
 msgstr "There are no routes yet. Create one with \"New route\"."
 
-#: src/app/(public)/spots/[id]/page.tsx:63
+#: src/app/(public)/spots/[id]/page.tsx:65
 msgid "ルートにもどる"
 msgstr "Back to route"
 
@@ -3666,7 +3666,7 @@ msgid "最低 {lowest}m"
 msgstr "Lowest {lowest}m"
 
 #: src/components/NearestPlaces.tsx:37
-#: src/components/SpotSheet.tsx:173
+#: src/components/SpotSheet.tsx:177
 msgid "最寄り"
 msgstr "Nearest"
 
@@ -3698,7 +3698,7 @@ msgstr "Highest {highest}m"
 #: src/components/landing/HeroSlides.tsx:45
 #: src/components/map/MapScreen.tsx:451
 #: src/components/SpotGallery.tsx:12
-#: src/components/SpotSheet.tsx:155
+#: src/components/SpotSheet.tsx:159
 msgid "写真"
 msgstr "Photos"
 
@@ -3810,7 +3810,7 @@ msgstr "Before you go"
 #: src/components/landing/Landing.tsx:271
 #: src/components/landing/TrailNotices.tsx:65
 #: src/components/RouteView.tsx:269
-#: src/components/SpotSheet.tsx:180
+#: src/components/SpotSheet.tsx:184
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "Check official sources before you go."
 
@@ -3823,7 +3823,7 @@ msgstr "Credit (who took it, terms of use)"
 #: src/components/admin/RouteEditor.tsx:684
 #: src/components/map/MapScreen.tsx:442
 #: src/components/RouteView.tsx:180
-#: src/components/SpotSheet.tsx:144
+#: src/components/SpotSheet.tsx:148
 msgid "出典"
 msgstr "Source"
 
@@ -4315,7 +4315,7 @@ msgstr "Map"
 
 #: src/app/(public)/blog/[id]/page.tsx:175
 #: src/components/PlaceDialog.tsx:29
-#: src/components/SpotSheet.tsx:72
+#: src/components/SpotSheet.tsx:76
 msgid "地図で見る"
 msgstr "Show in the map"
 
@@ -4782,7 +4782,7 @@ msgstr "Turnaround"
 msgid "押した"
 msgstr "Stamped"
 
-#: src/components/SpotSheet.tsx:93
+#: src/components/SpotSheet.tsx:97
 msgid "押し方: 場所の近くで、ボタンを押します（位置情報）"
 msgstr "How: press the button near the place (uses your location)"
 
@@ -5249,7 +5249,7 @@ msgstr "Routes are in walking order. Select a name to edit its text and map."
 #: src/components/admin/useChecklistLabels.ts:17
 #: src/components/map/MapScreen.tsx:424
 #: src/components/RouteView.tsx:162
-#: src/components/SpotSheet.tsx:128
+#: src/components/SpotSheet.tsx:132
 msgid "歴史・由来"
 msgstr "History and background"
 
@@ -6198,7 +6198,7 @@ msgid "該当する場所はありません。"
 msgstr "No matching places."
 
 #: src/components/admin/PlacePanel.tsx:108
-#: src/components/SpotSheet.tsx:111
+#: src/components/SpotSheet.tsx:115
 msgid "説明"
 msgstr "About this place"
 

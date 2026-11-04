@@ -29,8 +29,10 @@ export default async function SpotPage({ params, searchParams }: Props) {
   const stampMock = process.env.NODE_ENV !== "production" && isStampMock(stamp) ? stamp : undefined;
   if (!found) notFound();
   const spot = found;
-  // Both lists are needed only with a position; fetched together, once, for the nearby places and the nearest stations.
-  const [allPlaces, allRoutes] = spot.position ? await Promise.all([listPlaces(), listRoutes()]) : [[], []];
+  // The places list is needed only with a position (nearby and nearest); the routes always (the stamp popup shows the course's progress).
+  const [allPlaces, allRoutes] = await Promise.all([spot.position ? listPlaces() : [], listRoutes()]);
+  const course = allRoutes.find((r) => r.id === spot.routeId);
+  const stampProgress = course && course.spotCount > 0 ? { rallyName: pickText(i18n.locale, course.nameJa, course.nameEn)?.text ?? course.nameJa, place: pickText(i18n.locale, spot.nameJa, spot.nameEn)?.text ?? spot.nameJa, before: course.stampedCount ?? 0, total: course.spotCount } : undefined;
   // Toilets, shops and the like within a few minutes' walk, nearest first (a straight line, not the walking distance).
   const near: Nearby[] = spot.position
     ? sortByDistance(allPlaces, spot.position)
@@ -63,7 +65,7 @@ export default async function SpotPage({ params, searchParams }: Props) {
           <Trans>ルートにもどる</Trans>
         </BackLink>
       </div>
-      <SpotSheet stampMock={stampMock} nearby={near} nearest={nearest} spot={spot} locale={i18n.locale} loginHref={`${"/login"}?next=${encodeURIComponent(`/spots/${spot.id}`)}`} />
+      <SpotSheet stampMock={stampMock} stampProgress={stampProgress} nearby={near} nearest={nearest} spot={spot} locale={i18n.locale} loginHref={`${"/login"}?next=${encodeURIComponent(`/spots/${spot.id}`)}`} />
     </div>
   );
 }
