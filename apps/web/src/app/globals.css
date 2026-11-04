@@ -1093,3 +1093,13 @@ html[data-furigana] {
   60% { transform: scale(1.15); }
   100% { transform: scale(1); }
 }
+
+/* Navigation mode on the map: the layer pills and (on a phone) the site's own top bar step aside for the instruction banner. */
+body.map-nav-mode .map-layer-pills {
+  display: none;
+}
+@media (max-width: 767px) {
+  body.map-nav-mode .site-header {
+    display: none;
+  }
+}
