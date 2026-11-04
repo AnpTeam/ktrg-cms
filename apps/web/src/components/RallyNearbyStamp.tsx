@@ -8,6 +8,7 @@ import { distanceParts, type Problem } from "@/lib/stamp-flow";
 import { nearestToStamp, type RallyPlace } from "@/lib/rally-nearby";
 import { buzz, playThud, unlockAudio } from "@/lib/stamp-feel";
 import { locationAlreadyAllowed, readPosition, requestStamp } from "@/lib/stamp-client";
+import { announceProgress } from "@/lib/stamp-progress";
 import { track } from "@/lib/track";
 import { useStampMessages } from "./useStampMessages";
 
@@ -24,7 +25,7 @@ type Phase =
  * opening the place first. One tap reads ONE position, picks the nearest place they do not hold yet, and asks the server
  * for that stamp: the server still decides (distance, accuracy, closed). The position is used once and never kept.
  */
-export function RallyNearbyStamp({ places, held, locale, quiet = false }: { places: RallyPlace[]; held: string[]; locale: string; quiet?: boolean }) {
+export function RallyNearbyStamp({ places, held, locale, rallyName, quiet = false }: { places: RallyPlace[]; held: string[]; locale: string; rallyName: string; quiet?: boolean }) {
   const { t, i18n } = useLingui();
   const router = useRouter();
   const messages = useStampMessages();
@@ -66,6 +67,7 @@ export function RallyNearbyStamp({ places, held, locale, quiet = false }: { plac
     }
     track("stamp", { already: result.already, finishedCourse: (result.finished?.routeIds.length ?? 0) > 0, from: "rally" });
     window.dispatchEvent(new Event("ktrg:stamped"));
+    if (!result.already) announceProgress({ rallyName, before: held.length, after: held.length + 1, total: places.length, place: nameOf(found.place) });
     router.refresh();
   }
 

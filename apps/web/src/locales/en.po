@@ -370,12 +370,12 @@ msgid "「---」だけの行から下は、いちばん下の注意書きにな�
 msgstr "Everything below a line with only \"---\" becomes the note at the bottom."
 
 #. placeholder {0}: phase.place
-#: src/components/RallyNearbyStamp.tsx:112
+#: src/components/RallyNearbyStamp.tsx:114
 msgid "「{0}」のスタンプは、もう押してあります。"
 msgstr "You already have the stamp for \"{0}\"."
 
 #. placeholder {0}: phase.place
-#: src/components/RallyNearbyStamp.tsx:112
+#: src/components/RallyNearbyStamp.tsx:114
 msgid "「{0}」のスタンプを押しました！"
 msgstr "Stamped \"{0}\"!"
 
@@ -858,12 +858,12 @@ msgstr "Your position is not known yet. Please wait a moment in open sky."
 msgid "いまの位置が、わかりません。空の開けた場所で、もう一度お試しください。"
 msgstr "We can't tell where you are. Try again in an open place."
 
-#: src/components/RallyNearbyStamp.tsx:87
+#: src/components/RallyNearbyStamp.tsx:89
 #: src/components/StampHere.tsx:147
 msgid "いまの位置を調べています…"
 msgstr "Checking your location…"
 
-#: src/components/RallyNearbyStamp.tsx:97
+#: src/components/RallyNearbyStamp.tsx:99
 #: src/components/StampHere.tsx:163
 msgid "いまの位置を調べます"
 msgstr "We will check your location"
@@ -1096,7 +1096,7 @@ msgstr "A rally of courses: complete when every chosen course is finished."
 msgid "コースでつくる"
 msgstr "Make it from courses"
 
-#: src/app/(public)/badges/page.tsx:38
+#: src/app/(public)/badges/page.tsx:39
 msgid "コースのすべての場所でスタンプを押すと、そのコースのバッジがもらえます。"
 msgstr "Press a stamp at every place of a course to get that course's badge."
 
@@ -1573,6 +1573,10 @@ msgstr "Contrast"
 msgid "コンビニ・商店"
 msgstr "Convenience store / local shop"
 
+#: src/components/StampProgressPopup.tsx:46
+msgid "コンプリート！"
+msgstr "Rally complete!"
+
 #: src/components/CertificateButton.tsx:41
 msgid "コンプリート証"
 msgstr "Certificate of completion"
@@ -1725,7 +1729,7 @@ msgstr "Stamp locations"
 msgid "スタンプの場所 {spotCount}か所"
 msgstr "{spotCount} stamp places"
 
-#: src/components/RallyNearbyStamp.tsx:99
+#: src/components/RallyNearbyStamp.tsx:101
 #: src/components/StampHere.tsx:165
 msgid "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 msgstr "To check that you are near the stamp place, we look at your phone's location once."
@@ -1781,7 +1785,7 @@ msgstr "Restore stamps"
 msgid "スタンプを押した人"
 msgstr "People with a stamp"
 
-#: src/components/RallyNearbyStamp.tsx:87
+#: src/components/RallyNearbyStamp.tsx:89
 #: src/components/StampHere.tsx:149
 msgid "スタンプを押しています…"
 msgstr "Collecting the stamp…"
@@ -1792,6 +1796,7 @@ msgid "スタンプを押しました"
 msgstr "You collected this stamp"
 
 #: src/components/StampHere.tsx:108
+#: src/components/StampProgressPopup.tsx:46
 msgid "スタンプを押しました！"
 msgstr "Stamp collected!"
 
@@ -2015,6 +2020,10 @@ msgstr "Toilets and rest"
 msgid "トイレやお店などを、地図を開いたときから表示します。"
 msgstr "Show toilets, shops and so on as soon as the map opens."
 
+#: src/components/StampProgressPopup.tsx:57
+msgid "とじる"
+msgstr "Close"
+
 #: src/components/auth/authUi.tsx:91
 msgid "どちらからお越しですか？"
 msgstr "Where are you visiting from?"
@@ -2145,15 +2154,15 @@ msgstr "Bus stop"
 msgid "パソコン幅"
 msgstr "Desktop width"
 
-#: src/app/(public)/badges/page.tsx:14
-#: src/app/(public)/badges/page.tsx:32
+#: src/app/(public)/badges/page.tsx:15
+#: src/app/(public)/badges/page.tsx:33
 #: src/app/(public)/page.tsx:78
 #: src/app/(public)/rallies/page.tsx:39
 #: src/app/(public)/sitemap/page.tsx:87
 msgid "バッジ"
 msgstr "Badges"
 
-#: src/app/(public)/badges/page.tsx:43
+#: src/app/(public)/badges/page.tsx:44
 msgid "バッジは、まだ準備中です。"
 msgstr "Badges are not ready yet."
 
@@ -2639,7 +2648,7 @@ msgstr "Built-in text"
 msgid "もどる"
 msgstr "Back"
 
-#: src/app/(public)/badges/page.tsx:67
+#: src/app/(public)/badges/page.tsx:59
 msgid "もらいました"
 msgstr "Earned"
 
@@ -2648,7 +2657,7 @@ msgstr "Earned"
 #: src/components/auth/ReauthDialog.tsx:72
 #: src/components/auth/ReauthDialog.tsx:94
 #: src/components/ProfileSettings.tsx:251
-#: src/components/RallyNearbyStamp.tsx:106
+#: src/components/RallyNearbyStamp.tsx:108
 #: src/components/settings/PasskeyManager.tsx:138
 #: src/components/settings/PasskeyManager.tsx:212
 #: src/components/StampHere.tsx:172
@@ -2701,7 +2710,7 @@ msgid "ライト"
 msgstr "Light"
 
 #: src/app/(admin)/admin/rallies/page.tsx:22
-#: src/app/(public)/badges/page.tsx:29
+#: src/app/(public)/badges/page.tsx:30
 #: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/page.tsx:74
 #: src/app/(public)/rallies/[id]/page.tsx:59
@@ -3177,7 +3186,7 @@ msgstr "No position"
 msgid "位置の地図"
 msgstr "Map of the position"
 
-#: src/components/RallyNearbyStamp.tsx:100
+#: src/components/RallyNearbyStamp.tsx:102
 #: src/components/StampHere.tsx:166
 msgid "位置は、保存しません。保存するのは、スタンプだけです。"
 msgstr "We don't save your location. We only save the stamp."
@@ -3222,7 +3231,7 @@ msgstr "Write the source you checked the position against (a site name or link).
 msgid "位置を確認していない"
 msgstr "Position not checked"
 
-#: src/components/RallyNearbyStamp.tsx:103
+#: src/components/RallyNearbyStamp.tsx:105
 #: src/components/StampHere.tsx:169
 msgid "位置を調べてスタンプを押す"
 msgstr "Check my location and collect the stamp"
@@ -3532,7 +3541,7 @@ msgstr "Published."
 msgid "公開する"
 msgstr "Publish"
 
-#: src/app/(public)/badges/page.tsx:44
+#: src/app/(public)/badges/page.tsx:45
 msgid "公開できるようになったら、ここにコースのバッジが表示されます。"
 msgstr "When they can be published, the course badges will show here."
 
@@ -4457,7 +4466,7 @@ msgstr "Stories of the places"
 msgid "場所の見せ方"
 msgstr "How places are shown"
 
-#: src/components/RallyNearbyStamp.tsx:89
+#: src/components/RallyNearbyStamp.tsx:91
 msgid "場所の近くで押してください。位置は1回だけ調べ、保存しません。"
 msgstr "Press it near a place. Your position is checked once and never saved."
 
@@ -5652,11 +5661,11 @@ msgstr "About {amount} km"
 msgid "約{amount}m"
 msgstr "About {amount} m"
 
-#: src/components/RallyNearbyStamp.tsx:75
+#: src/components/RallyNearbyStamp.tsx:77
 msgid "約{n}km"
 msgstr "about {n} km"
 
-#: src/components/RallyNearbyStamp.tsx:75
+#: src/components/RallyNearbyStamp.tsx:77
 msgid "約{n}m"
 msgstr "about {n} m"
 
@@ -6267,11 +6276,11 @@ msgstr "No {category} nearby."
 
 #. placeholder {0}: phase.place
 #. placeholder {1}: away(phase.distanceM)
-#: src/components/RallyNearbyStamp.tsx:117
+#: src/components/RallyNearbyStamp.tsx:119
 msgid "近くにスタンプの場所がありません。いちばん近いのは「{0}」で、{1}です。"
 msgstr "There is no stamp place nearby. The nearest is \"{0}\", {1} away."
 
-#: src/components/RallyNearbyStamp.tsx:87
+#: src/components/RallyNearbyStamp.tsx:89
 msgid "近くのスタンプを押す"
 msgstr "Stamp the place near me"
 
