@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { Medal } from "./Medal";
-import { STAMP_PROGRESS_EVENT, type StampProgress } from "@/lib/stamp-progress";
+import { STAMP_POPUP_CLOSED_EVENT, STAMP_PROGRESS_EVENT, type StampProgress } from "@/lib/stamp-progress";
 
 /**
  * "Stamp collected": a popup after a new stamp in a rally. The ring starts where it was and fills to the new count; when the
@@ -39,7 +39,10 @@ export function StampProgressPopup() {
 
   const done = info !== null && shown >= info.total && info.total > 0;
   return (
-    <dialog ref={dialog} aria-labelledby="stamp-progress-title" onClose={() => setInfo(null)} className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-3xl bg-paper p-6 text-center text-ink backdrop:bg-black/60">
+    <dialog ref={dialog} aria-labelledby="stamp-progress-title" onClose={() => {
+        setInfo(null);
+        window.dispatchEvent(new Event(STAMP_POPUP_CLOSED_EVENT));
+      }} className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-3xl bg-paper p-6 text-center text-ink backdrop:bg-black/60">
       {info ? (
         <div className="flex flex-col items-center gap-3">
           <h2 id="stamp-progress-title" className="text-2xl font-bold">

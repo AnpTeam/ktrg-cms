@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { STAMP_POPUP_CLOSED_EVENT, stampPopupOpen } from "@/lib/stamp-progress";
 
 const SNOOZE_KEY = "ktrg-guest-nag-until";
 const SEEN_KEY = "ktrg-guest-nag-seen";
@@ -43,7 +44,11 @@ export function GuestNag({ hasStamps }: { hasStamps: boolean }) {
   const show = useCallback(() => {
     if (held() || Number(read(localStorage, SNOOZE_KEY) ?? 0) > Date.now()) return;
     window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setOpen(true), 2200);
+    timer.current = window.setTimeout(() => {
+      // Never on top of the "stamp collected" popup: wait until it is closed.
+      if (stampPopupOpen()) window.addEventListener(STAMP_POPUP_CLOSED_EVENT, () => setOpen(true), { once: true });
+      else setOpen(true);
+    }, 2200);
   }, [onRallies]); // eslint-disable-line react-hooks/exhaustive-deps -- `held` only reads `onRallies`
   useEffect(() => () => window.clearTimeout(timer.current), []);
 

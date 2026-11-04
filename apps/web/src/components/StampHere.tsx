@@ -7,6 +7,7 @@ import { useLingui } from "@lingui/react/macro";
 import { locationAlreadyAllowed, mockPosition, mockStamp, readPosition, requestStamp } from "@/lib/stamp-client";
 import { distanceParts, type Problem, type StampMock } from "@/lib/stamp-flow";
 import { buzz, playThud, unlockAudio } from "@/lib/stamp-feel";
+import { announceProgress, type StampProgress } from "@/lib/stamp-progress";
 import { track } from "@/lib/track";
 import { StampFace } from "./StampFace";
 import { useStampMessages } from "./useStampMessages";
@@ -34,6 +35,7 @@ export function StampHere({
   loginHref,
   mock,
   inSheet = false,
+  progress,
   onStamped,
 }: {
   spotId: string;
@@ -47,6 +49,8 @@ export function StampHere({
   mock?: StampMock;
   /** Shown inside the home map's bottom sheet: it sticks to the bottom of the sheet, not above the tab bar. */
   inSheet?: boolean;
+  /** Where the rally stood before this stamp: lets the popup show the ring filling. Left out when the screen does not know. */
+  progress?: Omit<StampProgress, "after">;
   /** Called once the server has given (or already had) the stamp; navigation moves on to the next stop. */
   onStamped?: () => void;
 }) {
@@ -82,6 +86,7 @@ export function StampHere({
       }
       track("stamp", { already: result.already, finishedCourse: (result.finished?.routeIds.length ?? 0) > 0 });
       window.dispatchEvent(new Event("ktrg:stamped")); // the sign-up reminder for a visitor with no account listens
+      if (!result.already && progress) announceProgress({ ...progress, after: progress.before + 1 });
       onStamped?.();
       router.refresh();
     } else {
