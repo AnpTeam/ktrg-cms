@@ -90,6 +90,12 @@ const routeProps = {
       noteEn: nullable(t.String({ maxLength: 300 })),
       // An optional https link (the operator's timetable, the ferry's page ...).
       url: t.Optional(nullable(t.String({ maxLength: 500 }))),
+      // Where the station is, which end it serves, and the "a person checked it" step (see content-service).
+      lat: t.Optional(nullable(t.Number({ minimum: -90, maximum: 90 }))),
+      lng: t.Optional(nullable(t.Number({ minimum: -180, maximum: 180 }))),
+      serves: t.Optional(t.Union([t.Literal("start"), t.Literal("end"), t.Literal("both"), t.Null()])),
+      checked: t.Optional(t.Boolean()),
+      source: t.Optional(nullable(t.String({ maxLength: 300 }))),
     }),
     { maxItems: 10 },
   ),

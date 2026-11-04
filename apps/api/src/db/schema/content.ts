@@ -68,6 +68,14 @@ export interface AccessPoint {
   noteEn: string | null;
   /** An https link for this way of getting there. */
   url?: string | null;
+  /** Where the station or stop is. Shown to visitors (and used for the map hand-off) only once `checked`. */
+  lat?: number | null;
+  lng?: number | null;
+  /** Which end of the route this serves; null = not said. */
+  serves?: "start" | "end" | "both" | null;
+  /** A person looked the position up in `source` and checked it on the map (needs lat, lng and a source). */
+  checked?: boolean;
+  source?: string | null;
 }
 
 /** A photo in a waypoint's gallery: an https link, who took it (when the license asks for a credit), and the page it came from. */

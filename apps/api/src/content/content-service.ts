@@ -117,6 +117,13 @@ function boundsOf(line: LineString | null): PublicRoute["bounds"] {
   return { west, south, east, north };
 }
 
+/** A station position nobody has checked is not shown (like a place or a line): the visitor gets the name and notes only. */
+export function publicAccessPoint(p: RouteRow["accessPoints"][number]): RouteRow["accessPoints"][number] {
+  if (p.checked) return p;
+  const { lat: _lat, lng: _lng, source: _source, ...rest } = p;
+  return rest;
+}
+
 function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolean, visibleSpotIds: ReadonlySet<string> = new Set()): PublicRoute {
   // A line nobody has checked is not shown: not the line, not its silhouette, not the box around it.
   const shown = r.lineVerified ? r.geometry : null;
@@ -130,7 +137,7 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     elevationGainM: r.elevationGainM,
     difficulty: r.difficulty,
     nameKana: r.nameKana,
-    accessPoints: r.accessPoints,
+    accessPoints: r.accessPoints.map(publicAccessPoint),
     physicalLevel: r.physicalLevel,
     technicalLevel: r.technicalLevel,
     expectedTimeMin: r.expectedTimeMin,
@@ -249,7 +256,20 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
         if (p.nameJa.trim() === "") continue;
         const url = text(p.url) ?? null;
         if (url !== null && !isHttpsUrl(url)) return bad("validation_failed");
-        rows.push({ type: p.type, nameJa: p.nameJa.trim(), nameEn: text(p.nameEn) ?? null, noteJa: text(p.noteJa) ?? null, noteEn: text(p.noteEn) ?? null, ...(url ? { url } : {}) });
+        const lat = p.lat ?? null;
+        const lng = p.lng ?? null;
+        const source = text(p.source) ?? null;
+        // "Checked" means a person looked the position up in a named source: it needs both numbers and the source.
+        if (p.checked && (lat === null || lng === null || source === null)) return bad("validation_failed");
+        if ((lat === null) !== (lng === null)) return bad("validation_failed");
+        rows.push({
+          type: p.type, nameJa: p.nameJa.trim(), nameEn: text(p.nameEn) ?? null, noteJa: text(p.noteJa) ?? null, noteEn: text(p.noteEn) ?? null,
+          ...(url ? { url } : {}),
+          ...(lat !== null && lng !== null ? { lat, lng } : {}),
+          ...(p.serves ? { serves: p.serves } : {}),
+          ...(p.checked ? { checked: true } : {}),
+          ...(source ? { source } : {}),
+        });
       }
       out.accessPoints = rows;
     }
