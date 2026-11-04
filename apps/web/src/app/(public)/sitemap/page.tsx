@@ -38,8 +38,8 @@ function Group({ title, children }: { title: React.ReactNode; children: React.Re
 // Every page of the app on one screen, for visitors (the search engines' list is /sitemap.xml).
 export default async function SitemapPage() {
   const i18n = await initLingui();
-  const routes = [...(await listRoutes())].sort((a, b) => a.order - b.order);
-  const pages = await customPages();
+  const [listed, pages] = await Promise.all([listRoutes(), customPages()]);
+  const routes = [...listed].sort((a, b) => a.order - b.order);
 
   return (
     <div className="page-narrow flex flex-col gap-8 pt-2">

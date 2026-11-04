@@ -154,22 +154,23 @@ export async function listRalliesWithProgress(db: Reader, userId: string): Promi
   const all = await db.select().from(rallies).where(eq(rallies.published, true)).orderBy(asc(rallies.sortOrder));
   if (all.length === 0) return [];
   const ids = all.map((r) => r.id);
-  const names = flattenTexts(RALLY_TEXT, await db.select().from(rallyTranslations).where(inArray(rallyTranslations.rallyId, ids)), (t) => t.rallyId);
-  const held = await stampsOf(db, userId);
-  const placesOf = await placeMembers(db, all.filter((r) => r.kind === "places").map((r) => r.id));
-  const coursesOf = await routeMembers(db, all.filter((r) => r.kind === "course").map((r) => r.id));
+  // Two rounds of at most three queries each (the pooler hung with more at once, see #194); none waits for another in its round.
+  const [translations, held, placesOf] = await Promise.all([
+    db.select().from(rallyTranslations).where(inArray(rallyTranslations.rallyId, ids)),
+    stampsOf(db, userId),
+    placeMembers(db, all.filter((r) => r.kind === "places").map((r) => r.id)),
+  ]);
+  const names = flattenTexts(RALLY_TEXT, translations, (t) => t.rallyId);
+  const [coursesOf, savedRows, completionRows] = await Promise.all([
+    routeMembers(db, all.filter((r) => r.kind === "course").map((r) => r.id)),
+    db.select({ routeId: courseCompletions.routeId }).from(courseCompletions).where(eq(courseCompletions.userId, userId)),
+    db.select({ rallyId: rallyCompletions.rallyId, at: rallyCompletions.completedAt }).from(rallyCompletions).where(and(eq(rallyCompletions.userId, userId), inArray(rallyCompletions.rallyId, ids))),
+  ]);
   const routeIds = [...new Set([...coursesOf.values()].flat())];
-  const members = await courseMembers(db, routeIds);
-  const savedCourses = new Set(
-    (await db.select({ routeId: courseCompletions.routeId }).from(courseCompletions).where(eq(courseCompletions.userId, userId))).map((r) => r.routeId),
-  );
+  const members = await courseMembers(db, routeIds); // needs the course list above
+  const savedCourses = new Set(savedRows.map((r) => r.routeId));
   const finished = new Set([...savedCourses, ...routeIds.filter((id) => placeProgress({ members: members.get(id) ?? [], stamps: held }).complete)]);
-  const completions = new Map(
-    (await db
-      .select({ rallyId: rallyCompletions.rallyId, at: rallyCompletions.completedAt })
-      .from(rallyCompletions)
-      .where(and(eq(rallyCompletions.userId, userId), inArray(rallyCompletions.rallyId, ids)))).map((c) => [c.rallyId, c.at]),
-  );
+  const completions = new Map(completionRows.map((c) => [c.rallyId, c.at]));
 
   return all.map((r) => {
     const base = { id: r.id, nameJa: names.get(r.id)?.nameJa ?? "", nameEn: names.get(r.id)?.nameEn ?? null, sortOrder: r.sortOrder, completedAt: completions.get(r.id) ?? null };

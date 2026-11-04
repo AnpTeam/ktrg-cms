@@ -17,8 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function SettingsPage({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
   await initLingui();
   const home = "/";
-  const viewer = await getViewer(searchParams);
-  const prefs = await getPrefs();
+  const [viewer, prefs] = await Promise.all([getViewer(searchParams), getPrefs()]);
 
   return (
     <div className="page-narrow flex flex-col gap-6 px-4 pt-2">

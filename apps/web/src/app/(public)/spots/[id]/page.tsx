@@ -25,14 +25,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SpotPage({ params, searchParams }: Props) {
   const i18n = await initLingui();
   // Development only: `?stamp=far` and so on pretends the answers of the stamping API, which does not exist yet.
-  const { stamp } = await searchParams;
+  const [{ stamp }, found] = await Promise.all([searchParams, params.then((p) => getSpot(p.id))]);
   const stampMock = process.env.NODE_ENV !== "production" && isStampMock(stamp) ? stamp : undefined;
-  const found = await getSpot((await params).id);
   if (!found) notFound();
   const spot = found;
+  // Both lists are needed only with a position; fetched together, once, for the nearby places and the nearest stations.
+  const [allPlaces, allRoutes] = spot.position ? await Promise.all([listPlaces(), listRoutes()]) : [[], []];
   // Toilets, shops and the like within a few minutes' walk, nearest first (a straight line, not the walking distance).
   const near: Nearby[] = spot.position
-    ? sortByDistance(await listPlaces(), spot.position)
+    ? sortByDistance(allPlaces, spot.position)
         .filter((p) => p.meters <= NEARBY_M)
         .slice(0, 8)
         .map((p) => {
@@ -44,7 +45,8 @@ export default async function SpotPage({ params, searchParams }: Props) {
   // The nearest stations, bus stops and parking (within 5 km, five of each), for the 最寄り tabs.
   const nearest: NearestGroup[] = [];
   if (spot.position) {
-    const [places, routes] = await Promise.all([listPlaces(), listRoutes()]);
+    const places = allPlaces;
+    const routes = allRoutes;
     for (const category of ["station", "bus_stop", "parking"] as const) {
       const items = sortByDistance(places.filter((p) => p.category === category), spot.position)
         .filter((p) => p.meters <= 5000)

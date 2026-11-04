@@ -17,10 +17,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RegisterPage({ searchParams }: Props) {
   await initLingui();
-  const params = await searchParams;
+  const [params, viewer] = await Promise.all([searchParams, getViewer(searchParams)]);
   const home = "/";
   const next = safeNextPath(params.next, home);
-  if ((await getViewer(searchParams)).signedIn) redirect(next);
+  if (viewer.signedIn) redirect(next);
 
   return (
     <div className="page-form flex flex-col gap-6 px-4">

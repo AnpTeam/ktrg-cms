@@ -32,10 +32,8 @@ import { initLingui } from "@/i18n/server";
 export default async function PublicLayout({ children }: { children: ReactNode }) {
   const i18n = await initLingui();
   const sample = sampleContentEnabled();
-  const viewer = await getViewer();
-  const prefsState = await getPrefsState();
+  const [viewer, prefsState, jar] = await Promise.all([getViewer(), getPrefsState(), cookies()]);
   // Stamps held without an account live in a signed cookie (guest/ in the API); the server only needs to know it is there.
-  const jar = await cookies();
   const hasGuestStamps = jar.has("guest") || jar.has("__Host-guest");
   // The intro's how-to-play step shows the same text as the 遊び方 page (the editor's, else the built-in), as plain words.
   const introSeen = jar.has("intro");
