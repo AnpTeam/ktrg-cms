@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
-import { Seal } from "@/components/Seal";
+import { Medal } from "@/components/Medal";
 import { BackLink } from "@/components/BackLink";
 import { Localized } from "@/components/Localized";
 import { EmptyState } from "@/components/EmptyState";
@@ -51,7 +51,7 @@ export default async function BadgesPage() {
             return (
               <li key={r.id}>
                 <Link href={`/routes/${r.id}`} className="tap-target flex h-full flex-col items-center gap-2 rounded-3xl bg-surface p-4 text-center">
-                  <Seal state={done ? "stamped" : "empty"} number={r.order} rough className="size-24" />
+                  <Medal number={r.order} done={done} stamped={r.stampedCount ?? 0} total={r.spotCount} className="h-32 w-auto" />
                   <span className="text-lg font-bold leading-snug">
                     <Localized value={pickText(i18n.locale, r.nameJa, r.nameEn)} tag={false} />
                   </span>
