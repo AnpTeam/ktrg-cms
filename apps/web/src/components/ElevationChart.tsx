@@ -1,7 +1,8 @@
 "use client";
 
-import { useId, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
+import { useEffect, useId, useMemo, useState, type KeyboardEvent, type PointerEvent } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { setElevationCursor } from "@/lib/elevation-cursor";
 import { buildProfile, gradientColor, GRADIENT_STOPS, nearestIndex, type MaybeEle } from "@/lib/elevation-profile";
 import type { LatLng } from "@/lib/navigation/geometry";
 
@@ -22,6 +23,8 @@ export function ElevationChart({ line, elevations, onHover }: { line: readonly L
   const gid = useId().replace(/:/g, "");
   const profile = useMemo(() => buildProfile(line, elevations), [line, elevations]);
   const [index, setIndex] = useState<number | null>(null);
+  // Leaving the page (or the chart) takes the dot off the map.
+  useEffect(() => () => setElevationCursor(null), []);
   if (!profile) return null;
 
   const { dist, ele, slopes, totalM, min, max, gain, loss } = profile;
@@ -37,7 +40,9 @@ export function ElevationChart({ line, elevations, onHover }: { line: readonly L
   const km = (m: number) => nf.format(m / 1000);
   const set = (i: number | null) => {
     setIndex(i);
-    onHover?.(i === null ? null : profile.points[i]!);
+    const point = i === null ? null : profile.points[i]!;
+    setElevationCursor(point); // a map on the same screen shows a dot there
+    onHover?.(point);
   };
   const at = (e: PointerEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect();

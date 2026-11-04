@@ -28,6 +28,7 @@ import type { PointKind } from "@/lib/point-kinds";
 import { SAME_PLACE_M, spreadMeters, stopMergePx } from "@/lib/map-screen";
 import { groupCounts, groupOf, sortByDistance, type Coord, type MapPlace, type PlaceGroup } from "@/lib/places";
 import { createClusterElement, createMarkerElement, createPlaceMarkerElement } from "./MapMarker";
+import { useCursorMarker } from "./useCursorMarker";
 import { MapPickList } from "./MapPickList";
 import { PlaceCard, PlaceChips, PlaceList, useGroupNames } from "./PlacesPanel";
 import { StopCard } from "./StopCard";
@@ -225,6 +226,8 @@ export function TrailMap({
     // `t` changes only with the language, which reloads the page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stops, line, sideLines, settings]);
+
+  useCursorMarker(mapRef, mlRef, mapGen);
 
   // Zoom in on a group of markers (or on one spot when they all sit on the same point).
   const zoomTo = (points: readonly Coord[]) => {

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { fetchRouteLine } from "@/lib/navigation/line-client";
+import { getRouteLine } from "@/lib/navigation/line-client";
 import { loadResume } from "@/lib/navigation/resume";
 import { useLingui } from "@lingui/react/macro";
 import { StampHere } from "@/components/StampHere";
@@ -61,7 +61,7 @@ const GAP_PX = 8;
 async function beginNavigation(route: MapScreenRoute, start: ReturnType<typeof useNavigation>["start"]): Promise<boolean> {
   const stampStops = route.stops?.filter((s) => !s.noStamp) ?? [];
   if (stampStops.length === 0) return false;
-  const fetched = route.line === null && route.hasLine ? await fetchRouteLine(route.id) : null;
+  const fetched = route.line === null && route.hasLine ? await getRouteLine(route.id) : null;
   const stops: Record<string, NavStopInfo> = Object.fromEntries(stampStops.map((s) => [s.id, { name: s.name, nameLang: s.nameLang, status: s.status }]));
   start({ routeId: route.id, routeName: route.name, access: route.accessPoints, stops, model: modelFromMapRoute(route, fetched) });
   return true;
