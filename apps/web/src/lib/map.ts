@@ -191,7 +191,7 @@ export function sideLineCollection(lines: readonly (readonly Position[])[]): { t
  * How big the numbered pins are at a zoom, as a share of their full size: full from zoom 15 (walking), down to just over half
  * when the whole course is in view, so they do not cover the map when zoomed out.
  */
-export const pinScale = (zoom: number): number => Math.min(1, Math.max(0.55, 0.55 + (zoom - 11) * 0.1125));
+export const pinScale = (zoom: number): number => Math.min(1, Math.max(0.8, 0.8 + (zoom - 12) * 0.1));
 
 /** Below this zoom the pins are small: their number chips are hidden (the picture still says what the place is). */
 export const PIN_NUMBER_MIN_ZOOM = 13;

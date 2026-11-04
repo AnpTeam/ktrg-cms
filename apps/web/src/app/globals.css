@@ -244,12 +244,14 @@ rt {
  * amber outline = caution, barrier stripe = closed. The start is blue, the goal orange, both a blue-to-orange fade.
  */
 .map-marker {
-  --pin-base: #2b2523;
+  /* A vivid red with a white outline stands out on the pale map tiles; the dark is kept for the flags of places with no stamp. */
+  --pin-base: #cc6256;
+  --pin-ink: #2b2523;
   --pin-on: #ffffff;
   display: block;
-  /* --pin (set on the map by its zoom, 0.55 to 1) makes the pins smaller when the whole course is in view. */
-  width: calc(1.9rem * var(--pin, 1));
-  height: calc(2.5rem * var(--pin, 1));
+  /* --pin (set on the map by its zoom, 0.8 to 1) makes the pins a little smaller when the whole course is in view. */
+  width: calc(2.3rem * var(--pin, 1));
+  height: calc(3rem * var(--pin, 1));
   /* The page's own button minimum (3rem) must not stretch a smaller pin. */
   min-width: 0;
   min-height: 0;
@@ -279,13 +281,13 @@ rt {
   /* A solid dark pin with a white outline reads on any map tile; the dark is fixed, not the theme's ink, so a dark page does not turn it pale. */
   fill: var(--pin-base);
   stroke: var(--pin-on);
-  stroke-width: 1.5;
+  stroke-width: 2.2;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
 .map-marker .pin-text {
   fill: var(--pin-on);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   text-anchor: middle;
   dominant-baseline: central;
@@ -324,15 +326,40 @@ rt {
 }
 
 /* The state is the shape and the line, never colour alone: seal red = stamped, big ring = next, dashed (round-ended) = not yet. */
-.map-marker[data-kind="todo"] .pin-shape {
-  stroke-dasharray: 3.4 3;
+/* Not yet: the head is a white disc with the number in the pin's colour (hollow); stamped and next keep it filled. */
+.map-marker .pin-hollow {
+  display: none;
+  fill: #fff;
+}
+.map-marker[data-kind="todo"]:not([data-role]) .pin-hollow {
+  display: block;
+}
+.map-marker[data-kind="todo"]:not([data-role]) .pin-text {
+  fill: var(--color-accent);
+}
+.map-marker .pin-check circle {
+  fill: #fff;
+  stroke: var(--color-shu);
+  stroke-width: 1.2;
+}
+.map-marker .pin-check path {
+  fill: none;
+  stroke: var(--color-shu);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 .map-marker[data-kind="next"] {
   z-index: 2;
 }
+.map-marker[data-kind="next"] {
+  /* The one to head for is bigger than the rest. */
+  transform: scale(1.25);
+  transform-origin: 50% 100%;
+}
 .map-marker[data-kind="next"] .pin-shape {
   fill: var(--color-accent);
-  stroke-width: 2.4;
+  stroke-width: 2.8;
 }
 .map-marker[data-kind="stamped"] .pin-shape {
   fill: var(--color-shu);
@@ -341,10 +368,10 @@ rt {
 /* A place with no stamp: a flag-shaped pin (the shape says it) on a plain light fill. */
 .map-marker[data-no-stamp="true"] .pin-shape {
   fill: var(--color-surface);
-  stroke: var(--pin-base);
+  stroke: var(--pin-ink);
 }
 .map-marker[data-no-stamp="true"] .pin-text {
-  fill: var(--pin-base);
+  fill: var(--pin-ink);
 }
 
 /* Where the walk starts and ends takes the badges' colours: lapis blue for the start, orange for the goal, a blue-to-orange fade for both. */
@@ -377,15 +404,15 @@ rt {
 }
 .map-marker[data-status="closed"] .pin-shape {
   fill: var(--color-surface);
-  stroke: var(--pin-base);
+  stroke: var(--pin-ink);
   stroke-dasharray: 2.8 2.8;
 }
 .map-marker[data-status="closed"] .pin-text {
-  fill: var(--pin-base);
+  fill: var(--pin-ink);
 }
 .map-marker[data-status="closed"] .pin-bar {
   display: block;
-  stroke: var(--pin-base);
+  stroke: var(--pin-ink);
 }
 
 .map-marker[aria-pressed="true"] {
