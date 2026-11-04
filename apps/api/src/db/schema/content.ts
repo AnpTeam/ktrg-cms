@@ -348,6 +348,9 @@ export const stamps = pgTable(
     // Plausibility checks flag a stamp for review; they never block it.
     flagged: boolean("flagged").notNull().default(false),
     flagReason: text("flag_reason"),
+    // When the phone pressed the stamp, for a stamp that was queued offline and uploaded later (null: stamped online).
+    // Only sanity-checked, never trusted: the award time (createdAt) stays the server's.
+    scannedAt: timestamp("scanned_at", { withTimezone: true }),
     revokedAt: timestamp("revoked_at", { withTimezone: true }),
     revokedBy: uuid("revoked_by").references(() => users.id, { onDelete: "set null" }),
     createdAt: createdAt(),

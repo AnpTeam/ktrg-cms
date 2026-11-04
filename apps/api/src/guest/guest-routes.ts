@@ -14,7 +14,7 @@ const YEAR_SEC = 365 * 24 * 60 * 60;
 
 function statusOf(reason: ErrorCode): 404 | 409 | 422 {
   if (reason === "not_found") return 404;
-  if (reason === "gps_accuracy_poor") return 422;
+  if (reason === "gps_accuracy_poor" || reason === "stale_scan" || reason === "bad_time") return 422;
   return 409; // spot_closed, too_far, guest_full
 }
 
@@ -47,6 +47,7 @@ export function guestRoutes(getServices: () => GuestServices, opts: RouteOptions
           lat: t.Number({ minimum: -90, maximum: 90 }),
           lng: t.Number({ minimum: -180, maximum: 180 }),
           accuracyM: t.Number({ minimum: 0, maximum: 100_000 }),
+          scannedAt: t.Optional(t.String({ format: "date-time" })),
         }),
         detail: { summary: "Collect a stamp without an account (kept in a signed cookie)" },
       },

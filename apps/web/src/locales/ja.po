@@ -575,7 +575,7 @@ msgstr "GPSの電波が弱いようです。空の開けた場所に動いて、
 msgid "GPSの電波が弱いようです。空の開けた場所に動いてください。"
 msgstr "GPSの電波が弱いようです。空の開けた場所に動いてください。"
 
-#: src/components/useErrorMessages.ts:44
+#: src/components/useErrorMessages.ts:46
 msgid "GPSの電波が弱いようです。空の開けた場所に移動して、もう一度お試しください。"
 msgstr "GPSの電波が弱いようです。空の開けた場所に移動して、もう一度お試しください。"
 
@@ -752,7 +752,7 @@ msgstr "アクセスの地域（管理）"
 msgid "アクセス数"
 msgstr "アクセス数"
 
-#: src/components/useErrorMessages.ts:61
+#: src/components/useErrorMessages.ts:63
 msgid "アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。"
 msgstr "アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。"
 
@@ -1183,7 +1183,7 @@ msgstr "このアカウントには、パスキーがありません。メール
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
 msgstr "このアカウントには、メールがありません。顔・指紋で確認してください。"
 
-#: src/components/useErrorMessages.ts:58
+#: src/components/useErrorMessages.ts:60
 msgid "このアカウントは、いま制限されています。スタンプを押すことと、コメントを書くことはできません。"
 msgstr "このアカウントは、いま制限されています。スタンプを押すことと、コメントを書くことはできません。"
 
@@ -1206,6 +1206,10 @@ msgstr "このコースの経由地で、ほかのコースにも置いている
 #: src/components/StampHere.tsx:113
 msgid "このスタンプは、もう押してあります。"
 msgstr "このスタンプは、もう押してあります。"
+
+#: src/components/useErrorMessages.ts:44
+msgid "このスタンプは、押してから時間がたちすぎているため、受け付けられませんでした（48時間まで）。"
+msgstr "このスタンプは、押してから時間がたちすぎているため、受け付けられませんでした（48時間まで）。"
 
 #: src/components/SampleNotice.tsx:51
 #: src/components/SampleNotice.tsx:78
@@ -1437,7 +1441,7 @@ msgstr "この端末・ブラウザでは、位置情報を使えません。"
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "この端末・ブラウザではパスキーを使えません。"
 
-#: src/components/useErrorMessages.ts:68
+#: src/components/useErrorMessages.ts:70
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 
@@ -1471,7 +1475,7 @@ msgstr "この端末には保存しました。つながったときに、アカ
 msgid "この経由地から、この距離の中にいるとスタンプを押せます。"
 msgstr "この経由地から、この距離の中にいるとスタンプを押せます。"
 
-#: src/components/useErrorMessages.ts:47
+#: src/components/useErrorMessages.ts:49
 msgid "この経由地の位置がまだ決まっていません。地図で位置を決めてください。"
 msgstr "この経由地の位置がまだ決まっていません。地図で位置を決めてください。"
 
@@ -1529,7 +1533,7 @@ msgstr "この設定は、本番のサイトにすぐ反映されます。保存
 msgid "この説明は日本語のみです。"
 msgstr "この説明は日本語のみです。"
 
-#: src/components/useErrorMessages.ts:65
+#: src/components/useErrorMessages.ts:67
 msgid "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 msgstr "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 
@@ -1708,7 +1712,7 @@ msgstr "スタンプ・状態・許可の設定"
 msgid "スタンプが多いルート"
 msgstr "スタンプが多いルート"
 
-#: src/components/useErrorMessages.ts:46
+#: src/components/useErrorMessages.ts:48
 msgid "スタンプが押されたことのある経由地は消せません。「公開をやめる」をお使いください。"
 msgstr "スタンプが押されたことのある経由地は消せません。「公開をやめる」をお使いください。"
 
@@ -1790,6 +1794,10 @@ msgstr "スタンプをもどす"
 #: src/app/(admin)/admin/page.tsx:78
 msgid "スタンプを押した人"
 msgstr "スタンプを押した人"
+
+#: src/components/useErrorMessages.ts:45
+msgid "スタンプを押した時刻が正しくありません。端末の日付と時刻を確かめてください。"
+msgstr "スタンプを押した時刻が正しくありません。端末の日付と時刻を確かめてください。"
 
 #: src/components/RallyNearbyStamp.tsx:89
 #: src/components/StampHere.tsx:154
@@ -1948,7 +1956,7 @@ msgstr "チェックを入れると、「経由地をつないで道をつくる
 #: src/components/StampGrid.tsx:77
 #: src/components/StampGrid.tsx:99
 #: src/components/StampGrid.tsx:109
-#: src/components/StampLegend.tsx:10
+#: src/components/StampLegend.tsx:11
 msgid "つぎ"
 msgstr "つぎ"
 
@@ -2127,7 +2135,7 @@ msgstr "パスキー {number}"
 msgid "パスキーの名前"
 msgstr "パスキーの名前"
 
-#: src/components/useErrorMessages.ts:69
+#: src/components/useErrorMessages.ts:71
 msgid "パスキーの確認が中止されました。もう一度お試しください。"
 msgstr "パスキーの確認が中止されました。もう一度お試しください。"
 
@@ -2443,7 +2451,7 @@ msgstr "まずは、歩きたい道をえらびます。登録しなくても、
 
 #: src/components/admin/RouteEditor.tsx:877
 #: src/components/RallyViews.tsx:108
-#: src/components/StampLegend.tsx:9
+#: src/components/StampLegend.tsx:10
 msgid "まだ"
 msgstr "まだ"
 
@@ -3129,7 +3137,7 @@ msgstr "並べ替えは、絞り込み・並べかえを外してからできま
 msgid "中身"
 msgstr "中身"
 
-#: src/components/useErrorMessages.ts:52
+#: src/components/useErrorMessages.ts:54
 msgid "中身のないラリーは公開できません。公開中のラリーを空にすることもできません。"
 msgstr "中身のないラリーは公開できません。公開中のラリーを空にすることもできません。"
 
@@ -3212,7 +3220,7 @@ msgstr "位置は「確認していない」状態で入ります。公開する
 msgid "位置を公式の情報で確認し、「位置を確認した」にチェックを入れて情報源を書いてください。"
 msgstr "位置を公式の情報で確認し、「位置を確認した」にチェックを入れて情報源を書いてください。"
 
-#: src/components/useErrorMessages.ts:48
+#: src/components/useErrorMessages.ts:50
 msgid "位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。"
 msgstr "位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。"
 
@@ -3228,7 +3236,7 @@ msgstr "位置を決めてください（地図に置くか、緯度と経度を
 msgid "位置を確認した"
 msgstr "位置を確認した"
 
-#: src/components/useErrorMessages.ts:49
+#: src/components/useErrorMessages.ts:51
 msgid "位置を確認した情報源（サイトの名前やリンク）を書いてください。"
 msgstr "位置を確認した情報源（サイトの名前やリンク）を書いてください。"
 
@@ -3781,7 +3789,7 @@ msgstr "写真ライブラリ"
 msgid "写真をアップロード"
 msgstr "写真をアップロード"
 
-#: src/components/useErrorMessages.ts:62
+#: src/components/useErrorMessages.ts:64
 msgid "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 msgstr "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 
@@ -3832,7 +3840,7 @@ msgstr "出典"
 msgid "出典: {0}"
 msgstr "出典: {0}"
 
-#: src/components/useErrorMessages.ts:59
+#: src/components/useErrorMessages.ts:61
 msgid "出典のリンクは https:// で始まるアドレスを入れてください。"
 msgstr "出典のリンクは https:// で始まるアドレスを入れてください。"
 
@@ -4283,7 +4291,7 @@ msgstr "和歌山県"
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 
-#: src/components/useErrorMessages.ts:71
+#: src/components/useErrorMessages.ts:73
 #: src/components/useStampMessages.ts:23
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "問題が発生しました。しばらくしてからもう一度お試しください。"
@@ -4777,7 +4785,7 @@ msgstr "折り返し"
 
 #: src/components/map/MapScreen.tsx:394
 #: src/components/RallyViews.tsx:108
-#: src/components/StampLegend.tsx:8
+#: src/components/StampLegend.tsx:9
 #: src/components/StopList.tsx:157
 msgid "押した"
 msgstr "押した"
@@ -5408,7 +5416,7 @@ msgstr "現在地を調べています…"
 msgid "現地の許可"
 msgstr "現地の許可"
 
-#: src/components/useErrorMessages.ts:50
+#: src/components/useErrorMessages.ts:52
 msgid "現地の許可がまだ確認できていません。許可を得たら「許可確認済み」にチェックを入れてください。"
 msgstr "現地の許可がまだ確認できていません。許可を得たら「許可確認済み」にチェックを入れてください。"
 
@@ -5489,7 +5497,7 @@ msgstr "登録する"
 msgid "登録できませんでした。もう一度お試しください。"
 msgstr "登録できませんでした。もう一度お試しください。"
 
-#: src/components/useErrorMessages.ts:45
+#: src/components/useErrorMessages.ts:47
 #: src/components/useStampMessages.ts:20
 msgid "登録なしで残せるスタンプの数が、上限になりました。新規登録すると、続けて集められます。"
 msgstr "登録なしで残せるスタンプの数が、上限になりました。新規登録すると、続けて集められます。"
@@ -5646,7 +5654,7 @@ msgstr "管理画面を開く"
 msgid "管理者としてログイン中"
 msgstr "管理者としてログイン中"
 
-#: src/components/useErrorMessages.ts:57
+#: src/components/useErrorMessages.ts:59
 msgid "管理者のアカウントは、制限したり削除したりできません。先に権限を変えてください。"
 msgstr "管理者のアカウントは、制限したり削除したりできません。先に権限を変えてください。"
 
@@ -5750,7 +5758,7 @@ msgstr "経由地ごとに、写真と、名前の由来や歴史を読めます
 msgid "経由地でつくったラリー：えらんだ経由地のスタンプを全部押すと達成。"
 msgstr "経由地でつくったラリー：えらんだ経由地のスタンプを全部押すと達成。"
 
-#: src/components/useErrorMessages.ts:53
+#: src/components/useErrorMessages.ts:55
 msgid "経由地でつくったラリーにはスタンプを押せる経由地を、コースでつくったラリーにはコースを入れてください。同じものは一度だけです。"
 msgstr "経由地でつくったラリーにはスタンプを押せる経由地を、コースでつくったラリーにはコースを入れてください。同じものは一度だけです。"
 
@@ -5947,11 +5955,11 @@ msgstr "自分でページをつくれます。公開すると、サイトの「
 msgid "自分に送っておくと、ブラウザのデータが消えても、このリンクからスタンプをもどせます。ほかの人には見せないでください。"
 msgstr "自分に送っておくと、ブラウザのデータが消えても、このリンクからスタンプをもどせます。ほかの人には見せないでください。"
 
-#: src/components/useErrorMessages.ts:56
+#: src/components/useErrorMessages.ts:58
 msgid "自分のアカウントは、制限したり削除したりできません。"
 msgstr "自分のアカウントは、制限したり削除したりできません。"
 
-#: src/components/useErrorMessages.ts:55
+#: src/components/useErrorMessages.ts:57
 msgid "自分の権限は変えられません。ほかの管理者に頼んでください。"
 msgstr "自分の権限は変えられません。ほかの管理者に頼んでください。"
 
@@ -6316,7 +6324,7 @@ msgstr "送っています…"
 msgid "送っています… {percent}%"
 msgstr "送っています… {percent}%"
 
-#: src/components/useErrorMessages.ts:70
+#: src/components/useErrorMessages.ts:72
 #: src/components/useStampMessages.ts:22
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "通信できませんでした。電波の良い場所でもう一度お試しください。"
@@ -6369,7 +6377,7 @@ msgstr "道なり"
 msgid "道に沿わせる"
 msgstr "道に沿わせる"
 
-#: src/components/useErrorMessages.ts:64
+#: src/components/useErrorMessages.ts:66
 msgid "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 msgstr "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 
@@ -6411,7 +6419,7 @@ msgstr "道を調べています…"
 msgid "道を調べています…（{step}/{total}）"
 msgstr "道を調べています…（{step}/{total}）"
 
-#: src/components/useErrorMessages.ts:66
+#: src/components/useErrorMessages.ts:68
 msgid "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 msgstr "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 

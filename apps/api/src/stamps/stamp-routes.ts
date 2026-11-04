@@ -13,6 +13,8 @@ function statusOf(reason: ErrorCode): 404 | 409 | 422 {
     case "not_found":
       return 404;
     case "gps_accuracy_poor":
+    case "stale_scan":
+    case "bad_time":
       return 422;
     default:
       return 409; // spot_closed, too_far, stamp_revoked
@@ -46,6 +48,7 @@ export function stampRoutes(getServices: () => StampServices, opts: RouteOptions
           lat: t.Number({ minimum: -90, maximum: 90 }),
           lng: t.Number({ minimum: -180, maximum: 180 }),
           accuracyM: t.Number({ minimum: 0, maximum: 100_000 }),
+          scannedAt: t.Optional(t.String({ format: "date-time" })),
         }),
       },
     )

@@ -13,6 +13,8 @@ export interface StampSpot {
   lng: number | null;
   radiusM: number;
   status: SpotStatus;
+  /** When the status last changed: an offline stamp pressed before a closure is still accepted. */
+  statusUpdatedAt?: Date | null;
 }
 
 /** Courses and rallies a stamp has just completed. */
@@ -51,7 +53,7 @@ export interface StampStore {
   /** Saves many stamps for one visitor at once (a guest signing up): one transaction, finishes worked out once at the end. */
   awardMany(userId: string, items: { spotId: string; flagged: boolean }[]): Promise<{ added: number; already: number }>;
   /** Saves the stamp (one per visitor and place) and, in the same transaction, the courses and rallies it finishes. */
-  award(userId: string, spotId: string, flag: { flagged: boolean; flagReason: string | null }): Promise<Awarded>;
+  award(userId: string, spotId: string, flag: { flagged: boolean; flagReason: string | null; scannedAt?: Date | null }): Promise<Awarded>;
   /** The visitor's own stamps that are not revoked. */
   listMine(userId: string): Promise<{ spotId: string; routeId: string; createdAt: Date }[]>;
   /** When the visitor finished each rally (saved at the moment the last stamp was awarded). */

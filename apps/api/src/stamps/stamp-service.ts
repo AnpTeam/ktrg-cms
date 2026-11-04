@@ -11,7 +11,13 @@ export interface Reading {
   lat: number;
   lng: number;
   accuracyM: number;
+  /** ISO time the phone pressed the stamp, sent only when it was queued offline. Checked, not trusted. */
+  scannedAt?: string;
 }
+
+/** A queued stamp may be this old when it is uploaded, and no more than this far ahead of the server's clock. */
+export const MAX_SCAN_AGE_MS = 48 * 60 * 60 * 1000;
+export const MAX_SCAN_AHEAD_MS = 5 * 60 * 1000;
 
 export interface Collected {
   spotId: string;
@@ -33,18 +39,25 @@ const isStampPlace = (spot: StampSpot | null): spot is StampPlace =>
   !!spot && spot.published && spot.stampable && spot.positionVerified && spot.lat !== null && spot.lng !== null;
 
 /** The place checks of a stamp (open, close enough, accurate enough), shared by an account's stamp and a guest's. */
-async function check(r: Reading, store: StampStore): Promise<Result<{ spot: StampPlace; flagged: boolean }>> {
+async function check(r: Reading, store: StampStore, now: Date): Promise<Result<{ spot: StampPlace; flagged: boolean; scannedAt: Date | null }>> {
   const spot = await store.findSpot(r.spotId);
   if (!isStampPlace(spot)) return { ok: false, reason: "not_found" };
-  if (spot.status === "closed") return { ok: false, reason: "spot_closed" };
+  let scannedAt: Date | null = null;
+  if (r.scannedAt !== undefined) {
+    scannedAt = new Date(r.scannedAt);
+    if (Number.isNaN(scannedAt.getTime()) || scannedAt.getTime() > now.getTime() + MAX_SCAN_AHEAD_MS) return { ok: false, reason: "bad_time" };
+    if (scannedAt.getTime() < now.getTime() - MAX_SCAN_AGE_MS) return { ok: false, reason: "stale_scan" };
+  }
+  // Closed now: refused, unless the phone pressed the stamp before the closure was set (it was open when they stood there).
+  if (spot.status === "closed" && !(scannedAt && spot.statusUpdatedAt && scannedAt < spot.statusUpdatedAt)) return { ok: false, reason: "spot_closed" };
   if (r.accuracyM > MAX_ACCURACY_M) return { ok: false, reason: "gps_accuracy_poor" };
   if (distanceMeters({ lat: r.lat, lng: r.lng }, { lat: spot.lat, lng: spot.lng }) > spot.radiusM) {
     return { ok: false, reason: "too_far" };
   }
-  return { ok: true, value: { spot, flagged: r.accuracyM >= FLAG_ACCURACY_M } };
+  return { ok: true, value: { spot, flagged: r.accuracyM >= FLAG_ACCURACY_M, scannedAt } };
 }
 
-export function createStampService({ store }: { store: StampStore }) {
+export function createStampService({ store, now = () => new Date() }: { store: StampStore; now?: () => Date }) {
   return {
     /** The place, if visitors may head for it and stamp it (also used by navigation); null otherwise. */
     async stampPlace(spotId: string): Promise<StampPlace | null> {
@@ -58,17 +71,17 @@ export function createStampService({ store }: { store: StampStore }) {
       return new Map(found.map((s) => [s.id, s]));
     },
 
-    check: (r: Reading) => check(r, store),
+    check: (r: Reading) => check(r, store, now()),
 
     /** Saves a stamp whose checks were already done (a guest's, once they sign up). */
     awardMany: (userId: string, items: { spotId: string; flagged: boolean }[]) => store.awardMany(userId, items),
     award: (userId: string, spotId: string, flagged: boolean) => store.award(userId, spotId, { flagged, flagReason: flagged ? "low_accuracy" : null }),
 
     async collect(userId: string, r: Reading): Promise<Result<Collected>> {
-      const checked = await check(r, store);
+      const checked = await check(r, store, now());
       if (!checked.ok) return checked;
-      const { spot, flagged } = checked.value;
-      const got = await store.award(userId, spot.id, { flagged, flagReason: flagged ? "low_accuracy" : null });
+      const { spot, flagged, scannedAt } = checked.value;
+      const got = await store.award(userId, spot.id, { flagged, flagReason: flagged ? "low_accuracy" : null, scannedAt });
       // A revoked stamp stays on record and blocks a new one; say so instead of "already stamped" with nothing to show.
       if (got.revoked) return { ok: false, reason: "stamp_revoked" };
       return {

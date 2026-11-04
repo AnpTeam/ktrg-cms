@@ -51,6 +51,8 @@ export const ERROR_CODES = {
   spot_closed: "409: the place is closed, so no stamp can be collected there",
   too_far: "409: the phone is not close enough to the place",
   stamp_revoked: "409: an admin revoked the stamp this account held at the place, so a new one cannot be collected",
+  stale_scan: "422: a stamp pressed offline is too old (more than 48 hours) to be accepted",
+  bad_time: "422: the time the stamp was pressed is not a valid time, or is in the future",
   gps_accuracy_poor: "422: the GPS reading is too rough (worse than 100 m); move to open sky and try again",
   guest_full: "409: a visitor without an account holds the most stamps that can be kept this way; sign up to keep collecting",
 
