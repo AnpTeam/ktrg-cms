@@ -15,6 +15,8 @@ export interface NavSession {
   routeName: string;
   /** Stop id -> its name in the visitor's language and its status, for the panel and the stamp button. */
   stops: Readonly<Record<string, NavStopInfo>>;
+  /** The course as the guidance sees it, for the progress and time left. */
+  model: NavModel;
   snapshot: NavSnapshot;
 }
 
@@ -33,14 +35,18 @@ interface NavigationApi {
   /** How tall the navigation toast is (0 when hidden), so a page can keep that room free at the bottom. */
   toastPx: number;
   setToastPx(px: number): void;
+  /** How far down from the top of the screen the instruction banner reaches on the map (0 when none), so the sheet stops below it. */
+  bannerPx: number;
+  setBannerPx(px: number): void;
 }
 
-const NavigationContext = createContext<NavigationApi>({ session: null, start: () => {}, stop: () => {}, markStamped: () => {}, toastPx: 0, setToastPx: () => {} });
+const NavigationContext = createContext<NavigationApi>({ session: null, start: () => {}, stop: () => {}, markStamped: () => {}, toastPx: 0, setToastPx: () => {}, bannerPx: 0, setBannerPx: () => {} });
 
 export function NavigationProvider({ children, signedIn }: { children: ReactNode; signedIn: boolean }) {
   const controller = useRef<NavigationController | null>(null);
   const [session, setSession] = useState<NavSession | null>(null);
   const [toastPx, setToastPx] = useState(0);
+  const [bannerPx, setBannerPx] = useState(0);
   // Read when a path is wanted, so signing in or out during a session takes effect without restarting it.
   const signedInRef = useRef(signedIn);
   useEffect(() => {
@@ -66,7 +72,7 @@ export function NavigationProvider({ children, signedIn }: { children: ReactNode
       onChange: (snapshot) => setSession((s) => (s && controller.current === c ? { ...s, snapshot } : s)),
     });
     controller.current = c;
-    setSession({ routeId, routeName, stops, snapshot: c.snapshot });
+    setSession({ routeId, routeName, stops, model, snapshot: c.snapshot });
     void c.start();
   }, []);
 
@@ -75,7 +81,7 @@ export function NavigationProvider({ children, signedIn }: { children: ReactNode
   // Leaving the site (or a full reload) ends the session; nothing is kept.
   useEffect(() => () => controller.current?.stop(), []);
 
-  const api = useMemo(() => ({ session, start, stop, markStamped, toastPx, setToastPx }), [session, start, stop, markStamped, toastPx]);
+  const api = useMemo(() => ({ session, start, stop, markStamped, toastPx, setToastPx, bannerPx, setBannerPx }), [session, start, stop, markStamped, toastPx, bannerPx]);
   return <NavigationContext.Provider value={api}>{children}</NavigationContext.Provider>;
 }
 

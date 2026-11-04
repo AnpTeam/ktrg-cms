@@ -70,6 +70,7 @@ export function MapScreen({
   const { t } = useLingui();
   const wrap = useRef<HTMLDivElement>(null);
   const nav = useNavigation();
+  const { toastPx: navToastPx, bannerPx: navBannerPx } = nav;
   // Coming back to the map during a navigation opens its course again.
   const [routeId, setRouteId] = useState<string | null>(initialRouteId ?? nav.session?.routeId ?? null);
   const [stopId, setStopId] = useState<string | null>(initialRouteId ? initialStopId : null);
@@ -127,14 +128,17 @@ export function MapScreen({
       const wide = window.matchMedia("(min-width: 768px)").matches;
       const tab = wide || chosen ? 0 : TAB_ROOM_REM * rem;
       setTabPx(tab);
+      // A navigation on a phone: the bottom strip and the top banner are drawn over the map, and the sheet fits between them
+      // (its handle must stay in view, or it cannot be pulled back down).
+      const navRoom = !window.matchMedia(WIDE_QUERY).matches ? navToastPx + navBannerPx : 0;
       setPanelPx(window.matchMedia(WIDE_QUERY).matches ? (PANEL_REM + 2 * PANEL_MARGIN_REM) * rem : 0);
-      setAvailable(Math.max(240, el.clientHeight - tab));
+      setAvailable(Math.max(240, el.clientHeight - tab - navRoom));
     };
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(el);
     return () => observer.disconnect();
-  }, [chosen]);
+  }, [chosen, navToastPx, navBannerPx]);
 
   // On a narrow screen the sheet rises to show what was chosen; on a desktop the panel just shows it.
   const chooseRoute = useCallback(

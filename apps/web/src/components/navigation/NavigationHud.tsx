@@ -8,6 +8,7 @@ import { StampHere } from "@/components/StampHere";
 import { compassPoint, type CompassPoint, type TurnKind } from "@/lib/navigation/geometry";
 import { modelFromMapRoute } from "@/lib/navigation/input";
 import type { MapScreenRoute } from "@/lib/map-screen";
+import { courseProgress } from "@/lib/navigation/progress";
 import { distanceParts } from "@/lib/stamp-flow";
 import { useNavigation, type NavStopInfo } from "./NavigationProvider";
 
@@ -65,9 +66,10 @@ export function NavigationStart({ route }: { route: MapScreenRoute }) {
 
 export function NavigationToast() {
   const { t, i18n } = useLingui();
-  const { session, stop, markStamped, setToastPx } = useNavigation();
+  const { session, stop, markStamped, setToastPx, setBannerPx } = useNavigation();
   const pathname = usePathname();
   const box = useRef<HTMLElement>(null);
+  const banner = useRef<HTMLElement>(null);
   const [now, setNow] = useState(() => Date.now());
 
   // Ticks so the age of an old fix stays true while nothing new arrives.
@@ -97,6 +99,21 @@ export function NavigationToast() {
       root.style.removeProperty("--nav-toast");
     };
   }, [shown, setToastPx]);
+
+  // The banner at the top of the map: tell the map how far down it reaches, so the sheet never rises under it.
+  const bannerShown = shown && pathname === "/map";
+  useLayoutEffect(() => {
+    const el = banner.current;
+    if (!bannerShown || !el) return;
+    const report = () => setBannerPx(el.offsetTop + el.offsetHeight + GAP_PX);
+    report();
+    const observer = new ResizeObserver(report);
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      setBannerPx(0);
+    };
+  }, [bannerShown, setBannerPx]);
 
   // On the map a running navigation is a mode of its own: the layer pills and the top bar step aside (globals.css).
   const navOnMap = shown && pathname === "/map";
@@ -195,6 +212,17 @@ export function NavigationToast() {
     );
   }
 
+  // Where the course stands: places done, time to the next one, and what is left (only numbers that can be true).
+  const progress = courseProgress(session.model, st, snap.stamped);
+  const mins = (m: number) => (m < 60 ? t`${m}分` : t`${Math.floor(m / 60)}時間${m % 60}分`);
+  const progressLine = (
+    <p className="rounded-2xl bg-paper px-4 py-2 text-lg font-bold leading-snug shadow-lg ring-1 ring-line/30">
+      <span className="tabular-nums">{t`スタンプ ${progress.done} / ${progress.total}`}</span>
+      {progress.toNextMin !== null ? <span className="tabular-nums">{` · ${t`次まで ${mins(progress.toNextMin)}`}`}</span> : null}
+      {progress.leftM !== null && progress.leftMin !== null ? <span className="tabular-nums">{` · ${t`残り ${meters(progress.leftM)}（${mins(progress.leftMin)}）`}`}</span> : null}
+    </p>
+  );
+
   const stampButton =
     st.inRadius && st.targetId && target ? (
       <StampHere
@@ -215,11 +243,12 @@ export function NavigationToast() {
     };
     return (
       <>
-        <section aria-label={t`ナビ中：${routeName}`} className="fixed inset-x-3 top-[calc(0.5rem+env(safe-area-inset-top))] z-30 flex flex-col gap-1 rounded-2xl bg-paper px-4 py-3 shadow-2xl ring-1 ring-line/30 md:inset-x-auto md:left-[calc(50%-14rem)] md:w-[28rem]">
+        <section ref={banner} aria-label={t`ナビ中：${routeName}`} className="fixed inset-x-3 top-[calc(0.5rem+env(safe-area-inset-top))] z-30 flex flex-col gap-1 rounded-2xl bg-paper px-4 py-3 shadow-2xl ring-1 ring-line/30 md:inset-x-auto md:left-[calc(50%-14rem)] md:w-[28rem]">
           {main}
           {note ? <p className="text-base leading-snug">{note}</p> : null}
         </section>
         <section ref={box} aria-label={t`ナビの操作`} className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 flex flex-col gap-2 md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem]">
+          {progressLine}
           {stampButton}
           <button type="button" onClick={leave} className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl border-2 border-ink bg-paper px-5 text-xl font-bold text-ink shadow-lg hover:bg-surface">
             {t`ナビを終える`}
