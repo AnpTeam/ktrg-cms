@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
+import { BackLink } from "@/components/BackLink";
 import { Localized } from "@/components/Localized";
 import { EmptyState } from "@/components/EmptyState";
 import { initLingui } from "@/i18n/server";
@@ -24,6 +25,9 @@ export default async function BadgesPage() {
   return (
     <div className="flex flex-col gap-6 pt-2 lg:pt-0">
       <div className="flex flex-col gap-2 px-4">
+        <BackLink href="/rallies">
+          <Trans>ラリー</Trans>
+        </BackLink>
         <h1 className="text-3xl font-bold lg:text-4xl">
           <Trans>バッジ</Trans>
         </h1>

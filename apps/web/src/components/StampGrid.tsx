@@ -1,5 +1,6 @@
 import { useLingui } from "@lingui/react/macro";
-import { StampFace, tilt, type StampState } from "./StampFace";
+import { Seal } from "./Seal";
+import { tilt, type StampState } from "./StampFace";
 
 /** First slot not yet stamped, or undefined when all are. */
 export function nextStamp(stamped: ReadonlySet<number>, total: number) {
@@ -102,12 +103,10 @@ export function StampGrid({
           );
         }
         return (
-          <li key={number} className="aspect-square">
-            <StampFace state={state} number={number} rough={big} className={`h-full w-full ${big ? "rounded-full! p-4 text-center" : ""}`}>
-              <span className={`${big ? "text-4xl" : "text-3xl"} font-bold leading-none tabular-nums`}>{number}</span>
-              {big && name ? <span className="mt-2 line-clamp-3 break-all text-lg font-bold leading-snug [text-wrap:balance]">{name}</span> : null}
-              {state === "next" ? <span className="mt-1 text-base font-bold">{t`つぎ`}</span> : null}
-            </StampFace>
+          <li key={number} className="flex flex-col items-center gap-1">
+            <Seal state={state} number={number} rough={big} className="aspect-square w-full" />
+            {big && name ? <span aria-hidden="true" className="line-clamp-2 break-all text-center text-lg font-bold leading-snug [text-wrap:balance]">{name}</span> : null}
+            {state === "next" ? <span aria-hidden="true" className="text-base font-bold text-accent">{t`つぎ`}</span> : null}
             <span className="sr-only">{name ? `${status} ${name}` : status}</span>
           </li>
         );

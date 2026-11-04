@@ -266,15 +266,15 @@ msgstr "{name}を空にして、もとの文章に戻す"
 msgid "{nameEn} (end)"
 msgstr "{nameEn} (end)"
 
-#: src/components/StampGrid.tsx:51
+#: src/components/StampGrid.tsx:52
 msgid "{number}番 スタンプ済み"
 msgstr "{number}番 スタンプ済み"
 
-#: src/components/StampGrid.tsx:53
+#: src/components/StampGrid.tsx:54
 msgid "{number}番 つぎのスタンプ"
 msgstr "{number}番 つぎのスタンプ"
 
-#: src/components/StampGrid.tsx:54
+#: src/components/StampGrid.tsx:55
 msgid "{number}番 まだ押していません"
 msgstr "{number}番 まだ押していません"
 
@@ -1096,7 +1096,7 @@ msgstr "コースでつくったラリー：えらんだコースを全部終え
 msgid "コースでつくる"
 msgstr "コースでつくる"
 
-#: src/app/(public)/badges/page.tsx:34
+#: src/app/(public)/badges/page.tsx:38
 msgid "コースのすべての場所でスタンプを押すと、そのコースのバッジがもらえます。"
 msgstr "コースのすべての場所でスタンプを押すと、そのコースのバッジがもらえます。"
 
@@ -1935,8 +1935,8 @@ msgid "チェックを入れると、「経由地をつないで道をつくる�
 msgstr "チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。代わりに、一つ前の経由地から、この場所までの寄り道の線（青い細い点線）を、地図で描けます。分かれ道に経由地を置き、その次にこの場所を並べてください。"
 
 #: src/components/RallyViews.tsx:61
-#: src/components/StampGrid.tsx:76
-#: src/components/StampGrid.tsx:98
+#: src/components/StampGrid.tsx:77
+#: src/components/StampGrid.tsx:99
 #: src/components/StampGrid.tsx:109
 #: src/components/StampLegend.tsx:10
 msgid "つぎ"
@@ -2145,15 +2145,15 @@ msgstr "バス停"
 msgid "パソコン幅"
 msgstr "パソコン幅"
 
-#: src/app/(public)/badges/page.tsx:13
-#: src/app/(public)/badges/page.tsx:28
+#: src/app/(public)/badges/page.tsx:14
+#: src/app/(public)/badges/page.tsx:32
 #: src/app/(public)/page.tsx:78
 #: src/app/(public)/rallies/page.tsx:39
 #: src/app/(public)/sitemap/page.tsx:87
 msgid "バッジ"
 msgstr "バッジ"
 
-#: src/app/(public)/badges/page.tsx:39
+#: src/app/(public)/badges/page.tsx:43
 msgid "バッジは、まだ準備中です。"
 msgstr "バッジは、まだ準備中です。"
 
@@ -2639,7 +2639,7 @@ msgstr "もとの文章"
 msgid "もどる"
 msgstr "もどる"
 
-#: src/app/(public)/badges/page.tsx:63
+#: src/app/(public)/badges/page.tsx:67
 msgid "もらいました"
 msgstr "もらいました"
 
@@ -2701,6 +2701,7 @@ msgid "ライト"
 msgstr "ライト"
 
 #: src/app/(admin)/admin/rallies/page.tsx:22
+#: src/app/(public)/badges/page.tsx:29
 #: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/page.tsx:74
 #: src/app/(public)/rallies/[id]/page.tsx:59
@@ -3531,7 +3532,7 @@ msgstr "公開しました。"
 msgid "公開する"
 msgstr "公開する"
 
-#: src/app/(public)/badges/page.tsx:40
+#: src/app/(public)/badges/page.tsx:44
 msgid "公開できるようになったら、ここにコースのバッジが表示されます。"
 msgstr "公開できるようになったら、ここにコースのバッジが表示されます。"
 
