@@ -16,10 +16,8 @@ export async function generateMetadata(): Promise<Metadata> {
 // changed later.
 export default async function WelcomePage({ searchParams }: { searchParams: Promise<{ next?: string; as?: string }> }) {
   await initLingui();
-  const params = await searchParams;
+  const [params, viewer, prefs] = await Promise.all([searchParams, getViewer(searchParams), getPrefs()]);
   const next = safeNextPath(params.next, "/");
-  const viewer = await getViewer(searchParams);
-  const prefs = await getPrefs();
 
   return (
     <div className="page-narrow flex flex-col gap-6 px-4 pt-2">

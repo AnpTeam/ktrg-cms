@@ -22,8 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function StampsPage({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
   const i18n = await initLingui();
-  const viewer = await getViewer(searchParams);
-  const rallies = await listRallies();
+  const [viewer, rallies] = await Promise.all([getViewer(searchParams), listRallies()]);
   const featured = pickFeatured(rallies);
   const others = otherRallies(rallies, featured);
 

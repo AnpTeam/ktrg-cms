@@ -24,15 +24,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 // Route page (WBS 3.2.4, 3.2.8). The body is RouteView, shared with the admin's live preview.
 export default async function RouteDetailPage({ params }: Props) {
   const i18n = await initLingui();
-  const found = await getRoute((await params).id);
+  // Each of these is a trip to the API and none needs another's answer: ask them all at once.
+  const [found, prefs, settings, viewer, allNotices] = await Promise.all([params.then((p) => getRoute(p.id)), getPrefs(), getMapSettings(), getViewer(), listNotices()]);
   if (!found) notFound();
   const route = found;
-  const prefs = await getPrefs();
-  const settings = await getMapSettings();
+  // The places are looked up by the route's number, so they wait for the route.
   const places = (await listPlacesForRoute(route.order)).map((p) => toMapPlace(i18n.locale, p));
-
-  const viewer = await getViewer();
-  const notices = (await listNotices()).filter((n) => n.routeId === null || n.routeId === route.id);
+  const notices = allNotices.filter((n) => n.routeId === null || n.routeId === route.id);
 
   return (
     <div className="flex flex-col gap-6">

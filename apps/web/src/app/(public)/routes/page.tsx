@@ -26,11 +26,9 @@ export default async function RoutesPage({
   searchParams: Promise<{ pref?: string; as?: string }>;
 }) {
   const i18n = await initLingui();
-  const viewer = await getViewer(searchParams);
-  const { pref } = await searchParams;
+  const [viewer, { pref }, all] = await Promise.all([getViewer(searchParams), searchParams, listRoutes()]);
   const active = isPrefecture(pref) ? pref : undefined;
 
-  const all = await listRoutes();
   // Routes that are ready come first, the coming-soon ones after; each keeps its own number (route.order), and the sort is stable.
   const routes = [...filterByPrefecture(all, active)].sort((a, b) => Number(a.status === "soon") - Number(b.status === "soon"));
   const available = prefectures.filter((p) => all.some((r) => r.prefecture === p));

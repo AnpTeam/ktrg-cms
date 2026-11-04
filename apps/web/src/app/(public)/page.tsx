@@ -27,10 +27,8 @@ function courseToContinue(routes: RouteSummary[]): RouteSummary | undefined {
 const OFFICIAL_PR_VIDEO = "https://www.youtube.com/watch?v=fd-i0SqyhP0";
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
-  const i18n = await initLingui();
-  const viewer = await getViewer(searchParams);
-
-  const [all, notices, banners, posts, sections] = await Promise.all([listRoutes(), listNotices(), listBanners(), listPosts(), getHomeSections()]);
+  // The visitor and the page's data do not depend on each other: one round of requests.
+  const [i18n, viewer, all, notices, banners, posts, sections] = await Promise.all([initLingui(), getViewer(searchParams), listRoutes(), listNotices(), listBanners(), listPosts(), getHomeSections()]);
   const routes = all;
   // The intro video is set by the deployment (a YouTube or Vimeo link); with none, the section is left out.
   const introVideo = parseVideoUrl(process.env.INTRO_VIDEO_URL ?? OFFICIAL_PR_VIDEO);
@@ -44,9 +42,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   const total = routes.reduce((n, r) => n + r.spotCount, 0) || TOTAL_STAMPS;
   const name = viewer.name;
-  const prefs = await getPrefs();
   const target = courseToContinue(routes);
-  const found = target ? await getRoute(target.id) : undefined;
+  const [prefs, found] = await Promise.all([getPrefs(), target ? getRoute(target.id) : undefined]);
   // The next places to stamp on that course, in order (a side trip and a closed place are left out).
   const next = found ? found.spots.filter((s) => s.stamped === false && s.status !== "closed" && !s.stopBy).slice(0, 3) : [];
 
