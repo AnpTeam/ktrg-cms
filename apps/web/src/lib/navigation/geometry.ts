@@ -138,7 +138,11 @@ export function nearestTarget(
 }
 
 /** Off-route needs OFF_ROUTE_FIXES fixes in a row beyond OFF_ROUTE_M, so one bad fix does not flash the warning. */
-export function offRouteStep(prevCount: number, offM: number): { count: number; offRoute: boolean } {
+/** Once off route, the warning clears only inside this (closer than OFF_ROUTE_M), so a fix hovering at the edge does not flicker. */
+export const BACK_ON_ROUTE_M = 25;
+
+export function offRouteStep(prevCount: number, offM: number, wasOff = false): { count: number; offRoute: boolean } {
+  if (wasOff) return offM > BACK_ON_ROUTE_M ? { count: prevCount + 1, offRoute: true } : { count: 0, offRoute: false };
   const count = offM > OFF_ROUTE_M ? prevCount + 1 : 0;
   return { count, offRoute: count >= OFF_ROUTE_FIXES };
 }

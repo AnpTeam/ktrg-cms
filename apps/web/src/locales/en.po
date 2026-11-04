@@ -150,7 +150,7 @@ msgstr "Cities and towns with fewer than {0} views are not named, only counted i
 
 #. placeholder {0}: Math.floor(m / 60)
 #. placeholder {1}: m % 60
-#: src/components/navigation/NavigationHud.tsx:218
+#: src/components/navigation/NavigationHud.tsx:234
 msgid "{0}時間{1}分"
 msgstr "{0} h {1} min"
 
@@ -190,7 +190,7 @@ msgstr "Connected {count} legs along trails. {straight} had no trail and are str
 msgid "{count}つの区間を、道に沿ってつなぎました。形を確かめてから、保存してください。「元に戻す」で、もとにもどせます。"
 msgstr "Connected {count} legs along trails. Check the shape, then save. Undo takes it back."
 
-#: src/components/navigation/NavigationHud.tsx:199
+#: src/components/navigation/NavigationHud.tsx:215
 msgid "{direction} {distText}"
 msgstr "{distText} {direction}"
 
@@ -223,7 +223,7 @@ msgstr "{label} (admin)"
 msgid "{label}の言語"
 msgstr "Language of {label}"
 
-#: src/components/navigation/NavigationHud.tsx:218
+#: src/components/navigation/NavigationHud.tsx:234
 msgid "{m}分"
 msgstr "{m} min"
 
@@ -326,7 +326,7 @@ msgstr "Latitude, row {row}"
 msgid "{row}行目を削除"
 msgstr "Remove row {row}"
 
-#: src/components/navigation/NavigationHud.tsx:199
+#: src/components/navigation/NavigationHud.tsx:215
 msgid "{steerWord} {distText}"
 msgstr "{steerWord}, {distText}"
 
@@ -364,7 +364,7 @@ msgstr "{TOTAL_STAMPS} places"
 msgid "{total}件"
 msgstr "{total} items"
 
-#: src/components/navigation/NavigationHud.tsx:196
+#: src/components/navigation/NavigationHud.tsx:212
 msgid "{turnIn}先 {turnWord}"
 msgstr "{turnWord} in {turnIn}"
 
@@ -583,7 +583,7 @@ msgstr "Open in Google Maps"
 msgid "GPSの電波が弱いようです。空の開けた場所に動いて、もう一度お試しください。"
 msgstr "The GPS signal looks weak. Move to open sky and try again."
 
-#: src/components/navigation/NavigationHud.tsx:187
+#: src/components/navigation/NavigationHud.tsx:203
 msgid "GPSの電波が弱いようです。空の開けた場所に動いてください。"
 msgstr "The GPS signal is weak. Please move to open sky."
 
@@ -1335,7 +1335,7 @@ msgstr "Use this photo"
 msgid "この動画は「ファストスタート」になっていないため、再生が始まるまで時間がかかることがあります。書き出し時に「Web向けに最適化」をオンにしてください。"
 msgstr "This video is not set up for fast start, so it may take a while before playback begins. When exporting, turn on \"Optimize for web\"."
 
-#: src/components/navigation/NavigationHud.tsx:189
+#: src/components/navigation/NavigationHud.tsx:205
 msgid "この区間のスタンプは、すべて押しました。"
 msgstr "Every stamp on this course is collected."
 
@@ -1678,7 +1678,7 @@ msgstr "Height of the sheet (change it with the up and down arrow keys)"
 msgid "スキップ"
 msgstr "Skip"
 
-#: src/components/navigation/NavigationHud.tsx:196
+#: src/components/navigation/NavigationHud.tsx:212
 msgid "すぐ{turnWord}"
 msgstr "{turnWord} now"
 
@@ -1704,7 +1704,7 @@ msgstr "Stamps"
 #. placeholder {1}: b.total
 #. placeholder {1}: progress.total
 #: src/components/BookmarkList.tsx:49
-#: src/components/navigation/NavigationHud.tsx:221
+#: src/components/navigation/NavigationHud.tsx:237
 msgid "スタンプ {0} / {1}"
 msgstr "Stamps {0} / {1}"
 
@@ -1770,7 +1770,7 @@ msgstr "The stamp places are not ready yet."
 msgid "スタンプの経由地 {0}"
 msgstr "{0} stamp waypoints"
 
-#: src/components/navigation/NavigationHud.tsx:180
+#: src/components/navigation/NavigationHud.tsx:196
 msgid "スタンプの記録を読めませんでした。"
 msgstr "Your stamps could not be read."
 
@@ -2087,7 +2087,7 @@ msgstr "Drag to move. Click to remove."
 msgid "ドラッグで動かします。クリックで選び、ダブルクリックでなめらかな点と角の点を切り替えます。"
 msgstr "Drag to move. Click to choose it; double-click to switch between a smooth point and a corner."
 
-#: src/components/navigation/NavigationHud.tsx:251
+#: src/components/navigation/NavigationHud.tsx:268
 msgid "ナビの操作"
 msgstr "Navigation controls"
 
@@ -2095,17 +2095,17 @@ msgstr "Navigation controls"
 msgid "ナビをはじめる"
 msgstr "Start navigation"
 
-#: src/components/navigation/NavigationHud.tsx:243
+#: src/components/navigation/NavigationHud.tsx:259
 msgid "ナビを終えますか？"
 msgstr "End navigation?"
 
-#: src/components/navigation/NavigationHud.tsx:256
-#: src/components/navigation/NavigationHud.tsx:277
+#: src/components/navigation/NavigationHud.tsx:273
+#: src/components/navigation/NavigationHud.tsx:294
 msgid "ナビを終える"
 msgstr "End navigation"
 
-#: src/components/navigation/NavigationHud.tsx:247
-#: src/components/navigation/NavigationHud.tsx:267
+#: src/components/navigation/NavigationHud.tsx:263
+#: src/components/navigation/NavigationHud.tsx:284
 msgid "ナビ中：{routeName}"
 msgstr "Navigating: {routeName}"
 
@@ -3248,7 +3248,7 @@ msgstr "We don't save your location. We only save the stamp."
 msgid "位置は、公式の情報から入れて、地図で確かめます。推測では入れません。"
 msgstr "Enter the position from official information and check it on the map. Never guess it."
 
-#: src/components/navigation/NavigationHud.tsx:178
+#: src/components/navigation/NavigationHud.tsx:194
 msgid "位置は{ageS}秒前のものです。"
 msgstr "This position is {ageS} seconds old."
 
@@ -4361,7 +4361,7 @@ msgid "土曜日"
 msgstr "Saturday"
 
 #: src/components/map/TrailMap.tsx:448
-#: src/components/navigation/NavigationHud.tsx:274
+#: src/components/navigation/NavigationHud.tsx:291
 msgid "地図"
 msgstr "Map"
 
@@ -5225,7 +5225,7 @@ msgstr "Elevations added. {matched} of the line's {total} points lay on the GPX 
 msgid "標高を調べています…"
 msgstr "Looking up elevation…"
 
-#: src/components/navigation/NavigationHud.tsx:207
+#: src/components/navigation/NavigationHud.tsx:223
 msgid "次のスタンプの場所"
 msgstr "Next stamp place"
 
@@ -5255,7 +5255,7 @@ msgid "次へ ＞"
 msgstr "Next >"
 
 #. placeholder {0}: mins(progress.toNextMin)
-#: src/components/navigation/NavigationHud.tsx:222
+#: src/components/navigation/NavigationHud.tsx:238
 msgid "次まで {0}"
 msgstr "Next stop in {0}"
 
@@ -5316,7 +5316,7 @@ msgstr "Best to keep"
 
 #. placeholder {0}: meters(progress.leftM)
 #. placeholder {1}: mins(progress.leftMin)
-#: src/components/navigation/NavigationHud.tsx:223
+#: src/components/navigation/NavigationHud.tsx:239
 msgid "残り {0}（{1}）"
 msgstr "{0} left ({1})"
 
@@ -5463,7 +5463,7 @@ msgstr "Status not checked"
 msgid "現在地を真ん中にする（進む向きが上）"
 msgstr "Keep my position in the middle (direction of travel up)"
 
-#: src/components/navigation/NavigationHud.tsx:187
+#: src/components/navigation/NavigationHud.tsx:203
 msgid "現在地を調べています…"
 msgstr "Finding your position…"
 
@@ -5500,7 +5500,7 @@ msgstr "Male"
 msgid "町や村の名前"
 msgstr "Name of the town or village"
 
-#: src/components/navigation/NavigationHud.tsx:174
+#: src/components/navigation/NavigationHud.tsx:190
 msgid "画面が見えない間は、位置を止めています。"
 msgstr "Position is paused while the screen is hidden."
 
@@ -5750,7 +5750,7 @@ msgstr "Pilgrim’s stamp book"
 msgid "終わりの日"
 msgstr "To"
 
-#: src/components/navigation/NavigationHud.tsx:278
+#: src/components/navigation/NavigationHud.tsx:295
 msgid "終了"
 msgstr "End"
 
@@ -6408,6 +6408,10 @@ msgstr "See closures and other notices with the date they were checked."
 msgid "遊び方"
 msgstr "How to play"
 
+#: src/components/navigation/NavigationHud.tsx:182
+msgid "道からはずれています"
+msgstr "You are off the trail"
+
 #: src/components/admin/map-editor/MapEditor.tsx:739
 msgid "道が見つかりませんでした。"
 msgstr "No trail was found."
@@ -6428,7 +6432,7 @@ msgstr "Path"
 msgid "道でつなぐ"
 msgstr "Connect by trail"
 
-#: src/components/navigation/NavigationHud.tsx:200
+#: src/components/navigation/NavigationHud.tsx:216
 msgid "道なり"
 msgstr "Follow the path"
 
@@ -6440,11 +6444,11 @@ msgstr "Snap to trails"
 msgid "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 msgstr "Snapping to trails is not available yet. Ask whoever manages the site to set up the route-finding service. You can still draw the line by hand."
 
-#: src/components/navigation/NavigationHud.tsx:200
+#: src/components/navigation/NavigationHud.tsx:216
 msgid "道の外・歩ける道"
 msgstr "Off the course, along a walkable path"
 
-#: src/components/navigation/NavigationHud.tsx:200
+#: src/components/navigation/NavigationHud.tsx:216
 msgid "道の外・直線"
 msgstr "Off the course, in a straight line"
 
@@ -6460,6 +6464,12 @@ msgstr "Choose by hand, based on the condition of the path."
 #: src/components/RouteStats.tsx:50
 msgid "道の険しさや迷いやすさを、A（整った道）からE（厳しい岩場や藪）で表した目安です。"
 msgstr "A guide to how rough a path is and how easy it is to lose, from A (a well-kept path) to E (hard rock or thick brush)."
+
+#. placeholder {0}: meters(back.m)
+#. placeholder {1}: compass[compassPoint(back.deg)]
+#: src/components/navigation/NavigationHud.tsx:174
+msgid "道まで {0}（{1}）"
+msgstr "{0} to the trail ({1})"
 
 #: src/components/admin/SiteSettingsForm.tsx:34
 msgid "道や建物、記号が細かく描かれた、いちばん詳しい地図です。"

@@ -116,6 +116,9 @@ export interface NavState {
   offRouteCount: number;
   /** Off the course line for OFF_ROUTE_FIXES fixes in a row. */
   offRoute: boolean;
+  /** While off route: metres to, and the bearing of, the nearest point of the course line (the way back). */
+  backM: number | null;
+  backBearingDeg: number | null;
   /** Fixes ignored for poor accuracy, so the screen can say "GPS signal is weak". */
   ignoredFixes: number;
 }
@@ -135,6 +138,8 @@ export function initialState(): NavState {
     inRadius: false,
     offRouteCount: 0,
     offRoute: false,
+    backM: null,
+    backBearingDeg: null,
     ignoredFixes: 0,
   };
 }
@@ -173,8 +178,19 @@ export function applyFix(model: NavModel, prev: NavState, reading: NavReading, s
     if (prev.alongM !== null) proj = projectOnLine(model.line, model.cum, reading, { fromM: prev.alongM - SEARCH_WINDOW_M, toM: prev.alongM + SEARCH_WINDOW_M });
     if (!proj || proj.offM > OFF_LINE_RECHECK_M) proj = projectOnLine(model.line, model.cum, reading);
   }
-  const off = proj ? offRouteStep(prev.offRouteCount, proj.offM) : { count: 0, offRoute: false };
-  const common = { ...base, targetId: stop.id, straightM, inRadius, offLineM: proj ? proj.offM : null, offRouteCount: off.count, offRoute: off.offRoute };
+  const off = proj ? offRouteStep(prev.offRouteCount, proj.offM, prev.offRoute) : { count: 0, offRoute: false };
+  const back = proj && off.offRoute ? pointAlong(model.line, model.cum, proj.alongM) : null;
+  const common = {
+    ...base,
+    targetId: stop.id,
+    straightM,
+    inRadius,
+    offLineM: proj ? proj.offM : null,
+    offRouteCount: off.count,
+    offRoute: off.offRoute,
+    backM: back && proj ? proj.offM : null,
+    backBearingDeg: back ? bearingDeg(reading, back) : null,
+  };
 
   const stopAlong = model.stopAlongM[i] ?? null;
   if (proj && !off.offRoute && proj.offM <= OFF_LINE_RECHECK_M && stopAlong !== null) {
