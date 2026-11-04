@@ -1,3 +1,4 @@
+import type { ComponentProps } from "react";
 import Link from "next/link";
 import { Trans } from "@lingui/react/macro";
 import { pickText, type SpotDetail } from "@/lib/content";
@@ -25,6 +26,7 @@ export function SpotSheet({
   locale,
   loginHref,
   stampMock,
+  stampProgress,
   nearby = [],
   nearest = [],
 }: {
@@ -37,6 +39,8 @@ export function SpotSheet({
   nearest?: NearestGroup[];
   /** Development only: pretend answers for the stamp button. */
   stampMock?: StampMock;
+  /** Where the spot's course stood before this stamp, for the "stamp collected" popup. */
+  stampProgress?: ComponentProps<typeof StampHere>["progress"];
 }) {
   // A place without a stamp has a page to read, but no stamp card and no stamp button.
   const stampable = spot.stampable !== false;
@@ -182,7 +186,7 @@ export function SpotSheet({
       <LastUpdated iso={spot.updatedAt} locale={locale} className="px-4" />
 
       {stampable ? (
-        <StampHere spotId={spot.id} status={spot.status} alreadyStamped={spot.stamped === true} stampImage={spot.stampImageUrl} loginHref={loginHref} mock={stampMock} />
+        <StampHere spotId={spot.id} status={spot.status} alreadyStamped={spot.stamped === true} stampImage={spot.stampImageUrl} loginHref={loginHref} mock={stampMock} progress={stampProgress} />
       ) : null}
     </article>
   );
