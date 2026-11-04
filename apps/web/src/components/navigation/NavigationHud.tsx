@@ -12,6 +12,7 @@ import { modelFromMapRoute } from "@/lib/navigation/input";
 import type { MapScreenRoute } from "@/lib/map-screen";
 import { courseProgress } from "@/lib/navigation/progress";
 import { distanceParts } from "@/lib/stamp-flow";
+import { useNavVoice } from "./useNavVoice";
 import { NavFarCard } from "./NavFarCard";
 import { NavTargetPicker } from "./NavTargetPicker";
 import { useNavigation, type NavStopInfo } from "./NavigationProvider";
@@ -113,6 +114,7 @@ export function NavigationToast() {
   const box = useRef<HTMLElement>(null);
   const banner = useRef<HTMLElement>(null);
   const [now, setNow] = useState(() => Date.now());
+  const voice = useNavVoice(session?.snapshot.state ?? null, session?.snapshot.state.targetId ? session.stops[session.snapshot.state.targetId]?.name : undefined);
 
   // Ticks so the age of an old fix stays true while nothing new arrives.
   useEffect(() => {
@@ -309,6 +311,14 @@ export function NavigationToast() {
           {main}
           {offRouteBlock}
           {note ? <p className="text-base leading-snug">{note}</p> : null}
+          {voice.supported ? (
+            <div className="flex items-center gap-3">
+              <button type="button" role="switch" aria-checked={voice.on} onClick={voice.toggle} className={quiet}>
+                {voice.on ? t`音声案内：オン` : t`音声案内：オフ`}
+              </button>
+              {voice.on && !voice.canVibrate ? <span className="text-base text-muted">{t`この端末では、振動は使えません。`}</span> : null}
+            </div>
+          ) : null}
         </section>
         <section ref={box} aria-label={t`ナビの操作`} className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 flex flex-col gap-2 md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem]">
           {progressLine}

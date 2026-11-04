@@ -1484,6 +1484,10 @@ msgstr "This device or browser can't use passkeys."
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "Passkeys cannot be used on this device or browser. Please try email instead."
 
+#: src/components/navigation/NavigationHud.tsx:279
+msgid "この端末では、振動は使えません。"
+msgstr "Vibration is not available on this device."
+
 #: src/components/admin/MapStylePreview.tsx:67
 msgid "この端末では地図の見本を表示できません。"
 msgstr "The map preview cannot be shown on this device."
@@ -1736,13 +1740,13 @@ msgstr "Stamps"
 #: src/components/BookmarkList.tsx:49
 #: src/components/navigation/NavigationHud.tsx:282
 msgid "スタンプ {0} / {1}"
-msgstr "Stamps {0} / {1}"
+msgstr "Stamps {0} / {1}"     
 
 #: src/components/landing/ContinueCard.tsx:23
 #: src/components/map/MapScreen.tsx:380
 #: src/components/RouteView.tsx:253
 #: src/components/TrailRibbon.tsx:62
-#: src/components/TripSummary.tsx:48
+#: src/components/TripSummary.tsx:48          
 msgid "スタンプ {stampedCount} / {spotCount}"
 msgstr "Stamps {stampedCount} / {spotCount}"
 
@@ -6763,6 +6767,18 @@ msgstr "Train"
 #: src/components/QuickActions.tsx:61
 msgid "音"
 msgstr "Sound"
+
+#: src/components/navigation/NavigationHud.tsx:277
+msgid "音声案内：オフ"
+msgstr "Voice guidance: off"
+
+#: src/components/navigation/NavigationHud.tsx:277
+msgid "音声案内：オン"
+msgstr "Voice guidance: on"
+
+#: src/components/navigation/useNavVoice.ts:55
+msgid "音声案内をオンにしました"
+msgstr "Voice guidance is on"
 
 #: src/components/admin/RallyList.tsx:114
 #: src/components/admin/RouteTable.tsx:154

@@ -1484,6 +1484,10 @@ msgstr "この端末・ブラウザではパスキーを使えません。"
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 
+#: src/components/navigation/NavigationHud.tsx:279
+msgid "この端末では、振動は使えません。"
+msgstr "この端末では、振動は使えません。"
+
 #: src/components/admin/MapStylePreview.tsx:67
 msgid "この端末では地図の見本を表示できません。"
 msgstr "この端末では地図の見本を表示できません。"
@@ -6763,6 +6767,18 @@ msgstr "電車"
 #: src/components/QuickActions.tsx:61
 msgid "音"
 msgstr "音"
+
+#: src/components/navigation/NavigationHud.tsx:277
+msgid "音声案内：オフ"
+msgstr "音声案内：オフ"
+
+#: src/components/navigation/NavigationHud.tsx:277
+msgid "音声案内：オン"
+msgstr "音声案内：オン"
+
+#: src/components/navigation/useNavVoice.ts:55
+msgid "音声案内をオンにしました"
+msgstr "音声案内をオンにしました"
 
 #: src/components/admin/RallyList.tsx:114
 #: src/components/admin/RouteTable.tsx:154
