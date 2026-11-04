@@ -230,3 +230,18 @@ describe("which way relative to the walking direction (no line to follow)", () =
     close(movementHeading(at(135), at(135.0002))!, 90, 1); // ~18 m east
   });
 });
+
+describe("a stop the visitor chose", () => {
+  test("it is the target even when another stop is nearer", () => {
+    // Standing at a (135.003): a is the nearest, but c was chosen.
+    expect(applyFix(model, initialState(), at(135.003), none).targetId).toBe("a");
+    expect(applyFix(model, initialState(), at(135.003), none, null, "c").targetId).toBe("c");
+  });
+
+  test("it is ignored once stamped, when closed, or when unknown: the nearest takes over", () => {
+    expect(applyFix(model, initialState(), at(135.003), new Set(["c"]), null, "c").targetId).toBe("a");
+    const closed = buildModel(line, stops.map((s) => (s.id === "c" ? { ...s, status: "closed" as const } : s)));
+    expect(applyFix(closed, initialState(), at(135.003), none, null, "c").targetId).toBe("a");
+    expect(applyFix(model, initialState(), at(135.003), none, null, "nope").targetId).toBe("a");
+  });
+});

@@ -152,12 +152,16 @@ function alongTrack(track: Track, alongM: number, targetAlongM: number, fix: Lat
 /**
  * Take one fix. `stamped` is the visitor's stamps (a new stamp changes the target at the next call); `path` is a
  * walking path from OpenRouteService for one stop, used only while off the course line and only for that stop.
+ * `forcedId` is a stop the visitor chose to head for instead of the nearest one.
  */
-export function applyFix(model: NavModel, prev: NavState, reading: NavReading, stamped: ReadonlySet<string>, path: NavPath | null = null): NavState {
+export function applyFix(model: NavModel, prev: NavState, reading: NavReading, stamped: ReadonlySet<string>, path: NavPath | null = null, forcedId: string | null = null): NavState {
   if (!(reading.accuracyM <= MAX_ACCURACY_M)) return { ...prev, ignoredFixes: prev.ignoredFixes + 1 }; // also catches NaN
 
   const base = { ...initialState(), ignoredFixes: prev.ignoredFixes, headingDeg: reading.headingDeg ?? prev.headingDeg };
-  const i = nearestTarget(model.stops, stamped, reading);
+  // The visitor may pick a stop themselves (forcedId); it is honoured only while it can still be stamped, else the nearest wins.
+  const forcedAt = forcedId === null ? -1 : model.stops.findIndex((s) => s.id === forcedId);
+  const forcedOk = forcedAt >= 0 && !stamped.has(forcedId!) && model.stops[forcedAt]!.status !== "closed";
+  const i = forcedOk ? forcedAt : nearestTarget(model.stops, stamped, reading);
   if (i === null) return base;
   const stop = model.stops[i]!;
   const straightM = distanceM(reading, stop);

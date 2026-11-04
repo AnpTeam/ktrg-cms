@@ -180,3 +180,22 @@ describe("a navigation session", () => {
     expect(c.snapshot.stampsKnown).toBe(false);
   });
 });
+
+describe("choosing a stop", () => {
+  test("setTarget heads for that stop at once, stamping it hands the choice back to the nearest, and null clears it", async () => {
+    const s = setup();
+    await s.c.start();
+    s.walk(135.003);
+    expect(s.c.snapshot.state.targetId).toBe("a");
+    s.c.setTarget("c");
+    expect(s.c.snapshot).toMatchObject({ forcedId: "c", state: { targetId: "c" } });
+    s.walk(135.0031); // still c while walking: the choice sticks
+    expect(s.c.snapshot.state.targetId).toBe("c");
+    s.c.markStamped("c");
+    expect(s.c.snapshot.forcedId).toBeNull();
+    expect(s.c.snapshot.state.targetId).toBe("a");
+    s.c.setTarget("b");
+    s.c.setTarget(null);
+    expect(s.c.snapshot).toMatchObject({ forcedId: null, state: { targetId: "a" } });
+  });
+});

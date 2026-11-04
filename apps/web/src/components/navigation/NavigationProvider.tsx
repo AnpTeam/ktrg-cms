@@ -32,6 +32,8 @@ interface NavigationApi {
   stop(): void;
   /** After a successful stamp: head for the next nearest stop at once. */
   markStamped(stopId: string): void;
+  /** Head for this stop instead of the nearest one; null goes back to the nearest. */
+  setTarget(stopId: string | null): void;
   /** How tall the navigation toast is (0 when hidden), so a page can keep that room free at the bottom. */
   toastPx: number;
   setToastPx(px: number): void;
@@ -40,7 +42,7 @@ interface NavigationApi {
   setBannerPx(px: number): void;
 }
 
-const NavigationContext = createContext<NavigationApi>({ session: null, start: () => {}, stop: () => {}, markStamped: () => {}, toastPx: 0, setToastPx: () => {}, bannerPx: 0, setBannerPx: () => {} });
+const NavigationContext = createContext<NavigationApi>({ session: null, start: () => {}, stop: () => {}, markStamped: () => {}, setTarget: () => {}, toastPx: 0, setToastPx: () => {}, bannerPx: 0, setBannerPx: () => {} });
 
 export function NavigationProvider({ children, signedIn }: { children: ReactNode; signedIn: boolean }) {
   const controller = useRef<NavigationController | null>(null);
@@ -77,11 +79,12 @@ export function NavigationProvider({ children, signedIn }: { children: ReactNode
   }, []);
 
   const markStamped = useCallback((stopId: string) => controller.current?.markStamped(stopId), []);
+  const setTarget = useCallback((stopId: string | null) => controller.current?.setTarget(stopId), []);
 
   // Leaving the site (or a full reload) ends the session; nothing is kept.
   useEffect(() => () => controller.current?.stop(), []);
 
-  const api = useMemo(() => ({ session, start, stop, markStamped, toastPx, setToastPx, bannerPx, setBannerPx }), [session, start, stop, markStamped, toastPx, bannerPx]);
+  const api = useMemo(() => ({ session, start, stop, markStamped, setTarget, toastPx, setToastPx, bannerPx, setBannerPx }), [session, start, stop, markStamped, setTarget, toastPx, bannerPx]);
   return <NavigationContext.Provider value={api}>{children}</NavigationContext.Provider>;
 }
 

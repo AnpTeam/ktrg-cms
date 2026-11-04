@@ -10,6 +10,7 @@ import { modelFromMapRoute } from "@/lib/navigation/input";
 import type { MapScreenRoute } from "@/lib/map-screen";
 import { courseProgress } from "@/lib/navigation/progress";
 import { distanceParts } from "@/lib/stamp-flow";
+import { NavTargetPicker } from "./NavTargetPicker";
 import { useNavigation, type NavStopInfo } from "./NavigationProvider";
 
 // The navigation toast: a small card floating at the bottom of the screen while a navigation runs, on every tab (on a
@@ -250,6 +251,7 @@ export function NavigationToast() {
         <section ref={box} aria-label={t`ナビの操作`} className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 flex flex-col gap-2 md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem]">
           {progressLine}
           {stampButton}
+          <NavTargetPicker />
           <button type="button" onClick={leave} className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl border-2 border-ink bg-paper px-5 text-xl font-bold text-ink shadow-lg hover:bg-surface">
             {t`ナビを終える`}
           </button>
