@@ -215,7 +215,8 @@ export function NavigationToast() {
           : null;
 
   // Off the course line: say so once (the block appears when the visitor leaves it), with the way back.
-  const back = st.offRoute && st.backM !== null && st.backBearingDeg !== null ? { m: st.backM, deg: st.backBearingDeg } : null;
+  const isFar = snap.position !== null && st.far && st.mode !== "path" && st.targetId !== null;
+  const back = !isFar && st.offRoute && st.backM !== null && st.backBearingDeg !== null ? { m: st.backM, deg: st.backBearingDeg } : null;
   const backText = back ? t`道まで ${meters(back.m)}（${compass[compassPoint(back.deg)]}）` : "";
   const offRouteBlock = back ? (
     <div role="alert" className="flex items-center gap-3 border-l-4 border-caution pl-3">
@@ -242,7 +243,7 @@ export function NavigationToast() {
           : null;
 
   // Far from the course, with no walking path chosen: how to get there, not a distance and direction that mean nothing.
-  const far = snap.position !== null && st.far && st.mode !== "path" && st.targetId !== null;
+  const far = isFar;
   let main;
   if (far) {
     main = pathname === "/map" ? <NavFarCard /> : <p className="text-base font-bold leading-snug">{t`この区間は遠くにあります。電車やバスで向かいましょう。`}</p>;
@@ -318,7 +319,7 @@ export function NavigationToast() {
           {main}
           {offRouteBlock}
           {note ? <p className="text-base leading-snug">{note}</p> : null}
-          {voice.supported ? (
+          {voice.supported && !far ? (
             <div className="flex items-center gap-3">
               <button type="button" role="switch" aria-checked={voice.on} onClick={voice.toggle} className={quiet}>
                 {voice.on ? t`音声案内：オン` : t`音声案内：オフ`}
@@ -328,13 +329,15 @@ export function NavigationToast() {
           ) : null}
         </section>
         <section ref={box} aria-label={t`ナビの操作`} className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 flex flex-col gap-2 md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem]">
-          {progressLine}
-          {profile ? <NavElevation profile={profile} /> : null}
-          {stampButton}
-          <NavTargetPicker />
-          <button type="button" onClick={leave} className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl border-2 border-ink bg-paper px-5 text-xl font-bold text-ink shadow-lg hover:bg-surface">
-            {t`ナビを終える`}
-          </button>
+          {far ? null : progressLine}
+          {far || !profile ? null : <NavElevation profile={profile} />}
+          {far ? null : stampButton}
+          <div className={far ? "" : "grid grid-cols-2 gap-2"}>
+            {far ? null : <NavTargetPicker />}
+            <button type="button" onClick={leave} className="tap-target flex min-h-12 w-full items-center justify-center rounded-xl border-2 border-ink bg-paper px-3 text-lg font-bold text-ink shadow-lg hover:bg-surface">
+              {t`ナビを終える`}
+            </button>
+          </div>
         </section>
       </>
     );
