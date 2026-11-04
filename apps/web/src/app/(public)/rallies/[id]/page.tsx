@@ -91,7 +91,7 @@ export default async function RallyPage({ params, searchParams }: Props) {
           <Link href={startHref} className={stamped === 0 ? button : quietButton}>
             {stamped === 0 ? <Trans>いますぐはじめる</Trans> : <Trans>つづきをはじめる</Trans>}
           </Link>
-          {canStampHere ? <RallyNearbyStamp places={detail.places} held={held} locale={i18n.locale} quiet={stamped === 0} /> : null}
+          {canStampHere ? <RallyNearbyStamp places={detail.places} held={held} locale={i18n.locale} rallyName={name} quiet={stamped === 0} /> : null}
           <RallyBookmark rallyId={rally.id} />
         </section>
       ) : null}
