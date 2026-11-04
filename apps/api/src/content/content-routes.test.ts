@@ -189,6 +189,16 @@ describe("an admin edits a route and its places", () => {
     expect((await patch({ accessPoints: [row("javascript:alert(1)")] }, next)).status).toBe(422);
   });
 
+  test("a route's far distance is 500 m to 200 km or empty, and visitors get it", async () => {
+    const { call, cookie, route } = await created();
+    const patch = (body: unknown, updatedAt: string) => call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt, ...(body as object) } });
+    expect((await patch({ farDistanceM: 100 }, route.updatedAt)).status).toBe(422);
+    expect((await patch({ farDistanceM: 250000 }, route.updatedAt)).status).toBe(422);
+    expect((await patch({ farDistanceM: 8000 }, route.updatedAt)).status).toBe(200);
+    const listed = (((await (await call("GET", "/routes")).json()) as Json).routes as Json[]).find((r) => r.id === route.id)!;
+    expect(listed.farDistanceM).toBe(8000);
+  });
+
   test("a station position needs a source to be 'checked'; visitors never get an unchecked one", async () => {
     const { call, cookie, route } = await created();
     const patch = (body: unknown, updatedAt: string) => call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt, ...(body as object) } });

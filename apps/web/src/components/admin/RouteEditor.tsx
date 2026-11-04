@@ -676,6 +676,9 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                   <MultilingualField id="route-history" field="history" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`歴史・由来`} ja={draft.historyJa} en={draft.historyEn} onJa={text("historyJa")} onEn={text("historyEn")} multiline />
                 </Section>
                 <Section title={t`アクセス・交通`}>
+                  <Field label={t`遠いとみなす距離`} htmlFor="route-far" hint={t`コースからこれより離れていると、ナビは歩く道ではなく、電車やバスでの行き方を案内します。空なら 5 km。`}>
+                    <NumberInput id="route-far" value={draft.farDistanceM} min={500} max={200000} integer suffix="m" onChange={(v) => dispatch({ type: "farDistanceM", value: v })} />
+                  </Field>
                   <AccessPointsEditor value={draft.accessPoints} onChange={(value) => dispatch({ type: "accessPoints", value })} />
                   <MultilingualField id="route-access" field="access" translations={draft.translations} onTranslations={(v) => dispatch({ type: "translations", value: v })} label={t`アクセス・交通の補足`} ja={draft.accessJa} en={draft.accessEn} onJa={text("accessJa")} onEn={text("accessEn")} multiline />
                   <p className="text-base text-muted">{t`上の一覧に入らない行き方（乗りかえ、時刻、帰りの方法など）を、自由に書きます。`}</p>

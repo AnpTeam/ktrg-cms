@@ -45,6 +45,7 @@ export interface RouteSummary {
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
+  farDistanceM: number | null;
   /** A simplified route line for the list silhouette, when the CMS has geometry. */
   sketch: Sketch | null;
   /** Where the course is, as one round area on the home map; null until the CMS has it. */
@@ -224,6 +225,7 @@ function toSummary(r: RouteDetail): RouteSummary {
     physicalLevel: r.physicalLevel,
     technicalLevel: r.technicalLevel,
     expectedTimeMin: r.expectedTimeMin,
+    farDistanceM: r.farDistanceM,
     sketch: r.sketch,
     area: r.area,
     spotCount: r.spotCount,

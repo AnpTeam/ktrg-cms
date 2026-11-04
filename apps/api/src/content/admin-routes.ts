@@ -102,6 +102,8 @@ const routeProps = {
   physicalLevel: nullable(t.Integer({ minimum: 1, maximum: 10 })),
   technicalLevel: t.Union([t.Literal("A"), t.Literal("B"), t.Literal("C"), t.Literal("D"), t.Literal("E"), t.Null()]),
   expectedTimeMin: nullable(t.Integer({ minimum: 0, maximum: 20000 })),
+  // How far from the course counts as far, in metres (500 m to 200 km); null = the default.
+  farDistanceM: nullable(t.Integer({ minimum: 500, maximum: 200000 })),
   prefecture: t.Union([prefecture, t.Null()]),
   walkStyle: t.Union([walkStyle, t.Null()]),
   municipality: nullable(t.String({ maxLength: 100 })),

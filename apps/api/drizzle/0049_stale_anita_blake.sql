@@ -1,0 +1,2 @@
+ALTER TABLE "routes" ADD COLUMN "far_distance_m" integer;--> statement-breakpoint
+ALTER TABLE "routes" ADD CONSTRAINT "routes_far_range" CHECK ("routes"."far_distance_m" is null or ("routes"."far_distance_m" >= 500 and "routes"."far_distance_m" <= 200000));

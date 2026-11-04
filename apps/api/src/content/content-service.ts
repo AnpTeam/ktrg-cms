@@ -70,6 +70,7 @@ export interface PublicRoute {
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
+  farDistanceM: number | null;
   prefecture: Prefecture | null;
   walkStyle: WalkStyle | null;
   municipality: string | null;
@@ -141,6 +142,7 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     physicalLevel: r.physicalLevel,
     technicalLevel: r.technicalLevel,
     expectedTimeMin: r.expectedTimeMin,
+    farDistanceM: r.farDistanceM,
     prefecture: r.prefecture,
     walkStyle: r.walkStyle,
     municipality: r.municipality,
@@ -249,6 +251,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
     if (input.distanceKm !== undefined) out.distanceKm = input.distanceKm;
     if (input.elevationGainM !== undefined) out.elevationGainM = input.elevationGainM;
     if (input.expectedTimeMin !== undefined) out.expectedTimeMin = input.expectedTimeMin;
+    if (input.farDistanceM !== undefined) out.farDistanceM = input.farDistanceM;
     if (input.accessPoints !== undefined) {
       // A row with no Japanese name is an empty row left in the form: dropped. The rest are trimmed.
       const rows: NonNullable<StoredRouteFields["accessPoints"]> = [];

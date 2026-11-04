@@ -18,6 +18,7 @@ export interface PublicRoute {
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
+  farDistanceM?: number | null;
   prefecture: string | null;
   walkStyle?: string | null;
   municipality: string | null;

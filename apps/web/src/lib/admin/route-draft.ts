@@ -93,6 +93,8 @@ export interface RouteDraft {
   accessPoints: AccessPoint[];
   /** The mountain-grading levels (see lib/grading.ts); null until chosen. */
   physicalLevel: number | null;
+  /** Metres from the course that count as far (the app shows train and bus instead of a walk); null = the default. */
+  farDistanceM: number | null;
   technicalLevel: TechnicalLevel | null;
   videoUrl: string;
   /** The English video's link (empty: the English site shows the Japanese video). */
@@ -114,7 +116,7 @@ export const emptyDraft = (): RouteDraft => ({
   id: null, updatedAt: null, nameJa: "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
   accessJa: "", accessEn: "", translations: {}, photoUrl: "", photoCredit: "", sourceJa: "", sourceEn: "", prefecture: null, walkStyle: null, municipality: "",
   distanceKm: null, distanceManual: false, elevationGainM: null, climbManual: false, expectedTimeMin: null, timeManual: false,
-  difficulty: "", nameKana: "", accessPoints: [], physicalLevel: null, technicalLevel: null, videoUrl: "", videoUrlEn: "", videoSubtitlesEn: false, videoSubtitles: false, line: [], legs: [], lineVerified: false, lineSource: "", places: [],
+  difficulty: "", nameKana: "", accessPoints: [], farDistanceM: null, physicalLevel: null, technicalLevel: null, videoUrl: "", videoUrlEn: "", videoSubtitlesEn: false, videoSubtitles: false, line: [], legs: [], lineVerified: false, lineSource: "", places: [],
 });
 
 const s = (v: string | null | undefined) => v ?? "";
@@ -167,7 +169,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
     expectedTimeMin: route.expectedTimeMin,
     // A saved time that is not what the distance and climb give was typed by hand.
     timeManual: route.expectedTimeMin !== null && route.expectedTimeMin !== estimateWalkMinutes(route.distanceKm, route.elevationGainM),
-    difficulty: s(route.difficulty), nameKana: s(route.nameKana), accessPoints: route.accessPoints ?? [], physicalLevel: route.physicalLevel, technicalLevel: route.technicalLevel, videoUrl: s(route.videoUrl), videoUrlEn: s(route.videoUrlEn), videoSubtitlesEn: route.videoSubtitlesEn === true, videoSubtitles: route.videoSubtitles === true,
+    difficulty: s(route.difficulty), nameKana: s(route.nameKana), accessPoints: route.accessPoints ?? [], farDistanceM: route.farDistanceM ?? null, physicalLevel: route.physicalLevel, technicalLevel: route.technicalLevel, videoUrl: s(route.videoUrl), videoUrlEn: s(route.videoUrlEn), videoSubtitlesEn: route.videoSubtitlesEn === true, videoSubtitles: route.videoSubtitles === true,
     line: legs.length > 0 ? joinLegs(pathStops(places), legs).line : line, legs, lineVerified: route.lineVerified, lineSource: s(route.lineSource),
     places,
   };
@@ -223,6 +225,7 @@ export type DraftAction =
   | { type: "prefecture"; value: Prefecture | null }
   | { type: "walkStyle"; value: WalkStyle | null }
   | { type: "physicalLevel"; value: number | null }
+  | { type: "farDistanceM"; value: number | null }
   | { type: "technicalLevel"; value: TechnicalLevel | null }
   | { type: "distance"; value: number | null }
   | { type: "climb"; value: number | null }
@@ -346,6 +349,8 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       return { ...d, prefecture: a.value };
     case "walkStyle":
       return { ...d, walkStyle: a.value };
+    case "farDistanceM":
+      return { ...d, farDistanceM: a.value };
     case "physicalLevel":
       return { ...d, physicalLevel: a.value };
     case "technicalLevel":
@@ -518,6 +523,7 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
     physicalLevel: d.physicalLevel,
     technicalLevel: d.technicalLevel,
     expectedTimeMin: d.expectedTimeMin,
+    farDistanceM: d.farDistanceM,
     sketch: sketchFromPoints(d.line),
     area: areaFromBounds(bounds),
     spotCount: stamps.length,

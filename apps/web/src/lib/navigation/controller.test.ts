@@ -199,3 +199,27 @@ describe("choosing a stop", () => {
     expect(s.c.snapshot).toMatchObject({ forcedId: null, state: { targetId: "a" } });
   });
 });
+
+describe("far from the course", () => {
+  const FAR_LAT = LAT + 0.06; // about 6.7 km north of the line
+
+  test("more than the far distance away: marked far, and no walking path is asked for unasked", async () => {
+    const asked: string[] = [];
+    const { c, walkAt } = setup(new Set(), async (id) => (asked.push(id), { ok: false, backOff: false }));
+    await c.start();
+    walkAt(135.005, FAR_LAT);
+    expect(c.snapshot.state.far).toBe(true);
+    expect(asked).toEqual([]);
+  });
+
+  test("choosing to walk asks for the path from the fix held; near the course it is not far", async () => {
+    const asked: string[] = [];
+    const { c, walkAt } = setup(new Set(), async (id) => (asked.push(id), { ok: false, backOff: false }));
+    await c.start();
+    walkAt(135.005, FAR_LAT);
+    c.chooseWalk();
+    expect(asked).toHaveLength(1);
+    walkAt(135.005, LAT + 0.0002);
+    expect(c.snapshot.state.far).toBe(false);
+  });
+});

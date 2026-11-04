@@ -98,6 +98,8 @@ export interface MapScreenRoute {
   distanceKm: number | null;
   elevationGainM: number | null;
   expectedTimeMin: number | null;
+  /** How far from the course counts as far (metres); null = the app's default. */
+  farDistanceM: number | null;
   difficulty: string | null;
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;

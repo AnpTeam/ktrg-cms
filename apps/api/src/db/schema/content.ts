@@ -112,6 +112,8 @@ export const routes = pgTable(
     physicalLevel: integer("physical_level"),
     technicalLevel: text("technical_level"),
     expectedTimeMin: integer("expected_time_min"),
+    // Farther than this from the course (metres), navigation offers train and bus instead of a long walk; null = the app default (5 km).
+    farDistanceM: integer("far_distance_m"),
     // Osaka, Wakayama or Nara (validated in the API).
     prefecture: text("prefecture"),
     // How the route is walked: one_way, loop (ends where it began) or out_and_back (to a turnaround and back the same
@@ -140,6 +142,7 @@ export const routes = pgTable(
   },
   (t) => [
     check("routes_distance_nonneg", sql`${t.distanceKm} is null or ${t.distanceKm} >= 0`),
+    check("routes_far_range", sql`${t.farDistanceM} is null or (${t.farDistanceM} >= 500 and ${t.farDistanceM} <= 200000)`),
     check("routes_time_nonneg", sql`${t.expectedTimeMin} is null or ${t.expectedTimeMin} >= 0`),
   ],
 );

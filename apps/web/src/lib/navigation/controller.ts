@@ -55,6 +55,8 @@ export function createNavigationController(deps: ControllerDeps) {
   // Bumped on stop, so an answer for an earlier session is dropped.
   let generation = 0;
   let forced: string | null = null;
+  // The visitor chose to walk although far from the course; reset once they are near it.
+  let walkChosen = false;
   let snap: NavSnapshot = { state: initialState(), stamped, stampsKnown, paused: false, problem: null, lastFixAtMs: null, position: null, pathLine: null, forcedId: null };
 
   const emit = (patch: Partial<NavSnapshot>) => {
@@ -94,8 +96,9 @@ export function createNavigationController(deps: ControllerDeps) {
     last = reading;
     const state = applyFix(model, snap.state, reading, stamped, path, forced);
     // A path for another stop (the target moved on) is no longer drawn.
+    if (!state.far) walkChosen = false;
     emit({ state, stamped, lastFixAtMs: deps.now(), problem: null, position: reading, pathLine: path && path.stopId === state.targetId ? path.line : null });
-    if (deps.fetchPath && !asking && shouldAskForPath(wantsPath(state), state.targetId, reading, deps.now(), lastAsk)) askForPath(state.targetId!, reading);
+    if (deps.fetchPath && !asking && shouldAskForPath(wantsPath(state, walkChosen), state.targetId, reading, deps.now(), lastAsk)) askForPath(state.targetId!, reading);
   };
 
   const watcher = createPositionWatcher({
@@ -143,6 +146,13 @@ export function createNavigationController(deps: ControllerDeps) {
       asking = false;
       generation++;
       forced = null;
+      walkChosen = false;
+    },
+    /** Walk to the course although it is far: asks for a walking path from the fix held (one at a time). */
+    chooseWalk() {
+      walkChosen = true;
+      const target = snap.state.targetId;
+      if (last && target && deps.fetchPath && !asking) askForPath(target, last);
     },
     /** Head for this stop instead of the nearest one (null: back to choosing the nearest). */
     setTarget(id: string | null) {
