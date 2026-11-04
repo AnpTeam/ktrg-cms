@@ -154,7 +154,7 @@ export function routeLineLayers(sourceId: string, approximate: boolean): LayerSp
       type: "line",
       source: sourceId,
       layout: { "line-cap": "round", "line-join": "round" },
-      paint: { "line-color": "#ffffff", "line-width": 9, "line-opacity": 0.9 },
+      paint: { "line-color": "#ffffff", "line-width": 11, "line-opacity": 1 },
     },
     {
       id: `${sourceId}-line`,
@@ -163,9 +163,9 @@ export function routeLineLayers(sourceId: string, approximate: boolean): LayerSp
       layout: { "line-cap": approximate ? "butt" : "round", "line-join": "round" },
       paint: {
         // Fixed colours on purpose: the map tiles do not change with the app theme, so the line
-        // must read on them in both themes (the colours match the accent pair).
-        "line-color": "#8a3b00",
-        "line-width": 5,
+        // must read on them in both themes. A vivid orange with a thick white casing stands out on the pale tiles.
+        "line-color": "#e8590c",
+        "line-width": 6,
         ...(approximate ? { "line-dasharray": [2, 1.4] } : {}),
       },
     },

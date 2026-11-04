@@ -541,19 +541,22 @@ rt {
   height: 3rem;
   padding: 0 0.5rem;
   border-radius: 9999px;
-  border: 3px solid var(--color-ink);
-  background: var(--color-surface);
-  color: var(--color-ink);
-  font-size: 1.125rem;
-  font-weight: 700;
+  /* Like the stop pins: the vivid red with a white outline, so a group of stops reads at a glance on the pale tiles. */
+  border: 3px solid #fff;
+  background: #cc6256;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 800;
   line-height: 1;
   font-variant-numeric: tabular-nums;
-  box-shadow: 0 1px 4px rgb(0 0 0 / 0.45), 0 0 0 4px var(--color-paper);
+  box-shadow: 0 1px 5px rgb(0 0 0 / 0.5);
   cursor: pointer;
 }
 
+/* A group of places (toilets, shops ...): dark and square-ish, so it is never taken for a group of stops. */
 .map-cluster[data-kind="places"] {
   border-radius: 0.75rem;
+  background: #2b2523;
 }
 
 /* A group of courses: the range of numbers, and under it the name of every course inside, so none is ever hidden. */
@@ -568,6 +571,10 @@ rt {
   padding: 0.4rem 0.6rem;
   border-radius: 1rem;
   text-align: left;
+  /* The course names are words on a card: light, with the red as its outline. */
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border-color: #cc6256;
 }
 .map-cluster-count {
   font-size: 1.125rem;
