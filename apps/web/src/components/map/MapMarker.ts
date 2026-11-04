@@ -132,6 +132,14 @@ function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: Stop
         chip.append(ring, num);
         svg.appendChild(chip);
       } else {
+        // A stop not yet stamped has a white head with its number in the pin's colour (hollow); once stamped the head is
+        // filled and the number white. Drawn always, shown by the page's CSS only for the "todo" state.
+        const hollow = document.createElementNS(SVG_NS, "circle");
+        hollow.setAttribute("cx", "15");
+        hollow.setAttribute("cy", "14.5");
+        hollow.setAttribute("r", "9.6");
+        hollow.setAttribute("class", "pin-hollow");
+        svg.appendChild(hollow);
         const text = document.createElementNS(SVG_NS, "text");
         text.setAttribute("x", "15");
         text.setAttribute("y", "15");
@@ -140,6 +148,19 @@ function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: Stop
         svg.appendChild(text);
       }
     }
+  }
+  if (stamped && !role && !place && shape === "tear") {
+    // Stamped: a small white badge with a check on the upper right, so it is not the colour alone that says "done".
+    const badge = document.createElementNS(SVG_NS, "g");
+    badge.setAttribute("class", "pin-check");
+    const ring = document.createElementNS(SVG_NS, "circle");
+    ring.setAttribute("cx", "25");
+    ring.setAttribute("cy", "5");
+    ring.setAttribute("r", "6");
+    const tick = document.createElementNS(SVG_NS, "path");
+    tick.setAttribute("d", "M22 5.2l2.2 2.2 3.8-4.4");
+    badge.append(ring, tick);
+    svg.appendChild(badge);
   }
   if (role && stamped && shape !== "dot") {
     const seal = document.createElementNS(SVG_NS, "circle");

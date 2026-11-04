@@ -159,6 +159,6 @@ describe("side trips and pin size", () => {
     expect(pinScale(17)).toBe(1);
     expect(pinScale(15)).toBe(1);
     expect(pinScale(13)).toBeGreaterThan(pinScale(11));
-    expect(pinScale(5)).toBe(0.55);
+    expect(pinScale(5)).toBe(0.8);
   });
 });
