@@ -15,7 +15,21 @@ export interface AccessPoint {
   noteEn: string | null;
   /** An https link for this way of getting there (a timetable, the operator's page). */
   url?: string | null;
+  /** Where the station or stop is: given to visitors only once `checked` (the API strips it otherwise). */
+  lat?: number | null;
+  lng?: number | null;
+  /** Which end of the route this serves; null or missing = not said. */
+  serves?: AccessServes | null;
+  /** A person looked the position up in `source` and checked it on the map. */
+  checked?: boolean;
+  source?: string | null;
 }
+
+export const accessServes = ["start", "end", "both"] as const;
+export type AccessServes = (typeof accessServes)[number];
+
+/** The place on the Geospatial Information Authority's map, to check a typed position by eye. */
+export const gsiMapUrl = (lat: number, lng: number) => `https://maps.gsi.go.jp/#17/${lat}/${lng}/`;
 
 export const isAccessType = (v: unknown): v is AccessType => typeof v === "string" && (accessTypes as readonly string[]).includes(v);
 

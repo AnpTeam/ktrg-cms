@@ -2,8 +2,8 @@
 
 import { useLingui } from "@lingui/react/macro";
 import { useAccessTypeNames, AccessIcon } from "@/components/AccessList";
-import { accessTypes, isAccessType, MAX_ACCESS_POINTS, newAccessPoint, type AccessPoint } from "@/lib/access-points";
-import { Field, inputClass, TextInput } from "./fields";
+import { accessServes, accessTypes, gsiMapUrl, isAccessType, MAX_ACCESS_POINTS, newAccessPoint, type AccessPoint } from "@/lib/access-points";
+import { Check, Field, inputClass, NumberInput, TextInput } from "./fields";
 
 /**
  * How to get there, as rows: pick the kind (train, bus, ferry ...), then the place and a short note in Japanese and
@@ -21,6 +21,7 @@ export function AccessPointsEditor({ value, onChange }: { value: AccessPoint[]; 
     onChange(next);
   };
   const nullIfEmpty = (v: string) => (v === "" ? null : v);
+  const serveNames = { start: t`スタート側`, end: t`ゴール側`, both: t`どちらでも` };
 
   return (
     <div className="flex flex-col gap-4">
@@ -69,6 +70,37 @@ export function AccessPointsEditor({ value, onChange }: { value: AccessPoint[]; 
           <Field label={t`リンク（任意）`} htmlFor={`access-${i}-url`} hint={t`https:// から始まるアドレス。入れると、場所の名前がリンクになります。`}>
             <TextInput id={`access-${i}-url`} value={p.url ?? ""} onChange={(v) => set(i, { url: nullIfEmpty(v.trim()) })} maxLength={500} placeholder="https://" invalid={!!p.url && !/^https:\/\//.test(p.url)} />
           </Field>
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Field label={t`緯度`} htmlFor={`access-${i}-lat`}>
+              <NumberInput id={`access-${i}-lat`} value={p.lat ?? null} min={-90} max={90} step={0.00001} onChange={(v) => set(i, { lat: v, ...(v === null ? { checked: false } : {}) })} />
+            </Field>
+            <Field label={t`経度`} htmlFor={`access-${i}-lng`}>
+              <NumberInput id={`access-${i}-lng`} value={p.lng ?? null} min={-180} max={180} step={0.00001} onChange={(v) => set(i, { lng: v, ...(v === null ? { checked: false } : {}) })} />
+            </Field>
+            <Field label={t`どちら側の入口か`} htmlFor={`access-${i}-serves`}>
+              <select id={`access-${i}-serves`} value={p.serves ?? ""} onChange={(e) => set(i, { serves: accessServes.find((s) => s === e.target.value) ?? null })} className={inputClass}>
+                <option value="">{t`指定しない`}</option>
+                {accessServes.map((s) => (
+                  <option key={s} value={s}>
+                    {serveNames[s]}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          </div>
+          {p.lat != null && p.lng != null ? (
+            <div className="flex flex-col gap-3">
+              <Field label={t`位置の出どころ`} htmlFor={`access-${i}-source`} hint={t`駅や会社の公式ページなど、位置を調べた場所の名前。`}>
+                <TextInput id={`access-${i}-source`} lang="ja" value={p.source ?? ""} onChange={(v) => set(i, { source: nullIfEmpty(v), ...(v.trim() === "" ? { checked: false } : {}) })} maxLength={300} />
+              </Field>
+              <a href={gsiMapUrl(p.lat, p.lng)} target="_blank" rel="noopener noreferrer" className="tap-target flex w-fit items-center text-lg font-bold text-accent underline">
+                {t`地図で位置を見る（新しいタブ）`}
+              </a>
+              <Check id={`access-${i}-checked`} checked={p.checked === true} disabled={!p.source?.trim()} onChange={(v) => set(i, { checked: v })}>
+                {t`位置を確認した（確認するまで、利用者には位置を出しません）`}
+              </Check>
+            </div>
+          ) : null}
         </div>
       ))}
       <button

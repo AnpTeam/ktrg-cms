@@ -483,7 +483,7 @@ msgstr "← 前の記事"
 msgid "← 前へ"
 msgstr "← 前へ"
 
-#: src/components/admin/AccessPointsEditor.tsx:80
+#: src/components/admin/AccessPointsEditor.tsx:112
 msgid "＋ 交通を追加"
 msgstr "＋ 交通を追加"
 
@@ -641,7 +641,7 @@ msgstr "GPXファイルを読み込めませんでした。道すじ（トラッ
 msgid "GPXファイルを読み込めませんでした。道すじ（トラック）の入ったファイルを選んでください。"
 msgstr "GPXファイルを読み込めませんでした。道すじ（トラック）の入ったファイルを選んでください。"
 
-#: src/components/admin/AccessPointsEditor.tsx:69
+#: src/components/admin/AccessPointsEditor.tsx:70
 msgid "https:// から始まるアドレス。入れると、場所の名前がリンクになります。"
 msgstr "https:// から始まるアドレス。入れると、場所の名前がリンクになります。"
 
@@ -1150,6 +1150,10 @@ msgstr "コース定数 ＝ 1.8 × 時間（h） ＋ 0.3 × 距離（km） ＋ 1
 #: src/components/TripSummary.tsx:37
 msgid "ゴール"
 msgstr "ゴール"
+
+#: src/components/admin/AccessPointsEditor.tsx:24
+msgid "ゴール側"
+msgstr "ゴール側"
 
 #: src/components/admin/PlacePanel.tsx:140
 msgid "ここに着いた人が、スタンプを押せます。公開するには、現地の許可の確認が必要です。"
@@ -1691,6 +1695,10 @@ msgstr "すぐ{turnWord}"
 msgid "スタート"
 msgstr "スタート"
 
+#: src/components/admin/AccessPointsEditor.tsx:24
+msgid "スタート側"
+msgstr "スタート側"
+
 #: src/app/(admin)/admin/page.tsx:76
 #: src/app/(public)/rallies/[id]/page.tsx:120
 #: src/components/admin/map-editor/PlaceList.tsx:106
@@ -2067,6 +2075,14 @@ msgstr "どちらからお越しですか？"
 msgid "どちらからかは未設定です"
 msgstr "どちらからかは未設定です"
 
+#: src/components/admin/AccessPointsEditor.tsx:24
+msgid "どちらでも"
+msgstr "どちらでも"
+
+#: src/components/admin/AccessPointsEditor.tsx:80
+msgid "どちら側の入口か"
+msgstr "どちら側の入口か"
+
 #: src/components/settings/PrefsForm.tsx:47
 msgid "とても大きい"
 msgstr "とても大きい"
@@ -2215,11 +2231,11 @@ msgstr "バッジ"
 msgid "バッジは、まだ準備中です。"
 msgstr "バッジは、まだ準備中です。"
 
-#: src/components/admin/AccessPointsEditor.tsx:65
+#: src/components/admin/AccessPointsEditor.tsx:66
 msgid "ひとこと（English）"
 msgstr "ひとこと（English）"
 
-#: src/components/admin/AccessPointsEditor.tsx:62
+#: src/components/admin/AccessPointsEditor.tsx:63
 msgid "ひとこと（日本語）"
 msgstr "ひとこと（日本語）"
 
@@ -2873,7 +2889,7 @@ msgstr "ラリー達成"
 msgid "リンク"
 msgstr "リンク"
 
-#: src/components/admin/AccessPointsEditor.tsx:69
+#: src/components/admin/AccessPointsEditor.tsx:70
 msgid "リンク（任意）"
 msgstr "リンク（任意）"
 
@@ -3116,11 +3132,11 @@ msgstr "上のボタンを押すと、{restName}や{shopsName}などが地図と
 msgid "上の一覧に入らない行き方（乗りかえ、時刻、帰りの方法など）を、自由に書きます。"
 msgstr "上の一覧に入らない行き方（乗りかえ、時刻、帰りの方法など）を、自由に書きます。"
 
-#: src/components/admin/AccessPointsEditor.tsx:44
+#: src/components/admin/AccessPointsEditor.tsx:45
 msgid "上へ"
 msgstr "上へ"
 
-#: src/components/admin/AccessPointsEditor.tsx:47
+#: src/components/admin/AccessPointsEditor.tsx:48
 msgid "下へ"
 msgstr "下へ"
 
@@ -3181,7 +3197,7 @@ msgstr "中身"
 msgid "中身のないラリーは公開できません。公開中のラリーを空にすることもできません。"
 msgstr "中身のないラリーは公開できません。公開中のラリーを空にすることもできません。"
 
-#: src/components/admin/AccessPointsEditor.tsx:32
+#: src/components/admin/AccessPointsEditor.tsx:33
 msgid "交通の種類"
 msgstr "交通の種類"
 
@@ -3235,6 +3251,10 @@ msgstr "位置"
 msgid "位置なし"
 msgstr "位置なし"
 
+#: src/components/admin/AccessPointsEditor.tsx:93
+msgid "位置の出どころ"
+msgstr "位置の出どころ"
+
 #: src/components/admin/PositionMap.tsx:79
 msgid "位置の地図"
 msgstr "位置の地図"
@@ -3275,6 +3295,10 @@ msgstr "位置を決めてください（地図に置くか、緯度と経度を
 #: src/components/admin/PlacePanel.tsx:195
 msgid "位置を確認した"
 msgstr "位置を確認した"
+
+#: src/components/admin/AccessPointsEditor.tsx:100
+msgid "位置を確認した（確認するまで、利用者には位置を出しません）"
+msgstr "位置を確認した（確認するまで、利用者には位置を出しません）"
 
 #: src/components/useErrorMessages.ts:51
 msgid "位置を確認した情報源（サイトの名前やリンク）を書いてください。"
@@ -3949,7 +3973,7 @@ msgstr "制限を解除する"
 msgid "制限中"
 msgstr "制限中"
 
-#: src/components/admin/AccessPointsEditor.tsx:51
+#: src/components/admin/AccessPointsEditor.tsx:52
 #: src/components/admin/AdminItemForm.tsx:293
 #: src/components/admin/AdminListTable.tsx:280
 #: src/components/admin/AdminListTable.tsx:314
@@ -4365,6 +4389,10 @@ msgstr "土曜日"
 msgid "地図"
 msgstr "地図"
 
+#: src/components/admin/AccessPointsEditor.tsx:97
+msgid "地図で位置を見る（新しいタブ）"
+msgstr "地図で位置を見る（新しいタブ）"
+
 #: src/app/(public)/blog/[id]/page.tsx:175
 #: src/components/PlaceDialog.tsx:29
 #: src/components/SpotSheet.tsx:76
@@ -4499,11 +4527,11 @@ msgstr "場所 {text} がここに集まっています。押すと拡大しま�
 msgid "場所から少し離れています。近くまで行って、もう一度お試しください。"
 msgstr "場所から少し離れています。近くまで行って、もう一度お試しください。"
 
-#: src/components/admin/AccessPointsEditor.tsx:59
+#: src/components/admin/AccessPointsEditor.tsx:60
 msgid "場所の名前（English）"
 msgstr "場所の名前（English）"
 
-#: src/components/admin/AccessPointsEditor.tsx:56
+#: src/components/admin/AccessPointsEditor.tsx:57
 msgid "場所の名前（日本語）"
 msgstr "場所の名前（日本語）"
 
@@ -4851,6 +4879,10 @@ msgstr "担当 {0}"
 #: src/components/map/TrailMap.tsx:507
 msgid "拡大"
 msgstr "拡大"
+
+#: src/components/admin/AccessPointsEditor.tsx:82
+msgid "指定しない"
+msgstr "指定しない"
 
 #: src/components/admin/RouteEditor.tsx:534
 msgid "捨てる"
@@ -5774,6 +5806,7 @@ msgstr "経塚 {name}"
 msgid "経塚ラリー"
 msgstr "経塚ラリー"
 
+#: src/components/admin/AccessPointsEditor.tsx:77
 #: src/components/admin/PlacePanel.tsx:189
 #: src/components/admin/PlaceTable.tsx:139
 msgid "経度"
@@ -5980,6 +6013,7 @@ msgstr "編集を戻しました。内容を確かめて、「保存する」を
 msgid "編集を戻す"
 msgstr "編集を戻す"
 
+#: src/components/admin/AccessPointsEditor.tsx:74
 #: src/components/admin/PlacePanel.tsx:186
 #: src/components/admin/PlaceTable.tsx:138
 msgid "緯度"
@@ -6727,6 +6761,10 @@ msgstr "駅"
 #: src/components/map/PlacesPanel.tsx:29
 msgid "駅・バス・駐車場"
 msgstr "駅・バス・駐車場"
+
+#: src/components/admin/AccessPointsEditor.tsx:93
+msgid "駅や会社の公式ページなど、位置を調べた場所の名前。"
+msgstr "駅や会社の公式ページなど、位置を調べた場所の名前。"
 
 #: src/components/admin/PlacePanel.tsx:51
 #: src/components/map/PlacesPanel.tsx:47

@@ -189,6 +189,25 @@ describe("an admin edits a route and its places", () => {
     expect((await patch({ accessPoints: [row("javascript:alert(1)")] }, next)).status).toBe(422);
   });
 
+  test("a station position needs a source to be 'checked'; visitors never get an unchecked one", async () => {
+    const { call, cookie, route } = await created();
+    const patch = (body: unknown, updatedAt: string) => call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt, ...(body as object) } });
+    const row = (extra: object) => ({ type: "train", nameJa: "加太駅", nameEn: null, noteJa: null, noteEn: null, ...extra });
+    const pos = { lat: 34.2, lng: 135.1, serves: "start" };
+    expect((await patch({ accessPoints: [row({ ...pos, checked: true })] }, route.updatedAt)).status).toBe(422); // no source
+    expect((await patch({ accessPoints: [row({ lat: 34.2 })] }, route.updatedAt)).status).toBe(422); // half a position
+    expect((await patch({ accessPoints: [row({ lat: 99, lng: 135 })] }, route.updatedAt)).status).toBe(422);
+    expect((await patch({ accessPoints: [row({ ...pos, source: " 南海電鉄 " }), row({ ...pos, nameJa: "別の駅", checked: true, source: "南海電鉄" })] }, route.updatedAt)).status).toBe(200);
+    const got = ((await (await call("GET", `/admin/routes/${route.id}`, { cookie })).json()) as Json).route as Json;
+    expect((got.accessPoints as Json[])[0]).toMatchObject({ lat: 34.2, lng: 135.1, serves: "start", source: "南海電鉄" }); // the editor sees everything
+    const listed = (((await (await call("GET", "/routes")).json()) as Json).routes as Json[]).find((r) => r.id === route.id)!;
+    const [unchecked, checked] = listed.accessPoints as Json[];
+    expect(unchecked).not.toHaveProperty("lat");
+    expect(unchecked).not.toHaveProperty("source");
+    expect(unchecked).toHaveProperty("serves", "start");
+    expect(checked).toMatchObject({ lat: 34.2, lng: 135.1, checked: true });
+  });
+
   test("the video's update time moves only when its address changes; visitors get it with the route's own", async () => {
     const { call, cookie, route } = await created();
     const patch = async (body: unknown, updatedAt: string) => {

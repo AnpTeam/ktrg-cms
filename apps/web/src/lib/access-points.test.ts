@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { accessColor, accessIconSvg, accessTypes, isAccessType, newAccessPoint } from "./access-points";
+import { accessColor, accessIconSvg, accessTypes, gsiMapUrl, isAccessType, newAccessPoint } from "./access-points";
 
 test("every kind of way to get there has a colour and a picture", () => {
   for (const type of accessTypes) {
@@ -12,4 +12,8 @@ test("isAccessType and newAccessPoint", () => {
   expect(isAccessType("ferry")).toBe(true);
   expect(isAccessType("plane")).toBe(false);
   expect(newAccessPoint("bus")).toEqual({ type: "bus", nameJa: "", nameEn: null, noteJa: null, noteEn: null });
+});
+
+test("the GSI map link carries the position", () => {
+  expect(gsiMapUrl(34.2, 135.1)).toBe("https://maps.gsi.go.jp/#17/34.2/135.1/");
 });
