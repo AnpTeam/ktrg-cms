@@ -57,7 +57,7 @@ export function NavigationStart({ route }: { route: MapScreenRoute }) {
     <section className="flex flex-col gap-2">
       <p className="text-lg leading-snug">{t`いまいる場所から、いちばん近いスタンプの場所まで案内します。位置は、この端末の中だけで使います。`}</p>
       <button type="button" className={primary} onClick={() => start({ routeId: route.id, routeName: route.name, stops, model: modelFromMapRoute(route) })}>
-        {session ? t`この区間のナビに切り替える` : t`この区間をナビする`}
+        {session ? t`この区間のナビに切り替える` : t`ナビをはじめる`}
       </button>
     </section>
   );
@@ -97,6 +97,13 @@ export function NavigationToast() {
       root.style.removeProperty("--nav-toast");
     };
   }, [shown, setToastPx]);
+
+  // On the map a running navigation is a mode of its own: the layer pills and the top bar step aside (globals.css).
+  const navOnMap = shown && pathname === "/map";
+  useEffect(() => {
+    document.body.classList.toggle("map-nav-mode", navOnMap);
+    return () => document.body.classList.remove("map-nav-mode");
+  }, [navOnMap]);
 
   if (!session) return null;
 
@@ -188,6 +195,40 @@ export function NavigationToast() {
     );
   }
 
+  const stampButton =
+    st.inRadius && st.targetId && target ? (
+      <StampHere
+        spotId={st.targetId}
+        status={target.status}
+        alreadyStamped={false}
+        loginHref={`/login?next=${encodeURIComponent(pathname)}`}
+        inSheet
+        progress={snap.stampsKnown ? { rallyName: routeName, place: target.name, before: Object.keys(session.stops).filter((id) => snap.stamped.has(id)).length, total: Object.keys(session.stops).length } : undefined}
+        onStamped={() => markStamped(st.targetId!)}
+      />
+    ) : null;
+
+  // On the map: the instruction on a banner at the top, and at the bottom the stamp button (when in range) and the exit.
+  if (pathname === "/map") {
+    const leave = () => {
+      if (window.confirm(t`ナビを終えますか？`)) stop();
+    };
+    return (
+      <>
+        <section aria-label={t`ナビ中：${routeName}`} className="fixed inset-x-3 top-[calc(0.5rem+env(safe-area-inset-top))] z-30 flex flex-col gap-1 rounded-2xl bg-paper px-4 py-3 shadow-2xl ring-1 ring-line/30 md:inset-x-auto md:left-[calc(50%-14rem)] md:w-[28rem]">
+          {main}
+          {note ? <p className="text-base leading-snug">{note}</p> : null}
+        </section>
+        <section ref={box} aria-label={t`ナビの操作`} className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 flex flex-col gap-2 md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem]">
+          {stampButton}
+          <button type="button" onClick={leave} className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl border-2 border-ink bg-paper px-5 text-xl font-bold text-ink shadow-lg hover:bg-surface">
+            {t`ナビを終える`}
+          </button>
+        </section>
+      </>
+    );
+  }
+
   return (
     <section
       ref={box}
@@ -207,17 +248,7 @@ export function NavigationToast() {
         </button>
       </div>
       {note ? <p className="text-base leading-snug">{note}</p> : null}
-      {st.inRadius && st.targetId && target ? (
-        <StampHere
-          spotId={st.targetId}
-          status={target.status}
-          alreadyStamped={false}
-          loginHref={`/login?next=${encodeURIComponent(pathname)}`}
-          inSheet
-          progress={snap.stampsKnown ? { rallyName: routeName, place: target.name, before: Object.keys(session.stops).filter((id) => snap.stamped.has(id)).length, total: Object.keys(session.stops).length } : undefined}
-          onStamped={() => markStamped(st.targetId!)}
-        />
-      ) : null}
+      {stampButton}
     </section>
   );
 }

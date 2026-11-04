@@ -350,6 +350,9 @@ function RoutePanel({
     <div className="flex flex-col gap-5 px-4">
       {route.status === "soon" ? <p className="rounded-2xl bg-surface p-4 text-lg font-bold">{t`この区間は、準備中です。`}</p> : null}
 
+      {/* The way in to navigation sits first, so it is seen without scrolling. */}
+      {route.status === "ready" ? <NavigationStart route={route} /> : null}
+
       {route.description ? (
         <ExpandableText text={route.description} className="whitespace-pre-line text-lg leading-8">
           <RichText text={route.description} />
@@ -357,8 +360,6 @@ function RoutePanel({
       ) : null}
 
       <RouteStats route={route} />
-
-      {route.status === "ready" ? <NavigationStart route={route} /> : null}
 
       {stampedCount !== null && spotCount > 0 ? (
         <p className="text-xl font-bold tabular-nums">{t`スタンプ ${stampedCount} / ${spotCount}`}</p>
