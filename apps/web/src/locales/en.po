@@ -1208,6 +1208,7 @@ msgid "このスタンプは、もう押してあります。"
 msgstr "You already have this stamp."
 
 #: src/components/useErrorMessages.ts:44
+#: src/components/useStampMessages.ts:17
 msgid "このスタンプは、押してから時間がたちすぎているため、受け付けられませんでした（48時間まで）。"
 msgstr "This stamp was pressed too long ago to be accepted (the limit is 48 hours)."
 
@@ -1249,7 +1250,7 @@ msgstr "This email address can't be used. It belongs to another account, or this
 msgid "このラリーのページを開く"
 msgstr "Open this rally's page"
 
-#: src/components/useStampMessages.ts:17
+#: src/components/useStampMessages.ts:19
 msgid "このラリーは、いまは行われていません。"
 msgstr "This rally is not running right now."
 
@@ -1796,6 +1797,7 @@ msgid "スタンプを押した人"
 msgstr "People with a stamp"
 
 #: src/components/useErrorMessages.ts:45
+#: src/components/useStampMessages.ts:18
 msgid "スタンプを押した時刻が正しくありません。端末の日付と時刻を確かめてください。"
 msgstr "The time the stamp was pressed is not valid. Check your device's date and time."
 
@@ -1819,7 +1821,7 @@ msgstr "Stamp collected!"
 msgid "スタンプを押す"
 msgstr "Stamp here"
 
-#: src/components/useStampMessages.ts:18
+#: src/components/useStampMessages.ts:20
 msgid "スタンプを押す機能は、まだ使えません。"
 msgstr "Collecting stamps isn't available yet."
 
@@ -3021,7 +3023,7 @@ msgid "ログイン"
 msgstr "Log in"
 
 #: src/components/useErrorMessages.ts:19
-#: src/components/useStampMessages.ts:19
+#: src/components/useStampMessages.ts:21
 msgid "ログインが切れたようです。ログインしなおしてください。"
 msgstr "You seem to have been logged out. Please log in again."
 
@@ -4292,7 +4294,7 @@ msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境に�
 msgstr "From the Izumi range to the Kongo mountains, these ridges run along the borders of Osaka, Wakayama and Nara. They have long been called Katsuragi and revered as mountains where the gods dwell. It is said that En no Gyoja, who is believed to have founded Shugendo, the path of training in the mountains, first practised here."
 
 #: src/components/useErrorMessages.ts:73
-#: src/components/useStampMessages.ts:23
+#: src/components/useStampMessages.ts:25
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "Something went wrong. Please try again in a little while."
 
@@ -5498,7 +5500,7 @@ msgid "登録できませんでした。もう一度お試しください。"
 msgstr "Could not register. Please try again."
 
 #: src/components/useErrorMessages.ts:47
-#: src/components/useStampMessages.ts:20
+#: src/components/useStampMessages.ts:22
 msgid "登録なしで残せるスタンプの数が、上限になりました。新規登録すると、続けて集められます。"
 msgstr "You have reached the most stamps that can be kept without an account. Sign up to keep collecting."
 
@@ -5557,7 +5559,7 @@ msgid "知ったきっかけ"
 msgstr "How you found it"
 
 #: src/components/useErrorMessages.ts:16
-#: src/components/useStampMessages.ts:21
+#: src/components/useStampMessages.ts:23
 msgid "短い間に何度も操作されました。しばらくしてからお試しください。"
 msgstr "Too many attempts in a short time. Please try again in a little while."
 
@@ -6325,7 +6327,7 @@ msgid "送っています… {percent}%"
 msgstr "Sending… {percent}%"
 
 #: src/components/useErrorMessages.ts:72
-#: src/components/useStampMessages.ts:22
+#: src/components/useStampMessages.ts:24
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not connect. Please try again where the signal is better."
 

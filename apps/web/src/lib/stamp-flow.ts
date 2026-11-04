@@ -29,6 +29,8 @@ export type StampFailure =
   | "low_accuracy"
   | "spot_closed"
   | "rally_not_active"
+  | "stale_scan"
+  | "bad_time"
   | "not_ready"
   | "login_needed"
   | "guest_full"
@@ -84,6 +86,10 @@ export function parseStampResponse(status: number, body: unknown): StampResult {
       return { ok: false, failure: "spot_closed" };
     case "guest_full":
       return { ok: false, failure: "guest_full" };
+    case "stale_scan":
+      return { ok: false, failure: "stale_scan" };
+    case "bad_time":
+      return { ok: false, failure: "bad_time" };
     case "rally_not_active":
       return { ok: false, failure: "rally_not_active" };
     default:

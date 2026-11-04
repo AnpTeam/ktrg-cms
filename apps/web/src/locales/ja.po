@@ -1208,6 +1208,7 @@ msgid "このスタンプは、もう押してあります。"
 msgstr "このスタンプは、もう押してあります。"
 
 #: src/components/useErrorMessages.ts:44
+#: src/components/useStampMessages.ts:17
 msgid "このスタンプは、押してから時間がたちすぎているため、受け付けられませんでした（48時間まで）。"
 msgstr "このスタンプは、押してから時間がたちすぎているため、受け付けられませんでした（48時間まで）。"
 
@@ -1249,7 +1250,7 @@ msgstr "このメールアドレスは、使えません。すでに別のアカ
 msgid "このラリーのページを開く"
 msgstr "このラリーのページを開く"
 
-#: src/components/useStampMessages.ts:17
+#: src/components/useStampMessages.ts:19
 msgid "このラリーは、いまは行われていません。"
 msgstr "このラリーは、いまは行われていません。"
 
@@ -1796,6 +1797,7 @@ msgid "スタンプを押した人"
 msgstr "スタンプを押した人"
 
 #: src/components/useErrorMessages.ts:45
+#: src/components/useStampMessages.ts:18
 msgid "スタンプを押した時刻が正しくありません。端末の日付と時刻を確かめてください。"
 msgstr "スタンプを押した時刻が正しくありません。端末の日付と時刻を確かめてください。"
 
@@ -1819,7 +1821,7 @@ msgstr "スタンプを押しました！"
 msgid "スタンプを押す"
 msgstr "スタンプを押す"
 
-#: src/components/useStampMessages.ts:18
+#: src/components/useStampMessages.ts:20
 msgid "スタンプを押す機能は、まだ使えません。"
 msgstr "スタンプを押す機能は、まだ使えません。"
 
@@ -3021,7 +3023,7 @@ msgid "ログイン"
 msgstr "ログイン"
 
 #: src/components/useErrorMessages.ts:19
-#: src/components/useStampMessages.ts:19
+#: src/components/useStampMessages.ts:21
 msgid "ログインが切れたようです。ログインしなおしてください。"
 msgstr "ログインが切れたようです。ログインしなおしてください。"
 
@@ -4292,7 +4294,7 @@ msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境に�
 msgstr "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 
 #: src/components/useErrorMessages.ts:73
-#: src/components/useStampMessages.ts:23
+#: src/components/useStampMessages.ts:25
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "問題が発生しました。しばらくしてからもう一度お試しください。"
 
@@ -5498,7 +5500,7 @@ msgid "登録できませんでした。もう一度お試しください。"
 msgstr "登録できませんでした。もう一度お試しください。"
 
 #: src/components/useErrorMessages.ts:47
-#: src/components/useStampMessages.ts:20
+#: src/components/useStampMessages.ts:22
 msgid "登録なしで残せるスタンプの数が、上限になりました。新規登録すると、続けて集められます。"
 msgstr "登録なしで残せるスタンプの数が、上限になりました。新規登録すると、続けて集められます。"
 
@@ -5557,7 +5559,7 @@ msgid "知ったきっかけ"
 msgstr "知ったきっかけ"
 
 #: src/components/useErrorMessages.ts:16
-#: src/components/useStampMessages.ts:21
+#: src/components/useStampMessages.ts:23
 msgid "短い間に何度も操作されました。しばらくしてからお試しください。"
 msgstr "短い間に何度も操作されました。しばらくしてからお試しください。"
 
@@ -6325,7 +6327,7 @@ msgid "送っています… {percent}%"
 msgstr "送っています… {percent}%"
 
 #: src/components/useErrorMessages.ts:72
-#: src/components/useStampMessages.ts:22
+#: src/components/useStampMessages.ts:24
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "通信できませんでした。電波の良い場所でもう一度お試しください。"
 

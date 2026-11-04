@@ -22,6 +22,7 @@
     "@simplewebauthn/browser": "14.0.0",
     "@vercel/analytics": "^2.0.1",
     "exceljs": "^4.4.0",
+    "idb": "^8.0.4",
     "maplibre-gl": "^6.16.0",
     "next": "^16.4.3",
     "pbf": "5.1.2",
