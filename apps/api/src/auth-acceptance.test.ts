@@ -417,6 +417,7 @@ describe("user B cannot touch user A", () => {
       listingConfirmed: false, listingNote: null, published: false,
     }),
     "PUT /api/v1/admin/dashboard/goals": () => ({ visits: null, stamps: 500, signups: null, completions: null }),
+    "PUT /api/v1/admin/settings/home-sections": () => ({ tourism: true }),
     "PUT /api/v1/admin/settings/map-style": () => ({ base: "pale", terrain: "hillshade", terrainOpacity: 0.5, saturation: 0, contrast: 0 }),
     "PUT /api/v1/admin/settings/pages/:key": () => ({ ja: { title: "", body: "" }, en: { title: "", body: "" } }),
     "PATCH /api/v1/admin/lists/directory/:id": () => ({ updatedAt: new Date().toISOString() }),
