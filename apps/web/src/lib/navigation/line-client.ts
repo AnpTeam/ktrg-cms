@@ -22,3 +22,19 @@ export async function fetchRouteLine(routeId: string): Promise<LinePoint[] | nul
     return null;
   }
 }
+
+const cache = new Map<string, Promise<LinePoint[] | null>>();
+
+/**
+ * `fetchRouteLine`, asked once per course per page: the map, the elevation chart and the navigation share the answer.
+ * A failure is not kept, so a later look asks again.
+ */
+export function getRouteLine(routeId: string): Promise<LinePoint[] | null> {
+  let p = cache.get(routeId);
+  if (!p) {
+    p = fetchRouteLine(routeId);
+    cache.set(routeId, p);
+    void p.then((line) => line === null && cache.delete(routeId));
+  }
+  return p;
+}

@@ -13,6 +13,8 @@ import { PlaceGroupPicture } from "@/components/PlaceIcon";
 import { useGroupNames } from "./PlacesPanel";
 import { boundsOf, lineFeature, mapStyle, markerKind, nextStopId, pinScale, PIN_NUMBER_MIN_ZOOM, routeLineLayers, sideLineCollection, sideLineLayers, zoomLimits, type Position } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
+import { getRouteLine } from "@/lib/navigation/line-client";
+import { useCursorMarker } from "./useCursorMarker";
 import { createClusterElement, createMarkerElement, createPinElement, createPlaceMarkerElement, createTagElement } from "./MapMarker";
 import { MapPickList } from "./MapPickList";
 import { MapPopup } from "./MapPopup";
@@ -137,13 +139,10 @@ export function MapScreenCanvas({
   useEffect(() => {
     if (!wanted) return;
     let stale = false;
-    fetch(`/api/v1/routes/${encodeURIComponent(wanted)}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((body: { route?: { line?: { coordinates: [number, number][] } | null } } | null) => {
-        const coords = body?.route?.line?.coordinates;
-        if (!stale && coords) setLines((l) => ({ ...l, [wanted]: coords.map(([lng, lat]) => ({ lat, lng })) }));
-      })
-      .catch(() => {}); // no path drawn; the stops still show
+    // Shared with the elevation chart and the navigation (one request per course).
+    void getRouteLine(wanted).then((coords) => {
+      if (!stale && coords) setLines((l) => ({ ...l, [wanted]: coords.map(([lng, lat]) => ({ lat, lng })) })); // no path drawn when it fails; the stops still show
+    });
     return () => {
       stale = true;
     };
@@ -294,6 +293,8 @@ export function MapScreenCanvas({
     },
     [mapGen],
   );
+
+  useCursorMarker(mapRef, mlRef, mapGen, ready);
 
   // Following only means something while there is a position (a navigation runs).
   const following = follow && user !== null;

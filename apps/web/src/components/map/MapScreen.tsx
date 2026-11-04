@@ -10,6 +10,7 @@ import { PlaceLine } from "@/components/PlaceLine";
 import { RichText } from "@/components/RichText";
 import { RouteStats } from "@/components/RouteStats";
 import { StampHere } from "@/components/StampHere";
+import { useRouteLine } from "./useRouteLine";
 import { NavigationResume, NavigationStart } from "@/components/navigation/NavigationHud";
 import { useNavigation } from "@/components/navigation/NavigationProvider";
 import { StampFace } from "@/components/StampFace";
@@ -361,6 +362,8 @@ function RoutePanel({
 }) {
   const { t } = useLingui();
   const { stampedCount, spotCount } = route;
+  // With a graph on show, the course's own line is loaded now (not left for later), so the graph is the interactive one.
+  const fetched = useRouteLine(route.elevations && route.hasLine && !route.line ? route.id : null);
   return (
     <div className="flex flex-col gap-5 px-4">
       {route.status === "soon" ? <p className="rounded-2xl bg-surface p-4 text-lg font-bold">{t`この区間は、準備中です。`}</p> : null}
@@ -386,7 +389,7 @@ function RoutePanel({
         </Link>
       ) : null}
 
-      {route.elevations ? <ElevationProfile elevations={route.elevations} distanceKm={route.distanceKm} /> : null}
+      {route.elevations ? <ElevationProfile elevations={route.elevations} distanceKm={route.distanceKm} routeLine={fetched?.line} lineElevations={fetched?.elevations} /> : null}
 
       {route.spots.length > 0 ? (
         <section>

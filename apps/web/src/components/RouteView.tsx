@@ -212,7 +212,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
         <div className={SIDE}>
           {route.sketch?.elevations ? (
             <section className="order-6 px-4 @4xl:order-none @4xl:px-0">
-              <ElevationProfile elevations={route.sketch.elevations} distanceKm={route.distanceKm} />
+              <ElevationProfile elevations={route.sketch.elevations} distanceKm={route.distanceKm} routeLine={route.line} lineElevations={route.lineElevations} />
             </section>
           ) : null}
 
