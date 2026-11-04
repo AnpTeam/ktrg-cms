@@ -208,7 +208,15 @@ export function NavigationToast() {
       </div>
       {note ? <p className="text-base leading-snug">{note}</p> : null}
       {st.inRadius && st.targetId && target ? (
-        <StampHere spotId={st.targetId} status={target.status} alreadyStamped={false} loginHref={`/login?next=${encodeURIComponent(pathname)}`} inSheet onStamped={() => markStamped(st.targetId!)} />
+        <StampHere
+          spotId={st.targetId}
+          status={target.status}
+          alreadyStamped={false}
+          loginHref={`/login?next=${encodeURIComponent(pathname)}`}
+          inSheet
+          progress={snap.stampsKnown ? { rallyName: routeName, place: target.name, before: Object.keys(session.stops).filter((id) => snap.stamped.has(id)).length, total: Object.keys(session.stops).length } : undefined}
+          onStamped={() => markStamped(st.targetId!)}
+        />
       ) : null}
     </section>
   );

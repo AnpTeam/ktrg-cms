@@ -513,7 +513,15 @@ function StopPanel({
       {stop.noStamp ? (
         <p className="self-start rounded-lg border-2 border-dashed border-line px-2 text-base font-bold">{t`スタンプなし`}</p>
       ) : (
-        <StampHere spotId={stop.id} status={stop.status} alreadyStamped={stop.stamped === true} loginHref={loginHref} mock={stampMock} inSheet />
+        <StampHere
+          spotId={stop.id}
+          status={stop.status}
+          alreadyStamped={stop.stamped === true}
+          loginHref={loginHref}
+          mock={stampMock}
+          inSheet
+          progress={route.stops ? { rallyName: route.name, place: stop.name, before: route.stops.filter((s) => !s.noStamp && s.stamped === true).length, total: route.stops.filter((s) => !s.noStamp).length } : undefined}
+        />
       )}
 
       <Link href={stop.href} className={linkButton}>
