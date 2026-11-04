@@ -12,6 +12,7 @@ import { RallyNearbyStamp } from "@/components/RallyNearbyStamp";
 import { Bar, SlotList } from "@/components/RallyViews";
 import { RoutePhoto } from "@/components/RoutePhoto";
 import { SectionBanner } from "@/components/SectionBanner";
+import { Medal } from "@/components/Medal";
 import { StampGrid } from "@/components/StampGrid";
 import { StampLegend } from "@/components/StampLegend";
 import { fetchPublicRally } from "@/lib/api-content";
@@ -73,18 +74,30 @@ export default async function RallyPage({ params, searchParams }: Props) {
         <CreditCaption credit={detail.photoCredit} />
       </div>
 
-      <section className="frame mx-4 flex flex-col gap-3 p-4">
-        <p className="text-6xl font-bold leading-none tabular-nums text-accent">
-          {stamped}
-          <span className="ml-2 text-3xl text-muted">/ {rally.total}</span>
-        </p>
-        <Bar stamped={stamped} total={rally.total} label={i18n._(msg`スタンプの進み具合`)} />
-        <p className="text-xl font-bold">
-          {done ? <Trans>すべてそろいました。</Trans> : stamped === 0 ? <Trans>まだスタンプはありません。</Trans> : <Trans>あと{rally.total - stamped}か所</Trans>}
-        </p>
-        <LastUpdated iso={detail.updatedAt} locale={i18n.locale} />
-        {viewer.signedIn && done ? <CertificateButton title={name} total={rally.total} locale={i18n.locale} /> : null}
-      </section>
+      {done ? (
+        // A finished rally: the closed medal, in place of the count and the bar.
+        <section className="frame pattern-shippo mx-4 flex flex-col items-center gap-3 p-6 text-center">
+          <Medal number={rally.total} done stamped={rally.total} total={rally.total} className="h-44 w-auto" />
+          <p className="font-serif text-3xl font-bold text-accent">
+            <Trans>コンプリート！</Trans>
+          </p>
+          <p className="text-xl font-bold">
+            <Trans>{rally.total}か所、すべてそろいました。</Trans>
+          </p>
+          <LastUpdated iso={detail.updatedAt} locale={i18n.locale} />
+          {viewer.signedIn ? <CertificateButton title={name} total={rally.total} locale={i18n.locale} /> : null}
+        </section>
+      ) : (
+        <section className="frame mx-4 flex flex-col gap-3 p-4">
+          <p className="text-6xl font-bold leading-none tabular-nums text-accent">
+            {stamped}
+            <span className="ml-2 text-3xl text-muted">/ {rally.total}</span>
+          </p>
+          <Bar stamped={stamped} total={rally.total} label={i18n._(msg`スタンプの進み具合`)} />
+          <p className="text-xl font-bold">{stamped === 0 ? <Trans>まだスタンプはありません。</Trans> : <Trans>あと{rally.total - stamped}か所</Trans>}</p>
+          <LastUpdated iso={detail.updatedAt} locale={i18n.locale} />
+        </section>
+      )}
 
       {!isSoon(rally) ? (
         <section className="mx-4 flex flex-col gap-3">

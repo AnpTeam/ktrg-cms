@@ -63,6 +63,11 @@ msgstr "{0}（{1}件）"
 msgid "{0}km"
 msgstr "{0}km"
 
+#. placeholder {0}: rally.total
+#: src/app/(public)/rallies/[id]/page.tsx:85
+msgid "{0}か所、すべてそろいました。"
+msgstr "{0}か所、すべてそろいました。"
+
 #. placeholder {0}: waypoints.length
 #: src/components/admin/map-editor/MapEditor.tsx:801
 msgid "{0}か所を、経由地として追加しました。名前や種類は「経由地」で直せます。"
@@ -760,7 +765,7 @@ msgid "アップロード済みの写真です。選んで「この写真を使�
 msgstr "アップロード済みの写真です。選んで「この写真を使う」を押すと、その写真のリンクが入ります。"
 
 #. placeholder {0}: rally.total - stamped
-#: src/app/(public)/rallies/[id]/page.tsx:83
+#: src/app/(public)/rallies/[id]/page.tsx:97
 msgid "あと{0}か所"
 msgstr "あと{0}か所"
 
@@ -834,7 +839,7 @@ msgstr "いま、通信がつながっていません。つながると、また
 msgid "いまいる場所から、いちばん近いスタンプの場所まで案内します。位置は、この端末の中だけで使います。"
 msgstr "いまいる場所から、いちばん近いスタンプの場所まで案内します。位置は、この端末の中だけで使います。"
 
-#: src/app/(public)/rallies/[id]/page.tsx:92
+#: src/app/(public)/rallies/[id]/page.tsx:105
 msgid "いますぐはじめる"
 msgstr "いますぐはじめる"
 
@@ -1573,6 +1578,7 @@ msgstr "コントラスト"
 msgid "コンビニ・商店"
 msgstr "コンビニ・商店"
 
+#: src/app/(public)/rallies/[id]/page.tsx:82
 #: src/components/StampProgressPopup.tsx:49
 msgid "コンプリート！"
 msgstr "コンプリート！"
@@ -1669,7 +1675,7 @@ msgid "スタート"
 msgstr "スタート"
 
 #: src/app/(admin)/admin/page.tsx:76
-#: src/app/(public)/rallies/[id]/page.tsx:102
+#: src/app/(public)/rallies/[id]/page.tsx:115
 #: src/components/admin/map-editor/PlaceList.tsx:106
 #: src/components/admin/PlaceTable.tsx:137
 #: src/components/ProgressSummary.tsx:38
@@ -1748,7 +1754,7 @@ msgstr "スタンプの経由地 {0}"
 msgid "スタンプの記録を読めませんでした。"
 msgstr "スタンプの記録を読めませんでした。"
 
-#: src/app/(public)/rallies/[id]/page.tsx:81
+#: src/app/(public)/rallies/[id]/page.tsx:96
 #: src/components/ProgressSummary.tsx:42
 #: src/components/RallyViews.tsx:57
 #: src/components/RallyViews.tsx:148
@@ -1846,7 +1852,6 @@ msgstr "すでに公開をやめた経由地があります（{names}）。「�
 msgid "すべて"
 msgstr "すべて"
 
-#: src/app/(public)/rallies/[id]/page.tsx:83
 #: src/components/ProgressSummary.tsx:33
 #: src/components/RallyViews.tsx:54
 msgid "すべてそろいました。"
@@ -1990,7 +1995,7 @@ msgstr "つくり方を変える"
 msgid "つくり方を変える…"
 msgstr "つくり方を変える…"
 
-#: src/app/(public)/rallies/[id]/page.tsx:92
+#: src/app/(public)/rallies/[id]/page.tsx:105
 msgid "つづきをはじめる"
 msgstr "つづきをはじめる"
 
@@ -2470,7 +2475,7 @@ msgstr "まだコメントはありません。"
 msgid "まだスタンプがありません。"
 msgstr "まだスタンプがありません。"
 
-#: src/app/(public)/rallies/[id]/page.tsx:83
+#: src/app/(public)/rallies/[id]/page.tsx:97
 #: src/components/ProgressSummary.tsx:31
 #: src/components/RallyViews.tsx:54
 msgid "まだスタンプはありません。"
@@ -2575,7 +2580,7 @@ msgstr "メールを追加する"
 msgid "メインメニュー"
 msgstr "メインメニュー"
 
-#: src/app/(public)/rallies/[id]/page.tsx:114
+#: src/app/(public)/rallies/[id]/page.tsx:127
 msgid "めぐる場所"
 msgstr "めぐる場所"
 
@@ -2713,7 +2718,7 @@ msgstr "ライト"
 #: src/app/(public)/badges/page.tsx:30
 #: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/page.tsx:71
-#: src/app/(public)/rallies/[id]/page.tsx:59
+#: src/app/(public)/rallies/[id]/page.tsx:60
 #: src/app/(public)/rallies/page.tsx:20
 #: src/app/(public)/rallies/page.tsx:35
 #: src/app/(public)/sitemap/page.tsx:82
@@ -5318,7 +5323,7 @@ msgstr "淡色"
 msgid "港・フェリー乗り場"
 msgstr "港・フェリー乗り場"
 
-#: src/app/(public)/rallies/[id]/page.tsx:67
+#: src/app/(public)/rallies/[id]/page.tsx:68
 #: src/components/admin/RouteTable.tsx:43
 #: src/components/BookmarkList.tsx:49
 #: src/components/map/MapScreen.tsx:330
