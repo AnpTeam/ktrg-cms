@@ -4,7 +4,8 @@
 #                         ├─/files/*─> storage_data volume (uploaded photos and videos)
 #                         └─other────> web:3000 ──> api:3001
 #
-# Only nginx publishes ports (80, 443). The others are reachable only inside the private network app-network.
+# Only nginx publishes ports to the internet (80, 443). pgadmin listens on 127.0.0.1:5050, inside the server only.
+# The others are reachable only inside the private network app-network.
 # Values like ${DOMAIN} come from the .env file next to this one (made from SSM Parameter Store /ktrg/env).
 services:
   # Reverse proxy: HTTPS, rate limit, security headers, the uploaded files. Config: nginx/ (設計書 6).
@@ -114,6 +115,26 @@ services:
     networks:
       - app-network
 
+  # pgAdmin (database GUI). Listens on 127.0.0.1 only: invisible from the internet, reached through a Session Manager
+  # tunnel from your PC (README.md). Log in with PGADMIN_EMAIL / PGADMIN_PASSWORD; the database's host is "db".
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: ktrg-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:?set PGADMIN_EMAIL in .env}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:?set PGADMIN_PASSWORD in .env}
+      PGADMIN_DISABLE_POSTFIX: "true" # no mail server inside the container
+    ports:
+      - "127.0.0.1:5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin # saved connections and settings
+    mem_limit: 300m # the server has 2 GB in all
+    depends_on:
+      - db
+    networks:
+      - app-network
+
   # Copies the uploaded files to S3 once a day (設計書 2.4.7-5). Uses the server's IAM role: no AWS keys here.
   # Nothing is ever deleted in S3 (no --delete), so an emptied volume cannot wipe the backup.
   backup_s3:
@@ -149,4 +170,6 @@ volumes:
   storage_data:
     driver: local
   db_data:
+    driver: local
+  pgadmin_data:
     driver: local
