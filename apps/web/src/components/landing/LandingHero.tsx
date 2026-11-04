@@ -23,7 +23,7 @@ export function LandingHero({ slides, locale }: { slides: BannerSlide[]; locale:
         <HeroSlides slides={photos.length > 0 ? photos : [FALLBACK]}>
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
           <div className="absolute inset-0 flex flex-col justify-between p-4 md:p-8 lg:p-10">
-            <div className="w-fit rounded-xl bg-paper/90 px-4 py-2 shadow-lg">
+            <div className="w-fit drop-shadow-[0_0_10px_rgb(255_255_255/0.9)]">
               <KatsuragiLogo className="h-20 w-auto md:h-28 lg:h-32" />
             </div>
             <h1 id="hero-title" className="font-serif text-3xl font-bold leading-snug text-white [text-shadow:0_1px_8px_rgb(0_0_0/0.7)] md:text-4xl lg:text-5xl">
