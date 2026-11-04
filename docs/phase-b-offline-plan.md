@@ -1,6 +1,6 @@
 # Phase B plan: stamping and reading without a signal
 
-Status: **decided 2026-11-04** (the user took my lean on all five questions below); **B1 (API) built**, B2 to B6 not started. Written 2026-11-04. CLAUDE.md says "Build A, then B": Phase A (online app, auth, admin, map, GPS stamp) is working, so this is the next phase. Plan only: no app code until the user says go.
+Status: **decided 2026-11-04** (the user took my lean on all five questions below); **B1 (API) and B2 (queue module) built**, B3 to B6 not started. Written 2026-11-04. CLAUDE.md says "Build A, then B": Phase A (online app, auth, admin, map, GPS stamp) is working, so this is the next phase. Plan only: no app code until the user says go.
 
 ## What the trail needs
 
@@ -79,7 +79,7 @@ Not in scope (unchanged from CLAUDE.md): background tracking, push, Background S
 | # | Slice | Verified by |
 | --- | --- | --- |
 | B1 (built, PR open) | API: `clientId`, `scannedAt` rules, `scanned_at` column + migration, closure rule | API tests (fixed clock), user-B-cannot-touch tests, 401 sweep body |
-| B2 | Queue module (`lib/stamp-queue.ts`): IndexedDB store, add/list/remove, Web Lock upload loop, retry rules, pure functions unit-tested with a fake `idb` | `bun test` |
+| B2 (built, PR open) | Queue module (`lib/stamp-queue.ts`): IndexedDB store, add/list/remove, Web Lock upload loop, retry rules, pure functions unit-tested with a fake `idb` | `bun test` |
 | B3 | Wire the stamp buttons (StampHere, RallyNearbyStamp, navigation) to the queue; waiting seal state; "N waiting" bar; logout warning | component tests where possible; **real phone** |
 | B4 | Worker: serwist install (after the Bun check), app shell precache, `/offline` page, update prompt | build output inspected; **real phone** |
 | B5 | Offline pack per course: save/update/delete UI, size and age, status age labels, storage persistence request | unit tests for tile list and size math; **real phone** |

@@ -14,6 +14,8 @@ export function useStampMessages(): Record<Problem, string> {
     too_far: t`まだ、この場所から遠いようです。場所の近くで、もう一度お試しください。`,
     low_accuracy: t`GPSの電波が弱いようです。空の開けた場所に動いて、もう一度お試しください。`,
     spot_closed: t`この場所は、いまは閉鎖中です。スタンプは押せません。`,
+    stale_scan: t`このスタンプは、押してから時間がたちすぎているため、受け付けられませんでした（48時間まで）。`,
+    bad_time: t`スタンプを押した時刻が正しくありません。端末の日付と時刻を確かめてください。`,
     rally_not_active: t`このラリーは、いまは行われていません。`,
     not_ready: t`スタンプを押す機能は、まだ使えません。`,
     login_needed: t`ログインが切れたようです。ログインしなおしてください。`,

@@ -29,13 +29,13 @@ export async function locationAlreadyAllowed(): Promise<boolean> {
   }
 }
 
-async function postStamp(path: string, spotId: string, reading: Reading): Promise<StampResult> {
+async function postStamp(path: string, spotId: string, reading: Reading, scannedAt?: string): Promise<StampResult> {
   try {
     const res = await fetch(path, {
       method: "POST",
       credentials: "same-origin",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ spotId, lat: reading.lat, lng: reading.lng, accuracyM: reading.accuracyM }),
+      body: JSON.stringify({ spotId, lat: reading.lat, lng: reading.lng, accuracyM: reading.accuracyM, ...(scannedAt ? { scannedAt } : {}) }),
     });
     let body: unknown = null;
     try {
@@ -53,9 +53,9 @@ async function postStamp(path: string, spotId: string, reading: Reading): Promis
  * Ask the server for the stamp (contract in stamp-flow.ts). Never throws. Signed out, the same request goes to the guest
  * endpoint, which checks the same things and keeps the stamp in a signed cookie instead of an account.
  */
-export async function requestStamp(spotId: string, reading: Reading): Promise<StampResult> {
-  const result = await postStamp("/api/v1/stamps", spotId, reading);
-  return !result.ok && result.failure === "login_needed" ? postStamp("/api/v1/guest/stamps", spotId, reading) : result;
+export async function requestStamp(spotId: string, reading: Reading, scannedAt?: string): Promise<StampResult> {
+  const result = await postStamp("/api/v1/stamps", spotId, reading, scannedAt);
+  return !result.ok && result.failure === "login_needed" ? postStamp("/api/v1/guest/stamps", spotId, reading, scannedAt) : result;
 }
 
 /** The ids of the places this visitor has stamped (account or guest), or null if they could not be read. Never throws. */
