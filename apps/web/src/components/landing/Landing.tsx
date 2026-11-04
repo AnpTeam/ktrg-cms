@@ -224,17 +224,6 @@ export function Landing({
         </section>
       ) : null}
 
-      <section className="flex flex-col gap-3 lg:col-span-2">
-        <div className="px-4">
-          <SectionBanner>
-            <Trans>周遊マップ＆モデルコース</Trans>
-          </SectionBanner>
-        </div>
-        <div className="px-4">
-          <Image src="/home/map.jpg" alt={locale === "ja" ? "葛城修験 全体マップ" : "Overall map of Katsuragi Shugen"} width={1180} height={598} sizes="(min-width: 1280px) 1200px, 100vw" className="h-auto w-full rounded-lg" />
-        </div>
-      </section>
-
       <LandingMap routes={routes} />
 
       <section className="flex flex-col gap-3 lg:col-span-2">
