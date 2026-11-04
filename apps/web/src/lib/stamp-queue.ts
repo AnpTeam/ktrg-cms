@@ -35,7 +35,7 @@ export interface QueueStore {
   /** The rows of one user key, oldest first. */
   list(userKey: string): Promise<QueuedStamp[]>;
   remove(id: string): Promise<void>;
-  update(id: string, patch: Partial<Pick<QueuedStamp, "tries">>): Promise<void>;
+  update(id: string, patch: Partial<Pick<QueuedStamp, "tries" | "userKey">>): Promise<void>;
 }
 
 export function newQueuedStamp(userKey: string, spotId: string, reading: Reading, now: Date, id: string = crypto.randomUUID()): QueuedStamp {

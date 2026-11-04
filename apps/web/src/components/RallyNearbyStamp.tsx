@@ -7,6 +7,7 @@ import { pickText } from "@/lib/pick-text";
 import { distanceParts, type Problem } from "@/lib/stamp-flow";
 import { nearestToStamp, type RallyPlace } from "@/lib/rally-nearby";
 import { buzz, playThud, unlockAudio } from "@/lib/stamp-feel";
+import { getOutbox } from "@/lib/stamp-outbox";
 import { locationAlreadyAllowed, readPosition, requestStamp } from "@/lib/stamp-client";
 import { announceProgress } from "@/lib/stamp-progress";
 import { track } from "@/lib/track";
@@ -17,6 +18,7 @@ type Phase =
   | { name: "explain" }
   | { name: "working"; what: "locating" | "sending" }
   | { name: "done"; place: string; already: boolean }
+  | { name: "queued"; place: string }
   | { name: "none"; place: string; distanceM: number }
   | { name: "problem"; problem: Problem; distanceM?: number };
 
@@ -59,6 +61,7 @@ export function RallyNearbyStamp({ places, held, locale, rallyName, quiet = fals
     if (!found.near) return setPhase({ name: "none", place: nameOf(found.place), distanceM: found.distanceM });
     setPhase({ name: "working", what: "sending" });
     const result = await requestStamp(found.place.id, position.reading);
+    if (!result.ok && result.failure === "network" && (await getOutbox().enqueue(found.place.id, position.reading))) return setPhase({ name: "queued", place: nameOf(found.place) });
     if (!result.ok) return setPhase({ name: "problem", problem: result.failure, distanceM: result.distanceM });
     setPhase({ name: "done", place: nameOf(found.place), already: result.already });
     if (!result.already) {
@@ -112,6 +115,11 @@ export function RallyNearbyStamp({ places, held, locale, rallyName, quiet = fals
       {phase.name === "done" ? (
         <p role="status" className="rounded-2xl bg-surface p-4 text-xl font-bold leading-snug">
           {phase.already ? t`「${phase.place}」のスタンプは、もう押してあります。` : t`「${phase.place}」のスタンプを押しました！`}
+        </p>
+      ) : null}
+      {phase.name === "queued" ? (
+        <p role="status" className="rounded-2xl bg-surface p-4 text-lg font-bold leading-snug">
+          {t`電波がないため、「${phase.place}」のスタンプは、あとで送ります。そのときに受け付けられないこともあります。`}
         </p>
       ) : null}
       {phase.name === "none" ? (

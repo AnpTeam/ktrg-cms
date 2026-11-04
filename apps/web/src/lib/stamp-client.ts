@@ -58,6 +58,14 @@ export async function requestStamp(spotId: string, reading: Reading, scannedAt?:
   return !result.ok && result.failure === "login_needed" ? postStamp("/api/v1/guest/stamps", spotId, reading, scannedAt) : result;
 }
 
+/**
+ * Sends one queued stamp as the account it was pressed under: "guest" to the guest endpoint, anything else to the
+ * account endpoint ONLY (a signed-out answer stays "login_needed", so the row waits instead of becoming a guest stamp).
+ */
+export function requestStampFor(userKey: string, spotId: string, reading: Reading, scannedAt: string): Promise<StampResult> {
+  return postStamp(userKey === "guest" ? "/api/v1/guest/stamps" : "/api/v1/stamps", spotId, reading, scannedAt);
+}
+
 /** The ids of the places this visitor has stamped (account or guest), or null if they could not be read. Never throws. */
 export async function fetchMyStamps(): Promise<Set<string> | null> {
   for (const path of ["/api/v1/stamps", "/api/v1/guest/stamps"]) {
