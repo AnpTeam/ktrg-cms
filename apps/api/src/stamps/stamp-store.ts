@@ -73,6 +73,10 @@ export function createDrizzleStampStore(db: Db): StampStore {
         .orderBy(desc(stamps.createdAt));
     },
 
+    listCompletions(userId) {
+      return db.select({ rallyId: rallyCompletions.rallyId, completedAt: rallyCompletions.completedAt }).from(rallyCompletions).where(eq(rallyCompletions.userId, userId));
+    },
+
     async setRevoked(actor, id, revoked) {
       return db.transaction(async (tx) => {
         const [row] = await tx

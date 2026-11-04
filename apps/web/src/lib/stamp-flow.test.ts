@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { distanceParts, geoFailureFromCode, isStampMock, parseMyStamps, parseStampResponse, readingFrom, roundedDistance } from "./stamp-flow";
+import { distanceParts, geoFailureFromCode, isStampMock, parseMyStamps, parseStampResponse, readingFrom, roundedDistance, parseMyCompletions } from "./stamp-flow";
 
 describe("geoFailureFromCode", () => {
   test("maps the browser's three error codes", () => {
@@ -104,4 +104,13 @@ test("isStampMock accepts only the known names", () => {
   expect(isStampMock("far")).toBe(true);
   expect(isStampMock("anything")).toBe(false);
   expect(isStampMock(undefined)).toBe(false);
+});
+
+describe("parseMyCompletions", () => {
+  test("keeps well-formed rows, drops the rest, and is empty when the answer is not usable", () => {
+    const body = { ok: true, completions: [{ rallyId: "r1", completedAt: "2026-11-04T01:00:00.000Z" }, { rallyId: 2, completedAt: "x" }, { rallyId: "r3", completedAt: "not a date" }, null] };
+    expect([...parseMyCompletions(200, body)]).toEqual([["r1", "2026-11-04T01:00:00.000Z"]]);
+    expect(parseMyCompletions(401, body).size).toBe(0);
+    expect(parseMyCompletions(200, { ok: true }).size).toBe(0);
+  });
 });

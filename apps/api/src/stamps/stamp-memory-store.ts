@@ -40,6 +40,9 @@ export function createMemoryStampStore(audit: AuditWriter, opts: { now?: () => D
     async listMine(userId) {
       return [...stamps.values()].filter((s) => s.userId === userId && !s.revoked).map((s) => ({ spotId: s.spotId, routeId: spots.get(s.spotId)?.routeId ?? "", createdAt: s.createdAt }));
     },
+    async listCompletions() {
+      return []; // the memory store does not work out finishes (award() returns none)
+    },
     async setRevoked(actor, id, revoked) {
       const s = stamps.get(id);
       if (!s) return "not_found";

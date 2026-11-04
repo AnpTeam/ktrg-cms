@@ -64,7 +64,7 @@ msgid "{0}km"
 msgstr "{0} km"
 
 #. placeholder {0}: rally.total
-#: src/app/(public)/rallies/[id]/page.tsx:85
+#: src/app/(public)/rallies/[id]/page.tsx:86
 msgid "{0}か所、すべてそろいました。"
 msgstr "All {0} stamps collected."
 
@@ -765,7 +765,7 @@ msgid "アップロード済みの写真です。選んで「この写真を使�
 msgstr "These are the photos already uploaded. Choose one and press \"Use this photo\" to fill in its link."
 
 #. placeholder {0}: rally.total - stamped
-#: src/app/(public)/rallies/[id]/page.tsx:97
+#: src/app/(public)/rallies/[id]/page.tsx:102
 msgid "あと{0}か所"
 msgstr "{0} to go"
 
@@ -839,7 +839,7 @@ msgstr "You are offline right now. It will work again when the signal returns."
 msgid "いまいる場所から、いちばん近いスタンプの場所まで案内します。位置は、この端末の中だけで使います。"
 msgstr "Guides you from where you are to the nearest stamp place. Your position is used on this device only."
 
-#: src/app/(public)/rallies/[id]/page.tsx:105
+#: src/app/(public)/rallies/[id]/page.tsx:110
 msgid "いますぐはじめる"
 msgstr "Start now"
 
@@ -1578,7 +1578,7 @@ msgstr "Contrast"
 msgid "コンビニ・商店"
 msgstr "Convenience store / local shop"
 
-#: src/app/(public)/rallies/[id]/page.tsx:82
+#: src/app/(public)/rallies/[id]/page.tsx:83
 #: src/components/StampProgressPopup.tsx:49
 msgid "コンプリート！"
 msgstr "Rally complete!"
@@ -1675,7 +1675,7 @@ msgid "スタート"
 msgstr "Start"
 
 #: src/app/(admin)/admin/page.tsx:76
-#: src/app/(public)/rallies/[id]/page.tsx:115
+#: src/app/(public)/rallies/[id]/page.tsx:120
 #: src/components/admin/map-editor/PlaceList.tsx:106
 #: src/components/admin/PlaceTable.tsx:137
 #: src/components/ProgressSummary.tsx:38
@@ -1754,7 +1754,7 @@ msgstr "{0} stamp waypoints"
 msgid "スタンプの記録を読めませんでした。"
 msgstr "Your stamps could not be read."
 
-#: src/app/(public)/rallies/[id]/page.tsx:96
+#: src/app/(public)/rallies/[id]/page.tsx:101
 #: src/components/ProgressSummary.tsx:42
 #: src/components/RallyViews.tsx:57
 #: src/components/RallyViews.tsx:148
@@ -1995,7 +1995,7 @@ msgstr "Change how it is made"
 msgid "つくり方を変える…"
 msgstr "Change how it is made…"
 
-#: src/app/(public)/rallies/[id]/page.tsx:105
+#: src/app/(public)/rallies/[id]/page.tsx:110
 msgid "つづきをはじめる"
 msgstr "Continue"
 
@@ -2475,7 +2475,7 @@ msgstr "No comments yet."
 msgid "まだスタンプがありません。"
 msgstr "No stamps yet."
 
-#: src/app/(public)/rallies/[id]/page.tsx:97
+#: src/app/(public)/rallies/[id]/page.tsx:102
 #: src/components/ProgressSummary.tsx:31
 #: src/components/RallyViews.tsx:54
 msgid "まだスタンプはありません。"
@@ -2580,7 +2580,7 @@ msgstr "Add email"
 msgid "メインメニュー"
 msgstr "Main menu"
 
-#: src/app/(public)/rallies/[id]/page.tsx:127
+#: src/app/(public)/rallies/[id]/page.tsx:132
 msgid "めぐる場所"
 msgstr "Places to visit"
 
@@ -2718,7 +2718,7 @@ msgstr "Light"
 #: src/app/(public)/badges/page.tsx:30
 #: src/app/(public)/guide/page.tsx:24
 #: src/app/(public)/page.tsx:71
-#: src/app/(public)/rallies/[id]/page.tsx:60
+#: src/app/(public)/rallies/[id]/page.tsx:61
 #: src/app/(public)/rallies/page.tsx:20
 #: src/app/(public)/rallies/page.tsx:35
 #: src/app/(public)/sitemap/page.tsx:82
@@ -5323,7 +5323,7 @@ msgstr "Pale"
 msgid "港・フェリー乗り場"
 msgstr "Port or ferry"
 
-#: src/app/(public)/rallies/[id]/page.tsx:68
+#: src/app/(public)/rallies/[id]/page.tsx:69
 #: src/components/admin/RouteTable.tsx:43
 #: src/components/BookmarkList.tsx:49
 #: src/components/map/MapScreen.tsx:330
@@ -6434,6 +6434,10 @@ msgstr "{0} finished"
 #: src/components/admin/RallyEditor.tsx:202
 msgid "達成した人の記録は残ります。スタンプは変わりません。"
 msgstr "The records of people who finished stay. Stamps do not change."
+
+#: src/app/(public)/rallies/[id]/page.tsx:90
+msgid "達成日"
+msgstr "Completed on"
 
 #: src/components/admin/GradingFields.tsx:63
 #: src/components/admin/GradingFields.tsx:90

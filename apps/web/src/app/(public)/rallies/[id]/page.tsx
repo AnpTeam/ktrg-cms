@@ -43,6 +43,7 @@ export default async function RallyPage({ params, searchParams }: Props) {
   const stamped = rally.stamped ?? 0;
   const done = rally.total > 0 && stamped === rally.total;
   const held = [...mine.ids];
+  const finishedAt = mine.completed.get(id) ?? null;
   const heldSet = new Set(held);
   // Where "start now" leads: the next place not yet stamped (the first one when nothing is), opened on the map.
   const next = nextSlot(rally);
@@ -84,7 +85,11 @@ export default async function RallyPage({ params, searchParams }: Props) {
           <p className="text-xl font-bold">
             <Trans>{rally.total}か所、すべてそろいました。</Trans>
           </p>
-          <LastUpdated iso={detail.updatedAt} locale={i18n.locale} />
+          {finishedAt ? (
+            <p className="text-lg text-muted">
+              <Trans>達成日</Trans> <time dateTime={finishedAt}>{new Intl.DateTimeFormat(i18n.locale === "ja" ? "ja-JP" : "en-US", { dateStyle: "long", timeZone: "Asia/Tokyo" }).format(new Date(finishedAt))}</time>
+            </p>
+          ) : null}
           {viewer.signedIn ? <CertificateButton title={name} total={rally.total} locale={i18n.locale} /> : null}
         </section>
       ) : (
