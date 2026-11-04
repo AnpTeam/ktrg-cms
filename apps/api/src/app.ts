@@ -60,8 +60,20 @@ import { createDrizzleMeStore } from "./me/me-store";
 import { apiDocs } from "./openapi";
 import { createRoutingService } from "./routing/routing-service";
 import { createServices, type Services } from "./services";
-import { subtitleRoutes, uploadRoutes } from "./uploads/upload-routes";
-import { createR2Storage } from "./uploads/upload-storage";
+import { directUploadRoutes, subtitleRoutes, uploadRoutes } from "./uploads/upload-routes";
+import { createDiskStorage, createR2Storage, type DiskStorage } from "./uploads/upload-storage";
+import { createHmac } from "node:crypto";
+
+// Uploads on the server's own disk (UPLOADS_DIR + UPLOADS_PUBLIC_URL) when R2 is not set up. Nothing is read or written until
+// the first upload. The upload addresses are signed with a key derived from OTP_HMAC_SECRET (required in production).
+const diskUploads: DiskStorage | undefined =
+  !env.R2_BUCKET_NAME && env.UPLOADS_DIR && env.UPLOADS_PUBLIC_URL
+    ? createDiskStorage({
+        root: env.UPLOADS_DIR,
+        uploadPath: "/api/v1/uploads/direct",
+        secret: createHmac("sha256", env.OTP_HMAC_SECRET ?? "dev-only-otp-secret-change-me-0000000").update("disk-upload-signing").digest("hex"),
+      })
+    : undefined;
 
 // Built on first use, so importing the app never opens a database connection.
 let services: Services | undefined;
@@ -108,8 +120,10 @@ function getServices(): Services {
         rpId: env.PASSKEY_RP_ID ?? new URL(env.APP_ORIGIN).hostname,
         origin: env.APP_ORIGIN,
       },
-      // All five R2 settings or none (parse-env checks): without them uploads answer 503.
-      uploads: env.R2_BUCKET_NAME
+      // All five R2 settings or none (parse-env checks), else the server's disk: without either, uploads answer 503.
+      uploads: diskUploads
+        ? { storage: diskUploads, publicBaseUrl: env.UPLOADS_PUBLIC_URL! }
+        : env.R2_BUCKET_NAME
         ? {
             storage: createR2Storage({
               accountId: env.R2_ACCOUNT_ID!,
@@ -131,7 +145,7 @@ function getServices(): Services {
  */
 export function createApp(
   getServices: () => Services,
-  opts: RouteOptions & { docs: boolean; cronSecret?: string; appOrigin?: () => string },
+  opts: RouteOptions & { docs: boolean; cronSecret?: string; appOrigin?: () => string; diskUploads?: DiskStorage },
 ) {
   return new Elysia({ prefix: "/api/v1" })
     .use(apiBase({ allowedOrigin: opts.appOrigin })) // first: request ids, the Origin check and the one error shape
@@ -192,7 +206,8 @@ export function createApp(
     .use(listReadRoutes(placeList, getServices, opts))
     .use(listReadRoutes(userList, getServices, opts))
     .use(userRoleRoutes(getServices, opts))
-    .use(purgeRoutes(getServices, opts.cronSecret));
+    .use(purgeRoutes(getServices, opts.cronSecret))
+    .use(opts.diskUploads ? directUploadRoutes(opts.diskUploads) : new Elysia());
 }
 
 export const app = createApp(getServices, {
@@ -201,6 +216,7 @@ export const app = createApp(getServices, {
   docs: env.NODE_ENV !== "production" || env.API_DOCS,
   cronSecret: env.CRON_SECRET,
   appOrigin: () => env.APP_ORIGIN,
+  diskUploads,
 });
 
 // Vercel's entry: its Elysia preset picks the first of app.ts, index.ts, server.ts, src/app.ts,

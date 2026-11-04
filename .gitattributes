@@ -1,1 +1,5 @@
 apps/web/src/locales/*.po merge=po-catalog
+
+# Run on the Linux server: keep Unix line endings even when checked out on Windows.
+*.sh text eol=lf
+deploy/aws/** text eol=lf

@@ -101,7 +101,8 @@ export const MAX_SUBTITLE_BYTES = 1024 * 1024;
 export function subtitleKeyFor(videoUrl: string, base: string): string | null {
   if (!videoUrl.startsWith(`${base}/`)) return null;
   try {
-    const path = decodeURIComponent(new URL(videoUrl).pathname.replace(/^\//, ""));
+    // The part after the base, which may itself have a path (https://example.com/files).
+    const path = decodeURIComponent(new URL(videoUrl).pathname.slice(new URL(`${base}/`).pathname.length));
     return /^videos\/[^/]+\.(mp4|webm)$/i.test(path) ? path.replace(/\.[^.]+$/, ".vtt") : null;
   } catch {
     return null;
@@ -210,6 +211,10 @@ export function createUploadService(deps: {
       const key = subtitleKeyFor(videoUrl, deps.publicBaseUrl);
       if (!key) return null;
       try {
+        if (deps.storage?.readText) {
+          const text = await deps.storage.readText(key);
+          return text && text.length <= MAX_SUBTITLE_BYTES && text.trimStart().startsWith("WEBVTT") ? text : null;
+        }
         const res = await fetcher(publicUrl(deps.publicBaseUrl, key), { signal: AbortSignal.timeout(5000) });
         if (!res.ok) return null;
         const text = await res.text();

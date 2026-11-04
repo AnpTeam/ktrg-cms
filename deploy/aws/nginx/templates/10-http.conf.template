@@ -1,0 +1,14 @@
+# Port 80 (HTTP): Let's Encrypt's check, everything else redirected to HTTPS.
+server {
+    listen 80 default_server;
+    server_name _;
+
+    # Let's Encrypt asks for a file here to check you own the domain; Certbot puts it in /var/www/certbot.
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://${DOMAIN}$request_uri;
+    }
+}

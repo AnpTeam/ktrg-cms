@@ -48,6 +48,10 @@ const EnvSchema = Type.Object({
   // https address is accepted. Set it once photos live in the bucket, so an editor cannot point visitors' browsers
   // at a stranger's server.
   PHOTO_HOSTS: Type.Optional(Type.String()),
+  // Uploads kept on the server's own disk instead of R2 (the AWS server): the folder, and the public address the web server
+  // serves it at (https, no trailing slash, e.g. https://example.com/files). Both or neither; R2 wins when it is set too.
+  UPLOADS_DIR: Type.Optional(Type.String({ minLength: 1 })),
+  UPLOADS_PUBLIC_URL: Type.Optional(Type.String({ pattern: "^https://[^/]+(/[^?#]*[^/?#])?$" })),
 });
 
 const R2_SETTINGS = ["R2_ACCOUNT_ID", "R2_ACCESS_KEY_ID", "R2_SECRET_ACCESS_KEY", "R2_BUCKET_NAME", "R2_PUBLIC_URL"] as const;

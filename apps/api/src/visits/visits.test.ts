@@ -40,6 +40,17 @@ describe("where a visit came from", () => {
     expect(placeFrom(from("大阪市", "27"), true).region).toBe("27");
   });
 
+  test("Cloudflare's location headers are read when Vercel's are absent", () => {
+    const cf = (h: Record<string, string>) => new Headers({ "user-agent": browser, ...h });
+    expect(placeFrom(cf({ "cf-ipcountry": "JP", "cf-region-code": "29", "cf-ipcity": "Gose" }), true)).toEqual({ country: "JP", region: "29", city: "Gose" });
+    expect(placeFrom(cf({ "cf-ipcountry": "XX", "cf-ipcity": "Somewhere" }), true)).toEqual({ country: "", region: "", city: "" });
+    expect(placeFrom(cf({ "cf-ipcountry": "T1" }), true)).toEqual({ country: "", region: "", city: "" });
+    expect(placeFrom(cf({ "cf-ipcountry": "JP", "cf-ipcity": "100%" }), true).city).toBe("100%");
+    // Vercel's win when both are there; neither is believed from an untrusted connection.
+    expect(placeFrom(from("御所市", "29", "JP", { "cf-ipcountry": "US" }), true).country).toBe("JP");
+    expect(placeFrom(cf({ "cf-ipcountry": "JP" }), false)).toEqual({ country: "", region: "", city: "" });
+  });
+
   test("the headers are not believed when the proxy is not trusted", () => {
     expect(placeFrom(from("御所市"), false)).toEqual({ country: "", region: "", city: "" });
   });

@@ -147,6 +147,11 @@ describe("subtitles", () => {
     expect(subtitleKeyFor(`${BASE}/photos/a.jpg`, BASE)).toBeNull();
     expect(subtitleKeyFor(`${BASE}/videos/../secret.mp4`, BASE)).toBeNull();
   });
+  test("works when the public address has a path of its own (files on the server's disk)", () => {
+    const base = "https://example.com/files";
+    expect(subtitleKeyFor(`${base}/videos/Kada-abc123.mp4`, base)).toBe("videos/Kada-abc123.vtt");
+    expect(subtitleKeyFor("https://example.com/videos/Kada-abc123.mp4", base)).toBeNull();
+  });
   test("signs for a video of ours, refuses anything else or too big", async () => {
     const { service } = setup();
     const ok = await service.createSubtitleUpload({ videoUrl: `${BASE}/videos/a-abc123.mp4`, size: 1200 });

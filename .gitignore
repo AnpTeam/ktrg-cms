@@ -91,6 +91,7 @@ Desktop.ini
 !COMMANDS.md
 !docs/
 !docs/*.md
+!deploy/aws/README.md
 
 # Database dumps
 sql/

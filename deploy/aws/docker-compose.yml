@@ -1,0 +1,152 @@
+# Production on one EC2 host (設計書 5. Docker compose): t4g.small (ARM64), in /opt/ktrg on the server.
+#
+#   visitor ─https─> nginx ─/api/*──> api:3001 ──> db:5432
+#                         ├─/files/*─> storage_data volume (uploaded photos and videos)
+#                         └─other────> web:3000 ──> api:3001
+#
+# Only nginx publishes ports (80, 443). The others are reachable only inside the private network app-network.
+# Values like ${DOMAIN} come from the .env file next to this one (made from SSM Parameter Store /ktrg/env).
+services:
+  # Reverse proxy: HTTPS, rate limit, security headers, the uploaded files. Config: nginx/ (設計書 6).
+  nginx:
+    image: nginx:1-alpine
+    container_name: nginx-gateway
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env}
+    volumes:
+      # nginx/templates/*.template become /etc/nginx/conf.d/*.conf at start, with ${DOMAIN} filled in.
+      - ./nginx/templates:/etc/nginx/templates:ro
+      - ./nginx/snippets:/etc/nginx/snippets:ro
+      # Leaves the HTTPS server out until Certbot has the certificate (the very first start).
+      - ./nginx/40-ktrg-https.sh:/docker-entrypoint.d/40-ktrg-https.sh:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+      - storage_data:/srv/files:ro
+    depends_on:
+      - web
+      - api
+    networks:
+      - app-network
+
+  # Let's Encrypt certificate. Not always running: started for one job and removed again, e.g.
+  #   docker compose run --rm certbot renew
+  certbot:
+    image: certbot/certbot:latest
+    profiles: ["tools"]
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - app-network
+
+  # Website (apps/web, Next.js standalone).
+  web:
+    image: ${REGISTRY:?set REGISTRY in .env}/ktrg-web:${TAG:-latest}
+    container_name: ktrg-web
+    restart: always
+    environment:
+      API_ORIGIN: http://api:3001
+    expose:
+      - "3000"
+    depends_on:
+      - api
+    networks:
+      - app-network
+
+  # API (apps/api, Bun + Elysia).
+  api:
+    image: ${REGISTRY}/ktrg-cms:${TAG:-latest}
+    container_name: ktrg-api
+    restart: always
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      # nginx is the only way in and sets X-Forwarded-For to the visitor's address (設計書 2.4.5-4).
+      TRUST_PROXY: "true"
+      # Uploads on the server's disk (storage_data); nginx serves them at /files/.
+      UPLOADS_DIR: /data/uploads
+      UPLOADS_PUBLIC_URL: https://${DOMAIN}/files
+    expose:
+      - "3001"
+    volumes:
+      - storage_data:/data/uploads
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - app-network
+
+  # Runs once at each `up`: applies new database migrations, then stops. The api waits for it.
+  migrate:
+    image: ${REGISTRY}/ktrg-cms:${TAG:-latest}
+    container_name: ktrg-migrate
+    command: ["bun", "scripts/migrate.ts"]
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # PostgreSQL 18 (postgres:18-alpine, copied into ECR as ktrg-db).
+  db:
+    image: ${REGISTRY}/ktrg-db:18-alpine
+    container_name: ktrg-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB in .env}
+      TZ: Asia/Tokyo
+    volumes:
+      # PostgreSQL 18 keeps its data in a versioned folder under /var/lib/postgresql: mount the parent.
+      - db_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app-network
+
+  # Copies the uploaded files to S3 once a day (設計書 2.4.7-5). Uses the server's IAM role: no AWS keys here.
+  # Nothing is ever deleted in S3 (no --delete), so an emptied volume cannot wipe the backup.
+  backup_s3:
+    image: amazon/aws-cli:latest
+    container_name: s3_backup_cron
+    restart: unless-stopped
+    user: "1000:1000" # the API's user (bun), owner of the files: read them without root
+    environment:
+      HOME: /tmp
+      AWS_DEFAULT_REGION: ap-northeast-3
+      S3_BUCKET_NAME: ${S3_BUCKET_NAME:?set S3_BUCKET_NAME in .env}
+      BACKUP_INTERVAL: "86400" # 24 hours in seconds
+    volumes:
+      - storage_data:/data:ro
+    entrypoint:
+      - sh
+      - -c
+      - |
+        while true; do
+          echo "[$$(date)] Starting sync to S3: s3://$$S3_BUCKET_NAME/backups/images/"
+          aws s3 sync /data "s3://$$S3_BUCKET_NAME/backups/images/" --exclude "*.part-*" --storage-class STANDARD_IA \
+            --only-show-errors && echo "[$$(date)] S3 backup sync completed." || echo "[$$(date)] S3 backup sync FAILED."
+          sleep "$$BACKUP_INTERVAL"
+        done
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  storage_data:
+    driver: local
+  db_data:
+    driver: local

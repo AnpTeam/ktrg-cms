@@ -1,0 +1,71 @@
+# Shared settings (nginx's http block). Both servers below use them.
+
+server_tokens off; # do not tell visitors the nginx version
+
+# Visitor's address when the domain goes through Cloudflare (orange cloud): requests then come from Cloudflare's
+# addresses (https://www.cloudflare.com/ips/), and the visitor's own is in CF-Connecting-IP. Believed only from these
+# ranges, so $remote_addr is always the real visitor. Update both lists if Cloudflare adds ranges.
+set_real_ip_from 173.245.48.0/20;
+set_real_ip_from 103.21.244.0/22;
+set_real_ip_from 103.22.200.0/22;
+set_real_ip_from 103.31.4.0/22;
+set_real_ip_from 141.101.64.0/18;
+set_real_ip_from 108.162.192.0/18;
+set_real_ip_from 190.93.240.0/20;
+set_real_ip_from 188.114.96.0/20;
+set_real_ip_from 197.234.240.0/22;
+set_real_ip_from 198.41.128.0/17;
+set_real_ip_from 162.158.0.0/15;
+set_real_ip_from 104.16.0.0/13;
+set_real_ip_from 104.24.0.0/14;
+set_real_ip_from 172.64.0.0/13;
+set_real_ip_from 131.0.72.0/22;
+set_real_ip_from 2400:cb00::/32;
+set_real_ip_from 2606:4700::/32;
+set_real_ip_from 2803:f800::/32;
+set_real_ip_from 2405:b500::/32;
+set_real_ip_from 2405:8100::/32;
+set_real_ip_from 2a06:98c0::/29;
+set_real_ip_from 2c0f:f248::/32;
+real_ip_header CF-Connecting-IP;
+
+# Cloudflare's place headers (country, region, city) are passed to the app only when the connection really comes
+# from Cloudflare; anyone else could fake them.
+geo $realip_remote_addr $from_cloudflare {
+    default 0;
+    173.245.48.0/20 1;
+    103.21.244.0/22 1;
+    103.22.200.0/22 1;
+    103.31.4.0/22 1;
+    141.101.64.0/18 1;
+    108.162.192.0/18 1;
+    190.93.240.0/20 1;
+    188.114.96.0/20 1;
+    197.234.240.0/22 1;
+    198.41.128.0/17 1;
+    162.158.0.0/15 1;
+    104.16.0.0/13 1;
+    104.24.0.0/14 1;
+    172.64.0.0/13 1;
+    131.0.72.0/22 1;
+    2400:cb00::/32 1;
+    2606:4700::/32 1;
+    2803:f800::/32 1;
+    2405:b500::/32 1;
+    2405:8100::/32 1;
+    2a06:98c0::/29 1;
+    2c0f:f248::/32 1;
+}
+map $from_cloudflare $cf_country { 1 $http_cf_ipcountry;   default ""; }
+map $from_cloudflare $cf_region  { 1 $http_cf_region_code; default ""; }
+map $from_cloudflare $cf_city    { 1 $http_cf_ipcity;      default ""; }
+
+# Rate limit for /api/ (設計書 2.4.5-4): 10 requests a second per visitor, bursts of 20; more get 429.
+limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+limit_req_status 429;
+
+# Compress text responses.
+gzip on;
+gzip_proxied any;
+gzip_min_length 1024;
+gzip_types text/plain text/css text/vtt application/javascript application/json image/svg+xml;

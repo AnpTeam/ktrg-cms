@@ -1,7 +1,10 @@
 import { ListObjectsV2Command, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import { mkdir, open, readdir, readFile, rename, rm, stat } from "node:fs/promises";
+import { dirname, join, resolve, sep } from "node:path";
 
-/** Where uploaded files are kept. The app uses Cloudflare R2; tests use the memory copy. */
+/** Where uploaded files are kept: Cloudflare R2, or a folder on the server's disk; tests use the memory copy. */
 export interface FileStorage {
   put(key: string, body: Uint8Array, contentType: string): Promise<void>;
   /**
@@ -11,6 +14,8 @@ export interface FileStorage {
   presignPut(key: string, contentType: string, size: number): Promise<string>;
   /** The files under a key prefix (at most `limit`), in no particular order. */
   list(prefix: string, limit: number): Promise<StoredFile[]>;
+  /** A small stored file's text, or null when there is none. Only storages that can read without HTTP have it. */
+  readText?(key: string): Promise<string | null>;
 }
 
 export interface StoredFile {
@@ -81,6 +86,121 @@ export function createR2Storage(config: R2Config): FileStorage {
         token = page.IsTruncated ? page.NextContinuationToken : undefined;
       } while (token && found.length < limit);
       return found;
+    },
+  };
+}
+
+/** The two folders a key may be in; anything else (or a path that climbs out with "..") is refused. */
+const DISK_KEY = /^(photos|videos)\/[^/\\\0]+$/;
+
+export type ReceiveResult = "ok" | "forbidden" | "wrong_size";
+
+/** Disk storage also takes the browser's PUT to an address it signed (see receive). */
+export interface DiskStorage extends FileStorage {
+  /**
+   * Stores the body of a PUT to an address presignPut made. "forbidden" when the signature, time or content type do not
+   * match; "wrong_size" when the body is not exactly the signed length (nothing is kept then).
+   */
+  receive(key: string, query: Record<string, string | undefined>, contentType: string | undefined, body: ReadableStream<Uint8Array> | null): Promise<ReceiveResult>;
+  readText(key: string): Promise<string | null>;
+}
+
+export interface DiskConfig {
+  /** The folder files are kept in (a volume on the server's disk). */
+  root: string;
+  /** Where the browser sends a signed PUT, without the key: "/api/v1/uploads/direct" (same site, so no CORS). */
+  uploadPath: string;
+  /** Key for signing upload addresses. */
+  secret: string;
+  now?: () => number;
+}
+
+/**
+ * Files in a folder on the server's own disk (EBS on AWS), served by the web server under the public address. A video is
+ * still sent by the browser in one PUT to a signed, short-lived address, as with R2, but the address is this API's
+ * (PUT /uploads/direct/<key>), which checks the signature, the type and the exact length before keeping anything.
+ */
+export function createDiskStorage(config: DiskConfig): DiskStorage {
+  const root = resolve(config.root);
+  const now = config.now ?? Date.now;
+  const pathOf = (key: string): string | null => {
+    if (!DISK_KEY.test(key) || key.split("/").some((p) => p === "." || p === "..")) return null;
+    const path = resolve(root, key);
+    return path.startsWith(root + sep) ? path : null;
+  };
+  const sign = (key: string, contentType: string, size: number, expires: number) =>
+    createHmac("sha256", config.secret).update(`${key}\n${contentType}\n${size}\n${expires}`).digest("base64url");
+  // Written beside the final name and renamed at the end, so a broken upload never shows at a public address.
+  async function write(path: string, chunks: AsyncIterable<Uint8Array> | Uint8Array[], expected: number): Promise<boolean> {
+    await mkdir(dirname(path), { recursive: true });
+    const tmp = `${path}.part-${randomBytes(6).toString("hex")}`;
+    const file = await open(tmp, "wx");
+    let written = 0;
+    try {
+      for await (const chunk of chunks) {
+        written += chunk.length;
+        if (written > expected) break;
+        await file.write(chunk);
+      }
+    } catch (err) {
+      // The browser went away mid-upload: drop the part file.
+      await file.close();
+      await rm(tmp, { force: true });
+      throw err;
+    }
+    await file.close();
+    if (written !== expected) {
+      await rm(tmp, { force: true });
+      return false;
+    }
+    await rename(tmp, path);
+    return true;
+  }
+  return {
+    async put(key, body) {
+      const path = pathOf(key);
+      if (!path) throw new Error("invalid storage key");
+      await write(path, [body], body.length);
+    },
+    async presignPut(key, contentType, size) {
+      if (!pathOf(key)) throw new Error("invalid storage key");
+      const expires = Math.floor(now() / 1000) + PRESIGN_SECONDS;
+      const query = new URLSearchParams({ type: contentType, size: String(size), expires: String(expires), sig: sign(key, contentType, size, expires) });
+      return `${config.uploadPath}/${key.split("/").map(encodeURIComponent).join("/")}?${query}`;
+    },
+    async receive(key, query, contentType, body) {
+      const path = pathOf(key);
+      const size = Number(query.size);
+      const expires = Number(query.expires);
+      if (!path || !body || !query.type || !query.sig || !Number.isInteger(size) || size <= 0 || !Number.isInteger(expires)) return "forbidden";
+      if (expires < Math.floor(now() / 1000) || contentType !== query.type) return "forbidden";
+      const expected = Buffer.from(sign(key, query.type, size, expires));
+      const given = Buffer.from(query.sig);
+      if (expected.length !== given.length || !timingSafeEqual(expected, given)) return "forbidden";
+      return (await write(path, body, size)) ? "ok" : "wrong_size";
+    },
+    async list(prefix, limit) {
+      const found: StoredFile[] = [];
+      const folder = prefix.replace(/\/+$/, "");
+      if (folder !== "photos" && folder !== "videos") return found;
+      let names: string[];
+      try {
+        names = await readdir(join(root, folder));
+      } catch {
+        return found; // nothing uploaded yet
+      }
+      for (const name of names) {
+        if (found.length >= limit) break;
+        if (name.includes(".part-")) continue;
+        const s = await stat(join(root, folder, name)).catch(() => null);
+        if (s?.isFile()) found.push({ key: `${folder}/${name}`, size: s.size, lastModified: s.mtime });
+      }
+      return found;
+    },
+    async readText(key) {
+      const path = pathOf(key);
+      if (!path) return null;
+      return readFile(path, "utf8").catch(() => null);
     },
   };
 }

@@ -56,6 +56,19 @@ const BOT = /bot|crawl|spider|slurp|preview|headless|lighthouse|monitor|facebook
 export function placeFrom(headers: Headers, trusted: boolean): Place {
   if (!trusted) return { country: "", region: "", city: "" };
   const upper = (v: string | null, max: number) => (v ?? "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, max);
+  // Cloudflare in front of the AWS server ("Add visitor location headers"): the same three things under its own names.
+  // XX is "unknown" and T1 is Tor there. The web server drops these headers unless the request came from Cloudflare.
+  if (!headers.has("x-vercel-ip-country") && headers.has("cf-ipcountry")) {
+    const country = upper(headers.get("cf-ipcountry"), 2);
+    let cfCity = headers.get("cf-ipcity") ?? "";
+    try {
+      cfCity = decodeURIComponent(cfCity);
+    } catch {
+      // not percent-encoded: keep it as sent
+    }
+    if (country === "XX" || country === "T1") return { country: "", region: "", city: "" };
+    return { country, region: upper(headers.get("cf-region-code"), 3), city: cfCity.trim().slice(0, 100) };
+  }
   let city = headers.get("x-vercel-ip-city") ?? "";
   try {
     city = decodeURIComponent(city);

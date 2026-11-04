@@ -7,9 +7,12 @@ import { createMemorySessionStore } from "../auth/session-memory-store";
 import { createSessionService } from "../auth/session-service";
 import type { AuthUser } from "../auth/user";
 import { apiBase } from "../lib/api-errors";
-import { subtitleRoutes, uploadRoutes } from "./upload-routes";
+import { directUploadRoutes, subtitleRoutes, uploadRoutes } from "./upload-routes";
 import { createUploadService } from "./upload-service";
-import { createMemoryStorage } from "./upload-storage";
+import { createDiskStorage, createMemoryStorage } from "./upload-storage";
+import { mkdtemp, readFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 const admin: AuthUser = { id: "11111111-1111-4111-8111-111111111111", email: "admin@example.com", role: "admin", locale: "ja" };
 const alice: AuthUser = { id: "22222222-2222-4222-8222-222222222222", email: "alice@example.com", role: "participant", locale: "ja" };
@@ -215,5 +218,22 @@ describe("GET /subtitles (public)", () => {
     expect((await s.app.handle(new Request(`http://localhost/api/v1/subtitles?video=${encodeURIComponent("https://evil.example/videos/a.mp4")}`))).status).toBe(404);
     expect(asked).toEqual(["https://photos.example.com/videos/walk-ab12.vtt"]);
     expect((await s.app.handle(new Request("http://localhost/api/v1/subtitles"))).status).toBe(422);
+  });
+});
+
+describe("PUT /uploads/direct (files on the server's disk)", () => {
+  test("the browser's signed PUT is stored; a tampered one is refused", async () => {
+    const root = await mkdtemp(join(tmpdir(), "ktrg-direct-"));
+    const storage = createDiskStorage({ root, uploadPath: "/api/v1/uploads/direct", secret: "s".repeat(64) });
+    const app = new Elysia({ prefix: "/api/v1" }).use(directUploadRoutes(storage));
+    const body = new Uint8Array(3000).fill(7);
+    const url = await storage.presignPut("videos/歩く-abc234.mp4", "video/mp4", body.length);
+    const put = (address: string, type = "video/mp4") =>
+      app.handle(new Request(`http://localhost${address}`, { method: "PUT", headers: { "content-type": type }, body }));
+    expect((await put(url.replace("sig=", "sig=x"))).status).toBe(403);
+    expect((await put(url, "image/png")).status).toBe(403);
+    const res = await put(url);
+    expect(res.status).toBe(200);
+    expect(await readFile(join(root, "videos/歩く-abc234.mp4"))).toEqual(Buffer.from(body));
   });
 });

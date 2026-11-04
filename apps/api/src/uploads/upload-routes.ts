@@ -2,6 +2,7 @@ import { Elysia, t } from "elysia";
 import { fail } from "../auth/http";
 import { routeKit, type KitServices, type RouteOptions } from "../auth/route-kit";
 import { MAX_SUBTITLE_BYTES, MAX_UPLOAD_BYTES, MAX_VIDEO_BYTES, type UploadService } from "./upload-service";
+import type { DiskStorage } from "./upload-storage";
 
 export interface UploadServices extends KitServices {
   uploads: UploadService;
@@ -24,6 +25,32 @@ export function subtitleRoutes(getServices: () => UploadServices, opts: RouteOpt
       return text;
     },
     { rateLimit: { subtitleIp: "ip" }, query: t.Object({ video: t.String({ maxLength: 500 }), v: t.Optional(t.String({ maxLength: 100 })) }), detail: { summary: "The subtitles (WebVTT) of one of our uploaded videos" } },
+  );
+}
+
+/**
+ * The address a browser PUTs a video or its subtitles to when files are kept on the server's disk (createDiskStorage): the
+ * signature in the query, made by POST /admin/uploads/video or /subtitles, is the permission, as with R2. The body is not
+ * parsed; it goes to the file as it arrives. Mounted only with disk storage.
+ */
+export function directUploadRoutes(storage: DiskStorage) {
+  return new Elysia({ detail: { hide: true } }).put(
+    "/uploads/direct/*",
+    async ({ request, query, set }) => {
+      const marker = "/uploads/direct/";
+      const pathname = new URL(request.url).pathname;
+      let key: string;
+      try {
+        key = pathname.slice(pathname.indexOf(marker) + marker.length).split("/").map(decodeURIComponent).join("/");
+      } catch {
+        return fail(set, 403, "forbidden");
+      }
+      const contentType = request.headers.get("content-type")?.split(";")[0]?.trim();
+      const result = await storage.receive(key, query, contentType, request.body);
+      if (result === "ok") return { ok: true as const };
+      return result === "wrong_size" ? fail(set, 400, "invalid_file") : fail(set, 403, "forbidden");
+    },
+    { parse: "none" },
   );
 }
 
