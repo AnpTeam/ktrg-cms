@@ -15,6 +15,7 @@ const spotColumns = {
   lng: spots.lng,
   radiusM: spots.radiusM,
   status: spots.status,
+  statusUpdatedAt: spots.statusUpdatedAt,
 };
 
 export function createDrizzleStampStore(db: Db): StampStore {
@@ -49,7 +50,7 @@ export function createDrizzleStampStore(db: Db): StampStore {
         // The unique index (user, place) decides a race between two taps: one row, the other sees it.
         const [made] = await tx
           .insert(stamps)
-          .values({ userId, spotId, flagged: flag.flagged, flagReason: flag.flagReason })
+          .values({ userId, spotId, flagged: flag.flagged, flagReason: flag.flagReason, scannedAt: flag.scannedAt ?? null })
           .onConflictDoNothing()
           .returning({ createdAt: stamps.createdAt, flagged: stamps.flagged });
         if (!made) {

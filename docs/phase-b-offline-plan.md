@@ -1,6 +1,6 @@
 # Phase B plan: stamping and reading without a signal
 
-Status: **proposed, nothing built.** Written 2026-11-04 for the user's review. CLAUDE.md says "Build A, then B": Phase A (online app, auth, admin, map, GPS stamp) is working, so this is the next phase. Plan only: no app code until the user says go.
+Status: **decided 2026-11-04** (the user took my lean on all five questions below); **B1 (API) built**, B2 to B6 not started. Written 2026-11-04. CLAUDE.md says "Build A, then B": Phase A (online app, auth, admin, map, GPS stamp) is working, so this is the next phase. Plan only: no app code until the user says go.
 
 ## What the trail needs
 
@@ -21,7 +21,7 @@ Not in scope (unchanged from CLAUDE.md): background tracking, push, Background S
 | `serwist`, `idb` | Approved in CLAUDE.md for Phase B, **not installed**. |
 | Manifest, icons, maskable icon | Done (`app/manifest.ts`). |
 
-## Decisions I need from you
+## Decisions (all five: the user said "go with your leans", 2026-11-04)
 
 1. **Worker: keep `sw.js` or move to `serwist`?** My recommendation: **serwist**. The hand-written worker does not precache the app shell, does not version its caches, and has no update flow; serwist gives precaching, cache versioning and a "new version, tap to refresh" hook, which CLAUDE.md requires ("updates must not strand users on an old version"). Cost: one dependency (already approved) and a build step; Bun compatibility must be checked first (the rule in "Working defaults" 6).
 2. **Offline stamp = GPS only, checked at sync?** Yes by the rules: GPS only, no QR. The phone reads one position at the press, queues `{spotId, lat, lng, accuracyM, scannedAt}`, and the **server decides at upload**. Consequence: a person can be told "rejected" later (too far, closed since) while no longer at the place. We must say so in the UI before they rely on it. OK?
@@ -50,8 +50,7 @@ Not in scope (unchanged from CLAUDE.md): background tracking, push, Background S
 
 ### 3. API changes (small, backward compatible)
 
-- `POST /stamps` and `/guest/stamps` accept optional `clientId` (uuid, idempotency) and `scannedAt` (ISO).
-  - `clientId` repeated: same answer as the first time, no second award (the unique `(user, spot)` index already makes a repeat harmless; this only makes the *response* stable so the client can clear the row).
+- `POST /stamps` and `/guest/stamps` accept an optional `scannedAt` (ISO). **B1 dropped `clientId`:** the unique `(user, spot)` index already makes a repeat harmless and the answer to a repeat is `alreadyStamped: true`, which the queue treats as done, so a second key would be dead weight. The queue row keeps its own id for the local Web Lock only.
   - `scannedAt` is **sanity-checked, not trusted**: not in the future (±5 min), not older than 48 h, else `stale_scan` / `bad_time`. It is stored on the stamp row (`scanned_at`, new nullable column, migration) for the admin's flagged list; award time stays server time.
   - Plausibility: queued stamps are flagged for review when travel between two consecutive scans is impossible (existing rule, evaluated with `scannedAt` order). Flag, never block.
 - A closed spot: accepted if `scannedAt` is before `statusUpdatedAt` of the closure (CLAUDE.md "offline stamp scanned before a closure time is accepted"). Needs the status change history; today only the latest `statusUpdatedAt` exists. Simplest rule that matches the text: reject if the spot is closed now **and** `scannedAt` is after `statusUpdatedAt`; accept otherwise.
@@ -79,7 +78,7 @@ Not in scope (unchanged from CLAUDE.md): background tracking, push, Background S
 
 | # | Slice | Verified by |
 | --- | --- | --- |
-| B1 | API: `clientId`, `scannedAt` rules, `scanned_at` column + migration, closure rule | API tests (fixed clock), user-B-cannot-touch tests, 401 sweep body |
+| B1 (built, PR open) | API: `clientId`, `scannedAt` rules, `scanned_at` column + migration, closure rule | API tests (fixed clock), user-B-cannot-touch tests, 401 sweep body |
 | B2 | Queue module (`lib/stamp-queue.ts`): IndexedDB store, add/list/remove, Web Lock upload loop, retry rules, pure functions unit-tested with a fake `idb` | `bun test` |
 | B3 | Wire the stamp buttons (StampHere, RallyNearbyStamp, navigation) to the queue; waiting seal state; "N waiting" bar; logout warning | component tests where possible; **real phone** |
 | B4 | Worker: serwist install (after the Bun check), app shell precache, `/offline` page, update prompt | build output inspected; **real phone** |

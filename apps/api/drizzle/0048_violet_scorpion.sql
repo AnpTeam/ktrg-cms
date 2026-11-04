@@ -1,0 +1,1 @@
+ALTER TABLE "stamps" ADD COLUMN "scanned_at" timestamp with time zone;

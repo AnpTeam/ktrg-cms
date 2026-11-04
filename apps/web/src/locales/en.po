@@ -575,7 +575,7 @@ msgstr "The GPS signal looks weak. Move to open sky and try again."
 msgid "GPSの電波が弱いようです。空の開けた場所に動いてください。"
 msgstr "The GPS signal is weak. Please move to open sky."
 
-#: src/components/useErrorMessages.ts:44
+#: src/components/useErrorMessages.ts:46
 msgid "GPSの電波が弱いようです。空の開けた場所に移動して、もう一度お試しください。"
 msgstr "The GPS signal is weak. Move to open sky and try again."
 
@@ -752,7 +752,7 @@ msgstr "Where visits come from (admin)"
 msgid "アクセス数"
 msgstr "Visits"
 
-#: src/components/useErrorMessages.ts:61
+#: src/components/useErrorMessages.ts:63
 msgid "アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。"
 msgstr "Only photos (JPEG, PNG or WebP, up to 4 MB) and videos (MP4 or WebM, up to 200 MB) can be uploaded."
 
@@ -1183,7 +1183,7 @@ msgstr "This account has no passkey. Confirm with the number sent to your email.
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
 msgstr "This account has no email. Confirm with your face or fingerprint."
 
-#: src/components/useErrorMessages.ts:58
+#: src/components/useErrorMessages.ts:60
 msgid "このアカウントは、いま制限されています。スタンプを押すことと、コメントを書くことはできません。"
 msgstr "This account is restricted right now. It cannot collect stamps or write comments."
 
@@ -1206,6 +1206,10 @@ msgstr "Waypoints of this course that other courses also hold"
 #: src/components/StampHere.tsx:113
 msgid "このスタンプは、もう押してあります。"
 msgstr "You already have this stamp."
+
+#: src/components/useErrorMessages.ts:44
+msgid "このスタンプは、押してから時間がたちすぎているため、受け付けられませんでした（48時間まで）。"
+msgstr "This stamp was pressed too long ago to be accepted (the limit is 48 hours)."
 
 #: src/components/SampleNotice.tsx:51
 #: src/components/SampleNotice.tsx:78
@@ -1437,7 +1441,7 @@ msgstr "This device or browser can't use location."
 msgid "この端末・ブラウザではパスキーを使えません。"
 msgstr "This device or browser can't use passkeys."
 
-#: src/components/useErrorMessages.ts:68
+#: src/components/useErrorMessages.ts:70
 msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
 msgstr "Passkeys cannot be used on this device or browser. Please try email instead."
 
@@ -1471,7 +1475,7 @@ msgstr "Saved on this phone. It will be saved to your account when you are conne
 msgid "この経由地から、この距離の中にいるとスタンプを押せます。"
 msgstr "Visitors within this distance of the waypoint can collect the stamp."
 
-#: src/components/useErrorMessages.ts:47
+#: src/components/useErrorMessages.ts:49
 msgid "この経由地の位置がまだ決まっていません。地図で位置を決めてください。"
 msgstr "This waypoint has no position yet. Set it on the map."
 
@@ -1529,7 +1533,7 @@ msgstr "This setting takes effect on the live site at once. Save it?"
 msgid "この説明は日本語のみです。"
 msgstr "This description is in Japanese only."
 
-#: src/components/useErrorMessages.ts:65
+#: src/components/useErrorMessages.ts:67
 msgid "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 msgstr "No walkable path was found near here. Move the points of the line closer to a path and try again."
 
@@ -1708,7 +1712,7 @@ msgstr "Stamp, status and permission settings"
 msgid "スタンプが多いルート"
 msgstr "Routes with the most stamps"
 
-#: src/components/useErrorMessages.ts:46
+#: src/components/useErrorMessages.ts:48
 msgid "スタンプが押されたことのある経由地は消せません。「公開をやめる」をお使いください。"
 msgstr "A waypoint that has been stamped cannot be deleted. Use \"Unpublish\" instead."
 
@@ -1790,6 +1794,10 @@ msgstr "Restore stamps"
 #: src/app/(admin)/admin/page.tsx:78
 msgid "スタンプを押した人"
 msgstr "People with a stamp"
+
+#: src/components/useErrorMessages.ts:45
+msgid "スタンプを押した時刻が正しくありません。端末の日付と時刻を確かめてください。"
+msgstr "The time the stamp was pressed is not valid. Check your device's date and time."
 
 #: src/components/RallyNearbyStamp.tsx:89
 #: src/components/StampHere.tsx:154
@@ -1948,7 +1956,7 @@ msgstr "When this is checked, \"Connect the waypoints\" skips this point. Instea
 #: src/components/StampGrid.tsx:77
 #: src/components/StampGrid.tsx:99
 #: src/components/StampGrid.tsx:109
-#: src/components/StampLegend.tsx:10
+#: src/components/StampLegend.tsx:11
 msgid "つぎ"
 msgstr "Next"
 
@@ -2127,7 +2135,7 @@ msgstr "Passkey {number}"
 msgid "パスキーの名前"
 msgstr "Passkey name"
 
-#: src/components/useErrorMessages.ts:69
+#: src/components/useErrorMessages.ts:71
 msgid "パスキーの確認が中止されました。もう一度お試しください。"
 msgstr "The passkey check was cancelled. Please try again."
 
@@ -2443,7 +2451,7 @@ msgstr "First, pick a route to walk. You can collect stamps without signing up."
 
 #: src/components/admin/RouteEditor.tsx:877
 #: src/components/RallyViews.tsx:108
-#: src/components/StampLegend.tsx:9
+#: src/components/StampLegend.tsx:10
 msgid "まだ"
 msgstr "Not yet"
 
@@ -3129,7 +3137,7 @@ msgstr "Reordering is possible only with no filter or sort on."
 msgid "中身"
 msgstr "Contents"
 
-#: src/components/useErrorMessages.ts:52
+#: src/components/useErrorMessages.ts:54
 msgid "中身のないラリーは公開できません。公開中のラリーを空にすることもできません。"
 msgstr "An empty rally cannot be published, and a published rally cannot be emptied."
 
@@ -3212,7 +3220,7 @@ msgstr "Positions are added as \"not checked\". Check them against official info
 msgid "位置を公式の情報で確認し、「位置を確認した」にチェックを入れて情報源を書いてください。"
 msgstr "Check the position against official information, tick \"Position checked\" and write the source."
 
-#: src/components/useErrorMessages.ts:48
+#: src/components/useErrorMessages.ts:50
 msgid "位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。"
 msgstr "The position has not been checked against an official source. Check it, then tick \"Position checked\"."
 
@@ -3228,7 +3236,7 @@ msgstr "Set the position (place it on the map, or enter latitude and longitude).
 msgid "位置を確認した"
 msgstr "Position checked"
 
-#: src/components/useErrorMessages.ts:49
+#: src/components/useErrorMessages.ts:51
 msgid "位置を確認した情報源（サイトの名前やリンク）を書いてください。"
 msgstr "Write the source you checked the position against (a site name or link)."
 
@@ -3781,7 +3789,7 @@ msgstr "Photo library"
 msgid "写真をアップロード"
 msgstr "Upload a photo"
 
-#: src/components/useErrorMessages.ts:62
+#: src/components/useErrorMessages.ts:64
 msgid "写真を保存できませんでした。しばらくしてからもう一度お試しください。"
 msgstr "The photo could not be saved. Please try again in a moment."
 
@@ -3832,7 +3840,7 @@ msgstr "Source"
 msgid "出典: {0}"
 msgstr "Source: {0}"
 
-#: src/components/useErrorMessages.ts:59
+#: src/components/useErrorMessages.ts:61
 msgid "出典のリンクは https:// で始まるアドレスを入れてください。"
 msgstr "The source link must be an address starting with https://."
 
@@ -4283,7 +4291,7 @@ msgstr "Wakayama"
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "From the Izumi range to the Kongo mountains, these ridges run along the borders of Osaka, Wakayama and Nara. They have long been called Katsuragi and revered as mountains where the gods dwell. It is said that En no Gyoja, who is believed to have founded Shugendo, the path of training in the mountains, first practised here."
 
-#: src/components/useErrorMessages.ts:71
+#: src/components/useErrorMessages.ts:73
 #: src/components/useStampMessages.ts:23
 msgid "問題が発生しました。しばらくしてからもう一度お試しください。"
 msgstr "Something went wrong. Please try again in a little while."
@@ -4777,7 +4785,7 @@ msgstr "Turnaround"
 
 #: src/components/map/MapScreen.tsx:394
 #: src/components/RallyViews.tsx:108
-#: src/components/StampLegend.tsx:8
+#: src/components/StampLegend.tsx:9
 #: src/components/StopList.tsx:157
 msgid "押した"
 msgstr "Stamped"
@@ -5408,7 +5416,7 @@ msgstr "Finding your position…"
 msgid "現地の許可"
 msgstr "Permission from the site"
 
-#: src/components/useErrorMessages.ts:50
+#: src/components/useErrorMessages.ts:52
 msgid "現地の許可がまだ確認できていません。許可を得たら「許可確認済み」にチェックを入れてください。"
 msgstr "Permission from the site has not been confirmed yet. Once you have it, tick \"Permission confirmed\"."
 
@@ -5489,7 +5497,7 @@ msgstr "Register"
 msgid "登録できませんでした。もう一度お試しください。"
 msgstr "Could not register. Please try again."
 
-#: src/components/useErrorMessages.ts:45
+#: src/components/useErrorMessages.ts:47
 #: src/components/useStampMessages.ts:20
 msgid "登録なしで残せるスタンプの数が、上限になりました。新規登録すると、続けて集められます。"
 msgstr "You have reached the most stamps that can be kept without an account. Sign up to keep collecting."
@@ -5646,7 +5654,7 @@ msgstr "Open the admin area"
 msgid "管理者としてログイン中"
 msgstr "Signed in as an administrator"
 
-#: src/components/useErrorMessages.ts:57
+#: src/components/useErrorMessages.ts:59
 msgid "管理者のアカウントは、制限したり削除したりできません。先に権限を変えてください。"
 msgstr "An admin account cannot be restricted or deleted. Change its permission first."
 
@@ -5750,7 +5758,7 @@ msgstr "For each stop, see photos and read where the name comes from and its his
 msgid "経由地でつくったラリー：えらんだ経由地のスタンプを全部押すと達成。"
 msgstr "A rally of waypoints: complete when every chosen stamp waypoint is stamped."
 
-#: src/components/useErrorMessages.ts:53
+#: src/components/useErrorMessages.ts:55
 msgid "経由地でつくったラリーにはスタンプを押せる経由地を、コースでつくったラリーにはコースを入れてください。同じものは一度だけです。"
 msgstr "A rally of waypoints takes stamp waypoints and a rally of courses takes courses, each once."
 
@@ -5947,11 +5955,11 @@ msgstr "You can make pages yourself. Once published they are at \"/p/<address>\"
 msgid "自分に送っておくと、ブラウザのデータが消えても、このリンクからスタンプをもどせます。ほかの人には見せないでください。"
 msgstr "Send it to yourself, and if the browser's data is lost you can bring the stamps back from this link. Do not show it to other people."
 
-#: src/components/useErrorMessages.ts:56
+#: src/components/useErrorMessages.ts:58
 msgid "自分のアカウントは、制限したり削除したりできません。"
 msgstr "You cannot restrict or delete your own account."
 
-#: src/components/useErrorMessages.ts:55
+#: src/components/useErrorMessages.ts:57
 msgid "自分の権限は変えられません。ほかの管理者に頼んでください。"
 msgstr "You cannot change your own permission. Ask another administrator."
 
@@ -6316,7 +6324,7 @@ msgstr "Uploading…"
 msgid "送っています… {percent}%"
 msgstr "Sending… {percent}%"
 
-#: src/components/useErrorMessages.ts:70
+#: src/components/useErrorMessages.ts:72
 #: src/components/useStampMessages.ts:22
 msgid "通信できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not connect. Please try again where the signal is better."
@@ -6369,7 +6377,7 @@ msgstr "Follow the path"
 msgid "道に沿わせる"
 msgstr "Snap to trails"
 
-#: src/components/useErrorMessages.ts:64
+#: src/components/useErrorMessages.ts:66
 msgid "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 msgstr "Snapping to trails is not available yet. Ask whoever manages the site to set up the route-finding service. You can still draw the line by hand."
 
@@ -6411,7 +6419,7 @@ msgstr "Looking up the paths…"
 msgid "道を調べています…（{step}/{total}）"
 msgstr "Looking for trails… ({step}/{total})"
 
-#: src/components/useErrorMessages.ts:66
+#: src/components/useErrorMessages.ts:68
 msgid "道を調べられませんでした。しばらくしてから、もう一度お試しください。"
 msgstr "Could not look up the paths. Please try again in a little while."
 

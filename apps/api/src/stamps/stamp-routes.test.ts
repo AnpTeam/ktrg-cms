@@ -58,6 +58,28 @@ async function setup() {
   return { call, cookies, stamp, answer, mem, audit };
 }
 
+describe("a stamp queued offline and uploaded later", () => {
+  const ago = (ms: number) => new Date(Date.now() - ms).toISOString();
+  const H = 60 * 60 * 1000;
+
+  test("a recent press time is accepted; one older than 48 h, in the future or not a time is refused", async () => {
+    const { stamp, cookies, answer } = await setup();
+    expect((await stamp(cookies.alice, { scannedAt: ago(2 * H) })).status).toBe(200);
+    expect(await answer(await stamp(cookies.bob, { scannedAt: ago(49 * H) }))).toEqual([422, "stale_scan"]);
+    expect(await answer(await stamp(cookies.bob, { scannedAt: new Date(Date.now() + 10 * 60 * 1000).toISOString() }))).toEqual([422, "bad_time"]);
+    expect((await stamp(cookies.bob, { scannedAt: "yesterday-ish" })).status).toBe(422);
+    expect((await stamp(cookies.bob, { scannedAt: ago(H) })).status).toBe(200); // bob's refused tries left nothing behind
+  });
+
+  test("a place closed since: a stamp pressed before the closure is accepted, one pressed after is not", async () => {
+    const { stamp, cookies, answer, mem } = await setup();
+    mem.spots.set(SPOT_ID, spot({ status: "closed", statusUpdatedAt: new Date(Date.now() - H) }));
+    expect(await answer(await stamp(cookies.alice))).toEqual([409, "spot_closed"]); // online: closed is closed
+    expect(await answer(await stamp(cookies.alice, { scannedAt: ago(30 * 60 * 1000) }))).toEqual([409, "spot_closed"]);
+    expect((await stamp(cookies.alice, { scannedAt: ago(3 * H) })).status).toBe(200);
+  });
+});
+
 describe("collecting a stamp", () => {
   test("a visitor near the place gets the stamp once; stamping again is a no-op", async () => {
     const { stamp, cookies, call } = await setup();

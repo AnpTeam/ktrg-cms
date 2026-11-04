@@ -337,6 +337,13 @@
       "when": 1793232759816,
       "tag": "0047_hesitant_exiles",
       "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1793763791344,
+      "tag": "0048_violet_scorpion",
+      "breakpoints": true
     }
   ]
 }

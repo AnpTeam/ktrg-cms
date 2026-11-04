@@ -52,6 +52,8 @@ const SERVER_CODES: Record<ErrorCode, true> = {
   gps_accuracy_poor: true,
   guest_full: true,
   stamp_revoked: true,
+  stale_scan: true,
+  bad_time: true,
   rally_empty: true,
   invalid_rally_members: true,
   invalid_file: true,
