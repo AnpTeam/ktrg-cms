@@ -15,6 +15,8 @@ export interface NavSession {
   routeName: string;
   /** Stop id -> its name in the visitor's language and its status, for the panel and the stamp button. */
   stops: Readonly<Record<string, NavStopInfo>>;
+  /** The course as the guidance sees it, for the progress and time left. */
+  model: NavModel;
   snapshot: NavSnapshot;
 }
 
@@ -66,7 +68,7 @@ export function NavigationProvider({ children, signedIn }: { children: ReactNode
       onChange: (snapshot) => setSession((s) => (s && controller.current === c ? { ...s, snapshot } : s)),
     });
     controller.current = c;
-    setSession({ routeId, routeName, stops, snapshot: c.snapshot });
+    setSession({ routeId, routeName, stops, model, snapshot: c.snapshot });
     void c.start();
   }, []);
 

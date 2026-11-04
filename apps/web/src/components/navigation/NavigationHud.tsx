@@ -8,6 +8,7 @@ import { StampHere } from "@/components/StampHere";
 import { compassPoint, type CompassPoint, type TurnKind } from "@/lib/navigation/geometry";
 import { modelFromMapRoute } from "@/lib/navigation/input";
 import type { MapScreenRoute } from "@/lib/map-screen";
+import { courseProgress } from "@/lib/navigation/progress";
 import { distanceParts } from "@/lib/stamp-flow";
 import { useNavigation, type NavStopInfo } from "./NavigationProvider";
 
@@ -195,6 +196,17 @@ export function NavigationToast() {
     );
   }
 
+  // Where the course stands: places done, time to the next one, and what is left (only numbers that can be true).
+  const progress = courseProgress(session.model, st, snap.stamped);
+  const mins = (m: number) => (m < 60 ? t`${m}分` : t`${Math.floor(m / 60)}時間${m % 60}分`);
+  const progressLine = (
+    <p className="rounded-2xl bg-paper px-4 py-2 text-lg font-bold leading-snug shadow-lg ring-1 ring-line/30">
+      <span className="tabular-nums">{t`スタンプ ${progress.done} / ${progress.total}`}</span>
+      {progress.toNextMin !== null ? <span className="tabular-nums">{` · ${t`次まで ${mins(progress.toNextMin)}`}`}</span> : null}
+      {progress.leftM !== null && progress.leftMin !== null ? <span className="tabular-nums">{` · ${t`残り ${meters(progress.leftM)}（${mins(progress.leftMin)}）`}`}</span> : null}
+    </p>
+  );
+
   const stampButton =
     st.inRadius && st.targetId && target ? (
       <StampHere
@@ -220,6 +232,7 @@ export function NavigationToast() {
           {note ? <p className="text-base leading-snug">{note}</p> : null}
         </section>
         <section ref={box} aria-label={t`ナビの操作`} className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 flex flex-col gap-2 md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem]">
+          {progressLine}
           {stampButton}
           <button type="button" onClick={leave} className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl border-2 border-ink bg-paper px-5 text-xl font-bold text-ink shadow-lg hover:bg-surface">
             {t`ナビを終える`}
