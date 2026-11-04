@@ -81,6 +81,20 @@ describe("on the course line: guided along it", () => {
     expect(s.offRoute).toBe(false);
     expect(s.mode).toBe("line");
   });
+
+  test("off route points back to the nearest line point, and stays off until clearly back (no flicker at 30 m)", () => {
+    const at30 = (lng: number) => at(lng, LAT + 0.00027); // ~30 m north: inside 40 m but outside the 25 m return distance
+    const north = (lng: number) => at(lng, LAT + 0.0005);
+    let s = walk([at(135.0005), north(135.001), north(135.0012), north(135.0014)]);
+    expect(s.offRoute).toBe(true);
+    close(s.backM!, 55, 5);
+    close(s.backBearingDeg!, 180, 3); // the line is due south of the visitor
+    s = walk([at30(135.0016)], none, s);
+    expect(s.offRoute).toBe(true); // 30 m: still warned
+    s = walk([at(135.0018, LAT + 0.0001)], none, s); // ~11 m
+    expect(s.offRoute).toBe(false);
+    expect(s.backM).toBeNull();
+  });
 });
 
 describe("off the course line", () => {

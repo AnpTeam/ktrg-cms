@@ -144,6 +144,11 @@ describe("offRouteStep", () => {
   test("exactly 40 m is still on route", () => {
     expect(offRouteStep(5, 40)).toEqual({ count: 0, offRoute: false });
   });
+
+  test("once off, it clears only inside 25 m", () => {
+    expect(offRouteStep(4, 30, true)).toEqual({ count: 5, offRoute: true });
+    expect(offRouteStep(4, 25, true)).toEqual({ count: 0, offRoute: false });
+  });
 });
 
 describe("distanceM", () => {

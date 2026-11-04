@@ -169,6 +169,22 @@ export function NavigationToast() {
           ? t`いまの位置が、わかりません。空の開けた場所で、しばらくお待ちください。`
           : null;
 
+  // Off the course line: say so once (the block appears when the visitor leaves it), with the way back.
+  const back = st.offRoute && st.backM !== null && st.backBearingDeg !== null ? { m: st.backM, deg: st.backBearingDeg } : null;
+  const backText = back ? t`道まで ${meters(back.m)}（${compass[compassPoint(back.deg)]}）` : "";
+  const offRouteBlock = back ? (
+    <div role="alert" className="flex items-center gap-3 border-l-4 border-caution pl-3">
+      {/* The arrow points the way back relative to the walking direction when it is known, else relative to north. */}
+      <svg viewBox="0 0 24 24" aria-hidden="true" className="size-8 shrink-0 text-ink" style={{ transform: `rotate(${back.deg - (st.headingDeg ?? 0)}deg)` }}>
+        <path d="M12 3 L19 20 L12 16 L5 20 Z" fill="currentColor" />
+      </svg>
+      <p className="text-lg font-bold leading-snug">
+        {t`道からはずれています`}
+        <span className="block text-base font-normal tabular-nums">{backText}</span>
+      </p>
+    </div>
+  ) : null;
+
   // At most one short note under the two lines, the most useful one first.
   const note = snap.paused
     ? t`画面が見えない間は、位置を止めています。`
@@ -246,6 +262,7 @@ export function NavigationToast() {
       <>
         <section ref={banner} aria-label={t`ナビ中：${routeName}`} className="fixed inset-x-3 top-[calc(0.5rem+env(safe-area-inset-top))] z-30 flex flex-col gap-1 rounded-2xl bg-paper px-4 py-3 shadow-2xl ring-1 ring-line/30 md:inset-x-auto md:left-[calc(50%-14rem)] md:w-[28rem]">
           {main}
+          {offRouteBlock}
           {note ? <p className="text-base leading-snug">{note}</p> : null}
         </section>
         <section ref={box} aria-label={t`ナビの操作`} className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 flex flex-col gap-2 md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem]">
@@ -278,6 +295,7 @@ export function NavigationToast() {
           {t`終了`}
         </button>
       </div>
+      {offRouteBlock}
       {note ? <p className="text-base leading-snug">{note}</p> : null}
       {stampButton}
     </section>
