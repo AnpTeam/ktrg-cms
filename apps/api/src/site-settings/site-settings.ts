@@ -25,7 +25,15 @@ export const MAP_STYLE = t.Object({
 });
 export type MapStyleSetting = Static<typeof MAP_STYLE>;
 
-export const SETTING_KEYS = { mapStyle: "map_style", dashboardGoals: "dashboard_goals" } as const;
+/**
+ * Which optional sections of the home page are switched on. Off until an admin turns one on, so a section that has no
+ * pages behind it yet (the tourism cards) is not shown to visitors by accident.
+ */
+export const HOME_SECTIONS = t.Object({ tourism: t.Boolean() });
+export type HomeSections = Static<typeof HOME_SECTIONS>;
+export const defaultHomeSections: HomeSections = { tourism: false };
+
+export const SETTING_KEYS = { mapStyle: "map_style", dashboardGoals: "dashboard_goals", homeSections: "home_sections" } as const;
 
 /**
  * The fixed pages whose text an editor can replace (管理 > ページの文章): the FAQ and how to play, and the terms and
@@ -61,6 +69,9 @@ export function createSiteSettingsService(deps: { store: SiteSettingsStore }) {
     /** The goals the dashboard measures its four numbers against (see dashboard/), or null when none were set. */
     dashboardGoals: async () => (await deps.store.get(SETTING_KEYS.dashboardGoals)) as DashboardGoals | null,
     setDashboardGoals: (actor: string, value: DashboardGoals) => deps.store.set(actor, SETTING_KEYS.dashboardGoals, value),
+    /** Which optional home page sections are on; every one is off until set. */
+    homeSections: async (): Promise<HomeSections> => ({ ...defaultHomeSections, ...(((await deps.store.get(SETTING_KEYS.homeSections)) as Partial<HomeSections> | null) ?? {}) }),
+    setHomeSections: (actor: string, value: HomeSections) => deps.store.set(actor, SETTING_KEYS.homeSections, value),
     pageText: async (key: PageKey) => (await deps.store.get(pageSetting(key))) as PageText | null,
     setPageText: (actor: string, key: PageKey, value: PageText) => deps.store.set(actor, pageSetting(key), value),
   };
@@ -74,6 +85,7 @@ export const SETTING_TARGET: Record<string, string> = {
   "page:terms": "00000000-0000-4000-8000-000000000004",
   "page:privacy": "00000000-0000-4000-8000-000000000005",
   [SETTING_KEYS.dashboardGoals]: "00000000-0000-4000-8000-000000000006",
+  [SETTING_KEYS.homeSections]: "00000000-0000-4000-8000-000000000007",
 };
 
 export const SETTING_AUDIT = "site_setting.update" as const;
@@ -101,7 +113,15 @@ export function siteSettingsRoutes(getServices: () => SiteSettingsServices, opts
   const { plugins } = routeKit(getServices, opts);
   return new Elysia({ prefix: "/admin/settings", detail: { tags: ["Site settings"] } })
     .use(plugins)
-    .get("/", async () => ({ ok: true as const, mapStyle: await getServices().siteSettings.mapStyle() }), { auth: "site.manage" })
+    .get("/", async () => ({ ok: true as const, mapStyle: await getServices().siteSettings.mapStyle(), homeSections: await getServices().siteSettings.homeSections() }), { auth: "site.manage" })
+    .put(
+      "/home-sections",
+      async ({ user, body }) => {
+        await getServices().siteSettings.setHomeSections(user.id, body);
+        return { ok: true as const, homeSections: body };
+      },
+      { auth: "site.manage", rateLimit: { adminWriteUser: "user.id" }, body: HOME_SECTIONS },
+    )
     .put(
       "/map-style",
       async ({ user, body }) => {
@@ -135,6 +155,6 @@ export function siteSettingsRoutes(getServices: () => SiteSettingsServices, opts
 /** What visitors' pages read (no login): the map style, or null for the default. */
 export function publicSettingsRoutes(getSettings: () => SiteSettingsService) {
   return new Elysia({ detail: { tags: ["Content"] } })
-    .get("/settings", async () => ({ ok: true as const, mapStyle: await getSettings().mapStyle() }))
+    .get("/settings", async () => ({ ok: true as const, mapStyle: await getSettings().mapStyle(), homeSections: await getSettings().homeSections() }))
     .get("/pages/:key", async ({ params }) => ({ ok: true as const, page: await getSettings().pageText(params.key) }), { params: t.Object({ key: oneOf(PAGE_KEYS) }) });
 }

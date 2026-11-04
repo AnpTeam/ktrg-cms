@@ -7,6 +7,7 @@ import { listBanners, slidesToShow } from "@/lib/banners";
 import { getRoute, listRoutes, pickText, sampleContentEnabled, type RouteSummary } from "@/lib/content";
 import { listNotices } from "@/lib/notices";
 import { listPosts } from "@/lib/posts";
+import { getHomeSections } from "@/lib/site-settings";
 import { parseVideoUrl } from "@/lib/video";
 import { getPrefs } from "@/lib/server-prefs";
 import { getViewer } from "@/lib/viewer";
@@ -29,12 +30,12 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const i18n = await initLingui();
   const viewer = await getViewer(searchParams);
 
-  const [all, notices, banners, posts] = await Promise.all([listRoutes(), listNotices(), listBanners(), listPosts()]);
+  const [all, notices, banners, posts, sections] = await Promise.all([listRoutes(), listNotices(), listBanners(), listPosts(), getHomeSections()]);
   const routes = all;
   // The intro video is set by the deployment (a YouTube or Vimeo link); with none, the section is left out.
   const introVideo = parseVideoUrl(process.env.INTRO_VIDEO_URL ?? OFFICIAL_PR_VIDEO);
   const slides = slidesToShow(banners, sampleContentEnabled());
-  const page = { locale: i18n.locale, routes, notices, introVideo, slides, posts };
+  const page = { locale: i18n.locale, routes, notices, introVideo, slides, posts, showTourism: sections.tourism };
 
   const stamped = routes.reduce((n, r) => n + (r.stampedCount ?? 0), 0);
   // Someone with no account and no stamp yet gets the landing page for a first-time visitor; anyone with progress (a guest's

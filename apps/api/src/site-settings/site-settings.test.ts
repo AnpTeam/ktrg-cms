@@ -23,6 +23,15 @@ describe("site settings", () => {
     expect(JSON.stringify(audit.rows)).not.toContain("pale");
   });
 
+  test("every home section is off until an admin turns it on, and the change is audited by setting only", async () => {
+    const audit = createMemoryAuditWriter();
+    const svc = createSiteSettingsService({ store: createMemorySiteSettingsStore(audit.writer) });
+    expect(await svc.homeSections()).toEqual({ tourism: false });
+    await svc.setHomeSections("11111111-1111-4111-8111-111111111111", { tourism: true });
+    expect(await svc.homeSections()).toEqual({ tourism: true });
+    expect(audit.rows.map((r) => r.targetId)).toEqual(["00000000-0000-4000-8000-000000000007"]);
+  });
+
   test("the schema refuses an unknown base map and out-of-range numbers", () => {
     expect(Value.Check(MAP_STYLE, style)).toBe(true);
     expect(Value.Check(MAP_STYLE, { ...style, base: "satellite" })).toBe(false);
