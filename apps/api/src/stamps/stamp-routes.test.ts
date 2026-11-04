@@ -70,6 +70,7 @@ describe("collecting a stamp", () => {
     expect(again.stamp).toMatchObject({ alreadyStamped: true, createdAt: body.stamp.createdAt });
 
     const mine = (await (await call("GET", "/stamps", { cookie: cookies.alice })).json()) as Json;
+    expect(mine.completions).toEqual([]); // the list is there (the memory store finishes no rally)
     expect(mine.stamps).toHaveLength(1);
     expect(mine.stamps[0]).toMatchObject({ spotId: SPOT_ID, routeId: ROUTE_ID });
   });

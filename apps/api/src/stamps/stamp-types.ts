@@ -54,6 +54,8 @@ export interface StampStore {
   award(userId: string, spotId: string, flag: { flagged: boolean; flagReason: string | null }): Promise<Awarded>;
   /** The visitor's own stamps that are not revoked. */
   listMine(userId: string): Promise<{ spotId: string; routeId: string; createdAt: Date }[]>;
+  /** When the visitor finished each rally (saved at the moment the last stamp was awarded). */
+  listCompletions(userId: string): Promise<{ rallyId: string; completedAt: Date }[]>;
   /** Revokes or restores; the audit row commits with it. Doing it again changes nothing and writes no audit row. */
   setRevoked(actor: string, id: string, revoked: boolean): Promise<"ok" | "not_found">;
 }

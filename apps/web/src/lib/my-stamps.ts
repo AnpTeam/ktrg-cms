@@ -3,21 +3,23 @@
 // JavaScript never sees it. Server code only: it is on the client-boundary list.
 
 import { cache } from "react";
-import { parseMyStampRows, type MyStampRow } from "./stamp-flow";
+import { parseMyCompletions, parseMyStampRows, type MyStampRow } from "./stamp-flow";
 
 export interface MyStamps {
   /** Place ids the visitor has stamped (revoked stamps are not in the API's answer). */
   ids: ReadonlySet<string>;
   /** How many places of each course (by course id) the visitor has stamped. */
   byRoute: ReadonlyMap<string, number>;
+  /** When the visitor finished each rally (rally id -> ISO time). Accounts only: a guest's stamps keep no finish date. */
+  completed: ReadonlyMap<string, string>;
 }
 
-export const noStamps: MyStamps = { ids: new Set(), byRoute: new Map() };
+export const noStamps: MyStamps = { ids: new Set(), byRoute: new Map(), completed: new Map() };
 
-export function myStampsFromRows(rows: readonly MyStampRow[]): MyStamps {
+export function myStampsFromRows(rows: readonly MyStampRow[], completed: ReadonlyMap<string, string> = new Map()): MyStamps {
   const byRoute = new Map<string, number>();
   for (const r of rows) if (r.routeId) byRoute.set(r.routeId, (byRoute.get(r.routeId) ?? 0) + 1);
-  return { ids: new Set(rows.map((r) => r.spotId)), byRoute };
+  return { ids: new Set(rows.map((r) => r.spotId)), byRoute, completed };
 }
 
 /**
@@ -37,8 +39,9 @@ export const getMyStamps = cache(async (): Promise<MyStamps> => {
       cache: "no-store",
       signal: AbortSignal.timeout(2500),
     });
-    const rows = parseMyStampRows(res.status, await res.json().catch(() => null));
-    return rows ? myStampsFromRows(rows) : noStamps;
+    const body = await res.json().catch(() => null);
+    const rows = parseMyStampRows(res.status, body);
+    return rows ? myStampsFromRows(rows, parseMyCompletions(res.status, body)) : noStamps;
   } catch {
     return noStamps;
   }

@@ -116,6 +116,18 @@ export function parseMyStampRows(status: number, body: unknown): MyStampRow[] | 
   return rows;
 }
 
+/** When the caller finished each rally (rally id -> ISO time), from the same answer; empty when there is none or it is not usable. */
+export function parseMyCompletions(status: number, body: unknown): Map<string, string> {
+  const out = new Map<string, string>();
+  const b = (typeof body === "object" && body !== null ? body : {}) as { ok?: unknown; completions?: unknown };
+  if (status !== 200 || b.ok !== true || !Array.isArray(b.completions)) return out;
+  for (const c of b.completions) {
+    const r = (c ?? {}) as { rallyId?: unknown; completedAt?: unknown };
+    if (typeof r.rallyId === "string" && typeof r.completedAt === "string" && !Number.isNaN(Date.parse(r.completedAt))) out.set(r.rallyId, r.completedAt);
+  }
+  return out;
+}
+
 /** The same as a set of place ids. */
 export function parseMyStamps(status: number, body: unknown): Set<string> | null {
   const rows = parseMyStampRows(status, body);

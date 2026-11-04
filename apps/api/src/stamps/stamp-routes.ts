@@ -51,10 +51,15 @@ export function stampRoutes(getServices: () => StampServices, opts: RouteOptions
     )
     .get(
       "/",
-      async ({ user }) => ({
-        ok: true as const,
-        stamps: (await svc().listMine(user.id)).map((s) => ({ spotId: s.spotId, routeId: s.routeId, createdAt: s.createdAt.toISOString() })),
-      }),
+      async ({ user }) => {
+        // Two independent reads, asked together (at most 3 at once: the pooler hung with more, see #194).
+        const [mine, done] = await Promise.all([svc().listMine(user.id), svc().listCompletions(user.id)]);
+        return {
+          ok: true as const,
+          stamps: mine.map((s) => ({ spotId: s.spotId, routeId: s.routeId, createdAt: s.createdAt.toISOString() })),
+          completions: done.map((c) => ({ rallyId: c.rallyId, completedAt: c.completedAt.toISOString() })),
+        };
+      },
       { auth: "stamp.create" },
     );
 }
