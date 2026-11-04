@@ -5,7 +5,7 @@
 #   bash server-setup.sh
 #
 # Safe to run again: each part checks first.
-#   a. update packages    b. 2 GB swap    c. Docker (with log rotation)    d. Docker Compose    e. check
+#   a. update packages   b. 2 GB swap   c. Docker (with log rotation)   d. Docker Compose   e. CloudWatch agent   f. check
 set -euo pipefail
 [ "$(id -u)" = 0 ] || { echo "run as root: sudo -i first"; exit 1; }
 
@@ -48,7 +48,29 @@ if ! docker compose version >/dev/null 2>&1; then
   chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 fi
 
-echo "== e. check"
+echo "== e. CloudWatch agent"
+# Memory and disk use are invisible to AWS from outside (CPU is not: EC2 reports it). The agent sends both every
+# minute to CloudWatch (namespace "ktrg"), for the 80% alarms (alarms-setup.sh). Permission: the role's ktrg-server
+# policy (cloudwatch:PutMetricData).
+dnf install -y -q amazon-cloudwatch-agent
+cat > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json <<'JSON'
+{
+  "agent": { "metrics_collection_interval": 60 },
+  "metrics": {
+    "namespace": "ktrg",
+    "append_dimensions": { "InstanceId": "${aws:InstanceId}" },
+    "metrics_collected": {
+      "mem":  { "measurement": ["mem_used_percent"] },
+      "disk": { "measurement": ["used_percent"], "resources": ["/"], "drop_device": true }
+    }
+  }
+}
+JSON
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s \
+  -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json >/dev/null
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a status | grep '"status"'
+
+echo "== f. check"
 free -h
 docker --version
 docker compose version

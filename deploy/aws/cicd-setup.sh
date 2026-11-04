@@ -5,7 +5,8 @@
 #   bash deploy/aws/cicd-setup.sh
 #
 # GitHub signs in with OIDC: AWS gives each workflow run short-lived permissions, so no AWS key is stored in GitHub.
-# Only workflows on main may use the role. It can push to the three ECR repositories and run commands on the server
+# Only workflows on main may use the role. It can push to the three ECR repositories, upload deploy/aws to S3, and run
+# commands on the server
 # (tag Name=ktrg-cms) through Session Manager. Safe to run again.
 set -euo pipefail
 
@@ -19,6 +20,7 @@ REPOS="ktrg-cms ktrg-web ktrg-db"           # ECR: API, website, PostgreSQL
 GITHUB_REPO=AnpTeam/ktrg-cms
 GITHUB_BRANCH=main                          # the only branch whose workflows may deploy
 GITHUB_ROLE=ktrg-github-deploy
+BUCKET=ktrg-backups-$ACCOUNT               # the deploy files go to deploy/aws/ in it
 
 # Policy files go to a temporary folder. aws.exe on Windows needs that folder as C:/..., not /tmp/...
 TMP="$(mktemp -d)"
@@ -64,6 +66,9 @@ cat > "$TMP/github.json" <<JSON
       "ecr:BatchCheckLayerAvailability", "ecr:BatchGetImage", "ecr:GetDownloadUrlForLayer", "ecr:InitiateLayerUpload",
       "ecr:UploadLayerPart", "ecr:CompleteLayerUpload", "ecr:PutImage", "ecr:DescribeImages" ],
     "Resource": [ ${REPO_ARNS%,} ] },
+  { "Effect": "Allow", "Action": ["s3:PutObject", "s3:DeleteObject"], "Resource": "arn:aws:s3:::$BUCKET/deploy/aws/*" },
+  { "Effect": "Allow", "Action": "s3:ListBucket", "Resource": "arn:aws:s3:::$BUCKET",
+    "Condition": { "StringLike": { "s3:prefix": "deploy/aws/*" } } },
   { "Effect": "Allow", "Action": "ssm:SendCommand", "Resource": "arn:aws:ssm:$AWS_REGION::document/AWS-RunShellScript" },
   { "Effect": "Allow", "Action": "ssm:SendCommand", "Resource": "arn:aws:ec2:$AWS_REGION:$ACCOUNT:instance/*",
     "Condition": { "StringEquals": { "ssm:resourceTag/Name": "$NAME" } } },
