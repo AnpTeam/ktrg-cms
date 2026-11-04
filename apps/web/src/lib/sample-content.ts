@@ -283,6 +283,13 @@ const rich: Record<number, Partial<RouteDetail>> = {
     sketch: { points: [...route02Draft.sketch], elevations: [...route02Draft.elevations] },
     area: route02Area(),
     line: route02Draft.line.map(([lat, lng]) => ({ lat, lng })),
+    // Invented: the sketch's elevations spread over the line's points, only so the chart can be reviewed.
+    lineElevations: route02Draft.line.map((_, i, all) => {
+      const at = (i / Math.max(1, all.length - 1)) * (route02Draft.elevations.length - 1);
+      const lo = Math.floor(at);
+      const hi = Math.min(route02Draft.elevations.length - 1, lo + 1);
+      return route02Draft.elevations[lo]! + (route02Draft.elevations[hi]! - route02Draft.elevations[lo]!) * (at - lo);
+    }),
     spotCount: r2Spots.length,
     stampedCount: 2,
     spots: r2Spots.map(listItem),

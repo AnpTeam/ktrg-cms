@@ -59,10 +59,20 @@ msgstr "{0} から {1} まで：{2} 回"
 msgid "{0}（{1}件）"
 msgstr "{0}（{1}件）"
 
+#. placeholder {0}: km(0)
+#. placeholder {0}: km(totalM)
 #. placeholder {0}: route.distanceKm
 #: src/components/blog/LinkedCards.tsx:28
+#: src/components/ElevationChart.tsx:120
+#: src/components/ElevationChart.tsx:121
 msgid "{0}km"
 msgstr "{0}km"
+
+#. placeholder {0}: here.e
+#. placeholder {1}: here.k
+#: src/components/ElevationChart.tsx:114
+msgid "{0}m · {1}km · {slopeWords}"
+msgstr "{0}m · {1}km · {slopeWords}"
 
 #. placeholder {0}: rally.total
 #: src/app/(public)/rallies/[id]/page.tsx:86
@@ -211,7 +221,7 @@ msgstr "{hours}時間"
 msgid "{hours}時間{minutes}分"
 msgstr "{hours}時間{minutes}分"
 
-#: src/components/ElevationProfile.tsx:24
+#: src/components/ElevationProfile.tsx:37
 #: src/components/RouteStats.tsx:24
 msgid "{km}km"
 msgstr "{km}km"
@@ -2528,6 +2538,10 @@ msgstr "ほかの言語（ドイツ語など）の訪問者には、English の�
 msgid "ほかの記事"
 msgstr "ほかの記事"
 
+#: src/components/ElevationChart.tsx:58
+msgid "ほぼ平ら"
+msgstr "ほぼ平ら"
+
 #: src/components/admin/map-editor/MapEditor.tsx:884
 msgid "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。"
 msgstr "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。"
@@ -3175,6 +3189,19 @@ msgstr "上へ"
 msgid "下へ"
 msgstr "下へ"
 
+#: src/components/ElevationChart.tsx:124
+msgid "下り"
+msgstr "下り"
+
+#. placeholder {0}: nf.format(Math.abs(pct))
+#: src/components/ElevationChart.tsx:58
+msgid "下り {0}%"
+msgstr "下り {0}%"
+
+#: src/components/ElevationChart.tsx:73
+msgid "下り {down}m"
+msgstr "下り {down}m"
+
 #: src/app/(admin)/admin/attention/page.tsx:90
 #: src/app/(admin)/admin/pages/page.tsx:88
 #: src/components/admin/DirectoryPicker.tsx:144
@@ -3768,7 +3795,8 @@ msgstr "内容"
 msgid "内容を確認する"
 msgstr "内容を確認する"
 
-#: src/components/ElevationProfile.tsx:35
+#: src/components/ElevationChart.tsx:71
+#: src/components/ElevationProfile.tsx:48
 msgid "最低 {lowest}m"
 msgstr "最低 {lowest}m"
 
@@ -3793,7 +3821,8 @@ msgstr "最終更新"
 msgid "最終更新：{day}"
 msgstr "最終更新：{day}"
 
-#: src/components/ElevationProfile.tsx:34
+#: src/components/ElevationChart.tsx:70
+#: src/components/ElevationProfile.tsx:47
 msgid "最高 {highest}m"
 msgstr "最高 {highest}m"
 
@@ -5272,7 +5301,12 @@ msgstr "標高が調べられない場所があります。"
 msgid "標高だけ取り込む（線は変えない）"
 msgstr "標高だけ取り込む（線は変えない）"
 
-#: src/components/ElevationProfile.tsx:32
+#: src/components/ElevationChart.tsx:79
+msgid "標高のグラフ。左右の矢印キーで、場所を動かせます。"
+msgstr "標高のグラフ。左右の矢印キーで、場所を動かせます。"
+
+#: src/components/ElevationChart.tsx:68
+#: src/components/ElevationProfile.tsx:45
 msgid "標高のようす"
 msgstr "標高のようす"
 
@@ -5284,7 +5318,7 @@ msgstr "標高の色を消す"
 msgid "標高の色を見る"
 msgstr "標高の色を見る"
 
-#: src/components/ElevationProfile.tsx:38
+#: src/components/ElevationProfile.tsx:51
 msgid "標高は{lowest}mから{highest}mまで"
 msgstr "標高は{lowest}mから{highest}mまで"
 
@@ -5615,10 +5649,23 @@ msgstr "番号が違うか、期限が切れています。もう一度お試し
 msgid "番号をもう一度送る"
 msgstr "番号をもう一度送る"
 
+#: src/components/ElevationChart.tsx:126
+msgid "登り"
+msgstr "登り"
+
 #. placeholder {0}: props.climbM
 #: src/components/admin/map-editor/MapEditor.tsx:1181
 msgid "登り {0} m"
 msgstr "登り {0} m"
+
+#. placeholder {0}: nf.format(Math.abs(pct))
+#: src/components/ElevationChart.tsx:58
+msgid "登り {0}%"
+msgstr "登り {0}%"
+
+#: src/components/ElevationChart.tsx:72
+msgid "登り {up}m"
+msgstr "登り {up}m"
 
 #: src/components/admin/RouteEditor.tsx:612
 msgid "登り（獲得標高）"
@@ -6422,6 +6469,12 @@ msgstr "足りないものがあるルートと経由地です。名前を押す
 #: src/components/RouteStats.tsx:24
 msgid "距離"
 msgstr "距離"
+
+#. placeholder {0}: here.k
+#. placeholder {1}: here.e
+#: src/components/ElevationChart.tsx:83
+msgid "距離 {0}km、標高 {1}m、{slopeWords}"
+msgstr "距離 {0}km、標高 {1}m、{slopeWords}"
 
 #: src/components/admin/GradingFields.tsx:53
 msgid "距離と時間を入れると、目安が出ます"

@@ -1,5 +1,6 @@
 import { useLingui } from "@lingui/react/macro";
 import { elevationArea } from "@/lib/sketch";
+import { ElevationChart } from "./ElevationChart";
 
 const W = 300;
 const H = 120;
@@ -11,8 +12,20 @@ const PAD = 4;
  * point per metre), so the shape is right but the horizontal scale is approximate. The drawing is hidden from
  * screen readers and replaced by one sentence with the same numbers.
  */
-export function ElevationProfile({ elevations, distanceKm }: { elevations: readonly number[]; distanceKm: number | null }) {
+export function ElevationProfile({
+  elevations,
+  distanceKm,
+  routeLine,
+  lineElevations,
+}: {
+  elevations: readonly number[];
+  distanceKm: number | null;
+  /** The route's own line with an elevation for each point: the interactive chart is drawn from it when it is there. */
+  routeLine?: readonly { lat: number; lng: number }[] | null;
+  lineElevations?: readonly (number | null)[] | null;
+}) {
   const { t, i18n } = useLingui();
+  if (routeLine && lineElevations && routeLine.length === lineElevations.length) return <ElevationChart line={routeLine} elevations={lineElevations} />;
   const area = elevationArea(elevations, W, H, PAD);
   if (!area) return null;
 
