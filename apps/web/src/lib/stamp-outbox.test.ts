@@ -68,4 +68,34 @@ describe("the outbox", () => {
     });
     expect(await broken.enqueue("spot-a", reading)).toBe(false);
   });
+
+  test("stamps pressed as a guest move to the account on sign-in and are sent as its own; or are dropped on request", async () => {
+    const { outbox, store, sent } = make([]);
+    await outbox.setUser("guest");
+    await outbox.enqueue("spot-a", reading);
+    await outbox.enqueue("spot-b", reading);
+    await outbox.setUser("u1");
+    expect(outbox.pending).toBe(0); // still theirs, not the account's
+    expect(await outbox.guestWaiting()).toBe(2);
+    expect(await outbox.adoptGuest()).toBe(2);
+    expect(outbox.pending).toBe(2);
+    await outbox.flush();
+    expect(sent.map((s) => s.key)).toEqual(["u1", "u1"]);
+    expect(store.rows).toHaveLength(0);
+
+    await outbox.setUser("guest");
+    await outbox.enqueue("spot-c", reading);
+    await outbox.setUser("u1");
+    await outbox.discardGuest();
+    expect(await outbox.guestWaiting()).toBe(0);
+    expect(store.rows).toHaveLength(0);
+  });
+
+  test("adopting while still a guest does nothing", async () => {
+    const { outbox } = make([]);
+    await outbox.setUser("guest");
+    await outbox.enqueue("spot-a", reading);
+    expect(await outbox.adoptGuest()).toBe(0);
+    expect(outbox.pending).toBe(1);
+  });
 });

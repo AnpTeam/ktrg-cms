@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { fetchMyStamps } from "@/lib/stamp-client";
 import { getOutbox, usePendingStamps } from "@/lib/stamp-outbox";
 import type { StampFailure } from "@/lib/stamp-flow";
 import { useStampMessages } from "./useStampMessages";
@@ -37,9 +38,43 @@ export function StampOutbox({ userKey }: { userKey: string }) {
     }
   }, [router]);
 
+  // Stamps pressed with no signal before signing in wait as "guest". Signed in now: with nothing on the account yet they
+  // simply move over (the same rule as GuestClaim); with stamps already on it the visitor chooses first.
+  const [ask, setAsk] = useState<{ guest: number; mine: number } | null>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
   useEffect(() => {
-    void getOutbox().setUser(userKey).then(run);
+    const el = dialog.current;
+    if (!el) return;
+    if (ask && !el.open) el.showModal();
+    if (!ask && el.open) el.close();
+  }, [ask]);
+
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      const outbox = getOutbox();
+      await outbox.setUser(userKey);
+      if (userKey !== "guest") {
+        const guest = await outbox.guestWaiting();
+        if (guest > 0) {
+          const mine = await fetchMyStamps(); // null (offline): asked again next time
+          if (mine && mine.size === 0) await outbox.adoptGuest();
+          else if (mine && live) setAsk({ guest, mine: mine.size });
+        }
+      }
+      if (live) void run();
+    })();
+    return () => {
+      live = false;
+    };
   }, [userKey, run]);
+
+  async function answer(send: boolean) {
+    setAsk(null);
+    if (send) await getOutbox().adoptGuest();
+    else await getOutbox().discardGuest();
+    void run();
+  }
 
   useEffect(() => {
     const onVisible = () => document.visibilityState === "visible" && void run();
@@ -52,9 +87,33 @@ export function StampOutbox({ userKey }: { userKey: string }) {
     };
   }, [run]);
 
-  if (pending === 0 && refused.length === 0) return null;
   const reasons = [...new Set(refused)];
   const count = refused.length;
+  const askDialog = (
+    <dialog
+      ref={dialog}
+      aria-labelledby="outbox-ask-title"
+      onClose={() => setAsk(null)}
+      className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-3xl bg-paper p-6 text-ink backdrop:bg-black/60"
+    >
+      <h2 id="outbox-ask-title" className="text-2xl font-bold">
+        {t`登録なしで押したスタンプがあります`}
+      </h2>
+      {ask ? (
+        <p className="mt-3 text-lg leading-8">{t`電波がなくて送れなかったスタンプが${ask.guest}件あります。このアカウントには、すでに${ask.mine}個のスタンプがあります。このアカウントに送りますか？`}</p>
+      ) : null}
+      <div className="mt-6 flex flex-col gap-3">
+        <button type="button" onClick={() => void answer(true)} className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper shadow-lg">
+          {t`このアカウントに送る`}
+        </button>
+        <button type="button" onClick={() => void answer(false)} className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl border border-ink bg-paper px-6 text-xl font-bold text-ink hover:bg-surface">
+          {t`送らずに捨てる`}
+        </button>
+      </div>
+    </dialog>
+  );
+
+  if (pending === 0 && refused.length === 0) return askDialog;
 
   return (
     <div className="fixed inset-x-3 bottom-[calc(5.5rem+var(--nav-toast,0px)+env(safe-area-inset-bottom))] z-20 flex flex-col gap-2 md:inset-x-auto md:bottom-[calc(1.5rem+var(--nav-toast,0px))] md:right-6 md:w-[24rem]">
@@ -80,6 +139,7 @@ export function StampOutbox({ userKey }: { userKey: string }) {
           </button>
         </div>
       ) : null}
+      {askDialog}
     </div>
   );
 }

@@ -309,7 +309,7 @@ msgstr "No. {number}, not stamped yet"
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
 
-#: src/components/StampOutbox.tsx:76
+#: src/components/StampOutbox.tsx:135
 msgid "{pending}件のスタンプが、送信待ちです。"
 msgstr "{pending} stamps are waiting to be sent."
 
@@ -950,7 +950,7 @@ msgstr "Heading here now"
 msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 msgstr "What you see now is sample and draft data. It includes information that has not been checked."
 
-#: src/components/StampOutbox.tsx:79
+#: src/components/StampOutbox.tsx:138
 msgid "いま送る"
 msgstr "Send now"
 
@@ -1233,6 +1233,10 @@ msgstr "This account has no passkey. Confirm with the number sent to your email.
 #: src/components/useErrorMessages.ts:23
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
 msgstr "This account has no email. Confirm with your face or fingerprint."
+
+#: src/components/StampOutbox.tsx:107
+msgid "このアカウントに送る"
+msgstr "Send to this account"
 
 #: src/components/useErrorMessages.ts:60
 msgid "このアカウントは、いま制限されています。スタンプを押すことと、コメントを書くことはできません。"
@@ -5702,6 +5706,10 @@ msgstr "Register"
 msgid "登録できませんでした。もう一度お試しください。"
 msgstr "Could not register. Please try again."
 
+#: src/components/StampOutbox.tsx:100
+msgid "登録なしで押したスタンプがあります"
+msgstr "You have stamps from before you signed in"
+
 #: src/components/useErrorMessages.ts:47
 #: src/components/useStampMessages.ts:22
 msgid "登録なしで残せるスタンプの数が、上限になりました。新規登録すると、続けて集められます。"
@@ -6542,7 +6550,7 @@ msgstr "We could not read what was sent. Please try again."
 #: src/components/admin/PhotoUpload.tsx:76
 #: src/components/admin/SubtitleUpload.tsx:61
 #: src/components/blog/CommentSection.tsx:97
-#: src/components/StampOutbox.tsx:79
+#: src/components/StampOutbox.tsx:138
 msgid "送っています…"
 msgstr "Uploading…"
 
@@ -6550,7 +6558,11 @@ msgstr "Uploading…"
 msgid "送っています… {percent}%"
 msgstr "Sending… {percent}%"
 
-#: src/components/StampOutbox.tsx:63
+#: src/components/StampOutbox.tsx:110
+msgid "送らずに捨てる"
+msgstr "Discard them"
+
+#: src/components/StampOutbox.tsx:122
 msgid "送信待ちだった{count}件のスタンプは、受け付けられませんでした。"
 msgstr "{count} of the waiting stamps were not accepted."
 
@@ -6798,7 +6810,7 @@ msgstr "Length"
 #: src/components/ProfileSettings.tsx:231
 #: src/components/SampleNotice.tsx:64
 #: src/components/SiteHeader.tsx:212
-#: src/components/StampOutbox.tsx:70
+#: src/components/StampOutbox.tsx:129
 msgid "閉じる"
 msgstr "Close"
 
@@ -6843,7 +6855,13 @@ msgstr "There is no signal, so the stamp for \"{0}\" will be sent later. It may 
 msgid "電波がないため、あとで送ります。"
 msgstr "There is no signal, so it will be sent later."
 
-#: src/components/StampOutbox.tsx:77
+#. placeholder {0}: ask.guest
+#. placeholder {1}: ask.mine
+#: src/components/StampOutbox.tsx:103
+msgid "電波がなくて送れなかったスタンプが{0}件あります。このアカウントには、すでに{1}個のスタンプがあります。このアカウントに送りますか？"
+msgstr "{0} stamps could not be sent for lack of signal. This account already has {1} stamps. Send them to this account?"
+
+#: src/components/StampOutbox.tsx:136
 msgid "電波のある場所で、自動で送ります。"
 msgstr "It is sent automatically where there is signal."
 

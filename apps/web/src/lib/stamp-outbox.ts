@@ -48,6 +48,27 @@ export function createOutbox(deps: OutboxDeps) {
       await refresh();
       return true;
     },
+    /** How many stamps pressed before signing in (kept as "guest") are still waiting on this phone. */
+    async guestWaiting(): Promise<number> {
+      try {
+        return (await deps.store.list("guest")).length;
+      } catch {
+        return 0;
+      }
+    },
+    /** Moves the waiting guest stamps to the current account, so they are sent as its own. No-op for "guest" itself. */
+    async adoptGuest(): Promise<number> {
+      if (userKey === "guest") return 0;
+      const rows = await deps.store.list("guest");
+      for (const r of rows) await deps.store.update(r.id, { userKey });
+      await refresh();
+      return rows.length;
+    },
+    /** Drops the waiting guest stamps (the visitor chose not to send them to the account). */
+    async discardGuest(): Promise<void> {
+      for (const r of await deps.store.list("guest")) await deps.store.remove(r.id);
+      await refresh();
+    },
     /** Sends what is waiting. `ran` is false when another tab is already doing it. */
     async flush(): Promise<{ ran: boolean; result: FlushResult | null }> {
       const key = userKey;
