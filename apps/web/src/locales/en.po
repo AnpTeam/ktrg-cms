@@ -866,6 +866,10 @@ msgstr "Top region"
 msgid "いつまで（空なら、解除するまで）"
 msgstr "Until (empty: until you lift it)"
 
+#: src/app/offline/page.tsx:14
+msgid "いま、通信がつながっていません"
+msgstr "No connection right now"
+
 #: src/components/OfflineNotice.tsx:26
 msgid "いま、通信がつながっていません。つながると、また使えます。"
 msgstr "You are offline right now. It will work again when the signal returns."
@@ -2454,6 +2458,10 @@ msgstr "Back to page text"
 msgid "ページの漢字すべてに、読みがなをつけます。"
 msgstr "Adds a reading over every kanji on the page."
 
+#: src/app/offline/page.tsx:17
+msgid "ページを開けませんでした。電波のある場所で、もう一度お試しください。"
+msgstr "The page could not be opened. Please try again where there is signal."
+
 #: src/components/Pager.tsx:24
 msgid "ページ番号"
 msgstr "Page number"
@@ -2732,6 +2740,7 @@ msgid "もう一度ためす"
 msgstr "Try again"
 
 #: src/app/(public)/error.tsx:28
+#: src/app/offline/page.tsx:28
 msgid "もう一度ひらく"
 msgstr "Open it again"
 
@@ -4679,7 +4688,7 @@ msgstr "Bigger map"
 msgid "大切な操作なので、もう一度、確認します。"
 msgstr "This is an important action, so we confirm it is you once more."
 
-#: src/app/layout.tsx:38
+#: src/app/layout.tsx:39
 msgid "大阪・和歌山・奈良にまたがる、葛城修験の山の古道を歩くための道案内とスタンプラリーです。"
 msgstr "A trail guide and stamp rally for the ancient mountain paths of Katsuragi Shugen, across Osaka, Wakayama and Nara."
 
@@ -5069,6 +5078,10 @@ msgstr "Text"
 msgid "文章の書式"
 msgstr "Text formatting"
 
+#: src/components/ServiceWorker.tsx:41
+msgid "新しいバージョンがあります。"
+msgstr "A new version is available."
+
 #: src/app/(admin)/admin/pages/page.tsx:65
 msgid "新しいページ"
 msgstr "New page"
@@ -5198,6 +5211,10 @@ msgstr "Updated {0}"
 msgid "更新 {updated}（日本時間）"
 msgstr "Updated {updated} (Japan time)"
 
+#: src/components/ServiceWorker.tsx:43
+msgid "更新する"
+msgstr "Update"
+
 #: src/components/admin/RouteImport.tsx:159
 msgid "書いたファイル（.xlsx）"
 msgstr "Your filled-in file (.xlsx)"
@@ -5264,7 +5281,7 @@ msgstr "Confirming it is you"
 msgid "本文"
 msgstr "Text"
 
-#: src/app/layout.tsx:66
+#: src/app/layout.tsx:67
 msgid "本文へ移動"
 msgstr "Skip to main content"
 
@@ -6241,12 +6258,12 @@ msgstr "English video"
 msgid "英語版の動画のリンク（YouTube、またはアップロードした動画）"
 msgstr "Link to the English video (YouTube, or an uploaded video)"
 
-#: src/app/layout.tsx:33
+#: src/app/layout.tsx:34
 #: src/components/landing/LandingHero.tsx:31
 msgid "葛城修験"
 msgstr "Katsuragi Shugen"
 
-#: src/app/layout.tsx:36
+#: src/app/layout.tsx:37
 msgctxt "tab title"
 msgid "葛城修験"
 msgstr "Katsuragi Shugen | Ancient Mountain Trails & Stamp Rally"
@@ -6854,6 +6871,10 @@ msgstr "There is no signal, so the stamp for \"{0}\" will be sent later. It may 
 #: src/components/StampHere.tsx:127
 msgid "電波がないため、あとで送ります。"
 msgstr "There is no signal, so it will be sent later."
+
+#: src/app/offline/page.tsx:20
+msgid "電波がないときに押したスタンプは、この端末に残り、つながると自動で送られます。"
+msgstr "Stamps you press with no signal stay on this phone and are sent automatically when you are back online."
 
 #. placeholder {0}: ask.guest
 #. placeholder {1}: ask.mine

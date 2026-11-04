@@ -33,6 +33,7 @@
     "@lingui/cli": "^6.10.1",
     "@lingui/loader": "^6.10.1",
     "@lingui/swc-plugin": "6.7.1",
+    "@serwist/turbopack": "^9.5.13",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/bun": "^1.4.4",
     "@types/node": "^26.6.5",
@@ -40,10 +41,12 @@
     "@types/react-dom": "^19.3.0",
     "@typescript/native": "npm:typescript@^7.0.2",
     "elysia": "^1.4.30",
+    "esbuild": "^0.25.12",
     "eslint": "^10.13.0",
     "eslint-config-next": "^16.4.3",
     "kuromoji": "^0.1.2",
     "postcss": "^8.5.31",
+    "serwist": "^9.5.13",
     "tailwindcss": "^4.3.3",
     "typescript": "npm:@typescript/typescript6@^6.0.2"
   }

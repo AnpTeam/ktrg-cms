@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 import { linguiMacroSwcPlugin } from "@lingui/swc-plugin/options";
+import { withSerwist } from "@serwist/turbopack";
 import { buildCsp } from "./src/lib/csp";
 
 // The Elysia API is proxied under /api/v1 so session cookies stay same-origin.
@@ -50,4 +51,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSerwist(nextConfig);
