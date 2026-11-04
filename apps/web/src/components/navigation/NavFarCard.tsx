@@ -1,0 +1,91 @@
+"use client";
+
+import { useState } from "react";
+import { useLingui } from "@lingui/react/macro";
+import { AccessIcon, useAccessTypeNames } from "@/components/AccessList";
+import { Localized } from "@/components/Localized";
+import { pickText } from "@/lib/pick-text";
+import { courseEnds, nearerEnd, sortAccess, transitLink } from "@/lib/navigation/transit-links";
+import { useNavigation } from "./NavigationProvider";
+
+const linkClass = "tap-target inline-flex items-center rounded-xl border border-ink bg-paper px-3 text-base font-bold text-ink hover:bg-surface";
+
+/**
+ * Shown instead of the distance and direction when the visitor is far from the course (docs/navigation-transit-plan.md):
+ * the course's hand-entered ways of getting there, with links to other services for the real timetables, and the walking
+ * route as a choice. Nothing is routed here, and only a station's checked position is put in a link.
+ */
+export function NavFarCard() {
+  const { t, i18n } = useLingui();
+  const { session, chooseWalk, signedIn } = useNavigation();
+  const names = useAccessTypeNames();
+  const [asked, setAsked] = useState(false); // shortcut: stays "asking" until the path arrives or the card goes away; add a retry if that is not enough
+  if (!session) return null;
+  const { model, snapshot, access } = session;
+  const points = sortAccess(access, nearerEnd(courseEnds(model), snapshot.position ?? { lat: 0, lng: 0 }));
+  const external = t`（外部サイトが新しいタブで開きます）`;
+
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-lg font-bold leading-snug">{t`この区間は遠くにあります。電車やバスで向かいましょう。`}</p>
+      {points.length > 0 ? (
+        <ul className="flex max-h-[40dvh] flex-col gap-3 overflow-y-auto">
+          {points.map((p, i) => {
+            const name = pickText(i18n.locale, p.nameJa, p.nameEn);
+            const note = pickText(i18n.locale, p.noteJa, p.noteEn);
+            const links = [
+              { label: t`Googleマップ`, href: transitLink(p, "google") },
+              { label: t`Yahoo!マップ`, href: transitLink(p, "yahoo") },
+              { label: t`時刻表`, href: p.url && /^https:\/\//.test(p.url) ? p.url : null },
+            ].filter((l): l is { label: string; href: string } => l.href !== null);
+            return (
+              <li key={i} className="flex flex-col gap-1">
+                <span className="flex items-center gap-2 text-lg font-bold leading-snug">
+                  <AccessIcon type={p.type} size={28} />
+                  <span className="min-w-0">
+                    <span className="text-base font-normal text-muted">{names[p.type]} · </span>
+                    <Localized value={name} />
+                  </span>
+                </span>
+                {note ? (
+                  <span className="text-base leading-snug text-muted">
+                    <Localized value={note} tag={false} />
+                  </span>
+                ) : null}
+                {links.length > 0 ? (
+                  <span className="flex flex-wrap gap-2">
+                    {links.map((l) => (
+                      <a key={l.label} href={l.href} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                        {l.label}
+                        <span aria-hidden="true"> ↗</span>
+                        <span className="sr-only"> {external}</span>
+                      </a>
+                    ))}
+                  </span>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p className="text-base leading-snug text-muted">{t`この区間の行き方は、まだ登録されていません。`}</p>
+      )}
+      <p className="text-base leading-snug text-muted">{t`リンクは別のサービスを開きます。渡すのは駅の場所だけで、あなたの位置は渡しません。`}</p>
+      {signedIn ? (
+        <button
+          type="button"
+          disabled={asked}
+          onClick={() => {
+            setAsked(true);
+            chooseWalk();
+          }}
+          className="tap-target flex min-h-12 w-full items-center justify-center rounded-xl border border-ink bg-paper px-4 text-lg font-bold text-ink hover:bg-surface disabled:opacity-60"
+        >
+          {asked ? t`歩く道を調べています…` : t`歩く道を調べる（このアプリ）`}
+        </button>
+      ) : (
+        <p className="text-base leading-snug text-muted">{t`歩く道を調べるには、ログインしてください。`}</p>
+      )}
+    </div>
+  );
+}

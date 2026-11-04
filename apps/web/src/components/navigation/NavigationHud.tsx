@@ -10,6 +10,7 @@ import { modelFromMapRoute } from "@/lib/navigation/input";
 import type { MapScreenRoute } from "@/lib/map-screen";
 import { courseProgress } from "@/lib/navigation/progress";
 import { distanceParts } from "@/lib/stamp-flow";
+import { NavFarCard } from "./NavFarCard";
 import { NavTargetPicker } from "./NavTargetPicker";
 import { useNavigation, type NavStopInfo } from "./NavigationProvider";
 
@@ -58,7 +59,7 @@ export function NavigationStart({ route }: { route: MapScreenRoute }) {
   return (
     <section className="flex flex-col gap-2">
       <p className="text-lg leading-snug">{t`いまいる場所から、いちばん近いスタンプの場所まで案内します。位置は、この端末の中だけで使います。`}</p>
-      <button type="button" className={primary} onClick={() => start({ routeId: route.id, routeName: route.name, stops, model: modelFromMapRoute(route) })}>
+      <button type="button" className={primary} onClick={() => start({ routeId: route.id, routeName: route.name, access: route.accessPoints, stops, model: modelFromMapRoute(route) })}>
         {session ? t`この区間のナビに切り替える` : t`ナビをはじめる`}
       </button>
     </section>
@@ -196,8 +197,12 @@ export function NavigationToast() {
           ? t`スタンプの記録を読めませんでした。`
           : null;
 
+  // Far from the course, with no walking path chosen: how to get there, not a distance and direction that mean nothing.
+  const far = snap.position !== null && st.far && st.mode !== "path" && st.targetId !== null;
   let main;
-  if (problem && snap.position === null) {
+  if (far) {
+    main = pathname === "/map" ? <NavFarCard /> : <p className="text-base font-bold leading-snug">{t`この区間は遠くにあります。電車やバスで向かいましょう。`}</p>;
+  } else if (problem && snap.position === null) {
     main = <p className="text-base font-bold leading-snug">{problem}</p>;
   } else if (snap.position === null) {
     main = <p className="text-base">{st.ignoredFixes > 0 ? t`GPSの電波が弱いようです。空の開けた場所に動いてください。` : t`現在地を調べています…`}</p>;
@@ -260,7 +265,7 @@ export function NavigationToast() {
     };
     return (
       <>
-        <section ref={banner} aria-label={t`ナビ中：${routeName}`} className="fixed inset-x-3 top-[calc(0.5rem+env(safe-area-inset-top))] z-30 flex flex-col gap-1 rounded-2xl bg-paper px-4 py-3 shadow-2xl ring-1 ring-line/30 md:inset-x-auto md:left-[calc(50%-14rem)] md:w-[28rem]">
+        <section ref={banner} aria-label={t`ナビ中：${routeName}`} className="fixed inset-x-3 top-[calc(0.5rem+env(safe-area-inset-top))] z-30 flex max-h-[70dvh] flex-col gap-1 overflow-y-auto rounded-2xl bg-paper px-4 py-3 shadow-2xl ring-1 ring-line/30 md:inset-x-auto md:left-[calc(50%-14rem)] md:w-[28rem]">
           {main}
           {offRouteBlock}
           {note ? <p className="text-base leading-snug">{note}</p> : null}

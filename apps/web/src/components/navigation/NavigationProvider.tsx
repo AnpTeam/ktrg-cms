@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createNavigationController, type NavigationController, type NavSnapshot } from "@/lib/navigation/controller";
 import { requestPath, type PathAnswer } from "@/lib/navigation/path-client";
+import type { AccessPoint } from "@/lib/access-points";
 import type { NavModel } from "@/lib/navigation/session";
 import { fetchMyStamps } from "@/lib/stamp-client";
 
@@ -13,6 +14,8 @@ import { fetchMyStamps } from "@/lib/stamp-client";
 export interface NavSession {
   routeId: string;
   routeName: string;
+  /** How to get to the course, for the far-from-the-course card. */
+  access: readonly AccessPoint[];
   /** Stop id -> its name in the visitor's language and its status, for the panel and the stamp button. */
   stops: Readonly<Record<string, NavStopInfo>>;
   /** The course as the guidance sees it, for the progress and time left. */
@@ -28,12 +31,15 @@ export interface NavStopInfo {
 
 interface NavigationApi {
   session: NavSession | null;
-  start(input: { routeId: string; routeName: string; stops: Record<string, NavStopInfo>; model: NavModel }): void;
+  start(input: { routeId: string; routeName: string; access: readonly AccessPoint[]; stops: Record<string, NavStopInfo>; model: NavModel }): void;
   stop(): void;
   /** After a successful stamp: head for the next nearest stop at once. */
   markStamped(stopId: string): void;
   /** Head for this stop instead of the nearest one; null goes back to the nearest. */
   setTarget(stopId: string | null): void;
+  /** Far from the course, the visitor chose a walking route after all (signed-in visitors only: see `signedIn`). */
+  chooseWalk(): void;
+  signedIn: boolean;
   /** How tall the navigation toast is (0 when hidden), so a page can keep that room free at the bottom. */
   toastPx: number;
   setToastPx(px: number): void;
@@ -42,7 +48,7 @@ interface NavigationApi {
   setBannerPx(px: number): void;
 }
 
-const NavigationContext = createContext<NavigationApi>({ session: null, start: () => {}, stop: () => {}, markStamped: () => {}, setTarget: () => {}, toastPx: 0, setToastPx: () => {}, bannerPx: 0, setBannerPx: () => {} });
+const NavigationContext = createContext<NavigationApi>({ session: null, start: () => {}, stop: () => {}, markStamped: () => {}, setTarget: () => {}, chooseWalk: () => {}, signedIn: false, toastPx: 0, setToastPx: () => {}, bannerPx: 0, setBannerPx: () => {} });
 
 export function NavigationProvider({ children, signedIn }: { children: ReactNode; signedIn: boolean }) {
   const controller = useRef<NavigationController | null>(null);
@@ -61,7 +67,7 @@ export function NavigationProvider({ children, signedIn }: { children: ReactNode
     setSession(null);
   }, []);
 
-  const start = useCallback<NavigationApi["start"]>(({ routeId, routeName, stops, model }) => {
+  const start = useCallback<NavigationApi["start"]>(({ routeId, routeName, access, stops, model }) => {
     controller.current?.stop();
     const c = createNavigationController({
       model,
@@ -74,17 +80,18 @@ export function NavigationProvider({ children, signedIn }: { children: ReactNode
       onChange: (snapshot) => setSession((s) => (s && controller.current === c ? { ...s, snapshot } : s)),
     });
     controller.current = c;
-    setSession({ routeId, routeName, stops, model, snapshot: c.snapshot });
+    setSession({ routeId, routeName, access, stops, model, snapshot: c.snapshot });
     void c.start();
   }, []);
 
   const markStamped = useCallback((stopId: string) => controller.current?.markStamped(stopId), []);
+  const chooseWalk = useCallback(() => controller.current?.chooseWalk(), []);
   const setTarget = useCallback((stopId: string | null) => controller.current?.setTarget(stopId), []);
 
   // Leaving the site (or a full reload) ends the session; nothing is kept.
   useEffect(() => () => controller.current?.stop(), []);
 
-  const api = useMemo(() => ({ session, start, stop, markStamped, setTarget, toastPx, setToastPx, bannerPx, setBannerPx }), [session, start, stop, markStamped, setTarget, toastPx, bannerPx]);
+  const api = useMemo(() => ({ session, start, stop, markStamped, setTarget, chooseWalk, signedIn, toastPx, setToastPx, bannerPx, setBannerPx }), [session, start, stop, markStamped, setTarget, chooseWalk, signedIn, toastPx, bannerPx]);
   return <NavigationContext.Provider value={api}>{children}</NavigationContext.Provider>;
 }
 

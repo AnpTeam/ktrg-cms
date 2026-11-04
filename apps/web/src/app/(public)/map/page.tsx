@@ -153,6 +153,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
           elevationGainM: r.elevationGainM,
           expectedTimeMin: r.expectedTimeMin,
           farDistanceM: r.farDistanceM,
+          accessPoints: r.accessPoints,
           difficulty: r.difficulty,
           physicalLevel: r.physicalLevel,
           technicalLevel: r.technicalLevel,
