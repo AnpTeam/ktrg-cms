@@ -129,14 +129,14 @@ export function Landing({
       </div>
 
       {firstRoutes.length > 0 ? (
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-3 lg:col-span-2">
           <div className="px-4">
             <SectionBanner>
               <Trans>歩く道</Trans>
             </SectionBanner>
           </div>
           <div className={panel}>
-            <ol>
+            <ol className="lg:grid lg:grid-cols-2 lg:gap-x-10 lg:gap-y-6">
               {firstRoutes.map((route, i) => (
                 <PreviewStop
                   key={route.id}
@@ -324,11 +324,11 @@ function PreviewStop({ route, locale, last, href }: { route: RouteSummary; local
     </span>
   );
   return (
-    <li className="relative pb-6 pl-16 last:pb-0">
+    <li className="relative pb-6 pl-16 last:pb-0 lg:pb-0">
       <span className="absolute left-0 top-0">
         <TrailNode state={state} order={route.order} share={progressShare(stampedCount, spotCount)} />
       </span>
-      {last ? null : <span aria-hidden="true" className="absolute bottom-0 left-[21px] top-11 w-0.5 bg-brand" />}
+      {last ? null : <span aria-hidden="true" className="absolute bottom-0 left-[21px] top-11 w-0.5 bg-brand lg:hidden" />}
       {soon ? (
         <div className="py-1">{body}</div>
       ) : (
