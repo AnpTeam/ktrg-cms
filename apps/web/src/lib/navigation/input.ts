@@ -22,8 +22,9 @@ export function modelFromRoute(route: Pick<PublicRoute, "line">, spots: readonly
 const MAP_STOP_RADIUS_M = 50;
 
 /** The navigation model for a course as the map page has it (MapScreenRoute): its line and its stops with positions. */
-export function modelFromMapRoute(route: Pick<MapScreenRoute, "line" | "stops" | "farDistanceM">): NavModel {
-  const line: LinePoint[] = (route.line ?? []).map((p) => [p.lng, p.lat]);
+export function modelFromMapRoute(route: Pick<MapScreenRoute, "line" | "stops" | "farDistanceM">, linePoints?: readonly LinePoint[] | null): NavModel {
+  // The fetched line carries elevations; the page's own (sample) line does not.
+  const line: readonly LinePoint[] = linePoints ?? (route.line ?? []).map((p): LinePoint => [p.lng, p.lat]);
   // Navigation heads for stamp places: a place with no stamp is on the map but is never its destination.
   const stops: NavStop[] = (route.stops ?? []).filter((s) => !s.noStamp).map((s) => ({ id: s.id, lat: s.position.lat, lng: s.position.lng, radiusM: MAP_STOP_RADIUS_M, status: s.status }));
   return buildModel(line, stops, route.farDistanceM ?? undefined);
