@@ -5,6 +5,7 @@ import { createNavigationController, type NavigationController, type NavSnapshot
 import { requestPath, type PathAnswer } from "@/lib/navigation/path-client";
 import type { AccessPoint } from "@/lib/access-points";
 import type { NavModel } from "@/lib/navigation/session";
+import { clearResume, saveResume } from "@/lib/navigation/resume";
 import { fetchMyStamps } from "@/lib/stamp-client";
 
 // The navigation session lives here, in the participant layout, so it keeps running while the visitor moves between
@@ -65,6 +66,7 @@ export function NavigationProvider({ children, signedIn }: { children: ReactNode
     controller.current?.stop();
     controller.current = null;
     setSession(null);
+    clearResume(typeof window === "undefined" ? undefined : window.localStorage); // ended by hand: do not pick it up again after a reload
   }, []);
 
   const start = useCallback<NavigationApi["start"]>(({ routeId, routeName, access, stops, model }) => {
@@ -80,6 +82,7 @@ export function NavigationProvider({ children, signedIn }: { children: ReactNode
       onChange: (snapshot) => setSession((s) => (s && controller.current === c ? { ...s, snapshot } : s)),
     });
     controller.current = c;
+    saveResume(typeof window === "undefined" ? undefined : window.localStorage, { routeId, at: Date.now() });
     setSession({ routeId, routeName, access, stops, model, snapshot: c.snapshot });
     void c.start();
   }, []);
