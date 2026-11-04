@@ -25,6 +25,8 @@ export interface NavSnapshot {
   position: NavReading | null;
   /** The walking path being followed off the course line, for the map; null when there is none. */
   pathLine: readonly LinePoint[] | null;
+  /** The stop the visitor chose to head for instead of the nearest one; null while it is chosen automatically. */
+  forcedId: string | null;
 }
 
 export interface ControllerDeps {
@@ -52,7 +54,8 @@ export function createNavigationController(deps: ControllerDeps) {
   let asking = false;
   // Bumped on stop, so an answer for an earlier session is dropped.
   let generation = 0;
-  let snap: NavSnapshot = { state: initialState(), stamped, stampsKnown, paused: false, problem: null, lastFixAtMs: null, position: null, pathLine: null };
+  let forced: string | null = null;
+  let snap: NavSnapshot = { state: initialState(), stamped, stampsKnown, paused: false, problem: null, lastFixAtMs: null, position: null, pathLine: null, forcedId: null };
 
   const emit = (patch: Partial<NavSnapshot>) => {
     if (!alive) return;
@@ -73,7 +76,7 @@ export function createNavigationController(deps: ControllerDeps) {
       if (!alive) return;
       if (answer.ok) {
         path = { stopId, ...trackOf(answer.line) };
-        emit({ pathLine: path.line, ...(last ? { state: applyFix(model, snap.state, last, stamped, path) } : {}) });
+        emit({ pathLine: path.line, ...(last ? { state: applyFix(model, snap.state, last, stamped, path, forced) } : {}) });
       } else if (answer.backOff && lastAsk) {
         lastAsk = { ...lastAsk, backOffUntilMs: atMs + PATH_BACKOFF_MS };
       }
@@ -89,7 +92,7 @@ export function createNavigationController(deps: ControllerDeps) {
     }
     if (reading.headingDeg !== undefined || !headingFrom) headingFrom = fix;
     last = reading;
-    const state = applyFix(model, snap.state, reading, stamped, path);
+    const state = applyFix(model, snap.state, reading, stamped, path, forced);
     // A path for another stop (the target moved on) is no longer drawn.
     emit({ state, stamped, lastFixAtMs: deps.now(), problem: null, position: reading, pathLine: path && path.stopId === state.targetId ? path.line : null });
     if (deps.fetchPath && !asking && shouldAskForPath(wantsPath(state), state.targetId, reading, deps.now(), lastAsk)) askForPath(state.targetId!, reading);
@@ -110,12 +113,14 @@ export function createNavigationController(deps: ControllerDeps) {
     if (loaded) {
       stamped = loaded;
       stampsKnown = true;
+      if (forced !== null && stamped.has(forced)) forced = null;
     }
     // Recompute right away when a fix is already there; otherwise just show the right target.
     emit({
       stamped,
       stampsKnown,
-      state: last ? applyFix(model, snap.state, last, stamped, path) : snap.state,
+      state: last ? applyFix(model, snap.state, last, stamped, path, forced) : snap.state,
+      forcedId: forced,
     });
   }
 
@@ -137,17 +142,24 @@ export function createNavigationController(deps: ControllerDeps) {
       lastAsk = null;
       asking = false;
       generation++;
+      forced = null;
+    },
+    /** Head for this stop instead of the nearest one (null: back to choosing the nearest). */
+    setTarget(id: string | null) {
+      forced = id;
+      emit({ forcedId: id, ...(last ? { state: applyFix(model, snap.state, last, stamped, path, forced) } : {}) });
     },
     /** After a successful stamp: move on at once, without waiting for the server's list. */
     markStamped(id: string) {
       stamped = new Set([...stamped, id]);
-      emit({ stamped, state: last ? applyFix(model, snap.state, last, stamped, path) : snap.state });
+      if (forced === id) forced = null; // the chosen stop is done: back to the nearest
+      emit({ stamped, forcedId: forced, state: last ? applyFix(model, snap.state, last, stamped, path, forced) : snap.state });
     },
     refreshStamps,
     /** A walking path from OpenRouteService (or null to drop it); used from the fix already held. */
     setPath(next: NavPath | null) {
       path = next;
-      emit({ pathLine: next ? next.line : null, ...(last ? { state: applyFix(model, snap.state, last, stamped, path) } : {}) });
+      emit({ pathLine: next ? next.line : null, ...(last ? { state: applyFix(model, snap.state, last, stamped, path, forced) } : {}) });
     },
     get snapshot() {
       return snap;
