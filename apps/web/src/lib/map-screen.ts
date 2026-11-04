@@ -1,3 +1,4 @@
+import type { AccessPoint } from "./access-points";
 import type { SpotStatus } from "./content";
 import type { Position } from "./map";
 import type { PlaceCategory } from "./places";
@@ -100,6 +101,8 @@ export interface MapScreenRoute {
   expectedTimeMin: number | null;
   /** How far from the course counts as far (metres); null = the app's default. */
   farDistanceM: number | null;
+  /** How to get there (train, bus ...), both languages; a position is here only once a person checked it. */
+  accessPoints: AccessPoint[];
   difficulty: string | null;
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
