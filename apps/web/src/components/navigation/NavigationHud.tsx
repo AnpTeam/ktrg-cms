@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { fetchRouteLine } from "@/lib/navigation/line-client";
+import { loadResume } from "@/lib/navigation/resume";
 import { useLingui } from "@lingui/react/macro";
 import { StampHere } from "@/components/StampHere";
 import { compassPoint, type CompassPoint, type TurnKind } from "@/lib/navigation/geometry";
@@ -50,18 +52,56 @@ function TurnSign({ kind }: { kind: TurnKind | null }) {
 /** Space kept between the toast and what is above it. */
 const GAP_PX = 8;
 
+/**
+ * Starts navigating a course. The map page does not send the course's path, so it is fetched here first; with none the
+ * guidance falls back to the stops only. Returns false when the course has no stamp places to head for.
+ */
+async function beginNavigation(route: MapScreenRoute, start: ReturnType<typeof useNavigation>["start"]): Promise<boolean> {
+  const stampStops = route.stops?.filter((s) => !s.noStamp) ?? [];
+  if (stampStops.length === 0) return false;
+  const line = route.line ?? (route.hasLine ? await fetchRouteLine(route.id) : null);
+  const stops: Record<string, NavStopInfo> = Object.fromEntries(stampStops.map((s) => [s.id, { name: s.name, nameLang: s.nameLang, status: s.status }]));
+  start({ routeId: route.id, routeName: route.name, access: route.accessPoints, stops, model: modelFromMapRoute({ ...route, line }) });
+  return true;
+}
+
+/**
+ * After a reload (the phone dropped the page while another one was on top), a navigation that was running starts again
+ * when the map opens. `onResume` lets the map open that course's sheet.
+ */
+export function NavigationResume({ routes, onResume }: { routes: readonly MapScreenRoute[]; onResume: (routeId: string) => void }) {
+  const { session, start } = useNavigation();
+  const tried = useRef(false);
+  useEffect(() => {
+    if (tried.current || session) return;
+    tried.current = true;
+    const rec = loadResume(window.localStorage, Date.now());
+    const route = rec ? routes.find((r) => r.id === rec.routeId && r.status === "ready") : undefined;
+    if (!route) return;
+    void beginNavigation(route, start).then((began) => began && onResume(route.id));
+  }, [routes, session, start, onResume]);
+  return null;
+}
+
 export function NavigationStart({ route }: { route: MapScreenRoute }) {
   const { t } = useLingui();
   const { session, start } = useNavigation();
-  const stampStops = route.stops?.filter((s) => !s.noStamp) ?? [];
-  if (stampStops.length === 0) return null;
+  const [starting, setStarting] = useState(false);
+  if (!route.stops?.some((s) => !s.noStamp)) return null;
   if (session?.routeId === route.id) return null; // the toast already shows it
-  const stops: Record<string, NavStopInfo> = Object.fromEntries(stampStops.map((s) => [s.id, { name: s.name, nameLang: s.nameLang, status: s.status }]));
   return (
     <section className="flex flex-col gap-2">
       <p className="text-lg leading-snug">{t`いまいる場所から、いちばん近いスタンプの場所まで案内します。位置は、この端末の中だけで使います。`}</p>
-      <button type="button" className={primary} onClick={() => start({ routeId: route.id, routeName: route.name, access: route.accessPoints, stops, model: modelFromMapRoute(route) })}>
-        {session ? t`この区間のナビに切り替える` : t`ナビをはじめる`}
+      <button
+        type="button"
+        className={primary}
+        disabled={starting}
+        onClick={() => {
+          setStarting(true);
+          void beginNavigation(route, start).finally(() => setStarting(false));
+        }}
+      >
+        {starting ? t`ナビを準備しています…` : session ? t`この区間のナビに切り替える` : t`ナビをはじめる`}
       </button>
     </section>
   );

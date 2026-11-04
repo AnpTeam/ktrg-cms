@@ -315,8 +315,11 @@ export function MapScreenCanvas({
   const hasUser = user !== null;
   // Adjusted while rendering (the pattern React recommends for state that follows another value).
   const [seenUser, setSeenUser] = useState(hasUser);
+  // Bumped when a navigation ends: the camera frames the course again instead of staying zoomed in where the visitor was.
+  const [navEnds, setNavEnds] = useState(0);
   if (seenUser !== hasUser) {
     setSeenUser(hasUser);
+    if (!hasUser) setNavEnds((n) => n + 1);
     // A navigation just began: the map follows the visitor from the start (the recenter button brings it back after a drag).
     setFollow(hasUser);
   }
@@ -334,7 +337,7 @@ export function MapScreenCanvas({
     const points = route ? framePoints(route.line || !lines[route.id] ? route : { ...route, line: lines[route.id] ?? null }) : routes.flatMap((r) => (r.area ? framePoints(r) : []));
     const bounds = boundsOf(points);
     if (bounds) map.fitBounds(bounds, { padding: padding(), maxZoom: route ? 15 : 11, duration: 600 });
-  }, [ready, routeId, mapGen, routeId ? lines[routeId] : null]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [ready, routeId, mapGen, navEnds, routeId ? lines[routeId] : null]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // A place asked for in the address ("show on map" from a route's nearby places): after the course has been framed, the map
   // moves to it, zoomed in enough for its pin to show, and its popup opens.

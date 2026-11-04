@@ -10,7 +10,7 @@ import { PlaceLine } from "@/components/PlaceLine";
 import { RichText } from "@/components/RichText";
 import { RouteStats } from "@/components/RouteStats";
 import { StampHere } from "@/components/StampHere";
-import { NavigationStart } from "@/components/navigation/NavigationHud";
+import { NavigationResume, NavigationStart } from "@/components/navigation/NavigationHud";
 import { useNavigation } from "@/components/navigation/NavigationProvider";
 import { StampFace } from "@/components/StampFace";
 import { StatusWord } from "@/components/StatusWord";
@@ -87,9 +87,19 @@ export function MapScreen({
   // Adjusted while rendering (the pattern React recommends for state that follows another value).
   const navRouteId = nav.session?.routeId ?? null;
   const [seenNavRouteId, setSeenNavRouteId] = useState(navRouteId);
+  // Where the sheet was when the navigation began, so ending it puts the screen back as it was.
+  const [snapBeforeNav, setSnapBeforeNav] = useState<SheetSnap | null>(null);
   if (seenNavRouteId !== navRouteId) {
     setSeenNavRouteId(navRouteId);
-    if (navRouteId && !wide) setSnap("hidden");
+    if (navRouteId && !seenNavRouteId && !wide) {
+      setSnapBeforeNav(snap);
+      setSnap("hidden");
+    } else if (navRouteId && !wide) setSnap("hidden");
+    else if (!navRouteId && snapBeforeNav !== null) {
+      // Only if the visitor has not moved the sheet since: the start put it away.
+      if (snap === "hidden") setSnap(snapBeforeNav);
+      setSnapBeforeNav(null);
+    }
   }
 
   // Below the sheet: the tab bar, and the navigation toast while one runs (on a desktop the toast is beside the panel).
@@ -232,6 +242,7 @@ export function MapScreen({
       data-dark={settings.dark}
       className={`trail-map map-screen relative h-dvh w-full overflow-hidden md:[--tab-room:0rem] ${chosen ? "[--tab-room:0rem]" : "[--tab-room:calc(5.5rem+env(safe-area-inset-bottom))]"}`}
     >
+      <NavigationResume routes={routes} onResume={setRouteId} />
       <MapScreenCanvasLoader
         routes={routes}
         routeId={routeId}

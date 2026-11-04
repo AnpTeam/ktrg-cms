@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { AccessIcon, useAccessTypeNames } from "@/components/AccessList";
 import { Localized } from "@/components/Localized";
@@ -19,17 +19,27 @@ export function NavFarCard() {
   const { t, i18n } = useLingui();
   const { session, chooseWalk, signedIn } = useNavigation();
   const names = useAccessTypeNames();
+  const dialog = useRef<HTMLDialogElement>(null);
   const [asked, setAsked] = useState(false); // shortcut: stays "asking" until the path arrives or the card goes away; add a retry if that is not enough
   if (!session) return null;
   const { model, snapshot, access } = session;
   const points = sortAccess(access, nearerEnd(courseEnds(model), snapshot.position ?? { lat: 0, lng: 0 }));
   const external = t`（外部サイトが新しいタブで開きます）`;
 
+  // The banner stays small so the map is still seen; the ways to get there open in a dialog.
   return (
     <div className="flex flex-col gap-2">
       <p className="text-lg font-bold leading-snug">{t`この区間は遠くにあります。電車やバスで向かいましょう。`}</p>
+      <button type="button" onClick={() => dialog.current?.showModal()} className="tap-target flex min-h-12 w-full items-center justify-center rounded-xl bg-ink px-4 text-lg font-bold text-paper">
+        {t`行き方を見る`}
+      </button>
+      <dialog ref={dialog} aria-labelledby="nav-far-title" className="m-auto max-h-[85dvh] w-[calc(100%-2rem)] max-w-sm overflow-y-auto rounded-3xl bg-paper p-5 text-ink backdrop:bg-black/60">
+        <h2 id="nav-far-title" className="mb-3 text-2xl font-bold">
+          {t`行き方`}
+        </h2>
+        <div className="flex flex-col gap-3">
       {points.length > 0 ? (
-        <ul className="flex max-h-[40dvh] flex-col gap-3 overflow-y-auto">
+        <ul className="flex flex-col gap-3">
           {points.map((p, i) => {
             const name = pickText(i18n.locale, p.nameJa, p.nameEn);
             const note = pickText(i18n.locale, p.noteJa, p.noteEn);
@@ -86,6 +96,11 @@ export function NavFarCard() {
       ) : (
         <p className="text-base leading-snug text-muted">{t`歩く道を調べるには、ログインしてください。`}</p>
       )}
+          <button type="button" onClick={() => dialog.current?.close()} className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl border border-ink bg-paper px-5 text-xl font-bold text-ink hover:bg-surface">
+            {t`とじる`}
+          </button>
+        </div>
+      </dialog>
     </div>
   );
 }
