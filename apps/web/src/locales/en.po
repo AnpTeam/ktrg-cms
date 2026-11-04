@@ -1515,6 +1515,10 @@ msgstr "Start with these settings"
 msgid "この設定は、本番のサイトにすぐ反映されます。すべての訪問者の地図の見た目が変わります。保存しますか？"
 msgstr "This goes live at once and changes the map for every visitor. Save it?"
 
+#: src/components/admin/HomeSectionsForm.tsx:19
+msgid "この設定は、本番のサイトにすぐ反映されます。保存しますか？"
+msgstr "This setting takes effect on the live site at once. Save it?"
+
 #: src/components/SpotSheet.tsx:119
 #: src/components/SpotSheet.tsx:135
 msgid "この説明は日本語のみです。"
@@ -1597,7 +1601,7 @@ msgstr "Size"
 msgid "サイト"
 msgstr "Website"
 
-#: src/app/(admin)/admin/settings/page.tsx:24
+#: src/app/(admin)/admin/settings/page.tsx:25
 msgid "サイトの全体に関わる設定です。ここで変えたことは、すぐに訪問者の画面に反映されます。"
 msgstr "Settings that affect the whole site. What you change here shows on visitors' screens at once."
 
@@ -1608,12 +1612,12 @@ msgstr "Settings that affect the whole site. What you change here shows on visit
 msgid "サイトマップ"
 msgstr "Site map"
 
-#: src/app/(admin)/admin/settings/page.tsx:21
+#: src/app/(admin)/admin/settings/page.tsx:22
 #: src/components/admin/AdminNav.tsx:44
 msgid "サイト全体の設定"
 msgstr "Site-wide settings"
 
-#: src/app/(admin)/admin/settings/page.tsx:10
+#: src/app/(admin)/admin/settings/page.tsx:11
 msgid "サイト全体の設定（管理）"
 msgstr "Site-wide settings (admin)"
 
@@ -2357,6 +2361,10 @@ msgstr "Home"
 msgid "ホームにもどる"
 msgstr "Back to Home"
 
+#: src/components/admin/HomeSectionsForm.tsx:45
+msgid "ホームページの表示"
+msgstr "Home page sections"
+
 #: src/app/(admin)/layout.tsx:39
 msgid "ホームへ戻る"
 msgstr "Back to home"
@@ -2467,6 +2475,7 @@ msgstr "No stamps yet."
 msgid "まだスタンプを押していません"
 msgstr "You haven't collected this stamp yet"
 
+#: src/components/admin/HomeSectionsForm.tsx:58
 #: src/components/admin/SiteSettingsForm.tsx:117
 msgid "まだ保存していません。"
 msgstr "Not saved yet."
@@ -2835,6 +2844,10 @@ msgstr "Could not make the link. Please try again."
 #: src/components/admin/PhotoLinkDetails.tsx:15
 msgid "リンクを直接入れる"
 msgstr "Enter the link directly"
+
+#: src/components/admin/HomeSectionsForm.tsx:51
+msgid "リンク先のページが用意できてから、オンにしてください。オフの間は、ホームページに出ません。"
+msgstr "Turn this on once the pages it links to are ready. While it is off, it does not appear on the home page."
 
 #: src/app/(admin)/admin/attention/page.tsx:54
 #: src/app/(admin)/admin/routes/page.tsx:22
@@ -3319,6 +3332,7 @@ msgstr "There are unsaved changes. Save them first."
 msgid "保存していない編集が、このブラウザに残っています（{offeredAt}）。戻しますか？"
 msgstr "Unsaved edits were kept in this browser ({offeredAt}). Restore them?"
 
+#: src/components/admin/HomeSectionsForm.tsx:56
 #: src/components/admin/SiteSettingsForm.tsx:112
 #: src/components/OfflineSave.tsx:47
 msgid "保存しています…"
@@ -3330,6 +3344,7 @@ msgstr "Save and next"
 
 #: src/components/admin/AdminItemForm.tsx:125
 #: src/components/admin/GoalsForm.tsx:50
+#: src/components/admin/HomeSectionsForm.tsx:32
 #: src/components/admin/RallyEditor.tsx:72
 #: src/components/admin/RouteEditor.tsx:335
 #: src/components/ProfileSettings.tsx:173
@@ -3365,6 +3380,7 @@ msgstr "Saved. No more places waiting to be checked."
 msgid "保存しました（電波がなくても開けます）"
 msgstr "Saved (opens without a signal)"
 
+#: src/components/admin/HomeSectionsForm.tsx:56
 #: src/components/admin/RouteEditor.tsx:489
 #: src/components/admin/SiteSettingsForm.tsx:112
 #: src/components/ProfileSettings.tsx:221
@@ -6130,6 +6146,10 @@ msgstr "Tourism website"
 #: src/components/landing/Landing.tsx:97
 msgid "観光情報"
 msgstr "Tourism information"
+
+#: src/components/admin/HomeSectionsForm.tsx:50
+msgid "観光情報（観光・グルメ・お土産・体験・宿泊）を表示する"
+msgstr "Show the tourism information (sightseeing, gourmet, souvenirs, experiences, stay)"
 
 #: src/components/LocaleSwitcher.tsx:20
 #: src/components/LocaleSwitcher.tsx:55
