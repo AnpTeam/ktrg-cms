@@ -33,6 +33,7 @@ export interface AdminRoute {
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
+  farDistanceM?: number | null;
   prefecture: Prefecture | null;
   walkStyle: WalkStyle | null;
   municipality: string | null;

@@ -9,6 +9,7 @@ const model = (along: (number | null)[] = [0, 1000, 2500, 4000], closed = -1): N
   cum: [],
   stops: ["a", "b", "c", "d"].map((id, i) => stop(id, i === closed ? "closed" : "open")),
   stopAlongM: along,
+  farM: 5000,
 });
 const at = (alongM: number | null, distanceM: number | null = null) => ({ ...initialState(), alongM, distanceM });
 

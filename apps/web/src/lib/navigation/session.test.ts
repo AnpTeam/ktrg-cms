@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { LinePoint } from "./geometry";
-import { applyFix, buildModel, initialState, MAX_ACCURACY_M, movementHeading, trackOf, wantsPath, type NavReading, type NavState, type NavStop } from "./session";
+import { applyFix, buildModel, initialState, isFar, MAX_ACCURACY_M, movementHeading, trackOf, wantsPath, type NavReading, type NavState, type NavStop } from "./session";
 
 // A straight east-west line at latitude 34.5 from 135.000 to 135.010 (about 917 m); 0.001 degrees of longitude is ~91.7 m.
 const LAT = 34.5;
@@ -257,5 +257,23 @@ describe("a stop the visitor chose", () => {
     const closed = buildModel(line, stops.map((s) => (s.id === "c" ? { ...s, status: "closed" as const } : s)));
     expect(applyFix(closed, initialState(), at(135.003), none, null, "c").targetId).toBe("a");
     expect(applyFix(model, initialState(), at(135.003), none, null, "nope").targetId).toBe("a");
+  });
+});
+
+describe("isFar", () => {
+  test("measured from the line when there is one, from the stops when there is not; the course's own distance counts", () => {
+    expect(isFar(model, { lat: LAT, lng: 135.005 })).toBe(false);
+    expect(isFar(model, { lat: LAT + 0.06, lng: 135.005 })).toBe(true); // ~6.7 km
+    expect(isFar(buildModel(line, stops, 10_000), { lat: LAT + 0.06, lng: 135.005 })).toBe(false);
+    expect(isFar(buildModel([], stops), { lat: LAT + 0.06, lng: 135.003 })).toBe(true);
+    expect(isFar(buildModel([], stops), { lat: LAT + 0.01, lng: 135.003 })).toBe(false);
+  });
+
+  test("far visitors are not sent a foot path unless they chose to walk", () => {
+    const s = walk([at(135.005, LAT + 0.06)]);
+    expect(s.far).toBe(true);
+    expect(s.mode).toBe("straight");
+    expect(wantsPath(s)).toBe(false);
+    expect(wantsPath(s, true)).toBe(true);
   });
 });

@@ -76,17 +76,32 @@ export function trackOf(line: readonly LinePoint[]): Track {
   return { line, cum: cumulativeDistances(line) };
 }
 
+/** Farther from the course than this, the visitor is told to travel there (train, bus) instead of being guided on foot. */
+export const DEFAULT_FAR_M = 5000;
+
 /** Built once per course (and again when the stops change). */
 export interface NavModel extends Track {
   stops: readonly NavStop[];
+  /** How far from the course is "far" for this course, in metres. */
+  farM: number;
   /** Where each stop sits along the course line (metres from its start); null when it cannot be placed on it. */
   stopAlongM: readonly (number | null)[];
 }
 
-export function buildModel(line: readonly LinePoint[], stops: readonly NavStop[]): NavModel {
+export function buildModel(line: readonly LinePoint[], stops: readonly NavStop[], farM: number = DEFAULT_FAR_M): NavModel {
   const track = trackOf(line);
   const legs = cutLegs(track.line, track.cum, stops);
-  return { ...track, stops, stopAlongM: legs.map((l) => (l.reliable ? l.endM : null)) };
+  return { ...track, stops, stopAlongM: legs.map((l) => (l.reliable ? l.endM : null)), farM };
+}
+
+/**
+ * True when the visitor is farther than the course's far distance from the course: from its line, or, with no checked
+ * line, from every stop. Then a walk is not the sensible way to get there (see docs/navigation-transit-plan.md).
+ */
+export function isFar(model: NavModel, at: LatLng): boolean {
+  const onLine = model.line.length >= 2 ? projectOnLine(model.line, model.cum, at) : null;
+  const nearest = onLine ? onLine.offM : model.stops.reduce((m, s) => Math.min(m, distanceM(at, s)), Number.POSITIVE_INFINITY);
+  return nearest > model.farM;
 }
 
 export type NavMode = "line" | "path" | "straight";
@@ -119,6 +134,8 @@ export interface NavState {
   /** While off route: metres to, and the bearing of, the nearest point of the course line (the way back). */
   backM: number | null;
   backBearingDeg: number | null;
+  /** Farther from the course than its far distance: the screen offers train and bus instead of a long walk. */
+  far: boolean;
   /** Fixes ignored for poor accuracy, so the screen can say "GPS signal is weak". */
   ignoredFixes: number;
 }
@@ -140,6 +157,7 @@ export function initialState(): NavState {
     offRoute: false,
     backM: null,
     backBearingDeg: null,
+    far: false,
     ignoredFixes: 0,
   };
 }
@@ -190,6 +208,7 @@ export function applyFix(model: NavModel, prev: NavState, reading: NavReading, s
     offRoute: off.offRoute,
     backM: back && proj ? proj.offM : null,
     backBearingDeg: back ? bearingDeg(reading, back) : null,
+    far: isFar(model, reading),
   };
 
   const stopAlong = model.stopAlongM[i] ?? null;
@@ -213,7 +232,10 @@ export function applyFix(model: NavModel, prev: NavState, reading: NavReading, s
   return { ...common, mode: "straight", distanceM: straightM, bearingDeg: towards, steer };
 }
 
-/** True when the screen should ask OpenRouteService for a path to the current target. */
-export function wantsPath(state: NavState): boolean {
-  return state.targetId !== null && state.mode === "straight" && !state.inRadius;
+/**
+ * True when the screen should ask OpenRouteService for a path to the current target. Far from the course, only when the
+ * visitor chose to walk (`walkChosen`): nobody is sent a 20 km foot path unasked.
+ */
+export function wantsPath(state: NavState, walkChosen = false): boolean {
+  return state.targetId !== null && state.mode === "straight" && !state.inRadius && (!state.far || walkChosen);
 }
