@@ -13,6 +13,8 @@ import type { MapScreenRoute } from "@/lib/map-screen";
 import { courseProgress } from "@/lib/navigation/progress";
 import { distanceParts } from "@/lib/stamp-flow";
 import { useNavVoice } from "./useNavVoice";
+import { NavElevation } from "./NavElevation";
+import { legProfile } from "@/lib/navigation/elevation";
 import { NavFarCard } from "./NavFarCard";
 import { NavTargetPicker } from "./NavTargetPicker";
 import { useNavigation, type NavStopInfo } from "./NavigationProvider";
@@ -59,9 +61,9 @@ const GAP_PX = 8;
 async function beginNavigation(route: MapScreenRoute, start: ReturnType<typeof useNavigation>["start"]): Promise<boolean> {
   const stampStops = route.stops?.filter((s) => !s.noStamp) ?? [];
   if (stampStops.length === 0) return false;
-  const line = route.line ?? (route.hasLine ? await fetchRouteLine(route.id) : null);
+  const fetched = route.line === null && route.hasLine ? await fetchRouteLine(route.id) : null;
   const stops: Record<string, NavStopInfo> = Object.fromEntries(stampStops.map((s) => [s.id, { name: s.name, nameLang: s.nameLang, status: s.status }]));
-  start({ routeId: route.id, routeName: route.name, access: route.accessPoints, stops, model: modelFromMapRoute({ ...route, line }) });
+  start({ routeId: route.id, routeName: route.name, access: route.accessPoints, stops, model: modelFromMapRoute(route, fetched) });
   return true;
 }
 
@@ -287,6 +289,11 @@ export function NavigationToast() {
     </p>
   );
 
+  // The climb to the next stop, when the course line carries elevations and the visitor is on it.
+  const targetAt = st.targetId ? session.model.stops.findIndex((s) => s.id === st.targetId) : -1;
+  const targetAlongM = targetAt >= 0 ? (session.model.stopAlongM[targetAt] ?? null) : null;
+  const profile = st.mode === "line" && st.alongM !== null && targetAlongM !== null ? legProfile(session.model.line, session.model.cum, st.alongM, targetAlongM) : null;
+
   const stampButton =
     st.inRadius && st.targetId && target ? (
       <StampHere
@@ -322,6 +329,7 @@ export function NavigationToast() {
         </section>
         <section ref={box} aria-label={t`ナビの操作`} className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 flex flex-col gap-2 md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem]">
           {progressLine}
+          {profile ? <NavElevation profile={profile} /> : null}
           {stampButton}
           <NavTargetPicker />
           <button type="button" onClick={leave} className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl border-2 border-ink bg-paper px-5 text-xl font-bold text-ink shadow-lg hover:bg-surface">
