@@ -13,6 +13,7 @@ import { IntroFlow } from "@/components/IntroFlow";
 import { BrowserWarning } from "@/components/BrowserWarning";
 import { GuestClaim } from "@/components/GuestClaim";
 import { GuestNag } from "@/components/GuestNag";
+import { StampProgressPopup } from "@/components/StampProgressPopup";
 import { FuriganaLayer } from "@/components/FuriganaLayer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { TabBar } from "@/components/TabBar";
@@ -73,6 +74,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
       {viewer.signedIn ? null : <IntroFlow seen={introSeen} guide={guide} />}
       {viewer.signedIn ? (hasGuestStamps ? <GuestClaim /> : null) : <GuestNag hasStamps={hasGuestStamps} />}
       {prefsState.effective.furigana ? <FuriganaLayer /> : null}
+      <StampProgressPopup />
       <NavigationToast />
       </NavigationProvider>
       </BookmarkProvider>

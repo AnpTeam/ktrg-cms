@@ -4,7 +4,7 @@
  * Different from the stamp seal on purpose: a seal is one place, a medal is a whole course. Decorative: the page gives the
  * text (the course name and n / N).
  */
-export function Medal({ number, done, stamped, total, className = "" }: { number: number; done: boolean; stamped: number; total: number; className?: string }) {
+export function Medal({ number, done, stamped, total, showNumber = true, className = "" }: { number: number; done: boolean; stamped: number; total: number; showNumber?: boolean; className?: string }) {
   const share = done ? 1 : total > 0 ? Math.min(1, stamped / total) : 0;
   return (
     <svg viewBox="0 0 120 132" aria-hidden="true" className={className}>
@@ -15,15 +15,13 @@ export function Medal({ number, done, stamped, total, className = "" }: { number
         </g>
       ) : null}
       <circle cx="60" cy="60" r="54" fill="none" strokeWidth="8" className="stroke-line" />
-      {share > 0 ? (
-        // pathLength=100 so the dash is a percentage; start at 12 o'clock.
-        <circle cx="60" cy="60" r="54" fill="none" strokeWidth="8" strokeLinecap="round" pathLength="100" strokeDasharray={`${share * 100} 100`} transform="rotate(-90 60 60)" className="stroke-moss" />
-      ) : null}
+      {/* pathLength=100 so the dash is a percentage; start at 12 o'clock. Always drawn so a change of `stamped` animates. */}
+      <circle cx="60" cy="60" r="54" fill="none" strokeWidth="8" strokeLinecap={share > 0 ? "round" : "butt"} pathLength="100" strokeDasharray={`${share * 100} 100`} transform="rotate(-90 60 60)" className="stroke-moss" style={{ transition: "stroke-dasharray 1.1s ease-out" }} />
       <circle cx="60" cy="60" r="44" className={done ? "fill-shu" : "fill-surface"} />
       {done ? <circle cx="60" cy="60" r="38" fill="none" strokeWidth="1.8" className="stroke-on-shu" /> : null}
-      <text x="60" y="76" textAnchor="middle" fontWeight="700" fontSize="46" className={`font-serif ${done ? "fill-on-shu" : "fill-muted"}`} style={{ fontVariantNumeric: "tabular-nums" }}>
+      {showNumber ? <text x="60" y="76" textAnchor="middle" fontWeight="700" fontSize="46" className={`font-serif ${done ? "fill-on-shu" : "fill-muted"}`} style={{ fontVariantNumeric: "tabular-nums" }}>
         {number}
-      </text>
+      </text> : null}
     </svg>
   );
 }
