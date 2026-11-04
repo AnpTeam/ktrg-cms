@@ -2,6 +2,7 @@ import { VisitBeacon } from "@/components/VisitBeacon";
 import { cookies } from "next/headers";
 import type { ReactNode } from "react";
 import { MenuProvider } from "@/components/MenuProvider";
+import { StampOutbox } from "@/components/StampOutbox";
 import { NavigationProvider } from "@/components/navigation/NavigationProvider";
 import { NavigationToast } from "@/components/navigation/NavigationHud";
 import { OfflineNotice } from "@/components/OfflineNotice";
@@ -73,6 +74,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
       {viewer.signedIn ? (hasGuestStamps ? <GuestClaim /> : null) : <GuestNag hasStamps={hasGuestStamps} />}
       {prefsState.effective.furigana ? <FuriganaLayer /> : null}
       <StampProgressPopup />
+      <StampOutbox userKey={viewer.signedIn ? (viewer.publicId ?? "guest") : "guest"} />
       <NavigationToast />
       </NavigationProvider>
       </BookmarkProvider>

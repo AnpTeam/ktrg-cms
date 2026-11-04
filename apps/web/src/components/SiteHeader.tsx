@@ -1,5 +1,6 @@
 "use client";
 
+import { getOutbox } from "@/lib/stamp-outbox";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -139,6 +140,9 @@ export function SiteHeader({
   const registerHref = `/register${here}`;
 
   async function signOut() {
+    // Stamps pressed with no signal stay on this phone under this account; they are sent after the next sign-in.
+    const waiting = getOutbox().pending;
+    if (waiting > 0 && !window.confirm(t`送信待ちのスタンプが${waiting}件あります。ログアウトすると、次にログインするまで送れません。ログアウトしますか？`)) return;
     setLeaving(true);
     await logOut();
     setLeaving(false);

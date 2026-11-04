@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { getOutbox } from "@/lib/stamp-outbox";
 import { locationAlreadyAllowed, mockPosition, mockStamp, readPosition, requestStamp } from "@/lib/stamp-client";
 import { distanceParts, type Problem, type StampMock } from "@/lib/stamp-flow";
 import { buzz, playThud, unlockAudio } from "@/lib/stamp-feel";
@@ -22,6 +23,7 @@ type Phase =
   | { name: "locating" }
   | { name: "sending" }
   | { name: "done"; already: boolean }
+  | { name: "queued" }
   | { name: "problem"; problem: Problem; distanceM?: number };
 
 const button = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper shadow-lg disabled:opacity-60";
@@ -89,6 +91,9 @@ export function StampHere({
       if (!result.already && progress) announceProgress({ ...progress, after: progress.before + 1 });
       onStamped?.();
       router.refresh();
+    } else if (result.failure === "network" && !mock && (await getOutbox().enqueue(spotId, position.reading))) {
+      // No signal: the stamp waits on this phone and is sent when the app is online (the server still decides then).
+      setPhase({ name: "queued" });
     } else {
       setPhase({ name: "problem", problem: result.failure, distanceM: result.distanceM });
     }
@@ -111,6 +116,16 @@ export function StampHere({
         <div role="status" className="flex items-center gap-4 rounded-3xl bg-surface p-4 shadow-lg">
           <StampFace state="stamped" number={1} image={stampImage} rough className="stamp-land h-16 w-16 shrink-0" />
           <p className="text-xl font-bold leading-snug">{phase.already ? t`このスタンプは、もう押してあります。` : t`スタンプを押しました！`}</p>
+        </div>
+      </div>
+    );
+  }
+  if (phase.name === "queued") {
+    return (
+      <div className={wrapper}>
+        <div role="status" className="flex flex-col gap-1 rounded-3xl bg-surface p-4 shadow-lg">
+          <p className="text-xl font-bold leading-snug">{t`電波がないため、あとで送ります。`}</p>
+          <p className="text-base leading-snug">{t`電波のある場所で、自動で送ります。そのときにサーバーが確かめるため、受け付けられないこともあります（場所が閉鎖中になったときなど）。`}</p>
         </div>
       </div>
     );
