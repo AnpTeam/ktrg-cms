@@ -11,7 +11,7 @@ import type { RouteSummary } from "@/lib/content";
 const PAD = 40;
 const TILE = 256;
 /** About this many pixels across: it decides the zoom, and so how many tiles are fetched. */
-const TARGET_W = 720;
+const TARGET_W = 960;
 
 // Web Mercator, in pixels of the whole world at zoom z (the same maths the tiles use).
 const worldX = (lng: number, z: number) => ((lng + 180) / 360) * TILE * 2 ** z;
@@ -42,14 +42,14 @@ export function LandingMap({ routes }: { routes: RouteSummary[] }) {
   const count = boxes.length;
 
   return (
-    <section className="flex flex-col gap-3">
+    <section className="flex flex-col gap-3 lg:col-span-2">
       <div className="px-4">
         <SectionBanner>
           <Trans>全体の地図</Trans>
         </SectionBanner>
       </div>
       <div className="mx-4 rounded-3xl bg-surface p-5">
-        <svg viewBox={`${left} ${top} ${W} ${H}`} role="img" aria-label={t`全${count}区間のある場所を示した図`} className="h-auto w-full rounded-2xl bg-paper">
+        <svg viewBox={`${left} ${top} ${W} ${H}`} role="img" aria-label={t`全${count}区間のある場所を示した図`} className="h-auto max-h-[80svh] w-full rounded-2xl bg-paper">
           {tiles.map((tile) => (
             <image key={tile.key} href={tile.href} x={tile.x} y={tile.y} width={TILE} height={TILE} />
           ))}

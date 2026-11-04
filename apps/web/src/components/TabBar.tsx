@@ -31,7 +31,7 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
   return (
     // Below 1024 px this wrapper adds nothing (the nav is placed by its own classes); from 1024 px it is the sidebar.
     <div className="print:hidden md:contents lg:sticky lg:top-0 lg:flex lg:h-dvh lg:w-64 lg:shrink-0 lg:flex-col lg:self-start lg:overflow-y-auto lg:border-r lg:border-surface">
-    <Link href="/" aria-label={t`ホーム`} className="hidden px-6 pb-2 pt-8 lg:block">
+    <Link href="/" aria-label={t`ホーム`} className="sidebar-logo hidden px-6 pb-2 pt-8 lg:block">
       <KatsuragiLogo compact className="h-16 w-auto" />
     </Link>
     <nav
