@@ -347,7 +347,8 @@ export function NavigationToast() {
           inert={tucked}
           aria-hidden={tucked || undefined}
           // Away first, then the sheet rises (MapScreen waits NAV_HANDOFF_MS); back only after the sheet has gone down (the delay).
-          className={`fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 flex flex-col gap-2 transition duration-200 ease-out motion-reduce:transition-none md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem] ${tucked ? "pointer-events-none translate-y-[calc(100%+2rem)] opacity-0" : "translate-y-0 opacity-100 delay-200"}`}
+          // Above the tab bar when it shows (--tabbar-room, globals.css): the map's overview keeps the tabs.
+          className={`fixed inset-x-3 bottom-[calc(0.75rem+var(--tabbar-room)+env(safe-area-inset-bottom))] z-30 flex flex-col gap-2 transition duration-200 ease-out motion-reduce:transition-none md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem] ${tucked ? "pointer-events-none translate-y-[calc(100%+2rem)] opacity-0" : "translate-y-0 opacity-100 delay-200"}`}
         >
           {far ? null : progressLine}
           {far || !profile ? null : <NavElevation profile={profile} />}
@@ -368,18 +369,21 @@ export function NavigationToast() {
       ref={box}
       aria-live="polite"
       aria-label={t`ナビ中：${routeName}`}
-      className="fixed inset-x-3 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-30 flex max-h-[50dvh] flex-col gap-2 overflow-y-auto rounded-2xl bg-paper px-3 py-2 shadow-2xl ring-1 ring-line/30 md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem]"
+      className="fixed inset-x-3 bottom-[calc(max(0.75rem,var(--tabbar-room))+env(safe-area-inset-bottom))] z-30 flex max-h-[50dvh] transition-[bottom] duration-200 motion-reduce:transition-none flex-col gap-2 overflow-y-auto rounded-2xl bg-paper px-3 py-2 shadow-2xl ring-1 ring-line/30 md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem]"
     >
-      <div className="flex items-center gap-2">
-        <div className="min-w-0 flex-1">{main}</div>
-        {pathname === "/map" ? null : (
-          <Link href="/map" className={quiet}>
-            {t`地図`}
-          </Link>
-        )}
-        <button type="button" className={quiet} onClick={stop} aria-label={t`ナビを終える`}>
-          {t`終了`}
-        </button>
+      {/* The direction and distance come first; with large text the two buttons drop to their own row instead of cutting it short. */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="min-w-[12rem] flex-1">{main}</div>
+        <div className="ml-auto flex gap-2">
+          {pathname === "/map" ? null : (
+            <Link href="/map" className={quiet}>
+              {t`地図`}
+            </Link>
+          )}
+          <button type="button" className={quiet} onClick={stop} aria-label={t`ナビを終える`}>
+            {t`終了`}
+          </button>
+        </div>
       </div>
       {offRouteBlock}
       {note ? <p className="text-base leading-snug">{note}</p> : null}
