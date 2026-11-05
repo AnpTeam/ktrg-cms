@@ -33,8 +33,8 @@ export function NavTargetPicker() {
 
   return (
     <>
-      <button type="button" onClick={() => dialog.current?.showModal()} className="tap-target flex min-h-12 w-full items-center justify-center rounded-xl border border-ink bg-paper px-5 text-lg font-bold text-ink shadow-lg hover:bg-surface">
-        {snap.forcedId ? t`向かう場所を変えました（変える）` : t`ほかの場所へ向かう`}
+      <button type="button" onClick={() => dialog.current?.showModal()} className="tap-target flex min-h-12 w-full items-center justify-center rounded-xl border-2 border-ink bg-paper px-3 text-lg font-bold text-ink shadow-lg hover:bg-surface">
+        {snap.forcedId ? t`ほかの場所へ ✓` : t`ほかの場所へ`}
       </button>
       <dialog ref={dialog} aria-labelledby="nav-target-title" className="m-auto max-h-[80dvh] w-[calc(100%-2rem)] max-w-sm overflow-y-auto rounded-3xl bg-paper p-5 text-ink backdrop:bg-black/60">
         <h2 id="nav-target-title" className="text-2xl font-bold">
