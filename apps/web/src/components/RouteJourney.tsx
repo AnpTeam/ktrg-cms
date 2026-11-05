@@ -39,9 +39,10 @@ export const StartGoalWords = () => (
 /** One badge and the name of the place it marks: blue for the start, orange for the goal and the turnaround, both for a start that is also the goal. */
 function Row({ badge, stop, locale, tone = "start" }: { badge: ReactNode; stop: TrailStop; locale: string; tone?: "start" | "goal" | "both" }) {
   return (
-    <div className="flex items-center gap-3">
+    // Wraps: on a narrow phone with large text the name goes under the badge instead of being squeezed to a few letters.
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
       <span className={`badge-ruri ${tone === "goal" ? "badge-goal" : tone === "both" ? "badge-both" : ""} min-w-[8.5rem] justify-center`}>{badge}</span>
-      <span className="min-w-0 text-xl font-bold leading-snug">
+      <span className="min-w-[8rem] flex-1 text-xl font-bold leading-snug">
         <Localized value={stopName(stop, locale)} />
       </span>
     </div>

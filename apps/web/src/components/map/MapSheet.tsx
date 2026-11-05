@@ -5,6 +5,9 @@ import { useLingui } from "@lingui/react/macro";
 import { nextSnap, sheetHeightPx, snapAfterDrag, sheetSnaps, type SheetSnap } from "@/lib/map-screen";
 import { ChevronDownIcon, ChevronUpIcon } from "@/components/icons";
 
+/** How long the sheet takes to move between heights, and to slide in or out. */
+const SLIDE_MS = 240;
+
 /**
  * The bottom sheet of the home map (WBS 3.2.10). It rests at three heights, so the map stays in view while the
  * visitor reads: a low one (peek), about half the screen, and nearly all of it. Pull the handle, flick it, tap
@@ -99,8 +102,29 @@ export function MapSheet({
   const atTop = !panel && height >= sheetHeightPx("full", available) - 1;
   // The handle says in words what a tap does (a thin grey bar alone is not understood by everyone).
   const tapLabel = snap === "full" ? t`小さくして地図を見る` : snap === "half" ? t`もっと広げる` : t`広げる`;
-  // Hidden (and not being pulled): nothing is drawn; the map screen shows a button to bring it back.
-  if (!panel && snap === "hidden" && dragPx === null) return null;
+  // Hidden (and not being pulled): after sliding down, nothing is drawn; the map screen shows a button to bring it back.
+  // Coming back it slides up from the bottom instead of appearing at once, so it reads as one thing replacing another
+  // (during a navigation: the controls go first, then the sheet rises).
+  const hidden = !panel && snap === "hidden" && dragPx === null;
+  const [mounted, setMounted] = useState(!hidden);
+  const [raised, setRaised] = useState(!hidden);
+  // The height it had when last shown, kept while it slides away (its own resting height when hidden is none).
+  const [lastPx, setLastPx] = useState(height);
+  if (!hidden && !mounted) setMounted(true);
+  if (hidden && raised) setRaised(false);
+  if (!hidden && lastPx !== height) setLastPx(height);
+  useEffect(() => {
+    if (!hidden && mounted && !raised) {
+      // Two frames: the first draws it below the screen, the second starts the slide.
+      let id = requestAnimationFrame(() => (id = requestAnimationFrame(() => setRaised(true))));
+      return () => cancelAnimationFrame(id);
+    }
+    if (hidden && mounted) {
+      const id = window.setTimeout(() => setMounted(false), SLIDE_MS);
+      return () => window.clearTimeout(id);
+    }
+  }, [hidden, mounted, raised]);
+  if (!panel && !mounted) return null;
 
   return (
     <section
@@ -110,7 +134,17 @@ export function MapSheet({
           ? "absolute bottom-3 left-3 top-3 z-[5] flex w-[26rem] flex-col rounded-3xl bg-paper shadow-[0_4px_24px_rgb(0_0_0/0.28)]"
           : "absolute inset-x-0 bottom-0 z-[5] flex flex-col rounded-t-3xl bg-paper shadow-[0_-4px_24px_rgb(0_0_0/0.28)] motion-reduce:transition-none"
       }
-      style={panel ? undefined : { height: height + tabPx, paddingTop: atTop ? "env(safe-area-inset-top)" : undefined, transition: dragPx === null ? "height 240ms ease-out" : "none" }}
+      inert={!panel && hidden}
+      style={
+        panel
+          ? undefined
+          : {
+              height: (hidden ? lastPx : height) + tabPx,
+              paddingTop: atTop ? "env(safe-area-inset-top)" : undefined,
+              transform: raised ? "translateY(0)" : "translateY(100%)",
+              transition: dragPx === null ? `height ${SLIDE_MS}ms ease-out, transform ${SLIDE_MS}ms ease-out` : "none",
+            }
+      }
     >
       {panel ? <div className="h-4 shrink-0" aria-hidden="true" /> : null}
       <div
