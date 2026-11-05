@@ -390,7 +390,7 @@ msgstr "Edit {title} (admin)"
 msgid "{title}を読み込めませんでした。しばらくしてから、ページを開き直してください。"
 msgstr "{title} could not be loaded. Please reload the page in a little while."
 
-#: src/components/IntroFlow.tsx:212
+#: src/components/IntroFlow.tsx:213
 #: src/components/landing/Landing.tsx:158
 msgid "{TOTAL_STAMPS}か所"
 msgstr "{TOTAL_STAMPS} places"
@@ -1165,7 +1165,7 @@ msgstr "Learn more"
 msgid "ゲストのまま使う"
 msgstr "Stay as a guest"
 
-#: src/components/IntroFlow.tsx:203
+#: src/components/IntroFlow.tsx:204
 #: src/components/landing/Landing.tsx:156
 #: src/components/map/MapScreenCanvas.tsx:625
 msgid "コース"
@@ -1221,7 +1221,7 @@ msgstr "Course constant = 1.8 × hours + 0.3 × distance (km) + 10 × climb (km)
 #: src/app/(public)/routes/[id]/page.tsx:57
 #: src/components/admin/LivePreview.tsx:75
 #: src/components/RouteJourney.tsx:34
-#: src/components/RouteJourney.tsx:96
+#: src/components/RouteJourney.tsx:97
 #: src/components/TripSummary.tsx:37
 msgid "ゴール"
 msgstr "Goal"
@@ -1286,7 +1286,7 @@ msgstr "Send to this account"
 msgid "このアカウントは、いま制限されています。スタンプを押すことと、コメントを書くことはできません。"
 msgstr "This account is restricted right now. It cannot collect stamps or write comments."
 
-#: src/components/IntroFlow.tsx:221
+#: src/components/IntroFlow.tsx:222
 msgid "このアプリでわかること"
 msgstr "What you will find here"
 
@@ -1654,7 +1654,7 @@ msgstr "This description is in Japanese only."
 msgid "この近くに、歩ける道が見つかりませんでした。線の点を、道の近くに置いてお試しください。"
 msgstr "No walkable path was found near here. Move the points of the line closer to a path and try again."
 
-#: src/components/IntroFlow.tsx:199
+#: src/components/IntroFlow.tsx:200
 msgid "この道すじには、法華経の二十八の章にちなむ「経塚」が並び、「葛城二十八宿」と呼ばれています。"
 msgstr "Along this path stand sutra mounds (経塚) named after the 28 chapters of the Lotus Sutra, known as the 28 stations of Katsuragi (葛城二十八宿)."
 
@@ -1720,7 +1720,7 @@ msgstr "Information"
 msgid "さあ、はじめましょう"
 msgstr "Let's get started"
 
-#: src/components/IntroFlow.tsx:263
+#: src/components/IntroFlow.tsx:264
 msgid "さあ、歩きはじめましょう"
 msgstr "Let's start walking"
 
@@ -1778,7 +1778,7 @@ msgstr "Import from a sheet (CSV)"
 msgid "シートの高さ（上下の矢印キーで変えられます）"
 msgstr "Height of the sheet (change it with the up and down arrow keys)"
 
-#: src/components/IntroFlow.tsx:153
+#: src/components/IntroFlow.tsx:154
 msgid "スキップ"
 msgstr "Skip"
 
@@ -1790,7 +1790,7 @@ msgstr "{turnWord} now"
 #: src/app/(public)/routes/[id]/page.tsx:57
 #: src/components/admin/LivePreview.tsx:75
 #: src/components/RouteJourney.tsx:31
-#: src/components/RouteJourney.tsx:92
+#: src/components/RouteJourney.tsx:93
 #: src/components/TripSummary.tsx:36
 msgid "スタート"
 msgstr "Start"
@@ -1897,7 +1897,7 @@ msgstr "Stamp progress"
 msgid "スタンプは押せません。場所のページは見られます。公開するには、現地の許可の確認が必要です。"
 msgstr "No stamp can be collected here, but visitors can open the place's page. To publish it, the site's permission must be confirmed."
 
-#: src/components/IntroFlow.tsx:228
+#: src/components/IntroFlow.tsx:229
 #: src/components/landing/Landing.tsx:89
 #: src/components/RallyViews.tsx:122
 msgid "スタンプラリー"
@@ -2098,7 +2098,7 @@ msgstr "Next"
 msgid "つぎの場所"
 msgstr "Next places"
 
-#: src/components/IntroFlow.tsx:279
+#: src/components/IntroFlow.tsx:280
 #: src/components/settings/WelcomeFlow.tsx:75
 msgid "つぎへ"
 msgstr "Next"
@@ -2295,7 +2295,7 @@ msgstr "An introduction and the steps (1, 2, 3 ...)."
 msgid "はじめの道を歩きませんか？"
 msgstr "Shall we walk the first route?"
 
-#: src/components/IntroFlow.tsx:275
+#: src/components/IntroFlow.tsx:276
 msgid "はじめる"
 msgstr "Start"
 
@@ -2642,7 +2642,7 @@ msgstr "Almost flat"
 msgid "まず、GPXファイルをここにドラッグするか「GPXファイルから読み込む」を押してください。手で入れるときは「経由地を置く」で経由地を入れ、「線を描く」で区間ごとに道すじを描きます。"
 msgstr "Start by dragging a GPX file here or pressing \"Load a GPX file\". To enter by hand, place waypoints with \"Add waypoint\", then draw the path leg by leg with \"Draw path\"."
 
-#: src/components/IntroFlow.tsx:266
+#: src/components/IntroFlow.tsx:267
 msgid "まずは、歩きたい道をえらびます。登録しなくても、スタンプは押せます。"
 msgstr "First, pick a route to walk. You can collect stamps without signing up."
 
@@ -2854,7 +2854,7 @@ msgstr "Home course"
 msgid "もとの文章"
 msgstr "Built-in text"
 
-#: src/components/IntroFlow.tsx:284
+#: src/components/IntroFlow.tsx:285
 #: src/components/SiteHeader.tsx:179
 msgid "もどる"
 msgstr "Back"
@@ -3732,7 +3732,7 @@ msgstr "Something in what you entered looks wrong. Please check it and try again
 msgid "全{count}区間のある場所を示した図"
 msgstr "A diagram of where all {count} courses lie"
 
-#: src/components/IntroFlow.tsx:204
+#: src/components/IntroFlow.tsx:205
 #: src/components/landing/Landing.tsx:156
 msgid "全{TOTAL_ROUTES}区間"
 msgstr "{TOTAL_ROUTES} sections"
@@ -3741,7 +3741,7 @@ msgstr "{TOTAL_ROUTES} sections"
 msgid "全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）"
 msgstr "{TOTAL_ROUTES} sections, about {TRAIL_KM} km"
 
-#: src/components/IntroFlow.tsx:225
+#: src/components/IntroFlow.tsx:226
 msgid "全{TOTAL_ROUTES}区間の道すじを、地図で見られます。距離、時間、きつさ、行き方もわかります。"
 msgstr "See the path of all {TOTAL_ROUTES} sections on a map, with distance, time, how hard it is, and how to get there."
 
@@ -3911,7 +3911,7 @@ msgstr "Nearest"
 msgid "最後に押した日時　{when}"
 msgstr "Last stamped: {when}"
 
-#: src/components/IntroFlow.tsx:227
+#: src/components/IntroFlow.tsx:228
 msgid "最新のお知らせ"
 msgstr "Latest notices"
 
@@ -4074,7 +4074,7 @@ msgstr "Source: {0}"
 msgid "出典のリンクは https:// で始まるアドレスを入れてください。"
 msgstr "The source link must be an address starting with https://."
 
-#: src/components/RouteJourney.tsx:71
+#: src/components/RouteJourney.tsx:72
 msgid "出発した場所に戻ってくる道です。"
 msgstr "A loop that brings you back to where you started."
 
@@ -4436,7 +4436,7 @@ msgstr "Add an end point here"
 msgid "同じ番号の行が、前にもあります"
 msgstr "An earlier row has the same number"
 
-#: src/components/RouteJourney.tsx:87
+#: src/components/RouteJourney.tsx:88
 msgid "同じ道を行って、同じ道を戻ります。"
 msgstr "You go out along the same path and come back the same way."
 
@@ -4530,7 +4530,7 @@ msgstr "Nearby places (parking, vending machines, toilets ...)"
 msgid "和歌山県"
 msgstr "Wakayama"
 
-#: src/components/IntroFlow.tsx:194
+#: src/components/IntroFlow.tsx:195
 #: src/components/landing/Landing.tsx:151
 msgid "和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。"
 msgstr "From the Izumi range to the Kongo mountains, these ridges run along the borders of Osaka, Wakayama and Nara. They have long been called Katsuragi and revered as mountains where the gods dwell. It is said that En no Gyoja, who is believed to have founded Shugendo, the path of training in the mountains, first practised here."
@@ -4591,7 +4591,7 @@ msgstr "See the position on the map (new tab)"
 msgid "地図で見る"
 msgstr "Show in the map"
 
-#: src/components/IntroFlow.tsx:225
+#: src/components/IntroFlow.tsx:226
 msgid "地図とルート"
 msgstr "Map and routes"
 
@@ -4743,7 +4743,7 @@ msgstr "Search by place name"
 msgid "場所の名前で探す（例：西念寺）"
 msgstr "Search by place name (e.g. Sainen-ji)"
 
-#: src/components/IntroFlow.tsx:226
+#: src/components/IntroFlow.tsx:227
 msgid "場所の物語"
 msgstr "Stories of the places"
 
@@ -4949,11 +4949,11 @@ msgstr "Choose a city. For a town or village, choose \"Other\" and type its name
 msgid "市区町村"
 msgstr "City or town"
 
-#: src/components/RouteJourney.tsx:80
+#: src/components/RouteJourney.tsx:81
 msgid "帰り"
 msgstr "Return"
 
-#: src/components/RouteJourney.tsx:102
+#: src/components/RouteJourney.tsx:103
 msgid "帰りの方法は、下の交通の説明を見てください。"
 msgstr "For the way back, see the transport notes below."
 
@@ -5058,7 +5058,7 @@ msgstr "About the technical level"
 msgid "技術度は計算ではなく、道の様子から人が決めます。Aがいちばんやさしく、Eがいちばん難しいです。"
 msgstr "The technical level is not calculated: a person decides it from what the path is like. A is the easiest and E the hardest."
 
-#: src/components/RouteJourney.tsx:82
+#: src/components/RouteJourney.tsx:83
 #: src/components/TripSummary.tsx:38
 msgid "折り返し"
 msgstr "Turnaround"
@@ -5529,7 +5529,7 @@ msgstr "Next stop: {up} m up"
 msgid "次まで 登り{up}m・下り{down}m"
 msgstr "Next stop: {up} m up, {down} m down"
 
-#: src/components/IntroFlow.tsx:228
+#: src/components/IntroFlow.tsx:229
 msgid "歩いた場所で、スタンプを集められます。登録しなくても始められます。"
 msgstr "Collect stamps where you walk. You can start without signing up."
 
@@ -6036,7 +6036,7 @@ msgstr "about {n} km"
 msgid "約{n}m"
 msgstr "about {n} m"
 
-#: src/components/IntroFlow.tsx:208
+#: src/components/IntroFlow.tsx:209
 #: src/components/landing/Landing.tsx:157
 msgid "約{TRAIL_KM}km"
 msgstr "About {TRAIL_KM} km"
@@ -6054,7 +6054,7 @@ msgid "終了"
 msgstr "End"
 
 #: src/components/admin/PlacePanel.tsx:41
-#: src/components/IntroFlow.tsx:211
+#: src/components/IntroFlow.tsx:212
 #: src/components/landing/Landing.tsx:158
 #: src/components/map/MapScreenCanvas.tsx:625
 #: src/components/PointKindName.tsx:9
@@ -6105,7 +6105,7 @@ msgstr "A route that still has waypoints cannot be deleted."
 msgid "経由地が残っているルートは消せません。先に経由地を消してください。"
 msgstr "A route that still has waypoints cannot be deleted. Delete its waypoints first."
 
-#: src/components/IntroFlow.tsx:226
+#: src/components/IntroFlow.tsx:227
 msgid "経由地ごとに、写真と、名前の由来や歴史を読めます。近くの駅、バス停、駐車場もわかります。"
 msgstr "For each stop, see photos and read where the name comes from and its history. Nearby stations, bus stops and parking are shown too."
 
@@ -6400,7 +6400,7 @@ msgstr "Katsuragi Shugen | Ancient Mountain Trails & Stamp Rally"
 msgid "葛城修験 管理"
 msgstr "Katsuragi Shugen Admin"
 
-#: src/components/IntroFlow.tsx:191
+#: src/components/IntroFlow.tsx:192
 #: src/components/landing/Landing.tsx:143
 msgid "葛城修験とは"
 msgstr "About Katsuragi Shugen"
@@ -6425,7 +6425,7 @@ msgstr "News about the Katsuragi Shugen trail and the days we walked it."
 msgid "葛城修験日本遺産活用推進協議会の公式サイト"
 msgstr "official site of the Katsuragi Shugen Japan Heritage Promotion Council"
 
-#: src/components/RouteJourney.tsx:80
+#: src/components/RouteJourney.tsx:81
 msgid "行き"
 msgstr "Out"
 
@@ -6736,7 +6736,7 @@ msgstr "Normal"
 msgid "通行止め"
 msgstr "Closed"
 
-#: src/components/IntroFlow.tsx:227
+#: src/components/IntroFlow.tsx:228
 msgid "通行止めなどの知らせを、確認した日づけで見られます。"
 msgstr "See closures and other notices with the date they were checked."
 
@@ -6942,7 +6942,7 @@ msgstr "Find duplicate places"
 msgid "金曜日"
 msgstr "Friday"
 
-#: src/components/IntroFlow.tsx:207
+#: src/components/IntroFlow.tsx:208
 #: src/components/landing/Landing.tsx:157
 msgid "長さ"
 msgstr "Length"

@@ -12,7 +12,7 @@ export function Localized({ value, tag = true }: { value: Picked | null; tag?: b
     <>
       <span lang={value.lang}>{value.text}</span>
       {value.fallback && tag ? (
-        <span className="ml-2 inline-block rounded border-2 border-line px-1.5 align-middle text-base font-normal text-muted">
+        <span className="ml-2 inline-block max-w-full whitespace-normal rounded border-2 border-line px-1.5 align-middle text-base font-normal text-muted">
           <Trans>日本語のみ</Trans>
         </span>
       ) : null}

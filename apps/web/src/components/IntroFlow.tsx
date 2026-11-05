@@ -144,12 +144,13 @@ export function IntroFlow({ seen, guide }: { seen: boolean; guide: { title: stri
     >
       <div className="mx-auto flex min-h-dvh max-w-xl flex-col gap-6 px-5 pb-8 pt-[calc(1.5rem+env(safe-area-inset-top))] md:min-h-[30rem] md:px-8 md:pt-8">
         <div className="flex items-center justify-between gap-3">
-          <ol aria-label={`${step + 1} / ${STEPS}`} className="flex gap-2">
+          {/* The dots shrink on a narrow phone with large text, so 「スキップ」 always fits. */}
+          <ol aria-label={`${step + 1} / ${STEPS}`} className="flex min-w-0 flex-1 gap-2">
             {Array.from({ length: STEPS }, (_, i) => (
-              <li key={i} aria-hidden="true" className={`h-2.5 w-8 rounded-full ${i <= step ? "bg-brand" : "bg-line/40"}`} />
+              <li key={i} aria-hidden="true" className={`h-2.5 min-w-2 max-w-8 flex-1 rounded-full ${i <= step ? "bg-brand" : "bg-line/40"}`} />
             ))}
           </ol>
-          <button type="button" onClick={() => finish("skipped")} className="tap-target text-lg font-bold text-muted underline">
+          <button type="button" onClick={() => finish("skipped")} className="tap-target shrink-0 text-lg font-bold text-muted underline">
             <Trans>スキップ</Trans>
           </button>
         </div>
