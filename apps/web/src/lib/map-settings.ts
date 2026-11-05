@@ -4,9 +4,10 @@
 
 /**
  * Base map (all GSI tiles): standard (colour, roads, names), pale (the same, quieter and lighter), blank (coastlines and
- * boundaries only) or photo (aerial photographs).
+ * boundaries only), photo (aerial photographs) or large (vector map with bigger text; not raster, so the calming
+ * adjustments below do not apply to it).
  */
-export const baseLayers = ["std", "pale", "blank", "photo"] as const;
+export const baseLayers = ["std", "pale", "blank", "photo", "large"] as const;
 /**
  * What the visitor's "terrain" button adds on top:
  * hillshade = soft light-and-shadow that shows the shape of the mountains (no colour change);

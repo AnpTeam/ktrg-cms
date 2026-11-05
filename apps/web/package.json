@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "lingui:extract": "lingui extract --clean",
+    "build:map-style": "bun scripts/build-large-text-style.ts",
     "check:catalogs": "bun scripts/check-catalogs.ts",
     "resolve:catalogs": "bun scripts/resolve-catalogs.ts",
     "build": "lingui extract --clean && next build",

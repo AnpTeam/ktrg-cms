@@ -1,5 +1,5 @@
 import type { RouteArea } from "./map-screen";
-import { gsiTileUrl, zoomLimits } from "./map";
+import { gsiTileUrl, vectorTileUrl, zoomLimits } from "./map";
 import type { MapSettings } from "./map-settings";
 import { tileUrls } from "./offline-tiles";
 
@@ -19,12 +19,13 @@ export const packCacheName = (routeId: string) => `ktrg-pack-${routeId}`;
 
 /** The tiles a course needs: the visitor's base map and its terrain overlay, from zoom 11 to 15 (the overlay stops sooner). */
 export function packTileUrls(area: RouteArea, settings: Pick<MapSettings, "base" | "terrain">): string[] {
-  const baseLayer = settings.base === "photo" ? "seamlessphoto" : settings.base;
-  const baseMax = baseLayer === "blank" ? 14 : MAX_ZOOM;
+  // The vector map's tiles are GSI's vector tiles; its names (glyphs) and icons are not kept yet, so offline it draws without names.
+  const baseTemplate = settings.base === "large" ? vectorTileUrl : gsiTileUrl(settings.base === "photo" ? "seamlessphoto" : settings.base);
+  const baseMax = settings.base === "blank" ? 14 : settings.base === "large" ? 16 : MAX_ZOOM;
   const terrainLayer = settings.terrain === "relief" ? "relief" : "hillshademap";
   const terrainMax = Math.min(MAX_ZOOM, settings.terrain === "relief" ? zoomLimits.reliefMax : zoomLimits.hillshadeMax);
   return [
-    ...tileUrls(area, gsiTileUrl(baseLayer), MIN_ZOOM, baseMax, PER_LAYER_LIMIT),
+    ...tileUrls(area, baseTemplate, MIN_ZOOM, baseMax, PER_LAYER_LIMIT),
     ...tileUrls(area, gsiTileUrl(terrainLayer), MIN_ZOOM, terrainMax, PER_LAYER_LIMIT),
   ];
 }

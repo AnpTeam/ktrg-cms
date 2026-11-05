@@ -9,7 +9,7 @@ import { routeKit, type KitServices, type RouteOptions } from "../auth/route-kit
 // an admin may (`site.manage`), every change is audited (the key only, never the value), and the screen says so.
 // The first one is the look of the map every visitor sees.
 
-export const BASE_LAYERS = ["std", "pale", "blank", "photo"] as const;
+export const BASE_LAYERS = ["std", "pale", "blank", "photo", "large"] as const;
 export const TERRAIN_LAYERS = ["hillshade", "relief"] as const;
 
 /**

@@ -11,7 +11,6 @@ import type { SpotStatus } from "@/lib/content";
 import {
   boundsOf,
   lineFeature,
-  mapStyle,
   markerKind,
   nextStopId,
   pinScale, PIN_NUMBER_MIN_ZOOM,
@@ -22,6 +21,7 @@ import {
   zoomLimits,
   type Position,
 } from "@/lib/map";
+import { mapStyleSource } from "@/lib/large-map-style";
 import type { MapSettings } from "@/lib/map-settings";
 import type { StopRole } from "@/lib/route-stops";
 import type { PointKind } from "@/lib/point-kinds";
@@ -159,7 +159,7 @@ export function TrailMap({
         const bounds = boundsOf([...stopPoints, ...linePoints]);
         map = new ml.Map({
           container: containerRef.current,
-          style: mapStyle(settings),
+          style: mapStyleSource(settings),
           bounds: bounds ?? undefined,
           fitBoundsOptions: FIT,
           minZoom: zoomLimits.min,
