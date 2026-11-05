@@ -10,16 +10,20 @@ export interface MyStamps {
   ids: ReadonlySet<string>;
   /** How many places of each course (by course id) the visitor has stamped. */
   byRoute: ReadonlyMap<string, number>;
+  /** When the visitor stamped each place (place id -> ISO time of the latest stamp), for the places whose time is known. */
+  at: ReadonlyMap<string, string>;
   /** When the visitor finished each rally (rally id -> ISO time). Accounts only: a guest's stamps keep no finish date. */
   completed: ReadonlyMap<string, string>;
 }
 
-export const noStamps: MyStamps = { ids: new Set(), byRoute: new Map(), completed: new Map() };
+export const noStamps: MyStamps = { ids: new Set(), byRoute: new Map(), at: new Map(), completed: new Map() };
 
 export function myStampsFromRows(rows: readonly MyStampRow[], completed: ReadonlyMap<string, string> = new Map()): MyStamps {
   const byRoute = new Map<string, number>();
   for (const r of rows) if (r.routeId) byRoute.set(r.routeId, (byRoute.get(r.routeId) ?? 0) + 1);
-  return { ids: new Set(rows.map((r) => r.spotId)), byRoute, completed };
+  const at = new Map<string, string>();
+  for (const r of rows) if (r.createdAt && (!at.has(r.spotId) || Date.parse(r.createdAt) > Date.parse(at.get(r.spotId)!))) at.set(r.spotId, r.createdAt);
+  return { ids: new Set(rows.map((r) => r.spotId)), byRoute, at, completed };
 }
 
 /**

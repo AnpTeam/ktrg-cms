@@ -305,7 +305,9 @@ export function toMapPlace(locale: string, p: PlaceItem): MapPlace {
  */
 export async function listRallies(): Promise<RallyItem[]> {
   const real = await fetchPublicRallies();
-  return real ? ralliesFromApi(real, (await getMyStamps()).ids) : [];
+  if (!real) return [];
+  const mine = await getMyStamps();
+  return ralliesFromApi(real, mine.ids, mine.at);
 }
 
 export async function listRoutes(): Promise<RouteSummary[]> {

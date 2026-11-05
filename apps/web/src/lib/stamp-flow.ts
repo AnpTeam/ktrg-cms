@@ -108,6 +108,8 @@ function finishedFrom(v: unknown): Finished | null {
 export interface MyStampRow {
   spotId: string;
   routeId: string | null;
+  /** When it was collected (ISO), when the answer says. */
+  createdAt?: string | null;
 }
 
 /** The caller's own stamps from GET /api/v1/stamps; null when the answer is not usable (never an empty list by mistake). */
@@ -116,8 +118,8 @@ export function parseMyStampRows(status: number, body: unknown): MyStampRow[] | 
   if (status !== 200 || b.ok !== true || !Array.isArray(b.stamps)) return null;
   const rows: MyStampRow[] = [];
   for (const s of b.stamps) {
-    const r = (s ?? {}) as { spotId?: unknown; routeId?: unknown };
-    if (typeof r.spotId === "string") rows.push({ spotId: r.spotId, routeId: typeof r.routeId === "string" && r.routeId ? r.routeId : null });
+    const r = (s ?? {}) as { spotId?: unknown; routeId?: unknown; createdAt?: unknown };
+    if (typeof r.spotId === "string") rows.push({ spotId: r.spotId, routeId: typeof r.routeId === "string" && r.routeId ? r.routeId : null, createdAt: typeof r.createdAt === "string" && !Number.isNaN(Date.parse(r.createdAt)) ? r.createdAt : null });
   }
   return rows;
 }
