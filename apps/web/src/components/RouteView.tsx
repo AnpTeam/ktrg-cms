@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import Image from "next/image";
 import { Trans } from "@lingui/react/macro";
 import { ElevationProfile } from "@/components/ElevationProfile";
 import { EmptyState } from "@/components/EmptyState";
@@ -15,8 +16,7 @@ import { RichText } from "@/components/RichText";
 import { RouteJourney } from "@/components/RouteJourney";
 import { RouteStats } from "@/components/RouteStats";
 import { StopList } from "@/components/StopList";
-import { TripSummary } from "@/components/TripSummary";
-import { HeroPhoto } from "@/components/map/HeroPhoto";
+import { CreditToggle } from "@/components/PhotoCredit";
 import type { MapStop } from "@/components/map/TrailMap";
 import { TrailMapLoader } from "@/components/map/TrailMapLoader";
 import type { RouteDetail } from "@/lib/content";
@@ -25,7 +25,7 @@ import { municipalityName } from "@/lib/municipalities";
 import { pickText } from "@/lib/pick-text";
 import { parseRuby, textOfRuby } from "@/lib/ruby";
 import { pointsAsPlaces } from "@/lib/point-places";
-import { isGuidanceOnly, journeyOf, roleLabel, stopRoles, trailStops } from "@/lib/route-stops";
+import { isGuidanceOnly, journeyOf, roleLabel, stopRoles, trailStops, walkRows } from "@/lib/route-stops";
 import type { MapPlace } from "@/lib/places";
 import { parseVideoFile, parseVideoUrl } from "@/lib/video";
 
@@ -83,6 +83,10 @@ export interface RouteViewProps {
   spotHref: (id: string) => string;
   /** Something for visitors only, shown under the elevation profile (the offline map). The admin's preview leaves it out. */
   offline?: ReactNode;
+  /** Trail notices for this route: right under the name and the numbers (safety first, but after the cover). */
+  notices?: ReactNode;
+  /** Show "スタンプ 3 / 14" over the walk: only for a visitor who has stamped somewhere (the admin's preview leaves it out). */
+  showStampCount?: boolean;
 }
 
 /**
@@ -90,7 +94,7 @@ export interface RouteViewProps {
  * and the places (stamp places numbered, the others marked "no stamp") as a trail. The public page and the admin's live preview both render this, so what an
  * editor sees while typing is what visitors get. It reads no cookies and calls no server API.
  */
-export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref, offline }: RouteViewProps) {
+export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref, offline, notices, showStampCount = false }: RouteViewProps) {
   const description = pickText(locale, route.descriptionJa, route.descriptionEn);
   const stops = buildStops(route, locale, spotHref, labels);
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
@@ -113,27 +117,33 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
   const mapPlaces = [...places, ...pointsAsPlaces(route.points.filter((p) => isGuidanceOnly(p.kind)), locale)];
   const trail = trailStops(route);
   const journey = journeyOf(trail, route.walkStyle ?? null);
+  const rows = walkRows(trail, journey, route.line);
   const photo = route.photoUrl ? { src: route.photoUrl, alt: pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa, credit: route.photoCredit ?? null } : null;
 
   // One column (the phone, and the admin's narrow preview). When the box this sits in is wide (a desktop page), two
   // columns: the photo, the name and the numbers, the story and the access on the left; the elevation, the video, the map
   // and the stops on the right. It follows the width of its own box (a container query), not the screen's, so the preview
-  // beside the admin form stays one column. In one column the order is the one for walking (each part's `order-n`): the
-  // photo, the name, the summary card, then the map and the places; the story comes after. The two wrappers are
+  // beside the admin form stays one column. In one column the order is the one for deciding and walking (each part's
+  // `order-n`): the cover with the name and the numbers, the short description, the walk from start to goal, the map
+  // and the climb; access, the video and the story come after. The two wrappers are
   // `contents` there, so they take no space of their own.
   const SIDE = "contents @4xl:flex @4xl:min-w-0 @4xl:flex-col @4xl:gap-6";
   return (
     <div className="@container flex flex-col gap-6">
       <div className="flex flex-col gap-6 @4xl:grid @4xl:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] @4xl:items-start @4xl:gap-x-10">
         <div className={SIDE}>
+          {/* The cover: in one column the photo runs edge to edge and fades into the page at the bottom, and the name sits on the
+              fade, so photo and title read as one. In two columns it is a plain framed photo with the name under it. */}
           {photo ? (
-            <div className="order-1 px-4 @4xl:order-none @4xl:px-0">
-              <HeroPhoto photo={photo} placeholder={false} />
+            <div className="relative order-1 aspect-[4/3] w-full overflow-hidden bg-surface @4xl:order-none @4xl:aspect-video @4xl:rounded-2xl">
+              <Image src={photo.src} alt={photo.alt} fill priority sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" unoptimized={photo.src.startsWith("https://")} />
+              <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-b from-transparent to-paper @4xl:hidden" />
+              <CreditToggle credit={photo.credit} />
             </div>
           ) : null}
-          <header className="order-2 px-4 @4xl:order-none @4xl:px-0">
+          <header className={`relative order-2 px-4 @4xl:order-none @4xl:mt-0 @4xl:px-0 ${photo ? "-mt-20" : ""}`}>
             {/* In Japanese the name can carry its reading over it; the heading sits a little lower to give the reading room. */}
-            <h1 className={`min-w-0 text-3xl font-bold @4xl:text-4xl ${ruby || rubyParts ? "pt-4" : ""}`}>
+            <h1 className={`min-w-0 text-4xl font-bold leading-tight @4xl:text-4xl ${ruby || rubyParts ? "pt-4" : ""}`}>
               {rubyParts ? <RubyParts parts={rubyParts} /> : ruby ? <Ruby reading={ruby.reading}>{ruby.text}</Ruby> : <Localized value={title} />}
             </h1>
             {route.prefecture || route.municipality ? (
@@ -141,18 +151,15 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
                 <PlaceLine prefecture={route.prefecture} place={municipalityName(locale, route.municipality)} locale={locale} />
               </p>
             ) : null}
-            {/* The phone has the summary card below instead. */}
-            <div className="hidden @4xl:block">
-              <RouteStats route={route} />
+            <div className="mt-5">
+              <RouteStats route={route} icons tips walkStyle={journey?.style ?? null} />
             </div>
           </header>
 
-          <div className="order-3 @4xl:order-none">
-            <TripSummary route={route} journey={journey} locale={locale} />
-          </div>
+          {notices ? <div className="order-3 flex flex-col gap-3 @4xl:order-none @4xl:[&>section]:mx-0">{notices}</div> : null}
 
           {description ? (
-            <section className="order-8 px-4 @4xl:order-none @4xl:px-0">
+            <section className="order-4 px-4 @4xl:order-none @4xl:px-0">
               <ExpandableText text={description.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
                 <RichText text={description.text} lang={description.lang} />
               </ExpandableText>
@@ -189,7 +196,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           ) : null}
 
           {access || journey || route.accessPoints.length > 0 ? (
-            <section className="order-7 flex flex-col gap-4 px-4 @4xl:order-none @4xl:px-0">
+            <section className="order-8 flex flex-col gap-4 px-4 @4xl:order-none @4xl:px-0">
               <h2 className="text-xl font-bold">
                 <Trans>アクセス・交通</Trans>
               </h2>
@@ -214,12 +221,12 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
 
         <div className={SIDE}>
           {route.sketch?.elevations ? (
-            <section className="order-6 px-4 @4xl:order-none @4xl:px-0">
+            <section className="order-7 px-4 @4xl:order-none @4xl:px-0">
               <ElevationProfile elevations={route.sketch.elevations} distanceKm={route.distanceKm} routeLine={route.line} lineElevations={route.lineElevations} />
             </section>
           ) : null}
 
-          {offline ? <section className="order-6 px-4 @4xl:order-none @4xl:px-0">{offline}</section> : null}
+          {offline ? <section className="order-7 px-4 @4xl:order-none @4xl:px-0">{offline}</section> : null}
 
           {video || videoFile ? (
             <section className="order-9 flex flex-col gap-3 px-4 @4xl:order-none @4xl:px-0">
@@ -236,7 +243,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           ) : null}
 
           {stops.length > 0 ? (
-            <section className="order-4 px-4 @4xl:order-none @4xl:px-0">
+            <section className="order-6 px-4 @4xl:order-none @4xl:px-0">
               <TrailMapLoader stops={stops} line={route.line} sideLines={route.sideLines?.map((s) => s.line)} places={mapPlaces} draft={draftPositions} settings={settings} mergeStops={mergeStops} placesFirst={placesFirst} />
             </section>
           ) : null}
@@ -251,9 +258,9 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             <section className="order-5 @4xl:order-none">
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 px-4 pb-2 @4xl:px-0">
                 <h2 className="text-xl font-bold">
-                  <Trans>経由地</Trans>
+                  <Trans>道のり</Trans>
                 </h2>
-                {stampedCount !== null && spotCount > 0 ? (
+                {showStampCount && stampedCount !== null && spotCount > 0 ? (
                   <p className="text-lg font-bold tabular-nums">
                     <Trans>
                       スタンプ {stampedCount} / {spotCount}
@@ -262,7 +269,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
                 ) : null}
               </div>
               <div className="px-4 @4xl:px-0">
-                <StopList stops={trail} hrefFor={spotHref} locale={locale} />
+                <StopList rows={rows} hrefFor={spotHref} locale={locale} />
               </div>
             </section>
           )}

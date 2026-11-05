@@ -11,6 +11,7 @@ import { RouteView } from "@/components/RouteView";
 import { getRoute, listPlacesForRoute, pickText, toMapPlace } from "@/lib/content";
 import { initLingui } from "@/i18n/server";
 import { getMapSettings } from "@/lib/site-settings";
+import { getMyStamps } from "@/lib/my-stamps";
 import { getViewer } from "@/lib/viewer";
 import { getPrefs } from "@/lib/server-prefs";
 
@@ -26,7 +27,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function RouteDetailPage({ params }: Props) {
   const i18n = await initLingui();
   // Each of these is a trip to the API and none needs another's answer: ask them all at once.
-  const [found, prefs, settings, viewer, allNotices] = await Promise.all([params.then((p) => getRoute(p.id)), getPrefs(), getMapSettings(), getViewer(), listNotices()]);
+  // getMyStamps is cached per request (getRoute asks it too), so knowing whether the visitor has stamped anywhere costs nothing.
+  const [found, prefs, settings, viewer, allNotices, mine] = await Promise.all([params.then((p) => getRoute(p.id)), getPrefs(), getMapSettings(), getViewer(), listNotices(), getMyStamps()]);
   if (!found) notFound();
   const route = found;
   // The places are looked up by the route's number, so they wait for the route.
@@ -40,13 +42,6 @@ export default async function RouteDetailPage({ params }: Props) {
           <Trans>ルート一覧</Trans>
         </BackLink>
       </div>
-      <PrintShare route={{ id: route.id, nameJa: route.nameJa }} gpx={route.line ? { signedIn: viewer.signedIn } : undefined} />
-      <TrailNotices notices={notices} locale={i18n.locale} />
-      {notices.length > 0 ? (
-        <a href={`/notices/feed.xml?route=${encodeURIComponent(route.id)}${i18n.locale === "en" ? "&lang=en" : ""}`} className="-mt-3 px-4 text-sm text-accent underline">
-          <Trans>このルートのお知らせをフィードで受け取る</Trans>
-        </a>
-      ) : null}
       <RouteView
         route={route}
         locale={i18n.locale}
@@ -57,7 +52,20 @@ export default async function RouteDetailPage({ params }: Props) {
         labels={{ stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`), start: i18n._(msg`スタート`), goal: i18n._(msg`ゴール`) }}
         spotHref={(id) => `/spots/${id}`}
         offline={<OfflinePack routeId={route.id} area={route.area} settings={settings} />}
+        showStampCount={mine.ids.size > 0}
+        notices={
+          notices.length > 0 ? (
+            <>
+              <TrailNotices notices={notices} locale={i18n.locale} />
+              <a href={`/notices/feed.xml?route=${encodeURIComponent(route.id)}${i18n.locale === "en" ? "&lang=en" : ""}`} className="px-4 text-base text-accent underline @4xl:px-0">
+                <Trans>このルートのお知らせをフィードで受け取る</Trans>
+              </a>
+            </>
+          ) : null
+        }
       />
+      {/* Print, share, the GPX file and the bookmark: handy, but not what a visitor opens the page for, so they come last. */}
+      <PrintShare route={{ id: route.id, nameJa: route.nameJa }} gpx={route.line ? { signedIn: viewer.signedIn } : undefined} />
     </div>
   );
 }
