@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Analytics } from "@vercel/analytics/next";
 import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
+import { ServiceWorker } from "@/components/ServiceWorker";
 import { LinguiClientProvider } from "@/i18n/LinguiClientProvider";
 import { initLingui } from "@/i18n/server";
 import { getPrefs } from "@/lib/server-prefs";
@@ -66,6 +67,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             <Trans>本文へ移動</Trans>
           </a>
           {children}
+          <ServiceWorker />
         </LinguiClientProvider>
         {/* Page views for the project (Vercel Analytics: no cookies, no personal data). Only counts on Vercel. */}
         <Analytics />

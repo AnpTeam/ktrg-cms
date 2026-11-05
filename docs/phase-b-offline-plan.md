@@ -1,6 +1,6 @@
 # Phase B plan: stamping and reading without a signal
 
-Status: **decided 2026-11-04** (the user took my lean on all five questions below); **B1 (API) and B2 (queue module) built**, B3 to B6 not started. Written 2026-11-04. CLAUDE.md says "Build A, then B": Phase A (online app, auth, admin, map, GPS stamp) is working, so this is the next phase. Plan only: no app code until the user says go.
+Status: **decided 2026-11-04** (the user took my lean on all five questions below); **B1 (API), B2 (queue), B3 (stamp wiring) and B4 (worker, /offline, update prompt) built**, B5 and B6 not started. Written 2026-11-04. CLAUDE.md says "Build A, then B": Phase A (online app, auth, admin, map, GPS stamp) is working, so this is the next phase. B4 note: serwist 9.5 works on Next 16 with Turbopack through `@serwist/turbopack` (a route handler builds `src/app/sw.ts` at build time; checked with `bun add` on Bun 1.4.3 and a real `next build`); `public/sw.js` and `OfflineSave` (hidden) are left for B5 to replace.
 
 ## What the trail needs
 
