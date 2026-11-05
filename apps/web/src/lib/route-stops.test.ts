@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { RoutePoint, SpotListItem } from "./content";
-import { journeyOf, roleLabel, stopRoles, trailStops, type Journey, type TrailStop } from "./route-stops";
+import { journeyOf, roleLabel, stopRoles, trailStops, walkRows, type Journey, type TrailStop } from "./route-stops";
 
 const spot = (id: string, over: Partial<SpotListItem> = {}): SpotListItem => ({
   id, nameJa: id, nameEn: null, status: "open", stamped: null, position: { lat: 34.3, lng: 135.1, verified: true }, ...over,
@@ -106,4 +106,34 @@ describe("stopRoles", () => {
 test("roleLabel speaks the role, and says nothing for an ordinary stop", () => {
   const w = { start: "スタート", goal: "ゴール" };
   expect([roleLabel("start", w), roleLabel("goal", w), roleLabel("both", w), roleLabel(undefined, w)]).toEqual(["スタート", "ゴール", "スタート・ゴール", null]);
+});
+
+describe("walkRows", () => {
+  // A line going north 0.02° (about 2.2 km) and back down, so its end is its start.
+  const at = (lat: number) => ({ lat, lng: 135.1, verified: true });
+  const out = [at(34.3), at(34.31), at(34.32)];
+  const loopLine = [...out, at(34.31), at(34.3)];
+  const route = { spots: [spot("st", { position: at(34.3) }), spot("mid", { position: at(34.31) }), spot("top", { position: at(34.32) })], points: [] };
+  const rows = (style: Journey["style"], line = loopLine) => {
+    const trail = trailStops(route);
+    return walkRows(trail, journeyOf(trail, style), line).map((r) => [r.key, r.role, r.legKm]);
+  };
+
+  test("a round trip ends with its start again, as the goal, measured to the end of the line", () => {
+    expect(rows("loop")).toEqual([["st", "start", null], ["mid", null, 1.1], ["top", null, 1.1], ["st:goal", "goal", 2.2]]);
+  });
+
+  test("a one-way walk names its last place the goal and adds no extra row", () => {
+    expect(rows("one_way", out)).toEqual([["st", "start", null], ["mid", null, 1.1], ["top", "goal", 1.1]]);
+  });
+
+  test("an out-and-back marks the turnaround and comes back to the start", () => {
+    expect(rows("out_and_back").map((r) => r[1])).toEqual(["start", null, "turnaround", "goal"]);
+  });
+
+  test("without a line there are no distances, and a place far off the line is not measured", () => {
+    expect(rows("loop", []).every((r) => r[2] === null)).toBe(true);
+    const trail = trailStops({ spots: [spot("st", { position: at(34.3) }), spot("off", { position: { lat: 34.31, lng: 135.2, verified: true } })], points: [] });
+    expect(walkRows(trail, journeyOf(trail, "one_way"), out).map((r) => r.legKm)).toEqual([null, null]);
+  });
 });

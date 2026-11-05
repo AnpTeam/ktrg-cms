@@ -1,4 +1,5 @@
 import type { RouteDetail, RoutePoint, SpotListItem } from "./content";
+import { cumulativeDistances, distanceM, type LinePoint, projectOnLine } from "./navigation/geometry";
 import { distanceMeters } from "./places";
 import type { PointKind } from "./point-kinds";
 import type { WalkStyle } from "./walk-style";
@@ -93,6 +94,57 @@ export function stopRoles(journey: Journey | null): Map<string, StopRole> {
 /** The spoken word for a stop's role, so the Start and Goal pins are not told apart by colour alone; null for an ordinary stop. */
 export function roleLabel(role: StopRole | undefined, words: { start: string; goal: string }): string | null {
   return role === "both" ? `${words.start}・${words.goal}` : role === "start" ? words.start : role === "goal" ? words.goal : null;
+}
+
+/** One row of the walk as the route page lists it. */
+export interface WalkRow {
+  stop: TrailStop;
+  /** Unique per row: a round trip lists its start twice (as the start and again as the goal). */
+  key: string;
+  role: "start" | "goal" | "turnaround" | null;
+  /** Kilometres along the route line from the row before that is on the way; null when unknown or for a side trip. */
+  legKm: number | null;
+}
+
+/** A stop farther than this from the drawn line is not measured along it (a station a short walk off the trail still is). */
+const ROW_MAX_OFF_LINE_M = FAR_GOAL_M;
+
+/**
+ * The walk from start to goal: every stop in order, the start and goal marked, and a walk that comes back to its start
+ * (a round trip or an out-and-back) ends with that same place again as the goal, so the list reads start → … → goal and
+ * both rows lead to the one place. Each row on the way gets its distance from the row before, measured along the line.
+ */
+export function walkRows(stops: readonly TrailStop[], journey: Journey | null, line: readonly { lat: number; lng: number }[] | null): WalkRow[] {
+  const idOf = (s: TrailStop) => (s.type === "stamp" ? s.spot.id : s.point.id);
+  const back = journey?.style === "loop" || journey?.style === "out_and_back";
+  const rows: WalkRow[] = stops.map((stop) => ({
+    stop,
+    key: idOf(stop),
+    role: journey && stop === journey.start ? "start" : journey && !back && stop === journey.goal ? "goal" : journey?.turnaround === stop ? "turnaround" : null,
+    legKm: null,
+  }));
+  if (journey && back) rows.push({ stop: journey.start, key: `${idOf(journey.start)}:goal`, role: "goal", legKm: null });
+
+  const points: LinePoint[] = (line ?? []).map((p) => [p.lng, p.lat]);
+  if (points.length < 2) return rows;
+  const cum = cumulativeDistances(points);
+  const total = cum[cum.length - 1]!;
+  let prevM: number | null = null;
+  for (const row of rows) {
+    if (isSideTrip(row.stop)) continue;
+    const pos = positionOf(row.stop);
+    let atM: number | null = null;
+    if (pos) {
+      // The goal of a walk that comes back is the end of the line (its start projects onto both ends); any other stop is
+      // looked for only ahead of the one before, so a line that passes a place twice picks the right pass.
+      const closing = row.key.endsWith(":goal") && distanceM(pos, { lng: points[points.length - 1]![0], lat: points[points.length - 1]![1] }) <= ROW_MAX_OFF_LINE_M;
+      const hit: { alongM: number; offM: number } | null = closing ? { alongM: total, offM: 0 } : projectOnLine(points, cum, pos, { fromM: prevM ?? 0, toM: Number.POSITIVE_INFINITY });
+      if (hit && hit.offM <= ROW_MAX_OFF_LINE_M) atM = hit.alongM;
+    }
+    if (prevM !== null && atM !== null && atM > prevM) row.legKm = Math.round((atM - prevM) / 100) / 10;
+    if (atM !== null) prevM = atM;
+  }
+  return rows;
 }
 
 /** The stamp number of each place along the walk by id (null for a side trip and for places without a stamp). */
