@@ -3,6 +3,7 @@ import { Trans } from "@lingui/react/macro";
 import { KatsuragiLogo } from "@/components/KatsuragiLogo";
 import { HeroSlides, type HeroSlide } from "@/components/landing/HeroSlides";
 import type { BannerSlide } from "@/lib/banners";
+import { buttonStyle } from "@/components/button";
 
 // The first screen of the landing page: the admin's banner photos fill the top, with the logo and the line over them, and
 // under them the buttons. With no banner yet, one photo of the trail (public/home, from the Japan Heritage council, reused
@@ -10,8 +11,8 @@ import type { BannerSlide } from "@/lib/banners";
 // buttons are below the photos, on the page colour, so their contrast does not depend on a picture.
 // The marker class `landing-hero` lets globals.css hide the sidebar's own logo (the big one is here); it keeps its space.
 
-const primary = "tap-target inline-flex min-h-14 items-center justify-center rounded-xl bg-ink px-8 text-xl font-bold text-paper";
-const secondary = "tap-target inline-flex min-h-14 items-center justify-center rounded-xl border border-ink bg-paper/70 px-8 text-xl font-bold text-ink hover:bg-paper";
+const primary = buttonStyle("primary", "lg", "inline-flex");
+const secondary = buttonStyle("secondary", "lg", "inline-flex");
 
 const FALLBACK: HeroSlide = { src: "/home/top_slider_img01.jpg", alt: "", unoptimized: false };
 

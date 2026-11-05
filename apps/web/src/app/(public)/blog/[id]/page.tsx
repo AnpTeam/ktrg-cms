@@ -25,6 +25,7 @@ import { distanceMeters } from "@/lib/places";
 import { getPost, listComments, listPosts, neighbours } from "@/lib/posts";
 import { getViewer } from "@/lib/viewer";
 import { ChevronIcon, ChevronLeftIcon } from "@/components/icons";
+import { buttonStyle } from "@/components/button";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -172,7 +173,7 @@ export default async function BlogPostPage({ params }: Props) {
                     }}
                   />
                   {mapHref ? (
-                    <Link href={mapHref} className="tap-target flex min-h-14 items-center justify-center rounded-xl border border-ink bg-surface px-6 text-xl font-bold text-accent hover:bg-paper">
+                    <Link href={mapHref} className={buttonStyle("secondary", "lg", "flex")}>
                       <Trans>地図で見る</Trans>
                     </Link>
                   ) : null}
@@ -243,7 +244,7 @@ export default async function BlogPostPage({ params }: Props) {
                 </li>
               ))}
             </ul>
-            <Link href="/blog" className="tap-target flex items-center justify-center rounded-xl border-2 border-ink px-5 text-lg font-bold hover:bg-surface">
+            <Link href="/blog" className={buttonStyle("secondary", "md", "flex")}>
               <Trans>ブログをすべて見る</Trans>
             </Link>
           </aside>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Trans } from "@lingui/react/macro";
 import { initLingui } from "@/i18n/server";
 import { SavedMapLink } from "@/components/SavedMapLink";
+import { buttonStyle } from "@/components/button";
 
 export const metadata: Metadata = { title: "オフライン / Offline", robots: { index: false } };
 
@@ -26,7 +27,7 @@ export default async function OfflinePage() {
       <SavedMapLink />
       {/* A plain link on purpose: a full page load is the retry (a client-side navigation would not ask the network again). */}
       {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-      <a href="/" className="tap-target inline-flex w-fit items-center rounded-xl bg-ink px-6 text-xl font-bold text-paper">
+      <a href="/" className={buttonStyle("primary", "lg", "inline-flex w-fit")}>
         <Trans>もう一度ひらく</Trans>
       </a>
     </main>

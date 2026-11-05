@@ -19,11 +19,12 @@ import type { TrailNotice } from "@/lib/notices";
 import type { BlogPost } from "@/lib/posts";
 import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
 import type { EmbedVideo } from "@/lib/video";
+import { buttonStyle } from "@/components/button";
 
 const primary =
-  "tap-target flex min-h-14 items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper";
+  buttonStyle("primary", "lg", "flex");
 const secondary =
-  "tap-target flex min-h-14 items-center justify-center rounded-xl border border-ink bg-surface px-6 text-xl font-bold text-ink hover:bg-paper";
+  buttonStyle("secondary", "lg", "flex");
 // Panels have no outline: a light grey fill with round corners, and room around them.
 const panel = "mx-4 rounded-3xl bg-surface p-5";
 const PREVIEW_ROUTES = 6;

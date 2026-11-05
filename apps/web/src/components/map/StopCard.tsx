@@ -5,6 +5,7 @@ import { Trans } from "@lingui/react/macro";
 import { StatusWord } from "@/components/StatusWord";
 import type { SpotStatus } from "@/lib/content";
 import { WarningIcon } from "@/components/icons";
+import { buttonStyle } from "@/components/button";
 
 /** The small card shown under the map when a stop is tapped. The full sheet is its own page. */
 export function StopCard({
@@ -49,7 +50,7 @@ export function StopCard({
       ) : null}
       <Link
         href={href}
-        className="tap-target inline-flex items-center justify-center self-start rounded-lg bg-ink px-5 text-lg font-bold text-paper"
+        className={buttonStyle("primary", "md", "inline-flex self-start")}
       >
         <Trans>この場所を見る</Trans>
       </Link>

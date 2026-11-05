@@ -22,14 +22,15 @@ import type { StampMock } from "@/lib/stamp-flow";
 import { MapScreenCanvasLoader } from "./MapScreenCanvasLoader";
 import { MapSheet } from "./MapSheet";
 import { Gallery, SheetHero } from "./SheetHero";
+import { buttonStyle } from "@/components/button";
 
 // The map tab (WBS 3.2.10): a map of the whole trail with a bottom sheet that never hides it. Nothing is
 // chosen at first: the sheet offers the 19 courses. Choose a course (on the map or in the
 // sheet) and the other areas fold away while its path and stops appear; choose a stop and the sheet shows it, with
 // the stamp button for someone who is signed in. Anyone may look around; navigation and stamps are for accounts.
 
-const linkButton = "tap-target flex min-h-12 w-full items-center justify-center rounded-xl border border-ink px-5 text-lg font-bold text-ink hover:bg-surface";
-const primaryLink = "tap-target flex min-h-12 w-full items-center justify-center rounded-xl bg-ink px-5 text-lg font-bold text-paper";
+const linkButton = buttonStyle("secondary", "md", "flex w-full");
+const primaryLink = buttonStyle("primary", "md", "flex w-full");
 // Room kept under the sheet for the floating tab bar (a rail on wide screens).
 const TAB_ROOM_REM = 5.5;
 // From this width (a desktop) the map fills the whole area beside the sidebar, and what a phone shows in a bottom sheet

@@ -10,7 +10,7 @@ import { foundationEn, foundationJa } from "@/lib/terms-content";
 export function SiteFooter({ locale, variant = "page" }: { locale: string; variant?: "page" | "sidebar" }) {
   const { t } = useLingui();
   const sidebar = variant === "sidebar";
-  const link = sidebar ? "inline-flex items-center py-1 text-base font-bold underline" : "tap-target inline-flex items-center text-lg font-bold underline";
+  const link = `tap-target inline-flex items-center font-bold underline ${sidebar ? "text-base" : "text-lg"}`;
   return (
     <footer className={sidebar ? "print:hidden site-footer border-t border-line/30 px-2 pt-3" : "print:hidden site-footer mt-10 border-t border-line/30 px-4 pt-4"}>
       <nav aria-label={t`フッター`} className={sidebar ? "flex flex-col" : "flex flex-wrap gap-x-6 gap-y-1"}>

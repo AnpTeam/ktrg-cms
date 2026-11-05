@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { buttonStyle } from "@/components/button";
 
 type State = "idle" | "copied" | "empty" | "failed";
 
@@ -29,7 +30,7 @@ export function GuestBackup() {
 
   return (
     <div className="flex flex-col gap-2">
-      <button type="button" onClick={copy} className="tap-target self-start rounded-xl border border-ink px-4 text-lg font-bold hover:bg-paper">
+      <button type="button" onClick={copy} className={buttonStyle("secondary", "md", "inline-flex self-start")}>
         {t`スタンプのバックアップリンク`}
       </button>
       {state === "copied" ? <p role="status" className="text-base leading-7">{t`自分に送っておくと、ブラウザのデータが消えても、このリンクからスタンプをもどせます。ほかの人には見せないでください。`}</p> : null}

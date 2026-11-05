@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { PlaceCard } from "@/components/map/PlacesPanel";
 import type { MapPlace } from "@/lib/places";
+import { buttonStyle } from "@/components/button";
 
 /**
  * A place in a small window over the page (a place has no page of its own): its details, and, when it is on the big map,
@@ -25,7 +26,7 @@ export function PlaceDialog({ place, mapHref, meters = null, onClose }: { place:
         <div className="flex flex-col gap-3">
           <PlaceCard place={place} meters={meters} onClose={onClose} />
           {mapHref ? (
-            <Link href={mapHref} className="tap-target flex min-h-12 items-center justify-center rounded-xl bg-ink px-5 text-lg font-bold text-paper">
+            <Link href={mapHref} className={buttonStyle("primary", "md", "flex")}>
               {t`地図で見る`}
             </Link>
           ) : null}

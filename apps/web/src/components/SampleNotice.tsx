@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { Trans, useLingui } from "@lingui/react/macro";
 import { InfoIcon } from "./icons";
+import { buttonStyle } from "@/components/button";
 
 // The "this is sample and draft data" notice (shown only while sample content is on). It used to be a
 // permanent banner that took a big part of a phone screen. Now it is a one-time pop-up when the app is
@@ -59,7 +60,7 @@ export function SampleNoticeHost() {
       <form method="dialog" className="mt-5">
         <button
           type="submit"
-          className="tap-target inline-flex w-full items-center justify-center rounded-lg bg-ink px-5 text-lg font-bold text-paper"
+          className={buttonStyle("primary", "md", "inline-flex w-full")}
         >
           <Trans>閉じる</Trans>
         </button>

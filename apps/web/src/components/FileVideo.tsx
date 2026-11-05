@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { subtitleUrl, type FileVideo } from "@/lib/video";
+import { buttonStyle } from "@/components/button";
 
 /**
  * A video file from the site's own storage, in the browser's own player. Like IntroVideo it loads nothing until the
@@ -52,7 +53,7 @@ export function FileVideoPlayer({ video, title, subtitles = false, language = "j
                 setFailed(null);
                 setAttempt((n) => n + 1);
               }}
-              className="tap-target rounded-xl bg-ink px-5 text-lg font-bold text-paper"
+              className={buttonStyle("primary", "md", "inline-flex")}
             >
               {t`もう一度ためす`}
             </button>

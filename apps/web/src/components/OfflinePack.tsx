@@ -6,6 +6,7 @@ import type { RouteArea } from "@/lib/map-screen";
 import type { MapSettings } from "@/lib/map-settings";
 import { CheckIcon, DownloadIcon } from "./icons";
 import { deletePack, megabytes, packAge, packTileUrls, readPack, savePack, type PackInfo } from "@/lib/offline-pack";
+import { buttonStyle } from "@/components/button";
 
 const noSubscribe = () => () => {};
 
@@ -53,7 +54,7 @@ export function OfflinePack({ routeId, area, settings }: { routeId: string; area
 
   const age = pack ? packAge(pack.savedAt, now) : null;
   const ageText = !age ? "" : age.unit === "minute" ? t`たった今` : age.unit === "hour" ? t`${age.n}時間前` : t`${age.n}日前`;
-  const secondary = "tap-target flex-1 rounded-lg border-2 border-line bg-paper px-4 text-lg font-bold text-ink hover:bg-surface";
+  const secondary = buttonStyle("secondary", "md", "inline-flex flex-1");
   const percent = progress ? Math.min(100, Math.round((progress.done / Math.max(1, progress.total)) * 100)) : 0;
 
   return (
@@ -91,7 +92,7 @@ export function OfflinePack({ routeId, area, settings }: { routeId: string; area
       ) : (
         <>
           <p className="text-base text-muted">{t`山では電波が届かないことがあります。入口で保存しておくと、電波がなくてもこの道の地図が開きます（数MB）。`}</p>
-          <button type="button" onClick={save} className="tap-target w-full rounded-lg bg-brand px-5 text-lg font-bold text-on-brand">
+          <button type="button" onClick={save} className={buttonStyle("action", "md", "inline-flex w-full")}>
             {t`地図を保存`}
           </button>
         </>

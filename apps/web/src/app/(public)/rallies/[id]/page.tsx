@@ -21,6 +21,7 @@ import { getMyStamps } from "@/lib/my-stamps";
 import { isSoon, nextSlot, stampedNumbers } from "@/lib/rally-model";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
+import { buttonStyle } from "@/components/button";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ as?: string }> };
 
@@ -50,8 +51,8 @@ export default async function RallyPage({ params, searchParams }: Props) {
   const start = detail.places.find((p) => (next && detail.kind === "course" ? p.routeId === next.id : true) && !heldSet.has(p.id)) ?? detail.places.find((p) => !heldSet.has(p.id));
   const startHref = start ? `/map?route=${encodeURIComponent(start.routeId)}&stop=${encodeURIComponent(start.id)}` : "/map";
   const canStampHere = !done && detail.places.some((p) => p.lat !== null && p.status !== "closed" && !heldSet.has(p.id));
-  const button = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper";
-  const quietButton = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl border border-ink bg-paper px-6 text-xl font-bold text-ink hover:bg-surface";
+  const button = buttonStyle("primary", "lg", "flex w-full");
+  const quietButton = buttonStyle("secondary", "lg", "flex w-full");
   // One main button at a time: the way to the first place until something is stamped, then the stamp button for the place you are at.
 
   return (

@@ -3,6 +3,7 @@ import { Trans } from "@lingui/react/macro";
 import { initLingui } from "@/i18n/server";
 import { GuestBackup } from "./GuestBackup";
 import { StampFace } from "./StampFace";
+import { buttonStyle } from "@/components/button";
 
 /**
  * Shown to a visitor with no account, where progress would be. Stamps work without one (they are kept in this browser), so
@@ -19,10 +20,10 @@ export async function SignInPrompt({ compact = false }: { compact?: boolean }) {
           <Trans>登録しなくても、スタンプは押せます。</Trans>
         </p>
         <div className="flex gap-3">
-          <Link href="/register" className="tap-target flex min-h-12 flex-1 items-center justify-center rounded-xl bg-ink px-4 text-lg font-bold text-paper">
+          <Link href="/register" className={buttonStyle("primary", "md", "flex flex-1")}>
             <Trans>新規登録</Trans>
           </Link>
-          <Link href="/login" className="tap-target flex min-h-12 flex-1 items-center justify-center rounded-xl border border-ink px-4 text-lg font-bold text-ink hover:bg-paper">
+          <Link href="/login" className={buttonStyle("secondary", "md", "flex flex-1")}>
             <Trans>ログイン</Trans>
           </Link>
         </div>
@@ -45,13 +46,13 @@ export async function SignInPrompt({ compact = false }: { compact?: boolean }) {
       <div className="flex flex-col gap-3">
         <Link
           href="/register"
-          className="tap-target flex min-h-14 items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper"
+          className={buttonStyle("primary", "lg", "flex")}
         >
           <Trans>新規登録</Trans>
         </Link>
         <Link
           href="/login"
-          className="tap-target flex min-h-14 items-center justify-center rounded-xl border border-ink px-6 text-xl font-bold text-ink hover:bg-surface"
+          className={buttonStyle("secondary", "lg", "flex")}
         >
           <Trans>ログイン</Trans>
         </Link>

@@ -4,13 +4,14 @@ import type { ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { origins, type AuthFailure, type Origin } from "@/lib/auth-flow";
 import { useErrorMessages } from "../useErrorMessages";
+import { buttonStyle } from "@/components/button";
 
 // Pieces shared by the login, register and profile screens. Big targets, few words, one action per step.
 
 export const primaryButton =
-  "tap-target flex min-h-14 w-full items-center justify-center gap-3 rounded-xl bg-ink px-6 text-xl font-bold text-paper disabled:opacity-60";
+  buttonStyle("action", "lg", "flex w-full");
 export const secondaryButton =
-  "tap-target flex min-h-14 w-full items-center justify-center gap-3 rounded-xl border border-ink bg-paper px-6 text-xl font-bold text-ink hover:bg-surface disabled:opacity-60";
+  buttonStyle("secondary", "lg", "flex w-full");
 export const inputClass =
   "tap-target w-full rounded-xl border-2 border-ink bg-paper px-4 text-xl text-ink placeholder:text-muted";
 
