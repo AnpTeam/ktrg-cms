@@ -1,3 +1,4 @@
+import { pickFeatured } from "./rally-model";
 import { afterEach, describe, expect, test } from "bun:test";
 import {
   areaFromBounds,
@@ -141,6 +142,17 @@ describe("ralliesFromApi", () => {
     const [r] = ralliesFromApi([courses], new Set(["s1", "s2"]));
     expect(r!.slots.map((s) => s.stamped)).toEqual([true, false]);
     expect(r!.stamped).toBe(1);
+  });
+  test("a rally's last stamp is the latest among its places (for a rally of courses, among its courses' places); none when nothing is stamped", () => {
+    const at = new Map([["s1", "2026-11-01T00:00:00Z"], ["s2", "2026-11-03T00:00:00Z"], ["elsewhere", "2026-11-09T00:00:00Z"]]);
+    expect(ralliesFromApi([places, courses], new Set(["s1", "s2"]), at).map((r) => r.lastStampedAt)).toEqual(["2026-11-03T00:00:00Z", "2026-11-03T00:00:00Z"]);
+    expect(ralliesFromApi([places], new Set(), new Map())[0]!.lastStampedAt).toBeNull();
+  });
+  test("the rally stamped in most recently is the one featured, not the mound rally", () => {
+    const other = { ...courses, id: "r-t", places: [], courses: [{ routeId: "c9", nameJa: "試し", nameEn: null, spots: [{ id: "t1", status: "open" as const }] }] };
+    const list = ralliesFromApi([places, other], new Set(["t1"]), new Map([["t1", "2026-11-05T00:00:00Z"]]));
+    expect(pickFeatured(list)?.id).toBe("r-t");
+    expect(pickFeatured(ralliesFromApi([places, other], new Set(), new Map()))?.id).toBe("r-p"); // nothing stamped: the introduction
   });
   test("a closed place that nobody stamped counts as done, like on the server; an open one does not", () => {
     const closed = { ...courses, courses: [{ routeId: "c1", nameJa: "道1", nameEn: null, spots: [{ id: "s1", status: "open" }, { id: "s2", status: "closed" }] }] };

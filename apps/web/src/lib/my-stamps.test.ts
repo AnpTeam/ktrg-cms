@@ -6,9 +6,9 @@ describe("parseMyStampRows", () => {
   test("keeps the place and the course; a missing course id becomes null", () => {
     const body = { ok: true, stamps: [{ spotId: "a", routeId: "r1", createdAt: "x" }, { spotId: "b", createdAt: "y" }, { spotId: "c", routeId: "" }] };
     expect(parseMyStampRows(200, body)).toEqual([
-      { spotId: "a", routeId: "r1" },
-      { spotId: "b", routeId: null },
-      { spotId: "c", routeId: null },
+      { spotId: "a", routeId: "r1", createdAt: null }, // "x" is not a time
+      { spotId: "b", routeId: null, createdAt: null },
+      { spotId: "c", routeId: null, createdAt: null },
     ]);
   });
 
@@ -37,5 +37,12 @@ describe("myStampsFromRows", () => {
     const m = myStampsFromRows([]);
     expect(m.ids.size).toBe(0);
     expect(m.byRoute.size).toBe(0);
+  });
+});
+
+describe("when each place was stamped", () => {
+  test("the latest time of each place is kept; a row without a usable time adds none", () => {
+    const rows = parseMyStampRows(200, { ok: true, stamps: [{ spotId: "a", routeId: "r", createdAt: "2026-11-01T00:00:00Z" }, { spotId: "a", routeId: "r", createdAt: "2026-11-04T00:00:00Z" }, { spotId: "b", routeId: null, createdAt: "nope" }] })!;
+    expect([...myStampsFromRows(rows).at]).toEqual([["a", "2026-11-04T00:00:00Z"]]);
   });
 });

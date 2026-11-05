@@ -231,15 +231,22 @@ const courseFinished = (spots: readonly { id: string; status: string }[], stampe
 /**
  * The rallies the CMS publishes, as the stamp page shows them. A rally of places has one slot for each place; a rally of
  * courses one for each course, stamped once every published stamp place of that course is. `stamped` is the set of place
- * ids the visitor holds (empty when signed out: the page then hides the progress).
+ * ids the visitor holds (empty when signed out: the page then hides the progress). `stampedAt` says when each was stamped,
+ * so the page can put the rally the visitor last stamped in first.
  */
-export function ralliesFromApi(rallies: readonly PublicRally[], stamped: ReadonlySet<string>): RallyItem[] {
+export function ralliesFromApi(rallies: readonly PublicRally[], stamped: ReadonlySet<string>, stampedAt: ReadonlyMap<string, string> = new Map()): RallyItem[] {
   return rallies.map((r, i): RallyItem => {
     const slots =
       r.kind === "places"
         ? r.places.map((p, n) => ({ id: p.id, number: n + 1, nameJa: p.nameJa, nameEn: p.nameEn, stamped: stamped.has(p.id) }))
         : r.courses.map((c, n) => ({ id: c.routeId, number: n + 1, nameJa: c.nameJa, nameEn: c.nameEn, stamped: courseFinished(c.spots, stamped) }));
-    return { id: r.id, kind: "rally", order: i + 1, nameJa: r.nameJa, nameEn: r.nameEn, routeId: null, total: slots.length, stamped: slots.filter((s) => s.stamped).length, lastStampedAt: null, slots };
+    // The latest stamp among the rally's own places (for a rally of courses: the places of its courses).
+    const placeIds = r.kind === "places" ? r.places.map((p) => p.id) : r.courses.flatMap((c) => c.spots.map((s) => s.id));
+    const lastStampedAt = placeIds.reduce<string | null>((best, id) => {
+      const at = stampedAt.get(id);
+      return at && (!best || Date.parse(at) > Date.parse(best)) ? at : best;
+    }, null);
+    return { id: r.id, kind: "rally", order: i + 1, nameJa: r.nameJa, nameEn: r.nameEn, routeId: null, total: slots.length, stamped: slots.filter((s) => s.stamped).length, lastStampedAt, slots };
   });
 }
 
