@@ -19,7 +19,7 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
   const pathname = usePathname() ?? "";
   const { open, setOpen, railButton } = useMenu();
 
-  // While reading on a phone, scrolling down tucks the tab bar (and a page's sticky bar) away and scrolling up brings them
+  // While reading on a phone, scrolling down tucks the tab bar away and scrolling up brings it
   // back (lib/scroll-bars.ts). It only sets <html data-bars="hidden">; the CSS decides who moves (phones only). A new page
   // and an open menu always show them.
   useEffect(() => {
@@ -35,13 +35,6 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
       frame = requestAnimationFrame(() => {
         frame = 0;
         state = nextBars(state, window.scrollY, document.documentElement.scrollHeight - window.innerHeight);
-        // A sticky bar only tucks away once it is stuck at its `top`. Read before the change below (a tucked bar sits higher);
-        // a bar already tucked stays marked, and it comes back with the others.
-        for (const bar of document.querySelectorAll<HTMLElement>("[data-scroll-hide]")) {
-          const stuck = bar.dataset.stuck !== undefined && state.hidden ? true : bar.getBoundingClientRect().top <= (parseFloat(getComputedStyle(bar).top) || 0) + 1;
-          if (stuck) bar.dataset.stuck = "";
-          else delete bar.dataset.stuck;
-        }
         if (state.hidden) root.dataset.bars = "hidden";
         else delete root.dataset.bars;
       });
