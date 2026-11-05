@@ -454,12 +454,15 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
   };
   const problemOf = (kind: DraftProblem["kind"], key?: string) => problems.some((p) => p.kind === kind && (!("key" in p) || p.key === key));
   const prefName: Record<Prefecture, string> = { osaka: t`大阪府`, wakayama: t`和歌山県`, nara: t`奈良県` };
+  // A walk that comes back to where it began (周回 or 往復); its first waypoint on the way is the start and the goal.
+  const comesBack = draft.walkStyle === "loop" || draft.walkStyle === "out_and_back";
+  const firstAlong = draft.places.find((p) => !p.stopBy) ?? null;
   // The numbers on the map are the stamp numbers visitors see; a waypoint without a stamp has none.
   const editorPlaces = (() => {
     let stamp = 0;
     // Where the walk starts and ends, by the same rule as the public map (a round trip or an out-and-back has one start and goal place).
     const along = draft.places.filter((p) => !p.stopBy && p.lat !== null && p.lng !== null);
-    const startOnly = draft.walkStyle === "loop" || draft.walkStyle === "out_and_back";
+    const startOnly = comesBack;
     const roleOf = (key: string): StopRole | undefined =>
       key === along[0]?.key ? (startOnly ? "both" : "start") : !startOnly && along.length > 1 && key === along.at(-1)!.key ? "goal" : undefined;
     return draft.places.map((p) => ({ key: p.key, lat: p.lat, lng: p.lng, number: p.stampable ? ++stamp : null, name: p.nameJa, stampable: p.stampable, stopBy: p.stopBy, kind: p.kind, published: p.published, role: roleOf(p.key) }));
@@ -797,6 +800,19 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                     </button>
                   ))}
                 </div>
+                {firstAlong ? (
+                  // The same setting as 歩き方 in 基本 (周回 / 往復 come back to the start): visitors then see this place as the start and again as the goal, one page and one stamp.
+                  <div className="rounded-xl border-2 border-line bg-paper px-4">
+                    <Check
+                      id="route-start-is-goal"
+                      checked={comesBack}
+                      onChange={(on) => dispatch({ type: "walkStyle", value: on ? (draft.walkStyle === "out_and_back" ? "out_and_back" : "loop") : "one_way" })}
+                    >
+                      {t`「${firstAlong.nameJa || t`1番目の経由地`}」をゴールにもする（出発した場所にもどる）`}
+                    </Check>
+                    {comesBack ? <p className="pb-3 text-base text-muted">{t`もどりの経由地を別に作る必要はありません。利用者には、スタートとゴールの両方にこの場所が表示されます。`}</p> : null}
+                  </div>
+                ) : null}
                 {placesView === "table" ? (
                   <PlaceTable
                     places={draft.places}
