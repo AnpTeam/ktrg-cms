@@ -586,6 +586,9 @@ export function MapScreenCanvas({
       <div className="absolute inset-0" lang={i18n.locale}>
         <div ref={containerRef} className="h-full w-full" />
       </div>
+      {/* Phone: a solid bar behind the logo and the pills, running up into the status area. iOS fills the status bar with its
+          colour instead of blurring the map under it (globals.css, the status strip); it also makes the band look meant. */}
+      <div aria-hidden="true" className="pointer-events-none fixed inset-x-0 top-0 z-[3] h-[calc(4rem+env(safe-area-inset-top))] border-b border-line/30 bg-paper md:hidden" />
 
       {ready ? null : <p className="pointer-events-none absolute inset-0 flex items-center justify-center bg-surface text-lg">{t`地図を読み込み中…`}</p>}
 

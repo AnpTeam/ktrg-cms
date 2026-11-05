@@ -323,7 +323,8 @@ export function NavigationToast() {
     };
     return (
       <>
-        <section ref={banner} aria-label={t`ナビ中：${routeName}`} className="fixed inset-x-3 top-[calc(0.5rem+env(safe-area-inset-top))] z-30 flex max-h-[70dvh] flex-col gap-1 overflow-y-auto rounded-2xl bg-paper px-4 py-3 shadow-2xl ring-1 ring-line/30 md:inset-x-auto md:left-[calc(50%-14rem)] md:w-[28rem]">
+        {/* Phone: the top of the screen itself, from the status bar down (a solid box there keeps iOS from blurring it). */}
+        <section ref={banner} aria-label={t`ナビ中：${routeName}`} className="fixed inset-x-0 top-0 z-30 flex max-h-[70dvh] flex-col gap-1 overflow-y-auto rounded-b-2xl border-b border-line/30 bg-paper px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] shadow-lg md:inset-x-auto md:left-[calc(50%-14rem)] md:top-[calc(0.5rem+env(safe-area-inset-top))] md:w-[28rem] md:rounded-2xl md:border-b-0 md:pt-3 md:shadow-2xl md:ring-1 md:ring-line/30">
           {main}
           {tucked ? (
             <button type="button" onClick={() => window.dispatchEvent(new Event(NAV_RESUME_EVENT))} className={buttonStyle("primary", "md", "mt-1 flex w-full")}>
