@@ -4,7 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { Map as MapLibreMap } from "maplibre-gl";
-import { ExpandIcon, WarningIcon } from "@/components/icons";
+import { ExpandIcon, MinusIcon, PlusIcon, WarningIcon } from "@/components/icons";
 import { SampleNoticeButton } from "@/components/SampleNotice";
 import { clusterByPixels } from "@/lib/cluster";
 import type { SpotStatus } from "@/lib/content";
@@ -507,11 +507,11 @@ export function TrailMap({
         ) : null}
 
         <div className="absolute right-2 top-2 z-10 flex flex-col gap-2 print:hidden">
-          <button type="button" onClick={() => zoom(1)} aria-label={t`拡大`} className={`${buttonClass} text-2xl`}>
-            ＋
+          <button type="button" onClick={() => zoom(1)} aria-label={t`拡大`} className={buttonClass}>
+            <PlusIcon size={26} />
           </button>
-          <button type="button" onClick={() => zoom(-1)} aria-label={t`縮小`} className={`${buttonClass} text-2xl`}>
-            －
+          <button type="button" onClick={() => zoom(-1)} aria-label={t`縮小`} className={buttonClass}>
+            <MinusIcon size={26} />
           </button>
         </div>
 

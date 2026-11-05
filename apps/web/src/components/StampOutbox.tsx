@@ -9,6 +9,7 @@ import { announceProgress, progressFromAccepted } from "@/lib/stamp-progress";
 import { getOutbox, usePendingStamps } from "@/lib/stamp-outbox";
 import type { StampFailure } from "@/lib/stamp-flow";
 import { useStampMessages } from "./useStampMessages";
+import { TickIcon } from "@/components/icons";
 
 /**
  * Sends the stamps that were pressed with no signal (docs/phase-b-offline-plan.md, B3). Tries when the page opens, when the
@@ -157,8 +158,8 @@ export function StampOutbox({ userKey }: { userKey: string }) {
       ) : null}
       {accepted > 0 ? (
         <div role="status" className="flex items-center gap-3 rounded-2xl border-2 border-moss bg-paper p-4 shadow-2xl">
-          <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-moss text-xl font-bold text-paper">
-            ✓
+          <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-moss text-paper">
+            <TickIcon size={20} />
           </span>
           <p className="text-lg font-bold leading-snug">{t`送信待ちだったスタンプが、${accepted}件、受け付けられました！`}</p>
         </div>

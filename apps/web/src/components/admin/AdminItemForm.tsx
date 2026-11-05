@@ -17,6 +17,7 @@ import { PhotoUpload } from "./PhotoUpload";
 import { PositionMap } from "./PositionMap";
 import { RelationPicker } from "./RelationPicker";
 import { UserActions } from "./UserActions";
+import { AlertIcon, TickIcon, XIcon } from "@/components/icons";
 
 type Notice = { kind: "saved" | "error"; text: string } | null;
 
@@ -272,14 +273,14 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
       ) : null}
       {notice ? (
         <div className={`fixed inset-x-4 top-20 z-50 mx-auto flex max-w-xl items-start gap-3 rounded-2xl border-2 border-white/40 p-4 text-white shadow-2xl ${notice.kind === "error" ? "bg-[#8f1818]" : "bg-[#14532d]"}`}>
-          <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-white text-xl font-bold text-ink">
-            {notice.kind === "error" ? "!" : "✓"}
+          <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-white text-ink">
+            {notice.kind === "error" ? <AlertIcon size={20} /> : <TickIcon size={20} />}
           </span>
           <p role={notice.kind === "error" ? "alert" : "status"} className="min-w-0 flex-1 pt-0.5 text-lg font-bold">
             {notice.text}
           </p>
-          <button type="button" onClick={() => setNotice(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-lg px-3 text-xl font-bold hover:bg-white/20">
-            ×
+          <button type="button" onClick={() => setNotice(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-lg px-3 hover:bg-white/20">
+            <XIcon size={22} />
           </button>
         </div>
       ) : null}

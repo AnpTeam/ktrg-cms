@@ -4,6 +4,7 @@ import { useLingui } from "@lingui/react/macro";
 import { useAccessTypeNames, AccessIcon } from "@/components/AccessList";
 import { accessServes, accessTypes, gsiMapUrl, isAccessType, MAX_ACCESS_POINTS, newAccessPoint, type AccessPoint } from "@/lib/access-points";
 import { Check, Field, inputClass, NumberInput, TextInput } from "./fields";
+import { ArrowDownIcon, ArrowUpIcon, PlusIcon } from "@/components/icons";
 
 /**
  * How to get there, as rows: pick the kind (train, bus, ferry ...), then the place and a short note in Japanese and
@@ -43,10 +44,10 @@ export function AccessPointsEditor({ value, onChange }: { value: AccessPoint[]; 
             </select>
             <span className="ml-auto flex gap-2">
               <button type="button" disabled={i === 0} onClick={() => move(i, -1)} aria-label={t`上へ`} className="tap-target rounded-xl border-2 border-line px-4 text-lg font-bold disabled:opacity-40">
-                ↑
+                <ArrowUpIcon size={22} />
               </button>
               <button type="button" disabled={i === value.length - 1} onClick={() => move(i, 1)} aria-label={t`下へ`} className="tap-target rounded-xl border-2 border-line px-4 text-lg font-bold disabled:opacity-40">
-                ↓
+                <ArrowDownIcon size={22} />
               </button>
               <button type="button" onClick={() => onChange(value.filter((_, k) => k !== i))} className="tap-target rounded-xl border-2 border-line px-4 text-lg font-bold">
                 {t`削除`}
@@ -109,7 +110,10 @@ export function AccessPointsEditor({ value, onChange }: { value: AccessPoint[]; 
         onClick={() => onChange([...value, newAccessPoint(value.length === 0 ? "train" : "bus")])}
         className="tap-target w-fit rounded-xl border-2 border-line px-5 text-lg font-bold disabled:opacity-40"
       >
-        {t`＋ 交通を追加`}
+        <span className="inline-flex items-center gap-1">
+              <PlusIcon size={20} />
+              {t`交通を追加`}
+            </span>
       </button>
     </div>
   );

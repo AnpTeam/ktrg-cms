@@ -3,6 +3,7 @@
 import { useLingui } from "@lingui/react/macro";
 import { addPeriod, copyDay, hasBackward, hoursText, isBackward, MAX_PERIODS, parseHours, removePeriod, setClosed, setTime } from "@/lib/admin/opening-hours";
 import { inputClass, TextInput } from "./fields";
+import { PlusIcon } from "@/components/icons";
 
 const button = "tap-target rounded-xl border-2 border-line px-4 text-base font-bold disabled:opacity-40";
 
@@ -39,7 +40,10 @@ export function HoursInput({ id, value, onChange, disabled }: { id: string; valu
             <div className="flex flex-wrap gap-2">
               {closed ? null : (
                 <button type="button" disabled={disabled || periods.length >= MAX_PERIODS} onClick={() => set(addPeriod(h, day))} className={button}>
-                  {t`＋ 時間を追加（昼休みなど）`}
+                  <span className="inline-flex items-center gap-1">
+              <PlusIcon size={20} />
+              {t`時間を追加（昼休みなど）`}
+            </span>
                 </button>
               )}
               {day === 0 && !closed ? (

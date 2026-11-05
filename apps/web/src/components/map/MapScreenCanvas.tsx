@@ -4,7 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
-import { WarningIcon } from "@/components/icons";
+import { MinusIcon, PlusIcon, WarningIcon } from "@/components/icons";
 import { clusterByPixels } from "@/lib/cluster";
 import { areaCollection, estimateGroupBox, framePoints, groupLabelLines, MERGE_PX, revealedRouteId, SAME_PLACE_M, spreadLabels, spreadMeters, stopMergePx, type LabelBox, type MapScreenPoint, type MapScreenRoute, type MapScreenStop } from "@/lib/map-screen";
 import { defaultLayers, moundStops, offeredLayers, type MapLayer } from "@/lib/map-layers";
@@ -661,15 +661,15 @@ export function MapScreenCanvas({
       ) : null}
 
       <div style={controlsTopPx > 0 ? { top: controlsTopPx } : undefined} className="absolute right-3 top-[calc(4.5rem+env(safe-area-inset-top))] z-[4] md:top-[calc(8.25rem+env(safe-area-inset-top))] flex flex-col gap-2">
-        {(["＋", "－"] as const).map((sign) => (
+        {(["in", "out"] as const).map((sign) => (
           <button
             key={sign}
             type="button"
-            onClick={() => zoom(sign === "＋" ? 1 : -1)}
-            aria-label={sign === "＋" ? t`拡大` : t`縮小`}
+            onClick={() => zoom(sign === "in" ? 1 : -1)}
+            aria-label={sign === "in" ? t`拡大` : t`縮小`}
             className="tap-target inline-flex items-center justify-center rounded-lg border border-ink bg-paper px-3 text-2xl font-bold text-ink hover:bg-surface"
           >
-            {sign}
+            {sign === "in" ? <PlusIcon size={26} /> : <MinusIcon size={26} />}
           </button>
         ))}
         {user ? (

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { nextSnap, sheetHeightPx, snapAfterDrag, sheetSnaps, type SheetSnap } from "@/lib/map-screen";
+import { ChevronDownIcon, ChevronUpIcon } from "@/components/icons";
 
 /** How long the sheet takes to move between heights, and to slide in or out. */
 const SLIDE_MS = 240;
@@ -164,7 +165,7 @@ export function MapSheet({
       >
         <span aria-hidden="true" className="h-1.5 w-12 rounded-full bg-muted/60" />
         <span className="inline-flex items-center gap-2 rounded-full bg-surface px-4 py-1 text-base font-bold text-ink">
-          <span aria-hidden="true">{snap === "full" ? "▼" : "▲"}</span>
+          {snap === "full" ? <ChevronDownIcon size={20} /> : <ChevronUpIcon size={20} />}
           {tapLabel}
         </span>
       </div>

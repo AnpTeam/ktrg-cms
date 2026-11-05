@@ -1,13 +1,13 @@
 import type { ReactNode } from "react";
 
 // Plain, heavy-stroke icons. Always shown next to a word, never alone.
-function Icon({ children }: { children: ReactNode }) {
+function Icon({ children, size = 28 }: { children: ReactNode; size?: number }) {
   return (
     <svg
       aria-hidden="true"
       viewBox="0 0 24 24"
-      width="28"
-      height="28"
+      width={size}
+      height={size}
       fill="none"
       stroke="currentColor"
       strokeWidth="2.5"
@@ -61,8 +61,8 @@ export const StampIcon = () => (
   </Icon>
 );
 
-export const ChevronIcon = () => (
-  <Icon>
+export const ChevronIcon = ({ size }: { size?: number } = {}) => (
+  <Icon size={size}>
     <path d="m9 5 7 7-7 7" />
   </Icon>
 );
@@ -75,8 +75,8 @@ export const InfoIcon = () => (
   </Icon>
 );
 
-export const ChevronLeftIcon = () => (
-  <Icon>
+export const ChevronLeftIcon = ({ size }: { size?: number } = {}) => (
+  <Icon size={size}>
     <path d="m15 5-7 7 7 7" />
   </Icon>
 );
@@ -324,5 +324,72 @@ export const GlobeIcon = () => (
     <circle cx="12" cy="12" r="9" />
     <path d="M3 12h18" />
     <path d="M12 3c2.5 2.5 3.5 5.5 3.5 9s-1 6.5-3.5 9c-2.5-2.5-3.5-5.5-3.5-9S9.5 5.5 12 3Z" />
+  </Icon>
+);
+
+// Small marks that used to be typed as characters (＋ ▲ ✓ ↑ ...): now one stroke weight with the rest of the set.
+type Sized = { size?: number };
+
+export const PlusIcon = ({ size }: Sized = {}) => (
+  <Icon size={size}>
+    <path d="M12 5v14M5 12h14" />
+  </Icon>
+);
+
+export const MinusIcon = ({ size }: Sized = {}) => (
+  <Icon size={size}>
+    <path d="M5 12h14" />
+  </Icon>
+);
+
+export const ChevronUpIcon = ({ size }: Sized = {}) => (
+  <Icon size={size}>
+    <path d="m5 15 7-7 7 7" />
+  </Icon>
+);
+
+export const ChevronDownIcon = ({ size }: Sized = {}) => (
+  <Icon size={size}>
+    <path d="m5 9 7 7 7-7" />
+  </Icon>
+);
+
+export const ArrowUpIcon = ({ size }: Sized = {}) => (
+  <Icon size={size}>
+    <path d="M12 19V5M6 11l6-6 6 6" />
+  </Icon>
+);
+
+export const ArrowDownIcon = ({ size }: Sized = {}) => (
+  <Icon size={size}>
+    <path d="M12 5v14M6 13l6 6 6-6" />
+  </Icon>
+);
+
+/** Up and down together: a column that can be sorted but is not yet. */
+export const SortIcon = ({ size }: Sized = {}) => (
+  <Icon size={size}>
+    <path d="m8 9 4-4 4 4M8 15l4 4 4-4" />
+  </Icon>
+);
+
+/** A plain tick (CheckIcon has a ring round it). */
+export const TickIcon = ({ size }: Sized = {}) => (
+  <Icon size={size}>
+    <path d="m5 12.5 4.5 4.5L19 7" />
+  </Icon>
+);
+
+/** An exclamation mark, for a badge that already draws its own circle. */
+export const AlertIcon = ({ size }: Sized = {}) => (
+  <Icon size={size}>
+    <path d="M12 5v9" />
+    <path d="M12 18.5v.5" />
+  </Icon>
+);
+
+export const XIcon = ({ size }: Sized = {}) => (
+  <Icon size={size}>
+    <path d="m6 6 12 12M18 6 6 18" />
   </Icon>
 );
