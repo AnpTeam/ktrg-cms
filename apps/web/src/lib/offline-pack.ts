@@ -7,9 +7,16 @@ import { tileUrls } from "./offline-tiles";
 // Cache Storage under one cache per course, so deleting a course is deleting that cache. The worker (app/sw.ts) answers
 // a tile request from here before it asks the network. A small JSON entry in the same cache says when it was saved and
 // how big it is, so the cache and its description can never disagree.
+// The pack also keeps the pages the map needs (the map and the course page) and the course's line, so the app opens cold with
+// no signal. Pages are the visitor's own (their stamps), kept in one shared cache that is emptied at sign-out (clearSavedPages),
+// and the worker only uses them when the network fails, never in place of a page it can fetch.
+// shortcut: a person whose session simply expired never signs out; their saved pages stay until the next sign-out or save.
 // shortcut: a tile shared by two neighbouring courses is stored twice, when storage matters keep one shared tile cache.
 
 const META_URL = "/__pack-meta";
+/** The cache of saved pages; sw.ts reads it by this name. */
+export const PAGES_CACHE = "ktrg-pages";
+const MAP_PAGE = "/map";
 const MIN_ZOOM = 11;
 const MAX_ZOOM = 15;
 const PER_LAYER_LIMIT = 300;
@@ -49,6 +56,35 @@ export async function readPack(routeId: string): Promise<PackInfo | null> {
 
 export async function deletePack(routeId: string): Promise<void> {
   await caches.delete(packCacheName(routeId));
+  const pages = await caches.open(PAGES_CACHE);
+  await pages.delete(coursePage(routeId));
+  // The map page is shared by every pack: it goes with the last one.
+  if (!(await caches.keys()).some((k) => k.startsWith("ktrg-pack-"))) await pages.delete(MAP_PAGE);
+}
+
+/** Sign-out: the saved pages show the person's name and stamps, so they must not outlive the session. Tiles are public and stay. */
+export async function clearSavedPages(): Promise<void> {
+  if (typeof caches !== "undefined") await caches.delete(PAGES_CACHE).catch(() => false);
+}
+
+const coursePage = (routeId: string) => `/routes/${encodeURIComponent(routeId)}`;
+const lineUrl = (routeId: string) => `/api/v1/routes/${encodeURIComponent(routeId)}`;
+
+/**
+ * The pages and the line, fetched with the visitor's own session like any page load. The line is stored as a small answer of
+ * its own (just the line, the one thing the navigation reads from that address), never the whole course with the person's stamps.
+ */
+async function savePages(routeId: string, cache: Cache): Promise<void> {
+  const pages = await caches.open(PAGES_CACHE);
+  for (const url of [MAP_PAGE, coursePage(routeId)]) {
+    const res = await fetch(url, { cache: "reload" });
+    if (!res.ok) throw new Error("page");
+    await pages.put(url, res);
+  }
+  const res = await fetch(lineUrl(routeId));
+  if (!res.ok) return; // a course without a line is fine: the navigation then guides to the stops
+  const line = ((await res.json().catch(() => null)) as { route?: { line?: unknown } } | null)?.route?.line ?? null;
+  if (line) await cache.put(lineUrl(routeId), new Response(JSON.stringify({ route: { line } }), { headers: { "content-type": "application/json" } }));
 }
 
 /**
@@ -58,6 +94,12 @@ export async function deletePack(routeId: string): Promise<void> {
  */
 export async function savePack(routeId: string, urls: string[], onProgress: (done: number, total: number) => void, now = Date.now()): Promise<PackInfo> {
   const cache = await caches.open(packCacheName(routeId));
+  try {
+    await savePages(routeId, cache);
+  } catch {
+    await caches.delete(packCacheName(routeId));
+    throw new Error("pack incomplete");
+  }
   let done = 0;
   let stored = 0;
   let bytes = 0;

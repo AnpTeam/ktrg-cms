@@ -765,7 +765,7 @@ msgstr "アカウントを削除しますか？"
 msgid "アカウントを削除する"
 msgstr "アカウントを削除する"
 
-#: src/components/SiteHeader.tsx:244
+#: src/components/SiteHeader.tsx:246
 msgid "アカウント設定"
 msgstr "アカウント設定"
 
@@ -876,7 +876,7 @@ msgstr "いちばん多い地域"
 msgid "いつまで（空なら、解除するまで）"
 msgstr "いつまで（空なら、解除するまで）"
 
-#: src/app/offline/page.tsx:14
+#: src/app/offline/page.tsx:15
 msgid "いま、通信がつながっていません"
 msgstr "いま、通信がつながっていません"
 
@@ -1710,7 +1710,7 @@ msgstr "サイトの全体に関わる設定です。ここで変えたことは
 #: src/app/(public)/sitemap/page.tsx:15
 #: src/app/(public)/sitemap/page.tsx:50
 #: src/components/SiteFooter.tsx:27
-#: src/components/SiteHeader.tsx:290
+#: src/components/SiteHeader.tsx:292
 msgid "サイトマップ"
 msgstr "サイトマップ"
 
@@ -2358,7 +2358,7 @@ msgstr "ふつうは、3日後に削除する方法を使います。その間�
 #: src/app/(public)/bookmarks/page.tsx:19
 #: src/app/(public)/page.tsx:79
 #: src/app/(public)/sitemap/page.tsx:99
-#: src/components/SiteHeader.tsx:257
+#: src/components/SiteHeader.tsx:259
 msgid "ブックマーク"
 msgstr "ブックマーク"
 
@@ -2389,7 +2389,7 @@ msgstr "フッター"
 #: src/app/(public)/sitemap/page.tsx:123
 #: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:33
-#: src/components/SiteHeader.tsx:288
+#: src/components/SiteHeader.tsx:290
 msgid "プライバシーポリシー"
 msgstr "プライバシーポリシー"
 
@@ -2416,7 +2416,7 @@ msgstr "プレビュー"
 #: src/app/(public)/sitemap/page.tsx:76
 #: src/components/landing/BlogCard.tsx:22
 #: src/components/SiteFooter.tsx:18
-#: src/components/SiteHeader.tsx:262
+#: src/components/SiteHeader.tsx:264
 msgid "ブログ"
 msgstr "ブログ"
 
@@ -2481,7 +2481,7 @@ msgstr "ページの文章へ戻る"
 msgid "ページの漢字すべてに、読みがなをつけます。"
 msgstr "ページの漢字すべてに、読みがなをつけます。"
 
-#: src/app/offline/page.tsx:17
+#: src/app/offline/page.tsx:18
 msgid "ページを開けませんでした。電波のある場所で、もう一度お試しください。"
 msgstr "ページを開けませんでした。電波のある場所で、もう一度お試しください。"
 
@@ -2504,7 +2504,7 @@ msgstr "ベースの地図"
 #: src/app/(public)/sitemap/page.tsx:53
 #: src/app/(public)/sitemap/page.tsx:55
 #: src/app/(public)/terms/page.tsx:26
-#: src/components/SiteHeader.tsx:186
+#: src/components/SiteHeader.tsx:188
 #: src/components/TabBar.tsx:22
 #: src/components/TabBar.tsx:34
 msgid "ホーム"
@@ -2741,7 +2741,7 @@ msgid "めぐる場所"
 msgstr "めぐる場所"
 
 #: src/components/admin/AdminNav.tsx:60
-#: src/components/SiteHeader.tsx:208
+#: src/components/SiteHeader.tsx:210
 #: src/components/TabBar.tsx:73
 msgid "メニュー"
 msgstr "メニュー"
@@ -2767,7 +2767,7 @@ msgid "もう一度ためす"
 msgstr "もう一度ためす"
 
 #: src/app/(public)/error.tsx:28
-#: src/app/offline/page.tsx:28
+#: src/app/offline/page.tsx:30
 msgid "もう一度ひらく"
 msgstr "もう一度ひらく"
 
@@ -2806,7 +2806,7 @@ msgid "もとの文章"
 msgstr "もとの文章"
 
 #: src/components/IntroFlow.tsx:284
-#: src/components/SiteHeader.tsx:177
+#: src/components/SiteHeader.tsx:179
 msgid "もどる"
 msgstr "もどる"
 
@@ -2849,7 +2849,7 @@ msgstr "やり直す"
 #: src/app/(public)/sitemap/page.tsx:117
 #: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:21
-#: src/components/SiteHeader.tsx:286
+#: src/components/SiteHeader.tsx:288
 msgid "よくあるご質問"
 msgstr "よくあるご質問"
 
@@ -2863,7 +2863,7 @@ msgstr "よみ"
 
 #: src/app/(public)/sitemap/page.tsx:126
 #: src/components/SiteFooter.tsx:24
-#: src/components/SiteHeader.tsx:289
+#: src/components/SiteHeader.tsx:291
 msgid "ライセンス情報"
 msgstr "ライセンス情報"
 
@@ -3154,7 +3154,7 @@ msgstr "ルート一覧にもどる"
 msgid "ルート名（日本語）"
 msgstr "ルート名（日本語）"
 
-#: src/components/SiteHeader.tsx:227
+#: src/components/SiteHeader.tsx:229
 msgid "ログアウト"
 msgstr "ログアウト"
 
@@ -3169,7 +3169,7 @@ msgstr "ログアウト"
 #: src/components/ProfileSettings.tsx:180
 #: src/components/SignInPrompt.tsx:26
 #: src/components/SignInPrompt.tsx:56
-#: src/components/SiteHeader.tsx:233
+#: src/components/SiteHeader.tsx:235
 msgid "ログイン"
 msgstr "ログイン"
 
@@ -3498,6 +3498,10 @@ msgstr "例：祝日は休み／ラストオーダーは閉店30分前"
 #: src/components/admin/PageTextEditor.tsx:76
 msgid "保存"
 msgstr "保存"
+
+#: src/components/SavedMapLink.tsx:22
+msgid "保存した地図を開く"
+msgstr "保存した地図を開く"
 
 #: src/components/admin/RouteEditor.tsx:866
 msgid "保存していない内容も含めて調べています。"
@@ -4048,7 +4052,7 @@ msgstr "別の人が先に保存しました。読み込み直してから、も
 #: src/app/(public)/sitemap/page.tsx:120
 #: src/components/admin/PageTextEditor.tsx:37
 #: src/components/SiteFooter.tsx:30
-#: src/components/SiteHeader.tsx:287
+#: src/components/SiteHeader.tsx:289
 msgid "利用規約"
 msgstr "利用規約"
 
@@ -5093,7 +5097,7 @@ msgstr "文字もボタンも、いちばん大きくなります。"
 msgid "文字もボタンも、少し大きくなります。"
 msgstr "文字もボタンも、少し大きくなります。"
 
-#: src/components/SiteHeader.tsx:280
+#: src/components/SiteHeader.tsx:282
 msgid "文字やボタンの大きさ、地図の見せ方"
 msgstr "文字やボタンの大きさ、地図の見せ方"
 
@@ -5166,7 +5170,7 @@ msgstr "新しく作るには、名前（日本語）が必要です"
 #: src/components/landing/LandingHero.tsx:41
 #: src/components/SignInPrompt.tsx:23
 #: src/components/SignInPrompt.tsx:50
-#: src/components/SiteHeader.tsx:236
+#: src/components/SiteHeader.tsx:238
 msgid "新規登録"
 msgstr "新規登録"
 
@@ -5698,7 +5702,7 @@ msgstr "町や村の名前"
 msgid "画面が見えない間は、位置を止めています。"
 msgstr "画面が見えない間は、位置を止めています。"
 
-#: src/components/SiteHeader.tsx:267
+#: src/components/SiteHeader.tsx:269
 msgid "画面の明るさ"
 msgstr "画面の明るさ"
 
@@ -5904,7 +5908,7 @@ msgstr "答えなくても大丈夫です。"
 msgid "管理メニュー"
 msgstr "管理メニュー"
 
-#: src/components/SiteHeader.tsx:251
+#: src/components/SiteHeader.tsx:253
 msgid "管理画面"
 msgstr "管理画面"
 
@@ -6416,7 +6420,7 @@ msgstr "見やすさのクイック設定"
 #: src/app/(public)/settings/page.tsx:12
 #: src/app/(public)/settings/page.tsx:28
 #: src/app/(public)/sitemap/page.tsx:108
-#: src/components/SiteHeader.tsx:278
+#: src/components/SiteHeader.tsx:280
 msgid "見やすさの設定"
 msgstr "見やすさの設定"
 
@@ -6619,7 +6623,7 @@ msgstr "送らずに捨てる"
 msgid "送信待ちだった{count}件のスタンプは、受け付けられませんでした。"
 msgstr "送信待ちだった{count}件のスタンプは、受け付けられませんでした。"
 
-#: src/components/SiteHeader.tsx:145
+#: src/components/SiteHeader.tsx:146
 msgid "送信待ちのスタンプが{waiting}件あります。ログアウトすると、次にログインするまで送れません。ログアウトしますか？"
 msgstr "送信待ちのスタンプが{waiting}件あります。ログアウトすると、次にログインするまで送れません。ログアウトしますか？"
 
@@ -6862,7 +6866,7 @@ msgstr "長さ"
 #: src/components/map/TrailMap.tsx:463
 #: src/components/ProfileSettings.tsx:231
 #: src/components/SampleNotice.tsx:64
-#: src/components/SiteHeader.tsx:212
+#: src/components/SiteHeader.tsx:214
 #: src/components/StampOutbox.tsx:129
 msgid "閉じる"
 msgstr "閉じる"
@@ -6908,7 +6912,7 @@ msgstr "電波がないため、「{0}」のスタンプは、あとで送りま
 msgid "電波がないため、あとで送ります。"
 msgstr "電波がないため、あとで送ります。"
 
-#: src/app/offline/page.tsx:20
+#: src/app/offline/page.tsx:21
 msgid "電波がないときに押したスタンプは、この端末に残り、つながると自動で送られます。"
 msgstr "電波がないときに押したスタンプは、この端末に残り、つながると自動で送られます。"
 

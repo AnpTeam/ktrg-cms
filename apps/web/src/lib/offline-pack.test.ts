@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, test } from "bun:test";
-import { deletePack, megabytes, packAge, packTileUrls, readPack, savePack } from "./offline-pack";
+import { clearSavedPages, deletePack, megabytes, packAge, packTileUrls, readPack, savePack } from "./offline-pack";
 
 const area = { lat: 34.45, lng: 135.65, widthM: 4000, heightM: 4000, verified: true };
 
@@ -9,9 +9,9 @@ function fakeCaches() {
   const open = async (name: string) => {
     const s = stores.get(name) ?? new Map<string, Response>();
     stores.set(name, s);
-    return { put: async (u: string, r: Response) => void s.set(u, r), match: async (u: string) => s.get(u)?.clone() };
+    return { put: async (u: string, r: Response) => void s.set(u, r), match: async (u: string) => s.get(u)?.clone(), delete: async (u: string) => s.delete(u) };
   };
-  return { stores, caches: { open, has: async (n: string) => stores.has(n), delete: async (n: string) => stores.delete(n) } };
+  return { stores, caches: { open, keys: async () => [...stores.keys()], has: async (n: string) => stores.has(n), delete: async (n: string) => stores.delete(n) } };
 }
 
 const realFetch = globalThis.fetch;
@@ -31,6 +31,37 @@ test("the tile list holds the base map and the overlay, each within its own zoom
   expect(urls.some((u) => u.includes("/relief/15/"))).toBe(true);
   expect(packTileUrls(area, { base: "blank", terrain: "hillshade" }).some((u) => u.includes("/blank/15/"))).toBe(false);
   expect(packTileUrls(area, { base: "photo", terrain: "hillshade" }).some((u) => u.includes("/seamlessphoto/") && u.endsWith(".jpg"))).toBe(true);
+});
+
+// Pages answer with a body, tiles with bytes; the course answers with a line.
+const site = (u: string) =>
+  u === "/api/v1/routes/r1" ? new Response(JSON.stringify({ route: { line: { coordinates: [[1, 2]] }, spots: ["private"] } })) : new Response("x".repeat(1000));
+
+test("the pages and the line are kept with the pack, the line without the rest of the course", async () => {
+  globalThis.fetch = (async (u: string) => site(u)) as unknown as typeof fetch;
+  await savePack("r1", ["u/1"], () => {});
+  expect([...(fake.stores.get("ktrg-pages")?.keys() ?? [])].sort()).toEqual(["/map", "/routes/r1"]);
+  const line = await fake.stores.get("ktrg-pack-r1")?.get("/api/v1/routes/r1")?.json();
+  expect(line).toEqual({ route: { line: { coordinates: [[1, 2]] } } });
+});
+
+test("deleting the last pack takes the map page too, and signing out empties the saved pages", async () => {
+  globalThis.fetch = (async (u: string) => site(u)) as unknown as typeof fetch;
+  await savePack("r1", ["u/1"], () => {});
+  await savePack("r2", ["u/1"], () => {});
+  await deletePack("r1");
+  expect([...(fake.stores.get("ktrg-pages")?.keys() ?? [])].sort()).toEqual(["/map", "/routes/r2"]);
+  await deletePack("r2");
+  expect([...(fake.stores.get("ktrg-pages")?.keys() ?? [])]).toEqual([]);
+  await savePack("r2", ["u/1"], () => {});
+  await clearSavedPages();
+  expect(fake.stores.has("ktrg-pages")).toBe(false);
+});
+
+test("a page that cannot be fetched fails the whole pack", async () => {
+  globalThis.fetch = (async (u: string) => (u === "/map" ? new Response("", { status: 500 }) : site(u))) as unknown as typeof fetch;
+  await expect(savePack("r1", ["u/1"], () => {})).rejects.toThrow();
+  expect(fake.stores.has("ktrg-pack-r1")).toBe(false);
 });
 
 test("a saved pack is described, and deleting it removes everything", async () => {

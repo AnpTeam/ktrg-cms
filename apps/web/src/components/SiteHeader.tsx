@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { logOut } from "@/lib/auth-client";
+import { clearSavedPages } from "@/lib/offline-pack";
 import { BookmarkIcon, ChevronIcon, DocumentIcon, ChevronLeftIcon, CloseIcon, GearIcon } from "./icons";
 import { QuickActions } from "./QuickActions";
 import type { Prefs } from "@/lib/prefs";
@@ -144,6 +145,7 @@ export function SiteHeader({
     const waiting = getOutbox().pending;
     if (waiting > 0 && !window.confirm(t`送信待ちのスタンプが${waiting}件あります。ログアウトすると、次にログインするまで送れません。ログアウトしますか？`)) return;
     setLeaving(true);
+    await clearSavedPages(); // the saved pages show this person's stamps
     await logOut();
     setLeaving(false);
     setOpen(false);
