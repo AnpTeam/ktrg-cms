@@ -646,16 +646,6 @@ msgstr "The GPX file had no path. Only named points were found."
 msgid "GPXファイルをここで離すと、読み込みます"
 msgstr "Drop the GPX file here to import it"
 
-#: src/components/PrintShare.tsx:40
-#: src/components/PrintShare.tsx:40
-msgid "GPXファイルをダウンロード"
-msgstr "Download the GPX file"
-
-#: src/components/PrintShare.tsx:44
-#: src/components/PrintShare.tsx:44
-msgid "GPXファイルをダウンロード（ログインが必要です）"
-msgstr "Download the GPX file (sign-in needed)"
-
 #: src/components/admin/map-editor/MapEditor.tsx:648
 msgid "GPXファイルを読み込み、経由地ごとの区間に分けました（最初の経由地より前と、最後の経由地より後は入りません）。形を確かめてから、保存してください。"
 msgstr "Loaded the GPX file and cut it into legs at the waypoints (what lies before the first and after the last waypoint is left out). Check the shape, then save."
@@ -778,7 +768,7 @@ msgstr "Visits"
 #: src/components/admin/RouteEditor.tsx:678
 #: src/components/admin/useChecklistLabels.ts:18
 #: src/components/map/MapScreen.tsx:482
-#: src/components/RouteView.tsx:197
+#: src/components/RouteView.tsx:229
 msgid "アクセス・交通"
 msgstr "Access and transport"
 
@@ -1202,7 +1192,7 @@ msgid "コース定数 ＝ 1.8 × 時間（h） ＋ 0.3 × 距離（km） ＋ 10
 msgstr "Course constant = 1.8 × hours + 0.3 × distance (km) + 10 × climb (km) + 0.6 × descent (km)"
 
 #: src/app/(public)/map/page.tsx:194
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:51
 #: src/components/admin/LivePreview.tsx:75
 #: src/components/RouteJourney.tsx:34
 #: src/components/RouteJourney.tsx:97
@@ -1324,6 +1314,10 @@ msgstr "This file cannot be read. Choose a JSON file saved in GSI's style editor
 msgid "このブラウザでは、スタンプが消えてしまうことがあります。"
 msgstr "Your stamps may be lost in this browser."
 
+#: src/app/(public)/routes/[id]/page.tsx:55
+msgid "このページの項目"
+msgstr "On this page"
+
 #: src/components/admin/AdminListTable.tsx:252
 msgid "このページをすべて選ぶ"
 msgstr "Select everything on this page"
@@ -1382,7 +1376,7 @@ msgstr "This route does not exist yet"
 msgid "このルートに追加"
 msgstr "Add to this route"
 
-#: src/app/(public)/routes/[id]/page.tsx:48
+#: src/app/(public)/routes/[id]/page.tsx:61
 msgid "このルートのお知らせをフィードで受け取る"
 msgstr "Follow this route's notices in a feed reader"
 
@@ -1512,8 +1506,8 @@ msgstr "Write the material this text is based on, or the official site you check
 msgid "この文章は、本番のサイトにすぐ反映されます。保存しますか？"
 msgstr "This text goes live at once. Save it?"
 
-#: src/components/RouteView.tsx:177
-#: src/components/RouteView.tsx:208
+#: src/components/RouteView.tsx:209
+#: src/components/RouteView.tsx:240
 msgid "この文章は日本語のみです。"
 msgstr "This text is only available in Japanese."
 
@@ -1771,7 +1765,7 @@ msgid "すぐ{turnWord}"
 msgstr "{turnWord} now"
 
 #: src/app/(public)/map/page.tsx:194
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:51
 #: src/components/admin/LivePreview.tsx:75
 #: src/components/RouteJourney.tsx:31
 #: src/components/RouteJourney.tsx:93
@@ -1806,7 +1800,7 @@ msgstr "Stamps {0} / {1}"
 
 #: src/components/landing/ContinueCard.tsx:23
 #: src/components/map/MapScreen.tsx:413
-#: src/components/RouteView.tsx:261
+#: src/components/RouteView.tsx:293
 #: src/components/TrailRibbon.tsx:62
 msgid "スタンプ {stampedCount} / {spotCount}"
 msgstr "Stamps {stampedCount} / {spotCount}"
@@ -1852,7 +1846,7 @@ msgid "スタンプの場所の近くにいるか、たしかめるために、�
 msgstr "To check that you are near the stamp place, we look at your phone's location once."
 
 #: src/components/map/MapScreen.tsx:468
-#: src/components/RouteView.tsx:249
+#: src/components/RouteView.tsx:281
 msgid "スタンプの場所は、まだ準備中です。"
 msgstr "The stamp places are not ready yet."
 
@@ -1952,7 +1946,7 @@ msgid "スタンプ数"
 msgstr "Stamps"
 
 #: src/app/(public)/map/page.tsx:194
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:51
 #: src/components/admin/LivePreview.tsx:75
 msgid "スタンプ済み"
 msgstr "stamped"
@@ -2394,9 +2388,8 @@ msgstr "Usually use the 3-day way. It can be cancelled until then."
 msgid "ブックマーク"
 msgstr "Bookmarks"
 
-#: src/components/PrintShare.tsx:56
-#: src/components/PrintShare.tsx:57
 #: src/components/RallyBookmark.tsx:21
+#: src/components/ShareBookmark.tsx:42
 msgid "ブックマークする"
 msgstr "Bookmark this route"
 
@@ -2404,12 +2397,8 @@ msgstr "Bookmark this route"
 msgid "ブックマークは、まだありません。"
 msgstr "No bookmarks yet."
 
-#: src/components/PrintShare.tsx:56
-#: src/components/PrintShare.tsx:57
-msgid "ブックマークをはずす"
-msgstr "Remove bookmark"
-
 #: src/components/RallyBookmark.tsx:21
+#: src/components/ShareBookmark.tsx:42
 msgid "ブックマーク済み"
 msgstr "Bookmarked"
 
@@ -3038,7 +3027,7 @@ msgstr "Links open another service. Only the station's location is passed on, ne
 msgid "リンクをコピー"
 msgstr "Copy link"
 
-#: src/components/PrintShare.tsx:50
+#: src/components/ShareBookmark.tsx:45
 msgid "リンクをコピーしました"
 msgstr "Link copied"
 
@@ -3108,7 +3097,7 @@ msgstr "Nearest first from the route's first waypoint."
 msgid "ルートの写真のリンク"
 msgstr "Route photo link"
 
-#: src/components/RouteView.tsx:230
+#: src/components/RouteView.tsx:262
 msgid "ルートの動画"
 msgstr "Route video"
 
@@ -3173,7 +3162,7 @@ msgid "ルートを読み込めませんでした。しばらくしてから、�
 msgstr "Could not load the routes. Please wait a moment and reopen the page."
 
 #: src/app/(public)/grading/page.tsx:39
-#: src/app/(public)/routes/[id]/page.tsx:42
+#: src/app/(public)/routes/[id]/page.tsx:41
 msgid "ルート一覧"
 msgstr "All routes"
 
@@ -3785,7 +3774,7 @@ msgstr "When they are ready to publish, the stamp rallies will appear here."
 msgid "公開できるようになったら、ここにルートが表示されます。"
 msgstr "Routes will appear here once they are published."
 
-#: src/components/RouteView.tsx:250
+#: src/components/RouteView.tsx:282
 msgid "公開できるようになったら、ここに場所の一覧が表示されます。"
 msgstr "When they are ready to publish, the list of places will appear here."
 
@@ -3871,8 +3860,7 @@ msgstr "Check before publishing"
 msgid "公開前の経由地も、ここには表示されます。"
 msgstr "Waypoints that are not published yet are shown here too."
 
-#: src/components/PrintShare.tsx:35
-#: src/components/PrintShare.tsx:35
+#: src/components/ShareBookmark.tsx:33
 msgid "共有"
 msgstr "Share"
 
@@ -3990,7 +3978,7 @@ msgstr "Shown with an ℹ︎ under the photo. A link is written [shown words](ht
 msgid "写真の出どころ"
 msgstr "Photo credit"
 
-#: src/components/PhotoCredit.tsx:57
+#: src/components/PhotoCredit.tsx:58
 msgid "写真の出典"
 msgstr "Photo credit"
 
@@ -4042,7 +4030,7 @@ msgstr "Before you go"
 #: src/app/(public)/routes/page.tsx:85
 #: src/components/landing/Landing.tsx:266
 #: src/components/landing/TrailNotices.tsx:65
-#: src/components/RouteView.tsx:277
+#: src/components/RouteView.tsx:309
 #: src/components/SpotSheet.tsx:185
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "Check official sources before you go."
@@ -4055,7 +4043,7 @@ msgstr "Credit (who took it, terms of use)"
 #: src/components/admin/RouteEditor.tsx:686
 #: src/components/admin/RouteEditor.tsx:687
 #: src/components/map/MapScreen.tsx:491
-#: src/components/RouteView.tsx:186
+#: src/components/RouteView.tsx:218
 #: src/components/SpotSheet.tsx:149
 msgid "出典"
 msgstr "Source"
@@ -4231,6 +4219,7 @@ msgid "動きをへらす"
 msgstr "Reduce motion"
 
 #: src/components/admin/useChecklistLabels.ts:20
+#: src/components/RouteView.tsx:126
 msgid "動画"
 msgstr "Video"
 
@@ -4331,11 +4320,6 @@ msgstr "Southeast"
 #: src/components/navigation/NavigationHud.tsx:205
 msgid "南西"
 msgstr "Southwest"
-
-#: src/components/PrintShare.tsx:32
-#: src/components/PrintShare.tsx:32
-msgid "印刷・PDF"
-msgstr "Print or save as PDF"
 
 #: src/components/admin/PlacePanel.tsx:43
 msgid "危険な所"
@@ -4558,6 +4542,7 @@ msgstr "A map with large, clear place names and symbols. The colour and contrast
 
 #: src/components/map/TrailMap.tsx:451
 #: src/components/navigation/NavigationHud.tsx:377
+#: src/components/RouteView.tsx:125
 msgid "地図"
 msgstr "Map"
 
@@ -5568,7 +5553,7 @@ msgstr "Routes are in walking order. Select a name to edit its text and map."
 #: src/components/admin/RouteEditor.tsx:676
 #: src/components/admin/useChecklistLabels.ts:17
 #: src/components/map/MapScreen.tsx:473
-#: src/components/RouteView.tsx:168
+#: src/components/RouteView.tsx:200
 #: src/components/SpotSheet.tsx:133
 msgid "歴史・由来"
 msgstr "History and background"
@@ -6418,6 +6403,7 @@ msgid "行き先の近くでボタンを押すと、スタンプがたまりま�
 msgstr "Press the button near a stop and the stamp is yours. Your position is checked only once, when you press, and is not saved."
 
 #: src/components/navigation/NavFarCard.tsx:39
+#: src/components/RouteView.tsx:127
 msgid "行き方"
 msgstr "How to get there"
 
@@ -6776,7 +6762,8 @@ msgstr "Snap to trails"
 msgid "道に沿わせる機能が、まだ使えません。管理する人に、道案内サービスの設定を頼んでください。手で線を描くことはできます。"
 msgstr "Snapping to trails is not available yet. Ask whoever manages the site to set up the route-finding service. You can still draw the line by hand."
 
-#: src/components/RouteView.tsx:257
+#: src/components/RouteView.tsx:124
+#: src/components/RouteView.tsx:289
 msgid "道のり"
 msgstr "The walk"
 
@@ -6972,7 +6959,7 @@ msgid "閉店・撤去"
 msgstr "Closed for good"
 
 #: src/app/(public)/map/page.tsx:194
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:51
 #: src/components/admin/LivePreview.tsx:75
 #: src/components/navigation/NavTargetPicker.tsx:56
 #: src/components/StatusWord.tsx:13

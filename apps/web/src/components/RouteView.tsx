@@ -85,6 +85,8 @@ export interface RouteViewProps {
   offline?: ReactNode;
   /** Trail notices for this route: right under the name and the numbers (safety first, but after the cover). */
   notices?: ReactNode;
+  /** The name of the "jump to a part" bar, for screen readers (a string: it is an attribute). */
+  jumpLabel?: string;
   /** Show "スタンプ 3 / 14" over the walk: only for a visitor who has stamped somewhere (the admin's preview leaves it out). */
   showStampCount?: boolean;
 }
@@ -94,7 +96,7 @@ export interface RouteViewProps {
  * and the places (stamp places numbered, the others marked "no stamp") as a trail. The public page and the admin's live preview both render this, so what an
  * editor sees while typing is what visitors get. It reads no cookies and calls no server API.
  */
-export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref, offline, notices, showStampCount = false }: RouteViewProps) {
+export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref, offline, notices, showStampCount = false, jumpLabel = "" }: RouteViewProps) {
   const description = pickText(locale, route.descriptionJa, route.descriptionEn);
   const stops = buildStops(route, locale, spotHref, labels);
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
@@ -118,6 +120,12 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
   const trail = trailStops(route);
   const journey = journeyOf(trail, route.walkStyle ?? null);
   const rows = walkRows(trail, journey, route.line);
+  const jumps = [
+    trail.length > 0 ? { id: "walk", label: <Trans>道のり</Trans> } : null,
+    stops.length > 0 ? { id: "map", label: <Trans>地図</Trans> } : null,
+    video || videoFile ? { id: "video", label: <Trans>動画</Trans> } : null,
+    access || journey || route.accessPoints.length > 0 ? { id: "access", label: <Trans>行き方</Trans> } : null,
+  ].filter((j) => j !== null);
   const photo = route.photoUrl ? { src: route.photoUrl, alt: pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa, credit: route.photoCredit ?? null } : null;
 
   // One column (the phone, and the admin's narrow preview). When the box this sits in is wide (a desktop page), two
@@ -161,6 +169,21 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             </div>
           </header>
 
+          {jumps.length >= 2 ? (
+            // Jump to a part of a long page. It stays at the top while scrolling on a phone; two columns show everything at once.
+            <nav aria-label={jumpLabel} className="sticky top-0 z-20 order-3 border-b border-line/30 bg-paper/95 py-2 backdrop-blur-sm @4xl:hidden">
+              <ul className="flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]">
+                {jumps.map((j) => (
+                  <li key={j.id} className="shrink-0">
+                    <a href={`#${j.id}`} className="tap-target inline-flex items-center rounded-full border border-line bg-paper px-4 text-lg font-bold text-ink hover:bg-surface">
+                      {j.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ) : null}
+
           {notices ? <div className="order-3 flex flex-col gap-3 @4xl:order-none @4xl:[&>section]:mx-0">{notices}</div> : null}
 
           {description ? (
@@ -201,7 +224,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           ) : null}
 
           {access || journey || route.accessPoints.length > 0 ? (
-            <section className="order-8 flex flex-col gap-4 px-4 @4xl:order-none @4xl:px-0">
+            <section id="access" className="order-8 flex flex-col gap-4 px-4 scroll-mt-20 @4xl:order-none @4xl:px-0">
               <h2 className="text-xl font-bold">
                 <Trans>アクセス・交通</Trans>
               </h2>
@@ -234,7 +257,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           {offline ? <section className="order-7 px-4 @4xl:order-none @4xl:px-0">{offline}</section> : null}
 
           {video || videoFile ? (
-            <section className="order-9 flex flex-col gap-3 px-4 @4xl:order-none @4xl:px-0">
+            <section id="video" className="order-9 flex flex-col gap-3 px-4 scroll-mt-20 @4xl:order-none @4xl:px-0">
               <h2 className="text-xl font-bold">
                 <Trans>ルートの動画</Trans>
               </h2>
@@ -248,7 +271,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           ) : null}
 
           {stops.length > 0 ? (
-            <section className="order-6 px-4 @4xl:order-none @4xl:px-0">
+            <section id="map" className="order-6 px-4 scroll-mt-20 @4xl:order-none @4xl:px-0">
               <TrailMapLoader stops={stops} line={route.line} sideLines={route.sideLines?.map((s) => s.line)} places={mapPlaces} draft={draftPositions} settings={settings} mergeStops={mergeStops} placesFirst={placesFirst} />
             </section>
           ) : null}
@@ -260,7 +283,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               </EmptyState>
             </div>
           ) : (
-            <section className="order-5 @4xl:order-none">
+            <section id="walk" className="order-5 scroll-mt-20 @4xl:order-none">
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 px-4 pb-2 @4xl:px-0">
                 <h2 className="text-xl font-bold">
                   <Trans>道のり</Trans>
