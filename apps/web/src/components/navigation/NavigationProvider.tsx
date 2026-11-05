@@ -47,15 +47,22 @@ interface NavigationApi {
   /** How far down from the top of the screen the instruction banner reaches on the map (0 when none), so the sheet stops below it. */
   bannerPx: number;
   setBannerPx(px: number): void;
+  /**
+   * On the map, during a navigation, the bottom of the screen belongs to one thing at a time: the navigation controls, or the
+   * sheet (a course's or a place's details). True while the sheet has it; the controls then slide away (NavigationHud).
+   */
+  sheetUp: boolean;
+  setSheetUp(up: boolean): void;
 }
 
-const NavigationContext = createContext<NavigationApi>({ session: null, start: () => {}, stop: () => {}, markStamped: () => {}, setTarget: () => {}, chooseWalk: () => {}, signedIn: false, toastPx: 0, setToastPx: () => {}, bannerPx: 0, setBannerPx: () => {} });
+const NavigationContext = createContext<NavigationApi>({ session: null, start: () => {}, stop: () => {}, markStamped: () => {}, setTarget: () => {}, chooseWalk: () => {}, signedIn: false, toastPx: 0, setToastPx: () => {}, bannerPx: 0, setBannerPx: () => {}, sheetUp: false, setSheetUp: () => {} });
 
 export function NavigationProvider({ children, signedIn }: { children: ReactNode; signedIn: boolean }) {
   const controller = useRef<NavigationController | null>(null);
   const [session, setSession] = useState<NavSession | null>(null);
   const [toastPx, setToastPx] = useState(0);
   const [bannerPx, setBannerPx] = useState(0);
+  const [sheetUp, setSheetUp] = useState(false);
   // Read when a path is wanted, so signing in or out during a session takes effect without restarting it.
   const signedInRef = useRef(signedIn);
   useEffect(() => {
@@ -94,7 +101,7 @@ export function NavigationProvider({ children, signedIn }: { children: ReactNode
   // Leaving the site (or a full reload) ends the session; nothing is kept.
   useEffect(() => () => controller.current?.stop(), []);
 
-  const api = useMemo(() => ({ session, start, stop, markStamped, setTarget, chooseWalk, signedIn, toastPx, setToastPx, bannerPx, setBannerPx }), [session, start, stop, markStamped, setTarget, chooseWalk, signedIn, toastPx, bannerPx]);
+  const api = useMemo(() => ({ session, start, stop, markStamped, setTarget, chooseWalk, signedIn, toastPx, setToastPx, bannerPx, setBannerPx, sheetUp, setSheetUp }), [session, start, stop, markStamped, setTarget, chooseWalk, signedIn, toastPx, bannerPx, sheetUp]);
   return <NavigationContext.Provider value={api}>{children}</NavigationContext.Provider>;
 }
 

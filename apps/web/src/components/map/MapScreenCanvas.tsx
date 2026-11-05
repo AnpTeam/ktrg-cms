@@ -54,6 +54,7 @@ export function MapScreenCanvas({
   focusPlaceId = null,
   coveredPx,
   coveredLeftPx = 0,
+  controlsTopPx = 0,
   settings,
   mergeStops,
   user = null,
@@ -73,6 +74,8 @@ export function MapScreenCanvas({
   coveredPx: number;
   /** On a desktop: how much of the map's left side the panel covers, so what is framed stays clear of it. */
   coveredLeftPx?: number;
+  /** How far down the screen something sits over the top of the map (the navigation banner): the buttons go below it. */
+  controlsTopPx?: number;
   settings: MapSettings;
   mergeStops: boolean;
   /** While navigating: where the phone is (on this phone only), drawn as a dot, and which way the visitor walks. */
@@ -649,7 +652,7 @@ export function MapScreenCanvas({
       ) : null}
 
       {draftShown ? (
-        <p style={{ marginLeft: coveredLeftPx }} className="absolute left-3 top-[calc(4.5rem+env(safe-area-inset-top))] z-[4] md:top-[calc(8.25rem+env(safe-area-inset-top))] flex max-w-[calc(100%-6rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">
+        <p style={{ marginLeft: coveredLeftPx, ...(controlsTopPx > 0 ? { top: controlsTopPx } : {}) }} className="absolute left-3 top-[calc(4.5rem+env(safe-area-inset-top))] z-[4] md:top-[calc(8.25rem+env(safe-area-inset-top))] flex max-w-[calc(100%-6rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">
           <span className="text-caution">
             <WarningIcon />
           </span>
@@ -657,7 +660,7 @@ export function MapScreenCanvas({
         </p>
       ) : null}
 
-      <div className="absolute right-3 top-[calc(4.5rem+env(safe-area-inset-top))] z-[4] md:top-[calc(8.25rem+env(safe-area-inset-top))] flex flex-col gap-2">
+      <div style={controlsTopPx > 0 ? { top: controlsTopPx } : undefined} className="absolute right-3 top-[calc(4.5rem+env(safe-area-inset-top))] z-[4] md:top-[calc(8.25rem+env(safe-area-inset-top))] flex flex-col gap-2">
         {(["＋", "－"] as const).map((sign) => (
           <button
             key={sign}
