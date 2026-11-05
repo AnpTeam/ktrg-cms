@@ -351,6 +351,13 @@
       "when": 1793772545769,
       "tag": "0049_stale_anita_blake",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1793846543650,
+      "tag": "0050_backfill_course_rallies",
+      "breakpoints": true
     }
   ]
 }

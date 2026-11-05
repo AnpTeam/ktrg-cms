@@ -3,6 +3,7 @@
 // The database must already be migrated (bun run db:migrate). Every row it creates is tagged and
 // removed afterwards, and it refuses to run against anything but localhost or a "test" database.
 import { afterAll, describe, expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
 import { randomBytes, randomUUID } from "node:crypto";
 import { and, asc, eq, inArray, like, sql } from "drizzle-orm";
 import { createDrizzleAuditWriter, writeAudit } from "../audit/audit-store";
@@ -881,6 +882,28 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       await body(createDrizzleContentStore(tx as unknown as typeof db), u!.id);
     }
 
+    test("the backfill gives a course made before auto-rallies a rally of its own, names included, and running it again changes nothing", async () => {
+      await inRollback(async (tx) => {
+        await seed(tx);
+        // A course as an older admin made it: no rally.
+        const [old] = await tx.insert(routes).values({ sortOrder: 99 }).returning({ id: routes.id });
+        await tx.insert(routeTranslations).values([{ routeId: old!.id, locale: "ja", name: "昔の道" }, { routeId: old!.id, locale: "en", name: "Old trail" }]);
+        const before = await tx.select().from(rallies);
+        const sqlText = readFileSync(new URL("../../drizzle/0050_backfill_course_rallies.sql", import.meta.url), "utf8");
+        await tx.execute(sql.raw(sqlText));
+        const after = await tx.select().from(rallies);
+        expect(after).toHaveLength(before.length + 1);
+        const [link] = await tx.select().from(rallyRoutes).where(eq(rallyRoutes.routeId, old!.id));
+        const made = after.find((x) => x.id === link!.rallyId)!;
+        expect(made).toMatchObject({ kind: "course", published: true });
+        expect(made.sortOrder).toBeGreaterThan(Math.max(...before.map((x) => x.sortOrder)));
+        const names = await nameOf(tx, rallyTranslations, (t) => t.rallyId);
+        expect([names.get(`${made.id}:ja`), names.get(`${made.id}:en`)]).toEqual(["昔の道", "Old trail"]);
+        await tx.execute(sql.raw(sqlText));
+        expect(await tx.select().from(rallies)).toHaveLength(after.length);
+      });
+    });
+
     test("a new course gets a published rally of its own, and deleting the empty course takes that rally with it", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {
@@ -1006,15 +1029,20 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       });
     });
 
-    test("deleting: a route with places is refused; an empty one leaves its rallies of courses (they stay); a stamped place is refused", async () => {
+    test("deleting: a route with places is refused; an empty one takes the rally made for it alone but not a rally shared with other courses; a stamped place is refused", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {
           const list = await store.listRoutes();
           expect(await store.deleteRoute(actor, list[3]!.id)).toBe("has_places");
           const [link] = await tx.select().from(rallyRoutes).where(eq(rallyRoutes.routeId, list[2]!.id));
+          // A rally an admin grouped with another course is not made for this course alone.
+          const [grouped] = await tx.insert(rallies).values({ kind: "course", published: true }).returning({ id: rallies.id });
+          await tx.insert(rallyTranslations).values({ rallyId: grouped!.id, locale: "ja", name: "まとめ" });
+          await tx.insert(rallyRoutes).values([{ rallyId: grouped!.id, routeId: list[2]!.id, position: 1 }, { rallyId: grouped!.id, routeId: list[0]!.id, position: 2 }]);
           expect(await store.deleteRoute(actor, list[2]!.id)).toBe("ok");
           expect(await tx.select().from(rallyRoutes).where(eq(rallyRoutes.routeId, list[2]!.id))).toHaveLength(0);
-          expect(await tx.select().from(rallies).where(eq(rallies.id, link!.rallyId))).toHaveLength(1);
+          expect(await tx.select().from(rallies).where(eq(rallies.id, link!.rallyId))).toHaveLength(0); // its own rally went with it
+          expect(await tx.select().from(rallies).where(eq(rallies.id, grouped!.id))).toHaveLength(1); // the shared one stays
 
           const [placeOnCourse4] = await tx.select().from(spots).where(eq(spots.routeId, list[3]!.id)).limit(1);
           const [visitor] = await tx.insert(users).values({}).returning({ id: users.id });
