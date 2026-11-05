@@ -1,5 +1,6 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
+import { PAGES_CACHE } from "@/lib/offline-pack";
 import { CacheFirst, ExpirationPlugin, NetworkOnly, Serwist, type PrecacheEntry, type SerwistGlobalConfig } from "serwist";
 
 // The service worker (Phase B, slice B4; docs/phase-b-offline-plan.md). What it does, and on purpose does NOT do:
@@ -8,8 +9,9 @@ import { CacheFirst, ExpirationPlugin, NetworkOnly, Serwist, type PrecacheEntry,
 //  - when a page cannot be fetched at all (no signal), shows /offline instead of the browser's error page;
 //  - waits for the visitor to tap "update" before a new version takes over (skipWaiting is off), so nobody is
 //    switched to a new version in the middle of a walk. The prompt is in components/ServiceWorker.tsx.
-// It never caches /api/* (answers carry the session), never caches a page the network can give (a stale page would show
-// another person's stamps), and never touches a POST. Saved map tiles (B5) are the one exception, answered from a course's pack before the network.
+// It never caches /api/* by itself, never serves a saved page while the network can give one (a stale page would show old
+// stamps), and never touches a POST. Only what the visitor saved with a course's offline map is read back, and only when the
+// network fails. Saved map tiles (B5) are the one exception, answered from a course's pack before the network.
 
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
@@ -19,17 +21,37 @@ declare global {
 
 declare const self: ServiceWorkerGlobalScope;
 
-const serwist = new Serwist({
+// When the network fails: the page the visitor saved with a course's offline map, else the /offline page. Written as our own
+// plugin because Serwist's `fallbacks` option skips any strategy that already has a handlerDidError plugin.
+const pageFromNetwork = new NetworkOnly({
+  networkTimeoutSeconds: 10,
+  plugins: [{ handlerDidError: async ({ request }) => (await caches.match(request, { cacheName: PAGES_CACHE, ignoreVary: true })) ?? serwist.matchPrecache("/offline") }],
+});
+
+const serwist: Serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   skipWaiting: false,
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: [
-    // Pages always come from the network. This route exists so that when the network fails the fallback below can answer:
-    // the fallback only runs for a request some route took. 10 s, not less: a slow mountain connection should still load.
+    // Pages always come from the network; only when it fails does pageFromNetwork answer (above). 10 s, not less: a slow
+    // mountain connection should still load.
     {
       matcher: ({ request }) => request.mode === "navigate",
-      handler: new NetworkOnly({ networkTimeoutSeconds: 10 }),
+      handler: pageFromNetwork,
+    },
+    // A saved course's line, only when the network cannot give it (the navigation reads it; see line-client.ts).
+    {
+      matcher: ({ url, sameOrigin, request }) => sameOrigin && request.method === "GET" && /^\/api\/v1\/routes\/[^/]+$/.test(url.pathname),
+      handler: async ({ request }) => {
+        try {
+          return await fetch(request, { signal: AbortSignal.timeout(8000) });
+        } catch (error) {
+          const saved = await caches.match(request);
+          if (saved) return saved;
+          throw error;
+        }
+      },
     },
     // Map tiles saved with a course's offline map (lib/offline-pack.ts) come from the phone; any other tile goes to the
     // network and is not kept (the visitor chose what to keep, nothing is saved unasked).
@@ -46,9 +68,6 @@ const serwist = new Serwist({
       handler: new CacheFirst({ cacheName: "ktrg-icons", plugins: [new ExpirationPlugin({ maxEntries: 20, maxAgeSeconds: 30 * 24 * 60 * 60 })] }),
     },
   ],
-  fallbacks: {
-    entries: [{ url: "/offline", matcher: ({ request }) => request.destination === "document" }],
-  },
 });
 
 serwist.addEventListeners();

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Trans } from "@lingui/react/macro";
 import { initLingui } from "@/i18n/server";
+import { SavedMapLink } from "@/components/SavedMapLink";
 
 export const metadata: Metadata = { title: "オフライン / Offline", robots: { index: false } };
 
@@ -22,6 +23,7 @@ export default async function OfflinePage() {
       <p lang="en" className="text-lg leading-8 text-muted">
         No connection right now. The page could not be opened; try again where there is signal. Stamps you pressed with no signal are kept on this phone and sent automatically when you are back online.
       </p>
+      <SavedMapLink />
       {/* A plain link on purpose: a full page load is the retry (a client-side navigation would not ask the network again). */}
       {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
       <a href="/" className="tap-target inline-flex w-fit items-center rounded-xl bg-ink px-6 text-xl font-bold text-paper">
