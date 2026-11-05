@@ -126,6 +126,11 @@ msgstr "{0}を開く"
 msgid "{0}件"
 msgstr "{0}件"
 
+#. placeholder {0}: entries.length
+#: src/components/admin/LargeStyleUpload.tsx:47
+msgid "{0}件の設定を読み込みました。下の見本で確かめて、よければ「反映する」を押してください。"
+msgstr "{0}件の設定を読み込みました。下の見本で確かめて、よければ「反映する」を押してください。"
+
 #. placeholder {0}: gone.size
 #: src/components/admin/AdminListTable.tsx:116
 msgid "{0}件を削除しました。残りは削除できませんでした：{failure}"
@@ -467,13 +472,17 @@ msgstr "「ルート」シート {0} 行目"
 msgid "「地図と線」で経由地を置く"
 msgstr "「地図と線」で経由地を置く"
 
-#: src/components/admin/SiteSettingsForm.tsx:91
+#: src/components/admin/SiteSettingsForm.tsx:95
 msgid "「地形」ボタンで重ねるもの"
 msgstr "「地形」ボタンで重ねるもの"
 
-#: src/components/admin/MapStylePreview.tsx:75
+#: src/components/admin/MapStylePreview.tsx:89
 msgid "「地形」ボタンを押した状態で見る"
 msgstr "「地形」ボタンを押した状態で見る"
+
+#: src/components/admin/SiteSettingsForm.tsx:115
+msgid "「大きい文字」の大きさ"
+msgstr "「大きい文字」の大きさ"
 
 #: src/components/admin/AdminItemForm.tsx:289
 msgid "「必須」の欄をすべて入れると保存できます。"
@@ -531,6 +540,10 @@ msgstr "＜ 前へ"
 #: src/components/map/TrailMap.tsx:174
 msgid "⌘キーを押しながら地図を動かします"
 msgstr "⌘キーを押しながら地図を動かします"
+
+#: src/components/admin/SiteSettingsForm.tsx:119
+msgid "100%が、国土地理院の地図に自分たちの調整を重ねた大きさです。大きくしすぎると文字が重なって読めなくなります。下の見本で確かめてください。"
+msgstr "100%が、国土地理院の地図に自分たちの調整を重ねた大きさです。大きくしすぎると文字が重なって読めなくなります。下の見本で確かめてください。"
 
 #: src/components/admin/RouteEditor.tsx:796
 msgid "1か所ずつ詳しく"
@@ -797,6 +810,10 @@ msgstr "アクセスの地域（管理）"
 msgid "アクセス数"
 msgstr "アクセス数"
 
+#: src/components/admin/LargeStyleUpload.tsx:54
+msgid "アップロードしたファイルをやめて、初めから入っている設定に戻します。よろしいですか？"
+msgstr "アップロードしたファイルをやめて、初めから入っている設定に戻します。よろしいですか？"
+
 #: src/components/useErrorMessages.ts:63
 msgid "アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。"
 msgstr "アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。"
@@ -940,6 +957,10 @@ msgstr "いまの状態"
 msgid "いまの読み（名前全体にひとつ）：{value}。上に入れると、漢字ごとの読みに置き換わります。"
 msgstr "いまの読み（名前全体にひとつ）：{value}。上に入れると、漢字ごとの読みに置き換わります。"
 
+#: src/components/admin/LargeStyleUpload.tsx:78
+msgid "いまは、アップロードしたファイルの設定を使っています。"
+msgstr "いまは、アップロードしたファイルの設定を使っています。"
+
 #: src/components/StatusBanner.tsx:77
 msgid "いまは、ここでスタンプを押せません。"
 msgstr "いまは、ここでスタンプを押せません。"
@@ -947,6 +968,10 @@ msgstr "いまは、ここでスタンプを押せません。"
 #: src/components/settings/LoginMethods.tsx:48
 msgid "いまは、パスキーだけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
 msgstr "いまは、パスキーだけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
+
+#: src/components/admin/LargeStyleUpload.tsx:78
+msgid "いまは、初めから入っている設定を使っています。"
+msgstr "いまは、初めから入っている設定を使っています。"
 
 #: src/components/admin/RallyEditor.tsx:172
 msgid "いまは「コースでつくる」です。"
@@ -1220,7 +1245,7 @@ msgstr "ここの写真は、この経由地のページに順に並びます。
 msgid "ここは、本番のサイトの文章です。保存すると、すぐにすべての訪問者の画面が変わります。"
 msgstr "ここは、本番のサイトの文章です。保存すると、すぐにすべての訪問者の画面が変わります。"
 
-#: src/components/admin/SiteSettingsForm.tsx:69
+#: src/components/admin/SiteSettingsForm.tsx:73
 msgid "ここは、本番のサイト全体の設定です。保存すると、すぐにすべての訪問者の画面が変わります。内容をよく確かめてから保存してください。"
 msgstr "ここは、本番のサイト全体の設定です。保存すると、すぐにすべての訪問者の画面が変わります。内容をよく確かめてから保存してください。"
 
@@ -1298,9 +1323,17 @@ msgstr "このパスキーは、消せません"
 msgid "このパスキーを消しますか？"
 msgstr "このパスキーを消しますか？"
 
+#: src/components/admin/LargeStyleUpload.tsx:54
+msgid "このファイルの設定を、すぐにすべての訪問者の地図に反映します。よろしいですか？"
+msgstr "このファイルの設定を、すぐにすべての訪問者の地図に反映します。よろしいですか？"
+
 #: src/components/admin/RouteImport.tsx:113
 msgid "このファイルは読み取れませんでした。「ひな形」から作ったファイル（.xlsx）を選んでください。"
 msgstr "このファイルは読み取れませんでした。「ひな形」から作ったファイル（.xlsx）を選んでください。"
+
+#: src/components/admin/LargeStyleUpload.tsx:49
+msgid "このファイルは読めません。国土地理院のスタイル編集で保存したJSONファイルを選んでください。"
+msgstr "このファイルは読めません。国土地理院のスタイル編集で保存したJSONファイルを選んでください。"
 
 #: src/components/BrowserWarning.tsx:23
 msgid "このブラウザでは、スタンプが消えてしまうことがあります。"
@@ -1528,7 +1561,7 @@ msgstr "この端末・ブラウザではパスキーを使えません。メー
 msgid "この端末では、振動は使えません。"
 msgstr "この端末では、振動は使えません。"
 
-#: src/components/admin/MapStylePreview.tsx:70
+#: src/components/admin/MapStylePreview.tsx:84
 msgid "この端末では地図の見本を表示できません。"
 msgstr "この端末では地図の見本を表示できません。"
 
@@ -1603,7 +1636,7 @@ msgstr "この記事を共有する"
 msgid "この設定ではじめる"
 msgstr "この設定ではじめる"
 
-#: src/components/admin/SiteSettingsForm.tsx:43
+#: src/components/admin/SiteSettingsForm.tsx:47
 msgid "この設定は、本番のサイトにすぐ反映されます。すべての訪問者の地図の見た目が変わります。保存しますか？"
 msgstr "この設定は、本番のサイトにすぐ反映されます。すべての訪問者の地図の見た目が変わります。保存しますか？"
 
@@ -1662,7 +1695,7 @@ msgstr "コメントを書くには、ログインが必要です。"
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 msgstr "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 
-#: src/components/admin/SiteSettingsForm.tsx:105
+#: src/components/admin/SiteSettingsForm.tsx:109
 msgid "コントラスト"
 msgstr "コントラスト"
 
@@ -1769,6 +1802,10 @@ msgstr "スタート"
 #: src/components/admin/AccessPointsEditor.tsx:24
 msgid "スタート側"
 msgstr "スタート側"
+
+#: src/components/admin/LargeStyleUpload.tsx:81
+msgid "スタイルファイルを選ぶ"
+msgstr "スタイルファイルを選ぶ"
 
 #: src/app/(admin)/admin/page.tsx:76
 #: src/app/(public)/rallies/[id]/page.tsx:120
@@ -1993,7 +2030,7 @@ msgstr "すべて消す"
 msgid "すべて選ぶ"
 msgstr "すべて選ぶ"
 
-#: src/components/admin/SiteSettingsForm.tsx:105
+#: src/components/admin/SiteSettingsForm.tsx:109
 msgid "そのまま"
 msgstr "そのまま"
 
@@ -2337,6 +2374,10 @@ msgstr "ファイルから取り込む"
 msgid "ファイルが大きすぎます（20MBまで）。"
 msgstr "ファイルが大きすぎます（20MBまで）。"
 
+#: src/components/admin/LargeStyleUpload.tsx:39
+msgid "ファイルが大きすぎます（6MBまで）。"
+msgstr "ファイルが大きすぎます（6MBまで）。"
+
 #: src/components/AccessList.tsx:9
 msgid "フェリー"
 msgstr "フェリー"
@@ -2489,7 +2530,7 @@ msgstr "ページを開けませんでした。電波のある場所で、もう
 msgid "ページ番号"
 msgstr "ページ番号"
 
-#: src/components/admin/SiteSettingsForm.tsx:79
+#: src/components/admin/SiteSettingsForm.tsx:83
 msgid "ベースの地図"
 msgstr "ベースの地図"
 
@@ -2642,7 +2683,7 @@ msgid "まだスタンプを押していません"
 msgstr "まだスタンプを押していません"
 
 #: src/components/admin/HomeSectionsForm.tsx:58
-#: src/components/admin/SiteSettingsForm.tsx:118
+#: src/components/admin/SiteSettingsForm.tsx:133
 msgid "まだ保存していません。"
 msgstr "まだ保存していません。"
 
@@ -3531,7 +3572,7 @@ msgid "保存していない編集が、このブラウザに残っています�
 msgstr "保存していない編集が、このブラウザに残っています（{offeredAt}）。戻しますか？"
 
 #: src/components/admin/HomeSectionsForm.tsx:56
-#: src/components/admin/SiteSettingsForm.tsx:113
+#: src/components/admin/SiteSettingsForm.tsx:128
 msgid "保存しています…"
 msgstr "保存しています…"
 
@@ -3557,7 +3598,7 @@ msgstr "保存しました。この経由地は下書きに戻っています。
 msgid "保存しました。サイトに反映されています。"
 msgstr "保存しました。サイトに反映されています。"
 
-#: src/components/admin/SiteSettingsForm.tsx:56
+#: src/components/admin/SiteSettingsForm.tsx:60
 msgid "保存しました。サイトの地図に反映されています。"
 msgstr "保存しました。サイトの地図に反映されています。"
 
@@ -3575,7 +3616,7 @@ msgstr "保存しました。次に確認する場所はありません。"
 
 #: src/components/admin/HomeSectionsForm.tsx:56
 #: src/components/admin/RouteEditor.tsx:489
-#: src/components/admin/SiteSettingsForm.tsx:113
+#: src/components/admin/SiteSettingsForm.tsx:128
 #: src/components/ProfileSettings.tsx:221
 #: src/components/settings/PasskeyManager.tsx:135
 #: src/components/settings/PrefsForm.tsx:163
@@ -3594,6 +3635,11 @@ msgstr "保存できません。赤く示した項目を直してください。
 #: src/components/admin/GoalsForm.tsx:50
 msgid "保存できませんでした。"
 msgstr "保存できませんでした。"
+
+#: src/components/admin/LargeStyleUpload.tsx:65
+#: src/components/admin/LargeStyleUpload.tsx:68
+msgid "保存できませんでした。ファイルの中身か、電波を確かめてください。"
+msgstr "保存できませんでした。ファイルの中身か、電波を確かめてください。"
 
 #: src/components/ProfilePhoto.tsx:50
 msgid "保存できませんでした。もう一度お試しください。"
@@ -3875,7 +3921,7 @@ msgstr "最高 {highest}m"
 
 #: src/components/admin/map-editor/MapEditor.tsx:1162
 #: src/components/admin/PlacePanel.tsx:153
-#: src/components/admin/SiteSettingsForm.tsx:37
+#: src/components/admin/SiteSettingsForm.tsx:41
 #: src/components/admin/useChecklistLabels.ts:19
 #: src/components/landing/BannerCarousel.tsx:38
 #: src/components/landing/HeroSlides.tsx:45
@@ -4036,7 +4082,15 @@ msgstr "分"
 msgid "列の幅を変える"
 msgstr "列の幅を変える"
 
-#: src/components/admin/SiteSettingsForm.tsx:116
+#: src/components/admin/LargeStyleUpload.tsx:63
+msgid "初めから入っている設定に戻しました。"
+msgstr "初めから入っている設定に戻しました。"
+
+#: src/components/admin/LargeStyleUpload.tsx:87
+msgid "初めの設定に戻す"
+msgstr "初めの設定に戻す"
+
+#: src/components/admin/SiteSettingsForm.tsx:131
 msgid "初期値にする"
 msgstr "初期値にする"
 
@@ -4305,6 +4359,14 @@ msgstr "厳しい岩場や藪こぎが続く。道を自分で見つける技術
 msgid "友人・知人"
 msgstr "友人・知人"
 
+#: src/components/admin/LargeStyleUpload.tsx:63
+msgid "反映しました。訪問者の地図には、数分のうちに変わります。"
+msgstr "反映しました。訪問者の地図には、数分のうちに変わります。"
+
+#: src/components/admin/LargeStyleUpload.tsx:84
+msgid "反映する"
+msgstr "反映する"
+
 #. placeholder {0}: report.filter((r) => r.status === "created").length
 #. placeholder {1}: report.filter((r) => r.status === "updated").length
 #. placeholder {2}: report.filter((r) => r.status === "skipped").length
@@ -4487,11 +4549,23 @@ msgstr "国"
 msgid "国土地理院（地理院タイル）"
 msgstr "国土地理院（地理院タイル）"
 
+#: src/components/admin/LargeStyleUpload.tsx:79
+msgid "国土地理院の「地理院地図Vector」のスタイル編集で保存したJSONファイルから、文字・記号・線の大きさと色を取り込みます。"
+msgstr "国土地理院の「地理院地図Vector」のスタイル編集で保存したJSONファイルから、文字・記号・線の大きさと色を取り込みます。"
+
+#: src/components/admin/LargeStyleUpload.tsx:76
+msgid "国土地理院のスタイルファイル"
+msgstr "国土地理院のスタイルファイル"
+
 #: src/components/admin/HoursInput.tsx:14
 msgid "土曜日"
 msgstr "土曜日"
 
-#: src/components/admin/SiteSettingsForm.tsx:38
+#: src/components/admin/SiteSettingsForm.tsx:116
+msgid "地名の大きさ"
+msgstr "地名の大きさ"
+
+#: src/components/admin/SiteSettingsForm.tsx:42
 msgid "地名や記号が大きく、はっきり読める地図です。色の濃さとコントラストの調整は効きません。電波がないときは、名前が出ないことがあります。"
 msgstr "地名や記号が大きく、はっきり読める地図です。色の濃さとコントラストの調整は効きません。電波がないときは、名前が出ないことがあります。"
 
@@ -4539,11 +4613,11 @@ msgstr "地図の種類"
 msgid "地図の見せ方"
 msgstr "地図の見せ方"
 
-#: src/components/admin/SiteSettingsForm.tsx:74
+#: src/components/admin/SiteSettingsForm.tsx:78
 msgid "地図の見た目"
 msgstr "地図の見た目"
 
-#: src/components/admin/MapStylePreview.tsx:77
+#: src/components/admin/MapStylePreview.tsx:91
 msgid "地図の見本"
 msgstr "地図の見本"
 
@@ -4597,7 +4671,7 @@ msgstr "地図を更新"
 msgid "地図を表示できませんでした。"
 msgstr "地図を表示できませんでした。"
 
-#: src/components/admin/SiteSettingsForm.tsx:103
+#: src/components/admin/SiteSettingsForm.tsx:107
 msgid "地図を見やすくする"
 msgstr "地図を見やすくする"
 
@@ -4622,7 +4696,7 @@ msgstr "地域ごとに見る"
 msgid "地域でしぼる"
 msgstr "地域でしぼる"
 
-#: src/components/admin/SiteSettingsForm.tsx:99
+#: src/components/admin/SiteSettingsForm.tsx:103
 msgid "地形の濃さ"
 msgstr "地形の濃さ"
 
@@ -4708,7 +4782,7 @@ msgstr "大"
 msgid "大きい"
 msgstr "大きい"
 
-#: src/components/admin/SiteSettingsForm.tsx:38
+#: src/components/admin/SiteSettingsForm.tsx:42
 msgid "大きい文字"
 msgstr "大きい文字"
 
@@ -5366,7 +5440,7 @@ msgid "構成文化財"
 msgstr "構成文化財"
 
 #: src/components/admin/map-editor/MapEditor.tsx:1162
-#: src/components/admin/SiteSettingsForm.tsx:34
+#: src/components/admin/SiteSettingsForm.tsx:38
 msgid "標準"
 msgstr "標準"
 
@@ -5563,7 +5637,7 @@ msgstr "注釈"
 msgid "海外"
 msgstr "海外"
 
-#: src/components/admin/SiteSettingsForm.tsx:36
+#: src/components/admin/SiteSettingsForm.tsx:40
 msgid "海岸線と境目だけの、いちばん静かな地図です。"
 msgstr "海岸線と境目だけの、いちばん静かな地図です。"
 
@@ -5583,7 +5657,7 @@ msgid "消すと、その端末では、顔や指紋でログインできなく�
 msgstr "消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。"
 
 #: src/components/admin/map-editor/MapEditor.tsx:1162
-#: src/components/admin/SiteSettingsForm.tsx:35
+#: src/components/admin/SiteSettingsForm.tsx:39
 msgid "淡色"
 msgstr "淡色"
 
@@ -5785,7 +5859,7 @@ msgstr "登録なしで残せるスタンプの数が、上限になりました
 msgid "登録済みの方は"
 msgstr "登録済みの方は"
 
-#: src/components/admin/SiteSettingsForm.tsx:36
+#: src/components/admin/SiteSettingsForm.tsx:40
 msgid "白地図"
 msgstr "白地図"
 
@@ -5900,7 +5974,7 @@ msgstr "種類"
 msgid "種類とスタンプ"
 msgstr "種類とスタンプ"
 
-#: src/components/admin/SiteSettingsForm.tsx:37
+#: src/components/admin/SiteSettingsForm.tsx:41
 msgid "空から撮った写真の地図です。"
 msgstr "空から撮った写真の地図です。"
 
@@ -6134,6 +6208,10 @@ msgstr "線と標高を読み込む"
 msgid "線のない区間はありません。区間を選ぶと、その区間をつくり直せます。"
 msgstr "線のない区間はありません。区間を選ぶと、その区間をつくり直せます。"
 
+#: src/components/admin/SiteSettingsForm.tsx:118
+msgid "線の太さ"
+msgstr "線の太さ"
+
 #: src/components/admin/RouteEditor.tsx:612
 msgid "線の標高から自動で計算"
 msgstr "線の標高から自動で計算"
@@ -6258,19 +6336,19 @@ msgstr "自動販売機"
 msgid "船"
 msgstr "船"
 
-#: src/components/admin/SiteSettingsForm.tsx:35
+#: src/components/admin/SiteSettingsForm.tsx:39
 msgid "色がおだやかで、道と名前が見やすい地図です。"
 msgstr "色がおだやかで、道と名前が見やすい地図です。"
 
-#: src/components/admin/SiteSettingsForm.tsx:104
+#: src/components/admin/SiteSettingsForm.tsx:108
 msgid "色の濃さ"
 msgstr "色の濃さ"
 
-#: src/components/admin/SiteSettingsForm.tsx:106
+#: src/components/admin/SiteSettingsForm.tsx:110
 msgid "色を薄くすると、道すじや印が目立ちます。濃さ100%、コントラスト「そのまま」が、国土地理院の地図のままです。"
 msgstr "色を薄くすると、道すじや印が目立ちます。濃さ100%、コントラスト「そのまま」が、国土地理院の地図のままです。"
 
-#: src/components/admin/SiteSettingsForm.tsx:40
+#: src/components/admin/SiteSettingsForm.tsx:44
 msgid "色別標高図（緑〜茶）"
 msgstr "色別標高図（緑〜茶）"
 
@@ -6477,7 +6555,11 @@ msgstr "言語は{MAX_LANGUAGES}つまで（日本語を含む）。英語以外
 msgid "記事は、まだありません。"
 msgstr "記事は、まだありません。"
 
-#: src/components/admin/SiteSettingsForm.tsx:76
+#: src/components/admin/SiteSettingsForm.tsx:117
+msgid "記号の大きさ"
+msgstr "記号の大きさ"
+
+#: src/components/admin/SiteSettingsForm.tsx:80
 msgid "訪問者が見る地図（マップ画面、ルートのページ）の見た目です。地図を作る管理画面の地図は、見やすさのため、いつも「標準」です。"
 msgstr "訪問者が見る地図（マップ画面、ルートのページ）の見た目です。地図を作る管理画面の地図は、見やすさのため、いつも「標準」です。"
 
@@ -6723,7 +6805,7 @@ msgstr "道の険しさや迷いやすさを、A（整った道）からE（厳�
 msgid "道まで {0}（{1}）"
 msgstr "道まで {0}（{1}）"
 
-#: src/components/admin/SiteSettingsForm.tsx:34
+#: src/components/admin/SiteSettingsForm.tsx:38
 msgid "道や建物、記号が細かく描かれた、いちばん詳しい地図です。"
 msgstr "道や建物、記号が細かく描かれた、いちばん詳しい地図です。"
 
@@ -6899,7 +6981,7 @@ msgstr "閉鎖中"
 msgid "開放中"
 msgstr "開放中"
 
-#: src/components/admin/SiteSettingsForm.tsx:40
+#: src/components/admin/SiteSettingsForm.tsx:44
 msgid "陰影（やわらかい影）"
 msgstr "陰影（やわらかい影）"
 

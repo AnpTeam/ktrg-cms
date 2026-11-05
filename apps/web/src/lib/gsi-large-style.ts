@@ -92,6 +92,15 @@ export function editorEntries(tree: Json): Array<{ key: string; draw: Obj }> {
   return out;
 }
 
+/** What is kept of an editor file: the layers' keys with only the settings used here (and the dash pattern, which tells layers apart). */
+export type Entry = [key: string, props: Obj];
+export const ENTRY_PROPS = [...new Set(Object.values(OVERRIDES).flatMap((o) => o.map((x) => x.from))), "line-dasharray"];
+
+/** A small version of an editor file (a few percent of its size): this is what an admin uploads and the server keeps. */
+export function compactEntries(tree: Json): Entry[] {
+  return editorEntries(tree).map(({ key, draw }): Entry => [key, Object.fromEntries(ENTRY_PROPS.filter((p) => draw[p] !== undefined).map((p) => [p, modernValue(draw[p])]))]);
+}
+
 export interface Report {
   layers: number;
   /** Layers that took the editor's values. */
@@ -104,8 +113,13 @@ export interface Report {
 
 /** GSI's style with the editor's sizes and colours applied. Does not change its input. */
 export function applyEditorStyle(std: { layers: StdLayer[] } & Obj, editor: Json): { style: typeof std; report: Report } {
+  return applyEntries(std, compactEntries(editor));
+}
+
+/** The same from the small form (what the server keeps). */
+export function applyEntries(std: { layers: StdLayer[] } & Obj, list: Entry[]): { style: typeof std; report: Report } {
   const entries = new Map<string, Obj[]>();
-  for (const e of editorEntries(editor)) entries.set(e.key, [...(entries.get(e.key) ?? []), e.draw]);
+  for (const [key, props] of list) entries.set(key, [...(entries.get(key) ?? []), props]);
 
   // GSI layers sharing a key are paired with the editor layers of that key in order, only when there are as many of each.
   const seen = new Map<string, number>();
