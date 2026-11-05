@@ -16,6 +16,7 @@ import { RichText } from "@/components/RichText";
 import { RouteJourney } from "@/components/RouteJourney";
 import { RouteStats } from "@/components/RouteStats";
 import { StopList } from "@/components/StopList";
+import { BookmarkButton } from "@/components/BookmarkButton";
 import { CreditToggle } from "@/components/PhotoCredit";
 import type { MapStop } from "@/components/map/TrailMap";
 import { TrailMapLoader } from "@/components/map/TrailMapLoader";
@@ -85,6 +86,8 @@ export interface RouteViewProps {
   offline?: ReactNode;
   /** Trail notices for this route: right under the name and the numbers (safety first, but after the cover). */
   notices?: ReactNode;
+  /** Offer the bookmark button (visitors only; the admin's preview leaves it out). */
+  bookmarkable?: boolean;
   /** The name of the "jump to a part" bar, for screen readers (a string: it is an attribute). */
   jumpLabel?: string;
   /** Show "スタンプ 3 / 14" over the walk: only for a visitor who has stamped somewhere (the admin's preview leaves it out). */
@@ -96,7 +99,7 @@ export interface RouteViewProps {
  * and the places (stamp places numbered, the others marked "no stamp") as a trail. The public page and the admin's live preview both render this, so what an
  * editor sees while typing is what visitors get. It reads no cookies and calls no server API.
  */
-export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref, offline, notices, showStampCount = false, jumpLabel = "" }: RouteViewProps) {
+export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref, offline, notices, showStampCount = false, jumpLabel = "", bookmarkable = false }: RouteViewProps) {
   const description = pickText(locale, route.descriptionJa, route.descriptionEn);
   const stops = buildStops(route, locale, spotHref, labels);
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
@@ -167,20 +170,34 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             <div className="mt-5">
               <RouteStats route={route} icons tips walkStyle={journey?.style ?? null} />
             </div>
+            {/* Two columns have no jump bar: the bookmark sits under the numbers, with its word. */}
+            {bookmarkable ? (
+              <div className="mt-4 hidden @4xl:block">
+                <BookmarkButton routeId={route.id} />
+              </div>
+            ) : null}
           </header>
 
-          {jumps.length >= 2 ? (
-            // Jump to a part of a long page. It stays at the top while scrolling on a phone; two columns show everything at once.
-            <nav aria-label={jumpLabel} className="sticky top-0 z-20 order-3 border-b border-line/30 bg-paper/95 py-2 backdrop-blur-sm @4xl:hidden">
-              <ul className="flex gap-2 overflow-x-auto px-4 [scrollbar-width:none]">
-                {jumps.map((j) => (
-                  <li key={j.id} className="shrink-0">
-                    <a href={`#${j.id}`} className="tap-target inline-flex items-center rounded-full border border-line bg-paper px-4 text-lg font-bold text-ink hover:bg-surface">
-                      {j.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+          {jumps.length >= 2 || bookmarkable ? (
+            // The bookmark, then links to the parts of a long page. It stays at the top while scrolling on a phone; two columns
+            // show everything at once. The bookmark stays put while the links scroll sideways on a narrow screen.
+            <nav aria-label={jumpLabel} className="sticky top-0 z-20 order-3 flex items-center border-b border-line/30 bg-paper/95 py-2 backdrop-blur-sm @4xl:hidden">
+              {bookmarkable ? (
+                <div className="shrink-0 border-r border-line pl-4 pr-3">
+                  <BookmarkButton routeId={route.id} compact />
+                </div>
+              ) : null}
+              {jumps.length >= 2 ? (
+                <ul className="flex min-w-0 gap-2 overflow-x-auto px-3 [scrollbar-width:none]">
+                  {jumps.map((j) => (
+                    <li key={j.id} className="shrink-0">
+                      <a href={`#${j.id}`} className="tap-target inline-flex items-center rounded-full border border-line bg-paper px-4 text-lg font-bold text-ink hover:bg-surface">
+                        {j.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </nav>
           ) : null}
 

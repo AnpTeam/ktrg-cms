@@ -3,16 +3,14 @@
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { buttonStyle } from "./button";
-import { BookmarkIcon, ShareIcon } from "./icons";
-import { useBookmarks } from "./useBookmarks";
+import { ShareIcon } from "./icons";
 
-// Share the page and bookmark the route, at the end of the route page. (Print and the GPX download were taken off on
-// 2026-11-05: printing a long page was not useful, and a second "download" beside the offline save confused people.)
-export function ShareBookmark({ route }: { route: { id: string; nameJa: string } }) {
+// Share the page, at the end of the route page. (Print and the GPX download were taken off on 2026-11-05: printing a
+// long page was not useful, and a second "download" beside the offline save confused people. The bookmark lives in the
+// page's jump bar: BookmarkButton.)
+export function ShareRoute({ route }: { route: { nameJa: string } }) {
   const { t } = useLingui();
-  const { list, toggle } = useBookmarks();
   const [copied, setCopied] = useState(false);
-  const saved = list.includes(route.id);
   const share = async () => {
     const url = window.location.href;
     try {
@@ -31,15 +29,6 @@ export function ShareBookmark({ route }: { route: { id: string; nameJa: string }
       <button type="button" className={buttonStyle("secondary", "md", "inline-flex")} onClick={share}>
         <ShareIcon />
         {t`共有`}
-      </button>
-      <button
-        type="button"
-        className={buttonStyle("secondary", "md", `inline-flex ${saved ? "bg-brand! text-on-brand! border-brand!" : ""}`)}
-        aria-pressed={saved}
-        onClick={() => toggle(route.id)}
-      >
-        <BookmarkIcon filled={saved} />
-        {saved ? t`ブックマーク済み` : t`ブックマークする`}
       </button>
       <span role="status" className="text-base font-bold text-muted">
         {copied ? t`リンクをコピーしました` : ""}

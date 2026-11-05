@@ -6,7 +6,7 @@ import { BackLink } from "@/components/BackLink";
 import { TrailNotices } from "@/components/landing/TrailNotices";
 import { listNotices } from "@/lib/notices";
 import { OfflinePack } from "@/components/OfflinePack";
-import { ShareBookmark } from "@/components/ShareBookmark";
+import { ShareRoute } from "@/components/ShareRoute";
 import { RouteView } from "@/components/RouteView";
 import { getRoute, listPlacesForRoute, pickText, toMapPlace } from "@/lib/content";
 import { initLingui } from "@/i18n/server";
@@ -53,6 +53,7 @@ export default async function RouteDetailPage({ params }: Props) {
         offline={<OfflinePack routeId={route.id} area={route.area} settings={settings} />}
         showStampCount={mine.ids.size > 0}
         jumpLabel={i18n._(msg`このページの項目`)}
+        bookmarkable
         notices={
           notices.length > 0 ? (
             <>
@@ -64,8 +65,8 @@ export default async function RouteDetailPage({ params }: Props) {
           ) : null
         }
       />
-      {/* Share and bookmark: handy, but not what a visitor opens the page for, so they come last. */}
-      <ShareBookmark route={{ id: route.id, nameJa: route.nameJa }} />
+      {/* Share: handy, but not what a visitor opens the page for, so it comes last (the bookmark is in the jump bar). */}
+      <ShareRoute route={{ nameJa: route.nameJa }} />
     </div>
   );
 }
