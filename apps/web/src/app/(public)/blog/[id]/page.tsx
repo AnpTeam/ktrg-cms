@@ -24,6 +24,7 @@ import { pickText } from "@/lib/pick-text";
 import { distanceMeters } from "@/lib/places";
 import { getPost, listComments, listPosts, neighbours } from "@/lib/posts";
 import { getViewer } from "@/lib/viewer";
+import { ChevronIcon, ChevronLeftIcon } from "@/components/icons";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -200,8 +201,9 @@ export default async function BlogPostPage({ params }: Props) {
             <nav aria-label={i18n._(msg`前後の記事`)} className="grid gap-3 px-4 sm:grid-cols-2 lg:px-0">
               {older ? (
                 <Link href={`/blog/${older.id}`} className="flex flex-col gap-1 rounded-2xl bg-surface p-4 hover:bg-paper">
-                  <span className="text-base text-muted">
-                    <Trans>← 前の記事</Trans>
+                  <span className="inline-flex items-center gap-1 text-base text-muted">
+                    <ChevronLeftIcon size={20} />
+                    <Trans>前の記事</Trans>
                   </span>
                   <span className="text-lg font-bold leading-snug text-accent">
                     <Localized value={pickText(locale, older.titleJa, older.titleEn)} />
@@ -212,8 +214,9 @@ export default async function BlogPostPage({ params }: Props) {
               )}
               {newer ? (
                 <Link href={`/blog/${newer.id}`} className="flex flex-col gap-1 rounded-2xl bg-surface p-4 text-right hover:bg-paper">
-                  <span className="text-base text-muted">
-                    <Trans>次の記事 →</Trans>
+                  <span className="inline-flex items-center justify-end gap-1 text-base text-muted">
+                    <Trans>次の記事</Trans>
+                    <ChevronIcon size={20} />
                   </span>
                   <span className="text-lg font-bold leading-snug text-accent">
                     <Localized value={pickText(locale, newer.titleJa, newer.titleEn)} />

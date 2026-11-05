@@ -4,6 +4,7 @@ import { useLingui } from "@lingui/react/macro";
 import { pointKinds, type PointKind } from "@/lib/point-kinds";
 import { useKindLabels } from "../PlacePanel";
 import { TrashIcon } from "./icons";
+import { ArrowDownIcon, ArrowUpIcon } from "@/components/icons";
 import type { MapEditorProps } from "./MapEditor";
 
 const fieldClass = "h-11 min-h-0 min-w-36 rounded-lg border border-line bg-paper px-2 text-base";
@@ -122,10 +123,10 @@ export function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, o
             </div>
             <div className="col-start-2 col-end-4 flex flex-wrap items-center gap-2">
               <button type="button" disabled={i === 0} onClick={(e) => { e.stopPropagation(); move(i, -1); }} aria-label={t`${p.name || p.number}を前へ`} title={t`順番を前へ`} className={chipToggle(false)}>
-                ↑
+                <ArrowUpIcon size={22} />
               </button>
               <button type="button" disabled={i === places.length - 1} onClick={(e) => { e.stopPropagation(); move(i, 1); }} aria-label={t`${p.name || p.number}を後ろへ`} title={t`順番を後ろへ`} className={chipToggle(false)}>
-                ↓
+                <ArrowDownIcon size={22} />
               </button>
               <button type="button" aria-pressed={insertAfter === p.key} onClick={(e) => { e.stopPropagation(); onInsertAfter(p.key); }} className={chipToggle(insertAfter === p.key)} title={t`地図をクリックして、この経由地のすぐ次に新しい経由地を入れます`}>
                 {t`この次に追加`}

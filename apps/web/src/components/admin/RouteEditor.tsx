@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
-import { CheckIcon, DocumentIcon, ListIcon, MapIcon, PinIcon } from "@/components/icons";
+import { AlertIcon, CheckIcon, DocumentIcon, ListIcon, MapIcon, PinIcon, TickIcon, XIcon } from "@/components/icons";
 import { api } from "@/lib/api";
 import { outcome } from "@/lib/admin/admin-client";
 import { checklist, factsFromDraft, progress, type EditorTab } from "@/lib/admin/checklist";
@@ -491,8 +491,8 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
         {/* A toast over the page, not a line in the bar: it must catch the eye wherever the page is scrolled to. */}
         {message ? (
           <div className={`fixed inset-x-4 top-20 z-50 mx-auto flex max-w-xl items-start gap-3 rounded-2xl border-2 p-4 shadow-2xl ${message.kind === "error" ? "border-white/40 bg-[#8f1818] text-white" : "border-white/40 bg-[#14532d] text-white"}`}>
-            <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-white text-xl font-bold text-ink">
-              {message.kind === "error" ? "!" : "✓"}
+            <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-white text-ink">
+              {message.kind === "error" ? <AlertIcon size={20} /> : <TickIcon size={20} />}
             </span>
             <p role={message.kind === "error" ? "alert" : "status"} className="min-w-0 flex-1 pt-0.5 text-lg font-bold">
               {message.text}
@@ -502,8 +502,8 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                 {t`直す場所を見る`}
               </button>
             ) : null}
-            <button type="button" onClick={() => setMessage(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-lg px-3 text-xl font-bold hover:bg-white/20">
-              ×
+            <button type="button" onClick={() => setMessage(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-lg px-3 hover:bg-white/20">
+              <XIcon size={22} />
             </button>
           </div>
         ) : null}

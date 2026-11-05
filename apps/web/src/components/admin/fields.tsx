@@ -4,6 +4,7 @@ import { useState, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { RichTextToolbar } from "./RichTextToolbar";
 import { ADDED_LOCALES, LOCALE_NAMES, MAX_LANGUAGES, moveLanguage, nextLanguage, startLanguages, withTranslation, type AddedLocale, type Translations } from "@/lib/admin/content-locales";
+import { PlusIcon } from "@/components/icons";
 
 // The small pieces every admin form is made of. Big controls, a visible label, and a hint line when it helps.
 
@@ -119,7 +120,10 @@ export function MultilingualField({
             onClick={() => next && setShown([...shown, next])}
             className="tap-target shrink-0 rounded-xl border-2 border-line px-4 text-base font-bold disabled:opacity-50"
           >
-            {t`＋ 言語を追加`}
+            <span className="inline-flex items-center gap-1">
+              <PlusIcon size={20} />
+              {t`言語を追加`}
+            </span>
           </button>
       </div>
       {shown.map((l) => (

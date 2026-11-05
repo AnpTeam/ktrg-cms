@@ -8,6 +8,7 @@ import { errorKeyFromApi, isServerCode, type ErrorKey } from "@/lib/api-error";
 import { pageCount, pageSlice } from "@/lib/pager";
 import { fileName, filterPhotos, formatSize, sortPhotos, type LibraryPhoto, type SortDir, type SortKey } from "@/lib/admin/photo-library";
 import { inputClass } from "./fields";
+import { ChevronDownIcon, ChevronUpIcon, XIcon } from "@/components/icons";
 
 const PAGE = 30;
 
@@ -99,7 +100,7 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
         className="inline-flex items-center gap-1 text-base font-bold"
       >
         {label}
-        <span aria-hidden="true">{sort.key === key ? (sort.dir === "asc" ? "▲" : "▼") : ""}</span>
+        {sort.key === key ? sort.dir === "asc" ? <ChevronUpIcon size={18} /> : <ChevronDownIcon size={18} /> : null}
       </button>
     </th>
   );
@@ -225,7 +226,7 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
           {chosen ? `${fileName(chosen.key)}（${formatSize(chosen.size)}）` : t`写真を選んでください。`}
           {chosen ? (
             <button type="button" onClick={() => setSelected(null)} aria-label={t`選ぶのをやめる`} className="tap-target inline-flex shrink-0 items-center justify-center rounded-full bg-surface px-3 text-xl font-bold text-ink">
-              <span aria-hidden="true">✕</span>
+              <XIcon size={20} />
             </button>
           ) : null}
         </p>

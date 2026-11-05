@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { ReactNode } from "react";
-import { ArticleIcon, ChartIcon, BellIcon, ClockIcon, CommentIcon, DocumentIcon, FuriganaIcon, GlobeIcon, FlagIcon, GearIcon, ImageIcon, PencilIcon, PinIcon, RouteIcon, ShopIcon, StampIcon, UserIcon, WarningIcon } from "@/components/icons";
+import { ArticleIcon, BellIcon, ChartIcon, ChevronDownIcon, ChevronUpIcon, ClockIcon, CommentIcon, DocumentIcon, FlagIcon, FuriganaIcon, GearIcon, GlobeIcon, ImageIcon, PencilIcon, PinIcon, RouteIcon, ShopIcon, StampIcon, UserIcon, WarningIcon } from "@/components/icons";
 
 /** The picture beside each list in the menu; a list the app does not know yet gets a plain document. */
 const LIST_ICONS: Record<string, ReactNode> = {
@@ -58,7 +58,7 @@ export function AdminNav({ lists, isAdmin }: { lists: { key: string; title: stri
         className="tap-target flex items-center justify-between rounded-xl border-2 border-line px-4 text-lg font-bold lg:hidden"
       >
         {t`メニュー`}
-        <span aria-hidden="true">{open ? "−" : "＋"}</span>
+        {open ? <ChevronUpIcon size={22} /> : <ChevronDownIcon size={22} />}
       </button>
       <div id="admin-menu" className={`${open ? "flex" : "hidden"} flex-col gap-1 lg:flex`}>
         {sections.map((group, i) => (

@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { PostCard } from "@/components/blog/PostCard";
 import { initLingui } from "@/i18n/server";
 import { listPosts } from "@/lib/posts";
+import { ChevronIcon, ChevronLeftIcon } from "@/components/icons";
 
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
@@ -26,7 +27,7 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
   const page = Math.min(pages, Math.max(1, Math.floor(Number((await searchParams).page)) || 1));
   const shown = rest.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   const href = (n: number) => (n === 1 ? "/blog" : `/blog?page=${n}`);
-  const pager = "tap-target inline-flex items-center rounded-xl border-2 border-ink px-5 text-lg font-bold hover:bg-surface";
+  const pager = "tap-target inline-flex items-center gap-1 rounded-xl border-2 border-ink px-5 text-lg font-bold hover:bg-surface";
 
   return (
     <div className="flex flex-col gap-8 pt-2">
@@ -75,7 +76,8 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
             <nav aria-label={i18n._(msg`ページ`)} className="flex items-center justify-between gap-3 px-4 lg:px-0">
               {page > 1 ? (
                 <Link href={href(page - 1)} className={pager}>
-                  <Trans>← 前へ</Trans>
+                  <ChevronLeftIcon size={22} />
+                  <Trans>前へ</Trans>
                 </Link>
               ) : (
                 <span />
@@ -85,7 +87,8 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
               </span>
               {page < pages ? (
                 <Link href={href(page + 1)} className={pager}>
-                  <Trans>次へ →</Trans>
+                  <Trans>次へ</Trans>
+                  <ChevronIcon size={22} />
                 </Link>
               ) : (
                 <span />

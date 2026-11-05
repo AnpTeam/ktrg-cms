@@ -249,21 +249,15 @@ export function Landing({
         </div>
         <ul className={`${panel} flex flex-col gap-3 text-lg leading-8`}>
           <li className="flex gap-3">
-            <span aria-hidden="true" className="text-accent">
-              ・
-            </span>
+            <span aria-hidden="true" className="mt-3 size-2 shrink-0 rounded-full bg-brand" />
             <Trans>山道です。天気と、水や食べ物、歩きやすい靴を用意してください。</Trans>
           </li>
           <li className="flex gap-3">
-            <span aria-hidden="true" className="text-accent">
-              ・
-            </span>
+            <span aria-hidden="true" className="mt-3 size-2 shrink-0 rounded-full bg-brand" />
             <Trans>山の中は、電波がつながりにくいことがあります。</Trans>
           </li>
           <li className="flex gap-3">
-            <span aria-hidden="true" className="text-accent">
-              ・
-            </span>
+            <span aria-hidden="true" className="mt-3 size-2 shrink-0 rounded-full bg-brand" />
             <Trans>道が通れないときは、無理をせず引き返してください。</Trans>
           </li>
         </ul>

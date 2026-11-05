@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, } from "react";
 import { useLingui } from "@lingui/react/macro";
-import { ChevronIcon, WarningIcon } from "@/components/icons";
+import { ChevronIcon, ChevronUpIcon, WarningIcon } from "@/components/icons";
 import { ExpandableText } from "@/components/ExpandableText";
 import { ElevationProfile } from "@/components/ElevationProfile";
 import { PlaceLine } from "@/components/PlaceLine";
@@ -267,7 +267,7 @@ export function MapScreen({
           style={{ bottom: bottomPx + 8 }}
           className="tap-target absolute left-3 z-[6] flex items-center gap-2 rounded-full bg-paper px-4 text-lg font-bold text-ink shadow-[0_4px_16px_rgb(0_0_0/0.28)]"
         >
-          <span aria-hidden="true">▲</span>
+          <ChevronUpIcon size={22} />
           {route ? t`区間の情報を見る` : t`区間の一覧を見る`}
         </button>
       ) : null}

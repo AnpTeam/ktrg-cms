@@ -6,6 +6,7 @@ import { pointKinds, stampableByDefault, type PointKind } from "@/lib/point-kind
 import type { PlaceDraft } from "@/lib/admin/route-draft";
 import { inputClass, NumberInput } from "./fields";
 import { useKindLabels } from "./PlacePanel";
+import { PlusIcon } from "@/components/icons";
 
 /** Column widths in px: #, name, kind, stamp, latitude, longitude, delete. Drag the edge of a heading to change one. */
 const DEFAULT_WIDTHS = [48, 260, 200, 110, 150, 150, 100];
@@ -215,7 +216,10 @@ export function PlaceTable({
         <p className="rounded-xl bg-paper p-4 text-lg">{t`まだありません。「＋ 行を追加」で、経由地を表に入れてください。`}</p>
       )}
       <button type="button" disabled={busy} onClick={onAdd} className="tap-target w-fit rounded-xl border-2 border-line px-5 text-lg font-bold disabled:opacity-50">
-        {t`＋ 行を追加`}
+        <span className="inline-flex items-center gap-1">
+              <PlusIcon size={20} />
+              {t`行を追加`}
+            </span>
       </button>
       <p className="text-base text-muted">{t`緯度・経度は、公式の情報で確かめてから、場所ごとに「位置を確認した」にチェックを入れてください。それまで訪れる人には表示されません。`}</p>
     </div>

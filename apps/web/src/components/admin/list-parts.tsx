@@ -2,6 +2,7 @@
 
 import { useLingui } from "@lingui/react/macro";
 import type { Sort } from "@/lib/admin/lists/sort";
+import { ArrowDownIcon, ArrowUpIcon, SortIcon } from "@/components/icons";
 
 // The pieces every admin list screen is made of, so the generic lists and the route and rally lists look and work alike.
 
@@ -13,7 +14,7 @@ export function SortHeader({ label, sortKey, sort, onSort }: { label: string; so
       <button type="button" onClick={() => onSort(sortKey)} className="tap-target flex w-full items-center gap-1 px-3 text-left font-bold hover:bg-line/30">
         {label}
         <span aria-hidden="true" className={on ? "text-ink" : "text-muted"}>
-          {on === "asc" ? "↑" : on === "desc" ? "↓" : "↕"}
+          {on === "asc" ? <ArrowUpIcon size={18} /> : on === "desc" ? <ArrowDownIcon size={18} /> : <SortIcon size={18} />}
         </span>
       </button>
     </th>
