@@ -124,8 +124,8 @@ export function StampHere({
     return (
       <div className={wrapper}>
         <div role="status" className="flex flex-col gap-1 rounded-3xl bg-surface p-4 shadow-lg">
-          <p className="text-xl font-bold leading-snug">{t`電波がないため、あとで送ります。`}</p>
-          <p className="text-base leading-snug">{t`電波のある場所で、自動で送ります。そのときにサーバーが確かめるため、受け付けられないこともあります（場所が閉鎖中になったときなど）。`}</p>
+          <p className="text-xl font-bold leading-snug">{t`電波が弱いか、つながらないため、あとで送ります。`}</p>
+          <p className="text-base leading-snug">{t`つながると、自動で送ります。そのときにサーバーが確かめるため、受け付けられないこともあります（場所が閉鎖中になったときなど）。`}</p>
         </div>
       </div>
     );

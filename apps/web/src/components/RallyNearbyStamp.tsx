@@ -119,7 +119,7 @@ export function RallyNearbyStamp({ places, held, locale, rallyName, quiet = fals
       ) : null}
       {phase.name === "queued" ? (
         <p role="status" className="rounded-2xl bg-surface p-4 text-lg font-bold leading-snug">
-          {t`電波がないため、「${phase.place}」のスタンプは、あとで送ります。そのときに受け付けられないこともあります。`}
+          {t`電波が弱いか、つながらないため、「${phase.place}」のスタンプは、あとで送ります。そのときに受け付けられないこともあります。`}
         </p>
       ) : null}
       {phase.name === "none" ? (

@@ -21,16 +21,21 @@ export function StampOutbox({ userKey }: { userKey: string }) {
   const pending = usePendingStamps();
   const [busy, setBusy] = useState(false);
   const [refused, setRefused] = useState<StampFailure[]>([]);
+  // How many waiting stamps the server just took: said for a few seconds, so the visitor sees that the wait paid off.
+  const [accepted, setAccepted] = useState(0);
 
   const run = useCallback(async () => {
     setBusy(true);
     try {
       const { result } = await getOutbox().flush();
       if (!result) return;
-      if (result.outcomes.some((o) => o.kind === "accepted" && !o.already)) {
+      const took = result.outcomes.filter((o) => o.kind === "accepted" && !o.already).length;
+      if (took > 0) {
+        setAccepted(took);
         window.dispatchEvent(new Event("ktrg:stamped")); // the sign-up reminder for a visitor with no account listens
-        router.refresh(); // the pages show the new stamps
       }
+      // Also when the server already had it (a request that timed out here may still have been taken): the pages show it.
+      if (result.outcomes.some((o) => o.kind === "accepted")) router.refresh();
       const bad = result.outcomes.flatMap((o) => (o.kind === "rejected" ? [o.failure === "expired" ? ("stale_scan" as const) : o.failure] : []));
       if (bad.length > 0) setRefused((r) => [...r, ...bad]);
     } finally {
@@ -77,6 +82,21 @@ export function StampOutbox({ userKey }: { userKey: string }) {
   }
 
   useEffect(() => {
+    if (accepted === 0) return;
+    const timer = setTimeout(() => setAccepted(0), 6000);
+    return () => clearTimeout(timer);
+  }, [accepted]);
+
+  // With a weak signal the phone is "online" and no event ever says it is back, so while stamps wait (and the screen is on)
+  // the page tries again every half minute.
+  const waiting = pending > 0;
+  useEffect(() => {
+    if (!waiting) return;
+    const timer = setInterval(() => document.visibilityState === "visible" && void run(), 30_000);
+    return () => clearInterval(timer);
+  }, [waiting, run]);
+
+  useEffect(() => {
     const onVisible = () => document.visibilityState === "visible" && void run();
     const onOnline = () => void run();
     window.addEventListener("online", onOnline);
@@ -113,7 +133,7 @@ export function StampOutbox({ userKey }: { userKey: string }) {
     </dialog>
   );
 
-  if (pending === 0 && refused.length === 0) return askDialog;
+  if (pending === 0 && refused.length === 0 && accepted === 0) return askDialog;
 
   return (
     <div className="fixed inset-x-3 bottom-[calc(5.5rem+var(--nav-toast,0px)+env(safe-area-inset-bottom))] z-20 flex flex-col gap-2 md:inset-x-auto md:bottom-[calc(1.5rem+var(--nav-toast,0px))] md:right-6 md:w-[24rem]">
@@ -130,10 +150,18 @@ export function StampOutbox({ userKey }: { userKey: string }) {
           </button>
         </div>
       ) : null}
+      {accepted > 0 ? (
+        <div role="status" className="flex items-center gap-3 rounded-2xl border-2 border-moss bg-paper p-4 shadow-2xl">
+          <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-moss text-xl font-bold text-paper">
+            ✓
+          </span>
+          <p className="text-lg font-bold leading-snug">{t`送信待ちだったスタンプが、${accepted}件、受け付けられました！`}</p>
+        </div>
+      ) : null}
       {pending > 0 ? (
         <div role="status" className="flex flex-col gap-2 rounded-2xl bg-paper p-4 shadow-2xl ring-1 ring-line/30">
           <p className="text-lg font-bold leading-snug tabular-nums">{t`${pending}件のスタンプが、送信待ちです。`}</p>
-          <p className="text-base leading-snug text-muted">{t`電波のある場所で、自動で送ります。`}</p>
+          <p className="text-base leading-snug text-muted">{t`つながると、自動で送ります。つながりにくいときは、30秒ごとにもう一度試します。`}</p>
           <button type="button" disabled={busy} onClick={() => void run()} className="tap-target flex min-h-12 w-full items-center justify-center rounded-xl bg-ink px-4 text-lg font-bold text-paper disabled:opacity-60">
             {busy ? t`送っています…` : t`いま送る`}
           </button>
