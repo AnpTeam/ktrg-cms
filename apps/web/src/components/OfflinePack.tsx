@@ -4,6 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { RouteArea } from "@/lib/map-screen";
 import type { MapSettings } from "@/lib/map-settings";
+import { CheckIcon, DownloadIcon } from "./icons";
 import { deletePack, megabytes, packAge, packTileUrls, readPack, savePack, type PackInfo } from "@/lib/offline-pack";
 
 const noSubscribe = () => () => {};
@@ -52,34 +53,47 @@ export function OfflinePack({ routeId, area, settings }: { routeId: string; area
 
   const age = pack ? packAge(pack.savedAt, now) : null;
   const ageText = !age ? "" : age.unit === "minute" ? t`たった今` : age.unit === "hour" ? t`${age.n}時間前` : t`${age.n}日前`;
-  const button = "tap-target rounded-full bg-surface px-4 text-base font-bold text-accent disabled:opacity-60";
+  const secondary = "tap-target flex-1 rounded-lg border-2 border-line bg-paper px-4 text-lg font-bold text-ink hover:bg-surface";
+  const percent = progress ? Math.min(100, Math.round((progress.done / Math.max(1, progress.total)) * 100)) : 0;
 
   return (
-    <section className="flex flex-col gap-2 px-4 print:hidden" aria-label={t`オフラインの地図`}>
+    <section aria-labelledby="offline-pack" className="flex flex-col gap-3 rounded-lg bg-surface p-4 print:hidden">
+      <h2 id="offline-pack" className="flex items-center gap-2 text-xl font-bold">
+        <span aria-hidden="true" className="text-accent">
+          <DownloadIcon />
+        </span>
+        {t`オフラインで使う`}
+      </h2>
       {progress ? (
-        <p role="status" className="text-base font-bold text-ink">
-          {t`地図を保存しています… ${progress.done}/${progress.total}`}
-        </p>
+        <div role="status" className="flex flex-col gap-2">
+          <p className="text-lg font-bold">{t`地図を保存しています… ${percent}%`}</p>
+          <div aria-hidden="true" className="h-3 overflow-hidden rounded-full bg-paper">
+            <div className="h-full rounded-full bg-moss" style={{ width: `${percent}%` }} />
+          </div>
+        </div>
       ) : pack ? (
         <>
-          <p className="text-base text-ink">{t`この道の地図を保存済み（${ageText}・${megabytes(pack.bytes)} MB）。電波がなくても地図が開きます。`}</p>
-          <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={save} className={button}>
-              {t`地図を更新`}
+          <p className="flex items-center gap-2 text-lg font-bold text-moss">
+            <CheckIcon />
+            {t`保存済み`}
+            <span className="text-base font-normal text-muted">{t`（${ageText}・${megabytes(pack.bytes)} MB）`}</span>
+          </p>
+          <p className="text-base text-muted">{t`電波がなくても、この道の地図が開きます。`}</p>
+          <div className="flex gap-2">
+            <button type="button" onClick={save} className={secondary}>
+              {t`更新`}
             </button>
-            <button type="button" onClick={remove} className={button}>
-              {t`地図を削除`}
+            <button type="button" onClick={remove} className={secondary}>
+              {t`削除`}
             </button>
           </div>
         </>
       ) : (
         <>
-          <p className="text-base text-muted">{t`山では電波が届かないことがあります。入口で保存しておくと、この道の地図が電波なしでも開きます（数MB）。`}</p>
-          <div>
-            <button type="button" onClick={save} className={button}>
-              {t`オフライン用に地図を保存`}
-            </button>
-          </div>
+          <p className="text-base text-muted">{t`山では電波が届かないことがあります。入口で保存しておくと、電波がなくてもこの道の地図が開きます（数MB）。`}</p>
+          <button type="button" onClick={save} className="tap-target w-full rounded-lg bg-brand px-5 text-lg font-bold text-on-brand">
+            {t`地図を保存`}
+          </button>
         </>
       )}
       {failed ? (

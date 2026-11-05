@@ -16,6 +16,11 @@ msgstr "  Until {until}"
 msgid "（{0} まで）"
 msgstr " (until {0})"
 
+#. placeholder {0}: megabytes(pack.bytes)
+#: src/components/OfflinePack.tsx:79
+msgid "（{ageText}・{0} MB）"
+msgstr "({ageText}, {0} MB)"
+
 #: src/components/landing/Landing.tsx:204
 #: src/components/landing/Landing.tsx:235
 msgid "（公式サイト、新しいタブで開きます）"
@@ -160,7 +165,7 @@ msgid "{0}回に満たない市・町は、名前を出さず合計だけにし�
 msgstr "Cities and towns with fewer than {0} views are not named, only counted in total ({1} views)."
 
 #. placeholder {0}: age.n
-#: src/components/OfflinePack.tsx:54
+#: src/components/OfflinePack.tsx:55
 msgid "{0}日前"
 msgstr "{0} days ago"
 
@@ -171,7 +176,7 @@ msgid "{0}時間{1}分"
 msgstr "{0} h {1} min"
 
 #. placeholder {0}: age.n
-#: src/components/OfflinePack.tsx:54
+#: src/components/OfflinePack.tsx:55
 msgid "{0}時間前"
 msgstr "{0} hours ago"
 
@@ -776,7 +781,7 @@ msgstr "Visits"
 #: src/components/admin/RouteEditor.tsx:678
 #: src/components/admin/useChecklistLabels.ts:18
 #: src/components/map/MapScreen.tsx:452
-#: src/components/RouteView.tsx:191
+#: src/components/RouteView.tsx:194
 msgid "アクセス・交通"
 msgstr "Access and transport"
 
@@ -996,13 +1001,9 @@ msgstr "Welcome back."
 msgid "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 msgstr "When off, every stamp place is shown on its own (recommended). When on, places close together are merged into a group such as \"3-5\"."
 
-#: src/components/OfflinePack.tsx:58
-msgid "オフラインの地図"
-msgstr "Offline map"
-
-#: src/components/OfflinePack.tsx:80
-msgid "オフライン用に地図を保存"
-msgstr "Save the map for offline use"
+#: src/components/OfflinePack.tsx:65
+msgid "オフラインで使う"
+msgstr "Use offline"
 
 #: src/components/ProfileSettings.tsx:122
 msgid "お住まい"
@@ -1192,7 +1193,7 @@ msgid "コース定数 ＝ 1.8 × 時間（h） ＋ 0.3 × 距離（km） ＋ 10
 msgstr "Course constant = 1.8 × hours + 0.3 × distance (km) + 10 × climb (km) + 0.6 × descent (km)"
 
 #: src/app/(public)/map/page.tsx:194
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:57
 #: src/components/admin/LivePreview.tsx:75
 #: src/components/RouteJourney.tsx:34
 #: src/components/RouteJourney.tsx:96
@@ -1364,7 +1365,7 @@ msgstr "This route does not exist yet"
 msgid "このルートに追加"
 msgstr "Add to this route"
 
-#: src/app/(public)/routes/[id]/page.tsx:48
+#: src/app/(public)/routes/[id]/page.tsx:47
 msgid "このルートのお知らせをフィードで受け取る"
 msgstr "Follow this route's notices in a feed reader"
 
@@ -1494,8 +1495,8 @@ msgstr "Write the material this text is based on, or the official site you check
 msgid "この文章は、本番のサイトにすぐ反映されます。保存しますか？"
 msgstr "This text goes live at once. Save it?"
 
-#: src/components/RouteView.tsx:171
-#: src/components/RouteView.tsx:202
+#: src/components/RouteView.tsx:174
+#: src/components/RouteView.tsx:205
 msgid "この文章は日本語のみです。"
 msgstr "This text is only available in Japanese."
 
@@ -1623,11 +1624,6 @@ msgstr "No walkable path was found near here. Move the points of the line closer
 #: src/components/IntroFlow.tsx:199
 msgid "この道すじには、法華経の二十八の章にちなむ「経塚」が並び、「葛城二十八宿」と呼ばれています。"
 msgstr "Along this path stand sutra mounds (経塚) named after the 28 chapters of the Lotus Sutra, known as the 28 stations of Katsuragi (葛城二十八宿)."
-
-#. placeholder {0}: megabytes(pack.bytes)
-#: src/components/OfflinePack.tsx:65
-msgid "この道の地図を保存済み（{ageText}・{0} MB）。電波がなくても地図が開きます。"
-msgstr "Map of this trail saved ({ageText}, {0} MB). It opens without a signal."
 
 #: src/components/landing/ContinueCard.tsx:51
 msgid "この道を見る"
@@ -1758,7 +1754,7 @@ msgid "すぐ{turnWord}"
 msgstr "{turnWord} now"
 
 #: src/app/(public)/map/page.tsx:194
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:57
 #: src/components/admin/LivePreview.tsx:75
 #: src/components/RouteJourney.tsx:31
 #: src/components/RouteJourney.tsx:92
@@ -1789,7 +1785,7 @@ msgstr "Stamps {0} / {1}"
 
 #: src/components/landing/ContinueCard.tsx:23
 #: src/components/map/MapScreen.tsx:383
-#: src/components/RouteView.tsx:253
+#: src/components/RouteView.tsx:258
 #: src/components/TrailRibbon.tsx:62
 #: src/components/TripSummary.tsx:48
 msgid "スタンプ {stampedCount} / {spotCount}"
@@ -1840,7 +1836,7 @@ msgid "スタンプの場所の近くにいるか、たしかめるために、�
 msgstr "To check that you are near the stamp place, we look at your phone's location once."
 
 #: src/components/map/MapScreen.tsx:438
-#: src/components/RouteView.tsx:241
+#: src/components/RouteView.tsx:246
 msgid "スタンプの場所は、まだ準備中です。"
 msgstr "The stamp places are not ready yet."
 
@@ -1940,7 +1936,7 @@ msgid "スタンプ数"
 msgstr "Stamps"
 
 #: src/app/(public)/map/page.tsx:194
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:57
 #: src/components/admin/LivePreview.tsx:75
 msgid "スタンプ済み"
 msgstr "stamped"
@@ -2036,7 +2032,7 @@ msgstr "Dashboard"
 msgid "ダッシュボード（管理）"
 msgstr "Dashboard (admin)"
 
-#: src/components/OfflinePack.tsx:54
+#: src/components/OfflinePack.tsx:55
 msgid "たった今"
 msgstr "Just now"
 
@@ -3076,7 +3072,7 @@ msgstr "Nearest first from the route's first waypoint."
 msgid "ルートの写真のリンク"
 msgstr "Route photo link"
 
-#: src/components/RouteView.tsx:222
+#: src/components/RouteView.tsx:227
 msgid "ルートの動画"
 msgstr "Route video"
 
@@ -3599,7 +3595,7 @@ msgstr "Could not save."
 msgid "保存できませんでした。もう一度お試しください。"
 msgstr "It could not be saved. Please try again."
 
-#: src/components/OfflinePack.tsx:87
+#: src/components/OfflinePack.tsx:101
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not save. Please try again where the signal is good."
 
@@ -3611,6 +3607,7 @@ msgstr "Saving…"
 
 #: src/components/admin/AdminItemForm.tsx:261
 #: src/components/admin/PageTextEditor.tsx:70
+#: src/components/OfflinePack.tsx:78
 msgid "保存済み"
 msgstr "Saved"
 
@@ -3739,7 +3736,7 @@ msgstr "When they are ready to publish, the stamp rallies will appear here."
 msgid "公開できるようになったら、ここにルートが表示されます。"
 msgstr "Routes will appear here once they are published."
 
-#: src/components/RouteView.tsx:242
+#: src/components/RouteView.tsx:247
 msgid "公開できるようになったら、ここに場所の一覧が表示されます。"
 msgstr "When they are ready to publish, the list of places will appear here."
 
@@ -3992,7 +3989,7 @@ msgstr "Before you go"
 #: src/app/(public)/routes/page.tsx:85
 #: src/components/landing/Landing.tsx:271
 #: src/components/landing/TrailNotices.tsx:65
-#: src/components/RouteView.tsx:269
+#: src/components/RouteView.tsx:274
 #: src/components/SpotSheet.tsx:184
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "Check official sources before you go."
@@ -4005,7 +4002,7 @@ msgstr "Credit (who took it, terms of use)"
 #: src/components/admin/RouteEditor.tsx:686
 #: src/components/admin/RouteEditor.tsx:687
 #: src/components/map/MapScreen.tsx:461
-#: src/components/RouteView.tsx:180
+#: src/components/RouteView.tsx:183
 #: src/components/SpotSheet.tsx:148
 msgid "出典"
 msgstr "Source"
@@ -4095,6 +4092,7 @@ msgstr "Restricted"
 #: src/components/admin/PlaceTable.tsx:140
 #: src/components/admin/PlaceTable.tsx:205
 #: src/components/admin/RallyEditor.tsx:205
+#: src/components/OfflinePack.tsx:87
 msgid "削除"
 msgstr "Delete"
 
@@ -4575,23 +4573,17 @@ msgstr "Click the map to place a waypoint at that position."
 msgid "地図をクリックすると、道を探すときの目印（ガイド点）を置きます。ガイド点は、訪れる人には見えません。点はドラッグで動かせ、クリックで消えます。置いたり動かしたりしても、道は探しません。並べ終わったら「道を探す」を押してください（探すのは1回だけです）。"
 msgstr "Click the map to put a mark (guide point) that steers the route search. Visitors cannot see guide points. Drag a point to move it, click it to remove it. Placing or moving points does not search for a way; when you have placed them all, press \"Find the way\" (one search only)."
 
-#. placeholder {0}: progress.done
-#. placeholder {1}: progress.total
-#: src/components/OfflinePack.tsx:61
-msgid "地図を保存しています… {0}/{1}"
-msgstr "Saving the map… {0}/{1}"
+#: src/components/OfflinePack.tsx:95
+msgid "地図を保存"
+msgstr "Save map"
 
-#: src/components/OfflinePack.tsx:71
-msgid "地図を削除"
-msgstr "Delete map"
+#: src/components/OfflinePack.tsx:69
+msgid "地図を保存しています… {percent}%"
+msgstr "Saving the map… {percent}%"
 
 #: src/components/admin/map-editor/MapEditor.tsx:1030
 msgid "地図を動かす"
 msgstr "Move the map there"
-
-#: src/components/OfflinePack.tsx:68
-msgid "地図を更新"
-msgstr "Update map"
 
 #: src/components/admin/PositionMap.tsx:77
 msgid "地図を表示できませんでした。"
@@ -4834,8 +4826,8 @@ msgstr "Make smaller and see the map"
 msgid "履歴を読み込めませんでした。"
 msgstr "Could not load the history."
 
-#: src/components/OfflinePack.tsx:77
-msgid "山では電波が届かないことがあります。入口で保存しておくと、この道の地図が電波なしでも開きます（数MB）。"
+#: src/components/OfflinePack.tsx:93
+msgid "山では電波が届かないことがあります。入口で保存しておくと、電波がなくてもこの道の地図が開きます（数MB）。"
 msgstr "There may be no signal in the mountains. Save the map at the trailhead and it opens without a signal (a few MB)."
 
 #: src/components/landing/Landing.tsx:261
@@ -5247,6 +5239,7 @@ msgstr "Turn"
 
 #: src/components/admin/RallyList.tsx:120
 #: src/components/admin/RouteTable.tsx:162
+#: src/components/OfflinePack.tsx:84
 msgid "更新"
 msgstr "Updated"
 
@@ -5511,7 +5504,7 @@ msgstr "Routes are in walking order. Select a name to edit its text and map."
 #: src/components/admin/RouteEditor.tsx:676
 #: src/components/admin/useChecklistLabels.ts:17
 #: src/components/map/MapScreen.tsx:443
-#: src/components/RouteView.tsx:162
+#: src/components/RouteView.tsx:165
 #: src/components/SpotSheet.tsx:132
 msgid "歴史・由来"
 msgstr "History and background"
@@ -6005,7 +5998,7 @@ msgstr "Longitude"
 
 #: src/app/(admin)/admin/attention/page.tsx:81
 #: src/components/admin/useChecklistLabels.ts:22
-#: src/components/RouteView.tsx:249
+#: src/components/RouteView.tsx:254
 msgid "経由地"
 msgstr "Waypoints"
 
@@ -6888,7 +6881,7 @@ msgid "閉店・撤去"
 msgstr "Closed for good"
 
 #: src/app/(public)/map/page.tsx:194
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:57
 #: src/components/admin/LivePreview.tsx:75
 #: src/components/navigation/NavTargetPicker.tsx:55
 #: src/components/StatusWord.tsx:13
@@ -6923,6 +6916,10 @@ msgstr "There is no signal, so it will be sent later."
 #: src/app/offline/page.tsx:21
 msgid "電波がないときに押したスタンプは、この端末に残り、つながると自動で送られます。"
 msgstr "Stamps you press with no signal stay on this phone and are sent automatically when you are back online."
+
+#: src/components/OfflinePack.tsx:81
+msgid "電波がなくても、この道の地図が開きます。"
+msgstr "The map of this trail opens without a signal."
 
 #. placeholder {0}: ask.guest
 #. placeholder {1}: ask.mine
