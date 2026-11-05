@@ -5,6 +5,7 @@ import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
 import { TrailNotices } from "@/components/landing/TrailNotices";
 import { listNotices } from "@/lib/notices";
+import { OfflinePack } from "@/components/OfflinePack";
 import { PrintShare } from "@/components/PrintShare";
 import { RouteView } from "@/components/RouteView";
 import { getRoute, listPlacesForRoute, pickText, toMapPlace } from "@/lib/content";
@@ -40,8 +41,7 @@ export default async function RouteDetailPage({ params }: Props) {
         </BackLink>
       </div>
       <PrintShare route={{ id: route.id, nameJa: route.nameJa }} gpx={route.line ? { signedIn: viewer.signedIn } : undefined} />
-      {/* The offline save (components/OfflineSave.tsx, public/sw.js) is built but left off until it is ready:
-          <OfflineSave area={route.area} tileTemplate={gsiTileUrl(settings.base === "photo" ? "seamlessphoto" : settings.base)} /> */}
+      <OfflinePack routeId={route.id} area={route.area} settings={settings} />
       <TrailNotices notices={notices} locale={i18n.locale} />
       {notices.length > 0 ? (
         <a href={`/notices/feed.xml?route=${encodeURIComponent(route.id)}${i18n.locale === "en" ? "&lang=en" : ""}`} className="-mt-3 px-4 text-sm text-accent underline">

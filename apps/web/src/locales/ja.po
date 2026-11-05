@@ -159,11 +159,21 @@ msgstr "{0}件を読みました。新しい場所：{1}件、すでにある場
 msgid "{0}回に満たない市・町は、名前を出さず合計だけにしています（{1}回）。"
 msgstr "{0}回に満たない市・町は、名前を出さず合計だけにしています（{1}回）。"
 
+#. placeholder {0}: age.n
+#: src/components/OfflinePack.tsx:54
+msgid "{0}日前"
+msgstr "{0}日前"
+
 #. placeholder {0}: Math.floor(m / 60)
 #. placeholder {1}: m % 60
 #: src/components/navigation/NavigationHud.tsx:284
 msgid "{0}時間{1}分"
 msgstr "{0}時間{1}分"
+
+#. placeholder {0}: age.n
+#: src/components/OfflinePack.tsx:54
+msgid "{0}時間前"
+msgstr "{0}時間前"
 
 #: src/components/settings/PasskeyManager.tsx:146
 msgid "{added} に追加"
@@ -986,9 +996,13 @@ msgstr "おかえりなさい。"
 msgid "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 msgstr "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 
-#: src/components/OfflineSave.tsx:47
-msgid "オフラインで使う"
-msgstr "オフラインで使う"
+#: src/components/OfflinePack.tsx:58
+msgid "オフラインの地図"
+msgstr "オフラインの地図"
+
+#: src/components/OfflinePack.tsx:80
+msgid "オフライン用に地図を保存"
+msgstr "オフライン用に地図を保存"
 
 #: src/components/ProfileSettings.tsx:122
 msgid "お住まい"
@@ -1610,6 +1624,11 @@ msgstr "この近くに、歩ける道が見つかりませんでした。線の
 msgid "この道すじには、法華経の二十八の章にちなむ「経塚」が並び、「葛城二十八宿」と呼ばれています。"
 msgstr "この道すじには、法華経の二十八の章にちなむ「経塚」が並び、「葛城二十八宿」と呼ばれています。"
 
+#. placeholder {0}: megabytes(pack.bytes)
+#: src/components/OfflinePack.tsx:65
+msgid "この道の地図を保存済み（{ageText}・{0} MB）。電波がなくても地図が開きます。"
+msgstr "この道の地図を保存済み（{ageText}・{0} MB）。電波がなくても地図が開きます。"
+
 #: src/components/landing/ContinueCard.tsx:51
 msgid "この道を見る"
 msgstr "この道を見る"
@@ -2016,6 +2035,10 @@ msgstr "ダッシュボード"
 #: src/app/(admin)/admin/page.tsx:16
 msgid "ダッシュボード（管理）"
 msgstr "ダッシュボード（管理）"
+
+#: src/components/OfflinePack.tsx:54
+msgid "たった今"
+msgstr "たった今"
 
 #: src/app/(public)/grading/page.tsx:60
 msgid "たとえば、4時間・距離8km・登り500m・下り500mなら、1.8×4 ＋ 0.3×8 ＋ 10×0.5 ＋ 0.6×0.5 ＝ 14.9 で、体力度は2です。"
@@ -3118,7 +3141,7 @@ msgid "ルートを読み込めませんでした。しばらくしてから、�
 msgstr "ルートを読み込めませんでした。しばらくしてから、ページを開き直してください。"
 
 #: src/app/(public)/grading/page.tsx:39
-#: src/app/(public)/routes/[id]/page.tsx:39
+#: src/app/(public)/routes/[id]/page.tsx:40
 msgid "ルート一覧"
 msgstr "ルート一覧"
 
@@ -3505,7 +3528,6 @@ msgstr "保存していない編集が、このブラウザに残っています
 
 #: src/components/admin/HomeSectionsForm.tsx:56
 #: src/components/admin/SiteSettingsForm.tsx:112
-#: src/components/OfflineSave.tsx:47
 msgid "保存しています…"
 msgstr "保存しています…"
 
@@ -3547,10 +3569,6 @@ msgstr "保存しました。ただし、未完成の経由地が{heldCount}件�
 msgid "保存しました。次に確認する場所はありません。"
 msgstr "保存しました。次に確認する場所はありません。"
 
-#: src/components/OfflineSave.tsx:47
-msgid "保存しました（電波がなくても開けます）"
-msgstr "保存しました（電波がなくても開けます）"
-
 #: src/components/admin/HomeSectionsForm.tsx:56
 #: src/components/admin/RouteEditor.tsx:489
 #: src/components/admin/SiteSettingsForm.tsx:112
@@ -3577,7 +3595,7 @@ msgstr "保存できませんでした。"
 msgid "保存できませんでした。もう一度お試しください。"
 msgstr "保存できませんでした。もう一度お試しください。"
 
-#: src/components/OfflineSave.tsx:49
+#: src/components/OfflinePack.tsx:87
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "保存できませんでした。電波の良い場所でもう一度お試しください。"
 
@@ -4549,9 +4567,23 @@ msgstr "地図をクリックすると、その位置に経由地を置きます
 msgid "地図をクリックすると、道を探すときの目印（ガイド点）を置きます。ガイド点は、訪れる人には見えません。点はドラッグで動かせ、クリックで消えます。置いたり動かしたりしても、道は探しません。並べ終わったら「道を探す」を押してください（探すのは1回だけです）。"
 msgstr "地図をクリックすると、道を探すときの目印（ガイド点）を置きます。ガイド点は、訪れる人には見えません。点はドラッグで動かせ、クリックで消えます。置いたり動かしたりしても、道は探しません。並べ終わったら「道を探す」を押してください（探すのは1回だけです）。"
 
+#. placeholder {0}: progress.done
+#. placeholder {1}: progress.total
+#: src/components/OfflinePack.tsx:61
+msgid "地図を保存しています… {0}/{1}"
+msgstr "地図を保存しています… {0}/{1}"
+
+#: src/components/OfflinePack.tsx:71
+msgid "地図を削除"
+msgstr "地図を削除"
+
 #: src/components/admin/map-editor/MapEditor.tsx:1030
 msgid "地図を動かす"
 msgstr "地図を動かす"
+
+#: src/components/OfflinePack.tsx:68
+msgid "地図を更新"
+msgstr "地図を更新"
 
 #: src/components/admin/PositionMap.tsx:77
 msgid "地図を表示できませんでした。"
@@ -4789,6 +4821,10 @@ msgstr "小さくして地図を見る"
 #: src/components/admin/RouteHistory.tsx:50
 msgid "履歴を読み込めませんでした。"
 msgstr "履歴を読み込めませんでした。"
+
+#: src/components/OfflinePack.tsx:77
+msgid "山では電波が届かないことがあります。入口で保存しておくと、この道の地図が電波なしでも開きます（数MB）。"
+msgstr "山では電波が届かないことがあります。入口で保存しておくと、この道の地図が電波なしでも開きます（数MB）。"
 
 #: src/components/landing/Landing.tsx:261
 msgid "山の中は、電波がつながりにくいことがあります。"

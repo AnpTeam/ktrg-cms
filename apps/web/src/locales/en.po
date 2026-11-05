@@ -159,11 +159,21 @@ msgstr "{0} rows read. New places: {1}. Already there: {2}"
 msgid "{0}回に満たない市・町は、名前を出さず合計だけにしています（{1}回）。"
 msgstr "Cities and towns with fewer than {0} views are not named, only counted in total ({1} views)."
 
+#. placeholder {0}: age.n
+#: src/components/OfflinePack.tsx:54
+msgid "{0}日前"
+msgstr "{0} days ago"
+
 #. placeholder {0}: Math.floor(m / 60)
 #. placeholder {1}: m % 60
 #: src/components/navigation/NavigationHud.tsx:284
 msgid "{0}時間{1}分"
 msgstr "{0} h {1} min"
+
+#. placeholder {0}: age.n
+#: src/components/OfflinePack.tsx:54
+msgid "{0}時間前"
+msgstr "{0} hours ago"
 
 #: src/components/settings/PasskeyManager.tsx:146
 msgid "{added} に追加"
@@ -986,9 +996,13 @@ msgstr "Welcome back."
 msgid "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 msgstr "When off, every stamp place is shown on its own (recommended). When on, places close together are merged into a group such as \"3-5\"."
 
-#: src/components/OfflineSave.tsx:47
-msgid "オフラインで使う"
-msgstr "Save for offline use"
+#: src/components/OfflinePack.tsx:58
+msgid "オフラインの地図"
+msgstr "Offline map"
+
+#: src/components/OfflinePack.tsx:80
+msgid "オフライン用に地図を保存"
+msgstr "Save the map for offline use"
 
 #: src/components/ProfileSettings.tsx:122
 msgid "お住まい"
@@ -1610,6 +1624,11 @@ msgstr "No walkable path was found near here. Move the points of the line closer
 msgid "この道すじには、法華経の二十八の章にちなむ「経塚」が並び、「葛城二十八宿」と呼ばれています。"
 msgstr "Along this path stand sutra mounds (経塚) named after the 28 chapters of the Lotus Sutra, known as the 28 stations of Katsuragi (葛城二十八宿)."
 
+#. placeholder {0}: megabytes(pack.bytes)
+#: src/components/OfflinePack.tsx:65
+msgid "この道の地図を保存済み（{ageText}・{0} MB）。電波がなくても地図が開きます。"
+msgstr "Map of this trail saved ({ageText}, {0} MB). It opens without a signal."
+
 #: src/components/landing/ContinueCard.tsx:51
 msgid "この道を見る"
 msgstr "See this route"
@@ -2016,6 +2035,10 @@ msgstr "Dashboard"
 #: src/app/(admin)/admin/page.tsx:16
 msgid "ダッシュボード（管理）"
 msgstr "Dashboard (admin)"
+
+#: src/components/OfflinePack.tsx:54
+msgid "たった今"
+msgstr "Just now"
 
 #: src/app/(public)/grading/page.tsx:60
 msgid "たとえば、4時間・距離8km・登り500m・下り500mなら、1.8×4 ＋ 0.3×8 ＋ 10×0.5 ＋ 0.6×0.5 ＝ 14.9 で、体力度は2です。"
@@ -3118,7 +3141,7 @@ msgid "ルートを読み込めませんでした。しばらくしてから、�
 msgstr "Could not load the routes. Please wait a moment and reopen the page."
 
 #: src/app/(public)/grading/page.tsx:39
-#: src/app/(public)/routes/[id]/page.tsx:39
+#: src/app/(public)/routes/[id]/page.tsx:40
 msgid "ルート一覧"
 msgstr "All routes"
 
@@ -3505,7 +3528,6 @@ msgstr "Unsaved edits were kept in this browser ({offeredAt}). Restore them?"
 
 #: src/components/admin/HomeSectionsForm.tsx:56
 #: src/components/admin/SiteSettingsForm.tsx:112
-#: src/components/OfflineSave.tsx:47
 msgid "保存しています…"
 msgstr "Saving…"
 
@@ -3547,10 +3569,6 @@ msgstr "Saved. {heldCount} unfinished waypoint(s) were not saved yet (the red it
 msgid "保存しました。次に確認する場所はありません。"
 msgstr "Saved. No more places waiting to be checked."
 
-#: src/components/OfflineSave.tsx:47
-msgid "保存しました（電波がなくても開けます）"
-msgstr "Saved (opens without a signal)"
-
 #: src/components/admin/HomeSectionsForm.tsx:56
 #: src/components/admin/RouteEditor.tsx:489
 #: src/components/admin/SiteSettingsForm.tsx:112
@@ -3577,7 +3595,7 @@ msgstr "Could not save."
 msgid "保存できませんでした。もう一度お試しください。"
 msgstr "It could not be saved. Please try again."
 
-#: src/components/OfflineSave.tsx:49
+#: src/components/OfflinePack.tsx:87
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not save. Please try again where the signal is good."
 
@@ -4549,9 +4567,23 @@ msgstr "Click the map to place a waypoint at that position."
 msgid "地図をクリックすると、道を探すときの目印（ガイド点）を置きます。ガイド点は、訪れる人には見えません。点はドラッグで動かせ、クリックで消えます。置いたり動かしたりしても、道は探しません。並べ終わったら「道を探す」を押してください（探すのは1回だけです）。"
 msgstr "Click the map to put a mark (guide point) that steers the route search. Visitors cannot see guide points. Drag a point to move it, click it to remove it. Placing or moving points does not search for a way; when you have placed them all, press \"Find the way\" (one search only)."
 
+#. placeholder {0}: progress.done
+#. placeholder {1}: progress.total
+#: src/components/OfflinePack.tsx:61
+msgid "地図を保存しています… {0}/{1}"
+msgstr "Saving the map… {0}/{1}"
+
+#: src/components/OfflinePack.tsx:71
+msgid "地図を削除"
+msgstr "Delete map"
+
 #: src/components/admin/map-editor/MapEditor.tsx:1030
 msgid "地図を動かす"
 msgstr "Move the map there"
+
+#: src/components/OfflinePack.tsx:68
+msgid "地図を更新"
+msgstr "Update map"
 
 #: src/components/admin/PositionMap.tsx:77
 msgid "地図を表示できませんでした。"
@@ -4789,6 +4821,10 @@ msgstr "Make smaller and see the map"
 #: src/components/admin/RouteHistory.tsx:50
 msgid "履歴を読み込めませんでした。"
 msgstr "Could not load the history."
+
+#: src/components/OfflinePack.tsx:77
+msgid "山では電波が届かないことがあります。入口で保存しておくと、この道の地図が電波なしでも開きます（数MB）。"
+msgstr "There may be no signal in the mountains. Save the map at the trailhead and it opens without a signal (a few MB)."
 
 #: src/components/landing/Landing.tsx:261
 msgid "山の中は、電波がつながりにくいことがあります。"

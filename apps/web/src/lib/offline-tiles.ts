@@ -1,6 +1,6 @@
 import type { RouteArea } from "./map-screen";
 
-// Which map tiles to keep for a route so its map still draws without a signal (see public/sw.js).
+// Which map tiles to keep for a route so its map still draws without a signal (see lib/offline-pack.ts).
 
 const M_PER_DEG_LAT = 111_320;
 
