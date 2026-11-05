@@ -361,6 +361,7 @@ describe("user B cannot touch user A", () => {
     "GET /api/v1/places",
     // The site-wide settings visitors read: the map style (see site-settings/site-settings.test.ts).
     "GET /api/v1/settings",
+    "GET /api/v1/settings/large-style",
     "GET /api/v1/pages/:key",
     // One page view, counted by approximate region only (see visits/visits.test.ts).
     "POST /api/v1/visits",
@@ -419,6 +420,7 @@ describe("user B cannot touch user A", () => {
     "PUT /api/v1/admin/dashboard/goals": () => ({ visits: null, stamps: 500, signups: null, completions: null }),
     "PUT /api/v1/admin/settings/home-sections": () => ({ tourism: true }),
     "PUT /api/v1/admin/settings/map-style": () => ({ base: "pale", terrain: "hillshade", terrainOpacity: 0.5, saturation: 0, contrast: 0 }),
+    "PUT /api/v1/admin/settings/large-style": () => ({ entries: null }),
     "PUT /api/v1/admin/settings/pages/:key": () => ({ ja: { title: "", body: "" }, en: { title: "", body: "" } }),
     "PATCH /api/v1/admin/lists/directory/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/lists/directory/import": () => ({ csv: "", apply: false }),

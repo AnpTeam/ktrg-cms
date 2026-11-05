@@ -5,6 +5,8 @@ import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode } from "@/lib/api-error";
 import { baseLayers, defaultMapSettings, terrainLayers, type BaseLayer, type MapSettings, type TerrainLayer } from "@/lib/map-settings";
+import type { Entry } from "@/lib/gsi-large-style";
+import { LargeStyleUpload } from "./LargeStyleUpload";
 import { MapStylePreview } from "./MapStylePreview";
 
 type Notice = { kind: "saved" | "error"; text: string } | null;
@@ -24,6 +26,8 @@ export function SiteSettingsForm({ initial }: { initial: MapSettings }) {
   const [s, setS] = useState(initial);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
+  // A file chosen for the large-text map but not applied yet; the preview shows it.
+  const [draft, setDraft] = useState<Entry[] | null>(null);
   const dirty = JSON.stringify(s) !== JSON.stringify(saved);
   const set = (patch: Partial<MapSettings>) => {
     setNotice(null);
@@ -115,8 +119,9 @@ export function SiteSettingsForm({ initial }: { initial: MapSettings }) {
             <p className="text-base text-muted">{t`100%が、国土地理院の地図に自分たちの調整を重ねた大きさです。大きくしすぎると文字が重なって読めなくなります。下の見本で確かめてください。`}</p>
           </fieldset>
         ) : null}
+        {s.base === "large" ? <LargeStyleUpload draft={draft} onDraft={setDraft} /> : null}
 
-        <MapStylePreview settings={s} />
+        <MapStylePreview settings={s} entries={draft} />
 
         <div className="flex flex-wrap items-center gap-3">
           <button type="button" disabled={busy || !dirty} onClick={save} className="tap-target rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50">

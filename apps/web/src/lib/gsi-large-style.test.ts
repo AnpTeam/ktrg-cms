@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { applyEditorStyle, modernValue, type StdLayer } from "./gsi-large-style";
+import { applyEditorStyle, applyEntries, modernValue, type StdLayer } from "./gsi-large-style";
 
 const std = (layers: StdLayer[]) => ({ version: 8, layers });
 const label = (extra: Partial<StdLayer> = {}): StdLayer => ({ id: "a", type: "symbol", "source-layer": "label", minzoom: 13, maxzoom: 14, filter: ["all", ["in", "ftCode", 100]], layout: { "text-size": 12 }, paint: { "text-color": "black" }, ...extra });
@@ -41,4 +41,22 @@ test("the editor's zoom stops become an interpolation", () => {
   expect(modernValue({ stops: [[17, 4.5]] })).toBe(4.5);
   expect(modernValue(8)).toBe(8);
   expect(modernValue(["get", "x"])).toEqual(["get", "x"]);
+});
+
+import { compactEntries } from "./gsi-large-style";
+import defaultEntries from "./map-style/gsi-large-text.entries.json";
+import gsiStd from "./map-style/gsi-std.json";
+
+test("the small form keeps only the settings used, and applying it gives the same result as applying the file", () => {
+  const file = editor({ "text-size": 30, "text-color": "red", "icon-pitch-alignment": "viewport", "line-dasharray": [2, 2] });
+  const small = compactEntries(file);
+  expect(small).toHaveLength(1);
+  expect(Object.keys(small[0]![1]).sort()).toEqual(["line-dasharray", "text-color", "text-size"]);
+  expect(applyEntries(std([label()]), small)).toEqual(applyEditorStyle(std([label()]), file));
+});
+
+test("the built-in adjustments still fit GSI's style (a changed file or style would show here)", () => {
+  const { report } = applyEntries(gsiStd as never, defaultEntries as never);
+  expect(report.layers).toBe(774);
+  expect(report.applied).toBeGreaterThan(500);
 });
