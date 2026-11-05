@@ -16,6 +16,11 @@ msgstr "  Until {until}"
 msgid "（{0} まで）"
 msgstr " (until {0})"
 
+#. placeholder {0}: megabytes(pack.bytes)
+#: src/components/OfflinePack.tsx:79
+msgid "（{ageText}・{0} MB）"
+msgstr "({ageText}, {0} MB)"
+
 #: src/components/landing/Landing.tsx:204
 #: src/components/landing/Landing.tsx:235
 msgid "（公式サイト、新しいタブで開きます）"
@@ -126,6 +131,11 @@ msgstr "Open {0}"
 msgid "{0}件"
 msgstr "{0} items"
 
+#. placeholder {0}: entries.length
+#: src/components/admin/LargeStyleUpload.tsx:47
+msgid "{0}件の設定を読み込みました。下の見本で確かめて、よければ「反映する」を押してください。"
+msgstr "Loaded {0} settings. Check the preview below and press \"Apply\" if it looks right."
+
 #. placeholder {0}: gone.size
 #: src/components/admin/AdminListTable.tsx:116
 msgid "{0}件を削除しました。残りは削除できませんでした：{failure}"
@@ -160,7 +170,7 @@ msgid "{0}回に満たない市・町は、名前を出さず合計だけにし�
 msgstr "Cities and towns with fewer than {0} views are not named, only counted in total ({1} views)."
 
 #. placeholder {0}: age.n
-#: src/components/OfflinePack.tsx:54
+#: src/components/OfflinePack.tsx:55
 msgid "{0}日前"
 msgstr "{0} days ago"
 
@@ -171,7 +181,7 @@ msgid "{0}時間{1}分"
 msgstr "{0} h {1} min"
 
 #. placeholder {0}: age.n
-#: src/components/OfflinePack.tsx:54
+#: src/components/OfflinePack.tsx:55
 msgid "{0}時間前"
 msgstr "{0} hours ago"
 
@@ -467,13 +477,17 @@ msgstr "Row {0} of the “ルート” sheet"
 msgid "「地図と線」で経由地を置く"
 msgstr "Place waypoints in “Map & line”"
 
-#: src/components/admin/SiteSettingsForm.tsx:91
+#: src/components/admin/SiteSettingsForm.tsx:95
 msgid "「地形」ボタンで重ねるもの"
 msgstr "What the \"Terrain\" button adds"
 
-#: src/components/admin/MapStylePreview.tsx:75
+#: src/components/admin/MapStylePreview.tsx:89
 msgid "「地形」ボタンを押した状態で見る"
 msgstr "Show it as when \"Terrain\" is pressed"
+
+#: src/components/admin/SiteSettingsForm.tsx:115
+msgid "「大きい文字」の大きさ"
+msgstr "Size of the Large text map"
 
 #: src/components/admin/AdminItemForm.tsx:289
 msgid "「必須」の欄をすべて入れると保存できます。"
@@ -531,6 +545,10 @@ msgstr "< Previous"
 #: src/components/map/TrailMap.tsx:174
 msgid "⌘キーを押しながら地図を動かします"
 msgstr "Hold the ⌘ key to move the map"
+
+#: src/components/admin/SiteSettingsForm.tsx:119
+msgid "100%が、国土地理院の地図に自分たちの調整を重ねた大きさです。大きくしすぎると文字が重なって読めなくなります。下の見本で確かめてください。"
+msgstr "100% is GSI's map with our own adjustments. Too large and the names overlap and become unreadable. Check the preview below."
 
 #: src/components/admin/RouteEditor.tsx:796
 msgid "1か所ずつ詳しく"
@@ -776,7 +794,7 @@ msgstr "Visits"
 #: src/components/admin/RouteEditor.tsx:678
 #: src/components/admin/useChecklistLabels.ts:18
 #: src/components/map/MapScreen.tsx:452
-#: src/components/RouteView.tsx:191
+#: src/components/RouteView.tsx:194
 msgid "アクセス・交通"
 msgstr "Access and transport"
 
@@ -796,6 +814,10 @@ msgstr "Where visits come from (admin)"
 #: src/components/admin/GoalsForm.tsx:15
 msgid "アクセス数"
 msgstr "Visits"
+
+#: src/components/admin/LargeStyleUpload.tsx:54
+msgid "アップロードしたファイルをやめて、初めから入っている設定に戻します。よろしいですか？"
+msgstr "Stop using the uploaded file and go back to the settings that came with the app. Continue?"
 
 #: src/components/useErrorMessages.ts:63
 msgid "アップロードできるのは、4MBまでのJPEG・PNG・WebPの写真と、200MBまでのMP4・WebMの動画だけです。"
@@ -940,6 +962,10 @@ msgstr "Current status"
 msgid "いまの読み（名前全体にひとつ）：{value}。上に入れると、漢字ごとの読みに置き換わります。"
 msgstr "Current reading (one for the whole name): {value}. Typing above replaces it with per-kanji readings."
 
+#: src/components/admin/LargeStyleUpload.tsx:78
+msgid "いまは、アップロードしたファイルの設定を使っています。"
+msgstr "The uploaded file's settings are in use."
+
 #: src/components/StatusBanner.tsx:77
 msgid "いまは、ここでスタンプを押せません。"
 msgstr "Stamps can't be collected here right now."
@@ -996,13 +1022,9 @@ msgstr "Welcome back."
 msgid "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 msgstr "When off, every stamp place is shown on its own (recommended). When on, places close together are merged into a group such as \"3-5\"."
 
-#: src/components/OfflinePack.tsx:58
-msgid "オフラインの地図"
-msgstr "Offline map"
-
-#: src/components/OfflinePack.tsx:80
-msgid "オフライン用に地図を保存"
-msgstr "Save the map for offline use"
+#: src/components/OfflinePack.tsx:65
+msgid "オフラインで使う"
+msgstr "Use offline"
 
 #: src/components/ProfileSettings.tsx:122
 msgid "お住まい"
@@ -1192,7 +1214,7 @@ msgid "コース定数 ＝ 1.8 × 時間（h） ＋ 0.3 × 距離（km） ＋ 10
 msgstr "Course constant = 1.8 × hours + 0.3 × distance (km) + 10 × climb (km) + 0.6 × descent (km)"
 
 #: src/app/(public)/map/page.tsx:194
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:57
 #: src/components/admin/LivePreview.tsx:75
 #: src/components/RouteJourney.tsx:34
 #: src/components/RouteJourney.tsx:96
@@ -1220,7 +1242,7 @@ msgstr "These photos appear in order on this waypoint's page. For a photo someon
 msgid "ここは、本番のサイトの文章です。保存すると、すぐにすべての訪問者の画面が変わります。"
 msgstr "This is the text of the live site. When you save, every visitor's screen changes at once."
 
-#: src/components/admin/SiteSettingsForm.tsx:69
+#: src/components/admin/SiteSettingsForm.tsx:73
 msgid "ここは、本番のサイト全体の設定です。保存すると、すぐにすべての訪問者の画面が変わります。内容をよく確かめてから保存してください。"
 msgstr "These are settings for the live site as a whole. When you save, every visitor's screen changes at once. Check them carefully before you save."
 
@@ -1298,9 +1320,17 @@ msgstr "This passkey can't be removed"
 msgid "このパスキーを消しますか？"
 msgstr "Remove this passkey?"
 
+#: src/components/admin/LargeStyleUpload.tsx:54
+msgid "このファイルの設定を、すぐにすべての訪問者の地図に反映します。よろしいですか？"
+msgstr "This file's settings will be applied to every visitor's map at once. Continue?"
+
 #: src/components/admin/RouteImport.tsx:113
 msgid "このファイルは読み取れませんでした。「ひな形」から作ったファイル（.xlsx）を選んでください。"
 msgstr "This file could not be read. Choose a file (.xlsx) made from the template."
+
+#: src/components/admin/LargeStyleUpload.tsx:49
+msgid "このファイルは読めません。国土地理院のスタイル編集で保存したJSONファイルを選んでください。"
+msgstr "This file cannot be read. Choose a JSON file saved in GSI's style editor."
 
 #: src/components/BrowserWarning.tsx:23
 msgid "このブラウザでは、スタンプが消えてしまうことがあります。"
@@ -1364,7 +1394,7 @@ msgstr "This route does not exist yet"
 msgid "このルートに追加"
 msgstr "Add to this route"
 
-#: src/app/(public)/routes/[id]/page.tsx:48
+#: src/app/(public)/routes/[id]/page.tsx:47
 msgid "このルートのお知らせをフィードで受け取る"
 msgstr "Follow this route's notices in a feed reader"
 
@@ -1494,8 +1524,8 @@ msgstr "Write the material this text is based on, or the official site you check
 msgid "この文章は、本番のサイトにすぐ反映されます。保存しますか？"
 msgstr "This text goes live at once. Save it?"
 
-#: src/components/RouteView.tsx:171
-#: src/components/RouteView.tsx:202
+#: src/components/RouteView.tsx:174
+#: src/components/RouteView.tsx:205
 msgid "この文章は日本語のみです。"
 msgstr "This text is only available in Japanese."
 
@@ -1528,7 +1558,7 @@ msgstr "Passkeys cannot be used on this device or browser. Please try email inst
 msgid "この端末では、振動は使えません。"
 msgstr "Vibration is not available on this device."
 
-#: src/components/admin/MapStylePreview.tsx:70
+#: src/components/admin/MapStylePreview.tsx:84
 msgid "この端末では地図の見本を表示できません。"
 msgstr "The map preview cannot be shown on this device."
 
@@ -1603,7 +1633,7 @@ msgstr "Share this post"
 msgid "この設定ではじめる"
 msgstr "Start with these settings"
 
-#: src/components/admin/SiteSettingsForm.tsx:43
+#: src/components/admin/SiteSettingsForm.tsx:47
 msgid "この設定は、本番のサイトにすぐ反映されます。すべての訪問者の地図の見た目が変わります。保存しますか？"
 msgstr "This goes live at once and changes the map for every visitor. Save it?"
 
@@ -1623,11 +1653,6 @@ msgstr "No walkable path was found near here. Move the points of the line closer
 #: src/components/IntroFlow.tsx:199
 msgid "この道すじには、法華経の二十八の章にちなむ「経塚」が並び、「葛城二十八宿」と呼ばれています。"
 msgstr "Along this path stand sutra mounds (経塚) named after the 28 chapters of the Lotus Sutra, known as the 28 stations of Katsuragi (葛城二十八宿)."
-
-#. placeholder {0}: megabytes(pack.bytes)
-#: src/components/OfflinePack.tsx:65
-msgid "この道の地図を保存済み（{ageText}・{0} MB）。電波がなくても地図が開きます。"
-msgstr "Map of this trail saved ({ageText}, {0} MB). It opens without a signal."
 
 #: src/components/landing/ContinueCard.tsx:51
 msgid "この道を見る"
@@ -1662,7 +1687,7 @@ msgstr "You need to log in to write a comment."
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 msgstr "This is the only way to sign in to this account. If you remove it, you won't be able to sign in. Add an email address or another passkey first."
 
-#: src/components/admin/SiteSettingsForm.tsx:105
+#: src/components/admin/SiteSettingsForm.tsx:109
 msgid "コントラスト"
 msgstr "Contrast"
 
@@ -1758,7 +1783,7 @@ msgid "すぐ{turnWord}"
 msgstr "{turnWord} now"
 
 #: src/app/(public)/map/page.tsx:194
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:57
 #: src/components/admin/LivePreview.tsx:75
 #: src/components/RouteJourney.tsx:31
 #: src/components/RouteJourney.tsx:92
@@ -1769,6 +1794,10 @@ msgstr "Start"
 #: src/components/admin/AccessPointsEditor.tsx:24
 msgid "スタート側"
 msgstr "Start end"
+
+#: src/components/admin/LargeStyleUpload.tsx:81
+msgid "スタイルファイルを選ぶ"
+msgstr "Choose a style file"
 
 #: src/app/(admin)/admin/page.tsx:76
 #: src/app/(public)/rallies/[id]/page.tsx:120
@@ -1789,7 +1818,7 @@ msgstr "Stamps {0} / {1}"
 
 #: src/components/landing/ContinueCard.tsx:23
 #: src/components/map/MapScreen.tsx:383
-#: src/components/RouteView.tsx:253
+#: src/components/RouteView.tsx:258
 #: src/components/TrailRibbon.tsx:62
 #: src/components/TripSummary.tsx:48
 msgid "スタンプ {stampedCount} / {spotCount}"
@@ -1840,7 +1869,7 @@ msgid "スタンプの場所の近くにいるか、たしかめるために、�
 msgstr "To check that you are near the stamp place, we look at your phone's location once."
 
 #: src/components/map/MapScreen.tsx:438
-#: src/components/RouteView.tsx:241
+#: src/components/RouteView.tsx:246
 msgid "スタンプの場所は、まだ準備中です。"
 msgstr "The stamp places are not ready yet."
 
@@ -1940,7 +1969,7 @@ msgid "スタンプ数"
 msgstr "Stamps"
 
 #: src/app/(public)/map/page.tsx:194
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:57
 #: src/components/admin/LivePreview.tsx:75
 msgid "スタンプ済み"
 msgstr "stamped"
@@ -1993,7 +2022,7 @@ msgstr "Remove all"
 msgid "すべて選ぶ"
 msgstr "Select all"
 
-#: src/components/admin/SiteSettingsForm.tsx:105
+#: src/components/admin/SiteSettingsForm.tsx:109
 msgid "そのまま"
 msgstr "As is"
 
@@ -2036,7 +2065,7 @@ msgstr "Dashboard"
 msgid "ダッシュボード（管理）"
 msgstr "Dashboard (admin)"
 
-#: src/components/OfflinePack.tsx:54
+#: src/components/OfflinePack.tsx:55
 msgid "たった今"
 msgstr "Just now"
 
@@ -2337,6 +2366,10 @@ msgstr "Import from a file"
 msgid "ファイルが大きすぎます（20MBまで）。"
 msgstr "The file is too large (up to 20 MB)."
 
+#: src/components/admin/LargeStyleUpload.tsx:39
+msgid "ファイルが大きすぎます（6MBまで）。"
+msgstr "The file is too large (up to 6 MB)."
+
 #: src/components/AccessList.tsx:9
 msgid "フェリー"
 msgstr "Ferry"
@@ -2489,7 +2522,7 @@ msgstr "The page could not be opened. Please try again where there is signal."
 msgid "ページ番号"
 msgstr "Page number"
 
-#: src/components/admin/SiteSettingsForm.tsx:79
+#: src/components/admin/SiteSettingsForm.tsx:83
 msgid "ベースの地図"
 msgstr "Base map"
 
@@ -2642,7 +2675,7 @@ msgid "まだスタンプを押していません"
 msgstr "You haven't collected this stamp yet"
 
 #: src/components/admin/HomeSectionsForm.tsx:58
-#: src/components/admin/SiteSettingsForm.tsx:118
+#: src/components/admin/SiteSettingsForm.tsx:133
 msgid "まだ保存していません。"
 msgstr "Not saved yet."
 
@@ -3076,7 +3109,7 @@ msgstr "Nearest first from the route's first waypoint."
 msgid "ルートの写真のリンク"
 msgstr "Route photo link"
 
-#: src/components/RouteView.tsx:222
+#: src/components/RouteView.tsx:227
 msgid "ルートの動画"
 msgstr "Route video"
 
@@ -3531,7 +3564,7 @@ msgid "保存していない編集が、このブラウザに残っています�
 msgstr "Unsaved edits were kept in this browser ({offeredAt}). Restore them?"
 
 #: src/components/admin/HomeSectionsForm.tsx:56
-#: src/components/admin/SiteSettingsForm.tsx:113
+#: src/components/admin/SiteSettingsForm.tsx:128
 msgid "保存しています…"
 msgstr "Saving…"
 
@@ -3557,7 +3590,7 @@ msgstr "Saved. This waypoint is back to a draft. Press \"Publish\" again."
 msgid "保存しました。サイトに反映されています。"
 msgstr "Saved. It is live on the site."
 
-#: src/components/admin/SiteSettingsForm.tsx:56
+#: src/components/admin/SiteSettingsForm.tsx:60
 msgid "保存しました。サイトの地図に反映されています。"
 msgstr "Saved. The site's map now uses it."
 
@@ -3575,7 +3608,7 @@ msgstr "Saved. No more places waiting to be checked."
 
 #: src/components/admin/HomeSectionsForm.tsx:56
 #: src/components/admin/RouteEditor.tsx:489
-#: src/components/admin/SiteSettingsForm.tsx:113
+#: src/components/admin/SiteSettingsForm.tsx:128
 #: src/components/ProfileSettings.tsx:221
 #: src/components/settings/PasskeyManager.tsx:135
 #: src/components/settings/PrefsForm.tsx:163
@@ -3595,11 +3628,16 @@ msgstr "Cannot save. Fix the items marked in red."
 msgid "保存できませんでした。"
 msgstr "Could not save."
 
+#: src/components/admin/LargeStyleUpload.tsx:65
+#: src/components/admin/LargeStyleUpload.tsx:68
+msgid "保存できませんでした。ファイルの中身か、電波を確かめてください。"
+msgstr "Could not save. Check the file's contents and your connection."
+
 #: src/components/ProfilePhoto.tsx:50
 msgid "保存できませんでした。もう一度お試しください。"
 msgstr "It could not be saved. Please try again."
 
-#: src/components/OfflinePack.tsx:87
+#: src/components/OfflinePack.tsx:101
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not save. Please try again where the signal is good."
 
@@ -3611,6 +3649,7 @@ msgstr "Saving…"
 
 #: src/components/admin/AdminItemForm.tsx:261
 #: src/components/admin/PageTextEditor.tsx:70
+#: src/components/OfflinePack.tsx:78
 msgid "保存済み"
 msgstr "Saved"
 
@@ -3739,7 +3778,7 @@ msgstr "When they are ready to publish, the stamp rallies will appear here."
 msgid "公開できるようになったら、ここにルートが表示されます。"
 msgstr "Routes will appear here once they are published."
 
-#: src/components/RouteView.tsx:242
+#: src/components/RouteView.tsx:247
 msgid "公開できるようになったら、ここに場所の一覧が表示されます。"
 msgstr "When they are ready to publish, the list of places will appear here."
 
@@ -3875,7 +3914,7 @@ msgstr "Highest {highest}m"
 
 #: src/components/admin/map-editor/MapEditor.tsx:1162
 #: src/components/admin/PlacePanel.tsx:153
-#: src/components/admin/SiteSettingsForm.tsx:37
+#: src/components/admin/SiteSettingsForm.tsx:41
 #: src/components/admin/useChecklistLabels.ts:19
 #: src/components/landing/BannerCarousel.tsx:38
 #: src/components/landing/HeroSlides.tsx:45
@@ -3992,7 +4031,7 @@ msgstr "Before you go"
 #: src/app/(public)/routes/page.tsx:85
 #: src/components/landing/Landing.tsx:271
 #: src/components/landing/TrailNotices.tsx:65
-#: src/components/RouteView.tsx:269
+#: src/components/RouteView.tsx:274
 #: src/components/SpotSheet.tsx:184
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "Check official sources before you go."
@@ -4005,7 +4044,7 @@ msgstr "Credit (who took it, terms of use)"
 #: src/components/admin/RouteEditor.tsx:686
 #: src/components/admin/RouteEditor.tsx:687
 #: src/components/map/MapScreen.tsx:461
-#: src/components/RouteView.tsx:180
+#: src/components/RouteView.tsx:183
 #: src/components/SpotSheet.tsx:148
 msgid "出典"
 msgstr "Source"
@@ -4036,7 +4075,15 @@ msgstr "min"
 msgid "列の幅を変える"
 msgstr "Resize column"
 
-#: src/components/admin/SiteSettingsForm.tsx:116
+#: src/components/admin/LargeStyleUpload.tsx:63
+msgid "初めから入っている設定に戻しました。"
+msgstr "Back to the settings that came with the app."
+
+#: src/components/admin/LargeStyleUpload.tsx:87
+msgid "初めの設定に戻す"
+msgstr "Go back to the first settings"
+
+#: src/components/admin/SiteSettingsForm.tsx:131
 msgid "初期値にする"
 msgstr "Use the default"
 
@@ -4305,6 +4352,14 @@ msgstr "Long stretches of hard rock and thick undergrowth. Needs route-finding s
 msgid "友人・知人"
 msgstr "Friend or acquaintance"
 
+#: src/components/admin/LargeStyleUpload.tsx:63
+msgid "反映しました。訪問者の地図には、数分のうちに変わります。"
+msgstr "Applied. Visitors' maps change within a few minutes."
+
+#: src/components/admin/LargeStyleUpload.tsx:84
+msgid "反映する"
+msgstr "Apply"
+
 #. placeholder {0}: report.filter((r) => r.status === "created").length
 #. placeholder {1}: report.filter((r) => r.status === "updated").length
 #. placeholder {2}: report.filter((r) => r.status === "skipped").length
@@ -4484,11 +4539,23 @@ msgstr "Country"
 msgid "国土地理院（地理院タイル）"
 msgstr "Geospatial Information Authority of Japan (GSI Tiles)"
 
+#: src/components/admin/LargeStyleUpload.tsx:79
+msgid "国土地理院の「地理院地図Vector」のスタイル編集で保存したJSONファイルから、文字・記号・線の大きさと色を取り込みます。"
+msgstr "Takes the sizes and colours of text, symbols and lines from a JSON file saved in GSI's Vector map style editor."
+
+#: src/components/admin/LargeStyleUpload.tsx:76
+msgid "国土地理院のスタイルファイル"
+msgstr "GSI style file"
+
 #: src/components/admin/HoursInput.tsx:14
 msgid "土曜日"
 msgstr "Saturday"
 
-#: src/components/admin/SiteSettingsForm.tsx:38
+#: src/components/admin/SiteSettingsForm.tsx:116
+msgid "地名の大きさ"
+msgstr "Place names"
+
+#: src/components/admin/SiteSettingsForm.tsx:42
 msgid "地名や記号が大きく、はっきり読める地図です。色の濃さとコントラストの調整は効きません。電波がないときは、名前が出ないことがあります。"
 msgstr "A map with large, clear place names and symbols. The colour and contrast sliders do not apply to it. Names may be missing when there is no signal."
 
@@ -4536,11 +4603,11 @@ msgstr "Map type"
 msgid "地図の見せ方"
 msgstr "How the map is shown"
 
-#: src/components/admin/SiteSettingsForm.tsx:74
+#: src/components/admin/SiteSettingsForm.tsx:78
 msgid "地図の見た目"
 msgstr "Map appearance"
 
-#: src/components/admin/MapStylePreview.tsx:77
+#: src/components/admin/MapStylePreview.tsx:91
 msgid "地図の見本"
 msgstr "Map preview"
 
@@ -4572,29 +4639,23 @@ msgstr "Click the map to place a waypoint at that position."
 msgid "地図をクリックすると、道を探すときの目印（ガイド点）を置きます。ガイド点は、訪れる人には見えません。点はドラッグで動かせ、クリックで消えます。置いたり動かしたりしても、道は探しません。並べ終わったら「道を探す」を押してください（探すのは1回だけです）。"
 msgstr "Click the map to put a mark (guide point) that steers the route search. Visitors cannot see guide points. Drag a point to move it, click it to remove it. Placing or moving points does not search for a way; when you have placed them all, press \"Find the way\" (one search only)."
 
-#. placeholder {0}: progress.done
-#. placeholder {1}: progress.total
-#: src/components/OfflinePack.tsx:61
-msgid "地図を保存しています… {0}/{1}"
-msgstr "Saving the map… {0}/{1}"
+#: src/components/OfflinePack.tsx:95
+msgid "地図を保存"
+msgstr "Save map"
 
-#: src/components/OfflinePack.tsx:71
-msgid "地図を削除"
-msgstr "Delete map"
+#: src/components/OfflinePack.tsx:69
+msgid "地図を保存しています… {percent}%"
+msgstr "Saving the map… {percent}%"
 
 #: src/components/admin/map-editor/MapEditor.tsx:1030
 msgid "地図を動かす"
 msgstr "Move the map there"
 
-#: src/components/OfflinePack.tsx:68
-msgid "地図を更新"
-msgstr "Update map"
-
 #: src/components/admin/PositionMap.tsx:77
 msgid "地図を表示できませんでした。"
 msgstr "The map could not be shown."
 
-#: src/components/admin/SiteSettingsForm.tsx:103
+#: src/components/admin/SiteSettingsForm.tsx:107
 msgid "地図を見やすくする"
 msgstr "Make the map easier on the eyes"
 
@@ -4619,7 +4680,7 @@ msgstr "See by region"
 msgid "地域でしぼる"
 msgstr "Filter by area"
 
-#: src/components/admin/SiteSettingsForm.tsx:99
+#: src/components/admin/SiteSettingsForm.tsx:103
 msgid "地形の濃さ"
 msgstr "Terrain strength"
 
@@ -4705,7 +4766,7 @@ msgstr "Large"
 msgid "大きい"
 msgstr "Large"
 
-#: src/components/admin/SiteSettingsForm.tsx:38
+#: src/components/admin/SiteSettingsForm.tsx:42
 msgid "大きい文字"
 msgstr "Large text"
 
@@ -4831,8 +4892,8 @@ msgstr "Make smaller and see the map"
 msgid "履歴を読み込めませんでした。"
 msgstr "Could not load the history."
 
-#: src/components/OfflinePack.tsx:77
-msgid "山では電波が届かないことがあります。入口で保存しておくと、この道の地図が電波なしでも開きます（数MB）。"
+#: src/components/OfflinePack.tsx:93
+msgid "山では電波が届かないことがあります。入口で保存しておくと、電波がなくてもこの道の地図が開きます（数MB）。"
 msgstr "There may be no signal in the mountains. Save the map at the trailhead and it opens without a signal (a few MB)."
 
 #: src/components/landing/Landing.tsx:261
@@ -5244,6 +5305,7 @@ msgstr "Turn"
 
 #: src/components/admin/RallyList.tsx:120
 #: src/components/admin/RouteTable.tsx:162
+#: src/components/OfflinePack.tsx:84
 msgid "更新"
 msgstr "Updated"
 
@@ -5363,7 +5425,7 @@ msgid "構成文化財"
 msgstr "Constituent cultural properties"
 
 #: src/components/admin/map-editor/MapEditor.tsx:1162
-#: src/components/admin/SiteSettingsForm.tsx:34
+#: src/components/admin/SiteSettingsForm.tsx:38
 msgid "標準"
 msgstr "Standard"
 
@@ -5508,7 +5570,7 @@ msgstr "Routes are in walking order. Select a name to edit its text and map."
 #: src/components/admin/RouteEditor.tsx:676
 #: src/components/admin/useChecklistLabels.ts:17
 #: src/components/map/MapScreen.tsx:443
-#: src/components/RouteView.tsx:162
+#: src/components/RouteView.tsx:165
 #: src/components/SpotSheet.tsx:132
 msgid "歴史・由来"
 msgstr "History and background"
@@ -5560,7 +5622,7 @@ msgstr "Footnote"
 msgid "海外"
 msgstr "Overseas"
 
-#: src/components/admin/SiteSettingsForm.tsx:36
+#: src/components/admin/SiteSettingsForm.tsx:40
 msgid "海岸線と境目だけの、いちばん静かな地図です。"
 msgstr "The quietest map: only coastlines and boundaries."
 
@@ -5580,7 +5642,7 @@ msgid "消すと、その端末では、顔や指紋でログインできなく�
 msgstr "After removing it, you can no longer log in with your face or fingerprint on that device. It can only be removed if you have another way to log in."
 
 #: src/components/admin/map-editor/MapEditor.tsx:1162
-#: src/components/admin/SiteSettingsForm.tsx:35
+#: src/components/admin/SiteSettingsForm.tsx:39
 msgid "淡色"
 msgstr "Pale"
 
@@ -5782,7 +5844,7 @@ msgstr "You have reached the most stamps that can be kept without an account. Si
 msgid "登録済みの方は"
 msgstr "Already registered?"
 
-#: src/components/admin/SiteSettingsForm.tsx:36
+#: src/components/admin/SiteSettingsForm.tsx:40
 msgid "白地図"
 msgstr "Blank map"
 
@@ -5897,7 +5959,7 @@ msgstr "Type"
 msgid "種類とスタンプ"
 msgstr "Kind and stamp"
 
-#: src/components/admin/SiteSettingsForm.tsx:37
+#: src/components/admin/SiteSettingsForm.tsx:41
 msgid "空から撮った写真の地図です。"
 msgstr "A map of aerial photographs."
 
@@ -6002,7 +6064,7 @@ msgstr "Longitude"
 
 #: src/app/(admin)/admin/attention/page.tsx:81
 #: src/components/admin/useChecklistLabels.ts:22
-#: src/components/RouteView.tsx:249
+#: src/components/RouteView.tsx:254
 msgid "経由地"
 msgstr "Waypoints"
 
@@ -6131,6 +6193,10 @@ msgstr "Import the line and elevation"
 msgid "線のない区間はありません。区間を選ぶと、その区間をつくり直せます。"
 msgstr "Every leg has a line. Choose a leg to make it again."
 
+#: src/components/admin/SiteSettingsForm.tsx:118
+msgid "線の太さ"
+msgstr "Line width"
+
 #: src/components/admin/RouteEditor.tsx:612
 msgid "線の標高から自動で計算"
 msgstr "Calculated from the line's elevation"
@@ -6255,19 +6321,19 @@ msgstr "Vending machines"
 msgid "船"
 msgstr "Ferry"
 
-#: src/components/admin/SiteSettingsForm.tsx:35
+#: src/components/admin/SiteSettingsForm.tsx:39
 msgid "色がおだやかで、道と名前が見やすい地図です。"
 msgstr "Gentle colours, with roads and names easy to read."
 
-#: src/components/admin/SiteSettingsForm.tsx:104
+#: src/components/admin/SiteSettingsForm.tsx:108
 msgid "色の濃さ"
 msgstr "Colour strength"
 
-#: src/components/admin/SiteSettingsForm.tsx:106
+#: src/components/admin/SiteSettingsForm.tsx:110
 msgid "色を薄くすると、道すじや印が目立ちます。濃さ100%、コントラスト「そのまま」が、国土地理院の地図のままです。"
 msgstr "Fading the colours makes the route and the markers stand out. Strength 100% and contrast \"As is\" is the GSI map unchanged."
 
-#: src/components/admin/SiteSettingsForm.tsx:40
+#: src/components/admin/SiteSettingsForm.tsx:44
 msgid "色別標高図（緑〜茶）"
 msgstr "Elevation colours (green to brown)"
 
@@ -6474,7 +6540,11 @@ msgstr "Up to {MAX_LANGUAGES} languages (Japanese included). Languages other tha
 msgid "記事は、まだありません。"
 msgstr "There are no posts yet."
 
-#: src/components/admin/SiteSettingsForm.tsx:76
+#: src/components/admin/SiteSettingsForm.tsx:117
+msgid "記号の大きさ"
+msgstr "Symbols"
+
+#: src/components/admin/SiteSettingsForm.tsx:80
 msgid "訪問者が見る地図（マップ画面、ルートのページ）の見た目です。地図を作る管理画面の地図は、見やすさのため、いつも「標準」です。"
 msgstr "How the map looks to visitors (the Map screen and the route pages). The map in the admin editor is always \"Standard\", so it is easy to work on."
 
@@ -6720,7 +6790,7 @@ msgstr "A guide to how rough a path is and how easy it is to lose, from A (a wel
 msgid "道まで {0}（{1}）"
 msgstr "{0} to the trail ({1})"
 
-#: src/components/admin/SiteSettingsForm.tsx:34
+#: src/components/admin/SiteSettingsForm.tsx:38
 msgid "道や建物、記号が細かく描かれた、いちばん詳しい地図です。"
 msgstr "The most detailed map, with roads, buildings and symbols drawn finely."
 
@@ -6885,7 +6955,7 @@ msgid "閉店・撤去"
 msgstr "Closed for good"
 
 #: src/app/(public)/map/page.tsx:194
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:57
 #: src/components/admin/LivePreview.tsx:75
 #: src/components/navigation/NavTargetPicker.tsx:55
 #: src/components/StatusWord.tsx:13
@@ -6896,7 +6966,7 @@ msgstr "Closed"
 msgid "開放中"
 msgstr "Open"
 
-#: src/components/admin/SiteSettingsForm.tsx:40
+#: src/components/admin/SiteSettingsForm.tsx:44
 msgid "陰影（やわらかい影）"
 msgstr "Shading (soft shadow)"
 
@@ -6920,6 +6990,10 @@ msgstr "There is no signal, so it will be sent later."
 #: src/app/offline/page.tsx:21
 msgid "電波がないときに押したスタンプは、この端末に残り、つながると自動で送られます。"
 msgstr "Stamps you press with no signal stay on this phone and are sent automatically when you are back online."
+
+#: src/components/OfflinePack.tsx:81
+msgid "電波がなくても、この道の地図が開きます。"
+msgstr "The map of this trail opens without a signal."
 
 #. placeholder {0}: ask.guest
 #. placeholder {1}: ask.mine

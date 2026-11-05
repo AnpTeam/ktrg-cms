@@ -1,3 +1,4 @@
+import type { Entry } from "./gsi-large-style";
 import { defaultMapSettings, sanitizeMapSettings, type MapSettings } from "./map-settings";
 
 // Server side: the settings an admin chose for the whole site (管理 > サイト全体の設定), read from the API for every page
@@ -10,6 +11,17 @@ async function readSettings(): Promise<PublicSettings | null> {
     const res = await fetch(`${process.env.API_ORIGIN ?? "http://localhost:3001"}/api/v1/settings`, { next: { revalidate: 15 }, signal: AbortSignal.timeout(3000) });
     const body = (await res.json().catch(() => null)) as PublicSettings | null;
     return res.ok && body?.ok === true ? body : null;
+  } catch {
+    return null;
+  }
+}
+
+/** The adjustments an admin uploaded for the 「大きい文字」 map, or null (use the built-in ones, or when the API cannot be reached). */
+export async function getLargeEntries(): Promise<Entry[] | null> {
+  try {
+    const res = await fetch(`${process.env.API_ORIGIN ?? "http://localhost:3001"}/api/v1/settings/large-style`, { next: { revalidate: 60 }, signal: AbortSignal.timeout(3000) });
+    const body = (await res.json().catch(() => null)) as { ok?: unknown; entries?: unknown } | null;
+    return res.ok && body?.ok === true && Array.isArray(body.entries) ? (body.entries as Entry[]) : null;
   } catch {
     return null;
   }

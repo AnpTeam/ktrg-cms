@@ -4,7 +4,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { Map as MapLibreMap, StyleSpecification } from "maplibre-gl";
-import { largeStyleUrl, mapStyleSource } from "@/lib/large-map-style";
+import { applyEntries, type Entry, type StdLayer } from "@/lib/gsi-large-style";
+import { composeLargeStyle, largeStyleUrl, mapStyleSource } from "@/lib/large-map-style";
 import { terrainLayerId, zoomLimits } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
 
@@ -18,7 +19,7 @@ const withTerrain = (settings: MapSettings, on: boolean): StyleSpecification | s
   return { ...style, layers: style.layers.map((l) => (l.id === terrainLayerId ? { ...l, layout: { ...l.layout, visibility: on ? ("visible" as const) : ("none" as const) } } : l)) };
 };
 
-export function MapStylePreview({ settings }: { settings: MapSettings }) {
+export function MapStylePreview({ settings, entries = null }: { settings: MapSettings; entries?: Entry[] | null }) {
   const { t } = useLingui();
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -63,8 +64,21 @@ export function MapStylePreview({ settings }: { settings: MapSettings }) {
 
   useEffect(() => {
     terrainRef.current = terrain;
-    mapRef.current?.setStyle(withTerrain(settings, terrain));
-  }, [settings, terrain]);
+    // Waits for the slider to rest: the vector style is large and each change loads it again.
+    let alive = true;
+    const timer = setTimeout(async () => {
+      // A file that is not applied yet is laid over GSI's style here in the browser (the style is loaded only in the admin).
+      if (settings.base === "large" && entries) {
+        const { default: std } = await import("@/lib/map-style/gsi-std.json");
+        const base = applyEntries(std as unknown as { layers: StdLayer[] }, entries).style;
+        if (alive) mapRef.current?.setStyle(composeLargeStyle(base as never, { origin: location.origin, terrain: settings.terrain, terrainOpacity: settings.terrainOpacity, terrainOn: terrain, labelScale: settings.labelScale, iconScale: settings.iconScale, lineScale: settings.lineScale }));
+      } else if (alive) mapRef.current?.setStyle(withTerrain(settings, terrain));
+    }, 250);
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+    };
+  }, [settings, terrain, entries]);
 
   return failed ? (
     <p className="rounded-xl bg-surface p-4 text-lg">{t`この端末では地図の見本を表示できません。`}</p>

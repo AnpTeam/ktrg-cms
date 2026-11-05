@@ -1,7 +1,7 @@
 import { and, asc, count, desc, eq, getTableColumns, inArray, isNotNull, max, ne, or, sql } from "drizzle-orm";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
-import { auditLog, rallySpots, routeSpots, routes, routeTranslations, routeVideoHistory, spots, spotRoutes, spotTranslations, stamps } from "../db/schema";
+import { auditLog, rallies, rallyCompletions, rallyRoutes, rallySpots, rallyTranslations, routeSpots, routes, routeTranslations, routeVideoHistory, spots, spotRoutes, spotTranslations, stamps } from "../db/schema";
 import { emptyTexts, flattenTexts, ROUTE_TEXT, SPOT_TEXT, splitTexts, type Texts } from "../db/translations";
 import type { ContentStore, RouteRow, RouteSummaryRow, SpotRow } from "./content-types";
 
@@ -54,6 +54,23 @@ async function saveRouteTexts(tx: Tx, routeId: string, texts: Texts<(typeof ROUT
       .returning({ locale: routeTranslations.locale });
     if (updated.length === 0) await tx.insert(routeTranslations).values({ routeId, locale, ...values });
   }
+}
+
+/**
+ * Every course has a rally of its own (the seed makes one for each of the 19), so a new course gets one too, in the same
+ * transaction: otherwise a visitor could stamp a place of it and have no rally to see the stamp in. Published, like the
+ * seed's; an admin can regroup, rename or unpublish it later.
+ */
+async function makeCourseRally(tx: Tx, actor: string, routeId: string, nameJa: string, nameEn: string | null) {
+  const [last] = await tx.select({ m: max(rallies.sortOrder) }).from(rallies);
+  const [made] = await tx
+    .insert(rallies)
+    .values({ kind: "course", sortOrder: (last?.m ?? 0) + 1, published: true })
+    .returning({ id: rallies.id });
+  await tx.insert(rallyTranslations).values({ rallyId: made!.id, locale: "ja", name: nameJa });
+  if (nameEn) await tx.insert(rallyTranslations).values({ rallyId: made!.id, locale: "en", name: nameEn });
+  await tx.insert(rallyRoutes).values({ rallyId: made!.id, routeId, position: 1 });
+  await writeAudit(tx, { actorUserId: actor, action: "rally.create", targetId: made!.id });
 }
 
 /** The English video's subtitle flag lives in the English translation row beside its video link (not a word, so it is written apart from the texts). */
@@ -167,6 +184,7 @@ export function createDrizzleContentStore(db: Db): ContentStore {
         await saveRouteTexts(tx, row!.id, texts);
         await saveEnglishSubtitles(tx, row!.id, videoSubtitlesEn);
         await writeAudit(tx, { actorUserId: actor, action: "route.create", targetId: row!.id });
+        await makeCourseRally(tx, actor, row!.id, fields.nameJa, fields.nameEn ?? null);
         return routeFromDb(tx, row!);
       });
     },
@@ -217,7 +235,14 @@ export function createDrizzleContentStore(db: Db): ContentStore {
         if (!exists) return "not_found";
         const [n] = await tx.select({ n: count() }).from(spots).where(eq(spots.routeId, id));
         if ((n?.n ?? 0) > 0) return "has_places";
-        // Its place in rallies of courses (rally_routes) goes by cascade; the rallies themselves stay.
+        // Its place in rallies of courses (rally_routes) goes by cascade. The rally made for it alone goes too, unless
+        // someone has finished it; a rally an admin grouped with other courses stays.
+        const own = await tx.select({ id: rallyRoutes.rallyId }).from(rallyRoutes).where(eq(rallyRoutes.routeId, id));
+        for (const { id: rallyId } of own) {
+          const [members] = await tx.select({ n: count() }).from(rallyRoutes).where(eq(rallyRoutes.rallyId, rallyId));
+          const [done] = await tx.select({ n: count() }).from(rallyCompletions).where(eq(rallyCompletions.rallyId, rallyId));
+          if (members?.n === 1 && done?.n === 0) await tx.delete(rallies).where(eq(rallies.id, rallyId));
+        }
         await tx.delete(routes).where(eq(routes.id, id));
         await writeAudit(tx, { actorUserId: actor, action: "route.delete", targetId: id });
         return "ok";

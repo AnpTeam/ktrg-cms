@@ -41,7 +41,6 @@ export default async function RouteDetailPage({ params }: Props) {
         </BackLink>
       </div>
       <PrintShare route={{ id: route.id, nameJa: route.nameJa }} gpx={route.line ? { signedIn: viewer.signedIn } : undefined} />
-      <OfflinePack routeId={route.id} area={route.area} settings={settings} />
       <TrailNotices notices={notices} locale={i18n.locale} />
       {notices.length > 0 ? (
         <a href={`/notices/feed.xml?route=${encodeURIComponent(route.id)}${i18n.locale === "en" ? "&lang=en" : ""}`} className="-mt-3 px-4 text-sm text-accent underline">
@@ -57,6 +56,7 @@ export default async function RouteDetailPage({ params }: Props) {
         placesFirst={prefs.placesOnMap}
         labels={{ stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`), start: i18n._(msg`スタート`), goal: i18n._(msg`ゴール`) }}
         spotHref={(id) => `/spots/${id}`}
+        offline={<OfflinePack routeId={route.id} area={route.area} settings={settings} />}
       />
     </div>
   );

@@ -8,7 +8,7 @@ import { createMemorySessionStore } from "../auth/session-memory-store";
 import { createSessionService } from "../auth/session-service";
 import type { AuthUser } from "../auth/user";
 import { apiBase } from "../lib/api-errors";
-import { createMemorySiteSettingsStore, createSiteSettingsService, MAP_STYLE, publicSettingsRoutes, siteSettingsRoutes } from "./site-settings";
+import { createMemorySiteSettingsStore, createSiteSettingsService, MAP_STYLE, publicSettingsRoutes, siteSettingsRoutes, validLargeEntries } from "./site-settings";
 
 const style = { base: "pale", terrain: "hillshade", terrainOpacity: 0.5, saturation: -0.2, contrast: 0 } as const;
 
@@ -103,5 +103,33 @@ describe("who may change a page's text", () => {
     expect((await call("participant", "PUT", "/admin/settings/pages/faq", page("x"))).status).toBe(403);
     expect((await call("participant", "GET", "/admin/settings/pages")).status).toBe(403);
     expect((await call(null, "PUT", "/admin/settings/pages/faq", page("x"))).status).toBe(401);
+  });
+
+  const entries = [["[\"label\",\"symbol\"]", { "text-size": ["interpolate", ["linear"], ["zoom"], 12, 8, 17, 20], "text-color": "rgba(0,0,0,1)" }]];
+
+  test("only an admin uploads the adjustments of the large-text map; anyone reads them; null goes back to the built-in ones", async () => {
+    const { call } = await setup();
+    expect((await call(null, "GET", "/settings/large-style")).body).toEqual({ ok: true, entries: null });
+    expect((await call("editor", "PUT", "/admin/settings/large-style", { entries })).status).toBe(403);
+    expect((await call(null, "PUT", "/admin/settings/large-style", { entries })).status).toBe(401);
+    expect((await call("admin", "PUT", "/admin/settings/large-style", { entries })).status).toBe(200);
+    expect((await call(null, "GET", "/settings/large-style")).body.entries).toEqual(entries);
+    expect((await call("admin", "PUT", "/admin/settings/large-style", { entries: null })).status).toBe(200);
+    expect((await call(null, "GET", "/settings/large-style")).body.entries).toBeNull();
+  });
+
+  test("a file the map could not read is refused, and nothing is saved", async () => {
+    const { call, audit } = await setup();
+    for (const bad of [[["k", { "fill-opacity": 1 }]], [["k", { "text-size": "big" }]], [["k", { "text-size": ["javascript", 1] }]], [["k", { "text-size": { nope: 1 } }]]]) {
+      expect((await call("admin", "PUT", "/admin/settings/large-style", { entries: bad })).status).toBe(400);
+    }
+    expect((await call(null, "GET", "/settings/large-style")).body.entries).toBeNull();
+    expect(audit.rows).toHaveLength(0);
+  });
+
+  test("validLargeEntries accepts numbers, colours, old stops and expressions, and refuses a huge file", () => {
+    expect(validLargeEntries([["k", { "line-width": 2, "line-color": "red", "text-size": { stops: [[14, 12], [16, 24]] }, "line-dasharray": [2, 2] }]])).toBe(true);
+    expect(validLargeEntries([["k", { "text-size": "red" }]])).toBe(false); // a word is only a colour
+    expect(validLargeEntries(Array.from({ length: 2500 }, (_, i) => [`key-${i}-${"x".repeat(300)}`, { "text-size": 12 }] as [string, Record<string, unknown>]))).toBe(false);
   });
 });

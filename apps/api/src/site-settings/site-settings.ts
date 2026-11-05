@@ -22,8 +22,50 @@ export const MAP_STYLE = t.Object({
   terrainOpacity: t.Number({ minimum: 0.2, maximum: 0.8 }),
   saturation: t.Number({ minimum: -1, maximum: 0.5 }),
   contrast: t.Number({ minimum: -0.5, maximum: 0.5 }),
+  // The 「大きい文字」 map only: how much bigger than GSI's style its names, icons and lines are drawn (1 = as the style says).
+  // Optional so a settings value saved before these existed is still valid.
+  labelScale: t.Optional(t.Number({ minimum: 0.8, maximum: 2 })),
+  iconScale: t.Optional(t.Number({ minimum: 0.8, maximum: 2 })),
+  lineScale: t.Optional(t.Number({ minimum: 0.8, maximum: 2 })),
 });
 export type MapStyleSetting = Static<typeof MAP_STYLE>;
+
+/**
+ * The adjustments of the 「大きい文字」 map: the small form of a GSI style-editor file (the web app turns the file into this
+ * before uploading; lib/gsi-large-style.ts there). Each entry is a layer key and the few settings taken from the editor.
+ * `entries: null` means "use the adjustments built into the app". A style the map cannot read would break every visitor's
+ * map, so the shape is checked here, not only the size.
+ */
+export const LARGE_STYLE = t.Object({ entries: t.Union([t.Null(), t.Array(t.Tuple([t.String({ maxLength: 1000 }), t.Record(t.String(), t.Unknown())]), { maxItems: 3000 })]) });
+export type LargeStyleSetting = Static<typeof LARGE_STYLE>;
+
+const SIZE_PROPS = ["text-size", "icon-size", "line-width", "text-halo-width"];
+const COLOR_PROPS = ["text-color", "line-color", "fill-color"];
+const OPERATORS = new Set(["interpolate", "step", "case", "get", "literal", "*", "+", "-", "/", "zoom", "==", "any", "all", "has", "!", "coalesce", "linear", "exponential"]);
+
+/** A number, a colour word, the older {stops} form, or an expression made of the usual operators (the map checks the rest). */
+function validValue(prop: string, v: unknown, depth = 0): boolean {
+  if (depth > 8) return false;
+  if (typeof v === "number") return Number.isFinite(v);
+  if (typeof v === "string") return COLOR_PROPS.includes(prop) && v.length <= 80;
+  if (Array.isArray(v)) {
+    if (prop === "line-dasharray") return v.length <= 8 && v.every((x) => typeof x === "number");
+    return v.length <= 200 && (typeof v[0] !== "string" || OPERATORS.has(v[0])) && v.every((x) => (typeof x === "string" ? x.length <= 80 : validValue(prop, x, depth + 1) || x === null));
+  }
+  if (typeof v === "object" && v !== null) {
+    const stops = (v as { stops?: unknown }).stops;
+    return Array.isArray(stops) && stops.length <= 40 && stops.every((p) => Array.isArray(p) && p.length === 2 && typeof p[0] === "number" && validValue(prop, p[1], depth + 1));
+  }
+  return false;
+}
+
+/** True when every entry only carries the settings the map takes from an editor file, each in a form the map understands, and the whole is not huge. */
+export function validLargeEntries(entries: LargeStyleSetting["entries"]): boolean {
+  if (entries === null) return true;
+  if (JSON.stringify(entries).length > 600_000) return false;
+  const allowed = [...SIZE_PROPS, ...COLOR_PROPS, "line-dasharray"];
+  return entries.every(([, props]) => Object.entries(props).every(([p, v]) => allowed.includes(p) && (p === "line-dasharray" || validValue(p, v))));
+}
 
 /**
  * Which optional sections of the home page are switched on. Off until an admin turns one on, so a section that has no
@@ -33,7 +75,7 @@ export const HOME_SECTIONS = t.Object({ tourism: t.Boolean() });
 export type HomeSections = Static<typeof HOME_SECTIONS>;
 export const defaultHomeSections: HomeSections = { tourism: false };
 
-export const SETTING_KEYS = { mapStyle: "map_style", dashboardGoals: "dashboard_goals", homeSections: "home_sections" } as const;
+export const SETTING_KEYS = { mapStyle: "map_style", dashboardGoals: "dashboard_goals", homeSections: "home_sections", largeStyle: "large_style" } as const;
 
 /**
  * The fixed pages whose text an editor can replace (管理 > ページの文章): the FAQ and how to play, and the terms and
@@ -72,6 +114,9 @@ export function createSiteSettingsService(deps: { store: SiteSettingsStore }) {
     /** Which optional home page sections are on; every one is off until set. */
     homeSections: async (): Promise<HomeSections> => ({ ...defaultHomeSections, ...(((await deps.store.get(SETTING_KEYS.homeSections)) as Partial<HomeSections> | null) ?? {}) }),
     setHomeSections: (actor: string, value: HomeSections) => deps.store.set(actor, SETTING_KEYS.homeSections, value),
+    /** The uploaded adjustments of the 「大きい文字」 map, or null (use the built-in ones). */
+    largeStyle: async () => ((await deps.store.get(SETTING_KEYS.largeStyle)) as LargeStyleSetting | null)?.entries ?? null,
+    setLargeStyle: (actor: string, value: LargeStyleSetting) => deps.store.set(actor, SETTING_KEYS.largeStyle, value),
     pageText: async (key: PageKey) => (await deps.store.get(pageSetting(key))) as PageText | null,
     setPageText: (actor: string, key: PageKey, value: PageText) => deps.store.set(actor, pageSetting(key), value),
   };
@@ -86,6 +131,7 @@ export const SETTING_TARGET: Record<string, string> = {
   "page:privacy": "00000000-0000-4000-8000-000000000005",
   [SETTING_KEYS.dashboardGoals]: "00000000-0000-4000-8000-000000000006",
   [SETTING_KEYS.homeSections]: "00000000-0000-4000-8000-000000000007",
+  [SETTING_KEYS.largeStyle]: "00000000-0000-4000-8000-000000000008",
 };
 
 export const SETTING_AUDIT = "site_setting.update" as const;
@@ -130,6 +176,16 @@ export function siteSettingsRoutes(getServices: () => SiteSettingsServices, opts
       },
       { auth: "site.manage", rateLimit: { adminWriteUser: "user.id" }, body: MAP_STYLE },
     )
+    .put(
+      "/large-style",
+      async ({ user, body, set }) => {
+        if (!validLargeEntries(body.entries)) return fail(set, 400, "validation_failed");
+        await getServices().siteSettings.setLargeStyle(user.id, body);
+        return { ok: true as const };
+      },
+      // 600 kB of settings plus the envelope; the server's own limit is 6 MB.
+      { auth: "site.manage", rateLimit: { adminWriteUser: "user.id" }, body: LARGE_STYLE },
+    )
     // The pages' own text. Editors may change the FAQ and how to play; the terms and the privacy policy are for an admin.
     .get(
       "/pages",
@@ -156,5 +212,7 @@ export function siteSettingsRoutes(getServices: () => SiteSettingsServices, opts
 export function publicSettingsRoutes(getSettings: () => SiteSettingsService) {
   return new Elysia({ detail: { tags: ["Content"] } })
     .get("/settings", async () => ({ ok: true as const, mapStyle: await getSettings().mapStyle(), homeSections: await getSettings().homeSections() }))
+    // Apart from /settings because it is large and only the map style address reads it.
+    .get("/settings/large-style", async () => ({ ok: true as const, entries: await getSettings().largeStyle() }))
     .get("/pages/:key", async ({ params }) => ({ ok: true as const, page: await getSettings().pageText(params.key) }), { params: t.Object({ key: oneOf(PAGE_KEYS) }) });
 }

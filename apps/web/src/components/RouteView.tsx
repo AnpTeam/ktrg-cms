@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
 import { ElevationProfile } from "@/components/ElevationProfile";
 import { EmptyState } from "@/components/EmptyState";
@@ -80,6 +81,8 @@ export interface RouteViewProps {
   labels: { stamped: string; closed: string; start: string; goal: string };
   /** Where a place's own page is. The admin's preview points these at nothing. */
   spotHref: (id: string) => string;
+  /** Something for visitors only, shown under the elevation profile (the offline map). The admin's preview leaves it out. */
+  offline?: ReactNode;
 }
 
 /**
@@ -87,7 +90,7 @@ export interface RouteViewProps {
  * and the places (stamp places numbered, the others marked "no stamp") as a trail. The public page and the admin's live preview both render this, so what an
  * editor sees while typing is what visitors get. It reads no cookies and calls no server API.
  */
-export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref }: RouteViewProps) {
+export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref, offline }: RouteViewProps) {
   const description = pickText(locale, route.descriptionJa, route.descriptionEn);
   const stops = buildStops(route, locale, spotHref, labels);
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
@@ -215,6 +218,8 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               <ElevationProfile elevations={route.sketch.elevations} distanceKm={route.distanceKm} routeLine={route.line} lineElevations={route.lineElevations} />
             </section>
           ) : null}
+
+          {offline ? <section className="order-6 px-4 @4xl:order-none @4xl:px-0">{offline}</section> : null}
 
           {video || videoFile ? (
             <section className="order-9 flex flex-col gap-3 px-4 @4xl:order-none @4xl:px-0">
