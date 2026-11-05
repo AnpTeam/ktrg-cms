@@ -329,7 +329,7 @@ msgstr "{number}番 まだ押していません"
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
 
-#: src/components/StampOutbox.tsx:162
+#: src/components/StampOutbox.tsx:168
 msgid "{pending}件のスタンプが、送信待ちです。"
 msgstr "{pending}件のスタンプが、送信待ちです。"
 
@@ -994,7 +994,7 @@ msgstr "いま向かっている場所"
 msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 msgstr "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 
-#: src/components/StampOutbox.tsx:165
+#: src/components/StampOutbox.tsx:171
 msgid "いま送る"
 msgstr "いま送る"
 
@@ -1278,7 +1278,7 @@ msgstr "このアカウントには、パスキーがありません。メール
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
 msgstr "このアカウントには、メールがありません。顔・指紋で確認してください。"
 
-#: src/components/StampOutbox.tsx:126
+#: src/components/StampOutbox.tsx:132
 msgid "このアカウントに送る"
 msgstr "このアカウントに送る"
 
@@ -2144,7 +2144,7 @@ msgstr "つづきをはじめる"
 msgid "つながると、自動で送ります。そのときにサーバーが確かめるため、受け付けられないこともあります（場所が閉鎖中になったときなど）。"
 msgstr "つながると、自動で送ります。そのときにサーバーが確かめるため、受け付けられないこともあります（場所が閉鎖中になったときなど）。"
 
-#: src/components/StampOutbox.tsx:163
+#: src/components/StampOutbox.tsx:169
 msgid "つながると、自動で送ります。つながりにくいときは、30秒ごとにもう一度試します。"
 msgstr "つながると、自動で送ります。つながりにくいときは、30秒ごとにもう一度試します。"
 
@@ -5843,7 +5843,7 @@ msgstr "登録する"
 msgid "登録できませんでした。もう一度お試しください。"
 msgstr "登録できませんでした。もう一度お試しください。"
 
-#: src/components/StampOutbox.tsx:119
+#: src/components/StampOutbox.tsx:125
 msgid "登録なしで押したスタンプがあります"
 msgstr "登録なしで押したスタンプがあります"
 
@@ -6695,7 +6695,7 @@ msgstr "送った内容が、読み取れませんでした。もう一度お試
 #: src/components/admin/PhotoUpload.tsx:76
 #: src/components/admin/SubtitleUpload.tsx:61
 #: src/components/blog/CommentSection.tsx:97
-#: src/components/StampOutbox.tsx:165
+#: src/components/StampOutbox.tsx:171
 msgid "送っています…"
 msgstr "送っています…"
 
@@ -6703,15 +6703,15 @@ msgstr "送っています…"
 msgid "送っています… {percent}%"
 msgstr "送っています… {percent}%"
 
-#: src/components/StampOutbox.tsx:129
+#: src/components/StampOutbox.tsx:135
 msgid "送らずに捨てる"
 msgstr "送らずに捨てる"
 
-#: src/components/StampOutbox.tsx:141
+#: src/components/StampOutbox.tsx:147
 msgid "送信待ちだった{count}件のスタンプは、受け付けられませんでした。"
 msgstr "送信待ちだった{count}件のスタンプは、受け付けられませんでした。"
 
-#: src/components/StampOutbox.tsx:157
+#: src/components/StampOutbox.tsx:163
 msgid "送信待ちだったスタンプが、{accepted}件、受け付けられました！"
 msgstr "送信待ちだったスタンプが、{accepted}件、受け付けられました！"
 
@@ -6959,7 +6959,7 @@ msgstr "長さ"
 #: src/components/ProfileSettings.tsx:231
 #: src/components/SampleNotice.tsx:64
 #: src/components/SiteHeader.tsx:214
-#: src/components/StampOutbox.tsx:148
+#: src/components/StampOutbox.tsx:154
 msgid "閉じる"
 msgstr "閉じる"
 
@@ -7005,7 +7005,7 @@ msgstr "電波がなくても、この道の地図が開きます。"
 
 #. placeholder {0}: ask.guest
 #. placeholder {1}: ask.mine
-#: src/components/StampOutbox.tsx:122
+#: src/components/StampOutbox.tsx:128
 msgid "電波がなくて送れなかったスタンプが{0}件あります。このアカウントには、すでに{1}個のスタンプがあります。このアカウントに送りますか？"
 msgstr "電波がなくて送れなかったスタンプが{0}件あります。このアカウントには、すでに{1}個のスタンプがあります。このアカウントに送りますか？"
 

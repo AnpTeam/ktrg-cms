@@ -5,7 +5,7 @@
 // keeps the count the screens show, and runs the upload under a lock so two tabs do not send the same row.
 
 import { useSyncExternalStore } from "react";
-import { createIdbQueueStore, flushQueue, newQueuedStamp, withUploadLock, type FlushResult, type Outcome, type QueueStore } from "./stamp-queue";
+import { createIdbQueueStore, flushQueue, newQueuedStamp, withUploadLock, type FlushResult, type Outcome, type QueuedStamp, type QueueStore } from "./stamp-queue";
 import { requestStampFor } from "./stamp-client";
 import type { Reading, StampResult } from "./stamp-flow";
 
@@ -39,9 +39,9 @@ export function createOutbox(deps: OutboxDeps) {
       await refresh();
     },
     /** Writes the stamp to the queue. False when it could not be kept (storage blocked or full): the screen must say so. */
-    async enqueue(spotId: string, reading: Reading): Promise<boolean> {
+    async enqueue(spotId: string, reading: Reading, celebrate?: QueuedStamp["celebrate"]): Promise<boolean> {
       try {
-        await deps.store.add(newQueuedStamp(userKey, spotId, reading, deps.now()));
+        await deps.store.add(newQueuedStamp(userKey, spotId, reading, deps.now(), undefined, celebrate));
       } catch {
         return false;
       }

@@ -329,7 +329,7 @@ msgstr "No. {number}, not stamped yet"
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
 
-#: src/components/StampOutbox.tsx:162
+#: src/components/StampOutbox.tsx:168
 msgid "{pending}件のスタンプが、送信待ちです。"
 msgstr "{pending} stamps are waiting to be sent."
 
@@ -994,7 +994,7 @@ msgstr "Heading here now"
 msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 msgstr "What you see now is sample and draft data. It includes information that has not been checked."
 
-#: src/components/StampOutbox.tsx:165
+#: src/components/StampOutbox.tsx:171
 msgid "いま送る"
 msgstr "Send now"
 
@@ -1278,7 +1278,7 @@ msgstr "This account has no passkey. Confirm with the number sent to your email.
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
 msgstr "This account has no email. Confirm with your face or fingerprint."
 
-#: src/components/StampOutbox.tsx:126
+#: src/components/StampOutbox.tsx:132
 msgid "このアカウントに送る"
 msgstr "Send to this account"
 
@@ -2144,7 +2144,7 @@ msgstr "Continue"
 msgid "つながると、自動で送ります。そのときにサーバーが確かめるため、受け付けられないこともあります（場所が閉鎖中になったときなど）。"
 msgstr "It is sent automatically once connected. The server checks it then, so it may not be accepted (for example if the place has closed)."
 
-#: src/components/StampOutbox.tsx:163
+#: src/components/StampOutbox.tsx:169
 msgid "つながると、自動で送ります。つながりにくいときは、30秒ごとにもう一度試します。"
 msgstr "It is sent automatically once connected. When the signal is weak, it tries again every 30 seconds."
 
@@ -5843,7 +5843,7 @@ msgstr "Register"
 msgid "登録できませんでした。もう一度お試しください。"
 msgstr "Could not register. Please try again."
 
-#: src/components/StampOutbox.tsx:119
+#: src/components/StampOutbox.tsx:125
 msgid "登録なしで押したスタンプがあります"
 msgstr "You have stamps from before you signed in"
 
@@ -6695,7 +6695,7 @@ msgstr "We could not read what was sent. Please try again."
 #: src/components/admin/PhotoUpload.tsx:76
 #: src/components/admin/SubtitleUpload.tsx:61
 #: src/components/blog/CommentSection.tsx:97
-#: src/components/StampOutbox.tsx:165
+#: src/components/StampOutbox.tsx:171
 msgid "送っています…"
 msgstr "Uploading…"
 
@@ -6703,15 +6703,15 @@ msgstr "Uploading…"
 msgid "送っています… {percent}%"
 msgstr "Sending… {percent}%"
 
-#: src/components/StampOutbox.tsx:129
+#: src/components/StampOutbox.tsx:135
 msgid "送らずに捨てる"
 msgstr "Discard them"
 
-#: src/components/StampOutbox.tsx:141
+#: src/components/StampOutbox.tsx:147
 msgid "送信待ちだった{count}件のスタンプは、受け付けられませんでした。"
 msgstr "{count} of the waiting stamps were not accepted."
 
-#: src/components/StampOutbox.tsx:157
+#: src/components/StampOutbox.tsx:163
 msgid "送信待ちだったスタンプが、{accepted}件、受け付けられました！"
 msgstr "{accepted} waiting stamp(s) were accepted!"
 
@@ -6959,7 +6959,7 @@ msgstr "Length"
 #: src/components/ProfileSettings.tsx:231
 #: src/components/SampleNotice.tsx:64
 #: src/components/SiteHeader.tsx:214
-#: src/components/StampOutbox.tsx:148
+#: src/components/StampOutbox.tsx:154
 msgid "閉じる"
 msgstr "Close"
 
@@ -7005,14 +7005,14 @@ msgstr "The map of this trail opens without a signal."
 
 #. placeholder {0}: ask.guest
 #. placeholder {1}: ask.mine
-#: src/components/StampOutbox.tsx:122
+#: src/components/StampOutbox.tsx:128
 msgid "電波がなくて送れなかったスタンプが{0}件あります。このアカウントには、すでに{1}個のスタンプがあります。このアカウントに送りますか？"
 msgstr "{0} stamps could not be sent for lack of signal. This account already has {1} stamps. Send them to this account?"
 
 #. placeholder {0}: phase.place
 #: src/components/RallyNearbyStamp.tsx:122
 msgid "電波が弱いか、つながらないため、「{0}」のスタンプは、あとで送ります。そのときに受け付けられないこともあります。"
-msgstr "The signal is weak or missing, so the stamp for "{0}" will be sent later. It may not be accepted then."
+msgstr "The signal is weak or missing, so the stamp for \"{0}\" will be sent later. It may not be accepted then."
 
 #: src/components/StampHere.tsx:127
 msgid "電波が弱いか、つながらないため、あとで送ります。"

@@ -5,8 +5,11 @@ import { geoFailureFromCode, parseMyStamps, parseStampResponse, readingFrom, typ
 
 export type PositionResult = { ok: true; reading: Reading } | { ok: false; reason: GeoFailure };
 
-/** Wait this long for the phone's position before giving up. */
-const POSITION_TIMEOUT_MS = 20_000;
+/**
+ * Wait this long for the phone's position before giving up. Short on purpose: a person standing at a place should hear "no fix yet,
+ * try again" within seconds, not stare at a button for twenty; the phone keeps warming its GPS, so the second try is usually quick.
+ */
+const POSITION_TIMEOUT_MS = 10_000;
 
 export function readPosition(): Promise<PositionResult> {
   if (typeof navigator === "undefined" || !navigator.geolocation) return Promise.resolve({ ok: false, reason: "unsupported" });

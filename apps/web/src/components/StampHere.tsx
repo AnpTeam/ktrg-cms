@@ -91,7 +91,7 @@ export function StampHere({
       if (!result.already && progress) announceProgress({ ...progress, after: progress.before + 1 });
       onStamped?.();
       router.refresh();
-    } else if (result.failure === "network" && !mock && (await getOutbox().enqueue(spotId, position.reading))) {
+    } else if (result.failure === "network" && !mock && (await getOutbox().enqueue(spotId, position.reading, progress))) {
       // No signal: the stamp waits on this phone and is sent when the app is online (the server still decides then).
       setPhase({ name: "queued" });
     } else {

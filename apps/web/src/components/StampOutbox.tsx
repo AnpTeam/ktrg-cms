@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { fetchMyStamps } from "@/lib/stamp-client";
+import { buzz, playThud } from "@/lib/stamp-feel";
+import { announceProgress, progressFromAccepted } from "@/lib/stamp-progress";
 import { getOutbox, usePendingStamps } from "@/lib/stamp-outbox";
 import type { StampFailure } from "@/lib/stamp-flow";
 import { useStampMessages } from "./useStampMessages";
@@ -32,6 +34,9 @@ export function StampOutbox({ userKey }: { userKey: string }) {
       const took = result.outcomes.filter((o) => o.kind === "accepted" && !o.already).length;
       if (took > 0) {
         setAccepted(took);
+        playThud();
+        buzz();
+        for (const p of progressFromAccepted(result.outcomes)) announceProgress(p); // the ring popup, as for a stamp pressed with signal
         window.dispatchEvent(new Event("ktrg:stamped")); // the sign-up reminder for a visitor with no account listens
       }
       // Also when the server already had it (a request that timed out here may still have been taken): the pages show it.
