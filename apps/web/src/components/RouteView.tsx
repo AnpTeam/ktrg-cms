@@ -151,8 +151,6 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             // installed app it also runs behind the Dynamic Island while it is in view (CoverWatch, globals.css).
             <div data-cover className="relative order-1 aspect-[4/3] w-full overflow-hidden bg-surface @4xl:order-none @4xl:aspect-video @4xl:rounded-2xl">
               <Image src={photo.src} alt={photo.alt} fill priority sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" unoptimized={photo.src.startsWith("https://")} />
-              {/* A light veil at the top so the bar's logo and buttons stay readable on any photo (phones only, where the bar is over it). */}
-              <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[calc(6rem+env(safe-area-inset-top))] bg-linear-to-b from-paper/80 to-transparent md:hidden" />
               <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-b from-transparent to-paper @4xl:hidden" />
               <div className="contents [&>details]:top-[calc(4rem+env(safe-area-inset-top))] md:[&>details]:top-3">
                 <CreditToggle credit={photo.credit} />

@@ -893,6 +893,10 @@ body.map-screen-active .site-footer {
 /* A page with a cover photo (the route page): on a phone the top bar lies over the photo, see-through, instead of above it,
    so the photo starts at the very top of the screen. The bar's buttons keep their own paper background. */
 @media (max-width: 767px) {
+  /* The same soft paper glow as on the map, so the logo reads on any photo. */
+  body:has([data-cover]) .site-header-bar a[href="/"] {
+    filter: drop-shadow(0 0 1px var(--color-paper)) drop-shadow(0 0 3px var(--color-paper)) drop-shadow(0 0 6px var(--color-paper));
+  }
   body:has([data-cover]) .site-header-bar {
     position: absolute;
     inset-inline: 0;
@@ -943,7 +947,8 @@ body.map-screen-active .site-footer {
   html[data-bars="hidden"]:not(:has([data-tabbar]:focus-within)) {
     --tabbar-room: 0px;
   }
-  html[data-bars="hidden"] [data-scroll-hide]:not(:focus-within) {
+  /* Only once it is stuck at the top (TabBar marks it): before that it is part of the page and stays where it is. */
+  html[data-bars="hidden"] [data-scroll-hide][data-stuck]:not(:focus-within) {
     translate: 0 calc(-100% - var(--status-strip, 0px));
   }
 }
