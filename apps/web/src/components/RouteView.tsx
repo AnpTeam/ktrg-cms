@@ -182,7 +182,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             // Solid background on purpose: a see-through bar at the top edge brings back iOS's status-bar blur (globals.css).
             // The bookmark, then links to the parts of a long page. It stays at the top while scrolling on a phone; two columns
             // show everything at once. The bookmark stays put while the links scroll sideways on a narrow screen.
-            <nav aria-label={jumpLabel} className="sticky top-[var(--status-strip,0px)] z-20 order-3 flex items-center border-b border-line/30 bg-paper py-2 @4xl:hidden">
+            <nav aria-label={jumpLabel} data-scroll-hide className="sticky top-[var(--status-strip,0px)] z-20 order-3 flex items-center border-b border-line/30 bg-paper py-2 @4xl:hidden">
               {bookmarkable ? (
                 <div className="shrink-0 border-r border-line pl-4 pr-3">
                   <BookmarkButton routeId={route.id} compact />

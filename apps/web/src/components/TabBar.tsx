@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { HomeIcon, MapIcon, MenuIcon, RouteIcon, StampIcon } from "./icons";
 import { KatsuragiLogo } from "./KatsuragiLogo";
 import { useMenu } from "./MenuProvider";
+import { initialBars, nextBars } from "@/lib/scroll-bars";
 
 // Tabs with an icon plus a word. On a phone: a floating rounded bar near the bottom, where the thumb is, with
 // the active tab as a filled pill. On a wide screen it becomes the left rail, and the menu (a pill at the top
@@ -17,6 +18,34 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
   const { t } = useLingui();
   const pathname = usePathname() ?? "";
   const { open, setOpen, railButton } = useMenu();
+
+  // While reading on a phone, scrolling down tucks the tab bar (and a page's sticky bar) away and scrolling up brings them
+  // back (lib/scroll-bars.ts). It only sets <html data-bars="hidden">; the CSS decides who moves (phones only). A new page
+  // and an open menu always show them.
+  useEffect(() => {
+    const root = document.documentElement;
+    if (open) {
+      delete root.dataset.bars;
+      return;
+    }
+    let state = initialBars(window.scrollY);
+    let frame = 0;
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        state = nextBars(state, window.scrollY, document.documentElement.scrollHeight - window.innerHeight);
+        if (state.hidden) root.dataset.bars = "hidden";
+        else delete root.dataset.bars;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(frame);
+      delete root.dataset.bars;
+    };
+  }, [open, pathname]);
 
   const tabs = [
     { path: "/", label: t`ホーム`, icon: <HomeIcon /> },

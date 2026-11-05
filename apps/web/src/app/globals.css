@@ -928,6 +928,28 @@ body.map-screen-active .site-footer {
     transform: translateY(-100%);
   }
 }
+/* Bars that step aside while reading on a phone (TabBar sets <html data-bars="hidden"> while scrolling down): the tab bar
+   slides down off the screen, a page's sticky bar ([data-scroll-hide]) slides up behind the status strip. `translate`, not
+   `transform`, so it adds to the tab bar's own transform in the installed app. A bar with keyboard focus stays. */
+@media (max-width: 767px) {
+  [data-tabbar],
+  [data-scroll-hide] {
+    transition: translate 220ms ease;
+  }
+  html[data-bars="hidden"] [data-tabbar]:not(:focus-within) {
+    translate: 0 100%;
+  }
+  html[data-bars="hidden"] [data-scroll-hide]:not(:focus-within) {
+    translate: 0 calc(-100% - var(--status-strip, 0px));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-tabbar],
+  [data-scroll-hide] {
+    transition: none;
+  }
+}
+
 /* On a phone, a chosen course or stop takes the whole screen: the bottom tab bar steps aside (the sheet's back button
    brings the map home, and the tabs with it). From 768 px the tabs are a side rail and stay. */
 @media (max-width: 767px) {
