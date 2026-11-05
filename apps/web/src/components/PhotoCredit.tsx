@@ -42,7 +42,7 @@ export function CreditBadge({ credit }: { credit: string | null | undefined }) {
 }
 
 /**
- * On a photo, top right: only "ⓘ" until tapped, then who took it / where it is from. For a large photo the credit
+ * On a photo, top right: only "©" until tapped, then who took it / where it is from. For a large photo the credit
  * would otherwise cover (the route page's cover). It sits in a box that is `relative`, and must not be inside a link.
  */
 export function CreditToggle({ credit }: { credit: string | null | undefined }) {
@@ -50,9 +50,10 @@ export function CreditToggle({ credit }: { credit: string | null | undefined }) 
   return (
     <details className="group absolute right-3 top-3 flex max-w-[85%] flex-col items-end">
       <summary
-        className="tap-target grid cursor-pointer list-none place-items-center rounded-full bg-black/60 text-white [&::-webkit-details-marker]:hidden [&_svg]:size-6"
+        className="tap-target grid cursor-pointer list-none place-items-center rounded-full bg-black/60 text-2xl font-bold text-white [&::-webkit-details-marker]:hidden"
       >
-        <InfoIcon />
+        {/* ©, not ⓘ: on a phone it sits just under the top bar's own ⓘ button. */}
+        <span aria-hidden="true">©</span>
         <span className="sr-only">
           <Trans>写真の出典</Trans>
         </span>

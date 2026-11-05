@@ -135,10 +135,15 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           {/* The cover: in one column the photo runs edge to edge and fades into the page at the bottom, and the name sits on the
               fade, so photo and title read as one. In two columns it is a plain framed photo with the name under it. */}
           {photo ? (
-            <div className="relative order-1 aspect-[4/3] w-full overflow-hidden bg-surface @4xl:order-none @4xl:aspect-video @4xl:rounded-2xl">
+            // data-cover: on a phone the top bar goes see-through and this photo runs up behind it to the top of the screen (globals.css).
+            <div data-cover className="relative order-1 aspect-[4/3] w-full overflow-hidden bg-surface @4xl:order-none @4xl:aspect-video @4xl:rounded-2xl">
               <Image src={photo.src} alt={photo.alt} fill priority sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" unoptimized={photo.src.startsWith("https://")} />
+              {/* A light veil at the top so the bar's logo and buttons stay readable on any photo (phones only, where the bar is over it). */}
+              <span aria-hidden="true" className="absolute inset-x-0 top-0 h-24 bg-linear-to-b from-paper/80 to-transparent md:hidden" />
               <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-b from-transparent to-paper @4xl:hidden" />
-              <CreditToggle credit={photo.credit} />
+              <div className="contents [&>details]:top-16 md:[&>details]:top-3">
+                <CreditToggle credit={photo.credit} />
+              </div>
             </div>
           ) : null}
           <header className={`relative order-2 px-4 @4xl:order-none @4xl:mt-0 @4xl:px-0 ${photo ? "-mt-20" : ""}`}>

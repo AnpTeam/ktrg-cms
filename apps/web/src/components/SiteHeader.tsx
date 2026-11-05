@@ -166,7 +166,7 @@ export function SiteHeader({
             ? "pointer-events-none absolute inset-x-3 top-[calc(0.75rem+env(safe-area-inset-top))] md:hidden"
             : onLanding
               ? `absolute inset-x-0 top-0 border-b border-line/30 bg-paper px-3 py-1 transition-opacity md:hidden motion-reduce:transition-none ${hidden ? "pointer-events-none opacity-0" : ""}`
-              : "relative mb-3 border-b border-line/30 bg-paper px-3 py-1 md:hidden"
+              : "site-header-bar relative mb-3 border-b border-line/30 bg-paper px-3 py-1 md:hidden"
         }
       >
         <div className={`mx-auto grid max-w-xl items-center gap-2 ${onMap ? "pointer-events-none grid-cols-[auto_1fr_auto] [&>*]:pointer-events-auto" : "grid-cols-[1fr_auto_1fr]"}`}>

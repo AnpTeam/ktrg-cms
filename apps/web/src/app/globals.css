@@ -884,6 +884,19 @@ body:has(.map-screen) {
 body.map-screen-active .site-footer {
   display: none;
 }
+/* A page with a cover photo (the route page): on a phone the top bar lies over the photo, see-through, instead of above it,
+   so the photo starts at the very top of the screen. The bar's buttons keep their own paper background. */
+@media (max-width: 767px) {
+  body:has([data-cover]) .site-header-bar {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    margin-bottom: 0;
+    background: transparent;
+    border-color: transparent;
+  }
+}
+
 /* The map's sheet at its top resting place covers the whole page, so the site's own top bar steps aside. Only on a phone:
    from 768 px the bar is not drawn, and this header also holds the menu popover, which must stay. */
 @media (max-width: 767px) {
