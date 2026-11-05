@@ -6,6 +6,7 @@ import { distanceM } from "@/lib/navigation/geometry";
 import { distanceParts } from "@/lib/stamp-flow";
 import { useNavigation } from "./NavigationProvider";
 
+import { buttonStyle } from "@/components/button";
 /**
  * 「ほかの場所へ向かう」: pick any stop still to stamp as the target instead of the nearest one (to skip one on purpose, or to
  * head for the one you want). A stop you stamp hands the choice back to the nearest; 「近い順にもどす」 does it by hand.
@@ -33,7 +34,7 @@ export function NavTargetPicker() {
 
   return (
     <>
-      <button type="button" onClick={() => dialog.current?.showModal()} className="tap-target flex min-h-12 w-full items-center justify-center rounded-xl border-2 border-ink bg-paper px-3 text-lg font-bold text-ink shadow-lg hover:bg-surface">
+      <button type="button" onClick={() => dialog.current?.showModal()} className={buttonStyle("secondary", "md", "flex w-full shadow-lg")}>
         {snap.forcedId ? t`ほかの場所へ ✓` : t`ほかの場所へ`}
       </button>
       <dialog ref={dialog} aria-labelledby="nav-target-title" className="m-auto max-h-[80dvh] w-[calc(100%-2rem)] max-w-sm overflow-y-auto rounded-3xl bg-paper p-5 text-ink backdrop:bg-black/60">
@@ -61,11 +62,11 @@ export function NavTargetPicker() {
         </ul>
         <div className="mt-4 flex flex-col gap-2">
           {snap.forcedId ? (
-            <button type="button" onClick={() => pick(null)} className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-ink px-5 text-xl font-bold text-paper">
+            <button type="button" onClick={() => pick(null)} className={buttonStyle("primary", "lg", "flex w-full")}>
               {t`近い順にもどす`}
             </button>
           ) : null}
-          <button type="button" onClick={() => dialog.current?.close()} className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl border border-ink bg-paper px-5 text-xl font-bold text-ink hover:bg-surface">
+          <button type="button" onClick={() => dialog.current?.close()} className={buttonStyle("secondary", "lg", "flex w-full")}>
             {t`とじる`}
           </button>
         </div>

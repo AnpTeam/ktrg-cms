@@ -13,6 +13,7 @@ import { track } from "@/lib/track";
 import { StampFace } from "./StampFace";
 import { useStampMessages } from "./useStampMessages";
 
+import { buttonStyle } from "@/components/button";
 // The "stamp here" button of a spot page (WBS 3.3.1). One tap: explain why the position is needed (before the
 // browser asks), read ONE position, send it, and show the answer in plain words. The server decides; every way it
 // can go wrong has its own sentence and a way to try again. The position is sent once and never kept.
@@ -26,8 +27,8 @@ type Phase =
   | { name: "queued" }
   | { name: "problem"; problem: Problem; distanceM?: number };
 
-const button = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper shadow-lg disabled:opacity-60";
-const quietButton = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl border border-ink bg-paper px-6 text-xl font-bold text-ink hover:bg-surface disabled:opacity-60";
+const button = buttonStyle("primary", "lg", "flex w-full shadow-lg");
+const quietButton = buttonStyle("secondary", "lg", "flex w-full");
 
 export function StampHere({
   spotId,

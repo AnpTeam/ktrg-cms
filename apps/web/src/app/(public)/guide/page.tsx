@@ -7,6 +7,7 @@ import { initLingui } from "@/i18n/server";
 import { RichText } from "@/components/RichText";
 import { helpFor } from "@/lib/page-text-server";
 
+import { buttonStyle } from "@/components/button";
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
   return { title: (await helpFor(i18n.locale)).guideTitle };
@@ -47,7 +48,7 @@ export default async function GuidePage() {
       <div className="px-4">
         <Link
           href="/faq"
-          className="tap-target flex min-h-14 items-center justify-center rounded-xl border border-ink bg-surface px-6 text-xl font-bold text-accent hover:bg-paper"
+          className={buttonStyle("secondary", "lg", "flex")}
         >
           {help.faqTitle}
         </Link>

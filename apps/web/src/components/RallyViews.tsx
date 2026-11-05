@@ -10,6 +10,7 @@ import { SectionBanner } from "./SectionBanner";
 import { StampGrid } from "./StampGrid";
 import { StampLegend } from "./StampLegend";
 
+import { buttonStyle } from "@/components/button";
 const nameOf = (locale: string, ja: string, en: string | null) => pickText(locale, ja, en)?.text ?? ja;
 
 /** A bar showing how far along a rally is. The numbers beside it say it all; the bar is a bonus. */
@@ -184,7 +185,7 @@ export function RallyCard({ rally, locale, account }: { rally: RallyItem; locale
           <div className="border-t-2 border-line p-4">
             <Link
               href={`/routes/${rally.routeId}`}
-              className="tap-target inline-flex items-center rounded-lg border border-ink px-4 text-lg font-bold text-accent hover:bg-paper"
+              className={buttonStyle("secondary", "md", "inline-flex")}
             >
               <Trans>コースを見る</Trans>
             </Link>

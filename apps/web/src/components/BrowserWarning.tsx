@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { canKeepData, isInAppBrowser } from "@/lib/browser-check";
 
+import { buttonStyle } from "@/components/button";
 const noSubscribe = () => () => {};
 
 /**
@@ -33,11 +34,11 @@ export function BrowserWarning() {
               // the browser refused: the address is still in its address bar
             }
           }}
-          className="tap-target rounded-xl bg-ink px-4 text-lg font-bold text-paper"
+          className={buttonStyle("primary", "md", "inline-flex")}
         >
           {copied ? t`コピーしました` : t`アドレスをコピー`}
         </button>
-        <button type="button" onClick={() => setClosed(true)} className="tap-target rounded-xl border border-ink px-4 text-lg font-bold">
+        <button type="button" onClick={() => setClosed(true)} className={buttonStyle("secondary", "md", "inline-flex")}>
           {t`閉じる`}
         </button>
       </div>

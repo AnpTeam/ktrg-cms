@@ -15,6 +15,7 @@ import { StampHere } from "./StampHere";
 import { StatusBanner } from "./StatusBanner";
 import type { StampMock } from "@/lib/stamp-flow";
 
+import { buttonStyle } from "@/components/button";
 /**
  * The spot detail sheet (WBS 3.2.5). Presentational on purpose: today it is the
  * body of /spots/[id]; the map's bottom sheet (3.2.10) will render the same thing.
@@ -71,7 +72,7 @@ export function SpotSheet({
         <div className="px-4">
           <Link
             href={`${"/map"}?route=${encodeURIComponent(spot.routeId)}&stop=${encodeURIComponent(spot.id)}`}
-            className="tap-target inline-flex items-center gap-2 rounded-xl border border-ink px-5 text-lg font-bold"
+            className={buttonStyle("secondary", "md", "inline-flex")}
           >
             <Trans>地図で見る</Trans>
           </Link>

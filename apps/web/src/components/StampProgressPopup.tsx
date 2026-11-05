@@ -5,6 +5,7 @@ import { useLingui } from "@lingui/react/macro";
 import { Medal } from "./Medal";
 import { STAMP_POPUP_CLOSED_EVENT, STAMP_PROGRESS_EVENT, type StampProgress } from "@/lib/stamp-progress";
 
+import { buttonStyle } from "@/components/button";
 /**
  * "Stamp collected": a popup after a new stamp in a rally. The ring starts where it was and fills to the new count; when the
  * rally is complete the medal turns vermilion with a pop. No timer closes it (people read at their own speed); calm turns the
@@ -56,7 +57,7 @@ export function StampProgressPopup() {
           <p className="text-3xl font-bold tabular-nums text-accent" role="status">
             {Math.min(shown, info.total)} / {info.total}
           </p>
-          <button type="button" onClick={() => dialog.current?.close()} className="tap-target mt-2 flex min-h-14 w-full items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper">
+          <button type="button" onClick={() => dialog.current?.close()} className={buttonStyle("primary", "lg", "mt-2 flex w-full")}>
             {t`とじる`}
           </button>
         </div>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useLingui } from "@lingui/react/macro";
 
+import { buttonStyle } from "@/components/button";
 // Shown by Next.js when a page breaks while it is being drawn (WBS 3.5.5). The visitor gets a plain sentence, a
 // way to try again and a way home; the technical details never reach the screen. The header and the tab bar
 // stay, because only this part of the page failed.
@@ -23,13 +24,13 @@ export default function PublicError({ error, reset }: { error: Error & { digest?
         <button
           type="button"
           onClick={() => reset()}
-          className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper"
+          className={buttonStyle("primary", "lg", "flex w-full")}
         >
           {t`もう一度ひらく`}
         </button>
         <Link
           href="/"
-          className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl border border-ink px-6 text-xl font-bold text-ink hover:bg-surface"
+          className={buttonStyle("secondary", "lg", "flex w-full")}
         >
           {t`ホームにもどる`}
         </Link>

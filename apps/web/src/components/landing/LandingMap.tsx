@@ -5,6 +5,7 @@ import { gsiTileListUrl } from "@/lib/map";
 import { rectangleRing } from "@/lib/map-screen";
 import type { RouteSummary } from "@/lib/content";
 
+import { buttonStyle } from "@/components/button";
 // A small picture of where all the courses lie: GSI tiles as the background (plain images, no script, so it stays light
 // on a weak signal) with each course's area as an outlined box and its number on top. The button opens the real map.
 
@@ -79,7 +80,7 @@ export function LandingMap({ routes }: { routes: RouteSummary[] }) {
             <Trans>国土地理院（地理院タイル）</Trans>
           </a>
         </p>
-        <Link href="/map" className="tap-target mt-4 flex min-h-14 items-center justify-center rounded-xl border border-ink bg-surface px-6 text-xl font-bold text-ink hover:bg-paper">
+        <Link href="/map" className={buttonStyle("secondary", "lg", "mt-4 flex")}>
           <Trans>マップをひらく</Trans>
         </Link>
       </div>

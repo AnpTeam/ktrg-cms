@@ -8,7 +8,8 @@ import { pickText } from "@/lib/pick-text";
 import { courseEnds, nearerEnd, sortAccess, transitLink } from "@/lib/navigation/transit-links";
 import { useNavigation } from "./NavigationProvider";
 
-const linkClass = "tap-target inline-flex items-center rounded-xl border border-ink bg-paper px-3 text-base font-bold text-ink hover:bg-surface";
+import { buttonStyle } from "@/components/button";
+const linkClass = buttonStyle("secondary", "sm", "inline-flex");
 
 /**
  * Shown instead of the distance and direction when the visitor is far from the course (docs/navigation-transit-plan.md):
@@ -30,7 +31,7 @@ export function NavFarCard() {
   return (
     <div className="flex flex-col gap-2">
       <p className="text-lg font-bold leading-snug">{t`この区間は遠くにあります。電車やバスで向かいましょう。`}</p>
-      <button type="button" onClick={() => dialog.current?.showModal()} className="tap-target flex min-h-12 w-full items-center justify-center rounded-xl bg-ink px-4 text-lg font-bold text-paper">
+      <button type="button" onClick={() => dialog.current?.showModal()} className={buttonStyle("primary", "md", "flex w-full")}>
         {t`行き方を見る`}
       </button>
       <dialog ref={dialog} aria-labelledby="nav-far-title" className="m-auto max-h-[85dvh] w-[calc(100%-2rem)] max-w-sm overflow-y-auto rounded-3xl bg-paper p-5 text-ink backdrop:bg-black/60">
@@ -89,14 +90,14 @@ export function NavFarCard() {
             setAsked(true);
             chooseWalk();
           }}
-          className="tap-target flex min-h-12 w-full items-center justify-center rounded-xl border border-ink bg-paper px-4 text-lg font-bold text-ink hover:bg-surface disabled:opacity-60"
+          className={buttonStyle("secondary", "md", "flex w-full")}
         >
           {asked ? t`歩く道を調べています…` : t`歩く道を調べる（このアプリ）`}
         </button>
       ) : (
         <p className="text-base leading-snug text-muted">{t`歩く道を調べるには、ログインしてください。`}</p>
       )}
-          <button type="button" onClick={() => dialog.current?.close()} className="tap-target flex min-h-14 w-full items-center justify-center rounded-xl border border-ink bg-paper px-5 text-xl font-bold text-ink hover:bg-surface">
+          <button type="button" onClick={() => dialog.current?.close()} className={buttonStyle("secondary", "lg", "flex w-full")}>
             {t`とじる`}
           </button>
         </div>

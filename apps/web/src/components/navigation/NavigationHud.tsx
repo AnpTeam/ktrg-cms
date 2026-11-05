@@ -19,14 +19,15 @@ import { NavFarCard } from "./NavFarCard";
 import { NavTargetPicker } from "./NavTargetPicker";
 import { useNavigation, type NavStopInfo } from "./NavigationProvider";
 
+import { buttonStyle } from "@/components/button";
 // The navigation toast: a small card floating at the bottom of the screen while a navigation runs, on every tab (on a
 // phone just above the tab bar and the phone's own bar, on a wider screen at the bottom right). Two lines: which way and
 // how far, then the stop and a short word on how it is guiding. The page makes room for it (its height is reported to
 // the provider and as the CSS variable --nav-toast), so it covers nothing. The sign on the left is the next turn
 // (straight when none is near); the way to the stop is an arrow on the visitor's dot on the map.
 
-const primary = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-ink px-5 text-xl font-bold text-paper";
-const quiet = "tap-target flex shrink-0 items-center justify-center whitespace-nowrap rounded-xl border border-ink bg-paper px-3 text-base font-bold text-ink hover:bg-surface";
+const primary = buttonStyle("primary", "lg", "flex w-full");
+const quiet = buttonStyle("secondary", "sm", "flex shrink-0 whitespace-nowrap");
 
 /** A fix older than this is said to be old, with its age. */
 const STALE_MS = 30_000;
@@ -325,7 +326,7 @@ export function NavigationToast() {
         <section ref={banner} aria-label={t`ナビ中：${routeName}`} className="fixed inset-x-3 top-[calc(0.5rem+env(safe-area-inset-top))] z-30 flex max-h-[70dvh] flex-col gap-1 overflow-y-auto rounded-2xl bg-paper px-4 py-3 shadow-2xl ring-1 ring-line/30 md:inset-x-auto md:left-[calc(50%-14rem)] md:w-[28rem]">
           {main}
           {tucked ? (
-            <button type="button" onClick={() => window.dispatchEvent(new Event(NAV_RESUME_EVENT))} className="tap-target mt-1 flex min-h-12 w-full items-center justify-center rounded-xl bg-ink px-4 text-lg font-bold text-paper">
+            <button type="button" onClick={() => window.dispatchEvent(new Event(NAV_RESUME_EVENT))} className={buttonStyle("primary", "md", "mt-1 flex w-full")}>
               {t`ナビにもどる`}
             </button>
           ) : null}
@@ -353,7 +354,7 @@ export function NavigationToast() {
           {far ? null : stampButton}
           <div className={far ? "" : "grid grid-cols-2 gap-2"}>
             {far ? null : <NavTargetPicker />}
-            <button type="button" onClick={leave} className="tap-target flex min-h-12 w-full items-center justify-center rounded-xl border-2 border-ink bg-paper px-3 text-lg font-bold text-ink shadow-lg hover:bg-surface">
+            <button type="button" onClick={leave} className={buttonStyle("secondary", "md", "flex w-full shadow-lg")}>
               {t`ナビを終える`}
             </button>
           </div>

@@ -9,6 +9,7 @@ import { initLingui } from "@/i18n/server";
 import { listPosts } from "@/lib/posts";
 import { ChevronIcon, ChevronLeftIcon } from "@/components/icons";
 
+import { buttonStyle } from "@/components/button";
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
   return { title: i18n._(msg`ブログ`) };
@@ -27,7 +28,7 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
   const page = Math.min(pages, Math.max(1, Math.floor(Number((await searchParams).page)) || 1));
   const shown = rest.slice((page - 1) * PER_PAGE, page * PER_PAGE);
   const href = (n: number) => (n === 1 ? "/blog" : `/blog?page=${n}`);
-  const pager = "tap-target inline-flex items-center gap-1 rounded-xl border-2 border-ink px-5 text-lg font-bold hover:bg-surface";
+  const pager = buttonStyle("secondary", "md", "inline-flex");
 
   return (
     <div className="flex flex-col gap-8 pt-2">

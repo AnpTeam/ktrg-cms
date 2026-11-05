@@ -25,8 +25,9 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
     { path: "/rallies", label: t`ラリー`, icon: <StampIcon /> },
   ];
 
+  // The label is capped at 4.25vw so "Routes" still fits a 320 px phone at the largest text size; wider screens never hit the cap.
   const item =
-    "flex min-h-[3.25rem] min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg text-sm font-bold leading-tight [&_svg]:size-6 md:min-h-14 md:flex-row md:justify-start md:gap-4 md:rounded-2xl md:px-5 md:text-xl";
+    "flex min-h-[3.25rem] min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg text-[min(0.875rem,4.25vw)] font-bold leading-tight [&_svg]:size-6 md:min-h-14 md:flex-row md:justify-start md:gap-4 md:rounded-2xl md:px-5 md:text-xl";
 
   return (
     // Below 1024 px this wrapper adds nothing (the nav is placed by its own classes); from 1024 px it is the sidebar.
@@ -37,9 +38,9 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
     <nav
       aria-label={t`メインメニュー`}
       data-tabbar
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-line/30 bg-paper px-3 pb-[calc(0.375rem+env(safe-area-inset-bottom))] pt-1.5 md:sticky md:inset-x-auto md:bottom-auto md:top-0 md:h-dvh md:w-44 md:shrink-0 md:self-start md:border-t-0 md:bg-transparent md:p-0 md:px-2 md:pt-6 lg:static lg:h-auto lg:w-full lg:flex-1 lg:self-auto lg:px-4 lg:pt-4"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-line/30 bg-paper px-1 pb-[calc(0.375rem+env(safe-area-inset-bottom))] min-[400px]:px-3 pt-1.5 md:sticky md:inset-x-auto md:bottom-auto md:top-0 md:h-dvh md:w-44 md:shrink-0 md:self-start md:border-t-0 md:bg-transparent md:p-0 md:px-2 md:pt-6 lg:static lg:h-auto lg:w-full lg:flex-1 lg:self-auto lg:px-4 lg:pt-4"
     >
-      <ul className="mx-auto grid max-w-xl grid-cols-5 gap-1 md:flex md:max-w-none md:flex-col md:gap-2">
+      <ul className="mx-auto grid max-w-xl grid-cols-5 gap-0.5 min-[400px]:gap-1 md:flex md:max-w-none md:flex-col md:gap-2">
         {tabs.map(({ path, label, icon }) => {
           const active = path === "/" ? pathname === "/" : pathname.startsWith(path);
           return (

@@ -9,6 +9,7 @@ import { SignInPrompt } from "@/components/SignInPrompt";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
 
+import { buttonStyle } from "@/components/button";
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
   return { title: i18n._(msg`プロフィール`) };
@@ -29,7 +30,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
           <ProfileCard publicId={viewer.publicId} deletionDueAt={viewer.deletionDueAt} locale={i18n.locale} name={viewer.name} origin={viewer.origin} ageRange={viewer.ageRange} gender={viewer.gender} foundVia={viewer.foundVia} email={viewer.email} />
           {viewer.role === "editor" || viewer.role === "admin" ? (
             <>
-              <Link prefetch={false} href="/admin" className="tap-target mx-4 flex items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper">
+              <Link prefetch={false} href="/admin" className={buttonStyle("primary", "lg", "mx-4 flex")}>
                 <Trans>管理画面を開く</Trans>
               </Link>
               <ProfilePhoto photoUrl={viewer.avatarUrl ?? null} name={viewer.name} />

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { STAMP_POPUP_CLOSED_EVENT, stampPopupOpen } from "@/lib/stamp-progress";
 
+import { buttonStyle } from "@/components/button";
 const SNOOZE_KEY = "ktrg-guest-nag-until";
 const SEEN_KEY = "ktrg-guest-nag-seen";
 const SNOOZE_MS = 7 * 24 * 60 * 60 * 1000;
@@ -72,7 +73,7 @@ export function GuestNag({ hasStamps }: { hasStamps: boolean }) {
     if (!open && el.open) el.close();
   }, [open]);
 
-  const later = "tap-target flex w-full items-center justify-center rounded-xl border border-ink px-4 text-lg font-bold hover:bg-surface";
+  const later = buttonStyle("secondary", "md", "flex w-full");
   return (
     <dialog ref={dialog} aria-labelledby="guest-nag-title" onClose={() => setOpen(false)} className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-3xl bg-paper p-6 text-ink backdrop:bg-black/60">
       <h2 id="guest-nag-title" className="text-2xl font-bold leading-snug">
@@ -80,7 +81,7 @@ export function GuestNag({ hasStamps }: { hasStamps: boolean }) {
       </h2>
       <p className="mt-3 text-lg leading-8">{t`いまのスタンプは、このブラウザにしか残っていません。ブラウザのデータを消したり、スマホを変えたりすると、なくなります。登録すると、ずっと残り、コンプリート証ももらえます。`}</p>
       <div className="mt-5 flex flex-col gap-3">
-        <Link href="/register" className="tap-target flex items-center justify-center rounded-xl bg-ink px-4 text-xl font-bold text-paper">
+        <Link href="/register" className={buttonStyle("primary", "lg", "flex")}>
           {t`新規登録`}
         </Link>
         <Link href="/login" className={later}>

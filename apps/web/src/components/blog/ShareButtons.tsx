@@ -3,6 +3,7 @@
 import { useState, useSyncExternalStore } from "react";
 import { useLingui } from "@lingui/react/macro";
 
+import { buttonStyle } from "@/components/button";
 const noop = () => () => {};
 const url = () => window.location.href;
 const canShare = () => typeof navigator.share === "function";
@@ -16,7 +17,7 @@ export function ShareButtons({ title }: { title: string }) {
   const href = useSyncExternalStore(noop, url, () => "");
   const native = useSyncExternalStore(noop, canShare, () => false);
   const [copied, setCopied] = useState(false);
-  const button = "tap-target inline-flex items-center justify-center rounded-xl border-2 border-ink px-4 text-base font-bold hover:bg-surface disabled:opacity-50";
+  const button = buttonStyle("secondary", "sm", "inline-flex");
 
   async function copy() {
     try {

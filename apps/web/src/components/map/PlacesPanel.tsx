@@ -17,6 +17,7 @@ import {
   type PlaceStatus,
 } from "@/lib/places";
 
+import { buttonStyle } from "@/components/button";
 // The "places nearby" pieces of the trail map: group buttons, the list sorted by distance, and the
 // card for one place. Plain words next to every picture; nothing here needs a gesture.
 
@@ -202,7 +203,7 @@ export function PlaceCard({
         <button
           type="button"
           onClick={onClose}
-          className="tap-target shrink-0 rounded-lg border border-ink px-3 text-base font-bold hover:bg-surface"
+          className={buttonStyle("secondary", "sm", "inline-flex shrink-0")}
         >
           {t`閉じる`}
         </button>

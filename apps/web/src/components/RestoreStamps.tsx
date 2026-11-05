@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 
+import { buttonStyle } from "@/components/button";
 type State = { name: "working" } | { name: "done"; restored: number; total: number } | { name: "failed" };
 
 /** Reads the backup code from the address (after the #), asks the server to put its stamps in this browser, and says how it went. */
@@ -39,7 +40,7 @@ export function RestoreStamps() {
       ) : null}
       {state.name === "failed" ? <p role="alert" className="text-xl font-bold text-danger">{t`このリンクからは、スタンプをもどせませんでした。リンクが途中で切れていないか、確かめてください。`}</p> : null}
       {state.name !== "working" ? (
-        <Link href="/rallies" className="tap-target flex min-h-14 items-center justify-center rounded-xl bg-ink px-6 text-xl font-bold text-paper">
+        <Link href="/rallies" className={buttonStyle("primary", "lg", "flex")}>
           {t`ラリーを見る`}
         </Link>
       ) : null}
