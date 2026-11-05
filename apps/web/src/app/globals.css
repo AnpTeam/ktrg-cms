@@ -839,6 +839,12 @@ html[data-size="xlarge"] {
 
 /* The name above the pin, centred, so the next pin along cannot cover it; the pin that shows a name is lifted over the others.
    Fixed colours, like the route line: the map tiles do not change with the theme. */
+/* Each map is its own layer: MapLibre's controls and the "use two fingers" hint (z-index 99999) stay inside it instead of
+   rising over the tab bar and the header (seen on the user's iPhone). */
+.maplibregl-map {
+  isolation: isolate;
+}
+
 .maplibregl-marker:has(.map-pin-name) {
   z-index: 10;
 }
@@ -1035,33 +1041,36 @@ body.map-screen-active .site-footer {
   }
 }
 
-/* iOS 27 draws a blur over the top of an installed web app unless WebKit finds a visible fixed or sticky box at the top edge
-   (about 90% of the viewport wide, over 10 px tall, with a background colour): it then extends that colour into the status bar
-   instead. A real-device report: a sticky header with a background removed the blur; a relative one with none did not
-   (yetone/magpie #3515). Our header is relative on a phone, so a strip in the page colour stands there for it; the page starts
-   below it. It sits under the header, the menu and, on the map, the chips (z-index), so nothing is covered. Installed app only.
-   (The status-bar-style tag is left out on purpose: black-translucent disables this colour extension.) */
+/* iOS 26+/27 draws a blur over the top of an installed web app unless WebKit finds a full-width fixed or sticky box at the
+   top edge with a solid background colour: it then fills the status bar with that colour instead. Reports agree it reads
+   the box's own background (a ::before strip, which we had until 2026-11-05, came back blurred on the user's iPhone), and
+   that a see-through box (alpha or backdrop-filter) brings the blur back. So: a real element (.status-strip, first in
+   <body>), sticky at the top, solid page colour, in the installed app only; the page starts below it. A real-device report:
+   yetone/magpie #3515. (The status-bar-style tag is left out on purpose: black-translucent disables the colour fill.) */
+.status-strip {
+  display: none;
+}
 @media (display-mode: standalone) {
-  body {
-    padding-top: 12px;
+  /* Other sticky bars (the route page's jump bar) stick just below the strip. */
+  :root {
+    --status-strip: max(12px, env(safe-area-inset-top));
   }
-  body::before {
-    content: "";
-    position: fixed;
-    inset: 0 0 auto 0;
+  .status-strip {
+    display: block;
+    position: sticky;
+    top: 0;
     /* As tall as the status bar, so scrolled content never shows (and gets blurred) under it. */
-    height: max(12px, env(safe-area-inset-top));
-    background: var(--color-paper);
+    height: var(--status-strip);
+    background-color: var(--color-paper);
     z-index: 20;
     pointer-events: none;
   }
-  body.map-screen-active,
-  body:has(.map-screen) {
-    padding-top: 0;
-  }
-  body.map-screen-active::before,
-  body:has(.map-screen)::before {
-    height: 12px; /* the map runs up under the status bar */
+  /* The map runs up under the status bar: the strip lies over it instead of pushing it down. */
+  body.map-screen-active .status-strip,
+  body:has(.map-screen) .status-strip {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 12px;
     z-index: 3;
   }
 }
