@@ -881,6 +881,25 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       await body(createDrizzleContentStore(tx as unknown as typeof db), u!.id);
     }
 
+    test("a new course gets a published rally of its own, and deleting the empty course takes that rally with it", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const before = await tx.select().from(rallies);
+          const made = await store.createRoute(actor, { nameJa: "試しの道", nameEn: "Test trail" });
+          const after = await tx.select().from(rallies);
+          expect(after).toHaveLength(before.length + 1);
+          const rally = after.find((r) => !before.some((b) => b.id === r.id))!;
+          expect(rally).toMatchObject({ kind: "course", published: true });
+          const names = await nameOf(tx, rallyTranslations, (t) => t.rallyId);
+          expect([names.get(`${rally.id}:ja`), names.get(`${rally.id}:en`)]).toEqual(["試しの道", "Test trail"]);
+          expect(await tx.select().from(rallyRoutes).where(eq(rallyRoutes.rallyId, rally.id))).toMatchObject([{ routeId: made.id, position: 1 }]);
+
+          expect(await store.deleteRoute(actor, made.id)).toBe("ok");
+          expect(await tx.select().from(rallies)).toHaveLength(before.length);
+        });
+      });
+    });
+
     test("the English video is kept in the route's English translation row, apart from the Japanese video, and can be cleared", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {
