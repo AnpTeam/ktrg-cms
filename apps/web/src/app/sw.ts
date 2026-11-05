@@ -9,7 +9,7 @@ import { CacheFirst, ExpirationPlugin, NetworkOnly, Serwist, type PrecacheEntry,
 //  - waits for the visitor to tap "update" before a new version takes over (skipWaiting is off), so nobody is
 //    switched to a new version in the middle of a walk. The prompt is in components/ServiceWorker.tsx.
 // It never caches /api/* (answers carry the session), never caches a page the network can give (a stale page would show
-// another person's stamps), and never touches a POST. Saved courses and map tiles are slice B5.
+// another person's stamps), and never touches a POST. Saved map tiles (B5) are the one exception, answered from a course's pack before the network.
 
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
@@ -30,6 +30,12 @@ const serwist = new Serwist({
     {
       matcher: ({ request }) => request.mode === "navigate",
       handler: new NetworkOnly({ networkTimeoutSeconds: 10 }),
+    },
+    // Map tiles saved with a course's offline map (lib/offline-pack.ts) come from the phone; any other tile goes to the
+    // network and is not kept (the visitor chose what to keep, nothing is saved unasked).
+    {
+      matcher: ({ url }) => url.hostname === "cyberjapandata.gsi.go.jp",
+      handler: async ({ request }) => (await caches.match(request)) ?? fetch(request),
     },
     {
       matcher: ({ url, sameOrigin }) => sameOrigin && url.pathname.startsWith("/_next/static/"),
