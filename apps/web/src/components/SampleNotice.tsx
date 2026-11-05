@@ -77,6 +77,7 @@ export function SampleNoticeButton({ className = "" }: { className?: string }) {
       type="button"
       onClick={openSampleNotice}
       aria-label={t`このデータについて`}
+      data-sample-notice
       className={`inline-flex min-h-10 min-w-10 items-center justify-center rounded-lg border border-ink bg-paper text-ink hover:bg-surface [&_svg]:size-5 ${className}`}
     >
       <InfoIcon />

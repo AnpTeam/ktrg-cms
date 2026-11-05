@@ -893,6 +893,14 @@ body.map-screen-active .site-footer {
 /* A page with a cover photo (the route page): on a phone the top bar lies over the photo, see-through, instead of above it,
    so the photo starts at the very top of the screen. The bar's buttons keep their own paper background. */
 @media (max-width: 767px) {
+  /* The bar is see-through over the photo: taps pass through it to the photo's © button, except on the bar's own buttons. */
+  body:has([data-cover]) .site-header-bar,
+  body:has([data-cover]) .site-header-bar > div {
+    pointer-events: none;
+  }
+  body:has([data-cover]) .site-header-bar > div > * {
+    pointer-events: auto;
+  }
   /* The same soft paper glow as on the map, so the logo reads on any photo. */
   body:has([data-cover]) .site-header-bar a[href="/"] {
     filter: drop-shadow(0 0 1px var(--color-paper)) drop-shadow(0 0 3px var(--color-paper)) drop-shadow(0 0 6px var(--color-paper));
@@ -932,12 +940,11 @@ body.map-screen-active .site-footer {
     transform: translateY(-100%);
   }
 }
-/* Bars that step aside while reading on a phone (TabBar sets <html data-bars="hidden"> while scrolling down): the tab bar
-   slides down off the screen, a page's sticky bar ([data-scroll-hide]) slides up behind the status strip. `translate`, not
-   `transform`, so it adds to the tab bar's own transform in the installed app. A bar with keyboard focus stays. */
+/* The tab bar steps aside while reading on a phone (TabBar sets <html data-bars="hidden"> while scrolling down): it slides
+   down off the screen. `translate`, not `transform`, so it adds to its own transform in the installed app. It stays while
+   it has keyboard focus. (A page's sticky bar used to tuck away too; the user found that bad on the route page.) */
 @media (max-width: 767px) {
-  [data-tabbar],
-  [data-scroll-hide] {
+  [data-tabbar] {
     transition: translate 220ms ease;
   }
   html[data-bars="hidden"] [data-tabbar]:not(:focus-within) {
@@ -947,29 +954,25 @@ body.map-screen-active .site-footer {
   html[data-bars="hidden"]:not(:has([data-tabbar]:focus-within)) {
     --tabbar-room: 0px;
   }
-  /* Only once it is stuck at the top (TabBar marks it): before that it is part of the page and stays where it is. */
-  html[data-bars="hidden"] [data-scroll-hide][data-stuck]:not(:focus-within) {
-    translate: 0 calc(-100% - var(--status-strip, 0px));
-  }
 }
 @media (prefers-reduced-motion: reduce) {
-  [data-tabbar],
-  [data-scroll-hide] {
+  [data-tabbar] {
     transition: none;
   }
 }
 
-/* How much of the bottom the tab bar takes right now, for things fixed above it (the navigation's buttons): the bar on a
-   phone, none from 768 px (a side rail) or when a chosen course hides it. Same 5.5rem as MapScreen's TAB_ROOM_REM. */
-:root {
-  --tabbar-room: 0px;
+/* The cover photo's © button: in the top bar's row, level with the back button (the bar starts below the status bar in the
+   installed app). Where the sample notice button holds that corner (sample content only), one row lower. */
+.cover-credit > details {
+  top: calc(0.125rem + env(safe-area-inset-top));
 }
-@media (max-width: 767px) {
-  :root {
-    --tabbar-room: 5.5rem;
-  }
-  body.map-tabs-hidden {
-    --tabbar-room: 0px;
+body:has([data-sample-notice]) .cover-credit > details {
+  top: calc(4rem + env(safe-area-inset-top));
+}
+@media (min-width: 768px) {
+  .cover-credit > details,
+  body:has([data-sample-notice]) .cover-credit > details {
+    top: 0.75rem;
   }
 }
 
