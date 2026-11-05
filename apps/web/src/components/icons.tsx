@@ -394,6 +394,14 @@ export const XIcon = ({ size }: Sized = {}) => (
   </Icon>
 );
 
+/** © in a ring: a photo credit. */
+export const CopyrightIcon = ({ size = 28 }: { size?: number }) => (
+  <Icon size={size}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M14.8 9.4a3.6 3.6 0 1 0 0 5.2" />
+  </Icon>
+);
+
 /** A ruler: a distance. */
 export const RulerIcon = () => (
   <Icon>

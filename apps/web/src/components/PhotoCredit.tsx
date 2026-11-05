@@ -1,5 +1,5 @@
 import { Trans } from "@lingui/react/macro";
-import { InfoIcon } from "@/components/icons";
+import { CopyrightIcon, InfoIcon } from "@/components/icons";
 import { Inlines } from "@/components/RichText";
 import { parseRich } from "@/lib/rich-text";
 
@@ -49,11 +49,12 @@ export function CreditToggle({ credit }: { credit: string | null | undefined }) 
   if (!credit?.trim()) return null;
   return (
     <details className="group absolute right-3 top-3 flex max-w-[85%] flex-col items-end">
-      <summary
-        className="tap-target grid cursor-pointer list-none place-items-center rounded-full bg-black/60 text-2xl font-bold text-white [&::-webkit-details-marker]:hidden"
-      >
+      {/* The whole 3rem square answers a tap; only a smaller ring shows, so it does not sit heavy on the photo. */}
+      <summary className="tap-target grid cursor-pointer list-none place-items-center text-white [&::-webkit-details-marker]:hidden">
         {/* ©, not ⓘ: on a phone it sits just under the top bar's own ⓘ button. */}
-        <span aria-hidden="true">©</span>
+        <span aria-hidden="true" className="grid size-9 place-items-center rounded-full bg-black/55">
+          <CopyrightIcon size={26} />
+        </span>
         <span className="sr-only">
           <Trans>写真の出典</Trans>
         </span>
