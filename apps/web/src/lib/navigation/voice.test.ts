@@ -47,3 +47,20 @@ describe("cueText", () => {
     expect(cueText({ kind: "offRoute" }, "en")).toBe("You are off the trail");
   });
 });
+
+import { pickVoice } from "./voice";
+
+describe("pickVoice", () => {
+  const v = (name: string, lang: string, localService = true, def = false) => ({ name, lang, localService, default: def });
+  test("a natural voice on the phone beats the robotic default", () => {
+    expect(pickVoice([v("Kyoko", "ja-JP", true, true), v("Kyoko (Enhanced)", "ja-JP"), v("Samantha", "en-US")], "ja")?.name).toBe("Kyoko (Enhanced)");
+  });
+  test("a voice on the phone beats a natural one that needs the network", () => {
+    expect(pickVoice([v("Google 日本語", "ja-JP", false), v("Microsoft Haruka", "ja-JP")], "ja")?.name).toBe("Microsoft Haruka");
+  });
+  test("only voices of the language count, written ja_JP or ja-JP; none gives null", () => {
+    expect(pickVoice([v("Samantha (Enhanced)", "en-US"), v("O-ren", "ja_JP")], "ja")?.name).toBe("O-ren");
+    expect(pickVoice([v("Samantha", "en-US")], "ja")).toBeNull();
+    expect(pickVoice([v("Kyoko", "ja-JP"), v("Ava (Premium)", "en-US"), v("Fred", "en-US", true, true)], "en")?.name).toBe("Ava (Premium)");
+  });
+});
