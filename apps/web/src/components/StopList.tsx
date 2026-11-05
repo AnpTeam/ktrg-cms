@@ -5,7 +5,7 @@ import type { SpotListItem } from "@/lib/content";
 import { pickText } from "@/lib/pick-text";
 import { plainRich } from "@/lib/rich-text";
 import type { NodeState } from "@/lib/ribbon";
-import type { TrailStop } from "@/lib/route-stops";
+import type { WalkRow } from "@/lib/route-stops";
 import { ChevronIcon } from "./icons";
 import { Localized } from "./Localized";
 import { PointKindName } from "./PointKindName";
@@ -17,7 +17,9 @@ import { TrailNode } from "./TrailNode";
 // the list reads as the order of the walk. Every place has its own page. A stamp place's node shows its state (seal =
 // stamped, ring = not yet, plain ring when signed out, dashed ring = closed right now); a place without a stamp (a toilet,
 // a station ...) has a plain ring and is marked "no stamp". A side trip (寄り道) has no number, only a small dashed dot.
-// Each is a card: photo, name, and the start of its description.
+// Each is a card: photo, name, and the start of its description. The start and the goal carry a badge; a walk that comes
+// back to its start lists that place again at the end as the goal (both rows lead to its one page, with the same stamp).
+// Between two places on the way: how far it is along the line (or the boat or bus ride the editor gave).
 
 const COLUMN = "3.25rem"; // the node column; the line runs through its middle
 const NODE_CENTER = "2.125rem"; // the row has 0.75rem above the 44 px node
@@ -67,16 +69,18 @@ function Card({ photo, alt, children }: { photo: string | null; alt: string; chi
 
 const chip = "rounded-lg border-2 border-dashed border-line px-2 text-base font-bold";
 
-export function StopList({ stops, hrefFor, locale }: { stops: TrailStop[]; hrefFor: (id: string) => string; locale: string }) {
+const ROLE_BADGE = { start: "", goal: "badge-goal", turnaround: "badge-goal" } as const;
+
+export function StopList({ rows, hrefFor, locale }: { rows: WalkRow[]; hrefFor: (id: string) => string; locale: string }) {
   // The walk so far: the line is moss up to the last stamped place.
-  const stampedUpTo = stops.reduce<boolean[]>((acc, s) => [...acc, s.type === "stamp" ? s.spot.stamped === true : (acc[acc.length - 1] ?? false)], []);
+  const stampedUpTo = rows.reduce<boolean[]>((acc, { stop: s }) => [...acc, s.type === "stamp" ? s.spot.stamped === true : (acc[acc.length - 1] ?? false)], []);
   return (
     <ol>
-      {stops.map((stop, index) => {
-        const hasNext = index < stops.length - 1;
+      {rows.map(({ stop, key, role, legKm }, index) => {
+        const hasNext = index < rows.length - 1;
         const doneAbove = index > 0 && stampedUpTo[index - 1] === true;
         const done = stampedUpTo[index] === true;
-        const before = stops[index - 1];
+        const before = rows[index - 1]?.stop;
         const item = stop.type === "stamp" ? stop.spot : stop.point;
         const name = pickText(locale, item.nameJa, item.nameEn);
         const description = pickText(locale, item.descriptionJa ?? null, item.descriptionEn ?? null);
@@ -85,12 +89,18 @@ export function StopList({ stops, hrefFor, locale }: { stops: TrailStop[]; hrefF
         const node =
           stop.number !== null && stop.type === "stamp" ? <TrailNode state={nodeFor(stop.spot)} order={stop.number} share={0} /> : <SideNode solid={!sideTrip} />;
         return (
-          <li key={item.id} className="relative">
+          <li key={key} className="relative">
             {index > 0 ? <Segment done={doneAbove} from="0" to={`calc(100% - ${NODE_CENTER})`} /> : null}
             {hasNext ? <Segment done={done} from={NODE_CENTER} to="0" /> : null}
+            <Leg km={legKm} spot={stop.type === "stamp" && before?.type === "stamp" ? stop.spot : null} />
             <Link href={hrefFor(item.id)} className="tap-target group relative grid items-start" style={{ gridTemplateColumns: `${COLUMN} 1fr` }}>
               <span className="flex justify-center pt-3">{node}</span>
               <Card photo={photo} alt={name?.text ?? ""}>
+                {role ? (
+                  <span className={`badge-ruri badge-small mb-1 ${ROLE_BADGE[role]}`}>
+                    {role === "start" ? <Trans>スタート</Trans> : role === "goal" ? <Trans>ゴール</Trans> : <Trans>折り返し</Trans>}
+                  </span>
+                ) : null}
                 <span className="block text-xl font-bold leading-snug">
                   <Localized value={name} />
                 </span>
@@ -118,7 +128,7 @@ export function StopList({ stops, hrefFor, locale }: { stops: TrailStop[]; hrefF
                     <span lang={description.lang}>{plainRich(description.text)}</span>
                   </span>
                 ) : null}
-                {stop.type === "stamp" ? <StampMeta spot={stop.spot} afterStamp={before?.type === "stamp"} /> : null}
+                {stop.type === "stamp" ? <StampMeta spot={stop.spot} /> : null}
               </Card>
             </Link>
           </li>
@@ -128,36 +138,47 @@ export function StopList({ stops, hrefFor, locale }: { stops: TrailStop[]; hrefF
   );
 }
 
-/** The walk from the stop before (only when that stop is the stamp place the time was worked out from), the status and the stamp. */
-function StampMeta({ spot, afterStamp }: { spot: SpotListItem; afterStamp: boolean }) {
-  const minutes = spot.fromPrev?.minutes;
-  const km = spot.fromPrev?.km;
-  const mode = spot.fromPrev?.mode;
+/**
+ * Between two rows: how far from the place before. A boat, bus or train ride the editor set between two stamp places is
+ * said as that ride; otherwise the distance along the line, with the walking time when the editor's leg gives one.
+ */
+function Leg({ km, spot }: { km: number | null; spot: SpotListItem | null }) {
+  const minutes = spot?.fromPrev?.minutes;
+  const mode = spot?.fromPrev?.mode;
+  const ride = minutes !== undefined && mode !== undefined; // no mode = on foot
+  const shownKm = km ?? (spot?.fromPrev && mode === undefined ? spot.fromPrev.km : null);
+  if (!ride && shownKm === null) return null;
   return (
-    <>
-      {afterStamp && minutes !== undefined ? (
-        <span className="mt-1 block text-lg text-muted">
-          {mode === "ferry" ? (
-            <Trans>前の場所から、船で約{minutes}分</Trans>
-          ) : mode === "bus" ? (
-            <Trans>前の場所から、バスで約{minutes}分</Trans>
-          ) : mode === "train" ? (
-            <Trans>前の場所から、電車で約{minutes}分</Trans>
-          ) : mode === "other" ? (
-            <Trans>前の場所から、乗り物で約{minutes}分</Trans>
-          ) : (
-            <Trans>前の場所から、歩いて約{minutes}分（{km} km）</Trans>
-          )}
+    <p className="text-base text-muted tabular-nums" style={{ paddingLeft: COLUMN }}>
+      {ride ? (
+        mode === "ferry" ? (
+          <Trans>船で約{minutes}分</Trans>
+        ) : mode === "bus" ? (
+          <Trans>バスで約{minutes}分</Trans>
+        ) : mode === "train" ? (
+          <Trans>電車で約{minutes}分</Trans>
+        ) : (
+          <Trans>乗り物で約{minutes}分</Trans>
+        )
+      ) : minutes !== undefined ? (
+        <Trans>{shownKm} km・歩いて約{minutes}分</Trans>
+      ) : (
+        <Trans>{shownKm} km</Trans>
+      )}
+    </p>
+  );
+}
+
+/** The status and the stamp. */
+function StampMeta({ spot }: { spot: SpotListItem }) {
+  return (
+    <span className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-lg">
+      <StatusWord status={spot.status} />
+      {spot.stamped === true ? (
+        <span className="font-bold text-ink">
+          <Trans>押した</Trans>
         </span>
       ) : null}
-      <span className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-lg">
-        <StatusWord status={spot.status} />
-        {spot.stamped === true ? (
-          <span className="font-bold text-ink">
-            <Trans>押した</Trans>
-          </span>
-        ) : null}
-      </span>
-    </>
+    </span>
   );
 }

@@ -393,3 +393,18 @@ export const XIcon = ({ size }: Sized = {}) => (
     <path d="m6 6 12 12M18 6 6 18" />
   </Icon>
 );
+
+/** A ruler: a distance. */
+export const RulerIcon = () => (
+  <Icon>
+    <path d="M3 15.5 15.5 3 21 8.5 8.5 21z" />
+    <path d="M7 11.5l2 2M10 8.5l1.5 1.5M13 5.5l2 2" />
+  </Icon>
+);
+
+/** A mountain: the climb. */
+export const MountainIcon = () => (
+  <Icon>
+    <path d="M2 20 9 7l4 7 2.5-4L22 20z" />
+  </Icon>
+);
