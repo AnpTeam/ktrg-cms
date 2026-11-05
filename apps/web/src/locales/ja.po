@@ -16,6 +16,11 @@ msgstr "　{until} まで"
 msgid "（{0} まで）"
 msgstr "（{0} まで）"
 
+#. placeholder {0}: megabytes(pack.bytes)
+#: src/components/OfflinePack.tsx:79
+msgid "（{ageText}・{0} MB）"
+msgstr "（{ageText}・{0} MB）"
+
 #: src/components/landing/Landing.tsx:204
 #: src/components/landing/Landing.tsx:235
 msgid "（公式サイト、新しいタブで開きます）"
@@ -165,7 +170,7 @@ msgid "{0}回に満たない市・町は、名前を出さず合計だけにし�
 msgstr "{0}回に満たない市・町は、名前を出さず合計だけにしています（{1}回）。"
 
 #. placeholder {0}: age.n
-#: src/components/OfflinePack.tsx:54
+#: src/components/OfflinePack.tsx:55
 msgid "{0}日前"
 msgstr "{0}日前"
 
@@ -176,7 +181,7 @@ msgid "{0}時間{1}分"
 msgstr "{0}時間{1}分"
 
 #. placeholder {0}: age.n
-#: src/components/OfflinePack.tsx:54
+#: src/components/OfflinePack.tsx:55
 msgid "{0}時間前"
 msgstr "{0}時間前"
 
@@ -789,7 +794,7 @@ msgstr "アクセス"
 #: src/components/admin/RouteEditor.tsx:678
 #: src/components/admin/useChecklistLabels.ts:18
 #: src/components/map/MapScreen.tsx:452
-#: src/components/RouteView.tsx:191
+#: src/components/RouteView.tsx:194
 msgid "アクセス・交通"
 msgstr "アクセス・交通"
 
@@ -1021,13 +1026,9 @@ msgstr "おかえりなさい。"
 msgid "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 msgstr "オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。"
 
-#: src/components/OfflinePack.tsx:58
-msgid "オフラインの地図"
-msgstr "オフラインの地図"
-
-#: src/components/OfflinePack.tsx:80
-msgid "オフライン用に地図を保存"
-msgstr "オフライン用に地図を保存"
+#: src/components/OfflinePack.tsx:65
+msgid "オフラインで使う"
+msgstr "オフラインで使う"
 
 #: src/components/ProfileSettings.tsx:122
 msgid "お住まい"
@@ -1217,7 +1218,7 @@ msgid "コース定数 ＝ 1.8 × 時間（h） ＋ 0.3 × 距離（km） ＋ 10
 msgstr "コース定数 ＝ 1.8 × 時間（h） ＋ 0.3 × 距離（km） ＋ 10 × 登り（km） ＋ 0.6 × 下り（km）"
 
 #: src/app/(public)/map/page.tsx:194
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:57
 #: src/components/admin/LivePreview.tsx:75
 #: src/components/RouteJourney.tsx:34
 #: src/components/RouteJourney.tsx:96
@@ -1397,7 +1398,7 @@ msgstr "このルートがまだありません"
 msgid "このルートに追加"
 msgstr "このルートに追加"
 
-#: src/app/(public)/routes/[id]/page.tsx:48
+#: src/app/(public)/routes/[id]/page.tsx:47
 msgid "このルートのお知らせをフィードで受け取る"
 msgstr "このルートのお知らせをフィードで受け取る"
 
@@ -1527,8 +1528,8 @@ msgstr "この文章のもとにした資料や、確かめた公式サイトを
 msgid "この文章は、本番のサイトにすぐ反映されます。保存しますか？"
 msgstr "この文章は、本番のサイトにすぐ反映されます。保存しますか？"
 
-#: src/components/RouteView.tsx:171
-#: src/components/RouteView.tsx:202
+#: src/components/RouteView.tsx:174
+#: src/components/RouteView.tsx:205
 msgid "この文章は日本語のみです。"
 msgstr "この文章は日本語のみです。"
 
@@ -1656,11 +1657,6 @@ msgstr "この近くに、歩ける道が見つかりませんでした。線の
 #: src/components/IntroFlow.tsx:199
 msgid "この道すじには、法華経の二十八の章にちなむ「経塚」が並び、「葛城二十八宿」と呼ばれています。"
 msgstr "この道すじには、法華経の二十八の章にちなむ「経塚」が並び、「葛城二十八宿」と呼ばれています。"
-
-#. placeholder {0}: megabytes(pack.bytes)
-#: src/components/OfflinePack.tsx:65
-msgid "この道の地図を保存済み（{ageText}・{0} MB）。電波がなくても地図が開きます。"
-msgstr "この道の地図を保存済み（{ageText}・{0} MB）。電波がなくても地図が開きます。"
 
 #: src/components/landing/ContinueCard.tsx:51
 msgid "この道を見る"
@@ -1791,7 +1787,7 @@ msgid "すぐ{turnWord}"
 msgstr "すぐ{turnWord}"
 
 #: src/app/(public)/map/page.tsx:194
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:57
 #: src/components/admin/LivePreview.tsx:75
 #: src/components/RouteJourney.tsx:31
 #: src/components/RouteJourney.tsx:92
@@ -1826,7 +1822,7 @@ msgstr "スタンプ {0} / {1}"
 
 #: src/components/landing/ContinueCard.tsx:23
 #: src/components/map/MapScreen.tsx:383
-#: src/components/RouteView.tsx:253
+#: src/components/RouteView.tsx:258
 #: src/components/TrailRibbon.tsx:62
 #: src/components/TripSummary.tsx:48
 msgid "スタンプ {stampedCount} / {spotCount}"
@@ -1877,7 +1873,7 @@ msgid "スタンプの場所の近くにいるか、たしかめるために、�
 msgstr "スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。"
 
 #: src/components/map/MapScreen.tsx:438
-#: src/components/RouteView.tsx:241
+#: src/components/RouteView.tsx:246
 msgid "スタンプの場所は、まだ準備中です。"
 msgstr "スタンプの場所は、まだ準備中です。"
 
@@ -1977,7 +1973,7 @@ msgid "スタンプ数"
 msgstr "スタンプ数"
 
 #: src/app/(public)/map/page.tsx:194
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:57
 #: src/components/admin/LivePreview.tsx:75
 msgid "スタンプ済み"
 msgstr "スタンプ済み"
@@ -2073,7 +2069,7 @@ msgstr "ダッシュボード"
 msgid "ダッシュボード（管理）"
 msgstr "ダッシュボード（管理）"
 
-#: src/components/OfflinePack.tsx:54
+#: src/components/OfflinePack.tsx:55
 msgid "たった今"
 msgstr "たった今"
 
@@ -3117,7 +3113,7 @@ msgstr "ルートの最初の経由地に近い順です。"
 msgid "ルートの写真のリンク"
 msgstr "ルートの写真のリンク"
 
-#: src/components/RouteView.tsx:222
+#: src/components/RouteView.tsx:227
 msgid "ルートの動画"
 msgstr "ルートの動画"
 
@@ -3645,7 +3641,7 @@ msgstr "保存できませんでした。ファイルの中身か、電波を確
 msgid "保存できませんでした。もう一度お試しください。"
 msgstr "保存できませんでした。もう一度お試しください。"
 
-#: src/components/OfflinePack.tsx:87
+#: src/components/OfflinePack.tsx:101
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "保存できませんでした。電波の良い場所でもう一度お試しください。"
 
@@ -3657,6 +3653,7 @@ msgstr "保存中…"
 
 #: src/components/admin/AdminItemForm.tsx:261
 #: src/components/admin/PageTextEditor.tsx:70
+#: src/components/OfflinePack.tsx:78
 msgid "保存済み"
 msgstr "保存済み"
 
@@ -3785,7 +3782,7 @@ msgstr "公開できるようになったら、ここにスタンプのラリー
 msgid "公開できるようになったら、ここにルートが表示されます。"
 msgstr "公開できるようになったら、ここにルートが表示されます。"
 
-#: src/components/RouteView.tsx:242
+#: src/components/RouteView.tsx:247
 msgid "公開できるようになったら、ここに場所の一覧が表示されます。"
 msgstr "公開できるようになったら、ここに場所の一覧が表示されます。"
 
@@ -4038,7 +4035,7 @@ msgstr "出かける前に"
 #: src/app/(public)/routes/page.tsx:85
 #: src/components/landing/Landing.tsx:271
 #: src/components/landing/TrailNotices.tsx:65
-#: src/components/RouteView.tsx:269
+#: src/components/RouteView.tsx:274
 #: src/components/SpotSheet.tsx:184
 msgid "出かける前に、公式の最新情報を確認してください。"
 msgstr "出かける前に、公式の最新情報を確認してください。"
@@ -4051,7 +4048,7 @@ msgstr "出どころ（撮った人、使用条件）"
 #: src/components/admin/RouteEditor.tsx:686
 #: src/components/admin/RouteEditor.tsx:687
 #: src/components/map/MapScreen.tsx:461
-#: src/components/RouteView.tsx:180
+#: src/components/RouteView.tsx:183
 #: src/components/SpotSheet.tsx:148
 msgid "出典"
 msgstr "出典"
@@ -4149,6 +4146,7 @@ msgstr "制限中"
 #: src/components/admin/PlaceTable.tsx:140
 #: src/components/admin/PlaceTable.tsx:205
 #: src/components/admin/RallyEditor.tsx:205
+#: src/components/OfflinePack.tsx:87
 msgid "削除"
 msgstr "削除"
 
@@ -4649,23 +4647,17 @@ msgstr "地図をクリックすると、その位置に経由地を置きます
 msgid "地図をクリックすると、道を探すときの目印（ガイド点）を置きます。ガイド点は、訪れる人には見えません。点はドラッグで動かせ、クリックで消えます。置いたり動かしたりしても、道は探しません。並べ終わったら「道を探す」を押してください（探すのは1回だけです）。"
 msgstr "地図をクリックすると、道を探すときの目印（ガイド点）を置きます。ガイド点は、訪れる人には見えません。点はドラッグで動かせ、クリックで消えます。置いたり動かしたりしても、道は探しません。並べ終わったら「道を探す」を押してください（探すのは1回だけです）。"
 
-#. placeholder {0}: progress.done
-#. placeholder {1}: progress.total
-#: src/components/OfflinePack.tsx:61
-msgid "地図を保存しています… {0}/{1}"
-msgstr "地図を保存しています… {0}/{1}"
+#: src/components/OfflinePack.tsx:95
+msgid "地図を保存"
+msgstr "地図を保存"
 
-#: src/components/OfflinePack.tsx:71
-msgid "地図を削除"
-msgstr "地図を削除"
+#: src/components/OfflinePack.tsx:69
+msgid "地図を保存しています… {percent}%"
+msgstr "地図を保存しています… {percent}%"
 
 #: src/components/admin/map-editor/MapEditor.tsx:1030
 msgid "地図を動かす"
 msgstr "地図を動かす"
-
-#: src/components/OfflinePack.tsx:68
-msgid "地図を更新"
-msgstr "地図を更新"
 
 #: src/components/admin/PositionMap.tsx:77
 msgid "地図を表示できませんでした。"
@@ -4908,9 +4900,9 @@ msgstr "小さくして地図を見る"
 msgid "履歴を読み込めませんでした。"
 msgstr "履歴を読み込めませんでした。"
 
-#: src/components/OfflinePack.tsx:77
-msgid "山では電波が届かないことがあります。入口で保存しておくと、この道の地図が電波なしでも開きます（数MB）。"
-msgstr "山では電波が届かないことがあります。入口で保存しておくと、この道の地図が電波なしでも開きます（数MB）。"
+#: src/components/OfflinePack.tsx:93
+msgid "山では電波が届かないことがあります。入口で保存しておくと、電波がなくてもこの道の地図が開きます（数MB）。"
+msgstr "山では電波が届かないことがあります。入口で保存しておくと、電波がなくてもこの道の地図が開きます（数MB）。"
 
 #: src/components/landing/Landing.tsx:261
 msgid "山の中は、電波がつながりにくいことがあります。"
@@ -5321,6 +5313,7 @@ msgstr "曲がり角"
 
 #: src/components/admin/RallyList.tsx:120
 #: src/components/admin/RouteTable.tsx:162
+#: src/components/OfflinePack.tsx:84
 msgid "更新"
 msgstr "更新"
 
@@ -5585,7 +5578,7 @@ msgstr "歩く順番に並んでいます。名前を押すと、文章や地図
 #: src/components/admin/RouteEditor.tsx:676
 #: src/components/admin/useChecklistLabels.ts:17
 #: src/components/map/MapScreen.tsx:443
-#: src/components/RouteView.tsx:162
+#: src/components/RouteView.tsx:165
 #: src/components/SpotSheet.tsx:132
 msgid "歴史・由来"
 msgstr "歴史・由来"
@@ -6079,7 +6072,7 @@ msgstr "経度"
 
 #: src/app/(admin)/admin/attention/page.tsx:81
 #: src/components/admin/useChecklistLabels.ts:22
-#: src/components/RouteView.tsx:249
+#: src/components/RouteView.tsx:254
 msgid "経由地"
 msgstr "経由地"
 
@@ -6970,7 +6963,7 @@ msgid "閉店・撤去"
 msgstr "閉店・撤去"
 
 #: src/app/(public)/map/page.tsx:194
-#: src/app/(public)/routes/[id]/page.tsx:58
+#: src/app/(public)/routes/[id]/page.tsx:57
 #: src/components/admin/LivePreview.tsx:75
 #: src/components/navigation/NavTargetPicker.tsx:55
 #: src/components/StatusWord.tsx:13
@@ -7005,6 +6998,10 @@ msgstr "電波がないため、あとで送ります。"
 #: src/app/offline/page.tsx:21
 msgid "電波がないときに押したスタンプは、この端末に残り、つながると自動で送られます。"
 msgstr "電波がないときに押したスタンプは、この端末に残り、つながると自動で送られます。"
+
+#: src/components/OfflinePack.tsx:81
+msgid "電波がなくても、この道の地図が開きます。"
+msgstr "電波がなくても、この道の地図が開きます。"
 
 #. placeholder {0}: ask.guest
 #. placeholder {1}: ask.mine
