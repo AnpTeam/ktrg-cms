@@ -11,7 +11,7 @@ import { RichText } from "@/components/RichText";
 import { RouteStats } from "@/components/RouteStats";
 import { StampHere } from "@/components/StampHere";
 import { useRouteLine } from "./useRouteLine";
-import { NavigationResume, NavigationStart } from "@/components/navigation/NavigationHud";
+import { NAV_HANDOFF_MS, NAV_RESUME_EVENT, NavigationResume, NavigationStart } from "@/components/navigation/NavigationHud";
 import { useNavigation } from "@/components/navigation/NavigationProvider";
 import { StampFace } from "@/components/StampFace";
 import { StatusWord } from "@/components/StatusWord";
@@ -71,13 +71,14 @@ export function MapScreen({
   const { t } = useLingui();
   const wrap = useRef<HTMLDivElement>(null);
   const nav = useNavigation();
-  const { toastPx: navToastPx, bannerPx: navBannerPx } = nav;
+  const { toastPx: navToastPx, bannerPx: navBannerPx, setSheetUp } = nav;
   // Coming back to the map during a navigation opens its course again.
   const [routeId, setRouteId] = useState<string | null>(initialRouteId ?? nav.session?.routeId ?? null);
   const [stopId, setStopId] = useState<string | null>(initialRouteId ? initialStopId : null);
   // The stop was opened from the sutra mound pins, not from its course: it is then shown without the course's numbering.
   const [viaMounds, setViaMounds] = useState(false);
-  const [snap, setSnap] = useState<SheetSnap>(initialRouteId || nav.session ? "half" : "peek");
+  // Coming back to the map during a navigation: the navigation has the bottom of the screen; the sheet waits below.
+  const [snap, setSnap] = useState<SheetSnap>(initialRouteId ? "half" : nav.session ? "hidden" : "peek");
   const [available, setAvailable] = useState(520);
   // The room under the sheet taken by the tab bar (none on a wide screen, where it is a rail).
   const [tabPx, setTabPx] = useState(88);
@@ -105,6 +106,33 @@ export function MapScreen({
 
   // Below the sheet: the tab bar, and the navigation toast while one runs (on a desktop the toast is beside the panel).
   const bottomPx = tabPx + (wide ? 0 : nav.toastPx);
+
+  // During a navigation on a phone the bottom of the screen holds one thing at a time: the navigation controls or the sheet.
+  // Opening the sheet first sends the controls away, then raises the sheet; putting the sheet away brings them back.
+  const navigating = nav.session !== null && !wide;
+  useEffect(() => {
+    setSheetUp(navigating && snap !== "hidden");
+  }, [navigating, snap, setSheetUp]);
+  useEffect(() => () => setSheetUp(false), [setSheetUp]);
+  const handoff = useRef({ navigating, snap });
+  useEffect(() => {
+    handoff.current = { navigating, snap };
+  }, [navigating, snap]);
+  const openSheet = useCallback(
+    (next: SheetSnap | ((s: SheetSnap) => SheetSnap)) => {
+      const { navigating: on, snap: now } = handoff.current;
+      if (!on || now !== "hidden") return setSnap(next);
+      setSheetUp(true);
+      window.setTimeout(() => setSnap(next), NAV_HANDOFF_MS);
+    },
+    [setSheetUp],
+  );
+  // 「ナビにもどる」 on the navigation banner.
+  useEffect(() => {
+    const resume = () => setSnap("hidden");
+    window.addEventListener(NAV_RESUME_EVENT, resume);
+    return () => window.removeEventListener(NAV_RESUME_EVENT, resume);
+  }, []);
 
   const route = routes.find((r) => r.id === routeId) ?? null;
   const chosen = route !== null;
@@ -157,18 +185,18 @@ export function MapScreen({
       setRouteId(id);
       setStopId(null);
       setViaMounds(false);
-      if (!wide) setSnap("half");
+      if (!wide) openSheet("half");
     },
-    [wide],
+    [wide, openSheet],
   );
   const chooseStop = useCallback(
     (routeId: string, id: string, fromMounds = false) => {
       setRouteId(routeId);
       setStopId(id);
       setViaMounds(fromMounds);
-      if (!wide) setSnap((s) => (s === "peek" || s === "hidden" ? "half" : s));
+      if (!wide) openSheet((s) => (s === "peek" || s === "hidden" ? "half" : s));
     },
-    [wide],
+    [wide, openSheet],
   );
   const back = useCallback(() => {
     if (stopId) setStopId(null);
@@ -254,6 +282,7 @@ export function MapScreen({
         focusPlaceId={initialPlaceId}
         coveredPx={wide ? 0 : sheetHeightPx(snap, available) + bottomPx}
         coveredLeftPx={panelPx}
+        controlsTopPx={wide ? 0 : navBannerPx}
         settings={settings}
         mergeStops={mergeStops}
         user={nav.session?.snapshot.position ?? null}
@@ -263,7 +292,7 @@ export function MapScreen({
       {!wide && snap === "hidden" ? (
         <button
           type="button"
-          onClick={() => setSnap(route ? "half" : "peek")}
+          onClick={() => openSheet(route ? "half" : "peek")}
           style={{ bottom: bottomPx + 8 }}
           className="tap-target absolute left-3 z-[6] flex items-center gap-2 rounded-full bg-paper px-4 text-lg font-bold text-ink shadow-[0_4px_16px_rgb(0_0_0/0.28)]"
         >

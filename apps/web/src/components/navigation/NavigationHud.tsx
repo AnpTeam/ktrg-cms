@@ -54,6 +54,11 @@ function TurnSign({ kind }: { kind: TurnKind | null }) {
 /** Space kept between the toast and what is above it. */
 const GAP_PX = 8;
 
+/** Asks the map to put its sheet away and hand the bottom of the screen back to the navigation (MapScreen listens). */
+export const NAV_RESUME_EVENT = "ktrg:nav-resume";
+/** How long the controls take to slide away before the sheet rises (MapScreen waits this long). */
+export const NAV_HANDOFF_MS = 200;
+
 /**
  * Starts navigating a course. The map page does not send the course's path, so it is fetched here first; with none the
  * guidance falls back to the stops only. Returns false when the course has no stamp places to head for.
@@ -111,7 +116,7 @@ export function NavigationStart({ route }: { route: MapScreenRoute }) {
 
 export function NavigationToast() {
   const { t, i18n } = useLingui();
-  const { session, stop, markStamped, setToastPx, setBannerPx } = useNavigation();
+  const { session, stop, markStamped, setToastPx, setBannerPx, sheetUp } = useNavigation();
   const pathname = usePathname();
   const box = useRef<HTMLElement>(null);
   const banner = useRef<HTMLElement>(null);
@@ -127,12 +132,14 @@ export function NavigationToast() {
 
   // Tell the page how much room to keep free at the bottom.
   const shown = session !== null;
+  // Slid away while the map's sheet holds the bottom of the screen: then it takes no room.
+  const tucked = sheetUp && pathname === "/map";
   useLayoutEffect(() => {
     const el = box.current;
     const root = document.documentElement;
     if (!shown || !el) return;
     const report = () => {
-      const px = el.offsetHeight + GAP_PX;
+      const px = tucked ? 0 : el.offsetHeight + GAP_PX;
       setToastPx(px);
       root.style.setProperty("--nav-toast", `${px}px`);
     };
@@ -144,7 +151,7 @@ export function NavigationToast() {
       setToastPx(0);
       root.style.removeProperty("--nav-toast");
     };
-  }, [shown, setToastPx]);
+  }, [shown, tucked, setToastPx]);
 
   // The banner at the top of the map: tell the map how far down it reaches, so the sheet never rises under it.
   const bannerShown = shown && pathname === "/map";
@@ -317,9 +324,14 @@ export function NavigationToast() {
       <>
         <section ref={banner} aria-label={t`ナビ中：${routeName}`} className="fixed inset-x-3 top-[calc(0.5rem+env(safe-area-inset-top))] z-30 flex max-h-[70dvh] flex-col gap-1 overflow-y-auto rounded-2xl bg-paper px-4 py-3 shadow-2xl ring-1 ring-line/30 md:inset-x-auto md:left-[calc(50%-14rem)] md:w-[28rem]">
           {main}
+          {tucked ? (
+            <button type="button" onClick={() => window.dispatchEvent(new Event(NAV_RESUME_EVENT))} className="tap-target mt-1 flex min-h-12 w-full items-center justify-center rounded-xl bg-ink px-4 text-lg font-bold text-paper">
+              {t`ナビにもどる`}
+            </button>
+          ) : null}
           {offRouteBlock}
           {note ? <p className="text-base leading-snug">{note}</p> : null}
-          {voice.supported && !far ? (
+          {voice.supported && !far && !tucked ? (
             <div className="flex items-center gap-3">
               <button type="button" role="switch" aria-checked={voice.on} onClick={voice.toggle} className={quiet}>
                 {voice.on ? t`音声案内：オン` : t`音声案内：オフ`}
@@ -328,7 +340,14 @@ export function NavigationToast() {
             </div>
           ) : null}
         </section>
-        <section ref={box} aria-label={t`ナビの操作`} className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 flex flex-col gap-2 md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem]">
+        <section
+          ref={box}
+          aria-label={t`ナビの操作`}
+          inert={tucked}
+          aria-hidden={tucked || undefined}
+          // Away first, then the sheet rises (MapScreen waits NAV_HANDOFF_MS); back only after the sheet has gone down (the delay).
+          className={`fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-30 flex flex-col gap-2 transition duration-200 ease-out motion-reduce:transition-none md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem] ${tucked ? "pointer-events-none translate-y-[calc(100%+2rem)] opacity-0" : "translate-y-0 opacity-100 delay-200"}`}
+        >
           {far ? null : progressLine}
           {far || !profile ? null : <NavElevation profile={profile} />}
           {far ? null : stampButton}
