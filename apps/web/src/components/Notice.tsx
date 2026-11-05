@@ -8,7 +8,7 @@ export function Notice({ children }: { children: ReactNode }) {
       <span className="mt-0.5 shrink-0">
         <InfoIcon />
       </span>
-      <span>{children}</span>
+      <span className="min-w-0">{children}</span>
     </p>
   );
 }

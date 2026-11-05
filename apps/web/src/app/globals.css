@@ -101,6 +101,17 @@
     word-break: auto-phrase;
   }
 
+  /* ...but a phrase longer than the line (large text on a 320 px phone) may still break inside, instead of pushing the page
+     sideways. Japanese pages only: on the English site it would let narrow boxes split English words. */
+  html:lang(ja) body {
+    overflow-wrap: anywhere;
+  }
+
+  /* A fieldset is as wide as its longest word by default (min-content), which pushes a 320 px page sideways at large text. */
+  fieldset {
+    min-inline-size: 0;
+  }
+
   /* No lonely last word or character on a line. */
   h1,
   h2,
