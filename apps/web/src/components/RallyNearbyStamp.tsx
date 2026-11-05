@@ -12,8 +12,8 @@ import { locationAlreadyAllowed, readPosition, requestStamp } from "@/lib/stamp-
 import { announceProgress } from "@/lib/stamp-progress";
 import { track } from "@/lib/track";
 import { useStampMessages } from "./useStampMessages";
-
 import { buttonStyle } from "@/components/button";
+
 type Phase =
   | { name: "idle" }
   | { name: "explain" }
@@ -105,7 +105,7 @@ export function RallyNearbyStamp({ places, held, locale, rallyName, quiet = fals
         <p className="mt-3 text-lg leading-8">{t`スタンプの場所の近くにいるか、たしかめるために、スマートフォンの位置を1回だけ調べます。`}</p>
         <p className="mt-2 text-lg leading-8">{t`位置は、保存しません。保存するのは、スタンプだけです。`}</p>
         <div className="mt-6 flex flex-col gap-3">
-          <button type="button" onClick={() => void start()} className={buttonStyle("primary", "lg", "flex w-full shadow-lg")}>
+          <button type="button" onClick={() => void start()} className={buttonStyle("action", "lg", "flex w-full shadow-lg")}>
             {t`位置を調べてスタンプを押す`}
           </button>
           <button type="button" onClick={() => setPhase({ name: "idle" })} className={buttonStyle("secondary", "lg", "flex w-full")}>

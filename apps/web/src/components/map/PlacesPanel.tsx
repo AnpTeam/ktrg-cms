@@ -16,8 +16,8 @@ import {
   type PlaceGroup,
   type PlaceStatus,
 } from "@/lib/places";
-
 import { buttonStyle } from "@/components/button";
+
 // The "places nearby" pieces of the trail map: group buttons, the list sorted by distance, and the
 // card for one place. Plain words next to every picture; nothing here needs a gesture.
 

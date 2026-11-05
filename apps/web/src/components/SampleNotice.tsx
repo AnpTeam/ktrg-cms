@@ -3,8 +3,8 @@
 import { useEffect, useRef } from "react";
 import { Trans, useLingui } from "@lingui/react/macro";
 import { InfoIcon } from "./icons";
-
 import { buttonStyle } from "@/components/button";
+
 // The "this is sample and draft data" notice (shown only while sample content is on). It used to be a
 // permanent banner that took a big part of a phone screen. Now it is a one-time pop-up when the app is
 // opened, and an info button (in the top bar, and on the expanded map) opens the same text again.

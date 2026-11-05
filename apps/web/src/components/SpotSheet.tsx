@@ -14,8 +14,8 @@ import { StampFace } from "./StampFace";
 import { StampHere } from "./StampHere";
 import { StatusBanner } from "./StatusBanner";
 import type { StampMock } from "@/lib/stamp-flow";
-
 import { buttonStyle } from "@/components/button";
+
 /**
  * The spot detail sheet (WBS 3.2.5). Presentational on purpose: today it is the
  * body of /spots/[id]; the map's bottom sheet (3.2.10) will render the same thing.

@@ -6,8 +6,8 @@ import type { RouteArea } from "@/lib/map-screen";
 import type { MapSettings } from "@/lib/map-settings";
 import { CheckIcon, DownloadIcon } from "./icons";
 import { deletePack, megabytes, packAge, packTileUrls, readPack, savePack, type PackInfo } from "@/lib/offline-pack";
-
 import { buttonStyle } from "@/components/button";
+
 const noSubscribe = () => () => {};
 
 // Keeps the map around a course on the phone, for walking where there is no signal (lib/offline-pack.ts; the worker
@@ -92,7 +92,7 @@ export function OfflinePack({ routeId, area, settings }: { routeId: string; area
       ) : (
         <>
           <p className="text-base text-muted">{t`山では電波が届かないことがあります。入口で保存しておくと、電波がなくてもこの道の地図が開きます（数MB）。`}</p>
-          <button type="button" onClick={save} className={buttonStyle("primary", "md", "inline-flex w-full")}>
+          <button type="button" onClick={save} className={buttonStyle("action", "md", "inline-flex w-full")}>
             {t`地図を保存`}
           </button>
         </>

@@ -6,8 +6,8 @@ import { Notice } from "@/components/Notice";
 import { initLingui } from "@/i18n/server";
 import { RichText } from "@/components/RichText";
 import { helpFor } from "@/lib/page-text-server";
-
 import { buttonStyle } from "@/components/button";
+
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
   return { title: (await helpFor(i18n.locale)).guideTitle };

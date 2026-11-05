@@ -12,8 +12,8 @@ import { announceProgress, type StampProgress } from "@/lib/stamp-progress";
 import { track } from "@/lib/track";
 import { StampFace } from "./StampFace";
 import { useStampMessages } from "./useStampMessages";
-
 import { buttonStyle } from "@/components/button";
+
 // The "stamp here" button of a spot page (WBS 3.3.1). One tap: explain why the position is needed (before the
 // browser asks), read ONE position, send it, and show the answer in plain words. The server decides; every way it
 // can go wrong has its own sentence and a way to try again. The position is sent once and never kept.
@@ -27,7 +27,7 @@ type Phase =
   | { name: "queued" }
   | { name: "problem"; problem: Problem; distanceM?: number };
 
-const button = buttonStyle("primary", "lg", "flex w-full shadow-lg");
+const button = buttonStyle("action", "lg", "flex w-full shadow-lg");
 const quietButton = buttonStyle("secondary", "lg", "flex w-full");
 
 export function StampHere({

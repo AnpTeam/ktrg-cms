@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { STAMP_POPUP_CLOSED_EVENT, stampPopupOpen } from "@/lib/stamp-progress";
-
 import { buttonStyle } from "@/components/button";
+
 const SNOOZE_KEY = "ktrg-guest-nag-until";
 const SEEN_KEY = "ktrg-guest-nag-seen";
 const SNOOZE_MS = 7 * 24 * 60 * 60 * 1000;

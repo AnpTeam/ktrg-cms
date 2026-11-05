@@ -3,8 +3,8 @@ import { Trans } from "@lingui/react/macro";
 import { initLingui } from "@/i18n/server";
 import { GuestBackup } from "./GuestBackup";
 import { StampFace } from "./StampFace";
-
 import { buttonStyle } from "@/components/button";
+
 /**
  * Shown to a visitor with no account, where progress would be. Stamps work without one (they are kept in this browser), so
  * it explains what an account adds (they are not lost, and there is a certificate) and offers the two ways in.

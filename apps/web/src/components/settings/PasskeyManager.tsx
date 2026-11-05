@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { AuthError, inputClass, primaryButton, secondaryButton } from "@/components/auth/authUi";
+import { buttonStyle } from "@/components/button";
 import { useReauth } from "@/components/auth/ReauthDialog";
 import { KeyIcon } from "@/components/icons";
 import { addPasskey, listPasskeys, renamePasskey, passkeysSupported, removePasskey, type PasskeyItem } from "@/lib/auth-client";
@@ -193,7 +194,7 @@ export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail:
             </h2>
             <p className="mt-3 text-lg leading-8">{t`これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。`}</p>
             <div className="mt-6">
-              <button type="button" onClick={() => setRemoving(null)} className={primaryButton}>
+              <button type="button" onClick={() => setRemoving(null)} className={buttonStyle("primary", "lg", "flex w-full")}>
                 {t`わかりました`}
               </button>
             </div>

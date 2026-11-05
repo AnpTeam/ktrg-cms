@@ -8,8 +8,8 @@ import { PostCard } from "@/components/blog/PostCard";
 import { initLingui } from "@/i18n/server";
 import { listPosts } from "@/lib/posts";
 import { ChevronIcon, ChevronLeftIcon } from "@/components/icons";
-
 import { buttonStyle } from "@/components/button";
+
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
   return { title: i18n._(msg`ブログ`) };

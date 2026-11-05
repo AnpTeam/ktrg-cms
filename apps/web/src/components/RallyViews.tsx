@@ -9,8 +9,8 @@ import { ChevronIcon } from "./icons";
 import { SectionBanner } from "./SectionBanner";
 import { StampGrid } from "./StampGrid";
 import { StampLegend } from "./StampLegend";
-
 import { buttonStyle } from "@/components/button";
+
 const nameOf = (locale: string, ja: string, en: string | null) => pickText(locale, ja, en)?.text ?? ja;
 
 /** A bar showing how far along a rally is. The numbers beside it say it all; the bar is a bonus. */

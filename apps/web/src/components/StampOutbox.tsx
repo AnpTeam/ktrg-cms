@@ -10,8 +10,8 @@ import { getOutbox, usePendingStamps } from "@/lib/stamp-outbox";
 import type { StampFailure } from "@/lib/stamp-flow";
 import { useStampMessages } from "./useStampMessages";
 import { TickIcon } from "@/components/icons";
-
 import { buttonStyle } from "@/components/button";
+
 /**
  * Sends the stamps that were pressed with no signal (docs/phase-b-offline-plan.md, B3). Tries when the page opens, when the
  * phone comes back online and when the app returns to the front (never in the background: browsers do not allow it), and
@@ -130,7 +130,7 @@ export function StampOutbox({ userKey }: { userKey: string }) {
         <p className="mt-3 text-lg leading-8">{t`電波がなくて送れなかったスタンプが${ask.guest}件あります。このアカウントには、すでに${ask.mine}個のスタンプがあります。このアカウントに送りますか？`}</p>
       ) : null}
       <div className="mt-6 flex flex-col gap-3">
-        <button type="button" onClick={() => void answer(true)} className={buttonStyle("primary", "lg", "flex w-full shadow-lg")}>
+        <button type="button" onClick={() => void answer(true)} className={buttonStyle("action", "lg", "flex w-full shadow-lg")}>
           {t`このアカウントに送る`}
         </button>
         <button type="button" onClick={() => void answer(false)} className={buttonStyle("secondary", "lg", "flex w-full")}>
@@ -169,7 +169,7 @@ export function StampOutbox({ userKey }: { userKey: string }) {
         <div role="status" className="flex flex-col gap-2 rounded-2xl bg-paper p-4 shadow-2xl ring-1 ring-line/30">
           <p className="text-lg font-bold leading-snug tabular-nums">{t`${pending}件のスタンプが、送信待ちです。`}</p>
           <p className="text-base leading-snug text-muted">{t`つながると、自動で送ります。つながりにくいときは、30秒ごとにもう一度試します。`}</p>
-          <button type="button" disabled={busy} onClick={() => void run()} className={buttonStyle("primary", "md", "flex w-full")}>
+          <button type="button" disabled={busy} onClick={() => void run()} className={buttonStyle("action", "md", "flex w-full")}>
             {busy ? t`送っています…` : t`いま送る`}
           </button>
         </div>

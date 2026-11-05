@@ -8,8 +8,8 @@ import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode } from "@/lib/api-error";
 import { formatDay, japanDay } from "@/lib/format";
 import type { PostComment } from "@/lib/posts";
-
 import { buttonStyle } from "@/components/button";
+
 const MAX = 1000;
 
 /**
@@ -94,7 +94,7 @@ export function CommentSection({ postId, comments, signedIn, locale, loginHref }
             className="w-full rounded-xl border-2 border-line bg-paper p-3 text-lg leading-8"
           />
           <div className="flex flex-wrap items-center gap-3">
-            <button type="submit" disabled={busy || text.trim() === ""} className={buttonStyle("primary", "md", "inline-flex")}>
+            <button type="submit" disabled={busy || text.trim() === ""} className={buttonStyle("action", "md", "inline-flex")}>
               {busy ? t`送っています…` : t`コメントする`}
             </button>
             <span className="text-base text-muted tabular-nums">{text.length} / {MAX}</span>

@@ -4,8 +4,8 @@ import { SectionBanner } from "@/components/SectionBanner";
 import { gsiTileListUrl } from "@/lib/map";
 import { rectangleRing } from "@/lib/map-screen";
 import type { RouteSummary } from "@/lib/content";
-
 import { buttonStyle } from "@/components/button";
+
 // A small picture of where all the courses lie: GSI tiles as the background (plain images, no script, so it stays light
 // on a weak signal) with each course's area as an outlined box and its number on top. The button opens the real map.
 

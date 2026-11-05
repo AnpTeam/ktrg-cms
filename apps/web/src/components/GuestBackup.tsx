@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
-
 import { buttonStyle } from "@/components/button";
+
 type State = "idle" | "copied" | "empty" | "failed";
 
 /**

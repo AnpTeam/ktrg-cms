@@ -8,8 +8,8 @@ import { ProfileSettings } from "@/components/ProfileSettings";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
-
 import { buttonStyle } from "@/components/button";
+
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
   return { title: i18n._(msg`プロフィール`) };

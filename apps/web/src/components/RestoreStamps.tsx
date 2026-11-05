@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
-
 import { buttonStyle } from "@/components/button";
+
 type State = { name: "working" } | { name: "done"; restored: number; total: number } | { name: "failed" };
 
 /** Reads the backup code from the address (after the #), asks the server to put its stamps in this browser, and says how it went. */

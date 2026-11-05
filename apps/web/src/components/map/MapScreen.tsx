@@ -22,8 +22,8 @@ import type { StampMock } from "@/lib/stamp-flow";
 import { MapScreenCanvasLoader } from "./MapScreenCanvasLoader";
 import { MapSheet } from "./MapSheet";
 import { Gallery, SheetHero } from "./SheetHero";
-
 import { buttonStyle } from "@/components/button";
+
 // The map tab (WBS 3.2.10): a map of the whole trail with a bottom sheet that never hides it. Nothing is
 // chosen at first: the sheet offers the 19 courses. Choose a course (on the map or in the
 // sheet) and the other areas fold away while its path and stops appear; choose a stop and the sheet shows it, with

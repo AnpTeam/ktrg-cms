@@ -18,15 +18,15 @@ import { legProfile } from "@/lib/navigation/elevation";
 import { NavFarCard } from "./NavFarCard";
 import { NavTargetPicker } from "./NavTargetPicker";
 import { useNavigation, type NavStopInfo } from "./NavigationProvider";
-
 import { buttonStyle } from "@/components/button";
+
 // The navigation toast: a small card floating at the bottom of the screen while a navigation runs, on every tab (on a
 // phone just above the tab bar and the phone's own bar, on a wider screen at the bottom right). Two lines: which way and
 // how far, then the stop and a short word on how it is guiding. The page makes room for it (its height is reported to
 // the provider and as the CSS variable --nav-toast), so it covers nothing. The sign on the left is the next turn
 // (straight when none is near); the way to the stop is an arrow on the visitor's dot on the map.
 
-const primary = buttonStyle("primary", "lg", "flex w-full");
+const primary = buttonStyle("action", "lg", "flex w-full");
 const quiet = buttonStyle("secondary", "sm", "flex shrink-0 whitespace-nowrap");
 
 /** A fix older than this is said to be old, with its age. */

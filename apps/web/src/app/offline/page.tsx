@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Trans } from "@lingui/react/macro";
 import { initLingui } from "@/i18n/server";
 import { SavedMapLink } from "@/components/SavedMapLink";
-
 import { buttonStyle } from "@/components/button";
+
 export const metadata: Metadata = { title: "オフライン / Offline", robots: { index: false } };
 
 // What the service worker shows when a page cannot be loaded at all (no signal). It is kept on the phone, so it says what

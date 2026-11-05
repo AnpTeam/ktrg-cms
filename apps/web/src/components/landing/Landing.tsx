@@ -19,8 +19,8 @@ import type { TrailNotice } from "@/lib/notices";
 import type { BlogPost } from "@/lib/posts";
 import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
 import type { EmbedVideo } from "@/lib/video";
-
 import { buttonStyle } from "@/components/button";
+
 const primary =
   buttonStyle("primary", "lg", "flex");
 const secondary =

@@ -25,8 +25,8 @@ import { distanceMeters } from "@/lib/places";
 import { getPost, listComments, listPosts, neighbours } from "@/lib/posts";
 import { getViewer } from "@/lib/viewer";
 import { ChevronIcon, ChevronLeftIcon } from "@/components/icons";
-
 import { buttonStyle } from "@/components/button";
+
 type Props = { params: Promise<{ id: string }> };
 
 /** The places shown under a post: those within this far of its place (straight line), at most this many. */

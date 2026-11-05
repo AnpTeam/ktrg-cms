@@ -3,8 +3,8 @@
 import { useLingui } from "@lingui/react/macro";
 import { BookmarkIcon } from "./icons";
 import { useBookmarks } from "./useBookmarks";
-
 import { buttonStyle } from "@/components/button";
+
 /** Saves the rally to the bookmarks (the same list as the routes: on the account when signed in, on the device when not). */
 export function RallyBookmark({ rallyId }: { rallyId: string }) {
   const { t } = useLingui();

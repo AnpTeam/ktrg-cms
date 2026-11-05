@@ -4,12 +4,12 @@ import type { ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { origins, type AuthFailure, type Origin } from "@/lib/auth-flow";
 import { useErrorMessages } from "../useErrorMessages";
-
 import { buttonStyle } from "@/components/button";
+
 // Pieces shared by the login, register and profile screens. Big targets, few words, one action per step.
 
 export const primaryButton =
-  buttonStyle("primary", "lg", "flex w-full");
+  buttonStyle("action", "lg", "flex w-full");
 export const secondaryButton =
   buttonStyle("secondary", "lg", "flex w-full");
 export const inputClass =

@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { PAGES_CACHE } from "@/lib/offline-pack";
-
 import { buttonStyle } from "@/components/button";
+
 // On the page shown when nothing can load: a way into the map this phone saved (lib/offline-pack.ts), if there is one.
 export function SavedMapLink() {
   const { t } = useLingui();
@@ -18,7 +18,8 @@ export function SavedMapLink() {
   }, []);
   if (!saved) return null;
   return (
-    // A plain link on purpose: the worker answers this page load from the saved copy.
+    // A plain link on purpose: the worker answers this page load from the saved copy (a client-side Link would not ask it).
+    // eslint-disable-next-line @next/next/no-html-link-for-pages
     <a href="/map" className={buttonStyle("secondary", "lg", "inline-flex w-fit")}>
       {t`保存した地図を開く`}
     </a>

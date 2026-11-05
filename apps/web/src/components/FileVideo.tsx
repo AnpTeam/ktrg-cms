@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { subtitleUrl, type FileVideo } from "@/lib/video";
-
 import { buttonStyle } from "@/components/button";
+
 /**
  * A video file from the site's own storage, in the browser's own player. Like IntroVideo it loads nothing until the
  * visitor taps it, so a long video costs no mobile data (and nothing on a weak signal) before they choose to watch.

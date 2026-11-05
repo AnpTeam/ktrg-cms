@@ -21,8 +21,8 @@ import { getMyStamps } from "@/lib/my-stamps";
 import { isSoon, nextSlot, stampedNumbers } from "@/lib/rally-model";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
-
 import { buttonStyle } from "@/components/button";
+
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ as?: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

@@ -5,8 +5,8 @@ import { Trans } from "@lingui/react/macro";
 import { StatusWord } from "@/components/StatusWord";
 import type { SpotStatus } from "@/lib/content";
 import { WarningIcon } from "@/components/icons";
-
 import { buttonStyle } from "@/components/button";
+
 /** The small card shown under the map when a stop is tapped. The full sheet is its own page. */
 export function StopCard({
   order,

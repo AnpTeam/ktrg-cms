@@ -2,8 +2,8 @@
 
 import { useState, useSyncExternalStore } from "react";
 import { useLingui } from "@lingui/react/macro";
-
 import { buttonStyle } from "@/components/button";
+
 const noop = () => () => {};
 const url = () => window.location.href;
 const canShare = () => typeof navigator.share === "function";

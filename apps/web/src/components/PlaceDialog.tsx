@@ -5,8 +5,8 @@ import { useEffect, useRef } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { PlaceCard } from "@/components/map/PlacesPanel";
 import type { MapPlace } from "@/lib/places";
-
 import { buttonStyle } from "@/components/button";
+
 /**
  * A place in a small window over the page (a place has no page of its own): its details, and, when it is on the big map,
  * a link that shows it there. `place` null keeps the window shut.

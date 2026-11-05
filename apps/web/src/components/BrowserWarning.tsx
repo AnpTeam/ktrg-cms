@@ -3,8 +3,8 @@
 import { useState, useSyncExternalStore } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { canKeepData, isInAppBrowser } from "@/lib/browser-check";
-
 import { buttonStyle } from "@/components/button";
+
 const noSubscribe = () => () => {};
 
 /**

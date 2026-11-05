@@ -5,8 +5,8 @@ import { useLingui } from "@lingui/react/macro";
 import { distanceM } from "@/lib/navigation/geometry";
 import { distanceParts } from "@/lib/stamp-flow";
 import { useNavigation } from "./NavigationProvider";
-
 import { buttonStyle } from "@/components/button";
+
 /**
  * 「ほかの場所へ向かう」: pick any stop still to stamp as the target instead of the nearest one (to skip one on purpose, or to
  * head for the one you want). A stop you stamp hands the choice back to the nearest; 「近い順にもどす」 does it by hand.

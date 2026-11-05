@@ -3,8 +3,8 @@ import { Trans } from "@lingui/react/macro";
 import { KatsuragiLogo } from "@/components/KatsuragiLogo";
 import { HeroSlides, type HeroSlide } from "@/components/landing/HeroSlides";
 import type { BannerSlide } from "@/lib/banners";
-
 import { buttonStyle } from "@/components/button";
+
 // The first screen of the landing page: the admin's banner photos fill the top, with the logo and the line over them, and
 // under them the buttons. With no banner yet, one photo of the trail (public/home, from the Japan Heritage council, reused
 // with their permission: decisions log 2026-11-02) stands in. The words sit on a dark fade so they read on any photo; the

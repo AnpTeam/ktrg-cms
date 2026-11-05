@@ -7,8 +7,8 @@ import { Localized } from "@/components/Localized";
 import { pickText } from "@/lib/pick-text";
 import { courseEnds, nearerEnd, sortAccess, transitLink } from "@/lib/navigation/transit-links";
 import { useNavigation } from "./NavigationProvider";
-
 import { buttonStyle } from "@/components/button";
+
 const linkClass = buttonStyle("secondary", "sm", "inline-flex");
 
 /**

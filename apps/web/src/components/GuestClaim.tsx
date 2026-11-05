@@ -6,6 +6,7 @@ import { useLingui } from "@lingui/react/macro";
 import { api } from "@/lib/api";
 import { fetchMyStamps } from "@/lib/stamp-client";
 import { primaryButton, secondaryButton } from "@/components/auth/authUi";
+import { buttonStyle } from "@/components/button";
 
 type Step = { name: "idle" } | { name: "ask"; mine: number; guest: number } | { name: "moved"; added: number };
 
@@ -80,7 +81,7 @@ export function GuestClaim() {
           <h2 id="guest-claim-title" className="text-2xl font-bold leading-snug">
             {t`スタンプを ${step.added} 個、アカウントに移しました。`}
           </h2>
-          <button type="button" onClick={() => setStep({ name: "idle" })} className={`${primaryButton} mt-5`}>
+          <button type="button" onClick={() => setStep({ name: "idle" })} className={buttonStyle("primary", "lg", "mt-5 flex w-full")}>
             {t`閉じる`}
           </button>
         </>
