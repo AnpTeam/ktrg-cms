@@ -939,6 +939,10 @@ body.map-screen-active .site-footer {
   html[data-bars="hidden"] [data-tabbar]:not(:focus-within) {
     translate: 0 100%;
   }
+  /* Things kept above the tab bar (the navigation strip) follow it down. */
+  html[data-bars="hidden"]:not(:has([data-tabbar]:focus-within)) {
+    --tabbar-room: 0px;
+  }
   html[data-bars="hidden"] [data-scroll-hide]:not(:focus-within) {
     translate: 0 calc(-100% - var(--status-strip, 0px));
   }
@@ -947,6 +951,20 @@ body.map-screen-active .site-footer {
   [data-tabbar],
   [data-scroll-hide] {
     transition: none;
+  }
+}
+
+/* How much of the bottom the tab bar takes right now, for things fixed above it (the navigation's buttons): the bar on a
+   phone, none from 768 px (a side rail) or when a chosen course hides it. Same 5.5rem as MapScreen's TAB_ROOM_REM. */
+:root {
+  --tabbar-room: 0px;
+}
+@media (max-width: 767px) {
+  :root {
+    --tabbar-room: 5.5rem;
+  }
+  body.map-tabs-hidden {
+    --tabbar-room: 0px;
   }
 }
 
