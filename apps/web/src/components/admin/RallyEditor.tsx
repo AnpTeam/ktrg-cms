@@ -8,6 +8,7 @@ import { api } from "@/lib/api";
 import { outcome } from "@/lib/admin/admin-client";
 import { nameChanges, sameOrder } from "@/lib/admin/rally-edit";
 import type { AdminRally } from "@/lib/admin/types";
+import { Chip } from "./Chip";
 import { MultilingualField, Section } from "./fields";
 import { RallyMemberPicker, type RallyCandidates } from "./RallyMemberPicker";
 
@@ -115,14 +116,25 @@ export function RallyEditor({
 
   return (
     <div className="flex flex-col gap-5">
-      <h1 className="text-3xl font-bold">{title}</h1>
+      {/* The same title bar as the route editor: the name, the state, and the one button that matters, always in reach. */}
+      <div className="sticky top-0 z-20 -mx-4 flex flex-wrap items-center gap-3 border-b border-line bg-paper px-4 py-3 lg:-mx-8 lg:px-8">
+        <h1 className="min-w-0 flex-1 break-words text-2xl font-bold">{title}</h1>
+        <Chip tone={saved.published ? "good" : "neutral"}>{saved.published ? t`公開中` : t`下書き`}</Chip>
+        <button
+          type="button"
+          onClick={() => setPublished(!saved.published)}
+          disabled={busy || namesChanged || membersChanged || (!saved.published && saved.memberCount === 0)}
+          className={`tap-target rounded-xl px-8 text-xl font-bold disabled:opacity-40 ${saved.published ? "border-2 border-ink bg-paper text-ink" : "bg-ink text-paper"}`}
+        >
+          {saved.published ? t`公開をやめる` : t`公開する`}
+        </button>
+      </div>
       <p className="text-lg text-muted">
         {saved.kind === "places" ? t`経由地でつくったラリー：えらんだ経由地のスタンプを全部押すと達成。` : t`コースでつくったラリー：えらんだコースを全部終えると達成。`}
-        {" "}
-        {saved.published ? t`公開中` : t`下書き`}
         {" ・ "}
         {t`達成した人 ${saved.completionCount}`}
       </p>
+      {namesChanged || membersChanged ? <p className="text-base text-muted">{t`保存していない変更があります。先に保存してから公開を切りかえてください。`}</p> : null}
 
       {notice ? (
         <p role={notice.kind === "error" ? "alert" : "status"} className={`rounded-xl bg-surface p-4 text-lg font-bold ${notice.kind === "error" ? "text-danger" : "text-moss"}`}>
@@ -130,7 +142,7 @@ export function RallyEditor({
         </p>
       ) : null}
 
-      <Section title={t`名前と公開`}>
+      <Section title={t`名前`}>
         <MultilingualField
           id="rally-name"
           label={t`ラリーの名前`}
@@ -148,16 +160,7 @@ export function RallyEditor({
           <button type="button" onClick={saveNames} disabled={busy || !namesChanged || names.nameJa.trim() === ""} className="tap-target rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50">
             {t`名前を保存`}
           </button>
-          <button
-            type="button"
-            onClick={() => setPublished(!saved.published)}
-            disabled={busy || namesChanged || membersChanged || (!saved.published && saved.memberCount === 0)}
-            className="tap-target rounded-xl border-2 border-line px-6 text-lg font-bold disabled:opacity-50"
-          >
-            {saved.published ? t`公開をやめる` : t`公開する`}
-          </button>
         </div>
-        {namesChanged || membersChanged ? <p className="text-base text-muted">{t`保存していない変更があります。先に保存してから公開を切りかえてください。`}</p> : null}
       </Section>
 
       <Section title={saved.kind === "places" ? t`ラリーに入る経由地` : t`ラリーに入るコース`}>

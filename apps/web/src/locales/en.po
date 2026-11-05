@@ -446,7 +446,7 @@ msgstr "Nearest first, from \"{stopName}\""
 msgid "「## 」で始まる行は、見出しです（よくあるご質問では質問、遊び方では手順の名前）。その下に、本文を書きます。"
 msgstr "A line starting with \"## \" is a heading (a question in the FAQ, the name of a step in How to play). Write its text below it."
 
-#: src/components/admin/RallyEditor.tsx:177
+#: src/components/admin/RallyEditor.tsx:180
 msgid "「コースでつくる」に変えます。えらんだコースを全部歩き終えると達成になります。いまの経由地は外れるので、入れるコースをえらんでください。"
 msgstr "This changes it to \"Made from courses\": it is complete when every chosen course is finished. The current waypoints come out, so choose the courses to put in."
 
@@ -492,7 +492,7 @@ msgstr "A journey of rediscovery, looking at “prayer”"
 msgid "「経由地」シート {0} 行目"
 msgstr "Row {0} of the “経由地” sheet"
 
-#: src/components/admin/RallyEditor.tsx:178
+#: src/components/admin/RallyEditor.tsx:181
 msgid "「経由地でつくる」に変えます。えらんだ経由地のスタンプを全部押すと達成になります。いまのコースは外れるので、入れる経由地をえらんでください。"
 msgstr "This changes it to \"Made from waypoints\": it is complete when every chosen waypoint is stamped. The current courses come out, so choose the waypoints to put in."
 
@@ -948,11 +948,11 @@ msgstr "Stamps can't be collected here right now."
 msgid "いまは、パスキーだけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
 msgstr "You currently sign in with a passkey only. If you add an email, you can still sign in with an emailed code if you lose your device."
 
-#: src/components/admin/RallyEditor.tsx:172
+#: src/components/admin/RallyEditor.tsx:175
 msgid "いまは「コースでつくる」です。"
 msgstr "It is now \"Made from courses\"."
 
-#: src/components/admin/RallyEditor.tsx:172
+#: src/components/admin/RallyEditor.tsx:175
 msgid "いまは「経由地でつくる」です。"
 msgstr "It is now \"Made from waypoints\"."
 
@@ -1158,7 +1158,7 @@ msgstr "Course {order}"
 msgid "コースからこれより離れていると、ナビは歩く道ではなく、電車やバスでの行き方を案内します。空なら 5 km。"
 msgstr "Farther from the course than this, navigation suggests how to get there by train or bus instead of a walking route. Empty means 5 km."
 
-#: src/components/admin/RallyEditor.tsx:120
+#: src/components/admin/RallyEditor.tsx:133
 msgid "コースでつくったラリー：えらんだコースを全部終えると達成。"
 msgstr "A rally of courses: complete when every chosen course is finished."
 
@@ -1327,16 +1327,16 @@ msgstr "Open this rally's page"
 msgid "このラリーは、いまは行われていません。"
 msgstr "This rally is not running right now."
 
-#: src/components/admin/RallyEditor.tsx:208
+#: src/components/admin/RallyEditor.tsx:211
 msgid "このラリーを削除"
 msgstr "Delete this rally"
 
-#: src/components/admin/RallyEditor.tsx:107
+#: src/components/admin/RallyEditor.tsx:108
 msgid "このラリーを削除します。よろしいですか？"
 msgstr "This rally will be deleted. Are you sure?"
 
 #. placeholder {0}: saved.completionCount
-#: src/components/admin/RallyEditor.tsx:107
+#: src/components/admin/RallyEditor.tsx:108
 msgid "このラリーを削除します。達成した {0} 人の達成記録も消えます（スタンプは残ります）。よろしいですか？"
 msgstr "This rally will be deleted, and so will the completion records of the {0} visitors who finished it (their stamps stay). Are you sure?"
 
@@ -2079,7 +2079,7 @@ msgid "つくったページはまだありません。"
 msgstr "No pages made yet."
 
 #: src/components/admin/RallyCreate.tsx:68
-#: src/components/admin/RallyEditor.tsx:171
+#: src/components/admin/RallyEditor.tsx:174
 msgid "つくり方"
 msgstr "How it is made"
 
@@ -2087,19 +2087,19 @@ msgstr "How it is made"
 msgid "つくり方は、あとからラリーの画面で変えられます。"
 msgstr "You can change this later on the rally's own page."
 
-#: src/components/admin/RallyEditor.tsx:97
+#: src/components/admin/RallyEditor.tsx:98
 msgid "つくり方を変えました。"
 msgstr "The way it is made was changed."
 
-#: src/components/admin/RallyEditor.tsx:94
+#: src/components/admin/RallyEditor.tsx:95
 msgid "つくり方を変えます。いまの中身は外れ、えらんだものが入ります。{unfinished}よろしいですか？"
 msgstr "This changes how it is made. The current contents come out and the ones you chose go in. {unfinished}Continue?"
 
-#: src/components/admin/RallyEditor.tsx:188
+#: src/components/admin/RallyEditor.tsx:191
 msgid "つくり方を変える"
 msgstr "Change how it is made"
 
-#: src/components/admin/RallyEditor.tsx:199
+#: src/components/admin/RallyEditor.tsx:202
 msgid "つくり方を変える…"
 msgstr "Change how it is made…"
 
@@ -2815,7 +2815,7 @@ msgid "もらいました"
 msgstr "Earned"
 
 #: src/components/admin/PublishedEditDialog.tsx:63
-#: src/components/admin/RallyEditor.tsx:191
+#: src/components/admin/RallyEditor.tsx:194
 #: src/components/auth/ReauthDialog.tsx:72
 #: src/components/auth/ReauthDialog.tsx:94
 #: src/components/ProfileSettings.tsx:251
@@ -2897,11 +2897,11 @@ msgstr "There are no rallies yet. Create one with \"New rally\"."
 msgid "ラリーとスタンプ"
 msgstr "Rallies and stamps"
 
-#: src/components/admin/RallyEditor.tsx:163
+#: src/components/admin/RallyEditor.tsx:166
 msgid "ラリーに入るコース"
 msgstr "Courses in this rally"
 
-#: src/components/admin/RallyEditor.tsx:163
+#: src/components/admin/RallyEditor.tsx:166
 msgid "ラリーに入る経由地"
 msgstr "Stamp waypoints in this rally"
 
@@ -2921,16 +2921,16 @@ msgstr "All rallies"
 msgid "ラリーの中の順番"
 msgstr "Order in the rally"
 
-#: src/components/admin/RallyEditor.tsx:166
+#: src/components/admin/RallyEditor.tsx:169
 msgid "ラリーの中身を保存"
 msgstr "Save what is in the rally"
 
-#: src/components/admin/RallyEditor.tsx:87
+#: src/components/admin/RallyEditor.tsx:88
 msgid "ラリーの中身を保存しました。"
 msgstr "What is in the rally was saved."
 
 #: src/components/admin/RallyCreate.tsx:77
-#: src/components/admin/RallyEditor.tsx:136
+#: src/components/admin/RallyEditor.tsx:148
 msgid "ラリーの名前"
 msgstr "Rally name"
 
@@ -2942,7 +2942,7 @@ msgstr "A rally is made from courses or from stamp waypoints. Open one to change
 msgid "ラリーは、まだ準備中です。"
 msgstr "The rallies are not ready yet."
 
-#: src/components/admin/RallyEditor.tsx:206
+#: src/components/admin/RallyEditor.tsx:209
 msgid "ラリーを削除しても、スタンプやコースの達成は消えません。このラリーの達成記録だけが消えます。"
 msgstr "Deleting a rally keeps visitors' stamps and finished courses. Only the completion records of this rally are removed."
 
@@ -3266,7 +3266,7 @@ msgstr "Draft"
 msgid "下書きとして作る"
 msgstr "Create as a draft"
 
-#: src/components/admin/RallyEditor.tsx:168
+#: src/components/admin/RallyEditor.tsx:171
 msgid "下書きの経由地は、公開されるまで数に入りません。スタンプの記録は変わりません。"
 msgstr "Draft waypoints do not count until they are published. Visitors' stamps are not changed."
 
@@ -3518,11 +3518,11 @@ msgstr "You have unsaved changes"
 msgid "保存していない変更があります。このページを離れますか？"
 msgstr "You have unsaved changes. Leave this page?"
 
-#: src/components/admin/RallyEditor.tsx:160
+#: src/components/admin/RallyEditor.tsx:137
 msgid "保存していない変更があります。先に保存してから公開を切りかえてください。"
 msgstr "There are unsaved changes. Save them before publishing or unpublishing."
 
-#: src/components/admin/RallyEditor.tsx:194
+#: src/components/admin/RallyEditor.tsx:197
 msgid "保存していない変更があります。先に保存してください。"
 msgstr "There are unsaved changes. Save them first."
 
@@ -3542,7 +3542,7 @@ msgstr "Save and next"
 #: src/components/admin/AdminItemForm.tsx:125
 #: src/components/admin/GoalsForm.tsx:50
 #: src/components/admin/HomeSectionsForm.tsx:32
-#: src/components/admin/RallyEditor.tsx:72
+#: src/components/admin/RallyEditor.tsx:73
 #: src/components/admin/RouteEditor.tsx:335
 #: src/components/ProfileSettings.tsx:173
 #: src/components/settings/PrefsForm.tsx:69
@@ -3717,13 +3717,13 @@ msgstr "Learn more on the official site"
 msgid "公開サイトで見る"
 msgstr "View this page on the public site"
 
-#: src/components/admin/RallyEditor.tsx:78
+#: src/components/admin/RallyEditor.tsx:79
 #: src/components/admin/RouteEditor.tsx:431
 msgid "公開しました。"
 msgstr "Published."
 
 #: src/components/admin/PlacePanel.tsx:253
-#: src/components/admin/RallyEditor.tsx:157
+#: src/components/admin/RallyEditor.tsx:129
 msgid "公開する"
 msgstr "Publish"
 
@@ -3752,13 +3752,13 @@ msgstr "You can publish it from the rally's page once it is created."
 msgid "公開まで、あと{0}つ"
 msgstr "{0} more to do before it can be published"
 
-#: src/components/admin/RallyEditor.tsx:78
+#: src/components/admin/RallyEditor.tsx:79
 #: src/components/admin/RouteEditor.tsx:431
 msgid "公開をやめました。"
 msgstr "Unpublished."
 
 #: src/components/admin/PlacePanel.tsx:247
-#: src/components/admin/RallyEditor.tsx:157
+#: src/components/admin/RallyEditor.tsx:129
 msgid "公開をやめる"
 msgstr "Unpublish"
 
@@ -3784,7 +3784,7 @@ msgstr "Published stamp waypoints"
 msgid "公開中のスタンプの経由地なし（達成できません）"
 msgstr "No published stamp waypoints (cannot be finished)"
 
-#: src/components/admin/RallyEditor.tsx:195
+#: src/components/admin/RallyEditor.tsx:198
 msgid "公開中のラリーは、からにできません。1つ以上えらんでください。"
 msgstr "A published rally cannot be left empty. Choose at least one."
 
@@ -4094,7 +4094,7 @@ msgstr "Restricted"
 #: src/components/admin/HoursInput.tsx:35
 #: src/components/admin/PlaceTable.tsx:140
 #: src/components/admin/PlaceTable.tsx:205
-#: src/components/admin/RallyEditor.tsx:205
+#: src/components/admin/RallyEditor.tsx:208
 msgid "削除"
 msgstr "Delete"
 
@@ -4373,6 +4373,7 @@ msgstr "You go out along the same path and come back the same way."
 #: src/components/admin/map-editor/PlaceList.tsx:79
 #: src/components/admin/PhotoLibrary.tsx:173
 #: src/components/admin/RallyCreate.tsx:76
+#: src/components/admin/RallyEditor.tsx:145
 #: src/components/admin/RallyList.tsx:115
 #: src/components/admin/RouteTable.tsx:155
 #: src/components/PlaceFacts.tsx:27
@@ -4398,10 +4399,6 @@ msgstr "Search by name"
 msgid "名前で絞る"
 msgstr "Filter by name"
 
-#: src/components/admin/RallyEditor.tsx:133
-msgid "名前と公開"
-msgstr "Name and publishing"
-
 #: src/components/blog/CommentSection.tsx:65
 msgid "名前なし"
 msgstr "No name"
@@ -4424,7 +4421,7 @@ msgstr "Type part of a name to search"
 msgid "名前の一部を入力"
 msgstr "Part of the name"
 
-#: src/components/admin/RallyEditor.tsx:149
+#: src/components/admin/RallyEditor.tsx:161
 msgid "名前を保存"
 msgstr "Save the name"
 
@@ -6033,7 +6030,7 @@ msgstr "A route that still has waypoints cannot be deleted. Delete its waypoints
 msgid "経由地ごとに、写真と、名前の由来や歴史を読めます。近くの駅、バス停、駐車場もわかります。"
 msgstr "For each stop, see photos and read where the name comes from and its history. Nearby stations, bus stops and parking are shown too."
 
-#: src/components/admin/RallyEditor.tsx:120
+#: src/components/admin/RallyEditor.tsx:133
 msgid "経由地でつくったラリー：えらんだ経由地のスタンプを全部押すと達成。"
 msgstr "A rally of waypoints: complete when every chosen stamp waypoint is stamped."
 
@@ -6745,7 +6742,7 @@ msgid "道を調べられませんでした。しばらくしてから、もう�
 msgstr "Could not look up the paths. Please try again in a little while."
 
 #. placeholder {0}: saved.completionCount
-#: src/components/admin/RallyEditor.tsx:93
+#: src/components/admin/RallyEditor.tsx:94
 msgid "達成した {0} 人の記録は残ります。"
 msgstr "The records of the {0} people who finished stay. "
 
@@ -6755,12 +6752,12 @@ msgstr "Finished by"
 
 #. placeholder {0}: r.completionCount
 #. placeholder {0}: saved.completionCount
-#: src/components/admin/RallyEditor.tsx:124
+#: src/components/admin/RallyEditor.tsx:135
 #: src/components/admin/RallyList.tsx:163
 msgid "達成した人 {0}"
 msgstr "{0} finished"
 
-#: src/components/admin/RallyEditor.tsx:202
+#: src/components/admin/RallyEditor.tsx:205
 msgid "達成した人の記録は残ります。スタンプは変わりません。"
 msgstr "The records of people who finished stay. Stamps do not change."
 
