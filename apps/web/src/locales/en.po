@@ -471,9 +471,13 @@ msgstr "Place waypoints in “Map & line”"
 msgid "「地形」ボタンで重ねるもの"
 msgstr "What the \"Terrain\" button adds"
 
-#: src/components/admin/MapStylePreview.tsx:75
+#: src/components/admin/MapStylePreview.tsx:77
 msgid "「地形」ボタンを押した状態で見る"
 msgstr "Show it as when \"Terrain\" is pressed"
+
+#: src/components/admin/SiteSettingsForm.tsx:111
+msgid "「大きい文字」の大きさ"
+msgstr "Size of the Large text map"
 
 #: src/components/admin/AdminItemForm.tsx:289
 msgid "「必須」の欄をすべて入れると保存できます。"
@@ -531,6 +535,10 @@ msgstr "< Previous"
 #: src/components/map/TrailMap.tsx:174
 msgid "⌘キーを押しながら地図を動かします"
 msgstr "Hold the ⌘ key to move the map"
+
+#: src/components/admin/SiteSettingsForm.tsx:115
+msgid "100%が、国土地理院の地図に自分たちの調整を重ねた大きさです。大きくしすぎると文字が重なって読めなくなります。下の見本で確かめてください。"
+msgstr "100% is GSI's map with our own adjustments. Too large and the names overlap and become unreadable. Check the preview below."
 
 #: src/components/admin/RouteEditor.tsx:796
 msgid "1か所ずつ詳しく"
@@ -1528,7 +1536,7 @@ msgstr "Passkeys cannot be used on this device or browser. Please try email inst
 msgid "この端末では、振動は使えません。"
 msgstr "Vibration is not available on this device."
 
-#: src/components/admin/MapStylePreview.tsx:70
+#: src/components/admin/MapStylePreview.tsx:72
 msgid "この端末では地図の見本を表示できません。"
 msgstr "The map preview cannot be shown on this device."
 
@@ -2642,7 +2650,7 @@ msgid "まだスタンプを押していません"
 msgstr "You haven't collected this stamp yet"
 
 #: src/components/admin/HomeSectionsForm.tsx:58
-#: src/components/admin/SiteSettingsForm.tsx:118
+#: src/components/admin/SiteSettingsForm.tsx:128
 msgid "まだ保存していません。"
 msgstr "Not saved yet."
 
@@ -3531,7 +3539,7 @@ msgid "保存していない編集が、このブラウザに残っています�
 msgstr "Unsaved edits were kept in this browser ({offeredAt}). Restore them?"
 
 #: src/components/admin/HomeSectionsForm.tsx:56
-#: src/components/admin/SiteSettingsForm.tsx:113
+#: src/components/admin/SiteSettingsForm.tsx:123
 msgid "保存しています…"
 msgstr "Saving…"
 
@@ -3575,7 +3583,7 @@ msgstr "Saved. No more places waiting to be checked."
 
 #: src/components/admin/HomeSectionsForm.tsx:56
 #: src/components/admin/RouteEditor.tsx:489
-#: src/components/admin/SiteSettingsForm.tsx:113
+#: src/components/admin/SiteSettingsForm.tsx:123
 #: src/components/ProfileSettings.tsx:221
 #: src/components/settings/PasskeyManager.tsx:135
 #: src/components/settings/PrefsForm.tsx:163
@@ -4036,7 +4044,7 @@ msgstr "min"
 msgid "列の幅を変える"
 msgstr "Resize column"
 
-#: src/components/admin/SiteSettingsForm.tsx:116
+#: src/components/admin/SiteSettingsForm.tsx:126
 msgid "初期値にする"
 msgstr "Use the default"
 
@@ -4491,6 +4499,10 @@ msgstr "Geospatial Information Authority of Japan (GSI Tiles)"
 msgid "土曜日"
 msgstr "Saturday"
 
+#: src/components/admin/SiteSettingsForm.tsx:112
+msgid "地名の大きさ"
+msgstr "Place names"
+
 #: src/components/admin/SiteSettingsForm.tsx:38
 msgid "地名や記号が大きく、はっきり読める地図です。色の濃さとコントラストの調整は効きません。電波がないときは、名前が出ないことがあります。"
 msgstr "A map with large, clear place names and symbols. The colour and contrast sliders do not apply to it. Names may be missing when there is no signal."
@@ -4543,7 +4555,7 @@ msgstr "How the map is shown"
 msgid "地図の見た目"
 msgstr "Map appearance"
 
-#: src/components/admin/MapStylePreview.tsx:77
+#: src/components/admin/MapStylePreview.tsx:79
 msgid "地図の見本"
 msgstr "Map preview"
 
@@ -6134,6 +6146,10 @@ msgstr "Import the line and elevation"
 msgid "線のない区間はありません。区間を選ぶと、その区間をつくり直せます。"
 msgstr "Every leg has a line. Choose a leg to make it again."
 
+#: src/components/admin/SiteSettingsForm.tsx:114
+msgid "線の太さ"
+msgstr "Line width"
+
 #: src/components/admin/RouteEditor.tsx:612
 msgid "線の標高から自動で計算"
 msgstr "Calculated from the line's elevation"
@@ -6476,6 +6492,10 @@ msgstr "Up to {MAX_LANGUAGES} languages (Japanese included). Languages other tha
 #: src/app/(public)/blog/page.tsx:48
 msgid "記事は、まだありません。"
 msgstr "There are no posts yet."
+
+#: src/components/admin/SiteSettingsForm.tsx:113
+msgid "記号の大きさ"
+msgstr "Symbols"
 
 #: src/components/admin/SiteSettingsForm.tsx:76
 msgid "訪問者が見る地図（マップ画面、ルートのページ）の見た目です。地図を作る管理画面の地図は、見やすさのため、いつも「標準」です。"

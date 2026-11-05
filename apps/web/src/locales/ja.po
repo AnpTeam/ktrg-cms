@@ -471,9 +471,13 @@ msgstr "「地図と線」で経由地を置く"
 msgid "「地形」ボタンで重ねるもの"
 msgstr "「地形」ボタンで重ねるもの"
 
-#: src/components/admin/MapStylePreview.tsx:75
+#: src/components/admin/MapStylePreview.tsx:77
 msgid "「地形」ボタンを押した状態で見る"
 msgstr "「地形」ボタンを押した状態で見る"
+
+#: src/components/admin/SiteSettingsForm.tsx:111
+msgid "「大きい文字」の大きさ"
+msgstr "「大きい文字」の大きさ"
 
 #: src/components/admin/AdminItemForm.tsx:289
 msgid "「必須」の欄をすべて入れると保存できます。"
@@ -531,6 +535,10 @@ msgstr "＜ 前へ"
 #: src/components/map/TrailMap.tsx:174
 msgid "⌘キーを押しながら地図を動かします"
 msgstr "⌘キーを押しながら地図を動かします"
+
+#: src/components/admin/SiteSettingsForm.tsx:115
+msgid "100%が、国土地理院の地図に自分たちの調整を重ねた大きさです。大きくしすぎると文字が重なって読めなくなります。下の見本で確かめてください。"
+msgstr "100%が、国土地理院の地図に自分たちの調整を重ねた大きさです。大きくしすぎると文字が重なって読めなくなります。下の見本で確かめてください。"
 
 #: src/components/admin/RouteEditor.tsx:796
 msgid "1か所ずつ詳しく"
@@ -1528,7 +1536,7 @@ msgstr "この端末・ブラウザではパスキーを使えません。メー
 msgid "この端末では、振動は使えません。"
 msgstr "この端末では、振動は使えません。"
 
-#: src/components/admin/MapStylePreview.tsx:70
+#: src/components/admin/MapStylePreview.tsx:72
 msgid "この端末では地図の見本を表示できません。"
 msgstr "この端末では地図の見本を表示できません。"
 
@@ -2642,7 +2650,7 @@ msgid "まだスタンプを押していません"
 msgstr "まだスタンプを押していません"
 
 #: src/components/admin/HomeSectionsForm.tsx:58
-#: src/components/admin/SiteSettingsForm.tsx:118
+#: src/components/admin/SiteSettingsForm.tsx:128
 msgid "まだ保存していません。"
 msgstr "まだ保存していません。"
 
@@ -3531,7 +3539,7 @@ msgid "保存していない編集が、このブラウザに残っています�
 msgstr "保存していない編集が、このブラウザに残っています（{offeredAt}）。戻しますか？"
 
 #: src/components/admin/HomeSectionsForm.tsx:56
-#: src/components/admin/SiteSettingsForm.tsx:113
+#: src/components/admin/SiteSettingsForm.tsx:123
 msgid "保存しています…"
 msgstr "保存しています…"
 
@@ -3575,7 +3583,7 @@ msgstr "保存しました。次に確認する場所はありません。"
 
 #: src/components/admin/HomeSectionsForm.tsx:56
 #: src/components/admin/RouteEditor.tsx:489
-#: src/components/admin/SiteSettingsForm.tsx:113
+#: src/components/admin/SiteSettingsForm.tsx:123
 #: src/components/ProfileSettings.tsx:221
 #: src/components/settings/PasskeyManager.tsx:135
 #: src/components/settings/PrefsForm.tsx:163
@@ -4036,7 +4044,7 @@ msgstr "分"
 msgid "列の幅を変える"
 msgstr "列の幅を変える"
 
-#: src/components/admin/SiteSettingsForm.tsx:116
+#: src/components/admin/SiteSettingsForm.tsx:126
 msgid "初期値にする"
 msgstr "初期値にする"
 
@@ -4491,6 +4499,10 @@ msgstr "国土地理院（地理院タイル）"
 msgid "土曜日"
 msgstr "土曜日"
 
+#: src/components/admin/SiteSettingsForm.tsx:112
+msgid "地名の大きさ"
+msgstr "地名の大きさ"
+
 #: src/components/admin/SiteSettingsForm.tsx:38
 msgid "地名や記号が大きく、はっきり読める地図です。色の濃さとコントラストの調整は効きません。電波がないときは、名前が出ないことがあります。"
 msgstr "地名や記号が大きく、はっきり読める地図です。色の濃さとコントラストの調整は効きません。電波がないときは、名前が出ないことがあります。"
@@ -4543,7 +4555,7 @@ msgstr "地図の見せ方"
 msgid "地図の見た目"
 msgstr "地図の見た目"
 
-#: src/components/admin/MapStylePreview.tsx:77
+#: src/components/admin/MapStylePreview.tsx:79
 msgid "地図の見本"
 msgstr "地図の見本"
 
@@ -6134,6 +6146,10 @@ msgstr "線と標高を読み込む"
 msgid "線のない区間はありません。区間を選ぶと、その区間をつくり直せます。"
 msgstr "線のない区間はありません。区間を選ぶと、その区間をつくり直せます。"
 
+#: src/components/admin/SiteSettingsForm.tsx:114
+msgid "線の太さ"
+msgstr "線の太さ"
+
 #: src/components/admin/RouteEditor.tsx:612
 msgid "線の標高から自動で計算"
 msgstr "線の標高から自動で計算"
@@ -6476,6 +6492,10 @@ msgstr "言語は{MAX_LANGUAGES}つまで（日本語を含む）。英語以外
 #: src/app/(public)/blog/page.tsx:48
 msgid "記事は、まだありません。"
 msgstr "記事は、まだありません。"
+
+#: src/components/admin/SiteSettingsForm.tsx:113
+msgid "記号の大きさ"
+msgstr "記号の大きさ"
 
 #: src/components/admin/SiteSettingsForm.tsx:76
 msgid "訪問者が見る地図（マップ画面、ルートのページ）の見た目です。地図を作る管理画面の地図は、見やすさのため、いつも「標準」です。"

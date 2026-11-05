@@ -31,6 +31,10 @@ export interface MapSettings {
   /** Contrast of the base tiles, -0.5 (flat) to 0.5 (hard); 0 leaves them as they are. */
   contrast: number;
   dark: DarkTreatment;
+  /** The vector map only: names, icons and lines drawn this many times the size its style gives (0.8 to 2; 1 = as is). */
+  labelScale: number;
+  iconScale: number;
+  lineScale: number;
 }
 
 /** The look until an admin chooses one: the quieter pale map. */
@@ -41,6 +45,9 @@ export const defaultMapSettings: MapSettings = {
   saturation: 0,
   contrast: 0,
   dark: "none", // plain tiles: dimmed or inverted maps were judged too dark to read outdoors
+  labelScale: 1,
+  iconScale: 1,
+  lineScale: 1,
 };
 
 const pick = <T extends string>(allowed: readonly T[], value: unknown, fallback: T): T =>
@@ -59,5 +66,8 @@ export function sanitizeMapSettings(value: unknown): MapSettings {
     saturation: clamp(v.saturation, -1, 0.5, defaultMapSettings.saturation),
     contrast: clamp(v.contrast, -0.5, 0.5, defaultMapSettings.contrast),
     dark: pick(darkTreatments, v.dark, defaultMapSettings.dark),
+    labelScale: clamp(v.labelScale, 0.8, 2, defaultMapSettings.labelScale),
+    iconScale: clamp(v.iconScale, 0.8, 2, defaultMapSettings.iconScale),
+    lineScale: clamp(v.lineScale, 0.8, 2, defaultMapSettings.lineScale),
   };
 }

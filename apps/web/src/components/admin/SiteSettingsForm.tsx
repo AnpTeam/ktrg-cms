@@ -48,7 +48,7 @@ export function SiteSettingsForm({ initial }: { initial: MapSettings }) {
         method: "PUT",
         credentials: "same-origin",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ base: s.base, terrain: s.terrain, terrainOpacity: s.terrainOpacity, saturation: s.saturation, contrast: s.contrast }),
+        body: JSON.stringify({ base: s.base, terrain: s.terrain, terrainOpacity: s.terrainOpacity, saturation: s.saturation, contrast: s.contrast, labelScale: s.labelScale, iconScale: s.iconScale, lineScale: s.lineScale }),
       });
       const json = (await res.json().catch(() => null)) as { ok?: unknown; error?: unknown } | null;
       if (res.ok && json?.ok === true) {
@@ -105,6 +105,16 @@ export function SiteSettingsForm({ initial }: { initial: MapSettings }) {
           <Slider label={t`コントラスト`} value={s.contrast} min={-0.5} max={0.5} step={0.05} shown={s.contrast === 0 ? t`そのまま` : `${s.contrast > 0 ? "+" : ""}${Math.round(s.contrast * 100)}`} onChange={(v) => set({ contrast: v })} />
           <p className="text-base text-muted">{t`色を薄くすると、道すじや印が目立ちます。濃さ100%、コントラスト「そのまま」が、国土地理院の地図のままです。`}</p>
         </fieldset>
+
+        {s.base === "large" ? (
+          <fieldset className="flex flex-col gap-3">
+            <legend className="mb-1 text-lg font-bold">{t`「大きい文字」の大きさ`}</legend>
+            <Slider label={t`地名の大きさ`} value={s.labelScale} min={0.8} max={2} step={0.1} shown={`${Math.round(s.labelScale * 100)}%`} onChange={(v) => set({ labelScale: v })} />
+            <Slider label={t`記号の大きさ`} value={s.iconScale} min={0.8} max={2} step={0.1} shown={`${Math.round(s.iconScale * 100)}%`} onChange={(v) => set({ iconScale: v })} />
+            <Slider label={t`線の太さ`} value={s.lineScale} min={0.8} max={2} step={0.1} shown={`${Math.round(s.lineScale * 100)}%`} onChange={(v) => set({ lineScale: v })} />
+            <p className="text-base text-muted">{t`100%が、国土地理院の地図に自分たちの調整を重ねた大きさです。大きくしすぎると文字が重なって読めなくなります。下の見本で確かめてください。`}</p>
+          </fieldset>
+        ) : null}
 
         <MapStylePreview settings={s} />
 

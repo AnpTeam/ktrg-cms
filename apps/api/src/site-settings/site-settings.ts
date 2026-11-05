@@ -22,6 +22,11 @@ export const MAP_STYLE = t.Object({
   terrainOpacity: t.Number({ minimum: 0.2, maximum: 0.8 }),
   saturation: t.Number({ minimum: -1, maximum: 0.5 }),
   contrast: t.Number({ minimum: -0.5, maximum: 0.5 }),
+  // The 「大きい文字」 map only: how much bigger than GSI's style its names, icons and lines are drawn (1 = as the style says).
+  // Optional so a settings value saved before these existed is still valid.
+  labelScale: t.Optional(t.Number({ minimum: 0.8, maximum: 2 })),
+  iconScale: t.Optional(t.Number({ minimum: 0.8, maximum: 2 })),
+  lineScale: t.Optional(t.Number({ minimum: 0.8, maximum: 2 })),
 });
 export type MapStyleSetting = Static<typeof MAP_STYLE>;
 

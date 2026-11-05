@@ -47,7 +47,7 @@ describe("GSI tiles", () => {
   });
 
   test("the settings choose the tiles: base map, terrain kind, strength", () => {
-    const plain = mapStyle({ base: "pale", terrain: "relief", terrainOpacity: 0.3, saturation: 0, contrast: 0, dark: "none" });
+    const plain = mapStyle({ base: "pale", terrain: "relief", terrainOpacity: 0.3, saturation: 0, contrast: 0, dark: "none", labelScale: 1, iconScale: 1, lineScale: 1 });
     const base = plain.sources["gsi-base"];
     const terrain = plain.sources["gsi-terrain"];
     expect(base && "tiles" in base ? base.tiles?.[0] : "").toContain("/pale/");

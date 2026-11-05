@@ -10,11 +10,19 @@ export function GET(request: NextRequest) {
   const q = request.nextUrl.searchParams;
   const terrain = terrainLayers.find((t) => t === q.get("terrain")) ?? "hillshade";
   const opacity = Number(q.get("opacity"));
+  // Sizes from the address, kept inside the range the settings allow; anything else means as the style says.
+  const scale = (name: string) => {
+    const n = Number(q.get(name));
+    return Number.isFinite(n) && q.has(name) ? Math.min(2, Math.max(0.8, n)) : 1;
+  };
   const style = composeLargeStyle(base as unknown as StyleSpecification, {
     origin: request.nextUrl.origin,
     terrain,
     terrainOpacity: Number.isFinite(opacity) ? Math.min(0.8, Math.max(0.2, opacity)) : 0.5,
     terrainOn: q.get("on") === "1",
+    labelScale: scale("ls"),
+    iconScale: scale("is"),
+    lineScale: scale("ws"),
   });
   return NextResponse.json(style, { headers: { "Cache-Control": "public, max-age=3600" } });
 }

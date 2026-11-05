@@ -63,7 +63,9 @@ export function MapStylePreview({ settings }: { settings: MapSettings }) {
 
   useEffect(() => {
     terrainRef.current = terrain;
-    mapRef.current?.setStyle(withTerrain(settings, terrain));
+    // Waits for the slider to rest: the vector style is large and each change loads it again.
+    const timer = setTimeout(() => mapRef.current?.setStyle(withTerrain(settings, terrain)), 250);
+    return () => clearTimeout(timer);
   }, [settings, terrain]);
 
   return failed ? (
