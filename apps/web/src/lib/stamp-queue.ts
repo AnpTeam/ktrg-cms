@@ -28,6 +28,8 @@ export interface QueuedStamp {
   /** ISO time the phone pressed the stamp. */
   scannedAt: string;
   tries: number;
+  /** What the progress popup needs when the server takes this stamp later (the rally and the count as they were at the press). */
+  celebrate?: { rallyName: string; before: number; total: number; place: string };
 }
 
 export interface QueueStore {
@@ -38,8 +40,8 @@ export interface QueueStore {
   update(id: string, patch: Partial<Pick<QueuedStamp, "tries" | "userKey">>): Promise<void>;
 }
 
-export function newQueuedStamp(userKey: string, spotId: string, reading: Reading, now: Date, id: string = crypto.randomUUID()): QueuedStamp {
-  return { id, userKey, spotId, lat: reading.lat, lng: reading.lng, accuracyM: reading.accuracyM, scannedAt: now.toISOString(), tries: 0 };
+export function newQueuedStamp(userKey: string, spotId: string, reading: Reading, now: Date, id: string = crypto.randomUUID(), celebrate?: QueuedStamp["celebrate"]): QueuedStamp {
+  return { id, userKey, spotId, lat: reading.lat, lng: reading.lng, accuracyM: reading.accuracyM, scannedAt: now.toISOString(), tries: 0, ...(celebrate ? { celebrate } : {}) };
 }
 
 /** Answers that mean "not now, try again later": the row stays and the rest of the queue waits too. */

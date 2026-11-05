@@ -329,7 +329,7 @@ msgstr "{number}番 まだ押していません"
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
 
-#: src/components/StampOutbox.tsx:135
+#: src/components/StampOutbox.tsx:168
 msgid "{pending}件のスタンプが、送信待ちです。"
 msgstr "{pending}件のスタンプが、送信待ちです。"
 
@@ -974,6 +974,10 @@ msgstr "いまは、ここでスタンプを押せません。"
 msgid "いまは、パスキーだけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
 msgstr "いまは、パスキーだけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
 
+#: src/components/admin/LargeStyleUpload.tsx:78
+msgid "いまは、初めから入っている設定を使っています。"
+msgstr "いまは、初めから入っている設定を使っています。"
+
 #: src/components/admin/RallyEditor.tsx:175
 msgid "いまは「コースでつくる」です。"
 msgstr "いまは「コースでつくる」です。"
@@ -990,7 +994,7 @@ msgstr "いま向かっている場所"
 msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 msgstr "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 
-#: src/components/StampOutbox.tsx:138
+#: src/components/StampOutbox.tsx:171
 msgid "いま送る"
 msgstr "いま送る"
 
@@ -1274,7 +1278,7 @@ msgstr "このアカウントには、パスキーがありません。メール
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
 msgstr "このアカウントには、メールがありません。顔・指紋で確認してください。"
 
-#: src/components/StampOutbox.tsx:107
+#: src/components/StampOutbox.tsx:132
 msgid "このアカウントに送る"
 msgstr "このアカウントに送る"
 
@@ -2135,6 +2139,14 @@ msgstr "つくり方を変える…"
 #: src/app/(public)/rallies/[id]/page.tsx:110
 msgid "つづきをはじめる"
 msgstr "つづきをはじめる"
+
+#: src/components/StampHere.tsx:128
+msgid "つながると、自動で送ります。そのときにサーバーが確かめるため、受け付けられないこともあります（場所が閉鎖中になったときなど）。"
+msgstr "つながると、自動で送ります。そのときにサーバーが確かめるため、受け付けられないこともあります（場所が閉鎖中になったときなど）。"
+
+#: src/components/StampOutbox.tsx:169
+msgid "つながると、自動で送ります。つながりにくいときは、30秒ごとにもう一度試します。"
+msgstr "つながると、自動で送ります。つながりにくいときは、30秒ごとにもう一度試します。"
 
 #: src/components/admin/RubyEditor.tsx:49
 msgid "つなぐ"
@@ -4142,6 +4154,7 @@ msgstr "制限中"
 #: src/components/admin/PlaceTable.tsx:140
 #: src/components/admin/PlaceTable.tsx:205
 #: src/components/admin/RallyEditor.tsx:208
+#: src/components/OfflinePack.tsx:87
 msgid "削除"
 msgstr "削除"
 
@@ -5830,7 +5843,7 @@ msgstr "登録する"
 msgid "登録できませんでした。もう一度お試しください。"
 msgstr "登録できませんでした。もう一度お試しください。"
 
-#: src/components/StampOutbox.tsx:100
+#: src/components/StampOutbox.tsx:125
 msgid "登録なしで押したスタンプがあります"
 msgstr "登録なしで押したスタンプがあります"
 
@@ -6682,7 +6695,7 @@ msgstr "送った内容が、読み取れませんでした。もう一度お試
 #: src/components/admin/PhotoUpload.tsx:76
 #: src/components/admin/SubtitleUpload.tsx:61
 #: src/components/blog/CommentSection.tsx:97
-#: src/components/StampOutbox.tsx:138
+#: src/components/StampOutbox.tsx:171
 msgid "送っています…"
 msgstr "送っています…"
 
@@ -6690,13 +6703,17 @@ msgstr "送っています…"
 msgid "送っています… {percent}%"
 msgstr "送っています… {percent}%"
 
-#: src/components/StampOutbox.tsx:110
+#: src/components/StampOutbox.tsx:135
 msgid "送らずに捨てる"
 msgstr "送らずに捨てる"
 
-#: src/components/StampOutbox.tsx:122
+#: src/components/StampOutbox.tsx:147
 msgid "送信待ちだった{count}件のスタンプは、受け付けられませんでした。"
 msgstr "送信待ちだった{count}件のスタンプは、受け付けられませんでした。"
+
+#: src/components/StampOutbox.tsx:163
+msgid "送信待ちだったスタンプが、{accepted}件、受け付けられました！"
+msgstr "送信待ちだったスタンプが、{accepted}件、受け付けられました！"
 
 #: src/components/SiteHeader.tsx:146
 msgid "送信待ちのスタンプが{waiting}件あります。ログアウトすると、次にログインするまで送れません。ログアウトしますか？"
@@ -6942,7 +6959,7 @@ msgstr "長さ"
 #: src/components/ProfileSettings.tsx:231
 #: src/components/SampleNotice.tsx:64
 #: src/components/SiteHeader.tsx:214
-#: src/components/StampOutbox.tsx:129
+#: src/components/StampOutbox.tsx:154
 msgid "閉じる"
 msgstr "閉じる"
 
@@ -6978,15 +6995,6 @@ msgstr "隠す"
 msgid "難しさ"
 msgstr "難しさ"
 
-#. placeholder {0}: phase.place
-#: src/components/RallyNearbyStamp.tsx:122
-msgid "電波がないため、「{0}」のスタンプは、あとで送ります。そのときに受け付けられないこともあります。"
-msgstr "電波がないため、「{0}」のスタンプは、あとで送ります。そのときに受け付けられないこともあります。"
-
-#: src/components/StampHere.tsx:127
-msgid "電波がないため、あとで送ります。"
-msgstr "電波がないため、あとで送ります。"
-
 #: src/app/offline/page.tsx:21
 msgid "電波がないときに押したスタンプは、この端末に残り、つながると自動で送られます。"
 msgstr "電波がないときに押したスタンプは、この端末に残り、つながると自動で送られます。"
@@ -6997,17 +7005,18 @@ msgstr "電波がなくても、この道の地図が開きます。"
 
 #. placeholder {0}: ask.guest
 #. placeholder {1}: ask.mine
-#: src/components/StampOutbox.tsx:103
+#: src/components/StampOutbox.tsx:128
 msgid "電波がなくて送れなかったスタンプが{0}件あります。このアカウントには、すでに{1}個のスタンプがあります。このアカウントに送りますか？"
 msgstr "電波がなくて送れなかったスタンプが{0}件あります。このアカウントには、すでに{1}個のスタンプがあります。このアカウントに送りますか？"
 
-#: src/components/StampOutbox.tsx:136
-msgid "電波のある場所で、自動で送ります。"
-msgstr "電波のある場所で、自動で送ります。"
+#. placeholder {0}: phase.place
+#: src/components/RallyNearbyStamp.tsx:122
+msgid "電波が弱いか、つながらないため、「{0}」のスタンプは、あとで送ります。そのときに受け付けられないこともあります。"
+msgstr "電波が弱いか、つながらないため、「{0}」のスタンプは、あとで送ります。そのときに受け付けられないこともあります。"
 
-#: src/components/StampHere.tsx:128
-msgid "電波のある場所で、自動で送ります。そのときにサーバーが確かめるため、受け付けられないこともあります（場所が閉鎖中になったときなど）。"
-msgstr "電波のある場所で、自動で送ります。そのときにサーバーが確かめるため、受け付けられないこともあります（場所が閉鎖中になったときなど）。"
+#: src/components/StampHere.tsx:127
+msgid "電波が弱いか、つながらないため、あとで送ります。"
+msgstr "電波が弱いか、つながらないため、あとで送ります。"
 
 #: src/components/map/PlacesPanel.tsx:219
 msgid "電話"

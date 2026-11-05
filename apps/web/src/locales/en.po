@@ -329,7 +329,7 @@ msgstr "No. {number}, not stamped yet"
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
 
-#: src/components/StampOutbox.tsx:135
+#: src/components/StampOutbox.tsx:168
 msgid "{pending}件のスタンプが、送信待ちです。"
 msgstr "{pending} stamps are waiting to be sent."
 
@@ -974,6 +974,10 @@ msgstr "Stamps can't be collected here right now."
 msgid "いまは、パスキーだけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
 msgstr "You currently sign in with a passkey only. If you add an email, you can still sign in with an emailed code if you lose your device."
 
+#: src/components/admin/LargeStyleUpload.tsx:78
+msgid "いまは、初めから入っている設定を使っています。"
+msgstr "The settings that came with the app are in use."
+
 #: src/components/admin/RallyEditor.tsx:175
 msgid "いまは「コースでつくる」です。"
 msgstr "It is now \"Made from courses\"."
@@ -990,7 +994,7 @@ msgstr "Heading here now"
 msgid "いま表示しているのは、見本と下書きのデータです。確認前の情報を含みます。"
 msgstr "What you see now is sample and draft data. It includes information that has not been checked."
 
-#: src/components/StampOutbox.tsx:138
+#: src/components/StampOutbox.tsx:171
 msgid "いま送る"
 msgstr "Send now"
 
@@ -1274,7 +1278,7 @@ msgstr "This account has no passkey. Confirm with the number sent to your email.
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
 msgstr "This account has no email. Confirm with your face or fingerprint."
 
-#: src/components/StampOutbox.tsx:107
+#: src/components/StampOutbox.tsx:132
 msgid "このアカウントに送る"
 msgstr "Send to this account"
 
@@ -2135,6 +2139,14 @@ msgstr "Change how it is made…"
 #: src/app/(public)/rallies/[id]/page.tsx:110
 msgid "つづきをはじめる"
 msgstr "Continue"
+
+#: src/components/StampHere.tsx:128
+msgid "つながると、自動で送ります。そのときにサーバーが確かめるため、受け付けられないこともあります（場所が閉鎖中になったときなど）。"
+msgstr "It is sent automatically once connected. The server checks it then, so it may not be accepted (for example if the place has closed)."
+
+#: src/components/StampOutbox.tsx:169
+msgid "つながると、自動で送ります。つながりにくいときは、30秒ごとにもう一度試します。"
+msgstr "It is sent automatically once connected. When the signal is weak, it tries again every 30 seconds."
 
 #: src/components/admin/RubyEditor.tsx:49
 msgid "つなぐ"
@@ -4142,6 +4154,7 @@ msgstr "Restricted"
 #: src/components/admin/PlaceTable.tsx:140
 #: src/components/admin/PlaceTable.tsx:205
 #: src/components/admin/RallyEditor.tsx:208
+#: src/components/OfflinePack.tsx:87
 msgid "削除"
 msgstr "Delete"
 
@@ -5830,7 +5843,7 @@ msgstr "Register"
 msgid "登録できませんでした。もう一度お試しください。"
 msgstr "Could not register. Please try again."
 
-#: src/components/StampOutbox.tsx:100
+#: src/components/StampOutbox.tsx:125
 msgid "登録なしで押したスタンプがあります"
 msgstr "You have stamps from before you signed in"
 
@@ -6682,7 +6695,7 @@ msgstr "We could not read what was sent. Please try again."
 #: src/components/admin/PhotoUpload.tsx:76
 #: src/components/admin/SubtitleUpload.tsx:61
 #: src/components/blog/CommentSection.tsx:97
-#: src/components/StampOutbox.tsx:138
+#: src/components/StampOutbox.tsx:171
 msgid "送っています…"
 msgstr "Uploading…"
 
@@ -6690,13 +6703,17 @@ msgstr "Uploading…"
 msgid "送っています… {percent}%"
 msgstr "Sending… {percent}%"
 
-#: src/components/StampOutbox.tsx:110
+#: src/components/StampOutbox.tsx:135
 msgid "送らずに捨てる"
 msgstr "Discard them"
 
-#: src/components/StampOutbox.tsx:122
+#: src/components/StampOutbox.tsx:147
 msgid "送信待ちだった{count}件のスタンプは、受け付けられませんでした。"
 msgstr "{count} of the waiting stamps were not accepted."
+
+#: src/components/StampOutbox.tsx:163
+msgid "送信待ちだったスタンプが、{accepted}件、受け付けられました！"
+msgstr "{accepted} waiting stamp(s) were accepted!"
 
 #: src/components/SiteHeader.tsx:146
 msgid "送信待ちのスタンプが{waiting}件あります。ログアウトすると、次にログインするまで送れません。ログアウトしますか？"
@@ -6942,7 +6959,7 @@ msgstr "Length"
 #: src/components/ProfileSettings.tsx:231
 #: src/components/SampleNotice.tsx:64
 #: src/components/SiteHeader.tsx:214
-#: src/components/StampOutbox.tsx:129
+#: src/components/StampOutbox.tsx:154
 msgid "閉じる"
 msgstr "Close"
 
@@ -6978,15 +6995,6 @@ msgstr "hidden"
 msgid "難しさ"
 msgstr "Difficulty"
 
-#. placeholder {0}: phase.place
-#: src/components/RallyNearbyStamp.tsx:122
-msgid "電波がないため、「{0}」のスタンプは、あとで送ります。そのときに受け付けられないこともあります。"
-msgstr "There is no signal, so the stamp for \"{0}\" will be sent later. It may not be accepted then."
-
-#: src/components/StampHere.tsx:127
-msgid "電波がないため、あとで送ります。"
-msgstr "There is no signal, so it will be sent later."
-
 #: src/app/offline/page.tsx:21
 msgid "電波がないときに押したスタンプは、この端末に残り、つながると自動で送られます。"
 msgstr "Stamps you press with no signal stay on this phone and are sent automatically when you are back online."
@@ -6997,17 +7005,18 @@ msgstr "The map of this trail opens without a signal."
 
 #. placeholder {0}: ask.guest
 #. placeholder {1}: ask.mine
-#: src/components/StampOutbox.tsx:103
+#: src/components/StampOutbox.tsx:128
 msgid "電波がなくて送れなかったスタンプが{0}件あります。このアカウントには、すでに{1}個のスタンプがあります。このアカウントに送りますか？"
 msgstr "{0} stamps could not be sent for lack of signal. This account already has {1} stamps. Send them to this account?"
 
-#: src/components/StampOutbox.tsx:136
-msgid "電波のある場所で、自動で送ります。"
-msgstr "It is sent automatically where there is signal."
+#. placeholder {0}: phase.place
+#: src/components/RallyNearbyStamp.tsx:122
+msgid "電波が弱いか、つながらないため、「{0}」のスタンプは、あとで送ります。そのときに受け付けられないこともあります。"
+msgstr "The signal is weak or missing, so the stamp for \"{0}\" will be sent later. It may not be accepted then."
 
-#: src/components/StampHere.tsx:128
-msgid "電波のある場所で、自動で送ります。そのときにサーバーが確かめるため、受け付けられないこともあります（場所が閉鎖中になったときなど）。"
-msgstr "It is sent automatically where there is signal. The server checks it then, so it may not be accepted (for example if the place has closed)."
+#: src/components/StampHere.tsx:127
+msgid "電波が弱いか、つながらないため、あとで送ります。"
+msgstr "The signal is weak or missing, so it will be sent later."
 
 #: src/components/map/PlacesPanel.tsx:219
 msgid "電話"

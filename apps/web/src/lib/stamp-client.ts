@@ -5,8 +5,11 @@ import { geoFailureFromCode, parseMyStamps, parseStampResponse, readingFrom, typ
 
 export type PositionResult = { ok: true; reading: Reading } | { ok: false; reason: GeoFailure };
 
-/** Wait this long for the phone's position before giving up. */
-const POSITION_TIMEOUT_MS = 20_000;
+/**
+ * Wait this long for the phone's position before giving up. Short on purpose: a person standing at a place should hear "no fix yet,
+ * try again" within seconds, not stare at a button for twenty; the phone keeps warming its GPS, so the second try is usually quick.
+ */
+const POSITION_TIMEOUT_MS = 10_000;
 
 export function readPosition(): Promise<PositionResult> {
   if (typeof navigator === "undefined" || !navigator.geolocation) return Promise.resolve({ ok: false, reason: "unsupported" });
@@ -29,9 +32,19 @@ export async function locationAlreadyAllowed(): Promise<boolean> {
   }
 }
 
-async function postStamp(path: string, spotId: string, reading: Reading, scannedAt?: string): Promise<StampResult> {
+/**
+ * How long to wait for the server. In a crowd or a valley the connection can be "on" and still never answer; without a limit the
+ * button would say "stamping…" for ever and nothing would be kept. After this the stamp is treated like one pressed with no signal:
+ * it waits on the phone and is sent again (a repeat of a stamp the server did take just answers "already").
+ */
+export const STAMP_REQUEST_TIMEOUT_MS = 12_000;
+
+export async function postStamp(path: string, spotId: string, reading: Reading, scannedAt?: string, timeoutMs = STAMP_REQUEST_TIMEOUT_MS): Promise<StampResult> {
+  const abort = new AbortController();
+  const timer = setTimeout(() => abort.abort(), timeoutMs); // AbortSignal.timeout is not in older iPhones
   try {
     const res = await fetch(path, {
+      signal: abort.signal,
       method: "POST",
       credentials: "same-origin",
       headers: { "content-type": "application/json" },
@@ -46,6 +59,8 @@ async function postStamp(path: string, spotId: string, reading: Reading, scanned
     return parseStampResponse(res.status, body);
   } catch {
     return { ok: false, failure: "network" };
+  } finally {
+    clearTimeout(timer);
   }
 }
 
