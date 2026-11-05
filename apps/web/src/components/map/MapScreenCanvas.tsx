@@ -11,7 +11,8 @@ import { defaultLayers, moundStops, offeredLayers, type MapLayer } from "@/lib/m
 import { groupOf } from "@/lib/places";
 import { PlaceGroupPicture } from "@/components/PlaceIcon";
 import { useGroupNames } from "./PlacesPanel";
-import { boundsOf, lineFeature, mapStyle, markerKind, nextStopId, pinScale, PIN_NUMBER_MIN_ZOOM, routeLineLayers, sideLineCollection, sideLineLayers, zoomLimits, type Position } from "@/lib/map";
+import { mapStyleSource } from "@/lib/large-map-style";
+import { boundsOf, lineFeature, markerKind, nextStopId, pinScale, PIN_NUMBER_MIN_ZOOM, routeLineLayers, sideLineCollection, sideLineLayers, zoomLimits, type Position } from "@/lib/map";
 import type { MapSettings } from "@/lib/map-settings";
 import { getRouteLine } from "@/lib/navigation/line-client";
 import { useCursorMarker } from "./useCursorMarker";
@@ -165,7 +166,7 @@ export function MapScreenCanvas({
         ml.setWorkerUrl(new URL("maplibre-gl/dist/maplibre-gl-worker.mjs", import.meta.url).toString());
         map = new ml.Map({
           container: containerRef.current,
-          style: mapStyle(settings),
+          style: mapStyleSource(settings),
           center: START_CENTER,
           zoom: 8.6,
           minZoom: zoomLimits.min,

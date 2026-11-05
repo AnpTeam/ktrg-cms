@@ -35,6 +35,7 @@ export function SiteSettingsForm({ initial }: { initial: MapSettings }) {
     pale: { name: t`淡色`, hint: t`色がおだやかで、道と名前が見やすい地図です。` },
     blank: { name: t`白地図`, hint: t`海岸線と境目だけの、いちばん静かな地図です。` },
     photo: { name: t`写真`, hint: t`空から撮った写真の地図です。` },
+    large: { name: t`大きい文字`, hint: t`地名や記号が大きく、はっきり読める地図です。色の濃さとコントラストの調整は効きません。電波がないときは、名前が出ないことがあります。` },
   };
   const terrainNames: Record<TerrainLayer, string> = { hillshade: t`陰影（やわらかい影）`, relief: t`色別標高図（緑〜茶）` };
 

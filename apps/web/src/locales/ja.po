@@ -315,7 +315,7 @@ msgid "{number}番 まだ押していません"
 msgstr "{number}番 まだ押していません"
 
 #: src/components/map/MapScreen.tsx:299
-#: src/components/map/MapScreenCanvas.tsx:404
+#: src/components/map/MapScreenCanvas.tsx:405
 msgid "{order}. {name}"
 msgstr "{order}. {name}"
 
@@ -467,11 +467,11 @@ msgstr "「ルート」シート {0} 行目"
 msgid "「地図と線」で経由地を置く"
 msgstr "「地図と線」で経由地を置く"
 
-#: src/components/admin/SiteSettingsForm.tsx:90
+#: src/components/admin/SiteSettingsForm.tsx:91
 msgid "「地形」ボタンで重ねるもの"
 msgstr "「地形」ボタンで重ねるもの"
 
-#: src/components/admin/MapStylePreview.tsx:72
+#: src/components/admin/MapStylePreview.tsx:75
 msgid "「地形」ボタンを押した状態で見る"
 msgstr "「地形」ボタンを押した状態で見る"
 
@@ -1141,7 +1141,7 @@ msgstr "ゲストのまま使う"
 
 #: src/components/IntroFlow.tsx:203
 #: src/components/landing/Landing.tsx:156
-#: src/components/map/MapScreenCanvas.tsx:621
+#: src/components/map/MapScreenCanvas.tsx:622
 msgid "コース"
 msgstr "コース"
 
@@ -1220,7 +1220,7 @@ msgstr "ここの写真は、この経由地のページに順に並びます。
 msgid "ここは、本番のサイトの文章です。保存すると、すぐにすべての訪問者の画面が変わります。"
 msgstr "ここは、本番のサイトの文章です。保存すると、すぐにすべての訪問者の画面が変わります。"
 
-#: src/components/admin/SiteSettingsForm.tsx:68
+#: src/components/admin/SiteSettingsForm.tsx:69
 msgid "ここは、本番のサイト全体の設定です。保存すると、すぐにすべての訪問者の画面が変わります。内容をよく確かめてから保存してください。"
 msgstr "ここは、本番のサイト全体の設定です。保存すると、すぐにすべての訪問者の画面が変わります。内容をよく確かめてから保存してください。"
 
@@ -1528,11 +1528,11 @@ msgstr "この端末・ブラウザではパスキーを使えません。メー
 msgid "この端末では、振動は使えません。"
 msgstr "この端末では、振動は使えません。"
 
-#: src/components/admin/MapStylePreview.tsx:67
+#: src/components/admin/MapStylePreview.tsx:70
 msgid "この端末では地図の見本を表示できません。"
 msgstr "この端末では地図の見本を表示できません。"
 
-#: src/components/map/MapScreenCanvas.tsx:577
+#: src/components/map/MapScreenCanvas.tsx:578
 msgid "この端末では地図を表示できません。下の一覧から区間を選べます。"
 msgstr "この端末では地図を表示できません。下の一覧から区間を選べます。"
 
@@ -1603,7 +1603,7 @@ msgstr "この記事を共有する"
 msgid "この設定ではじめる"
 msgstr "この設定ではじめる"
 
-#: src/components/admin/SiteSettingsForm.tsx:42
+#: src/components/admin/SiteSettingsForm.tsx:43
 msgid "この設定は、本番のサイトにすぐ反映されます。すべての訪問者の地図の見た目が変わります。保存しますか？"
 msgstr "この設定は、本番のサイトにすぐ反映されます。すべての訪問者の地図の見た目が変わります。保存しますか？"
 
@@ -1662,7 +1662,7 @@ msgstr "コメントを書くには、ログインが必要です。"
 msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 msgstr "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
 
-#: src/components/admin/SiteSettingsForm.tsx:104
+#: src/components/admin/SiteSettingsForm.tsx:105
 msgid "コントラスト"
 msgstr "コントラスト"
 
@@ -1993,7 +1993,7 @@ msgstr "すべて消す"
 msgid "すべて選ぶ"
 msgstr "すべて選ぶ"
 
-#: src/components/admin/SiteSettingsForm.tsx:104
+#: src/components/admin/SiteSettingsForm.tsx:105
 msgid "そのまま"
 msgstr "そのまま"
 
@@ -2489,7 +2489,7 @@ msgstr "ページを開けませんでした。電波のある場所で、もう
 msgid "ページ番号"
 msgstr "ページ番号"
 
-#: src/components/admin/SiteSettingsForm.tsx:78
+#: src/components/admin/SiteSettingsForm.tsx:79
 msgid "ベースの地図"
 msgstr "ベースの地図"
 
@@ -2535,7 +2535,7 @@ msgstr "ホーム画面に追加する"
 msgid "ホーム画面に追加すると、アプリのようにすぐ開けます。山の中でも、探す手間がかかりません。"
 msgstr "ホーム画面に追加すると、アプリのようにすぐ開けます。山の中でも、探す手間がかかりません。"
 
-#: src/components/map/MapScreenCanvas.tsx:429
+#: src/components/map/MapScreenCanvas.tsx:430
 msgid "ほか {more} 区間"
 msgstr "ほか {more} 区間"
 
@@ -2642,7 +2642,7 @@ msgid "まだスタンプを押していません"
 msgstr "まだスタンプを押していません"
 
 #: src/components/admin/HomeSectionsForm.tsx:58
-#: src/components/admin/SiteSettingsForm.tsx:117
+#: src/components/admin/SiteSettingsForm.tsx:118
 msgid "まだ保存していません。"
 msgstr "まだ保存していません。"
 
@@ -3531,7 +3531,7 @@ msgid "保存していない編集が、このブラウザに残っています�
 msgstr "保存していない編集が、このブラウザに残っています（{offeredAt}）。戻しますか？"
 
 #: src/components/admin/HomeSectionsForm.tsx:56
-#: src/components/admin/SiteSettingsForm.tsx:112
+#: src/components/admin/SiteSettingsForm.tsx:113
 msgid "保存しています…"
 msgstr "保存しています…"
 
@@ -3557,7 +3557,7 @@ msgstr "保存しました。この経由地は下書きに戻っています。
 msgid "保存しました。サイトに反映されています。"
 msgstr "保存しました。サイトに反映されています。"
 
-#: src/components/admin/SiteSettingsForm.tsx:55
+#: src/components/admin/SiteSettingsForm.tsx:56
 msgid "保存しました。サイトの地図に反映されています。"
 msgstr "保存しました。サイトの地図に反映されています。"
 
@@ -3575,7 +3575,7 @@ msgstr "保存しました。次に確認する場所はありません。"
 
 #: src/components/admin/HomeSectionsForm.tsx:56
 #: src/components/admin/RouteEditor.tsx:489
-#: src/components/admin/SiteSettingsForm.tsx:112
+#: src/components/admin/SiteSettingsForm.tsx:113
 #: src/components/ProfileSettings.tsx:221
 #: src/components/settings/PasskeyManager.tsx:135
 #: src/components/settings/PrefsForm.tsx:163
@@ -4036,7 +4036,7 @@ msgstr "分"
 msgid "列の幅を変える"
 msgstr "列の幅を変える"
 
-#: src/components/admin/SiteSettingsForm.tsx:115
+#: src/components/admin/SiteSettingsForm.tsx:116
 msgid "初期値にする"
 msgstr "初期値にする"
 
@@ -4236,7 +4236,7 @@ msgstr "北東"
 msgid "北西"
 msgstr "北西"
 
-#: src/components/map/MapScreenCanvas.tsx:427
+#: src/components/map/MapScreenCanvas.tsx:428
 msgid "区間 {text} がここに集まっています。押すと拡大します"
 msgstr "区間 {text} がここに集まっています。押すと拡大します"
 
@@ -4491,6 +4491,10 @@ msgstr "国土地理院（地理院タイル）"
 msgid "土曜日"
 msgstr "土曜日"
 
+#: src/components/admin/SiteSettingsForm.tsx:38
+msgid "地名や記号が大きく、はっきり読める地図です。色の濃さとコントラストの調整は効きません。電波がないときは、名前が出ないことがあります。"
+msgstr "地名や記号が大きく、はっきり読める地図です。色の濃さとコントラストの調整は効きません。電波がないときは、名前が出ないことがあります。"
+
 #: src/components/map/TrailMap.tsx:451
 #: src/components/navigation/NavigationHud.tsx:357
 msgid "地図"
@@ -4515,7 +4519,7 @@ msgstr "地図とルート"
 msgid "地図と線"
 msgstr "地図と線"
 
-#: src/components/map/MapScreenCanvas.tsx:590
+#: src/components/map/MapScreenCanvas.tsx:591
 msgid "地図に出すもの"
 msgstr "地図に出すもの"
 
@@ -4535,11 +4539,11 @@ msgstr "地図の種類"
 msgid "地図の見せ方"
 msgstr "地図の見せ方"
 
-#: src/components/admin/SiteSettingsForm.tsx:73
+#: src/components/admin/SiteSettingsForm.tsx:74
 msgid "地図の見た目"
 msgstr "地図の見た目"
 
-#: src/components/admin/MapStylePreview.tsx:74
+#: src/components/admin/MapStylePreview.tsx:77
 msgid "地図の見本"
 msgstr "地図の見本"
 
@@ -4593,13 +4597,13 @@ msgstr "地図を更新"
 msgid "地図を表示できませんでした。"
 msgstr "地図を表示できませんでした。"
 
-#: src/components/admin/SiteSettingsForm.tsx:102
+#: src/components/admin/SiteSettingsForm.tsx:103
 msgid "地図を見やすくする"
 msgstr "地図を見やすくする"
 
 #: src/components/admin/map-editor/MapEditor.tsx:1176
 #: src/components/admin/map-editor/MapEditorLoader.tsx:11
-#: src/components/map/MapScreenCanvas.tsx:586
+#: src/components/map/MapScreenCanvas.tsx:587
 #: src/components/map/MapScreenCanvasLoader.tsx:12
 #: src/components/map/TrailMap.tsx:484
 #: src/components/map/TrailMapLoader.tsx:12
@@ -4618,7 +4622,7 @@ msgstr "地域ごとに見る"
 msgid "地域でしぼる"
 msgstr "地域でしぼる"
 
-#: src/components/admin/SiteSettingsForm.tsx:98
+#: src/components/admin/SiteSettingsForm.tsx:99
 msgid "地形の濃さ"
 msgstr "地形の濃さ"
 
@@ -4639,7 +4643,7 @@ msgstr "地形の陰影を見る"
 msgid "基本"
 msgstr "基本"
 
-#: src/components/map/MapScreenCanvas.tsx:481
+#: src/components/map/MapScreenCanvas.tsx:482
 #: src/components/map/TrailMap.tsx:312
 msgid "場所 {text} がここに集まっています。押すと拡大します"
 msgstr "場所 {text} がここに集まっています。押すと拡大します"
@@ -4703,6 +4707,10 @@ msgstr "大"
 #: src/components/settings/PrefsForm.tsx:46
 msgid "大きい"
 msgstr "大きい"
+
+#: src/components/admin/SiteSettingsForm.tsx:38
+msgid "大きい文字"
+msgstr "大きい文字"
 
 #: src/components/admin/PhotoLibrary.tsx:146
 msgid "大きい順"
@@ -4793,7 +4801,7 @@ msgstr "寄り道（道すじから少しはずれた、任意の立ち寄り先
 msgid "寄り道の点を選んでいます。サブコースの線（{legName}）は、右の一覧の「サブコースの線を描く」か、「線を描く」で描けます。本線の点をクリックする必要はありません。"
 msgstr "寄り道の点を選んでいます。サブコースの線（{legName}）は、右の一覧の「サブコースの線を描く」か、「線を描く」で描けます。本線の点をクリックする必要はありません。"
 
-#: src/components/map/MapScreenCanvas.tsx:621
+#: src/components/map/MapScreenCanvas.tsx:622
 msgid "寄り道の線"
 msgstr "寄り道の線"
 
@@ -5000,7 +5008,7 @@ msgstr "押すと、アカウントと、集めたスタンプなどの記録を
 msgid "担当 {0}"
 msgstr "担当 {0}"
 
-#: src/components/map/MapScreenCanvas.tsx:665
+#: src/components/map/MapScreenCanvas.tsx:666
 #: src/components/map/TrailMap.tsx:510
 msgid "拡大"
 msgstr "拡大"
@@ -5657,7 +5665,7 @@ msgstr "状態のひとこと"
 msgid "状態は未確認"
 msgstr "状態は未確認"
 
-#: src/components/map/MapScreenCanvas.tsx:676
+#: src/components/map/MapScreenCanvas.tsx:677
 msgid "現在地を真ん中にする（進む向きが上）"
 msgstr "現在地を真ん中にする（進む向きが上）"
 
@@ -5972,16 +5980,16 @@ msgstr "終了"
 #: src/components/admin/PlacePanel.tsx:41
 #: src/components/IntroFlow.tsx:211
 #: src/components/landing/Landing.tsx:158
-#: src/components/map/MapScreenCanvas.tsx:621
+#: src/components/map/MapScreenCanvas.tsx:622
 #: src/components/PointKindName.tsx:9
 msgid "経塚"
 msgstr "経塚"
 
-#: src/components/map/MapScreenCanvas.tsx:524
+#: src/components/map/MapScreenCanvas.tsx:525
 msgid "経塚 {count} か所がここに集まっています。押すと拡大します"
 msgstr "経塚 {count} か所がここに集まっています。押すと拡大します"
 
-#: src/components/map/MapScreenCanvas.tsx:508
+#: src/components/map/MapScreenCanvas.tsx:509
 msgid "経塚 {name}"
 msgstr "経塚 {name}"
 
@@ -6214,7 +6222,7 @@ msgstr "緯度と経度は、両方入れるか、両方空にしてください
 msgid "緯度と経度は、両方書いてください"
 msgstr "緯度と経度は、両方書いてください"
 
-#: src/components/map/MapScreenCanvas.tsx:665
+#: src/components/map/MapScreenCanvas.tsx:666
 #: src/components/map/TrailMap.tsx:513
 msgid "縮小"
 msgstr "縮小"
@@ -6254,15 +6262,15 @@ msgstr "船"
 msgid "色がおだやかで、道と名前が見やすい地図です。"
 msgstr "色がおだやかで、道と名前が見やすい地図です。"
 
-#: src/components/admin/SiteSettingsForm.tsx:103
+#: src/components/admin/SiteSettingsForm.tsx:104
 msgid "色の濃さ"
 msgstr "色の濃さ"
 
-#: src/components/admin/SiteSettingsForm.tsx:105
+#: src/components/admin/SiteSettingsForm.tsx:106
 msgid "色を薄くすると、道すじや印が目立ちます。濃さ100%、コントラスト「そのまま」が、国土地理院の地図のままです。"
 msgstr "色を薄くすると、道すじや印が目立ちます。濃さ100%、コントラスト「そのまま」が、国土地理院の地図のままです。"
 
-#: src/components/admin/SiteSettingsForm.tsx:39
+#: src/components/admin/SiteSettingsForm.tsx:40
 msgid "色別標高図（緑〜茶）"
 msgstr "色別標高図（緑〜茶）"
 
@@ -6436,7 +6444,7 @@ msgstr "見やすさを設定しませんか"
 msgid "見やすさを選びましょう"
 msgstr "見やすさを選びましょう"
 
-#: src/components/map/MapScreenCanvas.tsx:655
+#: src/components/map/MapScreenCanvas.tsx:656
 msgid "見本の位置（目安です）"
 msgstr "見本の位置（目安です）"
 
@@ -6469,7 +6477,7 @@ msgstr "言語は{MAX_LANGUAGES}つまで（日本語を含む）。英語以外
 msgid "記事は、まだありません。"
 msgstr "記事は、まだありません。"
 
-#: src/components/admin/SiteSettingsForm.tsx:75
+#: src/components/admin/SiteSettingsForm.tsx:76
 msgid "訪問者が見る地図（マップ画面、ルートのページ）の見た目です。地図を作る管理画面の地図は、見やすさのため、いつも「標準」です。"
 msgstr "訪問者が見る地図（マップ画面、ルートのページ）の見た目です。地図を作る管理画面の地図は、見やすさのため、いつも「標準」です。"
 
@@ -6891,7 +6899,7 @@ msgstr "閉鎖中"
 msgid "開放中"
 msgstr "開放中"
 
-#: src/components/admin/SiteSettingsForm.tsx:39
+#: src/components/admin/SiteSettingsForm.tsx:40
 msgid "陰影（やわらかい影）"
 msgstr "陰影（やわらかい影）"
 

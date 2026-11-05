@@ -13,6 +13,9 @@ export const gsiAttribution = `<a href="${gsiTileListUrl}" target="_blank" rel="
 /** Real tile ranges (checked on the GSI tile list): base map 5 to 18, relief 5 to 15, hillshade 2 to 16. */
 export const zoomLimits = { min: 5, max: 18, reliefMax: 15, hillshadeMax: 16 } as const;
 
+/** GSI's vector tiles (the data behind the 「大きい文字」 map), zoom 4 to 16. */
+export const vectorTileUrl = "https://cyberjapandata.gsi.go.jp/xyz/experimental_bvmap/{z}/{x}/{y}.pbf";
+
 export const gsiTileUrl = (layer: "std" | "pale" | "blank" | "seamlessphoto" | "relief" | "hillshademap") =>
   `https://cyberjapandata.gsi.go.jp/xyz/${layer}/{z}/{x}/{y}.${layer === "seamlessphoto" ? "jpg" : "png"}`;
 
@@ -22,6 +25,8 @@ const baseTiles = {
   pale: { layer: "pale", maxzoom: 18 },
   blank: { layer: "blank", maxzoom: 14 },
   photo: { layer: "seamlessphoto", maxzoom: 18 },
+  // The vector map is drawn from its own style (lib/large-map-style.ts); this is only what the raster code falls back to.
+  large: { layer: "std", maxzoom: 18 },
 } as const;
 
 export interface Position {
