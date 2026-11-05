@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { NavState } from "@/lib/navigation/session";
-import { cueText, emptyCueMemory, nextCue } from "@/lib/navigation/voice";
+import { cueText, emptyCueMemory, nextCue, pickVoice } from "@/lib/navigation/voice";
 
 // Voice and vibration cues for a running navigation. Off by default; the choice is kept on this device only
 // (localStorage is fine for a per-viewer convenience). Uses the browser's own speech and vibration: nothing to download.
@@ -18,11 +18,30 @@ const read = (): boolean => {
   }
 };
 
+// The phone's voices arrive late in some browsers (Chrome fills the list after a "voiceschanged" event), so the choice is
+// made again whenever the list changes, and kept per language.
+const chosen = new Map<string, SpeechSynthesisVoice | null>();
+if (typeof window !== "undefined" && "speechSynthesis" in window) {
+  window.speechSynthesis.addEventListener?.("voiceschanged", () => chosen.clear());
+}
+function voiceFor(locale: string): SpeechSynthesisVoice | null {
+  if (!chosen.has(locale)) {
+    const list = window.speechSynthesis.getVoices();
+    if (list.length === 0) return null; // not loaded yet: the browser's default this time
+    chosen.set(locale, pickVoice(list, locale));
+  }
+  return chosen.get(locale) ?? null;
+}
+
 function say(text: string, locale: string) {
   const synth = window.speechSynthesis;
   synth.cancel(); // never queue behind an old phrase
   const u = new SpeechSynthesisUtterance(text);
   u.lang = locale === "ja" ? "ja-JP" : "en-US";
+  const voice = voiceFor(locale);
+  if (voice) u.voice = voice;
+  // A touch slower than the default: easier to catch outdoors with the phone in a hand or a pocket.
+  u.rate = 0.95;
   synth.speak(u);
 }
 

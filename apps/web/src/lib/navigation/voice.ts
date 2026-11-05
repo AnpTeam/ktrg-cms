@@ -69,3 +69,32 @@ export function cueText(cue: Cue, locale: string, name?: string): string {
       return ja ? `${name ?? "スタンプの場所"}に着きました` : `You have reached ${name ?? "the stamp place"}`;
   }
 }
+
+/** The fields of a SpeechSynthesisVoice used to choose one (a plain object in tests). */
+export interface VoiceInfo {
+  name: string;
+  lang: string;
+  localService: boolean;
+  default?: boolean;
+}
+
+// Words in a voice's name that mark the newer, natural-sounding voices of each system: Apple's downloadable "Enhanced" /
+// "Premium" and Siri voices, Microsoft's "Natural" ones, and Google's. The plain built-in voices (Kyoko compact, Haruka,
+// Ayumi) are the robotic ones.
+const NATURAL = /enhanced|premium|natural|neural|siri|google|拡張|高品質/i;
+// Voices known to read Japanese place names well, preferred when present.
+const GOOD_JA = /o-?ren|kyoko|nanami|keita|otoya|hattori/i;
+const GOOD_EN = /samantha|ava|zoe|aria|jenny|guy|daniel|karen/i;
+
+/**
+ * The most natural voice for the language. A voice on the phone itself wins over one that speaks over the network: in the
+ * mountains a network voice falls silent exactly when guidance matters. Among those, a natural one, then a known good one,
+ * then the system's default. Null when the phone has no voice for the language (the browser then picks).
+ */
+export function pickVoice<V extends VoiceInfo>(voices: readonly V[], locale: string): V | null {
+  const lang = locale === "ja" ? "ja" : "en";
+  const good = lang === "ja" ? GOOD_JA : GOOD_EN;
+  const score = (v: V) => (v.localService ? 8 : 0) + (NATURAL.test(v.name) ? 4 : 0) + (good.test(v.name) ? 2 : 0) + (v.default ? 1 : 0);
+  const mine = voices.filter((v) => v.lang.toLowerCase().replace("_", "-").startsWith(lang));
+  return mine.reduce<V | null>((best, v) => (best === null || score(v) > score(best) ? v : best), null);
+}
