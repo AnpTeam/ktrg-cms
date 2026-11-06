@@ -17,6 +17,8 @@ export const AUDIT_ACTIONS = {
   "session.logout": "user",
   /** A fresh-login re-check passed (needed before role changes). */
   "session.reauth": "user",
+  /** An editor or admin chose to keep this device, so the admin check asks after 30 days. */
+  "session.keep_staff_check": "user",
   /** A passkey-only account added its first email. */
   "email.add": "user",
   /** The optional password was set or changed, removed, or undone from the link in the email. */

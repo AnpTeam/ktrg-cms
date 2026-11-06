@@ -210,7 +210,7 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       const expiresAt = new Date(now.getTime() + 14 * 86_400_000);
       const absoluteExpiresAt = new Date(now.getTime() + 30 * 86_400_000);
 
-      await sessions.create({ userId: user.id, tokenHash, expiresAt, absoluteExpiresAt, now, lastLoginAt: now });
+      await sessions.create({ userId: user.id, tokenHash, expiresAt, absoluteExpiresAt, now, lastLoginAt: now, staffCheckedUntil: null });
       const found = await sessions.find(tokenHash);
       expect(found?.user).toEqual({ ...user, restricted: false });
       expect(found?.session.absoluteExpiresAt.getTime()).toBe(absoluteExpiresAt.getTime());
@@ -222,7 +222,7 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       // A fresh-login re-check moves last_login_at, nothing else.
       expect(found!.session.lastLoginAt.getTime()).toBe(now.getTime());
       const recheck = new Date(now.getTime() + 3_600_000);
-      await sessions.markFresh(found!.session.id, recheck);
+      await sessions.markFresh(found!.session.id, recheck, recheck);
       const after = (await sessions.find(tokenHash))!.session;
       expect(after.lastLoginAt.getTime()).toBe(recheck.getTime());
       expect(after.expiresAt.getTime()).toBe(slid.getTime());
@@ -234,7 +234,7 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
     test("deleting a user removes their sessions", async () => {
       const user = await newUser("session-cascade");
       const tokenHash = randomBytes(32).toString("hex");
-      await sessions.create({ userId: user.id, tokenHash, expiresAt: future(), absoluteExpiresAt: future(), now: new Date(), lastLoginAt: new Date() });
+      await sessions.create({ userId: user.id, tokenHash, expiresAt: future(), absoluteExpiresAt: future(), now: new Date(), lastLoginAt: new Date(), staffCheckedUntil: null });
       await db.delete(users).where(inArray(users.id, [user.id]));
       expect(await sessions.find(tokenHash)).toBeNull();
     });
@@ -1517,7 +1517,7 @@ describe.skipIf(!url)("banners and role changes on real PostgreSQL", () => {
     const target = await otp.findOrCreateUser(`${tag}-target@example.test`);
     const at = new Date();
     for (const userId of [admin.id, target.id]) {
-      await sessionStore.create({ userId, tokenHash: randomUUID(), expiresAt: new Date(at.getTime() + 60_000), absoluteExpiresAt: new Date(at.getTime() + 60_000), now: at, lastLoginAt: at });
+      await sessionStore.create({ userId, tokenHash: randomUUID(), expiresAt: new Date(at.getTime() + 60_000), absoluteExpiresAt: new Date(at.getTime() + 60_000), now: at, lastLoginAt: at, staffCheckedUntil: null });
     }
     const before = (await userStore.get(target.id))!;
     const changed = await userStore.setRole(admin.id, target.id, before.updatedAt, "admin");

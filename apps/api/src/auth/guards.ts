@@ -2,7 +2,7 @@ import { Elysia } from "elysia";
 import type { ApiError } from "../lib/api-errors";
 import { createHttpHelpers } from "./http";
 import { SESSION_SECURITY } from "../openapi";
-import { BLOCKED_WHEN_RESTRICTED, can, needsFreshLogin, type Permission } from "./permissions";
+import { BLOCKED_WHEN_RESTRICTED, can, needsFreshLogin, needsStaffCheck, type Permission } from "./permissions";
 import type { SessionService } from "./session-service";
 
 export const UNAUTHENTICATED = { ok: false, error: "unauthenticated" } as const satisfies ApiError;
@@ -11,6 +11,8 @@ export const FORBIDDEN = { ok: false, error: "forbidden" } as const satisfies Ap
 export const ACCOUNT_RESTRICTED = { ok: false, error: "account_restricted" } as const satisfies ApiError;
 /** The role is allowed, but this permission needs a fresh login: run POST /auth/reauth/request + verify. */
 export const REAUTH_REQUIRED = { ok: false, error: "reauth_required" } as const satisfies ApiError;
+/** The role is allowed, but the admin check is out of date: run POST /auth/reauth/request + verify. */
+export const STAFF_CHECK_REQUIRED = { ok: false, error: "staff_check_required" } as const satisfies ApiError;
 
 /**
  * Route guards. Use the plugin, then name the permission a route needs:
@@ -26,6 +28,7 @@ export const REAUTH_REQUIRED = { ok: false, error: "reauth_required" } as const 
  * - Allowed, but the permission needs a fresh login (FRESH_LOGIN_REQUIRED) and the last
  *   login or re-check is older than FRESH_LOGIN_MS: 403 `reauth_required`. Only someone
  *   who has the permission is ever told this.
+ * - Allowed, but the permission is staff-only and the admin check is out of date (STAFF_CHECK_MS): 403 `staff_check_required`.
  * - Otherwise the handler runs, with `user` set (never null) from the database on every
  *   request, so a role change or a deleted session takes effect immediately. `authSession`
  *   carries the session id and its `freshUntil`.
@@ -53,10 +56,11 @@ export function authGuards(opts: { getSession: () => SessionService; secureCooki
         const { user } = auth;
         if (!can(user.role, permission)) return status(403, FORBIDDEN);
         if (user.restricted && BLOCKED_WHEN_RESTRICTED.includes(permission)) return status(403, ACCOUNT_RESTRICTED);
+        if (needsStaffCheck(permission) && !auth.staffChecked) return status(403, STAFF_CHECK_REQUIRED);
         if (needsFreshLogin(permission) && !auth.fresh) {
           return status(403, REAUTH_REQUIRED);
         }
-        return { user, authSession: { id: auth.sessionId, freshUntil: auth.freshUntil } };
+        return { user, authSession: { id: auth.sessionId, freshUntil: auth.freshUntil, staffChecked: auth.staffChecked } };
       },
     }),
   });

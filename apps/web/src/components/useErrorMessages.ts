@@ -16,6 +16,7 @@ export function useErrorMessages(): Record<ErrorKey, string> {
     rate_limited: t`短い間に何度も操作されました。しばらくしてからお試しください。`,
     internal_error: t`こちらの問題で、うまくいきませんでした。しばらくしてからもう一度お試しください。`,
     // Login and permissions
+    staff_check_required: t`時間がたったので、本人の確認が必要です。ページを読み込みなおしてください。`,
     invalid_login: t`メールアドレスかパスワードが違います。パスワードを決めていないときは、メールでログインしてください。`,
     password_too_short: t`パスワードは、8文字以上にしてください。`,
     password_too_common: t`このパスワードは、ほかの人に当てられやすいものです。別のパスワードにしてください。`,

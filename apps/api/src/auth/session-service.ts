@@ -1,5 +1,7 @@
 import {
   FRESH_LOGIN_MS,
+  STAFF_CHECK_KEPT_MS,
+  STAFF_CHECK_MS,
   SESSION_POLICY,
   SESSION_TOUCH_INTERVAL_MS,
   generateSessionToken,
@@ -13,6 +15,8 @@ export interface SessionRecord {
   absoluteExpiresAt: Date;
   /** The last full login or fresh-login re-check. */
   lastLoginAt: Date;
+  /** Until when the admin screens are open to this session; null: never checked (see STAFF_CHECK_MS). */
+  staffCheckedUntil: Date | null;
 }
 
 /** Storage the session service needs; the Drizzle version is in session-store.ts. */
@@ -24,12 +28,15 @@ export interface SessionStore {
     absoluteExpiresAt: Date;
     now: Date;
     lastLoginAt: Date;
+    staffCheckedUntil: Date | null;
   }): Promise<void>;
   find(tokenHash: string): Promise<{ session: SessionRecord; user: AuthUser } | null>;
   touch(id: string, lastSeenAt: Date, expiresAt: Date): Promise<void>;
   remove(tokenHash: string): Promise<void>;
-  /** Record a fresh-login re-check: sets lastLoginAt. */
-  markFresh(id: string, at: Date): Promise<void>;
+  /** Record a fresh-login re-check: sets lastLoginAt, and moves staffCheckedUntil to this time unless it is already later. */
+  markFresh(id: string, at: Date, staffCheckedUntil: Date): Promise<void>;
+  /** The device is kept: sets staffCheckedUntil. */
+  keepStaffCheck(id: string, until: Date): Promise<void>;
   /** End every session of this account except one. */
   removeOthers(userId: string, keepSessionId: string): Promise<void>;
   removeAll(userId: string): Promise<void>;
@@ -42,6 +49,8 @@ export interface Authenticated {
   freshUntil: Date;
   /** Is it still before freshUntil? */
   fresh: boolean;
+  /** May this session use the admin screens right now (see STAFF_CHECK_MS)? */
+  staffChecked: boolean;
   expiresAt: Date;
   /** True when the expiry slid forward, so the cookie should be re-issued. */
   refreshed: boolean;
@@ -66,7 +75,7 @@ export function createSessionService({
       const expiresAt = new Date(Math.min(at.getTime() + policy.idleMs, absoluteExpiresAt.getTime()));
       const token = generateSessionToken();
       const lastLoginAt = fresh ? at : new Date(at.getTime() - FRESH_LOGIN_MS);
-      await store.create({ userId: user.id, tokenHash: hashSessionToken(token), expiresAt, absoluteExpiresAt, now: at, lastLoginAt });
+      await store.create({ userId: user.id, tokenHash: hashSessionToken(token), expiresAt, absoluteExpiresAt, now: at, lastLoginAt, staffCheckedUntil: fresh ? new Date(at.getTime() + STAFF_CHECK_MS) : null });
       return { token, expiresAt };
     },
 
@@ -79,7 +88,8 @@ export function createSessionService({
       const at = now().getTime();
       const { session, user } = found;
       const freshEnd = freshUntil(session.lastLoginAt);
-      const base = { user, sessionId: session.id, freshUntil: freshEnd, fresh: at < freshEnd.getTime() };
+      const staffChecked = session.staffCheckedUntil !== null && at < session.staffCheckedUntil.getTime();
+      const base = { user, sessionId: session.id, freshUntil: freshEnd, fresh: at < freshEnd.getTime(), staffChecked };
       // A cap further away than the role allows means the session began under a longer policy
       // (a participant since promoted): end it, so the new role's limit applies.
       const capTooFar = session.absoluteExpiresAt.getTime() - at > SESSION_POLICY[user.role].absoluteMs;
@@ -101,8 +111,13 @@ export function createSessionService({
     /** The user just proved it is them again (POST /auth/reauth/verify). Returns the new freshUntil. */
     async markFresh(sessionId: string): Promise<Date> {
       const at = now();
-      await store.markFresh(sessionId, at);
+      await store.markFresh(sessionId, at, new Date(at.getTime() + STAFF_CHECK_MS));
       return freshUntil(at);
+    },
+
+    /** An editor or admin chose to keep this device: no admin check for STAFF_CHECK_KEPT_MS. */
+    async keepStaffCheck(sessionId: string): Promise<void> {
+      await store.keepStaffCheck(sessionId, new Date(now().getTime() + STAFF_CHECK_KEPT_MS));
     },
 
     /** The account's security changed (a passkey added or removed): every other device is signed out, this one stays. */

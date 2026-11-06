@@ -40,6 +40,7 @@ describe("permission table", () => {
         "notice.manage",
         "post.manage",
         "rally.manage",
+        "session.keep_staff_check",
         "route.gpx",
         "route.manage",
         "spot.manage",

@@ -175,6 +175,7 @@ const asResult = async (request: () => Promise<{ error: { status: unknown; value
   }
 };
 
+export const keepStaffCheck = () => asResult(() => api.auth["staff-check"].keep.post());
 export const logInWithPassword = (email: string, password: string) => asResult(() => api.auth.password.login.post({ email, password }));
 export const setPassword = (password: string) => asResult(() => api.auth.password.put({ password }));
 export const removePassword = () => asResult(() => api.auth.password.delete());

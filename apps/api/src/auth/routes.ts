@@ -66,6 +66,17 @@ export function authRoutes(getServices: () => AuthServices, opts: RouteOptions) 
       },
       { detail: { security: SESSION_SECURITY, description: "The logged-in user, or 401 `unauthenticated`." } },
     )
+    // For the admin area: show the check screen, not pages that would all answer 403.
+    .get("/staff-check", ({ authSession }) => ({ ok: true as const, checked: authSession.staffChecked }), { auth: "me.manage" })
+    // Right after passing the check: keep this device. An old session cannot reach this, it needs a fresh login.
+    .post(
+      "/staff-check/keep",
+      async ({ authSession }) => {
+        await getServices().session.keepStaffCheck(authSession.id);
+        return { ok: true as const };
+      },
+      { auth: "session.keep_staff_check", audit: { action: "session.keep_staff_check", target: "self" } },
+    )
     // Fresh login, step 1: email a code to the logged-in account. Needed before a permission
     // marked FRESH_LOGIN_REQUIRED (the guard answers 403 reauth_required until then).
     .post(
