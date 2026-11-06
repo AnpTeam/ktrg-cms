@@ -10,9 +10,10 @@ type Stats = Pick<RouteSummary, "distanceKm" | "elevationGainM" | "expectedTimeM
 /**
  * Distance, climb, time and difficulty. Anything the CMS has not filled in yet is simply
  * left out (skeleton routes start empty). `compact` is for the trail list: label and value
- * on one line; the default stacks a small label over a big value; `icons` puts an icon beside each (the route page).
+ * on one line; the default stacks a small label over a big value; `icons` puts an icon beside each (the route page);
+ * `inline` is label and value side by side, inside the parent's own row (RoutePill), "brief" with distance and time only.
  */
-export function RouteStats({ route, compact = false, icons = false, walkStyle = null, tips = !compact }: { route: Stats; compact?: boolean; icons?: boolean; walkStyle?: WalkStyle | null; /** The "i" beside the two levels. Off where the stats sit inside a link (the trail list). */ tips?: boolean }) {
+export function RouteStats({ route, compact = false, icons = false, inline, walkStyle = null, tips = !compact }: { route: Stats; compact?: boolean; icons?: boolean; inline?: "all" | "brief"; walkStyle?: WalkStyle | null; /** The "i" beside the two levels. Off where the stats sit inside a link (the trail list). */ tips?: boolean }) {
   const { t, i18n } = useLingui();
   const numbers = new Intl.NumberFormat(i18n.locale === "ja" ? "ja-JP" : "en-US", {
     maximumFractionDigits: 1,
@@ -55,6 +56,20 @@ export function RouteStats({ route, compact = false, icons = false, walkStyle = 
     ) : null;
 
   if (items.length === 0) return null;
+
+  if (inline) {
+    const shown = inline === "brief" ? items.filter(({ label }) => label === t`距離` || label === t`時間`) : items;
+    return (
+      <dl className="contents">
+        {shown.map(({ label, value }) => (
+          <div key={label} className="flex gap-1">
+            <dt className="font-bold text-accent">{label}</dt>
+            <dd className="tabular-nums">{value}</dd>
+          </div>
+        ))}
+      </dl>
+    );
+  }
 
   if (icons) {
     // Icon, then a small label over the value, in even columns so the rows line up: two to a row, three where there is room.

@@ -7,9 +7,9 @@ const SIZE = 28;
 const GAP = 6;
 
 /** A medal with no ribbon: a coin with an inner ring and a star. Filled when it is earned, an outline when it is not. */
-function Medal({ earned }: { earned: boolean }) {
+export function Coin({ earned, size = SIZE }: { earned: boolean; size?: number }) {
   return (
-    <svg viewBox="0 0 28 28" width={SIZE} height={SIZE} aria-hidden="true" className="shrink-0">
+    <svg viewBox="0 0 28 28" width={size} height={size} aria-hidden="true" className="shrink-0">
       {earned ? (
         <>
           <circle cx="14" cy="14" r="13" className="fill-shu" />
@@ -49,7 +49,7 @@ export function MedalRow({ total, earned, label }: { total: number; earned: numb
   return (
     <span ref={box} role="img" aria-label={label} className="flex h-7 items-center overflow-hidden" style={{ gap: GAP }}>
       {Array.from({ length: shown }, (_, i) => (
-        <Medal key={i} earned={isEarned(i, earned)} />
+        <Coin key={i} earned={isEarned(i, earned)} />
       ))}
       {more > 0 ? <span className="shrink-0 pl-1 text-lg font-bold tabular-nums leading-none">+{more}</span> : null}
     </span>

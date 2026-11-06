@@ -7,14 +7,17 @@ import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { Notice } from "@/components/Notice";
 import { SectionBanner } from "@/components/SectionBanner";
 import { StampGrid } from "@/components/StampGrid";
-import { TrailRibbon } from "@/components/TrailRibbon";
+import { Localized } from "@/components/Localized";
+import { PlaceLine } from "@/components/PlaceLine";
+import { RoutePill } from "@/components/RoutePill";
 import { BannerCarousel } from "@/components/landing/BannerCarousel";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { LandingMap } from "@/components/landing/LandingMap";
 import { BlogCard } from "@/components/landing/BlogCard";
 import { TrailNotices } from "@/components/landing/TrailNotices";
 import type { BannerSlide } from "@/lib/banners";
-import type { RouteSummary } from "@/lib/content";
+import { pickText, type RouteSummary } from "@/lib/content";
+import { municipalityName } from "@/lib/municipalities";
 import type { TrailNotice } from "@/lib/notices";
 import type { BlogPost } from "@/lib/posts";
 import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
@@ -33,7 +36,7 @@ const OFFICIAL = "https://katsuragisyugen-nihonisan.com";
 
 /**
  * The home page, walk first. From the top: the banner photos with the logo and the line (or, for a signed-in visitor,
- * `top`: the greeting and where to go on), what the stamp rally is, the courses as photo cards, the map of every course,
+ * `top`: the greeting and where to go on), what the stamp rally is, the courses as wide rows with their photos, the map of every course,
  * the trail notices and the blog, a short word on what Katsuragi Shugen is, the intro video, a few links to the council's
  * own pages, the tourism cards (only when an admin turned them on), and what to know before leaving.
  *
@@ -118,7 +121,29 @@ export function Landing({
               <Trans>歩く道</Trans>
             </SectionBanner>
           </div>
-          <TrailRibbon routes={firstRoutes} hrefFor={(route) => `/routes/${route.id}`} locale={locale} />
+          <ul className="flex flex-col gap-3 px-4">
+            {firstRoutes.map((route) => {
+              const pill = (
+                <RoutePill
+                  route={route}
+                  name={<Localized value={pickText(locale, route.nameJa, route.nameEn)} />}
+                  place={route.prefecture || route.municipality ? <PlaceLine prefecture={route.prefecture} place={municipalityName(locale, route.municipality)} locale={locale} /> : null}
+                  photo={route.photoUrl}
+                />
+              );
+              return (
+                <li key={route.id}>
+                  {route.status === "soon" ? (
+                    pill
+                  ) : (
+                    <Link href={`/routes/${route.id}`} className="block rounded-3xl hover:opacity-95 focus-visible:outline-offset-4">
+                      {pill}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
           <div className="px-4">
             <Link href="/routes" className={secondary}>
               <Trans>全{TOTAL_ROUTES}区間を見る</Trans>

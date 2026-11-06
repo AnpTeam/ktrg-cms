@@ -7383,3 +7383,11 @@ msgstr "Collapse the menu"
 #: src/components/TabBar.tsx
 msgid "メニューをひらく"
 msgstr "Expand the menu"
+
+#: src/components/RoutePill.tsx
+msgid "{spotCount}個"
+msgstr "{spotCount} stamps"
+
+#: src/components/RoutePill.tsx
+msgid "{order} / {total}"
+msgstr "{order} / {total}"
