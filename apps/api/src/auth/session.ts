@@ -25,6 +25,13 @@ export const SESSION_TOUCH_INTERVAL_MS = 60 * 60 * 1000;
  */
 export const FRESH_LOGIN_MS = 10 * 60 * 1000;
 
+/**
+ * An editor or admin proves it is them again this often to use the admin screens, or after this longer time on a device
+ * they chose to keep. The session's own limits still apply: 14 days unused and 30 days in all.
+ */
+export const STAFF_CHECK_MS = 12 * 60 * 60 * 1000;
+export const STAFF_CHECK_KEPT_MS = 30 * 24 * 60 * 60 * 1000;
+
 /** 256 random bits, URL-safe. Only its SHA-256 hash is stored. */
 export function generateSessionToken(): string {
   return randomBytes(32).toString("base64url");

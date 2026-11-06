@@ -215,7 +215,7 @@ describe("permissions that need a fresh login", () => {
   test("a stale session can still use everything that needs no fresh login", async () => {
     const { call, login, advance } = setup();
     const cookie = await login(root);
-    advance(DAY);
+    advance(60 * 60 * 1000); // past a fresh login, within the 12-hour admin check
     expect((await call("POST", "/routes", cookie)).status).toBe(200);
     expect((await call("GET", "/me", cookie)).status).toBe(200);
   });

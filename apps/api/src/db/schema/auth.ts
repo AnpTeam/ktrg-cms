@@ -98,6 +98,8 @@ export const sessions = pgTable(
     absoluteExpiresAt: timestamp("absolute_expires_at", { withTimezone: true }).notNull(),
     // Last full login (OTP or passkey); used for the "fresh login" check.
     lastLoginAt: timestamp("last_login_at", { withTimezone: true }).notNull().defaultNow(),
+    // Until when this session may use the admin screens (see STAFF_CHECK_MS). Null: not checked yet.
+    staffCheckedUntil: timestamp("staff_checked_until", { withTimezone: true }),
   },
   (t) => [index("sessions_user_id_idx").on(t.userId)],
 );

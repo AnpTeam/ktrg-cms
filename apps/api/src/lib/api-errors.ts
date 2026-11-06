@@ -23,6 +23,7 @@ export const ERROR_CODES = {
   password_too_short: "400: a password needs at least 8 characters",
   password_too_common: "400: this password is too easy to guess",
   invalid_undo_link: "400: the link in the password email was used already, or is too old",
+  staff_check_required: "403: the admin screens ask you to prove it is you again; run POST /auth/reauth/request and verify",
   invalid_code: "401 at login, 400 at the fresh-login re-check: wrong, expired, used or locked code",
   no_email: "409: this account has no email to send a code to",
   no_passkey: "409: this account has no passkey to confirm with (use the emailed code)",

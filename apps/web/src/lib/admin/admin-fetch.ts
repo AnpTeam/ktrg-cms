@@ -3,10 +3,12 @@
 
 import { headers } from "next/headers";
 
-export async function adminGet<T>(path: string): Promise<{ status: number; body: T | null }> {
+export const adminGet = <T>(path: string) => apiGet<T>(`/admin${path}`);
+
+export async function apiGet<T>(path: string): Promise<{ status: number; body: T | null }> {
   const cookie = (await headers()).get("cookie") ?? "";
   try {
-    const res = await fetch(`${process.env.API_ORIGIN ?? "http://localhost:3001"}/api/v1/admin${path}`, {
+    const res = await fetch(`${process.env.API_ORIGIN ?? "http://localhost:3001"}/api/v1${path}`, {
       headers: { cookie },
       cache: "no-store",
       signal: AbortSignal.timeout(5000),

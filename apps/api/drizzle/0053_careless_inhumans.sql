@@ -1,0 +1,1 @@
+ALTER TABLE "sessions" ADD COLUMN "staff_checked_until" timestamp with time zone;

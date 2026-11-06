@@ -1,11 +1,11 @@
-import { and, eq, ne } from "drizzle-orm";
+import { and, eq, ne, sql } from "drizzle-orm";
 import type { Db } from "../db/client";
 import { sessions, users } from "../db/schema";
 import type { SessionStore } from "./session-service";
 
 export function createDrizzleSessionStore(db: Db): SessionStore {
   return {
-    async create({ userId, tokenHash, expiresAt, absoluteExpiresAt, now, lastLoginAt }) {
+    async create({ userId, tokenHash, expiresAt, absoluteExpiresAt, now, lastLoginAt, staffCheckedUntil }) {
       await db.insert(sessions).values({
         userId,
         tokenHash,
@@ -13,6 +13,7 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
         absoluteExpiresAt,
         lastSeenAt: now,
         lastLoginAt,
+        staffCheckedUntil,
       });
     },
 
@@ -23,6 +24,7 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
           expiresAt: sessions.expiresAt,
           absoluteExpiresAt: sessions.absoluteExpiresAt,
           lastLoginAt: sessions.lastLoginAt,
+          staffCheckedUntil: sessions.staffCheckedUntil,
           userId: users.id,
           email: users.email,
           role: users.role,
@@ -41,6 +43,7 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
           expiresAt: row.expiresAt,
           absoluteExpiresAt: row.absoluteExpiresAt,
           lastLoginAt: row.lastLoginAt,
+          staffCheckedUntil: row.staffCheckedUntil,
         },
         user: { id: row.userId, email: row.email, role: row.role, locale: row.locale, restricted: row.restrictedAt !== null && (row.restrictedUntil === null || row.restrictedUntil > new Date()) },
       };
@@ -54,8 +57,15 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
       await db.delete(sessions).where(eq(sessions.tokenHash, tokenHash));
     },
 
-    async markFresh(id, at) {
-      await db.update(sessions).set({ lastLoginAt: at }).where(eq(sessions.id, id));
+    async markFresh(id, at, staffCheckedUntil) {
+      await db
+        .update(sessions)
+        .set({ lastLoginAt: at, staffCheckedUntil: sql`greatest(${sessions.staffCheckedUntil}, ${staffCheckedUntil})` })
+        .where(eq(sessions.id, id));
+    },
+
+    async keepStaffCheck(id, until) {
+      await db.update(sessions).set({ staffCheckedUntil: until }).where(eq(sessions.id, id));
     },
 
     async removeAll(userId) {

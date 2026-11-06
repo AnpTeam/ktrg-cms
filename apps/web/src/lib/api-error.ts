@@ -26,6 +26,7 @@ const SERVER_CODES: Record<ErrorCode, true> = {
   password_too_short: true,
   password_too_common: true,
   invalid_undo_link: true,
+  staff_check_required: true,
   invalid_code: true,
   no_email: true,
   no_passkey: true,

@@ -25,6 +25,8 @@ export const PERMISSIONS = {
    * case, and a password is what gets phished. Needs a fresh login.
    */
   "me.password": ["participant"],
+  /** Keep this device, so the admin screens ask again after 30 days and not 12 hours. Needs a fresh login. */
+  "session.keep_staff_check": ["editor", "admin"],
   /** Collect a stamp at a spot. */
   "stamp.create": ["participant", "editor", "admin"],
   /** Download a route as a GPX file. */
@@ -76,13 +78,21 @@ export type Permission = keyof typeof PERMISSIONS;
  * Permissions that also need a fresh login: a login or POST /auth/reauth/verify within
  * FRESH_LOGIN_MS. The guard enforces this, so a route only names the permission.
  */
-export const FRESH_LOGIN_REQUIRED: readonly Permission[] = ["user.manage_roles", "user.restrict", "user.delete", "me.sensitive", "me.password"];
+export const FRESH_LOGIN_REQUIRED: readonly Permission[] = ["user.manage_roles", "user.restrict", "user.delete", "me.sensitive", "me.password", "session.keep_staff_check"];
 
 /**
  * What a restricted account may not do: taking part. Signing in, reading, its own profile and asking for its own deletion
  * stay, so a restriction never locks anyone out of their own data.
  */
 export const BLOCKED_WHEN_RESTRICTED: readonly Permission[] = ["stamp.create", "comment.create"];
+
+/**
+ * Anything only staff can do is an admin screen: it needs a recent check (STAFF_CHECK_MS) on top of the login. So every new
+ * staff permission is covered without anyone remembering to add it.
+ */
+export function needsStaffCheck(permission: Permission): boolean {
+  return !can("participant", permission);
+}
 
 export function needsFreshLogin(permission: Permission): boolean {
   return FRESH_LOGIN_REQUIRED.includes(permission);

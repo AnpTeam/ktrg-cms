@@ -372,6 +372,13 @@
       "when": 1793928802638,
       "tag": "0052_chunky_the_hand",
       "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "7",
+      "when": 1793930816186,
+      "tag": "0053_careless_inhumans",
+      "breakpoints": true
     }
   ]
 }

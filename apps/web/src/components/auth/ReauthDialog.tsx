@@ -11,7 +11,7 @@ import { AuthError, inputClass, primaryButton, secondaryButton } from "./authUi"
  * when the last login is more than 10 minutes old. The visitor proves it with the phone's face, fingerprint or lock
  * code (a passkey check), or with a 6-digit number sent to their email. It never appears right after logging in.
  */
-function ReauthSteps({ onDone, onCancel }: { onDone: () => void; onCancel: () => void }) {
+export function ReauthSteps({ onDone, onCancel }: { onDone: () => void; onCancel: () => void }) {
   const { t } = useLingui();
   const [step, setStep] = useState<"choose" | "code">("choose");
   const [code, setCode] = useState("");

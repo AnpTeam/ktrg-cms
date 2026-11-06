@@ -4,8 +4,10 @@ import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { StaffCheck } from "@/components/admin/StaffCheck";
 import { initLingui } from "@/i18n/server";
 import { adminAccess } from "@/lib/admin/access";
+import { apiGet } from "@/lib/admin/admin-fetch";
 import { pick } from "@/lib/admin/lists/config";
 import { adminLists } from "@/lib/admin/lists/server";
 import { getViewer } from "@/lib/viewer";
@@ -41,6 +43,10 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       </main>
     );
   }
+
+  // The API refuses every admin call until this is passed; this only shows the screen for it.
+  const check = await apiGet<{ checked?: boolean }>("/auth/staff-check");
+  if (check.body?.checked === false) return <StaffCheck />;
 
   // The generic lists (described by the API) join the menu by themselves.
   const lists = ((await adminLists()) ?? []).map((l) => ({ key: l.key, title: pick(l.title, i18n.locale) }));
