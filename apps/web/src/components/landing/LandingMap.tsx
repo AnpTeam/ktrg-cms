@@ -54,7 +54,7 @@ export function LandingMap({ routes }: { routes: RouteSummary[] }) {
           <Trans>全体の地図</Trans>
         </SectionBanner>
       </div>
-      <div className="relative h-56 overflow-hidden bg-paper [perspective:900px] lg:h-[28rem]">
+      <div className="relative h-56 overflow-clip bg-paper [perspective:900px] lg:h-[28rem]">
         <div
           role="img"
           aria-label={t`全${count}区間のある場所を示した図`}
