@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { activeNotices, isWebUrl, todayInJapan, type TrailNotice } from "./notices";
+import { isWebUrl } from "./format";
+import { activeNotices, todayInJapan, type TrailNotice } from "./notices";
 
 const make = (id: string, verifiedOn: string, expiresOn: string | null): TrailNotice => ({
   id,

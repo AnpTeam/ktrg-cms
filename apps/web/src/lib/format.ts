@@ -44,3 +44,6 @@ export function formatDay(locale: string, day: string): string {
   const [year, month, date] = [Number(m[1]), Number(m[2]), Number(m[3])];
   return locale === "ja" ? `${year}年${month}月${date}日` : `${monthsEn[month - 1]} ${date}, ${year}`;
 }
+
+/** Only http(s) links are ever rendered from CMS text. */
+export const isWebUrl = (value: string) => /^https?:\/\//i.test(value);

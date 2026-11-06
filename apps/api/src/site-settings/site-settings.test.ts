@@ -94,8 +94,8 @@ describe("who may change a page's text", () => {
 
   test("the list an editor reads leaves out the legal pages; an admin's has them", async () => {
     const { call } = await setup();
-    expect(Object.keys((await call("editor", "GET", "/admin/settings/pages")).body.pages).sort()).toEqual(["faq", "guide"]);
-    expect(Object.keys((await call("admin", "GET", "/admin/settings/pages")).body.pages).sort()).toEqual(["faq", "guide", "privacy", "terms"]);
+    expect(Object.keys((await call("editor", "GET", "/admin/settings/pages")).body.pages).sort()).toEqual(["faq", "guide", "home"]);
+    expect(Object.keys((await call("admin", "GET", "/admin/settings/pages")).body.pages).sort()).toEqual(["faq", "guide", "home", "privacy", "terms"]);
   });
 
   test("a participant or a visitor who is not signed in changes and reads nothing here", async () => {
