@@ -16,6 +16,10 @@ export function useErrorMessages(): Record<ErrorKey, string> {
     rate_limited: t`短い間に何度も操作されました。しばらくしてからお試しください。`,
     internal_error: t`こちらの問題で、うまくいきませんでした。しばらくしてからもう一度お試しください。`,
     // Login and permissions
+    invalid_login: t`メールアドレスかパスワードが違います。パスワードを決めていないときは、メールでログインしてください。`,
+    password_too_short: t`パスワードは、8文字以上にしてください。`,
+    password_too_common: t`このパスワードは、ほかの人に当てられやすいものです。別のパスワードにしてください。`,
+    invalid_undo_link: t`このボタンは、もう使えません。7日を過ぎたか、すでに使われています。メールの番号でログインして、ログインの方法を確認してください。`,
     unauthenticated: t`ログインが切れたようです。ログインしなおしてください。`,
     forbidden: t`この操作は、できません。`,
     reauth_required: t`もう一度、本人かどうかの確認が必要です。`,

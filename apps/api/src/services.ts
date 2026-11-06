@@ -1,6 +1,8 @@
 import type { AuditWriter } from "./audit/audit-log";
 import { createOtpService, type OtpStore } from "./auth/otp-service";
 import { createPasskeyService, type PasskeyConfig, type PasskeyStore } from "./auth/passkey-service";
+import type { PasswordServices } from "./auth/password-routes";
+import { createPasswordService, type PasswordStore } from "./auth/password-service";
 import type { PasskeyServices } from "./auth/passkey-routes";
 import { AUTH_LIMITS, createRateLimiter, type RateLimitStore } from "./auth/rate-limit";
 import type { NavigationServices } from "./navigation/navigation-routes";
@@ -45,7 +47,7 @@ import { createUploadService } from "./uploads/upload-service";
 import type { FileStorage } from "./uploads/upload-storage";
 
 /** Everything the routes use. */
-export type Services = AuthServices & PasskeyServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & PostServices & CommentServices & AuthorServices & BannerServices & PlaceServices & SiteSettingsServices & VisitServices & DashboardServices & AuditListServices & PlaceListServices & UserListServices & GuestServices & FuriganaServices & SitePageServices & NavigationServices;
+export type Services = AuthServices & PasskeyServices & PasswordServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & PostServices & CommentServices & AuthorServices & BannerServices & PlaceServices & SiteSettingsServices & VisitServices & DashboardServices & AuditListServices & PlaceListServices & UserListServices & GuestServices & FuriganaServices & SitePageServices & NavigationServices;
 
 /** What the services are built from: the storage (database or in-memory) and the outside world. */
 export interface ServiceDeps {
@@ -54,6 +56,7 @@ export interface ServiceDeps {
     session: SessionStore;
     rateLimit: RateLimitStore;
     passkeys: PasskeyStore;
+    passwords: PasswordStore;
     me: MeStore;
     content: ContentStore;
     rallyAdmin: RallyAdminStore;
@@ -113,6 +116,8 @@ export function createServices(deps: ServiceDeps): Services {
     audit: deps.audit,
     // Emails the owner when a passkey is added or removed.
     passkeys: createPasskeyService({ store: stores.passkeys, mailer, config: deps.passkey, now }),
+    // The optional password. The alert email links back to the site, which is the passkey origin.
+    passwords: createPasswordService({ store: stores.passwords, mailer, appOrigin: deps.passkey.origin, now }),
     // Profile, language, display name and deletion requests (emails the owner).
     me: createMeService({ store: stores.me, mailer, now, photoHosts: deps.photoHosts }),
     // Routes and places: what the admin edits and visitors read.

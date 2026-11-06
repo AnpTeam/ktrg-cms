@@ -14,6 +14,7 @@ import { createApp } from "../src/app";
 import { auditRow } from "../src/audit/audit-log";
 import { createMemoryOtpStore } from "../src/auth/otp-memory-store";
 import { createMemoryPasskeyStore } from "../src/auth/passkey-memory-store";
+import { createMemoryPasswordStore } from "../src/auth/password-memory-store";
 import { createMemoryRateLimitStore } from "../src/auth/rate-limit-memory-store";
 import { createMemorySessionStore } from "../src/auth/session-memory-store";
 import { createConsoleMailer } from "../src/lib/mailer";
@@ -82,6 +83,7 @@ const services = createServices({
     session: createMemorySessionStore(users).store,
     rateLimit: createMemoryRateLimitStore().store,
     passkeys: createMemoryPasskeyStore(users, profiles).store,
+    passwords: createMemoryPasswordStore(users).store,
     me: createMemoryMeStore(users, profiles).store,
     content: createMemoryContentStore(audit).store,
     rallyAdmin: createMemoryRallyAdminStore(audit).store,

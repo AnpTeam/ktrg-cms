@@ -18,10 +18,11 @@ export default async function WelcomePage({ searchParams }: { searchParams: Prom
   await initLingui();
   const [params, viewer, prefs] = await Promise.all([searchParams, getViewer(searchParams), getPrefs()]);
   const next = safeNextPath(params.next, "/");
+  const askAbout = viewer.ageRange === null && viewer.gender === null && viewer.foundVia === null;
 
   return (
     <div className="page-narrow flex flex-col gap-6 px-4 pt-2">
-      <WelcomeFlow initial={prefs} signedIn={viewer.signedIn} next={next} askAbout={viewer.ageRange === null && viewer.gender === null && viewer.foundVia === null} />
+      <WelcomeFlow initial={prefs} signedIn={viewer.signedIn} next={next} askAbout={askAbout} askPassword={askAbout && viewer.role === "participant" && viewer.email !== null} />
     </div>
   );
 }

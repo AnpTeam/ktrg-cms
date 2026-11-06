@@ -25,6 +25,15 @@ export const AUTH_LIMITS = {
   otpRequestIp: { name: "otp-request-ip", limit: 20, windowMs: 15 * MINUTE },
   otpVerifyEmail: { name: "otp-verify-email", limit: 10, windowMs: 15 * MINUTE },
   otpVerifyIp: { name: "otp-verify-ip", limit: 30, windowMs: 15 * MINUTE },
+  // Password guesses. Each one costs a slow hash, and unlike a mailed number the same password can be tried again and again.
+  passwordLoginEmailIp: { name: "password-login-email-ip", limit: 10, windowMs: 15 * MINUTE },
+  // Per address from anywhere, so guesses from many machines add up. Reaching it stops only the password, never the mailed number.
+  passwordLoginEmail: { name: "password-login-email", limit: 30, windowMs: 60 * MINUTE },
+  passwordLoginIp: { name: "password-login-ip", limit: 30, windowMs: 15 * MINUTE },
+  // Keyed by user id: setting or removing the password. Each change emails the owner.
+  passwordSetUser: { name: "password-set-user", limit: 10, windowMs: 15 * MINUTE },
+  // Keyed by IP: the link in the password email. Its token cannot be guessed; this only stops noise.
+  passwordUndoIp: { name: "password-undo-ip", limit: 20, windowMs: 15 * MINUTE },
   // Passkey sign-up creates an account with no email to throttle on. Generous, because
   // many people on one trailhead mobile network share an IP.
   passkeySignupIp: { name: "passkey-signup-ip", limit: 30, windowMs: 15 * MINUTE },

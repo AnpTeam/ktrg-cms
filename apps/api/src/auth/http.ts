@@ -84,8 +84,8 @@ export function createHttpHelpers(opts: {
     session,
 
     /** Start a session for a user who just logged in (email code or passkey) and set its cookie. */
-    async startSession(set: SetLike, user: AuthUser): Promise<void> {
-      const { token, expiresAt } = await opts.getSession().create(user);
+    async startSession(set: SetLike, user: AuthUser, options?: { fresh?: boolean }): Promise<void> {
+      const { token, expiresAt } = await opts.getSession().create(user, options);
       set.headers["set-cookie"] = cookieFor(token, expiresAt);
       await auditStaff(user, "session.login");
     },

@@ -121,6 +121,31 @@ export const passkeys = pgTable(
 );
 
 /**
+ * The optional password (see auth/password-service.ts). Its own table, not a column of `users`, so that no query or export
+ * of users can ever carry a hash. One row per account that chose to have one.
+ */
+export const userPasswords = pgTable("user_passwords", {
+  userId: uuid("user_id")
+    .primaryKey()
+    .references(() => users.id, { onDelete: "cascade" }),
+  hash: text("hash").notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull(),
+});
+
+/** The "this was not me" links in password emails. Only the SHA-256 hash of the token is stored. */
+export const passwordUndoTokens = pgTable(
+  "password_undo_tokens",
+  {
+    tokenHash: text("token_hash").primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  },
+  (t) => [index("password_undo_tokens_user_idx").on(t.userId)],
+);
+
+/**
  * One-time email codes. Not linked to users: the user is created only after
  * the first successful verify. Only the HMAC of the code is stored.
  */

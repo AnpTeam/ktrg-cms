@@ -5,14 +5,14 @@ import type { SessionStore } from "./session-service";
 
 export function createDrizzleSessionStore(db: Db): SessionStore {
   return {
-    async create({ userId, tokenHash, expiresAt, absoluteExpiresAt, now }) {
+    async create({ userId, tokenHash, expiresAt, absoluteExpiresAt, now, lastLoginAt }) {
       await db.insert(sessions).values({
         userId,
         tokenHash,
         expiresAt,
         absoluteExpiresAt,
         lastSeenAt: now,
-        lastLoginAt: now,
+        lastLoginAt,
       });
     },
 
@@ -56,6 +56,10 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
 
     async markFresh(id, at) {
       await db.update(sessions).set({ lastLoginAt: at }).where(eq(sessions.id, id));
+    },
+
+    async removeAll(userId) {
+      await db.delete(sessions).where(eq(sessions.userId, userId));
     },
 
     async removeOthers(userId, keepSessionId) {

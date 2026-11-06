@@ -15,8 +15,8 @@ export function createMemorySessionStore(users: Map<string, AuthUser>) {
   let nextId = 1;
 
   const store: SessionStore = {
-    async create({ userId, tokenHash, expiresAt, absoluteExpiresAt, now }) {
-      rows.push({ id: `s${nextId++}`, userId, tokenHash, expiresAt, absoluteExpiresAt, lastSeenAt: now, lastLoginAt: now });
+    async create({ userId, tokenHash, expiresAt, absoluteExpiresAt, now, lastLoginAt }) {
+      rows.push({ id: `s${nextId++}`, userId, tokenHash, expiresAt, absoluteExpiresAt, lastSeenAt: now, lastLoginAt });
     },
     async find(tokenHash) {
       const row = rows.find((r) => r.tokenHash === tokenHash);
@@ -37,6 +37,9 @@ export function createMemorySessionStore(users: Map<string, AuthUser>) {
     async markFresh(id, at) {
       const row = rows.find((r) => r.id === id);
       if (row) row.lastLoginAt = at;
+    },
+    async removeAll(userId) {
+      for (let i = rows.length - 1; i >= 0; i--) if (rows[i]!.userId === userId) rows.splice(i, 1);
     },
     async removeOthers(userId, keepSessionId) {
       for (let i = rows.length - 1; i >= 0; i--) if (rows[i]!.userId === userId && rows[i]!.id !== keepSessionId) rows.splice(i, 1);

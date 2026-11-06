@@ -17,6 +17,8 @@ import { createDrizzleStampListStore, stampList } from "./stamps/stamp-list";
 import { createDrizzleStampStore } from "./stamps/stamp-store";
 import { publicContentRoutes } from "./content/public-routes";
 import { passkeyRoutes } from "./auth/passkey-routes";
+import { passwordRoutes } from "./auth/password-routes";
+import { createDrizzlePasswordStore } from "./auth/password-store";
 import { createDrizzlePasskeyStore } from "./auth/passkey-store";
 import { createDrizzleRateLimitStore } from "./auth/rate-limit-store";
 import type { RouteOptions } from "./auth/route-kit";
@@ -74,6 +76,7 @@ function getServices(): Services {
         session: createDrizzleSessionStore(db),
         rateLimit: createDrizzleRateLimitStore(db),
         passkeys: createDrizzlePasskeyStore(db),
+        passwords: createDrizzlePasswordStore(db),
         me: createDrizzleMeStore(db),
         content: createDrizzleContentStore(db),
         rallyAdmin: createDrizzleRallyAdminStore(db),
@@ -145,6 +148,7 @@ export function createApp(
     )
     .use(authRoutes(getServices, opts))
     .use(passkeyRoutes(getServices, opts))
+    .use(passwordRoutes(getServices, opts))
     .use(meRoutes(getServices, opts))
     .use(adminContentRoutes(getServices, opts))
     .use(publicContentRoutes(() => getServices().content))
