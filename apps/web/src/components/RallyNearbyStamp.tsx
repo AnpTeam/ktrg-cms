@@ -88,7 +88,7 @@ export function RallyNearbyStamp({ places, held, locale, rallyName, quiet = fals
         disabled={busy}
         onClick={() => void press()}
         aria-live="polite"
-        className={`tap-target flex min-h-14 w-full items-center justify-center rounded-xl px-6 text-xl font-bold disabled:opacity-60 ${quiet ? "border border-ink bg-paper text-ink hover:bg-surface" : "bg-ink text-paper"}`}
+        className={`tap-target flex min-h-12 w-full items-center justify-center rounded-full px-6 text-xl font-bold disabled:opacity-60 ${quiet ? "border border-ink bg-paper text-ink hover:bg-surface" : "bg-ink text-paper"}`}
       >
         {phase.name === "working" ? (phase.what === "locating" ? t`いまの位置を調べています…` : t`スタンプを押しています…`) : t`近くのスタンプを押す`}
       </button>

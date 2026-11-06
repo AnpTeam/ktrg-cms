@@ -40,7 +40,7 @@ export function ChoiceCard({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`tap-target flex min-h-[5rem] w-full items-center gap-4 rounded-2xl p-4 text-left disabled:opacity-60 ${
+      className={`tap-target flex min-h-[5rem] w-full items-center gap-4 rounded-full p-4 text-left disabled:opacity-60 ${
         primary ? "bg-ink text-paper" : "border border-ink bg-surface text-ink hover:bg-paper"
       }`}
     >
@@ -97,7 +97,7 @@ export function OriginPicker({ value, onChange }: { value: Origin | null; onChan
           return (
             <label
               key={origin}
-              className={`tap-target flex cursor-pointer items-center justify-center rounded-xl border-2 px-2 py-3 text-center text-lg font-bold leading-tight focus-within:outline focus-within:outline-[3px] focus-within:outline-offset-2 focus-within:outline-accent ${
+              className={`tap-target flex cursor-pointer items-center justify-center rounded-full border-2 px-2 py-3 text-center text-lg font-bold leading-tight focus-within:outline focus-within:outline-[3px] focus-within:outline-offset-2 focus-within:outline-accent ${
                 on ? "border-brand bg-brand text-on-brand" : "border-line bg-paper text-ink"
               } ${index === origins.length - 1 && origins.length % 2 === 1 ? "col-span-2" : ""}`}
             >

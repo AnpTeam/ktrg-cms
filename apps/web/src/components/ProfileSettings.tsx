@@ -16,7 +16,7 @@ import { formatUpdated } from "@/lib/format";
 
 type Field = "displayName" | "origin" | "ageRange" | "gender" | "foundVia";
 
-const dangerButton = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-danger px-6 text-xl font-bold text-on-brand disabled:opacity-60";
+const dangerButton = "tap-target flex min-h-12 w-full items-center justify-center rounded-full bg-danger px-6 text-xl font-bold text-on-brand disabled:opacity-60";
 const rowBox = "tap-target flex items-center justify-between gap-3 px-4 py-3 text-left";
 const row = `w-full ${rowBox}`;
 
@@ -189,7 +189,7 @@ export function ProfileSettings({
           <h2 className="px-4 text-xl font-bold text-danger">{t`アカウントの削除`}</h2>
           <div className="mx-4 flex flex-col gap-3 rounded-3xl border-2 border-danger/40 p-4">
             <p className="text-lg leading-7">{t`アカウントと、集めたスタンプなどの記録を、すべて消します。依頼から3日のあいだは、取り消せます。`}</p>
-            <button type="button" onClick={() => setConfirming(true)} className="tap-target w-full rounded-xl border-2 border-danger px-4 text-lg font-bold text-danger hover:bg-paper">
+            <button type="button" onClick={() => setConfirming(true)} className="tap-target w-full rounded-full border-2 border-danger px-4 text-lg font-bold text-danger hover:bg-paper">
               {t`アカウントを削除する`}
             </button>
           </div>

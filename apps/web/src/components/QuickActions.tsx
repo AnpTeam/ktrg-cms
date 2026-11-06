@@ -34,7 +34,7 @@ export function QuickActions({ prefs, signedIn }: { prefs: Prefs; signedIn: bool
   const bigger = () => change({ ...current, size: textSizes[(textSizes.indexOf(current.size) + 1) % textSizes.length]! });
 
   const button = (on: boolean) =>
-    `flex min-h-14 min-w-0 flex-col items-center justify-center rounded-lg border px-1 py-1 text-center text-base font-bold leading-tight ${on ? "border-brand bg-brand text-on-brand" : "border-line bg-paper text-ink"}`;
+    `flex min-h-14 min-w-0 flex-col items-center justify-center rounded-full border px-1 py-1 text-center text-base font-bold leading-tight ${on ? "border-brand bg-brand text-on-brand" : "border-line bg-paper text-ink"}`;
   const sizeName = { small: t`小`, standard: t`ふつう`, large: t`大`, xlarge: t`特大` }[current.size];
 
   return (

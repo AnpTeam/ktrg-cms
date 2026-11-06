@@ -97,7 +97,7 @@ export function PlaceChips({
             type="button"
             aria-pressed={on}
             onClick={() => onToggle(group)}
-            className={`tap-target flex items-center gap-2 rounded-xl border border-ink px-3 py-1 text-left text-lg font-bold leading-tight ${
+            className={`tap-target flex items-center gap-2 rounded-full border border-ink px-3 py-1 text-left text-lg font-bold leading-tight ${
               on ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"
             }`}
           >

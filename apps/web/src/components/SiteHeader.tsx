@@ -19,11 +19,11 @@ import { SampleNoticeButton } from "./SampleNotice";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 
 const barButton =
-  "inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-ink bg-paper px-2.5 text-base font-bold text-ink hover:bg-surface [&>svg]:size-6";
+  "inline-flex min-h-11 items-center gap-1.5 rounded-full border border-ink bg-paper px-2.5 text-base font-bold text-ink hover:bg-surface [&>svg]:size-6";
 // How far the signed-out home page is scrolled (in px) before its menu button appears.
 const SHOW_MENU_AFTER = 240;
 const wideButton =
-  "tap-target flex w-full items-center justify-center rounded-xl px-5 text-lg font-bold";
+  "tap-target flex w-full items-center justify-center rounded-full px-5 text-lg font-bold";
 
 // The four tab pages: nothing is "behind" them, so the bar has no back button there.
 const TOP_LEVEL = /^\/(map|routes|rallies)?\/?$/;
@@ -209,7 +209,7 @@ export function SiteHeader({
             <div className="flex items-center justify-between gap-2 md:justify-end">
               <span className="text-2xl font-bold md:hidden">{t`メニュー`}</span>
               {/* On a phone the Menu tab below closes it; the popover has no tab to press. */}
-              <button type="button" onClick={() => setOpen(false)} className="tap-target hidden items-center gap-2 rounded-lg border border-ink px-3 text-lg font-bold md:inline-flex">
+              <button type="button" onClick={() => setOpen(false)} className="tap-target hidden items-center gap-2 rounded-full border border-ink px-3 text-lg font-bold md:inline-flex">
                 <CloseIcon />
                 {t`閉じる`}
               </button>
@@ -241,25 +241,25 @@ export function SiteHeader({
             )}
 
             {signedIn ? (
-              <Link prefetch={false} href="/profile" className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
+              <Link prefetch={false} href="/profile" className="tap-target flex items-center gap-3 rounded-full border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
                 <GearIcon />
                 <span className="min-w-0 flex-1">{t`アカウント設定`}</span>
                 <ChevronIcon />
               </Link>
             ) : null}
             {staff ? (
-              <Link prefetch={false} href="/admin" className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
+              <Link prefetch={false} href="/admin" className="tap-target flex items-center gap-3 rounded-full border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
                 <GearIcon />
                 <span className="min-w-0 flex-1">{t`管理画面`}</span>
                 <ChevronIcon />
               </Link>
             ) : null}
-            <Link prefetch={false} href="/bookmarks" className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
+            <Link prefetch={false} href="/bookmarks" className="tap-target flex items-center gap-3 rounded-full border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
               <BookmarkIcon />
               <span className="min-w-0 flex-1">{t`ブックマーク`}</span>
               <ChevronIcon />
             </Link>
-            <Link prefetch={false} href="/blog" className="tap-target flex items-center gap-3 rounded-xl border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
+            <Link prefetch={false} href="/blog" className="tap-target flex items-center gap-3 rounded-full border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
               <DocumentIcon />
               <span className="min-w-0 flex-1">{t`ブログ`}</span>
               <ChevronIcon />
@@ -275,7 +275,7 @@ export function SiteHeader({
             <div className="flex flex-col gap-2 border-t-2 border-line pt-4">
               <Link prefetch={false}
                 href="/settings"
-                className="tap-target flex items-center rounded-xl border border-ink px-4 text-lg font-bold text-ink hover:bg-paper"
+                className="tap-target flex items-center rounded-full border border-ink px-4 text-lg font-bold text-ink hover:bg-paper"
               >
                 {t`見やすさの設定`}
               </Link>

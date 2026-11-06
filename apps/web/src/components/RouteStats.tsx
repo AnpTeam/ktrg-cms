@@ -11,9 +11,9 @@ type Stats = Pick<RouteSummary, "distanceKm" | "elevationGainM" | "expectedTimeM
  * Distance, climb, time and difficulty. Anything the CMS has not filled in yet is simply
  * left out (skeleton routes start empty). `compact` is for the trail list: label and value
  * on one line; the default stacks a small label over a big value; `icons` puts an icon beside each (the route page);
- * `inline` is label and value side by side, inside the parent's own row (RoutePill), "brief" with distance and time only.
+ * `inline` is label and value side by side, inside the parent's own row (RoutePill): in a narrow container only distance and time.
  */
-export function RouteStats({ route, compact = false, icons = false, inline, walkStyle = null, tips = !compact }: { route: Stats; compact?: boolean; icons?: boolean; inline?: "all" | "brief"; walkStyle?: WalkStyle | null; /** The "i" beside the two levels. Off where the stats sit inside a link (the trail list). */ tips?: boolean }) {
+export function RouteStats({ route, compact = false, icons = false, inline = false, walkStyle = null, tips = !compact }: { route: Stats; compact?: boolean; icons?: boolean; inline?: boolean; walkStyle?: WalkStyle | null; /** The "i" beside the two levels. Off where the stats sit inside a link (the trail list). */ tips?: boolean }) {
   const { t, i18n } = useLingui();
   const numbers = new Intl.NumberFormat(i18n.locale === "ja" ? "ja-JP" : "en-US", {
     maximumFractionDigits: 1,
@@ -58,11 +58,10 @@ export function RouteStats({ route, compact = false, icons = false, inline, walk
   if (items.length === 0) return null;
 
   if (inline) {
-    const shown = inline === "brief" ? items.filter(({ label }) => label === t`距離` || label === t`時間`) : items;
     return (
       <dl className="contents">
-        {shown.map(({ label, value }) => (
-          <div key={label} className="flex gap-1">
+        {items.map(({ label, value }) => (
+          <div key={label} className={`gap-1 ${label === t`距離` || label === t`時間` ? "flex" : "hidden @2xl:flex"}`}>
             <dt className="font-bold text-accent">{label}</dt>
             <dd className="tabular-nums">{value}</dd>
           </div>

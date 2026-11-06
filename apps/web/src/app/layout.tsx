@@ -64,7 +64,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <LinguiClientProvider initialLocale={i18n.locale} initialMessages={i18n.messages}>
           <a
             href="#main"
-            className="tap-target sr-only rounded-lg bg-ink px-4 text-paper focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-20 focus:inline-flex focus:items-center"
+            className="tap-target sr-only rounded-full bg-ink px-4 text-paper focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-20 focus:inline-flex focus:items-center"
           >
             <Trans>本文へ移動</Trans>
           </a>

@@ -14,7 +14,7 @@ export function Pager({ page, pages, onPage, disabled = false, hideWhenSingle = 
     if (n === null || n === page) box.value = String(page);
     else onPage(n);
   };
-  const button = "tap-target rounded-xl border-2 border-line px-5 text-lg font-bold disabled:opacity-50";
+  const button = "tap-target rounded-full border-2 border-line px-5 text-lg font-bold disabled:opacity-50";
   return (
     <nav aria-label={t`ページ`} className="flex flex-wrap items-center gap-3">
       <button type="button" disabled={disabled || page <= 1} onClick={() => onPage(page - 1)} className={button}>

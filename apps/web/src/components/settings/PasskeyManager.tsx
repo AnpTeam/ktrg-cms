@@ -14,7 +14,7 @@ import { formatDay, japanDay } from "@/lib/format";
 // and removes one after a confirmation. The API refuses to remove the last way to log in and emails the owner.
 
 const dangerButton =
-  "tap-target flex min-h-14 w-full items-center justify-center rounded-xl bg-danger px-6 text-xl font-bold text-on-brand disabled:opacity-60";
+  "tap-target flex min-h-12 w-full items-center justify-center rounded-full bg-danger px-6 text-xl font-bold text-on-brand disabled:opacity-60";
 
 export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail: boolean }) {
   const { t } = useLingui();
@@ -158,7 +158,7 @@ export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail:
                 type="button"
                 onClick={() => setRemoving(item)}
                 disabled={busy}
-                className="tap-target shrink-0 rounded-lg border-2 border-danger px-4 text-lg font-bold text-danger hover:bg-paper disabled:opacity-60"
+                className="tap-target shrink-0 rounded-full border-2 border-danger px-4 text-lg font-bold text-danger hover:bg-paper disabled:opacity-60"
               >
                     {t`消す`}
                   </button>
