@@ -15,7 +15,7 @@ export function NavElevation({ profile }: { profile: LegProfile }) {
   const down = Math.round(profile.descentM);
   const words = up > 0 && down > 0 ? t`次まで 登り${up}m・下り${down}m` : up > 0 ? t`次まで 登り${up}m` : t`次まで 下り${down}m`;
   return (
-    <div className="flex items-center gap-3 rounded-2xl bg-paper px-4 py-2 shadow-lg ring-1 ring-line/30">
+    <div className="flex items-center gap-3">
       <svg aria-hidden="true" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" className="h-10 min-w-0 flex-1">
         <path d={area} className="fill-moss/25 stroke-moss" strokeWidth="2" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
       </svg>

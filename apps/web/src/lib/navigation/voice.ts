@@ -52,6 +52,9 @@ const TURN: Record<"ja" | "en", Record<TurnKind, string>> = {
   en: { "slight-left": "bear left", left: "turn left", "sharp-left": "turn sharp left", "slight-right": "bear right", right: "turn right", "sharp-right": "turn sharp right", "u-turn": "make a U-turn" },
 };
 
+/** Voice guidance starts on for walkers who said they are 70 or over (the privacy policy says so); they can turn it off. */
+export const speaksByDefault = (ageRange: string | null | undefined) => ageRange === "70plus" || ageRange === "70s" || ageRange === "80s" || ageRange === "90plus";
+
 /** What to say for a cue, in the app's language. `name` is the stop's name, said on arrival when known. */
 export function cueText(cue: Cue, locale: string, name?: string): string {
   const l = locale === "ja" ? "ja" : "en";

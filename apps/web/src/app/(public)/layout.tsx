@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { MenuProvider } from "@/components/MenuProvider";
 import { StampOutbox } from "@/components/StampOutbox";
 import { NavigationProvider } from "@/components/navigation/NavigationProvider";
+import { speaksByDefault } from "@/lib/navigation/voice";
 import { NavigationToast } from "@/components/navigation/NavigationHud";
 import { OfflineNotice } from "@/components/OfflineNotice";
 import { SampleNoticeHost } from "@/components/SampleNotice";
@@ -44,7 +45,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
   return (
     <MenuProvider>
       <BookmarkProvider signedIn={viewer.signedIn} ids={viewer.bookmarks}>
-      <NavigationProvider signedIn={viewer.signedIn}>
+      <NavigationProvider signedIn={viewer.signedIn} voiceByDefault={speaksByDefault(viewer.ageRange)}>
       <VisitBeacon />
       <StampFilters />
       <div className="mx-auto flex w-full max-w-5xl justify-center md:gap-6 lg:mx-0 lg:max-w-none lg:justify-start lg:gap-0">

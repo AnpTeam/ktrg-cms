@@ -37,6 +37,10 @@ const SEARCH_WINDOW_M = 300;
 const OFF_LINE_RECHECK_M = 100;
 /** Once following a walking path, the visitor leaves it only beyond this (joining needs OFF_ROUTE_M). */
 const OFF_PATH_LEAVE_M = 60;
+/** A stop counts as passed once the visitor came this close to it ... */
+export const PASSED_NEAR_M = 100;
+/** ... and then walked this much farther from it than they ever were. */
+export const PASSED_AWAY_M = 100;
 
 export interface NavStop extends Stop {
   /** The check-in radius of the place, in metres. */
@@ -104,6 +108,16 @@ export function isFar(model: NavModel, at: LatLng): boolean {
   return nearest > model.farM;
 }
 
+/** The stops left behind a walker at `alongM` who has just passed this one, the passed one included. Going on means not turning back for them. */
+export function stopsBehind(model: NavModel, passedId: string, alongM: number): string[] {
+  const from = model.stopAlongM[model.stops.findIndex((s) => s.id === passedId)];
+  if (from === null || from === undefined) return [passedId];
+  return model.stops.filter((_, i) => {
+    const at = model.stopAlongM[i];
+    return at !== null && at !== undefined && (alongM > from ? at <= from : at >= from);
+  }).map((s) => s.id);
+}
+
 export type NavMode = "line" | "path" | "straight";
 
 export interface NavState {
@@ -138,6 +152,10 @@ export interface NavState {
   far: boolean;
   /** Fixes ignored for poor accuracy, so the screen can say "GPS signal is weak". */
   ignoredFixes: number;
+  /** The closest the visitor has come to this target, in metres. */
+  closestM: number | null;
+  /** Came close to the target along the line and has walked on, away from it, without stamping. */
+  passed: boolean;
 }
 
 export function initialState(): NavState {
@@ -159,6 +177,8 @@ export function initialState(): NavState {
     backBearingDeg: null,
     far: false,
     ignoredFixes: 0,
+    closestM: null,
+    passed: false,
   };
 }
 
@@ -189,6 +209,7 @@ export function applyFix(model: NavModel, prev: NavState, reading: NavReading, s
   const stop = model.stops[i]!;
   const straightM = distanceM(reading, stop);
   const inRadius = straightM <= stop.radiusM;
+  const closestM = prev.targetId === stop.id && prev.closestM !== null ? Math.min(prev.closestM, straightM) : straightM;
 
   // Where is the visitor relative to the course line? Near the last position first, then anywhere.
   let proj = null;
@@ -209,11 +230,13 @@ export function applyFix(model: NavModel, prev: NavState, reading: NavReading, s
     backM: back && proj ? proj.offM : null,
     backBearingDeg: back ? bearingDeg(reading, back) : null,
     far: isFar(model, reading),
+    closestM,
   };
 
   const stopAlong = model.stopAlongM[i] ?? null;
   if (proj && !off.offRoute && proj.offM <= OFF_LINE_RECHECK_M && stopAlong !== null) {
-    return { ...common, mode: "line", alongM: proj.alongM, turn: nextTurn(model.line, model.cum, proj.alongM, stopAlong), ...alongTrack(model, proj.alongM, stopAlong, reading, stop) };
+    const passed = !inRadius && closestM <= PASSED_NEAR_M && straightM >= closestM + PASSED_AWAY_M;
+    return { ...common, passed, mode: "line", alongM: proj.alongM, turn: nextTurn(model.line, model.cum, proj.alongM, stopAlong), ...alongTrack(model, proj.alongM, stopAlong, reading, stop) };
   }
 
   if (path && path.stopId === stop.id && path.line.length >= 2) {

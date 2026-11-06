@@ -38,6 +38,11 @@ interface NavigationApi {
   markStamped(stopId: string): void;
   /** Head for this stop instead of the nearest one; null goes back to the nearest. */
   setTarget(stopId: string | null): void;
+  /** A stop was walked past: leave it behind, or go back to it. */
+  skipPassed(): void;
+  returnToPassed(): void;
+  /** Voice guidance starts on for this visitor unless they have chosen (see speaksByDefault). */
+  voiceByDefault: boolean;
   /** Far from the course, the visitor chose a walking route after all (signed-in visitors only: see `signedIn`). */
   chooseWalk(): void;
   signedIn: boolean;
@@ -55,9 +60,9 @@ interface NavigationApi {
   setSheetUp(up: boolean): void;
 }
 
-const NavigationContext = createContext<NavigationApi>({ session: null, start: () => {}, stop: () => {}, markStamped: () => {}, setTarget: () => {}, chooseWalk: () => {}, signedIn: false, toastPx: 0, setToastPx: () => {}, bannerPx: 0, setBannerPx: () => {}, sheetUp: false, setSheetUp: () => {} });
+const NavigationContext = createContext<NavigationApi>({ session: null, start: () => {}, stop: () => {}, markStamped: () => {}, setTarget: () => {}, skipPassed: () => {}, returnToPassed: () => {}, voiceByDefault: false, chooseWalk: () => {}, signedIn: false, toastPx: 0, setToastPx: () => {}, bannerPx: 0, setBannerPx: () => {}, sheetUp: false, setSheetUp: () => {} });
 
-export function NavigationProvider({ children, signedIn }: { children: ReactNode; signedIn: boolean }) {
+export function NavigationProvider({ children, signedIn, voiceByDefault = false }: { children: ReactNode; signedIn: boolean; voiceByDefault?: boolean }) {
   const controller = useRef<NavigationController | null>(null);
   const [session, setSession] = useState<NavSession | null>(null);
   const [toastPx, setToastPx] = useState(0);
@@ -97,11 +102,13 @@ export function NavigationProvider({ children, signedIn }: { children: ReactNode
   const markStamped = useCallback((stopId: string) => controller.current?.markStamped(stopId), []);
   const chooseWalk = useCallback(() => controller.current?.chooseWalk(), []);
   const setTarget = useCallback((stopId: string | null) => controller.current?.setTarget(stopId), []);
+  const skipPassed = useCallback(() => controller.current?.skipPassed(), []);
+  const returnToPassed = useCallback(() => controller.current?.returnToPassed(), []);
 
   // Leaving the site (or a full reload) ends the session; nothing is kept.
   useEffect(() => () => controller.current?.stop(), []);
 
-  const api = useMemo(() => ({ session, start, stop, markStamped, setTarget, chooseWalk, signedIn, toastPx, setToastPx, bannerPx, setBannerPx, sheetUp, setSheetUp }), [session, start, stop, markStamped, setTarget, chooseWalk, signedIn, toastPx, bannerPx, sheetUp]);
+  const api = useMemo(() => ({ session, start, stop, markStamped, setTarget, skipPassed, returnToPassed, voiceByDefault, chooseWalk, signedIn, toastPx, setToastPx, bannerPx, setBannerPx, sheetUp, setSheetUp }), [session, start, stop, markStamped, setTarget, skipPassed, returnToPassed, voiceByDefault, chooseWalk, signedIn, toastPx, bannerPx, sheetUp]);
   return <NavigationContext.Provider value={api}>{children}</NavigationContext.Provider>;
 }
 

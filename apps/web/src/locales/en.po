@@ -7515,3 +7515,83 @@ msgstr "On the FAQ a heading is a question, and on How to play it is the name of
 #: src/components/admin/BlockEditor.tsx
 msgid "線から下は、いちばん下の注意書きになります。"
 msgstr "Everything below the line becomes the closing note at the bottom of the page."
+
+#: src/components/map/MapScreen.tsx
+msgid "詳しく見る"
+msgstr "See details"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "あとで"
+msgstr "Later"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "着きました"
+msgstr "You have arrived"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "を通りすぎました"
+msgstr " is behind you"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "次の場所へ進みますか？"
+msgstr "Go on to the next place?"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "次へ進む（{left}秒）"
+msgstr "Go on ({left} s)"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "ナビをはじめます"
+msgstr "Starting navigation"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "道なりに {distText}"
+msgstr "Follow the path {distText}"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "道まで {0}"
+msgstr "{0} to the path"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "地図を傾ける"
+msgstr "Tilt the map"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "地図を平らにする（北が上）"
+msgstr "Lay the map flat (north up)"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "すべて見る（{0}か所）"
+msgstr "See all ({0} places)"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "少なく見る"
+msgstr "See fewer"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "歩いて約{0}分"
+msgstr "About {0} min on foot"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "船で約{n}分"
+msgstr "About {n} min by boat"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "バスで約{n}分"
+msgstr "About {n} min by bus"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "電車で約{n}分"
+msgstr "About {n} min by train"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "乗り物で約{n}分"
+msgstr "About {n} min by vehicle"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "時間は、前の場所から休まず歩いたときの目安です。実際とは違うことがあります。"
+msgstr "Times are estimates from the place before, walking without rests. Yours may differ."
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "{arrival}ごろ着"
+msgstr "Arrive around {arrival}"

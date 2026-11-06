@@ -7515,3 +7515,83 @@ msgstr "見出しは、よくあるご質問では質問、遊び方では手順
 #: src/components/admin/BlockEditor.tsx
 msgid "線から下は、いちばん下の注意書きになります。"
 msgstr "線から下は、いちばん下の注意書きになります。"
+
+#: src/components/map/MapScreen.tsx
+msgid "詳しく見る"
+msgstr "詳しく見る"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "あとで"
+msgstr "あとで"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "着きました"
+msgstr "着きました"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "を通りすぎました"
+msgstr "を通りすぎました"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "次の場所へ進みますか？"
+msgstr "次の場所へ進みますか？"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "次へ進む（{left}秒）"
+msgstr "次へ進む（{left}秒）"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "ナビをはじめます"
+msgstr "ナビをはじめます"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "道なりに {distText}"
+msgstr "道なりに {distText}"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "道まで {0}"
+msgstr "道まで {0}"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "地図を傾ける"
+msgstr "地図を傾ける"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "地図を平らにする（北が上）"
+msgstr "地図を平らにする（北が上）"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "すべて見る（{0}か所）"
+msgstr "すべて見る（{0}か所）"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "少なく見る"
+msgstr "少なく見る"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "歩いて約{0}分"
+msgstr "歩いて約{0}分"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "船で約{n}分"
+msgstr "船で約{n}分"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "バスで約{n}分"
+msgstr "バスで約{n}分"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "電車で約{n}分"
+msgstr "電車で約{n}分"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "乗り物で約{n}分"
+msgstr "乗り物で約{n}分"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "時間は、前の場所から休まず歩いたときの目安です。実際とは違うことがあります。"
+msgstr "時間は、前の場所から休まず歩いたときの目安です。実際とは違うことがあります。"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "{arrival}ごろ着"
+msgstr "{arrival}ごろ着"
