@@ -19,6 +19,9 @@ export function useAgeRangeNames(): Record<AgeRange, string> {
     "40s": t`40代`,
     "50s": t`50代`,
     "60s": t`60代`,
+    "70s": t`70代`,
+    "80s": t`80代`,
+    "90plus": t`90歳以上`,
     "70plus": t`70歳以上`,
   };
 }
@@ -98,7 +101,7 @@ export function AgeRangePicker({
         names={names}
         value={value}
         onChange={onChange}
-        columns={2}
+        columns={3}
       />
     </fieldset>
   );

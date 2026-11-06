@@ -46,6 +46,9 @@ export const ageRangeSchema = t.Union([
   t.Literal("40s"),
   t.Literal("50s"),
   t.Literal("60s"),
+  t.Literal("70s"),
+  t.Literal("80s"),
+  t.Literal("90plus"),
   t.Literal("70plus"),
 ]);
 /** "unspecified" is the answer "I'd rather not say". */

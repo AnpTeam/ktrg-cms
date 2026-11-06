@@ -291,7 +291,10 @@ export const userList: ReadDef<"users", UserListRow, UserListServices> & { field
         { value: "40s", label: { ja: "40代", en: "40s" } },
         { value: "50s", label: { ja: "50代", en: "50s" } },
         { value: "60s", label: { ja: "60代", en: "60s" } },
-        { value: "70plus", label: { ja: "70歳以上", en: "70 and over" } },
+        { value: "70s", label: { ja: "70代", en: "70s" } },
+        { value: "80s", label: { ja: "80代", en: "80s" } },
+        { value: "90plus", label: { ja: "90歳以上", en: "90 and over" } },
+        { value: "70plus", label: { ja: "70歳以上（以前の回答）", en: "70 and over (earlier answer)" } },
       ], inList: {} },
       { name: "gender", kind: "select", readOnly: true, label: { ja: "性別", en: "Gender" }, options: [
         { value: "female", label: { ja: "女性", en: "Female" } },

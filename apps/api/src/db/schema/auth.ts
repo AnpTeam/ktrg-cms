@@ -17,8 +17,11 @@ export const userRole = pgEnum("user_role", ["participant", "editor", "admin"]);
 export const userLocale = pgEnum("user_locale", ["ja", "en"]);
 /** Where a visitor says they come from (asked at sign-up; optional, for knowing who the app serves). */
 export const userOrigin = pgEnum("user_origin", ["osaka", "wakayama", "nara", "other_japan", "overseas"]);
-/** An age band the visitor picks after registering (optional, for knowing who the app serves). */
-export const userAgeRange = pgEnum("user_age_range", ["under20", "20s", "30s", "40s", "50s", "60s", "70plus"]);
+/**
+ * An age band the visitor picks after registering (optional, for knowing who the app serves). `70plus` is no longer
+ * offered: it was the top band until 2026-11-06, and those answers cannot be split into 70s, 80s and 90plus.
+ */
+export const userAgeRange = pgEnum("user_age_range", ["under20", "20s", "30s", "40s", "50s", "60s", "70s", "80s", "90plus", "70plus"]);
 /** Optional. "unspecified" is an answer ("I'd rather not say"); null means the question was never answered. */
 export const userGender = pgEnum("user_gender", ["female", "male", "other", "unspecified"]);
 /** How the visitor says they found the rally (asked after registering; optional, for knowing what brings people in). */

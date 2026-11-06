@@ -6,8 +6,9 @@ export const origins = ["osaka", "wakayama", "nara", "other_japan", "overseas"] 
 export type Origin = (typeof origins)[number];
 
 /** The age bands asked after registering; the keys match the API's `user_age_range`. */
-export const ageRanges = ["under20", "20s", "30s", "40s", "50s", "60s", "70plus"] as const;
-export type AgeRange = (typeof ageRanges)[number];
+export const ageRanges = ["under20", "20s", "30s", "40s", "50s", "60s", "70s", "80s", "90plus"] as const;
+/** `70plus` is an earlier answer: still shown to whoever gave it, no longer offered. */
+export type AgeRange = (typeof ageRanges)[number] | "70plus";
 
 /** The gender answers; "unspecified" ("I'd rather not say") is an answer, so the visitor can stay anonymous. Keys match `user_gender`. */
 export const genders = ["female", "male", "other", "unspecified"] as const;
