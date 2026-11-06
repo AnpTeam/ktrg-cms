@@ -37,9 +37,6 @@ export function todayInJapan(now = new Date()): string {
   return new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo" }).format(now);
 }
 
-/** Only http(s) links are ever rendered from CMS text. */
-export const isWebUrl = (value: string) => /^https?:\/\//i.test(value);
-
 // Published notices from the API (written in the admin: /admin/notices). With none, and only while sample content
 // is on, the sample notices stand in for design review (they say 見本 in their text); production never invents one.
 // The API already hides expired ones; filtering again here keeps a cached answer from showing one past its day.

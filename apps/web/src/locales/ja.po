@@ -7383,3 +7383,71 @@ msgstr "メニューをたたむ"
 #: src/components/TabBar.tsx
 msgid "メニューをひらく"
 msgstr "メニューをひらく"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "いちばん上"
+msgstr "いちばん上"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "写真の上の言葉"
+msgstr "写真の上の言葉"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "見出し"
+msgstr "見出し"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "大きな文字の一文"
+msgstr "大きな文字の一文"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "区間と地図"
+msgstr "区間と地図"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "区間の見出し"
+msgstr "区間の見出し"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "地図の見出し"
+msgstr "地図の見出し"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "写真の説明"
+msgstr "写真の説明"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "そのほかの見出し"
+msgstr "そのほかの見出し"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "公式サイト"
+msgstr "公式サイト"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "いちばん下（新規登録の上）"
+msgstr "いちばん下（新規登録の上）"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "1つ目"
+msgstr "1つ目"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "2つ目"
+msgstr "2つ目"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "3つ目"
+msgstr "3つ目"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "下の注意書き"
+msgstr "下の注意書き"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "空の欄には、もとの文章が表示されます。写真はバナー、コースはルート、お知らせはお知らせの画面で変えられます。"
+msgstr "空の欄には、もとの文章が表示されます。写真はバナー、コースはルート、お知らせはお知らせの画面で変えられます。"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "トップページの見出しと説明です。"
+msgstr "トップページの見出しと説明です。"

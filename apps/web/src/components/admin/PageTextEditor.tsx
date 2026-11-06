@@ -6,7 +6,8 @@ import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode } from "@/lib/api-error";
 import type { PageKey, PageLang, PageText } from "@/lib/page-text";
 import { Field, Section, TextArea, TextInput } from "./fields";
-import { PagePreview } from "./PagePreview";
+import { HomeTextFields } from "./HomeTextFields";
+import { PagePreview, type HomeData } from "./PagePreview";
 import { RichTextToolbar } from "./RichTextToolbar";
 import { AlertIcon, TickIcon, XIcon } from "@/components/icons";
 
@@ -15,7 +16,7 @@ type Notice = { kind: "saved" | "error"; text: string } | null;
 
 // 管理 > ページの文章 > one page. Each language has a title and a text. A language that was never written starts from
 // the text the app has now, so nothing is typed from nothing; emptying both boxes brings the built-in page back.
-export function PageTextEditor({ pageKey, saved, builtIn, locale }: { pageKey: PageKey; saved: PageText | null; builtIn: PageText; locale: string }) {
+export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { pageKey: PageKey; saved: PageText | null; home?: HomeData; builtIn: PageText; locale: string }) {
   const { t } = useLingui();
   const messages = useErrorMessages();
   const start = (lang: Lang): PageLang => (saved && (saved[lang].title !== "" || saved[lang].body !== "") ? saved[lang] : builtIn[lang]);
@@ -36,7 +37,7 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale }: { pageKey: P
     return () => window.removeEventListener("beforeunload", warn);
   }, [dirty]);
 
-  const names: Record<PageKey, string> = { faq: t`よくあるご質問`, guide: t`遊び方`, terms: t`利用規約`, privacy: t`プライバシーポリシー` };
+  const names: Record<PageKey, string> = { home: t`ホーム`, faq: t`よくあるご質問`, guide: t`遊び方`, terms: t`利用規約`, privacy: t`プライバシーポリシー` };
   const langs: { lang: Lang; name: string }[] = [
     { lang: "ja", name: t`日本語` },
     { lang: "en", name: "English" },
@@ -71,7 +72,7 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale }: { pageKey: P
         <p className="text-base text-muted" aria-live="polite">
           {dirty ? t`保存していない変更があります` : t`保存済み`}
         </p>
-        <a href={`/${pageKey}`} target="_blank" rel="noreferrer" className="text-base font-bold text-accent underline underline-offset-4">
+        <a href={pageKey === "home" ? "/" : `/${pageKey}`} target="_blank" rel="noreferrer" className="text-base font-bold text-accent underline underline-offset-4">
           {t`公開サイトで見る`}
         </a>
         <button type="button" onClick={save} disabled={!dirty || busy} className="tap-target rounded-full bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
@@ -95,6 +96,9 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale }: { pageKey: P
       <p role="note" className="rounded-2xl border-2 border-caution bg-paper p-4 text-lg font-bold leading-snug">
         {t`ここは、本番のサイトの文章です。保存すると、すぐにすべての訪問者の画面が変わります。`}
       </p>
+      {pageKey === "home" ? (
+        <p className="rounded-2xl bg-surface p-4 text-base leading-7">{t`空の欄には、もとの文章が表示されます。写真はバナー、コースはルート、お知らせはお知らせの画面で変えられます。`}</p>
+      ) : (
       <div className="rounded-2xl bg-surface p-4 text-base leading-7">
         <p className="font-bold">{t`書き方`}</p>
         <ul className="list-disc pl-6">
@@ -106,10 +110,13 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale }: { pageKey: P
           <li>{t`題と本文の両方を空にして保存すると、もとの文章に戻ります。`}</li>
         </ul>
       </div>
+      )}
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
       <div className="flex min-w-0 flex-col gap-5">
-      {langs.map(({ lang, name }) => (
+      {langs.map(({ lang, name }) => pageKey === "home" ? (
+        <HomeTextFields key={lang} lang={lang} title={name} body={text[lang].body} showBuiltIn={lang === (locale === "en" ? "en" : "ja")} onBody={(body) => edit(lang, { body })} />
+      ) : (
         <Section key={lang} title={name}>
           <Field label={t`題`} htmlFor={`${pageKey}-${lang}-title`}>
             <TextInput id={`${pageKey}-${lang}-title`} lang={lang} value={text[lang].title} onChange={(v) => edit(lang, { title: v })} maxLength={200} />
@@ -125,7 +132,7 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale }: { pageKey: P
       ))}
       </div>
       <div className="lg:sticky lg:top-24 lg:self-start">
-        <PagePreview pageKey={pageKey} text={text} locale={locale} />
+        <PagePreview pageKey={pageKey} text={text} locale={locale} home={home} />
       </div>
       </div>
       <p className="text-base text-muted" lang={locale}>

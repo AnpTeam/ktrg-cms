@@ -25,7 +25,7 @@ const worldY = (lat: number, z: number) => {
   return ((1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2) * TILE * 2 ** z;
 };
 
-export function LandingMap({ routes }: { routes: RouteSummary[] }) {
+export function LandingMap({ routes, heading }: { routes: RouteSummary[]; heading: string }) {
   const { t, i18n } = useLingui();
   const boxes = routes.flatMap((r) => (r.area ? [{ order: r.order, ring: rectangleRing(r.area) }] : []));
   if (boxes.length === 0) return null;
@@ -49,17 +49,17 @@ export function LandingMap({ routes }: { routes: RouteSummary[] }) {
 
   return (
     // From 1024 px the page is a centred column: the negative margins take this back out to the edges of the area beside the sidebar.
-    <section className="flex flex-col gap-3 lg:col-span-2 lg:mx-[calc((100%-100vw+var(--rail))/2)]">
-      <div className="px-4 lg:mx-auto lg:w-full lg:max-w-6xl lg:px-10">
+    <section className="flex flex-col gap-3 @[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
+      <div className="px-4 @[42rem]:mx-auto @[42rem]:w-full @[42rem]:max-w-6xl @[42rem]:px-10">
         <SectionBanner>
-          <Trans>全体の地図</Trans>
+          {heading}
         </SectionBanner>
       </div>
-      <div className="relative h-56 overflow-clip bg-paper [perspective:900px] lg:h-[28rem]">
+      <div className="relative h-56 overflow-clip bg-paper [perspective:900px] @[42rem]:h-[28rem]">
         <div
           role="img"
           aria-label={t`全${count}区間のある場所を示した図`}
-          className="absolute left-1/2 top-1/2 w-[150%] [transform-style:preserve-3d] lg:w-[125%]"
+          className="absolute left-1/2 top-1/2 w-[150%] [transform-style:preserve-3d] @[42rem]:w-[125%]"
           style={{ aspectRatio: `${W} / ${H}`, transform: `translate(-50%, -50%) rotateX(${TILT_DEG}deg)` }}
         >
           <svg viewBox={`${left} ${top} ${W} ${H}`} aria-hidden="true" className="absolute inset-0 size-full">
@@ -83,7 +83,7 @@ export function LandingMap({ routes }: { routes: RouteSummary[] }) {
               <span
                 key={b.order}
                 aria-hidden="true"
-                className="absolute grid size-6 origin-bottom place-items-center rounded-full border-2 border-paper bg-accent text-xs font-bold text-paper lg:size-7 lg:text-sm"
+                className="absolute grid size-6 origin-bottom place-items-center rounded-full border-2 border-paper bg-accent text-xs font-bold text-paper @[42rem]:size-7 @[42rem]:text-sm"
                 style={{ left: `${((cx - left) / W) * 100}%`, top: `${((cy - top) / H) * 100}%`, transform: `translate(-50%, -100%) rotateX(-${TILT_DEG}deg)` }}
               >
                 {b.order}
@@ -98,7 +98,7 @@ export function LandingMap({ routes }: { routes: RouteSummary[] }) {
           <Trans>国土地理院（地理院タイル）</Trans>
         </a>
       </div>
-      <div className="px-4 lg:mx-auto lg:w-full lg:max-w-6xl lg:px-10">
+      <div className="px-4 @[42rem]:mx-auto @[42rem]:w-full @[42rem]:max-w-6xl @[42rem]:px-10">
         <Link href="/map" className={buttonStyle("secondary", "lg", "flex")}>
           <Trans>マップをひらく</Trans>
         </Link>

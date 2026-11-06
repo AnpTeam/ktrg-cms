@@ -6,6 +6,12 @@ import { AdminBack } from "@/components/admin/AdminBack";
 import { PageTextEditor } from "@/components/admin/PageTextEditor";
 import { initLingui } from "@/i18n/server";
 import { adminGet } from "@/lib/admin/admin-fetch";
+import { listBanners, slidesToShow } from "@/lib/banners";
+import { listRoutes, sampleContentEnabled } from "@/lib/content";
+import { listNotices } from "@/lib/notices";
+import { listPosts } from "@/lib/posts";
+import { getHomeSections } from "@/lib/site-settings";
+import { homeIntroVideo } from "@/lib/video";
 import { PAGE_KEYS, type PageKey, type PageText } from "@/lib/page-text";
 import { builtInPages } from "@/lib/page-text-server";
 
@@ -23,12 +29,24 @@ export default async function EditPageText({ params }: { params: Promise<{ key: 
   if (!body?.ok || !(key in body.pages)) notFound();
   const saved = body.pages[key as PageKey] ?? null;
   const builtIn = builtInPages()[key as PageKey];
+  // The home page's preview shows the real courses, notices and photos around the words being typed.
+  const home =
+    key === "home"
+      ? await Promise.all([listRoutes(), listNotices(), listBanners(), listPosts(), getHomeSections()]).then(([routes, notices, banners, posts, sections]) => ({
+          routes,
+          notices,
+          slides: slidesToShow(banners, sampleContentEnabled()),
+          posts,
+          showTourism: sections.tourism,
+          introVideo: homeIntroVideo(),
+        }))
+      : undefined;
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-4">
       <AdminBack href="/admin/pages">
         <Trans>ページの文章へ戻る</Trans>
       </AdminBack>
-      <PageTextEditor pageKey={key as PageKey} saved={saved} builtIn={builtIn} locale={i18n.locale} />
+      <PageTextEditor pageKey={key as PageKey} saved={saved} builtIn={builtIn} locale={i18n.locale} home={home} />
     </div>
   );
 }

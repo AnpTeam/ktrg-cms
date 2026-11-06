@@ -78,11 +78,11 @@ export const defaultHomeSections: HomeSections = { tourism: false };
 export const SETTING_KEYS = { mapStyle: "map_style", dashboardGoals: "dashboard_goals", homeSections: "home_sections", largeStyle: "large_style" } as const;
 
 /**
- * The fixed pages whose text an editor can replace (管理 > ページの文章): the FAQ and how to play, and the terms and
- * the privacy policy. Until a page has its own text, the page built into the app is shown. The legal two are for an
+ * The fixed pages whose text an editor can replace (管理 > ページの文章): the home page's words, the FAQ and how to play, and
+ * the terms and the privacy policy. Until a page has its own text, the page built into the app is shown. The legal two are for an
  * admin only (`site.manage`).
  */
-export const PAGE_KEYS = ["faq", "guide", "terms", "privacy"] as const;
+export const PAGE_KEYS = ["home", "faq", "guide", "terms", "privacy"] as const;
 export type PageKey = (typeof PAGE_KEYS)[number];
 export const LEGAL_PAGES: readonly PageKey[] = ["terms", "privacy"];
 const PAGE_LANG = t.Object({ title: t.String({ maxLength: 200 }), body: t.String({ maxLength: 30000 }) });

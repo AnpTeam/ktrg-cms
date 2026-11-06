@@ -23,6 +23,7 @@ export default async function PageTextList() {
   const made = await adminGet<{ ok: true; items: ListItem[] }>("/lists/site-pages");
   const madePages = made.body?.ok ? made.body.items : [];
   const names: Record<PageKey, { name: string; hint: string }> = {
+    home: { name: i18n._(msg`ホーム`), hint: i18n._(msg`トップページの見出しと説明です。`) },
     faq: { name: i18n._(msg`よくあるご質問`), hint: i18n._(msg`質問と答えの一覧です。`) },
     guide: { name: i18n._(msg`遊び方`), hint: i18n._(msg`はじめの説明と、手順（1、2、3…）です。`) },
     terms: { name: i18n._(msg`利用規約`), hint: i18n._(msg`法的な文章です。管理者だけが直せます。`) },

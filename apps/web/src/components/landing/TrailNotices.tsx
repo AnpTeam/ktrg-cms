@@ -1,8 +1,9 @@
 import { Trans } from "@lingui/react/macro";
 import { Localized } from "@/components/Localized";
-import { pickText } from "@/lib/content";
+import { pickText } from "@/lib/pick-text";
 import { daysBetween, formatDay, japanDay } from "@/lib/format";
-import { isWebUrl, type TrailNotice } from "@/lib/notices";
+import { isWebUrl } from "@/lib/format";
+import type { TrailNotice } from "@/lib/notices";
 
 const BellIcon = () => (
   <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

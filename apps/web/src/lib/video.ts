@@ -67,3 +67,9 @@ export function parseVideoFile(raw: string | null | undefined): FileVideo | null
     return null;
   }
 }
+
+// The council's own promotional video, shown until the deployment sets INTRO_VIDEO_URL.
+const OFFICIAL_PR_VIDEO = "https://www.youtube.com/watch?v=fd-i0SqyhP0";
+
+/** The home page's video: set by the deployment (a YouTube link). Server side, for the environment. */
+export const homeIntroVideo = () => parseVideoUrl(process.env.INTRO_VIDEO_URL ?? OFFICIAL_PR_VIDEO);

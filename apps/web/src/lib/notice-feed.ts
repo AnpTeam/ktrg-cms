@@ -1,6 +1,6 @@
 import { pickText } from "./pick-text";
 import type { TrailNotice } from "./notices";
-import { isWebUrl } from "./notices";
+import { isWebUrl } from "./format";
 
 // The trail notices as an Atom feed, so people can follow closures in a feed reader. Pure; the route handler gives it the
 // notices, the site address and the language.

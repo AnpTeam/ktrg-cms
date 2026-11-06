@@ -6,9 +6,10 @@ import { Landing } from "@/components/landing/Landing";
 import { listBanners, slidesToShow } from "@/lib/banners";
 import { getRoute, listRoutes, pickText, sampleContentEnabled, type RouteSummary } from "@/lib/content";
 import { listNotices } from "@/lib/notices";
+import { homeTextFor } from "@/lib/page-text-server";
 import { listPosts } from "@/lib/posts";
 import { getHomeSections } from "@/lib/site-settings";
-import { parseVideoUrl } from "@/lib/video";
+import { homeIntroVideo } from "@/lib/video";
 import { getPrefs } from "@/lib/server-prefs";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
@@ -23,17 +24,15 @@ function courseToContinue(routes: RouteSummary[]): RouteSummary | undefined {
 
 // The home page. Everyone sees the same sections (banners, notices, the courses, about, map, before you go); a signed-in
 // visitor gets a greeting, where to go on, and their progress in place of the sign-up hero.
-// The council's own promotional video, shown until the deployment sets INTRO_VIDEO_URL.
-const OFFICIAL_PR_VIDEO = "https://www.youtube.com/watch?v=fd-i0SqyhP0";
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
   // The visitor and the page's data do not depend on each other: one round of requests.
-  const [i18n, viewer, all, notices, banners, posts, sections] = await Promise.all([initLingui(), getViewer(searchParams), listRoutes(), listNotices(), listBanners(), listPosts(), getHomeSections()]);
+  const i18n = await initLingui();
+  const [viewer, all, notices, banners, posts, sections, text] = await Promise.all([getViewer(searchParams), listRoutes(), listNotices(), listBanners(), listPosts(), getHomeSections(), homeTextFor(i18n.locale)]);
   const routes = all;
-  // The intro video is set by the deployment (a YouTube or Vimeo link); with none, the section is left out.
-  const introVideo = parseVideoUrl(process.env.INTRO_VIDEO_URL ?? OFFICIAL_PR_VIDEO);
+  const introVideo = homeIntroVideo();
   const slides = slidesToShow(banners, sampleContentEnabled());
-  const page = { locale: i18n.locale, routes, notices, introVideo, slides, posts, showTourism: sections.tourism };
+  const page = { locale: i18n.locale, routes, notices, introVideo, slides, posts, showTourism: sections.tourism, text };
 
   const stamped = routes.reduce((n, r) => n + (r.stampedCount ?? 0), 0);
   // Someone with no account and no stamp yet gets the landing page for a first-time visitor; anyone with progress (a guest's

@@ -7383,3 +7383,71 @@ msgstr "Collapse the menu"
 #: src/components/TabBar.tsx
 msgid "メニューをひらく"
 msgstr "Expand the menu"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "いちばん上"
+msgstr "Top of the page"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "写真の上の言葉"
+msgstr "Words over the photo"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "見出し"
+msgstr "Heading"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "大きな文字の一文"
+msgstr "Line in large letters"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "区間と地図"
+msgstr "Courses and map"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "区間の見出し"
+msgstr "Courses heading"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "地図の見出し"
+msgstr "Map heading"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "写真の説明"
+msgstr "Photo caption"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "そのほかの見出し"
+msgstr "Other headings"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "公式サイト"
+msgstr "Official site"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "いちばん下（新規登録の上）"
+msgstr "Bottom (above sign up)"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "1つ目"
+msgstr "First"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "2つ目"
+msgstr "Second"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "3つ目"
+msgstr "Third"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "下の注意書き"
+msgstr "Note below"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "空の欄には、もとの文章が表示されます。写真はバナー、コースはルート、お知らせはお知らせの画面で変えられます。"
+msgstr "An empty box shows the original words. Photos are changed under Banners, courses under Routes, and notices under Notices."
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "トップページの見出しと説明です。"
+msgstr "The headings and text of the home page."
