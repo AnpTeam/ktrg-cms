@@ -5,10 +5,10 @@ import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode } from "@/lib/api-error";
 import type { PageKey, PageLang, PageText } from "@/lib/page-text";
-import { Field, Section, TextArea, TextInput } from "./fields";
+import { BlockEditorLoader } from "./BlockEditorLoader";
+import { Field, Section, TextInput } from "./fields";
 import { HomeTextFields } from "./HomeTextFields";
 import { PagePreview, type HomeData } from "./PagePreview";
-import { RichTextToolbar } from "./RichTextToolbar";
 import { AlertIcon, TickIcon, XIcon } from "@/components/icons";
 
 type Lang = "ja" | "en";
@@ -102,10 +102,8 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
       <div className="rounded-2xl bg-surface p-4 text-base leading-7">
         <p className="font-bold">{t`書き方`}</p>
         <ul className="list-disc pl-6">
-          <li>{t`段落は、空の行で区切ります。`}</li>
-          <li>{t`「## 」で始まる行は、見出しです（よくあるご質問では質問、遊び方では手順の名前）。その下に、本文を書きます。`}</li>
-          {pageKey === "guide" ? <li>{t`「---」だけの行から下は、いちばん下の注意書きになります。`}</li> : null}
-          <li>{t`リンクは [表示する文字](https://…) の形で書けます（下のボタンでも入れられます）。`}</li>
+          <li>{t`見出しは、よくあるご質問では質問、遊び方では手順の名前になります。その下に、本文を書きます。`}</li>
+          {pageKey === "guide" ? <li>{t`線から下は、いちばん下の注意書きになります。`}</li> : null}
           {pageKey === "terms" || pageKey === "privacy" ? <li>{t`書きかえると、「案です」の表示や更新日の表示は出なくなります。日付などは、本文に書いてください。`}</li> : null}
           <li>{t`題と本文の両方を空にして保存すると、もとの文章に戻ります。`}</li>
         </ul>
@@ -122,8 +120,7 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
             <TextInput id={`${pageKey}-${lang}-title`} lang={lang} value={text[lang].title} onChange={(v) => edit(lang, { title: v })} maxLength={200} />
           </Field>
           <Field label={t`本文`} htmlFor={`${pageKey}-${lang}-body`}>
-            <RichTextToolbar targetId={`${pageKey}-${lang}-body`} value={text[lang].body} onChange={(v) => edit(lang, { body: v })} />
-            <TextArea id={`${pageKey}-${lang}-body`} lang={lang} rows={22} maxLength={30000} value={text[lang].body} onChange={(v) => edit(lang, { body: v })} />
+            <BlockEditorLoader id={`${pageKey}-${lang}-body`} lang={lang} label={`${name} ${t`本文`}`} value={text[lang].body} onChange={(v) => edit(lang, { body: v })} closingNote={pageKey === "guide"} />
           </Field>
           <button type="button" onClick={() => edit(lang, { title: "", body: "" })} className="tap-target w-fit rounded-full border-2 border-line px-5 text-base font-bold">
             {t`${name}を空にして、もとの文章に戻す`}

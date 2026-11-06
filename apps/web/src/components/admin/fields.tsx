@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { BlockEditorLoader } from "./BlockEditorLoader";
 import { RichTextToolbar } from "./RichTextToolbar";
 import { ADDED_LOCALES, LOCALE_NAMES, MAX_LANGUAGES, moveLanguage, nextLanguage, startLanguages, withTranslation, type AddedLocale, type Translations } from "@/lib/admin/content-locales";
 import { PlusIcon } from "@/components/icons";
@@ -63,6 +64,7 @@ export function MultilingualField({
   onEn,
   onTranslations,
   multiline = false,
+  blocks = false,
   required = false,
   invalid = false,
 }: {
@@ -77,6 +79,8 @@ export function MultilingualField({
   onEn: (v: string) => void;
   onTranslations: (next: Translations) => void;
   multiline?: boolean;
+  /** A page's text: the block editor instead of a plain box. */
+  blocks?: boolean;
   required?: boolean;
   invalid?: boolean;
 }) {
@@ -93,7 +97,9 @@ export function MultilingualField({
     if (after.translations !== before.translations) onTranslations(after.translations);
   }
   const box = (boxId: string, lang: string, value: string, onChange: (v: string) => void, ariaLabel?: string) =>
-    multiline ? (
+    blocks ? (
+      <BlockEditorLoader id={boxId} lang={lang} label={ariaLabel ?? label} value={value} onChange={onChange} />
+    ) : multiline ? (
       <>
         <RichTextToolbar targetId={boxId} value={value} onChange={onChange} />
         <TextArea id={boxId} lang={lang} value={value} onChange={onChange} ariaLabel={ariaLabel} />

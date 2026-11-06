@@ -1,10 +1,11 @@
 // The only markup editors can type in a description, history, access, source or photo credit:
 //   [shown words](https://example.com)   a link (http or https only)
 //   [^1] in the text, and a line "[^1]: the note" anywhere   a footnote
+//   **words**   bold
 // Everything else is plain text (line breaks are kept by the page). Never HTML: the parts below are rendered as React
 // text and anchors, so nothing typed here can run as script. Tests are in rich-text.test.ts.
 
-export type Inline = string | { href: string; label: string } | { note: number };
+export type Inline = string | { href: string; label: string } | { note: number } | { bold: Inline[] };
 
 export interface Rich {
   body: Inline[];
@@ -12,10 +13,10 @@ export interface Rich {
   notes: { n: number; parts: Inline[] }[];
 }
 
-const TOKEN = /\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)|\[\^([\w-]+)\]/g;
+const TOKEN = /\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)|\[\^([\w-]+)\]|\*\*([^\n]+?)\*\*/g;
 const DEFINITION = /^\[\^([\w-]+)\]:[ \t]*(.*)$/;
 
-function inline(text: string, noteOf?: (id: string) => number | null): Inline[] {
+export function inline(text: string, noteOf?: (id: string) => number | null): Inline[] {
   const out: Inline[] = [];
   let at = 0;
   for (const m of text.matchAll(TOKEN)) {
@@ -23,7 +24,7 @@ function inline(text: string, noteOf?: (id: string) => number | null): Inline[] 
     // A [^x] with no note to point at stays as typed, so a typo is visible rather than lost.
     if (m[3] !== undefined && note === null) continue;
     if (m.index > at) out.push(text.slice(at, m.index));
-    out.push(note !== null ? { note } : { href: m[2]!, label: m[1]! });
+    out.push(m[4] !== undefined ? { bold: inline(m[4], noteOf) } : note !== null ? { note } : { href: m[2]!, label: m[1]! });
     at = m.index + m[0].length;
   }
   if (at < text.length) out.push(text.slice(at));
@@ -59,11 +60,11 @@ export function parseRich(text: string): Rich {
   return { body, notes: mentioned() };
 }
 
+const words = (parts: Inline[]): string => parts.map((p) => (typeof p === "string" ? p : "href" in p ? p.label : "bold" in p ? words(p.bold) : "")).join("");
+
 /** The words alone, for places with no room for links or notes (a clamped card): links keep their words, notes go. */
 export function plainRich(text: string): string {
-  return parseRich(text)
-    .body.map((p) => (typeof p === "string" ? p : "href" in p ? p.label : ""))
-    .join("");
+  return words(parseRich(text).body);
 }
 
 // ---- Blocks: a longer text, for the blog -------------------------------------------------------------------
@@ -71,6 +72,7 @@ export function plainRich(text: string): string {
 //   ## a heading, ### a smaller heading
 //   - a bullet list (one item per line)
 //   ![what the photo shows](https://example.com/a.jpg)   a photo, alone on its line, https only
+//   ---   a line across the page
 // A blank line starts a new paragraph. Everything else is a paragraph, keeping its line breaks. Still never HTML:
 // RichBody renders these as React elements. The inline markers are parsed by the same code as above, so links and
 // footnotes behave identically and the notes are numbered across the whole text.
@@ -79,17 +81,19 @@ export type Block =
   | { kind: "p"; parts: Inline[] }
   | { kind: "h"; level: 2 | 3; parts: Inline[] }
   | { kind: "ul"; items: Inline[][] }
-  | { kind: "photo"; src: string; alt: string };
+  | { kind: "photo"; src: string; alt: string }
+  | { kind: "rule" };
 
 export interface RichBody {
   blocks: Block[];
   notes: Rich["notes"];
 }
 
-const HEADING = /^(##|###)[ \t]+(.*)$/;
-const ITEM = /^-[ \t]+(.*)$/;
+export const HEADING = /^(##|###)[ \t]+(.*)$/;
+export const ITEM = /^-[ \t]+(.*)$/;
+export const RULE = /^---[ \t]*$/;
 // Alone on its line, and https only: a photo address is loaded by the visitor's browser.
-const PHOTO = /^!\[([^\]\n]*)\]\((https:\/\/[^\s)]+)\)[ \t]*$/;
+export const PHOTO = /^!\[([^\]\n]*)\]\((https:\/\/[^\s)]+)\)[ \t]*$/;
 
 export function parseBlocks(text: string): RichBody {
   const { lines, noteOf, mentioned } = withNotes(text);
@@ -121,6 +125,9 @@ export function parseBlocks(text: string): RichBody {
     } else if (photo) {
       endBoth();
       blocks.push({ kind: "photo", src: photo[2]!, alt: photo[1]!.trim() });
+    } else if (RULE.test(line)) {
+      endBoth();
+      blocks.push({ kind: "rule" });
     } else if (item) {
       endParagraph();
       (items ??= []).push(item[1]!.trim());
@@ -138,9 +145,8 @@ export function parseBlocks(text: string): RichBody {
 
 /** The words of a long text, for a card that shows the beginning of a post: headings and list items included, photos not. */
 export function plainBody(text: string): string {
-  const words = (parts: Inline[]) => parts.map((p) => (typeof p === "string" ? p : "href" in p ? p.label : "")).join("");
   return parseBlocks(text)
-    .blocks.flatMap((b) => (b.kind === "photo" ? [] : b.kind === "ul" ? b.items.map(words) : [words(b.parts)]))
+    .blocks.flatMap((b) => (b.kind === "photo" || b.kind === "rule" ? [] : b.kind === "ul" ? b.items.map(words) : [words(b.parts)]))
     .join(" ")
     .replace(/\s+/g, " ")
     .trim();

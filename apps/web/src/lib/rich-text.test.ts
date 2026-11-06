@@ -87,3 +87,18 @@ describe("rich text blocks (the blog body)", () => {
     );
   });
 });
+
+describe("bold and rules", () => {
+  test("bold can hold a link or a note, and plain text drops the marks", () => {
+    expect(parseRich("a **b** c").body).toEqual(["a ", { bold: ["b"] }, " c"]);
+    expect(parseRich("**[x](https://e.com)**").body).toEqual([{ bold: [{ href: "https://e.com", label: "x" }] }]);
+    expect(plainRich("a **b** c")).toBe("a b c");
+    expect(plainBody("**a**\n\n---\n\n- **b**")).toBe("a b");
+  });
+
+  test("** left open stays as typed, and --- is a rule only alone on its line", () => {
+    expect(parseRich("2 ** 3").body).toEqual(["2 ** 3"]);
+    expect(parseBlocks("a\n---\nb").blocks.map((b) => b.kind)).toEqual(["p", "rule", "p"]);
+    expect(parseBlocks("--- a").blocks.map((b) => b.kind)).toEqual(["p"]);
+  });
+});

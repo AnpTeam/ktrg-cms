@@ -1,19 +1,28 @@
 import Link from "next/link";
+import { useId } from "react";
 import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
 import { buttonStyle } from "@/components/button";
 import { ChevronIcon } from "@/components/icons";
 import { Notice } from "@/components/Notice";
-import { RichText } from "@/components/RichText";
+import { RichBody } from "@/components/RichBody";
+import { Inlines } from "@/components/RichText";
 import { SectionBanner } from "@/components/SectionBanner";
 import type { Help } from "@/lib/help-content";
 import type { Terms } from "@/lib/page-content";
 import type { PageDoc } from "@/lib/page-text";
+import { parseRich } from "@/lib/rich-text";
 import type { Policy } from "@/lib/privacy-content";
 import { termsContent } from "@/lib/terms-content";
 
 // The fixed text pages, drawn from their content. The public pages and the admin's live preview both use these, so what an
 // editor sees beside the text box is the page itself, not a copy of it.
+
+/** An editor's text: paragraphs, lists, photos and the rest of what lib/rich-text.ts reads. */
+function Body({ text }: { text: string }) {
+  const id = useId();
+  return <RichBody text={text} anchor={id} />;
+}
 
 /** How to play: numbered steps and nothing else to read. */
 export function GuideView({ help }: { help: Help }) {
@@ -25,7 +34,7 @@ export function GuideView({ help }: { help: Help }) {
         </BackLink>
         <h1 className="text-3xl font-bold">{help.guideTitle}</h1>
         <div className="max-w-prose whitespace-pre-line text-lg leading-8">
-          <RichText text={help.guideIntro} />
+          <Body text={help.guideIntro} />
         </div>
       </div>
       <ol className="mx-4 flex flex-col gap-4">
@@ -37,13 +46,13 @@ export function GuideView({ help }: { help: Help }) {
             <div>
               <h2 className="text-xl font-bold leading-snug text-accent">{step.title}</h2>
               <div className="mt-1 whitespace-pre-line text-lg leading-8">
-                <RichText text={step.text} />
+                <Body text={step.text} />
               </div>
             </div>
           </li>
         ))}
       </ol>
-      {help.guideNote ? <Notice>{help.guideNote}</Notice> : null}
+      {help.guideNote ? <Notice><Inlines parts={parseRich(help.guideNote).body} /></Notice> : null}
       <div className="px-4">
         <Link href="/faq" className={buttonStyle("secondary", "lg", "flex")}>
           {help.faqTitle}
@@ -74,7 +83,7 @@ export function FaqView({ help, open = false }: { help: Help; open?: boolean }) 
                 </span>
               </summary>
               <div className="whitespace-pre-line px-5 pb-5 text-lg leading-8">
-                <RichText text={faq.answer} />
+                <Body text={faq.answer} />
               </div>
             </details>
           </li>
@@ -84,13 +93,7 @@ export function FaqView({ help, open = false }: { help: Help; open?: boolean }) 
   );
 }
 
-function Paragraph({ text }: { text: string }) {
-  return (
-    <div className="max-w-prose whitespace-pre-line text-lg leading-8">
-      <RichText text={text} />
-    </div>
-  );
-}
+const Paragraph = Body;
 
 /** The terms of use, in Japanese only unless an editor wrote an English text. English visitors are told so. */
 export function TermsView({ terms: t, locale }: { terms: Terms; locale: string }) {
