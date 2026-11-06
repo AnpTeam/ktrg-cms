@@ -81,7 +81,7 @@ export function Landing({
     <div className="grid grid-cols-1 gap-10 pt-4 @[42rem]:grid-cols-2 @[42rem]:gap-x-8 @[42rem]:pt-0">
       {/* With a dashboard (someone who has stamps or an account) the banners, the current events, come first. */}
       {top && slides.length > 0 ? (
-        <div className="@[42rem]:col-span-2">
+        <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
           <BannerCarousel slides={slides} />
         </div>
       ) : null}
@@ -89,7 +89,7 @@ export function Landing({
       {top ? (
         <div className="@[42rem]:col-span-2">{top}</div>
       ) : (
-        <div className="px-4 @[42rem]:col-span-2 @[42rem]:px-0">
+        <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
           <LandingHero slides={slides} locale={locale} line={w.heroLine} />
         </div>
       )}

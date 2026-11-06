@@ -1226,13 +1226,6 @@ html[data-furigana] {
   100% { transform: scale(2.2); opacity: 0; }
 }
 
-/* The home page's hero carries the big logo; the sidebar's own is hidden there but keeps its space so the nav does not move. */
-@media (min-width: 1024px) {
-  body:has(.landing-hero) .sidebar-logo {
-    visibility: hidden;
-  }
-}
-
 /* A finished rally's medal pops when the ring closes (StampProgressPopup). */
 @media (prefers-reduced-motion: no-preference) {
   .medal-pop {

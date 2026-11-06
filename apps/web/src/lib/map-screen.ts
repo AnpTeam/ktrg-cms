@@ -414,7 +414,7 @@ export function snapAfterDrag(heightPx: number, velocity: number, available: num
   return best;
 }
 
-/** The next resting place when the handle is tapped: up, and back down after the top (never to hidden: that is a pull). */
+/** The next resting place when the handle is tapped: up, and from the top back to half, so a tap never drops it low (peek and hidden are pulls). */
 export function nextSnap(snap: SheetSnap): SheetSnap {
-  return snap === "peek" || snap === "hidden" ? "half" : snap === "half" ? "full" : "peek";
+  return snap === "half" ? "full" : "half";
 }
