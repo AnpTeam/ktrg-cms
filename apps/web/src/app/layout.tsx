@@ -59,8 +59,6 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   return (
     <html lang={i18n.locale} data-theme={theme === "auto" ? undefined : theme} data-size={size} data-contrast={contrast ? "" : undefined} data-calm={calm ? "" : undefined} data-furigana={furigana ? "" : undefined}>
       <body>
-        {/* iOS fills the status bar from this (globals.css, .status-strip); hidden outside the installed app. */}
-        <div aria-hidden="true" className="status-strip" />
         <LinguiClientProvider initialLocale={i18n.locale} initialMessages={i18n.messages}>
           <a
             href="#main"

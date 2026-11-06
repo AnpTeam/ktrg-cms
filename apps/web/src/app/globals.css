@@ -1089,54 +1089,15 @@ body:has([data-sample-notice]) .cover-credit > details {
   }
 }
 
-/* iOS 26+/27 draws a blur over the top of an installed web app unless WebKit finds a full-width fixed or sticky box at the
-   top edge with a solid background colour: it then fills the status bar with that colour instead. Reports agree it reads
-   the box's own background (a ::before strip, which we had until 2026-11-05, came back blurred on the user's iPhone), and
-   that a see-through box (alpha or backdrop-filter) brings the blur back. So: a real element (.status-strip, first in
-   <body>), sticky at the top, solid page colour, in the installed app only; the page starts below it. A real-device report:
-   yetone/magpie #3515. (The status-bar-style tag is left out on purpose: black-translucent disables the colour fill.) */
-.status-strip {
-  display: none;
-}
+/* iOS 26+/27 draws its own blur over the status area of an installed web app, and we leave it there (decided 2026-11-06): a
+   solid full-width bar at the top edge swaps it for a flat band, which also covers the map and the cover photo. The status-bar-style
+   tag stays out on purpose. The page starts below the status bar, except where a map or a cover photo runs up under it. */
 @media (display-mode: standalone) {
-  /* Other sticky bars (the route page's jump bar) stick just below the strip. */
-  :root {
-    --status-strip: max(12px, env(safe-area-inset-top));
-  }
-  .status-strip {
-    display: block;
-    position: sticky;
-    top: 0;
-    /* As tall as the status bar, so scrolled content never shows (and gets blurred) under it. */
-    height: var(--status-strip);
-    background-color: var(--color-paper);
-    z-index: 20;
-    pointer-events: none;
-  }
-  /* The map runs up under the status bar: the strip lies over it instead of pushing it down. On a phone the map's own
-     solid top bar (MapScreenCanvas) does the strip's job, so the strip is not drawn there. */
-  body.map-screen-active .status-strip,
-  body:has(.map-screen) .status-strip {
-    position: fixed;
-    inset: 0 0 auto 0;
-    height: 12px;
-    z-index: 3;
-  }
-  /* The route page's cover photo runs up behind the Dynamic Island: the strip takes no room there, and while the photo is
-     in view (CoverWatch) it is not drawn at all; past the photo it is back. The bar over the photo clears the island. */
-  body:has([data-cover]) .status-strip {
-    position: fixed;
-    inset: 0 0 auto 0;
-  }
-  body.cover-in-view .status-strip {
-    display: none;
+  body:not(.map-screen-active, :has(.map-screen), :has([data-cover])) {
+    padding-top: env(safe-area-inset-top);
   }
 }
 @media (display-mode: standalone) and (max-width: 767px) {
-  body.map-screen-active .status-strip,
-  body:has(.map-screen) .status-strip {
-    display: none;
-  }
   body:has([data-cover]) .site-header-bar {
     padding-top: calc(0.25rem + env(safe-area-inset-top));
   }

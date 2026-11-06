@@ -17,7 +17,6 @@ import { RouteJourney } from "@/components/RouteJourney";
 import { RouteStats } from "@/components/RouteStats";
 import { StopList } from "@/components/StopList";
 import { BookmarkButton } from "@/components/BookmarkButton";
-import { CoverWatch } from "@/components/CoverWatch";
 import { CreditToggle } from "@/components/PhotoCredit";
 import type { MapStop } from "@/components/map/TrailMap";
 import { TrailMapLoader } from "@/components/map/TrailMapLoader";
@@ -148,7 +147,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               fade, so photo and title read as one. In two columns it is a plain framed photo with the name under it. */}
           {photo ? (
             // data-cover: on a phone the top bar goes see-through and this photo runs up behind it to the top of the screen; in the
-            // installed app it also runs behind the Dynamic Island while it is in view (CoverWatch, globals.css).
+            // installed app it also runs behind the Dynamic Island (globals.css).
             <div data-cover className="relative order-1 aspect-[4/3] w-full overflow-hidden bg-surface @4xl:order-none @4xl:aspect-video @4xl:rounded-2xl">
               <Image src={photo.src} alt={photo.alt} fill priority sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" unoptimized={photo.src.startsWith("https://")} />
               <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-b from-transparent to-paper @4xl:hidden" />
@@ -156,7 +155,6 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               <div className="cover-credit contents">
                 <CreditToggle credit={photo.credit} />
               </div>
-              <CoverWatch />
             </div>
           ) : null}
           <header className={`relative order-2 px-4 @4xl:order-none @4xl:mt-0 @4xl:px-0 ${photo ? "-mt-20" : ""}`}>
@@ -184,7 +182,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             // Solid background on purpose: a see-through bar at the top edge brings back iOS's status-bar blur (globals.css).
             // The bookmark, then links to the parts of a long page. It stays at the top while scrolling on a phone; two columns
             // show everything at once. The bookmark stays put while the links scroll sideways on a narrow screen.
-            <nav aria-label={jumpLabel} className="sticky top-[var(--status-strip,0px)] z-20 order-3 flex items-center border-b border-line/30 bg-paper py-2 @4xl:hidden">
+            <nav aria-label={jumpLabel} className="sticky top-[env(safe-area-inset-top)] z-20 order-3 flex items-center border-b border-line/30 bg-paper py-2 @4xl:hidden">
               {bookmarkable ? (
                 <div className="shrink-0 border-r border-line pl-4 pr-3">
                   <BookmarkButton routeId={route.id} compact />
