@@ -11,6 +11,7 @@ import type { MapPhoto } from "@/lib/map-screen";
  * into the page, and the name sits on the fade. With no photo the same banner is a deep red panel, so every course looks the same.
  */
 export function SheetHero({
+  short = false,
   photo,
   title,
   lang,
@@ -18,6 +19,8 @@ export function SheetHero({
   backLabel,
   onBack,
 }: {
+  /** Lower, for a sheet whose buttons must be in view at half height. */
+  short?: boolean;
   photo: MapPhoto | null;
   title: string;
   lang: "ja" | "en";
@@ -28,7 +31,7 @@ export function SheetHero({
 }) {
   return (
     <div>
-      <div className="relative aspect-[4/3] overflow-hidden" style={{ background: "linear-gradient(135deg, #6f241c, #b04a40)" }}>
+      <div className={`relative overflow-hidden ${short ? "aspect-[2/1]" : "aspect-[4/3]"}`} style={{ background: "linear-gradient(135deg, #6f241c, #b04a40)" }}>
         {photo ? <Image src={photo.src} alt="" fill sizes="(min-width: 1024px) 26rem, 100vw" className="object-cover" unoptimized={photo.src.startsWith("https://")} /> : null}
         <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-b from-transparent to-paper" />
         {/* Below the sheet's handle on a phone; a desktop panel has none. */}
@@ -51,21 +54,5 @@ export function SheetHero({
       </div>
       <CreditCaption credit={photo?.credit} className="mx-4 mt-2" />
     </div>
-  );
-}
-
-/** The photos of a course in a row you swipe sideways (and scroll with the arrow keys). */
-export function Gallery({ photos, label }: { photos: MapPhoto[]; label: string }) {
-  return (
-    <ul aria-label={label} className="-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2" tabIndex={0}>
-      {photos.map((p) => (
-        <li key={p.src} className="w-64 shrink-0 snap-start">
-          <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-surface">
-            <Image src={p.src} alt={p.alt} fill sizes="16rem" className="object-cover" unoptimized={p.src.startsWith("https://")} />
-          </div>
-          <CreditCaption credit={p.credit} className="mt-2" />
-        </li>
-      ))}
-    </ul>
   );
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { getRouteLine } from "@/lib/navigation/line-client";
 import { loadResume } from "@/lib/navigation/resume";
 import { useLingui } from "@lingui/react/macro";
@@ -91,15 +91,15 @@ export function NavigationResume({ routes, onResume }: { routes: readonly MapScr
   return null;
 }
 
-export function NavigationStart({ route }: { route: MapScreenRoute }) {
+/** `more` is the sheet's other button: it sits right under this one, above the note, and stands alone when there is nothing to start. */
+export function NavigationStart({ route, more }: { route: MapScreenRoute; more: ReactNode }) {
   const { t } = useLingui();
   const { session, start } = useNavigation();
   const [starting, setStarting] = useState(false);
-  if (!route.stops?.some((s) => !s.noStamp)) return null;
-  if (session?.routeId === route.id) return null; // the toast already shows it
+  if (!route.stops?.some((s) => !s.noStamp)) return more;
+  if (session?.routeId === route.id) return more; // the toast already shows it
   return (
     <section className="flex flex-col gap-2">
-      <p className="text-lg leading-snug">{t`いまいる場所から、いちばん近いスタンプの場所まで案内します。位置は、この端末の中だけで使います。`}</p>
       <button
         type="button"
         className={primary}
@@ -111,6 +111,8 @@ export function NavigationStart({ route }: { route: MapScreenRoute }) {
       >
         {starting ? t`ナビを準備しています…` : session ? t`この区間のナビに切り替える` : t`ナビをはじめる`}
       </button>
+      {more}
+      <p className="text-base leading-snug">{t`いまいる場所から、いちばん近いスタンプの場所まで案内します。位置は、この端末の中だけで使います。`}</p>
     </section>
   );
 }

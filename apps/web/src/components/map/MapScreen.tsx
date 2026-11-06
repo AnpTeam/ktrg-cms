@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { ChevronIcon, ChevronUpIcon, WarningIcon } from "@/components/icons";
-import { ExpandableText } from "@/components/ExpandableText";
 import { ElevationProfile } from "@/components/ElevationProfile";
 import { PlaceLine } from "@/components/PlaceLine";
 import { RichText } from "@/components/RichText";
@@ -21,7 +20,7 @@ import type { MapSettings } from "@/lib/map-settings";
 import type { StampMock } from "@/lib/stamp-flow";
 import { MapScreenCanvasLoader } from "./MapScreenCanvasLoader";
 import { MapSheet } from "./MapSheet";
-import { Gallery, SheetHero } from "./SheetHero";
+import { SheetHero } from "./SheetHero";
 import { RoutePill } from "@/components/RoutePill";
 import { buttonStyle } from "@/components/button";
 
@@ -31,7 +30,6 @@ import { buttonStyle } from "@/components/button";
 // the stamp button for someone who is signed in. Anyone may look around; navigation and stamps are for accounts.
 
 const linkButton = buttonStyle("secondary", "md", "flex w-full");
-const primaryLink = buttonStyle("primary", "md", "flex w-full");
 // Room kept under the sheet for the floating tab bar (a rail on wide screens).
 const TAB_ROOM_REM = 5.5;
 // From this width (a desktop) the map fills the whole area beside the sidebar, and what a phone shows in a bottom sheet
@@ -233,10 +231,11 @@ export function MapScreen({
   );
 
   // The banner at the top of the chosen course or stop: its photo (a stop without one shows its course's) with the
-  // name written over it. It scrolls away with the rest, so reading on reveals the history and the gallery.
+  // name written over it. A course's is lower, so its buttons are in view with the sheet at half height.
   const photo = stop?.photo ?? route?.photo ?? null;
   const hero = route ? (
     <SheetHero
+      short={!stop}
       photo={photo}
       title={stop ? `${stop.order === null || viaMounds ? "" : `${stop.order}. `}${stop.name}` : `${route.order}. ${route.name}`}
       lang={stop ? stop.nameLang : route.nameLang}
@@ -386,32 +385,23 @@ function RoutePanel({
   const { stampedCount, spotCount } = route;
   // With a graph on show, the course's own line is loaded now (not left for later), so the graph is the interactive one.
   const fetched = useRouteLine(route.elevations && route.hasLine && !route.line ? route.id : null);
+  const more = (
+    <Link href={route.href} className={linkButton}>
+      {t`詳しく見る`}
+    </Link>
+  );
   return (
-    <div className="flex flex-col gap-5 px-4">
+    <div className="flex flex-col gap-4 px-4">
       {route.status === "soon" ? <p className="rounded-2xl bg-surface p-4 text-lg font-bold">{t`この区間は、準備中です。`}</p> : null}
 
-      {/* The way in to navigation sits first, so it is seen without scrolling. */}
-      {route.status === "ready" ? <NavigationStart route={route} /> : null}
-
-      {route.description ? (
-        <ExpandableText text={route.description} className="whitespace-pre-line text-lg leading-8">
-          <RichText text={route.description} />
-        </ExpandableText>
-      ) : null}
-
-      <RouteStats route={route} icons tips walkStyle={route.walkStyle ?? null} />
+      <RouteStats route={route} compact />
 
       {stampedCount !== null && spotCount > 0 ? (
-        <p className="text-xl font-bold tabular-nums">{t`スタンプ ${stampedCount} / ${spotCount}`}</p>
+        <p className="text-lg font-bold tabular-nums">{t`スタンプ ${stampedCount} / ${spotCount}`}</p>
       ) : null}
 
-      {route.status === "ready" ? (
-        <Link href={route.href} className={primaryLink}>
-          {t`この区間のページを開く`}
-        </Link>
-      ) : null}
-
-      {route.elevations ? <ElevationProfile elevations={route.elevations} distanceKm={route.distanceKm} routeLine={fetched?.line} lineElevations={fetched?.elevations} /> : null}
+      {/* What can be done from the map comes first, so it is seen at half height. The reading is on the course's own page. */}
+      {route.status === "ready" ? <NavigationStart route={route} more={more} /> : more}
 
       {route.spots.length > 0 ? (
         <section>
@@ -460,40 +450,7 @@ function RoutePanel({
         <p className="rounded-2xl bg-surface p-4 text-lg">{t`スタンプの場所は、まだ準備中です。`}</p>
       ) : null}
 
-      {route.history ? (
-        <section className="flex flex-col gap-2">
-          <h3 className="text-xl font-bold">{t`歴史・由来`}</h3>
-          <ExpandableText text={route.history} className="whitespace-pre-line text-lg leading-8">
-            <RichText text={route.history} />
-          </ExpandableText>
-        </section>
-      ) : null}
-
-      {route.access ? (
-        <section className="flex flex-col gap-2">
-          <h3 className="text-xl font-bold">{t`アクセス・交通`}</h3>
-          <ExpandableText text={route.access} className="whitespace-pre-line text-lg leading-8">
-            <RichText text={route.access} />
-          </ExpandableText>
-        </section>
-      ) : null}
-
-      {route.source ? (
-        <section className="flex flex-col gap-2">
-          <h3 className="text-xl font-bold">{t`出典`}</h3>
-          <div className="whitespace-pre-line text-base leading-7 text-muted">
-            <RichText text={route.source} />
-          </div>
-        </section>
-      ) : null}
-
-      {route.gallery.length > 0 ? (
-        <section className="flex flex-col gap-2">
-          <h3 className="text-xl font-bold">{t`写真`}</h3>
-          <Gallery photos={route.gallery} label={t`この区間の写真`} />
-        </section>
-      ) : null}
-
+      {route.elevations ? <ElevationProfile elevations={route.elevations} distanceKm={route.distanceKm} routeLine={fetched?.line} lineElevations={fetched?.elevations} /> : null}
     </div>
   );
 }

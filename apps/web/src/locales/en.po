@@ -7515,3 +7515,7 @@ msgstr "On the FAQ a heading is a question, and on How to play it is the name of
 #: src/components/admin/BlockEditor.tsx
 msgid "線から下は、いちばん下の注意書きになります。"
 msgstr "Everything below the line becomes the closing note at the bottom of the page."
+
+#: src/components/map/MapScreen.tsx
+msgid "詳しく見る"
+msgstr "See details"

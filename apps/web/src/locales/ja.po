@@ -7515,3 +7515,7 @@ msgstr "見出しは、よくあるご質問では質問、遊び方では手順
 #: src/components/admin/BlockEditor.tsx
 msgid "線から下は、いちばん下の注意書きになります。"
 msgstr "線から下は、いちばん下の注意書きになります。"
+
+#: src/components/map/MapScreen.tsx
+msgid "詳しく見る"
+msgstr "詳しく見る"
