@@ -77,7 +77,7 @@ export default async function VisitsPage({ searchParams }: { searchParams: Promi
           <Trans>ページ（例：/routes や /rallies。空なら全部）</Trans>
           <input type="text" name="path" defaultValue={q.path ?? ""} placeholder="/routes" maxLength={200} className="tap-target rounded-xl border-2 border-line bg-paper px-3 text-lg font-normal" />
         </label>
-        <button type="submit" className="tap-target rounded-xl bg-ink px-6 text-lg font-bold text-paper">
+        <button type="submit" className="tap-target rounded-full bg-ink px-6 text-lg font-bold text-paper">
           <Trans>表示する</Trans>
         </button>
       </form>

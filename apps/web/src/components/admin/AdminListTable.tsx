@@ -177,7 +177,7 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
   return (
     <div className="flex flex-col gap-4">
       {config.ops.create && config.newLabel ? (
-        <Link href={`${base}/new`} className="tap-target inline-flex w-fit items-center rounded-xl bg-ink px-5 text-lg font-bold text-paper">
+        <Link href={`${base}/new`} className="tap-target inline-flex w-fit items-center rounded-full bg-ink px-5 text-lg font-bold text-paper">
           {pick(config.newLabel, locale)}
         </Link>
       ) : null}
@@ -193,7 +193,7 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
       >
         <div className="flex flex-wrap items-center gap-3">
           <input type="search" aria-label={t`さがす`} placeholder={t`さがす`} value={q} maxLength={100} onChange={(e) => setQ(e.target.value)} className={`${inputClass} min-w-48 flex-1`} />
-          <button type="submit" disabled={busy} className="tap-target rounded-xl bg-ink px-5 text-lg font-bold text-paper disabled:opacity-50">
+          <button type="submit" disabled={busy} className="tap-target rounded-full bg-ink px-5 text-lg font-bold text-paper disabled:opacity-50">
             {t`探す`}
           </button>
           {applied ? (
@@ -205,7 +205,7 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
                 setPicked({});
                 void search("", {});
               }}
-              className="tap-target rounded-xl px-3 text-lg font-bold text-accent underline underline-offset-4"
+              className="tap-target rounded-full px-3 text-lg font-bold text-accent underline underline-offset-4"
             >
               {t`条件をやめる`}
             </button>
@@ -252,7 +252,7 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
             {t`このページをすべて選ぶ`}
           </label>
           {ticked.size > 0 ? (
-            <button type="button" disabled={busy} onClick={() => void removeRows([...ticked])} className="tap-target rounded-xl border-2 border-danger px-4 text-base font-bold text-danger disabled:opacity-50">
+            <button type="button" disabled={busy} onClick={() => void removeRows([...ticked])} className="tap-target rounded-full border-2 border-danger px-4 text-base font-bold text-danger disabled:opacity-50">
               {t`選んだ${ticked.size}件を削除`}
             </button>
           ) : null}
@@ -310,7 +310,7 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
                       })}
                       {canDelete ? (
                         <td className="p-3 text-right">
-                          <button type="button" disabled={busy} onClick={() => void removeRows([item.id])} className="tap-target rounded-xl border-2 border-line px-3 text-base font-bold text-danger disabled:opacity-50">
+                          <button type="button" disabled={busy} onClick={() => void removeRows([item.id])} className="tap-target rounded-full border-2 border-line px-3 text-base font-bold text-danger disabled:opacity-50">
                             {t`削除`}
                           </button>
                         </td>
@@ -374,7 +374,7 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
                     </div>
                   </div>
                   {canDelete ? (
-                    <button type="button" disabled={busy} onClick={() => void removeRows([item.id])} className="tap-target shrink-0 rounded-xl border-2 border-line px-3 text-base font-bold text-danger disabled:opacity-50">
+                    <button type="button" disabled={busy} onClick={() => void removeRows([item.id])} className="tap-target shrink-0 rounded-full border-2 border-line px-3 text-base font-bold text-danger disabled:opacity-50">
                       {t`削除`}
                     </button>
                   ) : null}

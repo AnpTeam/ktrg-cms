@@ -49,7 +49,7 @@ export function DuplicateFinder({ meta, locale, choices, onChanged }: { meta: Li
       <summary className="cursor-pointer text-lg font-bold">{t`重複している場所をさがす`}</summary>
       <div className="mt-3 flex flex-col gap-3">
         <p className="text-base text-muted">{t`同じ名前で、位置が近い（150m以内、または位置が未入力）場所を、グループにして出します。各グループの先頭が、いちばん情報がそろっている場所です（残すのにおすすめ）。`}</p>
-        <button type="button" disabled={busy} onClick={() => void find()} className="tap-target w-fit rounded-xl bg-ink px-5 text-lg font-bold text-paper disabled:opacity-50">
+        <button type="button" disabled={busy} onClick={() => void find()} className="tap-target w-fit rounded-full bg-ink px-5 text-lg font-bold text-paper disabled:opacity-50">
           {busy && groups === null ? t`さがしています…` : t`さがす`}
         </button>
         {error ? (
@@ -62,7 +62,7 @@ export function DuplicateFinder({ meta, locale, choices, onChanged }: { meta: Li
           <div key={group[0]!.id} className="flex flex-col gap-2 rounded-2xl bg-surface p-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-lg font-bold">{t`${itemName(meta, group[0]!, locale)}（${group.length}件）`}</p>
-              <button type="button" disabled={busy} onClick={() => void remove(group.slice(1).map((p) => p.id))} className="tap-target rounded-xl border-2 border-danger px-4 text-base font-bold text-danger disabled:opacity-50">
+              <button type="button" disabled={busy} onClick={() => void remove(group.slice(1).map((p) => p.id))} className="tap-target rounded-full border-2 border-danger px-4 text-base font-bold text-danger disabled:opacity-50">
                 {t`先頭だけ残して、ほかを削除`}
               </button>
             </div>
@@ -81,7 +81,7 @@ export function DuplicateFinder({ meta, locale, choices, onChanged }: { meta: Li
                       <p className="text-base text-muted">{itemFacts(meta, p, locale, routeName).join(" ・ ")}</p>
                       {typeof p.addressJa === "string" && p.addressJa ? <p className="text-base text-muted">{p.addressJa}</p> : null}
                     </div>
-                    <button type="button" disabled={busy} onClick={() => void remove([p.id])} className="tap-target shrink-0 rounded-xl border-2 border-line px-3 text-base font-bold text-danger disabled:opacity-50">
+                    <button type="button" disabled={busy} onClick={() => void remove([p.id])} className="tap-target shrink-0 rounded-full border-2 border-line px-3 text-base font-bold text-danger disabled:opacity-50">
                       {t`削除`}
                     </button>
                   </li>

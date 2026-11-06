@@ -68,7 +68,7 @@ export function UserActions({ item, locale, onItem }: { item: ListItem; locale: 
               <br />
               {t`理由：${String(item.restrictionReason ?? "")}`}
             </p>
-            <button type="button" disabled={busy} onClick={() => void run(() => listRequest<{ item?: ListItem }>("DELETE", `users/${id}/restriction`), t`制限を解除しました。`)} className="tap-target w-fit rounded-xl border-2 border-ink px-6 text-lg font-bold disabled:opacity-50">
+            <button type="button" disabled={busy} onClick={() => void run(() => listRequest<{ item?: ListItem }>("DELETE", `users/${id}/restriction`), t`制限を解除しました。`)} className="tap-target w-fit rounded-full border-2 border-ink px-6 text-lg font-bold disabled:opacity-50">
               {t`制限を解除する`}
             </button>
           </div>
@@ -84,7 +84,7 @@ export function UserActions({ item, locale, onItem }: { item: ListItem; locale: 
               type="button"
               disabled={busy || reason.trim() === ""}
               onClick={() => void run(() => listRequest<{ item?: ListItem }>("PUT", `users/${id}/restriction`, { reason: reason.trim(), until: until ? endOfJstDay(until) : null }), t`制限しました。`, () => setReason(""))}
-              className="tap-target w-fit rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50"
+              className="tap-target w-fit rounded-full bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50"
             >
               {t`制限する`}
             </button>
@@ -96,14 +96,14 @@ export function UserActions({ item, locale, onItem }: { item: ListItem; locale: 
         {pending ? (
           <div className="flex flex-col gap-3">
             <p className="rounded-xl border-2 border-caution p-3 text-lg font-bold">{t`削除が予約されています。3日たつと、アカウントとスタンプが消えます。`}</p>
-            <button type="button" disabled={busy} onClick={() => void run(() => listRequest<{ item?: ListItem }>("DELETE", `users/${id}/deletion-request`), t`削除の予約を取り消しました。`)} className="tap-target w-fit rounded-xl border-2 border-ink px-6 text-lg font-bold disabled:opacity-50">
+            <button type="button" disabled={busy} onClick={() => void run(() => listRequest<{ item?: ListItem }>("DELETE", `users/${id}/deletion-request`), t`削除の予約を取り消しました。`)} className="tap-target w-fit rounded-full border-2 border-ink px-6 text-lg font-bold disabled:opacity-50">
               {t`削除の予約を取り消す`}
             </button>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
             <p className="text-base text-muted">{t`ふつうは、3日後に削除する方法を使います。その間は、取り消せます。`}</p>
-            <button type="button" disabled={busy} onClick={() => void run(() => listRequest<{ item?: ListItem }>("POST", `users/${id}/deletion-request`), t`3日後の削除を予約しました。`)} className="tap-target w-fit rounded-xl border-2 border-danger px-6 text-lg font-bold text-danger disabled:opacity-50">
+            <button type="button" disabled={busy} onClick={() => void run(() => listRequest<{ item?: ListItem }>("POST", `users/${id}/deletion-request`), t`3日後の削除を予約しました。`)} className="tap-target w-fit rounded-full border-2 border-danger px-6 text-lg font-bold text-danger disabled:opacity-50">
               {t`3日後に削除する`}
             </button>
           </div>
@@ -117,7 +117,7 @@ export function UserActions({ item, locale, onItem }: { item: ListItem; locale: 
             type="button"
             disabled={busy || confirm.trim() !== memberId}
             onClick={() => void run(() => listRequest<{ item?: ListItem }>("DELETE", `users/${id}`), t`削除しました。`, () => router.push("/admin/users"))}
-            className="tap-target w-fit rounded-xl bg-danger px-6 text-lg font-bold text-white disabled:opacity-50"
+            className="tap-target w-fit rounded-full bg-danger px-6 text-lg font-bold text-white disabled:opacity-50"
           >
             {t`今すぐ削除する`}
           </button>

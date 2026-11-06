@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
-import { AdminFrame, SidebarShow, SidebarToggle } from "./AdminFrame";
+import { AdminFrame, SidebarToggle } from "./AdminFrame";
 import { PublicSiteLink } from "./PublicSiteLink";
 import { AdminNav } from "./AdminNav";
 
@@ -13,7 +13,7 @@ export function AdminShell({ name, role, lists, children }: { name: string | nul
     <AdminFrame
       aside={
         <>
-          <Link href="/admin/routes" className="tap-target mb-3 flex items-center px-2 text-xl font-bold text-accent">
+          <Link href="/admin/routes" className="tap-target mb-3 flex items-center px-2 text-xl font-bold text-accent lg:group-data-[folded=true]:hidden">
             <Trans>葛城修験 管理</Trans>
           </Link>
           <SidebarToggle />
@@ -23,7 +23,6 @@ export function AdminShell({ name, role, lists, children }: { name: string | nul
     >
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-3 lg:px-8">
           <div className="flex flex-wrap items-center gap-3">
-            <SidebarShow />
             <p className="text-base text-muted">
             {name ? <Trans>{name} さんでログイン中</Trans> : <Trans>管理者としてログイン中</Trans>}
             </p>

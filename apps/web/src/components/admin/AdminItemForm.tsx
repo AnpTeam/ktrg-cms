@@ -262,11 +262,11 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
             {dirty ? t`保存していない変更があります` : saved ? t`保存済み` : ""}
           </p>
           {saved && reviewable ? (
-            <button type="button" onClick={() => void save(true)} disabled={!canSave} className="tap-target rounded-xl border-2 border-ink px-6 text-lg font-bold disabled:opacity-40">
+            <button type="button" onClick={() => void save(true)} disabled={!canSave} className="tap-target rounded-full border-2 border-ink px-6 text-lg font-bold disabled:opacity-40">
               {t`保存して次へ`}
             </button>
           ) : null}
-          <button type="button" onClick={() => void save()} disabled={!canSave} className="tap-target rounded-xl bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
+          <button type="button" onClick={() => void save()} disabled={!canSave} className="tap-target rounded-full bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
             {busy ? t`保存中…` : saved ? t`保存` : t`作成`}
           </button>
         </div>
@@ -279,7 +279,7 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
           <p role={notice.kind === "error" ? "alert" : "status"} className="min-w-0 flex-1 pt-0.5 text-lg font-bold">
             {notice.text}
           </p>
-          <button type="button" onClick={() => setNotice(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-lg px-3 hover:bg-white/20">
+          <button type="button" onClick={() => setNotice(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-full px-3 hover:bg-white/20">
             <XIcon size={22} />
           </button>
         </div>
@@ -292,7 +292,7 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
 
       {saved && config.ops.delete ? (
         <Section title={t`削除`}>
-          <button type="button" onClick={remove} disabled={busy} className="tap-target w-fit rounded-xl border-2 border-danger px-6 text-lg font-bold text-danger disabled:opacity-50">
+          <button type="button" onClick={remove} disabled={busy} className="tap-target w-fit rounded-full border-2 border-danger px-6 text-lg font-bold text-danger disabled:opacity-50">
             {t`削除する`}
           </button>
         </Section>

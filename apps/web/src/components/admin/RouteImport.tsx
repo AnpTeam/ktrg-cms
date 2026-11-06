@@ -137,7 +137,7 @@ export function RouteImport({ routes, onImported }: { routes: AdminRoute[]; onIm
   // New routes are only made one after another (the next number each time), so a row that jumps ahead is not counted.
   let next = routes.length + 1;
   const creating = (preview?.routes ?? []).filter((r) => r.number === next && ++next).length;
-  const button = "tap-target inline-flex items-center rounded-xl border-2 border-line px-5 text-lg font-bold";
+  const button = "tap-target inline-flex items-center rounded-full border-2 border-line px-5 text-lg font-bold";
 
   return (
     <div className="flex flex-col gap-3">
@@ -220,7 +220,7 @@ export function RouteImport({ routes, onImported }: { routes: AdminRoute[]; onIm
                 type="button"
                 disabled={tooMany || progress !== null || preview.routes.length + preview.places.length === 0}
                 onClick={run}
-                className="tap-target inline-flex items-center self-start rounded-xl bg-ink px-5 text-lg font-bold text-paper disabled:opacity-40"
+                className="tap-target inline-flex items-center self-start rounded-full bg-ink px-5 text-lg font-bold text-paper disabled:opacity-40"
               >
                 {t`この内容で取り込む`}
               </button>

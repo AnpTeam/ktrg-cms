@@ -110,7 +110,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
           {t`ルートをさがす`}
           <input type="search" value={query} onChange={(e) => { setQuery(e.target.value); setPage(1); }} placeholder={t`名前の一部を入力`} className="tap-target rounded-xl border-2 border-line bg-paper px-4 text-lg font-normal" />
         </label>
-        <Link href="/admin/routes/new" className="tap-target inline-flex items-center rounded-xl bg-ink px-5 text-lg font-bold text-paper">
+        <Link href="/admin/routes/new" className="tap-target inline-flex items-center rounded-full bg-ink px-5 text-lg font-bold text-paper">
           {t`新しいルート`}
         </Link>
       </div>

@@ -5,7 +5,7 @@ import { addPeriod, copyDay, hasBackward, hoursText, isBackward, MAX_PERIODS, pa
 import { inputClass, TextInput } from "./fields";
 import { PlusIcon } from "@/components/icons";
 
-const button = "tap-target rounded-xl border-2 border-line px-4 text-base font-bold disabled:opacity-40";
+const button = "tap-target rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-40";
 
 /** Weekly opening hours: one row per day, a time picker for each period, a second period for a shop open twice in a day. */
 export function HoursInput({ id, value, onChange, disabled }: { id: string; value: string; onChange: (v: string) => void; disabled?: boolean }) {

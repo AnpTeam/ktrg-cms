@@ -84,7 +84,7 @@ export function RallyList({ initial, locale }: { initial: AdminRally[]; locale: 
 
   return (
     <div className="flex flex-col gap-4">
-      <Link href="/admin/rallies/new" className="tap-target inline-flex w-fit items-center rounded-xl bg-ink px-5 text-lg font-bold text-paper">
+      <Link href="/admin/rallies/new" className="tap-target inline-flex w-fit items-center rounded-full bg-ink px-5 text-lg font-bold text-paper">
         {t`新しいラリー`}
       </Link>
       {rallies.length > 1 ? (

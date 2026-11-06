@@ -44,10 +44,10 @@ export function MoveButtons({ name, canEarlier, canLater, onMove, busy }: { name
   const { t } = useLingui();
   return (
     <div className="flex gap-2">
-      <button type="button" disabled={busy || !canEarlier} onClick={() => onMove(-1)} aria-label={t`${name} を1つ前へ`} className="tap-target min-w-14 rounded-xl border-2 border-line px-3 text-base font-bold disabled:opacity-40">
+      <button type="button" disabled={busy || !canEarlier} onClick={() => onMove(-1)} aria-label={t`${name} を1つ前へ`} className="tap-target min-w-14 rounded-full border-2 border-line px-3 text-base font-bold disabled:opacity-40">
         {t`前へ`}
       </button>
-      <button type="button" disabled={busy || !canLater} onClick={() => onMove(1)} aria-label={t`${name} を1つ後ろへ`} className="tap-target min-w-14 rounded-xl border-2 border-line px-3 text-base font-bold disabled:opacity-40">
+      <button type="button" disabled={busy || !canLater} onClick={() => onMove(1)} aria-label={t`${name} を1つ後ろへ`} className="tap-target min-w-14 rounded-full border-2 border-line px-3 text-base font-bold disabled:opacity-40">
         {t`後ろへ`}
       </button>
     </div>

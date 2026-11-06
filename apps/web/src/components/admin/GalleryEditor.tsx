@@ -22,7 +22,7 @@ function photoName(url: string): string {
     return url;
   }
 }
-const smallButton = "tap-target rounded-xl border-2 border-line px-4 text-base font-bold disabled:opacity-40";
+const smallButton = "tap-target rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-40";
 
 /**
  * The gallery of one waypoint: the photos in the order visitors see them, each with the credit that goes under it.
@@ -92,7 +92,7 @@ export function GalleryEditor({ photos, onChange, name, lat, lng }: { photos: Ga
                   <button type="button" disabled={i === photos.length - 1} onClick={() => move(i, 1)} className={smallButton}>
                     {t`後ろへ`}
                   </button>
-                  <button type="button" onClick={() => onChange(photos.filter((_, j) => j !== i))} className="tap-target ml-auto rounded-xl border-2 border-danger px-4 text-base font-bold text-danger">
+                  <button type="button" onClick={() => onChange(photos.filter((_, j) => j !== i))} className="tap-target ml-auto rounded-full border-2 border-danger px-4 text-base font-bold text-danger">
                     {t`ギャラリーから外す`}
                   </button>
                 </div>

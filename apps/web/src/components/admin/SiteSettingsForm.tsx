@@ -124,10 +124,10 @@ export function SiteSettingsForm({ initial }: { initial: MapSettings }) {
         <MapStylePreview settings={s} entries={draft} />
 
         <div className="flex flex-wrap items-center gap-3">
-          <button type="button" disabled={busy || !dirty} onClick={save} className="tap-target rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50">
+          <button type="button" disabled={busy || !dirty} onClick={save} className="tap-target rounded-full bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50">
             {busy ? t`保存しています…` : t`保存する`}
           </button>
-          <button type="button" disabled={busy} onClick={() => set(defaultMapSettings)} className="tap-target rounded-xl border-2 border-line px-6 text-lg font-bold disabled:opacity-50">
+          <button type="button" disabled={busy} onClick={() => set(defaultMapSettings)} className="tap-target rounded-full border-2 border-line px-6 text-lg font-bold disabled:opacity-50">
             {t`初期値にする`}
           </button>
           {dirty ? <span className="text-base text-muted">{t`まだ保存していません。`}</span> : null}

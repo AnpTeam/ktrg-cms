@@ -235,7 +235,7 @@ export function PlacePanel(p: PlacePanelProps) {
 
           <div className="flex flex-col gap-3 rounded-xl bg-surface p-4">
             <div className="flex flex-wrap items-center gap-3">
-              <button type="button" disabled={p.busy || !p.dirty || !p.canSave} onClick={p.onSave} className="tap-target w-fit rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-40">
+              <button type="button" disabled={p.busy || !p.dirty || !p.canSave} onClick={p.onSave} className="tap-target w-fit rounded-full bg-ink px-6 text-lg font-bold text-paper disabled:opacity-40">
                 {t`この経由地を保存`}
               </button>
               {!p.canSave ? <p className="text-base text-muted">{t`先にルートを保存してください。`}</p> : place.published && p.dirty ? <p className="text-base text-muted">{t`保存すると、この経由地は下書きに戻ります。`}</p> : null}
@@ -243,13 +243,13 @@ export function PlacePanel(p: PlacePanelProps) {
             {place.published ? (
               <div className="flex flex-wrap items-center gap-3">
                 <p className="text-lg font-bold">{t`この経由地は公開されています。`}</p>
-                <button type="button" disabled={p.busy} onClick={p.onUnpublish} className="tap-target rounded-xl border border-ink px-5 text-lg font-bold disabled:opacity-40">
+                <button type="button" disabled={p.busy} onClick={p.onUnpublish} className="tap-target rounded-full border border-ink px-5 text-lg font-bold disabled:opacity-40">
                   {t`公開をやめる`}
                 </button>
               </div>
             ) : (
               <>
-                <button type="button" disabled={p.busy || blockers.length > 0} onClick={p.onPublish} className="tap-target w-fit rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-40">
+                <button type="button" disabled={p.busy || blockers.length > 0} onClick={p.onPublish} className="tap-target w-fit rounded-full bg-ink px-6 text-lg font-bold text-paper disabled:opacity-40">
                   {t`公開する`}
                 </button>
                 {blockers.length > 0 ? (
@@ -264,13 +264,13 @@ export function PlacePanel(p: PlacePanelProps) {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <button type="button" disabled={!p.canMoveUp} onClick={() => p.onMove(-1)} className="tap-target rounded-xl border-2 border-line px-4 text-base font-bold disabled:opacity-40">
+            <button type="button" disabled={!p.canMoveUp} onClick={() => p.onMove(-1)} className="tap-target rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-40">
               {t`順番を前へ`}
             </button>
-            <button type="button" disabled={!p.canMoveDown} onClick={() => p.onMove(1)} className="tap-target rounded-xl border-2 border-line px-4 text-base font-bold disabled:opacity-40">
+            <button type="button" disabled={!p.canMoveDown} onClick={() => p.onMove(1)} className="tap-target rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-40">
               {t`順番を後ろへ`}
             </button>
-            <button type="button" disabled={place.published} onClick={p.onRemove} className="tap-target ml-auto rounded-xl border-2 border-danger px-4 text-base font-bold text-danger disabled:opacity-40">
+            <button type="button" disabled={place.published} onClick={p.onRemove} className="tap-target ml-auto rounded-full border-2 border-danger px-4 text-base font-bold text-danger disabled:opacity-40">
               {t`この経由地を削除`}
             </button>
           </div>

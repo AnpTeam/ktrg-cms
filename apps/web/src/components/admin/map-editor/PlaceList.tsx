@@ -91,7 +91,7 @@ export function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, o
               aria-label={t`${p.name || p.number}を消す`}
               aria-disabled={p.published}
               title={p.published ? t`公開中の経由地は削除できません。先に「経由地」タブで「公開をやめる」を押してください。` : t`消す`}
-              className={`inline-flex size-11 min-h-0 min-w-0 items-center justify-center rounded-lg border border-line ${p.published ? "cursor-not-allowed text-muted opacity-60" : "text-danger hover:bg-surface"}`}
+              className={`inline-flex size-11 min-h-0 min-w-0 items-center justify-center rounded-full border border-line ${p.published ? "cursor-not-allowed text-muted opacity-60" : "text-danger hover:bg-surface"}`}
             >
               <TrashIcon />
             </button>

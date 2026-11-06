@@ -104,10 +104,10 @@ const anchorClass =
 // A guide point of the chosen leg: a dashed orange ring. Visitors never see it; it only steers the route-finding service.
 const guideClass =
   "block size-4 min-h-0 min-w-0 cursor-grab rounded-full border-[3px] border-dashed border-[var(--color-goal)] bg-paper p-0 shadow-md active:cursor-grabbing";
-const chipClass = "inline-flex h-11 min-h-0 min-w-0 items-center justify-center gap-1.5 rounded-lg border border-line bg-paper px-3 text-sm font-bold hover:bg-surface disabled:opacity-40 disabled:hover:bg-paper";
+const chipClass = "inline-flex h-11 min-h-0 min-w-0 items-center justify-center gap-1.5 rounded-full border border-line bg-paper px-3 text-sm font-bold hover:bg-surface disabled:opacity-40 disabled:hover:bg-paper";
 const floatClass = "flex items-center gap-0.5 rounded-xl border border-line bg-paper/95 p-1 shadow-md backdrop-blur-sm";
-const iconBtn = "inline-flex shrink-0 whitespace-nowrap h-11 min-h-0 min-w-11 items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-bold [&:not([aria-pressed=true])]:hover:bg-surface disabled:opacity-40 disabled:hover:bg-transparent";
-const toolClass = "tap-target inline-flex items-center justify-center rounded-xl border-2 px-3 text-base font-bold disabled:opacity-40";
+const iconBtn = "inline-flex shrink-0 whitespace-nowrap h-11 min-h-0 min-w-11 items-center justify-center gap-1.5 rounded-full px-2 text-sm font-bold [&:not([aria-pressed=true])]:hover:bg-surface disabled:opacity-40 disabled:hover:bg-transparent";
+const toolClass = "tap-target inline-flex items-center justify-center rounded-full border-2 px-3 text-base font-bold disabled:opacity-40";
 
 type Actions = {
   collection: (preview: { id: string; points: LngLatEle[] } | null) => ReturnType<typeof legFeatures>;
@@ -1056,10 +1056,10 @@ export function MapEditor(props: MapEditorProps) {
           </ul>
           <p className="text-base text-muted">{t`位置は「確認していない」状態で入ります。公開する前に、公式の情報で確かめてください。`}</p>
           <div className="flex gap-2">
-            <button type="button" onClick={addWaypoints} className="tap-target rounded-xl bg-ink px-6 text-lg font-bold text-paper">
+            <button type="button" onClick={addWaypoints} className="tap-target rounded-full bg-ink px-6 text-lg font-bold text-paper">
               {t`追加する`}
             </button>
-            <button type="button" onClick={() => setWaypoints(null)} className="tap-target rounded-xl border-2 border-line px-6 text-lg font-bold">
+            <button type="button" onClick={() => setWaypoints(null)} className="tap-target rounded-full border-2 border-line px-6 text-lg font-bold">
               {t`追加しない`}
             </button>
           </div>

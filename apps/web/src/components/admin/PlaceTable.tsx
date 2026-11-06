@@ -201,7 +201,7 @@ export function PlaceTable({
                         disabled={busy}
                         onClick={() => onRemove(p.key)}
                         aria-label={t`${row}行目を削除`}
-                        className="tap-target rounded-xl border-2 border-line px-3 text-base font-bold disabled:opacity-50"
+                        className="tap-target rounded-full border-2 border-line px-3 text-base font-bold disabled:opacity-50"
                       >
                         {t`削除`}
                       </button>
@@ -215,7 +215,7 @@ export function PlaceTable({
       ) : (
         <p className="rounded-xl bg-paper p-4 text-lg">{t`まだありません。「＋ 行を追加」で、経由地を表に入れてください。`}</p>
       )}
-      <button type="button" disabled={busy} onClick={onAdd} className="tap-target w-fit rounded-xl border-2 border-line px-5 text-lg font-bold disabled:opacity-50">
+      <button type="button" disabled={busy} onClick={onAdd} className="tap-target w-fit rounded-full border-2 border-line px-5 text-lg font-bold disabled:opacity-50">
         <span className="inline-flex items-center gap-1">
               <PlusIcon size={20} />
               {t`行を追加`}

@@ -34,7 +34,7 @@ export function VideoHistory({ routeId, onPick }: { routeId: string; onPick: (ur
             {urls.map((url) => (
               <li key={url} className="flex flex-wrap items-center gap-2">
                 <span className="min-w-0 flex-1 break-all text-base">{url}</span>
-                <button type="button" onClick={() => onPick(url)} className="tap-target rounded-xl bg-surface px-4 text-base font-bold text-accent">
+                <button type="button" onClick={() => onPick(url)} className="tap-target rounded-full bg-surface px-4 text-base font-bold text-accent">
                   {t`このリンクに戻す`}
                 </button>
               </li>

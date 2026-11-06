@@ -118,7 +118,7 @@ export function MultilingualField({
             type="button"
             disabled={next === null}
             onClick={() => next && setShown([...shown, next])}
-            className="tap-target shrink-0 rounded-xl border-2 border-line px-4 text-base font-bold disabled:opacity-50"
+            className="tap-target shrink-0 rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-50"
           >
             <span className="inline-flex items-center gap-1">
               <PlusIcon size={20} />
@@ -154,7 +154,7 @@ export function MultilingualField({
               setShown(shown.filter((x) => x !== l));
             }}
             aria-label={t`${LOCALE_NAMES[l]}を削除`}
-            className="tap-target shrink-0 rounded-xl border-2 border-line px-4 text-base font-bold"
+            className="tap-target shrink-0 rounded-full border-2 border-line px-4 text-base font-bold"
           >
             {t`削除`}
           </button>

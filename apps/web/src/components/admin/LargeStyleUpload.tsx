@@ -70,7 +70,7 @@ export function LargeStyleUpload({ draft, onDraft }: { draft: Entry[] | null; on
     setBusy(false);
   }
 
-  const button = "tap-target rounded-xl border-2 border-line px-5 text-lg font-bold disabled:opacity-50";
+  const button = "tap-target rounded-full border-2 border-line px-5 text-lg font-bold disabled:opacity-50";
   return (
     <fieldset className="flex flex-col gap-3">
       <legend className="mb-1 text-lg font-bold">{t`国土地理院のスタイルファイル`}</legend>

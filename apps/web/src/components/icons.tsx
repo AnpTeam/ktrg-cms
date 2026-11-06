@@ -246,13 +246,6 @@ export const ListIcon = () => (
 );
 
 /** A window with a side panel: the button that hides and shows the admin menu. */
-export const SidebarIcon = () => (
-  <Icon>
-    <path d="M3.5 5h17v14h-17z" />
-    <path d="M9.5 5v14" />
-  </Icon>
-);
-
 export const PrintIcon = () => (
   <Icon>
     <path d="M7 9V4h10v5" />

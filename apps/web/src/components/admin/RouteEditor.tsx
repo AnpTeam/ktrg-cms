@@ -488,7 +488,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
         <p className="text-base text-muted" aria-live="polite">
           {dirty ? t`保存していない変更があります` : isNew ? "" : t`保存済み（更新 ${formatUpdated(locale, draft.updatedAt ?? new Date().toISOString())}）`}
         </p>
-        <button type="button" disabled={!dirty || saving} onClick={save} className="tap-target rounded-xl bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
+        <button type="button" disabled={!dirty || saving} onClick={save} className="tap-target rounded-full bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
           {saving ? t`保存中…` : t`保存する`}
         </button>
         {/* A toast over the page, not a line in the bar: it must catch the eye wherever the page is scrolled to. */}
@@ -501,11 +501,11 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
               {message.text}
             </p>
             {message.kind === "error" && problems.length > 0 ? (
-              <button type="button" onClick={() => showFirstProblem(problems[0]!.kind)} className="tap-target shrink-0 rounded-lg border-2 border-white px-3 text-base font-bold">
+              <button type="button" onClick={() => showFirstProblem(problems[0]!.kind)} className="tap-target shrink-0 rounded-full border-2 border-white px-3 text-base font-bold">
                 {t`直す場所を見る`}
               </button>
             ) : null}
-            <button type="button" onClick={() => setMessage(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-lg px-3 hover:bg-white/20">
+            <button type="button" onClick={() => setMessage(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-full px-3 hover:bg-white/20">
               <XIcon size={22} />
             </button>
           </div>
@@ -522,7 +522,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
               setOfferClosed(true);
               setMessage({ kind: "ok", text: t`編集を戻しました。内容を確かめて、「保存する」を押してください。` });
             }}
-            className="tap-target rounded-xl bg-ink px-5 text-lg font-bold text-paper"
+            className="tap-target rounded-full bg-ink px-5 text-lg font-bold text-paper"
           >
             {t`編集を戻す`}
           </button>
@@ -532,7 +532,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
               writeBackup(localStorage, initial, initial.updatedAt, false);
               setOfferClosed(true);
             }}
-            className="tap-target rounded-xl border-2 border-line px-5 text-lg font-bold"
+            className="tap-target rounded-full border-2 border-line px-5 text-lg font-bold"
           >
             {t`捨てる`}
           </button>
@@ -542,7 +542,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
       {/* Narrow screens: one thing at a time. */}
       <div className="flex gap-2 xl:hidden" role="tablist" aria-label={t`表示の切り替え`}>
         {(["edit", "preview"] as const).map((id) => (
-          <button key={id} type="button" role="tab" aria-selected={view === id} onClick={() => setView(id)} className={`tap-target flex-1 rounded-xl border-2 text-lg font-bold ${view === id ? "border-ink bg-ink text-paper" : "border-line"}`}>
+          <button key={id} type="button" role="tab" aria-selected={view === id} onClick={() => setView(id)} className={`tap-target flex-1 rounded-full border-2 text-lg font-bold ${view === id ? "border-ink bg-ink text-paper" : "border-line"}`}>
             {id === "edit" ? t`入力` : t`プレビュー`}
           </button>
         ))}
@@ -561,7 +561,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                 aria-selected={section === id}
                 aria-controls="editor-panel"
                 onClick={() => setSection(id)}
-                className={`tap-target inline-flex items-center gap-2 rounded-xl border-2 px-4 text-lg font-bold ${section === id ? "border-ink bg-ink text-paper" : "border-line"}`}
+                className={`tap-target inline-flex items-center gap-2 rounded-full border-2 px-4 text-lg font-bold ${section === id ? "border-ink bg-ink text-paper" : "border-line"}`}
               >
                 {TAB_ICONS[id]}
                 {labels.tab[id]}
@@ -794,7 +794,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                       type="button"
                       aria-pressed={placesView === v}
                       onClick={() => setPlacesView(v)}
-                      className={`tap-target rounded-xl border-2 px-5 text-lg font-bold ${placesView === v ? "border-ink bg-ink text-paper" : "border-line"}`}
+                      className={`tap-target rounded-full border-2 px-5 text-lg font-bold ${placesView === v ? "border-ink bg-ink text-paper" : "border-line"}`}
                     >
                       {v === "table" ? t`表でまとめて入力` : t`1か所ずつ詳しく`}
                     </button>
@@ -868,7 +868,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                 {draft.id ? <SharedPlaces routeId={draft.id} initial={shared} lent={lent} routeNames={routeNames} locale={locale} /> : null}
                 {draft.places.some((p) => p.id && p.published) ? (
                   <div className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-paper p-3">
-                    <button type="button" disabled={busyKey !== null} onClick={() => void unpublishAll()} className="tap-target rounded-xl border-2 border-danger px-5 text-lg font-bold text-danger disabled:opacity-40">
+                    <button type="button" disabled={busyKey !== null} onClick={() => void unpublishAll()} className="tap-target rounded-full border-2 border-danger px-5 text-lg font-bold text-danger disabled:opacity-40">
                       {busyKey === "all" ? t`処理しています…` : t`すべての公開をやめる`}
                     </button>
                     <p className="min-w-0 flex-1 text-base text-muted">{t`公開中の経由地をまとめて下書きに戻します。ルートは「準備中」として、一覧に残ります。`}</p>
@@ -896,7 +896,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                             <span className={`w-20 shrink-0 rounded-lg px-3 py-1 text-center text-base font-bold ${i.done ? "bg-moss text-paper" : required ? "bg-danger text-white" : "bg-surface"}`}>{i.done ? t`できた` : t`まだ`}</span>
                             <span className="min-w-0 flex-1 text-lg">{labels.item[i.id]}</span>
                             {!i.done ? (
-                              <button type="button" onClick={() => setSection(i.tab)} className="tap-target rounded-xl border border-ink px-4 text-base font-bold">
+                              <button type="button" onClick={() => setSection(i.tab)} className="tap-target rounded-full border border-ink px-4 text-base font-bold">
                                 {t`${labels.tab[i.tab]}を開く`}
                               </button>
                             ) : null}
@@ -911,7 +911,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
 
           {!isNew ? (
             <div className="flex flex-col gap-2 pb-10">
-              <button type="button" onClick={deleteRoute} disabled={draft.places.length > 0 || saving} className="tap-target w-fit rounded-xl border-2 border-danger px-5 text-lg font-bold text-danger disabled:opacity-40">
+              <button type="button" onClick={deleteRoute} disabled={draft.places.length > 0 || saving} className="tap-target w-fit rounded-full border-2 border-danger px-5 text-lg font-bold text-danger disabled:opacity-40">
                 {t`このルートを削除`}
               </button>
               {draft.places.length > 0 ? <p className="text-base text-muted">{t`経由地が残っているルートは削除できません。`}</p> : null}

@@ -93,7 +93,7 @@ export function RallyCreate({
           type="button"
           onClick={save}
           disabled={busy || nameJa.trim() === ""}
-          className="tap-target rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50"
+          className="tap-target rounded-full bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50"
         >
           {busy ? t`作っています…` : t`下書きとして作る`}
         </button>

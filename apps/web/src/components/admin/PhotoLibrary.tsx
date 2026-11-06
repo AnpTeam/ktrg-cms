@@ -39,7 +39,7 @@ export function PhotoLibraryButton({ onPicked, disabled = false }: { onPicked: (
         type="button"
         disabled={disabled}
         onClick={() => setOpen(true)}
-        className="tap-target inline-flex w-fit items-center rounded-xl border-2 border-line px-5 text-lg font-bold disabled:opacity-40"
+        className="tap-target inline-flex w-fit items-center rounded-full border-2 border-line px-5 text-lg font-bold disabled:opacity-40"
       >
         {t`アップロード済みの写真から選ぶ`}
       </button>
@@ -125,7 +125,7 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
             </h2>
             <p className="text-base text-muted">{t`アップロード済みの写真です。選んで「この写真を使う」を押すと、その写真のリンクが入ります。`}</p>
           </div>
-          <button type="button" onClick={() => ref.current?.close()} className="tap-target rounded-xl border-2 border-line px-5 text-lg font-bold">
+          <button type="button" onClick={() => ref.current?.close()} className="tap-target rounded-full border-2 border-line px-5 text-lg font-bold">
             {t`閉じる`}
           </button>
         </div>
@@ -150,7 +150,7 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
           </label>
           <div role="group" aria-label={t`表示`} className="flex gap-1">
             {(["table", "tiles"] as const).map((v) => (
-              <button key={v} type="button" aria-pressed={view === v} onClick={() => setView(v)} className={`tap-target rounded-xl border-2 px-4 text-base font-bold ${view === v ? "border-ink bg-ink text-paper" : "border-line"}`}>
+              <button key={v} type="button" aria-pressed={view === v} onClick={() => setView(v)} className={`tap-target rounded-full border-2 px-4 text-base font-bold ${view === v ? "border-ink bg-ink text-paper" : "border-line"}`}>
                 {v === "table" ? t`一覧` : t`タイル`}
               </button>
             ))}
@@ -187,7 +187,7 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
                 >
                   <td className="px-3 py-2">
                     <button type="button" aria-pressed={selected === p.key} onFocus={() => select(p)} className="flex w-full items-center gap-3 text-left text-lg font-bold">
-                      {thumb(p, "h-12 w-16 shrink-0 rounded-lg bg-surface object-cover")}
+                      {thumb(p, "h-12 w-16 shrink-0 rounded-full bg-surface object-cover")}
                       <span className="min-w-0 break-all">{fileName(p.key)}</span>
                     </button>
                   </td>
@@ -207,7 +207,7 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
                   aria-pressed={selected === p.key}
                   onClick={() => select(p)}
                   onDoubleClick={() => onPick(p.url)}
-                  className={`block w-full overflow-hidden rounded-xl border-2 text-left ${selected === p.key ? "border-accent outline outline-2 outline-accent" : "border-line"}`}
+                  className={`block w-full overflow-hidden rounded-full border-2 text-left ${selected === p.key ? "border-accent outline outline-2 outline-accent" : "border-line"}`}
                 >
                   {thumb(p, "aspect-video w-full object-cover")}
                   <span className="block truncate px-2 py-1 text-base">{fileName(p.key)}</span>
@@ -234,7 +234,7 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
           type="button"
           disabled={!chosen}
           onClick={() => chosen && onPick(chosen.url)}
-          className="tap-target rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-40"
+          className="tap-target rounded-full bg-ink px-6 text-lg font-bold text-paper disabled:opacity-40"
         >
           {t`この写真を使う`}
         </button>

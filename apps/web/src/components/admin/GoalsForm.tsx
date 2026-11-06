@@ -43,7 +43,7 @@ export function GoalsForm({ initial }: { initial: Goals }) {
         ))}
       </div>
       <div className="flex flex-wrap items-center gap-3">
-        <button type="submit" disabled={state === "saving"} className="tap-target rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50">
+        <button type="submit" disabled={state === "saving"} className="tap-target rounded-full bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50">
           {t`目標を保存`}
         </button>
         <p role="status" className={`text-lg font-bold ${state === "saved" ? "text-moss" : "text-danger"}`}>

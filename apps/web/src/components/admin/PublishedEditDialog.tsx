@@ -56,10 +56,10 @@ export function PublishedEditDialog({ name, onProceed, onCancel }: { name: strin
         {t`今後はこの確認を表示しない`}
       </label>
       <div className="mt-5 flex flex-wrap gap-2">
-        <button type="button" onClick={proceed} className="tap-target rounded-xl bg-ink px-5 text-lg font-bold text-paper">
+        <button type="button" onClick={proceed} className="tap-target rounded-full bg-ink px-5 text-lg font-bold text-paper">
           {t`編集して下書きに戻す`}
         </button>
-        <button type="button" onClick={onCancel} className="tap-target rounded-xl border-2 border-line px-5 text-lg font-bold">
+        <button type="button" onClick={onCancel} className="tap-target rounded-full border-2 border-line px-5 text-lg font-bold">
           {t`やめる`}
         </button>
       </div>
