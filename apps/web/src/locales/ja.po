@@ -2754,6 +2754,10 @@ msgstr "むずかしさを、ひとことで書く（任意）"
 msgid "メールアドレス"
 msgstr "メールアドレス"
 
+#: src/components/auth/EmailCodeStep.tsx:57
+msgid "メールを開いて番号を見たら、この画面にもどって入力してください。届かないときは、迷惑メールのフォルダも見てください。"
+msgstr "メールを開いて番号を見たら、この画面にもどって入力してください。届かないときは、迷惑メールのフォルダも見てください。"
+
 #: src/components/auth/EmailCodeStep.tsx:84
 msgid "メールアドレスを直す"
 msgstr "メールアドレスを直す"
