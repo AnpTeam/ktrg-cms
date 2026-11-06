@@ -1,5 +1,6 @@
 "use client";
 
+import { MapHelp } from "./MapHelp";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
@@ -172,6 +173,8 @@ export function MapScreenCanvas({
           style: mapStyleSource(settings),
           center: START_CENTER,
           zoom: 8.6,
+          // Tilted a little from the start, so the mountains read as a landscape. Three fingers change it (MapHelp).
+          pitch: 45,
           minZoom: zoomLimits.min,
           maxZoom: zoomLimits.max,
           dragRotate: false,
@@ -672,6 +675,7 @@ export function MapScreenCanvas({
             {sign === "in" ? <PlusIcon size={26} /> : <MinusIcon size={26} />}
           </button>
         ))}
+        <MapHelp />
         {user ? (
           <button
             type="button"

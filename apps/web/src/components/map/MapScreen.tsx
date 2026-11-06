@@ -294,8 +294,10 @@ export function MapScreen({
         <button
           type="button"
           onClick={() => openSheet(route ? "half" : "peek")}
-          style={{ bottom: bottomPx + 8 }}
-          className="tap-target absolute left-3 z-[6] flex items-center gap-2 rounded-full bg-paper px-4 text-lg font-bold text-ink shadow-[0_4px_16px_rgb(0_0_0/0.28)]"
+          // One place on the screen whatever is showing: the tab bar steps aside when a course is chosen, and the map box can
+          // change height, so this hangs from the same line as the tab bar and not from either of them.
+          style={{ top: `calc(100dvh - ${TAB_ROOM_REM + 0.5}rem - ${nav.toastPx}px)` }}
+          className="tap-target fixed left-3 z-[6] flex -translate-y-full items-center gap-2 rounded-full bg-paper px-4 text-lg font-bold text-ink shadow-[0_4px_16px_rgb(0_0_0/0.28)]"
         >
           <ChevronUpIcon size={22} />
           {route ? t`区間の情報を見る` : t`区間の一覧を見る`}

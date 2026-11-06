@@ -7331,3 +7331,31 @@ msgstr "メールを開いて番号を見たら、この画面にもどって入
 #: src/components/useErrorMessages.ts:27
 msgid "ログインできませんでした。この端末で顔・指紋のログインを設定していないときは、メールでログインしてください。"
 msgstr "ログインできませんでした。この端末で顔・指紋のログインを設定していないときは、メールでログインしてください。"
+
+#: src/components/map/MapHelp.tsx
+msgid "動かす"
+msgstr "動かす"
+
+#: src/components/map/MapHelp.tsx
+msgid "1本の指でなぞります。"
+msgstr "1本の指でなぞります。"
+
+#: src/components/map/MapHelp.tsx
+msgid "大きくする・小さくする"
+msgstr "大きくする・小さくする"
+
+#: src/components/map/MapHelp.tsx
+msgid "2本の指を広げたり、せばめたりします。"
+msgstr "2本の指を広げたり、せばめたりします。"
+
+#: src/components/map/MapHelp.tsx
+msgid "傾ける"
+msgstr "傾ける"
+
+#: src/components/map/MapHelp.tsx
+msgid "3本の指で、上下になぞります。"
+msgstr "3本の指で、上下になぞります。"
+
+#: src/components/map/MapHelp.tsx
+msgid "地図の使い方"
+msgstr "地図の使い方"

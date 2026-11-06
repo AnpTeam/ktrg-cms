@@ -7331,3 +7331,31 @@ msgstr "After you open the email and see the number, come back to this screen an
 #: src/components/useErrorMessages.ts:27
 msgid "ログインできませんでした。この端末で顔・指紋のログインを設定していないときは、メールでログインしてください。"
 msgstr "Could not log in. If you have not set up face or fingerprint login on this device, log in with email."
+
+#: src/components/map/MapHelp.tsx
+msgid "動かす"
+msgstr "Move"
+
+#: src/components/map/MapHelp.tsx
+msgid "1本の指でなぞります。"
+msgstr "Drag with one finger."
+
+#: src/components/map/MapHelp.tsx
+msgid "大きくする・小さくする"
+msgstr "Zoom in and out"
+
+#: src/components/map/MapHelp.tsx
+msgid "2本の指を広げたり、せばめたりします。"
+msgstr "Spread or pinch two fingers."
+
+#: src/components/map/MapHelp.tsx
+msgid "傾ける"
+msgstr "Tilt"
+
+#: src/components/map/MapHelp.tsx
+msgid "3本の指で、上下になぞります。"
+msgstr "Drag up or down with three fingers."
+
+#: src/components/map/MapHelp.tsx
+msgid "地図の使い方"
+msgstr "How to use the map"
