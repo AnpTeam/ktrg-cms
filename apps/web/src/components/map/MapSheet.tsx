@@ -140,7 +140,7 @@ export function MapSheet({
           ? undefined
           : {
               height: (hidden ? lastPx : height) + tabPx,
-              paddingTop: atTop ? "env(safe-area-inset-top)" : undefined,
+              paddingTop: atTop ? "var(--top-clear)" : undefined,
               transform: raised ? "translateY(0)" : "translateY(100%)",
               transition: dragPx === null ? `height ${SLIDE_MS}ms ease-out, transform ${SLIDE_MS}ms ease-out` : "none",
             }

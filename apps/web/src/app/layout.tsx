@@ -59,6 +59,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   return (
     <html lang={i18n.locale} data-theme={theme === "auto" ? undefined : theme} data-size={size} data-contrast={contrast ? "" : undefined} data-calm={calm ? "" : undefined} data-furigana={furigana ? "" : undefined}>
       <body>
+        {/* The solid band behind the status bar; hidden outside the installed app (globals.css). */}
+        <div aria-hidden="true" className="status-strip" />
         <LinguiClientProvider initialLocale={i18n.locale} initialMessages={i18n.messages}>
           <a
             href="#main"

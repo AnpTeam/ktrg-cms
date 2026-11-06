@@ -37,7 +37,7 @@ function UpdatePrompt() {
 
   if (!waiting || !serwist) return null;
   return (
-    <div role="status" className="fixed inset-x-3 top-[calc(0.5rem+env(safe-area-inset-top))] z-40 flex items-center gap-3 rounded-2xl bg-ink p-3 text-paper shadow-2xl md:inset-x-auto md:right-6 md:w-[24rem]">
+    <div role="status" className="fixed inset-x-3 top-[calc(0.5rem+var(--top-clear))] z-40 flex items-center gap-3 rounded-2xl bg-ink p-3 text-paper shadow-2xl md:inset-x-auto md:right-6 md:w-[24rem]">
       <p className="min-w-0 flex-1 text-base font-bold leading-snug">{t`新しいバージョンがあります。`}</p>
       <button type="button" onClick={() => serwist.messageSkipWaiting()} className="tap-target shrink-0 rounded-xl bg-paper px-4 text-base font-bold text-ink">
         {t`更新する`}

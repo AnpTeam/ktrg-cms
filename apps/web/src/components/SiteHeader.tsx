@@ -163,9 +163,9 @@ export function SiteHeader({
         // The bar is as wide as the tab bar at the bottom (same side gaps), with the logo in the middle.
         className={
           onMap
-            ? "pointer-events-none absolute inset-x-3 top-[calc(0.75rem+env(safe-area-inset-top))] md:hidden"
+            ? "pointer-events-none absolute inset-x-3 top-[calc(0.75rem+var(--top-clear))] md:hidden"
             : onLanding
-              ? `absolute inset-x-0 top-0 border-b border-line/30 bg-paper px-3 pb-1 pt-[calc(0.25rem+env(safe-area-inset-top))] transition-opacity md:hidden motion-reduce:transition-none ${hidden ? "pointer-events-none opacity-0" : ""}`
+              ? `absolute inset-x-0 top-0 border-b border-line/30 bg-paper px-3 pb-1 pt-[calc(0.25rem+var(--top-clear))] transition-opacity md:hidden motion-reduce:transition-none ${hidden ? "pointer-events-none opacity-0" : ""}`
               : "site-header-bar relative mb-3 border-b border-line/30 bg-paper px-3 py-1 md:hidden"
         }
       >
@@ -202,7 +202,7 @@ export function SiteHeader({
           id="site-menu"
           // A link to the page we are already on does not change the path, so close here to show the tap worked.
           onClick={(e) => e.target instanceof Element && e.target.closest("a") && setOpen(false)}
-          className="menu-drop fixed inset-0 overflow-y-auto overscroll-contain bg-surface pb-28 pt-[env(safe-area-inset-top)] md:inset-auto md:right-auto md:w-[26rem] md:max-h-[calc(100dvh-1.5rem)] md:rounded-2xl md:border-2 md:border-brand md:pb-0 md:pt-0 md:shadow-xl"
+          className="menu-drop fixed inset-0 overflow-y-auto overscroll-contain bg-surface pb-28 pt-[var(--top-clear)] md:inset-auto md:right-auto md:w-[26rem] md:max-h-[calc(100dvh-1.5rem)] md:rounded-2xl md:border-2 md:border-brand md:pb-0 md:pt-0 md:shadow-xl"
         >
           <div className="mx-auto flex max-w-xl flex-col gap-5 px-4 py-5">
             {/* From 768 px the bar is not drawn (the rail has the menu button), so the top row of the popover holds both. */}
