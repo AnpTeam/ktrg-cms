@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import {
   boundsOf,
+  englishMaxZoom,
   gsiAttribution,
   gsiTileListUrl,
   gsiTileUrl,
@@ -161,4 +162,13 @@ describe("side trips and pin size", () => {
     expect(pinScale(13)).toBeGreaterThan(pinScale(11));
     expect(pinScale(5)).toBe(0.8);
   });
+});
+
+test("the English map lies over the standard map, up to GSI's last English zoom", () => {
+  const ids = (s: ReturnType<typeof mapStyle>) => s.layers.map((l) => l.id);
+  const en = mapStyle({ ...defaultMapSettings, base: "std" }, "en");
+  expect(ids(en).indexOf("gsi-english")).toBe(ids(en).indexOf("gsi-base") + 1);
+  expect(en.layers.find((l) => l.id === "gsi-english")?.maxzoom).toBe(englishMaxZoom + 1);
+  expect(ids(mapStyle({ ...defaultMapSettings, base: "std" }, "ja"))).not.toContain("gsi-english");
+  expect(ids(mapStyle({ ...defaultMapSettings, base: "photo" }, "en"))).not.toContain("gsi-english");
 });
