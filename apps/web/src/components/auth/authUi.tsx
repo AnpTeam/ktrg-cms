@@ -40,7 +40,7 @@ export function ChoiceCard({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`tap-target flex min-h-[5rem] w-full items-center gap-4 rounded-2xl p-4 text-left disabled:opacity-60 ${
+      className={`tap-target flex min-h-[5rem] w-full items-center gap-4 rounded-full p-4 text-left disabled:opacity-60 ${
         primary ? "bg-ink text-paper" : "border border-ink bg-surface text-ink hover:bg-paper"
       }`}
     >

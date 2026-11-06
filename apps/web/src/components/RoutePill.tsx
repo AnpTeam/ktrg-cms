@@ -25,14 +25,14 @@ export function RoutePill({ route, name, place, photo, brief = false }: { route:
 
   return (
     <span className="@container relative block overflow-hidden rounded-[1.75rem] bg-surface">
-      <span className="absolute inset-y-0 right-0 block w-1/3 overflow-hidden @2xl:w-1/2">
+      <span className="absolute inset-y-0 right-0 block w-1/3 overflow-hidden @2xl:w-2/5">
         {/* A course that is not ready shows its photo blurred (the scale hides the soft edge), as in the course list. */}
         <span className={`absolute inset-0 block ${soon ? "scale-110 blur-[6px] saturate-50" : ""}`}>
           <RoutePhoto src={photo} alt="" />
         </span>
-        <span aria-hidden="true" className="absolute inset-0 bg-linear-to-r from-surface from-20% to-transparent to-85% @2xl:from-0% @2xl:to-70%" />
+        <span aria-hidden="true" className="absolute inset-0 bg-linear-to-r from-surface from-20% to-transparent to-85%" />
       </span>
-      <span className="relative flex items-center gap-3 p-3 pr-[22%] @2xl:gap-4 @2xl:p-4 @2xl:pr-[38%]">
+      <span className="relative flex items-center gap-3 p-3 pr-[22%] @2xl:gap-4 @2xl:p-4 @2xl:pr-[26%]">
         <span aria-hidden="true" className={`badge-pattern flex w-11 shrink-0 flex-col rounded-lg py-1 text-center text-lg font-bold leading-tight tabular-nums ${soon ? "bg-line/25 text-muted" : "bg-brand text-on-brand"}`}>
           <span>{order}</span>
           <span className={`mx-2 h-px ${soon ? "bg-muted" : "bg-on-brand"}`} />
