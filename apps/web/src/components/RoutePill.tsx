@@ -30,7 +30,7 @@ export function RoutePill({ route, name, place, photo, brief = false }: { route:
         </span>
         <span aria-hidden="true" className="absolute inset-0 bg-linear-to-r from-surface from-20% to-transparent to-85%" />
       </span>
-      <span className="relative flex min-h-[5.5rem] flex-col justify-center py-3 pl-4 pr-[34%] @2xl:py-4 @2xl:pl-5 @2xl:pr-[38%]">
+      <span className="relative flex min-h-24 flex-col justify-center py-3 pl-4 pr-[34%] @2xl:py-4 @2xl:pl-5 @2xl:pr-[38%]">
         {!brief || soon ? (
           <span className="flex flex-wrap items-center gap-x-2 text-base leading-snug text-muted">
             {place ? <span>{place}</span> : null}
