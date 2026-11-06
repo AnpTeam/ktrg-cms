@@ -1,10 +1,10 @@
 import { helpContent, type Help } from "./help-content";
-import { parsePageBody, writePageBody, type PageDoc, type PageKey, type PageText } from "./page-text";
+import { helpWith, ownText, policyWith, termsWith, type CustomPage, type OwnText, type Terms } from "./page-content";
+import { writePageBody, type PageKey, type PageText } from "./page-text";
 import { privacyPolicy, type Policy } from "./privacy-content";
 import { termsContent } from "./terms-content";
 
-// Server side: a fixed page's own text (see page-text.ts) laid over the page built into the app. A language with no
-// title or no body, or an API that cannot be reached, shows the built-in page, so a page never goes empty.
+// Server side: reads a fixed page's own text for page-content.ts. An API that cannot be reached shows the built-in page.
 
 async function savedPage(key: PageKey): Promise<PageText | null> {
   try {
@@ -16,46 +16,22 @@ async function savedPage(key: PageKey): Promise<PageText | null> {
   }
 }
 
-/** What the editor wrote for this visitor's language, read as a document; null when there is none (use the built-in page). */
-async function own(key: PageKey, locale: string): Promise<{ title: string; doc: PageDoc } | null> {
-  const lang = (await savedPage(key))?.[locale === "ja" ? "ja" : "en"];
-  return lang && lang.title.trim() !== "" && lang.body.trim() !== "" ? { title: lang.title.trim(), doc: parsePageBody(lang.body) } : null;
+async function own(key: PageKey, locale: string): Promise<OwnText> {
+  return ownText(await savedPage(key), locale);
 }
 
 /** The how-to-play page and the FAQ (and their titles), with the editor's text where there is some. */
 export async function helpFor(locale: string): Promise<Help> {
-  const help = helpContent(locale);
   const [guide, faq] = await Promise.all([own("guide", locale), own("faq", locale)]);
-  return {
-    ...help,
-    ...(guide ? { guideTitle: guide.title, guideIntro: guide.doc.lead.join("\n\n"), steps: guide.doc.sections.map((s) => ({ title: s.heading, text: s.paragraphs.join("\n\n") })), guideNote: guide.doc.note.join("\n\n") } : {}),
-    ...(faq ? { faqTitle: faq.title, faqs: faq.doc.sections.map((s) => ({ question: s.heading, answer: s.paragraphs.join("\n\n") })) } : {}),
-  };
+  return helpWith(locale, guide, faq);
 }
 
-/** The privacy policy: the editor's text has no draft notice or "updated" line of its own (the text says what it needs to). */
 export async function policyFor(locale: string): Promise<Policy> {
-  const mine = await own("privacy", locale);
-  if (!mine) return privacyPolicy(locale);
-  return { title: mine.title, draftNotice: "", updated: "", sections: [...(mine.doc.lead.length ? [{ heading: "", paragraphs: mine.doc.lead }] : []), ...mine.doc.sections] };
-}
-
-export interface Terms {
-  title: string;
-  /** Null when the editor wrote the page: its own text carries the date. */
-  updated: string | null;
-  lead: string;
-  intro: string[];
-  sections: { heading: string; paragraphs: string[] }[];
-  /** True when it is the built-in text (in Japanese only) and the page should say so, and carries the draft notice. */
-  builtIn: boolean;
+  return policyWith(locale, await own("privacy", locale));
 }
 
 export async function termsFor(locale: string): Promise<Terms> {
-  const mine = await own("terms", locale);
-  if (mine) return { title: mine.title, updated: null, lead: mine.doc.lead[0] ?? "", intro: mine.doc.lead.slice(1), sections: mine.doc.sections, builtIn: false };
-  const t = termsContent;
-  return { title: t.title, updated: t.updated, lead: t.lead, intro: [t.intro], sections: t.sections, builtIn: true };
+  return termsWith(await own("terms", locale));
 }
 
 /** What each page says now, written out as the editor's text, for the editor to start from. */
@@ -75,20 +51,6 @@ export function builtInPages(): Record<PageKey, PageText> {
   const terms = { title: termsContent.title, body: writePageBody({ lead: [termsContent.lead, termsContent.intro, `更新日：${termsContent.updated}`], sections: termsContent.sections, note: [] }) };
   // The terms are written in Japanese only; the English box starts empty (the English page shows the Japanese text and says so).
   return { faq: { ja: faq("ja"), en: faq("en") }, guide: { ja: guide("ja"), en: guide("en") }, privacy: { ja: privacy("ja"), en: privacy("en") }, terms: { ja: terms, en: { title: "", body: "" } } };
-}
-
-export interface CustomPage {
-  slug: string;
-  titleJa: string;
-  titleEn: string | null;
-  bodyJa?: string;
-  bodyEn?: string | null;
-}
-
-/** The page's title and text in the visitor's language: English when it is written and the visitor is not Japanese, else Japanese. */
-export function customPageIn(page: CustomPage, locale: string): { title: string; doc: PageDoc } {
-  const en = locale !== "ja" && page.titleEn ? page : null;
-  return { title: en ? page.titleEn! : page.titleJa, doc: parsePageBody(en && page.bodyEn ? page.bodyEn : (page.bodyJa ?? "")) };
 }
 
 /** A published page made in the admin (/p/<slug>), or null. */
@@ -112,3 +74,5 @@ export async function customPages(): Promise<CustomPage[]> {
     return [];
   }
 }
+
+export { customPageIn, type CustomPage, type Terms } from "./page-content";

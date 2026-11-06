@@ -24,7 +24,7 @@ export default async function EditPageText({ params }: { params: Promise<{ key: 
   const saved = body.pages[key as PageKey] ?? null;
   const builtIn = builtInPages()[key as PageKey];
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4">
+    <div className="mx-auto flex max-w-6xl flex-col gap-4">
       <AdminBack href="/admin/pages">
         <Trans>ページの文章へ戻る</Trans>
       </AdminBack>

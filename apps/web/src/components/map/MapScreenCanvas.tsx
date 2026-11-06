@@ -252,7 +252,7 @@ export function MapScreenCanvas({
       map?.remove();
       mapRef.current = null;
     };
-  }, [settings]);
+  }, [settings, i18n.locale]);
 
   // What is drawn: the rectangles (all of them, or only the chosen course) and the shown course's path.
   useEffect(() => {
