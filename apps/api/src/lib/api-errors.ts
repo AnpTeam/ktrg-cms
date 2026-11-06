@@ -41,7 +41,7 @@ export const ERROR_CODES = {
   invalid_line: "400: the route line is not a line inside Japan with 2 to 50,000 points",
   invalid_photo_url: "400: a photo address must be a link that starts with https://",
   route_has_places: "409: a route that still has places cannot be deleted",
-  spot_has_stamps: "409: a place that visitors have stamped cannot be deleted; unpublish it instead",
+  spot_has_stamps: "409: a place with stamps that are not revoked cannot be deleted; revoke them or unpublish it",
   no_coordinates: "409: the place has no position yet",
   position_not_verified: "409: the position has not been checked against an official source",
   source_required: "400: name the source when the position is marked as checked",
