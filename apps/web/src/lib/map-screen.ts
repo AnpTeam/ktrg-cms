@@ -55,7 +55,7 @@ export interface MapScreenStop {
   position: Position;
   /** What the place is; the map can show the sutra mounds on their own. */
   kind?: PointKind;
-  /** An optional visit beside the way (寄り道): its pin is smaller. */
+  /** An optional visit beside the way (寄り道): its pin has no number. */
   sideTrip?: boolean;
   /** A place where no stamp can be collected: a square pin, no stamp card in its sheet. */
   noStamp?: boolean;

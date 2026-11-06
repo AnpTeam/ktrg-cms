@@ -7359,3 +7359,11 @@ msgstr "Drag up or down with three fingers."
 #: src/components/map/MapHelp.tsx
 msgid "地図の使い方"
 msgstr "How to use the map"
+
+#: src/components/map/MapSheet.tsx
+msgid "たたむ"
+msgstr "Collapse"
+
+#: src/components/map/MapSheet.tsx
+msgid "ひらく"
+msgstr "Expand"

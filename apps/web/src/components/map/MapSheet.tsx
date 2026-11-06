@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { nextSnap, sheetHeightPx, snapAfterDrag, sheetSnaps, type SheetSnap } from "@/lib/map-screen";
-import { ChevronDownIcon, ChevronUpIcon } from "@/components/icons";
+import { ChevronDownIcon, ChevronIcon, ChevronLeftIcon, ChevronUpIcon } from "@/components/icons";
 
 /** How long the sheet takes to move between heights, and to slide in or out. */
 const SLIDE_MS = 240;
@@ -18,6 +18,9 @@ const SLIDE_MS = 240;
  */
 export function MapSheet({
   panel = false,
+  folded = false,
+  onFold,
+  rail,
   snap,
   onSnap,
   available,
@@ -28,6 +31,10 @@ export function MapSheet({
 }: {
   /** A desktop: not a bottom sheet to pull, but a panel floating at the left of the map. */
   panel?: boolean;
+  /** The panel folded to a narrow rail, which shows `rail` in place of the content. */
+  folded?: boolean;
+  onFold?: () => void;
+  rail?: ReactNode;
   snap: SheetSnap;
   onSnap: (snap: SheetSnap) => void;
   available: number;
@@ -131,22 +138,36 @@ export function MapSheet({
       aria-label={t`情報`}
       className={
         panel
-          ? "absolute bottom-3 left-3 top-3 z-[5] flex w-[26rem] flex-col rounded-3xl bg-paper shadow-[0_4px_24px_rgb(0_0_0/0.28)]"
-          : "absolute inset-x-0 bottom-0 z-[5] flex flex-col rounded-t-3xl bg-paper shadow-[0_-4px_24px_rgb(0_0_0/0.28)] motion-reduce:transition-none"
+          ? `absolute bottom-3 left-3 top-3 z-[5] flex flex-col overflow-hidden rounded-3xl bg-paper shadow-[0_4px_24px_rgb(0_0_0/0.28)] transition-[width] motion-reduce:transition-none ${folded ? "w-[4.5rem]" : "w-[26rem]"}`
+          : "absolute inset-x-0 bottom-0 z-[5] flex flex-col overflow-hidden rounded-t-3xl bg-paper shadow-[0_-4px_24px_rgb(0_0_0/0.28)] motion-reduce:transition-none"
       }
       inert={!panel && hidden}
       style={
         panel
           ? undefined
-          : {
+          : ({
               height: (hidden ? lastPx : height) + tabPx,
-              paddingTop: atTop ? "var(--top-clear)" : undefined,
+              paddingTop: atTop && header ? "var(--top-clear)" : undefined,
+              "--sheet-top": atTop ? "var(--top-clear)" : "0px",
               transform: raised ? "translateY(0)" : "translateY(100%)",
               transition: dragPx === null ? `height ${SLIDE_MS}ms ease-out, transform ${SLIDE_MS}ms ease-out` : "none",
-            }
+            } as CSSProperties)
       }
     >
-      {panel ? <div className="h-4 shrink-0" aria-hidden="true" /> : null}
+      {panel ? (
+        <button
+          type="button"
+          onClick={onFold}
+          aria-expanded={!folded}
+          className={`tap-target z-10 inline-flex items-center justify-center rounded-lg border border-ink bg-paper font-bold text-ink hover:bg-surface ${folded ? "mx-1 mt-2 shrink-0 flex-col text-base" : "absolute right-3 top-3 gap-1 px-3 text-lg"}`}
+        >
+          {folded ? <ChevronIcon /> : <ChevronLeftIcon />}
+          {folded ? t`ひらく` : t`たたむ`}
+        </button>
+      ) : null}
+      {folded ? rail : null}
+      <div className={folded ? "hidden" : "contents"}>
+      {panel && header ? <div className="h-[4.5rem] shrink-0" aria-hidden="true" /> : null}
       <div
         role="slider"
         tabIndex={0}
@@ -161,7 +182,9 @@ export function MapSheet({
         onPointerUp={up}
         onPointerCancel={up}
         onKeyDown={key}
-        className={`min-h-14 shrink-0 cursor-grab touch-none flex-col items-center justify-center gap-1 rounded-t-3xl pt-2 active:cursor-grabbing ${panel ? "hidden" : "flex"}`}
+        // With a banner it lies over the photo, so the photo reaches the top of the sheet.
+        style={header ? undefined : { top: "var(--sheet-top)" }}
+        className={`min-h-14 shrink-0 cursor-grab touch-none flex-col items-center justify-center gap-1 rounded-t-3xl pt-2 active:cursor-grabbing ${panel ? "hidden" : "flex"} ${header ? "" : "absolute inset-x-0 z-10"}`}
       >
         <span aria-hidden="true" className="h-1.5 w-12 rounded-full bg-muted/60" />
         <span className="inline-flex items-center gap-2 rounded-full bg-surface px-4 py-1 text-base font-bold text-ink">
@@ -172,6 +195,7 @@ export function MapSheet({
       {header ? <div className="shrink-0 px-4 pb-2">{header}</div> : null}
       <div ref={body} className="min-h-0 flex-1 overflow-y-auto overscroll-contain" style={{ paddingBottom: tabPx + 24 }}>
         {children}
+      </div>
       </div>
     </section>
   );

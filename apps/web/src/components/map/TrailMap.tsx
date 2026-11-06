@@ -47,7 +47,7 @@ export interface MapStop {
   status: SpotStatus;
   /** The spot page, already with the locale. */
   href: string;
-  /** An optional visit beside the way (寄り道): its pin is drawn smaller, and its line thin, dashed and blue. */
+  /** An optional visit beside the way (寄り道): its pin has no number, and its line is thin, dashed and blue. */
   sideTrip?: boolean;
   /** A place where no stamp can be collected (a toilet, a station ...): a square pin, never "next to stamp". */
   noStamp?: boolean;
@@ -303,7 +303,7 @@ export function TrailMap({
           onSelect: () => setSelected({ kind: "stop", id: stop.id }),
         });
         buttons.set(`stop:${stop.id}`, el);
-        put(el, stop.position, stop.sideTrip ? "center" : "bottom");
+        put(el, stop.position, "bottom");
       } else {
         const orders = members.flatMap((m) => (m.order === null ? [] : [m.order]));
         const text = orders.length > 1 ? `${Math.min(...orders)}–${Math.max(...orders)}` : String(members.length);
