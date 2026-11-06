@@ -42,7 +42,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     openGraph: { type: "website", siteName: site, title: home, description },
     // Added to the iPhone's home screen it opens like an app. No status-bar-style on purpose: iOS 26.1 and 27 blur the top of the page under both black-translucent and (tried 2026-10-30, on a real phone) default, and WebKit's answer on bug 317153 is to leave the tag out. iOS reads this when the app is added, so an installed copy must be deleted and added again.
-    appleWebApp: { capable: true, title: site },
+    appleWebApp: { capable: true, title: site, statusBarStyle: "black-translucent" },
   };
 }
 
