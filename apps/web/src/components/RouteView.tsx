@@ -1,3 +1,4 @@
+import { CoverWatch } from "@/components/CoverWatch";
 import type { ReactNode } from "react";
 import Image from "next/image";
 import { Trans } from "@lingui/react/macro";
@@ -149,6 +150,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             // data-cover: on a phone the top bar goes see-through and this photo runs up behind it to the top of the screen; in the
             // installed app it also runs behind the Dynamic Island (globals.css).
             <div data-cover className="relative order-1 aspect-[4/3] w-full overflow-hidden bg-surface @4xl:order-none @4xl:aspect-video @4xl:rounded-2xl">
+              <CoverWatch />
               <Image src={photo.src} alt={photo.alt} fill priority sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" unoptimized={photo.src.startsWith("https://")} />
               <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-b from-transparent to-paper @4xl:hidden" />
               {/* In line with the back button (the top bar's row); lower only where the sample notice button holds that corner. */}
@@ -182,7 +184,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             // Solid background on purpose: a see-through bar at the top edge brings back iOS's status-bar blur (globals.css).
             // The bookmark, then links to the parts of a long page. It stays at the top while scrolling on a phone; two columns
             // show everything at once. The bookmark stays put while the links scroll sideways on a narrow screen.
-            <nav aria-label={jumpLabel} className="sticky top-[env(safe-area-inset-top)] z-20 order-3 flex items-center border-b border-line/30 bg-paper py-2 @4xl:hidden">
+            <nav aria-label={jumpLabel} className="sticky top-[var(--top-clear)] z-20 order-3 flex items-center border-b border-line/30 bg-paper py-2 @4xl:hidden">
               {bookmarkable ? (
                 <div className="shrink-0 border-r border-line pl-4 pr-3">
                   <BookmarkButton routeId={route.id} compact />
@@ -242,7 +244,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           ) : null}
 
           {access || journey || route.accessPoints.length > 0 ? (
-            <section id="access" className="order-8 flex flex-col gap-4 px-4 scroll-mt-[calc(5rem+env(safe-area-inset-top))] @4xl:order-none @4xl:px-0">
+            <section id="access" className="order-8 flex flex-col gap-4 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:px-0">
               <h2 className="text-xl font-bold">
                 <Trans>アクセス・交通</Trans>
               </h2>
@@ -275,7 +277,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           {offline ? <section className="order-7 px-4 @4xl:order-none @4xl:px-0">{offline}</section> : null}
 
           {video || videoFile ? (
-            <section id="video" className="order-9 flex flex-col gap-3 px-4 scroll-mt-[calc(5rem+env(safe-area-inset-top))] @4xl:order-none @4xl:px-0">
+            <section id="video" className="order-9 flex flex-col gap-3 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:px-0">
               <h2 className="text-xl font-bold">
                 <Trans>ルートの動画</Trans>
               </h2>
@@ -289,7 +291,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           ) : null}
 
           {stops.length > 0 ? (
-            <section id="map" className="order-6 px-4 scroll-mt-[calc(5rem+env(safe-area-inset-top))] @4xl:order-none @4xl:px-0">
+            <section id="map" className="order-6 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:px-0">
               <TrailMapLoader stops={stops} line={route.line} sideLines={route.sideLines?.map((s) => s.line)} places={mapPlaces} draft={draftPositions} settings={settings} mergeStops={mergeStops} placesFirst={placesFirst} />
             </section>
           ) : null}
@@ -301,7 +303,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               </EmptyState>
             </div>
           ) : (
-            <section id="walk" className="order-5 scroll-mt-[calc(5rem+env(safe-area-inset-top))] @4xl:order-none">
+            <section id="walk" className="order-5 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none">
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 px-4 pb-2 @4xl:px-0">
                 <h2 className="text-xl font-bold">
                   <Trans>道のり</Trans>

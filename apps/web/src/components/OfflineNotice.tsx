@@ -22,7 +22,7 @@ export function OfflineNotice() {
   if (online) return null;
 
   return (
-    <div role="status" className="sticky top-0 z-40 mb-3 bg-ink px-4 py-3 text-center text-lg font-bold text-paper">
+    <div role="status" className="sticky top-[var(--top-clear)] z-40 mb-3 bg-ink px-4 py-3 text-center text-lg font-bold text-paper">
       {t`いま、通信がつながっていません。つながると、また使えます。`}
     </div>
   );

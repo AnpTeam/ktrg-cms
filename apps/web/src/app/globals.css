@@ -964,10 +964,10 @@ body.map-screen-active .site-footer {
 /* The cover photo's © button: in the top bar's row, level with the back button (the bar starts below the status bar in the
    installed app). Where the sample notice button holds that corner (sample content only), one row lower. */
 .cover-credit > details {
-  top: calc(0.125rem + env(safe-area-inset-top));
+  top: calc(0.125rem + var(--top-clear));
 }
 body:has([data-sample-notice]) .cover-credit > details {
-  top: calc(4rem + env(safe-area-inset-top));
+  top: calc(4rem + var(--top-clear));
 }
 @media (min-width: 768px) {
   .cover-credit > details,
@@ -1089,17 +1089,45 @@ body:has([data-sample-notice]) .cover-credit > details {
   }
 }
 
-/* iOS 26+/27 draws its own blur over the status area of an installed web app, and we leave it there (decided 2026-11-06): a
-   solid full-width bar at the top edge swaps it for a flat band, which also covers the map and the cover photo. The status-bar-style
-   tag stays out on purpose. The page starts below the status bar, except where a map or a cover photo runs up under it. */
+/* The installed app draws behind the status bar (black-translucent, decided 2026-11-06), so the map and a route's cover photo
+   really run behind the Dynamic Island. iOS lays a soft blur over the top of the screen, and no CSS turns it off. It runs about
+   30 pt past the status bar, so --top-clear is where the page's own controls may start: below the blur, not in it (measured
+   on the user's iPhone; shortcut: 2rem is that one phone's reading, check it on other models). A plain page keeps a solid strip
+   that tall, because blur over one flat colour cannot be seen; the map and the cover photo go without it, and the strip comes
+   back once the photo has gone (CoverWatch). */
+:root {
+  --top-clear: env(safe-area-inset-top);
+}
+.status-strip {
+  display: none;
+}
+@media (display-mode: standalone) and (max-width: 767px) {
+  :root {
+    --top-clear: calc(env(safe-area-inset-top) + 2rem);
+  }
+}
 @media (display-mode: standalone) {
   body:not(.map-screen-active, :has(.map-screen), :has([data-cover])) {
-    padding-top: env(safe-area-inset-top);
+    padding-top: var(--top-clear);
+  }
+  .status-strip {
+    display: block;
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: var(--top-clear);
+    background-color: var(--color-paper);
+    z-index: 20;
+    pointer-events: none;
+  }
+  body.map-screen-active .status-strip,
+  body:has(.map-screen) .status-strip,
+  body:has([data-cover]):not(.cover-gone) .status-strip {
+    display: none;
   }
 }
 @media (display-mode: standalone) and (max-width: 767px) {
   body:has([data-cover]) .site-header-bar {
-    padding-top: calc(0.25rem + env(safe-area-inset-top));
+    padding-top: calc(0.25rem + var(--top-clear));
   }
 }
 
