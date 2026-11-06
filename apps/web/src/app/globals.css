@@ -1090,9 +1090,9 @@ body:has([data-sample-notice]) .cover-credit > details {
 }
 
 /* The installed app draws behind the status bar (black-translucent, decided 2026-11-06), so the map and a route's cover photo
-   really run behind the Dynamic Island. iOS lays a soft blur over the top of the screen, and no CSS turns it off. It runs about
-   30 pt past the status bar, so --top-clear is where the page's own controls may start: below the blur, not in it (measured
-   on the user's iPhone; shortcut: 2rem is that one phone's reading, check it on other models). A plain page keeps a solid strip
+   really run behind the Dynamic Island. iOS lays a soft blur over the top of the screen, and no CSS turns it off. It fades out
+   about 20 pt past the status bar, so --top-clear is where the page's own controls may start: below the blur, not in it (measured
+   on the user's iPhone; shortcut: 1.25rem is that one phone's reading, check it on other models). A plain page keeps a solid strip
    that tall, because blur over one flat colour cannot be seen; the map and the cover photo go without it, and the strip comes
    back once the photo has gone (CoverWatch). */
 :root {
@@ -1103,10 +1103,15 @@ body:has([data-sample-notice]) .cover-credit > details {
 }
 @media (display-mode: standalone) and (max-width: 767px) {
   :root {
-    --top-clear: calc(env(safe-area-inset-top) + 2rem);
+    --top-clear: calc(env(safe-area-inset-top) + 1.25rem);
   }
 }
 @media (display-mode: standalone) {
+  /* Drawing behind the status bar, iOS shrinks the viewport by the status bar on a page shorter than the screen, which lifted
+     the tab bar about 60 pt while a page was loading. A document always taller than the screen stops that. */
+  html {
+    min-height: calc(100% + env(safe-area-inset-top));
+  }
   body:not(.map-screen-active, :has(.map-screen), :has([data-cover])) {
     padding-top: var(--top-clear);
   }
