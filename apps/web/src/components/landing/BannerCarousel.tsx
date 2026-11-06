@@ -35,12 +35,12 @@ export function BannerCarousel({ slides }: { slides: BannerSlide[] }) {
     "absolute top-1/2 flex size-12 -translate-y-1/2 items-center justify-center rounded-full bg-paper/90 text-ink shadow disabled:opacity-40";
 
   return (
-    <section aria-roledescription="carousel" aria-label={t`写真`} className="px-4">
+    <section aria-roledescription="carousel" aria-label={t`写真`}>
       <div className="relative">
         <ul
           ref={track}
           onScroll={onScroll}
-          className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain rounded-3xl [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
           {slides.map((slide, i) => (
             <li
@@ -48,14 +48,14 @@ export function BannerCarousel({ slides }: { slides: BannerSlide[] }) {
               role="group"
               aria-roledescription="slide"
               aria-label={`${i + 1} / ${count}`}
-              className="relative aspect-[16/10] w-full shrink-0 snap-center"
+              className="relative aspect-[16/10] w-full shrink-0 snap-center @[42rem]:aspect-auto @[42rem]:h-[30rem]"
             >
               {slide.src ? (
                 <Image
                   src={slide.src}
                   alt={i18n.locale === "ja" ? slide.altJa : slide.altEn}
                   fill
-                  sizes="(min-width: 36rem) 36rem, 100vw"
+                  sizes="100vw"
                   priority={i === 0}
                   // Banners are https links (R2 or pasted), on hosts next/image is not configured for: shown as they are.
                   unoptimized
