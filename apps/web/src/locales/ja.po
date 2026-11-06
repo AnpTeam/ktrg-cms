@@ -2596,8 +2596,8 @@ msgstr "ほかのコースの経由地を加える"
 
 #: src/components/auth/RegisterFlow.tsx:115
 #: src/components/settings/PasskeyManager.tsx:180
-msgid "ほかのアプリに保存するときは、表示される画面で選んでください。"
-msgstr "ほかのアプリに保存するときは、表示される画面で選んでください。"
+msgid "ほかのパスキーアプリを使うときは、表示される画面で選んでください。"
+msgstr "ほかのパスキーアプリを使うときは、表示される画面で選んでください。"
 
 #: src/components/admin/map-editor/MapEditor.tsx:824
 msgid "ほかの乗り物"

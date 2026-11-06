@@ -2596,8 +2596,8 @@ msgstr "Add a waypoint from another course"
 
 #: src/components/auth/RegisterFlow.tsx:115
 #: src/components/settings/PasskeyManager.tsx:180
-msgid "ほかのアプリに保存するときは、表示される画面で選んでください。"
-msgstr "To save it in a different app, choose it on the screen that appears."
+msgid "ほかのパスキーアプリを使うときは、表示される画面で選んでください。"
+msgstr "To use a different passkey app, choose it on the screen that appears."
 
 #: src/components/admin/map-editor/MapEditor.tsx:824
 msgid "ほかの乗り物"
