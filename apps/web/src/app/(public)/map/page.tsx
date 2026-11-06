@@ -36,6 +36,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
       .map(async (r): Promise<MapScreenRoute> => {
         const name = pickText(locale, r.nameJa, r.nameEn);
         let stops: MapScreenStop[] | null = null;
+        let walkStyle: MapScreenRoute["walkStyle"] = null;
         let line: MapScreenRoute["line"] = null;
         let hasLine = false;
         let sideLines: NonNullable<MapScreenRoute["sideLines"]> = [];
@@ -81,7 +82,9 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
             draft = positioned.some((s) => !s.position?.verified);
             // Each place of the course already carries what its sheet shows: no request per place.
             const trail = trailStops(detail);
-            const roles = stopRoles(journeyOf(trail, detail.walkStyle ?? null));
+            const journey = journeyOf(trail, detail.walkStyle ?? null);
+            walkStyle = journey?.style ?? null;
+            const roles = stopRoles(journey);
             stops = trail
               .map((t): MapScreenStop | null => {
                 const item = t.type === "stamp" ? t.spot : t.point;
@@ -172,6 +175,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
           spots,
           href: `/routes/${r.id}`,
           stops,
+          walkStyle,
           line,
           hasLine,
           sideLines,

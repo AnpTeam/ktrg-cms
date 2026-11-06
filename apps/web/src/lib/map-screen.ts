@@ -1,3 +1,4 @@
+import type { WalkStyle } from "@/lib/walk-style";
 import type { AccessPoint } from "./access-points";
 import type { SpotStatus } from "./content";
 import type { Position } from "./map";
@@ -106,6 +107,8 @@ export interface MapScreenRoute {
   difficulty: string | null;
   physicalLevel: number | null;
   technicalLevel: TechnicalLevel | null;
+  /** One way, loop or there and back; known once the course has stops on the map. */
+  walkStyle?: WalkStyle | null;
   /** "soon" = no published spots yet. */
   status: "ready" | "soon";
   spotCount: number;
