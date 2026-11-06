@@ -7,8 +7,8 @@ describe("buildOtpEmail", () => {
   test("English", () => {
     const m = buildOtpEmail({ ...base, locale: "en" });
     expect(m.to).toBe("a@example.com");
-    expect(m.subject).toBe("[KTRG] Your verification code");
-    expect(m.text).toContain("Enter this code to sign in to KTRG.");
+    expect(m.subject).toBe("[Katsuragi Shugen] Your verification code");
+    expect(m.text).toContain("Enter this code to sign in to Katsuragi Shugen.");
     expect(m.text).toContain("042137");
     expect(m.text).toContain("valid for 10 minutes");
     expect(m.html).toContain('<html lang="en">');
@@ -17,7 +17,7 @@ describe("buildOtpEmail", () => {
 
   test("Japanese", () => {
     const m = buildOtpEmail({ ...base, locale: "ja" });
-    expect(m.subject).toBe("【KTRG】確認コード");
+    expect(m.subject).toBe("【葛城修験】確認番号");
     expect(m.text).toContain("042137");
     expect(m.text).toContain("10分間有効");
     expect(m.text).toContain("心当たりがない場合");

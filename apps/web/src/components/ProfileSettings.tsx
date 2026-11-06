@@ -179,7 +179,7 @@ export function ProfileSettings({
       <section className="flex flex-col gap-2">
         <h2 className="px-4 text-xl font-bold text-accent">{t`ログイン`}</h2>
         <Link href="/settings/passkeys" className={`mx-4 flex items-center justify-between rounded-3xl bg-surface ${rowBox}`}>
-          <span className="text-lg font-bold">{t`ログインの方法（パスキー）`}</span>
+          <span className="text-lg font-bold">{t`ログインの方法`}</span>
           <ChevronIcon />
         </Link>
       </section>

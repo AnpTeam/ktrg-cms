@@ -966,8 +966,8 @@ msgid "いまは、ここでスタンプを押せません。"
 msgstr "Stamps can't be collected here right now."
 
 #: src/components/settings/LoginMethods.tsx:48
-msgid "いまは、パスキーだけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
-msgstr "You currently sign in with a passkey only. If you add an email, you can still sign in with an emailed code if you lose your device."
+msgid "いまは、顔・指紋だけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
+msgstr "You currently log in with your face or fingerprint only. If you add an email, you can still log in with an emailed number if you lose your device."
 
 #: src/components/admin/LargeStyleUpload.tsx:78
 msgid "いまは、初めから入っている設定を使っています。"
@@ -1262,12 +1262,12 @@ msgid "このGPXファイルには、標高のある道すじがないか、今�
 msgstr "This GPX file has no track with elevations, or it hardly overlaps the current line."
 
 #: src/components/settings/PasskeyManager.tsx:111
-msgid "このアカウントに、パスキーはまだありません。"
-msgstr "This account has no passkeys yet."
+msgid "このアカウントでは、顔・指紋のログインをまだ使っていません。"
+msgstr "This account does not use face or fingerprint login yet."
 
 #: src/components/useErrorMessages.ts:24
-msgid "このアカウントには、パスキーがありません。メールの番号で確認してください。"
-msgstr "This account has no passkey. Confirm with the number sent to your email."
+msgid "このアカウントでは、顔・指紋のログインを使っていません。メールの番号で確認してください。"
+msgstr "This account does not use face or fingerprint login. Confirm with the number sent to your email."
 
 #: src/components/useErrorMessages.ts:23
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
@@ -1312,12 +1312,12 @@ msgid "このデータについて"
 msgstr "About this data"
 
 #: src/components/settings/PasskeyManager.tsx:193
-msgid "このパスキーは、消せません"
-msgstr "This passkey can't be removed"
+msgid "このログインは、消せません"
+msgstr "This login can't be removed"
 
 #: src/components/settings/PasskeyManager.tsx:205
-msgid "このパスキーを消しますか？"
-msgstr "Remove this passkey?"
+msgid "この顔・指紋のログインを消しますか？"
+msgstr "Remove this face or fingerprint login?"
 
 #: src/components/admin/LargeStyleUpload.tsx:54
 msgid "このファイルの設定を、すぐにすべての訪問者の地図に反映します。よろしいですか？"
@@ -1550,12 +1550,12 @@ msgid "この端末・ブラウザでは、位置情報を使えません。"
 msgstr "This device or browser can't use location."
 
 #: src/components/settings/PasskeyManager.tsx:181
-msgid "この端末・ブラウザではパスキーを使えません。"
-msgstr "This device or browser can't use passkeys."
+msgid "この端末では、顔・指紋のログインを使えません。"
+msgstr "This device can't use face or fingerprint login."
 
 #: src/components/useErrorMessages.ts:70
-msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
-msgstr "Passkeys cannot be used on this device or browser. Please try email instead."
+msgid "この端末では、顔・指紋のログインを使えません。メールでお試しください。"
+msgstr "This device can't use face or fingerprint login. Please try email instead."
 
 #: src/components/navigation/NavigationHud.tsx:340
 msgid "この端末では、振動は使えません。"
@@ -1687,8 +1687,8 @@ msgid "コメントを書くには、ログインが必要です。"
 msgstr "You need to log in to write a comment."
 
 #: src/components/settings/PasskeyManager.tsx:195
-msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
-msgstr "This is the only way to sign in to this account. If you remove it, you won't be able to sign in. Add an email address or another passkey first."
+msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別の端末の顔・指紋のログインを追加してください。"
+msgstr "This is the only way to log in to this account. If you remove it, you won't be able to log in. Add an email address, or a face or fingerprint login on another device, first."
 
 #: src/components/admin/SiteSettingsForm.tsx:109
 msgid "コントラスト"
@@ -2299,28 +2299,28 @@ msgid "バス"
 msgstr "Bus"
 
 #: src/components/settings/PasskeyManager.tsx:146
-msgid "パスキー {number}"
-msgstr "Passkey {number}"
+msgid "顔・指紋のログイン {number}"
+msgstr "Face or fingerprint login {number}"
 
 #: src/components/settings/PasskeyManager.tsx:125
-msgid "パスキーの名前"
-msgstr "Passkey name"
+msgid "端末の名前"
+msgstr "Device name"
 
 #: src/components/useErrorMessages.ts:71
-msgid "パスキーの確認が中止されました。もう一度お試しください。"
-msgstr "The passkey check was cancelled. Please try again."
+msgid "顔・指紋の確認が中止されました。もう一度お試しください。"
+msgstr "The face or fingerprint check was cancelled. Please try again."
 
 #: src/components/useErrorMessages.ts:29
-msgid "パスキーは、これ以上ふやせません。使わないものを消してから、お試しください。"
-msgstr "You can't add more passkeys. Remove one you don't use and try again."
+msgid "顔・指紋のログインは、これ以上ふやせません。使わないものを消してから、お試しください。"
+msgstr "You can't add any more face or fingerprint logins. Remove one you don't use and try again."
 
 #: src/app/(public)/settings/passkeys/page.tsx:31
-msgid "パスキーは、顔や指紋でログインするための鍵です。この端末のものを追加すると、メールを待たずにログインできます。"
-msgstr "A passkey lets you log in with your face or fingerprint. Add one for this device and you can log in without waiting for an email."
+msgid "この端末で設定すると、顔や指紋で、メールを待たずにログインできます。画面に「パスキー」と出ることがありますが、同じものです。"
+msgstr "Set this up on this device and you can log in with your face or fingerprint, without waiting for an email. Your phone may call this a \"passkey\"; it is the same thing."
 
 #: src/components/settings/PasskeyManager.tsx:177
-msgid "パスキーを追加する"
-msgstr "Add a passkey"
+msgid "顔・指紋のログインを追加する"
+msgstr "Add face or fingerprint login"
 
 #: src/components/admin/DirectoryPicker.tsx:147
 #: src/components/admin/RelationPicker.tsx:87
@@ -2594,8 +2594,8 @@ msgid "ほかにもあります。もう少し入れて絞ってください。"
 msgstr "There are more. Type a little more to narrow them down."
 
 #: src/components/useErrorMessages.ts:30
-msgid "ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。"
-msgstr "This passkey can't be removed because it is your only way to log in. Set up email or another passkey first."
+msgid "ほかにログインの方法がないので、これは消せません。先にメールか、別の端末の顔・指紋のログインを使えるようにしてください。"
+msgstr "This can't be removed because it is your only way to log in. Set up email, or a face or fingerprint login on another device, first."
 
 #: src/components/admin/SharedPlaces.tsx:94
 #: src/components/admin/SharedPlaces.tsx:95
@@ -3241,8 +3241,8 @@ msgid "ログインする"
 msgstr "Log in"
 
 #: src/components/useErrorMessages.ts:27
-msgid "ログインできませんでした。この端末にパスキーがないときは、メールでログインしてください。"
-msgstr "Could not log in. If this device has no passkey, log in with email."
+msgid "ログインできませんでした。この端末で顔・指紋のログインを設定していないときは、メールでログインしてください。"
+msgstr "Could not log in. If you have not set up face or fingerprint login on this device, log in with email."
 
 #: src/app/(public)/settings/passkeys/page.tsx:12
 #: src/app/(public)/settings/passkeys/page.tsx:26
@@ -3251,8 +3251,8 @@ msgid "ログインの方法"
 msgstr "Ways to log in"
 
 #: src/components/ProfileSettings.tsx:182
-msgid "ログインの方法（パスキー）"
-msgstr "Ways to log in (passkeys)"
+msgid "ログインの方法"
+msgstr "Ways to log in"
 
 #: src/components/settings/PasskeyManager.tsx:198
 msgid "わかりました"

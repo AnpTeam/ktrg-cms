@@ -17,15 +17,15 @@ export function buildDeletionRequestEmail(opts: { to: string; locale: EmailLocal
       preheader: "アカウントと、集めたスタンプなどのデータが削除されます。",
       heading,
       intro: [
-        "あなたのアカウントの削除リクエストを受け付けました。アカウントと、集めたスタンプやパスキーなどのデータは、3日後にすべて削除されます。それまでは取り消せます。",
+        "あなたのアカウントの削除リクエストを受け付けました。アカウントと、集めたスタンプなどのデータは、3日後にすべて削除されます。それまでは取り消せます。",
       ],
       details: [
         { label: "日時", value: when },
         { label: "削除される日時", value: due },
       ],
       footnotes: [
-        "削除されるまでは取り消せます。KTRGにログインし、設定から削除リクエストを取り消してください。",
-        "心当たりがない場合は、すぐにKTRGにログインして削除リクエストを取り消し、パスキーを確認してください。",
+        "削除されるまでは取り消せます。葛城修験にログインし、設定から削除リクエストを取り消してください。",
+        "心当たりがない場合は、すぐに葛城修験にログインして削除リクエストを取り消し、ログインの方法を確認してください。",
       ],
     });
   }
@@ -36,15 +36,15 @@ export function buildDeletionRequestEmail(opts: { to: string; locale: EmailLocal
     preheader: "Your account and its data, such as your stamps, will be deleted.",
     heading,
     intro: [
-      "We received a request to delete your account. Your account and all its data, such as your stamps and passkeys, will be deleted in 3 days. Until then you can cancel.",
+      "We received a request to delete your account. Your account and all its data, such as your stamps, will be deleted in 3 days. Until then you can cancel.",
     ],
     details: [
       { label: "When", value: when },
       { label: "Deleted on", value: due },
     ],
     footnotes: [
-      "Until then you can change your mind: sign in to KTRG and cancel the request in your settings.",
-      "If this was not you, sign in to KTRG right away, cancel the request and review your passkeys.",
+      "Until then you can change your mind: sign in to Katsuragi Shugen and cancel the request in your settings.",
+      "If this was not you, sign in to Katsuragi Shugen right away, cancel the request and review your ways to log in.",
     ],
   });
 }

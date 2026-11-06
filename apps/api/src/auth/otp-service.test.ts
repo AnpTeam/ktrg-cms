@@ -92,9 +92,9 @@ describe("otp request", () => {
     const { service, sent } = setup();
     await service.request("a@example.com", "en");
     await service.request("b@example.com");
-    expect(sent[0]!.subject).toBe("[KTRG] Your verification code");
+    expect(sent[0]!.subject).toBe("[Katsuragi Shugen] Your verification code");
     expect(sent[0]!.html).toContain('<html lang="en">');
-    expect(sent[1]!.subject).toBe("【KTRG】確認コード");
+    expect(sent[1]!.subject).toBe("【葛城修験】確認番号");
   });
 });
 

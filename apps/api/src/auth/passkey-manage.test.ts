@@ -78,9 +78,9 @@ describe("alert email on add", () => {
     await addPasskey(taro, "Taroのスマホ");
 
     expect(sent).toHaveLength(2);
-    expect(sent[0]).toMatchObject({ to: "alice@example.com", subject: "[KTRG] A passkey was added to your account" });
+    expect(sent[0]).toMatchObject({ to: "alice@example.com", subject: "[Katsuragi Shugen] A face or fingerprint login was added to your account" });
     expect(sent[0]!.text).toContain("Name: My iPhone");
-    expect(sent[1]).toMatchObject({ to: "taro@example.com", subject: "【KTRG】パスキーが追加されました" });
+    expect(sent[1]).toMatchObject({ to: "taro@example.com", subject: "【葛城修験】顔・指紋のログインが追加されました" });
   });
 
   test("a passkey-only account has no email, so nothing is sent", async () => {
@@ -125,7 +125,7 @@ describe("remove", () => {
 
     expect((await service.list(alice)).map((p) => p.label)).toEqual(["Phone"]);
     expect(sent).toHaveLength(1);
-    expect(sent[0]).toMatchObject({ to: "alice@example.com", subject: "[KTRG] A passkey was removed from your account" });
+    expect(sent[0]).toMatchObject({ to: "alice@example.com", subject: "[Katsuragi Shugen] A face or fingerprint login was removed from your account" });
     expect(sent[0]!.text).toContain("Name: Old laptop");
   });
 

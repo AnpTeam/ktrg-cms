@@ -8,8 +8,8 @@ describe("buildPasskeyAlertEmail", () => {
   test("English: added", () => {
     const m = buildPasskeyAlertEmail({ ...base, locale: "en", action: "added", label: "My iPhone" });
     expect(m.to).toBe("a@example.com");
-    expect(m.subject).toBe("[KTRG] A passkey was added to your account");
-    expect(m.text).toContain("A passkey was added to your account.");
+    expect(m.subject).toBe("[Katsuragi Shugen] A face or fingerprint login was added to your account");
+    expect(m.text).toContain("A face or fingerprint login was added to your account.");
     expect(m.text).toContain("Name: My iPhone");
     expect(m.text).toContain("(JST)");
     expect(m.text).toContain("If this was not you");
@@ -17,16 +17,16 @@ describe("buildPasskeyAlertEmail", () => {
 
   test("English: removed", () => {
     const m = buildPasskeyAlertEmail({ ...base, locale: "en", action: "removed", label: null });
-    expect(m.subject).toBe("[KTRG] A passkey was removed from your account");
-    expect(m.text).toContain("A passkey was removed from your account.");
+    expect(m.subject).toBe("[Katsuragi Shugen] A face or fingerprint login was removed from your account");
+    expect(m.text).toContain("A face or fingerprint login was removed from your account.");
   });
 
   test("Japanese: added and removed", () => {
     const added = buildPasskeyAlertEmail({ ...base, locale: "ja", action: "added", label: "iPhone" });
     const removed = buildPasskeyAlertEmail({ ...base, locale: "ja", action: "removed", label: "iPhone" });
-    expect(added.subject).toBe("【KTRG】パスキーが追加されました");
+    expect(added.subject).toBe("【葛城修験】顔・指紋のログインが追加されました");
     expect(added.text).toContain("名前: iPhone");
-    expect(removed.subject).toBe("【KTRG】パスキーが削除されました");
+    expect(removed.subject).toBe("【葛城修験】顔・指紋のログインが削除されました");
     expect(removed.text).toContain("心当たりがない場合");
   });
 
@@ -73,10 +73,10 @@ describe("buildPasskeyAlertEmail html", () => {
     const en = buildPasskeyAlertEmail({ ...base, locale: "en", action: "added", label: "My iPhone" });
     const ja = buildPasskeyAlertEmail({ ...base, locale: "ja", action: "removed", label: "iPhone" });
     expect(en.html).toContain('<html lang="en">');
-    expect(en.html).toContain("A passkey was added to your account");
+    expect(en.html).toContain("A face or fingerprint login was added to your account");
     expect(en.html).toContain("My iPhone");
     expect(ja.html).toContain('<html lang="ja">');
-    expect(ja.html).toContain("パスキーが削除されました");
+    expect(ja.html).toContain("顔・指紋のログインが削除されました");
     expect(ja.html).toContain("14:30");
   });
 

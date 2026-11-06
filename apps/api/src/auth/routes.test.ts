@@ -332,7 +332,7 @@ describe("fresh login: POST /auth/reauth/request and /auth/reauth/verify", () =>
 
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ ok: true });
-    expect(t.subjects.at(-1)).toBe("【KTRG】本人確認コード"); // new accounts are Japanese
+    expect(t.subjects.at(-1)).toBe("【葛城修験】本人確認の番号"); // new accounts are Japanese
   });
 
   test("the right code makes the session fresh for 10 minutes", async () => {
