@@ -294,8 +294,8 @@ export function MapScreen({
         <button
           type="button"
           onClick={() => openSheet(route ? "half" : "peek")}
-          style={{ bottom: bottomPx + 8 }}
-          className="tap-target absolute left-3 z-[6] flex items-center gap-2 rounded-full bg-paper px-4 text-lg font-bold text-ink shadow-[0_4px_16px_rgb(0_0_0/0.28)]"
+          // Measured from the screen, as the tab bar is, so it stays put when the tab bar steps aside for a chosen course.
+          className="tap-target fixed bottom-[calc(5rem+var(--nav-toast,0px)+env(safe-area-inset-bottom))] left-3 z-[6] flex items-center gap-2 rounded-full bg-paper px-4 text-lg font-bold text-ink shadow-[0_4px_16px_rgb(0_0_0/0.28)]"
         >
           <ChevronUpIcon size={22} />
           {route ? t`区間の情報を見る` : t`区間の一覧を見る`}
