@@ -89,7 +89,7 @@ export function Landing({
       {top ? (
         <div className="@[42rem]:col-span-2">{top}</div>
       ) : (
-        <div className="px-4 @[42rem]:col-span-2 @[42rem]:px-0">
+        <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
           <LandingHero slides={slides} locale={locale} line={w.heroLine} />
         </div>
       )}

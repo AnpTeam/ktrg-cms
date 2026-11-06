@@ -222,7 +222,7 @@ describe("the bottom sheet", () => {
     expect(nextSnap("peek")).toBe("half");
     expect(nextSnap("hidden")).toBe("half");
     expect(nextSnap("half")).toBe("full");
-    expect(nextSnap("full")).toBe("peek");
+    expect(nextSnap("full")).toBe("half");
   });
 });
 

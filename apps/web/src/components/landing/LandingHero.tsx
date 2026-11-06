@@ -1,15 +1,13 @@
 import Link from "next/link";
 import { Trans } from "@lingui/react/macro";
-import { KatsuragiLogo } from "@/components/KatsuragiLogo";
 import { HeroSlides, type HeroSlide } from "@/components/landing/HeroSlides";
 import type { BannerSlide } from "@/lib/banners";
 import { buttonStyle } from "@/components/button";
 
-// The first screen of the landing page: the admin's banner photos fill the top, with the logo and the line over them, and
-// under them the buttons. With no banner yet, one photo of the trail (public/home, from the Japan Heritage council, reused
+// The first screen of the landing page: the admin's banner photos run from edge to edge of the page, with the line over them,
+// and under them the buttons. With no banner yet, one photo of the trail (public/home, from the Japan Heritage council, reused
 // with their permission: decisions log 2026-11-02) stands in. The words sit on a dark fade so they read on any photo; the
 // buttons are below the photos, on the page colour, so their contrast does not depend on a picture.
-// The marker class `landing-hero` lets globals.css hide the sidebar's own logo (the big one is here); it keeps its space.
 
 const primary = buttonStyle("primary", "lg", "inline-flex");
 const secondary = buttonStyle("secondary", "lg", "inline-flex");
@@ -19,14 +17,11 @@ const FALLBACK: HeroSlide = { src: "/home/top_slider_img01.jpg", alt: "", unopti
 export function LandingHero({ slides, locale, line }: { slides: BannerSlide[]; locale: string; line: string }) {
   const photos: HeroSlide[] = slides.flatMap((s) => (s.src ? [{ src: s.src, alt: locale === "ja" ? s.altJa : s.altEn, credit: s.credit, unoptimized: true }] : []));
   return (
-    <section aria-labelledby="hero-title" className="landing-hero overflow-hidden rounded-lg bg-surface">
+    <section aria-labelledby="hero-title" className="overflow-hidden bg-surface">
       <div className="relative h-80 @[34rem]:h-96 @[42rem]:h-[30rem]">
         <HeroSlides slides={photos.length > 0 ? photos : [FALLBACK]}>
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
-          <div className="absolute inset-0 flex flex-col justify-between p-4 @[34rem]:p-8 @[42rem]:p-10">
-            <div className="w-fit drop-shadow-[0_0_10px_rgb(255_255_255/0.9)]">
-              <KatsuragiLogo className="h-20 w-auto @[34rem]:h-28 @[42rem]:h-32" />
-            </div>
+          <div className="absolute inset-0 mx-auto flex max-w-6xl flex-col justify-end p-4 @[34rem]:p-8 @[42rem]:p-10">
             <h1 id="hero-title" className="font-serif text-3xl font-bold leading-snug text-white [text-shadow:0_1px_8px_rgb(0_0_0/0.7)] @[34rem]:text-4xl @[42rem]:text-5xl">
               <span className="sr-only">
                 <Trans>葛城修験</Trans>{" "}
@@ -36,7 +31,8 @@ export function LandingHero({ slides, locale, line }: { slides: BannerSlide[]; l
           </div>
         </HeroSlides>
       </div>
-      <div className="pattern-shippo flex flex-col gap-4 px-5 py-6 @[34rem]:px-10 @[42rem]:flex-row @[42rem]:items-center @[42rem]:justify-between @[42rem]:px-12">
+      <div className="pattern-shippo">
+      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-5 py-6 @[34rem]:px-10 @[42rem]:flex-row @[42rem]:items-center @[42rem]:justify-between">
         <div className="flex flex-wrap items-center gap-3">
           <Link href="/register" className={primary}>
             <Trans>新規登録</Trans>
@@ -51,6 +47,7 @@ export function LandingHero({ slides, locale, line }: { slides: BannerSlide[]; l
             <Trans>ログイン</Trans>
           </Link>
         </p>
+      </div>
       </div>
     </section>
   );
