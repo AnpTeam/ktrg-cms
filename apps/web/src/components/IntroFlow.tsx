@@ -77,7 +77,7 @@ function InstallStep() {
 
 /**
  * What a new visitor meets on the home page, once: pick a language, what 葛城修験 is, how the app works in a few
- * cards, then one big start button that goes to the routes. Full screen on a phone and a card in the middle of the page on a larger screen, over the page, so the page underneath is still the
+ * cards, then one big start button that goes to the home page. Full screen on a phone and a card in the middle of the page on a larger screen, over the page, so the page underneath is still the
  * real home page for search engines and for anyone who skips it. Shown only to someone signed out who has not seen
  * it (the `intro` cookie, which the server reads); skipping counts as seeing it.
  */
@@ -122,8 +122,8 @@ export function IntroFlow({ seen, guide }: { seen: boolean; guide: { title: stri
     document.cookie = `${INTRO_COOKIE}=1; Path=/; Max-Age=31536000; SameSite=Lax${secure}`;
     track(`intro_${how}`, { step });
     setDismissed(true);
-    if (how === "done") router.push("/routes");
-    else router.refresh(); // the server learns it was seen
+    if (how === "done") router.push("/");
+    router.refresh(); // the server learns it was seen
   }
 
   const next = () => {
