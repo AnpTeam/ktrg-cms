@@ -7359,3 +7359,11 @@ msgstr "3本の指で、上下になぞります。"
 #: src/components/map/MapHelp.tsx
 msgid "地図の使い方"
 msgstr "地図の使い方"
+
+#: src/components/map/MapSheet.tsx
+msgid "たたむ"
+msgstr "たたむ"
+
+#: src/components/map/MapSheet.tsx
+msgid "ひらく"
+msgstr "ひらく"

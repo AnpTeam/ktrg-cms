@@ -399,15 +399,6 @@ rt {
   fill: var(--color-on-ruri);
 }
 
-/* A side trip (寄り道): a small dashed ring standing on its point, with no number. */
-.map-marker[data-side="true"] {
-  width: calc(1.5rem * var(--pin, 1));
-  height: calc(1.5rem * var(--pin, 1));
-}
-.map-marker[data-side="true"] .pin-shape {
-  stroke-dasharray: 2.8 2.6;
-}
-
 .map-marker[data-status="caution"] .pin-shape {
   stroke: var(--color-caution);
   stroke-width: 2.4;

@@ -18,7 +18,7 @@ export interface MarkerOptions {
   label: string;
   kind: MarkerKind;
   status: SpotStatus;
-  /** A side trip (寄り道): smaller, with a dashed ring. */
+  /** A side trip (寄り道): the same pin as a stop, without a start or goal colour. */
   sideTrip?: boolean;
   /** A place where no stamp can be collected: a square pin instead of a round one. */
   noStamp?: boolean;
@@ -36,11 +36,10 @@ export function createMarkerElement({ order, label, kind, status, sideTrip, noSt
   el.type = "button";
   el.className = "map-marker";
   el.dataset.kind = kind;
-  if (sideTrip) el.dataset.side = "true";
   if (noStamp) el.dataset.noStamp = "true";
   if (role && !sideTrip) el.dataset.role = role;
   el.dataset.status = status;
-  el.appendChild(pinSvg(order, sideTrip ? "dot" : noStamp ? "flag" : "tear", role && !sideTrip ? role : null, !!stamped, sideTrip ? null : place ?? null));
+  el.appendChild(pinSvg(sideTrip ? null : order, noStamp ? "flag" : "tear", role && !sideTrip ? role : null, !!stamped, place ?? null));
   el.setAttribute("aria-label", label);
   el.setAttribute("aria-pressed", "false");
   el.addEventListener("click", onSelect);
@@ -52,27 +51,18 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 // The stop pins stand on their point (the tip is the position), so a pin never covers the spot it marks.
 //   tear  a stop with a stamp: a teardrop with its number
 //   flag  a place without a stamp: a flag-shaped pin with its number
-//   dot   a side trip (寄り道): a small dashed ring, no number
 // The tip is a small arc, not a point, so the pin ends softly.
 const TEAR = "M27 14.5a12 12 0 0 0-24 0C3 23.5 8.2 31.5 12.9 37.7a2.7 2.7 0 0 0 4.2 0C21.8 31.5 27 23.5 27 14.5Z";
 const FLAG = "M6 3h18a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3h-6.5L15 33l-2.5-7H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z";
 
-function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: StopRole | null, stamped: boolean, place: PointKind | null): SVGSVGElement {
+function pinSvg(order: number | null, shape: "tear" | "flag", role: StopRole | null, stamped: boolean, place: PointKind | null): SVGSVGElement {
   const svg = document.createElementNS(SVG_NS, "svg");
-  svg.setAttribute("viewBox", shape === "dot" ? "0 0 20 20" : "0 0 30 40");
+  svg.setAttribute("viewBox", "0 0 30 40");
   svg.setAttribute("class", "map-pin-svg");
   svg.setAttribute("aria-hidden", "true");
   svg.setAttribute("focusable", "false");
-  let body: SVGElement;
-  if (shape === "dot") {
-    body = document.createElementNS(SVG_NS, "circle");
-    body.setAttribute("cx", "10");
-    body.setAttribute("cy", "10");
-    body.setAttribute("r", "8");
-  } else {
-    body = document.createElementNS(SVG_NS, "path");
-    body.setAttribute("d", shape === "tear" ? TEAR : FLAG);
-  }
+  const body = document.createElementNS(SVG_NS, "path");
+  body.setAttribute("d", shape === "tear" ? TEAR : FLAG);
   body.setAttribute("class", "pin-shape");
   if (role === "both") {
     // One place that is the start and the goal: blue fading into orange, top to bottom (the colours of the Start / Goal
@@ -94,59 +84,57 @@ function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: Stop
     svg.appendChild(defs);
   }
   svg.appendChild(body);
-  if (shape !== "dot") {
+  if (place) {
+    // The kind of place as a coloured picture on a white disc in the head, with the number in a chip on the upper right.
+    const disc = document.createElementNS(SVG_NS, "circle");
+    disc.setAttribute("cx", "15");
+    disc.setAttribute("cy", "14.5");
+    disc.setAttribute("r", "9.2");
+    disc.setAttribute("class", "pin-disc");
+    svg.appendChild(disc);
+    const icon = document.createElementNS(SVG_NS, "g");
+    icon.setAttribute("transform", "translate(7.4 6.9) scale(0.62)");
+    icon.innerHTML = pointIconSvg[place];
+    svg.appendChild(icon);
+  }
+  // Closed: a bar across the head (drawn only for that state, by the page's own CSS).
+  const bar = document.createElementNS(SVG_NS, "line");
+  bar.setAttribute("x1", "8");
+  bar.setAttribute("y1", "7");
+  bar.setAttribute("x2", "22");
+  bar.setAttribute("y2", "21");
+  bar.setAttribute("class", "pin-bar");
+  svg.appendChild(bar);
+  if (order !== null) {
     if (place) {
-      // The kind of place as a coloured picture on a white disc in the head, with the number in a chip on the upper right.
-      const disc = document.createElementNS(SVG_NS, "circle");
-      disc.setAttribute("cx", "15");
-      disc.setAttribute("cy", "14.5");
-      disc.setAttribute("r", "9.2");
-      disc.setAttribute("class", "pin-disc");
-      svg.appendChild(disc);
-      const icon = document.createElementNS(SVG_NS, "g");
-      icon.setAttribute("transform", "translate(7.4 6.9) scale(0.62)");
-      icon.innerHTML = pointIconSvg[place];
-      svg.appendChild(icon);
-    }
-    // Closed: a bar across the head (drawn only for that state, by the page's own CSS).
-    const bar = document.createElementNS(SVG_NS, "line");
-    bar.setAttribute("x1", "8");
-    bar.setAttribute("y1", "7");
-    bar.setAttribute("x2", "22");
-    bar.setAttribute("y2", "21");
-    bar.setAttribute("class", "pin-bar");
-    svg.appendChild(bar);
-    if (order !== null) {
-      if (place) {
-        const chip = document.createElementNS(SVG_NS, "g");
-        chip.setAttribute("class", "pin-chip");
-        const ring = document.createElementNS(SVG_NS, "circle");
-        ring.setAttribute("cx", "25.5");
-        ring.setAttribute("cy", "4.5");
-        ring.setAttribute("r", "6.3");
-        const num = document.createElementNS(SVG_NS, "text");
-        num.setAttribute("x", "25.5");
-        num.setAttribute("y", "5");
-        if (String(order).length > 1) num.setAttribute("font-size", "7.4");
-        num.textContent = String(order);
-        chip.append(ring, num);
-        svg.appendChild(chip);
-      } else {
-        // A stop not yet stamped has a white head with its number in the pin's colour (hollow); once stamped the head is
-        // filled and the number white. Drawn always, shown by the page's CSS only for the "todo" state.
-        const hollow = document.createElementNS(SVG_NS, "circle");
-        hollow.setAttribute("cx", "15");
-        hollow.setAttribute("cy", "14.5");
-        hollow.setAttribute("r", "9.6");
-        hollow.setAttribute("class", "pin-hollow");
-        svg.appendChild(hollow);
-        const text = document.createElementNS(SVG_NS, "text");
-        text.setAttribute("x", "15");
-        text.setAttribute("y", "15");
-        text.setAttribute("class", "pin-text");
-        text.textContent = String(order);
-        svg.appendChild(text);
-      }
+      const chip = document.createElementNS(SVG_NS, "g");
+      chip.setAttribute("class", "pin-chip");
+      const ring = document.createElementNS(SVG_NS, "circle");
+      ring.setAttribute("cx", "25.5");
+      ring.setAttribute("cy", "4.5");
+      ring.setAttribute("r", "6.3");
+      const num = document.createElementNS(SVG_NS, "text");
+      num.setAttribute("x", "25.5");
+      num.setAttribute("y", "5");
+      if (String(order).length > 1) num.setAttribute("font-size", "7.4");
+      num.textContent = String(order);
+      chip.append(ring, num);
+      svg.appendChild(chip);
+    } else {
+      // A stop not yet stamped has a white head with its number in the pin's colour (hollow); once stamped the head is
+      // filled and the number white. Drawn always, shown by the page's CSS only for the "todo" state.
+      const hollow = document.createElementNS(SVG_NS, "circle");
+      hollow.setAttribute("cx", "15");
+      hollow.setAttribute("cy", "14.5");
+      hollow.setAttribute("r", "9.6");
+      hollow.setAttribute("class", "pin-hollow");
+      svg.appendChild(hollow);
+      const text = document.createElementNS(SVG_NS, "text");
+      text.setAttribute("x", "15");
+      text.setAttribute("y", "15");
+      text.setAttribute("class", "pin-text");
+      text.textContent = String(order);
+      svg.appendChild(text);
     }
   }
   if (stamped && !role && !place && shape === "tear") {
@@ -162,7 +150,7 @@ function pinSvg(order: number | null, shape: "tear" | "flag" | "dot", role: Stop
     badge.append(ring, tick);
     svg.appendChild(badge);
   }
-  if (role && stamped && shape !== "dot") {
+  if (role && stamped) {
     const seal = document.createElementNS(SVG_NS, "circle");
     seal.setAttribute("cx", "4.5");
     seal.setAttribute("cy", "5");

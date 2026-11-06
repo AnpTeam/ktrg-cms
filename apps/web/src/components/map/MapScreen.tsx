@@ -37,6 +37,7 @@ const TAB_ROOM_REM = 5.5;
 // (the courses, the chosen course or stop) is a panel floating at the left of the map.
 const WIDE_QUERY = "(min-width: 1024px)";
 const PANEL_REM = 26; // the panel's width
+const RAIL_REM = 4.5; // its width when folded
 const PANEL_MARGIN_REM = 0.75; // its gap to the map's edges
 
 function subscribeWide(onChange: () => void) {
@@ -85,6 +86,8 @@ export function MapScreen({
   const [tabPx, setTabPx] = useState(88);
   // On a desktop: how much of the map's left side the panel covers.
   const [panelPx, setPanelPx] = useState(0);
+  // On a desktop: the panel folded to a narrow rail, for more map. Choosing something opens it again.
+  const [folded, setFolded] = useState(false);
   const wide = useSyncExternalStore(subscribeWide, () => window.matchMedia(WIDE_QUERY).matches, () => false);
   // When a navigation starts, the sheet steps down on a phone so the map and the navigation toast are in view.
   // Adjusted while rendering (the pattern React recommends for state that follows another value).
@@ -171,14 +174,14 @@ export function MapScreen({
       // A navigation on a phone: the bottom strip and the top banner are drawn over the map, and the sheet fits between them
       // (its handle must stay in view, or it cannot be pulled back down).
       const navRoom = !window.matchMedia(WIDE_QUERY).matches ? navToastPx + navBannerPx : 0;
-      setPanelPx(window.matchMedia(WIDE_QUERY).matches ? (PANEL_REM + 2 * PANEL_MARGIN_REM) * rem : 0);
+      setPanelPx(window.matchMedia(WIDE_QUERY).matches ? ((folded ? RAIL_REM : PANEL_REM) + 2 * PANEL_MARGIN_REM) * rem : 0);
       setAvailable(Math.max(240, el.clientHeight - tab - navRoom));
     };
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(el);
     return () => observer.disconnect();
-  }, [chosen, navToastPx, navBannerPx]);
+  }, [chosen, folded, navToastPx, navBannerPx]);
 
   // On a narrow screen the sheet rises to show what was chosen; on a desktop the panel just shows it.
   const chooseRoute = useCallback(
@@ -186,6 +189,7 @@ export function MapScreen({
       setRouteId(id);
       setStopId(null);
       setViaMounds(false);
+      setFolded(false);
       if (!wide) openSheet("half");
     },
     [wide, openSheet],
@@ -195,6 +199,7 @@ export function MapScreen({
       setRouteId(routeId);
       setStopId(id);
       setViaMounds(fromMounds);
+      setFolded(false);
       if (!wide) openSheet((s) => (s === "peek" || s === "hidden" ? "half" : s));
     },
     [wide, openSheet],
@@ -241,8 +246,7 @@ export function MapScreen({
           </>
         ) : null
       }
-      backLabel={stop ? routeName : t`全体の地図`}
-      backLang={stop ? route.nameLang : undefined}
+      backLabel={stop ? t`戻る` : t`全体の地図`}
       onBack={back}
     />
   ) : null;
@@ -301,7 +305,7 @@ export function MapScreen({
           {route ? t`区間の情報を見る` : t`区間の一覧を見る`}
         </button>
       ) : null}
-      <MapSheet panel={wide} snap={snap} onSnap={setSnap} available={available} tabPx={bottomPx} header={showDetailInSheet ? null : homeHeader} contentKey={`${routeId ?? ""}/${stopId ?? ""}`}>
+      <MapSheet panel={wide} folded={wide && folded} onFold={() => setFolded(!folded)} rail={<RouteChips column routes={routes} onChoose={chooseRoute} selectedId={routeId} />} snap={snap} onSnap={setSnap} available={available} tabPx={bottomPx} header={showDetailInSheet ? null : homeHeader} contentKey={`${routeId ?? ""}/${stopId ?? ""}`}>
         {showDetailInSheet ? (
           <div className="flex flex-col gap-4">
             {hero}
@@ -318,11 +322,11 @@ export function MapScreen({
 }
 
 /** The 19 courses as numbered buttons, so a course can be chosen without finding its area on the map. */
-function RouteChips({ routes, onChoose, selectedId }: { routes: MapScreenRoute[]; onChoose: (id: string) => void; selectedId: string | null }) {
+function RouteChips({ routes, onChoose, selectedId, column = false }: { routes: MapScreenRoute[]; onChoose: (id: string) => void; selectedId: string | null; column?: boolean }) {
   const { t } = useLingui();
   const ordered = [...routes].sort((a, b) => a.order - b.order);
   return (
-    <div role="group" aria-label={t`区間をえらぶ`} className="-mx-4 mt-2 flex gap-2 overflow-x-auto px-4 pb-2">
+    <div role="group" aria-label={t`区間をえらぶ`} className={column ? "mt-2 flex min-h-0 flex-1 flex-col items-center gap-2 overflow-y-auto pb-3 [scrollbar-width:thin]" : "-mx-4 mt-2 flex gap-2 overflow-x-auto px-4 pb-2"}>
       {ordered.map((r) => {
         const order = r.order;
         const name = r.name;
