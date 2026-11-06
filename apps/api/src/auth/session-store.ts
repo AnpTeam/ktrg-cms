@@ -60,7 +60,7 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
     async markFresh(id, at, staffCheckedUntil) {
       await db
         .update(sessions)
-        .set({ lastLoginAt: at, staffCheckedUntil: sql`greatest(${sessions.staffCheckedUntil}, ${staffCheckedUntil})` })
+        .set({ lastLoginAt: at, staffCheckedUntil: sql`greatest(${sessions.staffCheckedUntil}, ${staffCheckedUntil.toISOString()}::timestamptz)` })
         .where(eq(sessions.id, id));
     },
 
