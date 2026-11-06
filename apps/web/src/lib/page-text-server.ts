@@ -1,5 +1,6 @@
 import { helpContent, type Help } from "./help-content";
 import { helpWith, ownText, policyWith, termsWith, type CustomPage, type OwnText, type Terms } from "./page-content";
+import { homeTextIn, type HomeText } from "./home-text";
 import { writePageBody, type PageKey, type PageText } from "./page-text";
 import { privacyPolicy, type Policy } from "./privacy-content";
 import { termsContent } from "./terms-content";
@@ -18,6 +19,11 @@ async function savedPage(key: PageKey): Promise<PageText | null> {
 
 async function own(key: PageKey, locale: string): Promise<OwnText> {
   return ownText(await savedPage(key), locale);
+}
+
+/** What the editor wrote in place of the home page's words. */
+export async function homeTextFor(locale: string): Promise<HomeText> {
+  return homeTextIn(await savedPage("home"), locale);
 }
 
 /** The how-to-play page and the FAQ (and their titles), with the editor's text where there is some. */
@@ -50,7 +56,7 @@ export function builtInPages(): Record<PageKey, PageText> {
   });
   const terms = { title: termsContent.title, body: writePageBody({ lead: [termsContent.lead, termsContent.intro, `更新日：${termsContent.updated}`], sections: termsContent.sections, note: [] }) };
   // The terms are written in Japanese only; the English box starts empty (the English page shows the Japanese text and says so).
-  return { faq: { ja: faq("ja"), en: faq("en") }, guide: { ja: guide("ja"), en: guide("en") }, privacy: { ja: privacy("ja"), en: privacy("en") }, terms: { ja: terms, en: { title: "", body: "" } } };
+  return { home: { ja: { title: "", body: "" }, en: { title: "", body: "" } }, faq: { ja: faq("ja"), en: faq("en") }, guide: { ja: guide("ja"), en: guide("en") }, privacy: { ja: privacy("ja"), en: privacy("en") }, terms: { ja: terms, en: { title: "", body: "" } } };
 }
 
 /** A published page made in the admin (/p/<slug>), or null. */

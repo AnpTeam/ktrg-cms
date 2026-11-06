@@ -6,7 +6,7 @@
 //   a line of three dashes (---)                     after it comes the closing note (how to play)
 // Paragraphs are separated by a blank line. Pure functions; tests are in page-text.test.ts.
 
-export const PAGE_KEYS = ["faq", "guide", "terms", "privacy"] as const;
+export const PAGE_KEYS = ["home", "faq", "guide", "terms", "privacy"] as const;
 export type PageKey = (typeof PAGE_KEYS)[number];
 export type PageLang = { title: string; body: string };
 export type PageText = { ja: PageLang; en: PageLang };

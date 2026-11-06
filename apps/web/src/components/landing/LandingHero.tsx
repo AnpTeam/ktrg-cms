@@ -16,27 +16,27 @@ const secondary = buttonStyle("secondary", "lg", "inline-flex");
 
 const FALLBACK: HeroSlide = { src: "/home/top_slider_img01.jpg", alt: "", unoptimized: false };
 
-export function LandingHero({ slides, locale }: { slides: BannerSlide[]; locale: string }) {
+export function LandingHero({ slides, locale, line }: { slides: BannerSlide[]; locale: string; line: string }) {
   const photos: HeroSlide[] = slides.flatMap((s) => (s.src ? [{ src: s.src, alt: locale === "ja" ? s.altJa : s.altEn, credit: s.credit, unoptimized: true }] : []));
   return (
     <section aria-labelledby="hero-title" className="landing-hero overflow-hidden rounded-lg bg-surface">
-      <div className="relative h-80 md:h-96 lg:h-[30rem]">
+      <div className="relative h-80 @[34rem]:h-96 @[42rem]:h-[30rem]">
         <HeroSlides slides={photos.length > 0 ? photos : [FALLBACK]}>
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
-          <div className="absolute inset-0 flex flex-col justify-between p-4 md:p-8 lg:p-10">
+          <div className="absolute inset-0 flex flex-col justify-between p-4 @[34rem]:p-8 @[42rem]:p-10">
             <div className="w-fit drop-shadow-[0_0_10px_rgb(255_255_255/0.9)]">
-              <KatsuragiLogo className="h-20 w-auto md:h-28 lg:h-32" />
+              <KatsuragiLogo className="h-20 w-auto @[34rem]:h-28 @[42rem]:h-32" />
             </div>
-            <h1 id="hero-title" className="font-serif text-3xl font-bold leading-snug text-white [text-shadow:0_1px_8px_rgb(0_0_0/0.7)] md:text-4xl lg:text-5xl">
+            <h1 id="hero-title" className="font-serif text-3xl font-bold leading-snug text-white [text-shadow:0_1px_8px_rgb(0_0_0/0.7)] @[34rem]:text-4xl @[42rem]:text-5xl">
               <span className="sr-only">
                 <Trans>葛城修験</Trans>{" "}
               </span>
-              <Trans>「祈り」を見つめる再発見の旅</Trans>
+              {line}
             </h1>
           </div>
         </HeroSlides>
       </div>
-      <div className="pattern-shippo flex flex-col gap-4 px-5 py-6 md:px-10 lg:flex-row lg:items-center lg:justify-between lg:px-12">
+      <div className="pattern-shippo flex flex-col gap-4 px-5 py-6 @[34rem]:px-10 @[42rem]:flex-row @[42rem]:items-center @[42rem]:justify-between @[42rem]:px-12">
         <div className="flex flex-wrap items-center gap-3">
           <Link href="/register" className={primary}>
             <Trans>新規登録</Trans>

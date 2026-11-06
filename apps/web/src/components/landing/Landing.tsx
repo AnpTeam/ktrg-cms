@@ -15,9 +15,11 @@ import { LandingHero } from "@/components/landing/LandingHero";
 import { LandingMap } from "@/components/landing/LandingMap";
 import { BlogCard } from "@/components/landing/BlogCard";
 import { TrailNotices } from "@/components/landing/TrailNotices";
+import { useHomeWords } from "@/components/landing/useHomeWords";
 import type { BannerSlide } from "@/lib/banners";
 import { pickText, type RouteSummary } from "@/lib/content";
 import { municipalityName } from "@/lib/municipalities";
+import type { HomeText } from "@/lib/home-text";
 import type { TrailNotice } from "@/lib/notices";
 import type { BlogPost } from "@/lib/posts";
 import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
@@ -52,6 +54,7 @@ export function Landing({
   posts,
   showTourism,
   top,
+  text,
 }: {
   locale: string;
   routes: RouteSummary[];
@@ -63,46 +66,51 @@ export function Landing({
   showTourism: boolean;
   /** For a signed-in visitor: shown in place of the hero (and the sign-up buttons are left out). */
   top?: ReactNode;
+  /** What an editor wrote in place of the app's words. */
+  text?: HomeText;
 }) {
+  const w = useHomeWords(text);
   // Routes that are ready first, then the coming-soon ones; each keeps its own number.
   const firstRoutes = [...routes].sort((a, b) => Number(a.status === "soon") - Number(b.status === "soon") || a.order - b.order).slice(0, PREVIEW_ROUTES);
 
   return (
-    // One column on a phone and a tablet; two columns from 1024 px. Most sections span both.
-    <div className="grid grid-cols-1 gap-10 pt-4 lg:grid-cols-2 lg:gap-x-8 lg:pt-0">
+    // One column on a phone and a tablet; two columns on a desktop. Most sections span both. Sized by the page's own width, not
+    // the screen's, so the admin's phone-shaped preview shows the phone layout on a desktop.
+    <div className="@container">
+    <div className="grid grid-cols-1 gap-10 pt-4 @[42rem]:grid-cols-2 @[42rem]:gap-x-8 @[42rem]:pt-0">
       {/* With a dashboard (someone who has stamps or an account) the banners, the current events, come first. */}
       {top && slides.length > 0 ? (
-        <div className="lg:col-span-2">
+        <div className="@[42rem]:col-span-2">
           <BannerCarousel slides={slides} />
         </div>
       ) : null}
 
       {top ? (
-        <div className="lg:col-span-2">{top}</div>
+        <div className="@[42rem]:col-span-2">{top}</div>
       ) : (
-        <div className="px-4 lg:col-span-2 lg:px-0">
-          <LandingHero slides={slides} locale={locale} />
+        <div className="px-4 @[42rem]:col-span-2 @[42rem]:px-0">
+          <LandingHero slides={slides} locale={locale} line={w.heroLine} />
         </div>
       )}
 
       {top ? null : (
-        <section aria-labelledby="rally-title" className="flex flex-col gap-3 lg:col-span-2">
+        <section aria-labelledby="rally-title" className="flex flex-col gap-3 @[42rem]:col-span-2">
           <div className="px-4">
             <SectionBanner>
               <span id="rally-title">
-                <Trans>スタンプラリー</Trans>
+                {w.rallyHeading}
               </span>
             </SectionBanner>
           </div>
-          <div className={`${panel} grid gap-5 lg:grid-cols-2 lg:items-center lg:gap-10`}>
+          <div className={`${panel} grid gap-5 @[42rem]:grid-cols-2 @[42rem]:items-center @[42rem]:gap-10`}>
             <div className="flex flex-col gap-3">
               <p className="font-serif text-2xl font-bold leading-snug">
-                <Trans>歩いて、スタンプを集めよう。</Trans>
+                {w.rallyLead}
               </p>
               <p className="max-w-prose text-lg leading-8">
-                <Trans>行き先の近くでボタンを押すと、スタンプがたまります。位置は、押した一回だけ調べ、保存しません。</Trans>
+                {w.rallyText}
               </p>
-              <Link href="/rallies" className={`${secondary} mt-1 lg:w-fit`}>
+              <Link href="/rallies" className={`${secondary} mt-1 @[42rem]:w-fit`}>
                 <Trans>ラリーを見る</Trans>
               </Link>
             </div>
@@ -115,10 +123,10 @@ export function Landing({
       )}
 
       {firstRoutes.length > 0 ? (
-        <section className="flex flex-col gap-3 lg:col-span-2">
+        <section className="flex flex-col gap-3 @[42rem]:col-span-2">
           <div className="px-4">
             <SectionBanner>
-              <Trans>歩く道</Trans>
+              {w.routesHeading}
             </SectionBanner>
           </div>
           <ul className="flex flex-col gap-3 px-4">
@@ -152,31 +160,29 @@ export function Landing({
         </section>
       ) : null}
 
-      <LandingMap routes={routes} />
+      <LandingMap routes={routes} heading={w.mapHeading} />
 
-      <div className="lg:col-span-2">
+      <div className="@[42rem]:col-span-2">
         <TrailNotices notices={notices} locale={locale} />
       </div>
 
-      <div className="lg:col-span-2">
+      <div className="@[42rem]:col-span-2">
         <BlogCard posts={posts} locale={locale} />
       </div>
 
-      <section aria-labelledby="story-title" className="flex flex-col gap-3 lg:col-span-2">
+      <section aria-labelledby="story-title" className="flex flex-col gap-3 @[42rem]:col-span-2">
         <div className="px-4">
           <SectionBanner>
             <span id="story-title">
-              <Trans>葛城修験とは</Trans>
+              {w.storyHeading}
             </span>
           </SectionBanner>
         </div>
-        <div className={`${panel} grid gap-5 lg:grid-cols-2 lg:items-center lg:gap-8`}>
+        <div className={`${panel} grid gap-5 @[42rem]:grid-cols-2 @[42rem]:items-center @[42rem]:gap-8`}>
           <div>
             {/* Our own wording of well-known facts. */}
             <p className="max-w-prose text-lg leading-8">
-              <Trans>
-                和泉山脈から金剛山地へ。大阪・和歌山・奈良の境にのびるこの山なみは、古くから「葛城」と呼ばれ、神の宿る山として敬われてきました。山で心身をきたえる修験道を開いたと伝わる役行者が、はじめて修行をしたのも、この山々だといわれています。
-              </Trans>
+              {w.storyText}
             </p>
             <dl className="mt-4">
               <Fact term={<Trans>コース</Trans>} value={<Trans>全{TOTAL_ROUTES}区間</Trans>} />
@@ -187,17 +193,17 @@ export function Landing({
           <figure className="flex flex-col items-center gap-2">
             <Image src="/home/story_img.png" alt="" width={834} height={547} sizes="(min-width: 1024px) 560px, 100vw" className="h-auto w-full max-w-md rounded-lg" />
             <figcaption className="text-base text-muted">
-              <Trans>役小角（役行者）</Trans>
+              {w.storyCaption}
             </figcaption>
           </figure>
         </div>
       </section>
 
       {introVideo ? (
-        <section className="flex flex-col gap-3 lg:col-span-2">
+        <section className="flex flex-col gap-3 @[42rem]:col-span-2">
           <div className="px-4">
             <SectionBanner>
-              <Trans>動画で見る</Trans>
+              {w.videoHeading}
             </SectionBanner>
           </div>
           <div className="px-4">
@@ -209,15 +215,15 @@ export function Landing({
         </section>
       ) : null}
 
-      <section aria-labelledby="official-title" className="flex flex-col gap-3 lg:col-span-2">
+      <section aria-labelledby="official-title" className="flex flex-col gap-3 @[42rem]:col-span-2">
         <div className="px-4">
           <SectionBanner>
             <span id="official-title">
-              <Trans>公式サイトで、もっと知る</Trans>
+              {w.officialHeading}
             </span>
           </SectionBanner>
         </div>
-        <ul className="grid gap-3 px-4 md:grid-cols-3">
+        <ul className="grid gap-3 px-4 @[34rem]:grid-cols-3">
           {[
             { path: "/story/", label: <Trans>日本遺産 葛城修験ストーリー</Trans> },
             { path: "/about/", label: <Trans>葛城修験の基礎知識</Trans> },
@@ -236,15 +242,15 @@ export function Landing({
       </section>
 
       {showTourism ? (
-        <section aria-labelledby="tourism-title" className="flex flex-col gap-3 lg:col-span-2">
+        <section aria-labelledby="tourism-title" className="flex flex-col gap-3 @[42rem]:col-span-2">
           <div className="px-4">
             <SectionBanner>
               <span id="tourism-title">
-                <Trans>観光情報</Trans>
+                {w.tourismHeading}
               </span>
             </SectionBanner>
           </div>
-          <ul className="grid grid-cols-2 gap-3 px-4 md:grid-cols-5">
+          <ul className="grid grid-cols-2 gap-3 px-4 @[34rem]:grid-cols-5">
             {[
               { cat: "cat01", img: "/home/tourism_1.jpg", label: <Trans>観光</Trans> },
               { cat: "cat02", img: "/home/tourism_2.jpg", label: <Trans>グルメ</Trans> },
@@ -252,8 +258,8 @@ export function Landing({
               { cat: "cat04", img: "/home/tourism_4.jpg", label: <Trans>体験</Trans> },
               { cat: "cat05", img: "/home/tourism_5.jpg", label: <Trans>宿泊</Trans> },
             ].map((c, i) => (
-              <li key={c.cat} className={i === 4 ? "col-span-2 md:col-span-1 [&>a]:aspect-[2.4/1] md:[&>a]:aspect-square" : ""}>
-                <a href={`${OFFICIAL}/tourism/${c.cat}/`} target="_blank" rel="noopener noreferrer" className="tap-target relative block aspect-[594/366] overflow-hidden rounded-lg md:aspect-square">
+              <li key={c.cat} className={i === 4 ? "col-span-2 @[34rem]:col-span-1 [&>a]:aspect-[2.4/1] @[34rem]:[&>a]:aspect-square" : ""}>
+                <a href={`${OFFICIAL}/tourism/${c.cat}/`} target="_blank" rel="noopener noreferrer" className="tap-target relative block aspect-[594/366] overflow-hidden rounded-lg @[34rem]:aspect-square">
                   <Image src={c.img} alt="" fill sizes="(min-width: 768px) 20vw, 50vw" className="object-cover" />
                   <span aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                   <span className="absolute inset-x-0 bottom-0 px-3 pb-2 font-serif text-2xl font-bold text-white [text-shadow:0_1px_6px_rgb(0_0_0/0.7)]">{c.label}</span>
@@ -267,35 +273,35 @@ export function Landing({
         </section>
       ) : null}
 
-      <section className="flex flex-col gap-3 lg:col-span-2">
+      <section className="flex flex-col gap-3 @[42rem]:col-span-2">
         <div className="px-4">
           <SectionBanner>
-            <Trans>出かける前に</Trans>
+            {w.beforeHeading}
           </SectionBanner>
         </div>
         <ul className={`${panel} flex flex-col gap-3 text-lg leading-8`}>
           <li className="flex gap-3">
             <span aria-hidden="true" className="mt-3 size-2 shrink-0 rounded-full bg-brand" />
-            <Trans>山道です。天気と、水や食べ物、歩きやすい靴を用意してください。</Trans>
+            {w.before1}
           </li>
           <li className="flex gap-3">
             <span aria-hidden="true" className="mt-3 size-2 shrink-0 rounded-full bg-brand" />
-            <Trans>山の中は、電波がつながりにくいことがあります。</Trans>
+            {w.before2}
           </li>
           <li className="flex gap-3">
             <span aria-hidden="true" className="mt-3 size-2 shrink-0 rounded-full bg-brand" />
-            <Trans>道が通れないときは、無理をせず引き返してください。</Trans>
+            {w.before3}
           </li>
         </ul>
         <Notice>
-          <Trans>出かける前に、公式の最新情報を確認してください。</Trans>
+          {w.beforeNotice}
         </Notice>
       </section>
 
       {top ? null : (
-        <section className="flex flex-col gap-3 px-4 lg:col-span-2 lg:hidden">
+        <section className="flex flex-col gap-3 px-4 @[42rem]:col-span-2 @[42rem]:hidden">
           <SectionBanner>
-            <Trans>さあ、はじめましょう</Trans>
+            {w.startHeading}
           </SectionBanner>
           <div className="flex flex-col gap-3">
             <Link href="/register" className={primary}>
@@ -308,7 +314,7 @@ export function Landing({
         </section>
       )}
 
-      <footer className="flex flex-col gap-4 border-t-2 border-line px-4 pb-6 pt-6 lg:col-span-2">
+      <footer className="flex flex-col gap-4 border-t-2 border-line px-4 pb-6 pt-6 @[42rem]:col-span-2">
         <p className="text-base text-muted">
           <Trans>写真と文章の一部は、</Trans>
           <a href={OFFICIAL} target="_blank" rel="noopener noreferrer" className="font-bold underline">
@@ -318,6 +324,7 @@ export function Landing({
         </p>
         <LocaleSwitcher />
       </footer>
+    </div>
     </div>
   );
 }

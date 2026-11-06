@@ -41,8 +41,8 @@ export function TextInput({ id, value, onChange, lang, maxLength, placeholder, i
   );
 }
 
-export function TextArea({ id, value, onChange, lang, rows = 6, maxLength = 20000, ariaLabel }: { id: string; value: string; onChange: (v: string) => void; lang?: string; rows?: number; maxLength?: number; ariaLabel?: string }) {
-  return <textarea id={id} lang={lang} rows={rows} maxLength={maxLength} value={value} aria-label={ariaLabel} onChange={(e) => onChange(e.target.value)} className={`${inputClass} py-3 leading-7`} />;
+export function TextArea({ id, value, onChange, lang, rows = 6, maxLength = 20000, ariaLabel, placeholder }: { id: string; value: string; onChange: (v: string) => void; lang?: string; placeholder?: string; rows?: number; maxLength?: number; ariaLabel?: string }) {
+  return <textarea id={id} lang={lang} rows={rows} maxLength={maxLength} value={value} aria-label={ariaLabel} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} className={`${inputClass} py-3 leading-7`} />;
 }
 
 /**
