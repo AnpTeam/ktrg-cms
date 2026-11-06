@@ -20,6 +20,11 @@ export const PERMISSIONS = {
    * so someone holding a signed-in phone cannot give themselves a login that outlives the owner's changes.
    */
   "me.sensitive": ["participant", "editor", "admin"],
+  /**
+   * Set, change or remove the optional password; also who may log in with one. Not staff: an admin takeover is the worst
+   * case, and a password is what gets phished. Needs a fresh login.
+   */
+  "me.password": ["participant"],
   /** Collect a stamp at a spot. */
   "stamp.create": ["participant", "editor", "admin"],
   /** Download a route as a GPX file. */
@@ -71,7 +76,7 @@ export type Permission = keyof typeof PERMISSIONS;
  * Permissions that also need a fresh login: a login or POST /auth/reauth/verify within
  * FRESH_LOGIN_MS. The guard enforces this, so a route only names the permission.
  */
-export const FRESH_LOGIN_REQUIRED: readonly Permission[] = ["user.manage_roles", "user.restrict", "user.delete", "me.sensitive"];
+export const FRESH_LOGIN_REQUIRED: readonly Permission[] = ["user.manage_roles", "user.restrict", "user.delete", "me.sensitive", "me.password"];
 
 /**
  * What a restricted account may not do: taking part. Signing in, reading, its own profile and asking for its own deletion

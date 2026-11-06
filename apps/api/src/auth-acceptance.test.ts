@@ -12,6 +12,7 @@ import { createMemoryAuditWriter } from "./audit/audit-log";
 import { OTP_COOLDOWN_MS, OTP_TTL_MS, normalizeEmail } from "./auth/otp";
 import { createMemoryOtpStore } from "./auth/otp-memory-store";
 import { createMemoryPasskeyStore } from "./auth/passkey-memory-store";
+import { createMemoryPasswordStore } from "./auth/password-memory-store";
 import { createMemoryRateLimitStore } from "./auth/rate-limit-memory-store";
 import { SESSION_POLICY } from "./auth/session";
 import { createMemorySessionStore } from "./auth/session-memory-store";
@@ -89,6 +90,7 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       session: sessions.store,
       rateLimit: createMemoryRateLimitStore().store,
       passkeys: passkeys.store,
+      passwords: createMemoryPasswordStore(users).store,
       me: profiles.store,
       content: createMemoryContentStore(audit.writer).store,
       rallyAdmin: createMemoryRallyAdminStore(audit.writer).store,
@@ -373,12 +375,15 @@ describe("user B cannot touch user A", () => {
     "POST /api/v1/auth/passkeys/signup/verify",
     "POST /api/v1/auth/passkeys/login/options",
     "POST /api/v1/auth/passkeys/login/verify",
+    "POST /api/v1/auth/password/login",
+    "POST /api/v1/auth/password/undo",
     // Not for people: a scheduler calls it with a bearer secret (404 without one configured); see internal/purge-routes.test.ts.
     "POST /api/v1/internal/purge-deletions",
   ]);
   /** A well-formed body for each logged-in route that needs one (validation runs before the guard). */
   const BODIES: Record<string, () => unknown> = {
     "PATCH /api/v1/auth/passkeys/:id": () => ({ label: "x" }),
+    "PUT /api/v1/auth/password": () => ({ password: "yamabushi-walk" }),
     "PUT /api/v1/admin/routes/:id/shared-spots/:spotId": () => ({ position: 0 }),
     "PATCH /api/v1/me": () => ({ locale: "en" }),
     "POST /api/v1/guest/claim": () => ({ mode: "merge" }),

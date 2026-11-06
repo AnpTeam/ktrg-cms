@@ -1,6 +1,6 @@
 // The terms of use, taken from the foundation's other web application (katsuragi-shugen.naraiseki.org/terms,
 // updated 2026-04-01) with the team's agreement, and adapted to this app on 2026-10-17: login is by email code or
-// passkey (no passwords or user names), and the parts about user-created content (uploaded photos, comments)
+// passkey, or an optional password added on 2026-11-06 (no user names), and the parts about user-created content (uploaded photos, comments)
 // and a community guideline are left out, because this app has none of those. It is the Japanese text only; the
 // page tells English readers so. The foundation (the owner of the original text) still has to approve this version.
 // "当財団" is the foundation named in `foundationJa` below.
@@ -39,7 +39,7 @@ export const termsContent = {
     {
       heading: "登録",
       paragraphs: [
-        "Webアプリケーションまたはサービスの一部を使用するには、特定の情報（お名前、及び、メールアドレスまたはパスキーの登録を含む）を登録して提供する必要があります。お客様は、登録時にお客様の登録情報が最新で完全で正確であること、及び必要に応じてそれを更新することを表明するものとします。お客様は、他人がお客様のアカウント（メールアドレスに届く確認番号やパスキーを含みます）を使用することを許可しないこと、またお客様も他人のアカウントを使用しないことに同意するものとします。確認番号の秘匿と、パスキーを登録した端末の管理はお客様の責任です。お客様のアカウントの不正使用のために、当財団または他者が損失を蒙った場合、お客様に責任が発生することがあります。",
+        "Webアプリケーションまたはサービスの一部を使用するには、特定の情報（お名前、及び、メールアドレスまたはパスキーの登録を含む）を登録して提供する必要があります。お客様は、登録時にお客様の登録情報が最新で完全で正確であること、及び必要に応じてそれを更新することを表明するものとします。お客様は、他人がお客様のアカウント（メールアドレスに届く確認番号やパスキーを含みます）を使用することを許可しないこと、またお客様も他人のアカウントを使用しないことに同意するものとします。確認番号やパスワードの秘匿と、パスキーを登録した端末の管理はお客様の責任です。お客様のアカウントの不正使用のために、当財団または他者が損失を蒙った場合、お客様に責任が発生することがあります。",
       ],
     },
     {

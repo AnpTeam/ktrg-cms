@@ -599,18 +599,6 @@ msgstr "50代"
 msgid "60代"
 msgstr "60代"
 
-#: src/components/auth/AboutYou.tsx:21
-msgid "70代"
-msgstr "70代"
-
-#: src/components/auth/AboutYou.tsx:22
-msgid "80代"
-msgstr "80代"
-
-#: src/components/auth/AboutYou.tsx:23
-msgid "90歳以上"
-msgstr "90歳以上"
-
 #: src/components/auth/AboutYou.tsx:22
 msgid "70歳以上"
 msgstr "70歳以上"
@@ -7141,3 +7129,113 @@ msgstr "駐車場"
 #: src/components/map/MapSheet.tsx:158
 msgid "高い"
 msgstr "高い"
+
+#: src/components/settings/PasswordMethod.tsx:85
+msgid "8文字以上にしてください。記号はなくてもかまいません。"
+msgstr "8文字以上にしてください。記号はなくてもかまいません。"
+
+#: src/components/useErrorMessages.ts:21
+msgid "このパスワードは、ほかの人に当てられやすいものです。別のパスワードにしてください。"
+msgstr "このパスワードは、ほかの人に当てられやすいものです。別のパスワードにしてください。"
+
+#: src/components/useErrorMessages.ts:22
+msgid "このボタンは、もう使えません。7日を過ぎたか、すでに使われています。メールの番号でログインして、ログインの方法を確認してください。"
+msgstr "このボタンは、もう使えません。7日を過ぎたか、すでに使われています。メールの番号でログインして、ログインの方法を確認してください。"
+
+#: src/components/auth/LoginFlow.tsx:80
+#: src/components/settings/PasswordMethod.tsx:67
+msgid "パスワード"
+msgstr "パスワード"
+
+#: src/components/auth/LoginFlow.tsx:149
+msgid "パスワードでログイン"
+msgstr "パスワードでログイン"
+
+#: src/components/auth/PasswordUndo.tsx:43
+msgid "パスワードの変更に心当たりがないときは、下のボタンを押してください。パスワードを消して、すべての端末からログアウトします。"
+msgstr "パスワードの変更に心当たりがないときは、下のボタンを押してください。パスワードを消して、すべての端末からログアウトします。"
+
+#: src/app/(public)/password/undo/page.tsx:9
+#: src/app/(public)/password/undo/page.tsx:17
+msgid "パスワードの変更を取り消す"
+msgstr "パスワードの変更を取り消す"
+
+#: src/components/useErrorMessages.ts:20
+msgid "パスワードは、8文字以上にしてください。"
+msgstr "パスワードは、8文字以上にしてください。"
+
+#: src/components/settings/PasswordMethod.tsx:75
+msgid "パスワードは、なくてもかまいません。決めておくと、メールを待たずにログインできます。"
+msgstr "パスワードは、なくてもかまいません。決めておくと、メールを待たずにログインできます。"
+
+#: src/components/settings/PasswordMethod.tsx:69
+msgid "パスワードを使うには、先にメールアドレスを追加してください。忘れたときに、メールで確認するためです。"
+msgstr "パスワードを使うには、先にメールアドレスを追加してください。忘れたときに、メールで確認するためです。"
+
+#: src/components/settings/PasswordMethod.tsx:50
+msgid "パスワードを保存しました。確認のメールを送りました。"
+msgstr "パスワードを保存しました。確認のメールを送りました。"
+
+#: src/components/settings/PasswordMethod.tsx:87
+msgid "パスワードを保存する"
+msgstr "パスワードを保存する"
+
+#: src/components/settings/PasswordMethod.tsx:98
+msgid "パスワードを変える"
+msgstr "パスワードを変える"
+
+#: src/components/auth/LoginFlow.tsx:88
+msgid "パスワードを忘れたときは、メールでログイン"
+msgstr "パスワードを忘れたときは、メールでログイン"
+
+#: src/components/auth/PasswordUndo.tsx:32
+msgid "パスワードを消して、すべての端末からログアウトしました。"
+msgstr "パスワードを消して、すべての端末からログアウトしました。"
+
+#: src/components/auth/PasswordUndo.tsx:46
+msgid "パスワードを消してログアウトする"
+msgstr "パスワードを消してログアウトする"
+
+#: src/components/settings/PasswordMethod.tsx:62
+msgid "パスワードを消しました。"
+msgstr "パスワードを消しました。"
+
+#: src/components/settings/PasswordMethod.tsx:54
+msgid "パスワードを消しますか？メールの番号や顔・指紋では、これまでどおりログインできます。"
+msgstr "パスワードを消しますか？メールの番号や顔・指紋では、これまでどおりログインできます。"
+
+#: src/components/settings/PasswordMethod.tsx:101
+msgid "パスワードを消す"
+msgstr "パスワードを消す"
+
+#: src/components/auth/PasswordInput.tsx:42
+msgid "パスワードを表示する"
+msgstr "パスワードを表示する"
+
+#: src/components/settings/PasswordMethod.tsx:74
+msgid "パスワードを設定しています。忘れたときは、メールの番号でログインして、ここで決めなおせます。"
+msgstr "パスワードを設定しています。忘れたときは、メールの番号でログインして、ここで決めなおせます。"
+
+#: src/components/useErrorMessages.ts:19
+msgid "メールアドレスかパスワードが違います。パスワードを決めていないときは、メールでログインしてください。"
+msgstr "メールアドレスかパスワードが違います。パスワードを決めていないときは、メールでログインしてください。"
+
+#: src/components/auth/PasswordUndo.tsx:33
+msgid "メールの番号でログインしなおして、ログインの方法を確認してください。"
+msgstr "メールの番号でログインしなおして、ログインの方法を確認してください。"
+
+#: src/components/settings/PasswordMethod.tsx:85
+msgid "新しいパスワード"
+msgstr "新しいパスワード"
+
+#: src/components/auth/AboutYou.tsx:21
+msgid "70代"
+msgstr "70代"
+
+#: src/components/auth/AboutYou.tsx:22
+msgid "80代"
+msgstr "80代"
+
+#: src/components/auth/AboutYou.tsx:23
+msgid "90歳以上"
+msgstr "90歳以上"

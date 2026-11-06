@@ -23,6 +23,7 @@ export interface SessionStore {
     expiresAt: Date;
     absoluteExpiresAt: Date;
     now: Date;
+    lastLoginAt: Date;
   }): Promise<void>;
   find(tokenHash: string): Promise<{ session: SessionRecord; user: AuthUser } | null>;
   touch(id: string, lastSeenAt: Date, expiresAt: Date): Promise<void>;
@@ -31,6 +32,7 @@ export interface SessionStore {
   markFresh(id: string, at: Date): Promise<void>;
   /** End every session of this account except one. */
   removeOthers(userId: string, keepSessionId: string): Promise<void>;
+  removeAll(userId: string): Promise<void>;
 }
 
 export interface Authenticated {
@@ -53,14 +55,18 @@ export function createSessionService({
   now?: () => Date;
 }) {
   return {
-    /** Start a session after a successful login. The token goes in the cookie only. */
-    async create(user: AuthUser): Promise<{ token: string; expiresAt: Date }> {
+    /**
+     * Start a session after a successful login. The token goes in the cookie only. `fresh: false` starts it as if the login
+     * were long ago, for a login too weak to count as a fresh login (a password).
+     */
+    async create(user: AuthUser, { fresh = true }: { fresh?: boolean } = {}): Promise<{ token: string; expiresAt: Date }> {
       const at = now();
       const policy = SESSION_POLICY[user.role];
       const absoluteExpiresAt = new Date(at.getTime() + policy.absoluteMs);
       const expiresAt = new Date(Math.min(at.getTime() + policy.idleMs, absoluteExpiresAt.getTime()));
       const token = generateSessionToken();
-      await store.create({ userId: user.id, tokenHash: hashSessionToken(token), expiresAt, absoluteExpiresAt, now: at });
+      const lastLoginAt = fresh ? at : new Date(at.getTime() - FRESH_LOGIN_MS);
+      await store.create({ userId: user.id, tokenHash: hashSessionToken(token), expiresAt, absoluteExpiresAt, now: at, lastLoginAt });
       return { token, expiresAt };
     },
 
@@ -102,6 +108,11 @@ export function createSessionService({
     /** The account's security changed (a passkey added or removed): every other device is signed out, this one stays. */
     async endOthers(userId: string, keepSessionId: string): Promise<void> {
       await store.removeOthers(userId, keepSessionId);
+    },
+
+    /** The owner said someone else got in: every device is signed out, this one too. */
+    async endAll(userId: string): Promise<void> {
+      await store.removeAll(userId);
     },
 
     /** Log out: forget the session on the server. */

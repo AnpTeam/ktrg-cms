@@ -6,6 +6,7 @@ import { AuthError, inputClass, primaryButton } from "@/components/auth/authUi";
 import { EmailCodeStep } from "@/components/auth/EmailCodeStep";
 import { useReauth } from "@/components/auth/ReauthDialog";
 import { PasskeyManager } from "@/components/settings/PasskeyManager";
+import { PasswordMethod } from "@/components/settings/PasswordMethod";
 import { api } from "@/lib/api";
 import { requestAddEmail, verifyAddEmail } from "@/lib/auth-client";
 import type { AuthFailure } from "@/lib/auth-flow";
@@ -105,6 +106,7 @@ export function LoginMethods({ locale }: { locale: string }) {
     <div className="flex flex-col gap-6">
       {email !== undefined ? <EmailMethod email={email} locale={language} onAdded={setEmail} /> : null}
       <PasskeyManager locale={locale} hasEmail={email !== null} />
+      {email !== undefined ? <PasswordMethod hasEmail={email !== null} /> : null}
     </div>
   );
 }

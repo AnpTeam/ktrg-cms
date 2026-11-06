@@ -21,7 +21,7 @@ describe("permission table", () => {
 
   test("participants can only do these things (a change here must be deliberate)", () => {
     const forParticipant: string[] = permissions.filter((p) => can("participant", p)).sort();
-    expect(forParticipant).toEqual(["comment.create", "me.manage", "me.sensitive", "navigation.path", "route.gpx", "stamp.create"]);
+    expect(forParticipant).toEqual(["comment.create", "me.manage", "me.password", "me.sensitive", "navigation.path", "route.gpx", "stamp.create"]);
   });
 
   test("admins can do everything participants can, plus the CMS", () => {
@@ -58,7 +58,7 @@ describe("permission table", () => {
   });
 
   test("every CMS permission is admin-only", () => {
-    const cms = permissions.filter((p) => p !== "me.manage" && p !== "me.sensitive" && p !== "stamp.create" && p !== "navigation.path" && p !== "route.gpx" && p !== "comment.create");
+    const cms = permissions.filter((p) => p !== "me.manage" && p !== "me.password" && p !== "me.sensitive" && p !== "stamp.create" && p !== "navigation.path" && p !== "route.gpx" && p !== "comment.create");
     expect(cms.length).toBeGreaterThan(0);
     for (const p of cms) {
       expect(can("participant", p)).toBe(false);
@@ -107,10 +107,10 @@ describe("fresh-login permissions", () => {
     expect(needsFreshLogin("route.manage")).toBe(false);
   });
 
-  test("a participant is only ever asked for a re-check for account security (me.sensitive)", () => {
+  test("a participant is only ever asked for a re-check for account security (me.sensitive, me.password)", () => {
     for (const p of FRESH_LOGIN_REQUIRED) {
       expect(Object.hasOwn(PERMISSIONS, p)).toBe(true);
-      if (p !== "me.sensitive") expect(can("participant", p)).toBe(false);
+      if (p !== "me.sensitive" && p !== "me.password") expect(can("participant", p)).toBe(false);
     }
   });
 });

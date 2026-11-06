@@ -166,6 +166,20 @@ export async function verifyEmailCode(email: string, code: string, profile?: Sig
   }
 }
 
+const asResult = async (request: () => Promise<{ error: { status: unknown; value: unknown } | null }>): Promise<AuthResult> => {
+  try {
+    const res = await request();
+    return res.error ? fail(apiFailure(res.error)) : done;
+  } catch {
+    return fail("network");
+  }
+};
+
+export const logInWithPassword = (email: string, password: string) => asResult(() => api.auth.password.login.post({ email, password }));
+export const setPassword = (password: string) => asResult(() => api.auth.password.put({ password }));
+export const removePassword = () => asResult(() => api.auth.password.delete());
+export const undoPassword = (token: string) => asResult(() => api.auth.password.undo.post({ token }));
+
 export async function logOut(): Promise<AuthResult> {
   try {
     const res = await api.auth.logout.post();

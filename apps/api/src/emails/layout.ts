@@ -20,6 +20,8 @@ export interface EmailParts {
   intro: string[];
   /** Large, monospaced block such as a one-time code. */
   highlight?: string;
+  /** One button, after the details. Only for an address we built. */
+  link?: { label: string; href: string };
   /** Label / value rows, e.g. name and time. */
   details?: { label: string; value: string }[];
   /** Paragraphs after the main content, shown smaller. */
@@ -64,6 +66,7 @@ export function subjectPrefix(locale: EmailLocale): string {
 export function renderText(parts: EmailParts): string {
   const lines: string[] = [parts.heading, "", ...joinParagraphs(parts.intro)];
   if (parts.highlight) lines.push("", `    ${parts.highlight}`);
+  if (parts.link) lines.push("", `${parts.link.label}: ${parts.link.href}`);
   if (parts.details?.length) {
     lines.push("", ...parts.details.map(({ label, value }) => `${label}: ${value}`));
   }
@@ -81,6 +84,9 @@ export function renderHtml(parts: EmailParts): string {
   const p = (text: string, style = "margin:0 0 16px;font-size:15px;line-height:1.7;color:#1f2937;") =>
     `<p style="${style}">${e(text)}</p>`;
 
+  const link = parts.link
+    ? `<p style="margin:8px 0 24px;"><a href="${e(parts.link.href)}" style="display:inline-block;padding:14px 24px;background:#8e2a21;border-radius:8px;color:#ffffff;font-size:16px;font-weight:700;text-decoration:none;">${e(parts.link.label)}</a></p>`
+    : "";
   const highlight = parts.highlight
     ? `<p style="margin:8px 0 24px;padding:16px;background:#f3f4f6;border-radius:8px;text-align:center;font-family:'SFMono-Regular',Consolas,'Liberation Mono',monospace;font-size:32px;font-weight:700;letter-spacing:8px;color:#111827;">${e(parts.highlight)}</p>`
     : "";
@@ -113,6 +119,7 @@ export function renderHtml(parts: EmailParts): string {
 ${parts.intro.map((t) => p(t)).join("\n")}
 ${highlight}
 ${details}
+${link}
 ${parts.footnotes.map((t) => p(t, "margin:0 0 12px;font-size:13px;line-height:1.7;color:#4b5563;")).join("\n")}
 </td></tr>
 <tr><td style="padding:16px 32px 24px;border-top:1px solid #e5e7eb;font-size:12px;line-height:1.6;color:#9ca3af;">${e(footer[parts.locale])}</td></tr>

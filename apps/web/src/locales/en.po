@@ -599,18 +599,6 @@ msgstr "50s"
 msgid "60代"
 msgstr "60s"
 
-#: src/components/auth/AboutYou.tsx:21
-msgid "70代"
-msgstr "70s"
-
-#: src/components/auth/AboutYou.tsx:22
-msgid "80代"
-msgstr "80s"
-
-#: src/components/auth/AboutYou.tsx:23
-msgid "90歳以上"
-msgstr "90 and over"
-
 #: src/components/auth/AboutYou.tsx:22
 msgid "70歳以上"
 msgstr "70 or older"
@@ -7141,3 +7129,113 @@ msgstr "Parking"
 #: src/components/map/MapSheet.tsx:158
 msgid "高い"
 msgstr "high"
+
+#: src/components/settings/PasswordMethod.tsx:85
+msgid "8文字以上にしてください。記号はなくてもかまいません。"
+msgstr "Use at least 8 characters. Symbols are not needed."
+
+#: src/components/useErrorMessages.ts:21
+msgid "このパスワードは、ほかの人に当てられやすいものです。別のパスワードにしてください。"
+msgstr "This password is too easy for others to guess. Please choose another."
+
+#: src/components/useErrorMessages.ts:22
+msgid "このボタンは、もう使えません。7日を過ぎたか、すでに使われています。メールの番号でログインして、ログインの方法を確認してください。"
+msgstr "This button no longer works: it is over 7 days old or was already used. Log in with an emailed number and check your ways to log in."
+
+#: src/components/auth/LoginFlow.tsx:80
+#: src/components/settings/PasswordMethod.tsx:67
+msgid "パスワード"
+msgstr "Password"
+
+#: src/components/auth/LoginFlow.tsx:149
+msgid "パスワードでログイン"
+msgstr "Log in with a password"
+
+#: src/components/auth/PasswordUndo.tsx:43
+msgid "パスワードの変更に心当たりがないときは、下のボタンを押してください。パスワードを消して、すべての端末からログアウトします。"
+msgstr "If you did not change your password, press the button below. It removes the password and logs out every device."
+
+#: src/app/(public)/password/undo/page.tsx:9
+#: src/app/(public)/password/undo/page.tsx:17
+msgid "パスワードの変更を取り消す"
+msgstr "Undo a password change"
+
+#: src/components/useErrorMessages.ts:20
+msgid "パスワードは、8文字以上にしてください。"
+msgstr "Please use at least 8 characters."
+
+#: src/components/settings/PasswordMethod.tsx:75
+msgid "パスワードは、なくてもかまいません。決めておくと、メールを待たずにログインできます。"
+msgstr "A password is optional. With one, you can log in without waiting for an email."
+
+#: src/components/settings/PasswordMethod.tsx:69
+msgid "パスワードを使うには、先にメールアドレスを追加してください。忘れたときに、メールで確認するためです。"
+msgstr "To use a password, add an email address first. It is how you get back in if you forget it."
+
+#: src/components/settings/PasswordMethod.tsx:50
+msgid "パスワードを保存しました。確認のメールを送りました。"
+msgstr "Your password is saved. We sent you a confirmation email."
+
+#: src/components/settings/PasswordMethod.tsx:87
+msgid "パスワードを保存する"
+msgstr "Save password"
+
+#: src/components/settings/PasswordMethod.tsx:98
+msgid "パスワードを変える"
+msgstr "Change password"
+
+#: src/components/auth/LoginFlow.tsx:88
+msgid "パスワードを忘れたときは、メールでログイン"
+msgstr "Forgot your password? Log in with email"
+
+#: src/components/auth/PasswordUndo.tsx:32
+msgid "パスワードを消して、すべての端末からログアウトしました。"
+msgstr "The password is removed, and every device is logged out."
+
+#: src/components/auth/PasswordUndo.tsx:46
+msgid "パスワードを消してログアウトする"
+msgstr "Remove password and log out"
+
+#: src/components/settings/PasswordMethod.tsx:62
+msgid "パスワードを消しました。"
+msgstr "Your password is removed."
+
+#: src/components/settings/PasswordMethod.tsx:54
+msgid "パスワードを消しますか？メールの番号や顔・指紋では、これまでどおりログインできます。"
+msgstr "Remove your password? You can still log in with an emailed number or your face or fingerprint."
+
+#: src/components/settings/PasswordMethod.tsx:101
+msgid "パスワードを消す"
+msgstr "Remove password"
+
+#: src/components/auth/PasswordInput.tsx:42
+msgid "パスワードを表示する"
+msgstr "Show password"
+
+#: src/components/settings/PasswordMethod.tsx:74
+msgid "パスワードを設定しています。忘れたときは、メールの番号でログインして、ここで決めなおせます。"
+msgstr "You have a password. If you forget it, log in with an emailed number and set a new one here."
+
+#: src/components/useErrorMessages.ts:19
+msgid "メールアドレスかパスワードが違います。パスワードを決めていないときは、メールでログインしてください。"
+msgstr "The email address or password is wrong. If you have not set a password, log in with email."
+
+#: src/components/auth/PasswordUndo.tsx:33
+msgid "メールの番号でログインしなおして、ログインの方法を確認してください。"
+msgstr "Log in again with an emailed number and check your ways to log in."
+
+#: src/components/settings/PasswordMethod.tsx:85
+msgid "新しいパスワード"
+msgstr "New password"
+
+#: src/components/auth/AboutYou.tsx:21
+msgid "70代"
+msgstr "70s"
+
+#: src/components/auth/AboutYou.tsx:22
+msgid "80代"
+msgstr "80s"
+
+#: src/components/auth/AboutYou.tsx:23
+msgid "90歳以上"
+msgstr "90 and over"

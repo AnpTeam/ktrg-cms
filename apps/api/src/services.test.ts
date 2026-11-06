@@ -3,6 +3,7 @@ import { describe, expect, test } from "bun:test";
 import { createMemoryAuditWriter } from "./audit/audit-log";
 import { createMemoryOtpStore } from "./auth/otp-memory-store";
 import { createMemoryPasskeyStore } from "./auth/passkey-memory-store";
+import { createMemoryPasswordStore } from "./auth/password-memory-store";
 import { createMemoryRateLimitStore } from "./auth/rate-limit-memory-store";
 import { createMemorySessionStore } from "./auth/session-memory-store";
 import { createMemoryVisitStore } from "./visits/visits";
@@ -33,6 +34,7 @@ function build(photoHosts?: string[]) {
       session: createMemorySessionStore(users).store,
       rateLimit: createMemoryRateLimitStore().store,
       passkeys: createMemoryPasskeyStore(users).store,
+      passwords: createMemoryPasswordStore(users).store,
       me: createMemoryMeStore(users).store,
       content: createMemoryContentStore(audit.writer).store,
       rallyAdmin: createMemoryRallyAdminStore(audit.writer).store,

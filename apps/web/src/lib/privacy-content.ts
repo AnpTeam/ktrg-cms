@@ -38,6 +38,7 @@ const ja: Policy = {
       items: [
         { term: "メールアドレス", text: "メールでログインする方だけです。ログイン用の番号を送るために使います。" },
         { term: "パスキー", text: "パスキーで登録した方の、公開用の鍵だけを保存します。顔や指紋のデータは、お使いの端末の外に出ません。" },
+        { term: "パスワード", text: "決めた方だけです。元に戻せない形に変えたものだけを保存し、パスワードそのものは保存しません。" },
         { term: "お名前", text: "アプリの中で表示します。ニックネームでかまいません。" },
         {
           term: "どちらからお越しか、年代、性別",
@@ -131,6 +132,7 @@ const en: Policy = {
           term: "Passkey",
           text: "If you register with a passkey, we store only its public key. Your face or fingerprint data never leaves your device.",
         },
+        { term: "Password", text: "Only if you choose to set one. We keep it only in a scrambled form that cannot be turned back, never the password itself." },
         { term: "Name", text: "Shown inside the app. A nickname is fine." },
         {
           term: "Where you come from, age range, gender",

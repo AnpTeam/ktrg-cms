@@ -19,6 +19,10 @@ export const AUDIT_ACTIONS = {
   "session.reauth": "user",
   /** A passkey-only account added its first email. */
   "email.add": "user",
+  /** The optional password was set or changed, removed, or undone from the link in the email. */
+  "password.set": "user",
+  "password.remove": "user",
+  "password.undo": "user",
   "passkey.add": "passkey",
   "passkey.remove": "passkey",
   "passkey.rename": "passkey",

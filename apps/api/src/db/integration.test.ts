@@ -11,6 +11,7 @@ import { createDrizzleOtpStore } from "../auth/otp-store";
 import { createDrizzleContentStore } from "../content/content-store";
 import { createDrizzleMeStore } from "../me/me-store";
 import { createDrizzlePasskeyStore } from "../auth/passkey-store";
+import { createDrizzlePasswordStore } from "../auth/password-store";
 import { createDrizzleRateLimitStore } from "../auth/rate-limit-store";
 import { createDrizzleSessionStore } from "../auth/session-store";
 import { createDb } from "./client";
@@ -209,7 +210,7 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       const expiresAt = new Date(now.getTime() + 14 * 86_400_000);
       const absoluteExpiresAt = new Date(now.getTime() + 30 * 86_400_000);
 
-      await sessions.create({ userId: user.id, tokenHash, expiresAt, absoluteExpiresAt, now });
+      await sessions.create({ userId: user.id, tokenHash, expiresAt, absoluteExpiresAt, now, lastLoginAt: now });
       const found = await sessions.find(tokenHash);
       expect(found?.user).toEqual({ ...user, restricted: false });
       expect(found?.session.absoluteExpiresAt.getTime()).toBe(absoluteExpiresAt.getTime());
@@ -233,7 +234,7 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
     test("deleting a user removes their sessions", async () => {
       const user = await newUser("session-cascade");
       const tokenHash = randomBytes(32).toString("hex");
-      await sessions.create({ userId: user.id, tokenHash, expiresAt: future(), absoluteExpiresAt: future(), now: new Date() });
+      await sessions.create({ userId: user.id, tokenHash, expiresAt: future(), absoluteExpiresAt: future(), now: new Date(), lastLoginAt: new Date() });
       await db.delete(users).where(inArray(users.id, [user.id]));
       expect(await sessions.find(tokenHash)).toBeNull();
     });
@@ -1056,6 +1057,22 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       });
     });
 
+    test("the password store keeps one hash per account, and an undo link removes it once", async () => {
+      await inRollback(async (tx) => {
+        const store = createDrizzlePasswordStore(tx as unknown as typeof db);
+        const [user] = await tx.insert(users).values({ email: "password-test@example.com" }).returning({ id: users.id });
+        const now = new Date();
+        const undo = { tokenHash: "a".repeat(64), expiresAt: new Date(now.getTime() + 60_000) };
+        expect(await store.findLogin("password-test@example.com")).toMatchObject({ hash: null });
+        expect(await store.save(user!.id, "first", undo, now)).toBe(false);
+        expect(await store.save(user!.id, "second", { ...undo, tokenHash: "b".repeat(64) }, now)).toBe(true);
+        expect(await store.findLogin("password-test@example.com")).toMatchObject({ user: { id: user!.id }, hash: "second" });
+        expect(await store.undo("a".repeat(64), now)).toBe(user!.id);
+        expect(await store.hasPassword(user!.id)).toBe(false);
+        expect(await store.undo("b".repeat(64), now)).toBeNull();
+      });
+    });
+
     test("publishing writes one audit row, a second publish writes none, and the database still guards the rules", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {
@@ -1500,7 +1517,7 @@ describe.skipIf(!url)("banners and role changes on real PostgreSQL", () => {
     const target = await otp.findOrCreateUser(`${tag}-target@example.test`);
     const at = new Date();
     for (const userId of [admin.id, target.id]) {
-      await sessionStore.create({ userId, tokenHash: randomUUID(), expiresAt: new Date(at.getTime() + 60_000), absoluteExpiresAt: new Date(at.getTime() + 60_000), now: at });
+      await sessionStore.create({ userId, tokenHash: randomUUID(), expiresAt: new Date(at.getTime() + 60_000), absoluteExpiresAt: new Date(at.getTime() + 60_000), now: at, lastLoginAt: at });
     }
     const before = (await userStore.get(target.id))!;
     const changed = await userStore.setRole(admin.id, target.id, before.updatedAt, "admin");

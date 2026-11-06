@@ -365,6 +365,13 @@
       "when": 1793927026237,
       "tag": "0051_slim_sheva_callister",
       "breakpoints": true
+    },
+    {
+      "idx": 52,
+      "version": "7",
+      "when": 1793928802638,
+      "tag": "0052_chunky_the_hand",
+      "breakpoints": true
     }
   ]
 }
