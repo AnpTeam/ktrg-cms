@@ -7239,3 +7239,15 @@ msgstr "80代"
 #: src/components/auth/AboutYou.tsx:23
 msgid "90歳以上"
 msgstr "90歳以上"
+
+#: src/components/settings/WelcomeFlow.tsx
+msgid "パスワードを決めますか？"
+msgstr "パスワードを決めますか？"
+
+#: src/components/settings/WelcomeFlow.tsx
+msgid "決めなくても大丈夫です。決めておくと、メールを待たずにログインできます。あとから「ログインの方法」でも決められます。"
+msgstr "決めなくても大丈夫です。決めておくと、メールを待たずにログインできます。あとから「ログインの方法」でも決められます。"
+
+#: src/components/settings/WelcomeFlow.tsx
+msgid "パスワードなしで続ける"
+msgstr "パスワードなしで続ける"
