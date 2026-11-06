@@ -161,7 +161,7 @@ export function MapSheet({
           aria-expanded={!folded}
           aria-label={folded ? t`ひらく` : t`たたむ`}
           title={folded ? t`ひらく` : t`たたむ`}
-          className={`tap-target z-10 inline-flex items-center justify-center rounded-lg border border-ink bg-paper text-ink hover:bg-surface ${folded ? "mx-auto mt-3 shrink-0" : "absolute right-3 top-3"}`}
+          className={`tap-target z-10 inline-flex items-center justify-center rounded-full border border-ink bg-paper text-ink hover:bg-surface ${folded ? "mx-auto mt-3 shrink-0" : "absolute right-3 top-3"}`}
         >
           <PanelIcon />
         </button>

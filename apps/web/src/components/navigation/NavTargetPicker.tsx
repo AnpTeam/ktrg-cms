@@ -30,7 +30,7 @@ export function NavTargetPicker() {
     setTarget(id);
     dialog.current?.close();
   };
-  const row = "tap-target flex w-full items-center justify-between gap-3 rounded-xl border border-ink px-4 py-2 text-left text-lg font-bold hover:bg-surface disabled:opacity-60";
+  const row = "tap-target flex w-full items-center justify-between gap-3 rounded-full border border-ink px-4 py-2 text-left text-lg font-bold hover:bg-surface disabled:opacity-60";
 
   return (
     <>

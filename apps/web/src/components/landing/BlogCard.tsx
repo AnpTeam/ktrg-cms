@@ -38,7 +38,7 @@ export function BlogCard({ posts, locale }: { posts: BlogPost[]; locale: string 
           </li>
         ))}
       </ul>
-      <Link href="/blog" className="tap-target mt-2 flex items-center justify-between gap-3 rounded-2xl bg-paper px-5 text-xl font-bold text-accent">
+      <Link href="/blog" className="tap-target mt-2 flex items-center justify-between gap-3 rounded-full bg-paper px-5 text-xl font-bold text-accent">
         <Trans>ブログをすべて見る</Trans>
         <ChevronIcon />
       </Link>

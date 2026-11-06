@@ -37,7 +37,7 @@ export function useGenderNames(): Record<Gender, string> {
 }
 
 const tile =
-  "tap-target flex cursor-pointer items-center justify-center rounded-xl border-2 px-2 py-3 text-center text-lg font-bold leading-tight focus-within:outline focus-within:outline-[3px] focus-within:outline-offset-2 focus-within:outline-accent";
+  "tap-target flex cursor-pointer items-center justify-center rounded-full border-2 px-2 py-3 text-center text-lg font-bold leading-tight focus-within:outline focus-within:outline-[3px] focus-within:outline-offset-2 focus-within:outline-accent";
 
 function Tiles<K extends string>({
   name,

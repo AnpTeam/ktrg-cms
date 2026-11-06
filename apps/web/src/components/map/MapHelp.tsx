@@ -21,7 +21,7 @@ export function MapHelp() {
         type="button"
         onClick={() => dialog.current?.showModal()}
         aria-label={t`地図の使い方`}
-        className="tap-target inline-flex items-center justify-center rounded-lg border border-ink bg-paper px-3 text-2xl font-bold text-ink hover:bg-surface md:hidden"
+        className="tap-target inline-flex items-center justify-center rounded-full border border-ink bg-paper text-2xl font-bold text-ink hover:bg-surface md:hidden"
       >
         ?
       </button>

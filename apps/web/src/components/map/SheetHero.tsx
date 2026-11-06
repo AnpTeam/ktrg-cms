@@ -35,7 +35,7 @@ export function SheetHero({
         <button
           type="button"
           onClick={onBack}
-          className="tap-target absolute left-3 top-[calc(3.75rem+var(--sheet-top,0px))] inline-flex items-center gap-1 rounded-lg bg-black/60 py-1 pl-2 pr-4 text-lg font-bold text-white lg:top-3"
+          className="tap-target absolute left-3 top-[calc(3.75rem+var(--sheet-top,0px))] inline-flex items-center gap-1 rounded-full bg-black/60 py-1 pl-2 pr-4 text-lg font-bold text-white lg:top-3"
         >
           <ChevronLeftIcon />
           {backLabel}

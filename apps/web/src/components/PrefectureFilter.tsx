@@ -22,7 +22,7 @@ export function PrefectureFilter({
 
   // A softer chip: a thin line, fully rounded, never squeezed (it keeps its width and the row scrolls instead).
   const chip = (selected: boolean) =>
-    `tap-target inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border px-3 text-lg font-bold md:gap-1 md:px-1.5 md:text-base ${
+    `tap-target inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border px-3 text-lg font-bold md:gap-1 md:px-1.5 md:text-base ${
       selected ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"
     }`;
 

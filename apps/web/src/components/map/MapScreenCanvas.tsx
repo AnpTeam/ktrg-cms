@@ -670,7 +670,7 @@ export function MapScreenCanvas({
             type="button"
             onClick={() => zoom(sign === "in" ? 1 : -1)}
             aria-label={sign === "in" ? t`拡大` : t`縮小`}
-            className="tap-target inline-flex items-center justify-center rounded-lg border border-ink bg-paper px-3 text-2xl font-bold text-ink hover:bg-surface"
+            className="tap-target inline-flex items-center justify-center rounded-full border border-ink bg-paper text-2xl font-bold text-ink hover:bg-surface"
           >
             {sign === "in" ? <PlusIcon size={26} /> : <MinusIcon size={26} />}
           </button>
@@ -682,7 +682,7 @@ export function MapScreenCanvas({
             onClick={startFollowing}
             aria-pressed={following}
             aria-label={t`現在地を真ん中にする（進む向きが上）`}
-            className={`tap-target inline-flex items-center justify-center rounded-lg border border-ink px-3 ${following ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"}`}
+            className={`tap-target inline-flex items-center justify-center rounded-full border border-ink ${following ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"}`}
           >
             <svg viewBox="0 0 24 24" aria-hidden="true" className="size-6" fill="none" stroke="currentColor" strokeWidth="2.2">
               <circle cx="12" cy="12" r="4" />

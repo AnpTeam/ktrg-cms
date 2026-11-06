@@ -85,7 +85,7 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
 
   // The label is capped at 4.25vw so "Routes" still fits a 320 px phone at the largest text size; wider screens never hit the cap.
   const item =
-    "flex min-h-[3.25rem] min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg text-[min(0.875rem,4.25vw)] font-bold leading-tight [&_svg]:size-6 md:min-h-14 md:flex-row md:justify-start md:gap-4 md:rounded-2xl md:px-5 md:text-xl";
+    "flex min-h-[3.25rem] min-w-0 flex-col items-center justify-center gap-0.5 rounded-full text-[min(0.875rem,4.25vw)] font-bold leading-tight [&_svg]:size-6 md:min-h-14 md:flex-row md:justify-start md:gap-4  md:px-5 md:text-xl";
   // Folded, a tab is its icon over its word again, as on a phone.
   const miniItem = mini ? " lg:flex-col lg:justify-center lg:gap-0.5 lg:px-0 lg:text-sm" : "";
 
@@ -101,7 +101,7 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
       aria-expanded={!mini}
       aria-label={mini ? t`メニューをひらく` : t`メニューをたたむ`}
       title={mini ? t`メニューをひらく` : t`メニューをたたむ`}
-      className={`tap-target hidden items-center justify-center rounded-lg text-ink hover:bg-surface lg:inline-flex ${mini ? "mx-auto mt-2 shrink-0" : "absolute right-2 top-2"}`}
+      className={`tap-target hidden items-center justify-center rounded-full text-ink hover:bg-surface lg:inline-flex ${mini ? "mx-auto mt-2 shrink-0" : "absolute right-2 top-2"}`}
     >
       <PanelIcon />
     </button>

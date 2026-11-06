@@ -31,7 +31,7 @@ export function BookmarkButton({ routeId, compact = false }: { routeId: string; 
         aria-label={compact ? label : undefined}
         title={compact ? label : undefined}
         onClick={press}
-        className={`tap-target inline-flex items-center justify-center gap-2 rounded-lg border font-bold ${compact ? "px-0" : "px-5 text-lg"} ${look}`}
+        className={`tap-target inline-flex items-center justify-center gap-2 rounded-full border font-bold ${compact ? "px-0" : "px-5 text-lg"} ${look}`}
       >
         <BookmarkIcon filled={saved} />
         {compact ? null : label}

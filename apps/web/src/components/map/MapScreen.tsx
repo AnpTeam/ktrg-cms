@@ -360,7 +360,7 @@ function CourseList({ routes, onChoose, locale }: { routes: MapScreenRoute[]; on
     <ol className="flex flex-col gap-2">
       {ordered.map((r) => (
         <li key={r.id}>
-          <button type="button" onClick={() => onChoose(r.id)} className="tap-target block w-full rounded-3xl text-left hover:opacity-95">
+          <button type="button" onClick={() => onChoose(r.id)} className="tap-target block w-full rounded-[1.75rem] text-left hover:opacity-95">
             <RoutePill
               route={r}
               brief

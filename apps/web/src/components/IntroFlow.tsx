@@ -13,7 +13,7 @@ const INTRO_COOKIE = "intro";
 // Endonyms: each language names itself, so it is findable in a language the person cannot read.
 const names: Record<Locale, string> = { ja: "日本語", en: "English" };
 
-const big = "tap-target flex min-h-14 w-full items-center justify-center rounded-xl px-6 text-xl font-bold";
+const big = "tap-target flex min-h-12 w-full items-center justify-center rounded-full px-6 text-xl font-bold";
 
 // Already opened from the home screen: nothing to add.
 const standaloneQuery = "(display-mode: standalone)";
