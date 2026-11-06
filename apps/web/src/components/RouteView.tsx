@@ -242,7 +242,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           ) : null}
 
           {access || journey || route.accessPoints.length > 0 ? (
-            <section id="access" className="order-8 flex flex-col gap-4 px-4 scroll-mt-20 @4xl:order-none @4xl:px-0">
+            <section id="access" className="order-8 flex flex-col gap-4 px-4 scroll-mt-[calc(5rem+env(safe-area-inset-top))] @4xl:order-none @4xl:px-0">
               <h2 className="text-xl font-bold">
                 <Trans>アクセス・交通</Trans>
               </h2>
@@ -275,7 +275,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           {offline ? <section className="order-7 px-4 @4xl:order-none @4xl:px-0">{offline}</section> : null}
 
           {video || videoFile ? (
-            <section id="video" className="order-9 flex flex-col gap-3 px-4 scroll-mt-20 @4xl:order-none @4xl:px-0">
+            <section id="video" className="order-9 flex flex-col gap-3 px-4 scroll-mt-[calc(5rem+env(safe-area-inset-top))] @4xl:order-none @4xl:px-0">
               <h2 className="text-xl font-bold">
                 <Trans>ルートの動画</Trans>
               </h2>
@@ -289,7 +289,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           ) : null}
 
           {stops.length > 0 ? (
-            <section id="map" className="order-6 px-4 scroll-mt-20 @4xl:order-none @4xl:px-0">
+            <section id="map" className="order-6 px-4 scroll-mt-[calc(5rem+env(safe-area-inset-top))] @4xl:order-none @4xl:px-0">
               <TrailMapLoader stops={stops} line={route.line} sideLines={route.sideLines?.map((s) => s.line)} places={mapPlaces} draft={draftPositions} settings={settings} mergeStops={mergeStops} placesFirst={placesFirst} />
             </section>
           ) : null}
@@ -301,7 +301,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               </EmptyState>
             </div>
           ) : (
-            <section id="walk" className="order-5 scroll-mt-20 @4xl:order-none">
+            <section id="walk" className="order-5 scroll-mt-[calc(5rem+env(safe-area-inset-top))] @4xl:order-none">
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 px-4 pb-2 @4xl:px-0">
                 <h2 className="text-xl font-bold">
                   <Trans>道のり</Trans>
