@@ -38,6 +38,7 @@ const TAB_ROOM_REM = 5.5;
 const WIDE_QUERY = "(min-width: 1024px)";
 const PANEL_REM = 26; // the panel's width
 const RAIL_REM = 4.5; // its width when folded
+const SOON_CIRCLE = "border-transparent bg-line/25 text-muted"; // a course not ready yet: a plain grey disc
 const PANEL_MARGIN_REM = 0.75; // its gap to the map's edges
 
 function subscribeWide(onChange: () => void) {
@@ -223,9 +224,10 @@ export function MapScreen({
 
   const homeHeader = (
     <div>
-      <h1 className="font-serif text-2xl font-bold leading-snug text-accent">{t`マップ`}</h1>
-      <p className="text-lg leading-snug">{t`区間を選ぶと、道とスタンプの場所が見えます。`}</p>
-      <RouteChips routes={routes} onChoose={chooseRoute} selectedId={routeId} />
+      <h1 className="sr-only font-serif text-2xl font-bold leading-snug text-accent lg:not-sr-only">{t`区間の一覧`}</h1>
+      <div className="lg:hidden">
+        <RouteChips routes={routes} onChoose={chooseRoute} selectedId={routeId} />
+      </div>
     </div>
   );
 
@@ -338,9 +340,9 @@ function RouteChips({ routes, onChoose, selectedId, column = false }: { routes: 
             onClick={() => onChoose(r.id)}
             aria-label={label}
             aria-pressed={r.id === selectedId}
-            className={`tap-target grid min-w-12 shrink-0 place-items-center rounded-full border-[3px] px-3 text-lg font-bold tabular-nums ${
-              r.id === selectedId ? "bg-brand text-on-brand" : "bg-paper text-ink hover:bg-surface"
-            } ${r.status === "soon" ? "border-dashed border-line" : "border-brand"}`}
+            className={`tap-target grid size-12 shrink-0 place-items-center rounded-full border-[3px] text-lg font-bold tabular-nums ${
+              r.id === selectedId ? "bg-brand text-on-brand" : r.status === "soon" ? "hover:bg-line/40" : "bg-paper text-ink hover:bg-surface"
+            } ${r.status === "soon" ? SOON_CIRCLE : "border-brand"}`}
           >
             {r.order}
           </button>
@@ -364,7 +366,7 @@ function CourseList({ routes, onChoose, locale }: { routes: MapScreenRoute[]; on
             className="tap-target flex w-full items-center gap-3 border-t border-line/30 py-3 text-left hover:bg-surface"
           >
             <span
-              className={`grid size-10 shrink-0 place-items-center rounded-full border-[3px] text-lg font-bold tabular-nums ${r.status === "soon" ? "border-dashed border-line text-muted" : "border-brand"}`}
+              className={`grid size-10 shrink-0 place-items-center rounded-full border-[3px] text-lg font-bold tabular-nums ${r.status === "soon" ? SOON_CIRCLE : "border-brand"}`}
             >
               {r.order}
             </span>
@@ -411,7 +413,7 @@ function RoutePanel({
         </ExpandableText>
       ) : null}
 
-      <RouteStats route={route} />
+      <RouteStats route={route} icons tips walkStyle={route.walkStyle ?? null} />
 
       {stampedCount !== null && spotCount > 0 ? (
         <p className="text-xl font-bold tabular-nums">{t`スタンプ ${stampedCount} / ${spotCount}`}</p>

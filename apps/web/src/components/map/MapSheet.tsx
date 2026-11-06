@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent, type PointerEvent, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { nextSnap, sheetHeightPx, snapAfterDrag, sheetSnaps, type SheetSnap } from "@/lib/map-screen";
-import { ChevronDownIcon, ChevronIcon, ChevronLeftIcon, ChevronUpIcon } from "@/components/icons";
+import { ChevronDownIcon, ChevronUpIcon, PanelIcon } from "@/components/icons";
 
 /** How long the sheet takes to move between heights, and to slide in or out. */
 const SLIDE_MS = 240;
@@ -159,15 +159,15 @@ export function MapSheet({
           type="button"
           onClick={onFold}
           aria-expanded={!folded}
-          className={`tap-target z-10 inline-flex items-center justify-center rounded-lg border border-ink bg-paper font-bold text-ink hover:bg-surface ${folded ? "mx-1 mt-2 shrink-0 flex-col text-base" : "absolute right-3 top-3 gap-1 px-3 text-lg"}`}
+          aria-label={folded ? t`ひらく` : t`たたむ`}
+          title={folded ? t`ひらく` : t`たたむ`}
+          className={`tap-target z-10 inline-flex items-center justify-center rounded-lg border border-ink bg-paper text-ink hover:bg-surface ${folded ? "mx-auto mt-3 shrink-0" : "absolute right-3 top-3"}`}
         >
-          {folded ? <ChevronIcon /> : <ChevronLeftIcon />}
-          {folded ? t`ひらく` : t`たたむ`}
+          <PanelIcon />
         </button>
       ) : null}
       {folded ? rail : null}
       <div className={folded ? "hidden" : "contents"}>
-      {panel && header ? <div className="h-[4.5rem] shrink-0" aria-hidden="true" /> : null}
       <div
         role="slider"
         tabIndex={0}
@@ -192,7 +192,7 @@ export function MapSheet({
           {tapLabel}
         </span>
       </div>
-      {header ? <div className="shrink-0 px-4 pb-2">{header}</div> : null}
+      {header ? <div className={`shrink-0 px-4 pb-2 ${panel ? "pr-16 pt-5" : ""}`}>{header}</div> : null}
       <div ref={body} className="min-h-0 flex-1 overflow-y-auto overscroll-contain" style={{ paddingBottom: tabPx + 24 }}>
         {children}
       </div>
