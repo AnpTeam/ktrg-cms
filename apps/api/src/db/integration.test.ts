@@ -1048,6 +1048,9 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
           const [visitor] = await tx.insert(users).values({}).returning({ id: users.id });
           await tx.insert(stamps).values({ userId: visitor!.id, spotId: placeOnCourse4!.id });
           expect(await store.deleteSpot(actor, placeOnCourse4!.id)).toBe("has_stamps");
+          await tx.update(stamps).set({ revokedAt: new Date() }).where(eq(stamps.spotId, placeOnCourse4!.id));
+          expect(await store.deleteSpot(actor, placeOnCourse4!.id)).toBe("ok"); // revoked: it no longer holds the place
+          expect(await tx.select().from(stamps).where(eq(stamps.spotId, placeOnCourse4!.id))).toHaveLength(0);
           expect(await store.deleteSpot(actor, "00000000-0000-4000-8000-000000000000")).toBe("not_found");
         });
       });

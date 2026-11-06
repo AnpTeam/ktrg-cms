@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, getTableColumns, inArray, isNotNull, max, ne, or, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, getTableColumns, inArray, isNotNull, isNull, max, ne, or, sql } from "drizzle-orm";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
 import { auditLog, rallies, rallyCompletions, rallyRoutes, rallySpots, rallyTranslations, routeSpots, routes, routeTranslations, routeVideoHistory, spots, spotRoutes, spotTranslations, stamps } from "../db/schema";
@@ -344,8 +344,10 @@ export function createDrizzleContentStore(db: Db): ContentStore {
       return db.transaction(async (tx) => {
         const [exists] = await tx.select({ id: spots.id }).from(spots).where(eq(spots.id, id)).limit(1);
         if (!exists) return "not_found";
-        const [n] = await tx.select({ n: count() }).from(stamps).where(eq(stamps.spotId, id));
+        // Only a stamp a visitor still holds keeps the place; revoked ones count for nothing and go with it.
+        const [n] = await tx.select({ n: count() }).from(stamps).where(and(eq(stamps.spotId, id), isNull(stamps.revokedAt)));
         if ((n?.n ?? 0) > 0) return "has_stamps";
+        await tx.delete(stamps).where(eq(stamps.spotId, id));
         await tx.delete(spots).where(eq(spots.id, id)); // its rally links go by cascade
         await writeAudit(tx, { actorUserId: actor, action: "spot.delete", targetId: id });
         return "ok";

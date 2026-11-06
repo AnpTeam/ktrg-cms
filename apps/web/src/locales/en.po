@@ -1827,8 +1827,8 @@ msgid "スタンプが多いルート"
 msgstr "Routes with the most stamps"
 
 #: src/components/useErrorMessages.ts:48
-msgid "スタンプが押されたことのある経由地は消せません。「公開をやめる」をお使いください。"
-msgstr "A waypoint that has been stamped cannot be deleted. Use \"Unpublish\" instead."
+msgid "取り消していないスタンプがある経由地は消せません。先に「スタンプ」の一覧で取り消すか、「公開をやめる」をお使いください。"
+msgstr "A waypoint with stamps that have not been revoked cannot be deleted. Revoke them in the Stamps list first, or use \"Unpublish\"."
 
 #: src/components/map/MapScreen.tsx:563
 #: src/components/map/StopCard.tsx:39
