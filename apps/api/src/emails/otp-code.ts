@@ -10,15 +10,15 @@ export function buildOtpEmail(opts: {
   const { to, locale, code, ttlMinutes } = opts;
 
   if (locale === "ja") {
-    return renderEmail(to, `${subjectPrefix(locale)}確認コード`, {
+    return renderEmail(to, `${subjectPrefix(locale)}確認番号`, {
       locale,
-      preheader: `確認コードは ${code} です（${ttlMinutes}分間有効）`,
-      heading: "確認コード",
-      intro: ["KTRGにログインするには、次のコードを入力してください。"],
+      preheader: `確認番号は ${code} です（${ttlMinutes}分間有効）`,
+      heading: "確認番号",
+      intro: ["葛城修験にログインするには、次の番号を入力してください。"],
       highlight: code,
       footnotes: [
-        `このコードは${ttlMinutes}分間有効で、1回だけ使えます。`,
-        "コードは誰にも教えないでください。KTRGのスタッフがコードを尋ねることはありません。",
+        `この番号は${ttlMinutes}分間有効で、1回だけ使えます。`,
+        "番号は誰にも教えないでください。スタッフが番号を尋ねることはありません。",
         "心当たりがない場合は、このメールを無視してください。アカウントは変更されません。",
       ],
     });
@@ -28,11 +28,11 @@ export function buildOtpEmail(opts: {
     locale,
     preheader: `Your code is ${code} (valid for ${ttlMinutes} minutes)`,
     heading: "Your verification code",
-    intro: ["Enter this code to sign in to KTRG."],
+    intro: ["Enter this code to sign in to Katsuragi Shugen."],
     highlight: code,
     footnotes: [
       `The code is valid for ${ttlMinutes} minutes and can be used once.`,
-      "Never share this code. KTRG staff will never ask you for it.",
+      "Never share this code. Our staff will never ask you for it.",
       "If you did not request it, you can ignore this email. Nothing on your account has changed.",
     ],
   });

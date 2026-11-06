@@ -32,7 +32,7 @@ describe("flattenUserText", () => {
 describe("renderText", () => {
   test("lays out every part in order", () => {
     expect(renderText(parts)).toBe(
-      ["Heading", "", "First.", "", "Second.", "", "    123456", "", "Name: Phone", "", "Small print.", "", "--", "KTRG", "This mailbox is not monitored. Please do not reply."].join("\n"),
+      ["Heading", "", "First.", "", "Second.", "", "    123456", "", "Name: Phone", "", "Small print.", "", "--", "Katsuragi Shugen", "This mailbox is not monitored. Please do not reply."].join("\n"),
     );
   });
 });

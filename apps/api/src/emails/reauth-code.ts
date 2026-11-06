@@ -13,19 +13,19 @@ export function buildReauthEmail(opts: {
   const { to, locale, code, ttlMinutes } = opts;
 
   if (locale === "ja") {
-    return renderEmail(to, `${subjectPrefix(locale)}本人確認コード`, {
+    return renderEmail(to, `${subjectPrefix(locale)}本人確認の番号`, {
       locale,
-      preheader: `本人確認コードは ${code} です（${ttlMinutes}分間有効）`,
-      heading: "本人確認コード",
+      preheader: `本人確認の番号は ${code} です（${ttlMinutes}分間有効）`,
+      heading: "本人確認の番号",
       intro: [
         "重要な操作（アカウントの権限の変更など）を続けるには、ご本人の確認が必要です。",
-        "次のコードを入力してください。",
+        "次の番号を入力してください。",
       ],
       highlight: code,
       footnotes: [
-        `このコードは${ttlMinutes}分間有効で、1回だけ使えます。`,
-        "コードは誰にも教えないでください。KTRGのスタッフがコードを尋ねることはありません。",
-        "心当たりがない場合は、コードを入力しないでください。ログインしたままの端末を誰かが使っている可能性があります。",
+        `この番号は${ttlMinutes}分間有効で、1回だけ使えます。`,
+        "番号は誰にも教えないでください。スタッフが番号を尋ねることはありません。",
+        "心当たりがない場合は、番号を入力しないでください。ログインしたままの端末を誰かが使っている可能性があります。",
       ],
     });
   }
@@ -41,7 +41,7 @@ export function buildReauthEmail(opts: {
     highlight: code,
     footnotes: [
       `The code is valid for ${ttlMinutes} minutes and can be used once.`,
-      "Never share this code. KTRG staff will never ask you for it.",
+      "Never share this code. Our staff will never ask you for it.",
       "If this was not you, do not enter the code: someone may be using a device where you are still signed in.",
     ],
   });

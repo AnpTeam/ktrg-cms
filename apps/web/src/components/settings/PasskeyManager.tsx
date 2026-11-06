@@ -108,7 +108,7 @@ export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail:
         </p>
       ) : null}
 
-      {items && items.length === 0 ? <p className="text-lg">{t`このアカウントに、パスキーはまだありません。`}</p> : null}
+      {items && items.length === 0 ? <p className="text-lg">{t`このアカウントでは、顔・指紋のログインをまだ使っていません。`}</p> : null}
 
       {items && items.length > 0 ? (
         <ul className="flex flex-col gap-3">
@@ -122,7 +122,7 @@ export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail:
               </span>
               {renaming?.id === item.id ? (
                 <form onSubmit={saveName} className="flex min-w-0 flex-1 flex-col gap-2">
-                  <label className="sr-only" htmlFor="passkey-name">{t`パスキーの名前`}</label>
+                  <label className="sr-only" htmlFor="passkey-name">{t`端末の名前`}</label>
                   <input
                     id="passkey-name"
                     value={renaming.label}
@@ -143,7 +143,7 @@ export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail:
               ) : (
                 <>
                   <span className="min-w-0 flex-1">
-                    <span className="block break-words text-xl font-bold leading-snug">{item.label ?? t`パスキー ${number}`}</span>
+                    <span className="block break-words text-xl font-bold leading-snug">{item.label ?? t`顔・指紋のログイン ${number}`}</span>
                     <span className="block text-lg text-muted">{t`${added} に追加`}</span>
                     <button
                       type="button"
@@ -174,11 +174,11 @@ export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail:
 
       {supported === true ? (
         <button type="button" onClick={add} disabled={busy} className={primaryButton}>
-          {t`パスキーを追加する`}
+          {t`顔・指紋のログインを追加する`}
         </button>
       ) : null}
       {supported === true ? <p className="text-base text-muted">{t`ほかのパスキーアプリを使うときは、表示される画面で選んでください。`}</p> : null}
-      {supported === false ? <p className="rounded-2xl bg-surface p-4 text-lg">{t`この端末・ブラウザではパスキーを使えません。`}</p> : null}
+      {supported === false ? <p className="rounded-2xl bg-surface p-4 text-lg">{t`この端末では、顔・指紋のログインを使えません。`}</p> : null}
 
       {reauthDialog}
       <dialog
@@ -190,9 +190,9 @@ export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail:
         {lastWay ? (
           <>
             <h2 id="remove-passkey-title" className="text-2xl font-bold">
-              {t`このパスキーは、消せません`}
+              {t`このログインは、消せません`}
             </h2>
-            <p className="mt-3 text-lg leading-8">{t`これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。`}</p>
+            <p className="mt-3 text-lg leading-8">{t`これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別の端末の顔・指紋のログインを追加してください。`}</p>
             <div className="mt-6">
               <button type="button" onClick={() => setRemoving(null)} className={buttonStyle("primary", "lg", "flex w-full")}>
                 {t`わかりました`}
@@ -202,7 +202,7 @@ export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail:
         ) : (
           <>
             <h2 id="remove-passkey-title" className="text-2xl font-bold">
-              {t`このパスキーを消しますか？`}
+              {t`この顔・指紋のログインを消しますか？`}
             </h2>
             <p className="mt-3 text-lg leading-8">{t`消すと、その端末では、顔や指紋でログインできなくなります。ほかにログインの方法があるときだけ、消せます。`}</p>
             <div className="mt-6 flex flex-col gap-3">

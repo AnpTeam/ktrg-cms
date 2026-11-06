@@ -26,7 +26,7 @@ export interface EmailParts {
   footnotes: string[];
 }
 
-const BRAND = "KTRG";
+const BRAND: Record<EmailLocale, string> = { ja: "葛城修験", en: "Katsuragi Shugen" };
 
 const footer: Record<EmailLocale, string> = {
   ja: "このメールは送信専用です。返信はできません。",
@@ -58,7 +58,7 @@ export function formatJst(at: Date, locale: EmailLocale): string {
 }
 
 export function subjectPrefix(locale: EmailLocale): string {
-  return locale === "ja" ? `【${BRAND}】` : `[${BRAND}] `;
+  return locale === "ja" ? `【${BRAND.ja}】` : `[${BRAND.en}] `;
 }
 
 export function renderText(parts: EmailParts): string {
@@ -67,7 +67,7 @@ export function renderText(parts: EmailParts): string {
   if (parts.details?.length) {
     lines.push("", ...parts.details.map(({ label, value }) => `${label}: ${value}`));
   }
-  lines.push("", ...joinParagraphs(parts.footnotes), "", "--", BRAND, footer[parts.locale]);
+  lines.push("", ...joinParagraphs(parts.footnotes), "", "--", BRAND[parts.locale], footer[parts.locale]);
   return lines.join("\n");
 }
 
@@ -107,7 +107,7 @@ export function renderHtml(parts: EmailParts): string {
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f9fafb;">
 <tr><td align="center" style="padding:32px 16px;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border:1px solid #e5e7eb;border-radius:12px;font-family:${font};">
-<tr><td style="padding:24px 32px 0;font-size:13px;font-weight:700;letter-spacing:2px;color:#6b7280;">${BRAND}</td></tr>
+<tr><td style="padding:24px 32px 0;font-size:13px;font-weight:700;letter-spacing:2px;color:#6b7280;">${BRAND[parts.locale]}</td></tr>
 <tr><td style="padding:16px 32px 8px;">
 <h1 style="margin:0 0 16px;font-size:20px;line-height:1.4;color:#111827;">${e(parts.heading)}</h1>
 ${parts.intro.map((t) => p(t)).join("\n")}

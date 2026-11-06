@@ -7,7 +7,7 @@ const base = { to: "a@example.com", code: "042137", ttlMinutes: 10 };
 describe("buildReauthEmail", () => {
   test("English", () => {
     const m = buildReauthEmail({ ...base, locale: "en" });
-    expect(m.subject).toBe("[KTRG] Confirm it's you");
+    expect(m.subject).toBe("[Katsuragi Shugen] Confirm it's you");
     expect(m.text).toContain("042137");
     expect(m.text).toContain("valid for 10 minutes");
     expect(m.text).toContain("do not enter the code");
@@ -16,7 +16,7 @@ describe("buildReauthEmail", () => {
 
   test("Japanese", () => {
     const m = buildReauthEmail({ ...base, locale: "ja" });
-    expect(m.subject).toBe("【KTRG】本人確認コード");
+    expect(m.subject).toBe("【葛城修験】本人確認の番号");
     expect(m.text).toContain("042137");
     expect(m.text).toContain("10分間有効");
     expect(m.html).toContain('<html lang="ja">');

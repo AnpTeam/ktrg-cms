@@ -103,7 +103,7 @@ function getServices(): Services {
       secret: env.OTP_HMAC_SECRET ?? "dev-only-otp-secret-change-me-0000000",
       adminEmails: parseAdminEmails(env.ADMIN_EMAILS).emails, // checked at boot (parse-env)
       passkey: {
-        rpName: "KTRG",
+        rpName: "葛城修験",
         // Passkeys only work on this domain, so it must be the site users actually visit.
         rpId: env.PASSKEY_RP_ID ?? new URL(env.APP_ORIGIN).hostname,
         origin: env.APP_ORIGIN,

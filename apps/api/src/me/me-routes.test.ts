@@ -293,7 +293,7 @@ describe("DELETE /me (deletion request) and POST /me/deletion/cancel", () => {
     expect(me.deletionDueAt).not.toBeNull();
     expect(users.has(alice.id)).toBe(true);
     expect((await call("GET", "", cookie)).status).toBe(200); // still logged in, still there
-    expect(sent.map((m) => m.subject)).toEqual(["【KTRG】アカウント削除のリクエストを受け付けました"]);
+    expect(sent.map((m) => m.subject)).toEqual(["【葛城修験】アカウント削除のリクエストを受け付けました"]);
     expect(audit).toEqual([{ actorUserId: alice.id, action: "user.deletion_request", targetType: "user", targetId: alice.id }]);
   });
 

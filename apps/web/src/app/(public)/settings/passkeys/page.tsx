@@ -28,7 +28,7 @@ export default async function PasskeysPage({ searchParams }: { searchParams: Pro
       {viewer.signedIn ? (
         <>
           <p className="text-lg">
-            <Trans>パスキーは、顔や指紋でログインするための鍵です。この端末のものを追加すると、メールを待たずにログインできます。</Trans>
+            <Trans>この端末で設定すると、顔や指紋で、メールを待たずにログインできます。画面に「パスキー」と出ることがありますが、同じものです。</Trans>
           </p>
           <LoginMethods locale={i18n.locale} />
         </>

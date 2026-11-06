@@ -27,30 +27,30 @@ export function buildPasskeyAlertEmail(opts: {
   const added = action === "added";
 
   if (locale === "ja") {
-    const heading = added ? "パスキーが追加されました" : "パスキーが削除されました";
+    const heading = added ? "顔・指紋のログインが追加されました" : "顔・指紋のログインが削除されました";
     return renderEmail(to, `${subjectPrefix(locale)}${heading}`, {
       locale,
-      preheader: added ? "アカウントに新しいパスキーが追加されました。" : "アカウントからパスキーが削除されました。",
+      preheader: added ? "アカウントに新しい顔・指紋のログインが追加されました。" : "アカウントから顔・指紋のログインが削除されました。",
       heading,
-      intro: [added ? "アカウントにパスキーが追加されました。" : "アカウントからパスキーが削除されました。"],
+      intro: [added ? "アカウントに顔・指紋のログインが追加されました。" : "アカウントから顔・指紋のログインが削除されました。"],
       details: [...(label ? [{ label: "名前", value: label }] : []), { label: "日時", value: when }],
       footnotes: [
         "ご自身の操作であれば、対応は不要です。",
-        "心当たりがない場合は、すぐにKTRGにログインしてパスキーを確認し、不審なものを削除してください。",
+        "心当たりがない場合は、すぐに葛城修験にログインしてログインの方法を確認し、不審なものを削除してください。",
       ],
     });
   }
 
-  const heading = added ? "A passkey was added to your account" : "A passkey was removed from your account";
+  const heading = added ? "A face or fingerprint login was added to your account" : "A face or fingerprint login was removed from your account";
   return renderEmail(to, `${subjectPrefix(locale)}${heading}`, {
     locale,
-    preheader: added ? "A new passkey can now sign in to your account." : "A passkey can no longer sign in to your account.",
+    preheader: added ? "A new face or fingerprint login can now open your account." : "A face or fingerprint login can no longer open your account.",
     heading,
     intro: [`${heading}.`],
     details: [...(label ? [{ label: "Name", value: label }] : []), { label: "When", value: when }],
     footnotes: [
       "If this was you, there is nothing more to do.",
-      "If this was not you, sign in to KTRG right away, review your passkeys and remove any you do not recognise.",
+      "If this was not you, sign in to Katsuragi Shugen right away, review your ways to log in and remove any you do not recognise.",
     ],
   });
 }

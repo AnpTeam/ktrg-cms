@@ -96,7 +96,7 @@ describe("deletion request", () => {
     expect(audit).toEqual([{ actorUserId: alice.id, action: "user.deletion_request", targetType: "user", targetId: alice.id }]);
     expect(sent).toHaveLength(1);
     expect(sent[0]!.to).toBe("alice@example.com");
-    expect(sent[0]!.subject).toBe("[KTRG] We received your request to delete your account");
+    expect(sent[0]!.subject).toBe("[Katsuragi Shugen] We received your request to delete your account");
   });
 
   test("asking again while one is pending changes nothing, sends nothing, audits nothing", async () => {

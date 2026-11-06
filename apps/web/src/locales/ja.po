@@ -954,8 +954,8 @@ msgid "いまは、ここでスタンプを押せません。"
 msgstr "いまは、ここでスタンプを押せません。"
 
 #: src/components/settings/LoginMethods.tsx:48
-msgid "いまは、パスキーだけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
-msgstr "いまは、パスキーだけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
+msgid "いまは、顔・指紋だけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
+msgstr "いまは、顔・指紋だけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。"
 
 #: src/components/admin/LargeStyleUpload.tsx:78
 msgid "いまは、初めから入っている設定を使っています。"
@@ -1250,12 +1250,12 @@ msgid "このGPXファイルには、標高のある道すじがないか、今�
 msgstr "このGPXファイルには、標高のある道すじがないか、今の線とほとんど重なっていません。"
 
 #: src/components/settings/PasskeyManager.tsx:111
-msgid "このアカウントに、パスキーはまだありません。"
-msgstr "このアカウントに、パスキーはまだありません。"
+msgid "このアカウントでは、顔・指紋のログインをまだ使っていません。"
+msgstr "このアカウントでは、顔・指紋のログインをまだ使っていません。"
 
 #: src/components/useErrorMessages.ts:24
-msgid "このアカウントには、パスキーがありません。メールの番号で確認してください。"
-msgstr "このアカウントには、パスキーがありません。メールの番号で確認してください。"
+msgid "このアカウントでは、顔・指紋のログインを使っていません。メールの番号で確認してください。"
+msgstr "このアカウントでは、顔・指紋のログインを使っていません。メールの番号で確認してください。"
 
 #: src/components/useErrorMessages.ts:23
 msgid "このアカウントには、メールがありません。顔・指紋で確認してください。"
@@ -1300,12 +1300,12 @@ msgid "このデータについて"
 msgstr "このデータについて"
 
 #: src/components/settings/PasskeyManager.tsx:193
-msgid "このパスキーは、消せません"
-msgstr "このパスキーは、消せません"
+msgid "このログインは、消せません"
+msgstr "このログインは、消せません"
 
 #: src/components/settings/PasskeyManager.tsx:205
-msgid "このパスキーを消しますか？"
-msgstr "このパスキーを消しますか？"
+msgid "この顔・指紋のログインを消しますか？"
+msgstr "この顔・指紋のログインを消しますか？"
 
 #: src/components/admin/LargeStyleUpload.tsx:54
 msgid "このファイルの設定を、すぐにすべての訪問者の地図に反映します。よろしいですか？"
@@ -1538,12 +1538,12 @@ msgid "この端末・ブラウザでは、位置情報を使えません。"
 msgstr "この端末・ブラウザでは、位置情報を使えません。"
 
 #: src/components/settings/PasskeyManager.tsx:181
-msgid "この端末・ブラウザではパスキーを使えません。"
-msgstr "この端末・ブラウザではパスキーを使えません。"
+msgid "この端末では、顔・指紋のログインを使えません。"
+msgstr "この端末では、顔・指紋のログインを使えません。"
 
 #: src/components/useErrorMessages.ts:70
-msgid "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
-msgstr "この端末・ブラウザではパスキーを使えません。メールでお試しください。"
+msgid "この端末では、顔・指紋のログインを使えません。メールでお試しください。"
+msgstr "この端末では、顔・指紋のログインを使えません。メールでお試しください。"
 
 #: src/components/navigation/NavigationHud.tsx:340
 msgid "この端末では、振動は使えません。"
@@ -1675,8 +1675,8 @@ msgid "コメントを書くには、ログインが必要です。"
 msgstr "コメントを書くには、ログインが必要です。"
 
 #: src/components/settings/PasskeyManager.tsx:195
-msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
-msgstr "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別のパスキーを追加してください。"
+msgid "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別の端末の顔・指紋のログインを追加してください。"
+msgstr "これが、このアカウントに入るための、ただ一つの方法です。消すと、ログインできなくなります。先に、メールアドレスを追加するか、別の端末の顔・指紋のログインを追加してください。"
 
 #: src/components/admin/SiteSettingsForm.tsx:109
 msgid "コントラスト"
@@ -2287,28 +2287,28 @@ msgid "バス"
 msgstr "バス"
 
 #: src/components/settings/PasskeyManager.tsx:146
-msgid "パスキー {number}"
-msgstr "パスキー {number}"
+msgid "顔・指紋のログイン {number}"
+msgstr "顔・指紋のログイン {number}"
 
 #: src/components/settings/PasskeyManager.tsx:125
-msgid "パスキーの名前"
-msgstr "パスキーの名前"
+msgid "端末の名前"
+msgstr "端末の名前"
 
 #: src/components/useErrorMessages.ts:71
-msgid "パスキーの確認が中止されました。もう一度お試しください。"
-msgstr "パスキーの確認が中止されました。もう一度お試しください。"
+msgid "顔・指紋の確認が中止されました。もう一度お試しください。"
+msgstr "顔・指紋の確認が中止されました。もう一度お試しください。"
 
 #: src/components/useErrorMessages.ts:29
-msgid "パスキーは、これ以上ふやせません。使わないものを消してから、お試しください。"
-msgstr "パスキーは、これ以上ふやせません。使わないものを消してから、お試しください。"
+msgid "顔・指紋のログインは、これ以上ふやせません。使わないものを消してから、お試しください。"
+msgstr "顔・指紋のログインは、これ以上ふやせません。使わないものを消してから、お試しください。"
 
 #: src/app/(public)/settings/passkeys/page.tsx:31
-msgid "パスキーは、顔や指紋でログインするための鍵です。この端末のものを追加すると、メールを待たずにログインできます。"
-msgstr "パスキーは、顔や指紋でログインするための鍵です。この端末のものを追加すると、メールを待たずにログインできます。"
+msgid "この端末で設定すると、顔や指紋で、メールを待たずにログインできます。画面に「パスキー」と出ることがありますが、同じものです。"
+msgstr "この端末で設定すると、顔や指紋で、メールを待たずにログインできます。画面に「パスキー」と出ることがありますが、同じものです。"
 
 #: src/components/settings/PasskeyManager.tsx:177
-msgid "パスキーを追加する"
-msgstr "パスキーを追加する"
+msgid "顔・指紋のログインを追加する"
+msgstr "顔・指紋のログインを追加する"
 
 #: src/components/admin/DirectoryPicker.tsx:147
 #: src/components/admin/RelationPicker.tsx:87
@@ -2582,8 +2582,8 @@ msgid "ほかにもあります。もう少し入れて絞ってください。"
 msgstr "ほかにもあります。もう少し入れて絞ってください。"
 
 #: src/components/useErrorMessages.ts:30
-msgid "ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。"
-msgstr "ほかにログインの方法がないので、このパスキーは消せません。先にメールかほかのパスキーを使えるようにしてください。"
+msgid "ほかにログインの方法がないので、これは消せません。先にメールか、別の端末の顔・指紋のログインを使えるようにしてください。"
+msgstr "ほかにログインの方法がないので、これは消せません。先にメールか、別の端末の顔・指紋のログインを使えるようにしてください。"
 
 #: src/components/admin/SharedPlaces.tsx:94
 #: src/components/admin/SharedPlaces.tsx:95
@@ -3225,8 +3225,8 @@ msgid "ログインする"
 msgstr "ログインする"
 
 #: src/components/useErrorMessages.ts:27
-msgid "ログインできませんでした。この端末にパスキーがないときは、メールでログインしてください。"
-msgstr "ログインできませんでした。この端末にパスキーがないときは、メールでログインしてください。"
+msgid "ログインできませんでした。この端末で顔・指紋のログインを設定していないときは、メールでログインしてください。"
+msgstr "ログインできませんでした。この端末で顔・指紋のログインを設定していないときは、メールでログインしてください。"
 
 #: src/app/(public)/settings/passkeys/page.tsx:12
 #: src/app/(public)/settings/passkeys/page.tsx:26
@@ -3235,8 +3235,8 @@ msgid "ログインの方法"
 msgstr "ログインの方法"
 
 #: src/components/ProfileSettings.tsx:182
-msgid "ログインの方法（パスキー）"
-msgstr "ログインの方法（パスキー）"
+msgid "ログインの方法"
+msgstr "ログインの方法"
 
 #: src/components/settings/PasskeyManager.tsx:198
 msgid "わかりました"
