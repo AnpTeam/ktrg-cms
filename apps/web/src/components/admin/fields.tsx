@@ -108,12 +108,12 @@ export function MultilingualField({
         {label}
         {required ? <span className="ml-2 rounded-md bg-surface px-2 py-0.5 text-sm font-bold text-accent">{t`必須`}</span> : null}
       </legend>
-      <div className="mt-2 flex flex-wrap items-start gap-2 sm:flex-nowrap">
+      <div className={`mt-2 flex flex-wrap items-start gap-2 ${multiline ? "" : "sm:flex-nowrap"}`}>
         {/* Japanese is always there, so it is a fixed label in the place the other rows have their picker. */}
         <label htmlFor={`${id}-ja`} className={`${inputClass} flex basis-full items-center sm:w-40 sm:basis-auto`}>
           {LOCALE_NAMES.ja}
         </label>
-        <div className="min-w-0 flex-1 basis-full sm:basis-auto">{box(`${id}-ja`, "ja", ja, onJa)}</div>
+        <div className={`min-w-0 flex-1 basis-full ${multiline ? "order-last" : "sm:basis-auto"}`}>{box(`${id}-ja`, "ja", ja, onJa)}</div>
           <button
             type="button"
             disabled={next === null}
@@ -127,7 +127,7 @@ export function MultilingualField({
           </button>
       </div>
       {shown.map((l) => (
-        <div key={l} className="flex flex-wrap items-start gap-2 sm:flex-nowrap">
+        <div key={l} className={`flex flex-wrap items-start gap-2 ${multiline ? "" : "sm:flex-nowrap"}`}>
           <select
             aria-label={t`${label}の言語`}
             value={l}
@@ -144,7 +144,7 @@ export function MultilingualField({
               </option>
             ))}
           </select>
-          <div className="min-w-0 flex-1 basis-full sm:basis-auto">
+          <div className={`min-w-0 flex-1 basis-full ${multiline ? "order-last" : "sm:basis-auto"}`}>
             {box(`${id}-${l}`, l, valueOf(l), (v) => (l === "en" ? onEn(v) : onTranslations(withTranslation(translations, l, field, v))), `${label}（${LOCALE_NAMES[l]}）`)}
           </div>
           <button
