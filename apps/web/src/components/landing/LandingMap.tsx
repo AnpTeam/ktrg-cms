@@ -54,11 +54,11 @@ export function LandingMap({ routes }: { routes: RouteSummary[] }) {
           <Trans>全体の地図</Trans>
         </SectionBanner>
       </div>
-      <div className="relative h-80 overflow-hidden bg-paper [perspective:900px] lg:h-[28rem]">
+      <div className="relative h-56 overflow-hidden bg-paper [perspective:900px] lg:h-[28rem]">
         <div
           role="img"
           aria-label={t`全${count}区間のある場所を示した図`}
-          className="absolute left-1/2 top-1/2 w-[150%] [transform-style:preserve-3d]"
+          className="absolute left-1/2 top-1/2 w-[150%] [transform-style:preserve-3d] lg:w-[125%]"
           style={{ aspectRatio: `${W} / ${H}`, transform: `translate(-50%, -50%) rotateX(${TILT_DEG}deg)` }}
         >
           <svg viewBox={`${left} ${top} ${W} ${H}`} aria-hidden="true" className="absolute inset-0 size-full">
@@ -82,7 +82,7 @@ export function LandingMap({ routes }: { routes: RouteSummary[] }) {
               <span
                 key={b.order}
                 aria-hidden="true"
-                className="absolute grid size-7 origin-bottom place-items-center rounded-full border-2 border-paper bg-accent text-sm font-bold text-paper"
+                className="absolute grid size-6 origin-bottom place-items-center rounded-full border-2 border-paper bg-accent text-xs font-bold text-paper lg:size-7 lg:text-sm"
                 style={{ left: `${((cx - left) / W) * 100}%`, top: `${((cy - top) / H) * 100}%`, transform: `translate(-50%, -100%) rotateX(-${TILT_DEG}deg)` }}
               >
                 {b.order}
@@ -92,7 +92,7 @@ export function LandingMap({ routes }: { routes: RouteSummary[] }) {
         </div>
         {/* The far edge melts into the page, and the sides and near edge meet it softly. */}
         <span aria-hidden="true" className="absolute inset-x-0 top-0 h-1/3 bg-linear-to-b from-paper to-transparent" />
-        <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-t from-paper to-transparent" />
+        <span aria-hidden="true" className="absolute inset-x-0 -bottom-px h-1/4 bg-linear-to-t from-paper to-transparent" />
         <a href={gsiTileListUrl} target="_blank" rel="noopener noreferrer" className="absolute bottom-1 right-2 rounded bg-paper/85 px-1 text-sm text-muted underline">
           <Trans>国土地理院（地理院タイル）</Trans>
         </a>
