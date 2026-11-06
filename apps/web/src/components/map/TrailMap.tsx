@@ -225,7 +225,7 @@ export function TrailMap({
     };
     // `t` changes only with the language, which reloads the page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stops, line, sideLines, settings]);
+  }, [stops, line, sideLines, settings, i18n.locale]);
 
   useCursorMarker(mapRef, mlRef, mapGen);
 

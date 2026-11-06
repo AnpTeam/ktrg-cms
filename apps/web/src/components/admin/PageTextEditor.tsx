@@ -6,6 +6,7 @@ import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode } from "@/lib/api-error";
 import type { PageKey, PageLang, PageText } from "@/lib/page-text";
 import { Field, Section, TextArea, TextInput } from "./fields";
+import { PagePreview } from "./PagePreview";
 import { RichTextToolbar } from "./RichTextToolbar";
 import { AlertIcon, TickIcon, XIcon } from "@/components/icons";
 
@@ -106,6 +107,8 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale }: { pageKey: P
         </ul>
       </div>
 
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
+      <div className="flex min-w-0 flex-col gap-5">
       {langs.map(({ lang, name }) => (
         <Section key={lang} title={name}>
           <Field label={t`題`} htmlFor={`${pageKey}-${lang}-title`}>
@@ -120,6 +123,11 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale }: { pageKey: P
           </button>
         </Section>
       ))}
+      </div>
+      <div className="lg:sticky lg:top-24 lg:self-start">
+        <PagePreview pageKey={pageKey} text={text} locale={locale} />
+      </div>
+      </div>
       <p className="text-base text-muted" lang={locale}>
         {t`ほかの言語（ドイツ語など）の訪問者には、English の文章が表示されます。`}
       </p>

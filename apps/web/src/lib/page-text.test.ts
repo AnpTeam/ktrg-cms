@@ -1,3 +1,5 @@
+import { helpContent } from "./help-content";
+import { helpWith, ownText, policyWith, termsWith } from "./page-content";
 import { describe, expect, test } from "bun:test";
 import { parsePageBody, writePageBody } from "./page-text";
 
@@ -21,5 +23,26 @@ describe("page text", () => {
 
   test("a body with no heading is all opening text, and CRLF line ends are fine", () => {
     expect(parsePageBody("One.\r\n\r\nTwo.")).toEqual({ lead: ["One.", "Two."], sections: [], note: [] });
+  });
+});
+
+describe("page content (the public pages and the live preview)", () => {
+  const text = { ja: { title: "題", body: "はじめに\n\n## 一\n答え\n\n---\n注意" }, en: { title: "", body: "" } };
+
+  test("a language with no title or body falls back to the built-in page", () => {
+    expect(ownText(text, "ja")?.title).toBe("題");
+    expect(ownText(text, "en")).toBeNull();
+    expect(ownText(null, "ja")).toBeNull();
+    expect(helpWith("en", null, ownText(text, "en")).faqTitle).toBe(helpContent("en").faqTitle);
+    expect(termsWith(ownText(text, "en")).builtIn).toBe(true);
+  });
+
+  test("typed text fills the page's own shape", () => {
+    const own = ownText(text, "ja");
+    expect(helpWith("ja", own, null).steps).toEqual([{ title: "一", text: "答え" }]);
+    expect(helpWith("ja", own, null).guideNote).toBe("注意");
+    expect(helpWith("ja", null, own).faqs).toEqual([{ question: "一", answer: "答え" }]);
+    expect(termsWith(own)).toMatchObject({ lead: "はじめに", builtIn: false, updated: null });
+    expect(policyWith("ja", own).draftNotice).toBe("");
   });
 });

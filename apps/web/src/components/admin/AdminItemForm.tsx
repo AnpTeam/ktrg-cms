@@ -11,6 +11,7 @@ import { listRequest, type ListAnswer, type ListPage, type OneItem } from "@/lib
 import { translationsChange, type Translations } from "@/lib/admin/content-locales";
 import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
 import { HoursInput } from "./HoursInput";
+import { CustomPagePreview } from "./PagePreview";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoLinkDetails } from "./PhotoLinkDetails";
 import { PhotoUpload } from "./PhotoUpload";
@@ -285,10 +286,17 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
         </div>
       ) : null}
 
+      <div className={config.key === "site-pages" ? "grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]" : "contents"}>
       <Section title={t`内容`}>
         {config.fields.map(input)}
         {editable && missing.length > 0 ? <p className="text-base text-muted">{t`「必須」の欄をすべて入れると保存できます。`}</p> : null}
       </Section>
+      {config.key === "site-pages" ? (
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <CustomPagePreview page={{ slug: text("slug"), titleJa: text("titleJa"), titleEn: text("titleEn"), bodyJa: text("bodyJa"), bodyEn: text("bodyEn") }} locale={locale} />
+        </div>
+      ) : null}
+      </div>
 
       {saved && config.ops.delete ? (
         <Section title={t`削除`}>
