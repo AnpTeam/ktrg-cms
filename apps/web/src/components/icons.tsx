@@ -337,6 +337,14 @@ export const GlobeIcon = () => (
 // Small marks that used to be typed as characters (＋ ▲ ✓ ↑ ...): now one stroke weight with the rest of the set.
 type Sized = { size?: number };
 
+/** A side panel in a window: folds or opens a panel. */
+export const PanelIcon = ({ size }: Sized = {}) => (
+  <Icon size={size}>
+    <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+    <path d="M9.5 4.5v15" />
+  </Icon>
+);
+
 export const PlusIcon = ({ size }: Sized = {}) => (
   <Icon size={size}>
     <path d="M12 5v14M5 12h14" />

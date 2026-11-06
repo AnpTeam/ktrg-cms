@@ -223,9 +223,10 @@ export function MapScreen({
 
   const homeHeader = (
     <div>
-      <h1 className="font-serif text-2xl font-bold leading-snug text-accent">{t`マップ`}</h1>
-      <p className="text-lg leading-snug">{t`区間を選ぶと、道とスタンプの場所が見えます。`}</p>
-      <RouteChips routes={routes} onChoose={chooseRoute} selectedId={routeId} />
+      <h1 className="sr-only font-serif text-2xl font-bold leading-snug text-accent lg:not-sr-only">{t`区間の一覧`}</h1>
+      <div className="lg:hidden">
+        <RouteChips routes={routes} onChoose={chooseRoute} selectedId={routeId} />
+      </div>
     </div>
   );
 

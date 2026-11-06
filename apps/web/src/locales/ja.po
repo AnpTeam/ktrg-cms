@@ -7367,3 +7367,19 @@ msgstr "たたむ"
 #: src/components/map/MapSheet.tsx
 msgid "ひらく"
 msgstr "ひらく"
+
+#: src/components/TabBar.tsx
+msgid "区間の一覧"
+msgstr "区間の一覧"
+
+#: src/components/TabBar.tsx
+msgid "区間を見る"
+msgstr "区間を見る"
+
+#: src/components/TabBar.tsx
+msgid "メニューをたたむ"
+msgstr "メニューをたたむ"
+
+#: src/components/TabBar.tsx
+msgid "メニューをひらく"
+msgstr "メニューをひらく"

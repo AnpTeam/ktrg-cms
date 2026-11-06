@@ -7367,3 +7367,19 @@ msgstr "Collapse"
 #: src/components/map/MapSheet.tsx
 msgid "ひらく"
 msgstr "Expand"
+
+#: src/components/TabBar.tsx
+msgid "区間の一覧"
+msgstr "Courses"
+
+#: src/components/TabBar.tsx
+msgid "区間を見る"
+msgstr "See a course"
+
+#: src/components/TabBar.tsx
+msgid "メニューをたたむ"
+msgstr "Collapse the menu"
+
+#: src/components/TabBar.tsx
+msgid "メニューをひらく"
+msgstr "Expand the menu"

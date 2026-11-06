@@ -9,6 +9,7 @@ export function MapHelp() {
   const { t } = useLingui();
   const dialog = useRef<HTMLDialogElement>(null);
   const rows = [
+    [t`区間を見る`, t`区間を選ぶと、道とスタンプの場所が見えます。`],
     [t`動かす`, t`1本の指でなぞります。`],
     [t`大きくする・小さくする`, t`2本の指を広げたり、せばめたりします。`],
     [t`傾ける`, t`3本の指で、上下になぞります。`],
