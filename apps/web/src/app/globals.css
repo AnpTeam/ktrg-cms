@@ -655,7 +655,6 @@ html[data-size="xlarge"] {
 
 /* The same 七宝 in a course's number badge, in the badge's own text colour so it shows on the red. Decoration only. */
 .badge-pattern {
-  position: relative;
   isolation: isolate;
   overflow: hidden;
 }
