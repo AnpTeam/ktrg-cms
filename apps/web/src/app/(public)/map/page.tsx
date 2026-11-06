@@ -70,7 +70,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
             spots = detail.spots.flatMap((s): MapScreenSpot[] => {
               const spotName = pickText(locale, s.nameJa, s.nameEn);
               return spotName
-                ? [{ id: s.id, order: numbers.get(s.id) ?? null, name: spotName.text, nameLang: spotName.lang, status: s.status, stamped: s.stamped, href: `/spots/${s.id}` }]
+                ? [{ id: s.id, order: numbers.get(s.id) ?? null, name: spotName.text, nameLang: spotName.lang, status: s.status, stamped: s.stamped, href: `/spots/${s.id}`, photo: s.photoUrl ? { src: s.photoUrl, alt: spotName.text, credit: s.photoCredit ?? null } : null, ...(s.fromPrev ? { fromPrev: { minutes: s.fromPrev.minutes, ...(s.fromPrev.mode ? { mode: s.fromPrev.mode } : {}) } } : {}) }]
                 : [];
             });
           }

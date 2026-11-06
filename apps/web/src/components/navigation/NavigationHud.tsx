@@ -6,13 +6,15 @@ import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "re
 import { getRouteLine } from "@/lib/navigation/line-client";
 import { loadResume } from "@/lib/navigation/resume";
 import { useLingui } from "@lingui/react/macro";
+import { Medal } from "@/components/Medal";
 import { StampHere } from "@/components/StampHere";
 import { compassPoint, type CompassPoint, type TurnKind } from "@/lib/navigation/geometry";
 import { modelFromMapRoute } from "@/lib/navigation/input";
 import type { MapScreenRoute } from "@/lib/map-screen";
 import { courseProgress } from "@/lib/navigation/progress";
 import { distanceParts } from "@/lib/stamp-flow";
-import { useNavVoice } from "./useNavVoice";
+import { say, useNavVoice, voiceIsOn } from "./useNavVoice";
+import { ArrivalPrompt, PassedPrompt } from "./NavPrompts";
 import { NavElevation } from "./NavElevation";
 import { legProfile } from "@/lib/navigation/elevation";
 import { NavFarCard } from "./NavFarCard";
@@ -33,21 +35,27 @@ const quiet = buttonStyle("secondary", "sm", "flex shrink-0 whitespace-nowrap");
 const STALE_MS = 30_000;
 /** A turn is announced from this far away ("in 120 m, turn left"); further off, the toast gives the direction. */
 const TURN_ANNOUNCE_M = 300;
-/** How the turn arrow is drawn: straight up is "ahead", so a left turn leans 90 degrees to the left. */
-const TURN_ARROW_DEG: Record<TurnKind, number> = { "slight-left": -45, left: -90, "sharp-left": -135, "slight-right": 45, right: 90, "sharp-right": 135, "u-turn": 180 };
+/** The right-hand turns as drawn (the left ones are their mirror): the way to go, where its head sits, and the road left behind. */
+const TURN_SHAPES = {
+  slight: { way: "M20 44 V33 Q20 24 30 15", x: 32, y: 13, deg: 45, road: 20 },
+  turn: { way: "M16 44 V32 Q16 23 26 23 H30", x: 32, y: 23, deg: 90, road: 16 },
+  sharp: { way: "M15 44 V19 Q15 8 25 13 L31 20", x: 32, y: 22, deg: 135, road: 15 },
+};
 
-/** The turn sign, like a road sign: the arrow goes up and bends the way to turn; straight up when no turn is near. */
+/**
+ * The turn sign, drawn like a car navigation's junction: white on the brand red, the way to go as one thick curve into a big
+ * head, with the road straight on left faint behind it. Straight up when no turn is near.
+ */
 function TurnSign({ kind }: { kind: TurnKind | null }) {
-  const deg = kind ? TURN_ARROW_DEG[kind] : 0;
-  const rad = (deg * Math.PI) / 180;
-  // A U-turn goes up, round and back down; every other sign bends once at the middle.
-  const [x, y] = kind === "u-turn" ? [17, 31] : [24 + 13 * Math.sin(rad), 22 - 13 * Math.cos(rad)];
-  const stem = kind === "u-turn" ? "M31 41 V21 a7 7 0 0 0 -14 0 V31" : `M24 41 V22 L${x} ${y}`;
+  const shape = !kind || kind === "u-turn" ? null : TURN_SHAPES[kind.startsWith("slight") ? "slight" : kind.startsWith("sharp") ? "sharp" : "turn"];
+  const { way, x, y, deg } = shape ?? (kind === "u-turn" ? { way: "M34 44 V21 a10 10 0 0 0 -20 0 V27", x: 14, y: 30, deg: 180 } : { way: "M25 44 V17", x: 25, y: 15, deg: 0 });
   return (
-    <svg viewBox="0 0 48 48" aria-hidden="true" className="size-11 shrink-0 text-brand">
-      <rect width="48" height="48" rx="12" className="fill-surface" />
-      <path d={stem} fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M0 -8 L8 3 L-8 3 Z" fill="currentColor" transform={`translate(${x} ${y}) rotate(${deg})`} />
+    <svg viewBox="0 0 50 50" aria-hidden="true" className="size-14 shrink-0 rounded-xl bg-brand text-white">
+      <g transform={kind?.endsWith("left") ? "matrix(-1 0 0 1 50 0)" : undefined}>
+        {shape ? <path d={`M${shape.road} 28 V7`} fill="none" stroke="currentColor" strokeOpacity="0.3" strokeWidth="7" strokeLinecap="round" /> : null}
+        <path d={way} fill="none" stroke="currentColor" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M0 -11 L12 4 L-12 4 Z" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" transform={`translate(${x} ${y}) rotate(${deg})`} />
+      </g>
     </svg>
   );
 }
@@ -93,8 +101,8 @@ export function NavigationResume({ routes, onResume }: { routes: readonly MapScr
 
 /** `more` is the sheet's other button: it sits right under this one, above the note, and stands alone when there is nothing to start. */
 export function NavigationStart({ route, more }: { route: MapScreenRoute; more: ReactNode }) {
-  const { t } = useLingui();
-  const { session, start } = useNavigation();
+  const { t, i18n } = useLingui();
+  const { session, start, voiceByDefault } = useNavigation();
   const [starting, setStarting] = useState(false);
   if (!route.stops?.some((s) => !s.noStamp)) return more;
   if (session?.routeId === route.id) return more; // the toast already shows it
@@ -106,6 +114,8 @@ export function NavigationStart({ route, more }: { route: MapScreenRoute; more: 
         disabled={starting}
         onClick={() => {
           setStarting(true);
+          // Said inside the tap: an iPhone lets a page speak only after a touch, and the voice may be on without one.
+          if (voiceIsOn(voiceByDefault)) say(t`ナビをはじめます`, i18n.locale);
           void beginNavigation(route, start).finally(() => setStarting(false));
         }}
       >
@@ -119,12 +129,14 @@ export function NavigationStart({ route, more }: { route: MapScreenRoute; more: 
 
 export function NavigationToast() {
   const { t, i18n } = useLingui();
-  const { session, stop, markStamped, setToastPx, setBannerPx, sheetUp } = useNavigation();
+  const { session, stop, markStamped, skipPassed, returnToPassed, voiceByDefault, setToastPx, setBannerPx, sheetUp } = useNavigation();
   const pathname = usePathname();
   const box = useRef<HTMLElement>(null);
   const banner = useRef<HTMLElement>(null);
   const [now, setNow] = useState(() => Date.now());
-  const voice = useNavVoice(session?.snapshot.state ?? null, session?.snapshot.state.targetId ? session.stops[session.snapshot.state.targetId]?.name : undefined);
+  const voice = useNavVoice(session?.snapshot.state ?? null, session?.snapshot.state.targetId ? session.stops[session.snapshot.state.targetId]?.name : undefined, voiceByDefault);
+  // The stamp place whose arrival card was put off: its small button stays at the bottom of the screen.
+  const [laterId, setLaterId] = useState<string | null>(null);
 
   // Ticks so the age of an old fix stays true while nothing new arrives.
   useEffect(() => {
@@ -227,7 +239,8 @@ export function NavigationToast() {
   // Off the course line: say so once (the block appears when the visitor leaves it), with the way back.
   const isFar = snap.position !== null && st.far && st.mode !== "path" && st.targetId !== null;
   const back = !isFar && st.offRoute && st.backM !== null && st.backBearingDeg !== null ? { m: st.backM, deg: st.backBearingDeg } : null;
-  const backText = back ? t`道まで ${meters(back.m)}（${compass[compassPoint(back.deg)]}）` : "";
+  // With a walking direction the arrow beside it says which way; a compass word only when there is none.
+  const backText = back ? (st.headingDeg !== null ? t`道まで ${meters(back.m)}` : t`道まで ${meters(back.m)}（${compass[compassPoint(back.deg)]}）`) : "";
   const offRouteBlock = back ? (
     <div role="alert" className="flex items-center gap-3 border-l-4 border-caution pl-3">
       {/* The arrow points the way back relative to the walking direction when it is known, else relative to north. */}
@@ -272,8 +285,11 @@ export function NavigationToast() {
     const turnText = turn ? (turn.inM < 15 ? t`すぐ${turnWord}` : t`${turnIn}先 ${turnWord}`) : "";
     const steer = !turn && st.mode === "straight" ? st.steer : null;
     const steerWord = steer ? steerWords[steer] : "";
-    const line1 = turn ? turnText : steer ? t`${steerWord} ${distText}` : direction ? t`${direction} ${distText}` : distText;
-    const mode = st.mode === "line" ? t`道なり` : st.mode === "path" ? t`道の外・歩ける道` : t`道の外・直線`;
+    // Words a walker can use: left, right, along the path. A compass word only when nothing better is known.
+    const onWay = st.mode === "line" || st.mode === "path";
+    const line1 = turn ? turnText : steer ? t`${steerWord} ${distText}` : onWay ? t`道なりに ${distText}` : direction ? t`${direction} ${distText}` : distText;
+    const mode = st.mode === "line" ? null : st.mode === "path" ? t`道の外・歩ける道` : t`道の外・直線`;
+    const line2 = turn ? distText : mode;
     main = (
       <div className="flex min-w-0 items-center gap-3">
         <TurnSign kind={turn?.kind ?? (steer && steer !== "straight" ? steer : null)} />
@@ -282,7 +298,7 @@ export function NavigationToast() {
           <p className="truncate text-base leading-snug text-muted">
             <span className="sr-only">{t`次のスタンプの場所`} </span>
             <span lang={target.nameLang}>{target.name}</span>
-            {` · ${turn ? distText : mode}`}
+            {line2 ? ` · ${line2}` : null}
           </p>
         </div>
       </div>
@@ -292,12 +308,22 @@ export function NavigationToast() {
   // Where the course stands: places done, time to the next one, and what is left (only numbers that can be true).
   const progress = courseProgress(session.model, st, snap.stamped);
   const mins = (m: number) => (m < 60 ? t`${m}分` : t`${Math.floor(m / 60)}時間${m % 60}分`);
+  // The clock time of the arrival, in Japan's time like every date here. `now` ticks, so it stays true while standing still.
+  const arrival = progress.toNextMin === null ? null : new Intl.DateTimeFormat(i18n.locale === "ja" ? "ja-JP" : "en-US", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Tokyo" }).format(now + progress.toNextMin * 60_000);
+  const left = progress.leftM !== null && progress.leftMin !== null ? t`残り ${meters(progress.leftM)}（${mins(progress.leftMin)}）` : null;
+  // The walk at a glance: the time in the heading type, and the stamps as the course's medal, the app's own way of showing them.
   const progressLine = (
-    <p className="rounded-2xl bg-paper px-4 py-2 text-lg font-bold leading-snug shadow-lg ring-1 ring-line/30">
-      <span className="tabular-nums">{t`スタンプ ${progress.done} / ${progress.total}`}</span>
-      {progress.toNextMin !== null ? <span className="tabular-nums">{` · ${t`次まで ${mins(progress.toNextMin)}`}`}</span> : null}
-      {progress.leftM !== null && progress.leftMin !== null ? <span className="tabular-nums">{` · ${t`残り ${meters(progress.leftM)}（${mins(progress.leftMin)}）`}`}</span> : null}
-    </p>
+    <div className="flex items-center gap-3">
+      <div className="min-w-0 flex-1">
+        {progress.toNextMin !== null ? <p className="font-serif text-2xl font-bold leading-tight text-accent tabular-nums">{t`次まで ${mins(progress.toNextMin)}`}</p> : null}
+        <p className="text-base leading-snug tabular-nums">{[arrival ? t`${arrival}ごろ着` : null, left].filter(Boolean).join(" · ")}</p>
+      </div>
+      <p className="flex shrink-0 items-center gap-1.5 text-lg font-bold tabular-nums">
+        <span className="sr-only">{t`スタンプ ${progress.done} / ${progress.total}`}</span>
+        <Medal number={progress.done} done={progress.total > 0 && progress.done >= progress.total} stamped={progress.done} total={progress.total} className="h-14 w-auto" />
+        <span aria-hidden="true">/ {progress.total}</span>
+      </p>
+    </div>
   );
 
   // The climb to the next stop, when the course line carries elevations and the visitor is on it.
@@ -318,6 +344,16 @@ export function NavigationToast() {
       />
     ) : null;
 
+  const passed = snap.passedId ? session.stops[snap.passedId] : undefined;
+  const arrived = stampButton !== null && laterId !== st.targetId && !passed;
+  const prompts = passed ? (
+    <PassedPrompt key={snap.passedId} name={passed.name} nameLang={passed.nameLang} onGoOn={skipPassed} onGoBack={returnToPassed} />
+  ) : arrived && target ? (
+    <ArrivalPrompt key={st.targetId} name={target.name} nameLang={target.nameLang} onLater={() => setLaterId(st.targetId)}>
+      {stampButton}
+    </ArrivalPrompt>
+  ) : null;
+
   // On the map: the instruction on a banner at the top, and at the bottom the stamp button (when in range) and the exit.
   if (pathname === "/map") {
     const leave = () => {
@@ -325,6 +361,7 @@ export function NavigationToast() {
     };
     return (
       <>
+        {prompts}
         {/* Phone: the top of the screen itself, from the status bar down (a solid box there keeps iOS from blurring it). */}
         <section ref={banner} aria-label={t`ナビ中：${routeName}`} className="fixed inset-x-0 top-0 z-30 flex max-h-[70dvh] flex-col gap-1 overflow-y-auto rounded-b-2xl border-b border-line/30 bg-paper px-4 pb-3 pt-[calc(0.75rem+var(--top-clear))] shadow-lg md:inset-x-auto md:left-[calc(50%-14rem)] md:top-[calc(0.5rem+var(--top-clear))] md:w-[28rem] md:rounded-2xl md:border-b-0 md:pt-3 md:shadow-2xl md:ring-1 md:ring-line/30">
           {main}
@@ -351,16 +388,19 @@ export function NavigationToast() {
           aria-hidden={tucked || undefined}
           // Away first, then the sheet rises (MapScreen waits NAV_HANDOFF_MS); back only after the sheet has gone down (the delay).
           // Above the tab bar when it shows (--tabbar-room, globals.css): the map's overview keeps the tabs.
-          className={`fixed inset-x-3 bottom-[calc(0.75rem+var(--tabbar-room)+env(safe-area-inset-bottom))] z-30 flex flex-col gap-2 transition duration-200 ease-out motion-reduce:transition-none md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem] ${tucked ? "pointer-events-none translate-y-[calc(100%+2rem)] opacity-0" : "translate-y-0 opacity-100 delay-200"}`}
+          className={`fixed inset-x-0 bottom-[var(--tabbar-room)] z-30 transition duration-200 ease-out motion-reduce:transition-none md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem] ${tucked ? "pointer-events-none translate-y-[calc(100%+2rem)] opacity-0" : "translate-y-0 opacity-100 delay-200"}`}
         >
+          {/* Its own box: the pattern's class sets `position` and would undo the `fixed` above. */}
+          <div className="pattern-shippo flex flex-col gap-3 rounded-t-2xl border-t border-line/30 bg-paper px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-4px_24px_rgb(0_0_0/0.28)] md:rounded-2xl md:pb-3">
           {far ? null : progressLine}
           {far || !profile ? null : <NavElevation profile={profile} />}
-          {far ? null : stampButton}
+          {far || arrived ? null : stampButton}
           <div className={far ? "" : "grid grid-cols-2 gap-2"}>
             {far ? null : <NavTargetPicker />}
-            <button type="button" onClick={leave} className={buttonStyle("secondary", "md", "flex w-full shadow-lg")}>
+            <button type="button" onClick={leave} className={buttonStyle("secondary", "md", "flex w-full")}>
               {t`ナビを終える`}
             </button>
+          </div>
           </div>
         </section>
       </>
@@ -390,7 +430,8 @@ export function NavigationToast() {
       </div>
       {offRouteBlock}
       {note ? <p className="text-base leading-snug">{note}</p> : null}
-      {stampButton}
+      {arrived ? null : stampButton}
+      {prompts}
     </section>
   );
 }

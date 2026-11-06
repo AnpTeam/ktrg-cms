@@ -7,7 +7,7 @@ import type { GeoFailure } from "../stamp-flow";
 import type { LinePoint } from "./geometry";
 import { createPositionWatcher, type GeoApi, type VisibilityApi } from "./position-watcher";
 import { PATH_BACKOFF_MS, shouldAskForPath, type LastAsk, type PathAnswer } from "./path-client";
-import { applyFix, initialState, movementHeading, trackOf, wantsPath, type NavModel, type NavPath, type NavReading, type NavState } from "./session";
+import { applyFix, initialState, movementHeading, stopsBehind, trackOf, wantsPath, type NavModel, type NavPath, type NavReading, type NavState } from "./session";
 
 export interface NavSnapshot {
   state: NavState;
@@ -27,6 +27,8 @@ export interface NavSnapshot {
   pathLine: readonly LinePoint[] | null;
   /** The stop the visitor chose to head for instead of the nearest one; null while it is chosen automatically. */
   forcedId: string | null;
+  /** A stop just walked past without stamping: the screen asks whether to go on or go back. */
+  passedId: string | null;
 }
 
 export interface ControllerDeps {
@@ -57,7 +59,15 @@ export function createNavigationController(deps: ControllerDeps) {
   let forced: string | null = null;
   // The visitor chose to walk although far from the course; reset once they are near it.
   let walkChosen = false;
-  let snap: NavSnapshot = { state: initialState(), stamped, stampsKnown, paused: false, problem: null, lastFixAtMs: null, position: null, pathLine: null, forcedId: null };
+  // Stops walked past and left behind: the guidance no longer heads for them. `asked`: each is asked about once.
+  let skipped: ReadonlySet<string> = new Set();
+  let asked: ReadonlySet<string> = new Set();
+  // What the guidance does not head for. With only skipped stops left it heads for those rather than saying all is done.
+  const finished = (): ReadonlySet<string> => {
+    const done = new Set([...stamped, ...skipped]);
+    return model.stops.some((s) => !done.has(s.id) && s.status !== "closed") ? done : stamped;
+  };
+  let snap: NavSnapshot = { state: initialState(), stamped, stampsKnown, paused: false, problem: null, lastFixAtMs: null, position: null, pathLine: null, forcedId: null, passedId: null };
 
   const emit = (patch: Partial<NavSnapshot>) => {
     if (!alive) return;
@@ -78,7 +88,7 @@ export function createNavigationController(deps: ControllerDeps) {
       if (!alive) return;
       if (answer.ok) {
         path = { stopId, ...trackOf(answer.line) };
-        emit({ pathLine: path.line, ...(last ? { state: applyFix(model, snap.state, last, stamped, path, forced) } : {}) });
+        emit({ pathLine: path.line, ...(last ? { state: applyFix(model, snap.state, last, finished(), path, forced) } : {}) });
       } else if (answer.backOff && lastAsk) {
         lastAsk = { ...lastAsk, backOffUntilMs: atMs + PATH_BACKOFF_MS };
       }
@@ -94,10 +104,13 @@ export function createNavigationController(deps: ControllerDeps) {
     }
     if (reading.headingDeg !== undefined || !headingFrom) headingFrom = fix;
     last = reading;
-    const state = applyFix(model, snap.state, reading, stamped, path, forced);
+    const state = applyFix(model, snap.state, reading, finished(), path, forced);
+    // A stop chosen by hand is never asked about: the visitor wants it.
+    const justPassed = state.passed && forced === null && snap.passedId === null && state.targetId !== null && !asked.has(state.targetId);
+    if (justPassed) asked = new Set([...asked, state.targetId!]);
     // A path for another stop (the target moved on) is no longer drawn.
     if (!state.far) walkChosen = false;
-    emit({ state, stamped, lastFixAtMs: deps.now(), problem: null, position: reading, pathLine: path && path.stopId === state.targetId ? path.line : null });
+    emit({ state, stamped, lastFixAtMs: deps.now(), problem: null, position: reading, pathLine: path && path.stopId === state.targetId ? path.line : null, passedId: justPassed ? state.targetId : snap.passedId });
     if (deps.fetchPath && !asking && shouldAskForPath(wantsPath(state, walkChosen), state.targetId, reading, deps.now(), lastAsk)) askForPath(state.targetId!, reading);
   };
 
@@ -122,7 +135,7 @@ export function createNavigationController(deps: ControllerDeps) {
     emit({
       stamped,
       stampsKnown,
-      state: last ? applyFix(model, snap.state, last, stamped, path, forced) : snap.state,
+      state: last ? applyFix(model, snap.state, last, finished(), path, forced) : snap.state,
       forcedId: forced,
     });
   }
@@ -147,6 +160,8 @@ export function createNavigationController(deps: ControllerDeps) {
       generation++;
       forced = null;
       walkChosen = false;
+      skipped = new Set();
+      asked = new Set();
     },
     /** Walk to the course although it is far: asks for a walking path from the fix held (one at a time). */
     chooseWalk() {
@@ -157,19 +172,36 @@ export function createNavigationController(deps: ControllerDeps) {
     /** Head for this stop instead of the nearest one (null: back to choosing the nearest). */
     setTarget(id: string | null) {
       forced = id;
-      emit({ forcedId: id, ...(last ? { state: applyFix(model, snap.state, last, stamped, path, forced) } : {}) });
+      if (id !== null && skipped.has(id)) skipped = new Set([...skipped].filter((s) => s !== id));
+      emit({ forcedId: id, ...(last ? { state: applyFix(model, snap.state, last, finished(), path, forced) } : {}) });
+    },
+    /** The stop just passed is left behind: head for the next one. */
+    skipPassed() {
+      if (snap.passedId === null) return;
+      const behind = snap.state.alongM === null ? [] : stopsBehind(model, snap.passedId, snap.state.alongM);
+      const wide = new Set([...skipped, snap.passedId, ...behind]);
+      // Walking off the last stop: nothing lies ahead, so only the passed one is dropped.
+      skipped = model.stops.some((s) => !wide.has(s.id) && !stamped.has(s.id) && s.status !== "closed") ? wide : new Set([...skipped, snap.passedId]);
+      emit({ passedId: null, ...(last ? { state: applyFix(model, snap.state, last, finished(), path, forced) } : {}) });
+    },
+    /** Go back to the stop just passed. */
+    returnToPassed() {
+      const id = snap.passedId;
+      if (id === null) return;
+      forced = id;
+      emit({ passedId: null, forcedId: id, ...(last ? { state: applyFix(model, snap.state, last, finished(), path, forced) } : {}) });
     },
     /** After a successful stamp: move on at once, without waiting for the server's list. */
     markStamped(id: string) {
       stamped = new Set([...stamped, id]);
       if (forced === id) forced = null; // the chosen stop is done: back to the nearest
-      emit({ stamped, forcedId: forced, state: last ? applyFix(model, snap.state, last, stamped, path, forced) : snap.state });
+      emit({ stamped, forcedId: forced, passedId: snap.passedId === id ? null : snap.passedId, state: last ? applyFix(model, snap.state, last, finished(), path, forced) : snap.state });
     },
     refreshStamps,
     /** A walking path from OpenRouteService (or null to drop it); used from the fix already held. */
     setPath(next: NavPath | null) {
       path = next;
-      emit({ pathLine: next ? next.line : null, ...(last ? { state: applyFix(model, snap.state, last, stamped, path, forced) } : {}) });
+      emit({ pathLine: next ? next.line : null, ...(last ? { state: applyFix(model, snap.state, last, finished(), path, forced) } : {}) });
     },
     get snapshot() {
       return snap;

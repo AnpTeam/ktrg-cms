@@ -21,7 +21,7 @@ export interface Policy {
 const ja: Policy = {
   title: "プライバシーポリシー",
   draftNotice: "この文章は案です。公開の前に、内容を確認します。",
-  updated: "2026年10月28日（案）",
+  updated: "2026年11月6日（案）",
   sections: [
     {
       heading: "このページについて",
@@ -42,7 +42,7 @@ const ja: Policy = {
         { term: "お名前", text: "アプリの中で表示します。ニックネームでかまいません。" },
         {
           term: "どちらからお越しか、年代、性別",
-          text: "どれも任意で、答えなくてもアプリは使えます。「答えたくない」も選べます。どんな方がこのアプリを使っているかを知るためだけに使い、個人が分からない形でまとめます。",
+          text: "どれも任意で、答えなくてもアプリは使えます。「答えたくない」も選べます。どんな方がこのアプリを使っているかを知るために、個人が分からない形でまとめます。年代が70代以上の方は、ナビの音声案内が最初からオンになります（ナビの画面で、いつでも変えられます）。ほかの目的には使いません。",
         },
         { term: "言語・見やすさの設定", text: "表示をあなたに合わせるために保存します。" },
         { term: "スタンプの記録", text: "どの場所で、いつ、どの方法でスタンプを押したかを保存します。スタンプカードを表示するために使います。" },
@@ -112,7 +112,7 @@ const ja: Policy = {
 const en: Policy = {
   title: "Privacy policy",
   draftNotice: "This text is a draft. It will be checked before the app is published.",
-  updated: "October 28, 2026 (draft)",
+  updated: "November 6, 2026 (draft)",
   sections: [
     {
       heading: "About this page",
@@ -136,7 +136,7 @@ const en: Policy = {
         { term: "Name", text: "Shown inside the app. A nickname is fine." },
         {
           term: "Where you come from, age range, gender",
-          text: "All optional: the app works without them, and \"Prefer not to say\" is a choice. We use them only to understand who uses the app, and we put them together in a form that does not identify anyone.",
+          text: "All optional: the app works without them, and \"Prefer not to say\" is a choice. We put them together, in a form that does not identify anyone, to understand who uses the app. If your age range is 70 or over, voice guidance starts on (you can change it on the navigation screen at any time). We use them for nothing else.",
         },
         { term: "Language and display settings", text: "Saved so the app looks the way you want." },
         { term: "Stamp records", text: "Which place you stamped, when, and how. Used to show your stamp card." },

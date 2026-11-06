@@ -449,7 +449,6 @@ export function TrailMap({
     <section
       ref={sectionRef}
       aria-label={t`地図`}
-      data-dark={settings.dark}
       className={expanded ? "trail-map fixed inset-0 z-30 flex flex-col gap-3 bg-paper p-3 pt-[calc(0.75rem+var(--top-clear))]" : "trail-map flex scroll-mt-2 flex-col gap-3"}
     >
       {expanded ? (

@@ -223,3 +223,38 @@ describe("far from the course", () => {
     expect(c.snapshot.state.far).toBe(false);
   });
 });
+
+describe("a stop walked past", () => {
+  const past = async () => {
+    const run = setup();
+    await run.c.start();
+    [135.0025, 135.0029, 135.0043].forEach((lng) => run.walk(lng));
+    return run;
+  };
+
+  test("asks once; going on heads for the next stop", async () => {
+    const { c, walk } = await past();
+    expect(c.snapshot.passedId).toBe("a");
+    c.skipPassed();
+    expect(c.snapshot.passedId).toBeNull();
+    expect(c.snapshot.state.targetId).toBe("b");
+    walk(135.0044);
+    expect(c.snapshot.passedId).toBeNull();
+  });
+
+  test("going back heads for it and does not ask again", async () => {
+    const { c, walk } = await past();
+    c.returnToPassed();
+    expect(c.snapshot.forcedId).toBe("a");
+    expect(c.snapshot.state.targetId).toBe("a");
+    walk(135.0045);
+    expect(c.snapshot.passedId).toBeNull();
+  });
+
+  test("a stop left behind can still be chosen by hand", async () => {
+    const { c } = await past();
+    c.skipPassed();
+    c.setTarget("a");
+    expect(c.snapshot.state.targetId).toBe("a");
+  });
+});

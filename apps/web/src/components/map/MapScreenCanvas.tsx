@@ -60,6 +60,8 @@ export function MapScreenCanvas({
   mergeStops,
   user = null,
   towardsDeg = null,
+  far = false,
+  resumeTick = 0,
   guide = null,
 }: {
   routes: MapScreenRoute[];
@@ -83,6 +85,10 @@ export function MapScreenCanvas({
   user?: { lat: number; lng: number; headingDeg?: number } | null;
   /** While navigating: the way to the next stop (degrees from north), drawn as an arrow on the visitor's dot. */
   towardsDeg?: number | null;
+  /** Far from the course: the map shows the course, not the visitor's own town. */
+  far?: boolean;
+  /** Goes up each time 「ナビにもどる」 is pressed. */
+  resumeTick?: number;
   /** While navigating off the course line: the walking path being followed, as [lng, lat] points. */
   guide?: readonly (readonly [number, number, number?])[] | null;
 }) {
@@ -286,7 +292,7 @@ export function MapScreenCanvas({
       const el = document.createElement("div");
       el.setAttribute("aria-hidden", "true");
       el.innerHTML =
-        '<svg viewBox="0 0 44 44" class="size-11 text-brand drop-shadow"><path d="M22 1 L30 13 L14 13 Z" fill="currentColor" /><circle cx="22" cy="22" r="8.5" class="fill-ink stroke-paper" stroke-width="3" /></svg>';
+        '<svg viewBox="0 0 64 64" class="size-16 text-brand drop-shadow-lg"><path d="M32 2 L49 28 Q32 19 15 28 Z" fill="currentColor" stroke="white" stroke-width="2.5" stroke-linejoin="round" /><circle cx="32" cy="34" r="10" class="fill-ink stroke-paper" stroke-width="3.5" /></svg>';
       userMarker.current = new ml.Marker({ element: el, rotationAlignment: "map" }).setLngLat([user.lng, user.lat]).addTo(map);
     } else userMarker.current.setLngLat([user.lng, user.lat]);
     userMarker.current.setRotation(towardsDeg ?? 0);
@@ -304,7 +310,7 @@ export function MapScreenCanvas({
   useCursorMarker(mapRef, mlRef, mapGen, ready);
 
   // Following only means something while there is a position (a navigation runs).
-  const following = follow && user !== null;
+  const following = follow && user !== null && !far;
 
   // While following: keep the visitor in the middle, the way they walk up.
   useEffect(() => {
@@ -338,6 +344,34 @@ export function MapScreenCanvas({
 
   const startFollowing = () => setFollowing(true);
 
+  // 「ナビにもどる」: back on the walk, or on the course when it is far away.
+  const [seenResume, setSeenResume] = useState(resumeTick);
+  if (seenResume !== resumeTick) {
+    setSeenResume(resumeTick);
+    setFollow(true);
+    if (far) setNavEnds((n) => n + 1);
+  }
+  useEffect(() => {
+    followRef.current = follow;
+  }, [follow]);
+
+  // The compass: its needle shows where north is, and a tap lays the map flat or tilts it again.
+  const [camera, setCamera] = useState({ bearing: 0, pitch: 45 });
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const read = () => setCamera({ bearing: map.getBearing(), pitch: map.getPitch() });
+    read();
+    map.on("rotate", read);
+    map.on("pitch", read);
+    return () => {
+      map.off("rotate", read);
+      map.off("pitch", read);
+    };
+  }, [ready, mapGen]);
+  const flat = camera.pitch < 5;
+  const toggleTilt = () => mapRef.current?.easeTo({ pitch: flat ? 45 : 0, ...(following ? {} : { bearing: 0 }), duration: 400 });
+
   // Where the camera goes: all the areas at first, a chosen course when there is one.
   useEffect(() => {
     const map = mapRef.current;
@@ -346,6 +380,13 @@ export function MapScreenCanvas({
     const bounds = boundsOf(points);
     if (bounds) map.fitBounds(bounds, { padding: padding(), maxZoom: route ? 15 : 11, duration: 600 });
   }, [ready, routeId, mapGen, navEnds, routeId ? lines[routeId] : null]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // After the framing above: 「ナビにもどる」 may have just brought the course back, and the walker comes first.
+  useEffect(() => {
+    if (resumeTick === 0 || !user || far) return;
+    const map = mapRef.current;
+    map?.easeTo({ center: [user.lng, user.lat], zoom: Math.max(map.getZoom(), 16), padding: padding(), duration: 700 });
+  }, [resumeTick]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // A place asked for in the address ("show on map" from a route's nearby places): after the course has been framed, the map
   // moves to it, zoomed in enough for its pin to show, and its popup opens.
@@ -676,6 +717,18 @@ export function MapScreenCanvas({
           </button>
         ))}
         <MapHelp />
+        <button
+          type="button"
+          onClick={toggleTilt}
+          aria-pressed={flat}
+          aria-label={flat ? t`地図を傾ける` : t`地図を平らにする（北が上）`}
+          className="tap-target inline-flex items-center justify-center rounded-full border border-ink bg-paper text-ink hover:bg-surface"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" className="size-7 transition-transform" style={{ transform: `rotate(${-camera.bearing}deg) scaleY(${flat ? 1 : 0.8})` }}>
+            <path d="M12 2 L17 12 H7 Z" className="fill-brand" />
+            <path d="M12 22 L7 12 H17 Z" fill="currentColor" />
+          </svg>
+        </button>
         {user ? (
           <button
             type="button"

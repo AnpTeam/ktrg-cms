@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { initialState, type NavState } from "./session";
-import { cueText, emptyCueMemory, nextCue, type CueMemory } from "./voice";
+import { cueText, emptyCueMemory, nextCue, speaksByDefault, type CueMemory } from "./voice";
 
 const st = (over: Partial<NavState>): NavState => ({ ...initialState(), targetId: "a", ...over });
 const run = (states: NavState[]) => {
@@ -62,5 +62,12 @@ describe("pickVoice", () => {
     expect(pickVoice([v("Samantha (Enhanced)", "en-US"), v("O-ren", "ja_JP")], "ja")?.name).toBe("O-ren");
     expect(pickVoice([v("Samantha", "en-US")], "ja")).toBeNull();
     expect(pickVoice([v("Kyoko", "ja-JP"), v("Ava (Premium)", "en-US"), v("Fred", "en-US", true, true)], "en")?.name).toBe("Ava (Premium)");
+  });
+});
+
+describe("voice by age", () => {
+  test("on for 70 and over only; no answer stays off", () => {
+    expect(["70plus", "70s", "80s", "90plus"].every(speaksByDefault)).toBe(true);
+    expect(["60s", "under20", null, undefined].some(speaksByDefault)).toBe(false);
   });
 });

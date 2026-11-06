@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import type { LinePoint } from "./geometry";
-import { applyFix, buildModel, initialState, isFar, MAX_ACCURACY_M, movementHeading, trackOf, wantsPath, type NavReading, type NavState, type NavStop } from "./session";
+import { applyFix, buildModel, initialState, isFar, stopsBehind, MAX_ACCURACY_M, movementHeading, trackOf, wantsPath, type NavReading, type NavState, type NavStop } from "./session";
 
 // A straight east-west line at latitude 34.5 from 135.000 to 135.010 (about 917 m); 0.001 degrees of longitude is ~91.7 m.
 const LAT = 34.5;
@@ -275,5 +275,40 @@ describe("isFar", () => {
     expect(s.mode).toBe("straight");
     expect(wantsPath(s)).toBe(false);
     expect(wantsPath(s, true)).toBe(true);
+  });
+});
+
+describe("a stop walked past", () => {
+  const two: NavStop[] = [
+    { id: "a", lat: LAT, lng: 135.002, radiusM: 30 },
+    { id: "b", lat: LAT, lng: 135.009, radiusM: 30 },
+  ];
+  const model = buildModel(line, two);
+  const walk = (lngs: number[]) => lngs.reduce((s, lng) => applyFix(model, s, { lat: LAT, lng, accuracyM: 10 }, new Set()), initialState());
+
+  test("walking on past a stop marks it passed; coming up to it does not", () => {
+    expect(walk([135, 135.0012]).passed).toBe(false);
+    const past = walk([135.0015, 135.0019, 135.0035]);
+    expect(past.passed).toBe(true);
+    expect(past.targetId).toBe("a");
+  });
+
+  test("standing at the stop, or never having come close, is not passing", () => {
+    expect(walk([135.0019, 135.002]).passed).toBe(false);
+    expect(walk([135.0055, 135.0056]).passed).toBe(false);
+  });
+});
+
+describe("stops left behind", () => {
+  const model = buildModel(line, [
+    { id: "a", lat: LAT, lng: 135.002, radiusM: 30 },
+    { id: "b", lat: LAT, lng: 135.004, radiusM: 30 },
+    { id: "c", lat: LAT, lng: 135.0095, radiusM: 30 },
+  ]);
+  const at = (degrees: number) => degrees * 91_700;
+
+  test("depends on which way the walker went past", () => {
+    expect(stopsBehind(model, "b", at(0.0055))).toEqual(["a", "b"]);
+    expect(stopsBehind(model, "b", at(0.0025))).toEqual(["b", "c"]);
   });
 });

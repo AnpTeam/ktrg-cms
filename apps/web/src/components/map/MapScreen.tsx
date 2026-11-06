@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, } from "react";
 import { useLingui } from "@lingui/react/macro";
-import { ChevronIcon, ChevronUpIcon, WarningIcon } from "@/components/icons";
+import { ChevronUpIcon, WarningIcon } from "@/components/icons";
 import { ElevationProfile } from "@/components/ElevationProfile";
 import { PlaceLine } from "@/components/PlaceLine";
 import { RichText } from "@/components/RichText";
@@ -21,6 +21,7 @@ import type { StampMock } from "@/lib/stamp-flow";
 import { MapScreenCanvasLoader } from "./MapScreenCanvasLoader";
 import { MapSheet } from "./MapSheet";
 import { SheetHero } from "./SheetHero";
+import { RoutePhoto } from "@/components/RoutePhoto";
 import { RoutePill } from "@/components/RoutePill";
 import { buttonStyle } from "@/components/button";
 
@@ -132,11 +133,17 @@ export function MapScreen({
     [setSheetUp],
   );
   // 「ナビにもどる」 on the navigation banner.
+  const [resumeTick, setResumeTick] = useState(0);
   useEffect(() => {
-    const resume = () => setSnap("hidden");
+    const resume = () => {
+      setSnap("hidden");
+      setStopId(null);
+      if (navRouteId) setRouteId(navRouteId); // the visitor may have been looking at another course
+      setResumeTick((n) => n + 1);
+    };
     window.addEventListener(NAV_RESUME_EVENT, resume);
     return () => window.removeEventListener(NAV_RESUME_EVENT, resume);
-  }, []);
+  }, [navRouteId]);
 
   const route = routes.find((r) => r.id === routeId) ?? null;
   const chosen = route !== null;
@@ -275,7 +282,6 @@ export function MapScreen({
     <div className="relative md:-mt-6 lg:mt-0">
     <div
       ref={wrap}
-      data-dark={settings.dark}
       className={`trail-map map-screen relative h-dvh w-full overflow-hidden md:[--tab-room:0rem] ${chosen ? "[--tab-room:0rem]" : "[--tab-room:calc(5.5rem+env(safe-area-inset-bottom))]"}`}
     >
       <NavigationResume routes={routes} onResume={setRouteId} />
@@ -294,6 +300,8 @@ export function MapScreen({
         mergeStops={mergeStops}
         user={nav.session?.snapshot.position ?? null}
         towardsDeg={nav.session?.snapshot.state.bearingDeg ?? null}
+        far={nav.session?.snapshot.state.far ?? false}
+        resumeTick={resumeTick}
         guide={nav.session?.snapshot.pathLine ?? null}
       />
       {!wide && snap === "hidden" ? (
@@ -374,6 +382,69 @@ function CourseList({ routes, onChoose, locale }: { routes: MapScreenRoute[]; on
   );
 }
 
+/** How many stops show before 「すべて見る」: the sheet stays short. */
+const STOPS_SHOWN = 4;
+
+/** The stamp places of a course: a photo, the name, and how long the walk from the place before takes. */
+function StopRows({ route, onChooseStop }: { route: MapScreenRoute; onChooseStop: (id: string) => void }) {
+  const { t } = useLingui();
+  const [all, setAll] = useState(false);
+  const shown = all ? route.spots : route.spots.slice(0, STOPS_SHOWN);
+  const rides = { ferry: (n: number) => t`船で約${n}分`, bus: (n: number) => t`バスで約${n}分`, train: (n: number) => t`電車で約${n}分`, other: (n: number) => t`乗り物で約${n}分` };
+  return (
+    <section>
+      <h3 className="pb-2 text-xl font-bold">{t`スタンプの場所`}</h3>
+      <ol className="flex flex-col gap-2">
+        {shown.map((spot) => {
+          const onMap = route.stops?.some((x) => x.id === spot.id) ?? false;
+          const leg = spot.fromPrev;
+          // The look of a course in the list: the photo at the right, fading into the card.
+          const row = (
+            <>
+              <span className="absolute inset-y-0 right-0 block w-2/5 overflow-hidden">
+                <RoutePhoto src={spot.photo?.src ?? null} alt="" />
+                <span aria-hidden="true" className="absolute inset-0 bg-linear-to-r from-surface from-20% to-transparent to-85%" />
+              </span>
+              <span className="relative flex min-h-24 flex-col justify-center py-3 pl-4 pr-[34%]">
+                <span lang={spot.nameLang} className="block text-xl font-bold leading-snug">
+                  {spot.name}
+                </span>
+                <span className="mt-0.5 flex flex-wrap items-center gap-x-3 text-base leading-snug">
+                  <StatusWord status={spot.status} />
+                  {spot.stamped === true ? <span className="font-bold">{t`押した`}</span> : null}
+                  {leg ? <span className="tabular-nums">{leg.mode ? rides[leg.mode](leg.minutes) : t`歩いて約${leg.minutes}分`}</span> : null}
+                </span>
+              </span>
+              <span className={`absolute right-3 top-3 grid size-8 place-items-center rounded-full text-lg font-bold tabular-nums ${spot.stamped ? "bg-shu text-on-shu" : "badge-pattern bg-brand text-on-brand"}`}>{spot.order}</span>
+            </>
+          );
+          const rowClass = "tap-target relative block w-full overflow-hidden rounded-[1.75rem] bg-surface text-left";
+          return (
+            <li key={spot.id}>
+              {onMap ? (
+                <button type="button" onClick={() => onChooseStop(spot.id)} className={rowClass}>
+                  {row}
+                </button>
+              ) : (
+                <Link href={spot.href} className={rowClass}>
+                  {row}
+                </Link>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+      {route.spots.length > STOPS_SHOWN ? (
+        <button type="button" onClick={() => setAll(!all)} aria-expanded={all} className={buttonStyle("secondary", "md", "mt-2 flex w-full")}>
+          {all ? t`少なく見る` : t`すべて見る（${route.spots.length}か所）`}
+        </button>
+      ) : null}
+      {route.spots.some((s) => s.fromPrev) ? <p className="pt-2 text-base leading-snug text-muted">{t`時間は、前の場所から休まず歩いたときの目安です。実際とは違うことがあります。`}</p> : null}
+      {route.stops ? null : <p className="pt-2 text-base text-muted">{t`地図の上の場所は、準備中です。`}</p>}
+    </section>
+  );
+}
+
 function RoutePanel({
   route,
   onChooseStop,
@@ -404,48 +475,7 @@ function RoutePanel({
       {route.status === "ready" ? <NavigationStart route={route} more={more} /> : more}
 
       {route.spots.length > 0 ? (
-        <section>
-          <h3 className="pb-2 text-xl font-bold">{t`スタンプの場所`}</h3>
-          <ol className="flex flex-col">
-            {route.spots.map((spot) => {
-              const onMap = route.stops?.some((x) => x.id === spot.id) ?? false;
-              const row = (
-                <>
-                  <span
-                    className={`grid size-10 shrink-0 place-items-center rounded-full border-[3px] text-lg font-bold tabular-nums ${spot.stamped ? "border-shu bg-shu text-on-shu" : "border-ink"}`}
-                  >
-                    {spot.order}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span lang={spot.nameLang} className="block text-xl font-bold leading-snug">
-                      {spot.name}
-                    </span>
-                    <span className="flex flex-wrap items-center gap-x-3 text-lg">
-                      <StatusWord status={spot.status} />
-                      {spot.stamped === true ? <span className="font-bold">{t`押した`}</span> : null}
-                    </span>
-                  </span>
-                  <ChevronIcon />
-                </>
-              );
-              const rowClass = "tap-target flex w-full items-center gap-3 border-t border-line/30 py-3 text-left hover:bg-surface";
-              return (
-                <li key={spot.id}>
-                  {onMap ? (
-                    <button type="button" onClick={() => onChooseStop(spot.id)} className={rowClass}>
-                      {row}
-                    </button>
-                  ) : (
-                    <Link href={spot.href} className={rowClass}>
-                      {row}
-                    </Link>
-                  )}
-                </li>
-              );
-            })}
-          </ol>
-          {route.stops ? null : <p className="pt-2 text-base text-muted">{t`地図の上の場所は、準備中です。`}</p>}
-        </section>
+        <StopRows key={route.id} route={route} onChooseStop={onChooseStop} />
       ) : route.status === "ready" ? (
         <p className="rounded-2xl bg-surface p-4 text-lg">{t`スタンプの場所は、まだ準備中です。`}</p>
       ) : null}

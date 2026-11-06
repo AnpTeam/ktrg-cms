@@ -455,23 +455,14 @@ rt {
   text-decoration: underline;
 }
 
-/* GSI has no dark tiles. By default they stay as they are (dimming made the map too dark to read).
-   The map settings can choose "dim" or "invert" through data-dark on the map. Markers are HTML, so unaffected. */
-:root[data-theme="dark"] .trail-map[data-dark="dim"] .trail-map-canvas canvas {
-  filter: brightness(0.8);
-}
-:root[data-theme="dark"] .trail-map[data-dark="invert"] .trail-map-canvas canvas {
-  filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.95);
+/* On a phone the navigation's panel lies across the bottom of the map: the required map credit stays above it. */
+@media (max-width: 767px) {
+  body.map-nav-mode .trail-map .maplibregl-ctrl-bottom-right {
+    bottom: var(--nav-toast, 0px);
+  }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .trail-map[data-dark="dim"] .trail-map-canvas canvas {
-    filter: brightness(0.8);
-  }
-  :root:not([data-theme="light"]) .trail-map[data-dark="invert"] .trail-map-canvas canvas {
-    filter: invert(1) hue-rotate(180deg) brightness(0.9) contrast(0.95);
-  }
-}
+/* GSI has no dark tiles, and the map stays as it is in dark mode: dimmed or inverted maps were too dark to read outdoors. */
 
 /* The header menu drops down from the top on a phone, and grows out of the rail's button from 768 px. Reduced motion: it just appears. */
 @media (prefers-reduced-motion: no-preference) {
@@ -968,6 +959,21 @@ body.map-screen-active .site-footer {
 @media (prefers-reduced-motion: reduce) {
   [data-tabbar] {
     transition: none;
+  }
+}
+
+/* How much of the bottom the tab bar takes right now, for things fixed above it (the navigation's buttons): the bar on a
+   phone, none from 768 px (a side rail) or when a chosen course hides it. Same 5.5rem as MapScreen's TAB_ROOM_REM. A var() with
+   no value makes the whole `bottom` invalid, and the buttons then fall to the end of the page, off the screen. */
+:root {
+  --tabbar-room: 0px;
+}
+@media (max-width: 767px) {
+  :root {
+    --tabbar-room: 5.5rem;
+  }
+  body.map-tabs-hidden {
+    --tabbar-room: 0px;
   }
 }
 

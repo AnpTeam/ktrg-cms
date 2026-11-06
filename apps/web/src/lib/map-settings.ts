@@ -14,12 +14,9 @@ export const baseLayers = ["std", "pale", "blank", "photo", "large"] as const;
  * relief = GSI's 色別標高図: a colour for each height (green low, brown high), which tints the map.
  */
 export const terrainLayers = ["hillshade", "relief"] as const;
-/** What to do to the (always light) tiles in dark mode. Not a site setting: tiles stay plain. */
-export const darkTreatments = ["none", "dim", "invert"] as const;
 
 export type BaseLayer = (typeof baseLayers)[number];
 export type TerrainLayer = (typeof terrainLayers)[number];
-export type DarkTreatment = (typeof darkTreatments)[number];
 
 export interface MapSettings {
   base: BaseLayer;
@@ -30,7 +27,6 @@ export interface MapSettings {
   saturation: number;
   /** Contrast of the base tiles, -0.5 (flat) to 0.5 (hard); 0 leaves them as they are. */
   contrast: number;
-  dark: DarkTreatment;
   /** The vector map only: names, icons and lines drawn this many times the size its style gives (0.8 to 2; 1 = as is). */
   labelScale: number;
   iconScale: number;
@@ -44,7 +40,6 @@ export const defaultMapSettings: MapSettings = {
   terrainOpacity: 0.5,
   saturation: 0,
   contrast: 0,
-  dark: "none", // plain tiles: dimmed or inverted maps were judged too dark to read outdoors
   labelScale: 1,
   iconScale: 1,
   lineScale: 1,
@@ -65,7 +60,6 @@ export function sanitizeMapSettings(value: unknown): MapSettings {
     terrainOpacity: clamp(v.terrainOpacity, 0.2, 0.8, defaultMapSettings.terrainOpacity),
     saturation: clamp(v.saturation, -1, 0.5, defaultMapSettings.saturation),
     contrast: clamp(v.contrast, -0.5, 0.5, defaultMapSettings.contrast),
-    dark: pick(darkTreatments, v.dark, defaultMapSettings.dark),
     labelScale: clamp(v.labelScale, 0.8, 2, defaultMapSettings.labelScale),
     iconScale: clamp(v.iconScale, 0.8, 2, defaultMapSettings.iconScale),
     lineScale: clamp(v.lineScale, 0.8, 2, defaultMapSettings.lineScale),

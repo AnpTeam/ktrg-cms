@@ -3,7 +3,7 @@ import { defaultMapSettings, sanitizeMapSettings } from "./map-settings";
 
 describe("map settings", () => {
   test("the defaults: the quiet pale map, hillshade terrain, tiles as GSI draws them", () => {
-    expect(defaultMapSettings).toEqual({ base: "pale", terrain: "hillshade", terrainOpacity: 0.5, saturation: 0, contrast: 0, dark: "none", labelScale: 1, iconScale: 1, lineScale: 1 });
+    expect(defaultMapSettings).toEqual({ base: "pale", terrain: "hillshade", terrainOpacity: 0.5, saturation: 0, contrast: 0, labelScale: 1, iconScale: 1, lineScale: 1 });
   });
 
   test("each field falls back on its own, and the numbers are kept in range", () => {
@@ -13,7 +13,6 @@ describe("map settings", () => {
       terrainOpacity: 0.8,
       saturation: -1,
       contrast: 0.3,
-      dark: "none",
       labelScale: 1,
       iconScale: 1,
       lineScale: 1,

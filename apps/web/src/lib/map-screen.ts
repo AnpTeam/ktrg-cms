@@ -42,6 +42,9 @@ export interface MapScreenSpot {
   stamped: boolean | null;
   /** The spot's own page, with the locale. */
   href: string;
+  photo: MapPhoto | null;
+  /** How long from the place before; `mode` when that stretch is a ride, not a walk. */
+  fromPrev?: { minutes: number; mode?: "ferry" | "bus" | "train" | "other" };
 }
 
 /** A stop on a course's detailed map, with what its bottom sheet shows. Sent to the browser, so plain data only. */

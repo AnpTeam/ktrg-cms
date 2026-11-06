@@ -5,16 +5,18 @@ import { useLingui } from "@lingui/react/macro";
 import type { NavState } from "@/lib/navigation/session";
 import { cueText, emptyCueMemory, nextCue, pickVoice } from "@/lib/navigation/voice";
 
-// Voice and vibration cues for a running navigation. Off by default; the choice is kept on this device only
+// Voice and vibration cues for a running navigation. Off by default, on for walkers of 70 and over (speaksByDefault); the choice is kept on this device only
 // (localStorage is fine for a per-viewer convenience). Uses the browser's own speech and vibration: nothing to download.
 
 const KEY = "ktrg-nav-voice";
 
-const read = (): boolean => {
+/** Is the voice on for this visitor: what they chose on this device, else the default for them. */
+export const voiceIsOn = (byDefault: boolean) => {
   try {
-    return window.localStorage.getItem(KEY) === "1";
+    const saved = window.localStorage.getItem(KEY);
+    return saved === null ? byDefault : saved === "1";
   } catch {
-    return false;
+    return byDefault;
   }
 };
 
@@ -33,7 +35,7 @@ function voiceFor(locale: string): SpeechSynthesisVoice | null {
   return chosen.get(locale) ?? null;
 }
 
-function say(text: string, locale: string) {
+export function say(text: string, locale: string) {
   const synth = window.speechSynthesis;
   synth.cancel(); // never queue behind an old phrase
   const u = new SpeechSynthesisUtterance(text);
@@ -45,9 +47,9 @@ function say(text: string, locale: string) {
   synth.speak(u);
 }
 
-export function useNavVoice(state: NavState | null, targetName: string | undefined) {
+export function useNavVoice(state: NavState | null, targetName: string | undefined, byDefault: boolean) {
   const { t, i18n } = useLingui();
-  const [on, setOn] = useState(() => (typeof window === "undefined" ? false : read()));
+  const [on, setOn] = useState(() => (typeof window === "undefined" ? false : voiceIsOn(byDefault)));
   const mem = useRef(emptyCueMemory());
   const supported = typeof window !== "undefined" && "speechSynthesis" in window;
   const canVibrate = typeof navigator !== "undefined" && typeof navigator.vibrate === "function";
