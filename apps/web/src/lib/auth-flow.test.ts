@@ -49,7 +49,7 @@ describe("sign-up choices", () => {
 
 describe("about-you choices", () => {
   test("the age bands and gender answers are the API's, and 'unspecified' is an answer", () => {
-    expect(ageRanges).toEqual(["under20", "20s", "30s", "40s", "50s", "60s", "70plus"]);
+    expect(ageRanges).toEqual(["under20", "20s", "30s", "40s", "50s", "60s", "70s", "80s", "90plus"]);
     expect(genders).toEqual(["female", "male", "other", "unspecified"]);
   });
 

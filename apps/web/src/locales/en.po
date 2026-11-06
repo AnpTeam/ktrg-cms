@@ -599,6 +599,18 @@ msgstr "50s"
 msgid "60代"
 msgstr "60s"
 
+#: src/components/auth/AboutYou.tsx:21
+msgid "70代"
+msgstr "70s"
+
+#: src/components/auth/AboutYou.tsx:22
+msgid "80代"
+msgstr "80s"
+
+#: src/components/auth/AboutYou.tsx:23
+msgid "90歳以上"
+msgstr "90 and over"
+
 #: src/components/auth/AboutYou.tsx:22
 msgid "70歳以上"
 msgstr "70 or older"
