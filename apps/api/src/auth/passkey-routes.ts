@@ -1,3 +1,4 @@
+import { signupOrigin } from "./user";
 import type { AuthenticationResponseJSON, RegistrationResponseJSON } from "@simplewebauthn/server";
 import { Elysia, t } from "elysia";
 import { normalizeDisplayName } from "../me/me-service";
@@ -190,7 +191,7 @@ export function passkeyRoutes(getServices: () => PasskeyServices, opts: RouteOpt
           const result = await getServices().passkeys.verifySignup(
             body.response as RegistrationResponseJSON,
             body.label?.trim() || null,
-            { displayName, origin: body.profile.origin ?? null, locale: body.profile.locale ?? "ja" },
+            { displayName, ...signupOrigin(body.profile), locale: body.profile.locale ?? "ja" },
           );
           if (!result.ok) return fail(set, 400, "registration_failed");
           await http.startSession(set, result.user);

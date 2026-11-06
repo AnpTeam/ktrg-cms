@@ -138,7 +138,7 @@ export function MapSheet({
       aria-label={t`情報`}
       className={
         panel
-          ? `absolute bottom-3 left-3 top-3 z-[5] flex flex-col overflow-hidden rounded-3xl bg-paper shadow-[0_4px_24px_rgb(0_0_0/0.28)] transition-[width] motion-reduce:transition-none ${folded ? "w-[4.5rem]" : "w-[26rem]"}`
+          ? `absolute bottom-3 left-3 top-3 z-[5] flex flex-col overflow-hidden rounded-3xl bg-paper shadow-[0_4px_24px_rgb(0_0_0/0.28)] transition-[width] motion-reduce:transition-none ${folded ? "w-[4.5rem]" : "w-[26rem] [@media(max-height:600px)]:w-[20rem]"}`
           : "absolute inset-x-0 bottom-0 z-[5] flex flex-col overflow-hidden rounded-t-3xl bg-paper shadow-[0_-4px_24px_rgb(0_0_0/0.28)] motion-reduce:transition-none"
       }
       inert={!panel && hidden}

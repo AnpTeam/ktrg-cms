@@ -40,10 +40,10 @@ export default async function RoutesPage({
   );
 
   return (
-    <div className="flex flex-col gap-6 lg:gap-8">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+    <div className="flex flex-col gap-6 wide:gap-8">
+      <div className="flex flex-col gap-6 wide:flex-row wide:items-end wide:justify-between">
       <section className="px-4">
-        <h1 className="text-3xl font-bold lg:text-4xl">
+        <h1 className="text-3xl font-bold wide:text-4xl">
           <Trans>葛城修験の道</Trans>
         </h1>
         <p className="mt-3 text-xl">
@@ -60,7 +60,7 @@ export default async function RoutesPage({
         ) : null}
       </section>
 
-      <div className="lg:shrink-0">
+      <div className="wide:shrink-0">
         <PrefectureFilter base={base} available={available} active={active} />
       </div>
       </div>

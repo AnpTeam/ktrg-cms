@@ -6,7 +6,7 @@ import type { ChallengeType, PasskeyStore } from "./passkey-service";
 export function createMemoryPasskeyStore(
   users: Map<string, AuthUser> = new Map(),
   /** Name and origin given at sign-up, by user id. Pass the same map to the other memory stores to share it. */
-  profiles: Map<string, { displayName: string | null; origin: string | null }> = new Map(),
+  profiles: Map<string, { displayName: string | null; origin: string | null; originPlace?: string | null }> = new Map(),
 ) {
   const challenges: {
     challenge: string;
@@ -85,7 +85,7 @@ export function createMemoryPasskeyStore(
     async createUserWithPasskey({ profile, ...row }) {
       if (passkeys.some((p) => p.credentialId === row.credentialId)) return false;
       users.set(row.userId, { id: row.userId, email: null, role: "participant", locale: profile.locale });
-      profiles.set(row.userId, { displayName: profile.displayName, origin: profile.origin });
+      profiles.set(row.userId, { displayName: profile.displayName, origin: profile.origin, originPlace: profile.originPlace });
       passkeys.push({ id: randomUUID(), createdAt: new Date(), ...row });
       return true;
     },

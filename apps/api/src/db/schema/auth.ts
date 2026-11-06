@@ -61,6 +61,8 @@ export const users = pgTable(
     avatarUrl: text("avatar_url"),
     // Where the person says they come from; null when they did not say.
     origin: userOrigin("origin"),
+    /** The answer in detail: a prefecture (JP-27) or a country (TH), ISO codes. `origin` stays the plain answer for the counts. */
+    originPlace: text("origin_place"),
     // Asked once after registering; both optional and changeable on the profile.
     ageRange: userAgeRange("age_range"),
     gender: userGender("gender"),

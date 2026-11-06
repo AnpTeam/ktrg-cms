@@ -48,23 +48,23 @@ export default async function PublicLayout({ children }: { children: ReactNode }
       <NavigationProvider signedIn={viewer.signedIn} voiceByDefault={speaksByDefault(viewer.ageRange)}>
       <VisitBeacon />
       <StampFilters />
-      <div className="mx-auto flex w-full max-w-5xl justify-center md:gap-6 lg:mx-0 lg:max-w-none lg:justify-start lg:gap-0">
+      <div className="mx-auto flex w-full max-w-5xl justify-center md:gap-6 wide:mx-0 wide:max-w-none wide:justify-start wide:gap-0">
         {/* The footer lives in the sidebar on a desktop (and is hidden on the map, whose page has no room for it). */}
         <TabBar footer={<SiteFooter locale={i18n.locale} variant="sidebar" />} />
-        <div className="min-w-0 max-w-xl flex-1 md:border-x md:border-surface lg:max-w-none lg:border-x-0">
+        <div className="min-w-0 max-w-xl flex-1 md:border-x md:border-surface wide:max-w-none wide:border-x-0">
           <SiteHeader
             signedIn={viewer.signedIn}
             staff={viewer.role === "editor" || viewer.role === "admin"}
             locale={i18n.locale}
-            profile={{ publicId: viewer.publicId, deletionDueAt: viewer.deletionDueAt, name: viewer.name, origin: viewer.origin, ageRange: viewer.ageRange, gender: viewer.gender, foundVia: viewer.foundVia }}
+            profile={{ publicId: viewer.publicId, deletionDueAt: viewer.deletionDueAt, name: viewer.name, origin: viewer.origin, originPlace: viewer.originPlace, ageRange: viewer.ageRange, gender: viewer.gender, foundVia: viewer.foundVia }}
             prefs={prefsState.effective}
             sample={sample}
           />
           <OfflineNotice />
           {sample ? <SampleNoticeHost /> : null}
           <PrefsSync signedIn={viewer.signedIn} account={prefsState.account} device={prefsState.device} />
-          <main id="main" className="pb-[calc(7rem+var(--nav-toast,0px))] md:pb-[calc(2.5rem+var(--nav-toast,0px))] md:pt-6 lg:pb-[calc(5rem+var(--nav-toast,0px))] lg:pt-8">
-            <div className="lg:mx-auto lg:max-w-6xl lg:px-10">
+          <main id="main" className="pb-[calc(7rem+var(--nav-toast,0px))] md:pb-[calc(2.5rem+var(--nav-toast,0px))] md:pt-6 wide:pb-[calc(5rem+var(--nav-toast,0px))] wide:pt-8">
+            <div className="wide:mx-auto wide:max-w-6xl wide:px-10">
               {viewer.signedIn ? null : <BrowserWarning />}
               {children}
             </div>

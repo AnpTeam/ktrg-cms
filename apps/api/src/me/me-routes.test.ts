@@ -23,6 +23,7 @@ type MeBody = {
     locale: string;
     displayName: string | null;
     origin: string | null;
+    originPlace: string | null;
     ageRange: string | null;
     gender: string | null;
     preferences: { size: string; mergeStops: boolean; placesOnMap: boolean; setupDone: boolean; updatedAt: number } | null;
@@ -161,6 +162,24 @@ describe("PATCH /me", () => {
 });
 
 describe("PATCH /me: where you come from", () => {
+  test("a prefecture or country is saved, and the plain answer follows it", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    const me = async (body: object) => ((await (await t.call("PATCH", "", cookie, body)).json()) as MeBody).me;
+    expect(await me({ originPlace: "JP-30" })).toMatchObject({ origin: "wakayama", originPlace: "JP-30" });
+    expect(await me({ originPlace: "JP-13" })).toMatchObject({ origin: "other_japan", originPlace: "JP-13" });
+    expect(await me({ originPlace: "TH" })).toMatchObject({ origin: "overseas", originPlace: "TH" });
+    expect(await me({ origin: "other_japan", originPlace: null })).toMatchObject({ origin: "other_japan", originPlace: null });
+    await me({ originPlace: "TH" });
+    expect(await me({ origin: "nara" })).toMatchObject({ origin: "nara", originPlace: null });
+  });
+
+  test("anything that is not a prefecture or a country other than Japan is refused", async () => {
+    const t = setup();
+    const cookie = await t.login(alice);
+    for (const originPlace of ["JP", "JP-48", "JP-00", "th", "THA", "<b>"]) expect((await t.call("PATCH", "", cookie, { originPlace })).status).toBe(422);
+  });
+
   test("can be set, changed and cleared, and only for yourself", async () => {
     const t = setup();
     const cookie = await t.login(alice);

@@ -5,7 +5,7 @@ import type { OtpRow, OtpStore } from "./otp-service";
 /** In-memory store for tests and manual checks. Mirrors the Drizzle store's rules. */
 export function createMemoryOtpStore(
   /** Name and origin given at sign-up, by user id. Pass the same map to the other memory stores to share it. */
-  profiles: Map<string, { displayName: string | null; origin: string | null }> = new Map(),
+  profiles: Map<string, { displayName: string | null; origin: string | null; originPlace?: string | null }> = new Map(),
 ) {
   const rows: (OtpRow & { email: string })[] = [];
   const users = new Map<string, AuthUser>();
@@ -44,7 +44,7 @@ export function createMemoryOtpStore(
       if (!user) {
         user = { id: randomUUID(), email, role: "participant", locale: profile?.locale ?? "ja" };
         users.set(email, user);
-        profiles.set(user.id, { displayName: profile?.displayName ?? null, origin: profile?.origin ?? null });
+        profiles.set(user.id, { displayName: profile?.displayName ?? null, origin: profile?.origin ?? null, originPlace: profile?.originPlace ?? null });
       }
       return user;
     },

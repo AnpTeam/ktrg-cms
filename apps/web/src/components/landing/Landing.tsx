@@ -231,7 +231,7 @@ export function Landing({
             { path: "/cultural_property/", label: <Trans>構成文化財</Trans> },
           ].map((link) => (
             <li key={link.path}>
-              <a href={`${OFFICIAL}${link.path}`} target="_blank" rel="noopener noreferrer" className={`${secondary} text-center`}>
+              <a href={`${OFFICIAL}${link.path}`} target="_blank" rel="noopener noreferrer" className={`${secondary} size-full text-center`}>
                 {link.label}
                 <span className="sr-only">
                   <Trans>（公式サイト、新しいタブで開きます）</Trans>

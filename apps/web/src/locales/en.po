@@ -7595,3 +7595,31 @@ msgstr "Times are estimates from the place before, walking without rests. Yours 
 #: src/components/navigation/NavigationHud.tsx
 msgid "{arrival}ごろ着"
 msgstr "Arrive around {arrival}"
+
+#: src/components/auth/authUi.tsx
+msgid "日本から来ました"
+msgstr "I came from within Japan"
+
+#: src/components/auth/authUi.tsx
+msgid "海外から来ました"
+msgstr "I came from abroad"
+
+#: src/components/auth/authUi.tsx
+msgid "都道府県を選択してください"
+msgstr "Choose your prefecture"
+
+#: src/components/auth/authUi.tsx
+msgid "国を選択してください"
+msgstr "Choose your country"
+
+#: src/components/auth/authUi.tsx
+msgid "選んでください"
+msgstr "Please choose"
+
+#: src/components/auth/authUi.tsx
+msgid "選びなおす"
+msgstr "Choose again"
+
+#: src/components/auth/authUi.tsx
+msgid "日本"
+msgstr "Japan"

@@ -11,6 +11,7 @@ import { ChevronIcon } from "@/components/icons";
 import { PrivacyNote } from "@/components/PrivacyNote";
 import { api } from "@/lib/api";
 import { requestAccountDeletion } from "@/lib/auth-client";
+import { placeName } from "@/lib/origin-places";
 import { failureFromApi, hasName, NAME_MAX, type AgeRange, type AuthFailure, type FoundVia, type Gender, type Origin } from "@/lib/auth-flow";
 import { formatUpdated } from "@/lib/format";
 
@@ -30,6 +31,7 @@ export function ProfileSettings({
   deletionDueAt,
   name,
   origin,
+  originPlace,
   ageRange,
   gender,
   foundVia,
@@ -38,6 +40,7 @@ export function ProfileSettings({
   deletionDueAt: string | null;
   name: string | null;
   origin: Origin | null;
+  originPlace: string | null;
   ageRange: AgeRange | null;
   gender: Gender | null;
   foundVia: FoundVia | null;
@@ -71,7 +74,7 @@ export function ProfileSettings({
     if (!confirming && el.open) el.close();
   }, [confirming]);
 
-  async function save(change: Partial<Record<Field, string | null>>) {
+  async function save(change: Partial<Record<Field | "originPlace", string | null>>) {
     if (busy) return;
     setBusy(true);
     setError(null);
@@ -119,7 +122,7 @@ export function ProfileSettings({
   const unset = t`未設定`;
   const rows: { field: Field; label: string; value: string }[] = [
     { field: "displayName", label: t`お名前`, value: name ?? unset },
-    { field: "origin", label: t`お住まい`, value: origin ? originNames[origin] : unset },
+    { field: "origin", label: t`お住まい`, value: (originPlace && placeName(originPlace, locale)) || (origin ? originNames[origin] : unset) },
     { field: "ageRange", label: t`年代`, value: ageRange ? ageNames[ageRange] : unset },
     { field: "gender", label: t`性別`, value: gender ? genderNames[gender] : unset },
     { field: "foundVia", label: t`知ったきっかけ`, value: foundVia ? foundViaNames[foundVia] : unset },
@@ -128,7 +131,7 @@ export function ProfileSettings({
 
   // A choice in the sheet is saved at once; choosing the chosen one again clears it.
   const picker: Record<Exclude<Field, "displayName">, ReactNode> = {
-    origin: <OriginPicker value={origin} onChange={(v) => save({ origin: v })} />,
+    origin: <OriginPicker value={{ origin, place: originPlace }} onChange={(v) => save({ origin: v.origin, originPlace: v.place })} />,
     ageRange: <AgeRangePicker value={ageRange} onChange={(v) => save({ ageRange: v })} />,
     gender: <GenderPicker value={gender} onChange={(v) => save({ gender: v })} />,
     foundVia: <FoundViaPicker value={foundVia} onChange={(v) => save({ foundVia: v })} />,

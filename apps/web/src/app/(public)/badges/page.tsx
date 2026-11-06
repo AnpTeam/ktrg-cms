@@ -24,12 +24,12 @@ export default async function BadgesPage() {
   const earned = states.filter((s) => s === "complete").length;
 
   return (
-    <div className="flex flex-col gap-6 pt-2 lg:pt-0">
+    <div className="flex flex-col gap-6 pt-2 wide:pt-0">
       <div className="flex flex-col gap-2 px-4">
         <BackLink href="/rallies">
           <Trans>ラリー</Trans>
         </BackLink>
-        <h1 className="text-3xl font-bold lg:text-4xl">
+        <h1 className="text-3xl font-bold wide:text-4xl">
           <Trans>バッジ</Trans>
         </h1>
         <p className="text-2xl font-bold tabular-nums text-accent">

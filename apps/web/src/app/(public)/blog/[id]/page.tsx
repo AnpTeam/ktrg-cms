@@ -93,7 +93,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <article className="flex flex-col gap-8 pt-2">
-      <header className="flex flex-col gap-4 px-4 lg:px-0">
+      <header className="flex flex-col gap-4 px-4 wide:px-0">
         <BackLink href="/blog">
           <Trans>ブログ</Trans>
         </BackLink>
@@ -135,23 +135,23 @@ export default async function BlogPostPage({ params }: Props) {
 
       {post.coverPhotoUrl ? (
         <figure className="flex flex-col gap-2">
-          <span className="relative block aspect-[16/10] overflow-hidden md:aspect-[16/8] lg:rounded-3xl">
+          <span className="relative block aspect-[16/10] overflow-hidden md:aspect-[16/8] wide:rounded-3xl">
             <RoutePhoto src={post.coverPhotoUrl} alt={title?.text ?? ""} />
           </span>
-          <CreditCaption credit={post.coverCredit} className="px-4 lg:px-0" />
+          <CreditCaption credit={post.coverCredit} className="px-4 wide:px-0" />
         </figure>
       ) : null}
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+      <div className="grid gap-10 wide:grid-cols-[minmax(0,1fr)_20rem] wide:items-start">
         <div className="flex min-w-0 flex-col gap-10">
           {body ? (
-            <div className="px-4 lg:px-0">
+            <div className="px-4 wide:px-0">
               <RichBody text={body.text} lang={body.lang} anchor={post.id} />
             </div>
           ) : null}
 
           {hasAbout ? (
-            <section className="flex flex-col gap-4 px-4 lg:px-0">
+            <section className="flex flex-col gap-4 px-4 wide:px-0">
               <SectionBanner>
                 <Trans>この記事の場所</Trans>
               </SectionBanner>
@@ -183,7 +183,7 @@ export default async function BlogPostPage({ params }: Props) {
           ) : null}
 
           {nearby.length > 0 ? (
-            <section className="flex flex-col gap-3 px-4 lg:px-0">
+            <section className="flex flex-col gap-3 px-4 wide:px-0">
               <SectionBanner>
                 <Trans>まわりの場所</Trans>
               </SectionBanner>
@@ -191,7 +191,7 @@ export default async function BlogPostPage({ params }: Props) {
             </section>
           ) : null}
 
-          <section className="flex flex-col gap-3 border-y border-line/40 px-4 py-5 lg:px-0">
+          <section className="flex flex-col gap-3 border-y border-line/40 px-4 py-5 wide:px-0">
             <p className="text-lg font-bold">
               <Trans>この記事を共有する</Trans>
             </p>
@@ -199,7 +199,7 @@ export default async function BlogPostPage({ params }: Props) {
           </section>
 
           {newer || older ? (
-            <nav aria-label={i18n._(msg`前後の記事`)} className="grid gap-3 px-4 sm:grid-cols-2 lg:px-0">
+            <nav aria-label={i18n._(msg`前後の記事`)} className="grid gap-3 px-4 sm:grid-cols-2 wide:px-0">
               {older ? (
                 <Link href={`/blog/${older.id}`} className="flex flex-col gap-1 rounded-2xl bg-surface p-4 hover:bg-paper">
                   <span className="inline-flex items-center gap-1 text-base text-muted">
@@ -227,13 +227,13 @@ export default async function BlogPostPage({ params }: Props) {
             </nav>
           ) : null}
 
-          <div className="px-4 lg:px-0">
+          <div className="px-4 wide:px-0">
             <CommentSection postId={post.id} comments={comments} signedIn={viewer.signedIn} locale={locale} loginHref={`/login?next=${encodeURIComponent(`/blog/${post.id}`)}`} />
           </div>
         </div>
 
         {others.length > 0 ? (
-          <aside className="flex flex-col gap-4 px-4 lg:sticky lg:top-6 lg:px-0">
+          <aside className="flex flex-col gap-4 px-4 wide:sticky wide:top-6 wide:px-0">
             <h2 className="border-l-[6px] border-accent pl-3 text-2xl font-bold">
               <Trans>ほかの記事</Trans>
             </h2>

@@ -27,11 +27,11 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
   const others = otherRallies(rallies, featured);
 
   return (
-    <div className="flex flex-col gap-6 pt-2 lg:pt-0">
+    <div className="flex flex-col gap-6 pt-2 wide:pt-0">
       {/* One column in this order, on a phone and on a desktop alike: the title, you, the rally you are in, then the rest as cards side by side. */}
       {/* The title, with the badges and how to play to its side ("?"): how to play lives here, with the stamps, and nowhere else. */}
       <div className="flex items-center gap-3 px-4">
-        <h1 className="min-w-0 flex-1 text-3xl font-bold lg:text-4xl">
+        <h1 className="min-w-0 flex-1 text-3xl font-bold wide:text-4xl">
           <Trans>ラリー</Trans>
         </h1>
         <Link href="/badges" className="tap-target inline-flex items-center rounded-full bg-surface px-5 text-xl font-bold text-accent">
@@ -61,7 +61,7 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
           <SectionBanner>
             <Trans>ラリーの一覧</Trans>
           </SectionBanner>
-          <ul className="grid gap-3 lg:grid-cols-2 lg:gap-4">
+          <ul className="grid gap-3 wide:grid-cols-2 wide:gap-4">
             {others.map((rally) => (
               <RallyCard key={rally.id} rally={rally} locale={i18n.locale} account={viewer.signedIn} />
             ))}

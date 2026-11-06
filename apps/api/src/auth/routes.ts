@@ -3,7 +3,7 @@ import { normalizeDisplayName } from "../me/me-service";
 import { emailSchema, localeSchema, otpCodeSchema, signupProfileSchema } from "../lib/schemas";
 import { SESSION_SECURITY } from "../openapi";
 import { fail } from "./http";
-import type { NewAccountProfile } from "./user";
+import { signupOrigin, type NewAccountProfile } from "./user";
 import type { OtpService } from "./otp-service";
 import { routeKit, type KitServices, type RouteOptions } from "./route-kit";
 
@@ -43,7 +43,7 @@ export function authRoutes(getServices: () => AuthServices, opts: RouteOptions) 
         if (body.profile) {
           const displayName = normalizeDisplayName(body.profile.displayName);
           if (displayName === undefined) return fail(set, 400, "invalid_display_name");
-          profile = { displayName, origin: body.profile.origin ?? null, locale: body.profile.locale ?? "ja" };
+          profile = { displayName, ...signupOrigin(body.profile), locale: body.profile.locale ?? "ja" };
         }
         const result = await getServices().otp.verify(body.email, body.code, profile);
         // One answer for wrong, expired, used, locked or unknown.

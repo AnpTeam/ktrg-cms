@@ -2,7 +2,8 @@
 
 import type { ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
-import { origins, type AuthFailure, type Origin } from "@/lib/auth-flow";
+import { type AuthFailure, type Origin } from "@/lib/auth-flow";
+import { COUNTRY_REGIONS, countryOptions, originOfPlace, placeOfOrigin, PREFECTURE_REGIONS, regionName } from "@/lib/origin-places";
 import { useErrorMessages } from "../useErrorMessages";
 import { buttonStyle } from "@/components/button";
 
@@ -78,43 +79,73 @@ export function useOriginNames(): Record<Origin, string> {
     osaka: t`大阪府`,
     wakayama: t`和歌山県`,
     nara: t`奈良県`,
-    other_japan: t`日本のほかの地域`,
+    other_japan: t`日本`,
     overseas: t`海外`,
   };
 }
 
-/** "Where do you come from": big tiles, two to a row. Tapping the chosen one again clears it (optional). */
-export function OriginPicker({ value, onChange }: { value: Origin | null; onChange: (value: Origin | null) => void }) {
-  const { t } = useLingui();
-  const names = useOriginNames();
+/** An answer to "where do you come from": the plain one, and the prefecture or country when one was chosen. */
+export type OriginAnswer = { origin: Origin | null; place: string | null };
+
+const OTHER_JAPAN = "other_japan";
+
+/**
+ * "Where do you come from": two big boxes, then the list that goes with the box. Answering is optional, and 「選びなおす」
+ * clears it. Native lists with sections: on a phone they open the system's own large picker.
+ */
+export function OriginPicker({ value, onChange }: { value: OriginAnswer; onChange: (value: OriginAnswer) => void }) {
+  const { t, i18n } = useLingui();
+  const locale = i18n.locale;
+  const place = value.place ?? placeOfOrigin(value.origin);
+  const side = value.origin === null ? null : value.origin === "overseas" ? "abroad" : "japan";
+  const box = "tap-target flex min-h-28 w-full items-center justify-center rounded-lg border-2 border-line bg-paper p-4 text-center text-xl font-bold text-ink hover:bg-surface";
+
+  if (side === null) {
+    return (
+      <fieldset className="flex flex-col gap-3">
+        <legend className="text-lg font-bold">{t`どちらからお越しですか？`}</legend>
+        <p className="-mt-1 text-base text-muted">{t`答えなくても大丈夫です。`}</p>
+        <button type="button" onClick={() => onChange({ origin: OTHER_JAPAN, place: null })} className={box}>
+          {t`日本から来ました`}
+        </button>
+        <button type="button" onClick={() => onChange({ origin: "overseas", place: null })} className={box}>
+          {t`海外から来ました`}
+        </button>
+      </fieldset>
+    );
+  }
+
+  const pick = (code: string) => onChange(code ? { origin: originOfPlace(code), place: code } : { origin: side === "japan" ? OTHER_JAPAN : "overseas", place: null });
   return (
-    <fieldset className="flex flex-col gap-3">
-      <legend className="text-lg font-bold">{t`どちらからお越しですか？`}</legend>
-      <p className="-mt-1 text-base text-muted">{t`答えなくても大丈夫です。`}</p>
-      <div className="grid grid-cols-2 gap-2">
-        {origins.map((origin, index) => {
-          const on = value === origin;
-          return (
-            <label
-              key={origin}
-              className={`tap-target flex cursor-pointer items-center justify-center rounded-full border-2 px-2 py-3 text-center text-lg font-bold leading-tight focus-within:outline focus-within:outline-[3px] focus-within:outline-offset-2 focus-within:outline-accent ${
-                on ? "border-brand bg-brand text-on-brand" : "border-line bg-paper text-ink"
-              } ${index === origins.length - 1 && origins.length % 2 === 1 ? "col-span-2" : ""}`}
-            >
-              <input
-                type="radio"
-                name="origin"
-                value={origin}
-                checked={on}
-                onChange={() => onChange(origin)}
-                onClick={() => on && onChange(null)}
-                className="sr-only"
-              />
-              {names[origin]}
-            </label>
-          );
-        })}
-      </div>
-    </fieldset>
+    <div className="flex flex-col gap-3">
+      <label htmlFor="origin-place" className="text-lg font-bold">
+        {side === "japan" ? t`都道府県を選択してください` : t`国を選択してください`}
+      </label>
+      <select id="origin-place" value={place ?? ""} onChange={(e) => pick(e.target.value)} className={inputClass}>
+        <option value="">{t`選んでください`}</option>
+        {side === "japan"
+          ? PREFECTURE_REGIONS.map((region) => (
+              <optgroup key={region.ja} label={regionName(region, locale)}>
+                {region.prefectures.map((p) => (
+                  <option key={p.code} value={p.code}>
+                    {regionName(p, locale)}
+                  </option>
+                ))}
+              </optgroup>
+            ))
+          : COUNTRY_REGIONS.map((region) => (
+              <optgroup key={region.ja} label={regionName(region, locale)}>
+                {countryOptions(region.countries, locale).map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.name}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+      </select>
+      <button type="button" onClick={() => onChange({ origin: null, place: null })} className="tap-target w-fit text-base font-bold underline underline-offset-4">
+        {t`選びなおす`}
+      </button>
+    </div>
   );
 }

@@ -13,8 +13,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RestorePage() {
   await initLingui();
   return (
-    <div className="flex flex-col gap-6 pt-2 lg:pt-0">
-      <h1 className="px-4 text-3xl font-bold lg:text-4xl">
+    <div className="flex flex-col gap-6 pt-2 wide:pt-0">
+      <h1 className="px-4 text-3xl font-bold wide:text-4xl">
         <Trans>スタンプをもどす</Trans>
       </h1>
       <RestoreStamps />

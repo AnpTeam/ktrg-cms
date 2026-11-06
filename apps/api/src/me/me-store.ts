@@ -13,6 +13,7 @@ const profileColumns = {
   displayName: users.displayName,
   avatarUrl: users.avatarUrl,
   origin: users.origin,
+  originPlace: users.originPlace,
   ageRange: users.ageRange,
   gender: users.gender,
   foundVia: users.foundVia,

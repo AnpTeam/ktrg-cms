@@ -283,7 +283,7 @@ export function SiteHeader({
               <QuickActions prefs={prefs} signedIn={signedIn} />
             </div>
             {/* From 1024 px these links are always in the sidebar's footer, so the menu leaves them out. */}
-            <ul className="flex flex-col border-t-2 border-line pt-2 lg:hidden">
+            <ul className="flex flex-col border-t-2 border-line pt-2 wide:hidden">
               {[
                 { path: "/faq", label: t`よくあるご質問` },
                 { path: "/terms", label: t`利用規約` },
@@ -299,7 +299,7 @@ export function SiteHeader({
                 </li>
               ))}
             </ul>
-            <p lang={locale === "ja" ? "ja" : "en"} className="text-sm text-muted lg:hidden">
+            <p lang={locale === "ja" ? "ja" : "en"} className="text-sm text-muted wide:hidden">
               {locale === "ja" ? foundationJa : foundationEn}
             </p>
           </div>

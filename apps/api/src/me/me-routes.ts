@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia";
 import { fail } from "../auth/http";
 import { routeKit, type KitServices, type RouteOptions } from "../auth/route-kit";
-import { ageRangeSchema, foundViaSchema, genderSchema, localeSchema, originSchema, preferencesSchema } from "../lib/schemas";
+import { ageRangeSchema, foundViaSchema, genderSchema, localeSchema, originPlaceSchema, originSchema, preferencesSchema } from "../lib/schemas";
 import type { MeService } from "./me-service";
 
 export interface MeServices extends KitServices {
@@ -48,6 +48,7 @@ export function meRoutes(getServices: () => MeServices, opts: RouteOptions) {
               avatarUrl: t.Optional(t.Union([t.String({ maxLength: 500 }), t.Null()])),
               // Where you come from; null clears it.
               origin: t.Optional(t.Union([originSchema, t.Null()])),
+              originPlace: t.Optional(t.Union([originPlaceSchema, t.Null()])),
               // Age band and gender (answered after registering); null clears them.
               ageRange: t.Optional(t.Union([ageRangeSchema, t.Null()])),
               gender: t.Optional(t.Union([genderSchema, t.Null()])),
