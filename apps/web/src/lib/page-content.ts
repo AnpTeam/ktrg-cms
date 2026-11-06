@@ -10,9 +10,9 @@ import { termsContent } from "./terms-content";
 export type OwnText = { title: string; doc: PageDoc } | null;
 
 /** What the editor wrote for this visitor's language, read as a document; null when there is none (use the built-in page). */
-export function ownText(text: PageText | null | undefined, locale: string): OwnText {
+export function ownText(text: PageText | null | undefined, locale: string, closingNote = false): OwnText {
   const lang = text?.[locale === "ja" ? "ja" : "en"];
-  return lang && lang.title.trim() !== "" && lang.body.trim() !== "" ? { title: lang.title.trim(), doc: parsePageBody(lang.body) } : null;
+  return lang && lang.title.trim() !== "" && lang.body.trim() !== "" ? { title: lang.title.trim(), doc: parsePageBody(lang.body, closingNote) } : null;
 }
 
 /** The how-to-play page and the FAQ (and their titles), with the editor's text where there is some. */
@@ -42,7 +42,7 @@ export interface Terms {
 }
 
 export function termsWith(mine: OwnText): Terms {
-  if (mine) return { title: mine.title, updated: null, lead: mine.doc.lead[0] ?? "", intro: mine.doc.lead.slice(1), sections: mine.doc.sections, builtIn: false };
+  if (mine) return { title: mine.title, updated: null, lead: "", intro: mine.doc.lead, sections: mine.doc.sections, builtIn: false };
   const t = termsContent;
   return { title: t.title, updated: t.updated, lead: t.lead, intro: [t.intro], sections: t.sections, builtIn: true };
 }

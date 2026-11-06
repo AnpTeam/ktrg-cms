@@ -14,6 +14,10 @@ export function Inlines({ parts, ids, linkClass = LINK }: { parts: Inline[]; ids
           <a key={i} href={p.href} target="_blank" rel="noopener noreferrer" className={linkClass}>
             {p.label}
           </a>
+        ) : "bold" in p ? (
+          <strong key={i}>
+            <Inlines parts={p.bold} ids={ids} linkClass={linkClass} />
+          </strong>
         ) : (
           <sup key={i} className="mx-0.5">
             <a href={`#${ids}-fn-${p.note}`} aria-label={`${p.note}`} className={LINK}>

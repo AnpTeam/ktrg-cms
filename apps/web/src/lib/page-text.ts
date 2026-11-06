@@ -3,7 +3,8 @@
 // (links and footnotes, see rich-text.ts):
 //   the first paragraphs, before any heading        the opening text of the page
 //   ## a heading, then paragraphs under it           a section (an FAQ question and its answer; a how-to-play step)
-//   a line of three dashes (---)                     after it comes the closing note (how to play)
+//   a line of three dashes (---)                     how to play: after it comes the closing note; elsewhere a line across the page
+//   anything else rich-text.ts reads as a block      bold, lists, photos and smaller headings, inside a paragraph
 // Paragraphs are separated by a blank line. Pure functions; tests are in page-text.test.ts.
 
 export const PAGE_KEYS = ["home", "faq", "guide", "terms", "privacy"] as const;
@@ -24,7 +25,7 @@ const paragraphs = (lines: string[]) =>
     .map((p) => p.trim())
     .filter((p) => p !== "");
 
-export function parsePageBody(body: string): PageDoc {
+export function parsePageBody(body: string, closingNote = false): PageDoc {
   const doc: PageDoc = { lead: [], sections: [], note: [] };
   let part: "lead" | "section" | "note" = "lead";
   let lines: string[] = [];
@@ -41,7 +42,7 @@ export function parsePageBody(body: string): PageDoc {
       close();
       part = "section";
       heading = h[1]!;
-    } else if (/^---[ \t]*$/.test(line) && part !== "note") {
+    } else if (closingNote && /^---[ \t]*$/.test(line) && part !== "note") {
       close();
       part = "note";
     } else lines.push(line);

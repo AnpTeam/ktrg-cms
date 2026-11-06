@@ -18,7 +18,7 @@ async function savedPage(key: PageKey): Promise<PageText | null> {
 }
 
 async function own(key: PageKey, locale: string): Promise<OwnText> {
-  return ownText(await savedPage(key), locale);
+  return ownText(await savedPage(key), locale, key === "guide");
 }
 
 /** What the editor wrote in place of the home page's words. */

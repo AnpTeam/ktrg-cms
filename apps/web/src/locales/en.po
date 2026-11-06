@@ -7451,3 +7451,67 @@ msgstr "An empty box shows the original words. Photos are changed under Banners,
 #: src/components/admin/HomeTextFields.tsx
 msgid "トップページの見出しと説明です。"
 msgstr "The headings and text of the home page."
+
+#: src/components/admin/BlockEditor.tsx
+msgid "小見出し"
+msgstr "Small heading"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "箇条書き"
+msgstr "Bullet list"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "線（ここから下は注意書き）"
+msgstr "Line (the closing note starts below it)"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "区切りの線"
+msgstr "Dividing line"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "追加"
+msgstr "Add"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "この行の種類"
+msgstr "Type of this line"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "太字"
+msgstr "Bold"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "リンク先のアドレス"
+msgstr "Link address"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "入れる"
+msgstr "Insert"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "リンクを外す"
+msgstr "Remove link"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "https:// で始まるアドレスを入れてください。"
+msgstr "Enter an address that starts with https://."
+
+#: src/components/admin/BlockEditor.tsx
+msgid "写真の説明（目の見えにくい方に読み上げられます）"
+msgstr "Photo description (read aloud for people who cannot see it)"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "「追加」か、空の行で「/」を押すと、入れられるものの一覧が出ます。"
+msgstr "Press Add, or type / on an empty line, to see what you can insert."
+
+#: src/components/admin/BlockEditor.tsx
+msgid "追加するもの"
+msgstr "What to add"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "見出しは、よくあるご質問では質問、遊び方では手順の名前になります。その下に、本文を書きます。"
+msgstr "On the FAQ a heading is a question, and on How to play it is the name of a step. Write the text under it."
+
+#: src/components/admin/BlockEditor.tsx
+msgid "線から下は、いちばん下の注意書きになります。"
+msgstr "Everything below the line becomes the closing note at the bottom of the page."

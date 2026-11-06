@@ -7,7 +7,7 @@ const body = "Opening one.\n\nOpening two.\n\n## Question A\nAnswer A1.\n\nAnswe
 
 describe("page text", () => {
   test("reads the opening, the sections and the closing note", () => {
-    expect(parsePageBody(body)).toEqual({
+    expect(parsePageBody(body, true)).toEqual({
       lead: ["Opening one.", "Opening two."],
       sections: [
         { heading: "Question A", paragraphs: ["Answer A1.", "Answer A2."] },
@@ -18,7 +18,7 @@ describe("page text", () => {
   });
 
   test("writing it back and reading again gives the same document", () => {
-    expect(parsePageBody(writePageBody(parsePageBody(body)))).toEqual(parsePageBody(body));
+    expect(parsePageBody(writePageBody(parsePageBody(body, true)), true)).toEqual(parsePageBody(body, true));
   });
 
   test("a body with no heading is all opening text, and CRLF line ends are fine", () => {
@@ -38,11 +38,11 @@ describe("page content (the public pages and the live preview)", () => {
   });
 
   test("typed text fills the page's own shape", () => {
-    const own = ownText(text, "ja");
+    const own = ownText(text, "ja", true);
     expect(helpWith("ja", own, null).steps).toEqual([{ title: "一", text: "答え" }]);
     expect(helpWith("ja", own, null).guideNote).toBe("注意");
     expect(helpWith("ja", null, own).faqs).toEqual([{ question: "一", answer: "答え" }]);
-    expect(termsWith(own)).toMatchObject({ lead: "はじめに", builtIn: false, updated: null });
+    expect(termsWith(own)).toMatchObject({ lead: "", intro: ["はじめに"], builtIn: false, updated: null });
     expect(policyWith("ja", own).draftNotice).toBe("");
   });
 });

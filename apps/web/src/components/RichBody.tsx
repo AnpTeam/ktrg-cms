@@ -3,8 +3,8 @@ import { parseBlocks } from "@/lib/rich-text";
 import { Inlines } from "./RichText";
 
 /**
- * A long text with its headings, bullet lists, photos, links and footnotes (see lib/rich-text.ts). Used by the blog;
- * route and place text keeps the shorter `RichText`. Everything is a React element, never HTML, so nothing an editor
+ * A long text with its headings, bullet lists, photos, links and footnotes (see lib/rich-text.ts). Used by the blog and
+ * the site's text pages; route and place text keeps the shorter `RichText`. Everything is a React element, never HTML, so nothing an editor
  * types can run as script.
  *
  * `anchor` makes the footnote ids unique on the page (the post's id), so the links work without a hook and the
@@ -23,6 +23,7 @@ export function RichBody({ text, lang, anchor }: { text: string; lang?: string; 
             </Tag>
           );
         }
+        if (block.kind === "rule") return <hr key={i} className="max-w-prose border-line" />;
         if (block.kind === "ul") {
           return (
             <ul key={i} className="max-w-prose list-disc space-y-2 pl-6 text-lg leading-8">

@@ -16,7 +16,7 @@ export type HomeData = Omit<ComponentProps<typeof Landing>, "locale" | "top" | "
 
 function FixedPage({ pageKey, text, locale, home }: { pageKey: PageKey; text: PageText; locale: string; home?: HomeData }) {
   if (pageKey === "home") return home ? <Landing {...home} locale={locale} text={homeTextIn(text, locale)} /> : null;
-  const own = ownText(text, locale);
+  const own = ownText(text, locale, pageKey === "guide");
   if (pageKey === "faq") return <FaqView help={helpWith(locale, null, own)} open />;
   if (pageKey === "guide") return <GuideView help={helpWith(locale, own, null)} />;
   if (pageKey === "terms") return <TermsView terms={termsWith(own)} locale={locale} />;

@@ -7451,3 +7451,67 @@ msgstr "空の欄には、もとの文章が表示されます。写真はバナ
 #: src/components/admin/HomeTextFields.tsx
 msgid "トップページの見出しと説明です。"
 msgstr "トップページの見出しと説明です。"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "小見出し"
+msgstr "小見出し"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "箇条書き"
+msgstr "箇条書き"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "線（ここから下は注意書き）"
+msgstr "線（ここから下は注意書き）"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "区切りの線"
+msgstr "区切りの線"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "追加"
+msgstr "追加"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "この行の種類"
+msgstr "この行の種類"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "太字"
+msgstr "太字"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "リンク先のアドレス"
+msgstr "リンク先のアドレス"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "入れる"
+msgstr "入れる"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "リンクを外す"
+msgstr "リンクを外す"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "https:// で始まるアドレスを入れてください。"
+msgstr "https:// で始まるアドレスを入れてください。"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "写真の説明（目の見えにくい方に読み上げられます）"
+msgstr "写真の説明（目の見えにくい方に読み上げられます）"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "「追加」か、空の行で「/」を押すと、入れられるものの一覧が出ます。"
+msgstr "「追加」か、空の行で「/」を押すと、入れられるものの一覧が出ます。"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "追加するもの"
+msgstr "追加するもの"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "見出しは、よくあるご質問では質問、遊び方では手順の名前になります。その下に、本文を書きます。"
+msgstr "見出しは、よくあるご質問では質問、遊び方では手順の名前になります。その下に、本文を書きます。"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "線から下は、いちばん下の注意書きになります。"
+msgstr "線から下は、いちばん下の注意書きになります。"

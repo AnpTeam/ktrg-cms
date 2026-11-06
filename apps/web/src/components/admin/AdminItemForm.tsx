@@ -173,6 +173,7 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
               onEn={set(`${f.name}En`)}
               onTranslations={setWords}
               multiline={f.kind === "bilingual-long"}
+              blocks={config.key === "site-pages" && f.kind === "bilingual-long"}
               required={f.required}
               invalid={missing.includes(f.name)}
             />
