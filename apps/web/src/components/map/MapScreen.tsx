@@ -22,6 +22,7 @@ import type { StampMock } from "@/lib/stamp-flow";
 import { MapScreenCanvasLoader } from "./MapScreenCanvasLoader";
 import { MapSheet } from "./MapSheet";
 import { Gallery, SheetHero } from "./SheetHero";
+import { RoutePill } from "@/components/RoutePill";
 import { buttonStyle } from "@/components/button";
 
 // The map tab (WBS 3.2.10): a map of the whole trail with a bottom sheet that never hides it. Nothing is
@@ -354,34 +355,19 @@ function RouteChips({ routes, onChoose, selectedId, column = false }: { routes: 
 
 /** Every course as a row, so a course can be chosen by its name without finding it on the map. */
 function CourseList({ routes, onChoose, locale }: { routes: MapScreenRoute[]; onChoose: (id: string) => void; locale: string }) {
-  const { t } = useLingui();
   const ordered = [...routes].sort((a, b) => a.order - b.order);
   return (
-    <ol className="flex flex-col">
+    <ol className="flex flex-col gap-2">
       {ordered.map((r) => (
         <li key={r.id}>
-          <button
-            type="button"
-            onClick={() => onChoose(r.id)}
-            className="tap-target flex w-full items-center gap-3 border-t border-line/30 py-3 text-left hover:bg-surface"
-          >
-            <span
-              className={`grid size-10 shrink-0 place-items-center rounded-full border-[3px] text-lg font-bold tabular-nums ${r.status === "soon" ? SOON_CIRCLE : "border-brand"}`}
-            >
-              {r.order}
-            </span>
-            <span className="min-w-0 flex-1">
-              <span lang={r.nameLang} className={`block text-xl font-bold leading-snug ${r.status === "soon" ? "text-muted" : ""}`}>
-                {r.name}
-              </span>
-              {r.prefecture || r.municipality ? (
-                <span className="block text-lg text-muted">
-                  <PlaceLine prefecture={r.prefecture} place={r.municipality} locale={locale} />
-                </span>
-              ) : null}
-              {r.status === "soon" ? <span className="block text-base font-bold text-muted">{t`準備中`}</span> : null}
-            </span>
-            <ChevronIcon />
+          <button type="button" onClick={() => onChoose(r.id)} className="tap-target block w-full rounded-3xl text-left hover:opacity-95">
+            <RoutePill
+              route={r}
+              brief
+              name={<span lang={r.nameLang}>{r.name}</span>}
+              place={r.prefecture || r.municipality ? <PlaceLine prefecture={r.prefecture} place={r.municipality} locale={locale} /> : null}
+              photo={r.photo?.src ?? null}
+            />
           </button>
         </li>
       ))}

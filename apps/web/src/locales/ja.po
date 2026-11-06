@@ -7383,3 +7383,11 @@ msgstr "メニューをたたむ"
 #: src/components/TabBar.tsx
 msgid "メニューをひらく"
 msgstr "メニューをひらく"
+
+#: src/components/RoutePill.tsx
+msgid "{spotCount}個"
+msgstr "{spotCount}個"
+
+#: src/components/RoutePill.tsx
+msgid "{order} / {total}"
+msgstr "{order} / {total}"
