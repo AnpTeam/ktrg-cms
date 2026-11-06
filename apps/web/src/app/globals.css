@@ -1068,6 +1068,19 @@ body:has([data-sample-notice]) .cover-credit > details {
   }
 }
 
+/* The sidebar's width from 1024 px, for what runs from edge to edge of the area beside it. The clip hides the scrollbar's share of 100vw. */
+:root {
+  --rail: 16rem;
+}
+:root:has([data-rail="mini"]) {
+  --rail: 5rem;
+}
+@media (min-width: 1024px) {
+  #main {
+    overflow-x: clip;
+  }
+}
+
 /* On a desktop the map takes the whole area beside the sidebar (no centred column, no padding). */
 @media (min-width: 1024px) {
   body.map-screen-active #main {
