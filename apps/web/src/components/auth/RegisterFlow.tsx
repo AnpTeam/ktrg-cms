@@ -6,9 +6,9 @@ import { useState, type FormEvent } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { KeyIcon, MailIcon } from "@/components/icons";
 import { requestEmailCode, signUpWithPasskey, verifyEmailCode, type SignupProfile } from "@/lib/auth-client";
-import { hasName, NAME_MAX, safeNextPath, type AuthFailure, type Origin } from "@/lib/auth-flow";
+import { hasName, NAME_MAX, safeNextPath, type AuthFailure } from "@/lib/auth-flow";
 import { PrivacyNote } from "@/components/PrivacyNote";
-import { AuthError, ChoiceCard, inputClass, OriginPicker, primaryButton, secondaryButton } from "./authUi";
+import { AuthError, ChoiceCard, inputClass, OriginPicker, primaryButton, secondaryButton, type OriginAnswer } from "./authUi";
 import { EmailCodeStep } from "./EmailCodeStep";
 
 type Step = "choose" | "details" | "name" | "origin" | "email" | "code";
@@ -27,12 +27,12 @@ export function RegisterFlow({ next, loginHref }: { next?: string; loginHref: st
   const locale = i18n.locale === "en" ? "en" : "ja";
   const [step, setStep] = useState<Step>("choose");
   const [name, setName] = useState("");
-  const [origin, setOrigin] = useState<Origin | null>(null);
+  const [origin, setOrigin] = useState<OriginAnswer>({ origin: null, place: null });
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<AuthFailure | null>(null);
 
-  const profile = (): SignupProfile => ({ displayName: name.trim(), origin, locale });
+  const profile = (): SignupProfile => ({ displayName: name.trim(), origin: origin.origin, originPlace: origin.place, locale });
   // A new account meets the set-up screen first (how big, how the map looks), then goes where it was going.
   const finish = () => {
     const after = safeNextPath(next, "/");

@@ -1,4 +1,4 @@
-import type { AgeRange, AuthUser, FoundVia, Gender, Locale, Origin, Role } from "../auth/user";
+import { originOfPlace, type AgeRange, type AuthUser, type FoundVia, type Gender, type Locale, type Origin, type Role } from "../auth/user";
 import { can } from "../auth/permissions";
 import { isPhotoUrl } from "../lib/https-url";
 import { buildDeletionRequestEmail } from "../emails/deletion-request";
@@ -25,6 +25,7 @@ export interface Profile {
   avatarUrl: string | null;
   /** Where they said they come from; null if they did not say. */
   origin: Origin | null;
+  originPlace: string | null;
   /** Age band and gender they chose after registering; null until answered. */
   ageRange: AgeRange | null;
   gender: Gender | null;
@@ -56,6 +57,8 @@ export interface ProfileChanges {
   bookmarks?: string[];
   /** Where they come from; null clears it. */
   origin?: Origin | null;
+  /** The answer in detail; when given, the plain answer comes from it. */
+  originPlace?: string | null;
   /** Null clears it. */
   ageRange?: AgeRange | null;
   gender?: Gender | null;
@@ -147,7 +150,14 @@ export function createMeService({
       }
       if (input.preferences !== undefined) changes.preferences = input.preferences;
       if (input.bookmarks !== undefined) changes.bookmarks = [...new Set(input.bookmarks)].slice(0, BOOKMARKS_MAX);
-      if (input.origin !== undefined) changes.origin = input.origin;
+      if (input.origin !== undefined) {
+        changes.origin = input.origin;
+        changes.originPlace = null; // a plain answer alone replaces the old detail
+      }
+      if (input.originPlace !== undefined) {
+        changes.originPlace = input.originPlace;
+        if (input.originPlace !== null) changes.origin = originOfPlace(input.originPlace);
+      }
       if (input.ageRange !== undefined) changes.ageRange = input.ageRange;
       if (input.gender !== undefined) changes.gender = input.gender;
       if (input.foundVia !== undefined) changes.foundVia = input.foundVia;

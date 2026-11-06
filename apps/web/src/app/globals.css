@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* A phone on its side is wide but very low, so it gets the desktop layout (side menu, map panel), not the stacked tablet one:
+   the bottom sheet would leave almost no map. Use `wide:`, not `lg:`, on the public screens. Keep the same query in lib/screen.ts and in the three rules further down. */
+@custom-variant wide {
+  @media (min-width: 1024px), (min-width: 768px) and (max-height: 600px) {
+    @slot;
+  }
+}
+
 /*
  * Accessibility base (WBS 1.1.10). The app is used outdoors, in sunlight, by
  * many older visitors, so these are defaults every screen inherits:
@@ -1063,7 +1071,7 @@ body:has([data-sample-notice]) .cover-credit > details {
 }
 
 /* From 1024 px the content area is wide. Text pages, settings and forms keep one readable column, centred in it. */
-@media (min-width: 1024px) {
+@media (min-width: 1024px), (min-width: 768px) and (max-height: 600px) {
   .page-narrow {
     max-width: 48rem;
     margin-inline: auto;
@@ -1081,14 +1089,14 @@ body:has([data-sample-notice]) .cover-credit > details {
 :root:has([data-rail="mini"]) {
   --rail: 5rem;
 }
-@media (min-width: 1024px) {
+@media (min-width: 1024px), (min-width: 768px) and (max-height: 600px) {
   #main {
     overflow-x: clip;
   }
 }
 
 /* On a desktop the map takes the whole area beside the sidebar (no centred column, no padding). */
-@media (min-width: 1024px) {
+@media (min-width: 1024px), (min-width: 768px) and (max-height: 600px) {
   body.map-screen-active #main {
     padding: 0;
   }

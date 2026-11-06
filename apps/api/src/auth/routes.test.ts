@@ -431,7 +431,7 @@ describe("register with a name and origin", () => {
     expect(res.status).toBe(200);
     const id = users.get("new@example.com")!.id;
     expect(users.get("new@example.com")!.locale).toBe("en");
-    expect(otpProfiles.get(id)).toEqual({ displayName: "Hana", origin: "wakayama" });
+    expect(otpProfiles.get(id)).toEqual({ displayName: "Hana", origin: "wakayama", originPlace: null });
 
     // Logging in again with different details changes nothing.
     advanceOtp(61_000); // past the resend cooldown
@@ -442,7 +442,7 @@ describe("register with a name and origin", () => {
       profile: { displayName: "Someone else", origin: "overseas" },
     });
     expect(later.status).toBe(200);
-    expect(otpProfiles.get(id)).toEqual({ displayName: "Hana", origin: "wakayama" });
+    expect(otpProfiles.get(id)).toEqual({ displayName: "Hana", origin: "wakayama", originPlace: null });
   });
 
   test("a bad name is a 400 and does not use up the code", async () => {

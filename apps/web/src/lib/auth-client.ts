@@ -16,6 +16,7 @@ export type AuthResult = { ok: true } | { ok: false; code: AuthFailure };
 export interface SignupProfile {
   displayName: string;
   origin: Origin | null;
+  originPlace: string | null;
   locale: "ja" | "en";
 }
 
@@ -77,6 +78,7 @@ const ownLabel = () => (typeof navigator === "undefined" ? undefined : passkeyLa
 const profileBody = (profile: SignupProfile) => ({
   displayName: profile.displayName,
   origin: profile.origin ?? undefined,
+  originPlace: profile.originPlace ?? undefined,
   locale: profile.locale,
 });
 

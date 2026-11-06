@@ -54,7 +54,7 @@ export function createDrizzleOtpStore(db: Db): OtpStore {
       // (an existing account keeps its own name, origin and language).
       await db
         .insert(users)
-        .values({ email, displayName: profile?.displayName, origin: profile?.origin, locale: profile?.locale })
+        .values({ email, displayName: profile?.displayName, origin: profile?.origin, originPlace: profile?.originPlace, locale: profile?.locale })
         .onConflictDoNothing();
       const [user] = await db
         .select({ id: users.id, email: users.email, role: users.role, locale: users.locale })

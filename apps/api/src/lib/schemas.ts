@@ -38,6 +38,9 @@ export const originSchema = t.Union([
 const _originCovered: Exclude<(typeof userOrigin.enumValues)[number], Static<typeof originSchema>> extends never ? true : never = true;
 void [_localeCovered, _originCovered];
 
+/** A prefecture (JP-01 to JP-47) or a country other than Japan, as ISO codes. */
+export const originPlaceSchema = t.String({ pattern: "^(JP-(0[1-9]|[1-3][0-9]|4[0-7])|(?!JP)[A-Z]{2})$" });
+
 /** Age band, asked after registering; literal unions for the same reason as originSchema. */
 export const ageRangeSchema = t.Union([
   t.Literal("under20"),
@@ -82,6 +85,7 @@ export const signupProfileSchema = t.Object(
   {
     displayName: t.String({ maxLength: 200 }),
     origin: t.Optional(originSchema),
+    originPlace: t.Optional(originPlaceSchema),
     locale: t.Optional(localeSchema),
   },
   { additionalProperties: false },

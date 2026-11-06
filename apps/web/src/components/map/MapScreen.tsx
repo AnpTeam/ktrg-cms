@@ -15,6 +15,7 @@ import { useNavigation } from "@/components/navigation/NavigationProvider";
 import { StampFace } from "@/components/StampFace";
 import { StatusWord } from "@/components/StatusWord";
 import { formatUpdated } from "@/lib/format";
+import { LOW_QUERY, WIDE_QUERY, watchQuery } from "@/lib/screen";
 import { sheetHeightPx, type MapScreenRoute, type MapScreenStop, type SheetSnap } from "@/lib/map-screen";
 import type { MapSettings } from "@/lib/map-settings";
 import type { StampMock } from "@/lib/stamp-flow";
@@ -35,17 +36,13 @@ const linkButton = buttonStyle("secondary", "md", "flex w-full");
 const TAB_ROOM_REM = 5.5;
 // From this width (a desktop) the map fills the whole area beside the sidebar, and what a phone shows in a bottom sheet
 // (the courses, the chosen course or stop) is a panel floating at the left of the map.
-const WIDE_QUERY = "(min-width: 1024px)";
 const PANEL_REM = 26; // the panel's width
+const LOW_PANEL_REM = 20; // on a phone on its side, so the map keeps most of the screen
 const RAIL_REM = 4.5; // its width when folded
 const SOON_CIRCLE = "border-transparent bg-line/25 text-muted"; // a course not ready yet: a plain grey disc
 const PANEL_MARGIN_REM = 0.75; // its gap to the map's edges
 
-function subscribeWide(onChange: () => void) {
-  const query = window.matchMedia(WIDE_QUERY);
-  query.addEventListener("change", onChange);
-  return () => query.removeEventListener("change", onChange);
-}
+const subscribeWide = (onChange: () => void) => watchQuery(WIDE_QUERY, onChange);
 
 export function MapScreen({
   routes,
@@ -181,7 +178,7 @@ export function MapScreen({
       // A navigation on a phone: the bottom strip and the top banner are drawn over the map, and the sheet fits between them
       // (its handle must stay in view, or it cannot be pulled back down).
       const navRoom = !window.matchMedia(WIDE_QUERY).matches ? navToastPx + navBannerPx : 0;
-      setPanelPx(window.matchMedia(WIDE_QUERY).matches ? ((folded ? RAIL_REM : PANEL_REM) + 2 * PANEL_MARGIN_REM) * rem : 0);
+      setPanelPx(window.matchMedia(WIDE_QUERY).matches ? ((folded ? RAIL_REM : window.matchMedia(LOW_QUERY).matches ? LOW_PANEL_REM : PANEL_REM) + 2 * PANEL_MARGIN_REM) * rem : 0);
       setAvailable(Math.max(240, el.clientHeight - tab - navRoom));
     };
     measure();
@@ -230,8 +227,8 @@ export function MapScreen({
 
   const homeHeader = (
     <div>
-      <h1 className="sr-only font-serif text-2xl font-bold leading-snug text-accent lg:not-sr-only">{t`区間の一覧`}</h1>
-      <div className="lg:hidden">
+      <h1 className="sr-only font-serif text-2xl font-bold leading-snug text-accent wide:not-sr-only">{t`区間の一覧`}</h1>
+      <div className="wide:hidden">
         <RouteChips routes={routes} onChoose={chooseRoute} selectedId={routeId} />
       </div>
     </div>
@@ -279,7 +276,7 @@ export function MapScreen({
   const showDetailInSheet = hasDetail;
 
   return (
-    <div className="relative md:-mt-6 lg:mt-0">
+    <div className="relative md:-mt-6 wide:mt-0">
     <div
       ref={wrap}
       className={`trail-map map-screen relative h-dvh w-full overflow-hidden md:[--tab-room:0rem] ${chosen ? "[--tab-room:0rem]" : "[--tab-room:calc(5.5rem+env(safe-area-inset-bottom))]"}`}
@@ -309,7 +306,7 @@ export function MapScreen({
           type="button"
           onClick={() => openSheet(route ? "half" : "peek")}
           // Measured from the screen, as the tab bar is, so it stays put when the tab bar steps aside for a chosen course.
-          className="tap-target fixed bottom-[calc(5rem+var(--nav-toast,0px)+env(safe-area-inset-bottom))] left-3 z-[6] flex items-center gap-2 rounded-full bg-paper px-4 text-lg font-bold text-ink shadow-[0_4px_16px_rgb(0_0_0/0.28)]"
+          className="tap-target fixed bottom-[calc(5rem+var(--nav-toast,0px)+env(safe-area-inset-bottom))] left-3 z-[6] md:absolute md:bottom-[calc(1rem+var(--nav-toast,0px))] flex items-center gap-2 rounded-full bg-paper px-4 text-lg font-bold text-ink shadow-[0_4px_16px_rgb(0_0_0/0.28)]"
         >
           <ChevronUpIcon size={22} />
           {route ? t`区間の情報を見る` : t`区間の一覧を見る`}

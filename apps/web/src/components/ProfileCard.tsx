@@ -3,6 +3,7 @@
 import { useLingui } from "@lingui/react/macro";
 import { useAgeRangeNames, useFoundViaNames, useGenderNames } from "@/components/auth/AboutYou";
 import { useOriginNames } from "@/components/auth/authUi";
+import { placeName } from "@/lib/origin-places";
 import { UserIcon } from "@/components/icons";
 import { formatPublicId, type AgeRange, type FoundVia, type Gender, type Origin } from "@/lib/auth-flow";
 
@@ -13,6 +14,7 @@ export interface ProfileCardProps {
   locale: string;
   name: string | null;
   origin: Origin | null;
+  originPlace?: string | null;
   ageRange: AgeRange | null;
   gender: Gender | null;
   foundVia: FoundVia | null;
@@ -26,8 +28,8 @@ export interface ProfileCardProps {
  * Who is signed in, as a card: the name, what they said about themselves, and their ID. Only shows; changing anything and
  * deleting the account happen on the profile page (ProfileSettings). `readOnly` is the small version for the menu.
  */
-export function ProfileCard({ publicId, name, origin, ageRange, gender, foundVia, email, readOnly = false }: ProfileCardProps) {
-  const { t } = useLingui();
+export function ProfileCard({ publicId, name, origin, originPlace = null, ageRange, gender, foundVia, email, readOnly = false }: ProfileCardProps) {
+  const { t, i18n } = useLingui();
   const originNames = useOriginNames();
   const ageNames = useAgeRangeNames();
   const genderNames = useGenderNames();
@@ -41,7 +43,7 @@ export function ProfileCard({ publicId, name, origin, ageRange, gender, foundVia
       </span>
       <div className="min-w-0 flex-1">
         <p className={`break-words font-bold leading-snug ${readOnly ? "text-lg" : "text-xl"}`}>{name ?? t`お名前は未設定です`}</p>
-        <p className={`text-muted ${text}`}>{origin ? originNames[origin] : t`どちらからかは未設定です`}</p>
+        <p className={`text-muted ${text}`}>{(originPlace && placeName(originPlace, i18n.locale)) || (origin ? originNames[origin] : t`どちらからかは未設定です`)}</p>
         {ageRange || gender ? (
           <p className={`text-muted ${text}`}>
             {ageRange ? ageNames[ageRange] : null}

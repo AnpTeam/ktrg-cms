@@ -32,7 +32,7 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
 
   return (
     <div className="flex flex-col gap-8 pt-2">
-      <div className="flex flex-col gap-4 px-4 lg:px-0">
+      <div className="flex flex-col gap-4 px-4 wide:px-0">
         <BackLink href="/">
           <Trans>ホーム</Trans>
         </BackLink>
@@ -53,17 +53,17 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
       ) : (
         <>
           {page === 1 && feature ? (
-            <div className="px-4 lg:px-0">
+            <div className="px-4 wide:px-0">
               <PostCard post={feature} locale={i18n.locale} size="feature" />
             </div>
           ) : null}
 
           {shown.length > 0 ? (
-            <section className="flex flex-col gap-4 px-4 lg:px-0">
+            <section className="flex flex-col gap-4 px-4 wide:px-0">
               <h2 className="text-2xl font-bold">
                 <Trans>新しい記事</Trans>
               </h2>
-              <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              <ul className="grid gap-5 sm:grid-cols-2 wide:grid-cols-3">
                 {shown.map((post) => (
                   <li key={post.id}>
                     <PostCard post={post} locale={i18n.locale} />
@@ -74,7 +74,7 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
           ) : null}
 
           {pages > 1 ? (
-            <nav aria-label={i18n._(msg`ページ`)} className="flex items-center justify-between gap-3 px-4 lg:px-0">
+            <nav aria-label={i18n._(msg`ページ`)} className="flex items-center justify-between gap-3 px-4 wide:px-0">
               {page > 1 ? (
                 <Link href={href(page - 1)} className={pager}>
                   <ChevronLeftIcon size={22} />

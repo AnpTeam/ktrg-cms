@@ -7595,3 +7595,31 @@ msgstr "時間は、前の場所から休まず歩いたときの目安です。
 #: src/components/navigation/NavigationHud.tsx
 msgid "{arrival}ごろ着"
 msgstr "{arrival}ごろ着"
+
+#: src/components/auth/authUi.tsx
+msgid "日本から来ました"
+msgstr "日本から来ました"
+
+#: src/components/auth/authUi.tsx
+msgid "海外から来ました"
+msgstr "海外から来ました"
+
+#: src/components/auth/authUi.tsx
+msgid "都道府県を選択してください"
+msgstr "都道府県を選択してください"
+
+#: src/components/auth/authUi.tsx
+msgid "国を選択してください"
+msgstr "国を選択してください"
+
+#: src/components/auth/authUi.tsx
+msgid "選んでください"
+msgstr "選んでください"
+
+#: src/components/auth/authUi.tsx
+msgid "選びなおす"
+msgstr "選びなおす"
+
+#: src/components/auth/authUi.tsx
+msgid "日本"
+msgstr "日本"

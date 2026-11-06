@@ -6,8 +6,11 @@ import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { HomeIcon, MapIcon, MenuIcon, PanelIcon, RouteIcon, StampIcon } from "./icons";
 import { KatsuragiLogo } from "./KatsuragiLogo";
+import { LOW_QUERY, watchQuery } from "@/lib/screen";
 import { useMenu } from "./MenuProvider";
 import { initialBars, nextBars } from "@/lib/scroll-bars";
+
+const subscribeLow = (onChange: () => void) => watchQuery(LOW_QUERY, onChange);
 
 // The sidebar folded to a narrow rail: remembered on this device, and still works where the browser keeps nothing.
 const FOLD_KEY = "sidebar-folded";
@@ -46,7 +49,10 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
   const { t } = useLingui();
   const pathname = usePathname() ?? "";
   const { open, setOpen, railButton } = useMenu();
-  const mini = useSyncExternalStore(subscribeFold, isFolded, () => false);
+  const foldedByHand = useSyncExternalStore(subscribeFold, isFolded, () => false);
+  // A phone on its side has no width to spare: the menu stays folded, and there is no button to open it.
+  const low = useSyncExternalStore(subscribeLow, () => window.matchMedia(LOW_QUERY).matches, () => false);
+  const mini = foldedByHand || low;
 
   // While reading on a phone, scrolling down tucks the tab bar away and scrolling up brings it
   // back (lib/scroll-bars.ts). It only sets <html data-bars="hidden">; the CSS decides who moves (phones only). A new page
@@ -87,30 +93,32 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
   const item =
     "flex min-h-[3.25rem] min-w-0 flex-col items-center justify-center gap-0.5 rounded-[1.125rem] text-[min(0.875rem,4.25vw)] font-bold leading-tight [&_svg]:size-6 md:min-h-14 md:flex-row md:justify-start md:gap-4 md:rounded-full md:px-5 md:text-xl";
   // Folded, a tab is its icon over its word again, as on a phone.
-  const miniItem = mini ? " lg:flex-col lg:justify-center lg:gap-0.5 lg:rounded-[1.125rem] lg:px-0 lg:text-sm" : "";
+  const miniItem = mini ? ` wide:flex-col wide:justify-center wide:gap-0.5 wide:rounded-[1.125rem] wide:px-0 wide:text-sm ${low ? "wide:min-h-12" : ""}` : "";
 
   return (
     // Below 1024 px this wrapper adds nothing (the nav is placed by its own classes); from 1024 px it is the sidebar.
-    <div data-rail={mini ? "mini" : "full"} className={`print:hidden md:contents lg:sticky lg:top-0 lg:flex lg:h-dvh lg:shrink-0 lg:flex-col lg:self-start lg:overflow-y-auto lg:border-r lg:border-surface ${mini ? "lg:w-20" : "lg:w-64"}`}>
-    <Link href="/" aria-label={t`ホーム`} className={`hidden lg:block ${mini ? "px-2 pt-4" : "px-6 pb-2 pt-8"}`}>
+    <div data-rail={mini ? "mini" : "full"} className={`print:hidden md:contents wide:sticky wide:top-0 wide:flex wide:h-dvh wide:shrink-0 wide:flex-col wide:self-start wide:overflow-y-auto wide:border-r wide:border-surface ${mini ? "wide:w-20" : "wide:w-64"}`}>
+    <Link href="/" aria-label={t`ホーム`} className={`hidden wide:block ${low ? "px-2 pt-2" : mini ? "px-2 pt-4" : "px-6 pb-2 pt-8"}`}>
       <KatsuragiLogo compact className={mini ? "mx-auto h-8 w-auto" : "h-16 w-auto"} />
     </Link>
+    {low ? null : (
     <button
       type="button"
       onClick={() => setFolded(!mini)}
       aria-expanded={!mini}
       aria-label={mini ? t`メニューをひらく` : t`メニューをたたむ`}
       title={mini ? t`メニューをひらく` : t`メニューをたたむ`}
-      className={`tap-target hidden items-center justify-center rounded-full text-ink hover:bg-surface lg:inline-flex ${mini ? "mx-auto mt-2 shrink-0" : "absolute right-2 top-2"}`}
+      className={`tap-target hidden items-center justify-center rounded-full text-ink hover:bg-surface wide:inline-flex ${mini ? "mx-auto mt-2 shrink-0" : "absolute right-2 top-2"}`}
     >
       <PanelIcon />
     </button>
+    )}
     <nav
       aria-label={t`メインメニュー`}
       data-tabbar
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-line/30 bg-paper px-1 pb-[calc(0.375rem+env(safe-area-inset-bottom))] min-[400px]:px-3 pt-1.5 md:sticky md:inset-x-auto md:bottom-auto md:top-0 md:h-dvh md:w-44 md:shrink-0 md:self-start md:border-t-0 md:bg-transparent md:p-0 md:px-2 md:pt-6 lg:static lg:h-auto lg:w-full lg:flex-1 lg:self-auto lg:pt-4 ${mini ? "lg:px-2" : "lg:px-4"}`}
+      className={`fixed inset-x-0 bottom-0 z-40 border-t border-line/30 bg-paper px-1 pb-[calc(0.375rem+env(safe-area-inset-bottom))] min-[400px]:px-3 pt-1.5 md:sticky md:inset-x-auto md:bottom-auto md:top-0 md:h-dvh md:w-44 md:shrink-0 md:self-start md:border-t-0 md:bg-transparent md:p-0 md:px-2 md:pt-6 wide:static wide:h-auto wide:w-full wide:flex-1 wide:self-auto ${low ? "wide:pt-1" : "wide:pt-4"} ${mini ? "wide:px-2" : "wide:px-4"}`}
     >
-      <ul className="mx-auto grid max-w-xl grid-cols-5 gap-0.5 min-[400px]:gap-1 md:flex md:max-w-none md:flex-col md:gap-2">
+      <ul className={`mx-auto grid max-w-xl grid-cols-5 gap-0.5 min-[400px]:gap-1 md:flex md:max-w-none md:flex-col ${low ? "md:gap-0.5" : "md:gap-2"}`}>
         {tabs.map(({ path, label, icon }) => {
           const active = path === "/" ? pathname === "/" : pathname.startsWith(path);
           return (
@@ -146,7 +154,7 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
         </li>
       </ul>
     </nav>
-    {footer && !mini ? <div className="hidden px-4 pb-4 lg:block">{footer}</div> : null}
+    {footer && !mini ? <div className="hidden px-4 pb-4 wide:block">{footer}</div> : null}
     </div>
   );
 }

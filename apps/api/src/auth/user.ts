@@ -23,8 +23,21 @@ export interface NewAccountProfile {
   /** Already cleaned by normalizeDisplayName. */
   displayName: string | null;
   origin: Origin | null;
+  originPlace?: string | null;
   locale: Locale;
 }
+
+/** The plain answer a detailed place belongs to: the three prefectures of the trails, the rest of Japan, or abroad. */
+export function originOfPlace(place: string): Origin {
+  if (!place.startsWith("JP-")) return "overseas";
+  return place === "JP-27" ? "osaka" : place === "JP-30" ? "wakayama" : place === "JP-29" ? "nara" : "other_japan";
+}
+
+/** What sign-up saves: with a place the plain answer comes from it, so the two always agree. */
+export const signupOrigin = (profile: { origin?: Origin; originPlace?: string }) => ({
+  origin: profile.originPlace ? originOfPlace(profile.originPlace) : (profile.origin ?? null),
+  originPlace: profile.originPlace ?? null,
+});
 
 /** A logged-in account, as the auth code passes it around. */
 export interface AuthUser {

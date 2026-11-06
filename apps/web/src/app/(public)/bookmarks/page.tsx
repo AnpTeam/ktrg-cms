@@ -14,8 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function BookmarksPage() {
   const i18n = await initLingui();
   return (
-    <div className="flex flex-col gap-6 pt-2 lg:pt-0">
-      <h1 className="px-4 text-3xl font-bold lg:text-4xl">
+    <div className="flex flex-col gap-6 pt-2 wide:pt-0">
+      <h1 className="px-4 text-3xl font-bold wide:text-4xl">
         <Trans>ブックマーク</Trans>
       </h1>
       <BookmarkList locale={i18n.locale} routes={await listRoutes()} rallies={await listRallies()} />

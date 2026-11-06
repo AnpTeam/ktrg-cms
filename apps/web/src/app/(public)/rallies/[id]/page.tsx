@@ -56,7 +56,7 @@ export default async function RallyPage({ params, searchParams }: Props) {
   // One main button at a time: the way to the first place until something is stamped, then the stamp button for the place you are at.
 
   return (
-    <div className="flex flex-col gap-6 pt-2 lg:pt-0">
+    <div className="flex flex-col gap-6 pt-2 wide:pt-0">
       <div className="px-4">
         <BackLink href="/rallies">
           <Trans>ラリー</Trans>
@@ -64,7 +64,7 @@ export default async function RallyPage({ params, searchParams }: Props) {
       </div>
 
       <div className="flex flex-col gap-4 px-4">
-        <h1 className="text-3xl font-bold leading-snug lg:text-4xl">{name}</h1>
+        <h1 className="text-3xl font-bold leading-snug wide:text-4xl">{name}</h1>
         {isSoon(rally) ? (
           <p className="inline-block w-fit rounded-lg border-2 border-dashed border-line px-3 text-xl font-bold text-muted">
             <Trans>準備中</Trans>

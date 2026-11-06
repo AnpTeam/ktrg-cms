@@ -112,7 +112,7 @@ export function createDrizzlePasskeyStore(db: Db): PasskeyStore {
       try {
         await db.transaction(async (tx) => {
           // No email: the column is null, the role takes its default (participant).
-          await tx.insert(users).values({ id: userId, displayName: profile.displayName, origin: profile.origin, locale: profile.locale });
+          await tx.insert(users).values({ id: userId, displayName: profile.displayName, origin: profile.origin, originPlace: profile.originPlace, locale: profile.locale });
           const rows = await tx
             .insert(passkeys)
             .values({ userId, credentialId, publicKey: Buffer.from(publicKey), counter, label })

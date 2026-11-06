@@ -4,7 +4,7 @@ import type { Preferences } from "./preferences";
 import { publicIdFor } from "../lib/public-id";
 import type { MeStore, StoredProfile } from "./me-service";
 
-type Extra = { publicId: string; displayName: string | null; avatarUrl: string | null; origin: Origin | null; ageRange: AgeRange | null; gender: Gender | null; foundVia: FoundVia | null; preferences: Preferences | null; bookmarks: string[]; deletionRequestedAt: Date | null; createdAt: Date };
+type Extra = { publicId: string; displayName: string | null; avatarUrl: string | null; origin: Origin | null; originPlace: string | null; ageRange: AgeRange | null; gender: Gender | null; foundVia: FoundVia | null; preferences: Preferences | null; bookmarks: string[]; deletionRequestedAt: Date | null; createdAt: Date };
 
 /**
  * In-memory store for tests and the dev test page. `users` is the same map the OTP and
@@ -13,7 +13,7 @@ type Extra = { publicId: string; displayName: string | null; avatarUrl: string |
 export function createMemoryMeStore(
   users: Map<string, AuthUser>,
   /** Name and origin given at sign-up (shared with the OTP and passkey memory stores). */
-  profiles: Map<string, { displayName: string | null; origin: string | null }> = new Map(),
+  profiles: Map<string, { displayName: string | null; origin: string | null; originPlace?: string | null }> = new Map(),
 ) {
   const extras = new Map<string, Extra>();
   let sequence = 0;
@@ -25,7 +25,7 @@ export function createMemoryMeStore(
     let e = extras.get(userId);
     if (!e) {
       const given = profiles.get(userId);
-      e = { publicId: publicIdFor(++sequence), displayName: given?.displayName ?? null, avatarUrl: null, origin: (given?.origin as Origin | null | undefined) ?? null,
+      e = { publicId: publicIdFor(++sequence), displayName: given?.displayName ?? null, avatarUrl: null, origin: (given?.origin as Origin | null | undefined) ?? null, originPlace: given?.originPlace ?? null,
         ageRange: null, gender: null, foundVia: null, preferences: null, bookmarks: [], deletionRequestedAt: null, createdAt: new Date() };
       extras.set(userId, e);
     }
@@ -53,6 +53,7 @@ export function createMemoryMeStore(
       if (changes.preferences !== undefined) extraOf(userId).preferences = changes.preferences;
       if (changes.bookmarks !== undefined) extraOf(userId).bookmarks = changes.bookmarks;
       if (changes.origin !== undefined) extraOf(userId).origin = changes.origin;
+      if (changes.originPlace !== undefined) extraOf(userId).originPlace = changes.originPlace;
       if (changes.ageRange !== undefined) extraOf(userId).ageRange = changes.ageRange;
       if (changes.gender !== undefined) extraOf(userId).gender = changes.gender;
       if (changes.foundVia !== undefined) extraOf(userId).foundVia = changes.foundVia;
