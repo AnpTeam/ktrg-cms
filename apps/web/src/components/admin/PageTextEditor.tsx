@@ -73,7 +73,7 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale }: { pageKey: P
         <a href={`/${pageKey}`} target="_blank" rel="noreferrer" className="text-base font-bold text-accent underline underline-offset-4">
           {t`公開サイトで見る`}
         </a>
-        <button type="button" onClick={save} disabled={!dirty || busy} className="tap-target rounded-xl bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
+        <button type="button" onClick={save} disabled={!dirty || busy} className="tap-target rounded-full bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
           {busy ? t`保存中…` : t`保存`}
         </button>
         {notice ? (
@@ -84,7 +84,7 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale }: { pageKey: P
             <p role={notice.kind === "error" ? "alert" : "status"} className="min-w-0 flex-1 pt-0.5 text-lg font-bold">
               {notice.text}
             </p>
-            <button type="button" onClick={() => setNotice(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-lg px-3 hover:bg-white/20">
+            <button type="button" onClick={() => setNotice(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-full px-3 hover:bg-white/20">
               <XIcon size={22} />
             </button>
           </div>
@@ -115,7 +115,7 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale }: { pageKey: P
             <RichTextToolbar targetId={`${pageKey}-${lang}-body`} value={text[lang].body} onChange={(v) => edit(lang, { body: v })} />
             <TextArea id={`${pageKey}-${lang}-body`} lang={lang} rows={22} maxLength={30000} value={text[lang].body} onChange={(v) => edit(lang, { body: v })} />
           </Field>
-          <button type="button" onClick={() => edit(lang, { title: "", body: "" })} className="tap-target w-fit rounded-xl border-2 border-line px-5 text-base font-bold">
+          <button type="button" onClick={() => edit(lang, { title: "", body: "" })} className="tap-target w-fit rounded-full border-2 border-line px-5 text-base font-bold">
             {t`${name}を空にして、もとの文章に戻す`}
           </button>
         </Section>

@@ -10,7 +10,7 @@ import type { AdminSharedSpot } from "@/lib/admin/types";
 import { listRequest, type ListAnswer, type ListPage } from "@/lib/admin/lists/list-client";
 import type { ErrorKey } from "@/lib/api-error";
 
-const chip = "tap-target inline-flex items-center justify-center rounded-lg border-2 border-line bg-paper px-4 text-base font-bold hover:bg-surface disabled:opacity-40";
+const chip = "tap-target inline-flex items-center justify-center rounded-full border-2 border-line bg-paper px-4 text-base font-bold hover:bg-surface disabled:opacity-40";
 
 type Found = { id: string; name: string; routeId: string };
 

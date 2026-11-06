@@ -55,7 +55,7 @@ export function AdminNav({ lists, isAdmin }: { lists: { key: string; title: stri
         aria-expanded={open}
         aria-controls="admin-menu"
         onClick={() => setOpen((v) => !v)}
-        className="tap-target flex items-center justify-between rounded-xl border-2 border-line px-4 text-lg font-bold lg:hidden"
+        className="tap-target flex items-center justify-between rounded-full border-2 border-line px-4 text-lg font-bold lg:hidden"
       >
         {t`メニュー`}
         {open ? <ChevronUpIcon size={22} /> : <ChevronDownIcon size={22} />}
@@ -70,10 +70,11 @@ export function AdminNav({ lists, isAdmin }: { lists: { key: string; title: stri
                   key={item.href}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`tap-target flex items-center gap-3 rounded-xl px-4 text-lg font-bold ${active ? "bg-brand text-on-brand" : "text-ink hover:bg-surface"}`}
+                  title={item.label}
+                  className={`tap-target flex items-center gap-3 rounded-full px-4 text-lg font-bold lg:group-data-[folded=true]:justify-center lg:group-data-[folded=true]:rounded-[1.125rem] lg:group-data-[folded=true]:px-0 ${active ? "bg-brand text-on-brand" : "text-ink hover:bg-surface"}`}
                 >
                   <span className="shrink-0">{item.icon}</span>
-                  {item.label}
+                  <span className="lg:group-data-[folded=true]:sr-only">{item.label}</span>
                 </Link>
               );
             })}

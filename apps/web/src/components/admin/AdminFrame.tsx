@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useSyncExternalStore, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
-import { SidebarIcon } from "@/components/icons";
+import { PanelIcon } from "@/components/icons";
 
 const KEY = "admin-sidebar-hidden";
 const CHANGED = "admin-sidebar-changed";
@@ -30,8 +30,8 @@ function readHidden(): boolean {
 const Sidebar = createContext<{ hidden: boolean; toggle: () => void }>({ hidden: false, toggle: () => {} });
 
 /**
- * The grid of every admin page: the menu on the left and the page. The menu can be hidden (on a wide screen) to give
- * the page the whole width; the choice is remembered in this browser (a convenience, so a blocked store just means "shown").
+ * The grid of every admin page: the menu on the left and the page. The menu can fold to its icons (on a wide screen) to
+ * give the page more width; the choice is remembered in this browser (a convenience, so a blocked store just means "shown").
  */
 export function AdminFrame({ aside, children }: { aside: ReactNode; children: ReactNode }) {
   // Read from the browser's storage as an external value: shown on the server and while hydrating, then what was chosen.
@@ -48,8 +48,8 @@ export function AdminFrame({ aside, children }: { aside: ReactNode; children: Re
 
   return (
     <Sidebar.Provider value={{ hidden, toggle }}>
-      <div className={`min-h-screen bg-paper text-ink lg:grid ${hidden ? "lg:grid-cols-1" : "lg:grid-cols-[16rem_1fr]"}`}>
-        <aside id="admin-sidebar" className={`border-b border-line p-4 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-b-0 lg:border-r ${hidden ? "lg:hidden" : ""}`}>
+      <div className={`min-h-screen bg-paper text-ink lg:grid ${hidden ? "lg:grid-cols-[5rem_1fr]" : "lg:grid-cols-[16rem_1fr]"}`}>
+        <aside id="admin-sidebar" data-folded={hidden} className={`group border-b border-line p-4 lg:sticky lg:top-0 lg:h-screen lg:overflow-y-auto lg:border-b-0 lg:border-r ${hidden ? "lg:p-2" : ""}`}>
           {aside}
         </aside>
         <div className="min-w-0">{children}</div>
@@ -58,28 +58,22 @@ export function AdminFrame({ aside, children }: { aside: ReactNode; children: Re
   );
 }
 
-/** The button at the top of the menu that hides it (wide screens only: a narrow screen has its own menu button). */
+/** The button at the top of the menu that folds it to its icons, or opens it again (wide screens only: a narrow screen has its own menu button). */
 export function SidebarToggle() {
   const { t } = useLingui();
   const { hidden, toggle } = useContext(Sidebar);
-  if (hidden) return null;
+  const label = hidden ? t`メニューを出す` : t`メニューを隠す`;
   return (
-    <button type="button" onClick={toggle} aria-expanded aria-controls="admin-sidebar" className="tap-target mb-3 hidden items-center gap-2 rounded-xl border-2 border-line px-3 text-base font-bold lg:inline-flex">
-      <SidebarIcon />
-      {t`メニューを隠す`}
-    </button>
-  );
-}
-
-/** The button in the top bar that brings the hidden menu back; there while the menu is hidden. */
-export function SidebarShow() {
-  const { t } = useLingui();
-  const { hidden, toggle } = useContext(Sidebar);
-  if (!hidden) return null;
-  return (
-    <button type="button" onClick={toggle} aria-expanded={false} aria-controls="admin-sidebar" className="tap-target hidden items-center gap-2 rounded-xl border-2 border-line px-3 text-base font-bold lg:inline-flex">
-      <SidebarIcon />
-      {t`メニューを出す`}
+    <button
+      type="button"
+      onClick={toggle}
+      aria-expanded={!hidden}
+      aria-controls="admin-sidebar"
+      aria-label={label}
+      title={label}
+      className={`tap-target mb-3 hidden items-center justify-center rounded-full border-2 border-line text-ink hover:bg-surface lg:flex ${hidden ? "mx-auto" : ""}`}
+    >
+      <PanelIcon />
     </button>
   );
 }

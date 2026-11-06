@@ -124,7 +124,7 @@ export function RallyEditor({
           type="button"
           onClick={() => setPublished(!saved.published)}
           disabled={busy || namesChanged || membersChanged || (!saved.published && saved.memberCount === 0)}
-          className={`tap-target rounded-xl px-8 text-xl font-bold disabled:opacity-40 ${saved.published ? "border-2 border-ink bg-paper text-ink" : "bg-ink text-paper"}`}
+          className={`tap-target rounded-full px-8 text-xl font-bold disabled:opacity-40 ${saved.published ? "border-2 border-ink bg-paper text-ink" : "bg-ink text-paper"}`}
         >
           {saved.published ? t`公開をやめる` : t`公開する`}
         </button>
@@ -157,7 +157,7 @@ export function RallyEditor({
           invalid={names.nameJa.trim() === ""}
         />
         <div className="flex flex-wrap gap-3">
-          <button type="button" onClick={saveNames} disabled={busy || !namesChanged || names.nameJa.trim() === ""} className="tap-target rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50">
+          <button type="button" onClick={saveNames} disabled={busy || !namesChanged || names.nameJa.trim() === ""} className="tap-target rounded-full bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50">
             {t`名前を保存`}
           </button>
         </div>
@@ -165,7 +165,7 @@ export function RallyEditor({
 
       <Section title={saved.kind === "places" ? t`ラリーに入る経由地` : t`ラリーに入るコース`}>
         <RallyMemberPicker candidates={cands.mine} selected={ids} onChange={setIds} routeNames={routeNames} locale={locale} disabled={busy} />
-        <button type="button" onClick={saveMembers} disabled={busy || !membersChanged} className="tap-target w-fit rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50">
+        <button type="button" onClick={saveMembers} disabled={busy || !membersChanged} className="tap-target w-fit rounded-full bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50">
           {t`ラリーの中身を保存`}
         </button>
         <p className="text-base text-muted">{t`下書きの経由地は、公開されるまで数に入りません。スタンプの記録は変わりません。`}</p>
@@ -186,11 +186,11 @@ export function RallyEditor({
                 type="button"
                 onClick={changeKind}
                 disabled={busy || namesChanged || membersChanged || (saved.published && newIds.length === 0)}
-                className="tap-target rounded-xl bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50"
+                className="tap-target rounded-full bg-ink px-6 text-lg font-bold text-paper disabled:opacity-50"
               >
                 {t`つくり方を変える`}
               </button>
-              <button type="button" onClick={() => { setSwitching(false); setNewIds([]); }} disabled={busy} className="tap-target rounded-xl border-2 border-line px-6 text-lg font-bold disabled:opacity-50">
+              <button type="button" onClick={() => { setSwitching(false); setNewIds([]); }} disabled={busy} className="tap-target rounded-full border-2 border-line px-6 text-lg font-bold disabled:opacity-50">
                 {t`やめる`}
               </button>
             </div>
@@ -198,7 +198,7 @@ export function RallyEditor({
             {saved.published && newIds.length === 0 ? <p className="text-base text-muted">{t`公開中のラリーは、からにできません。1つ以上えらんでください。`}</p> : null}
           </div>
         ) : (
-          <button type="button" onClick={() => setSwitching(true)} disabled={busy} className="tap-target w-fit rounded-xl border-2 border-line px-6 text-lg font-bold disabled:opacity-50">
+          <button type="button" onClick={() => setSwitching(true)} disabled={busy} className="tap-target w-fit rounded-full border-2 border-line px-6 text-lg font-bold disabled:opacity-50">
             {t`つくり方を変える…`}
           </button>
         )}
@@ -207,7 +207,7 @@ export function RallyEditor({
 
       <Section title={t`削除`}>
         <p className="text-base">{t`ラリーを削除しても、スタンプやコースの達成は消えません。このラリーの達成記録だけが消えます。`}</p>
-        <button type="button" onClick={remove} disabled={busy} className="tap-target w-fit rounded-xl border-2 border-danger px-6 text-lg font-bold text-danger disabled:opacity-50">
+        <button type="button" onClick={remove} disabled={busy} className="tap-target w-fit rounded-full border-2 border-danger px-6 text-lg font-bold text-danger disabled:opacity-50">
           {t`このラリーを削除`}
         </button>
       </Section>

@@ -22,7 +22,7 @@ export function RichTextToolbar({ targetId, value, onChange }: { targetId: strin
     });
   }
 
-  const button = "tap-target rounded-xl border-2 border-line px-4 text-base font-bold";
+  const button = "tap-target rounded-full border-2 border-line px-4 text-base font-bold";
   return (
     <div role="toolbar" aria-label={t`文章の書式`} aria-controls={targetId} className="mb-1 flex flex-wrap gap-2">
       <button type="button" className={button} onClick={() => apply((b) => withLink(value, b.selectionStart, b.selectionEnd))}>

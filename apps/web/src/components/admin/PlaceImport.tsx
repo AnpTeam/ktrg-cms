@@ -76,7 +76,7 @@ export function PlaceImport({ onDone }: { onDone: () => void }) {
           <div className="flex flex-col gap-2">
             <p className="text-lg font-bold">{t`${preview.read}件を読みました。新しい場所：${preview.added}件、すでにある場所：${preview.skipped}件`}</p>
             {preview.failed.length > 0 ? <Failed items={preview.failed} /> : null}
-            <button type="button" disabled={busy || preview.added === 0} onClick={() => void run(csv, true)} className="tap-target w-fit rounded-xl bg-ink px-5 text-lg font-bold text-paper disabled:opacity-50">
+            <button type="button" disabled={busy || preview.added === 0} onClick={() => void run(csv, true)} className="tap-target w-fit rounded-full bg-ink px-5 text-lg font-bold text-paper disabled:opacity-50">
               {t`${preview.added}件を取り込む`}
             </button>
           </div>

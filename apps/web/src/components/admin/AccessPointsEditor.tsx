@@ -43,13 +43,13 @@ export function AccessPointsEditor({ value, onChange }: { value: AccessPoint[]; 
               ))}
             </select>
             <span className="ml-auto flex gap-2">
-              <button type="button" disabled={i === 0} onClick={() => move(i, -1)} aria-label={t`上へ`} className="tap-target rounded-xl border-2 border-line px-4 text-lg font-bold disabled:opacity-40">
+              <button type="button" disabled={i === 0} onClick={() => move(i, -1)} aria-label={t`上へ`} className="tap-target rounded-full border-2 border-line px-4 text-lg font-bold disabled:opacity-40">
                 <ArrowUpIcon size={22} />
               </button>
-              <button type="button" disabled={i === value.length - 1} onClick={() => move(i, 1)} aria-label={t`下へ`} className="tap-target rounded-xl border-2 border-line px-4 text-lg font-bold disabled:opacity-40">
+              <button type="button" disabled={i === value.length - 1} onClick={() => move(i, 1)} aria-label={t`下へ`} className="tap-target rounded-full border-2 border-line px-4 text-lg font-bold disabled:opacity-40">
                 <ArrowDownIcon size={22} />
               </button>
-              <button type="button" onClick={() => onChange(value.filter((_, k) => k !== i))} className="tap-target rounded-xl border-2 border-line px-4 text-lg font-bold">
+              <button type="button" onClick={() => onChange(value.filter((_, k) => k !== i))} className="tap-target rounded-full border-2 border-line px-4 text-lg font-bold">
                 {t`削除`}
               </button>
             </span>
@@ -108,7 +108,7 @@ export function AccessPointsEditor({ value, onChange }: { value: AccessPoint[]; 
         type="button"
         disabled={value.length >= MAX_ACCESS_POINTS}
         onClick={() => onChange([...value, newAccessPoint(value.length === 0 ? "train" : "bus")])}
-        className="tap-target w-fit rounded-xl border-2 border-line px-5 text-lg font-bold disabled:opacity-40"
+        className="tap-target w-fit rounded-full border-2 border-line px-5 text-lg font-bold disabled:opacity-40"
       >
         <span className="inline-flex items-center gap-1">
               <PlusIcon size={20} />

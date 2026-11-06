@@ -42,7 +42,7 @@ export default async function PageTextList() {
           const own = !!mine && (mine.ja.body.trim() !== "" || mine.en.body.trim() !== "");
           return (
             <li key={key}>
-              <Link href={`/admin/pages/${key}`} className="tap-target flex items-center justify-between gap-3 rounded-2xl bg-surface p-5 hover:bg-paper">
+              <Link href={`/admin/pages/${key}`} className="tap-target flex items-center justify-between gap-3 rounded-full bg-surface p-5 hover:bg-paper">
                 <span>
                   <span className="block text-xl font-bold">{names[key].name}</span>
                   <span className="block text-base text-muted">{names[key].hint}</span>
@@ -61,7 +61,7 @@ export default async function PageTextList() {
         <h2 className="text-2xl font-bold">
           <Trans>つくったページ</Trans>
         </h2>
-        <Link href="/admin/site-pages/new" className="tap-target inline-flex items-center rounded-xl bg-ink px-5 text-lg font-bold text-paper">
+        <Link href="/admin/site-pages/new" className="tap-target inline-flex items-center rounded-full bg-ink px-5 text-lg font-bold text-paper">
           <Trans>新しいページ</Trans>
         </Link>
       </div>

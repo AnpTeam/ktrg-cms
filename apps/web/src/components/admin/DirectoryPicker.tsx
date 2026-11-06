@@ -10,7 +10,7 @@ import type { ErrorKey } from "@/lib/api-error";
 import { distanceLabel, placeCategories, type Coord } from "@/lib/places";
 
 const MAX_PAGES = 10;
-const chip = "inline-flex h-11 min-h-0 min-w-0 items-center justify-center rounded-lg border border-line bg-paper px-3 text-sm font-bold hover:bg-surface disabled:opacity-40";
+const chip = "inline-flex h-11 min-h-0 min-w-0 items-center justify-center rounded-full border border-line bg-paper px-3 text-sm font-bold hover:bg-surface disabled:opacity-40";
 
 /** A directory row as the admin list sends it, with what the manager needs. */
 interface Row extends DirectoryPlace {

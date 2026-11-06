@@ -85,9 +85,9 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
 
   // The label is capped at 4.25vw so "Routes" still fits a 320 px phone at the largest text size; wider screens never hit the cap.
   const item =
-    "flex min-h-[3.25rem] min-w-0 flex-col items-center justify-center gap-0.5 rounded-full text-[min(0.875rem,4.25vw)] font-bold leading-tight [&_svg]:size-6 md:min-h-14 md:flex-row md:justify-start md:gap-4  md:px-5 md:text-xl";
+    "flex min-h-[3.25rem] min-w-0 flex-col items-center justify-center gap-0.5 rounded-[1.125rem] text-[min(0.875rem,4.25vw)] font-bold leading-tight [&_svg]:size-6 md:min-h-14 md:flex-row md:justify-start md:gap-4 md:rounded-full md:px-5 md:text-xl";
   // Folded, a tab is its icon over its word again, as on a phone.
-  const miniItem = mini ? " lg:flex-col lg:justify-center lg:gap-0.5 lg:px-0 lg:text-sm" : "";
+  const miniItem = mini ? " lg:flex-col lg:justify-center lg:gap-0.5 lg:rounded-[1.125rem] lg:px-0 lg:text-sm" : "";
 
   return (
     // Below 1024 px this wrapper adds nothing (the nav is placed by its own classes); from 1024 px it is the sidebar.
