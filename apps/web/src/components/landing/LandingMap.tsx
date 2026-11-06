@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Trans, useLingui } from "@lingui/react/macro";
 import { SectionBanner } from "@/components/SectionBanner";
-import { gsiTileListUrl } from "@/lib/map";
+import { englishMaxZoom, gsiTileListUrl } from "@/lib/map";
 import { rectangleRing } from "@/lib/map-screen";
 import type { RouteSummary } from "@/lib/content";
 import { buttonStyle } from "@/components/button";
@@ -26,7 +26,7 @@ const worldY = (lat: number, z: number) => {
 };
 
 export function LandingMap({ routes }: { routes: RouteSummary[] }) {
-  const { t } = useLingui();
+  const { t, i18n } = useLingui();
   const boxes = routes.flatMap((r) => (r.area ? [{ order: r.order, ring: rectangleRing(r.area) }] : []));
   if (boxes.length === 0) return null;
 
@@ -40,10 +40,11 @@ export function LandingMap({ routes }: { routes: RouteSummary[] }) {
   const y = (lat: number) => worldY(lat, z);
   const [left, top] = [x(west) - PAD_X, y(north) - PAD_Y];
   const [W, H] = [Math.round(x(east) - x(west) + 2 * PAD_X), Math.round(y(south) - y(north) + 2 * PAD_Y)];
+  const layer = i18n.locale === "en" && z <= englishMaxZoom ? "english" : "pale";
   const tiles: { key: string; href: string; x: number; y: number }[] = [];
   for (let tx = Math.floor(left / TILE); tx <= Math.floor((left + W) / TILE); tx++)
     for (let ty = Math.floor(top / TILE); ty <= Math.floor((top + H) / TILE); ty++)
-      tiles.push({ key: `${tx}/${ty}`, href: `https://cyberjapandata.gsi.go.jp/xyz/pale/${z}/${tx}/${ty}.png`, x: tx * TILE, y: ty * TILE });
+      tiles.push({ key: `${tx}/${ty}`, href: `https://cyberjapandata.gsi.go.jp/xyz/${layer}/${z}/${tx}/${ty}.png`, x: tx * TILE, y: ty * TILE });
   const count = boxes.length;
 
   return (

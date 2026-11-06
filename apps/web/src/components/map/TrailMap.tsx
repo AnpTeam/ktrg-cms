@@ -106,7 +106,7 @@ export function TrailMap({
   /** The visitor's choice: show the nearby places from the start. */
   placesFirst: boolean;
 }) {
-  const { t } = useLingui();
+  const { t, i18n } = useLingui();
   const groupNames = useGroupNames();
   const sectionRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -159,7 +159,7 @@ export function TrailMap({
         const bounds = boundsOf([...stopPoints, ...linePoints]);
         map = new ml.Map({
           container: containerRef.current,
-          style: mapStyleSource(settings),
+          style: mapStyleSource(settings, i18n.locale),
           bounds: bounds ?? undefined,
           fitBoundsOptions: FIT,
           minZoom: zoomLimits.min,

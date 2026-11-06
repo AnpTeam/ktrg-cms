@@ -20,8 +20,8 @@ export function largeStyleUrl(settings: Pick<MapSettings, "terrain" | "terrainOp
 }
 
 /** The style to hand to the map: a raster style as an object, the vector one as an address. */
-export function mapStyleSource(settings: MapSettings = defaultMapSettings): StyleSpecification | string {
-  return settings.base === "large" ? largeStyleUrl(settings) : mapStyle(settings);
+export function mapStyleSource(settings: MapSettings = defaultMapSettings, locale = "ja"): StyleSpecification | string {
+  return settings.base === "large" ? largeStyleUrl(settings) : mapStyle(settings, locale);
 }
 
 /** GSI's vector style with our sprite and the terrain overlay (hidden until the visitor turns it on) under the labels. */

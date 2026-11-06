@@ -170,7 +170,7 @@ export function MapScreenCanvas({
         ml.setWorkerUrl(new URL("maplibre-gl/dist/maplibre-gl-worker.mjs", import.meta.url).toString());
         map = new ml.Map({
           container: containerRef.current,
-          style: mapStyleSource(settings),
+          style: mapStyleSource(settings, i18n.locale),
           center: START_CENTER,
           zoom: 8.6,
           // Tilted a little from the start, so the mountains read as a landscape. Three fingers change it (MapHelp).

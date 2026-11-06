@@ -13,10 +13,13 @@ export const gsiAttribution = `<a href="${gsiTileListUrl}" target="_blank" rel="
 /** Real tile ranges (checked on the GSI tile list): base map 5 to 18, relief 5 to 15, hillshade 2 to 16. */
 export const zoomLimits = { min: 5, max: 18, reliefMax: 15, hillshadeMax: 16 } as const;
 
+/** GSI's English map: the standard map with English names, for Japan as far as this zoom; closer in, GSI has only Japanese. */
+export const englishMaxZoom = 11;
+
 /** GSI's vector tiles (the data behind the 「大きい文字」 map), zoom 4 to 16. */
 export const vectorTileUrl = "https://cyberjapandata.gsi.go.jp/xyz/experimental_bvmap/{z}/{x}/{y}.pbf";
 
-export const gsiTileUrl = (layer: "std" | "pale" | "blank" | "seamlessphoto" | "relief" | "hillshademap") =>
+export const gsiTileUrl = (layer: "std" | "pale" | "blank" | "seamlessphoto" | "relief" | "hillshademap" | "english") =>
   `https://cyberjapandata.gsi.go.jp/xyz/${layer}/{z}/{x}/{y}.${layer === "seamlessphoto" ? "jpg" : "png"}`;
 
 /** The GSI layer behind each base map choice, and the last zoom it has tiles for (beyond it the tiles are stretched). */
@@ -104,9 +107,12 @@ export const terrainLayerId = "gsi-terrain";
  * turns it on). Raster tiles only. The overlay's tiles stop at their own maximum zoom, so they
  * are stretched beyond it.
  */
-export function mapStyle(settings: MapSettings = defaultMapSettings): StyleSpecification {
+export function mapStyle(settings: MapSettings = defaultMapSettings, locale = "ja"): StyleSpecification {
   const terrainTiles = settings.terrain === "relief" ? gsiTileUrl("relief") : gsiTileUrl("hillshademap");
   const terrainMax = settings.terrain === "relief" ? zoomLimits.reliefMax : zoomLimits.hillshadeMax;
+  const paint = { ...(settings.saturation !== 0 ? { "raster-saturation": settings.saturation } : {}), ...(settings.contrast !== 0 ? { "raster-contrast": settings.contrast } : {}) };
+  // Over the two drawn maps: it is the standard map with other names, so it does not fit a photo or a blank map.
+  const english = locale === "en" && (settings.base === "std" || settings.base === "pale");
   return {
     version: 8,
     sources: {
@@ -118,6 +124,11 @@ export function mapStyle(settings: MapSettings = defaultMapSettings): StyleSpeci
         maxzoom: baseTiles[settings.base].maxzoom,
         attribution: gsiAttribution,
       },
+      ...(english
+        ? {
+            "gsi-english": { type: "raster" as const, tiles: [gsiTileUrl("english")], tileSize: 256, minzoom: zoomLimits.min, maxzoom: englishMaxZoom, attribution: gsiAttribution },
+          }
+        : {}),
       "gsi-terrain": {
         type: "raster",
         tiles: [terrainTiles],
@@ -135,8 +146,9 @@ export function mapStyle(settings: MapSettings = defaultMapSettings): StyleSpeci
         type: "raster",
         source: "gsi-base",
         // Calming the tiles: less colour and less contrast make the same map easier on the eyes (0 leaves them as drawn).
-        paint: { ...(settings.saturation !== 0 ? { "raster-saturation": settings.saturation } : {}), ...(settings.contrast !== 0 ? { "raster-contrast": settings.contrast } : {}) },
+        paint,
       },
+      ...(english ? [{ id: "gsi-english", type: "raster" as const, source: "gsi-english", maxzoom: englishMaxZoom + 1, paint }] : []),
       {
         id: terrainLayerId,
         type: "raster",
