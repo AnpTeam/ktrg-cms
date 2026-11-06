@@ -54,6 +54,7 @@ export function EmailCodeStep({
   return (
     <form onSubmit={submit} className="flex flex-col gap-6" noValidate>
       <p className="text-lg">{t`${email} に、6桁の番号を送りました。`}</p>
+      <p className="text-lg">{t`メールを開いて番号を見たら、この画面にもどって入力してください。届かないときは、迷惑メールのフォルダも見てください。`}</p>
       <label className="flex flex-col gap-2 text-lg font-bold">
         {t`確認番号`}
         <input

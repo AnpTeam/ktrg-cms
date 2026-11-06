@@ -2742,6 +2742,10 @@ msgstr "Describe the difficulty in a few words (optional)"
 msgid "メールアドレス"
 msgstr "Email address"
 
+#: src/components/auth/EmailCodeStep.tsx:57
+msgid "メールを開いて番号を見たら、この画面にもどって入力してください。届かないときは、迷惑メールのフォルダも見てください。"
+msgstr "After you open the email and see the number, come back to this screen and enter it. If it does not arrive, please also check your spam folder."
+
 #: src/components/auth/EmailCodeStep.tsx:84
 msgid "メールアドレスを直す"
 msgstr "Change the email address"
