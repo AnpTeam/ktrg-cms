@@ -165,7 +165,7 @@ export function SiteHeader({
           onMap
             ? "pointer-events-none absolute inset-x-3 top-[calc(0.75rem+env(safe-area-inset-top))] md:hidden"
             : onLanding
-              ? `absolute inset-x-0 top-0 border-b border-line/30 bg-paper px-3 py-1 transition-opacity md:hidden motion-reduce:transition-none ${hidden ? "pointer-events-none opacity-0" : ""}`
+              ? `absolute inset-x-0 top-0 border-b border-line/30 bg-paper px-3 pb-1 pt-[calc(0.25rem+env(safe-area-inset-top))] transition-opacity md:hidden motion-reduce:transition-none ${hidden ? "pointer-events-none opacity-0" : ""}`
               : "site-header-bar relative mb-3 border-b border-line/30 bg-paper px-3 py-1 md:hidden"
         }
       >

@@ -58,7 +58,7 @@ export default async function RouteDetailPage({ params }: Props) {
           notices.length > 0 ? (
             <>
               <TrailNotices notices={notices} locale={i18n.locale} />
-              <a href={`/notices/feed.xml?route=${encodeURIComponent(route.id)}${i18n.locale === "en" ? "&lang=en" : ""}`} className="px-4 text-base text-accent underline @4xl:px-0">
+              <a href={`/notices/feed.xml?route=${encodeURIComponent(route.id)}${i18n.locale === "en" ? "&lang=en" : ""}`} className="tap-target mx-4 inline-flex w-fit items-center text-base text-accent underline @4xl:mx-0">
                 <Trans>このルートのお知らせをフィードで受け取る</Trans>
               </a>
             </>
