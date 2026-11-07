@@ -10,6 +10,14 @@ msgstr ""
 msgid "音声案内"
 msgstr "Voice guidance"
 
+#: src/components/navigation/NavPrompts.tsx
+msgid "押したスタンプは消えません。"
+msgstr "The stamps you collected stay saved."
+
+#: src/components/navigation/NavPrompts.tsx
+msgid "ナビをつづける"
+msgstr "Keep navigating"
+
 #: src/components/navigation/NavigationHud.tsx
 msgid "電車・バスで行く"
 msgstr "By train or bus"

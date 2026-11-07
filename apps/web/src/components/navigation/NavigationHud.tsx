@@ -14,7 +14,7 @@ import type { MapScreenRoute } from "@/lib/map-screen";
 import { courseProgress } from "@/lib/navigation/progress";
 import { distanceParts } from "@/lib/stamp-flow";
 import { say, useNavVoice, voiceIsOn } from "./useNavVoice";
-import { ArrivalPrompt, PassedPrompt } from "./NavPrompts";
+import { ArrivalPrompt, EndPrompt, PassedPrompt } from "./NavPrompts";
 import { NavElevation } from "./NavElevation";
 import { legProfile } from "@/lib/navigation/elevation";
 import { NavFarCard } from "./NavFarCard";
@@ -140,6 +140,7 @@ export function NavigationToast() {
   const [laterId, setLaterId] = useState<string | null>(null);
   // The off-the-path card was closed; it stays closed until the visitor is back on the path.
   const [offClosed, setOffClosed] = useState(false);
+  const [ending, setEnding] = useState(false);
 
   // Ticks so the age of an old fix stays true while nothing new arrives.
   useEffect(() => {
@@ -378,12 +379,18 @@ export function NavigationToast() {
 
   // On the map: the instruction on a banner at the top, and at the bottom the stamp button (when in range) and the exit.
   if (pathname === "/map") {
-    const leave = () => {
-      if (window.confirm(t`ナビを終えますか？`)) stop();
-    };
     return (
       <>
         {prompts}
+        {ending ? (
+          <EndPrompt
+            onKeep={() => setEnding(false)}
+            onEnd={() => {
+              setEnding(false);
+              stop();
+            }}
+          />
+        ) : null}
         {/* Phone: the top of the screen itself, from the status bar down (a solid box there keeps iOS from blurring it). */}
         <section ref={banner} aria-label={t`ナビ中：${routeName}`} className="fixed inset-x-0 top-0 z-30 flex max-h-[70dvh] flex-col gap-1 overflow-y-auto rounded-b-2xl border-b border-line/30 bg-paper px-4 pb-3 pt-[calc(0.75rem+var(--top-clear))] shadow-lg md:inset-x-auto md:left-[calc(50%-14rem)] md:top-[calc(0.5rem+var(--top-clear))] md:w-[28rem] md:rounded-2xl md:border-b-0 md:pt-3 md:shadow-2xl md:ring-1 md:ring-line/30">
           <div className="flex items-start gap-2">
@@ -427,7 +434,7 @@ export function NavigationToast() {
           {far || arrived ? null : stampButton}
           <div className={far ? "" : "grid grid-cols-2 gap-2"}>
             {far ? null : <NavTargetPicker />}
-            <button type="button" onClick={leave} className={buttonStyle("secondary", "md", "flex w-full")}>
+            <button type="button" onClick={() => setEnding(true)} className={buttonStyle("secondary", "md", "flex w-full")}>
               {t`ナビを終える`}
             </button>
           </div>

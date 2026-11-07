@@ -10,6 +10,14 @@ msgstr ""
 msgid "音声案内"
 msgstr "音声案内"
 
+#: src/components/navigation/NavPrompts.tsx
+msgid "押したスタンプは消えません。"
+msgstr "押したスタンプは消えません。"
+
+#: src/components/navigation/NavPrompts.tsx
+msgid "ナビをつづける"
+msgstr "ナビをつづける"
+
 #: src/components/navigation/NavigationHud.tsx
 msgid "電車・バスで行く"
 msgstr "電車・バスで行く"

@@ -30,6 +30,31 @@ export function ArrivalPrompt({ name, nameLang, onLater, children }: { name: str
   );
 }
 
+/** Before ending a navigation. Going on comes first, so a second tap in the same place cannot end the walk by mistake. */
+export function EndPrompt({ onEnd, onKeep }: { onEnd: () => void; onKeep: () => void }) {
+  const { t } = useLingui();
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    dialog.current?.showModal();
+  }, []);
+  return (
+    <dialog ref={dialog} aria-labelledby="nav-end" onClose={onKeep} className={`${CARD} m-auto backdrop:bg-black/50`}>
+      <h2 id="nav-end" className="text-2xl font-bold leading-snug">
+        {t`ナビを終えますか？`}
+      </h2>
+      <p className="mt-2 text-lg leading-snug">{t`押したスタンプは消えません。`}</p>
+      <div className="mt-4 flex flex-col gap-2">
+        <button type="button" autoFocus onClick={onKeep} className={buttonStyle("primary", "md", "flex w-full")}>
+          {t`ナビをつづける`}
+        </button>
+        <button type="button" onClick={onEnd} className={buttonStyle("secondary", "md", "flex w-full")}>
+          {t`ナビを終える`}
+        </button>
+      </div>
+    </dialog>
+  );
+}
+
 /** Just past a stamp place without stamping. Nobody has to answer: after a moment the walk simply goes on to the next one. */
 export function PassedPrompt({ name, nameLang, onGoOn, onGoBack }: { name: string; nameLang: "ja" | "en"; onGoOn: () => void; onGoBack: () => void }) {
   const { t } = useLingui();

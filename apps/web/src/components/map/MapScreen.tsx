@@ -226,7 +226,7 @@ export function MapScreen({
 
   useEffect(() => {
     if (!routeId) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && back();
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && !document.querySelector("dialog[open]") && back(); // Esc in a dialog closes only the dialog
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [routeId, back]);
