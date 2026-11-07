@@ -40,7 +40,7 @@ import { createDrizzleSitePageStore } from "./pages/site-page-store";
 import { publicSitePageRoutes, sitePageList } from "./pages/site-pages";
 import { createDrizzleFuriganaStore } from "./furigana/furigana-store";
 import { furiganaList, publicFuriganaRoutes } from "./furigana/furigana-words";
-import { bannerList, publicBannerRoutes } from "./banners/banner-list";
+import { bannerList, bannerOrderRoutes, publicBannerRoutes } from "./banners/banner-list";
 import { createDrizzleBannerStore } from "./banners/banner-store";
 import { placeDirectoryList, placeImportRoutes, publicPlaceRoutes } from "./places/place-directory";
 import { publicSettingsRoutes, siteSettingsRoutes } from "./site-settings/site-settings";
@@ -172,6 +172,7 @@ export function createApp(
     .use(publicPostRoutes(() => getServices().posts))
     .use(listReadRoutes(bannerList, getServices, opts))
     .use(listWriteRoutes(bannerList, getServices, opts))
+    .use(bannerOrderRoutes(getServices, opts))
     .use(publicBannerRoutes(() => getServices().banners))
     .use(listReadRoutes(furiganaList, getServices, opts))
     .use(listWriteRoutes(furiganaList, getServices, opts))

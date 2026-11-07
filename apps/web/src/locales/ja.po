@@ -2589,22 +2589,6 @@ msgstr "ページ番号"
 msgid "ベースの地図"
 msgstr "ベースの地図"
 
-msgid "すべて見る"
-msgstr "すべて見る"
-
-msgid "{until} まで"
-msgstr "{until} まで"
-
-msgid "今、お知らせはありません。"
-msgstr "今、お知らせはありません。"
-
-msgid "通行止めなどがあれば、ここに表示されます。"
-msgstr "通行止めなどがあれば、ここに表示されます。"
-
-msgid "お知らせをフィードで受け取る"
-msgstr "お知らせをフィードで受け取る"
-
-#: src/components/admin/BlockEditor.tsx
 #: src/app/(public)/blog/page.tsx:37
 #: src/app/(public)/licenses/page.tsx:21
 #: src/app/(public)/login/page.tsx:29
@@ -5134,33 +5118,19 @@ msgstr "手直しが必要（{needsWorkCount}）"
 msgid "現在の場所"
 msgstr "現在の場所"
 
-msgid "ルートとラリー"
-msgstr "ルートとラリー"
+msgid "経由地を直す（管理）"
+msgstr "経由地を直す（管理）"
 
-msgid "サイトの内容"
-msgstr "サイトの内容"
+msgid "経由地の一覧へ戻る"
+msgstr "経由地の一覧へ戻る"
 
-msgid "コミュニティ"
-msgstr "コミュニティ"
+msgid "ルート：{name}"
+msgstr "ルート：{name}"
 
-msgid "運営"
-msgstr "運営"
+msgid "ルートの画面で開く"
+msgstr "ルートの画面で開く"
 
-msgid "ルート一覧にもどる"
-msgstr "ルート一覧にもどる"
-
-msgid "一覧へ戻る"
-msgstr "一覧へ戻る"
-
-msgid "ページへ戻る"
-msgstr "ページへ戻る"
-
-msgid "ブログへ戻る"
-msgstr "ブログへ戻る"
-
-msgid "書き手を管理する"
-msgstr "書き手を管理する"
-
+#: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "写真を消す"
 
@@ -7846,3 +7816,18 @@ msgstr "この削除は、管理者が予約したものです。プロフィー
 
 msgid "管理者が予約した削除は、ありません。"
 msgstr "管理者が予約した削除は、ありません。"
+
+msgid "すべて見る"
+msgstr "すべて見る"
+
+msgid "{until} まで"
+msgstr "{until} まで"
+
+msgid "今、お知らせはありません。"
+msgstr "今、お知らせはありません。"
+
+msgid "通行止めなどがあれば、ここに表示されます。"
+msgstr "通行止めなどがあれば、ここに表示されます。"
+
+msgid "お知らせをフィードで受け取る"
+msgstr "お知らせをフィードで受け取る"

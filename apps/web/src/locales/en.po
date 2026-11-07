@@ -2589,22 +2589,6 @@ msgstr "Page number"
 msgid "ベースの地図"
 msgstr "Base map"
 
-msgid "すべて見る"
-msgstr "See all"
-
-msgid "{until} まで"
-msgstr "Until {until}"
-
-msgid "今、お知らせはありません。"
-msgstr "No notices at the moment."
-
-msgid "通行止めなどがあれば、ここに表示されます。"
-msgstr "Closures and the like will be shown here."
-
-msgid "お知らせをフィードで受け取る"
-msgstr "Follow the notices in a feed reader"
-
-#: src/components/admin/BlockEditor.tsx
 #: src/app/(public)/blog/page.tsx:37
 #: src/app/(public)/licenses/page.tsx:21
 #: src/app/(public)/login/page.tsx:29
@@ -5160,33 +5144,19 @@ msgstr "Needs work ({needsWorkCount})"
 msgid "現在の場所"
 msgstr "You are here"
 
-msgid "ルートとラリー"
-msgstr "Routes and rallies"
+msgid "経由地を直す（管理）"
+msgstr "Edit waypoint (admin)"
 
-msgid "サイトの内容"
-msgstr "Site content"
+msgid "経由地の一覧へ戻る"
+msgstr "Back to all waypoints"
 
-msgid "コミュニティ"
-msgstr "Community"
+msgid "ルート：{name}"
+msgstr "Route: {name}"
 
-msgid "運営"
-msgstr "Running the site"
+msgid "ルートの画面で開く"
+msgstr "Open in the route editor"
 
-msgid "ルート一覧にもどる"
-msgstr "Back to the route list"
-
-msgid "一覧へ戻る"
-msgstr "Back to the list"
-
-msgid "ページへ戻る"
-msgstr "Back to pages"
-
-msgid "ブログへ戻る"
-msgstr "Back to the blog"
-
-msgid "書き手を管理する"
-msgstr "Manage writers"
-
+#: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "Remove photo"
 
@@ -7846,3 +7816,18 @@ msgstr "An administrator scheduled this deletion. You can appeal from your profi
 
 msgid "管理者が予約した削除は、ありません。"
 msgstr "There is no deletion scheduled by an administrator."
+
+msgid "すべて見る"
+msgstr "See all"
+
+msgid "{until} まで"
+msgstr "Until {until}"
+
+msgid "今、お知らせはありません。"
+msgstr "No notices at the moment."
+
+msgid "通行止めなどがあれば、ここに表示されます。"
+msgstr "Closures and the like will be shown here."
+
+msgid "お知らせをフィードで受け取る"
+msgstr "Follow the notices in a feed reader"

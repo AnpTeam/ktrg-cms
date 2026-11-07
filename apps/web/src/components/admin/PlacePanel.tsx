@@ -31,6 +31,8 @@ export interface PlacePanelProps {
   onSave: () => void;
   onPublish: () => void;
   onUnpublish: () => void;
+  /** A map to place it on, under the numbers (the route editor has its own map tab). */
+  positionMap?: ReactNode;
 }
 
 /** The words for what a waypoint can be. */
@@ -190,6 +192,7 @@ export function PlacePanel(p: PlacePanelProps) {
               </Field>
             </div>
             <p className="text-base text-muted">{t`位置は、公式の情報から入れて、地図で確かめます。推測では入れません。`}</p>
+            {p.positionMap}
             <Check id={`${id}-verified`} checked={place.positionVerified} disabled={place.lat === null} onChange={(v) => p.onChange({ positionVerified: v })}>
               {t`位置を確認した`}
             </Check>
@@ -263,12 +266,16 @@ export function PlacePanel(p: PlacePanelProps) {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <button type="button" disabled={!p.canMoveUp} onClick={() => p.onMove(-1)} className="tap-target rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-40">
-              {t`順番を前へ`}
-            </button>
-            <button type="button" disabled={!p.canMoveDown} onClick={() => p.onMove(1)} className="tap-target rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-40">
-              {t`順番を後ろへ`}
-            </button>
+            {p.canMoveUp || p.canMoveDown ? (
+              <>
+                <button type="button" disabled={!p.canMoveUp} onClick={() => p.onMove(-1)} className="tap-target rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-40">
+                  {t`順番を前へ`}
+                </button>
+                <button type="button" disabled={!p.canMoveDown} onClick={() => p.onMove(1)} className="tap-target rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-40">
+                  {t`順番を後ろへ`}
+                </button>
+              </>
+            ) : null}
             <button type="button" disabled={place.published} onClick={p.onRemove} className="tap-target ml-auto rounded-full border-2 border-danger px-4 text-base font-bold text-danger disabled:opacity-40">
               {t`この経由地を削除`}
             </button>

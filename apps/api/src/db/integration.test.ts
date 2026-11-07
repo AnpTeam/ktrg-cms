@@ -1528,16 +1528,23 @@ describe.skipIf(!url)("banners and role changes on real PostgreSQL", () => {
 
   test("banners: words saved per language, visitors get published ones in order, delete takes the words", async () => {
     const actor = (await otp.findOrCreateUser(`${tag}-admin@example.test`)).id;
-    const add = async (altJa: string, sortOrder: number, published: boolean) => {
-      const row = await bannerStore.create(actor, { imageUrl: "https://example.com/a.jpg", altJa, altEn: null, sortOrder, published });
+    const add = async (altJa: string, published: boolean) => {
+      const row = await bannerStore.create(actor, { imageUrl: "https://example.com/a.jpg", altJa, altEn: null, published });
       made.push(row.id);
       return row;
     };
-    const late = await add(`${tag} 二`, 2, true);
-    await add(`${tag} 下書き`, 0, false);
-    const first = await add(`${tag} 一`, 1, true);
+    const late = await add(`${tag} 二`, true);
+    await add(`${tag} 下書き`, false);
+    const first = await add(`${tag} 一`, true);
     expect(first).toMatchObject({ altJa: `${tag} 一`, altEn: null });
-    expect((await bannerStore.listPublic()).map((b) => b.altJa).filter((a) => a.startsWith(tag))).toEqual([`${tag} 一`, `${tag} 二`]);
+    const shown = async () => (await bannerStore.listPublic()).map((b) => b.altJa).filter((a) => a.startsWith(tag));
+    expect(await shown()).toEqual([`${tag} 二`, `${tag} 一`]); // a new one goes last
+
+    const ids = (await bannerStore.listOrdered()).map((b) => b.id).filter((id) => id !== first.id);
+    ids.splice(ids.indexOf(late.id), 0, first.id);
+    expect(await bannerStore.reorder(actor, ids.slice(1))).toBe(false); // every banner, or nothing
+    expect(await bannerStore.reorder(actor, ids)).toBe(true);
+    expect(await shown()).toEqual([`${tag} 一`, `${tag} 二`]);
 
     const changed = await bannerStore.update(actor, late.id, late.updatedAt, { altEn: "Two" });
     expect(changed).toMatchObject({ altJa: `${tag} 二`, altEn: "Two" });

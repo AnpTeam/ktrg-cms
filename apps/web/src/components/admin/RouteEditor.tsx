@@ -200,7 +200,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
   }
 
   async function save() {
-    if (saving || !dirty) return;
+    if (saving || busyKey || !dirty) return;
     const found = draftProblems(draft);
     setProblems(found);
     // A problem with the route itself stops the save. An unfinished waypoint does not: it is held back (what was typed stays on
@@ -389,7 +389,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
   // Takes every published waypoint off the site at once. The route itself stays in the list, shown as "coming soon" (準備中).
   async function unpublishAll() {
     const live = draft.places.filter((p) => p.id && p.published);
-    if (!draft.id || live.length === 0 || busyKey) return;
+    if (!draft.id || live.length === 0 || busyKey || saving) return;
     const count = live.length;
     if (!(await confirmDialog({ title: t`公開をやめますか？`, body: t`公開中の${count}か所を、すべて公開をやめます。ルートは「準備中」として一覧に残ります。よろしいですか？`, yes: t`公開をやめる` }))) return;
     setBusyKey("all");
@@ -485,7 +485,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
         <p className="text-base text-muted" aria-live="polite">
           {dirty ? t`保存していない変更があります` : isNew ? "" : t`保存済み（更新 ${formatUpdated(locale, draft.updatedAt ?? new Date().toISOString())}）`}
         </p>
-        <button type="button" disabled={!dirty || saving} onClick={save} className="tap-target rounded-full bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
+        <button type="button" disabled={!dirty || saving || busyKey !== null} onClick={save} className="tap-target rounded-full bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
           {saving ? t`保存中…` : t`保存する`}
         </button>
       </div>
