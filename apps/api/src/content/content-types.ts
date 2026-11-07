@@ -1,3 +1,4 @@
+import type { AttentionInput } from "./attention";
 import type { ErrorCode } from "../lib/api-errors";
 import type { AccessPoint, SpotPhoto, spotKinds } from "../db/schema/content";
 import type { ROUTE_TEXT, SPOT_TEXT, Translations } from "../db/translations";
@@ -197,6 +198,8 @@ export type Result<T> = { ok: true; value: T } | { ok: false; reason: ErrorCode 
  */
 export interface ContentStore {
   listRoutes(): Promise<RouteSummaryRow[]>;
+  /** Every route with its own waypoints, only what the attention list reads, in a fixed few queries. */
+  listForAttention(): Promise<AttentionInput[]>;
   /** `spots` are the course's own places; `shared` are places of other courses it also holds (see SharedSpotRow). */
   /** `sharedWith`: for each of the course's own places that is also on other courses, those courses' ids. */
   getRoute(id: string): Promise<{ route: RouteRow; spots: SpotRow[]; shared: SharedSpotRow[]; sharedWith: Record<string, string[]> } | null>;

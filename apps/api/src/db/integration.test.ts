@@ -824,6 +824,17 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
     });
   });
 
+  test("the attention list reads every route and its own places, with their names", async () => {
+    await inRollback(async (tx) => {
+      await seed(tx);
+      const rows = await createDrizzleContentStore(tx as unknown as typeof db).listForAttention();
+      expect(rows).toHaveLength(19);
+      expect(rows.every((r) => r.nameJa !== "" && r.hasLine === false)).toBe(true);
+      expect(rows.flatMap((r) => r.spots)).toHaveLength(31);
+      expect(rows.flatMap((r) => r.spots).every((s) => s.nameJa !== "")).toBe(true);
+    });
+  });
+
   test("a saved course finish stays when the course gets another place later", async () => {
     await inRollback(async (tx) => {
       await seed(tx);

@@ -3,6 +3,12 @@
 
 import type { RouteRow, SpotRow } from "./content-types";
 
+/** What the check reads: whether a line exists, never the line itself, so the page stays a few small queries. */
+export type AttentionInput = Pick<RouteRow, "id" | "nameJa" | "nameEn" | "lineVerified" | "photoUrl"> & {
+  hasLine: boolean;
+  spots: readonly Pick<SpotRow, "id" | "nameJa" | "nameEn" | "photoUrl" | "photos" | "lat" | "positionVerified" | "published">[];
+};
+
 export type RouteIssue = "line_unchecked" | "no_line" | "no_english_name" | "no_photo";
 export type SpotIssue = "no_photo" | "no_english_name" | "position_unchecked";
 
@@ -22,7 +28,7 @@ export interface AttentionSpot {
 
 const blank = (v: string | null | undefined) => !v || v.trim() === "";
 
-export function attention(routes: readonly (Pick<RouteRow, "id" | "nameJa" | "nameEn" | "geometry" | "lineVerified" | "photoUrl"> & { spots: readonly Pick<SpotRow, "id" | "nameJa" | "nameEn" | "photoUrl" | "photos" | "positionVerified" | "lat" | "published">[] })[]): {
+export function attention(routes: readonly AttentionInput[]): {
   routes: AttentionRoute[];
   spots: AttentionSpot[];
 } {
@@ -30,7 +36,7 @@ export function attention(routes: readonly (Pick<RouteRow, "id" | "nameJa" | "na
   const outSpots: AttentionSpot[] = [];
   for (const r of routes) {
     const issues: RouteIssue[] = [];
-    if (!r.geometry) issues.push("no_line");
+    if (!r.hasLine) issues.push("no_line");
     else if (!r.lineVerified) issues.push("line_unchecked");
     if (blank(r.nameEn)) issues.push("no_english_name");
     if (blank(r.photoUrl)) issues.push("no_photo");
