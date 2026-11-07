@@ -125,7 +125,7 @@ export function UserActions({ item, locale, onItem }: { item: ListItem; locale: 
             type="button"
             disabled={busy || confirm.trim() !== memberId}
             onClick={() => void run(() => listRequest<{ item?: ListItem }>("DELETE", `users/${id}`), t`削除しました。`, () => router.push("/admin/users"))}
-            className="tap-target w-fit rounded-full bg-danger px-6 text-lg font-bold text-white disabled:opacity-50"
+            className="tap-target w-fit rounded-full bg-danger px-6 text-lg font-bold text-paper disabled:opacity-50"
           >
             {t`今すぐ削除する`}
           </button>
