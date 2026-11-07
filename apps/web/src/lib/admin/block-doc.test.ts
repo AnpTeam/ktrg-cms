@@ -12,7 +12,7 @@ const schema = getSchema([StarterKit.configure({ heading: { levels: [2, 3] } }),
 
 describe("short text", () => {
   const short = (body: string) => docToBody(bodyToDoc(body, "short"));
-  const shortSchema = getSchema([StarterKit.configure({ heading: false, bulletList: false, listItem: false, listKeymap: false, horizontalRule: false })]);
+  const shortSchema = getSchema([StarterKit.configure({ orderedList: false, heading: false, bulletList: false, listItem: false, listKeymap: false, horizontalRule: false })]);
 
   test("every line comes back as written, and what only long text has stays words", () => {
     const body = ["一行目\n二行目", "- 箇条書きではない\n## 見出しではない", "---", "![写真ではない](https://e.com/a.jpg)", "**太字**と__斜体__と[リンク](https://e.com)[^1]", "[^1]: 注の文"].join("\n\n");
