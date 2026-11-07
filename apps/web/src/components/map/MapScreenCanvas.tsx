@@ -704,7 +704,7 @@ export function MapScreenCanvas({
         </p>
       ) : null}
 
-      <div style={controlsTopPx > 0 ? { top: controlsTopPx } : undefined} className="absolute right-3 top-[calc(4.5rem+var(--top-clear))] z-[4] flex flex-col gap-2">
+      <div style={controlsTopPx > 0 ? { top: controlsTopPx } : undefined} className="absolute right-[calc(0.75rem+env(safe-area-inset-right))] top-[calc(4.5rem+var(--top-clear))] z-[4] flex flex-col gap-2">
         {(["in", "out"] as const).map((sign) => (
           <button
             key={sign}
