@@ -2,8 +2,8 @@
 
 import { useDeferredValue, type ComponentProps } from "react";
 import { Landing } from "@/components/landing/Landing";
-import { CustomPageView, FaqView, GuideView, PolicyView, TermsView } from "@/components/pages/PageViews";
-import { customPageIn, helpWith, ownText, policyWith, termsWith, type CustomPage } from "@/lib/page-content";
+import { FaqView, GuideView, PolicyView, TermsView } from "@/components/pages/PageViews";
+import { helpWith, ownText, policyWith, termsWith } from "@/lib/page-content";
 import { homeTextIn } from "@/lib/home-text";
 import type { PageKey, PageText } from "@/lib/page-text";
 import { PreviewFrame } from "./PreviewFrame";
@@ -30,20 +30,6 @@ export function PagePreview({ pageKey, text, locale, home }: { pageKey: PageKey;
       {(lang) => (
         <div inert>
           <FixedPage pageKey={pageKey} text={shown} locale={lang} home={home} />
-        </div>
-      )}
-    </PreviewFrame>
-  );
-}
-
-/** The same for a page made in the admin (/p/<address>). */
-export function CustomPagePreview({ page, locale }: { page: CustomPage; locale: string }) {
-  const shown = useDeferredValue(page);
-  return (
-    <PreviewFrame locale={locale} canWiden={false}>
-      {(lang) => (
-        <div inert>
-          <CustomPageView {...customPageIn(shown, lang)} />
         </div>
       )}
     </PreviewFrame>

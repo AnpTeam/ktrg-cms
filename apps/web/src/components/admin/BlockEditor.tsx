@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import type { JSONContent } from "@tiptap/core";
 import Image from "@tiptap/extension-image";
 import { NodeSelection } from "@tiptap/pm/state";
-import { EditorContent, useEditor, useEditorState, type Editor } from "@tiptap/react";
+import { EditorContent, NodeViewWrapper, ReactNodeViewRenderer, useEditor, useEditorState, type Editor, type NodeViewProps } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useLingui } from "@lingui/react/macro";
-import { ChevronDownIcon, ChevronUpIcon, PlusIcon } from "@/components/icons";
+import { ChevronDownIcon, ChevronUpIcon, ImageIcon, LinkIcon, ListIcon, PlusIcon, TrashIcon, UndoIcon } from "@/components/icons";
 import { bodyToDoc, docToBody, moveBlock } from "@/lib/admin/block-doc";
 import { isWebUrl } from "@/lib/format";
 import { inputClass } from "./fields";
@@ -19,12 +19,87 @@ import { PhotoUpload } from "./PhotoUpload";
 // collaboration packages).
 
 type Kind = "paragraph" | "h2" | "h3" | "list" | "rule" | "photo";
-type Panel = { kind: "link"; href: string; bad: boolean } | { kind: "photo" } | { kind: "alt"; alt: string } | null;
+type Panel = { kind: "link"; href: string; bad: boolean } | { kind: "photo" } | null;
 
 const SHOWN =
   "tiptap-page min-h-72 rounded-xl border-2 border-line bg-paper p-4 text-lg leading-8 text-ink [&_a]:font-bold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4 [&_h2]:mt-5 [&_h2]:border-l-[6px] [&_h2]:border-accent [&_h2]:pl-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-snug [&_h3]:mt-4 [&_h3]:text-xl [&_h3]:font-bold [&_hr]:my-6 [&_hr]:border-line [&_img]:my-4 [&_img]:rounded-xl [&_p]:my-3 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_.ProseMirror-selectednode]:outline-4 [&_.ProseMirror-selectednode]:outline-accent";
 const BUTTON = "tap-target inline-flex items-center gap-1 rounded-full border-2 border-line bg-paper px-4 text-base font-bold disabled:opacity-40";
 const ACTIVE = "border-ink bg-ink text-paper";
+
+/** A photo in the text, its description right under it: nobody has to look for a button or scroll to write one. */
+function PhotoBlock({ node, selected, updateAttributes, deleteNode, editor, getPos }: NodeViewProps) {
+  const { t } = useLingui();
+  const box = useRef<HTMLInputElement>(null);
+  const src = String(node.attrs.src ?? "");
+  const alt = String(node.attrs.alt ?? "");
+  // A photo just added, or chosen with nothing written yet, goes straight to its description.
+  useEffect(() => {
+    if (selected && !alt) box.current?.focus();
+    // Only when it becomes selected: emptying the box must not pull the caret back.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected]);
+  // The picture arrives after the box has the focus, and pushes it down.
+  const keepBoxInView = () => {
+    if (document.activeElement === box.current) box.current?.scrollIntoView({ block: "center" });
+  };
+  return (
+    <NodeViewWrapper className="relative my-3 flex w-fit max-w-full flex-col gap-2">
+      {/* eslint-disable-next-line @next/next/no-img-element -- the editor's own picture: any uploaded link, shown as it is */}
+      <img src={src} alt={alt} onLoad={keepBoxInView} className="max-h-[50dvh] w-auto max-w-full self-start" />
+      <button type="button" onClick={deleteNode} aria-label={t`写真を消す`} className="tap-target absolute right-2 top-2 inline-grid place-items-center rounded-full bg-paper text-ink shadow">
+        {/* The click must land on the button itself: the editor only leaves a button alone, not an icon inside it. */}
+        <span className="pointer-events-none">
+          <TrashIcon />
+        </span>
+      </button>
+      <input
+        ref={box}
+        aria-label={t`写真の説明`}
+        placeholder={t`写真の説明（目の見えにくい方に読み上げられます）`}
+        value={alt}
+        onChange={(e) => updateAttributes({ alt: e.target.value })}
+        onFocus={() => {
+          const at = getPos();
+          if (typeof at === "number") editor.commands.setNodeSelection(at); // so 上へ and 下へ move this photo
+        }}
+        onKeyDown={(e) => {
+          if (e.key !== "Enter") return;
+          e.preventDefault(); // this box sits inside the page's form
+          editor.commands.focus();
+        }}
+        className={inputClass}
+      />
+    </NodeViewWrapper>
+  );
+}
+
+const Photo = Image.extend({
+  addNodeView() {
+    return ReactNodeViewRenderer(PhotoBlock);
+  },
+});
+
+/** One button of the toolbar: an icon, with its name for screen readers and in a tooltip of our own. */
+function Tool({ name, pressed, disabled, onClick, children }: { name: string; pressed?: boolean; disabled?: boolean; onClick: (e: ReactMouseEvent<HTMLButtonElement>) => void; children: ReactNode }) {
+  return (
+    <button
+      type="button"
+      aria-label={name}
+      aria-pressed={pressed}
+      disabled={disabled}
+      onMouseDown={(e) => e.preventDefault()}
+      onClick={onClick}
+      className={`group tap-target relative inline-grid place-items-center rounded-full text-lg font-bold disabled:opacity-40 ${pressed ? "bg-ink text-paper" : "hover:bg-surface"}`}
+    >
+      {children}
+      <span aria-hidden="true" className="pointer-events-none absolute left-1/2 top-full z-20 mt-1 hidden -translate-x-1/2 whitespace-nowrap rounded bg-ink px-2 py-1 text-base font-bold text-paper group-hover:block group-focus-visible:block">
+        {name}
+      </span>
+    </button>
+  );
+}
+
+const GAP = <span aria-hidden="true" className="mx-1 h-7 w-px bg-line" />;
 
 /** Where a new block goes: over the empty line the cursor is on, else after the block it is in. */
 function place(editor: Editor, block: JSONContent, caret: ((start: number) => void) | null) {
@@ -53,7 +128,7 @@ export function BlockEditor({ id, lang, label, value, onChange, closingNote = fa
         heading: { levels: [2, 3] },
         link: { openOnClick: false },
       }),
-      Image.configure({ allowBase64: false }),
+      Photo.configure({ allowBase64: false }),
     ],
     content: bodyToDoc(value),
     editorProps: {
@@ -91,10 +166,9 @@ function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closi
       const { selection } = e.state;
       const { $from, empty } = selection;
       return {
-        style: e.isActive("heading", { level: 2 }) ? "h2" : e.isActive("heading", { level: 3 }) ? "h3" : e.isActive("bulletList") ? "list" : "paragraph",
+        style: selection instanceof NodeSelection ? null : e.isActive("heading", { level: 2 }) ? "h2" : e.isActive("heading", { level: 3 }) ? "h3" : e.isActive("bulletList") ? "list" : "paragraph",
         bold: e.isActive("bold"),
         link: e.isActive("link"),
-        photo: selection instanceof NodeSelection && selection.node.type.name === "image",
         // Both slashes: a Japanese keyboard types the wide one.
         slash: empty && $from.depth === 1 && $from.parent.type.name === "paragraph" && /^[/／]$/.test($from.parent.textContent),
         canUndo: e.can().undo(),
@@ -172,7 +246,7 @@ function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closi
   };
   const addPhoto = (src: string) => {
     place(editor, { type: "image", attrs: { src, alt: "" } }, (start) => editor.commands.setNodeSelection(start));
-    setPanel({ kind: "alt", alt: "" });
+    setPanel(null);
   };
 
   // Under the caret for "/", under the button for "＋"; above the caret when there is no room below it.
@@ -182,124 +256,95 @@ function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closi
 
   return (
     <div className="flex flex-col gap-2">
-      <div role="toolbar" aria-label={t`文章の書式`} aria-controls={id} className="sticky top-[4.75rem] z-10 flex flex-wrap items-center gap-2 bg-paper py-1">
-        <button type="button" onClick={openPlus} aria-haspopup="menu" aria-expanded={menuOpen} className={`${BUTTON} border-ink`}>
-          <PlusIcon size={20} />
-          {t`追加`}
-        </button>
-        <select aria-label={t`この行の種類`} value={state.style} onChange={(e) => setStyle(e.target.value)} className="tap-target rounded-xl border-2 border-line bg-paper px-3 text-base font-bold">
+      <div className="sticky top-[4.75rem] z-10 flex flex-col gap-2">
+        <div role="toolbar" aria-label={t`文章の書式`} aria-controls={id} className="flex flex-wrap items-center gap-1 rounded-xl border-2 border-line bg-paper p-1">
+          <Tool name={t`追加`} pressed={menuOpen} onClick={openPlus}>
+            <PlusIcon size={24} />
+          </Tool>
+          {GAP}
           {items.slice(0, 4).map((item) => (
-            <option key={item.kind} value={item.kind}>
-              {item.name}
-            </option>
+            <Tool key={item.kind} name={item.name} pressed={state.style === item.kind} onClick={() => setStyle(item.kind)}>
+              {item.kind === "list" ? <ListIcon /> : { paragraph: "¶", h2: "H2", h3: "H3" }[item.kind as string]}
+            </Tool>
           ))}
-        </select>
-        <button type="button" aria-pressed={state.bold} onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().toggleBold().run()} className={`${BUTTON} ${state.bold ? ACTIVE : ""}`}>
-          {t`太字`}
-        </button>
-        <button
-          type="button"
-          aria-pressed={state.link}
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => setPanel(panel?.kind === "link" ? null : { kind: "link", href: state.link ? String(editor.getAttributes("link").href ?? "") : "", bad: false })}
-          className={`${BUTTON} ${state.link ? ACTIVE : ""}`}
-        >
-          {t`リンク`}
-        </button>
-        {state.photo ? (
-          <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => setPanel({ kind: "alt", alt: String(editor.getAttributes("image").alt ?? "") })} className={BUTTON}>
-            {t`写真の説明`}
-          </button>
-        ) : null}
-        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => move(-1)} className={BUTTON}>
-          <ChevronUpIcon size={20} />
-          {t`上へ`}
-        </button>
-        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => move(1)} className={BUTTON}>
-          <ChevronDownIcon size={20} />
-          {t`下へ`}
-        </button>
-        <button type="button" disabled={!state.canUndo} onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().undo().run()} className={BUTTON}>
-          {t`元に戻す`}
-        </button>
-      </div>
+          {GAP}
+          <Tool name={t`太字`} pressed={state.bold} onClick={() => editor.chain().focus().toggleBold().run()}>
+            <span className="text-xl font-black">B</span>
+          </Tool>
+          <Tool name={t`リンク`} pressed={state.link} onClick={() => setPanel(panel?.kind === "link" ? null : { kind: "link", href: state.link ? String(editor.getAttributes("link").href ?? "") : "", bad: false })}>
+            <LinkIcon />
+          </Tool>
+          <Tool name={t`写真`} pressed={panel?.kind === "photo"} onClick={() => setPanel(panel?.kind === "photo" ? null : { kind: "photo" })}>
+            <ImageIcon />
+          </Tool>
+          {GAP}
+          <Tool name={t`上へ`} onClick={() => move(-1)}>
+            <ChevronUpIcon size={24} />
+          </Tool>
+          <Tool name={t`下へ`} onClick={() => move(1)}>
+            <ChevronDownIcon size={24} />
+          </Tool>
+          {GAP}
+          <Tool name={t`元に戻す`} disabled={!state.canUndo} onClick={() => editor.chain().focus().undo().run()}>
+            <UndoIcon />
+          </Tool>
+        </div>
 
-      {panel ? (
-        <div className="flex flex-col gap-2 rounded-xl bg-surface p-3">
-          {panel.kind === "link" ? (
-            <>
-              <div className="flex flex-wrap items-center gap-2">
-                <input
-                  type="url"
-                  autoFocus
-                  aria-label={t`リンク先のアドレス`}
-                  placeholder="https://…"
-                  value={panel.href}
-                  onChange={(e) => setPanel({ kind: "link", href: e.target.value, bad: false })}
-                  onKeyDown={(e) => {
-                    if (e.key !== "Enter") return;
-                    e.preventDefault(); // this box sits inside the page's form
-                    applyLink(panel.href);
-                  }}
-                  className={`${inputClass} min-w-0 flex-1 basis-60`}
-                />
-                <button type="button" onClick={() => applyLink(panel.href)} className={`${BUTTON} ${ACTIVE}`}>
-                  {t`入れる`}
-                </button>
-                {state.link ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      editor.chain().focus().extendMarkRange("link").unsetLink().run();
-                      setPanel(null);
+        {panel ? (
+          <div className="flex flex-col gap-2 rounded-xl border-2 border-line bg-surface p-3 shadow-lg">
+            {panel.kind === "link" ? (
+              <>
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    type="url"
+                    autoFocus
+                    aria-label={t`リンク先のアドレス`}
+                    placeholder="https://…"
+                    value={panel.href}
+                    onChange={(e) => setPanel({ kind: "link", href: e.target.value, bad: false })}
+                    onKeyDown={(e) => {
+                      if (e.key !== "Enter") return;
+                      e.preventDefault(); // this box sits inside the page's form
+                      applyLink(panel.href);
                     }}
-                    className={BUTTON}
-                  >
-                    {t`リンクを外す`}
+                    className={`${inputClass} min-w-0 flex-1 basis-60`}
+                  />
+                  <button type="button" onClick={() => applyLink(panel.href)} className={`${BUTTON} ${ACTIVE}`}>
+                    {t`入れる`}
                   </button>
+                  {state.link ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        editor.chain().focus().extendMarkRange("link").unsetLink().run();
+                        setPanel(null);
+                      }}
+                      className={BUTTON}
+                    >
+                      {t`リンクを外す`}
+                    </button>
+                  ) : null}
+                  <button type="button" onClick={() => setPanel(null)} className={BUTTON}>
+                    {t`閉じる`}
+                  </button>
+                </div>
+                {panel.bad ? (
+                  <p role="alert" className="text-base font-bold text-danger">
+                    {t`https:// で始まるアドレスを入れてください。`}
+                  </p>
                 ) : null}
+              </>
+            ) : (
+              <div className="flex flex-wrap items-start gap-2">
+                <PhotoUpload onUploaded={addPhoto} />
                 <button type="button" onClick={() => setPanel(null)} className={BUTTON}>
                   {t`閉じる`}
                 </button>
               </div>
-              {panel.bad ? (
-                <p role="alert" className="text-base font-bold text-danger">
-                  {t`https:// で始まるアドレスを入れてください。`}
-                </p>
-              ) : null}
-            </>
-          ) : panel.kind === "photo" ? (
-            <div className="flex flex-wrap items-start gap-2">
-              <PhotoUpload onUploaded={addPhoto} />
-              <button type="button" onClick={() => setPanel(null)} className={BUTTON}>
-                {t`閉じる`}
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-wrap items-center gap-2">
-              <input
-                autoFocus
-                aria-label={t`写真の説明`}
-                placeholder={t`写真の説明（目の見えにくい方に読み上げられます）`}
-                value={panel.alt}
-                onChange={(e) => {
-                  setPanel({ kind: "alt", alt: e.target.value });
-                  editor.commands.updateAttributes("image", { alt: e.target.value });
-                }}
-                onKeyDown={(e) => {
-                  if (e.key !== "Enter") return;
-                  e.preventDefault();
-                  setPanel(null);
-                }}
-                className={`${inputClass} min-w-0 flex-1 basis-60`}
-              />
-              <button type="button" onClick={() => setPanel(null)} className={BUTTON}>
-                {t`閉じる`}
-              </button>
-            </div>
-          )}
-        </div>
-      ) : null}
+            )}
+          </div>
+        ) : null}
+      </div>
 
       <EditorContent editor={editor} />
       <p className="text-base text-muted">{t`「追加」か、空の行で「/」を押すと、入れられるものの一覧が出ます。`}</p>

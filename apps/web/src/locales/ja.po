@@ -4989,6 +4989,10 @@ msgstr "必要なこと"
 msgid "必須"
 msgstr "必須"
 
+#: src/components/admin/BlockEditor.tsx
+msgid "写真を消す"
+msgstr "写真を消す"
+
 #: src/components/admin/GradingFields.tsx:39
 msgid "急な登り下りや、わかりにくい所がある。はしごやくさりが出ることもある。"
 msgstr "急な登り下りや、わかりにくい所がある。はしごやくさりが出ることもある。"
