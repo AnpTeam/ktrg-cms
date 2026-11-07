@@ -5157,6 +5157,18 @@ msgstr "Needs work ({needsWorkCount})"
 msgid "現在の場所"
 msgstr "You are here"
 
+msgid "経由地を直す（管理）"
+msgstr "Edit waypoint (admin)"
+
+msgid "経由地の一覧へ戻る"
+msgstr "Back to all waypoints"
+
+msgid "ルート：{name}"
+msgstr "Route: {name}"
+
+msgid "ルートの画面で開く"
+msgstr "Open in the route editor"
+
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "Remove photo"
