@@ -71,6 +71,7 @@ export const AUDIT_ACTIONS = {
   "banner.create": "banner",
   "banner.update": "banner",
   "banner.delete": "banner",
+  "banner.reorder": "banner",
   /** The furigana words (admin-lists): made, changed, deleted. */
   "furigana.create": "furigana",
   "furigana.update": "furigana",

@@ -3,7 +3,7 @@ import { createMemoryAuditWriter } from "../audit/audit-log";
 import { createBannerService, createMemoryBannerStore } from "./banner-list";
 
 const actor = "11111111-1111-4111-8111-111111111111";
-const banner = (over: Record<string, unknown> = {}) => ({ imageUrl: " https://img.example.com/a.jpg ", altJa: " 朝日 ", altEn: "  ", sortOrder: 0, published: false, ...over });
+const banner = (over: Record<string, unknown> = {}) => ({ imageUrl: " https://img.example.com/a.jpg ", altJa: " 朝日 ", altEn: "  ", published: false, ...over });
 
 function setup() {
   const audit = createMemoryAuditWriter();
@@ -25,11 +25,34 @@ describe("banners", () => {
     expect(await s.svc.create(actor, banner({ altJa: "   " }))).toEqual({ ok: false, reason: "validation_failed" });
   });
 
-  test("visitors get published banners only, smallest order number first", async () => {
+  test("visitors get published banners only, in order", async () => {
     const s = setup();
-    await s.svc.create(actor, banner({ altJa: "三", sortOrder: 3, published: true }));
-    await s.svc.create(actor, banner({ altJa: "下書き", sortOrder: 0 }));
-    await s.svc.create(actor, banner({ altJa: "一", sortOrder: 1, published: true }));
+    await s.svc.create(actor, banner({ altJa: "一", published: true }));
+    await s.svc.create(actor, banner({ altJa: "下書き" }));
+    await s.svc.create(actor, banner({ altJa: "三", published: true }));
     expect((await s.svc.publicBanners()).map((b) => b.altJa)).toEqual(["一", "三"]);
   });
+});
+
+test("a new banner goes last, and the arrows set the order visitors see", async () => {
+  const s = setup();
+  const a = await s.svc.create(actor, banner({ altJa: "一", published: true }));
+  const b = await s.svc.create(actor, banner({ altJa: "二", published: true }));
+  const c = await s.svc.create(actor, banner({ altJa: "三" }));
+  if (!a.ok || !b.ok || !c.ok) throw new Error("not created");
+  expect((await s.svc.ordered()).map((x) => x.altJa)).toEqual(["一", "二", "三"]);
+
+  expect(await s.svc.reorder(actor, [c.value.id, b.value.id, a.value.id])).toBe(true);
+  expect((await s.svc.ordered()).map((x) => x.altJa)).toEqual(["三", "二", "一"]);
+  expect((await s.svc.publicBanners()).map((x) => x.altJa)).toEqual(["二", "一"]);
+});
+
+test("the order must name every banner once", async () => {
+  const s = setup();
+  const a = await s.svc.create(actor, banner({ altJa: "一" }));
+  const b = await s.svc.create(actor, banner({ altJa: "二" }));
+  if (!a.ok || !b.ok) throw new Error("not created");
+  expect(await s.svc.reorder(actor, [a.value.id])).toBe(false);
+  expect(await s.svc.reorder(actor, [a.value.id, a.value.id])).toBe(false);
+  expect((await s.svc.ordered()).map((x) => x.altJa)).toEqual(["一", "二"]);
 });

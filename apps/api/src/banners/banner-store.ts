@@ -42,7 +42,8 @@ export function createDrizzleBannerStore(db: Db): BannerStore {
     async create(actor, fields) {
       const { rest, texts } = splitTexts(BANNER_TEXT, fields);
       return db.transaction(async (tx) => {
-        const [made] = await tx.insert(banners).values(rest).returning();
+        // After every other banner, worked out in the insert itself.
+        const [made] = await tx.insert(banners).values({ ...rest, sortOrder: sql`(select coalesce(max(${banners.sortOrder}), 0) + 1 from ${banners})` }).returning();
         await saveTexts(tx, made!.id, texts);
         await writeAudit(tx, { actorUserId: actor, action: BANNER_AUDIT.create, targetId: made!.id });
         return (await withTexts(tx, [made!]))[0]!;
@@ -71,6 +72,19 @@ export function createDrizzleBannerStore(db: Db): BannerStore {
         const [gone] = await tx.delete(banners).where(eq(banners.id, id)).returning({ id: banners.id }); // words by cascade
         if (!gone) return false;
         await writeAudit(tx, { actorUserId: actor, action: BANNER_AUDIT.delete, targetId: id });
+        return true;
+      });
+    },
+    async listOrdered() {
+      return withTexts(db, await db.select().from(banners).orderBy(asc(banners.sortOrder), asc(banners.createdAt)));
+    },
+    async reorder(actor, ids) {
+      return db.transaction(async (tx) => {
+        const all = await tx.select({ id: banners.id }).from(banners);
+        if (ids.length !== all.length || new Set(ids).size !== ids.length || !all.every((b) => ids.includes(b.id))) return false;
+        // updatedAt stays: an edit open in another tab is not out of date because the order moved.
+        for (const [i, id] of ids.entries()) await tx.update(banners).set({ sortOrder: i + 1 }).where(eq(banners.id, id));
+        await writeAudit(tx, { actorUserId: actor, action: "banner.reorder", targetId: null });
         return true;
       });
     },
