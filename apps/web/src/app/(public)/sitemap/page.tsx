@@ -77,6 +77,9 @@ export default async function SitemapPage() {
         <LinkRow href="/blog">
           <Trans>ブログの一覧</Trans>
         </LinkRow>
+        <LinkRow href="/notices">
+          <Trans>お知らせ</Trans>
+        </LinkRow>
       </Group>
 
       <Group title={<Trans>ラリー</Trans>}>

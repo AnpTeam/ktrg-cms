@@ -5171,6 +5171,21 @@ msgstr "Back to the blog"
 msgid "書き手を管理する"
 msgstr "Manage writers"
 
+msgid "すべて見る"
+msgstr "See all"
+
+msgid "{until} まで"
+msgstr "Until {until}"
+
+msgid "今、お知らせはありません。"
+msgstr "No notices at the moment."
+
+msgid "通行止めなどがあれば、ここに表示されます。"
+msgstr "Closures and the like will be shown here."
+
+msgid "お知らせをフィードで受け取る"
+msgstr "Follow the notices in a feed reader"
+
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "Remove photo"

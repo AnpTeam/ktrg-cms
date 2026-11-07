@@ -1434,6 +1434,7 @@ describe.skipIf(!url)("trail notices on real PostgreSQL", () => {
     sourceNameEn: null,
     verifiedOn: "2026-10-20",
     expiresOn: null,
+    closure: false,
     published: false,
     ...over,
   });

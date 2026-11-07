@@ -164,7 +164,7 @@ export function Landing({
       <LandingMap routes={routes} heading={w.mapHeading} />
 
       <div className="@[42rem]:col-span-2">
-        <TrailNotices notices={notices} locale={locale} />
+        <TrailNotices notices={notices} locale={locale} limit={2} />
       </div>
 
       <div className="@[42rem]:col-span-2">

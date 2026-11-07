@@ -1,0 +1,1 @@
+ALTER TABLE "trail_notices" ADD COLUMN "closure" boolean DEFAULT false NOT NULL;

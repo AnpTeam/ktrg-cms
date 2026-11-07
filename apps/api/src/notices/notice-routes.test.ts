@@ -27,6 +27,7 @@ const notice = (over: Record<string, unknown> = {}) => ({
   sourceNameEn: "Nara Prefecture",
   verifiedOn: "2026-10-20",
   expiresOn: "2026-10-31",
+  closure: false,
   published: false,
   ...over,
 });

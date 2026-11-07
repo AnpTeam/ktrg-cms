@@ -24,6 +24,8 @@ export const NOTICE_FIELDS = {
   verifiedOn: t.String({ format: "date" }),
   /** YYYY-MM-DD; hidden from visitors after this day. null = until someone removes it. */
   expiresOn: t.Union([t.String({ format: "date" }), t.Null()]),
+  /** A way or place is shut: a red mark for visitors, shown before other notices. */
+  closure: t.Boolean(),
   published: t.Boolean(),
 };
 
@@ -33,6 +35,6 @@ export type NoticeRow = ListRow & NoticeFields;
 
 export interface NoticeStore extends ListStore<NoticeRow, NoticeFields> {
   routeExists(id: string): Promise<boolean>;
-  /** Published notices that have not expired on `today` (YYYY-MM-DD), the most recently checked first. */
+  /** Published notices that have not expired on `today` (YYYY-MM-DD): closures first, then the most recently checked. */
   listPublic(today: string): Promise<NoticeRow[]>;
 }

@@ -69,6 +69,12 @@ export const noticeList: ListDef<"notices", typeof NOTICE_FIELDS, NoticeRow, Not
         inList: { text: { ja: "{value} まで", en: "Until {value}" }, empty: { ja: "期限なし", en: "No end date" } },
       },
       {
+        name: "closure",
+        kind: "boolean",
+        label: { ja: "通行止め・閉鎖のお知らせ（赤い印を付けて、先頭に出す）", en: "Closure notice (red mark, shown first)" },
+        inList: { yes: { ja: "通行止め", en: "Closed" } },
+      },
+      {
         name: "published",
         kind: "boolean",
         label: { ja: "公開する（訪れる人に見せる）", en: "Publish (show to visitors)" },
@@ -81,7 +87,7 @@ export const noticeList: ListDef<"notices", typeof NOTICE_FIELDS, NoticeRow, Not
 /** What a visitor sees of a notice: no draft flag, no edit times, no other languages (the site speaks ja / en). */
 const publicOut = ({ published: _p, createdAt: _c, updatedAt: _u, translations: _t, ...n }: NoticeRow) => n;
 
-/** What visitors read, no login: published notices that have not expired (Japan time), the most recently checked first. */
+/** What visitors read, no login: published notices that have not expired (Japan time), closures first, then the most recently checked. */
 export function publicNoticeRoutes(getNotices: () => NoticeService) {
   return new Elysia({ detail: { tags: ["Content"] } }).get("/notices", async ({ set }) => {
     publicCache(set, 30); // hazards and closures: a shorter wait than the rest

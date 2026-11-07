@@ -5145,6 +5145,21 @@ msgstr "ブログへ戻る"
 msgid "書き手を管理する"
 msgstr "書き手を管理する"
 
+msgid "すべて見る"
+msgstr "すべて見る"
+
+msgid "{until} まで"
+msgstr "{until} まで"
+
+msgid "今、お知らせはありません。"
+msgstr "今、お知らせはありません。"
+
+msgid "通行止めなどがあれば、ここに表示されます。"
+msgstr "通行止めなどがあれば、ここに表示されます。"
+
+msgid "お知らせをフィードで受け取る"
+msgstr "お知らせをフィードで受け取る"
+
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "写真を消す"

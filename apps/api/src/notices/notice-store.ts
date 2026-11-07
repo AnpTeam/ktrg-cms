@@ -34,6 +34,7 @@ async function withTexts(q: Reader, rows: (typeof trailNotices.$inferSelect)[]):
       translations: w.translations,
       verifiedOn: r.verifiedOn,
       expiresOn: r.expiresOn,
+      closure: r.closure,
       published: r.published,
       createdAt: r.createdAt,
       updatedAt: r.updatedAt,
@@ -118,7 +119,7 @@ export function createDrizzleNoticeStore(db: Db): NoticeStore {
         .select()
         .from(trailNotices)
         .where(and(eq(trailNotices.published, true), or(isNull(trailNotices.expiresOn), gte(trailNotices.expiresOn, today))))
-        .orderBy(desc(trailNotices.verifiedOn), desc(trailNotices.createdAt));
+        .orderBy(desc(trailNotices.closure), desc(trailNotices.verifiedOn), desc(trailNotices.createdAt));
       return withTexts(db, rows);
     },
   };

@@ -21,15 +21,17 @@ export interface TrailNotice {
   verifiedOn: string;
   /** YYYY-MM-DD; the notice disappears after this day. null = until someone removes it. */
   expiresOn: string | null;
+  /** A way or place is shut: a red mark, and it comes before other notices. */
+  closure: boolean;
   /** The route it is about, or null for the whole trail. */
   routeId: string | null;
 }
 
-/** Notices that have not expired as of `today` (YYYY-MM-DD, Japan time), the most recently checked first. */
+/** Notices that have not expired as of `today` (YYYY-MM-DD, Japan time): closures first, so they survive the short list on the home page, then the most recently checked. */
 export function activeNotices(list: readonly TrailNotice[], today: string): TrailNotice[] {
   return list
     .filter((n) => n.expiresOn === null || n.expiresOn >= today)
-    .sort((a, b) => b.verifiedOn.localeCompare(a.verifiedOn));
+    .sort((a, b) => Number(b.closure) - Number(a.closure) || b.verifiedOn.localeCompare(a.verifiedOn));
 }
 
 /** Today as YYYY-MM-DD in Japan time. */
