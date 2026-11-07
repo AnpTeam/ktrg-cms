@@ -444,8 +444,17 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
   }
 }
 
+/** What a save settled for good: undo takes back the words and the map, never a thing's id or the time the server gave it. */
+function keepServerIds(d: RouteDraft, a: Extract<DraftAction, { type: "savedPlace" | "savedRoute" }>): RouteDraft {
+  if (a.type === "savedRoute") return { ...d, id: a.id, updatedAt: a.updatedAt };
+  return { ...d, places: d.places.map((p) => (p.key === a.key ? { ...p, id: a.place.id, updatedAt: a.place.updatedAt } : p)) };
+}
+
 export function draftReducer(state: DraftState, a: DraftAction): DraftState {
   if (a.type === "loaded") return initialState(a.draft);
+  if (a.type === "savedPlace" || a.type === "savedRoute") {
+    return { present: apply(state.present, a), past: state.past.map((d) => keepServerIds(d, a)), future: state.future.map((d) => keepServerIds(d, a)) };
+  }
   if (a.type === "undo") {
     const prev = state.past.at(-1);
     return prev ? { present: prev, past: state.past.slice(0, -1), future: [state.present, ...state.future] } : state;

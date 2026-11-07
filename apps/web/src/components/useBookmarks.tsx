@@ -67,8 +67,14 @@ export function BookmarkProvider({ signedIn, ids, children }: { signedIn: boolea
   useEffect(() => {
     const onDevice = parseBookmarks(held);
     if (onDevice.length === 0) return;
-    write([]);
-    void save(mergeBookmarks(ids, onDevice));
+    void api.me
+      .patch({ bookmarks: mergeBookmarks(ids, onDevice) })
+      .then((res) => {
+        if (res.error) return; // kept on the device: tried again at the next arrival
+        write([]);
+        router.refresh();
+      })
+      .catch(() => undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- once per arrival of device bookmarks
   }, [held]);
 

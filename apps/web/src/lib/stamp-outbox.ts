@@ -41,12 +41,21 @@ export function createOutbox(deps: OutboxDeps) {
     /** Writes the stamp to the queue. False when it could not be kept (storage blocked or full): the screen must say so. */
     async enqueue(spotId: string, reading: Reading, celebrate?: QueuedStamp["celebrate"]): Promise<boolean> {
       try {
-        await deps.store.add(newQueuedStamp(userKey, spotId, reading, deps.now(), undefined, celebrate));
+        // Pressed again while it waits: the first press is the one that counts, as it was the earlier time at the place.
+        if (!(await deps.store.list(userKey)).some((r) => r.spotId === spotId)) await deps.store.add(newQueuedStamp(userKey, spotId, reading, deps.now(), undefined, celebrate));
       } catch {
         return false;
       }
       await refresh();
       return true;
+    },
+    /** The places with a stamp waiting on this phone. */
+    async waitingSpots(): Promise<string[]> {
+      try {
+        return (await deps.store.list(userKey)).map((r) => r.spotId);
+      } catch {
+        return [];
+      }
     },
     /** How many stamps pressed before signing in (kept as "guest") are still waiting on this phone. */
     async guestWaiting(): Promise<number> {

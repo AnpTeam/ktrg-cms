@@ -31,6 +31,8 @@ const button = buttonStyle("action", "lg", "flex w-full shadow-lg");
 const quietButton = buttonStyle("secondary", "lg", "flex w-full");
 /** How long the stamp-press moment lasts (.stamp-press in globals.css). */
 const STAMP_PRESS_MS = 1700;
+/** How long the "sent later" words stay before navigation moves on; the waiting count stays on screen after that. */
+const QUEUED_READ_MS = 4000;
 
 export function StampHere({
   spotId,
@@ -59,7 +61,7 @@ export function StampHere({
   aside?: ReactNode;
   /** Where the rally stood before this stamp: lets the popup show the ring filling. Left out when the screen does not know. */
   progress?: Omit<StampProgress, "after">;
-  /** Called once the server has given (or already had) the stamp and the press has played; navigation moves on to the next stop. */
+  /** Called once the stamp is given, or is waiting on the phone with no signal, and the moment has played; navigation moves on to the next stop. */
   onStamped?: () => void;
 }) {
   const { t, i18n } = useLingui();
@@ -101,6 +103,7 @@ export function StampHere({
     } else if (result.failure === "network" && !mock && (await getOutbox().enqueue(spotId, position.reading, progress))) {
       // No signal: the stamp waits on this phone and is sent when the app is online (the server still decides then).
       setPhase({ name: "queued" });
+      window.setTimeout(() => onStamped?.(), QUEUED_READ_MS);
     } else {
       setPhase({ name: "problem", problem: result.failure, distanceM: result.distanceM });
     }
@@ -134,7 +137,6 @@ export function StampHere({
           <p className="text-xl font-bold leading-snug">{t`電波が弱いか、つながらないため、あとで送ります。`}</p>
           <p className="text-base leading-snug">{t`つながると、自動で送ります。そのときにサーバーが確かめるため、受け付けられないこともあります（場所が閉鎖中になったときなど）。`}</p>
         </div>
-        {aside}
       </div>
     );
   }

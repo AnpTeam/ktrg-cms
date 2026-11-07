@@ -8,8 +8,8 @@ import type { StampServices } from "./stamp-routes";
 /**
  * The one write of the stamps list: PATCH /admin/lists/stamps/:id with `{ updatedAt, revoked }`, the same shape as
  * every generic list's change, so the generated form saves here unchanged (`updatedAt` is not checked: revoking is
- * idempotent). A revoked stamp is kept and ignored by progress; it can be restored. A course or rally the visitor
- * already finished stays finished (finishes are saved once).
+ * idempotent). A revoked stamp is kept and ignored by progress; it can be restored. Revoking drops the finishes the stamp
+ * was part of, and restoring saves them again.
  */
 export function stampAdminRoutes(getServices: () => StampServices & StampListServices, opts: RouteOptions) {
   const { plugins } = routeKit(getServices, opts);
