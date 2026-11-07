@@ -9,11 +9,11 @@ import { BlockEditorLoader } from "./BlockEditorLoader";
 import { Field, Section, TextInput } from "./fields";
 import { HomeTextFields } from "./HomeTextFields";
 import { PagePreview, type HomeData } from "./PagePreview";
-import { AlertIcon, TickIcon, XIcon } from "@/components/icons";
+
 import { confirmDialog } from "@/components/ConfirmDialog";
+import { showToast } from "@/lib/admin/toast";
 
 type Lang = "ja" | "en";
-type Notice = { kind: "saved" | "error"; text: string } | null;
 
 // 管理 > ページの文章 > one page. Each language has a title and a text. A language that was never written starts from
 // the text the app has now, so nothing is typed from nothing; emptying both boxes brings the built-in page back.
@@ -24,10 +24,9 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
   const [done, setDone] = useState<PageText>(() => ({ ja: start("ja"), en: start("en") }));
   const [text, setText] = useState<PageText>(done);
   const [busy, setBusy] = useState(false);
-  const [notice, setNotice] = useState<Notice>(null);
   const dirty = JSON.stringify(text) !== JSON.stringify(done);
   const edit = (lang: Lang, patch: Partial<PageLang>) => {
-    setNotice(null);
+    showToast(null);
     setText((cur) => ({ ...cur, [lang]: { ...cur[lang], ...patch } }));
   };
 
@@ -47,7 +46,7 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
   async function save() {
     if (!(await confirmDialog({ title: t`サイトに反映しますか？`, body: t`この文章は、本番のサイトにすぐ反映されます。保存しますか？`, yes: t`保存する` }))) return;
     setBusy(true);
-    setNotice(null);
+    showToast(null);
     try {
       const res = await fetch(`/api/v1/admin/settings/pages/${pageKey}`, {
         method: "PUT",
@@ -58,10 +57,10 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
       const json = (await res.json().catch(() => null)) as { ok?: unknown; error?: unknown } | null;
       if (res.ok && json?.ok === true) {
         setDone(text);
-        setNotice({ kind: "saved", text: t`保存しました。サイトに反映されています。` });
-      } else setNotice({ kind: "error", text: messages[json?.ok === false && isServerCode(json.error) ? json.error : errorKeyFromApi(res.status, json)] });
+        showToast({ kind: "ok", text: t`保存しました。サイトに反映されています。` });
+      } else showToast({ kind: "error", text: messages[json?.ok === false && isServerCode(json.error) ? json.error : errorKeyFromApi(res.status, json)] });
     } catch {
-      setNotice({ kind: "error", text: messages.network });
+      showToast({ kind: "error", text: messages.network });
     }
     setBusy(false);
   }
@@ -79,19 +78,6 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
         <button type="button" onClick={save} disabled={!dirty || busy} className="tap-target rounded-full bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
           {busy ? t`保存中…` : t`保存`}
         </button>
-        {notice ? (
-          <div className={`fixed inset-x-4 top-20 z-50 mx-auto flex max-w-xl items-start gap-3 rounded-2xl border-2 border-white/40 p-4 text-white shadow-2xl ${notice.kind === "error" ? "bg-[#8f1818]" : "bg-[#14532d]"}`}>
-            <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-white text-ink">
-              {notice.kind === "error" ? <AlertIcon size={20} /> : <TickIcon size={20} />}
-            </span>
-            <p role={notice.kind === "error" ? "alert" : "status"} className="min-w-0 flex-1 pt-0.5 text-lg font-bold">
-              {notice.text}
-            </p>
-            <button type="button" onClick={() => setNotice(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-full px-3 hover:bg-white/20">
-              <XIcon size={22} />
-            </button>
-          </div>
-        ) : null}
       </div>
 
       <p role="note" className="rounded-2xl border-2 border-caution bg-paper p-4 text-lg font-bold leading-snug">

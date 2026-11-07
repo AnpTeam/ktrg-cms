@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { compactEntries, type Entry } from "@/lib/gsi-large-style";
 import { confirmDialog } from "@/components/ConfirmDialog";
+import { showToast } from "@/lib/admin/toast";
 
-type Notice = { kind: "ok" | "error"; text: string } | null;
 
 const MAX_FILE_BYTES = 6 * 1024 * 1024;
 
@@ -19,7 +19,6 @@ export function LargeStyleUpload({ draft, onDraft }: { draft: Entry[] | null; on
   const [custom, setCustom] = useState<boolean | null>(null);
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
-  const [notice, setNotice] = useState<Notice>(null);
 
   // Whether an uploaded file is in use already (the answer is large; only whether it exists matters here).
   useEffect(() => {
@@ -34,10 +33,10 @@ export function LargeStyleUpload({ draft, onDraft }: { draft: Entry[] | null; on
   }, []);
 
   async function pick(file: File | undefined) {
-    setNotice(null);
+    showToast(null);
     onDraft(null);
     if (!file) return;
-    if (file.size > MAX_FILE_BYTES) return setNotice({ kind: "error", text: t`ファイルが大きすぎます（6MBまで）。` });
+    if (file.size > MAX_FILE_BYTES) return showToast({ kind: "error", text: t`ファイルが大きすぎます（6MBまで）。` });
     try {
       const tree: unknown = JSON.parse(await file.text());
       if (typeof tree !== "object" || tree === null || !Array.isArray((tree as { list?: unknown }).list)) throw new Error("shape");
@@ -45,9 +44,9 @@ export function LargeStyleUpload({ draft, onDraft }: { draft: Entry[] | null; on
       if (entries.length === 0) throw new Error("empty");
       setName(file.name);
       onDraft(entries);
-      setNotice({ kind: "ok", text: t`${entries.length}件の設定を読み込みました。下の見本で確かめて、よければ「反映する」を押してください。` });
+      showToast({ kind: "ok", text: t`${entries.length}件の設定を読み込みました。下の見本で確かめて、よければ「反映する」を押してください。` });
     } catch {
-      setNotice({ kind: "error", text: t`このファイルは読めません。国土地理院のスタイル編集で保存したJSONファイルを選んでください。` });
+      showToast({ kind: "error", text: t`このファイルは読めません。国土地理院のスタイル編集で保存したJSONファイルを選んでください。` });
     }
   }
 
@@ -55,18 +54,18 @@ export function LargeStyleUpload({ draft, onDraft }: { draft: Entry[] | null; on
     const ask = entries ? t`このファイルの設定を、すぐにすべての訪問者の地図に反映します。よろしいですか？` : t`アップロードしたファイルをやめて、初めから入っている設定に戻します。よろしいですか？`;
     if (!(await confirmDialog({ title: t`サイトに反映しますか？`, body: ask, yes: entries ? t`反映する` : t`元に戻す` }))) return;
     setBusy(true);
-    setNotice(null);
+    showToast(null);
     try {
       const res = await fetch("/api/v1/admin/settings/large-style", { method: "PUT", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ entries }) });
       if (res.ok) {
         setCustom(entries !== null);
         onDraft(null);
-        setNotice({ kind: "ok", text: entries ? t`反映しました。訪問者の地図には、数分のうちに変わります。` : t`初めから入っている設定に戻しました。` });
+        showToast({ kind: "ok", text: entries ? t`反映しました。訪問者の地図には、数分のうちに変わります。` : t`初めから入っている設定に戻しました。` });
       } else {
-        setNotice({ kind: "error", text: t`保存できませんでした。ファイルの中身か、電波を確かめてください。` });
+        showToast({ kind: "error", text: t`保存できませんでした。ファイルの中身か、電波を確かめてください。` });
       }
     } catch {
-      setNotice({ kind: "error", text: t`保存できませんでした。ファイルの中身か、電波を確かめてください。` });
+      showToast({ kind: "error", text: t`保存できませんでした。ファイルの中身か、電波を確かめてください。` });
     }
     setBusy(false);
   }
@@ -89,11 +88,6 @@ export function LargeStyleUpload({ draft, onDraft }: { draft: Entry[] | null; on
         </button>
       </div>
       {draft && name ? <p className="text-base">{name}</p> : null}
-      {notice ? (
-        <p role={notice.kind === "error" ? "alert" : "status"} className={`rounded-xl bg-paper p-4 text-lg font-bold ${notice.kind === "error" ? "text-danger" : "text-moss"}`}>
-          {notice.text}
-        </p>
-      ) : null}
     </fieldset>
   );
 }

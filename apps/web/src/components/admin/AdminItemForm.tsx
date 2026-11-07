@@ -17,10 +17,10 @@ import { PhotoUpload } from "./PhotoUpload";
 import { PositionMap } from "./PositionMap";
 import { RelationPicker } from "./RelationPicker";
 import { UserActions } from "./UserActions";
-import { AlertIcon, TickIcon, XIcon } from "@/components/icons";
-import { confirmDialog } from "@/components/ConfirmDialog";
 
-type Notice = { kind: "saved" | "error"; text: string } | null;
+import { confirmDialog } from "@/components/ConfirmDialog";
+import { showToast } from "@/lib/admin/toast";
+
 
 // The form for one row of any generic admin list, drawn from its description (GET /admin/lists) like the rally
 // editor. A new row is created in one go and then opens as its own page; a change sends only what changed, with the
@@ -39,7 +39,6 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
   // The other content languages of the bilingual fields ({ de: { title } }), kept beside the plain values.
   const [words, setWords] = useState<Translations>(() => (initial?.translations ?? {}) as Translations);
   const [busy, setBusy] = useState(false);
-  const [notice, setNotice] = useState<Notice>(null);
 
   const missing = missingRequired(config, values);
   const wordChange = saved ? translationsChange((saved.translations ?? {}) as Translations, words) : null;
@@ -103,16 +102,16 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
   /** After saving a place, open the next one still waiting for its position to be checked. */
   async function openNext(currentId: string) {
     const res = await listRequest<ListPage>("GET", `${config.key}?filter=positionVerified:false`);
-    if (!res.ok) return setNotice({ kind: "error", text: messages[res.key] });
+    if (!res.ok) return showToast({ kind: "error", text: messages[res.key] });
     const at = res.data.items.findIndex((i) => i.id === currentId);
     const target = res.data.items[at + 1] ?? res.data.items.find((i) => i.id !== currentId);
     if (target) router.push(`/admin/${config.key}/${target.id}`);
-    else setNotice({ kind: "saved", text: t`保存しました。次に確認する場所はありません。` });
+    else showToast({ kind: "ok", text: t`保存しました。次に確認する場所はありません。` });
   }
 
   async function save(andNext = false) {
     setBusy(true);
-    setNotice(null);
+    showToast(null);
     const got: { item: ListItem | null } = { item: null };
     const send = async () => {
       const res: ListAnswer<OneItem> = saved
@@ -125,12 +124,12 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
     const outcome = await guard(send);
     setBusy(false);
     const item = got.item;
-    if (!outcome.ok || !item) return outcome.ok || outcome.code === "cancelled" ? undefined : setNotice({ kind: "error", text: messages[outcome.code] });
+    if (!outcome.ok || !item) return outcome.ok || outcome.code === "cancelled" ? undefined : showToast({ kind: "error", text: messages[outcome.code] });
     if (!saved) return router.push(`/admin/${config.key}/${item.id}`);
     setSaved(item);
     setValues(formValues(config, item));
     setWords((item.translations ?? {}) as Translations);
-    setNotice({ kind: "saved", text: t`保存しました。` });
+    showToast({ kind: "ok", text: t`保存しました。` });
     if (andNext) await openNext(item.id);
   }
 
@@ -139,7 +138,7 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
     setBusy(true);
     const res = await listRequest("DELETE", `${config.key}/${saved.id}`);
     setBusy(false);
-    if (!res.ok) return setNotice({ kind: "error", text: messages[res.key] });
+    if (!res.ok) return showToast({ kind: "error", text: messages[res.key] });
     router.push(`/admin/${config.key}`);
   }
 
@@ -278,19 +277,6 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
           ) : null}
           <button type="button" onClick={() => void save()} disabled={!canSave} className="tap-target rounded-full bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
             {busy ? t`保存中…` : saved ? t`保存` : t`作成`}
-          </button>
-        </div>
-      ) : null}
-      {notice ? (
-        <div className={`fixed inset-x-4 top-20 z-50 mx-auto flex max-w-xl items-start gap-3 rounded-2xl border-2 border-white/40 p-4 text-white shadow-2xl ${notice.kind === "error" ? "bg-[#8f1818]" : "bg-[#14532d]"}`}>
-          <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-white text-ink">
-            {notice.kind === "error" ? <AlertIcon size={20} /> : <TickIcon size={20} />}
-          </span>
-          <p role={notice.kind === "error" ? "alert" : "status"} className="min-w-0 flex-1 pt-0.5 text-lg font-bold">
-            {notice.text}
-          </p>
-          <button type="button" onClick={() => setNotice(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-full px-3 hover:bg-white/20">
-            <XIcon size={22} />
           </button>
         </div>
       ) : null}

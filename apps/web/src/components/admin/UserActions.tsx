@@ -9,6 +9,7 @@ import { formatMoment, type ListItem } from "@/lib/admin/lists/config";
 import { listRequest, type ListAnswer } from "@/lib/admin/lists/list-client";
 import { endOfJstDay } from "@/lib/admin/lists/jst";
 import { Field, inputClass, Section, TextInput } from "./fields";
+import { showToast } from "@/lib/admin/toast";
 
 /**
  * What an admin can do to an account besides changing its role: restrict it (it can look but not take part), ask for its
@@ -24,7 +25,6 @@ export function UserActions({ item, locale, onItem }: { item: ListItem; locale: 
   const [until, setUntil] = useState("");
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
   const id = item.id;
   const restricted = item.restricted === true;
   const pending = item.deletionPending === true;
@@ -35,7 +35,7 @@ export function UserActions({ item, locale, onItem }: { item: ListItem; locale: 
   /** Run one call behind the fresh-login step; show its error or the done text. */
   async function run(call: () => Promise<ListAnswer<{ item?: ListItem }>>, done: string, after?: () => void) {
     setBusy(true);
-    setMessage(null);
+    showToast(null);
     let got: ListItem | null = null;
     const outcome = await guard(async () => {
       const res = await call();
@@ -44,9 +44,9 @@ export function UserActions({ item, locale, onItem }: { item: ListItem; locale: 
       return { ok: true as const };
     });
     setBusy(false);
-    if (!outcome.ok) return outcome.code === "cancelled" ? undefined : setMessage({ ok: false, text: messages[outcome.code] });
+    if (!outcome.ok) return outcome.code === "cancelled" ? undefined : showToast({ kind: "error", text: messages[outcome.code] });
     if (got) onItem(got);
-    setMessage({ ok: true, text: done });
+    showToast({ kind: "ok", text: done });
     after?.();
   }
 
@@ -131,11 +131,6 @@ export function UserActions({ item, locale, onItem }: { item: ListItem; locale: 
           </button>
         </div>
       </Section>
-      {message ? (
-        <p role={message.ok ? "status" : "alert"} className={`text-lg font-bold ${message.ok ? "text-moss" : "text-danger"}`}>
-          {message.text}
-        </p>
-      ) : null}
       {dialog}
     </>
   );

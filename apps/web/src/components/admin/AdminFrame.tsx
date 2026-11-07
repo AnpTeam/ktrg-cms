@@ -3,6 +3,7 @@
 import { createContext, useContext, useSyncExternalStore, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { PanelIcon } from "@/components/icons";
+import { Toaster } from "./Toaster";
 
 const KEY = "admin-sidebar-hidden";
 const CHANGED = "admin-sidebar-changed";
@@ -53,6 +54,7 @@ export function AdminFrame({ aside, children }: { aside: ReactNode; children: Re
           {aside}
         </aside>
         <div className="min-w-0">{children}</div>
+        <Toaster />
       </div>
     </Sidebar.Provider>
   );

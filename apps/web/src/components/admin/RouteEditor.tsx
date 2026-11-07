@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
-import { AlertIcon, CheckIcon, DocumentIcon, ListIcon, MapIcon, PinIcon, TickIcon, XIcon } from "@/components/icons";
+import { CheckIcon, DocumentIcon, ListIcon, MapIcon, PinIcon } from "@/components/icons";
 import { api } from "@/lib/api";
 import { outcome } from "@/lib/admin/admin-client";
 import { checklist, factsFromDraft, progress, type EditorTab } from "@/lib/admin/checklist";
@@ -54,6 +54,7 @@ import { PlaceTable } from "./PlaceTable";
 import { SharedPlaces } from "./SharedPlaces";
 import { useChecklistLabels } from "./useChecklistLabels";
 import { confirmDialog } from "@/components/ConfirmDialog";
+import { showToast } from "@/lib/admin/toast";
 
 const TABS: EditorTab[] = ["overview", "text", "map", "places", "check"];
 const TAB_ICONS: Record<EditorTab, ReactNode> = { overview: <ListIcon />, text: <DocumentIcon />, map: <MapIcon />, places: <PinIcon />, check: <CheckIcon /> };
@@ -76,7 +77,10 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
   const draftRef = useRef<RouteDraft>(initial);
   const [saving, setSaving] = useState(false);
   const [busyKey, setBusyKey] = useState<string | null>(null);
-  const [message, setMessage] = useState<{ kind: "error" | "ok"; text: string } | null>(null);
+  // An error with fields to fix offers a way to them.
+  // A caller that has just found problems passes them: `problems` is only new on the next render.
+  const setMessage = (m: { kind: "error" | "ok"; text: string } | null, now: DraftProblem[] = problems) =>
+    showToast(m && (m.kind === "error" && now.length > 0 ? { ...m, action: { label: t`直す場所を見る`, run: () => showFirstProblem(now[0]!.kind) } } : m));
   const [problems, setProblems] = useState<DraftProblem[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [view, setView] = useState<"edit" | "preview">("edit");
@@ -107,11 +111,6 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
   }
 
   // A good result fades on its own; an error stays until it is closed.
-  useEffect(() => {
-    if (message?.kind !== "ok") return;
-    const timer = setTimeout(() => setMessage(null), 5000);
-    return () => clearTimeout(timer);
-  }, [message]);
 
   useEffect(() => {
     draftRef.current = draft;
@@ -212,7 +211,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
     // screen, in red) and everything else is saved, so one blank row never costs the rest of the work.
     const routeProblem = found.find((p) => !p.kind.startsWith("place_"));
     if (routeProblem) {
-      setMessage({ kind: "error", text: t`保存できません。赤く示した項目を直してください。` });
+      setMessage({ kind: "error", text: t`保存できません。赤く示した項目を直してください。` }, found);
       showFirstProblem(routeProblem.kind); // the tab that holds the red item, and the item itself
       return;
     }
@@ -315,7 +314,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
     if (failure) {
       // A waypoint that was taken off the site before the failure stays off: say so.
       const names = unpublished.join("、");
-      setMessage({ kind: "error", text: unpublished.length > 0 ? `${failure} ${t`すでに公開をやめた経由地があります（${names}）。「経由地」タブで確かめてください。`}` : failure });
+      setMessage({ kind: "error", text: unpublished.length > 0 ? `${failure} ${t`すでに公開をやめた経由地があります（${names}）。「経由地」タブで確かめてください。`}` : failure }, found);
       setSaving(false);
       return;
     }
@@ -335,6 +334,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
       heldCount === 0
         ? { kind: unsourced ? "error" : "ok", text: unsourced ? t`保存しました。ただし、情報源が空のため、線は「確認していない」状態で保存しました。情報源を入れて、もう一度保存してください。` : t`保存しました。` }
         : { kind: "error", text: t`保存しました。ただし、未完成の経由地が${heldCount}件あり、まだ保存していません（赤く示した項目）。` },
+      heldCount === 0 ? [] : found,
     );
     setProblems(heldCount === 0 ? [] : found);
     setSaving(false);
@@ -352,7 +352,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
     const found = draftProblems({ ...before, places: [place] }).filter((p) => "key" in p && p.key === key);
     if (found.length > 0) {
       setProblems((old) => [...old.filter((p) => !("key" in p && p.key === key)), ...found]);
-      setMessage({ kind: "error", text: t`保存できません。赤く示した項目を直してください。` });
+      setMessage({ kind: "error", text: t`保存できません。赤く示した項目を直してください。` }, found);
       return;
     }
     setProblems((old) => old.filter((p) => !("key" in p && p.key === key)));
@@ -492,25 +492,6 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
         <button type="button" disabled={!dirty || saving} onClick={save} className="tap-target rounded-full bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
           {saving ? t`保存中…` : t`保存する`}
         </button>
-        {/* A toast over the page, not a line in the bar: it must catch the eye wherever the page is scrolled to. */}
-        {message ? (
-          <div className={`fixed inset-x-4 top-20 z-50 mx-auto flex max-w-xl items-start gap-3 rounded-2xl border-2 p-4 shadow-2xl ${message.kind === "error" ? "border-white/40 bg-[#8f1818] text-white" : "border-white/40 bg-[#14532d] text-white"}`}>
-            <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-white text-ink">
-              {message.kind === "error" ? <AlertIcon size={20} /> : <TickIcon size={20} />}
-            </span>
-            <p role={message.kind === "error" ? "alert" : "status"} className="min-w-0 flex-1 pt-0.5 text-lg font-bold">
-              {message.text}
-            </p>
-            {message.kind === "error" && problems.length > 0 ? (
-              <button type="button" onClick={() => showFirstProblem(problems[0]!.kind)} className="tap-target shrink-0 rounded-full border-2 border-white px-3 text-base font-bold">
-                {t`直す場所を見る`}
-              </button>
-            ) : null}
-            <button type="button" onClick={() => setMessage(null)} aria-label={t`閉じる`} className="tap-target shrink-0 rounded-full px-3 hover:bg-white/20">
-              <XIcon size={22} />
-            </button>
-          </div>
-        ) : null}
       </div>
 
       {offerOpen ? (

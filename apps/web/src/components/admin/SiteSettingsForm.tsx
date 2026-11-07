@@ -9,8 +9,8 @@ import type { Entry } from "@/lib/gsi-large-style";
 import { LargeStyleUpload } from "./LargeStyleUpload";
 import { MapStylePreview } from "./MapStylePreview";
 import { confirmDialog } from "@/components/ConfirmDialog";
+import { showToast } from "@/lib/admin/toast";
 
-type Notice = { kind: "saved" | "error"; text: string } | null;
 
 const choice = (on: boolean) =>
   `tap-target flex flex-col items-start gap-1 rounded-xl border-2 px-4 py-3 text-left ${on ? "border-ink bg-paper ring-2 ring-ink" : "border-line bg-paper hover:bg-surface"}`;
@@ -26,12 +26,11 @@ export function SiteSettingsForm({ initial }: { initial: MapSettings }) {
   const [saved, setSaved] = useState(initial);
   const [s, setS] = useState(initial);
   const [busy, setBusy] = useState(false);
-  const [notice, setNotice] = useState<Notice>(null);
   // A file chosen for the large-text map but not applied yet; the preview shows it.
   const [draft, setDraft] = useState<Entry[] | null>(null);
   const dirty = JSON.stringify(s) !== JSON.stringify(saved);
   const set = (patch: Partial<MapSettings>) => {
-    setNotice(null);
+    showToast(null);
     setS((cur) => ({ ...cur, ...patch }));
   };
 
@@ -47,7 +46,7 @@ export function SiteSettingsForm({ initial }: { initial: MapSettings }) {
   async function save() {
     if (!(await confirmDialog({ title: t`サイトに反映しますか？`, body: t`この設定は、本番のサイトにすぐ反映されます。すべての訪問者の地図の見た目が変わります。保存しますか？`, yes: t`保存する` }))) return;
     setBusy(true);
-    setNotice(null);
+    showToast(null);
     try {
       const res = await fetch("/api/v1/admin/settings/map-style", {
         method: "PUT",
@@ -58,12 +57,12 @@ export function SiteSettingsForm({ initial }: { initial: MapSettings }) {
       const json = (await res.json().catch(() => null)) as { ok?: unknown; error?: unknown } | null;
       if (res.ok && json?.ok === true) {
         setSaved(s);
-        setNotice({ kind: "saved", text: t`保存しました。サイトの地図に反映されています。` });
+        showToast({ kind: "ok", text: t`保存しました。サイトの地図に反映されています。` });
       } else {
-        setNotice({ kind: "error", text: messages[json?.ok === false && isServerCode(json.error) ? json.error : errorKeyFromApi(res.status, json)] });
+        showToast({ kind: "error", text: messages[json?.ok === false && isServerCode(json.error) ? json.error : errorKeyFromApi(res.status, json)] });
       }
     } catch {
-      setNotice({ kind: "error", text: messages.network });
+      showToast({ kind: "error", text: messages.network });
     }
     setBusy(false);
   }
@@ -133,11 +132,6 @@ export function SiteSettingsForm({ initial }: { initial: MapSettings }) {
           </button>
           {dirty ? <span className="text-base text-muted">{t`まだ保存していません。`}</span> : null}
         </div>
-        {notice ? (
-          <p role={notice.kind === "error" ? "alert" : "status"} className={`rounded-xl bg-paper p-4 text-lg font-bold ${notice.kind === "error" ? "text-danger" : "text-moss"}`}>
-            {notice.text}
-          </p>
-        ) : null}
       </section>
     </div>
   );
