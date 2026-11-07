@@ -5130,6 +5130,45 @@ msgstr "ルート：{name}"
 msgid "ルートの画面で開く"
 msgstr "ルートの画面で開く"
 
+msgid "コミュニティ"
+msgstr "コミュニティ"
+
+msgid "サイトの内容"
+msgstr "サイトの内容"
+
+msgid "バナー（管理）"
+msgstr "バナー（管理）"
+
+msgid "バナーがまだありません。「新しいバナー」から作ってください。"
+msgstr "バナーがまだありません。「新しいバナー」から作ってください。"
+
+msgid "バナーを読み込めませんでした。しばらくしてから、ページを開き直してください。"
+msgstr "バナーを読み込めませんでした。しばらくしてから、ページを開き直してください。"
+
+msgid "ブログへ戻る"
+msgstr "ブログへ戻る"
+
+msgid "ページへ戻る"
+msgstr "ページへ戻る"
+
+msgid "ルートとラリー"
+msgstr "ルートとラリー"
+
+msgid "ルート一覧にもどる"
+msgstr "ルート一覧にもどる"
+
+msgid "一覧へ戻る"
+msgstr "一覧へ戻る"
+
+msgid "新しいバナー"
+msgstr "新しいバナー"
+
+msgid "書き手を管理する"
+msgstr "書き手を管理する"
+
+msgid "運営"
+msgstr "運営"
+
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "写真を消す"

@@ -5156,6 +5156,45 @@ msgstr "Route: {name}"
 msgid "ルートの画面で開く"
 msgstr "Open in the route editor"
 
+msgid "コミュニティ"
+msgstr "Community"
+
+msgid "サイトの内容"
+msgstr "Site content"
+
+msgid "バナー（管理）"
+msgstr "Banners (admin)"
+
+msgid "バナーがまだありません。「新しいバナー」から作ってください。"
+msgstr "There are no banners yet. Add one with New banner."
+
+msgid "バナーを読み込めませんでした。しばらくしてから、ページを開き直してください。"
+msgstr "The banners could not be loaded. Please try opening the page again in a while."
+
+msgid "ブログへ戻る"
+msgstr "Back to the blog"
+
+msgid "ページへ戻る"
+msgstr "Back to pages"
+
+msgid "ルートとラリー"
+msgstr "Routes and rallies"
+
+msgid "ルート一覧にもどる"
+msgstr "Back to the route list"
+
+msgid "一覧へ戻る"
+msgstr "Back to the list"
+
+msgid "新しいバナー"
+msgstr "New banner"
+
+msgid "書き手を管理する"
+msgstr "Manage writers"
+
+msgid "運営"
+msgstr "Running the site"
+
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "Remove photo"
