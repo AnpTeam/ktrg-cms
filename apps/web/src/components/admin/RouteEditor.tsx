@@ -78,8 +78,9 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
   const [saving, setSaving] = useState(false);
   const [busyKey, setBusyKey] = useState<string | null>(null);
   // An error with fields to fix offers a way to them.
-  const setMessage = (m: { kind: "error" | "ok"; text: string } | null) =>
-    showToast(m && (m.kind === "error" && problems.length > 0 ? { ...m, action: { label: t`直す場所を見る`, run: () => showFirstProblem(problems[0]!.kind) } } : m));
+  // A caller that has just found problems passes them: `problems` is only new on the next render.
+  const setMessage = (m: { kind: "error" | "ok"; text: string } | null, now: DraftProblem[] = problems) =>
+    showToast(m && (m.kind === "error" && now.length > 0 ? { ...m, action: { label: t`直す場所を見る`, run: () => showFirstProblem(now[0]!.kind) } } : m));
   const [problems, setProblems] = useState<DraftProblem[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [view, setView] = useState<"edit" | "preview">("edit");
@@ -210,7 +211,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
     // screen, in red) and everything else is saved, so one blank row never costs the rest of the work.
     const routeProblem = found.find((p) => !p.kind.startsWith("place_"));
     if (routeProblem) {
-      setMessage({ kind: "error", text: t`保存できません。赤く示した項目を直してください。` });
+      setMessage({ kind: "error", text: t`保存できません。赤く示した項目を直してください。` }, found);
       showFirstProblem(routeProblem.kind); // the tab that holds the red item, and the item itself
       return;
     }
@@ -313,7 +314,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
     if (failure) {
       // A waypoint that was taken off the site before the failure stays off: say so.
       const names = unpublished.join("、");
-      setMessage({ kind: "error", text: unpublished.length > 0 ? `${failure} ${t`すでに公開をやめた経由地があります（${names}）。「経由地」タブで確かめてください。`}` : failure });
+      setMessage({ kind: "error", text: unpublished.length > 0 ? `${failure} ${t`すでに公開をやめた経由地があります（${names}）。「経由地」タブで確かめてください。`}` : failure }, found);
       setSaving(false);
       return;
     }
@@ -333,6 +334,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
       heldCount === 0
         ? { kind: unsourced ? "error" : "ok", text: unsourced ? t`保存しました。ただし、情報源が空のため、線は「確認していない」状態で保存しました。情報源を入れて、もう一度保存してください。` : t`保存しました。` }
         : { kind: "error", text: t`保存しました。ただし、未完成の経由地が${heldCount}件あり、まだ保存していません（赤く示した項目）。` },
+      heldCount === 0 ? [] : found,
     );
     setProblems(heldCount === 0 ? [] : found);
     setSaving(false);
@@ -350,7 +352,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
     const found = draftProblems({ ...before, places: [place] }).filter((p) => "key" in p && p.key === key);
     if (found.length > 0) {
       setProblems((old) => [...old.filter((p) => !("key" in p && p.key === key)), ...found]);
-      setMessage({ kind: "error", text: t`保存できません。赤く示した項目を直してください。` });
+      setMessage({ kind: "error", text: t`保存できません。赤く示した項目を直してください。` }, found);
       return;
     }
     setProblems((old) => old.filter((p) => !("key" in p && p.key === key)));

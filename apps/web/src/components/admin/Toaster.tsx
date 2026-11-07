@@ -10,12 +10,13 @@ import { readToast, showToast, subscribeToast } from "@/lib/admin/toast";
 export function Toaster() {
   const { t } = useLingui();
   const toast = useSyncExternalStore(subscribeToast, readToast, () => null);
-  const pathname = usePathname();
+  // "/admin/routes", not the whole address: saving a new route moves it to its own address, and its message must stay.
+  const section = (usePathname() ?? "").split("/").slice(0, 3).join("/");
 
-  // An error is about the page it happened on; good news may follow a save that moved to a new page.
+  // An error is about the screen it happened on.
   useEffect(() => {
     if (readToast()?.kind === "error") showToast(null);
-  }, [pathname]);
+  }, [section]);
 
   if (!toast) return null;
   const error = toast.kind === "error";
