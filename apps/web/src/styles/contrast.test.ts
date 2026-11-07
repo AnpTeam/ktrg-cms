@@ -158,3 +158,17 @@ for (const [scheme, colors] of Object.entries(palettes)) {
     }
   });
 }
+
+// The map stays light in dark mode, so its course dots use fixed colours, not the tokens.
+describe("course dots on the map", () => {
+  const dots: [string, string, string][] = [
+    ["plain", "#2b2523", "#fcfaf5"],
+    ["done", "#ffffff", "#8e2a21"],
+    ["soon", "#463f3b", "#dcd7d0"],
+  ];
+  test.each(dots)("%s: the number reaches 7:1", (_, number, disc) => {
+    expect(css).toContain(number);
+    expect(css).toContain(disc);
+    expect(ratio(number, disc)).toBeGreaterThanOrEqual(7);
+  });
+});

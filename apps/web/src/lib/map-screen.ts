@@ -227,17 +227,15 @@ export function framePoints(route: MapScreenRoute): Position[] {
 
 // ---- Names beside the pins ----------------------------------------------------------------------------------------
 
-/** The size, in px, of a pin's head and of the room its name takes up beside it (see .map-pin in globals.css). */
-const PIN_W = 44;
-const PIN_H = 56;
-const LABEL_GAP = 4;
-const LABEL_MAX_WIDTH = 120; // 7.5rem
+/** How far apart course dots are kept, in px: the 36 px disc and a small gap. More would push crowded dots out of trail order. */
+export const COURSE_DOT_PX = 40;
+const LABEL_MAX_WIDTH = 120; // 7.5rem, .map-dot-name
 
 /** About how big a sideways name's label comes out. An estimate: it only has to keep names from covering each other. */
 export function estimateLabel(name: string): { w: number; h: number } {
-  const n = [...name].length;
-  const w = Math.min(LABEL_MAX_WIDTH, n * 8 + 13);
-  const lines = Math.max(1, Math.ceil((n * 8) / (LABEL_MAX_WIDTH - 13)));
+  const width = [...name].reduce((sum, ch) => sum + (ch.charCodeAt(0) > 0x2e80 ? 14 : 8), 0); // Japanese is wider than Latin
+  const w = Math.min(LABEL_MAX_WIDTH, width + 13);
+  const lines = Math.max(1, Math.ceil(width / (LABEL_MAX_WIDTH - 13)));
   return { w, h: lines * 18 + 10 };
 }
 
@@ -249,22 +247,34 @@ interface Box {
 }
 const overlaps = (a: Box, b: Box) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
 
+export type NameSide = "right" | "left" | "below" | "above";
+
 /**
- * Which pins may show their name. `x` and `y` are where the pin's point is on screen. Every pin keeps its head;
- * a name is shown only if it clears all the heads and the names already shown, taking the pins in the order given
- * (lowest course number first), so two names never print over each other.
+ * Which course dots may show their name, and on which side. `x` and `y` are the dot's centre on screen. Every course keeps
+ * its dot; a name takes the first side that clears all the dots and the names already placed, taking them in the order
+ * given (lowest course number first), so two names never print over each other. The trail runs from dot to dot, so the
+ * right side is often taken by the next course. A side that runs out of `area` (the part of the map in view) is not free.
+ * No free side: no name.
  */
-export function namesThatFit(pins: readonly { id: string; x: number; y: number; name: string }[]): Set<string> {
-  const heads: Box[] = pins.map((p) => ({ x: p.x - PIN_W / 2, y: p.y - PIN_H, w: PIN_W, h: PIN_H }));
+export function namesThatFit(pins: readonly { id: string; x: number; y: number; name: string }[], area?: { left: number; top: number; right: number; bottom: number }): Map<string, NameSide> {
+  const half = COURSE_DOT_PX / 2;
+  const heads: Box[] = pins.map((p) => ({ x: p.x - half, y: p.y - half, w: COURSE_DOT_PX, h: COURSE_DOT_PX }));
   const placed: Box[] = [];
-  const shown = new Set<string>();
+  const shown = new Map<string, NameSide>();
   pins.forEach((p, i) => {
     const { w, h } = estimateLabel(p.name);
-    const box: Box = { x: p.x + PIN_W / 2 + LABEL_GAP, y: p.y - PIN_H, w, h };
     const others = heads.filter((_, j) => j !== i);
-    if ([...others, ...placed].some((o) => overlaps(box, o))) return;
-    placed.push(box);
-    shown.add(p.id);
+    const sides: [NameSide, Box][] = [
+      ["right", { x: p.x + half, y: p.y - h / 2, w, h }],
+      ["left", { x: p.x - half - w, y: p.y - h / 2, w, h }],
+      ["below", { x: p.x - w / 2, y: p.y + half, w, h }],
+      ["above", { x: p.x - w / 2, y: p.y - half - h, w, h }],
+    ];
+    const inView = (box: Box) => !area || (box.x >= area.left && box.y >= area.top && box.x + box.w <= area.right && box.y + box.h <= area.bottom);
+    const free = sides.find(([, box]) => inView(box) && ![...others, ...placed].some((o) => overlaps(box, o)));
+    if (!free) return;
+    placed.push(free[1]);
+    shown.set(p.id, free[0]);
   });
   return shown;
 }
@@ -272,11 +282,18 @@ export function namesThatFit(pins: readonly { id: string; x: number; y: number; 
 // ---- Pins that are too close ---------------------------------------------------------------------------------------
 
 /**
- * How far apart, in screen pixels, two course pins must be to stay separate when the visitor chose to merge near places;
- * closer ones merge into one group. (A Japanese tag is narrow; a pin with its name beside it is wide, so it needs the
- * most room.)
+ * How far apart, in screen pixels, two pins must be to stay separate when the visitor chose to merge near places;
+ * closer ones merge into one group. (A pin with its name beside it is wide, so it needs the most room.)
  */
-export const MERGE_PX = { tag: 40, pin: 50, namedPin: 120 } as const;
+export const MERGE_PX = { pin: 50, namedPin: 120 } as const;
+
+export type CourseDotState = "plain" | "done" | "soon";
+
+/** How a course's dot looks. Signed out, stamps are not known, so no course is shown as finished. */
+export function courseDotState(route: Pick<MapScreenRoute, "status" | "stampedCount" | "spotCount">): CourseDotState {
+  if (route.status === "soon") return "soon";
+  return route.stampedCount !== null && route.spotCount > 0 && route.stampedCount >= route.spotCount ? "done" : "plain";
+}
 
 export interface LabelBox {
   id: string;
@@ -315,7 +332,7 @@ export function spreadLabels(boxes: readonly LabelBox[], area: { left: number; t
     b.y = Math.min(maxY, Math.max(minY, b.y));
   };
   out.forEach(clamp);
-  for (let round = 0; round < 40; round++) {
+  for (let round = 0; round < 120; round++) {
     let moved = false;
     for (let i = 0; i < out.length; i++) {
       for (let j = i + 1; j < out.length; j++) {

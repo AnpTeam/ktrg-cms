@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { areaCollection, areaContains, estimateGroupBox, estimateLabel, framePoints, groupLabelLines, MERGE_PX, namesThatFit, nextSnap, rectangleRing, revealedRouteId, SAME_PLACE_M, sheetHeightPx, snapAfterDrag, spreadLabels, spreadMeters, stopMergePx, type LabelBox, type MapScreenRoute } from "./map-screen";
+import { courseDotState, COURSE_DOT_PX, areaCollection, areaContains, estimateGroupBox, estimateLabel, framePoints, groupLabelLines, MERGE_PX, namesThatFit, nextSnap, rectangleRing, revealedRouteId, SAME_PLACE_M, sheetHeightPx, snapAfterDrag, spreadLabels, spreadMeters, stopMergePx, type LabelBox, type MapScreenRoute } from "./map-screen";
 import { distanceMeters } from "./places";
 
 const route = (id: string, order: number, over: Partial<MapScreenRoute> = {}): MapScreenRoute => ({
@@ -124,7 +124,7 @@ describe("names beside the pins", () => {
   });
 
   test("a name with room is shown", () => {
-    expect([...namesThatFit([{ id: "a", x: 200, y: 300, name: "Mount Kongo" }])]).toEqual(["a"]);
+    expect([...namesThatFit([{ id: "a", x: 200, y: 300, name: "Mount Kongo" }]).keys()]).toEqual(["a"]);
   });
 
   test("pins far apart all keep their names", () => {
@@ -135,20 +135,34 @@ describe("names beside the pins", () => {
     expect(namesThatFit(pins).size).toBe(2);
   });
 
-  test("when two names would collide, the earlier one wins and the other shows only its pin", () => {
-    const pins = [
-      { id: "a", x: 100, y: 300, name: "From Mt. Kabuto across Kyoshi-toge" },
-      { id: "b", x: 60, y: 340, name: "From Nagaredani to Iwawaki-ji Temple" },
-    ];
-    expect([...namesThatFit(pins)]).toEqual(["a"]);
+  test("a name goes to the right, or to the next free side when a neighbour is there", () => {
+    const name = "Mount Kongo";
+    expect(namesThatFit([{ id: "a", x: 100, y: 300, name }]).get("a")).toBe("right");
+    const pair = [{ id: "a", x: 100, y: 300, name }, { id: "b", x: 150, y: 300, name: "x" }];
+    expect(namesThatFit(pair).get("a")).toBe("left");
   });
 
-  test("a name never covers another pin's head", () => {
+  test("a dot with no free side shows only its number", () => {
+    const name = "Mount Kongo";
+    const around = [[150, 300], [50, 300], [100, 345], [100, 255]].map(([x, y], i) => ({ id: `${i}`, x: x as number, y: y as number, name: "x" }));
+    expect(namesThatFit([{ id: "a", x: 100, y: 300, name }, ...around]).has("a")).toBe(false);
+  });
+
+  test("a name is not placed where the panel or the screen edge would cut it", () => {
+    const area = { left: 80, top: 0, right: 400, bottom: 600 };
+    const dot = { id: "a", name: "Mount Kongo", y: 300 };
+    expect(namesThatFit([{ ...dot, x: 380 }], area).get("a")).toBe("left");
+    expect(namesThatFit([{ ...dot, x: 100 }], area).get("a")).toBe("right");
+  });
+
+  test("the earlier course keeps its side when two names want the same room", () => {
     const pins = [
-      { id: "a", x: 100, y: 300, name: "Mount Kongo" },
-      { id: "b", x: 150, y: 300, name: "x" },
+      { id: "a", x: 100, y: 300, name: "From Mt. Kabuto across Kyoshi-toge" },
+      { id: "b", x: 100, y: 330, name: "From Nagaredani to Iwawaki-ji Temple" },
     ];
-    expect(namesThatFit(pins).has("a")).toBe(false);
+    const sides = namesThatFit(pins);
+    expect(sides.get("a")).toBe("right");
+    expect(sides.get("b")).not.toBe("right");
   });
 });
 
@@ -165,7 +179,33 @@ describe("the bottom sheet", () => {
     expect(stopMergePx(false)).toBeLessThan(8); // off: only pins right on top of each other share one
     expect(stopMergePx(true)).toBeGreaterThan(stopMergePx(false));
     expect(MERGE_PX.namedPin).toBeGreaterThan(MERGE_PX.pin);
-    expect(MERGE_PX.pin).toBeGreaterThan(MERGE_PX.tag);
+  });
+
+  test("a course dot is finished only when every stamp is held", () => {
+    const route = { status: "ready" as const, stampedCount: 3, spotCount: 3 };
+    expect(courseDotState(route)).toBe("done");
+    expect(courseDotState({ ...route, stampedCount: 2 })).toBe("plain");
+    expect(courseDotState({ ...route, stampedCount: null })).toBe("plain"); // signed out
+    expect(courseDotState({ ...route, stampedCount: 0, spotCount: 0 })).toBe("plain"); // nothing to stamp yet
+    expect(courseDotState({ ...route, status: "soon" })).toBe("soon");
+  });
+
+  test("19 dots on nearly the same spot all end up apart, and dots already apart stay put", () => {
+    const far = { left: -1e5, top: -1e5, right: 1e5, bottom: 1e5 };
+    const boxes = Array.from({ length: 19 }, (_, i) => ({ id: `${i}`, x: 200 + i * 3, y: 200 + (i % 3) * 2, w: COURSE_DOT_PX, h: COURSE_DOT_PX }));
+    const out = spreadLabels(boxes, far);
+    for (let i = 0; i < out.length; i++) {
+      for (let j = i + 1; j < out.length; j++) {
+        const [a, b] = [out[i]!, out[j]!];
+        expect(Math.abs(a.x - b.x) >= COURSE_DOT_PX - 1 || Math.abs(a.y - b.y) >= COURSE_DOT_PX - 1).toBe(true);
+      }
+    }
+    const apart = [{ id: "a", x: 0, y: 0, w: COURSE_DOT_PX, h: COURSE_DOT_PX }, { id: "b", x: 500, y: 900, w: COURSE_DOT_PX, h: COURSE_DOT_PX }];
+    expect(spreadLabels(apart, far)).toEqual(apart);
+  });
+
+  test("Japanese names are estimated wider than Latin ones of the same length", () => {
+    expect(estimateLabel("葛城山").w).toBeGreaterThan(estimateLabel("abc").w);
   });
 
   test("group labels are pushed apart and kept inside the visible area", () => {

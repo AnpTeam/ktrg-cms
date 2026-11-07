@@ -7631,3 +7631,11 @@ msgstr "Fitness"
 #: src/components/RouteStats.tsx
 msgid "技術"
 msgstr "Skill"
+
+#: src/components/map/MapScreenCanvas.tsx
+msgid "{order}. {name}（スタンプ完了）"
+msgstr "{order}. {name} (all stamps collected)"
+
+#: src/components/map/MapScreenCanvas.tsx
+msgid "{order}. {name}（準備中）"
+msgstr "{order}. {name} (coming soon)"
