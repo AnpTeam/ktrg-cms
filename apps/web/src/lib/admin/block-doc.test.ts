@@ -9,6 +9,22 @@ import { parsePageBody } from "@/lib/page-text";
 const roundTrip = (body: string) => docToBody(bodyToDoc(body));
 const schema = getSchema([StarterKit.configure({ heading: { levels: [2, 3] } }), Image]);
 
+describe("short text", () => {
+  const short = (body: string) => docToBody(bodyToDoc(body, true));
+  const shortSchema = getSchema([StarterKit.configure({ heading: false, bulletList: false, listItem: false, listKeymap: false, horizontalRule: false })]);
+
+  test("every line comes back as written, and what only long text has stays words", () => {
+    const body = ["一行目\n二行目", "- 箇条書きではない\n## 見出しではない", "---", "![写真ではない](https://e.com/a.jpg)", "**太字**と__斜体__と[リンク](https://e.com)[^1]", "[^1]: 注の文"].join("\n\n");
+    expect(short(body)).toBe(body);
+    expect(bodyToDoc(body, true).content!.every((b) => b.type === "paragraph")).toBe(true);
+  });
+
+  test("the short editor's schema accepts it, and nothing stays nothing", () => {
+    expect(() => shortSchema.nodeFromJSON(bodyToDoc("- a\n\n## b\n\n---", true)).check()).not.toThrow();
+    expect(short("")).toBe("");
+  });
+});
+
 describe("cards in the editor", () => {
   const parts = (body: string, look: "faq" | "guide") => cardParts((bodyToDoc(body).content ?? []).map((b) => ({ type: b.type!, level: b.attrs?.level as number | undefined })), look);
   const count = (body: string, look: "faq" | "guide", name: string) => parts(body, look).filter((p) => p.className.split(" ").includes(name)).length;

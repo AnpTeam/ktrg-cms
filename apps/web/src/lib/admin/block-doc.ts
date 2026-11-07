@@ -20,7 +20,19 @@ const textNodes = (parts: Inline[], marks: NonNullable<JSONContent["marks"]> = [
 const inlineContent = (text: string): JSONContent[] =>
   text.split("\n").flatMap((line, i) => [...(i > 0 ? [{ type: "hardBreak" }] : []), ...textNodes(inline(line))]);
 
-export function bodyToDoc(body: string): JSONContent {
+/** A short text (RichText on the page): only paragraphs. A line starting "- " or "## " is shown as typed there, so it stays words here. */
+function shortDoc(body: string): JSONContent {
+  const content = body
+    .replace(/\r\n?/g, "\n")
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter((p) => p !== "")
+    .map((p): JSONContent => ({ type: "paragraph", content: inlineContent(p) }));
+  return { type: "doc", content: content.length ? content : [{ type: "paragraph" }] };
+}
+
+export function bodyToDoc(body: string, short = false): JSONContent {
+  if (short) return shortDoc(body);
   const content: JSONContent[] = [];
   let paragraph: string[] = [];
   let items: JSONContent[] = [];

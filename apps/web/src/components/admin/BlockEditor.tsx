@@ -24,7 +24,7 @@ type Kind = "paragraph" | "h2" | "h3" | "list" | "rule" | "photo";
 type Panel = { kind: "link"; href: string; bad: boolean } | { kind: "photo" } | null;
 
 const SHOWN =
-  "tiptap-page min-h-72 rounded-xl border-2 border-line bg-paper p-4 text-lg leading-8 text-ink [&_a]:font-bold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4 [&_h2]:mt-5 [&_h2]:border-l-[6px] [&_h2]:border-accent [&_h2]:pl-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-snug [&_h3]:mt-4 [&_h3]:text-xl [&_h3]:font-bold [&_hr]:my-6 [&_hr]:border-line [&_img]:my-4 [&_img]:rounded-xl [&_p]:my-3 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_.ProseMirror-selectednode]:outline-4 [&_.ProseMirror-selectednode]:outline-accent [&_.note-mark]:rounded [&_.note-mark]:bg-surface [&_.note-mark]:px-1 [&_.note-mark]:text-base [&_.note-mark]:font-bold [&_.note-mark]:text-accent [&_.note-line]:text-base [&_.note-line]:text-muted";
+  "tiptap-page rounded-xl border-2 border-line bg-paper p-4 text-lg leading-8 text-ink [&_a]:font-bold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4 [&_h2]:mt-5 [&_h2]:border-l-[6px] [&_h2]:border-accent [&_h2]:pl-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-snug [&_h3]:mt-4 [&_h3]:text-xl [&_h3]:font-bold [&_hr]:my-6 [&_hr]:border-line [&_img]:my-4 [&_img]:rounded-xl [&_p]:my-3 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_.ProseMirror-selectednode]:outline-4 [&_.ProseMirror-selectednode]:outline-accent [&_.note-mark]:rounded [&_.note-mark]:bg-surface [&_.note-mark]:px-1 [&_.note-mark]:text-base [&_.note-mark]:font-bold [&_.note-mark]:text-accent [&_.note-line]:text-base [&_.note-line]:text-muted";
 const BUTTON = "tap-target inline-flex items-center gap-1 rounded-full border-2 border-line bg-paper px-4 text-base font-bold disabled:opacity-40";
 const ACTIVE = "border-ink bg-ink text-paper";
 
@@ -168,7 +168,7 @@ function place(editor: Editor, block: JSONContent, caret: ((start: number) => vo
   caret?.(start);
 }
 
-export function BlockEditor({ id, lang, label, value, onChange, look, notes = false }: { id: string; lang: string; label: string; value: string; onChange: (v: string) => void; /** Offer footnotes: only where one text is drawn as a whole, or a note cannot find its mark. */ notes?: boolean; /** Draw the text as this page will: its headings as cards. */ look?: PageLook }) {
+export function BlockEditor({ id, lang, label, value, onChange, look, notes = false, short = false }: { id: string; lang: string; label: string; value: string; onChange: (v: string) => void; /** Offer footnotes: only where one text is drawn as a whole, or a note cannot find its mark. */ notes?: boolean; /** A text the page draws with RichText: paragraphs, bold, italic, underline, links and footnotes, nothing else. */ short?: boolean; /** Draw the text as this page will: its headings as cards. */ look?: PageLook }) {
   const { t } = useLingui();
   const written = useRef(value);
 
@@ -181,16 +181,17 @@ export function BlockEditor({ id, lang, label, value, onChange, look, notes = fa
         codeBlock: false,
         orderedList: false,
         strike: false,
-        heading: { levels: [2, 3] },
         link: { openOnClick: false },
+        // Off, not only hidden: typing "- " or "## " must stay words, as the page shows them.
+        ...(short ? { heading: false, bulletList: false, listItem: false, listKeymap: false, horizontalRule: false } : ({ heading: { levels: [2, 3] } } as const)),
       }),
-      Photo.configure({ allowBase64: false }),
+      ...(short ? [] : [Photo.configure({ allowBase64: false })]),
       ...(look ? [pageCards(look, t`ここはページに表示されません`)] : []),
       ...(notes ? [footnotes] : []),
     ],
-    content: bodyToDoc(value),
+    content: bodyToDoc(value, short),
     editorProps: {
-      attributes: { id, lang, role: "textbox", "aria-multiline": "true", "aria-label": label, class: `${SHOWN} ${look ? LOOK[look] : ""}` },
+      attributes: { id, lang, role: "textbox", "aria-multiline": "true", "aria-label": label, class: `${SHOWN} ${short ? "min-h-32" : "min-h-72"} ${look ? LOOK[look] : ""}` },
     },
     onUpdate: ({ editor: e }) => {
       const next = docToBody(e.getJSON());
@@ -204,14 +205,14 @@ export function BlockEditor({ id, lang, label, value, onChange, look, notes = fa
   useEffect(() => {
     if (!editor || value === written.current) return;
     written.current = value;
-    editor.commands.setContent(bodyToDoc(value), { emitUpdate: false });
-  }, [editor, value]);
+    editor.commands.setContent(bodyToDoc(value, short), { emitUpdate: false });
+  }, [editor, value, short]);
 
   // Only drawn once the editor exists: its state hook takes the editor it starts with and sees nothing until a transaction.
-  return editor ? <Blocks editor={editor} id={id} closingNote={look === "guide"} notes={notes} /> : <div className={`${SHOWN} animate-pulse`} aria-busy="true" />;
+  return editor ? <Blocks editor={editor} id={id} closingNote={look === "guide"} notes={notes} short={short} /> : <div className={`${SHOWN} animate-pulse`} aria-busy="true" />;
 }
 
-function Blocks({ editor, id, closingNote, notes }: { editor: Editor; id: string; closingNote: boolean; notes: boolean }) {
+function Blocks({ editor, id, closingNote, notes, short }: { editor: Editor; id: string; closingNote: boolean; notes: boolean; short: boolean }) {
   const { t } = useLingui();
   const [panel, setPanel] = useState<Panel>(null);
   const [plusAt, setPlusAt] = useState<{ x: number; y: number } | null>(null);
@@ -230,7 +231,7 @@ function Blocks({ editor, id, closingNote, notes }: { editor: Editor; id: string
         underline: e.isActive("underline"),
         link: e.isActive("link"),
         // Both slashes: a Japanese keyboard types the wide one.
-        slash: empty && $from.depth === 1 && $from.parent.type.name === "paragraph" && /^[/／]$/.test($from.parent.textContent),
+        slash: !short && empty && $from.depth === 1 && $from.parent.type.name === "paragraph" && /^[/／]$/.test($from.parent.textContent),
         canUndo: e.can().undo(),
       };
     },
@@ -330,16 +331,20 @@ function Blocks({ editor, id, closingNote, notes }: { editor: Editor; id: string
     <div className="flex flex-col gap-2">
       <div className="sticky top-[4.75rem] z-10 flex flex-col gap-2">
         <div role="toolbar" aria-label={t`文章の書式`} aria-controls={id} className="flex flex-wrap items-center gap-0.5 rounded-xl border-2 border-line bg-paper p-1">
-          <Tool name={t`追加`} pressed={menuOpen} onClick={openPlus}>
-            <PlusIcon size={24} />
-          </Tool>
-          {GAP}
-          {items.slice(0, 4).map((item) => (
-            <Tool key={item.kind} name={item.name} pressed={state.style === item.kind} onClick={() => setStyle(item.kind)}>
-              {item.kind === "list" ? <ListIcon /> : { paragraph: "¶", h2: "H2", h3: "H3" }[item.kind as string]}
-            </Tool>
-          ))}
-          {GAP}
+          {short ? null : (
+            <>
+              <Tool name={t`追加`} pressed={menuOpen} onClick={openPlus}>
+                <PlusIcon size={24} />
+              </Tool>
+              {GAP}
+              {items.slice(0, 4).map((item) => (
+                <Tool key={item.kind} name={item.name} pressed={state.style === item.kind} onClick={() => setStyle(item.kind)}>
+                  {item.kind === "list" ? <ListIcon /> : { paragraph: "¶", h2: "H2", h3: "H3" }[item.kind as string]}
+                </Tool>
+              ))}
+              {GAP}
+            </>
+          )}
           <Tool name={t`太字`} pressed={state.bold} disabled={inHeading} onClick={() => editor.chain().focus().toggleBold().run()}>
             <span className="text-xl font-black">B</span>
           </Tool>
@@ -359,16 +364,20 @@ function Blocks({ editor, id, closingNote, notes }: { editor: Editor; id: string
               </span>
             </Tool>
           ) : null}
-          <Tool name={t`写真`} pressed={panel?.kind === "photo"} onClick={() => setPanel(panel?.kind === "photo" ? null : { kind: "photo" })}>
-            <ImageIcon />
-          </Tool>
-          {GAP}
-          <Tool name={t`上へ`} onClick={() => move(-1)}>
-            <ChevronUpIcon size={24} />
-          </Tool>
-          <Tool name={t`下へ`} onClick={() => move(1)}>
-            <ChevronDownIcon size={24} />
-          </Tool>
+          {short ? null : (
+            <>
+              <Tool name={t`写真`} pressed={panel?.kind === "photo"} onClick={() => setPanel(panel?.kind === "photo" ? null : { kind: "photo" })}>
+                <ImageIcon />
+              </Tool>
+              {GAP}
+              <Tool name={t`上へ`} onClick={() => move(-1)}>
+                <ChevronUpIcon size={24} />
+              </Tool>
+              <Tool name={t`下へ`} onClick={() => move(1)}>
+                <ChevronDownIcon size={24} />
+              </Tool>
+            </>
+          )}
           {GAP}
           <Tool name={t`元に戻す`} disabled={!state.canUndo} onClick={() => editor.chain().focus().undo().run()}>
             <UndoIcon />
@@ -432,7 +441,7 @@ function Blocks({ editor, id, closingNote, notes }: { editor: Editor; id: string
       </div>
 
       <EditorContent editor={editor} />
-      <p className="text-base text-muted">{t`「追加」か、空の行で「/」を押すと、入れられるものの一覧が出ます。`}</p>
+      {short ? null : <p className="text-base text-muted">{t`「追加」か、空の行で「/」を押すと、入れられるものの一覧が出ます。`}</p>}
 
       {menuOpen && at ? (
         <>
