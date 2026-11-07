@@ -43,6 +43,9 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
     { lang: "en", name: "English" },
   ];
 
+  // Terms and privacy look the same in the editor. These do not: home is boxes, and the others turn headings into cards.
+  const previewed = pageKey === "home" || pageKey === "faq" || pageKey === "guide";
+
   async function save() {
     if (!window.confirm(t`この文章は、本番のサイトにすぐ反映されます。保存しますか？`)) return;
     setBusy(true);
@@ -110,7 +113,7 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
       </div>
       )}
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
+      <div className={previewed ? "grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]" : ""}>
       <div className="flex min-w-0 flex-col gap-5">
       {langs.map(({ lang, name }) => pageKey === "home" ? (
         <HomeTextFields key={lang} lang={lang} title={name} body={text[lang].body} showBuiltIn={lang === (locale === "en" ? "en" : "ja")} onBody={(body) => edit(lang, { body })} />
@@ -128,9 +131,11 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
         </Section>
       ))}
       </div>
-      <div className="lg:sticky lg:top-24 lg:self-start">
-        <PagePreview pageKey={pageKey} text={text} locale={locale} home={home} />
-      </div>
+      {previewed ? (
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <PagePreview pageKey={pageKey} text={text} locale={locale} home={home} />
+        </div>
+      ) : null}
       </div>
       <p className="text-base text-muted" lang={locale}>
         {t`ほかの言語（ドイツ語など）の訪問者には、English の文章が表示されます。`}

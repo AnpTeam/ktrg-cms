@@ -18,6 +18,14 @@ export function Inlines({ parts, ids, linkClass = LINK }: { parts: Inline[]; ids
           <strong key={i}>
             <Inlines parts={p.bold} ids={ids} linkClass={linkClass} />
           </strong>
+        ) : "italic" in p ? (
+          <em key={i}>
+            <Inlines parts={p.italic} ids={ids} linkClass={linkClass} />
+          </em>
+        ) : "underline" in p ? (
+          <u key={i}>
+            <Inlines parts={p.underline} ids={ids} linkClass={linkClass} />
+          </u>
         ) : (
           <sup key={i} className="mx-0.5">
             <a href={`#${ids}-fn-${p.note}`} aria-label={`${p.note}`} className={LINK}>

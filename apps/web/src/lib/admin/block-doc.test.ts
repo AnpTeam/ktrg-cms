@@ -23,6 +23,15 @@ describe("block document", () => {
     expect(roundTrip(body)).toBe(body);
   });
 
+  test("bold, italic and underline come back, alone or together, on links too", () => {
+    for (const body of ["**a**と__b__と++c++", "**__a__**", "**++__a__++**", "++[a](https://e.com)++"]) expect(roundTrip(body)).toBe(body);
+  });
+
+  test("a space inside a marked run stays outside its markers", () => {
+    const doc = { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "a " }, { type: "text", text: "b ", marks: [{ type: "italic" }] }, { type: "text", text: "c" }] }] };
+    expect(docToBody(doc)).toBe("a __b__ c");
+  });
+
   test("the schema of the real editor accepts the document", () => {
     expect(() => schema.nodeFromJSON(bodyToDoc("## 見出し\n本文\n- a\n\n---\n\n![x](https://e.com/a.jpg)")).check()).not.toThrow();
     expect(schema.nodeFromJSON(bodyToDoc("")).childCount).toBe(1);

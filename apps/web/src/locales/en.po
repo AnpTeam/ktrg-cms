@@ -5016,6 +5016,14 @@ msgid "手入力（空にすると、標高から自動）"
 msgstr "Typed by hand (empty = from the elevation)"
 
 #: src/components/admin/BlockEditor.tsx
+msgid "斜体"
+msgstr "Italic"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "下線"
+msgstr "Underline"
+
+#: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "Remove photo"
 

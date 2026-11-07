@@ -96,6 +96,15 @@ describe("bold and rules", () => {
     expect(plainBody("**a**\n\n---\n\n- **b**")).toBe("a b");
   });
 
+  test("italic and underline nest with bold, and only touch their words", () => {
+    expect(parseRich("a __b__ c ++d++").body).toEqual(["a ", { italic: ["b"] }, " c ", { underline: ["d"] }]);
+    expect(parseRich("**++__x__++**").body).toEqual([{ bold: [{ underline: [{ italic: ["x"] }] }] }]);
+    expect(plainRich("a __b__ ++c++")).toBe("a b c");
+    expect(parseRich("2 ++ 3 ++ 4").body).toEqual(["2 ++ 3 ++ 4"]);
+    expect(parseRich("__ a __").body).toEqual(["__ a __"]);
+    expect(parseRich("[x](https://e.com/a__b__c)").body).toEqual([{ href: "https://e.com/a__b__c", label: "x" }]);
+  });
+
   test("** left open stays as typed, and --- is a rule only alone on its line", () => {
     expect(parseRich("2 ** 3").body).toEqual(["2 ** 3"]);
     expect(parseBlocks("a\n---\nb").blocks.map((b) => b.kind)).toEqual(["p", "rule", "p"]);

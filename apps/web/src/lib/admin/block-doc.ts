@@ -11,6 +11,8 @@ const textNodes = (parts: Inline[], marks: NonNullable<JSONContent["marks"]> = [
     if (typeof p === "string") return p ? [{ type: "text", text: p, ...(marks.length ? { marks } : {}) }] : [];
     if ("href" in p) return [{ type: "text", text: p.label, marks: [...marks, { type: "link", attrs: { href: p.href } }] }];
     if ("bold" in p) return textNodes(p.bold, [...marks, { type: "bold" }]);
+    if ("italic" in p) return textNodes(p.italic, [...marks, { type: "italic" }]);
+    if ("underline" in p) return textNodes(p.underline, [...marks, { type: "underline" }]);
     return [];
   });
 
@@ -58,15 +60,20 @@ export function bodyToDoc(body: string): JSONContent {
 
 const plain = (node: JSONContent): string => node.text ?? (node.type === "hardBreak" ? " " : (node.content ?? []).map(plain).join(""));
 
+/** Innermost first. The markers must touch the words, so the spaces around them stay outside. */
+const WRAPS = [["italic", "__"], ["underline", "++"], ["bold", "**"]] as const;
+
 function inlineText(nodes: JSONContent[] = []): string {
   return nodes
     .map((n) => {
       if (n.type === "hardBreak") return "\n";
       const text = n.text ?? "";
       const href = n.marks?.find((m) => m.type === "link")?.attrs?.href as string | undefined;
-      // A link's words stay plain: bold inside a link has no form in the text.
-      if (href && /^https?:\/\//i.test(href) && !/[[\]]/.test(text)) return `[${text}](${href.replace(/\s/g, "%20").replace(/\)/g, "%29")})`;
-      return n.marks?.some((m) => m.type === "bold") && text.trim() ? `**${text}**` : text;
+      const linked = href && /^https?:\/\//i.test(href) && !/[[\]]/.test(text) ? `[${text}](${href.replace(/\s/g, "%20").replace(/\)/g, "%29")})` : text;
+      const [, before, words, after] = /^(\s*)([\s\S]*?)(\s*)$/.exec(linked)!;
+      if (!words) return linked;
+      const wrapped = WRAPS.reduce((w, [mark, marker]) => (n.marks?.some((m) => m.type === mark) ? `${marker}${w}${marker}` : w), words!);
+      return `${before}${wrapped}${after}`;
     })
     .join("");
 }

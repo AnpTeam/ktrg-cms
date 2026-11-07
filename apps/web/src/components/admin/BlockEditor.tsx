@@ -121,10 +121,8 @@ export function BlockEditor({ id, lang, label, value, onChange, closingNote = fa
         blockquote: false,
         code: false,
         codeBlock: false,
-        italic: false,
         orderedList: false,
         strike: false,
-        underline: false,
         heading: { levels: [2, 3] },
         link: { openOnClick: false },
       }),
@@ -168,6 +166,8 @@ function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closi
       return {
         style: selection instanceof NodeSelection ? null : e.isActive("heading", { level: 2 }) ? "h2" : e.isActive("heading", { level: 3 }) ? "h3" : e.isActive("bulletList") ? "list" : "paragraph",
         bold: e.isActive("bold"),
+        italic: e.isActive("italic"),
+        underline: e.isActive("underline"),
         link: e.isActive("link"),
         // Both slashes: a Japanese keyboard types the wide one.
         slash: empty && $from.depth === 1 && $from.parent.type.name === "paragraph" && /^[/／]$/.test($from.parent.textContent),
@@ -270,6 +270,12 @@ function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closi
           {GAP}
           <Tool name={t`太字`} pressed={state.bold} onClick={() => editor.chain().focus().toggleBold().run()}>
             <span className="text-xl font-black">B</span>
+          </Tool>
+          <Tool name={t`斜体`} pressed={state.italic} onClick={() => editor.chain().focus().toggleItalic().run()}>
+            <span className="font-serif text-xl font-bold italic">I</span>
+          </Tool>
+          <Tool name={t`下線`} pressed={state.underline} onClick={() => editor.chain().focus().toggleUnderline().run()}>
+            <span className="text-xl font-bold underline underline-offset-2">U</span>
           </Tool>
           <Tool name={t`リンク`} pressed={state.link} onClick={() => setPanel(panel?.kind === "link" ? null : { kind: "link", href: state.link ? String(editor.getAttributes("link").href ?? "") : "", bad: false })}>
             <LinkIcon />
