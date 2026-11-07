@@ -8,6 +8,7 @@ import { baseLayers, defaultMapSettings, terrainLayers, type BaseLayer, type Map
 import type { Entry } from "@/lib/gsi-large-style";
 import { LargeStyleUpload } from "./LargeStyleUpload";
 import { MapStylePreview } from "./MapStylePreview";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type Notice = { kind: "saved" | "error"; text: string } | null;
 
@@ -44,7 +45,7 @@ export function SiteSettingsForm({ initial }: { initial: MapSettings }) {
   const terrainNames: Record<TerrainLayer, string> = { hillshade: t`陰影（やわらかい影）`, relief: t`色別標高図（緑〜茶）` };
 
   async function save() {
-    if (!window.confirm(t`この設定は、本番のサイトにすぐ反映されます。すべての訪問者の地図の見た目が変わります。保存しますか？`)) return;
+    if (!(await confirmDialog({ title: t`サイトに反映しますか？`, body: t`この設定は、本番のサイトにすぐ反映されます。すべての訪問者の地図の見た目が変わります。保存しますか？`, yes: t`保存する` }))) return;
     setBusy(true);
     setNotice(null);
     try {

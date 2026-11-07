@@ -19,6 +19,7 @@ import { PositionMap } from "./PositionMap";
 import { RelationPicker } from "./RelationPicker";
 import { UserActions } from "./UserActions";
 import { AlertIcon, TickIcon, XIcon } from "@/components/icons";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type Notice = { kind: "saved" | "error"; text: string } | null;
 
@@ -53,20 +54,23 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
   useEffect(() => {
     if (!dirty) return;
     const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    const leave = () => confirmDialog({ title: t`ページを離れますか？`, body: t`保存していない変更は消えます。`, yes: t`離れる`, no: t`編集をつづける` });
     const follow = (e: MouseEvent) => {
       const a = (e.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
       if (!a || a.target === "_blank" || a.origin !== window.location.origin || a.pathname === window.location.pathname) return;
-      if (!window.confirm(t`保存していない変更があります。このページを離れますか？`)) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
+      // The answer comes later, so the click is always stopped here and followed by hand on a yes.
+      e.preventDefault();
+      e.stopPropagation();
+      void leave().then((yes) => {
+        if (yes) router.push(a.pathname + a.search + a.hash);
+      });
     };
     // The Back button: next's router has no way to block it, so one extra history entry is added while there is unsaved
     // work. Back then only removes that entry (and fires popstate), and the person is asked before going on or staying.
     // shortcut: after saving, that one extra entry stays, so Back is pressed once more on the same page.
     history.pushState(history.state, "", window.location.href);
-    const back = () => {
-      if (window.confirm(t`保存していない変更があります。このページを離れますか？`)) {
+    const back = async () => {
+      if (await leave()) {
         window.removeEventListener("popstate", back);
         history.back();
       } else history.pushState(history.state, "", window.location.href);
@@ -79,7 +83,7 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
       window.removeEventListener("popstate", back);
       document.removeEventListener("click", follow, true);
     };
-  }, [dirty, t]);
+  }, [dirty, t, router]);
 
   // Ctrl+S / ⌘S saves, even from inside a box. The latest save is kept in a ref so the listener is added once.
   const saveNow = useRef<() => void>(() => {});
@@ -129,7 +133,7 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
   }
 
   async function remove() {
-    if (!saved || (config.deleteWarning && !window.confirm(pick(config.deleteWarning, locale)))) return;
+    if (!saved || (config.deleteWarning && !(await confirmDialog({ title: t`削除しますか？`, body: pick(config.deleteWarning, locale), yes: t`削除する` })))) return;
     setBusy(true);
     const res = await listRequest("DELETE", `${config.key}/${saved.id}`);
     setBusy(false);

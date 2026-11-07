@@ -17,6 +17,7 @@ import { foundationEn, foundationJa } from "@/lib/terms-content";
 import { useMenu } from "./MenuProvider";
 import { SampleNoticeButton } from "./SampleNotice";
 import { ThemeSwitcher } from "./ThemeSwitcher";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const barButton =
   "inline-flex min-h-11 items-center gap-1.5 rounded-full border border-ink bg-paper px-2.5 text-base font-bold text-ink hover:bg-surface [&>svg]:size-6";
@@ -143,7 +144,7 @@ export function SiteHeader({
   async function signOut() {
     // Stamps pressed with no signal stay on this phone under this account; they are sent after the next sign-in.
     const waiting = getOutbox().pending;
-    if (waiting > 0 && !window.confirm(t`送信待ちのスタンプが${waiting}件あります。ログアウトすると、次にログインするまで送れません。ログアウトしますか？`)) return;
+    if (waiting > 0 && !(await confirmDialog({ title: t`ログアウトしますか？`, body: t`送信待ちのスタンプが${waiting}件あります。ログアウトすると、次にログインするまで送れません。ログアウトしますか？`, yes: t`ログアウトする` }))) return;
     setLeaving(true);
     await clearSavedPages(); // the saved pages show this person's stamps
     await logOut();

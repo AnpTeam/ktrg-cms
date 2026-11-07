@@ -10,6 +10,7 @@ import { Field, Section, TextInput } from "./fields";
 import { HomeTextFields } from "./HomeTextFields";
 import { PagePreview, type HomeData } from "./PagePreview";
 import { AlertIcon, TickIcon, XIcon } from "@/components/icons";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type Lang = "ja" | "en";
 type Notice = { kind: "saved" | "error"; text: string } | null;
@@ -44,7 +45,7 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
   ];
 
   async function save() {
-    if (!window.confirm(t`この文章は、本番のサイトにすぐ反映されます。保存しますか？`)) return;
+    if (!(await confirmDialog({ title: t`サイトに反映しますか？`, body: t`この文章は、本番のサイトにすぐ反映されます。保存しますか？`, yes: t`保存する` }))) return;
     setBusy(true);
     setNotice(null);
     try {

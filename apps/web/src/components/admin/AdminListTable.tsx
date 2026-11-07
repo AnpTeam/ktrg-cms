@@ -13,6 +13,7 @@ import { inputClass } from "./fields";
 import { cellOf, itemHref, itemName, listColumns, nameIsFallback, pick, type FieldUi, type ListMeta } from "@/lib/admin/lists/config";
 import { listRequest, type ListPage } from "@/lib/admin/lists/list-client";
 import { nextSort, sortItems, type Sort } from "@/lib/admin/lists/sort";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 // A soft shadow on the right edge while more columns wait to be scrolled to (the cover is `local`, so it moves away at the end).
 const edgeShadow = { background: "linear-gradient(to left, var(--color-paper) 30%, transparent) right / 2.5rem 100% local no-repeat, linear-gradient(to left, rgb(0 0 0 / 0.18), transparent) right / 0.9rem 100% scroll no-repeat" };
@@ -100,7 +101,7 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
     if (busy || ids.length === 0) return;
     const one = ids.length === 1 ? items.find((i) => i.id === ids[0]) : undefined;
     const ask = one ? (config.deleteWarning ? pick(config.deleteWarning, locale) : t`「${name(one)}」を削除します。元に戻せません。よろしいですか？`) : t`選んだ${ids.length}件を削除します。元に戻せません。よろしいですか？`;
-    if (!window.confirm(ask)) return;
+    if (!(await confirmDialog({ title: t`削除しますか？`, body: ask, yes: t`削除する` }))) return;
     setBusy(true);
     setError(null);
     const gone = new Set<string>();

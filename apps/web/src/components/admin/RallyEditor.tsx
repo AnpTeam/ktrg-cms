@@ -11,6 +11,7 @@ import type { AdminRally } from "@/lib/admin/types";
 import { Chip } from "./Chip";
 import { MultilingualField, Section } from "./fields";
 import { RallyMemberPicker, type RallyCandidates } from "./RallyMemberPicker";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type Notice = { kind: "saved" | "error"; text: string } | null;
 
@@ -92,7 +93,7 @@ export function RallyEditor({
   async function changeKind() {
     const to = cands.other.kind;
     const unfinished = saved.completionCount > 0 ? t`達成した ${saved.completionCount} 人の記録は残ります。` : "";
-    if (!window.confirm(t`つくり方を変えます。いまの中身は外れ、えらんだものが入ります。${unfinished}よろしいですか？`)) return;
+    if (!(await confirmDialog({ title: t`つくり方を変えますか？`, body: t`つくり方を変えます。いまの中身は外れ、えらんだものが入ります。${unfinished}よろしいですか？`, yes: t`変える` }))) return;
     start();
     const res = await outcome(one().kind.put({ updatedAt: saved.updatedAt, kind: to, ...(to === "places" ? { spotIds: newIds } : { routeIds: newIds }) }));
     if (finish(asResult(res), t`つくり方を変えました。`)) {
@@ -106,7 +107,7 @@ export function RallyEditor({
 
   async function remove() {
     const warning = saved.completionCount > 0 ? t`このラリーを削除します。達成した ${saved.completionCount} 人の達成記録も消えます（スタンプは残ります）。よろしいですか？` : t`このラリーを削除します。よろしいですか？`;
-    if (!window.confirm(warning)) return;
+    if (!(await confirmDialog({ title: t`削除しますか？`, body: warning, yes: t`削除する` }))) return;
     setBusy(true);
     const res = await outcome(one().delete());
     setBusy(false);

@@ -8,6 +8,7 @@ import { useReauth } from "@/components/auth/ReauthDialog";
 import { api } from "@/lib/api";
 import { removePassword, setPassword } from "@/lib/auth-client";
 import type { AuthFailure } from "@/lib/auth-flow";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 /** The optional password on the login methods screen. Staff accounts cannot have one, so they do not see this. */
 export function PasswordMethod({ hasEmail }: { hasEmail: boolean }) {
@@ -51,7 +52,7 @@ export function PasswordMethod({ hasEmail }: { hasEmail: boolean }) {
   }
 
   async function remove() {
-    if (busy || !window.confirm(t`パスワードを消しますか？メールの番号や顔・指紋では、これまでどおりログインできます。`)) return;
+    if (busy || !(await confirmDialog({ title: t`パスワードを消しますか？`, body: t`メールの番号や顔・指紋では、これまでどおりログインできます。`, yes: t`消す` }))) return;
     setBusy(true);
     setError(null);
     setDone(null);
