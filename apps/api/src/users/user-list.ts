@@ -1,3 +1,6 @@
+import { buildAdminDeletionEmail } from "../emails/admin-deletion";
+import { mailFailure, type Mailer } from "../lib/mailer";
+import { DELETION_NOTICE_DAYS } from "../me/me-service";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import { t } from "elysia";
 import type { ReadDef } from "../admin-lists/list-routes";
@@ -30,6 +33,10 @@ export interface UserListRow extends ListRow {
   restrictionReason: string | null;
   /** The owner (or an admin) asked for the account to be deleted; it goes after the grace period. */
   deletionRequestedAt: Date | null;
+  deletionByAdmin: boolean;
+  /** What the owner wrote back about a deletion an admin asked for. */
+  deletionAppeal: string | null;
+  locale: "ja" | "en";
   /** True while a restriction is in force (set and not ended). */
   restricted: boolean;
   deletionPending: boolean;
@@ -77,6 +84,9 @@ const columns = {
   restrictedUntil: users.restrictedUntil,
   restrictionReason: users.restrictionReason,
   deletionRequestedAt: users.deletionRequestedAt,
+  deletionByAdmin: users.deletionByAdmin,
+  deletionAppeal: users.deletionAppeal,
+  locale: users.locale,
   createdAt: users.createdAt,
   updatedAt: users.updatedAt,
 };
@@ -109,8 +119,8 @@ export function createDrizzleUserListStore(db: Db): UserListStore {
     restrict: (actor, id, { reason, until }) => change(db, actor, id, "user.restrict", { restrictedAt: sql`now()`, restrictedUntil: until, restrictionReason: reason }),
     lift: (actor, id) => change(db, actor, id, "user.restriction_lift", { restrictedAt: null, restrictedUntil: null, restrictionReason: null }),
     // Only a real change counts, so two requests at once write one audit row.
-    requestDeletion: (actor, id) => change(db, actor, id, "user.deletion_request_by_admin", { deletionRequestedAt: sql`now()` }, isNull(users.deletionRequestedAt)),
-    cancelDeletion: (actor, id) => change(db, actor, id, "user.deletion_cancel_by_admin", { deletionRequestedAt: null }),
+    requestDeletion: (actor, id) => change(db, actor, id, "user.deletion_request_by_admin", { deletionRequestedAt: sql`now()`, deletionByAdmin: true, deletionAppeal: null }, isNull(users.deletionRequestedAt)),
+    cancelDeletion: (actor, id) => change(db, actor, id, "user.deletion_cancel_by_admin", { deletionRequestedAt: null, deletionByAdmin: false, deletionAppeal: null }),
     async deleteNow(actor, id) {
       return db.transaction(async (tx) => {
         const [gone] = await tx.delete(users).where(eq(users.id, id)).returning({ id: users.id, email: users.email });
@@ -163,10 +173,10 @@ export function createMemoryUserListStore(audit: AuditWriter) {
       return edit(actor, id, "user.restriction_lift", { restrictedAt: null, restrictedUntil: null, restrictionReason: null });
     },
     async requestDeletion(actor, id) {
-      return edit(actor, id, "user.deletion_request_by_admin", { deletionRequestedAt: new Date() }, (r) => r.deletionRequestedAt === null);
+      return edit(actor, id, "user.deletion_request_by_admin", { deletionRequestedAt: new Date(), deletionByAdmin: true, deletionAppeal: null }, (r) => r.deletionRequestedAt === null);
     },
     async cancelDeletion(actor, id) {
-      return edit(actor, id, "user.deletion_cancel_by_admin", { deletionRequestedAt: null });
+      return edit(actor, id, "user.deletion_cancel_by_admin", { deletionRequestedAt: null, deletionByAdmin: false, deletionAppeal: null });
     },
     async deleteNow(actor, id) {
       if (!rows.delete(id)) return false;
@@ -198,7 +208,7 @@ export type UserListService = ListReader<UserListRow> & {
 };
 
 /** The users list, and the one change it allows. Nobody changes their own role, so the last admin cannot lock everyone out. */
-export function createUserListService(deps: { store: UserListStore; now?: () => Date }): UserListService {
+export function createUserListService(deps: { store: UserListStore; now?: () => Date; mailer?: Mailer; log?: (message: string) => void }): UserListService {
   const { store } = deps;
   const now = deps.now ?? (() => new Date());
   /** Restricting or deleting: not your own account (the last admin cannot lock themselves out) and not an admin (change the role first). */
@@ -229,7 +239,22 @@ export function createUserListService(deps: { store: UserListStore; now?: () => 
       return act(actor, id, () => store.restrict(actor, id, { reason: text, until: end }));
     },
     lift: (actor, id) => act(actor, id, () => store.lift(actor, id)),
-    requestDeletion: (actor, id) => act(actor, id, () => store.requestDeletion(actor, id)),
+    async requestDeletion(actor, id) {
+      const t = await target(actor, id);
+      if (!t.ok) return t;
+      const row = await store.requestDeletion(actor, id);
+      if (!row) return bad("not_found");
+      // Told once, when it starts. Stands without the email (an account may have none; its owner sees it on signing in).
+      if (t.value.deletionRequestedAt === null && row.email && deps.mailer) {
+        const at = now();
+        try {
+          await deps.mailer.send(buildAdminDeletionEmail({ to: row.email, locale: row.locale, at, deleteOn: new Date(at.getTime() + DELETION_NOTICE_DAYS * 24 * 60 * 60 * 1000) }));
+        } catch (err) {
+          (deps.log ?? console.error)(`[users] deletion notice failed: ${mailFailure(err)}`);
+        }
+      }
+      return ok(row);
+    },
     cancelDeletion: (actor, id) => act(actor, id, () => store.cancelDeletion(actor, id)),
     async deleteNow(actor, id) {
       const t = await target(actor, id);

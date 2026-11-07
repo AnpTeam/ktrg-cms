@@ -5142,6 +5142,42 @@ msgstr "Not used in the text"
 msgid "注の文がありません"
 msgstr "This note has no text"
 
+msgid "管理者が、アカウントの削除を予約しました"
+msgstr "An administrator has scheduled your account for deletion"
+
+msgid "{due}（日本時間）に、アカウントとすべての記録が消えます。異議があるときは、理由を送ってください。管理者が確認します。"
+msgstr "Your account and all its records will be deleted on {due} (Japan time). If you disagree, send your reason. An administrator will read it."
+
+msgid "異議を受け付けました。書きなおすと、新しい内容に変わります。"
+msgstr "We received your appeal. Writing again replaces it."
+
+msgid "異議の理由"
+msgstr "Your reason"
+
+msgid "異議を送る"
+msgstr "Send appeal"
+
+msgid "管理者が削除を予約しました。7日たつと、アカウントとスタンプが消えます。"
+msgstr "An admin scheduled this deletion. The account and its stamps go after 7 days."
+
+msgid "本人からの異議"
+msgstr "Appeal from the owner"
+
+msgid "ふつうは、7日後に削除する方法を使います。本人にメールで知らせ、本人は異議を送れます。その間は、取り消せます。"
+msgstr "Normally use deletion after 7 days. The owner is told by email and can appeal, and you can cancel until then."
+
+msgid "7日後の削除を予約し、本人に知らせました。"
+msgstr "Deletion in 7 days is scheduled, and the owner has been told."
+
+msgid "7日後に削除する"
+msgstr "Delete in 7 days"
+
+msgid "この削除は、管理者が予約したものです。プロフィールの画面から、異議を送れます。"
+msgstr "An administrator scheduled this deletion. You can appeal from your profile page."
+
+msgid "管理者が予約した削除は、ありません。"
+msgstr "There is no deletion scheduled by an administrator."
+
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "Remove photo"

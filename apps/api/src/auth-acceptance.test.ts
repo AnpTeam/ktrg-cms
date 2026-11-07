@@ -434,6 +434,7 @@ describe("user B cannot touch user A", () => {
     "POST /api/v1/auth/reauth/verify": () => ({ code: "123456" }),
     "POST /api/v1/auth/email/request": () => ({ email: "new@example.com" }),
     "POST /api/v1/auth/email/verify": () => ({ email: "new@example.com", code: "123456" }),
+    "POST /api/v1/me/deletion/appeal": () => ({ message: "x" }),
     "POST /api/v1/admin/uploads/video": () => ({ name: "a.mp4", contentType: "video/mp4", size: 1024 }),
     "POST /api/v1/admin/uploads/subtitles": () => ({ videoUrl: "https://photos.example.com/videos/a.mp4", size: 1024 }),
     "POST /api/v1/admin/uploads": () => {

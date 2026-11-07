@@ -8,6 +8,7 @@ import { createMemorySessionStore } from "../auth/session-memory-store";
 import { createSessionService } from "../auth/session-service";
 import type { AuthUser } from "../auth/user";
 import { apiBase } from "../lib/api-errors";
+import type { MailMessage } from "../lib/mailer";
 import { createMemoryUserListStore, createUserListService, userList } from "./user-list";
 import { userRoleRoutes } from "./user-routes";
 
@@ -22,13 +23,25 @@ function setup() {
   const audit = createMemoryAuditWriter();
   const mem = createMemoryUserListStore(audit.writer);
   for (const u of [admin, alice, boss]) {
-    mem.rows.set(u.id, { id: u.id, publicId: u.id.slice(0, 8), email: u.email, displayName: null, role: u.role, origin: null, ageRange: null, gender: null, foundVia: null, restrictedAt: null, restrictedUntil: null, restrictionReason: null, deletionRequestedAt: null, restricted: false, deletionPending: false, createdAt: clock, updatedAt: clock });
+    mem.rows.set(u.id, { id: u.id, publicId: u.id.slice(0, 8), email: u.email, displayName: null, role: u.role, deletionByAdmin: false, deletionAppeal: null, locale: "ja", origin: null, ageRange: null, gender: null, foundVia: null, restrictedAt: null, restrictedUntil: null, restrictionReason: null, deletionRequestedAt: null, restricted: false, deletionPending: false, createdAt: clock, updatedAt: clock });
   }
+  const sent: MailMessage[] = [];
+  const logs: string[] = [];
+  let mailFails = false;
   const services = {
     session,
     audit: audit.writer,
     rateLimit: createRateLimiter({ store: createMemoryRateLimitStore().store, secret: "m".repeat(32) }),
-    userList: createUserListService({ store: mem.store }),
+    userList: createUserListService({
+      store: mem.store,
+      log: (m) => logs.push(m),
+      mailer: {
+        async send(m) {
+          if (mailFails) throw new Error("smtp down");
+          sent.push(m);
+        },
+      },
+    }),
   };
   const opts = { secureCookies: false };
   const app = new Elysia({ prefix: "/api/v1" }).use(apiBase()).use(listReadRoutes(userList, () => services, opts)).use(userRoleRoutes(() => services, opts));
@@ -45,7 +58,7 @@ function setup() {
   const login = async (u: AuthUser) => `session=${(await session.create(u)).token}`;
   const later = (minutes: number) => (clock = new Date(clock.getTime() + minutes * 60_000));
   const at = (id: string) => mem.rows.get(id)!.updatedAt.toISOString();
-  return { call, login, later, at, mem, audit };
+  return { call, login, later, at, mem, audit, sent, logs, failMail: (on: boolean) => (mailFails = on) };
 }
 
 describe("users and roles", () => {
@@ -128,6 +141,33 @@ describe("restricting and deleting accounts", () => {
     }
     expect(s.mem.deleted).toEqual([]);
     expect(s.audit.rows).toEqual([]);
+  });
+
+  test("an admin's deletion tells the owner once; a failed email does not stop it; cancelling clears the appeal", async () => {
+    const s = setup();
+    const cookie = await s.login(admin);
+    const path = `/admin/lists/users/${alice.id}/deletion-request`;
+    s.failMail(true);
+    expect((await s.call("POST", path, cookie)).body.item).toMatchObject({ deletionPending: true, deletionByAdmin: true });
+    expect(s.logs).toHaveLength(1);
+    expect(s.logs[0]).not.toContain(alice.email!);
+    await s.call("DELETE", path, cookie);
+
+    s.failMail(false);
+    await s.call("POST", path, cookie);
+    await s.call("POST", path, cookie); // already pending: not told twice
+    expect(s.sent.map((m) => m.to)).toEqual([alice.email!]);
+
+    s.mem.rows.get(alice.id)!.deletionAppeal = "please no";
+    expect((await s.call("DELETE", path, cookie)).body.item).toMatchObject({ deletionPending: false, deletionByAdmin: false, deletionAppeal: null });
+  });
+
+  test("an owner's own pending request stays theirs: no notice, not turned into an admin's", async () => {
+    const s = setup();
+    Object.assign(s.mem.rows.get(alice.id)!, { deletionRequestedAt: new Date("2026-10-19T00:00:00Z"), deletionPending: true });
+    const res = await s.call("POST", `/admin/lists/users/${alice.id}/deletion-request`, await s.login(admin));
+    expect(res.body.item).toMatchObject({ deletionPending: true, deletionByAdmin: false });
+    expect(s.sent).toEqual([]);
   });
 
   test("deletion after the grace period can be asked for and cancelled; delete now removes the account at once", async () => {

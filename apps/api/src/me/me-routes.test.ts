@@ -63,7 +63,7 @@ function setup() {
       }),
     );
   const login = async (user: AuthUser) => `session=${(await session.create(users.get(user.id)!)).token}`;
-  return { call, login, users, sent, audit: mem.audit, session };
+  return { call, login, users, sent, audit: mem.audit, session, extras: mem.extras };
 }
 
 describe("every /me route needs a login", () => {
@@ -74,6 +74,7 @@ describe("every /me route needs a login", () => {
       ["PATCH", "", { locale: "en" }],
       ["DELETE", "", undefined],
       ["POST", "/deletion/cancel", undefined],
+      ["POST", "/deletion/appeal", { message: "x" }],
     ] as const) {
       const res = await call(method, path, undefined, body);
       expect(res.status).toBe(401);
@@ -297,6 +298,62 @@ describe("preferences", () => {
     const me = ((await res.json()) as MeBody).me;
     expect(me.locale).toBe("en");
     expect(me.preferences).toEqual(prefs);
+  });
+});
+
+describe("a deletion an admin asked for", () => {
+  function scheduled() {
+    const s = setup();
+    // What the admin's request leaves on the account.
+    const asked = async () => {
+      const cookie = await s.login(alice);
+      await s.call("DELETE", "", cookie);
+      s.extras.get(alice.id)!.deletionByAdmin = true;
+      return cookie;
+    };
+    return { ...s, asked };
+  }
+
+  test("the owner cannot cancel it, and it stays pending", async () => {
+    const { call, asked } = scheduled();
+    const cookie = await asked();
+    const res = await call("POST", "/deletion/cancel", cookie);
+    expect(res.status).toBe(403);
+    expect(await res.json()).toEqual({ ok: false, error: "deletion_by_admin" });
+    expect(((await (await call("GET", "", cookie)).json()) as MeBody).me.deletionRequestedAt).not.toBeNull();
+  });
+
+  test("the owner can appeal and rewrite it; the audit row never holds the words", async () => {
+    const { call, asked, audit } = scheduled();
+    const cookie = await asked();
+    expect((await call("POST", "/deletion/appeal", cookie, { message: "  first  " })).status).toBe(200);
+    const res = await call("POST", "/deletion/appeal", cookie, { message: "second" });
+    expect(((await res.json()) as { me: { deletionAppeal: string } }).me.deletionAppeal).toBe("second");
+    expect(audit.filter((r) => r.action === "user.deletion_appeal")).toHaveLength(2);
+    expect(JSON.stringify(audit)).not.toContain("second");
+  });
+
+  test("an empty or oversized appeal is refused", async () => {
+    const { call, asked } = scheduled();
+    const cookie = await asked();
+    expect((await call("POST", "/deletion/appeal", cookie, { message: "   " })).status).toBe(422);
+    expect((await call("POST", "/deletion/appeal", cookie, { message: "x".repeat(1001) })).status).toBe(422);
+  });
+
+  test("no appeal with none pending or for one's own request, which stays theirs to cancel", async () => {
+    const { call, login } = setup();
+    const a = await login(alice);
+    expect((await call("POST", "/deletion/appeal", a, { message: "x" })).status).toBe(409);
+    await call("DELETE", "", a);
+    expect((await call("POST", "/deletion/appeal", a, { message: "x" })).status).toBe(409);
+    expect((await call("POST", "/deletion/cancel", a)).status).toBe(200);
+  });
+
+  test("user B's appeal cannot reach user A's account", async () => {
+    const { call, asked, login, extras } = scheduled();
+    await asked();
+    expect((await call("POST", "/deletion/appeal", await login(bob), { message: "x" })).status).toBe(409);
+    expect(extras.get(alice.id)!.deletionAppeal).toBeNull();
   });
 });
 

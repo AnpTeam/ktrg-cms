@@ -107,8 +107,8 @@ describe("resolveViewer", () => {
 
 describe("viewerFromMe", () => {
   test("a good answer gives the name", () => {
-    expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana" } })).toEqual({ signedIn: true, role: null, publicId: null, deletionDueAt: null, name: "Hana", avatarUrl: null, origin: null, originPlace: null, ageRange: null, gender: null, email: null, foundVia: null, preferences: null, bookmarks: [] });
-    expect(viewerFromMe(200, { ok: true, me: { displayName: null } })).toEqual({ signedIn: true, role: null, publicId: null, deletionDueAt: null, name: null, avatarUrl: null, origin: null, originPlace: null, ageRange: null, gender: null, email: null, foundVia: null, preferences: null, bookmarks: [] });
+    expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana" } })).toEqual({ signedIn: true, role: null, publicId: null, deletionDueAt: null, deletionByAdmin: false, deletionAppeal: null, name: "Hana", avatarUrl: null, origin: null, originPlace: null, ageRange: null, gender: null, email: null, foundVia: null, preferences: null, bookmarks: [] });
+    expect(viewerFromMe(200, { ok: true, me: { displayName: null } })).toEqual({ signedIn: true, role: null, publicId: null, deletionDueAt: null, deletionByAdmin: false, deletionAppeal: null, name: null, avatarUrl: null, origin: null, originPlace: null, ageRange: null, gender: null, email: null, foundVia: null, preferences: null, bookmarks: [] });
     expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana", origin: "nara" } }).origin).toBe("nara");
     expect(viewerFromMe(200, { ok: true, me: { displayName: "Hana", origin: "mars" } }).origin).toBeNull();
     const about = viewerFromMe(200, { ok: true, me: { publicId: "00048271", deletionDueAt: "2026-10-18T05:30:00.000Z", displayName: "Hana", ageRange: "60s", gender: "unspecified" } });

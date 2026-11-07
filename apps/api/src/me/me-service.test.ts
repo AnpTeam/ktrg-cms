@@ -143,8 +143,20 @@ describe("deletion after the grace period", () => {
     const mem = createMemoryMeStore(users);
     let now = new Date("2026-10-15T05:30:00Z");
     const service = createMeService({ store: mem.store, now: () => now });
-    return { service, users, audit: mem.audit, advance: (days: number) => (now = new Date(now.getTime() + days * DAY)) };
+    return { service, users, mem, audit: mem.audit, advance: (days: number) => (now = new Date(now.getTime() + days * DAY)) };
   }
+
+  test("an admin's deletion gives a week: still there at 6 days, gone at 7", async () => {
+    const { service, advance, mem } = clocked();
+    await service.requestDeletion(alice);
+    mem.extras.get(alice.id)!.deletionByAdmin = true;
+    const profile = await service.get(alice);
+    expect(profile!.deletionDueAt!.getTime() - profile!.deletionRequestedAt!.getTime()).toBe(7 * DAY);
+    advance(6);
+    expect(await service.purgeDue()).toBe(0);
+    advance(1);
+    expect(await service.purgeDue()).toBe(1);
+  });
 
   test("a request shows the day it will happen: 3 days later", async () => {
     const { service } = clocked();

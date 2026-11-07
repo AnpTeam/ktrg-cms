@@ -14,6 +14,9 @@ export interface Viewer {
   publicId: string | null;
   /** When a requested account deletion will really happen (ISO time); null with no request. */
   deletionDueAt: string | null;
+  /** An admin asked for the deletion: the owner can appeal, not cancel. */
+  deletionByAdmin?: boolean;
+  deletionAppeal?: string | null;
   /** The display name given at sign-up; null when signed out or when there is none. */
   name: string | null;
   /** A photo of the person (staff only; shown as a blog byline); left out or null when none. */
@@ -53,13 +56,15 @@ export const devViewerCookie = "dev_as";
 /** Read the profile from GET /me's answer; anything unexpected is signed out. */
 export function viewerFromMe(status: number, body: unknown): Viewer {
   if (status !== 200) return signedOut;
-  const me = (body as { ok?: unknown; me?: { role?: unknown; publicId?: unknown; deletionDueAt?: unknown; displayName?: unknown; avatarUrl?: unknown; origin?: unknown; originPlace?: unknown; ageRange?: unknown; gender?: unknown; email?: unknown; foundVia?: unknown; preferences?: unknown; bookmarks?: unknown } } | null)?.me;
+  const me = (body as { ok?: unknown; me?: { role?: unknown; publicId?: unknown; deletionDueAt?: unknown; deletionByAdmin?: unknown; deletionAppeal?: unknown; displayName?: unknown; avatarUrl?: unknown; origin?: unknown; originPlace?: unknown; ageRange?: unknown; gender?: unknown; email?: unknown; foundVia?: unknown; preferences?: unknown; bookmarks?: unknown } } | null)?.me;
   if ((body as { ok?: unknown } | null)?.ok !== true || !me) return signedOut;
   return {
     signedIn: true,
     role: me.role === "admin" || me.role === "editor" || me.role === "participant" ? me.role : null,
     publicId: typeof me.publicId === "string" && me.publicId ? me.publicId : null,
     deletionDueAt: typeof me.deletionDueAt === "string" && me.deletionDueAt ? me.deletionDueAt : null,
+    deletionByAdmin: me.deletionByAdmin === true,
+    deletionAppeal: typeof me.deletionAppeal === "string" ? me.deletionAppeal : null,
     name: typeof me.displayName === "string" && me.displayName ? me.displayName : null,
     avatarUrl: typeof me.avatarUrl === "string" && me.avatarUrl ? me.avatarUrl : null,
     origin: origins.find((o) => o === me.origin) ?? null,

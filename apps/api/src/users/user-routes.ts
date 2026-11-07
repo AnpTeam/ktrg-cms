@@ -29,7 +29,7 @@ export function userRoleRoutes(getServices: () => UserListServices, opts: RouteO
       body: t.Object({ updatedAt: t.String({ format: "date-time" }), ...USER_FIELDS }),
     },
   )
-    // Restrict an account (it can look but not take part), lift that, ask for deletion after 3 days, cancel that, delete now.
+    // Restrict an account (it can look but not take part), lift that, ask for deletion after a week's notice, cancel that, delete now.
     // Every one needs a fresh login, refuses your own account and an admin's, and is audited by account id only.
     .put(
       "/:id/restriction",

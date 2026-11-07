@@ -1,4 +1,4 @@
-import { and, eq, isNotNull, isNull, lt, lte, sql } from "drizzle-orm";
+import { and, eq, isNotNull, isNull, lt, lte, or, sql } from "drizzle-orm";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
 import { otpCodes, sessions, users } from "../db/schema";
@@ -20,6 +20,8 @@ const profileColumns = {
   preferences: users.preferences,
   bookmarks: users.bookmarks,
   deletionRequestedAt: users.deletionRequestedAt,
+  deletionByAdmin: users.deletionByAdmin,
+  deletionAppeal: users.deletionAppeal,
   createdAt: users.createdAt,
 };
 
@@ -61,18 +63,16 @@ export function createDrizzleMeStore(db: Db): MeStore {
       });
     },
 
-    async purgeDue(cutoff) {
+    async purgeDue(cutoff, adminCutoff) {
+      const due = or(and(eq(users.deletionByAdmin, false), lte(users.deletionRequestedAt, cutoff)), and(eq(users.deletionByAdmin, true), lte(users.deletionRequestedAt, adminCutoff)));
       return db.transaction(async (tx) => {
-        const due = await tx
-          .select({ id: users.id, email: users.email })
-          .from(users)
-          .where(and(isNotNull(users.deletionRequestedAt), lte(users.deletionRequestedAt, cutoff)));
+        const found = await tx.select({ id: users.id, email: users.email }).from(users).where(and(isNotNull(users.deletionRequestedAt), due));
         let deleted = 0;
-        for (const { id, email } of due) {
+        for (const { id, email } of found) {
           // The conditions are repeated so a request cancelled a moment ago is not deleted.
           const [gone] = await tx
             .delete(users)
-            .where(and(eq(users.id, id), isNotNull(users.deletionRequestedAt), lte(users.deletionRequestedAt, cutoff)))
+            .where(and(eq(users.id, id), isNotNull(users.deletionRequestedAt), due))
             .returning({ id: users.id });
           if (!gone) continue;
           // Login codes are kept by email, not user id, so no foreign key removes them.
@@ -87,12 +87,29 @@ export function createDrizzleMeStore(db: Db): MeStore {
       });
     },
 
+    async appealDeletion(userId, text) {
+      return db.transaction(async (tx) => {
+        const [row] = await tx
+          .update(users)
+          .set({ deletionAppeal: text, updatedAt: sql`now()` })
+          .where(and(eq(users.id, userId), isNotNull(users.deletionRequestedAt), eq(users.deletionByAdmin, true)))
+          .returning(profileColumns);
+        if (!row) {
+          const profile = await getProfile(tx, userId);
+          return profile ? { profile, changed: false } : null;
+        }
+        await writeAudit(tx, { actorUserId: userId, action: "user.deletion_appeal", targetId: userId });
+        return { profile: row, changed: true };
+      });
+    },
+
     async cancelDeletion(userId) {
       return db.transaction(async (tx) => {
         const [row] = await tx
           .update(users)
           .set({ deletionRequestedAt: null, updatedAt: sql`now()` })
-          .where(and(eq(users.id, userId), isNotNull(users.deletionRequestedAt)))
+          // Not one an admin asked for: that is for an admin to cancel.
+          .where(and(eq(users.id, userId), isNotNull(users.deletionRequestedAt), eq(users.deletionByAdmin, false)))
           .returning(profileColumns);
         if (!row) {
           const profile = await getProfile(tx, userId);

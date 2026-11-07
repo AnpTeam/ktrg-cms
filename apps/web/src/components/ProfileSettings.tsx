@@ -29,6 +29,8 @@ const row = `w-full ${rowBox}`;
 export function ProfileSettings({
   locale,
   deletionDueAt,
+  deletionByAdmin,
+  deletionAppeal,
   name,
   origin,
   originPlace,
@@ -38,6 +40,8 @@ export function ProfileSettings({
 }: {
   locale: string;
   deletionDueAt: string | null;
+  deletionByAdmin: boolean;
+  deletionAppeal: string | null;
   name: string | null;
   origin: Origin | null;
   originPlace: string | null;
@@ -60,6 +64,7 @@ export function ProfileSettings({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<AuthFailure | null>(null);
   const [saved, setSaved] = useState(false);
+  const [appeal, setAppeal] = useState("");
 
   useEffect(() => {
     const el = sheet.current;
@@ -105,6 +110,20 @@ export function ProfileSettings({
     setBusy(false);
   }
 
+  async function sendAppeal() {
+    if (busy || appeal.trim() === "") return;
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await api.me.deletion.appeal.post({ message: appeal.trim() });
+      if (res.error) setError("failed");
+      else router.refresh();
+    } catch {
+      setError("network");
+    }
+    setBusy(false);
+  }
+
   async function cancelDeletion() {
     if (busy) return;
     setBusy(true);
@@ -139,7 +158,21 @@ export function ProfileSettings({
 
   return (
     <div className="flex flex-col gap-6">
-      {deletionDueAt ? (
+      {deletionDueAt && deletionByAdmin ? (
+        <section role="status" className="mx-4 flex flex-col gap-3 rounded-3xl border-2 border-danger p-5">
+          <p className="text-xl font-bold text-danger">{t`管理者が、アカウントの削除を予約しました`}</p>
+          <p className="text-lg leading-8">{t`${due}（日本時間）に、アカウントとすべての記録が消えます。異議があるときは、理由を送ってください。管理者が確認します。`}</p>
+          {deletionAppeal ? <p className="whitespace-pre-line rounded-2xl bg-surface p-4 text-lg leading-8">{deletionAppeal}</p> : null}
+          {deletionAppeal ? <p className="text-lg font-bold">{t`異議を受け付けました。書きなおすと、新しい内容に変わります。`}</p> : null}
+          <label className="flex flex-col gap-2 text-lg font-bold">
+            {t`異議の理由`}
+            <textarea value={appeal} onChange={(e) => setAppeal(e.target.value)} rows={4} maxLength={1000} className="rounded-2xl border-2 border-line bg-paper p-3 text-lg font-normal" />
+          </label>
+          <button type="button" disabled={busy || appeal.trim() === ""} onClick={sendAppeal} className={primaryButton}>
+            {t`異議を送る`}
+          </button>
+        </section>
+      ) : deletionDueAt ? (
         <section role="status" className="mx-4 flex flex-col gap-3 rounded-3xl border-2 border-danger p-5">
           <p className="text-xl font-bold text-danger">{t`アカウントを削除します`}</p>
           <p className="text-lg leading-8">{t`${due}（日本時間）に、アカウントとすべての記録が消えます。それまでは、取り消せます。`}</p>

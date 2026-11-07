@@ -36,7 +36,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
               <ProfilePhoto photoUrl={viewer.avatarUrl ?? null} name={viewer.name} />
             </>
           ) : null}
-          <ProfileSettings locale={i18n.locale} deletionDueAt={viewer.deletionDueAt} name={viewer.name} origin={viewer.origin} originPlace={viewer.originPlace} ageRange={viewer.ageRange} gender={viewer.gender} foundVia={viewer.foundVia} />
+          <ProfileSettings locale={i18n.locale} deletionDueAt={viewer.deletionDueAt} deletionByAdmin={viewer.deletionByAdmin ?? false} deletionAppeal={viewer.deletionAppeal ?? null} name={viewer.name} origin={viewer.origin} originPlace={viewer.originPlace} ageRange={viewer.ageRange} gender={viewer.gender} foundVia={viewer.foundVia} />
         </>
       ) : (
         <SignInPrompt />

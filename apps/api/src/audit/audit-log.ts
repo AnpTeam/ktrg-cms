@@ -103,6 +103,8 @@ export const AUDIT_ACTIONS = {
   /** An admin asked for an account to be deleted after the usual 3 days, or cancelled that. */
   "user.deletion_request_by_admin": "user",
   "user.deletion_cancel_by_admin": "user",
+  /** The owner answered an admin's deletion. The words stay on the account, never in the log. */
+  "user.deletion_appeal": "user",
   /** An admin deleted an account at once (a test account). */
   "user.deleted_by_admin": "user",
   /** An admin uploaded a photo (the target is the file's UUID in storage). */
