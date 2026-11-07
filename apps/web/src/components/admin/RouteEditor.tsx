@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { useUnsavedGuard } from "./useUnsavedGuard";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { AlertIcon, CheckIcon, DocumentIcon, ListIcon, MapIcon, PinIcon, TickIcon, XIcon } from "@/components/icons";
 import { api } from "@/lib/api";
@@ -152,12 +153,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
   }, [draft, dirty, offerOpen]);
 
   // ---- leaving with unsaved work ---------------------------------------------------------------------------
-  useEffect(() => {
-    if (!dirty) return;
-    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
-    window.addEventListener("beforeunload", warn);
-    return () => window.removeEventListener("beforeunload", warn);
-  }, [dirty]);
+  useUnsavedGuard(dirty);
 
   // ---- undo and redo from the keyboard (not while typing in a box: the box has its own) -----------------------------
   useEffect(() => {

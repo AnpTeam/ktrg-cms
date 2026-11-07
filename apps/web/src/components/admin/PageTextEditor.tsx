@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { useUnsavedGuard } from "./useUnsavedGuard";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode } from "@/lib/api-error";
 import type { PageKey, PageLang, PageText } from "@/lib/page-text";
@@ -31,12 +32,7 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
     setText((cur) => ({ ...cur, [lang]: { ...cur[lang], ...patch } }));
   };
 
-  useEffect(() => {
-    if (!dirty) return;
-    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
-    window.addEventListener("beforeunload", warn);
-    return () => window.removeEventListener("beforeunload", warn);
-  }, [dirty]);
+  useUnsavedGuard(dirty);
 
   const names: Record<PageKey, string> = { home: t`ホーム`, faq: t`よくあるご質問`, guide: t`遊び方`, terms: t`利用規約`, privacy: t`プライバシーポリシー` };
   const langs: { lang: Lang; name: string }[] = [
