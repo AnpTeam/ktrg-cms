@@ -1,3 +1,4 @@
+import { APPEAL_MAX } from "./me-service";
 import { Elysia, t } from "elysia";
 import { fail } from "../auth/http";
 import { routeKit, type KitServices, type RouteOptions } from "../auth/route-kit";
@@ -80,9 +81,23 @@ export function meRoutes(getServices: () => MeServices, opts: RouteOptions) {
         "/deletion/cancel",
         async ({ user, set }) => {
           const profile = await getServices().me.cancelDeletion(user);
-          return profile ? { ok: true as const, me: profile } : fail(set, 401, "unauthenticated");
+          if (!profile) return fail(set, 401, "unauthenticated");
+          if (profile.deletionByAdmin) return fail(set, 403, "deletion_by_admin");
+          return { ok: true as const, me: profile };
         },
         { auth: "me.manage", rateLimit: { meDeletionUser: "user.id" } },
+      )
+      // A deletion an admin asked for: the owner cannot cancel it, but can say why it should not happen. An admin reads this.
+      .post(
+        "/deletion/appeal",
+        async ({ user, body, set }) => {
+          if (body.message.trim() === "") return fail(set, 422, "validation_failed");
+          const result = await getServices().me.appealDeletion(user, body.message);
+          if (!result) return fail(set, 401, "unauthenticated");
+          if (!result.changed) return fail(set, 409, "no_admin_deletion");
+          return { ok: true as const, me: result.profile };
+        },
+        { auth: "me.manage", rateLimit: { meDeletionUser: "user.id" }, body: t.Object({ message: t.String({ maxLength: APPEAL_MAX }) }) },
       )
   );
 }

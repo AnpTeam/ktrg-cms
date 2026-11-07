@@ -208,3 +208,86 @@ describe("destroy", () => {
     await expect(service.destroy("whatever")).resolves.toBeUndefined();
   });
 });
+
+describe("rotation", () => {
+  const DUE = 30 * DAY;
+  const GRACE = 60 * 60 * 1000;
+
+  test("is not due at first, and is due after 30 days", async () => {
+    const { service, advance } = setup();
+    const { token } = await service.create(participant);
+    expect((await service.authenticate(token))!.rotateDue).toBe(false);
+    advance(DUE);
+    expect((await service.authenticate(token))!.rotateDue).toBe(true);
+  });
+
+  test("the old token keeps working until the new one is used, then ends", async () => {
+    const { service, rows, advance } = setup();
+    const { token } = await service.create(participant);
+    advance(DUE);
+    const id = (await service.authenticate(token))!.sessionId;
+    const next = (await service.rotate(id))!;
+    expect((await service.authenticate(token))?.user.id).toBe(participant.id); // the reply may have been lost
+    expect((await service.authenticate(next))?.rotateDue).toBe(false);
+    advance(GRACE);
+    expect((await service.authenticate(next))?.rotateDue).toBe(false);
+    expect(await service.authenticate(token)).toBeNull();
+    expect(rows).toHaveLength(1);
+  });
+
+  test("a walker offline for days after a lost reply is still signed in: no timer on the old token", async () => {
+    const { service, advance } = setup();
+    const { token } = await service.create(participant);
+    advance(DUE);
+    await service.rotate((await service.authenticate(token))!.sessionId);
+    advance(10 * DAY);
+    expect((await service.authenticate(token))?.user.id).toBe(participant.id);
+  });
+
+  test("two asking at once get one new token, so no reply can leave a phone holding a dead one", async () => {
+    const { service, advance } = setup();
+    const { token } = await service.create(participant);
+    advance(DUE);
+    const id = (await service.authenticate(token))!.sessionId;
+    const [first, second] = await Promise.all([service.rotate(id), service.rotate(id)]);
+    expect(second).toBeNull();
+    expect((await service.authenticate(token))!.rotateDue).toBe(false); // the old token does not ask again for now
+    expect((await service.authenticate(first!))?.user.id).toBe(participant.id);
+  });
+
+  test("a slow upload sent with the old token still lands after the new one is in use", async () => {
+    const { service, advance } = setup();
+    const { token } = await service.create(participant);
+    advance(DUE);
+    const next = (await service.rotate((await service.authenticate(token))!.sessionId))!;
+    await service.authenticate(next);
+    advance(GRACE - 1);
+    await service.authenticate(next);
+    expect((await service.authenticate(token))?.user.id).toBe(participant.id);
+  });
+
+  test("a phone that never got the new token rotates again, and its old token stays good", async () => {
+    const { service, advance } = setup();
+    const { token } = await service.create(participant);
+    advance(DUE);
+    const id = (await service.authenticate(token))!.sessionId;
+    const lost = (await service.rotate(id))!;
+    advance(GRACE);
+    expect((await service.authenticate(token))!.rotateDue).toBe(true);
+    const next = (await service.rotate(id))!;
+    expect(await service.authenticate(lost)).toBeNull();
+    expect((await service.authenticate(token))?.user.id).toBe(participant.id);
+    advance(GRACE);
+    expect((await service.authenticate(next))?.user.id).toBe(participant.id);
+    expect(await service.authenticate(token)).toBeNull();
+  });
+
+  test("logging out with either token ends the session", async () => {
+    const { service, rows, advance } = setup();
+    const { token } = await service.create(participant);
+    advance(DUE);
+    await service.rotate((await service.authenticate(token))!.sessionId);
+    await service.destroy(token);
+    expect(rows).toHaveLength(0);
+  });
+});

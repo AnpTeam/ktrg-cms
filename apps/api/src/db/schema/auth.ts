@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import {
+  boolean,
   index,
   integer,
   pgEnum,
@@ -74,6 +75,10 @@ export const users = pgTable(
     // Set by DELETE /me: the owner asked for the account to be deleted. Nothing is deleted
     // yet; cleared again if they cancel. Null when no deletion is pending.
     deletionRequestedAt: timestamp("deletion_requested_at", { withTimezone: true }),
+    // An admin asked, not the owner: the owner is told, has DELETION_NOTICE_DAYS, and may appeal but not cancel.
+    deletionByAdmin: boolean("deletion_by_admin").notNull().default(false),
+    // What the owner wrote back; only an admin reads it, and it goes with the account.
+    deletionAppeal: text("deletion_appeal"),
     // Set by an admin: the account can still sign in and look, but cannot take part (collect stamps, write comments; see
     // auth/permissions.ts). It ends at `restrictedUntil` (null: until an admin lifts it). The reason is for admins only.
     restrictedAt: timestamp("restricted_at", { withTimezone: true }),
@@ -102,8 +107,12 @@ export const sessions = pgTable(
     lastLoginAt: timestamp("last_login_at", { withTimezone: true }).notNull().defaultNow(),
     // Until when this session may use the admin screens (see STAFF_CHECK_MS). Null: not checked yet.
     staffCheckedUntil: timestamp("staff_checked_until", { withTimezone: true }),
+    // When the token last changed (see SESSION_ROTATE_MS).
+    rotatedAt: timestamp("rotated_at", { withTimezone: true }).notNull().defaultNow(),
+    // The token before that, until the new one is first used: a reply lost on a weak signal must not sign anyone out.
+    previousTokenHash: text("previous_token_hash"),
   },
-  (t) => [index("sessions_user_id_idx").on(t.userId)],
+  (t) => [index("sessions_user_id_idx").on(t.userId), index("sessions_previous_token_idx").on(t.previousTokenHash)],
 );
 
 /** WebAuthn credentials (SimpleWebAuthn). */

@@ -12,7 +12,7 @@ import { Field, inputClass, Section, TextInput } from "./fields";
 
 /**
  * What an admin can do to an account besides changing its role: restrict it (it can look but not take part), ask for its
- * deletion after the usual 3 days (and cancel that), or delete it now (for a test account). Each one asks the admin to
+ * deletion with a week's notice to the owner (and cancel that), or delete it now (for a test account). Each one asks the admin to
  * confirm it is them (the fresh login step) and is refused for the admin's own account and for other admins.
  */
 export function UserActions({ item, locale, onItem }: { item: ListItem; locale: string; onItem: (item: ListItem) => void }) {
@@ -28,6 +28,8 @@ export function UserActions({ item, locale, onItem }: { item: ListItem; locale: 
   const id = item.id;
   const restricted = item.restricted === true;
   const pending = item.deletionPending === true;
+  const byAdmin = item.deletionByAdmin === true;
+  const appeal = typeof item.deletionAppeal === "string" ? item.deletionAppeal : null;
   const memberId = String(item.publicId ?? "");
 
   /** Run one call behind the fresh-login step; show its error or the done text. */
@@ -95,16 +97,22 @@ export function UserActions({ item, locale, onItem }: { item: ListItem; locale: 
       <Section title={t`アカウントの削除`}>
         {pending ? (
           <div className="flex flex-col gap-3">
-            <p className="rounded-xl border-2 border-caution p-3 text-lg font-bold">{t`削除が予約されています。3日たつと、アカウントとスタンプが消えます。`}</p>
+            <p className="rounded-xl border-2 border-caution p-3 text-lg font-bold">{byAdmin ? t`管理者が削除を予約しました。7日たつと、アカウントとスタンプが消えます。` : t`削除が予約されています。3日たつと、アカウントとスタンプが消えます。`}</p>
+            {appeal ? (
+              <div className="flex flex-col gap-1 rounded-xl bg-surface p-3">
+                <p className="text-lg font-bold">{t`本人からの異議`}</p>
+                <p className="whitespace-pre-line text-lg">{appeal}</p>
+              </div>
+            ) : null}
             <button type="button" disabled={busy} onClick={() => void run(() => listRequest<{ item?: ListItem }>("DELETE", `users/${id}/deletion-request`), t`削除の予約を取り消しました。`)} className="tap-target w-fit rounded-full border-2 border-ink px-6 text-lg font-bold disabled:opacity-50">
               {t`削除の予約を取り消す`}
             </button>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
-            <p className="text-base text-muted">{t`ふつうは、3日後に削除する方法を使います。その間は、取り消せます。`}</p>
-            <button type="button" disabled={busy} onClick={() => void run(() => listRequest<{ item?: ListItem }>("POST", `users/${id}/deletion-request`), t`3日後の削除を予約しました。`)} className="tap-target w-fit rounded-full border-2 border-danger px-6 text-lg font-bold text-danger disabled:opacity-50">
-              {t`3日後に削除する`}
+            <p className="text-base text-muted">{t`ふつうは、7日後に削除する方法を使います。本人にメールで知らせ、本人は異議を送れます。その間は、取り消せます。`}</p>
+            <button type="button" disabled={busy} onClick={() => void run(() => listRequest<{ item?: ListItem }>("POST", `users/${id}/deletion-request`), t`7日後の削除を予約し、本人に知らせました。`)} className="tap-target w-fit rounded-full border-2 border-danger px-6 text-lg font-bold text-danger disabled:opacity-50">
+              {t`7日後に削除する`}
             </button>
           </div>
         )}

@@ -68,6 +68,8 @@ export const ERROR_CODES = {
   // --- Admin lists (trail notices, ...) ---------------------------------------------------
   invalid_source_url: "400: the source must be a link that starts with https://",
   account_restricted: "403: an admin restricted this account: it can look but cannot take part (collect stamps, write comments)",
+  deletion_by_admin: "403: an admin asked for this deletion: the owner may appeal, an admin decides",
+  no_admin_deletion: "409: only a deletion an admin asked for can be appealed",
   cannot_manage_self: "409: an admin cannot restrict or delete their own account",
   cannot_manage_admin: "409: an admin account cannot be restricted or deleted; change its role first",
   cannot_change_own_role: "409: an admin cannot change their own role (so the last admin cannot lock everyone out)",

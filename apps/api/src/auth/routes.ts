@@ -66,6 +66,18 @@ export function authRoutes(getServices: () => AuthServices, opts: RouteOptions) 
       },
       { detail: { security: SESSION_SECURITY, description: "The logged-in user, or 401 `unauthenticated`." } },
     )
+    // A long session's token changes now and then; nothing happens until it is due.
+    .post(
+      "/session/rotate",
+      async ({ authSession, set }) => {
+        if (!authSession.rotateDue) return { ok: true as const, rotated: false };
+        const token = await getServices().session.rotate(authSession.id);
+        if (!token) return { ok: true as const, rotated: false };
+        http.setToken(set, token, authSession.expiresAt);
+        return { ok: true as const, rotated: true };
+      },
+      { auth: "me.manage", rateLimit: { sessionRotateUser: "user.id" } },
+    )
     // For the admin area: show the check screen, not pages that would all answer 403.
     .get("/staff-check", ({ authSession }) => ({ ok: true as const, checked: authSession.staffChecked }), { auth: "me.manage" })
     // Right after passing the check: keep this device. An old session cannot reach this, it needs a fresh login.

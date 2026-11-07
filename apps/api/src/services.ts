@@ -145,7 +145,7 @@ export function createServices(deps: ServiceDeps): Services {
     dashboard: createDashboardService({ store: stores.dashboard, visits, settings, now }),
     auditList: createListReader({ store: stores.auditList }),
     placeList: createListReader({ store: stores.placeList }),
-    userList: createUserListService({ store: stores.userList }),
+    userList: createUserListService({ store: stores.userList, mailer, now }),
     // Admin photo uploads.
     uploads: createUploadService({ ...deps.uploads }),
     // The route-finding service behind the map editor's "snap to trails" (no key: it answers "not set up").

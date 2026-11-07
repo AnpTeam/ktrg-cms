@@ -224,6 +224,48 @@ describe("session cookie", () => {
   });
 });
 
+describe("POST /auth/session/rotate", () => {
+  test("needs a session", async () => {
+    expect((await setup().post("session/rotate")).status).toBe(401);
+  });
+
+  test("changes nothing until it is due", async () => {
+    const t = setup();
+    const { cookie } = await t.login();
+    const res = await t.post("session/rotate", undefined, cookie);
+    expect(await res.json()).toEqual({ ok: true, rotated: false });
+    expect(res.headers.get("set-cookie")).toBeNull();
+  });
+
+  test("when due, gives the browser a new token that works, and the old one ends once it is used", async () => {
+    const t = setup();
+    const { cookie } = await t.login();
+    t.sessions.rows[0]!.rotatedAt = new Date(Date.now() - 31 * 24 * 3600 * 1000);
+    const res = await t.post("session/rotate", undefined, cookie);
+    expect(await res.json()).toEqual({ ok: true, rotated: true });
+    const next = res.headers.get("set-cookie")!.split(";")[0]!;
+    expect(next).not.toBe(cookie);
+    expect((await t.get("session", cookie)).status).toBe(200);
+    expect((await t.get("session", next)).status).toBe(200);
+    expect((await t.get("session", cookie)).status).toBe(200); // a slow request sent before the change
+    t.sessions.rows[0]!.rotatedAt = new Date(Date.now() - 2 * 3600 * 1000);
+    expect((await t.get("session", next)).status).toBe(200);
+    expect((await t.get("session", cookie)).status).toBe(401);
+    expect(await (await t.post("session/rotate", undefined, next)).json()).toEqual({ ok: true, rotated: false });
+  });
+
+  test("asking again straight after sets no second cookie: the old one stays good", async () => {
+    const t = setup();
+    const { cookie } = await t.login();
+    t.sessions.rows[0]!.rotatedAt = new Date(Date.now() - 31 * 24 * 3600 * 1000);
+    await t.post("session/rotate", undefined, cookie);
+    const again = await t.post("session/rotate", undefined, cookie);
+    expect(await again.json()).toEqual({ ok: true, rotated: false });
+    expect(again.headers.get("set-cookie")).toBeNull();
+    expect((await t.get("session", cookie)).status).toBe(200);
+  });
+});
+
 describe("rate limits", () => {
   test("otp/request: the 6th request for one email in 15 minutes gets 429 with Retry-After", async () => {
     const { post } = setup();

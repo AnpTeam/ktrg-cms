@@ -62,6 +62,8 @@ export function useErrorMessages(): Record<ErrorKey, string> {
     cannot_change_own_role: t`自分の権限は変えられません。ほかの管理者に頼んでください。`,
     cannot_manage_self: t`自分のアカウントは、制限したり削除したりできません。`,
     cannot_manage_admin: t`管理者のアカウントは、制限したり削除したりできません。先に権限を変えてください。`,
+    deletion_by_admin: t`この削除は、管理者が予約したものです。プロフィールの画面から、異議を送れます。`,
+    no_admin_deletion: t`管理者が予約した削除は、ありません。`,
     account_restricted: t`このアカウントは、いま制限されています。スタンプを押すことと、コメントを書くことはできません。`,
     invalid_source_url: t`出典のリンクは https:// で始まるアドレスを入れてください。`,
     // Admin: photo uploads

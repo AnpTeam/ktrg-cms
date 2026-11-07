@@ -83,6 +83,11 @@ export function createHttpHelpers(opts: {
 
     session,
 
+    /** The session has a new token: hand it to the browser. */
+    setToken(set: SetLike, token: string, expiresAt: Date): void {
+      set.headers["set-cookie"] = cookieFor(token, expiresAt);
+    },
+
     /** Start a session for a user who just logged in (email code or passkey) and set its cookie. */
     async startSession(set: SetLike, user: AuthUser, options?: { fresh?: boolean }): Promise<void> {
       const { token, expiresAt } = await opts.getSession().create(user, options);

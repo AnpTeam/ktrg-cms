@@ -215,6 +215,26 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       expect(found?.user).toEqual({ ...user, restricted: false });
       expect(found?.session.absoluteExpiresAt.getTime()).toBe(absoluteExpiresAt.getTime());
 
+      // A new token: both work until the new one has been used, then only the new one.
+      const nextHash = randomBytes(32).toString("hex");
+      const later = new Date(now.getTime() + 3_600_000); // the row's own rotated_at is the database's clock, not ours
+      await sessions.rotate(found!.session.id, nextHash, now, later);
+      expect((await sessions.find(tokenHash))?.session).toMatchObject({ rotating: true, viaPrevious: true });
+      expect((await sessions.find(nextHash))?.session).toMatchObject({ rotating: true, viaPrevious: false });
+      await sessions.settle(found!.session.id);
+      expect(await sessions.find(tokenHash)).toBeNull();
+
+      // Two at once: the row lock lets exactly one through, so no reply can hand a phone a token already replaced.
+      const [hashA, hashB] = [randomBytes(32).toString("hex"), randomBytes(32).toString("hex")];
+      const cutoff = new Date(now.getTime() - 3_600_000);
+      await sessions.rotate(found!.session.id, nextHash, new Date(now.getTime() - 7_200_000), later);
+      const won = await Promise.all([sessions.rotate(found!.session.id, hashA, now, cutoff), sessions.rotate(found!.session.id, hashB, now, cutoff)]);
+      expect(won.filter(Boolean)).toHaveLength(1);
+      expect(await sessions.find(won[0] ? hashB : hashA)).toBeNull();
+
+      await sessions.rotate(found!.session.id, tokenHash, now, later); // back, for the steps below
+      await sessions.settle(found!.session.id);
+
       const slid = new Date(now.getTime() + 20 * 86_400_000);
       await sessions.touch(found!.session.id, new Date(), slid);
       expect((await sessions.find(tokenHash))!.session.expiresAt.getTime()).toBe(slid.getTime());
@@ -280,7 +300,7 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       await otp.insert({ email: old.email!, codeHash: "e".repeat(64), expiresAt: future() });
       await otp.insert({ email: fresh.email!, codeHash: "f".repeat(64), expiresAt: future() });
       try {
-        expect(await me.purgeDue(new Date("2026-03-01T00:00:00Z"))).toBe(1);
+        expect(await me.purgeDue(new Date("2026-03-01T00:00:00Z"), new Date("2026-03-01T00:00:00Z"))).toBe(1);
         // Their login codes go with them (kept by email, so no foreign key reaches them).
         expect(await otp.latest(old.email!)).toBeNull();
         expect(await otp.latest(fresh.email!)).not.toBeNull();

@@ -4,7 +4,7 @@ import type { Preferences } from "./preferences";
 import { publicIdFor } from "../lib/public-id";
 import type { MeStore, StoredProfile } from "./me-service";
 
-type Extra = { publicId: string; displayName: string | null; avatarUrl: string | null; origin: Origin | null; originPlace: string | null; ageRange: AgeRange | null; gender: Gender | null; foundVia: FoundVia | null; preferences: Preferences | null; bookmarks: string[]; deletionRequestedAt: Date | null; createdAt: Date };
+type Extra = { publicId: string; displayName: string | null; avatarUrl: string | null; origin: Origin | null; originPlace: string | null; ageRange: AgeRange | null; gender: Gender | null; foundVia: FoundVia | null; preferences: Preferences | null; bookmarks: string[]; deletionRequestedAt: Date | null; deletionByAdmin: boolean; deletionAppeal: string | null; createdAt: Date };
 
 /**
  * In-memory store for tests and the dev test page. `users` is the same map the OTP and
@@ -26,7 +26,7 @@ export function createMemoryMeStore(
     if (!e) {
       const given = profiles.get(userId);
       e = { publicId: publicIdFor(++sequence), displayName: given?.displayName ?? null, avatarUrl: null, origin: (given?.origin as Origin | null | undefined) ?? null, originPlace: given?.originPlace ?? null,
-        ageRange: null, gender: null, foundVia: null, preferences: null, bookmarks: [], deletionRequestedAt: null, createdAt: new Date() };
+        ageRange: null, gender: null, foundVia: null, preferences: null, bookmarks: [], deletionRequestedAt: null, deletionByAdmin: false, deletionAppeal: null, createdAt: new Date() };
       extras.set(userId, e);
     }
     return e;
@@ -68,10 +68,19 @@ export function createMemoryMeStore(
       audit.push(auditRow({ actorUserId: userId, action: "user.deletion_request", targetId: userId }));
       return { profile: profile(user), changed: true };
     },
-    async purgeDue(cutoff) {
+    async appealDeletion(userId, text) {
+      const user = find(userId);
+      if (!user) return null;
+      const e = extraOf(userId);
+      if (!e.deletionRequestedAt || !e.deletionByAdmin) return { profile: profile(user), changed: false };
+      e.deletionAppeal = text;
+      audit.push(auditRow({ actorUserId: userId, action: "user.deletion_appeal", targetId: userId }));
+      return { profile: profile(user), changed: true };
+    },
+    async purgeDue(cutoff, adminCutoff) {
       let deleted = 0;
       for (const [userId, e] of [...extras]) {
-        if (!e.deletionRequestedAt || e.deletionRequestedAt > cutoff) continue;
+        if (!e.deletionRequestedAt || e.deletionRequestedAt > (e.deletionByAdmin ? adminCutoff : cutoff)) continue;
         const user = find(userId);
         if (!user) continue;
         for (const [key, u] of [...users]) if (u.id === user.id) users.delete(key);
@@ -85,7 +94,7 @@ export function createMemoryMeStore(
       const user = find(userId);
       if (!user) return null;
       const e = extraOf(userId);
-      if (!e.deletionRequestedAt) return { profile: profile(user), changed: false };
+      if (!e.deletionRequestedAt || e.deletionByAdmin) return { profile: profile(user), changed: false };
       e.deletionRequestedAt = null;
       audit.push(auditRow({ actorUserId: userId, action: "user.deletion_cancel", targetId: userId }));
       return { profile: profile(user), changed: true };

@@ -22,6 +22,8 @@ const SERVER_CODES: Record<ErrorCode, true> = {
   unauthenticated: true,
   forbidden: true,
   reauth_required: true,
+  deletion_by_admin: true,
+  no_admin_deletion: true,
   invalid_login: true,
   password_too_short: true,
   password_too_common: true,

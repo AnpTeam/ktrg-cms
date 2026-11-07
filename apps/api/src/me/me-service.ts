@@ -9,6 +9,9 @@ export type { Locale };
 
 /** How long a deletion request can be cancelled before the account and its data are really deleted. */
 export const DELETION_GRACE_DAYS = 3;
+/** A deletion an admin asks for: the owner is told and has this long to appeal. */
+export const DELETION_NOTICE_DAYS = 7;
+export const APPEAL_MAX = 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** What the account owner sees about themselves. */
@@ -37,6 +40,8 @@ export interface Profile {
   bookmarks: string[];
   /** Set while a deletion request is pending; null otherwise. */
   deletionRequestedAt: Date | null;
+  deletionByAdmin: boolean;
+  deletionAppeal: string | null;
   /** When the account will really be deleted (the request plus the grace period); null with no request. */
   deletionDueAt: Date | null;
   createdAt: Date;
@@ -74,20 +79,24 @@ export interface MeStore {
    * transaction. `changed` is false when one was already pending (nothing written then).
    */
   requestDeletion(userId: string, at: Date): Promise<{ profile: StoredProfile; changed: boolean } | null>;
-  /** Clear a pending request (audit row in the same transaction). `changed` false if none was pending. */
+  /** Clear a pending request of the owner's own (audit row in the same transaction). `changed` false if there was none to clear. */
   cancelDeletion(userId: string): Promise<{ profile: StoredProfile; changed: boolean } | null>;
   /**
-   * Delete every account whose deletion was requested at or before `cutoff` (cascades to sessions, passkeys and
+   * Keep the owner's answer to an admin's deletion (audit row in the same transaction). `changed` false when no such deletion is pending.
+   */
+  appealDeletion(userId: string, text: string): Promise<{ profile: StoredProfile; changed: boolean } | null>;
+  /**
+   * Delete every account whose deletion was requested at or before `cutoff`, or `adminCutoff` when an admin asked (cascades to sessions, passkeys and
    * stamps), writing an audit row for each in the same transaction. Returns how many were deleted.
    */
-  purgeDue(cutoff: Date): Promise<number>;
+  purgeDue(cutoff: Date, adminCutoff: Date): Promise<number>;
 }
 
 /** Add the day the deletion will happen. */
 export function present(profile: StoredProfile): Profile {
   return {
     ...profile,
-    deletionDueAt: profile.deletionRequestedAt ? new Date(profile.deletionRequestedAt.getTime() + DELETION_GRACE_DAYS * DAY_MS) : null,
+    deletionDueAt: profile.deletionRequestedAt ? new Date(profile.deletionRequestedAt.getTime() + (profile.deletionByAdmin ? DELETION_NOTICE_DAYS : DELETION_GRACE_DAYS) * DAY_MS) : null,
   };
 }
 
@@ -190,9 +199,15 @@ export function createMeService({
       return result ? present(result.profile) : null;
     },
 
+    /** The owner's answer to a deletion an admin asked for. Null: no such account. */
+    async appealDeletion(user: AuthUser, text: string): Promise<{ profile: Profile; changed: boolean } | null> {
+      const result = await store.appealDeletion(user.id, text.trim());
+      return result ? { profile: present(result.profile), changed: result.changed } : null;
+    },
+
     /** Delete the accounts whose grace period is over. Called hourly by the purge-deletions workflow (POST /internal/purge-deletions). */
     purgeDue(): Promise<number> {
-      return store.purgeDue(new Date(now().getTime() - DELETION_GRACE_DAYS * DAY_MS));
+      return store.purgeDue(new Date(now().getTime() - DELETION_GRACE_DAYS * DAY_MS), new Date(now().getTime() - DELETION_NOTICE_DAYS * DAY_MS));
     },
   };
 }

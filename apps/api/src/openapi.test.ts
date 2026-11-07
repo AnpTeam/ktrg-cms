@@ -45,6 +45,7 @@ describe("API docs (outside production)", () => {
       ["/me/", "patch", "Me"],
       ["/me/", "delete", "Me"],
       ["/me/deletion/cancel", "post", "Me"],
+      ["/me/deletion/appeal", "post", "Me"],
     ];
     for (const [path, method, tag] of expected) {
       expect(op(d, path, method)?.tags, `${method} ${path}`).toEqual([tag]);

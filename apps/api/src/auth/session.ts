@@ -18,6 +18,11 @@ export const SESSION_POLICY: Record<SessionRole, { idleMs: number; absoluteMs: n
 /** Only write a slid expiry back when it moved by at least this much. */
 export const SESSION_TOUCH_INTERVAL_MS = 60 * 60 * 1000;
 
+/** A long session gets a new token this often, so a copied cookie does not stay good for its whole year. */
+export const SESSION_ROTATE_MS = 30 * DAY_MS;
+/** After a change: no second new token, and the old one is not retired, so two tabs or a slow upload on weak signal sign nobody out. */
+export const SESSION_ROTATE_GRACE_MS = 60 * 60 * 1000;
+
 /**
  * A login (or a re-check with POST /auth/reauth/verify) counts as "fresh" for this long.
  * Permissions marked fresh in the permission table need one, so a stolen or forgotten

@@ -1,4 +1,4 @@
-import { and, eq, ne, sql } from "drizzle-orm";
+import { and, eq, ne, or, sql, lte } from "drizzle-orm";
 import type { Db } from "../db/client";
 import { sessions, users } from "../db/schema";
 import type { SessionStore } from "./session-service";
@@ -25,6 +25,8 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
           absoluteExpiresAt: sessions.absoluteExpiresAt,
           lastLoginAt: sessions.lastLoginAt,
           staffCheckedUntil: sessions.staffCheckedUntil,
+          rotatedAt: sessions.rotatedAt,
+          previousTokenHash: sessions.previousTokenHash,
           userId: users.id,
           email: users.email,
           role: users.role,
@@ -34,7 +36,7 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
         })
         .from(sessions)
         .innerJoin(users, eq(users.id, sessions.userId))
-        .where(eq(sessions.tokenHash, tokenHash))
+        .where(or(eq(sessions.tokenHash, tokenHash), eq(sessions.previousTokenHash, tokenHash)))
         .limit(1);
       if (!row) return null;
       return {
@@ -44,6 +46,9 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
           absoluteExpiresAt: row.absoluteExpiresAt,
           lastLoginAt: row.lastLoginAt,
           staffCheckedUntil: row.staffCheckedUntil,
+          rotatedAt: row.rotatedAt,
+          rotating: row.previousTokenHash !== null,
+          viaPrevious: row.previousTokenHash === tokenHash,
         },
         user: { id: row.userId, email: row.email, role: row.role, locale: row.locale, restricted: row.restrictedAt !== null && (row.restrictedUntil === null || row.restrictedUntil > new Date()) },
       };
@@ -53,8 +58,21 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
       await db.update(sessions).set({ lastSeenAt, expiresAt }).where(eq(sessions.id, id));
     },
 
+    async rotate(id, tokenHash, at, notAfter) {
+      const changed = await db
+        .update(sessions)
+        .set({ previousTokenHash: sql`coalesce(${sessions.previousTokenHash}, ${sessions.tokenHash})`, tokenHash, rotatedAt: at })
+        .where(and(eq(sessions.id, id), lte(sessions.rotatedAt, notAfter)))
+        .returning({ id: sessions.id });
+      return changed.length > 0;
+    },
+
+    async settle(id) {
+      await db.update(sessions).set({ previousTokenHash: null }).where(eq(sessions.id, id));
+    },
+
     async remove(tokenHash) {
-      await db.delete(sessions).where(eq(sessions.tokenHash, tokenHash));
+      await db.delete(sessions).where(or(eq(sessions.tokenHash, tokenHash), eq(sessions.previousTokenHash, tokenHash)));
     },
 
     async markFresh(id, at, staffCheckedUntil) {
