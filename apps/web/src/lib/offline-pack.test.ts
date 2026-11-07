@@ -98,6 +98,16 @@ test("an update that fails keeps the pack already saved", async () => {
   expect(await fake.stores.get("ktrg-pack-r1")?.get("u/1")?.text()).toBe("x".repeat(1000));
 });
 
+test("tiles are asked for past the worker's saved copy, so an update really fetches them", async () => {
+  const asked: (RequestInit | undefined)[] = [];
+  globalThis.fetch = (async (u: string, init?: RequestInit) => {
+    if (u === "u/1") asked.push(init);
+    return site(u);
+  }) as unknown as typeof fetch;
+  await savePack("r1", ["u/1"], () => {});
+  expect(asked).toEqual([{ cache: "reload" }]);
+});
+
 test("age and size read plainly", () => {
   const now = 10 * 24 * 3600_000;
   expect(packAge(now - 30_000, now)).toEqual({ n: 0, unit: "minute" });

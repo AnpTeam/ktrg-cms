@@ -113,7 +113,8 @@ export async function savePack(routeId: string, urls: string[], onProgress: (don
     await Promise.all(
       urls.slice(i, i + AT_A_TIME).map(async (url) => {
         try {
-          const res = await fetch(url);
+          // reload: past the worker's saved copy too, or an update would only save the old tile again (app/sw.ts).
+          const res = await fetch(url, { cache: "reload" });
           if (res.ok) {
             const size = (await res.clone().blob()).size; // added after the await: `bytes += await` would lose parallel updates
             bytes += size;
