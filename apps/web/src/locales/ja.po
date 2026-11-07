@@ -2586,10 +2586,6 @@ msgstr "ページの文章"
 msgid "ページの文章（管理）"
 msgstr "ページの文章（管理）"
 
-#: src/app/(admin)/admin/pages/[key]/page.tsx:29
-msgid "ページの文章へ戻る"
-msgstr "ページの文章へ戻る"
-
 #: src/components/settings/PrefsForm.tsx:121
 msgid "ページの漢字すべてに、読みがなをつけます。"
 msgstr "ページの漢字すべてに、読みがなをつけます。"
@@ -3262,11 +3258,6 @@ msgstr "ルートを読み込めませんでした。しばらくしてから、
 msgid "ルート一覧"
 msgstr "ルート一覧"
 
-#: src/app/(admin)/admin/routes/[id]/page.tsx:37
-#: src/app/(admin)/admin/routes/new/page.tsx:23
-msgid "ルート一覧にもどる"
-msgstr "ルート一覧にもどる"
-
 #: src/components/admin/useChecklistLabels.ts:11
 msgid "ルート名（日本語）"
 msgstr "ルート名（日本語）"
@@ -3332,11 +3323,6 @@ msgstr "一覧"
 #: src/app/(admin)/admin/pages/page.tsx:73
 msgid "一覧で見る・削除する"
 msgstr "一覧で見る・削除する"
-
-#: src/app/(admin)/admin/[list]/[id]/page.tsx:31
-#: src/app/(admin)/admin/[list]/new/page.tsx:26
-msgid "一覧へ戻る"
-msgstr "一覧へ戻る"
 
 #: src/components/map/TrailMap.tsx:584
 msgid "上のボタンを押すと、{restName}や{shopsName}などが地図と一覧に出ます。"
@@ -5141,6 +5127,9 @@ msgstr "{label}でしぼりこむ"
 
 msgid "手直しが必要（{needsWorkCount}）"
 msgstr "手直しが必要（{needsWorkCount}）"
+
+msgid "現在の場所"
+msgstr "現在の場所"
 
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
