@@ -6,6 +6,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: @lingui/cli\n"
 "Language: ja\n"
+#: src/components/navigation/NavigationHud.tsx
+msgid "音声案内"
+msgstr "音声案内"
+
+#: src/components/navigation/NavPrompts.tsx
+msgid "押したスタンプは消えません。"
+msgstr "押したスタンプは消えません。"
+
+#: src/components/navigation/NavPrompts.tsx
+msgid "ナビをつづける"
+msgstr "ナビをつづける"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "電車・バスで行く"
+msgstr "電車・バスで行く"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "歩いて行く道を見る"
+msgstr "歩いて行く道を見る"
 
 #: src/components/landing/TrailNotices.tsx:42
 msgid "　{until} まで"

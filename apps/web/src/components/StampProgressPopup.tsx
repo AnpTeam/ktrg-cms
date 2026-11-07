@@ -22,14 +22,14 @@ export function StampProgressPopup() {
     const onEvent = (e: Event) => {
       const detail = (e as CustomEvent<StampProgress>).detail;
       window.clearTimeout(timer);
-      // Let the press animation on the page land first.
+      // The press animation on the page plays first: its seal holds for about 1.2 s, then fades as this opens.
       timer = window.setTimeout(() => {
         setInfo(detail);
         setShown(detail.before);
         dialog.current?.showModal();
         // Next frames: the ring moves from `before` to `after` (a CSS transition).
         window.setTimeout(() => setShown(detail.after), 400);
-      }, 700);
+      }, 1400);
     };
     window.addEventListener(STAMP_PROGRESS_EVENT, onEvent);
     return () => {

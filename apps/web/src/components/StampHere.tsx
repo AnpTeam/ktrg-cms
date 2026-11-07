@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { getOutbox } from "@/lib/stamp-outbox";
 import { locationAlreadyAllowed, mockPosition, mockStamp, readPosition, requestStamp } from "@/lib/stamp-client";
@@ -29,6 +29,8 @@ type Phase =
 
 const button = buttonStyle("action", "lg", "flex w-full shadow-lg");
 const quietButton = buttonStyle("secondary", "lg", "flex w-full");
+/** How long the stamp-press moment lasts (.stamp-press in globals.css). */
+const STAMP_PRESS_MS = 1700;
 
 export function StampHere({
   spotId,
@@ -38,6 +40,7 @@ export function StampHere({
   loginHref,
   mock,
   inSheet = false,
+  aside,
   progress,
   onStamped,
 }: {
@@ -52,9 +55,11 @@ export function StampHere({
   mock?: StampMock;
   /** Shown inside the home map's bottom sheet: it sticks to the bottom of the sheet, not above the tab bar. */
   inSheet?: boolean;
+  /** A smaller button beside the stamp button (navigation's "later"); gone once the stamp is pressed. */
+  aside?: ReactNode;
   /** Where the rally stood before this stamp: lets the popup show the ring filling. Left out when the screen does not know. */
   progress?: Omit<StampProgress, "after">;
-  /** Called once the server has given (or already had) the stamp; navigation moves on to the next stop. */
+  /** Called once the server has given (or already had) the stamp and the press has played; navigation moves on to the next stop. */
   onStamped?: () => void;
 }) {
   const { t, i18n } = useLingui();
@@ -90,7 +95,8 @@ export function StampHere({
       track("stamp", { already: result.already, finishedCourse: (result.finished?.routeIds.length ?? 0) > 0 });
       window.dispatchEvent(new Event("ktrg:stamped")); // the sign-up reminder for a visitor with no account listens
       if (!result.already && progress) announceProgress({ ...progress, after: progress.before + 1 });
-      onStamped?.();
+      // Moving on takes this button off the screen, and the press with it: the press plays first.
+      window.setTimeout(() => onStamped?.(), result.already ? 0 : STAMP_PRESS_MS);
       router.refresh();
     } else if (result.failure === "network" && !mock && (await getOutbox().enqueue(spotId, position.reading, progress))) {
       // No signal: the stamp waits on this phone and is sent when the app is online (the server still decides then).
@@ -128,6 +134,7 @@ export function StampHere({
           <p className="text-xl font-bold leading-snug">{t`電波が弱いか、つながらないため、あとで送ります。`}</p>
           <p className="text-base leading-snug">{t`つながると、自動で送ります。そのときにサーバーが確かめるため、受け付けられないこともあります（場所が閉鎖中になったときなど）。`}</p>
         </div>
+        {aside}
       </div>
     );
   }
@@ -157,21 +164,27 @@ export function StampHere({
 
       {status === "closed" ? (
         <>
-          <button type="button" disabled className={`${button} opacity-50`}>
-            {t`スタンプを押す`}
-          </button>
+          <div className="flex gap-2">
+            {aside}
+            <button type="button" disabled className={`${button} min-w-0 flex-1 opacity-50`}>
+              {t`スタンプを押す`}
+            </button>
+          </div>
           <p className="rounded-xl bg-paper/95 px-3 py-1 text-center text-base text-muted">{t`この場所は、いまは閉鎖中です。`}</p>
         </>
       ) : (
-        <button type="button" disabled={busy} onClick={() => void press()} className={button} aria-live="polite">
-          {phase.name === "locating"
-            ? t`いまの位置を調べています…`
-            : phase.name === "sending"
-              ? t`スタンプを押しています…`
-              : phase.name === "problem"
-                ? t`もう一度試す`
-                : t`スタンプを押す`}
-        </button>
+        <div className="flex gap-2">
+          {busy ? null : aside}
+          <button type="button" disabled={busy} onClick={() => void press()} className={`${button} min-w-0 flex-1`} aria-live="polite">
+            {phase.name === "locating"
+              ? t`いまの位置を調べています…`
+              : phase.name === "sending"
+                ? t`スタンプを押しています…`
+                : phase.name === "problem"
+                  ? t`もう一度試す`
+                  : t`スタンプを押す`}
+          </button>
+        </div>
       )}
 
       <dialog

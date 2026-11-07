@@ -1,3 +1,4 @@
+import { offRouteCardShown, OFF_ROUTE_LOCKED_M } from "./geometry";
 import { describe, expect, test } from "bun:test";
 import { bearingDeg, compassPoint, cumulativeDistances, cutLegs, distanceM, nearestTarget, nextTurn, offRouteStep, pointAlong, projectOnLine, turnDelta, turnKind, vectorTo, type LinePoint, type Stop } from "./geometry";
 
@@ -279,5 +280,14 @@ describe("turns ahead", () => {
     const pin: LinePoint[] = [[135, LAT], [135.002, LAT], [135.0021, LAT + 0.00005], [135.0021, LAT + 0.0001], [135, LAT + 0.0001]];
     const cum = cumulativeDistances(pin);
     expect(nextTurn(pin, cum, 0, cum[cum.length - 1]!)!.kind).toBe("sharp-left");
+  });
+});
+
+describe("the off-route card", () => {
+  test("it can be closed within 1 km of the course, and comes back when farther", () => {
+    expect(offRouteCardShown(400, false)).toBe(true);
+    expect(offRouteCardShown(400, true)).toBe(false);
+    expect(offRouteCardShown(OFF_ROUTE_LOCKED_M, true)).toBe(false);
+    expect(offRouteCardShown(OFF_ROUTE_LOCKED_M + 1, true)).toBe(true);
   });
 });

@@ -141,6 +141,14 @@ export function nearestTarget(
 /** Once off route, the warning clears only inside this (closer than OFF_ROUTE_M), so a fix hovering at the edge does not flicker. */
 export const BACK_ON_ROUTE_M = 25;
 
+/** Farther from the course than this, the "off the path" card cannot be closed: being this far off is not something to hide. */
+export const OFF_ROUTE_LOCKED_M = 1000;
+
+/** Whether the card shows: closing it holds only while the visitor is near enough to close it at all. */
+export function offRouteCardShown(backM: number, closed: boolean): boolean {
+  return backM > OFF_ROUTE_LOCKED_M || !closed;
+}
+
 export function offRouteStep(prevCount: number, offM: number, wasOff = false): { count: number; offRoute: boolean } {
   if (wasOff) return offM > BACK_ON_ROUTE_M ? { count: prevCount + 1, offRoute: true } : { count: 0, offRoute: false };
   const count = offM > OFF_ROUTE_M ? prevCount + 1 : 0;

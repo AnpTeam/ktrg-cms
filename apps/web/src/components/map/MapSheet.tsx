@@ -24,6 +24,7 @@ export function MapSheet({
   snap,
   onSnap,
   available,
+  belowBanner = false,
   tabPx,
   header,
   contentKey,
@@ -38,6 +39,8 @@ export function MapSheet({
   snap: SheetSnap;
   onSnap: (snap: SheetSnap) => void;
   available: number;
+  /** A navigation banner is above the sheet, so even at its highest it never reaches the top of the screen. */
+  belowBanner?: boolean;
   /** The room the floating tab bar takes at the bottom: the sheet reaches the screen's edge under it. */
   tabPx: number;
   /** Null when the content brings its own top (a course's banner), which then scrolls with the rest. */
@@ -106,7 +109,7 @@ export function MapSheet({
   const height = dragPx ?? restingPx;
   // At its top the sheet runs under the phone's status bar / camera island: its first row starts below it, so the handle
   // (and the back button under it) can still be reached.
-  const atTop = !panel && height >= sheetHeightPx("full", available) - 1;
+  const atTop = !panel && !belowBanner && height >= sheetHeightPx("full", available) - 1;
   // The handle says in words what a tap does (a thin grey bar alone is not understood by everyone).
   const tapLabel = snap === "full" ? t`小さくして地図を見る` : snap === "half" ? t`もっと広げる` : t`広げる`;
   // Hidden (and not being pulled): after sliding down, nothing is drawn; the map screen shows a button to bring it back.
