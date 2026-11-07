@@ -8,6 +8,7 @@ import type { AccessPoint } from "@/lib/access-points";
 import type { NavModel } from "@/lib/navigation/session";
 import { clearResume, saveResume } from "@/lib/navigation/resume";
 import { fetchMyStamps } from "@/lib/stamp-client";
+import { getOutbox } from "@/lib/stamp-outbox";
 
 // The navigation session lives here, in the participant layout, so it keeps running while the visitor moves between
 // the app's tabs (Home, Map, Routes, Stamps): layouts are not remounted on navigation. A hidden browser tab or a locked
@@ -92,6 +93,7 @@ export function NavigationProvider({ children, signedIn, voiceByDefault = false 
       doc: document,
       now: () => Date.now(),
       loadStamps: fetchMyStamps,
+      loadWaiting: () => getOutbox().waitingSpots(),
       // Signed out: no request leaves the phone (the answer says "back off", so it is not asked again soon).
       fetchPath: (spotId, from): Promise<PathAnswer> => (signedInRef.current ? requestPath(spotId, from) : Promise.resolve({ ok: false, backOff: true })),
       onChange: (snapshot) => setSession((s) => (s && controller.current === c ? { ...s, snapshot } : s)),

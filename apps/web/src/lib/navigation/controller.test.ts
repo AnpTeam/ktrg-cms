@@ -11,7 +11,7 @@ const spot = (id: string, lng: number, over: Partial<PublicSpot> = {}): PublicSp
   ({ id, routeId: "r", stampable: true, position: { lat: LAT, lng, verified: true }, radiusM: 50, status: "open", sortOrder: 1, ...over }) as PublicSpot;
 const spots = [spot("a", 135.003, { sortOrder: 1 }), spot("b", 135.006, { sortOrder: 2 }), spot("c", 135.01, { sortOrder: 3 })];
 
-function setup(stampsOnServer: Set<string> | null = new Set(), fetchPath?: Parameters<typeof createNavigationController>[0]["fetchPath"]) {
+function setup(stampsOnServer: Set<string> | null = new Set(), fetchPath?: Parameters<typeof createNavigationController>[0]["fetchPath"], waiting: string[] = []) {
   let deliver: ((p: { coords: { latitude: number; longitude: number; accuracy: number } }) => void) | null = null;
   const watching = new Set<number>();
   const geo: GeoApi = {
@@ -31,6 +31,7 @@ function setup(stampsOnServer: Set<string> | null = new Set(), fetchPath?: Param
     doc,
     now: () => t,
     loadStamps: async () => stampsOnServer,
+    loadWaiting: async () => waiting,
     fetchPath,
     onChange: (s) => seen.push(s),
   });
@@ -99,6 +100,41 @@ describe("a navigation session", () => {
     s.walk(135.009, 300);
     expect(s.c.snapshot.state.distanceM).toBe(before);
     expect(s.c.snapshot.state.ignoredFixes).toBe(1);
+  });
+
+  test("a fix too poor to use is no position: the screen can say the signal is weak, not that every stamp is pressed", async () => {
+    const s = setup();
+    await s.c.start();
+    s.walk(135.001, 300);
+    const first = s.c.snapshot;
+    expect(first.position).toBeNull();
+    expect(first.lastFixAtMs).toBeNull();
+    expect(first.state.ignoredFixes).toBe(1);
+  });
+
+  test("a poor fix after a good one leaves the dot and the age of the position alone", async () => {
+    const s = setup();
+    await s.c.start();
+    s.walk(135.001);
+    const { position, lastFixAtMs } = s.c.snapshot;
+    s.walk(135.009, 300);
+    expect(s.c.snapshot.position).toEqual(position);
+    expect(s.c.snapshot.lastFixAtMs).toBe(lastFixAtMs);
+  });
+
+  test("a stamp waiting on the phone is not headed for again, even when the server cannot be reached", async () => {
+    const s = setup(null, undefined, ["a"]);
+    await s.c.start();
+    s.walk(135.003); // standing at "a"
+    expect(s.c.snapshot.state.targetId).toBe("b");
+    expect(s.c.snapshot.stampsKnown).toBe(false);
+  });
+
+  test("a stamp waiting on the phone counts beside the server's list", async () => {
+    const s = setup(new Set(["b"]), undefined, ["a"]);
+    await s.c.start();
+    expect([...s.c.snapshot.stamped].sort()).toEqual(["a", "b"]);
+    expect(s.c.snapshot.stampsKnown).toBe(true);
   });
 
   test("a path for the target switches an off-route visitor from 'straight' to 'path'", async () => {
