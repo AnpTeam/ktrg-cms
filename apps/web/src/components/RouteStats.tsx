@@ -19,7 +19,7 @@ export function RouteStats({ route, compact = false, icons = false, inline = fal
     maximumFractionDigits: 1,
   });
 
-  const items: { label: string; value: string; icon: ReactNode; info?: "physical" | "technical" }[] = [];
+  const items: { label: string; value: string; icon: ReactNode; short?: string; info?: "physical" | "technical" }[] = [];
   // How the walk goes (片道, 周回 or 往復), where the page chooses to say it: it reads as one more number of the route.
   if (walkStyle) items.push({ label: t`歩き方`, icon: <RouteIcon />, value: walkStyle === "loop" ? t`周回` : walkStyle === "out_and_back" ? t`往復` : t`片道` });
   if (route.distanceKm !== null) {
@@ -40,8 +40,8 @@ export function RouteStats({ route, compact = false, icons = false, inline = fal
     });
   }
   // The grading levels when they are set; otherwise the editor's own words.
-  if (route.physicalLevel !== null) items.push({ label: t`体力度`, icon: <ChartIcon />, value: `${route.physicalLevel}`, info: "physical" });
-  if (route.technicalLevel !== null) items.push({ label: t`技術度`, icon: <FlagIcon />, value: route.technicalLevel, info: "technical" });
+  if (route.physicalLevel !== null) items.push({ label: t`体力度`, short: t`体力`, icon: <ChartIcon />, value: `${route.physicalLevel}`, info: "physical" });
+  if (route.technicalLevel !== null) items.push({ label: t`技術度`, short: t`技術`, icon: <FlagIcon />, value: route.technicalLevel, info: "technical" });
   if (route.physicalLevel === null && route.technicalLevel === null && route.difficulty) items.push({ label: t`難しさ`, icon: <ChartIcon />, value: route.difficulty });
 
   const tip = (info: "physical" | "technical" | undefined) =>
@@ -60,11 +60,16 @@ export function RouteStats({ route, compact = false, icons = false, inline = fal
   if (inline) {
     return (
       <dl className="contents">
-        {items.map(({ label, value, icon }) => (
+        {items.map(({ label, value, icon, short }) => (
           <div key={label} className={`items-center gap-1 ${label === t`距離` || label === t`時間` ? "flex" : "hidden @2xl:flex"}`}>
-            {/* English words are too long for this row: the icon shows, and the word stays for screen readers and on hover. */}
+            {/* English words are too long for this row: an icon, or a short word where an icon alone says too little. The full word stays for screen readers and on hover. */}
             {i18n.locale === "ja" ? (
               <dt className="font-bold text-accent">{label}</dt>
+            ) : short ? (
+              <dt title={label} className="font-bold text-accent">
+                <span aria-hidden="true">{short}</span>
+                <span className="sr-only">{label}</span>
+              </dt>
             ) : (
               <dt title={label} className="shrink-0 text-brand [&_svg]:size-5">
                 {icon}
