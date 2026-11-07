@@ -5118,17 +5118,17 @@ msgstr "手直しが必要（{needsWorkCount}）"
 msgid "現在の場所"
 msgstr "現在の場所"
 
-msgid "バナー（管理）"
-msgstr "バナー（管理）"
+msgid "経由地を直す（管理）"
+msgstr "経由地を直す（管理）"
 
-msgid "新しいバナー"
-msgstr "新しいバナー"
+msgid "経由地の一覧へ戻る"
+msgstr "経由地の一覧へ戻る"
 
-msgid "バナーを読み込めませんでした。しばらくしてから、ページを開き直してください。"
-msgstr "バナーを読み込めませんでした。しばらくしてから、ページを開き直してください。"
+msgid "ルート：{name}"
+msgstr "ルート：{name}"
 
-msgid "バナーがまだありません。「新しいバナー」から作ってください。"
-msgstr "バナーがまだありません。「新しいバナー」から作ってください。"
+msgid "ルートの画面で開く"
+msgstr "ルートの画面で開く"
 
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"

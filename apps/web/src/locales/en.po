@@ -5144,17 +5144,17 @@ msgstr "Needs work ({needsWorkCount})"
 msgid "現在の場所"
 msgstr "You are here"
 
-msgid "バナー（管理）"
-msgstr "Banners (admin)"
+msgid "経由地を直す（管理）"
+msgstr "Edit waypoint (admin)"
 
-msgid "新しいバナー"
-msgstr "New banner"
+msgid "経由地の一覧へ戻る"
+msgstr "Back to all waypoints"
 
-msgid "バナーを読み込めませんでした。しばらくしてから、ページを開き直してください。"
-msgstr "The banners could not be loaded. Please try opening the page again in a while."
+msgid "ルート：{name}"
+msgstr "Route: {name}"
 
-msgid "バナーがまだありません。「新しいバナー」から作ってください。"
-msgstr "There are no banners yet. Add one with New banner."
+msgid "ルートの画面で開く"
+msgstr "Open in the route editor"
 
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
