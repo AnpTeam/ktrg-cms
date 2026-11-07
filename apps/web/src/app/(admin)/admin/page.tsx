@@ -62,8 +62,9 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
           <p className="text-base text-muted">
             {data.range.from} 〜 {data.range.to}
           </p>
-          <div className="grid gap-4 md:grid-cols-2">
-            <DashboardTile title={i18n._(msg`アクセス`)} total={data.visits.total} goal={data.goals.visits} added={data.visits.inRange} addedLabel={added} daily={data.visits.daily}>
+          {/* A bento grid: one gap, one radius, solid tiles. The source order is the reading order. */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <DashboardTile title={i18n._(msg`アクセス`)} className="lg:col-span-2" total={data.visits.total} goal={data.goals.visits} added={data.visits.inRange} addedLabel={added} daily={data.visits.daily}>
               {data.visits.topRegion ? (
                 <p className="text-base">
                   <Trans>いちばん多い地域</Trans>: <span className="font-bold">{regionName(data.visits.topRegion.country, data.visits.topRegion.region)}（{countryName(data.visits.topRegion.country, i18n.locale)}）</span>
@@ -73,7 +74,7 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
                 <Trans>地域ごとに見る</Trans>
               </Link>
             </DashboardTile>
-            <DashboardTile title={i18n._(msg`スタンプ`)} total={data.stamps.total} goal={data.goals.stamps} added={data.stamps.inRange} addedLabel={added} daily={data.stamps.daily}>
+            <DashboardTile title={i18n._(msg`スタンプ`)} className="lg:col-span-2" total={data.stamps.total} goal={data.goals.stamps} added={data.stamps.inRange} addedLabel={added} daily={data.stamps.daily}>
               <p className="text-base">
                 <Trans>スタンプを押した人</Trans>: <span className="font-bold">{data.stamps.stampers.toLocaleString()}</span>
               </p>
@@ -83,6 +84,32 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
                 </Link>
               ) : null}
             </DashboardTile>
+            <section className="flex flex-col gap-3 rounded-2xl bg-surface p-4 md:col-span-2 lg:row-span-2">
+              <h2 className="text-xl font-bold">
+                <Trans>スタンプが多いルート</Trans>
+              </h2>
+              {data.stampsByRoute.length === 0 ? (
+                <p className="text-lg">
+                  <Trans>この期間のスタンプは、まだありません。</Trans>
+                </p>
+              ) : (
+                <ul className="flex flex-col gap-2">
+                  {data.stampsByRoute.map((r) => (
+                    <li key={r.routeId} className="flex flex-col gap-1">
+                      <div className="flex items-baseline justify-between gap-3 text-lg">
+                        <Link href={`/admin/routes/${r.routeId}`} className="min-w-0 break-words underline underline-offset-4">
+                          {r.name ?? r.routeId}
+                        </Link>
+                        <span className="font-bold tabular-nums">{r.stamps.toLocaleString()}</span>
+                      </div>
+                      <div aria-hidden="true" className="h-2 rounded-full bg-paper">
+                        <div className="h-2 rounded-full bg-brand" style={{ width: `${barPercent(r.stamps, routeMax)}%` }} />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
             <DashboardTile title={i18n._(msg`登録した人`)} total={data.signups.total} goal={data.goals.signups} added={data.signups.inRange} addedLabel={added} daily={data.signups.daily}>
               {data.signups.byOrigin.length > 0 ? (
                 <p className="text-base">
@@ -95,41 +122,15 @@ export default async function AdminHome({ searchParams }: { searchParams: Promis
                 <Trans>ラリーを達成した人と回数です。同じ人が二つのラリーを達成すると、2と数えます。</Trans>
               </p>
             </DashboardTile>
+            <details className="rounded-2xl bg-surface p-4 md:col-span-2">
+              <summary className="tap-target flex w-fit cursor-pointer items-center text-lg font-bold text-accent">
+                <Trans>目標を決める・変える</Trans>
+              </summary>
+              <div className="mt-2">
+                <GoalsForm initial={data.goals} />
+              </div>
+            </details>
           </div>
-          <section className="flex flex-col gap-3 rounded-2xl bg-surface p-4">
-            <h2 className="text-xl font-bold">
-              <Trans>スタンプが多いルート</Trans>
-            </h2>
-            {data.stampsByRoute.length === 0 ? (
-              <p className="text-lg">
-                <Trans>この期間のスタンプは、まだありません。</Trans>
-              </p>
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {data.stampsByRoute.map((r) => (
-                  <li key={r.routeId} className="flex flex-col gap-1">
-                    <div className="flex items-baseline justify-between gap-3 text-lg">
-                      <Link href={`/admin/routes/${r.routeId}`} className="min-w-0 break-words underline underline-offset-4">
-                        {r.name ?? r.routeId}
-                      </Link>
-                      <span className="font-bold tabular-nums">{r.stamps.toLocaleString()}</span>
-                    </div>
-                    <div aria-hidden="true" className="h-2 rounded-full bg-paper">
-                      <div className="h-2 rounded-full bg-brand" style={{ width: `${barPercent(r.stamps, routeMax)}%` }} />
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-          <details className="rounded-2xl">
-            <summary className="tap-target flex w-fit cursor-pointer items-center text-lg font-bold text-accent">
-              <Trans>目標を決める・変える</Trans>
-            </summary>
-            <div className="mt-2">
-              <GoalsForm initial={data.goals} />
-            </div>
-          </details>
         </>
       )}
     </div>

@@ -34,7 +34,7 @@ export function GoalsForm({ initial }: { initial: Goals }) {
         e.preventDefault();
         void save();
       }}
-      className="flex flex-col gap-3 rounded-2xl bg-surface p-4"
+      className="flex flex-col gap-3"
     >
       <p className="text-base text-muted">{t`数字を空にすると、その目標はなしになります。保存すると、ページを開き直したときに反映されます。`}</p>
       <div className="grid gap-3 sm:grid-cols-2">

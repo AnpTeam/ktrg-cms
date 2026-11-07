@@ -8,12 +8,12 @@ import { progressPercent, sparkPoints } from "@/lib/admin/dashboard";
  * One headline number: the total, how far it is toward the goal (a bar and the words), what the chosen range added, and a
  * small daily line. The line is a picture of the numbers under "daily numbers", so nothing depends on seeing it.
  */
-export async function DashboardTile({ title, total, goal, added, addedLabel, daily, children }: { title: string; total: number; goal: number | null; added: number; addedLabel: string; daily?: { day: string; n: number }[]; children?: ReactNode }) {
+export async function DashboardTile({ title, total, goal, added, addedLabel, daily, children, className = "" }: { className?: string; title: string; total: number; goal: number | null; added: number; addedLabel: string; daily?: { day: string; n: number }[]; children?: ReactNode }) {
   const i18n = await initLingui();
   const pct = progressPercent(total, goal);
   const goalText = goal === null ? "" : goal.toLocaleString();
   return (
-    <section className="flex flex-col gap-3 rounded-2xl bg-surface p-4">
+    <section className={`flex flex-col gap-3 rounded-2xl bg-surface p-4 ${className}`}>
       <h2 className="text-lg font-bold">{title}</h2>
       <p className="text-4xl font-bold tabular-nums">{total.toLocaleString()}</p>
       {goal !== null && pct !== null ? (
