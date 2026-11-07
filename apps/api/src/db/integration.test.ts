@@ -829,6 +829,8 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       expect(await tx.select().from(rallyCompletions).where(eq(rallyCompletions.userId, me!.id))).toHaveLength(0);
       expect(await store.setRevoked(admin!.id, queued!.id, false)).toBe("ok");
       expect(await store.listMine(me!.id)).toHaveLength(2);
+      // Restored, the finishes it was part of come back.
+      expect(await tx.select().from(courseCompletions).where(eq(courseCompletions.userId, me!.id))).toHaveLength(1);
       expect(await store.setRevoked(admin!.id, randomUUID(), true)).toBe("not_found");
       // Revoked, a stamp blocks a new one and says so; revoking twice keeps the first time and writes one audit row.
       expect(await store.setRevoked(admin!.id, queued!.id, true)).toBe("ok");
@@ -839,6 +841,17 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       expect(await store.setRevoked(admin!.id, queued!.id, false)).toBe("ok");
       const audits = await tx.select().from(auditLog).where(eq(auditLog.actorUserId, admin!.id));
       expect(audits.map((r) => [r.action, r.targetId])).toEqual([["stamp.revoke", queued!.id], ["stamp.restore", queued!.id], ["stamp.revoke", queued!.id], ["stamp.restore", queued!.id]]);
+    });
+  });
+
+  test("the attention list reads every route and its own places, with their names", async () => {
+    await inRollback(async (tx) => {
+      await seed(tx);
+      const rows = await createDrizzleContentStore(tx as unknown as typeof db).listForAttention();
+      expect(rows).toHaveLength(19);
+      expect(rows.every((r) => r.nameJa !== "" && r.hasLine === false)).toBe(true);
+      expect(rows.flatMap((r) => r.spots)).toHaveLength(31);
+      expect(rows.flatMap((r) => r.spots).every((s) => s.nameJa !== "")).toBe(true);
     });
   });
 

@@ -2,7 +2,7 @@ import { expect, test } from "bun:test";
 import { attention } from "./attention";
 
 const spot = (over: Record<string, unknown> = {}) => ({ id: "s", nameJa: "経塚", nameEn: "Mound", photoUrl: "https://x/a.jpg", photos: [], positionVerified: true, lat: 34, published: true, ...over });
-const route = (over: Record<string, unknown> = {}) => ({ id: "r", nameJa: "道", nameEn: "Road", geometry: { type: "LineString" as const, coordinates: [] }, lineVerified: true, photoUrl: "https://x/r.jpg", spots: [spot()], ...over });
+const route = (over: Record<string, unknown> = {}) => ({ id: "r", nameJa: "道", nameEn: "Road", hasLine: true, lineVerified: true, photoUrl: "https://x/r.jpg", spots: [spot()], ...over });
 
 test("a route and a waypoint with nothing missing are not listed", () => {
   expect(attention([route() as never])).toEqual({ routes: [], spots: [] });
@@ -10,7 +10,7 @@ test("a route and a waypoint with nothing missing are not listed", () => {
 
 test("each missing thing is named, for the route and for its waypoints", () => {
   const found = attention([
-    route({ geometry: null, nameEn: " ", photoUrl: null, spots: [spot({ photoUrl: null, nameEn: null, positionVerified: false })] }) as never,
+    route({ hasLine: false, nameEn: " ", photoUrl: null, spots: [spot({ photoUrl: null, nameEn: null, positionVerified: false })] }) as never,
     route({ id: "r2", lineVerified: false, spots: [spot({ photoUrl: null, photos: [{ url: "https://x/g.jpg" }] })] }) as never,
   ]);
   expect(found.routes).toEqual([

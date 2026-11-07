@@ -80,7 +80,9 @@ async function routeMembers(q: Reader, rallyIds: readonly string[]): Promise<Map
  * Saves what a visitor has just finished: every course whose published stamp places are all stamped (or closed),
  * then every published rally that is now complete (its places, or all its courses). Rows are only ever added
  * (`ON CONFLICT DO NOTHING`), so a finish stays saved. With `spotId` only the course of that place and the rallies it
- * counts in are checked (after a stamp); without it, everything (when a visitor's progress is read).
+ * counts in are checked (after a stamp, or a stamp restored); without it, everything (after guest stamps are claimed).
+ * A finish stays saved when a place that was waived reopens (decided 2026-11-07). A place closing saves nothing by itself:
+ * the rally page shows that finish live, and it is saved at the visitor's next stamp in that rally.
  * Returns what was newly finished.
  */
 export async function recordFinished(

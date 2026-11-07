@@ -4,10 +4,12 @@ import type { MapPhoto } from "@/lib/map-screen";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createNavigationController, type NavigationController, type NavSnapshot } from "@/lib/navigation/controller";
 import { requestPath, type PathAnswer } from "@/lib/navigation/path-client";
+import { fetchStatuses } from "@/lib/navigation/status-client";
 import type { AccessPoint } from "@/lib/access-points";
 import type { NavModel } from "@/lib/navigation/session";
 import { clearResume, saveResume } from "@/lib/navigation/resume";
 import { fetchMyStamps } from "@/lib/stamp-client";
+import { getOutbox } from "@/lib/stamp-outbox";
 
 // The navigation session lives here, in the participant layout, so it keeps running while the visitor moves between
 // the app's tabs (Home, Map, Routes, Stamps): layouts are not remounted on navigation. A hidden browser tab or a locked
@@ -92,6 +94,7 @@ export function NavigationProvider({ children, signedIn, voiceByDefault = false 
       doc: document,
       now: () => Date.now(),
       loadStamps: fetchMyStamps,
+      loadWaiting: () => getOutbox().waitingSpots(),
       // Signed out: no request leaves the phone (the answer says "back off", so it is not asked again soon).
       fetchPath: (spotId, from): Promise<PathAnswer> => (signedInRef.current ? requestPath(spotId, from) : Promise.resolve({ ok: false, backOff: true })),
       onChange: (snapshot) => setSession((s) => (s && controller.current === c ? { ...s, snapshot } : s)),
@@ -107,6 +110,26 @@ export function NavigationProvider({ children, signedIn, voiceByDefault = false 
   const setTarget = useCallback((stopId: string | null) => controller.current?.setTarget(stopId), []);
   const skipPassed = useCallback(() => controller.current?.skipPassed(), []);
   const returnToPassed = useCallback(() => controller.current?.returnToPassed(), []);
+
+  // A place can close during the walk: asked once a minute and on coming back, only while the page is in view.
+  const running = session !== null;
+  useEffect(() => {
+    if (!running) return;
+    const poll = async () => {
+      if (document.hidden) return;
+      const statuses = await fetchStatuses();
+      if (!statuses) return;
+      controller.current?.setStatuses(statuses);
+      setSession((s) => s && { ...s, stops: Object.fromEntries(Object.entries(s.stops).map(([id, info]) => [id, { ...info, status: statuses.get(id) ?? info.status }])) });
+    };
+    const timer = setInterval(() => void poll(), 60_000);
+    const onVisible = () => void poll();
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [running]);
 
   // Leaving the site (or a full reload) ends the session; nothing is kept.
   useEffect(() => () => controller.current?.stop(), []);

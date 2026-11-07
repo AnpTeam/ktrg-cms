@@ -16,11 +16,16 @@ const base = {
 
 test("the terrain overlay goes under the first label, hidden unless asked for, and the sprite is ours", () => {
   const style = composeLargeStyle(base, { origin: "https://x.test", terrain: "relief", terrainOpacity: 0.4, terrainOn: false });
-  expect(style.layers.map((l) => l.id)).toEqual(["bg", "road", terrainLayerId, "name"]);
-  expect(style.layers[2]?.layout?.visibility).toBe("none");
+  expect(style.layers.map((l) => l.id)).toEqual(["land", "bg", "road", terrainLayerId, "name"]);
+  expect(style.layers[3]?.layout?.visibility).toBe("none");
   expect(style.sprite).toBe("https://x.test/map-style/sprite/std");
   expect(style.sources["gsi-terrain"]).toBeDefined();
-  expect(composeLargeStyle(base, { origin: "o", terrain: "hillshade", terrainOpacity: 0.5, terrainOn: true }).layers[2]?.layout?.visibility).toBe("visible");
+  expect(composeLargeStyle(base, { origin: "o", terrain: "hillshade", terrainOpacity: 0.5, terrainOn: true }).layers[3]?.layout?.visibility).toBe("visible");
+});
+
+test("the map paints its own land, in a fixed colour, so the page and its theme never show through", () => {
+  const style = composeLargeStyle({ ...base, layers: base.layers.filter((l) => l.type !== "background") }, { origin: "o", terrain: "hillshade", terrainOpacity: 0.5, terrainOn: false });
+  expect(style.layers[0]).toEqual({ id: "land", type: "background", paint: { "background-color": "#fcfaf5" } });
 });
 
 test("only the 'large' base map is an address", () => {

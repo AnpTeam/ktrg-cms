@@ -143,6 +143,26 @@ export function createDrizzleContentStore(db: Db): ContentStore {
       }));
     },
 
+    async listForAttention() {
+      // Four small reads however many routes there are, and the line is only asked whether it exists.
+      const rows = await db
+        .select({ id: routes.id, hasLine: sql<boolean>`${routes.geometry} is not null`, lineVerified: routes.lineVerified, photoUrl: routes.photoUrl })
+        .from(routes)
+        .orderBy(asc(routes.sortOrder));
+      const places = await db
+        .select({ id: spots.id, routeId: spots.routeId, photoUrl: spots.photoUrl, photos: spots.photos, lat: spots.lat, positionVerified: spots.positionVerified, published: spots.published })
+        .from(spots)
+        .orderBy(asc(spots.sortOrder));
+      const routeNames = await db.select({ id: routeTranslations.routeId, locale: routeTranslations.locale, name: routeTranslations.name }).from(routeTranslations).where(inArray(routeTranslations.locale, ["ja", "en"]));
+      const spotNames = await db.select({ id: spotTranslations.spotId, locale: spotTranslations.locale, name: spotTranslations.name }).from(spotTranslations).where(inArray(spotTranslations.locale, ["ja", "en"]));
+      const named = <T extends { id: string }>(row: T, names: typeof routeNames) => ({
+        ...row,
+        nameJa: names.find((n) => n.id === row.id && n.locale === "ja")?.name ?? "",
+        nameEn: names.find((n) => n.id === row.id && n.locale === "en")?.name ?? null,
+      });
+      return rows.map((r) => ({ ...named(r, routeNames), spots: places.filter((s) => s.routeId === r.id).map((s) => named(s, spotNames)) }));
+    },
+
     async getRoute(id) {
       const [route] = await db.select().from(routes).where(eq(routes.id, id)).limit(1);
       if (!route) return null;

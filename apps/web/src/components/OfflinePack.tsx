@@ -41,7 +41,6 @@ export function OfflinePack({ routeId, area, settings }: { routeId: string; area
       // Asks the browser to keep the map when space runs short. It may say no; nothing relies on it.
       void navigator.storage?.persist?.();
     } catch {
-      setPack(null);
       setFailed(true);
     }
     setProgress(null);
@@ -50,6 +49,7 @@ export function OfflinePack({ routeId, area, settings }: { routeId: string; area
   const remove = async () => {
     await deletePack(routeId);
     setPack(null);
+    setFailed(false);
   };
 
   const age = pack ? packAge(pack.savedAt, now) : null;
@@ -99,7 +99,7 @@ export function OfflinePack({ routeId, area, settings }: { routeId: string; area
       )}
       {failed ? (
         <p role="alert" className="text-base font-bold text-danger">
-          {t`保存できませんでした。電波の良い場所でもう一度お試しください。`}
+          {pack ? t`更新できませんでした。前に保存した地図は、そのまま使えます。` : t`保存できませんでした。電波の良い場所でもう一度お試しください。`}
         </p>
       ) : null}
     </section>

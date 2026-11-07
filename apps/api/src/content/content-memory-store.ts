@@ -37,6 +37,9 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
           return { ...r, geometry: r.geometry ? line : null, spotCount: stamps.length, publishedSpotCount: stamps.filter((s) => s.published).length, pointCount: ss.length - stamps.length };
         });
     },
+    async listForAttention() {
+      return [...routes.values()].sort((a, b) => a.sortOrder - b.sortOrder).map((r) => ({ ...r, hasLine: r.geometry !== null, spots: sortedSpots(r.id) }));
+    },
     async getRoute(id) {
       const route = routes.get(id);
       const shared = [...shares].filter(([k]) => k.endsWith(`|${id}`)).map(([k, position]) => ({ ...spots.get(k.split("|")[0]!)!, position }));

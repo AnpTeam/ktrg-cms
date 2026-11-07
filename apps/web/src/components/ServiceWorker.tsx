@@ -25,8 +25,10 @@ function UpdatePrompt() {
   useEffect(() => {
     if (!serwist) return;
     const onWaiting = () => setWaiting(true);
-    // The new version took over: load it.
-    const onControlling = () => window.location.reload();
+    // A new version took over: load it. Not on a first visit, where the first worker taking the page changes nothing on it.
+    const onControlling = ({ isUpdate }: { isUpdate?: boolean }) => {
+      if (isUpdate) window.location.reload();
+    };
     serwist.addEventListener("waiting", onWaiting);
     serwist.addEventListener("controlling", onControlling);
     return () => {

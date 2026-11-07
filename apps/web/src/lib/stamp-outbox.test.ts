@@ -98,4 +98,13 @@ describe("the outbox", () => {
     expect(await outbox.adoptGuest()).toBe(0);
     expect(outbox.pending).toBe(1);
   });
+  test("a place already waiting is not queued twice, and the screens can ask which places wait", async () => {
+    const { outbox, store } = make([]);
+    await outbox.setUser("u1");
+    expect(await outbox.enqueue("spot-a", reading)).toBe(true);
+    expect(await outbox.enqueue("spot-a", reading)).toBe(true);
+    expect(outbox.pending).toBe(1);
+    expect((await store.list("u1")).length).toBe(1);
+    expect(await outbox.waitingSpots()).toEqual(["spot-a"]);
+  });
 });

@@ -7,7 +7,7 @@ import type { GeoFailure } from "../stamp-flow";
 import type { LinePoint } from "./geometry";
 import { createPositionWatcher, type GeoApi, type VisibilityApi } from "./position-watcher";
 import { PATH_BACKOFF_MS, shouldAskForPath, type LastAsk, type PathAnswer } from "./path-client";
-import { applyFix, initialState, movementHeading, stopsBehind, trackOf, wantsPath, type NavModel, type NavPath, type NavReading, type NavState } from "./session";
+import { applyFix, initialState, MAX_ACCURACY_M, movementHeading, stopsBehind, trackOf, wantsPath, type NavModel, type NavPath, type NavReading, type NavState } from "./session";
 
 export interface NavSnapshot {
   state: NavState;
@@ -38,13 +38,16 @@ export interface ControllerDeps {
   now: () => number;
   /** The visitor's stamps from the server; null when they cannot be read. */
   loadStamps: () => Promise<Set<string> | null>;
+  /** Places stamped with no signal and still waiting on this phone: the guidance does not head for them again. */
+  loadWaiting?: () => Promise<string[]>;
   /** Asks for a walking path; leave it out for a signed-out visitor (then off the line it is straight to the stop). */
   fetchPath?: (spotId: string, from: { lat: number; lng: number }) => Promise<PathAnswer>;
   onChange: (snapshot: NavSnapshot) => void;
 }
 
 export function createNavigationController(deps: ControllerDeps) {
-  const { model } = deps;
+  // The stops' statuses change while walking (setStatuses).
+  let model = deps.model;
   let alive = false;
   let stamped: ReadonlySet<string> = new Set();
   let stampsKnown = false;
@@ -96,6 +99,8 @@ export function createNavigationController(deps: ControllerDeps) {
   };
 
   const apply = (fix: NavReading) => {
+    // Too poor to use: only counted. It is not the visitor's position, so nothing below may keep it.
+    if (!(fix.accuracyM <= MAX_ACCURACY_M)) return emit({ problem: null, state: applyFix(model, snap.state, fix, finished(), path, forced) });
     // The phone's heading when it has one; otherwise read it from the movement since the last one.
     let reading = fix;
     if (fix.headingDeg === undefined) {
@@ -124,13 +129,14 @@ export function createNavigationController(deps: ControllerDeps) {
   });
 
   async function refreshStamps() {
-    const loaded = await deps.loadStamps();
+    const [loaded, waiting] = await Promise.all([deps.loadStamps(), deps.loadWaiting?.() ?? []]);
     if (!alive) return;
     if (loaded) {
       stamped = loaded;
       stampsKnown = true;
-      if (forced !== null && stamped.has(forced)) forced = null;
     }
+    stamped = new Set([...stamped, ...waiting]);
+    if (forced !== null && stamped.has(forced)) forced = null;
     // Recompute right away when a fix is already there; otherwise just show the right target.
     emit({
       stamped,
@@ -190,6 +196,13 @@ export function createNavigationController(deps: ControllerDeps) {
       if (id === null) return;
       forced = id;
       emit({ passedId: null, forcedId: id, ...(last ? { state: applyFix(model, snap.state, last, finished(), path, forced) } : {}) });
+    },
+    /** The stops' latest statuses: a stop closed during the walk is no longer headed for, one reopened is again. */
+    setStatuses(statuses: ReadonlyMap<string, "open" | "caution" | "closed">) {
+      if (!model.stops.some((s) => statuses.has(s.id) && statuses.get(s.id) !== s.status)) return;
+      model = { ...model, stops: model.stops.map((s) => ({ ...s, status: statuses.get(s.id) ?? s.status })) };
+      if (forced !== null && statuses.get(forced) === "closed") forced = null;
+      emit({ forcedId: forced, ...(last ? { state: applyFix(model, snap.state, last, finished(), path, forced) } : {}) });
     },
     /** After a successful stamp: move on at once, without waiting for the server's list. */
     markStamped(id: string) {

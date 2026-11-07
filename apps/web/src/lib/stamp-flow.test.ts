@@ -46,7 +46,8 @@ describe("parseStampResponse", () => {
     expect(parseStampResponse(409, { ok: false, error: "too_far" })).toEqual({ ok: false, failure: "too_far" });
     expect(parseStampResponse(409, { ok: false, error: "too_far", distanceM: 240 })).toEqual({ ok: false, failure: "too_far", distanceM: 240 });
     expect(parseStampResponse(422, { ok: false, error: "gps_accuracy_poor" })).toEqual({ ok: false, failure: "low_accuracy" });
-    expect(parseStampResponse(409, { ok: false, error: "stamp_revoked" })).toEqual({ ok: false, failure: "failed" });
+    expect(parseStampResponse(409, { ok: false, error: "stamp_revoked" })).toEqual({ ok: false, failure: "stamp_revoked" });
+    expect(parseStampResponse(403, { ok: false, error: "account_restricted" })).toEqual({ ok: false, failure: "account_restricted" });
     expect(parseStampResponse(409, { ok: false, error: "spot_closed" })).toEqual({ ok: false, failure: "spot_closed" });
     expect(parseStampResponse(409, { ok: false, error: "rally_not_active" })).toEqual({ ok: false, failure: "rally_not_active" });
   });
