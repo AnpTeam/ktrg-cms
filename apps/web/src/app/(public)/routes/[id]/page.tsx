@@ -30,6 +30,20 @@ export default async function RouteDetailPage({ params }: Props) {
   const [found, prefs, settings, allNotices, mine] = await Promise.all([params.then((p) => getRoute(p.id)), getPrefs(), getMapSettings(), listNotices(), getMyStamps()]);
   if (!found) notFound();
   const route = found;
+  // An old link or a bookmark can still land here; the name says which course, and there is nothing to read yet.
+  if (route.status === "soon") {
+    return (
+      <div className="flex flex-col gap-4 px-4">
+        <BackLink href="/routes">
+          <Trans>ルート一覧</Trans>
+        </BackLink>
+        <h1 className="text-3xl font-bold">{pickText(i18n.locale, route.nameJa, route.nameEn)?.text}</h1>
+        <p className="rounded-2xl bg-surface p-4 text-lg font-bold">
+          <Trans>この区間は、準備中です。</Trans>
+        </p>
+      </div>
+    );
+  }
   // The places are looked up by the route's number, so they wait for the route.
   const places = (await listPlacesForRoute(route.order)).map((p) => toMapPlace(i18n.locale, p));
   const notices = allNotices.filter((n) => n.routeId === null || n.routeId === route.id);

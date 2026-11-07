@@ -11,6 +11,6 @@ const PAGES = ["", "/map", "/routes", "/blog", "/sitemap", "/guide", "/faq", "/l
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const origin = siteOrigin();
   const [routes, posts] = await Promise.all([listRoutes(), listPosts()]);
-  const paths = [...PAGES, ...routes.map((r) => `/routes/${r.id}`), ...posts.map((p) => `/blog/${p.id}`)];
+  const paths = [...PAGES, ...routes.filter((r) => r.status === "ready").map((r) => `/routes/${r.id}`), ...posts.map((p) => `/blog/${p.id}`)];
   return paths.map((path) => ({ url: `${origin}${path}` }));
 }

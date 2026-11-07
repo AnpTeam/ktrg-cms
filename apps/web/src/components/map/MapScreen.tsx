@@ -478,7 +478,7 @@ function RoutePanel({
       ) : null}
 
       {/* What can be done from the map comes first, so it is seen at half height. The reading is on the course's own page. */}
-      {route.status === "ready" ? <NavigationStart route={route} more={more} /> : more}
+      {route.status === "ready" ? <NavigationStart route={route} more={more} /> : null}
 
       {route.spots.length > 0 ? (
         <StopRows key={route.id} route={route} onChooseStop={onChooseStop} />

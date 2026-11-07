@@ -200,7 +200,7 @@ describe("an admin edits a route and its places", () => {
   });
 
   test("a station position needs a source to be 'checked'; visitors never get an unchecked one", async () => {
-    const { call, cookie, route } = await created();
+    const { call, cookie, route, mem } = await created();
     const patch = (body: unknown, updatedAt: string) => call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt, ...(body as object) } });
     const row = (extra: object) => ({ type: "train", nameJa: "加太駅", nameEn: null, noteJa: null, noteEn: null, ...extra });
     const pos = { lat: 34.2, lng: 135.1, serves: "start" };
@@ -210,6 +210,8 @@ describe("an admin edits a route and its places", () => {
     expect((await patch({ accessPoints: [row({ ...pos, source: " 南海電鉄 " }), row({ ...pos, nameJa: "別の駅", checked: true, source: "南海電鉄" })] }, route.updatedAt)).status).toBe(200);
     const got = ((await (await call("GET", `/admin/routes/${route.id}`, { cookie })).json()) as Json).route as Json;
     expect((got.accessPoints as Json[])[0]).toMatchObject({ lat: 34.2, lng: 135.1, serves: "start", source: "南海電鉄" }); // the editor sees everything
+    const place = (((await (await call("POST", `/admin/routes/${route.id}/spots`, { cookie, body: { nameJa: "S" } })).json()) as Json).spot) as Json;
+    await mem.store.setPublished(admin.id, place.id as string, true); // a coming-soon course sends no stations at all
     const listed = (((await (await call("GET", "/routes")).json()) as Json).routes as Json[]).find((r) => r.id === route.id)!;
     const [unchecked, checked] = listed.accessPoints as Json[];
     expect(unchecked).not.toHaveProperty("lat");
@@ -349,6 +351,18 @@ describe("what visitors read", () => {
     expect(res.status).toBe(200);
     const body = (await res.json()) as Json;
     expect(body.routes.map((r: Json) => [r.nameJa, r.status])).toEqual([["準備中のルート", "soon"]]);
+  });
+
+  test("a coming-soon course gives its name, not its reading, in the list and by its own address", async () => {
+    const { call, login } = setup();
+    const cookie = await login(admin);
+    const texts = { descriptionJa: "下書きの説明", historyJa: "下書きの歴史", accessJa: "下書きの行き方", sourceJa: "下書きの出典", videoUrl: "https://www.youtube.com/watch?v=abcdefghijk" };
+    const route = ((await (await call("POST", "/admin/routes", { cookie, body: { nameJa: "準備中のルート", ...texts } })).json()) as Json).route as Json;
+    for (const path of ["/routes", `/routes/${route.id}`]) {
+      const sent = await (await call("GET", path)).text();
+      expect(sent).toContain("準備中のルート");
+      for (const words of Object.values(texts)) expect(sent).not.toContain(words);
+    }
   });
 
   test("a drawn line is not sent until it is checked against a source", async () => {
