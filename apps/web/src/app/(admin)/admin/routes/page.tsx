@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { RouteTable } from "@/components/admin/RouteTable";
@@ -18,9 +19,14 @@ export default async function AdminRoutesPage() {
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-5">
-      <h1 className="text-3xl font-bold">
-        <Trans>ルート</Trans>
-      </h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-3xl font-bold">
+          <Trans>ルート</Trans>
+        </h1>
+        <Link href="/admin/routes/new" className="tap-target inline-flex items-center rounded-full bg-ink px-5 text-lg font-bold text-paper">
+          <Trans>新しいルート</Trans>
+        </Link>
+      </div>
       <p className="text-lg text-muted">
         <Trans>歩く順番に並んでいます。名前を押すと、文章や地図を直せます。</Trans>
       </p>

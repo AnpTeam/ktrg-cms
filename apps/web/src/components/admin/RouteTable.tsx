@@ -11,7 +11,7 @@ import { checklist, factsFromSummary, progress } from "@/lib/admin/checklist";
 import { nextSort, sortBy, type Sort } from "@/lib/admin/lists/sort";
 import { filterRoutes, moveId, routeState, type RouteState } from "@/lib/admin/route-list";
 import { Chip } from "./Chip";
-import { FilterGroup, MoveButtons, OrderBadge, SortHeader } from "./list-parts";
+import { FilterGroup, HeaderFilter, MoveButtons, OrderBadge, SortHeader } from "./list-parts";
 import { RouteImport } from "./RouteImport";
 import { useChecklistLabels } from "./useChecklistLabels";
 import type { AdminRouteSummary, Prefecture } from "@/lib/admin/types";
@@ -102,6 +102,16 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
     setSort(nextSort(sort, key));
     setPage(1);
   };
+  const prefOptions = PREFECTURES.map((p) => ({ value: p, text: prefName[p] }));
+  const stateOptions = STATES.map((s) => ({ value: s, text: stateLabel[s] }));
+  const pickPrefecture = (v: string) => {
+    setPrefecture((v || null) as Prefecture | null);
+    setPage(1);
+  };
+  const pickState = (v: string) => {
+    setState((v || null) as RouteState | null);
+    setPage(1);
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -110,13 +120,10 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
           {t`ルートをさがす`}
           <input type="search" value={query} onChange={(e) => { setQuery(e.target.value); setPage(1); }} placeholder={t`名前の一部を入力`} className="tap-target rounded-xl border-2 border-line bg-paper px-4 text-lg font-normal" />
         </label>
-        <Link href="/admin/routes/new" className="tap-target inline-flex items-center rounded-full bg-ink px-5 text-lg font-bold text-paper">
-          {t`新しいルート`}
-        </Link>
       </div>
-      <div className="flex flex-col gap-3 rounded-2xl bg-surface p-3">
-        <FilterGroup label={t`都道府県`} options={PREFECTURES.map((p) => ({ value: p, text: prefName[p] }))} value={prefecture ?? ""} onChange={(v) => { setPrefecture((v || null) as Prefecture | null); setPage(1); }} />
-        <FilterGroup label={t`状態`} options={STATES.map((s) => ({ value: s, text: stateLabel[s] }))} value={state ?? ""} onChange={(v) => { setState((v || null) as RouteState | null); setPage(1); }} />
+      <div className="flex flex-col gap-3 rounded-2xl bg-surface p-3 md:hidden">
+        <FilterGroup label={t`都道府県`} options={prefOptions} value={prefecture ?? ""} onChange={pickPrefecture} />
+        <FilterGroup label={t`状態`} options={stateOptions} value={state ?? ""} onChange={pickState} />
         <button
           type="button"
           aria-pressed={needsWorkOnly}
@@ -130,7 +137,12 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
         </button>
       </div>
 
-      <RouteImport routes={routes} onImported={setRoutes} />
+      <div className="flex flex-wrap items-center gap-x-4">
+        <p className="text-base font-bold text-muted" aria-live="polite">
+          {t`${shown.length}件`}
+        </p>
+        <RouteImport routes={routes} onImported={setRoutes} />
+      </div>
 
       {error ? (
         <p role="alert" className="rounded-xl bg-surface p-4 text-lg font-bold text-danger">
@@ -140,32 +152,37 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
 
       {routes.length === 0 ? (
         <p className="rounded-2xl bg-surface p-6 text-lg">{t`ルートがまだありません。「新しいルート」から作ってください。`}</p>
-      ) : shown.length === 0 ? (
-        <p className="rounded-2xl bg-surface p-6 text-lg">{t`条件に合うルートがありません。`}</p>
       ) : (
         <>
-          <p className="text-base font-bold text-muted" aria-live="polite">
-            {t`${shown.length}件`}
-          </p>
           <div className="relative hidden overflow-x-auto rounded-2xl border border-line md:block">
             <table className="w-full border-collapse text-left">
-              <thead className="bg-surface text-base">
+              <thead className="bg-surface align-top text-base">
                 <tr>
                   <SortHeader label={t`順`} sortKey="order" sort={sort} onSort={onSort} />
                   <SortHeader label={t`名前`} sortKey="name" sort={sort} onSort={onSort} />
-                  <SortHeader label={t`都道府県`} sortKey="prefecture" sort={sort} onSort={onSort} />
-                  <SortHeader label={t`状態`} sortKey="state" sort={sort} onSort={onSort} />
+                  <SortHeader label={t`都道府県`} sortKey="prefecture" sort={sort} onSort={onSort} filter={<HeaderFilter label={t`都道府県`} options={prefOptions} value={prefecture ?? ""} onChange={pickPrefecture} />} />
+                  <SortHeader label={t`状態`} sortKey="state" sort={sort} onSort={onSort} filter={<HeaderFilter label={t`状態`} options={stateOptions} value={state ?? ""} onChange={pickState} />} />
                   <SortHeader label={t`公開中の経由地`} sortKey="spots" sort={sort} onSort={onSort} />
-                  <th scope="col" className="p-3 font-bold">
-                    {t`足りないもの`}
+                  <th scope="col" className="p-0 font-bold">
+                    <div className="tap-target flex items-center px-3">{t`足りないもの`}</div>
+                    <div className="px-3 pb-2">
+                      <HeaderFilter label={t`足りないもの`} options={[{ value: "yes", text: t`手直しが必要（${needsWorkCount}）` }]} value={needsWorkOnly ? "yes" : ""} onChange={(v) => { setNeedsWorkOnly(v === "yes"); setPage(1); }} />
+                    </div>
                   </th>
                   <SortHeader label={t`更新`} sortKey="updated" sort={sort} onSort={onSort} />
-                  <th scope="col" className="w-40 p-3">
+                  <th scope="col" className="w-16 p-3">
                     <span className="sr-only">{t`並べ替え`}</span>
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
+                {shown.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="p-6 text-lg">
+                      {t`条件に合うルートがありません。`}
+                    </td>
+                  </tr>
+                ) : null}
                 {visible.map((r) => {
                   const index = order.get(r.id)! - 1;
                   return (
@@ -178,9 +195,9 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
                           {name(r)}
                         </Link>
                       </td>
-                      <td className="p-3 text-lg">{r.prefecture ? prefName[r.prefecture] : <span className="text-muted">{t`未入力`}</span>}</td>
+                      <td className="whitespace-nowrap p-3 text-lg">{r.prefecture ? prefName[r.prefecture] : <span className="text-muted">{t`未入力`}</span>}</td>
                       <td className="p-3">{stateChip(r)}</td>
-                      <td className="p-3 text-lg tabular-nums">
+                      <td className="whitespace-nowrap p-3 text-lg tabular-nums">
                         {r.publishedSpotCount} / {r.spotCount}
                       </td>
                       <td className="p-3">
@@ -188,9 +205,9 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
                           {missing(r)}
                         </ul>
                       </td>
-                      <td className="p-3 text-base text-muted">{formatUpdated(locale, r.updatedAt)}</td>
+                      <td className="whitespace-nowrap p-3 text-base text-muted">{formatUpdated(locale, r.updatedAt)}</td>
                       <td className="p-3">
-                        <MoveButtons name={name(r)} canEarlier={canMove && index > 0} canLater={canMove && index < routes.length - 1} onMove={(step) => void move(r.id, step)} busy={busy} />
+                        <MoveButtons name={name(r)} canEarlier={canMove && index > 0} canLater={canMove && index < routes.length - 1} onMove={(step) => void move(r.id, step)} busy={busy} stacked />
                       </td>
                     </tr>
                   );
@@ -198,7 +215,8 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
               </tbody>
             </table>
           </div>
-          <ol className="flex flex-col divide-y divide-line rounded-2xl border border-line md:hidden">
+          {shown.length === 0 ? <p className="rounded-2xl bg-surface p-6 text-lg md:hidden">{t`条件に合うルートがありません。`}</p> : null}
+          <ol className={`flex-col divide-y divide-line rounded-2xl border border-line md:hidden ${shown.length === 0 ? "hidden" : "flex"}`}>
             {visible.map((r) => {
               const index = order.get(r.id)! - 1;
               return (

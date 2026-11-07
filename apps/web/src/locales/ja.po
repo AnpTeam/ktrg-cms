@@ -5136,6 +5136,12 @@ msgstr "関係するルート"
 msgid "赤いものは、直すまで訪問者に見えません。名前を押すと、そのルートの編集画面が開きます。"
 msgstr "赤いものは、直すまで訪問者に見えません。名前を押すと、そのルートの編集画面が開きます。"
 
+msgid "{label}でしぼりこむ"
+msgstr "{label}でしぼりこむ"
+
+msgid "手直しが必要（{needsWorkCount}）"
+msgstr "手直しが必要（{needsWorkCount}）"
+
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "写真を消す"

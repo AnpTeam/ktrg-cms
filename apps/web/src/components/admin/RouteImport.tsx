@@ -138,20 +138,19 @@ export function RouteImport({ routes, onImported }: { routes: AdminRoute[]; onIm
   let next = routes.length + 1;
   const creating = (preview?.routes ?? []).filter((r) => r.number === next && ++next).length;
   const button = "tap-target inline-flex items-center rounded-full border-2 border-line px-5 text-lg font-bold";
+  const quiet = "tap-target inline-flex items-center px-2 text-base underline underline-offset-4";
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap gap-3">
-        <button type="button" onClick={download} className={button}>
-          {t`ひな形をダウンロード`}
-        </button>
-        <button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className={button}>
-          {t`ファイルから取り込む`}
-        </button>
-      </div>
+    <div className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-x-2">
+      <button type="button" onClick={download} className={quiet}>
+        {t`ひな形をダウンロード`}
+      </button>
+      <button type="button" aria-expanded={open} onClick={() => setOpen(!open)} className={quiet}>
+        {t`ファイルから取り込む`}
+      </button>
 
       {open ? (
-        <section aria-label={t`ファイルから取り込む`} className="flex flex-col gap-4 rounded-2xl bg-surface p-5">
+        <section aria-label={t`ファイルから取り込む`} className="flex basis-full flex-col gap-4 rounded-2xl bg-surface p-5">
           <p className="text-lg">
             {t`ひな形（.xlsx）に書いて、ここで選びます。空のセルは「今のまま」です。取り込んだだけでは、公開されません。`}
           </p>
