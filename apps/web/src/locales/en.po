@@ -6,6 +6,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: @lingui/cli\n"
 "Language: en\n"
+#: src/components/navigation/NavigationHud.tsx
+msgid "音声案内"
+msgstr "Voice guidance"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "電車・バスで行く"
+msgstr "By train or bus"
+
+#: src/components/navigation/NavigationHud.tsx
+msgid "歩いて行く道を見る"
+msgstr "Show the way on foot"
 
 #: src/components/landing/TrailNotices.tsx:42
 msgid "　{until} まで"

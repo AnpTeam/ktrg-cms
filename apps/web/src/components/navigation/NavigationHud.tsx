@@ -8,7 +8,7 @@ import { loadResume } from "@/lib/navigation/resume";
 import { useLingui } from "@lingui/react/macro";
 import { Medal } from "@/components/Medal";
 import { StampHere } from "@/components/StampHere";
-import { compassPoint, type CompassPoint, type TurnKind } from "@/lib/navigation/geometry";
+import { compassPoint, OFF_ROUTE_LOCKED_M, offRouteCardShown, type CompassPoint, type TurnKind } from "@/lib/navigation/geometry";
 import { modelFromMapRoute } from "@/lib/navigation/input";
 import type { MapScreenRoute } from "@/lib/map-screen";
 import { courseProgress } from "@/lib/navigation/progress";
@@ -21,6 +21,7 @@ import { NavFarCard } from "./NavFarCard";
 import { NavTargetPicker } from "./NavTargetPicker";
 import { useNavigation, type NavStopInfo } from "./NavigationProvider";
 import { buttonStyle } from "@/components/button";
+import { CloseIcon, SoundOffIcon, SoundOnIcon } from "@/components/icons";
 
 // The navigation toast: a small card floating at the bottom of the screen while a navigation runs, on every tab (on a
 // phone just above the tab bar and the phone's own bar, on a wider screen at the bottom right). Two lines: which way and
@@ -137,6 +138,8 @@ export function NavigationToast() {
   const voice = useNavVoice(session?.snapshot.state ?? null, session?.snapshot.state.targetId ? session.stops[session.snapshot.state.targetId]?.name : undefined, voiceByDefault);
   // The stamp place whose arrival card was put off: its small button stays at the bottom of the screen.
   const [laterId, setLaterId] = useState<string | null>(null);
+  // The off-the-path card was closed; it stays closed until the visitor is back on the path.
+  const [offClosed, setOffClosed] = useState(false);
 
   // Ticks so the age of an old fix stays true while nothing new arrives.
   useEffect(() => {
@@ -241,18 +244,36 @@ export function NavigationToast() {
   const back = !isFar && st.offRoute && st.backM !== null && st.backBearingDeg !== null ? { m: st.backM, deg: st.backBearingDeg } : null;
   // With a walking direction the arrow beside it says which way; a compass word only when there is none.
   const backText = back ? (st.headingDeg !== null ? t`道まで ${meters(back.m)}` : t`道まで ${meters(back.m)}（${compass[compassPoint(back.deg)]}）`) : "";
-  const offRouteBlock = back ? (
-    <div role="alert" className="flex items-center gap-3 border-l-4 border-caution pl-3">
+  if (!back && offClosed) setOffClosed(false);
+  const offRouteWords = back ? (
+    <>
       {/* The arrow points the way back relative to the walking direction when it is known, else relative to north. */}
       <svg viewBox="0 0 24 24" aria-hidden="true" className="size-8 shrink-0 text-ink" style={{ transform: `rotate(${back.deg - (st.headingDeg ?? 0)}deg)` }}>
         <path d="M12 3 L19 20 L12 16 L5 20 Z" fill="currentColor" />
       </svg>
-      <p className="text-lg font-bold leading-snug">
+      <p className="min-w-0 flex-1 text-lg font-bold leading-snug">
         {t`道からはずれています`}
         <span className="block text-base font-normal tabular-nums">{backText}</span>
       </p>
+    </>
+  ) : null;
+  const offRouteBlock = back ? (
+    <div role="alert" className="flex items-center gap-3 border-l-4 border-caution pl-3">
+      {offRouteWords}
     </div>
   ) : null;
+  // On the map it is a card at the bottom of the screen, above the controls. Far from the course it cannot be closed.
+  const offRouteCard =
+    back && offRouteCardShown(back.m, offClosed) ? (
+      <div role="alert" className="flex items-center gap-3 rounded-lg border-l-4 border-caution bg-surface py-2 pl-3 pr-2">
+        {offRouteWords}
+        {back.m <= OFF_ROUTE_LOCKED_M ? (
+          <button type="button" onClick={() => setOffClosed(true)} aria-label={t`とじる`} className="tap-target inline-flex shrink-0 items-center justify-center rounded-full text-ink hover:bg-paper">
+            <CloseIcon />
+          </button>
+        ) : null}
+      </div>
+    ) : null;
 
   // At most one short note under the two lines, the most useful one first.
   const note = snap.paused
@@ -295,10 +316,11 @@ export function NavigationToast() {
         <TurnSign kind={turn?.kind ?? (steer && steer !== "straight" ? steer : null)} />
         <div className="min-w-0">
           <p className="truncate text-xl font-bold leading-tight tabular-nums">{line1}</p>
-          <p className="truncate text-base leading-snug text-muted">
+          {/* The distance comes first and nothing is cut: a long place name may take a second line. */}
+          <p className="text-base leading-snug text-muted">
             <span className="sr-only">{t`次のスタンプの場所`} </span>
+            {line2 ? <span className="whitespace-nowrap tabular-nums">{line2} · </span> : null}
             <span lang={target.nameLang}>{target.name}</span>
-            {line2 ? ` · ${line2}` : null}
           </p>
         </div>
       </div>
@@ -364,22 +386,29 @@ export function NavigationToast() {
         {prompts}
         {/* Phone: the top of the screen itself, from the status bar down (a solid box there keeps iOS from blurring it). */}
         <section ref={banner} aria-label={t`ナビ中：${routeName}`} className="fixed inset-x-0 top-0 z-30 flex max-h-[70dvh] flex-col gap-1 overflow-y-auto rounded-b-2xl border-b border-line/30 bg-paper px-4 pb-3 pt-[calc(0.75rem+var(--top-clear))] shadow-lg md:inset-x-auto md:left-[calc(50%-14rem)] md:top-[calc(0.5rem+var(--top-clear))] md:w-[28rem] md:rounded-2xl md:border-b-0 md:pt-3 md:shadow-2xl md:ring-1 md:ring-line/30">
-          {main}
+          <div className="flex items-start gap-2">
+            <div className="min-w-0 flex-1">{main}</div>
+            {voice.supported && !far && !tucked ? (
+              <button
+                type="button"
+                role="switch"
+                aria-checked={voice.on}
+                aria-label={t`音声案内`}
+                title={t`音声案内`}
+                onClick={voice.toggle}
+                className={`tap-target inline-flex shrink-0 items-center justify-center rounded-full border border-ink ${voice.on ? "bg-ink text-paper" : "bg-paper text-ink"}`}
+              >
+                {voice.on ? <SoundOnIcon /> : <SoundOffIcon />}
+              </button>
+            ) : null}
+          </div>
           {tucked ? (
             <button type="button" onClick={() => window.dispatchEvent(new Event(NAV_RESUME_EVENT))} className={buttonStyle("primary", "md", "mt-1 flex w-full")}>
               {t`ナビにもどる`}
             </button>
           ) : null}
-          {offRouteBlock}
           {note ? <p className="text-base leading-snug">{note}</p> : null}
-          {voice.supported && !far && !tucked ? (
-            <div className="flex items-center gap-3">
-              <button type="button" role="switch" aria-checked={voice.on} onClick={voice.toggle} className={quiet}>
-                {voice.on ? t`音声案内：オン` : t`音声案内：オフ`}
-              </button>
-              {voice.on && !voice.canVibrate ? <span className="text-base text-muted">{t`この端末では、振動は使えません。`}</span> : null}
-            </div>
-          ) : null}
+          {voice.supported && voice.on && !voice.canVibrate && !far && !tucked ? <p className="text-base text-muted">{t`この端末では、振動は使えません。`}</p> : null}
         </section>
         <section
           ref={box}
@@ -392,6 +421,7 @@ export function NavigationToast() {
         >
           {/* Its own box: the pattern's class sets `position` and would undo the `fixed` above. */}
           <div className="pattern-shippo flex flex-col gap-3 rounded-t-2xl border-t border-line/30 bg-paper px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-4px_24px_rgb(0_0_0/0.28)] md:rounded-2xl md:pb-3">
+          {offRouteCard}
           {far ? null : progressLine}
           {far || !profile ? null : <NavElevation profile={profile} />}
           {far || arrived ? null : stampButton}

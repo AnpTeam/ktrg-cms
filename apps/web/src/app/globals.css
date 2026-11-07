@@ -1112,6 +1112,64 @@ body:has([data-sample-notice]) .cover-credit > details {
   }
 }
 
+/* The map's gesture tour (MapHelp): a drawn hand repeating each gesture. With reduced motion it stands still. */
+.tour-tap,
+.tour-drag,
+.tour-tilt,
+.tour-pinch-index,
+.tour-pinch-thumb,
+.tour-touch {
+  transform-box: fill-box;
+  animation-duration: 2s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+.tour-tap {
+  animation-name: tour-tap;
+}
+.tour-drag {
+  animation-name: tour-drag;
+}
+.tour-tilt {
+  animation-name: tour-tilt;
+}
+.tour-pinch-index {
+  transform-origin: 50% 100%;
+  animation-name: tour-pinch-index;
+}
+.tour-pinch-thumb {
+  transform-origin: 50% 100%;
+  animation-name: tour-pinch-thumb;
+}
+.tour-touch {
+  transform-origin: center;
+  animation-name: tour-touch;
+}
+@keyframes tour-tap {
+  0%, 100% { transform: translateY(-14px); }
+  45%, 60% { transform: translateY(6px); }
+}
+@keyframes tour-drag {
+  0%, 100% { transform: translateX(-46px); }
+  50% { transform: translateX(46px); }
+}
+@keyframes tour-tilt {
+  0%, 100% { transform: translateY(34px); }
+  50% { transform: translateY(-34px); }
+}
+@keyframes tour-pinch-index {
+  0%, 100% { transform: rotate(-6deg); }
+  50% { transform: rotate(16deg); }
+}
+@keyframes tour-pinch-thumb {
+  0%, 100% { transform: rotate(6deg); }
+  50% { transform: rotate(-16deg); }
+}
+@keyframes tour-touch {
+  0%, 100% { transform: scale(0.8); }
+  50% { transform: scale(1.15); }
+}
+
 /* On paper the map keeps to the page width, and its buttons (useless there) are left off. */
 @media print {
   .trail-map .maplibregl-canvas {

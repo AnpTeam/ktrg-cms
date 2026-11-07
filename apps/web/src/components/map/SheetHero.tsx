@@ -7,8 +7,8 @@ import { CreditCaption } from "@/components/PhotoCredit";
 import type { MapPhoto } from "@/lib/map-screen";
 
 /**
- * The top of a course's or a stop's sheet, in the look of a route page's cover: the photo runs to the sheet's edges and fades
- * into the page, and the name sits on the fade. With no photo the same banner is a deep red panel, so every course looks the same.
+ * The top of a course's or a stop's sheet: the photo runs to the sheet's edges and darkens towards its foot, where the name sits
+ * in white. With no photo the same banner is a deep red panel, so every course looks the same.
  */
 export function SheetHero({
   short = false,
@@ -31,9 +31,14 @@ export function SheetHero({
 }) {
   return (
     <div>
-      <div className={`relative overflow-hidden ${short ? "aspect-[2/1]" : "aspect-[4/3]"}`} style={{ background: "linear-gradient(135deg, #6f241c, #b04a40)" }}>
+      {/* It grows with its words, so a long name never runs under the back button. */}
+      <div
+        className={`relative flex flex-col justify-end pt-[calc(7.25rem+var(--sheet-top,0px))] wide:pt-16 ${short ? "aspect-[2/1]" : "aspect-[4/3]"}`}
+        style={{ background: "linear-gradient(135deg, #6f241c, #b04a40)" }}
+      >
         {photo ? <Image src={photo.src} alt="" fill sizes="(min-width: 1024px) 26rem, 100vw" className="object-cover" unoptimized={photo.src.startsWith("https://")} /> : null}
-        <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-b from-transparent to-paper" />
+        {/* Dark under the words, so white reads on any photo. */}
+        <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-3/4 bg-linear-to-b from-transparent to-black/80" />
         {/* Below the sheet's handle on a phone; a desktop panel has none. */}
         <button
           type="button"
@@ -44,13 +49,13 @@ export function SheetHero({
           {backLabel}
         </button>
         {photo ? <span className="sr-only">{photo.alt}</span> : null}
-      </div>
-      <div className="relative -mt-20 px-4">
-        {/* The page's one h1 while a course or stop is chosen (the home header, which has it otherwise, is not drawn then). */}
-        <h1 lang={lang} className="text-3xl font-bold leading-tight">
-          {title}
-        </h1>
-        {eyebrow ? <p className="mt-2 text-lg leading-snug text-muted">{eyebrow}</p> : null}
+        <div className="relative px-4 pb-3 text-white [text-shadow:0_1px_3px_rgb(0_0_0/0.7)]">
+          {/* The page's one h1 while a course or stop is chosen (the home header, which has it otherwise, is not drawn then). */}
+          <h1 lang={lang} className="text-3xl font-bold leading-tight text-white">
+            {title}
+          </h1>
+          {eyebrow ? <p className="mt-1 text-lg leading-snug">{eyebrow}</p> : null}
+        </div>
       </div>
       <CreditCaption credit={photo?.credit} className="mx-4 mt-2" />
     </div>
