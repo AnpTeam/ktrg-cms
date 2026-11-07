@@ -379,20 +379,22 @@ export function NavigationToast() {
     </ArrivalPrompt>
   ) : null;
 
+  const endPrompt = ending ? (
+    <EndPrompt
+      onKeep={() => setEnding(false)}
+      onEnd={() => {
+        setEnding(false);
+        stop();
+      }}
+    />
+  ) : null;
+
   // On the map: the instruction on a banner at the top, and at the bottom the stamp button (when in range) and the exit.
   if (pathname === "/map") {
     return (
       <>
         {prompts}
-        {ending ? (
-          <EndPrompt
-            onKeep={() => setEnding(false)}
-            onEnd={() => {
-              setEnding(false);
-              stop();
-            }}
-          />
-        ) : null}
+        {endPrompt}
         {/* Phone: the top of the screen itself, from the status bar down (a solid box there keeps iOS from blurring it). */}
         <section ref={banner} aria-label={t`ナビ中：${routeName}`} className="fixed inset-x-0 top-0 z-30 flex max-h-[70dvh] flex-col gap-1 overflow-y-auto rounded-b-2xl border-b border-line/30 bg-paper px-4 pb-3 pt-[calc(0.75rem+var(--top-clear))] shadow-lg md:inset-x-auto md:left-[calc(50%-14rem)] md:top-[calc(0.5rem+var(--top-clear))] md:w-[28rem] md:rounded-2xl md:border-b-0 md:pt-3 md:shadow-2xl md:ring-1 md:ring-line/30">
           <div className="flex items-start gap-2">
@@ -462,7 +464,7 @@ export function NavigationToast() {
               {t`地図`}
             </Link>
           )}
-          <button type="button" className={quiet} onClick={stop} aria-label={t`ナビを終える`}>
+          <button type="button" className={quiet} onClick={() => setEnding(true)} aria-label={t`ナビを終える`}>
             {t`終了`}
           </button>
         </div>
@@ -471,6 +473,7 @@ export function NavigationToast() {
       {note ? <p className="text-base leading-snug">{note}</p> : null}
       {arrived ? null : stampButton()}
       {prompts}
+      {endPrompt}
     </section>
   );
 }
