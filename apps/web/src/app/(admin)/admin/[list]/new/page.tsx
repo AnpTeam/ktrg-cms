@@ -22,7 +22,7 @@ export default async function NewListItemPage({ params }: { params: Promise<{ li
   const choices = await relationChoices(meta, i18n.locale);
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4">
+    <div className={`mx-auto flex flex-col gap-4 ${meta.fields.some((f) => f.side) ? "max-w-6xl" : "max-w-4xl"}`}>
       <AdminBack href={`/admin/${meta.key}`}><Trans>一覧へ戻る</Trans></AdminBack>
       <h1 className="text-3xl font-bold">{pick(meta.newLabel, i18n.locale)}</h1>
       <AdminItemForm meta={meta} initial={null} locale={i18n.locale} choices={choices} />

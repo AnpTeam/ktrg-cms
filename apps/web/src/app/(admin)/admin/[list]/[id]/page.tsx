@@ -27,7 +27,7 @@ export default async function EditListItemPage({ params }: { params: Promise<{ l
   const title = pick(meta.title, i18n.locale);
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4">
+    <div className={`mx-auto flex flex-col gap-4 ${meta.fields.some((f) => f.side) ? "max-w-6xl" : "max-w-4xl"}`}>
       <AdminBack href={`/admin/${meta.key}`}><Trans>一覧へ戻る</Trans></AdminBack>
       {item ? (
         <>

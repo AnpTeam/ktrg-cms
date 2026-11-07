@@ -119,7 +119,6 @@ export const sitePageList: ListDef<"site-pages", typeof SITE_PAGE_FIELDS, SitePa
         name: "body",
         kind: "bilingual-long",
         label: { ja: "本文", en: "Text" },
-        hint: { ja: "「## 」で始まる行は見出しです。段落は空の行で区切ります。", en: "A line starting with \"## \" is a heading. Separate paragraphs with a blank line." },
       },
       { name: "published", kind: "boolean", label: { ja: "公開する", en: "Publish" }, inList: { yes: { ja: "公開中", en: "Published" }, no: { ja: "下書き", en: "Draft" } } },
     ],

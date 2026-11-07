@@ -90,6 +90,8 @@ export interface FieldUi {
   options?: { value: string; label: Label; tone?: Tone }[];
   /** Shown on the form but never sent (the API does not take it). */
   readOnly?: boolean;
+  /** Goes in the form's side panel, beside the writing (below it on a narrow screen). */
+  side?: boolean;
   /**
    * Shown in the list's line of facts under each row's name. `text` wraps the value ("{value}" is replaced; a day is
    * written out, a route by its name); `empty` is shown when there is no value; a boolean shows `yes` or `no`.

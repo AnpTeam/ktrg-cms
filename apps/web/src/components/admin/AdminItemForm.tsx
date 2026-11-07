@@ -147,6 +147,8 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
   });
   const reviewable = config.fields.some((f) => f.name === "positionVerified");
 
+  const sideFields = config.fields.filter((f) => f.side);
+
   function input(f: FieldUi) {
     const id = `${config.key}-${f.name}`;
     const label = pick(f.label, locale);
@@ -176,7 +178,8 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
               onEn={set(`${f.name}En`)}
               onTranslations={setWords}
               multiline={f.kind === "bilingual-long"}
-              blocks={config.key === "site-pages" && f.kind === "bilingual-long"}
+              blocks={(config.key === "site-pages" || config.key === "posts") && f.kind === "bilingual-long"}
+              notes={config.key === "posts"}
               required={f.required}
               invalid={missing.includes(f.name)}
             />
@@ -290,10 +293,13 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
         </div>
       ) : null}
 
-      <Section title={t`内容`}>
-        {config.fields.map(input)}
-        {editable && missing.length > 0 ? <p className="text-base text-muted">{t`「必須」の欄をすべて入れると保存できます。`}</p> : null}
-      </Section>
+      <div className={sideFields.length > 0 ? "grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]" : "contents"}>
+        <Section title={t`内容`}>
+          {config.fields.filter((f) => !f.side).map(input)}
+          {editable && missing.length > 0 ? <p className="text-base text-muted">{t`「必須」の欄をすべて入れると保存できます。`}</p> : null}
+        </Section>
+        {sideFields.length > 0 ? <Section title={t`公開と記事の情報`}>{sideFields.map(input)}</Section> : null}
+      </div>
 
       {saved && config.ops.delete ? (
         <Section title={t`削除`}>
