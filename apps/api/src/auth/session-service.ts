@@ -3,6 +3,7 @@ import {
   STAFF_CHECK_KEPT_MS,
   STAFF_CHECK_MS,
   SESSION_POLICY,
+  SESSION_ROTATE_MS,
   SESSION_TOUCH_INTERVAL_MS,
   generateSessionToken,
   hashSessionToken,
@@ -17,6 +18,11 @@ export interface SessionRecord {
   lastLoginAt: Date;
   /** Until when the admin screens are open to this session; null: never checked (see STAFF_CHECK_MS). */
   staffCheckedUntil: Date | null;
+  rotatedAt: Date;
+  /** The token before the last change has not been replaced in use yet. */
+  rotating: boolean;
+  /** This token is that older one: the phone never got the new one. */
+  viaPrevious: boolean;
 }
 
 /** Storage the session service needs; the Drizzle version is in session-store.ts. */
@@ -32,6 +38,10 @@ export interface SessionStore {
   }): Promise<void>;
   find(tokenHash: string): Promise<{ session: SessionRecord; user: AuthUser } | null>;
   touch(id: string, lastSeenAt: Date, expiresAt: Date): Promise<void>;
+  /** A new token; the old one keeps working until `settle` (a token not yet used is simply replaced). */
+  rotate(id: string, tokenHash: string, at: Date): Promise<void>;
+  /** The new token was used: the old one ends. */
+  settle(id: string): Promise<void>;
   remove(tokenHash: string): Promise<void>;
   /** Record a fresh-login re-check: sets lastLoginAt, and moves staffCheckedUntil to this time unless it is already later. */
   markFresh(id: string, at: Date, staffCheckedUntil: Date): Promise<void>;
@@ -52,6 +62,8 @@ export interface Authenticated {
   /** May this session use the admin screens right now (see STAFF_CHECK_MS)? */
   staffChecked: boolean;
   expiresAt: Date;
+  /** The token is due for a change (see `rotate`). */
+  rotateDue: boolean;
   /** True when the expiry slid forward, so the cookie should be re-issued. */
   refreshed: boolean;
 }
@@ -89,7 +101,8 @@ export function createSessionService({
       const { session, user } = found;
       const freshEnd = freshUntil(session.lastLoginAt);
       const staffChecked = session.staffCheckedUntil !== null && at < session.staffCheckedUntil.getTime();
-      const base = { user, sessionId: session.id, freshUntil: freshEnd, fresh: at < freshEnd.getTime(), staffChecked };
+      const rotateDue = session.viaPrevious || at - session.rotatedAt.getTime() >= SESSION_ROTATE_MS;
+      const base = { user, sessionId: session.id, freshUntil: freshEnd, fresh: at < freshEnd.getTime(), staffChecked, rotateDue };
       // A cap further away than the role allows means the session began under a longer policy
       // (a participant since promoted): end it, so the new role's limit applies.
       const capTooFar = session.absoluteExpiresAt.getTime() - at > SESSION_POLICY[user.role].absoluteMs;
@@ -97,6 +110,8 @@ export function createSessionService({
         await store.remove(tokenHash);
         return null;
       }
+
+      if (session.rotating && !session.viaPrevious) await store.settle(session.id);
 
       // Slide the idle expiry forward, never past the absolute cap.
       const slid = Math.min(at + SESSION_POLICY[user.role].idleMs, session.absoluteExpiresAt.getTime());
@@ -106,6 +121,16 @@ export function createSessionService({
       const expiresAt = new Date(slid);
       await store.touch(session.id, new Date(at), expiresAt);
       return { ...base, expiresAt, refreshed: true };
+    },
+
+    /**
+     * A new token for this session. Only from a request the browser itself sends (POST /auth/session/rotate): a page rendered on
+     * the server forwards the cookie, and a new one sent back there would never reach the browser.
+     */
+    async rotate(sessionId: string): Promise<string> {
+      const token = generateSessionToken();
+      await store.rotate(sessionId, hashSessionToken(token), now());
+      return token;
     },
 
     /** The user just proved it is them again (POST /auth/reauth/verify). Returns the new freshUntil. */

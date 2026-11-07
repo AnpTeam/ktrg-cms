@@ -102,8 +102,12 @@ export const sessions = pgTable(
     lastLoginAt: timestamp("last_login_at", { withTimezone: true }).notNull().defaultNow(),
     // Until when this session may use the admin screens (see STAFF_CHECK_MS). Null: not checked yet.
     staffCheckedUntil: timestamp("staff_checked_until", { withTimezone: true }),
+    // When the token last changed (see SESSION_ROTATE_MS).
+    rotatedAt: timestamp("rotated_at", { withTimezone: true }).notNull().defaultNow(),
+    // The token before that, until the new one is first used: a reply lost on a weak signal must not sign anyone out.
+    previousTokenHash: text("previous_token_hash"),
   },
-  (t) => [index("sessions_user_id_idx").on(t.userId)],
+  (t) => [index("sessions_user_id_idx").on(t.userId), index("sessions_previous_token_idx").on(t.previousTokenHash)],
 );
 
 /** WebAuthn credentials (SimpleWebAuthn). */

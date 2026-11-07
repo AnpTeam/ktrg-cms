@@ -12,27 +12,37 @@ export function createMemorySessionStore(users: Map<string, AuthUser>) {
     lastSeenAt: Date;
     lastLoginAt: Date;
     staffCheckedUntil: Date | null;
+    rotatedAt: Date;
+    previousTokenHash: string | null;
   }[] = [];
   let nextId = 1;
 
   const store: SessionStore = {
     async create({ userId, tokenHash, expiresAt, absoluteExpiresAt, now, lastLoginAt, staffCheckedUntil }) {
-      rows.push({ id: `s${nextId++}`, userId, tokenHash, expiresAt, absoluteExpiresAt, lastSeenAt: now, lastLoginAt, staffCheckedUntil });
+      rows.push({ id: `s${nextId++}`, userId, tokenHash, expiresAt, absoluteExpiresAt, lastSeenAt: now, lastLoginAt, staffCheckedUntil, rotatedAt: now, previousTokenHash: null });
     },
     async find(tokenHash) {
-      const row = rows.find((r) => r.tokenHash === tokenHash);
+      const row = rows.find((r) => r.tokenHash === tokenHash || r.previousTokenHash === tokenHash);
       if (!row) return null;
       const user = [...users.values()].find((u) => u.id === row.userId);
       if (!user) return null;
-      const { id, expiresAt, absoluteExpiresAt, lastLoginAt, staffCheckedUntil } = row;
-      return { session: { id, expiresAt, absoluteExpiresAt, lastLoginAt, staffCheckedUntil }, user };
+      const { id, expiresAt, absoluteExpiresAt, lastLoginAt, staffCheckedUntil, rotatedAt } = row;
+      return { session: { id, expiresAt, absoluteExpiresAt, lastLoginAt, staffCheckedUntil, rotatedAt, rotating: row.previousTokenHash !== null, viaPrevious: row.previousTokenHash === tokenHash }, user };
     },
     async touch(id, lastSeenAt, expiresAt) {
       const row = rows.find((r) => r.id === id);
       if (row) Object.assign(row, { lastSeenAt, expiresAt });
     },
+    async rotate(id, tokenHash, at) {
+      const row = rows.find((r) => r.id === id);
+      if (row) Object.assign(row, { previousTokenHash: row.previousTokenHash ?? row.tokenHash, tokenHash, rotatedAt: at });
+    },
+    async settle(id) {
+      const row = rows.find((r) => r.id === id);
+      if (row) row.previousTokenHash = null;
+    },
     async remove(tokenHash) {
-      const i = rows.findIndex((r) => r.tokenHash === tokenHash);
+      const i = rows.findIndex((r) => r.tokenHash === tokenHash || r.previousTokenHash === tokenHash);
       if (i !== -1) rows.splice(i, 1);
     },
     async markFresh(id, at, staffCheckedUntil) {

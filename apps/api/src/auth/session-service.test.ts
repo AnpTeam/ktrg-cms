@@ -208,3 +208,50 @@ describe("destroy", () => {
     await expect(service.destroy("whatever")).resolves.toBeUndefined();
   });
 });
+
+describe("rotation", () => {
+  const DUE = 30 * DAY;
+
+  test("is not due at first, and is due after 30 days", async () => {
+    const { service, advance } = setup();
+    const { token } = await service.create(participant);
+    expect((await service.authenticate(token))!.rotateDue).toBe(false);
+    advance(DUE);
+    expect((await service.authenticate(token))!.rotateDue).toBe(true);
+  });
+
+  test("the old token keeps working until the new one is used, then ends", async () => {
+    const { service, rows, advance } = setup();
+    const { token } = await service.create(participant);
+    advance(DUE);
+    const id = (await service.authenticate(token))!.sessionId;
+    const next = await service.rotate(id);
+    expect((await service.authenticate(token))?.user.id).toBe(participant.id); // the reply may have been lost
+    expect((await service.authenticate(next))?.rotateDue).toBe(false);
+    expect(await service.authenticate(token)).toBeNull();
+    expect(rows).toHaveLength(1);
+  });
+
+  test("a phone that never got the new token rotates again, and its old token stays good", async () => {
+    const { service, advance } = setup();
+    const { token } = await service.create(participant);
+    advance(DUE);
+    const id = (await service.authenticate(token))!.sessionId;
+    const lost = await service.rotate(id);
+    expect((await service.authenticate(token))!.rotateDue).toBe(true);
+    const next = await service.rotate(id);
+    expect(await service.authenticate(lost)).toBeNull();
+    expect((await service.authenticate(token))?.user.id).toBe(participant.id);
+    expect((await service.authenticate(next))?.user.id).toBe(participant.id);
+    expect(await service.authenticate(token)).toBeNull();
+  });
+
+  test("logging out with either token ends the session", async () => {
+    const { service, rows, advance } = setup();
+    const { token } = await service.create(participant);
+    advance(DUE);
+    await service.rotate((await service.authenticate(token))!.sessionId);
+    await service.destroy(token);
+    expect(rows).toHaveLength(0);
+  });
+});

@@ -41,6 +41,8 @@ export const AUTH_LIMITS = {
   passkeyLoginIp: { name: "passkey-login-ip", limit: 30, windowMs: 15 * MINUTE },
   // Keyed by user id: removing passkeys.
   passkeyRemoveUser: { name: "passkey-remove-user", limit: 10, windowMs: 15 * MINUTE },
+  // Keyed by user id: the app asks about once a day, so this only stops a loop.
+  sessionRotateUser: { name: "session-rotate-user", limit: 30, windowMs: 60 * MINUTE },
   // Keyed by user id: renaming passkeys.
   passkeyRenameUser: { name: "passkey-rename-user", limit: 30, windowMs: 15 * MINUTE },
   // Keyed by user id: adding a passkey needs a login, so this just caps abuse.

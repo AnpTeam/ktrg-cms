@@ -60,7 +60,7 @@ export function authGuards(opts: { getSession: () => SessionService; secureCooki
         if (needsFreshLogin(permission) && !auth.fresh) {
           return status(403, REAUTH_REQUIRED);
         }
-        return { user, authSession: { id: auth.sessionId, freshUntil: auth.freshUntil, staffChecked: auth.staffChecked } };
+        return { user, authSession: { id: auth.sessionId, expiresAt: auth.expiresAt, rotateDue: auth.rotateDue, freshUntil: auth.freshUntil, staffChecked: auth.staffChecked } };
       },
     }),
   });

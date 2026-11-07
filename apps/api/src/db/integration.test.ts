@@ -215,6 +215,16 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       expect(found?.user).toEqual({ ...user, restricted: false });
       expect(found?.session.absoluteExpiresAt.getTime()).toBe(absoluteExpiresAt.getTime());
 
+      // A new token: both work until the new one has been used, then only the new one.
+      const nextHash = randomBytes(32).toString("hex");
+      await sessions.rotate(found!.session.id, nextHash, now);
+      expect((await sessions.find(tokenHash))?.session).toMatchObject({ rotating: true, viaPrevious: true });
+      expect((await sessions.find(nextHash))?.session).toMatchObject({ rotating: true, viaPrevious: false });
+      await sessions.settle(found!.session.id);
+      expect(await sessions.find(tokenHash)).toBeNull();
+      await sessions.rotate(found!.session.id, tokenHash, now); // back, for the steps below
+      await sessions.settle(found!.session.id);
+
       const slid = new Date(now.getTime() + 20 * 86_400_000);
       await sessions.touch(found!.session.id, new Date(), slid);
       expect((await sessions.find(tokenHash))!.session.expiresAt.getTime()).toBe(slid.getTime());

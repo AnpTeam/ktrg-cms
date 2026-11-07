@@ -20,6 +20,7 @@ import { FuriganaLayer } from "@/components/FuriganaLayer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { TabBar } from "@/components/TabBar";
 import { PrefsSync } from "@/components/settings/PrefsSync";
+import { SessionRotate } from "@/components/settings/SessionRotate";
 import { getPrefsState } from "@/lib/server-prefs";
 import { getViewer } from "@/lib/viewer";
 import { sampleContentEnabled } from "@/lib/content";
@@ -63,6 +64,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           <OfflineNotice />
           {sample ? <SampleNoticeHost /> : null}
           <PrefsSync signedIn={viewer.signedIn} account={prefsState.account} device={prefsState.device} />
+          {viewer.signedIn ? <SessionRotate /> : null}
           <main id="main" className="pb-[calc(7rem+var(--nav-toast,0px))] md:pb-[calc(2.5rem+var(--nav-toast,0px))] md:pt-6 wide:pb-[calc(5rem+var(--nav-toast,0px))] wide:pt-8">
             <div className="wide:mx-auto wide:max-w-6xl wide:px-10">
               {viewer.signedIn ? null : <BrowserWarning />}
