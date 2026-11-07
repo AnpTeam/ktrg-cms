@@ -14,7 +14,9 @@ export function noticeFeed(notices: readonly TrailNotice[], opts: { site: string
   const self = `${opts.site}/notices/feed.xml${opts.routeId ? `?route=${encodeURIComponent(opts.routeId)}` : ""}`;
   // A notice is dated by the day a person last checked it, at the start of that day in Japan.
   const at = (day: string) => `${day}T00:00:00+09:00`;
-  const updated = list[0] ? at(list[0].verifiedOn) : (opts.now ?? new Date()).toISOString();
+  // Closures come first, so the first notice is not always the newest.
+  const newest = list.map((n) => n.verifiedOn).sort().at(-1);
+  const updated = newest ? at(newest) : (opts.now ?? new Date()).toISOString();
   const entries = list
     .map((n) => {
       const heading = pickText(opts.locale, n.titleJa, n.titleEn)?.text ?? n.titleJa;

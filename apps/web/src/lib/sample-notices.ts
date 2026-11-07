@@ -14,6 +14,7 @@ export const sampleNotices: TrailNotice[] = [
     sourceNameEn: "Japan Heritage Katsuragi Shugen official site",
     verifiedOn: "2026-10-16",
     expiresOn: "2099-12-31",
+    closure: false,
     routeId: null,
   },
 ];

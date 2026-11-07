@@ -138,8 +138,8 @@ export const TrashIcon = () => (
   </Icon>
 );
 
-export const ClosedIcon = () => (
-  <Icon>
+export const ClosedIcon = ({ size }: { size?: number } = {}) => (
+  <Icon size={size}>
     <circle cx="12" cy="12" r="9" />
     <path d="m6 6 12 12" />
   </Icon>

@@ -16,7 +16,7 @@ export function createMemoryNoticeStore(audit: AuditWriter, opts: { now?: () => 
     async listPublic(today) {
       return [...list.rows.values()]
         .filter((n) => n.published && (n.expiresOn === null || n.expiresOn >= today))
-        .sort((a, b) => b.verifiedOn.localeCompare(a.verifiedOn));
+        .sort((a, b) => Number(b.closure) - Number(a.closure) || b.verifiedOn.localeCompare(a.verifiedOn));
     },
   };
   return { store, rows: list.rows, routes };

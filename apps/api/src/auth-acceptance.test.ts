@@ -63,6 +63,7 @@ const sampleNotice = () => ({
   sourceNameJa: "x",
   sourceNameEn: null,
   verifiedOn: "2026-10-20",
+  closure: false,
   expiresOn: null,
   published: false,
 });

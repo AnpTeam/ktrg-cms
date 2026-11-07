@@ -392,6 +392,8 @@ export const trailNotices = pgTable(
     verifiedOn: date("verified_at", { mode: "string" }).notNull(),
     // Hidden after this day; null means no expiry.
     expiresOn: date("expires_at", { mode: "string" }),
+    // A way or place is shut: visitors see a red mark, and it comes before other notices.
+    closure: boolean("closure").notNull().default(false),
     published: boolean("published").notNull().default(false),
     createdAt: createdAt(),
     updatedAt: updatedAt(),

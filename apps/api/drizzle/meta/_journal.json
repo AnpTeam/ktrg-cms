@@ -400,6 +400,13 @@
       "when": 1794032946206,
       "tag": "0056_nappy_terrax",
       "breakpoints": true
+    },
+    {
+      "idx": 57,
+      "version": "7",
+      "when": 1794040228626,
+      "tag": "0057_polite_solo",
+      "breakpoints": true
     }
   ]
 }

@@ -13,6 +13,7 @@ const make = (id: string, verifiedOn: string, expiresOn: string | null): TrailNo
   sourceNameEn: null,
   verifiedOn,
   expiresOn,
+  closure: false,
   routeId: null,
 });
 
@@ -26,6 +27,11 @@ describe("activeNotices", () => {
     const list = [make("a", "2026-10-01", null), make("b", "2026-10-09", null)];
     expect(activeNotices(list, "2026-10-16").map((n) => n.id)).toEqual(["b", "a"]);
     expect(list.map((n) => n.id)).toEqual(["a", "b"]);
+  });
+
+  test("a closure comes first even when it was checked long ago", () => {
+    const list = [make("new", "2026-10-09", null), { ...make("shut", "2026-09-01", null), closure: true }];
+    expect(activeNotices(list, "2026-10-16").map((n) => n.id)).toEqual(["shut", "new"]);
   });
 });
 
