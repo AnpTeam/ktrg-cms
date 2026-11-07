@@ -19,6 +19,12 @@ export function largeStyleUrl(settings: Pick<MapSettings, "terrain" | "terrainOp
   return `${largeStylePath}?${q}`;
 }
 
+/**
+ * GSI's style has no background layer, so land with no fill is see-through and the page shows behind it: black in dark mode.
+ * A fixed colour, never a theme token: the map looks the same in both themes.
+ */
+const LAND_COLOUR = "#fcfaf5";
+
 /** The style to hand to the map: a raster style as an object, the vector one as an address. */
 export function mapStyleSource(settings: MapSettings = defaultMapSettings, locale = "ja"): StyleSpecification | string {
   return settings.base === "large" ? largeStyleUrl(settings) : mapStyle(settings, locale);
@@ -37,7 +43,7 @@ export function composeLargeStyle(
   // Under the first label or symbol, so names stay readable on the shading.
   const at = layers.findIndex((l) => l.type === "symbol");
   layers.splice(at === -1 ? layers.length : at, 0, { ...terrainLayer, layout: { visibility: opts.terrainOn ? "visible" : "none" } } as LayerSpecification);
-  return { ...base, sprite: `${opts.origin}/map-style/sprite/std`, sources: { ...base.sources, "gsi-terrain": terrainSource }, layers };
+  return { ...base, sprite: `${opts.origin}/map-style/sprite/std`, sources: { ...base.sources, "gsi-terrain": terrainSource }, layers: [{ id: "land", type: "background", paint: { "background-color": LAND_COLOUR } }, ...layers] };
 }
 
 type Json = unknown;
