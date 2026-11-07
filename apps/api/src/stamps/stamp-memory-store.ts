@@ -26,7 +26,12 @@ export function createMemoryStampStore(audit: AuditWriter, opts: { now?: () => D
     },
     async awardMany(userId, items) {
       let added = 0;
-      for (const i of items) if ((await store.award(userId, i.spotId, { flagged: i.flagged, flagReason: i.flagged ? "low_accuracy" : null })).created) added++;
+      for (const i of items) {
+        if (!(await store.award(userId, i.spotId, { flagged: i.flagged, flagReason: i.flagged ? "low_accuracy" : null })).created) continue;
+        added++;
+        const row = [...stamps.values()].find((s) => s.userId === userId && s.spotId === i.spotId);
+        if (row) row.createdAt = i.createdAt;
+      }
       return { added, already: items.length - added };
     },
     async award(userId, spotId, flag) {

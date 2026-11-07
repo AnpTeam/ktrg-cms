@@ -74,7 +74,7 @@ export function createStampService({ store, now = () => new Date() }: { store: S
     check: (r: Reading) => check(r, store, now()),
 
     /** Saves a stamp whose checks were already done (a guest's, once they sign up). */
-    awardMany: (userId: string, items: { spotId: string; flagged: boolean }[]) => store.awardMany(userId, items),
+    awardMany: (userId: string, items: { spotId: string; flagged: boolean; createdAt: Date }[]) => store.awardMany(userId, items),
     award: (userId: string, spotId: string, flagged: boolean) => store.award(userId, spotId, { flagged, flagReason: flagged ? "low_accuracy" : null }),
 
     async collect(userId: string, r: Reading): Promise<Result<Collected>> {

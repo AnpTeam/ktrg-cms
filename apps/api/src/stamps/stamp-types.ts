@@ -50,8 +50,8 @@ export interface StampStore {
   findSpot(id: string): Promise<StampSpot | null>;
   /** Several places in one query (a guest's whole cookie); an id that is not there is left out. */
   findSpots(ids: string[]): Promise<StampSpot[]>;
-  /** Saves many stamps for one visitor at once (a guest signing up): one transaction, finishes worked out once at the end. */
-  awardMany(userId: string, items: { spotId: string; flagged: boolean }[]): Promise<{ added: number; already: number }>;
+  /** Saves many stamps for one visitor at once (a guest signing up), each with the time it was earned: one transaction, finishes worked out once at the end. */
+  awardMany(userId: string, items: { spotId: string; flagged: boolean; createdAt: Date }[]): Promise<{ added: number; already: number }>;
   /** Saves the stamp (one per visitor and place) and, in the same transaction, the courses and rallies it finishes. */
   award(userId: string, spotId: string, flag: { flagged: boolean; flagReason: string | null; scannedAt?: Date | null }): Promise<Awarded>;
   /** The visitor's own stamps that are not revoked. */

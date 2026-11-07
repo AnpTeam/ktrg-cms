@@ -11,6 +11,7 @@ import { createMemoryStampStore } from "../stamps/stamp-memory-store";
 import { stampRoutes } from "../stamps/stamp-routes";
 import { createStampService } from "../stamps/stamp-service";
 import type { StampSpot } from "../stamps/stamp-types";
+import { encodeGuest } from "./guest-cookie";
 import { guestRoutes } from "./guest-routes";
 import { createGuestService } from "./guest-service";
 
@@ -109,6 +110,15 @@ describe("stamps without an account", () => {
     // The same code again adds nothing.
     expect(((await (await call("POST", "/guest/restore", { cookie, body: { code } })).json()) as Json).restored).toBe(0);
     expect((await call("POST", "/guest/restore", { body: { code: "AAAA.BBBB" } })).status).toBe(422);
+  });
+
+  test("a claimed stamp keeps the day it was earned, not the day of signing up", async () => {
+    const { call, session1 } = await setup();
+    const earned = new Date("2026-05-03T01:00:00.000Z");
+    const cookie = `guest=${encodeGuest([{ spotId: SPOT_ID, at: earned.getTime() / 1000, flagged: false }], "g".repeat(32))}`;
+    await call("POST", "/guest/claim", { cookie: `${session1}; ${cookie}`, body: { mode: "merge" } });
+    const mine = (await (await call("GET", "/stamps", { cookie: session1 })).json()) as Json;
+    expect(mine.stamps[0].createdAt).toBe(earned.toISOString());
   });
 
   test("claiming needs a login", async () => {
