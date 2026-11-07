@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { useUnsavedGuard } from "./useUnsavedGuard";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode } from "@/lib/api-error";
 import { baseLayers, defaultMapSettings, terrainLayers, type BaseLayer, type MapSettings, type TerrainLayer } from "@/lib/map-settings";
@@ -29,6 +30,7 @@ export function SiteSettingsForm({ initial }: { initial: MapSettings }) {
   // A file chosen for the large-text map but not applied yet; the preview shows it.
   const [draft, setDraft] = useState<Entry[] | null>(null);
   const dirty = JSON.stringify(s) !== JSON.stringify(saved);
+  useUnsavedGuard(dirty);
   const set = (patch: Partial<MapSettings>) => {
     showToast(null);
     setS((cur) => ({ ...cur, ...patch }));

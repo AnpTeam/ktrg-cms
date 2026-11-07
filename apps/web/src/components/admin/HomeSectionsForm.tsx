@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { useUnsavedGuard } from "./useUnsavedGuard";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode } from "@/lib/api-error";
 import { confirmDialog } from "@/components/ConfirmDialog";
@@ -15,6 +16,7 @@ export function HomeSectionsForm({ initial }: { initial: { tourism: boolean } })
   const [s, setS] = useState(initial);
   const [busy, setBusy] = useState(false);
   const dirty = s.tourism !== saved.tourism;
+  useUnsavedGuard(dirty);
 
   async function save() {
     if (!(await confirmDialog({ title: t`サイトに反映しますか？`, body: t`この設定は、本番のサイトにすぐ反映されます。保存しますか？`, yes: t`保存する` }))) return;

@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { useUnsavedGuard } from "./useUnsavedGuard";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { api } from "@/lib/api";
 import { outcome } from "@/lib/admin/admin-client";
@@ -48,6 +49,7 @@ export function RallyEditor({
   const changes = nameChanges(saved, names);
   const namesChanged = Object.keys(changes).length > 0;
   const membersChanged = !sameOrder(ids, savedIds);
+  useUnsavedGuard(namesChanged || membersChanged);
   const title = locale === "en" && saved.nameEn ? saved.nameEn : saved.nameJa;
 
   const one = () => api.admin.rallies({ id: saved.id });
