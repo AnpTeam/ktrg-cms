@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import { Extension, type JSONContent } from "@tiptap/core";
 import Image from "@tiptap/extension-image";
-import { NodeSelection, Plugin } from "@tiptap/pm/state";
+import { NodeSelection, Plugin, TextSelection } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { EditorContent, NodeViewContent, NodeViewWrapper, ReactNodeViewRenderer, useEditor, useEditorState, type Editor, type NodeViewProps } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useLingui } from "@lingui/react/macro";
 import { ChevronDownIcon, ChevronUpIcon, ImageIcon, LinkIcon, ListIcon, PlusIcon, TrashIcon, UndoIcon } from "@/components/icons";
 import { CardTitle, PageCard } from "@/lib/admin/card-nodes";
+import { noteProblems, noteSpots, renumberNotes } from "@/lib/admin/footnotes";
 import { bodyToDoc, cardParts, docToBody, moveBlock, type PageLook } from "@/lib/admin/block-doc";
 import { isWebUrl } from "@/lib/format";
 import type { CardStyle } from "@/lib/rich-text";
@@ -26,7 +27,7 @@ type Kind = "paragraph" | "h2" | "h3" | "list" | "rule" | "photo" | CardStyle;
 type Panel = { kind: "link"; href: string; bad: boolean } | { kind: "photo" } | null;
 
 const SHOWN =
-  "tiptap-page rounded-xl border-2 border-line bg-paper p-4 text-lg leading-8 text-ink [&_a]:font-bold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4 [&_h2]:mt-5 [&_h2]:border-l-[6px] [&_h2]:border-accent [&_h2]:pl-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-snug [&_h3]:mt-4 [&_h3]:text-xl [&_h3]:font-bold [&_hr]:my-6 [&_hr]:border-line [&_img]:my-4 [&_img]:rounded-xl [&_p]:my-3 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_.ProseMirror-selectednode]:outline-4 [&_.ProseMirror-selectednode]:outline-accent [&_.note-mark]:rounded [&_.note-mark]:bg-surface [&_.note-mark]:px-1 [&_.note-mark]:text-base [&_.note-mark]:font-bold [&_.note-mark]:text-accent [&_.note-line]:text-base [&_.note-line]:text-muted";
+  "tiptap-page rounded-xl border-2 border-line bg-paper p-4 text-lg leading-8 text-ink [&_a]:font-bold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4 [&_h2]:mt-5 [&_h2]:border-l-[6px] [&_h2]:border-accent [&_h2]:pl-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-snug [&_h3]:mt-4 [&_h3]:text-xl [&_h3]:font-bold [&_hr]:my-6 [&_hr]:border-line [&_img]:my-4 [&_img]:rounded-xl [&_p]:my-3 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_.ProseMirror-selectednode]:outline-4 [&_.ProseMirror-selectednode]:outline-accent [&_.note-mark]:rounded [&_.note-mark]:bg-surface [&_.note-mark]:px-1 [&_.note-mark]:text-base [&_.note-mark]:font-bold [&_.note-mark]:text-accent [&_.note-line]:text-base [&_.note-line]:text-muted [&_.note-problem]:after:ml-1 [&_.note-problem]:after:font-normal [&_.note-problem]:after:text-danger [&_.note-problem]:after:content-[attr(data-label)]";
 const BUTTON = "tap-target inline-flex items-center gap-1 rounded-full border-2 border-line bg-paper px-4 text-base font-bold disabled:opacity-40";
 const ACTIVE = "border-ink bg-ink text-paper";
 
@@ -191,26 +192,38 @@ function pageCards(look: PageLook, hiddenLabel: string) {
   });
 }
 
-/** The marks of a footnote and the lines that hold the notes, set apart. They stay plain text, so the saved format is unchanged. */
-const footnotes = Extension.create({
-  name: "footnotes",
-  addProseMirrorPlugins() {
-    return [
-      new Plugin({
-        props: {
-          decorations: ({ doc }) => {
-            const shown: Decoration[] = [];
-            doc.descendants((node, at) => {
-              if (node.isText) for (const m of node.text!.matchAll(/\[\^[\w-]+\]/g)) shown.push(Decoration.inline(at + m.index, at + m.index + m[0].length, { class: "note-mark" }));
-              else if (node.type.name === "paragraph" && /^\[\^[\w-]+\]:/.test(node.textContent)) shown.push(Decoration.node(at, at + node.nodeSize, { class: "note-line" }));
-            });
-            return DecorationSet.create(doc, shown);
+/**
+ * Footnotes stay plain text, so the saved format is unchanged: the marks and note lines are only set apart here. Every change
+ * puts them back in the page's order, and a mark with no note or a note nobody mentions says so, as the page would not show it.
+ */
+function footnotes(noMark: string, noNote: string) {
+  return Extension.create({
+    name: "footnotes",
+    addProseMirrorPlugins() {
+      return [
+        new Plugin({
+          // Not while a Japanese word is being composed: moving its line would cut the word off.
+          appendTransaction: (changes, _old, state) => (changes.some((c) => c.docChanged) && !changes.some((c) => c.getMeta("composition") !== undefined) ? renumberNotes(state) : null),
+          props: {
+            decorations: ({ doc }) => {
+              const spots = noteSpots(doc);
+              const { missing, unused } = noteProblems(spots);
+              const shown: Decoration[] = [];
+              for (const s of spots) {
+                const problem = s.label ? (unused.has(s.id) ? noMark : null) : !s.inNote && missing.has(s.id) ? noNote : null;
+                shown.push(Decoration.inline(s.from, s.to, { class: problem ? "note-mark note-problem" : "note-mark", ...(problem ? { "data-label": problem } : {}) }));
+              }
+              doc.forEach((node, at) => {
+                if (node.type.name === "paragraph" && /^\[\^[\w-]+\]:/.test(node.textContent)) shown.push(Decoration.node(at, at + node.nodeSize, { class: "note-line" }));
+              });
+              return DecorationSet.create(doc, shown);
+            },
           },
-        },
-      }),
-    ];
-  },
-});
+        }),
+      ];
+    },
+  });
+}
 
 /** Where a new block goes: over the empty line the cursor is on, else after the block it is in. Inside a card it stays inside, except another card, which goes after it. */
 function place(editor: Editor, block: JSONContent, caret: ((start: number) => void) | null) {
@@ -243,7 +256,7 @@ export function BlockEditor({ id, lang, label, value, onChange, look, notes = fa
       }),
       ...(short ? [] : [Photo.configure({ allowBase64: false })]),
       ...(look ? [pageCards(look, t`ここはページに表示されません`)] : []),
-      ...(notes ? [footnotes] : []),
+      ...(notes ? [footnotes(t`本文で使われていません`, t`注の文がありません`)] : []),
       ...(cards ? [CardTitle, Card, cardMarks(t`題を入力`)] : []),
     ],
     content: bodyToDoc(value, mode),
@@ -370,14 +383,19 @@ function Blocks({ editor, id, closingNote, notes, short, cards }: { editor: Edit
     else chain.extendMarkRange("link").setLink({ href: address }).run();
     setPanel(null);
   };
-  // The mark at the caret, its note on a new line at the end, and the caret there to write it.
+  // The mark at the caret, its note on a new line at the end, and the caret there to write it. One step, so the numbers are
+  // put in order with both in place.
   const addNote = () => {
-    const n = nextNote(docToBody(editor.getJSON()));
-    editor.chain().focus().setTextSelection(editor.state.selection.to).insertContent(`[^${n}]`).run();
+    const mark = `[^${nextNote(docToBody(editor.getJSON()))}]`;
     editor
       .chain()
-      .insertContentAt(editor.state.doc.content.size, { type: "paragraph", content: [{ type: "text", text: `[^${n}]: ` }] })
-      .focus("end")
+      .focus()
+      .command(({ tr }) => {
+        tr.insertText(mark, tr.selection.to);
+        tr.insert(tr.doc.content.size, editor.schema.nodes.paragraph!.create(null, editor.schema.text(`${mark}: `)));
+        tr.setSelection(TextSelection.atEnd(tr.doc));
+        return true;
+      })
       .run();
   };
   const addPhoto = (src: string) => {

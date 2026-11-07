@@ -5109,6 +5109,14 @@ msgid "たたむ質問"
 msgstr "たたむ質問"
 
 #: src/components/admin/BlockEditor.tsx
+msgid "本文で使われていません"
+msgstr "本文で使われていません"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "注の文がありません"
+msgstr "注の文がありません"
+
+#: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "写真を消す"
 

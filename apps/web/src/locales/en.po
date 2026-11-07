@@ -5135,6 +5135,14 @@ msgid "たたむ質問"
 msgstr "Folding question"
 
 #: src/components/admin/BlockEditor.tsx
+msgid "本文で使われていません"
+msgstr "Not used in the text"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "注の文がありません"
+msgstr "This note has no text"
+
+#: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "Remove photo"
 
