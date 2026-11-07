@@ -5144,32 +5144,17 @@ msgstr "Needs work ({needsWorkCount})"
 msgid "現在の場所"
 msgstr "You are here"
 
-msgid "ルートとラリー"
-msgstr "Routes and rallies"
+msgid "バナー（管理）"
+msgstr "Banners (admin)"
 
-msgid "サイトの内容"
-msgstr "Site content"
+msgid "新しいバナー"
+msgstr "New banner"
 
-msgid "コミュニティ"
-msgstr "Community"
+msgid "バナーを読み込めませんでした。しばらくしてから、ページを開き直してください。"
+msgstr "The banners could not be loaded. Please try opening the page again in a while."
 
-msgid "運営"
-msgstr "Running the site"
-
-msgid "ルート一覧にもどる"
-msgstr "Back to the route list"
-
-msgid "一覧へ戻る"
-msgstr "Back to the list"
-
-msgid "ページへ戻る"
-msgstr "Back to pages"
-
-msgid "ブログへ戻る"
-msgstr "Back to the blog"
-
-msgid "書き手を管理する"
-msgstr "Manage writers"
+msgid "バナーがまだありません。「新しいバナー」から作ってください。"
+msgstr "There are no banners yet. Add one with New banner."
 
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
