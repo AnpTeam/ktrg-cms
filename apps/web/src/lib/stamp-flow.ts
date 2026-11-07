@@ -10,7 +10,7 @@
 //   409 { ok: false, error: "too_far" }              outside the spot's check-in radius (the distance is never sent)
 //   422 { ok: false, error: "gps_accuracy_poor" }    the phone's own error radius is over 100 m
 //   409 { ok: false, error: "spot_closed" }
-//   409 { ok: false, error: "stamp_revoked" }        an admin revoked the stamp held here (shown as a plain failure for now)
+//   409 { ok: false, error: "stamp_revoked" }        an admin revoked the stamp held here
 //   401 unauthenticated, 429 rate limited, 404 no such spot (a draft, not a stamp place, or no checked position)
 // GET /api/v1/stamps answers { ok: true, stamps: [{ spotId, createdAt }] }: the caller's own, revoked ones left out.
 
@@ -34,6 +34,8 @@ export type StampFailure =
   | "not_ready"
   | "login_needed"
   | "guest_full"
+  | "stamp_revoked"
+  | "account_restricted"
   | "too_many_requests"
   | "network"
   | "failed";
@@ -88,6 +90,10 @@ export function parseStampResponse(status: number, body: unknown): StampResult {
       return { ok: false, failure: "guest_full" };
     case "stale_scan":
       return { ok: false, failure: "stale_scan" };
+    case "stamp_revoked":
+      return { ok: false, failure: "stamp_revoked" };
+    case "account_restricted":
+      return { ok: false, failure: "account_restricted" };
     case "bad_time":
       return { ok: false, failure: "bad_time" };
     case "rally_not_active":

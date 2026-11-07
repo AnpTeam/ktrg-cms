@@ -809,6 +809,8 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       expect(await tx.select().from(rallyCompletions).where(eq(rallyCompletions.userId, me!.id))).toHaveLength(0);
       expect(await store.setRevoked(admin!.id, queued!.id, false)).toBe("ok");
       expect(await store.listMine(me!.id)).toHaveLength(2);
+      // Restored, the finishes it was part of come back.
+      expect(await tx.select().from(courseCompletions).where(eq(courseCompletions.userId, me!.id))).toHaveLength(1);
       expect(await store.setRevoked(admin!.id, randomUUID(), true)).toBe("not_found");
       // Revoked, a stamp blocks a new one and says so; revoking twice keeps the first time and writes one audit row.
       expect(await store.setRevoked(admin!.id, queued!.id, true)).toBe("ok");

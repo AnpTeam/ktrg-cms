@@ -102,16 +102,15 @@ describe("createPositionWatcher", () => {
     expect(s.watching.size).toBe(1);
   });
 
-  test("permission denied is reported once and stops watching for good", () => {
+  test("permission denied stops watching, and coming back to the page tries again", () => {
     const s = setup();
     s.watcher.start();
     s.error(1);
     expect(s.problems).toEqual(["denied"]);
     expect(s.watching.size).toBe(0);
-    expect(s.hasListener()).toBe(false);
     s.hide(true);
     s.hide(false);
-    expect(s.watching.size).toBe(0); // a returning page does not ask again
+    expect(s.watching.size).toBe(1); // the visitor may have allowed it in the settings
   });
 
   test("unavailable and timeout are reported but the watch keeps going", () => {

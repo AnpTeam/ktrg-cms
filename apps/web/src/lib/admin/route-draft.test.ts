@@ -483,4 +483,14 @@ describe("what is on the screen when a save finishes", () => {
     // Nothing changed meanwhile: exactly what the server holds.
     expect(keepLaterEdits(fromServer, atStart, atStart)).toEqual(fromServer);
   });
+  test("undo after one waypoint was saved keeps the id the server gave it, so it is not made twice", () => {
+    let s = initialState({ ...emptyDraft(), id: "r", updatedAt: "r1" });
+    s = draftReducer(s, { type: "addPlace", key: "a", lat: 34.4, lng: 135.5 });
+    s = draftReducer(s, { type: "movePlace", key: "a", lat: 34.41, lng: 135.51 });
+    s = draftReducer(s, { type: "savedPlace", key: "a", place: { ...s.present.places[0]!, id: "spot-a", updatedAt: "t2" } });
+    s = draftReducer(s, { type: "undo" });
+    expect(s.present.places[0]).toMatchObject({ id: "spot-a", updatedAt: "t2", lat: 34.4, lng: 135.5 });
+    s = draftReducer(s, { type: "redo" });
+    expect(s.present.places[0]).toMatchObject({ id: "spot-a", lat: 34.41 });
+  });
 });

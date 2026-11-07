@@ -2,7 +2,7 @@
 //
 // Rules (CLAUDE.md, Map, GPS and stamp rules): watchPosition only while navigation is on and the page is visible;
 // at most one fix per few seconds; always clearWatch (also when the page is hidden, or on stop); permission denied
-// stops watching. The accuracy filter is the state step's job (session.ts), not this file's.
+// stops watching until the visitor comes back to the page (they may have allowed it in the settings). The accuracy filter is the state step's job (session.ts), not this file's.
 
 import { geoFailureFromCode, type GeoFailure } from "../stamp-flow";
 
@@ -66,12 +66,8 @@ export function createPositionWatcher(opts: WatcherOptions) {
       (err) => {
         const problem = geoFailureFromCode(err.code);
         opts.onProblem(problem);
-        if (problem === "denied") {
-          // Asking again would only repeat the refusal.
-          endWatch();
-          running = false;
-          opts.doc.removeEventListener("visibilitychange", onVisibility);
-        }
+        // Asking again now would only repeat the refusal. Browsers do not prompt again, so the try on return is silent.
+        if (problem === "denied") endWatch();
       },
       { enableHighAccuracy: true, maximumAge: MAX_FIX_AGE_MS, timeout: WATCH_TIMEOUT_MS },
     );

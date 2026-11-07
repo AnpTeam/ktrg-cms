@@ -46,7 +46,8 @@ export interface ControllerDeps {
 }
 
 export function createNavigationController(deps: ControllerDeps) {
-  const { model } = deps;
+  // The stops' statuses change while walking (setStatuses).
+  let model = deps.model;
   let alive = false;
   let stamped: ReadonlySet<string> = new Set();
   let stampsKnown = false;
@@ -99,7 +100,7 @@ export function createNavigationController(deps: ControllerDeps) {
 
   const apply = (fix: NavReading) => {
     // Too poor to use: only counted. It is not the visitor's position, so nothing below may keep it.
-    if (!(fix.accuracyM <= MAX_ACCURACY_M)) return emit({ state: applyFix(model, snap.state, fix, finished(), path, forced) });
+    if (!(fix.accuracyM <= MAX_ACCURACY_M)) return emit({ problem: null, state: applyFix(model, snap.state, fix, finished(), path, forced) });
     // The phone's heading when it has one; otherwise read it from the movement since the last one.
     let reading = fix;
     if (fix.headingDeg === undefined) {
@@ -195,6 +196,13 @@ export function createNavigationController(deps: ControllerDeps) {
       if (id === null) return;
       forced = id;
       emit({ passedId: null, forcedId: id, ...(last ? { state: applyFix(model, snap.state, last, finished(), path, forced) } : {}) });
+    },
+    /** The stops' latest statuses: a stop closed during the walk is no longer headed for, one reopened is again. */
+    setStatuses(statuses: ReadonlyMap<string, "open" | "caution" | "closed">) {
+      if (!model.stops.some((s) => statuses.has(s.id) && statuses.get(s.id) !== s.status)) return;
+      model = { ...model, stops: model.stops.map((s) => ({ ...s, status: statuses.get(s.id) ?? s.status })) };
+      if (forced !== null && statuses.get(forced) === "closed") forced = null;
+      emit({ forcedId: forced, ...(last ? { state: applyFix(model, snap.state, last, finished(), path, forced) } : {}) });
     },
     /** After a successful stamp: move on at once, without waiting for the server's list. */
     markStamped(id: string) {

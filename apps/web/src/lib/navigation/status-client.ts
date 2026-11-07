@@ -1,0 +1,22 @@
+type Status = "open" | "caution" | "closed";
+
+/** The statuses in the answer of GET /spots/status; anything else in it is left out. */
+export function parseStatuses(body: unknown): Map<string, Status> | null {
+  const spots = (body as { ok?: unknown; spots?: unknown } | null)?.spots;
+  if (!Array.isArray(spots)) return null;
+  const out = new Map<string, Status>();
+  for (const s of spots as { id?: unknown; status?: unknown }[]) {
+    if (typeof s?.id === "string" && (s.status === "open" || s.status === "caution" || s.status === "closed")) out.set(s.id, s.status);
+  }
+  return out;
+}
+
+/** Every published place's status, or null with no signal: then the last known ones stay. Never throws. */
+export async function fetchStatuses(): Promise<Map<string, Status> | null> {
+  try {
+    const res = await fetch("/api/v1/spots/status", { credentials: "same-origin" });
+    return res.ok ? parseStatuses(await res.json()) : null;
+  } catch {
+    return null;
+  }
+}

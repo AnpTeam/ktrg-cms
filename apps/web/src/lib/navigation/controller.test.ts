@@ -13,10 +13,12 @@ const spots = [spot("a", 135.003, { sortOrder: 1 }), spot("b", 135.006, { sortOr
 
 function setup(stampsOnServer: Set<string> | null = new Set(), fetchPath?: Parameters<typeof createNavigationController>[0]["fetchPath"], waiting: string[] = []) {
   let deliver: ((p: { coords: { latitude: number; longitude: number; accuracy: number } }) => void) | null = null;
+  let refuse: ((e: { code: number }) => void) | null = null;
   const watching = new Set<number>();
   const geo: GeoApi = {
-    watchPosition(ok) {
+    watchPosition(ok, fail) {
       deliver = ok;
+      refuse = fail;
       watching.add(1);
       return 1;
     },
@@ -37,6 +39,7 @@ function setup(stampsOnServer: Set<string> | null = new Set(), fetchPath?: Param
   });
   return {
     c, seen, watching,
+    fail: (code: number) => refuse!({ code }),
     walk: (lng: number, accuracy = 10) => {
       t += 5000; // past the throttle every time
       deliver!({ coords: { latitude: LAT, longitude: lng, accuracy } });
@@ -120,6 +123,28 @@ describe("a navigation session", () => {
     s.walk(135.009, 300);
     expect(s.c.snapshot.position).toEqual(position);
     expect(s.c.snapshot.lastFixAtMs).toBe(lastFixAtMs);
+  });
+
+  test("a poor fix still clears an old problem: the phone did answer", async () => {
+    const s = setup();
+    await s.c.start();
+    s.fail(3);
+    expect(s.c.snapshot.problem).toBe("timeout");
+    s.walk(135.001, 300);
+    expect(s.c.snapshot.problem).toBeNull();
+  });
+
+  test("a stop closed during the walk is left for the next one, and a stop chosen by hand with it", async () => {
+    const s = setup();
+    await s.c.start();
+    s.walk(135.003);
+    expect(s.c.snapshot.state.targetId).toBe("a");
+    s.c.setTarget("a");
+    s.c.setStatuses(new Map([["a", "closed"]]));
+    expect(s.c.snapshot.state.targetId).toBe("b");
+    expect(s.c.snapshot.forcedId).toBeNull();
+    s.c.setStatuses(new Map([["a", "open"]]));
+    expect(s.c.snapshot.state.targetId).toBe("a");
   });
 
   test("a stamp waiting on the phone is not headed for again, even when the server cannot be reached", async () => {
