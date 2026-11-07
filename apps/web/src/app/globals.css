@@ -288,6 +288,23 @@ rt {
   position: absolute;
   inset: -6px -6px -2px;
 }
+/* Stops on one spot share a pin: how many, on the corner the number chip leaves free. */
+.map-marker[data-count]::after {
+  content: attr(data-count);
+  position: absolute;
+  top: -0.4rem;
+  left: -0.4rem;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  border: 2px solid var(--color-paper);
+  border-radius: 9999px;
+  background: var(--pin-ink);
+  color: var(--pin-on);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.1rem;
+  text-align: center;
+}
 .map-marker .map-pin-svg {
   display: block;
   width: 100%;

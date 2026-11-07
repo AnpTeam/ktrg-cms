@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { courseDotState, COURSE_DOT_PX, areaCollection, areaContains, estimateGroupBox, estimateLabel, framePoints, groupLabelLines, MERGE_PX, namesThatFit, nextSnap, rectangleRing, revealedRouteId, SAME_PLACE_M, sheetHeightPx, snapAfterDrag, spreadLabels, spreadMeters, stopMergePx, type LabelBox, type MapScreenRoute } from "./map-screen";
+import { samePlaceOnly, courseDotState, COURSE_DOT_PX, areaCollection, areaContains, estimateGroupBox, estimateLabel, framePoints, groupLabelLines, MERGE_PX, namesThatFit, nextSnap, rectangleRing, revealedRouteId, SAME_PLACE_M, sheetHeightPx, snapAfterDrag, spreadLabels, spreadMeters, stopMergePx, type LabelBox, type MapScreenRoute } from "./map-screen";
 import { distanceMeters } from "./places";
 
 const route = (id: string, order: number, over: Partial<MapScreenRoute> = {}): MapScreenRoute => ({
@@ -206,6 +206,13 @@ describe("the bottom sheet", () => {
 
   test("Japanese names are estimated wider than Latin ones of the same length", () => {
     expect(estimateLabel("葛城山").w).toBeGreaterThan(estimateLabel("abc").w);
+  });
+
+  test("with merging off, only stops on one spot stay together", () => {
+    const at: Record<string, { lat: number; lng: number }> = { a: { lat: 34.3, lng: 135.1 }, b: { lat: 34.3001, lng: 135.1 }, c: { lat: 34.31, lng: 135.1 }, d: { lat: 34.32, lng: 135.1 } };
+    const positionOf = (id: string) => at[id]!;
+    expect(samePlaceOnly([["a", "b"]], positionOf)).toEqual([["a", "b"]]); // about 11 m apart
+    expect(samePlaceOnly([["a", "c"], ["d"]], positionOf)).toEqual([["a"], ["c"], ["d"]]); // about 1 km: they just overlap
   });
 
   test("group labels are pushed apart and kept inside the visible area", () => {
