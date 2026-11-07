@@ -1087,11 +1087,17 @@ body:has([data-sample-notice]) .cover-credit > details {
   --rail: 16rem;
 }
 :root:has([data-rail="mini"]) {
-  --rail: 5rem;
+  --rail: calc(5rem + env(safe-area-inset-left) + env(safe-area-inset-right));
 }
+/* A phone on its side: the Dynamic Island sits at one end, so the rail and the page keep clear of both (the insets are 0 elsewhere). */
 @media (min-width: 1024px), (min-width: 768px) and (max-height: 600px) {
+  [data-rail="mini"] {
+    width: calc(5rem + env(safe-area-inset-left));
+    padding-left: env(safe-area-inset-left);
+  }
   #main {
     overflow-x: clip;
+    padding-right: env(safe-area-inset-right);
   }
 }
 
