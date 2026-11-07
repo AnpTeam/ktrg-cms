@@ -60,9 +60,17 @@ export function RouteStats({ route, compact = false, icons = false, inline = fal
   if (inline) {
     return (
       <dl className="contents">
-        {items.map(({ label, value }) => (
-          <div key={label} className={`gap-1 ${label === t`距離` || label === t`時間` ? "flex" : "hidden @2xl:flex"}`}>
-            <dt className="font-bold text-accent">{label}</dt>
+        {items.map(({ label, value, icon }) => (
+          <div key={label} className={`items-center gap-1 ${label === t`距離` || label === t`時間` ? "flex" : "hidden @2xl:flex"}`}>
+            {/* English words are too long for this row: the icon shows, and the word stays for screen readers and on hover. */}
+            {i18n.locale === "ja" ? (
+              <dt className="font-bold text-accent">{label}</dt>
+            ) : (
+              <dt title={label} className="shrink-0 text-brand [&_svg]:size-5">
+                {icon}
+                <span className="sr-only">{label}</span>
+              </dt>
+            )}
             <dd className="tabular-nums">{value}</dd>
           </div>
         ))}
