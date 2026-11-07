@@ -3,7 +3,6 @@
 import { useState, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { BlockEditorLoader } from "./BlockEditorLoader";
-import { RichTextToolbar } from "./RichTextToolbar";
 import { ADDED_LOCALES, LOCALE_NAMES, MAX_LANGUAGES, moveLanguage, nextLanguage, startLanguages, withTranslation, type AddedLocale, type Translations } from "@/lib/admin/content-locales";
 import { PlusIcon } from "@/components/icons";
 
@@ -63,8 +62,7 @@ export function MultilingualField({
   onJa,
   onEn,
   onTranslations,
-  multiline = false,
-  blocks = false,
+  long,
   notes = false,
   required = false,
   invalid = false,
@@ -79,9 +77,8 @@ export function MultilingualField({
   onJa: (v: string) => void;
   onEn: (v: string) => void;
   onTranslations: (next: Translations) => void;
-  multiline?: boolean;
-  /** A page's text: the block editor instead of a plain box. */
-  blocks?: boolean;
+  /** A long text, by how the page draws it: all the blocks, a short editor (RichText), or a plain box (shown as typed). */
+  long?: "blocks" | "short" | "plain";
   /** Offer footnotes in the block editor. */
   notes?: boolean;
   required?: boolean;
@@ -89,6 +86,7 @@ export function MultilingualField({
 }) {
   const { t } = useLingui();
   const [shown, setShown] = useState<AddedLocale[]>(() => startLanguages(en, translations, field));
+  const [tab, setTab] = useState<"ja" | AddedLocale>("ja");
   const next = nextLanguage(shown);
   const valueOf = (l: AddedLocale) => (l === "en" ? en : (translations?.[l]?.[field] ?? ""));
 
@@ -100,79 +98,136 @@ export function MultilingualField({
     if (after.translations !== before.translations) onTranslations(after.translations);
   }
   const box = (boxId: string, lang: string, value: string, onChange: (v: string) => void, ariaLabel?: string) =>
-    blocks ? (
-      <BlockEditorLoader id={boxId} lang={lang} label={ariaLabel ?? label} value={value} onChange={onChange} notes={notes} />
-    ) : multiline ? (
-      <>
-        <RichTextToolbar targetId={boxId} value={value} onChange={onChange} />
-        <TextArea id={boxId} lang={lang} value={value} onChange={onChange} ariaLabel={ariaLabel} />
-      </>
+    long === "blocks" || long === "short" ? (
+      <BlockEditorLoader id={boxId} lang={lang} label={ariaLabel ?? label} value={value} onChange={onChange} notes={notes || long === "short"} short={long === "short"} />
+    ) : long === "plain" ? (
+      <TextArea id={boxId} lang={lang} value={value} onChange={onChange} ariaLabel={ariaLabel} />
     ) : (
       <TextInput id={boxId} lang={lang} value={value} onChange={onChange} maxLength={200} invalid={lang === "ja" && invalid} ariaLabel={ariaLabel} />
     );
+  const boxFor = (l: AddedLocale) => box(`${id}-${l}`, l, valueOf(l), (v) => (l === "en" ? onEn(v) : onTranslations(withTranslation(translations, l, field, v))), `${label}（${LOCALE_NAMES[l]}）`);
+  const picker = (l: AddedLocale) => (
+    <select
+      aria-label={t`${label}の言語`}
+      value={l}
+      onChange={(e) => {
+        const to = e.target.value as AddedLocale;
+        move(l, to);
+        setShown(shown.map((x) => (x === l ? to : x)));
+        setTab(to);
+      }}
+      className={`${inputClass} basis-full sm:w-40 sm:basis-auto`}
+    >
+      {ADDED_LOCALES.filter((o) => o === l || !shown.includes(o)).map((o) => (
+        <option key={o} value={o}>
+          {LOCALE_NAMES[o]}
+        </option>
+      ))}
+    </select>
+  );
+  const remove = (l: AddedLocale) => (
+    <button
+      type="button"
+      onClick={() => {
+        move(l, null);
+        setShown(shown.filter((x) => x !== l));
+        setTab("ja");
+      }}
+      aria-label={t`${LOCALE_NAMES[l]}を削除`}
+      className="tap-target shrink-0 rounded-full border-2 border-line px-4 text-base font-bold"
+    >
+      {t`削除`}
+    </button>
+  );
+  const add = (
+    <button
+      type="button"
+      disabled={next === null}
+      onClick={() => {
+        if (!next) return;
+        setShown([...shown, next]);
+        setTab(next);
+      }}
+      className="tap-target shrink-0 rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-50"
+    >
+      <span className="inline-flex items-center gap-1">
+        <PlusIcon size={20} />
+        {t`言語を追加`}
+      </span>
+    </button>
+  );
+  const title = (
+    <legend className="text-base font-bold">
+      {label}
+      {required ? <span className="ml-2 rounded-md bg-surface px-2 py-0.5 text-sm font-bold text-accent">{t`必須`}</span> : null}
+    </legend>
+  );
+  const note = (
+    <p className="text-sm text-muted">
+      {shown.includes("en") ? null : `${t`英語は未入力です（日本語を表示します）`} `}
+      {t`言語は${MAX_LANGUAGES}つまで（日本語を含む）。英語以外は、まだ訪れる人には表示されません。`}
+    </p>
+  );
+
+  // A long text: one box at a time, a tab for each language. The dot marks a language with nothing written yet.
+  if (long) {
+    const open = tab !== "ja" && shown.includes(tab) ? tab : "ja";
+    return (
+      <fieldset className="flex flex-col gap-3">
+        {title}
+        <div role="group" aria-label={label} className="mt-2 flex flex-wrap items-center gap-2">
+          {(["ja", ...shown] as const).map((l) => {
+            const empty = (l === "ja" ? ja : valueOf(l)).trim() === "";
+            return (
+              <button
+                key={l}
+                type="button"
+                aria-pressed={l === open}
+                aria-label={empty ? `${LOCALE_NAMES[l]}（${t`未入力`}）` : undefined}
+                onClick={() => setTab(l)}
+                className={`tap-target inline-flex items-center gap-2 rounded-full border-2 px-4 text-base font-bold ${l === open ? "border-ink bg-ink text-paper" : "border-line"}`}
+              >
+                {LOCALE_NAMES[l]}
+                {empty ? <span aria-hidden="true" className="size-2.5 rounded-full bg-caution" /> : null}
+              </button>
+            );
+          })}
+          {add}
+        </div>
+        {open === "ja" ? null : (
+          <div className="flex flex-wrap items-center gap-2">
+            {picker(open)}
+            {remove(open)}
+          </div>
+        )}
+        {/* key: each language is its own box, so one editor never shows another's text or undo. */}
+        <div key={open} className="min-w-0">
+          {open === "ja" ? box(`${id}-ja`, "ja", ja, onJa) : boxFor(open)}
+        </div>
+        {note}
+      </fieldset>
+    );
+  }
 
   return (
     <fieldset className="flex flex-col gap-3">
-      <legend className="text-base font-bold">
-        {label}
-        {required ? <span className="ml-2 rounded-md bg-surface px-2 py-0.5 text-sm font-bold text-accent">{t`必須`}</span> : null}
-      </legend>
-      <div className={`mt-2 flex flex-wrap items-start gap-2 ${multiline ? "" : "sm:flex-nowrap"}`}>
+      {title}
+      <div className="mt-2 flex flex-wrap items-start gap-2 sm:flex-nowrap">
         {/* Japanese is always there, so it is a fixed label in the place the other rows have their picker. */}
         <label htmlFor={`${id}-ja`} className={`${inputClass} flex basis-full items-center sm:w-40 sm:basis-auto`}>
           {LOCALE_NAMES.ja}
         </label>
-        <div className={`min-w-0 flex-1 basis-full ${multiline ? "order-last" : "sm:basis-auto"}`}>{box(`${id}-ja`, "ja", ja, onJa)}</div>
-          <button
-            type="button"
-            disabled={next === null}
-            onClick={() => next && setShown([...shown, next])}
-            className="tap-target shrink-0 rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-50"
-          >
-            <span className="inline-flex items-center gap-1">
-              <PlusIcon size={20} />
-              {t`言語を追加`}
-            </span>
-          </button>
+        <div className="min-w-0 flex-1 basis-full sm:basis-auto">{box(`${id}-ja`, "ja", ja, onJa)}</div>
+        {add}
       </div>
       {shown.map((l) => (
-        <div key={l} className={`flex flex-wrap items-start gap-2 ${multiline ? "" : "sm:flex-nowrap"}`}>
-          <select
-            aria-label={t`${label}の言語`}
-            value={l}
-            onChange={(e) => {
-              const to = e.target.value as AddedLocale;
-              move(l, to);
-              setShown(shown.map((x) => (x === l ? to : x)));
-            }}
-            className={`${inputClass} basis-full sm:w-40 sm:basis-auto`}
-          >
-            {ADDED_LOCALES.filter((o) => o === l || !shown.includes(o)).map((o) => (
-              <option key={o} value={o}>
-                {LOCALE_NAMES[o]}
-              </option>
-            ))}
-          </select>
-          <div className={`min-w-0 flex-1 basis-full ${multiline ? "order-last" : "sm:basis-auto"}`}>
-            {box(`${id}-${l}`, l, valueOf(l), (v) => (l === "en" ? onEn(v) : onTranslations(withTranslation(translations, l, field, v))), `${label}（${LOCALE_NAMES[l]}）`)}
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              move(l, null);
-              setShown(shown.filter((x) => x !== l));
-            }}
-            aria-label={t`${LOCALE_NAMES[l]}を削除`}
-            className="tap-target shrink-0 rounded-full border-2 border-line px-4 text-base font-bold"
-          >
-            {t`削除`}
-          </button>
+        <div key={l} className="flex flex-wrap items-start gap-2 sm:flex-nowrap">
+          {picker(l)}
+          <div className="min-w-0 flex-1 basis-full sm:basis-auto">{boxFor(l)}</div>
+          {remove(l)}
         </div>
       ))}
-      <p className="text-sm text-muted">
-        {shown.includes("en") ? null : `${t`英語は未入力です（日本語を表示します）`} `}
-        {t`言語は${MAX_LANGUAGES}つまで（日本語を含む）。英語以外は、まだ訪れる人には表示されません。`}
-      </p>
+      {note}
     </fieldset>
   );
 }

@@ -105,10 +105,9 @@ export function PlacePanel(p: PlacePanelProps) {
         <div className="flex flex-col gap-6 border-t border-line p-4">
           <Group title={t`文章`} first>
           <MultilingualField id={`${id}-name`} label={t`経由地の名前`} field="name" ja={place.nameJa} en={place.nameEn} translations={place.translations} onJa={(v) => p.onChange({ nameJa: v })} onEn={(v) => p.onChange({ nameEn: v })} onTranslations={(v) => p.onChange({ translations: v })} required invalid={p.invalidName} />
-          <MultilingualField id={`${id}-desc`} label={t`説明`} field="description" ja={place.descriptionJa} en={place.descriptionEn} translations={place.translations} onJa={(v) => p.onChange({ descriptionJa: v })} onEn={(v) => p.onChange({ descriptionEn: v })} onTranslations={(v) => p.onChange({ translations: v })} multiline />
-          <MultilingualField id={`${id}-history`} label={t`歴史・由来`} field="history" ja={place.historyJa} en={place.historyEn} translations={place.translations} onJa={(v) => p.onChange({ historyJa: v })} onEn={(v) => p.onChange({ historyEn: v })} onTranslations={(v) => p.onChange({ translations: v })} multiline />
-          <p className="-mt-3 text-base text-muted">{t`リンクは [表示する文字](https://…) と書きます。脚注は、本文に [^1] と書き、別の行に [^1]: 注の内容 と書きます。`}</p>
-          <MultilingualField id={`${id}-source`} label={t`出典`} field="source" ja={place.sourceJa} en={place.sourceEn} translations={place.translations} onJa={(v) => p.onChange({ sourceJa: v })} onEn={(v) => p.onChange({ sourceEn: v })} onTranslations={(v) => p.onChange({ translations: v })} multiline />
+          <MultilingualField id={`${id}-desc`} label={t`説明`} field="description" ja={place.descriptionJa} en={place.descriptionEn} translations={place.translations} onJa={(v) => p.onChange({ descriptionJa: v })} onEn={(v) => p.onChange({ descriptionEn: v })} onTranslations={(v) => p.onChange({ translations: v })} long="short" />
+          <MultilingualField id={`${id}-history`} label={t`歴史・由来`} field="history" ja={place.historyJa} en={place.historyEn} translations={place.translations} onJa={(v) => p.onChange({ historyJa: v })} onEn={(v) => p.onChange({ historyEn: v })} onTranslations={(v) => p.onChange({ translations: v })} long="short" />
+          <MultilingualField id={`${id}-source`} label={t`出典`} field="source" ja={place.sourceJa} en={place.sourceEn} translations={place.translations} onJa={(v) => p.onChange({ sourceJa: v })} onEn={(v) => p.onChange({ sourceEn: v })} onTranslations={(v) => p.onChange({ translations: v })} long="short" />
 
           </Group>
 
