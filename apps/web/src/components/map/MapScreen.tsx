@@ -16,6 +16,7 @@ import { StampFace } from "@/components/StampFace";
 import { StatusWord } from "@/components/StatusWord";
 import { formatUpdated } from "@/lib/format";
 import { LOW_QUERY, WIDE_QUERY, watchQuery } from "@/lib/screen";
+import { mapMemory, resumeFrom } from "@/lib/map-memory";
 import { sheetHeightPx, type MapScreenRoute, type MapScreenStop, type SheetSnap } from "@/lib/map-screen";
 import type { MapSettings } from "@/lib/map-settings";
 import type { StampMock } from "@/lib/stamp-flow";
@@ -72,13 +73,20 @@ export function MapScreen({
   const wrap = useRef<HTMLDivElement>(null);
   const nav = useNavigation();
   const { toastPx: navToastPx, bannerPx: navBannerPx, setSheetUp } = nav;
+  // Coming back from a course's page: the same course, stop, sheet and view as when the visitor left.
+  const [returning] = useState(() =>
+    resumeFrom(mapMemory, { routeIds: routes.map((r) => r.id), wantedRouteId: initialRouteId, wantedStopId: initialStopId, wantedPlaceId: initialPlaceId, navigating: nav.session !== null }),
+  );
   // Coming back to the map during a navigation opens its course again.
-  const [routeId, setRouteId] = useState<string | null>(initialRouteId ?? nav.session?.routeId ?? null);
-  const [stopId, setStopId] = useState<string | null>(initialRouteId ? initialStopId : null);
+  const [routeId, setRouteId] = useState<string | null>(returning ? returning.routeId : (initialRouteId ?? nav.session?.routeId ?? null));
+  const [stopId, setStopId] = useState<string | null>(returning ? returning.stopId : initialRouteId ? initialStopId : null);
   // The stop was opened from the sutra mound pins, not from its course: it is then shown without the course's numbering.
-  const [viaMounds, setViaMounds] = useState(false);
+  const [viaMounds, setViaMounds] = useState(returning?.viaMounds ?? false);
   // Coming back to the map during a navigation: the navigation has the bottom of the screen; the sheet waits below.
-  const [snap, setSnap] = useState<SheetSnap>(initialRouteId ? "half" : nav.session ? "hidden" : "peek");
+  const [snap, setSnap] = useState<SheetSnap>(returning?.snap ?? (initialRouteId ? "half" : nav.session ? "hidden" : "peek"));
+  useEffect(() => {
+    mapMemory.place = { routeId, stopId, viaMounds, snap };
+  }, [routeId, stopId, viaMounds, snap]);
   const [available, setAvailable] = useState(520);
   // The room under the sheet taken by the tab bar (none on a wide screen, where it is a rail).
   const [tabPx, setTabPx] = useState(88);
@@ -290,6 +298,7 @@ export function MapScreen({
         onSelectStop={chooseStop}
         onSelectMound={(routeId, id) => chooseStop(routeId, id, true)}
         focusPlaceId={initialPlaceId}
+        startCamera={returning?.camera ?? null}
         coveredPx={wide ? 0 : sheetHeightPx(snap, available) + bottomPx}
         coveredLeftPx={panelPx}
         controlsTopPx={wide ? 0 : navBannerPx}
@@ -345,7 +354,7 @@ function RouteChips({ routes, onChoose, selectedId, column = false }: { routes: 
             onClick={() => onChoose(r.id)}
             aria-label={label}
             aria-pressed={r.id === selectedId}
-            className={`tap-target grid size-12 shrink-0 place-items-center rounded-full border-[3px] text-lg font-bold tabular-nums ${
+            className={`tap-target grid size-12 shrink-0 place-items-center rounded-full border-[3px] text-lg font-bold tracking-[-0.05em] ${
               r.id === selectedId ? "bg-brand text-on-brand" : r.status === "soon" ? "hover:bg-line/40" : "bg-paper text-ink hover:bg-surface"
             } ${r.status === "soon" ? SOON_CIRCLE : "border-brand"}`}
           >
