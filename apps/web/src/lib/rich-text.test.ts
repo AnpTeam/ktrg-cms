@@ -88,6 +88,22 @@ describe("rich text blocks (the blog body)", () => {
   });
 });
 
+describe("cards", () => {
+  test("a card holds a title and its own blocks, and notes share one list", () => {
+    const { blocks, notes } = parseBlocks("前\n\n:::step 一\n本文[^1]\n\n- 項目\n:::\n\n後\n\n[^1]: 注");
+    expect(blocks.map((b) => b.kind)).toEqual(["p", "card", "p"]);
+    expect(blocks[1]).toMatchObject({ style: "step", title: "一" });
+    expect((blocks[1] as { blocks: { kind: string }[] }).blocks.map((b) => b.kind)).toEqual(["p", "ul"]);
+    expect(notes).toHaveLength(1);
+  });
+
+  test("left open it ends with the text, other ::: lines stay words, and its words count as text", () => {
+    expect(parseBlocks(":::card 題\n本文").blocks).toMatchObject([{ kind: "card", title: "題" }]);
+    expect(parseBlocks(":::other x\n\n:::").blocks.map((b) => b.kind)).toEqual(["p", "p"]);
+    expect(plainBody(":::faq 問い\n答え\n:::")).toBe("問い 答え");
+  });
+});
+
 describe("bold and rules", () => {
   test("bold can hold a link or a note, and plain text drops the marks", () => {
     expect(parseRich("a **b** c").body).toEqual(["a ", { bold: ["b"] }, " c"]);

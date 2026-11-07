@@ -1,6 +1,6 @@
 import { NodeSelection, TextSelection, type EditorState, type Transaction } from "@tiptap/pm/state";
 import type { JSONContent } from "@tiptap/core";
-import { HEADING, inline, ITEM, PHOTO, RULE, type Inline } from "@/lib/rich-text";
+import { CARD_CLOSE, CARD_OPEN, HEADING, inline, ITEM, PHOTO, RULE, type Inline } from "@/lib/rich-text";
 
 // The block editor's document and the plain text the site stores (the format of lib/rich-text.ts), both ways. The text stays
 // the stored form, so the public pages need no editor code and every page written before keeps working. Written here and not
@@ -31,8 +31,19 @@ function shortDoc(body: string): JSONContent {
   return { type: "doc", content: content.length ? content : [{ type: "paragraph" }] };
 }
 
-export function bodyToDoc(body: string, short = false): JSONContent {
-  if (short) return shortDoc(body);
+/** A card's text: what a card can hold. A heading or a line typed inside one stays words, so nothing is lost. */
+const cardInside = (lines: string[]): JSONContent[] => {
+  const inside = (bodyToDoc(lines.join("\n")).content ?? []).map((b): JSONContent => {
+    if (b.type !== "heading" && b.type !== "horizontalRule") return b;
+    const words = blockText(b);
+    return { type: "paragraph", content: [{ type: "text", text: words }] };
+  });
+  return inside.length ? inside : [{ type: "paragraph" }];
+};
+
+/** `short`: a text with no blocks (RichText). `cards`: this editor has cards; elsewhere a ::: line stays words. */
+export function bodyToDoc(body: string, mode?: "short" | "cards"): JSONContent {
+  if (mode === "short") return shortDoc(body);
   const content: JSONContent[] = [];
   let paragraph: string[] = [];
   let items: JSONContent[] = [];
@@ -45,7 +56,20 @@ export function bodyToDoc(body: string, short = false): JSONContent {
     if (items.length) content.push({ type: "bulletList", content: items });
     items = [];
   };
-  for (const line of body.replace(/\r\n?/g, "\n").split("\n")) {
+  const lines = body.replace(/\r\n?/g, "\n").split("\n");
+  for (let at = 0; at < lines.length; at++) {
+    const line = lines[at]!;
+    const card = mode === "cards" ? CARD_OPEN.exec(line) : null;
+    if (card) {
+      endParagraph();
+      endList();
+      const close = lines.findIndex((l, i) => i > at && CARD_CLOSE.test(l));
+      const end = close === -1 ? lines.length : close;
+      const title = (card[2] ?? "").trim();
+      content.push({ type: "pageCard", attrs: { kind: card[1] }, content: [{ type: "cardTitle", ...(title ? { content: [{ type: "text", text: title }] } : {}) }, ...cardInside(lines.slice(at + 1, end))] });
+      at = end;
+      continue;
+    }
     const heading = HEADING.exec(line);
     const item = ITEM.exec(line);
     const photo = PHOTO.exec(line);
@@ -101,6 +125,11 @@ const listLines = (list: JSONContent): string[] =>
   });
 
 function blockText(block: JSONContent): string {
+  if (block.type === "pageCard") {
+    const [title, ...inside] = block.content ?? [];
+    const words = inside.map(blockText).filter((b) => b !== "").join("\n\n");
+    return `:::${String(block.attrs?.kind ?? "card")} ${plain(title ?? {}).trim()}`.trimEnd() + `\n${words ? `${words}\n` : ""}:::`;
+  }
   if (block.type === "heading") {
     const words = plain(block).trim();
     return words ? `${"#".repeat(block.attrs?.level === 3 ? 3 : 2)} ${words}` : "";

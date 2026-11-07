@@ -99,7 +99,7 @@ export function MultilingualField({
   }
   const box = (boxId: string, lang: string, value: string, onChange: (v: string) => void, ariaLabel?: string) =>
     long === "blocks" || long === "short" ? (
-      <BlockEditorLoader id={boxId} lang={lang} label={ariaLabel ?? label} value={value} onChange={onChange} notes={notes || long === "short"} short={long === "short"} />
+      <BlockEditorLoader id={boxId} lang={lang} label={ariaLabel ?? label} value={value} onChange={onChange} notes={notes || long === "short"} short={long === "short"} cards={long === "blocks"} />
     ) : long === "plain" ? (
       <TextArea id={boxId} lang={lang} value={value} onChange={onChange} ariaLabel={ariaLabel} />
     ) : (

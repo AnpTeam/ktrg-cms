@@ -5115,6 +5115,26 @@ msgid "脚注"
 msgstr "Footnote"
 
 #: src/components/admin/BlockEditor.tsx
+msgid "カードを消す"
+msgstr "Remove card"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "題を入力"
+msgstr "Write a title"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "カード"
+msgstr "Card"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "手順"
+msgstr "Step"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "たたむ質問"
+msgstr "Folding question"
+
+#: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "Remove photo"
 

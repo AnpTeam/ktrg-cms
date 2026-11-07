@@ -46,3 +46,8 @@ describe("page content (the public pages and the live preview)", () => {
     expect(policyWith("ja", own).draftNotice).toBe("");
   });
 });
+
+test("a card stays whole across its blank lines, and steps stay together", () => {
+  const doc = parsePageBody(":::card 題\n一\n\n二\n:::\n\n:::step あ\n一\n:::\n\n:::step い\n二\n:::\n\n後");
+  expect(doc.lead).toEqual([":::card 題\n一\n\n二\n:::", ":::step あ\n一\n:::\n\n:::step い\n二\n:::", "後"]);
+});

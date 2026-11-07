@@ -2,8 +2,8 @@ import Link from "next/link";
 import { useId } from "react";
 import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
+import { FaqCard, StepCard } from "@/components/pages/Cards";
 import { buttonStyle } from "@/components/button";
-import { ChevronIcon } from "@/components/icons";
 import { Notice } from "@/components/Notice";
 import { RichBody } from "@/components/RichBody";
 import { Inlines } from "@/components/RichText";
@@ -15,8 +15,7 @@ import { parseRich } from "@/lib/rich-text";
 import type { Policy } from "@/lib/privacy-content";
 import { termsContent } from "@/lib/terms-content";
 
-// The fixed text pages, drawn from their content. The FAQ's and how to play's cards are drawn again in the block editor
-// (LOOK in components/admin/BlockEditor.tsx): a change of look here belongs there too.
+// The fixed text pages, drawn from their content.
 
 /** An editor's text: paragraphs, lists, photos and the rest of what lib/rich-text.ts reads. */
 function Body({ text }: { text: string }) {
@@ -39,17 +38,9 @@ export function GuideView({ help }: { help: Help }) {
       </div>
       <ol className="mx-4 flex flex-col gap-4">
         {help.steps.map((step, i) => (
-          <li key={i} className="flex gap-4 rounded-3xl bg-surface p-5">
-            <span aria-hidden="true" className="flex size-12 shrink-0 items-center justify-center rounded-full bg-brand text-2xl font-bold text-on-brand">
-              {i + 1}
-            </span>
-            <div>
-              <h2 className="text-xl font-bold leading-snug text-accent">{step.title}</h2>
-              <div className="mt-1 whitespace-pre-line text-lg leading-8">
-                <Body text={step.text} />
-              </div>
-            </div>
-          </li>
+          <StepCard key={i} n={i + 1} title={step.title}>
+            <Body text={step.text} />
+          </StepCard>
         ))}
       </ol>
       {help.guideNote ? <Notice><Inlines parts={parseRich(help.guideNote).body} /></Notice> : null}
@@ -74,18 +65,10 @@ export function FaqView({ help, open = false }: { help: Help; open?: boolean }) 
       </div>
       <ul className="mx-4 flex flex-col gap-3">
         {help.faqs.map((faq, i) => (
-          <li key={i} className="rounded-3xl bg-surface">
-            <details className="group" open={open}>
-              <summary className="tap-target flex cursor-pointer list-none items-center justify-between gap-3 p-5 text-xl font-bold leading-snug [&::-webkit-details-marker]:hidden">
-                <span>{faq.question}</span>
-                <span className="shrink-0 transition-transform group-open:rotate-90">
-                  <ChevronIcon />
-                </span>
-              </summary>
-              <div className="whitespace-pre-line px-5 pb-5 text-lg leading-8">
-                <Body text={faq.answer} />
-              </div>
-            </details>
+          <li key={i}>
+            <FaqCard question={faq.question} open={open}>
+              <Body text={faq.answer} />
+            </FaqCard>
           </li>
         ))}
       </ul>
