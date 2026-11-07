@@ -78,14 +78,20 @@ const sessionViewer = cache(async (): Promise<Viewer> => {
   const { headers } = await import("next/headers");
   const cookie = (await headers()).get("cookie");
   if (!cookie) return signedOut;
+  const started = Date.now();
   try {
     const res = await fetch(`${process.env.API_ORIGIN ?? "http://localhost:3001"}/api/v1/me`, {
       headers: { cookie },
       cache: "no-store",
       signal: AbortSignal.timeout(6000), // a slow API must not look like a signed-out visitor
     });
-    return viewerFromMe(res.status, await res.json().catch(() => null));
-  } catch {
+    const body = await res.json().catch(() => null);
+    const ms = Date.now() - started;
+    if (ms > 1000 || res.status >= 500) console.warn(`[web] /me answered ${res.status} in ${ms} ms`);
+    return viewerFromMe(res.status, body);
+  } catch (error) {
+    // Looks like being signed out to the visitor, so it must show up here. Status, time and error name only: never the cookie.
+    console.error(`[web] /me failed after ${Date.now() - started} ms: ${error instanceof Error ? error.name : "unknown"}`);
     return signedOut;
   }
 });
