@@ -117,7 +117,10 @@ export function ProfileSettings({
     try {
       const res = await api.me.deletion.appeal.post({ message: appeal.trim() });
       if (res.error) setError("failed");
-      else router.refresh();
+      else {
+        setAppeal("");
+        router.refresh();
+      }
     } catch {
       setError("network");
     }
