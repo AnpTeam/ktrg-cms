@@ -17,6 +17,7 @@ export function ShareButtons({ title }: { title: string }) {
   const href = useSyncExternalStore(noop, url, () => "");
   const native = useSyncExternalStore(noop, canShare, () => false);
   const [copied, setCopied] = useState(false);
+  const [manual, setManual] = useState(false);
   const button = buttonStyle("secondary", "sm", "inline-flex");
 
   async function copy() {
@@ -25,7 +26,7 @@ export function ShareButtons({ title }: { title: string }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch {
-      window.prompt(t`このリンクをコピーしてください`, href);
+      setManual(true);
     }
   }
 
@@ -45,6 +46,12 @@ export function ShareButtons({ title }: { title: string }) {
       <a className={button} aria-disabled={!href} target="_blank" rel="noopener noreferrer" href={href ? `https://twitter.com/intent/tweet?url=${encodeURIComponent(href)}&text=${encodeURIComponent(title)}` : undefined}>
         X
       </a>
+      {manual ? (
+        <label className="w-full text-base">
+          {t`このリンクをコピーしてください`}
+          <input readOnly value={href} autoFocus onFocus={(e) => e.currentTarget.select()} className="tap-target mt-1 block w-full rounded border border-ink bg-paper px-3 text-ink" />
+        </label>
+      ) : null}
     </div>
   );
 }

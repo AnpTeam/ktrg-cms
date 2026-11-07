@@ -6,6 +6,7 @@ import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { itemFacts, itemHref, itemName, type ListItem, type ListMeta } from "@/lib/admin/lists/config";
 import { listRequest } from "@/lib/admin/lists/list-client";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 // Places that look entered twice (same name, near each other), in groups. The first of a group is the most complete one,
 // and is the one to keep; each place can be deleted here, or all but the first at once.
@@ -28,7 +29,7 @@ export function DuplicateFinder({ meta, locale, choices, onChanged }: { meta: Li
 
   async function remove(ids: string[]) {
     const ask = ids.length === 1 ? t`この場所を削除します。元に戻せません。よろしいですか？` : t`${ids.length}件を削除します。元に戻せません。よろしいですか？`;
-    if (busy || !window.confirm(ask)) return;
+    if (busy || !(await confirmDialog({ title: t`削除しますか？`, body: ask, yes: t`削除する` }))) return;
     setBusy(true);
     setError(null);
     const gone = new Set<string>();

@@ -2448,6 +2448,62 @@ msgstr "Show furigana"
 msgid "プレビュー"
 msgstr "Preview"
 
+#: src/components/ConfirmDialog.tsx
+msgid "削除しますか？"
+msgstr "Delete this?"
+
+#: src/components/ConfirmDialog.tsx
+msgid "サイトに反映しますか？"
+msgstr "Publish this to the site?"
+
+#: src/components/ConfirmDialog.tsx
+msgid "ページを離れますか？"
+msgstr "Leave this page?"
+
+#: src/components/ConfirmDialog.tsx
+msgid "保存していない変更は消えます。"
+msgstr "Your unsaved changes will be lost."
+
+#: src/components/ConfirmDialog.tsx
+msgid "離れる"
+msgstr "Leave"
+
+#: src/components/ConfirmDialog.tsx
+msgid "編集をつづける"
+msgstr "Keep editing"
+
+#: src/components/ConfirmDialog.tsx
+msgid "公開をやめますか？"
+msgstr "Unpublish these?"
+
+#: src/components/ConfirmDialog.tsx
+msgid "つくり方を変えますか？"
+msgstr "Change how it is made?"
+
+#: src/components/ConfirmDialog.tsx
+msgid "変える"
+msgstr "Change"
+
+#: src/components/ConfirmDialog.tsx
+msgid "経由地を消しますか？"
+msgstr "Remove this waypoint?"
+
+#: src/components/ConfirmDialog.tsx
+msgid "パスワードを消しますか？"
+msgstr "Remove your password?"
+
+#: src/components/ConfirmDialog.tsx
+msgid "メールの番号や顔・指紋では、これまでどおりログインできます。"
+msgstr "You can still log in with an emailed number, your face or your fingerprint."
+
+#: src/components/ConfirmDialog.tsx
+msgid "ログアウトしますか？"
+msgstr "Log out?"
+
+#: src/components/ConfirmDialog.tsx
+msgid "ログアウトする"
+msgstr "Log out"
+
 #: src/app/(public)/blog/[id]/page.tsx:98
 #: src/app/(public)/blog/page.tsx:15
 #: src/app/(public)/blog/page.tsx:41

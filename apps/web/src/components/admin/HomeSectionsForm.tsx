@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode } from "@/lib/api-error";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 /** 管理 > サイト全体の設定 > ホームページ: which optional sections visitors see. Each one is off until it is turned on here. */
 export function HomeSectionsForm({ initial }: { initial: { tourism: boolean } }) {
@@ -16,7 +17,7 @@ export function HomeSectionsForm({ initial }: { initial: { tourism: boolean } })
   const dirty = s.tourism !== saved.tourism;
 
   async function save() {
-    if (!window.confirm(t`この設定は、本番のサイトにすぐ反映されます。保存しますか？`)) return;
+    if (!(await confirmDialog({ title: t`サイトに反映しますか？`, body: t`この設定は、本番のサイトにすぐ反映されます。保存しますか？`, yes: t`保存する` }))) return;
     setBusy(true);
     setNotice(null);
     try {

@@ -2443,6 +2443,62 @@ msgstr "ふりがな"
 msgid "ふりがなをつける"
 msgstr "ふりがなをつける"
 
+#: src/components/ConfirmDialog.tsx
+msgid "削除しますか？"
+msgstr "削除しますか？"
+
+#: src/components/ConfirmDialog.tsx
+msgid "サイトに反映しますか？"
+msgstr "サイトに反映しますか？"
+
+#: src/components/ConfirmDialog.tsx
+msgid "ページを離れますか？"
+msgstr "ページを離れますか？"
+
+#: src/components/ConfirmDialog.tsx
+msgid "保存していない変更は消えます。"
+msgstr "保存していない変更は消えます。"
+
+#: src/components/ConfirmDialog.tsx
+msgid "離れる"
+msgstr "離れる"
+
+#: src/components/ConfirmDialog.tsx
+msgid "編集をつづける"
+msgstr "編集をつづける"
+
+#: src/components/ConfirmDialog.tsx
+msgid "公開をやめますか？"
+msgstr "公開をやめますか？"
+
+#: src/components/ConfirmDialog.tsx
+msgid "つくり方を変えますか？"
+msgstr "つくり方を変えますか？"
+
+#: src/components/ConfirmDialog.tsx
+msgid "変える"
+msgstr "変える"
+
+#: src/components/ConfirmDialog.tsx
+msgid "経由地を消しますか？"
+msgstr "経由地を消しますか？"
+
+#: src/components/ConfirmDialog.tsx
+msgid "パスワードを消しますか？"
+msgstr "パスワードを消しますか？"
+
+#: src/components/ConfirmDialog.tsx
+msgid "メールの番号や顔・指紋では、これまでどおりログインできます。"
+msgstr "メールの番号や顔・指紋では、これまでどおりログインできます。"
+
+#: src/components/ConfirmDialog.tsx
+msgid "ログアウトしますか？"
+msgstr "ログアウトしますか？"
+
+#: src/components/ConfirmDialog.tsx
+msgid "ログアウトする"
+msgstr "ログアウトする"
+
 #: src/components/admin/LivePreview.tsx:39
 #: src/components/admin/RouteEditor.tsx:546
 msgid "プレビュー"

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { compactEntries, type Entry } from "@/lib/gsi-large-style";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 type Notice = { kind: "ok" | "error"; text: string } | null;
 
@@ -52,7 +53,7 @@ export function LargeStyleUpload({ draft, onDraft }: { draft: Entry[] | null; on
 
   async function send(entries: Entry[] | null) {
     const ask = entries ? t`このファイルの設定を、すぐにすべての訪問者の地図に反映します。よろしいですか？` : t`アップロードしたファイルをやめて、初めから入っている設定に戻します。よろしいですか？`;
-    if (!window.confirm(ask)) return;
+    if (!(await confirmDialog({ title: t`サイトに反映しますか？`, body: ask, yes: entries ? t`反映する` : t`元に戻す` }))) return;
     setBusy(true);
     setNotice(null);
     try {

@@ -53,6 +53,7 @@ import { PlacePanel } from "./PlacePanel";
 import { PlaceTable } from "./PlaceTable";
 import { SharedPlaces } from "./SharedPlaces";
 import { useChecklistLabels } from "./useChecklistLabels";
+import { confirmDialog } from "@/components/ConfirmDialog";
 
 const TABS: EditorTab[] = ["overview", "text", "map", "places", "check"];
 const TAB_ICONS: Record<EditorTab, ReactNode> = { overview: <ListIcon />, text: <DocumentIcon />, map: <MapIcon />, places: <PinIcon />, check: <CheckIcon /> };
@@ -394,7 +395,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
     const live = draft.places.filter((p) => p.id && p.published);
     if (!draft.id || live.length === 0 || busyKey) return;
     const count = live.length;
-    if (!window.confirm(t`公開中の${count}か所を、すべて公開をやめます。ルートは「準備中」として一覧に残ります。よろしいですか？`)) return;
+    if (!(await confirmDialog({ title: t`公開をやめますか？`, body: t`公開中の${count}か所を、すべて公開をやめます。ルートは「準備中」として一覧に残ります。よろしいですか？`, yes: t`公開をやめる` }))) return;
     setBusyKey("all");
     setMessage(null);
     // One request: the server takes them all back in one step, so it is all or nothing.
@@ -435,7 +436,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
 
   async function deleteRoute() {
     if (!draft.id || saving) return;
-    if (!window.confirm(t`このルートを削除します。元に戻せません。よろしいですか？`)) return;
+    if (!(await confirmDialog({ title: t`削除しますか？`, body: t`このルートを削除します。元に戻せません。よろしいですか？`, yes: t`削除する` }))) return;
     const res = await outcome(api.admin.routes({ id: draft.id }).delete());
     if (res.ok) router.replace(`/admin/routes`);
     else setMessage({ kind: "error", text: messages[res.key] });
@@ -445,12 +446,12 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
   const savedByKey = useMemo(() => new Map(saved.places.map((p) => [p.key, p])), [saved.places]);
   // Places of this course that other courses hold too: listed in the shared block, and removing one asks first.
   const lent = draft.places.flatMap((p) => (p.id && sharedWith[p.id] ? [{ key: p.key, name: locale === "en" && p.nameEn ? p.nameEn : p.nameJa, routeIds: sharedWith[p.id]! }] : []));
-  const confirmRemoval = (key: string) => {
+  const confirmRemoval = async (key: string) => {
     const one = lent.find((x) => x.key === key);
     if (!one) return true;
     const name = one.name;
     const where = one.routeIds.map((id) => routeNames[id]).filter(Boolean).join(", ");
-    return window.confirm(t`「${name}」は、ほかのコース（${where}）にも置いてあります。消すと、そこからも消えます。よろしいですか？`);
+    return confirmDialog({ title: t`経由地を消しますか？`, body: t`「${name}」は、ほかのコース（${where}）にも置いてあります。消すと、そこからも消えます。よろしいですか？`, yes: t`消す` });
   };
   const problemOf = (kind: DraftProblem["kind"], key?: string) => problems.some((p) => p.kind === kind && (!("key" in p) || p.key === key));
   const prefName: Record<Prefecture, string> = { osaka: t`大阪府`, wakayama: t`和歌山県`, nara: t`奈良県` };
@@ -757,7 +758,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                   onRemovePlace={(key) => {
                     const p = draft.places.find((x) => x.key === key);
                     if (p?.published) setMessage({ kind: "error", text: t`公開中の経由地は消せません。先に「公開をやめる」を押してください。` });
-                    else if (confirmRemoval(key)) dispatch({ type: "removePlace", key });
+                    else void confirmRemoval(key).then((yes) => yes && dispatch({ type: "removePlace", key }));
                   }}
                   onSelectPlace={setSelectedKey}
                   onPatchPlace={(key, patch) => {
@@ -819,7 +820,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                     busy={busyKey !== null || saving}
                     invalidName={(key) => problemOf("place_name", key)}
                     onChange={(key, patch) => guarded(key, { type: "place", key, patch })}
-                    onRemove={(key) => confirmRemoval(key) && dispatch({ type: "removePlace", key })}
+                    onRemove={(key) => void confirmRemoval(key).then((yes) => yes && dispatch({ type: "removePlace", key }))}
                     onAdd={() => dispatch({ type: "addRow", key: crypto.randomUUID() })}
                   />
                 ) : draft.places.length === 0 ? (
@@ -845,8 +846,8 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                         invalidPhoto={problemOf("place_photo_link", p.key)}
                         onSelect={() => setSelectedKey(p.key === selectedKey ? null : p.key)}
                         onChange={(patch) => guarded(p.key, { type: "place", key: p.key, patch })}
-                        onRemove={() => {
-                          if (!confirmRemoval(p.key)) return;
+                        onRemove={async () => {
+                          if (!(await confirmRemoval(p.key))) return;
                           dispatch({ type: "removePlace", key: p.key });
                           setSelectedKey(null);
                         }}
