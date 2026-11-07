@@ -57,7 +57,8 @@ const serwist: Serwist = new Serwist({
     // network and is not kept (the visitor chose what to keep, nothing is saved unasked).
     {
       matcher: ({ url }) => url.hostname === "cyberjapandata.gsi.go.jp",
-      handler: async ({ request }) => (await caches.match(request)) ?? fetch(request),
+      // A pack being updated asks with cache: "reload" and must reach the network.
+      handler: async ({ request }) => (request.cache !== "reload" ? await caches.match(request) : undefined) ?? fetch(request),
     },
     {
       matcher: ({ url, sameOrigin }) => sameOrigin && url.pathname.startsWith("/_next/static/"),

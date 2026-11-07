@@ -3729,6 +3729,10 @@ msgstr "Could not save. Check the file's contents and your connection."
 msgid "保存できませんでした。もう一度お試しください。"
 msgstr "It could not be saved. Please try again."
 
+#: src/components/OfflinePack.tsx
+msgid "更新できませんでした。前に保存した地図は、そのまま使えます。"
+msgstr "The update failed. The map you saved earlier still works."
+
 #: src/components/OfflinePack.tsx:102
 msgid "保存できませんでした。電波の良い場所でもう一度お試しください。"
 msgstr "Could not save. Please try again where the signal is good."
