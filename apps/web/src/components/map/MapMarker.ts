@@ -1,3 +1,4 @@
+import type { CourseDotState, NameSide } from "@/lib/map-screen";
 import type { SpotStatus } from "@/lib/content";
 import type { MarkerKind } from "@/lib/map";
 import type { StopRole } from "@/lib/route-stops";
@@ -210,7 +211,7 @@ export function createPlaceMarkerElement({
 /**
  * A course on the map in a language that is written sideways: a pin whose point is the middle of the course's
  * rectangle, with the course number in its head and, where there is room, its name beside it on a few short lines.
- * A dashed head means the course is not ready. (Japanese uses the narrower top-to-bottom tag below.)
+ * A dashed head means the course is not ready.
  */
 export function createPinElement({
   number,
@@ -246,35 +247,37 @@ export function createPinElement({
 }
 
 /**
- * A course on the map in Japanese: a name tag read top to bottom (as on the official map) standing on the middle of
- * the course's rectangle, with the course number in a round head above it. It is narrow, so all the courses can
- * show their names together even when the whole trail is in view. A dashed head means the course is not ready.
+ * A course on the whole-trail map: a round button with its number, and its name beside it once the map is close enough.
+ * Its centre is the middle of the course's rectangle, unless neighbours pushed it aside (see spreadLabels).
  */
-export function createTagElement({
+export function createCourseDot({
   number,
   name,
+  nameSide,
   label,
-  soon,
+  state,
   onSelect,
 }: {
   number: string;
-  /** null: only the round head with its number (the name appears once the pin is tapped, see MapScreenCanvas). */
+  /** null: only the number. */
   name: string | null;
+  nameSide?: NameSide;
   label: string;
-  soon: boolean;
+  state: CourseDotState;
   onSelect: () => void;
 }): HTMLButtonElement {
   const el = document.createElement("button");
   el.type = "button";
-  el.className = "map-tag";
-  if (soon) el.dataset.soon = "true";
-  const head = document.createElement("span");
-  head.className = "map-tag-head";
-  head.textContent = number;
-  el.append(head);
+  el.className = "map-dot";
+  el.dataset.state = state;
+  const disc = document.createElement("span");
+  disc.className = "map-dot-disc";
+  disc.textContent = number;
+  el.append(disc);
   if (name) {
     const text = document.createElement("span");
-    text.className = "map-tag-name";
+    text.className = "map-dot-name";
+    text.dataset.side = nameSide ?? "right";
     text.textContent = name;
     el.append(text);
   }

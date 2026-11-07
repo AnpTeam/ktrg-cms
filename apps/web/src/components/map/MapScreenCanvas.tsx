@@ -8,7 +8,7 @@ import { useLingui } from "@lingui/react/macro";
 import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import { MinusIcon, PlusIcon, WarningIcon } from "@/components/icons";
 import { clusterByPixels } from "@/lib/cluster";
-import { areaCollection, estimateGroupBox, framePoints, groupLabelLines, MERGE_PX, revealedRouteId, SAME_PLACE_M, spreadLabels, spreadMeters, stopMergePx, type LabelBox, type MapScreenPoint, type MapScreenRoute, type MapScreenStop } from "@/lib/map-screen";
+import { areaCollection, courseDotState, COURSE_DOT_PX, estimateGroupBox, framePoints, groupLabelLines, MERGE_PX, namesThatFit, revealedRouteId, SAME_PLACE_M, spreadLabels, spreadMeters, stopMergePx, type LabelBox, type MapScreenPoint, type MapScreenRoute, type MapScreenStop } from "@/lib/map-screen";
 import { defaultLayers, moundStops, offeredLayers, type MapLayer } from "@/lib/map-layers";
 import { groupOf } from "@/lib/places";
 import { PlaceGroupPicture } from "@/components/PlaceIcon";
@@ -18,7 +18,7 @@ import { boundsOf, lineFeature, markerKind, nextStopId, pinScale, PIN_NUMBER_MIN
 import type { MapSettings } from "@/lib/map-settings";
 import { getRouteLine } from "@/lib/navigation/line-client";
 import { useCursorMarker } from "./useCursorMarker";
-import { createClusterElement, createMarkerElement, createPinElement, createPlaceMarkerElement, createTagElement } from "./MapMarker";
+import { createClusterElement, createMarkerElement, createPinElement, createPlaceMarkerElement, createCourseDot } from "./MapMarker";
 import { MapPickList } from "./MapPickList";
 import { MapPopup } from "./MapPopup";
 
@@ -37,6 +37,10 @@ const GUIDE = "nav-guide";
 const POINTS_ZOOM = 13;
 /** From this zoom on, being "inside" a course opens it: its stops appear without anyone choosing it. */
 const REVEAL_ZOOM = 11.3;
+/** From this zoom on, a course's name shows beside its dot, where there is room. Below REVEAL_ZOOM, or no name would ever show. */
+const NAME_ZOOM = 10;
+/** A course dot this close to the visible part of the map is kept inside it, in px. */
+const DOT_PULL_PX = 40;
 const EMPTY = { type: "FeatureCollection" as const, features: [] };
 // Where the camera starts before any area is known: the middle of the trail (Osaka, Wakayama, Nara).
 const START_CENTER: [number, number] = [135.35, 34.4];
@@ -205,7 +209,7 @@ export function MapScreenCanvas({
         map.on("error", () => {});
         // Touching the map itself (not a pin) puts away the popup and the list.
         map.on("click", (e) => {
-          if ((e.originalEvent.target as HTMLElement | null)?.closest(".place-marker, .map-marker, .map-cluster, .map-tag, .map-pin")) return;
+          if ((e.originalEvent.target as HTMLElement | null)?.closest(".place-marker, .map-marker, .map-cluster, .map-dot, .map-pin")) return;
           setPopup(null);
           setPick(null);
           setRevealed(null);
@@ -230,8 +234,8 @@ export function MapScreenCanvas({
           if (started || cancelled || !map || !map.isStyleLoaded()) return;
           started = true;
           map.addSource(AREAS, { type: "geojson", data: EMPTY });
-          map.addLayer({ id: `${AREAS}-fill`, type: "fill", source: AREAS, paint: { "fill-color": "#cc6256", "fill-opacity": ["case", ["get", "selected"], 0.06, 0.16] } });
-          map.addLayer({ id: `${AREAS}-line`, type: "line", source: AREAS, paint: { "line-color": "#a8362b", "line-width": ["case", ["get", "selected"], 3, 2.2], "line-opacity": 0.95 } });
+          map.addLayer({ id: `${AREAS}-fill`, type: "fill", source: AREAS, paint: { "fill-color": "#cc6256", "fill-opacity": ["case", ["get", "selected"], 0.06, 0.05] } });
+          map.addLayer({ id: `${AREAS}-line`, type: "line", source: AREAS, paint: { "line-color": "#a8362b", "line-width": ["case", ["get", "selected"], 3, 1.5], "line-opacity": ["case", ["get", "selected"], 0.95, 0.35] } });
           map.addSource(SIDE, { type: "geojson", data: EMPTY });
           for (const layer of sideLineLayers(SIDE)) map.addLayer(layer);
           map.addSource(DETAIL, { type: "geojson", data: EMPTY });
@@ -240,7 +244,7 @@ export function MapScreenCanvas({
           map.addLayer({ id: `${GUIDE}-line`, type: "line", source: GUIDE, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#1d4ed8", "line-width": 4, "line-dasharray": [1.5, 1.5] } });
           map.on("click", `${AREAS}-fill`, (e) => {
             // A pin or tag standing on the area is the target, not the area under it.
-            if ((e.originalEvent.target as HTMLElement | null)?.closest(".place-marker, .map-marker, .map-cluster, .map-tag, .map-pin")) return;
+            if ((e.originalEvent.target as HTMLElement | null)?.closest(".place-marker, .map-marker, .map-cluster, .map-dot, .map-pin")) return;
             const id = e.features?.[0]?.properties?.id;
             if (typeof id === "string") selectRouteRef.current(id);
           });
@@ -450,34 +454,16 @@ export function MapScreenCanvas({
     // with no stops of its own to show keeps its pin, so there is still something to read and press.
     const pinned = route ? [] : focus ? (focus.stops?.length ? [] : [focus]) : layers.has("courses") ? routes.filter((r) => r.area) : [];
     const byId = new Map(pinned.map((r) => [r.id, r]));
-    // Pins merge only when the visitor chose 「近い場所をまとめて表示する」: by default every course shows its own
-    // name, even where pins overlap. When merging, a group lists the names of the courses inside it.
-    const sideways = pinned.some((r) => r.nameLang !== "ja");
-    const groups = mergeStops
-      ? clusterByPixels(pinned.map((r) => pixel(r.id, r.area as Position)), sideways ? MERGE_PX.namedPin : MERGE_PX.tag)
-      : pinned.map((r) => [r.id]);
+    // Courses merge only when the visitor chose 「近い場所をまとめて表示する」: by default each keeps its own dot. When merging,
+    // a group lists the names of the courses inside it.
+    const groups = mergeStops ? clusterByPixels(pinned.map((r) => pixel(r.id, r.area as Position)), MERGE_PX.pin) : pinned.map((r) => [r.id]);
     const merged: { box: LabelBox; node: HTMLElement }[] = [];
-    // Names show on their own only for the courses alone, in Japanese; with the mounds on too, or in English, they would pile up.
-    const namesShown = layers.has("courses") && !layers.has("mounds") && !sideways;
+    const dots: { route: MapScreenRoute; box: LabelBox }[] = [];
     for (const ids of groups) {
       const members = ids.map((id) => byId.get(id)!);
       if (members.length === 1) {
         const r = members[0]!;
-        const order = r.order;
-        const name = r.name;
-        const showName = namesShown || revealed === r.id;
-        const common = {
-          number: String(r.order),
-          label: t`${order}. ${name}`,
-          soon: r.status === "soon",
-          onSelect: () => {
-            if (!showName) return setRevealed(r.id);
-            setRevealed(null);
-            onSelectRoute(r.id);
-          },
-        };
-        const shown = showName ? name : null;
-        put(r.nameLang === "ja" ? createTagElement({ ...common, name: shown }) : createPinElement({ ...common, name: shown }), r.area as Position, "bottom");
+        dots.push({ route: r, box: { ...pixel(r.id, r.area as Position), w: COURSE_DOT_PX, h: COURSE_DOT_PX } });
       } else {
         const sorted = [...members].sort((x, y) => x.order - y.order);
         const orders = sorted.map((m) => m.order);
@@ -500,9 +486,36 @@ export function MapScreenCanvas({
         merged.push({ box: { id: ids.join(","), x: middle.x, y: middle.y, ...estimateGroupBox(more > 0 ? [...shown, ""] : shown) }, node });
       }
     }
+    // Dots near each other are pushed just far enough apart to read and tap; zoomed in they no longer touch, so they sit on
+    // their own spots. Dots in view stay in the part of the map that can be seen; a dot well off it stays off it, or panning
+    // would gather every far course at the edge.
+    const size = containerRef.current;
+    const seen = { left: 8 + leftRef.current, top: 100, right: (size?.clientWidth ?? 360) - 64, bottom: (size?.clientHeight ?? 700) - coveredRef.current - 8 }; // right: clear of the zoom buttons
+    const near = (b: LabelBox) => b.x > seen.left - DOT_PULL_PX && b.x < seen.right + DOT_PULL_PX && b.y > seen.top - DOT_PULL_PX && b.y < seen.bottom + DOT_PULL_PX;
+    const spreadDots = [...spreadLabels(dots.map((d) => d.box).filter(near), seen), ...dots.map((d) => d.box).filter((b) => !near(b))];
+    const dotOf = new Map(dots.map((d) => [d.box.id, d.route]));
+    const named = map.getZoom() >= NAME_ZOOM && !layers.has("mounds") ? namesThatFit(spreadDots.map((b) => ({ id: b.id, x: b.x, y: b.y, name: dotOf.get(b.id)!.name })), seen) : null;
+    for (const box of spreadDots) {
+      const r = dotOf.get(box.id)!;
+      const order = r.order;
+      const name = r.name;
+      const state = courseDotState(r);
+      const at = map.unproject([box.x, box.y]);
+      put(
+        createCourseDot({
+          number: String(order),
+          name: named?.has(r.id) ? name : null,
+          nameSide: named?.get(r.id),
+          label: state === "done" ? t`${order}. ${name}（スタンプ完了）` : state === "soon" ? t`${order}. ${name}（準備中）` : t`${order}. ${name}`,
+          state,
+          onSelect: () => onSelectRoute(r.id),
+        }),
+        { lat: at.lat, lng: at.lng },
+      );
+    }
+
     // The labels of merged groups must not cover each other or sit under the buttons and the sheet: every name stays readable.
     if (merged.length > 0) {
-      const size = containerRef.current;
       const spread = spreadLabels(
         merged.map((m) => m.box),
         { left: 8 + leftRef.current, top: 100, right: (size?.clientWidth ?? 360) - 8, bottom: (size?.clientHeight ?? 700) - coveredRef.current - 8 },
