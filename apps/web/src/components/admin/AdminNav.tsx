@@ -44,7 +44,7 @@ export function AdminNav({ lists, isAdmin }: { lists: { key: string; title: stri
     ...(isAdmin ? [{ key: "settings", href: `${base}/settings`, label: t`サイト全体の設定`, icon: <GearIcon /> }] : []),
   ];
   // Menu sections, split by a line. A list the app does not know yet joins the section of notices and banners.
-  const SECTIONS = [["dashboard"], ["routes", "rallies", "places", "directory"], ["attention"], ["notices", "banners", "furigana", "pages"], ["visits", "stamps", "users", "audit"], ["settings"]];
+  const SECTIONS = [["attention"], ["dashboard"], ["routes", "rallies", "places", "directory"], ["notices", "banners", "furigana", "pages"], ["visits", "stamps", "users", "audit"], ["settings"]];
   const known = new Set(SECTIONS.flat());
   const sections = SECTIONS.map((keys, i) => [...keys.flatMap((k) => ready.filter((r) => r.key === k)), ...(i === 3 ? ready.filter((r) => !known.has(r.key)) : [])]).filter((g) => g.length > 0);
 

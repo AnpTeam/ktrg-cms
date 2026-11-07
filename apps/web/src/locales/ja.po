@@ -5116,6 +5116,22 @@ msgstr "本文で使われていません"
 msgid "注の文がありません"
 msgstr "注の文がありません"
 
+#: src/app/(admin)/admin/attention/page.tsx
+msgid "先に直すもの"
+msgstr "先に直すもの"
+
+#: src/app/(admin)/admin/attention/page.tsx
+msgid "あとで足すもの"
+msgstr "あとで足すもの"
+
+#: src/app/(admin)/admin/attention/page.tsx
+msgid "関係するルート"
+msgstr "関係するルート"
+
+#: src/app/(admin)/admin/attention/page.tsx
+msgid "赤いものは、直すまで訪問者に見えません。名前を押すと、そのルートの編集画面が開きます。"
+msgstr "赤いものは、直すまで訪問者に見えません。名前を押すと、そのルートの編集画面が開きます。"
+
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "写真を消す"

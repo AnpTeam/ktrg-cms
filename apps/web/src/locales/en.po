@@ -5142,6 +5142,22 @@ msgstr "Not used in the text"
 msgid "注の文がありません"
 msgstr "This note has no text"
 
+#: src/app/(admin)/admin/attention/page.tsx
+msgid "先に直すもの"
+msgstr "Fix first"
+
+#: src/app/(admin)/admin/attention/page.tsx
+msgid "あとで足すもの"
+msgstr "Add later"
+
+#: src/app/(admin)/admin/attention/page.tsx
+msgid "関係するルート"
+msgstr "Routes affected"
+
+#: src/app/(admin)/admin/attention/page.tsx
+msgid "赤いものは、直すまで訪問者に見えません。名前を押すと、そのルートの編集画面が開きます。"
+msgstr "Visitors cannot see the red items until they are fixed. Press a name to open that route in the editor."
+
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "Remove photo"
