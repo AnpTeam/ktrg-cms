@@ -5,6 +5,7 @@ import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode } from "@/lib/api-error";
 import { confirmDialog } from "@/components/ConfirmDialog";
+import { showToast } from "@/lib/admin/toast";
 
 /** 管理 > サイト全体の設定 > ホームページ: which optional sections visitors see. Each one is off until it is turned on here. */
 export function HomeSectionsForm({ initial }: { initial: { tourism: boolean } }) {
@@ -13,13 +14,12 @@ export function HomeSectionsForm({ initial }: { initial: { tourism: boolean } })
   const [saved, setSaved] = useState(initial);
   const [s, setS] = useState(initial);
   const [busy, setBusy] = useState(false);
-  const [notice, setNotice] = useState<{ kind: "saved" | "error"; text: string } | null>(null);
   const dirty = s.tourism !== saved.tourism;
 
   async function save() {
     if (!(await confirmDialog({ title: t`サイトに反映しますか？`, body: t`この設定は、本番のサイトにすぐ反映されます。保存しますか？`, yes: t`保存する` }))) return;
     setBusy(true);
-    setNotice(null);
+    showToast(null);
     try {
       const res = await fetch("/api/v1/admin/settings/home-sections", {
         method: "PUT",
@@ -30,12 +30,12 @@ export function HomeSectionsForm({ initial }: { initial: { tourism: boolean } })
       const json = (await res.json().catch(() => null)) as { ok?: unknown; error?: unknown } | null;
       if (res.ok && json?.ok === true) {
         setSaved(s);
-        setNotice({ kind: "saved", text: t`保存しました。` });
+        showToast({ kind: "ok", text: t`保存しました。` });
       } else {
-        setNotice({ kind: "error", text: messages[json?.ok === false && isServerCode(json.error) ? json.error : errorKeyFromApi(res.status, json)] });
+        showToast({ kind: "error", text: messages[json?.ok === false && isServerCode(json.error) ? json.error : errorKeyFromApi(res.status, json)] });
       }
     } catch {
-      setNotice({ kind: "error", text: messages.network });
+      showToast({ kind: "error", text: messages.network });
     }
     setBusy(false);
   }
@@ -46,7 +46,7 @@ export function HomeSectionsForm({ initial }: { initial: { tourism: boolean } })
         {t`ホームページの表示`}
       </h2>
       <label className="tap-target flex items-start gap-3 text-lg">
-        <input type="checkbox" checked={s.tourism} onChange={(e) => { setNotice(null); setS({ tourism: e.target.checked }); }} className="mt-1.5 size-6 accent-[var(--color-brand)]" />
+        <input type="checkbox" checked={s.tourism} onChange={(e) => { showToast(null); setS({ tourism: e.target.checked }); }} className="mt-1.5 size-6 accent-[var(--color-brand)]" />
         <span>
           <span className="block font-bold">{t`観光情報（観光・グルメ・お土産・体験・宿泊）を表示する`}</span>
           <span className="block text-base text-muted">{t`リンク先のページが用意できてから、オンにしてください。オフの間は、ホームページに出ません。`}</span>
@@ -58,11 +58,6 @@ export function HomeSectionsForm({ initial }: { initial: { tourism: boolean } })
         </button>
         {dirty ? <span className="text-base text-muted">{t`まだ保存していません。`}</span> : null}
       </div>
-      {notice ? (
-        <p role={notice.kind === "error" ? "alert" : "status"} className={`rounded-xl bg-paper p-4 text-lg font-bold ${notice.kind === "error" ? "text-danger" : "text-moss"}`}>
-          {notice.text}
-        </p>
-      ) : null}
     </section>
   );
 }

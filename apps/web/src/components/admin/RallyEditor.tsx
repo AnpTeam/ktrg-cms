@@ -12,8 +12,8 @@ import { Chip } from "./Chip";
 import { MultilingualField, Section } from "./fields";
 import { RallyMemberPicker, type RallyCandidates } from "./RallyMemberPicker";
 import { confirmDialog } from "@/components/ConfirmDialog";
+import { showToast } from "@/lib/admin/toast";
 
-type Notice = { kind: "saved" | "error"; text: string } | null;
 
 // One rally: its names, whether visitors see it, what is in it (places or courses, by its type), and deleting it.
 // Every save sends the updatedAt it loaded, so nobody overwrites a newer save; the members are saved in one go.
@@ -41,7 +41,6 @@ export function RallyEditor({
   const [savedIds, setSavedIds] = useState(memberIds);
   const [ids, setIds] = useState(memberIds);
   const [busy, setBusy] = useState(false);
-  const [notice, setNotice] = useState<Notice>(null);
   const [cands, setCands] = useState({ mine: candidates, other: otherCandidates });
   const [switching, setSwitching] = useState(false);
   const [newIds, setNewIds] = useState<string[]>([]);
@@ -54,16 +53,16 @@ export function RallyEditor({
   const one = () => api.admin.rallies({ id: saved.id });
   const start = () => {
     setBusy(true);
-    setNotice(null);
+    showToast(null);
   };
   const finish = (res: { ok: true; rally: AdminRally } | { ok: false; key: keyof typeof messages }, text: string) => {
     setBusy(false);
     if (!res.ok) {
-      setNotice({ kind: "error", text: messages[res.key] });
+      showToast({ kind: "error", text: messages[res.key] });
       return null;
     }
     setSaved(res.rally);
-    setNotice({ kind: "saved", text });
+    showToast({ kind: "ok", text });
     return res.rally;
   };
   const asResult = (res: { ok: true; data: { rally: AdminRally } } | { ok: false; key: keyof typeof messages }) =>
@@ -111,7 +110,7 @@ export function RallyEditor({
     setBusy(true);
     const res = await outcome(one().delete());
     setBusy(false);
-    if (!res.ok) return setNotice({ kind: "error", text: messages[res.key] });
+    if (!res.ok) return showToast({ kind: "error", text: messages[res.key] });
     router.push(`/admin/rallies`);
   }
 
@@ -137,11 +136,6 @@ export function RallyEditor({
       </p>
       {namesChanged || membersChanged ? <p className="text-base text-muted">{t`保存していない変更があります。先に保存してから公開を切りかえてください。`}</p> : null}
 
-      {notice ? (
-        <p role={notice.kind === "error" ? "alert" : "status"} className={`rounded-xl bg-surface p-4 text-lg font-bold ${notice.kind === "error" ? "text-danger" : "text-moss"}`}>
-          {notice.text}
-        </p>
-      ) : null}
 
       <Section title={t`名前`}>
         <MultilingualField
