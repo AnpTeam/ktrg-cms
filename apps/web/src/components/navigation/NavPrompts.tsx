@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { buttonStyle } from "@/components/button";
+import { WarningIcon } from "@/components/icons";
 
 // The two moments a navigation stops to ask something, as cards in the middle of the screen: at a stamp place, and just past one.
 
@@ -38,11 +39,18 @@ export function EndPrompt({ onEnd, onKeep }: { onEnd: () => void; onKeep: () => 
     dialog.current?.showModal();
   }, []);
   return (
-    <dialog ref={dialog} aria-labelledby="nav-end" onClose={onKeep} className={`${CARD} m-auto backdrop:bg-black/50`}>
-      <h2 id="nav-end" className="text-2xl font-bold leading-snug">
-        {t`ナビを終えますか？`}
-      </h2>
-      <p className="mt-2 text-lg leading-snug">{t`押したスタンプは消えません。`}</p>
+    <dialog ref={dialog} aria-labelledby="nav-end" onClose={onKeep} className="m-auto w-[calc(100%-2rem)] max-w-sm rounded-2xl bg-paper p-5 text-ink shadow-2xl backdrop:bg-black/50">
+      <div className="flex items-start gap-3">
+        <span className="mt-0.5 shrink-0 text-caution">
+          <WarningIcon />
+        </span>
+        <div className="min-w-0">
+          <h2 id="nav-end" className="text-2xl font-bold leading-snug">
+            {t`ナビを終えますか？`}
+          </h2>
+          <p className="mt-2 text-lg leading-snug">{t`押したスタンプは消えません。`}</p>
+        </div>
+      </div>
       <div className="mt-4 flex flex-col gap-2">
         <button type="button" autoFocus onClick={onKeep} className={buttonStyle("primary", "md", "flex w-full")}>
           {t`ナビをつづける`}
