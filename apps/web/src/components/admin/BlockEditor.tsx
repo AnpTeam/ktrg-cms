@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
-import type { JSONContent } from "@tiptap/core";
+import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
+import { Extension, type JSONContent } from "@tiptap/core";
 import Image from "@tiptap/extension-image";
-import { NodeSelection } from "@tiptap/pm/state";
-import { EditorContent, useEditor, useEditorState, type Editor } from "@tiptap/react";
+import { NodeSelection, Plugin } from "@tiptap/pm/state";
+import { Decoration, DecorationSet } from "@tiptap/pm/view";
+import { EditorContent, NodeViewWrapper, ReactNodeViewRenderer, useEditor, useEditorState, type Editor, type NodeViewProps } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useLingui } from "@lingui/react/macro";
-import { ChevronDownIcon, ChevronUpIcon, PlusIcon } from "@/components/icons";
-import { bodyToDoc, docToBody, moveBlock } from "@/lib/admin/block-doc";
+import { ChevronDownIcon, ChevronUpIcon, ImageIcon, LinkIcon, ListIcon, PlusIcon, TrashIcon, UndoIcon } from "@/components/icons";
+import { bodyToDoc, cardParts, docToBody, moveBlock, type PageLook } from "@/lib/admin/block-doc";
 import { isWebUrl } from "@/lib/format";
 import { inputClass } from "./fields";
 import { PhotoUpload } from "./PhotoUpload";
@@ -19,12 +20,121 @@ import { PhotoUpload } from "./PhotoUpload";
 // collaboration packages).
 
 type Kind = "paragraph" | "h2" | "h3" | "list" | "rule" | "photo";
-type Panel = { kind: "link"; href: string; bad: boolean } | { kind: "photo" } | { kind: "alt"; alt: string } | null;
+type Panel = { kind: "link"; href: string; bad: boolean } | { kind: "photo" } | null;
 
 const SHOWN =
   "tiptap-page min-h-72 rounded-xl border-2 border-line bg-paper p-4 text-lg leading-8 text-ink [&_a]:font-bold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4 [&_h2]:mt-5 [&_h2]:border-l-[6px] [&_h2]:border-accent [&_h2]:pl-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-snug [&_h3]:mt-4 [&_h3]:text-xl [&_h3]:font-bold [&_hr]:my-6 [&_hr]:border-line [&_img]:my-4 [&_img]:rounded-xl [&_p]:my-3 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_.ProseMirror-selectednode]:outline-4 [&_.ProseMirror-selectednode]:outline-accent";
 const BUTTON = "tap-target inline-flex items-center gap-1 rounded-full border-2 border-line bg-paper px-4 text-base font-bold disabled:opacity-40";
 const ACTIVE = "border-ink bg-ink text-paper";
+
+/** A photo in the text, its description right under it: nobody has to look for a button or scroll to write one. */
+function PhotoBlock({ node, selected, updateAttributes, deleteNode, editor, getPos }: NodeViewProps) {
+  const { t } = useLingui();
+  const box = useRef<HTMLInputElement>(null);
+  const src = String(node.attrs.src ?? "");
+  const alt = String(node.attrs.alt ?? "");
+  // A photo just added, or chosen with nothing written yet, goes straight to its description.
+  useEffect(() => {
+    if (selected && !alt) box.current?.focus();
+    // Only when it becomes selected: emptying the box must not pull the caret back.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected]);
+  // The picture arrives after the box has the focus, and pushes it down.
+  const keepBoxInView = () => {
+    if (document.activeElement === box.current) box.current?.scrollIntoView({ block: "center" });
+  };
+  return (
+    <NodeViewWrapper className="relative my-3 flex w-fit max-w-full flex-col gap-2">
+      {/* eslint-disable-next-line @next/next/no-img-element -- the editor's own picture: any uploaded link, shown as it is */}
+      <img src={src} alt={alt} onLoad={keepBoxInView} className="max-h-[50dvh] w-auto max-w-full self-start" />
+      <button type="button" onClick={deleteNode} aria-label={t`写真を消す`} className="tap-target absolute right-2 top-2 inline-grid place-items-center rounded-full bg-paper text-ink shadow">
+        {/* The click must land on the button itself: the editor only leaves a button alone, not an icon inside it. */}
+        <span className="pointer-events-none">
+          <TrashIcon />
+        </span>
+      </button>
+      <input
+        ref={box}
+        aria-label={t`写真の説明`}
+        placeholder={t`写真の説明（目の見えにくい方に読み上げられます）`}
+        value={alt}
+        onChange={(e) => updateAttributes({ alt: e.target.value })}
+        onFocus={() => {
+          const at = getPos();
+          if (typeof at === "number") editor.commands.setNodeSelection(at); // so 上へ and 下へ move this photo
+        }}
+        onKeyDown={(e) => {
+          if (e.key !== "Enter") return;
+          e.preventDefault(); // this box sits inside the page's form
+          editor.commands.focus();
+        }}
+        className={inputClass}
+      />
+    </NodeViewWrapper>
+  );
+}
+
+const Photo = Image.extend({
+  addNodeView() {
+    return ReactNodeViewRenderer(PhotoBlock);
+  },
+});
+
+/** One button of the toolbar: an icon, with its name for screen readers and in a tooltip of our own. */
+function Tool({ name, pressed, disabled, onClick, children }: { name: string; pressed?: boolean; disabled?: boolean; onClick: (e: ReactMouseEvent<HTMLButtonElement>) => void; children: ReactNode }) {
+  return (
+    <button
+      type="button"
+      aria-label={name}
+      aria-pressed={pressed}
+      disabled={disabled}
+      onMouseDown={(e) => e.preventDefault()}
+      onClick={onClick}
+      className={`group tap-target relative inline-grid place-items-center rounded-full text-lg font-bold disabled:opacity-40 ${pressed ? "bg-ink text-paper" : "hover:bg-surface"}`}
+    >
+      {children}
+      <span aria-hidden="true" className="pointer-events-none absolute left-1/2 top-full z-20 mt-1 hidden -translate-x-1/2 whitespace-nowrap rounded bg-ink px-2 py-1 text-base font-bold text-paper group-hover:block group-focus-visible:block">
+        {name}
+      </span>
+    </button>
+  );
+}
+
+const GAP = <span aria-hidden="true" className="mx-1 h-7 w-px bg-line" />;
+
+// The FAQ and how to play draw their headings as cards (components/pages/PageViews.tsx). Here the same cards are drawn over the
+// flat document: each block gets a class (cardParts), and neighbouring blocks with the same background read as one card.
+const CARD =
+  "[&_.card-part]:m-0 [&_.card-part]:bg-surface [&_.card-part]:px-5 [&_.card-part]:py-1.5 [&_ul.card-part]:pl-10 [&_.card-part.card-head]:relative [&_.card-part.card-head]:mt-4 [&_.card-part.card-head]:rounded-t-3xl [&_.card-part.card-head]:border-l-0 [&_.card-part.card-head]:pb-1 [&_.card-part.card-head]:pt-5 [&_.card-part.card-head]:text-xl [&_.card-part.card-end]:rounded-b-3xl [&_.card-part.card-end]:pb-5";
+const LOOK: Record<PageLook, string> = {
+  faq: `${CARD} [&_.card-part.card-head]:pr-12 [&_.card-part.card-head]:text-ink [&_.card-part.card-head]:[font-family:inherit] [&_.card-head]:after:absolute [&_.card-head]:after:right-6 [&_.card-head]:after:top-6 [&_.card-head]:after:size-3 [&_.card-head]:after:rotate-45 [&_.card-head]:after:border-b-2 [&_.card-head]:after:border-r-2 [&_.card-head]:after:border-ink [&_.card-head]:after:content-[''] [&_.page-hidden]:text-muted [&_.page-hidden]:before:block [&_.page-hidden]:before:text-base [&_.page-hidden]:before:font-bold [&_.page-hidden]:before:content-[attr(data-label)]`,
+  guide: `${CARD} [&_.card-part.card-head]:pl-[5.25rem] [&_.card-part.card-head]:text-accent [&_.card-part.card-head.card-end]:min-h-[5.5rem] [&_.card-head]:before:absolute [&_.card-head]:before:left-5 [&_.card-head]:before:top-5 [&_.card-head]:before:grid [&_.card-head]:before:size-12 [&_.card-head]:before:place-items-center [&_.card-head]:before:rounded-full [&_.card-head]:before:bg-brand [&_.card-head]:before:text-2xl [&_.card-head]:before:text-on-brand [&_.card-head]:before:content-[attr(data-step)] [&_.card-head]:before:[font-family:var(--font-sans)] [&_.card-part:not(.card-note):not(.card-head)]:pl-[5.25rem] [&_.card-part.card-note]:relative [&_.card-part.card-note]:pl-12 [&_.card-part.card-note-first]:rounded-t-2xl [&_.card-part.card-note-first]:pt-4 [&_.card-part.card-note.card-end]:rounded-b-2xl [&_.card-part.card-note.card-end]:pb-4 [&_.card-note-first]:before:absolute [&_.card-note-first]:before:left-4 [&_.card-note-first]:before:text-xl [&_.card-note-first]:before:content-['ⓘ']`,
+};
+
+function pageCards(look: PageLook, hiddenLabel: string) {
+  return Extension.create({
+    name: "pageCards",
+    addProseMirrorPlugins() {
+      return [
+        new Plugin({
+          props: {
+            decorations: ({ doc }) => {
+              const blocks: { type: string; level?: number }[] = [];
+              doc.forEach((n) => blocks.push({ type: n.type.name, level: n.attrs.level as number | undefined }));
+              const parts = cardParts(blocks, look);
+              const shown: Decoration[] = [];
+              doc.forEach((n, at, i) => {
+                const { className, step, hidden } = parts[i]!;
+                if (className) shown.push(Decoration.node(at, at + n.nodeSize, { class: className, ...(step ? { "data-step": String(step) } : {}), ...(hidden ? { "data-label": hiddenLabel } : {}) }));
+              });
+              return DecorationSet.create(doc, shown);
+            },
+          },
+        }),
+      ];
+    },
+  });
+}
 
 /** Where a new block goes: over the empty line the cursor is on, else after the block it is in. */
 function place(editor: Editor, block: JSONContent, caret: ((start: number) => void) | null) {
@@ -36,7 +146,8 @@ function place(editor: Editor, block: JSONContent, caret: ((start: number) => vo
   caret?.(start);
 }
 
-export function BlockEditor({ id, lang, label, value, onChange, closingNote = false }: { id: string; lang: string; label: string; value: string; onChange: (v: string) => void; /** How to play: the line starts the closing note. */ closingNote?: boolean }) {
+export function BlockEditor({ id, lang, label, value, onChange, look }: { id: string; lang: string; label: string; value: string; onChange: (v: string) => void; /** Draw the text as this page will: its headings as cards. */ look?: PageLook }) {
+  const { t } = useLingui();
   const written = useRef(value);
 
   const editor = useEditor({
@@ -46,18 +157,17 @@ export function BlockEditor({ id, lang, label, value, onChange, closingNote = fa
         blockquote: false,
         code: false,
         codeBlock: false,
-        italic: false,
         orderedList: false,
         strike: false,
-        underline: false,
         heading: { levels: [2, 3] },
         link: { openOnClick: false },
       }),
-      Image.configure({ allowBase64: false }),
+      Photo.configure({ allowBase64: false }),
+      ...(look ? [pageCards(look, t`ここはページに表示されません`)] : []),
     ],
     content: bodyToDoc(value),
     editorProps: {
-      attributes: { id, lang, role: "textbox", "aria-multiline": "true", "aria-label": label, class: SHOWN },
+      attributes: { id, lang, role: "textbox", "aria-multiline": "true", "aria-label": label, class: `${SHOWN} ${look ? LOOK[look] : ""}` },
     },
     onUpdate: ({ editor: e }) => {
       const next = docToBody(e.getJSON());
@@ -75,7 +185,7 @@ export function BlockEditor({ id, lang, label, value, onChange, closingNote = fa
   }, [editor, value]);
 
   // Only drawn once the editor exists: its state hook takes the editor it starts with and sees nothing until a transaction.
-  return editor ? <Blocks editor={editor} id={id} closingNote={closingNote} /> : <div className={`${SHOWN} animate-pulse`} aria-busy="true" />;
+  return editor ? <Blocks editor={editor} id={id} closingNote={look === "guide"} /> : <div className={`${SHOWN} animate-pulse`} aria-busy="true" />;
 }
 
 function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closingNote: boolean }) {
@@ -91,10 +201,11 @@ function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closi
       const { selection } = e.state;
       const { $from, empty } = selection;
       return {
-        style: e.isActive("heading", { level: 2 }) ? "h2" : e.isActive("heading", { level: 3 }) ? "h3" : e.isActive("bulletList") ? "list" : "paragraph",
+        style: selection instanceof NodeSelection ? null : e.isActive("heading", { level: 2 }) ? "h2" : e.isActive("heading", { level: 3 }) ? "h3" : e.isActive("bulletList") ? "list" : "paragraph",
         bold: e.isActive("bold"),
+        italic: e.isActive("italic"),
+        underline: e.isActive("underline"),
         link: e.isActive("link"),
-        photo: selection instanceof NodeSelection && selection.node.type.name === "image",
         // Both slashes: a Japanese keyboard types the wide one.
         slash: empty && $from.depth === 1 && $from.parent.type.name === "paragraph" && /^[/／]$/.test($from.parent.textContent),
         canUndo: e.can().undo(),
@@ -110,6 +221,8 @@ function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closi
     { kind: "photo", name: t`写真` },
     { kind: "rule", name: closingNote ? t`線（ここから下は注意書き）` : t`区切りの線` },
   ];
+  // A heading is saved as plain words: nothing done to its letters would last.
+  const inHeading = state.style === "h2" || state.style === "h3";
   const slashOpen = state.slash && !dismissed;
   if (!state.slash && dismissed) setDismissed(false);
   const menuOpen = slashOpen || plusAt !== null;
@@ -172,7 +285,7 @@ function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closi
   };
   const addPhoto = (src: string) => {
     place(editor, { type: "image", attrs: { src, alt: "" } }, (start) => editor.commands.setNodeSelection(start));
-    setPanel({ kind: "alt", alt: "" });
+    setPanel(null);
   };
 
   // Under the caret for "/", under the button for "＋"; above the caret when there is no room below it.
@@ -182,124 +295,101 @@ function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closi
 
   return (
     <div className="flex flex-col gap-2">
-      <div role="toolbar" aria-label={t`文章の書式`} aria-controls={id} className="sticky top-[4.75rem] z-10 flex flex-wrap items-center gap-2 bg-paper py-1">
-        <button type="button" onClick={openPlus} aria-haspopup="menu" aria-expanded={menuOpen} className={`${BUTTON} border-ink`}>
-          <PlusIcon size={20} />
-          {t`追加`}
-        </button>
-        <select aria-label={t`この行の種類`} value={state.style} onChange={(e) => setStyle(e.target.value)} className="tap-target rounded-xl border-2 border-line bg-paper px-3 text-base font-bold">
+      <div className="sticky top-[4.75rem] z-10 flex flex-col gap-2">
+        <div role="toolbar" aria-label={t`文章の書式`} aria-controls={id} className="flex flex-wrap items-center gap-1 rounded-xl border-2 border-line bg-paper p-1">
+          <Tool name={t`追加`} pressed={menuOpen} onClick={openPlus}>
+            <PlusIcon size={24} />
+          </Tool>
+          {GAP}
           {items.slice(0, 4).map((item) => (
-            <option key={item.kind} value={item.kind}>
-              {item.name}
-            </option>
+            <Tool key={item.kind} name={item.name} pressed={state.style === item.kind} onClick={() => setStyle(item.kind)}>
+              {item.kind === "list" ? <ListIcon /> : { paragraph: "¶", h2: "H2", h3: "H3" }[item.kind as string]}
+            </Tool>
           ))}
-        </select>
-        <button type="button" aria-pressed={state.bold} onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().toggleBold().run()} className={`${BUTTON} ${state.bold ? ACTIVE : ""}`}>
-          {t`太字`}
-        </button>
-        <button
-          type="button"
-          aria-pressed={state.link}
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={() => setPanel(panel?.kind === "link" ? null : { kind: "link", href: state.link ? String(editor.getAttributes("link").href ?? "") : "", bad: false })}
-          className={`${BUTTON} ${state.link ? ACTIVE : ""}`}
-        >
-          {t`リンク`}
-        </button>
-        {state.photo ? (
-          <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => setPanel({ kind: "alt", alt: String(editor.getAttributes("image").alt ?? "") })} className={BUTTON}>
-            {t`写真の説明`}
-          </button>
-        ) : null}
-        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => move(-1)} className={BUTTON}>
-          <ChevronUpIcon size={20} />
-          {t`上へ`}
-        </button>
-        <button type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => move(1)} className={BUTTON}>
-          <ChevronDownIcon size={20} />
-          {t`下へ`}
-        </button>
-        <button type="button" disabled={!state.canUndo} onMouseDown={(e) => e.preventDefault()} onClick={() => editor.chain().focus().undo().run()} className={BUTTON}>
-          {t`元に戻す`}
-        </button>
-      </div>
+          {GAP}
+          <Tool name={t`太字`} pressed={state.bold} disabled={inHeading} onClick={() => editor.chain().focus().toggleBold().run()}>
+            <span className="text-xl font-black">B</span>
+          </Tool>
+          <Tool name={t`斜体`} pressed={state.italic} disabled={inHeading} onClick={() => editor.chain().focus().toggleItalic().run()}>
+            <span className="font-serif text-xl font-bold italic">I</span>
+          </Tool>
+          <Tool name={t`下線`} pressed={state.underline} disabled={inHeading} onClick={() => editor.chain().focus().toggleUnderline().run()}>
+            <span className="text-xl font-bold underline underline-offset-2">U</span>
+          </Tool>
+          <Tool name={t`リンク`} pressed={state.link} disabled={inHeading} onClick={() => setPanel(panel?.kind === "link" ? null : { kind: "link", href: state.link ? String(editor.getAttributes("link").href ?? "") : "", bad: false })}>
+            <LinkIcon />
+          </Tool>
+          <Tool name={t`写真`} pressed={panel?.kind === "photo"} onClick={() => setPanel(panel?.kind === "photo" ? null : { kind: "photo" })}>
+            <ImageIcon />
+          </Tool>
+          {GAP}
+          <Tool name={t`上へ`} onClick={() => move(-1)}>
+            <ChevronUpIcon size={24} />
+          </Tool>
+          <Tool name={t`下へ`} onClick={() => move(1)}>
+            <ChevronDownIcon size={24} />
+          </Tool>
+          {GAP}
+          <Tool name={t`元に戻す`} disabled={!state.canUndo} onClick={() => editor.chain().focus().undo().run()}>
+            <UndoIcon />
+          </Tool>
+        </div>
 
-      {panel ? (
-        <div className="flex flex-col gap-2 rounded-xl bg-surface p-3">
-          {panel.kind === "link" ? (
-            <>
-              <div className="flex flex-wrap items-center gap-2">
-                <input
-                  type="url"
-                  autoFocus
-                  aria-label={t`リンク先のアドレス`}
-                  placeholder="https://…"
-                  value={panel.href}
-                  onChange={(e) => setPanel({ kind: "link", href: e.target.value, bad: false })}
-                  onKeyDown={(e) => {
-                    if (e.key !== "Enter") return;
-                    e.preventDefault(); // this box sits inside the page's form
-                    applyLink(panel.href);
-                  }}
-                  className={`${inputClass} min-w-0 flex-1 basis-60`}
-                />
-                <button type="button" onClick={() => applyLink(panel.href)} className={`${BUTTON} ${ACTIVE}`}>
-                  {t`入れる`}
-                </button>
-                {state.link ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      editor.chain().focus().extendMarkRange("link").unsetLink().run();
-                      setPanel(null);
+        {panel ? (
+          <div className="flex flex-col gap-2 rounded-xl border-2 border-line bg-surface p-3 shadow-lg">
+            {panel.kind === "link" ? (
+              <>
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    type="url"
+                    autoFocus
+                    aria-label={t`リンク先のアドレス`}
+                    placeholder="https://…"
+                    value={panel.href}
+                    onChange={(e) => setPanel({ kind: "link", href: e.target.value, bad: false })}
+                    onKeyDown={(e) => {
+                      if (e.key !== "Enter") return;
+                      e.preventDefault(); // this box sits inside the page's form
+                      applyLink(panel.href);
                     }}
-                    className={BUTTON}
-                  >
-                    {t`リンクを外す`}
+                    className={`${inputClass} min-w-0 flex-1 basis-60`}
+                  />
+                  <button type="button" onClick={() => applyLink(panel.href)} className={`${BUTTON} ${ACTIVE}`}>
+                    {t`入れる`}
                   </button>
+                  {state.link ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        editor.chain().focus().extendMarkRange("link").unsetLink().run();
+                        setPanel(null);
+                      }}
+                      className={BUTTON}
+                    >
+                      {t`リンクを外す`}
+                    </button>
+                  ) : null}
+                  <button type="button" onClick={() => setPanel(null)} className={BUTTON}>
+                    {t`閉じる`}
+                  </button>
+                </div>
+                {panel.bad ? (
+                  <p role="alert" className="text-base font-bold text-danger">
+                    {t`https:// で始まるアドレスを入れてください。`}
+                  </p>
                 ) : null}
+              </>
+            ) : (
+              <div className="flex flex-wrap items-start gap-2">
+                <PhotoUpload onUploaded={addPhoto} />
                 <button type="button" onClick={() => setPanel(null)} className={BUTTON}>
                   {t`閉じる`}
                 </button>
               </div>
-              {panel.bad ? (
-                <p role="alert" className="text-base font-bold text-danger">
-                  {t`https:// で始まるアドレスを入れてください。`}
-                </p>
-              ) : null}
-            </>
-          ) : panel.kind === "photo" ? (
-            <div className="flex flex-wrap items-start gap-2">
-              <PhotoUpload onUploaded={addPhoto} />
-              <button type="button" onClick={() => setPanel(null)} className={BUTTON}>
-                {t`閉じる`}
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-wrap items-center gap-2">
-              <input
-                autoFocus
-                aria-label={t`写真の説明`}
-                placeholder={t`写真の説明（目の見えにくい方に読み上げられます）`}
-                value={panel.alt}
-                onChange={(e) => {
-                  setPanel({ kind: "alt", alt: e.target.value });
-                  editor.commands.updateAttributes("image", { alt: e.target.value });
-                }}
-                onKeyDown={(e) => {
-                  if (e.key !== "Enter") return;
-                  e.preventDefault();
-                  setPanel(null);
-                }}
-                className={`${inputClass} min-w-0 flex-1 basis-60`}
-              />
-              <button type="button" onClick={() => setPanel(null)} className={BUTTON}>
-                {t`閉じる`}
-              </button>
-            </div>
-          )}
-        </div>
-      ) : null}
+            )}
+          </div>
+        ) : null}
+      </div>
 
       <EditorContent editor={editor} />
       <p className="text-base text-muted">{t`「追加」か、空の行で「/」を押すと、入れられるものの一覧が出ます。`}</p>

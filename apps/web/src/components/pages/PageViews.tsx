@@ -15,8 +15,8 @@ import { parseRich } from "@/lib/rich-text";
 import type { Policy } from "@/lib/privacy-content";
 import { termsContent } from "@/lib/terms-content";
 
-// The fixed text pages, drawn from their content. The public pages and the admin's live preview both use these, so what an
-// editor sees beside the text box is the page itself, not a copy of it.
+// The fixed text pages, drawn from their content. The FAQ's and how to play's cards are drawn again in the block editor
+// (LOOK in components/admin/BlockEditor.tsx): a change of look here belongs there too.
 
 /** An editor's text: paragraphs, lists, photos and the rest of what lib/rich-text.ts reads. */
 function Body({ text }: { text: string }) {

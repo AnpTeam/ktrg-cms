@@ -3,10 +3,37 @@ import { getSchema } from "@tiptap/core";
 import { EditorState, TextSelection } from "@tiptap/pm/state";
 import Image from "@tiptap/extension-image";
 import StarterKit from "@tiptap/starter-kit";
-import { bodyToDoc, docToBody, moveBlock } from "./block-doc";
+import { bodyToDoc, cardParts, docToBody, moveBlock } from "./block-doc";
+import { parsePageBody } from "@/lib/page-text";
 
 const roundTrip = (body: string) => docToBody(bodyToDoc(body));
 const schema = getSchema([StarterKit.configure({ heading: { levels: [2, 3] } }), Image]);
+
+describe("cards in the editor", () => {
+  const parts = (body: string, look: "faq" | "guide") => cardParts((bodyToDoc(body).content ?? []).map((b) => ({ type: b.type!, level: b.attrs?.level as number | undefined })), look);
+  const count = (body: string, look: "faq" | "guide", name: string) => parts(body, look).filter((p) => p.className.split(" ").includes(name)).length;
+
+  test("as many cards and the same note as the page itself", () => {
+    const body = "はじめ\n\n## 一\n本文\n\n### 小\n\n本文\n\n## 二\n\n---\n\n注意\n\n## 注意の中\n\n続き";
+    const guide = parsePageBody(body, true);
+    expect(count(body, "guide", "card-head")).toBe(guide.sections.length);
+    expect(count(body, "guide", "card-note")).toBe(3); // a heading after the line stays in the note
+    expect(guide.note.length).toBeGreaterThan(0);
+    expect(count(body, "faq", "card-head")).toBe(parsePageBody(body).sections.length);
+    expect(count(body, "faq", "card-note")).toBe(0); // the line is only a line on the FAQ
+  });
+
+  test("a card closes before the next one and the steps count up", () => {
+    const shown = parts("## 一\n本文\n\n## 二", "guide");
+    expect(shown.map((p) => p.step)).toEqual([1, undefined, 2]);
+    expect(shown.map((p) => p.className.includes("card-end"))).toEqual([false, true, true]);
+  });
+
+  test("text before the first question is marked as not shown, on the FAQ only", () => {
+    expect(parts("はじめ\n\n## 問い", "faq")[0]).toEqual({ className: "page-hidden", hidden: true });
+    expect(parts("はじめ\n\n## 問い", "guide")[0]).toEqual({ className: "" });
+  });
+});
 
 describe("block document", () => {
   test("every block comes back as it was written", () => {
@@ -21,6 +48,15 @@ describe("block document", () => {
       "[^1]: 注の文",
     ].join("\n\n");
     expect(roundTrip(body)).toBe(body);
+  });
+
+  test("bold, italic and underline come back, alone or together, on links too", () => {
+    for (const body of ["**a**と__b__と++c++", "**__a__**", "**++__a__++**", "++[a](https://e.com)++"]) expect(roundTrip(body)).toBe(body);
+  });
+
+  test("a space inside a marked run stays outside its markers", () => {
+    const doc = { type: "doc", content: [{ type: "paragraph", content: [{ type: "text", text: "a " }, { type: "text", text: "b ", marks: [{ type: "italic" }] }, { type: "text", text: "c" }] }] };
+    expect(docToBody(doc)).toBe("a __b__ c");
   });
 
   test("the schema of the real editor accepts the document", () => {

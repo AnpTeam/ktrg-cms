@@ -11,6 +11,8 @@ const textNodes = (parts: Inline[], marks: NonNullable<JSONContent["marks"]> = [
     if (typeof p === "string") return p ? [{ type: "text", text: p, ...(marks.length ? { marks } : {}) }] : [];
     if ("href" in p) return [{ type: "text", text: p.label, marks: [...marks, { type: "link", attrs: { href: p.href } }] }];
     if ("bold" in p) return textNodes(p.bold, [...marks, { type: "bold" }]);
+    if ("italic" in p) return textNodes(p.italic, [...marks, { type: "italic" }]);
+    if ("underline" in p) return textNodes(p.underline, [...marks, { type: "underline" }]);
     return [];
   });
 
@@ -58,15 +60,20 @@ export function bodyToDoc(body: string): JSONContent {
 
 const plain = (node: JSONContent): string => node.text ?? (node.type === "hardBreak" ? " " : (node.content ?? []).map(plain).join(""));
 
+/** Innermost first. The markers must touch the words, so the spaces around them stay outside. */
+const WRAPS = [["italic", "__"], ["underline", "++"], ["bold", "**"]] as const;
+
 function inlineText(nodes: JSONContent[] = []): string {
   return nodes
     .map((n) => {
       if (n.type === "hardBreak") return "\n";
       const text = n.text ?? "";
       const href = n.marks?.find((m) => m.type === "link")?.attrs?.href as string | undefined;
-      // A link's words stay plain: bold inside a link has no form in the text.
-      if (href && /^https?:\/\//i.test(href) && !/[[\]]/.test(text)) return `[${text}](${href.replace(/\s/g, "%20").replace(/\)/g, "%29")})`;
-      return n.marks?.some((m) => m.type === "bold") && text.trim() ? `**${text}**` : text;
+      const linked = href && /^https?:\/\//i.test(href) && !/[[\]]/.test(text) ? `[${text}](${href.replace(/\s/g, "%20").replace(/\)/g, "%29")})` : text;
+      const [, before, words, after] = /^(\s*)([\s\S]*?)(\s*)$/.exec(linked)!;
+      if (!words) return linked;
+      const wrapped = WRAPS.reduce((w, [mark, marker]) => (n.marks?.some((m) => m.type === mark) ? `${marker}${w}${marker}` : w), words!);
+      return `${before}${wrapped}${after}`;
     })
     .join("");
 }
@@ -115,4 +122,38 @@ export function moveBlock(state: EditorState, by: -1 | 1): Transaction | null {
   const tr = state.tr.replaceWith(start, end, [doc.child(second), doc.child(first)]);
   const at = selection.from + by * doc.child(other).nodeSize;
   return tr.setSelection(selection instanceof NodeSelection ? NodeSelection.create(tr.doc, at) : TextSelection.near(tr.doc.resolve(at))).scrollIntoView();
+}
+
+/** The pages whose headings become cards. */
+export type PageLook = "faq" | "guide";
+
+/**
+ * How a page will draw each top-level block, so the editor can look the same: the split of parsePageBody (lib/page-text.ts),
+ * which a test holds it to. The document stays a flat list; these only name a class for each block.
+ */
+export function cardParts(blocks: readonly { type: string; level?: number }[], look: PageLook): { className: string; step?: number; hidden?: true }[] {
+  let part: "lead" | "section" | "note" = "lead";
+  let step = 0;
+  const kinds = blocks.map((b) => {
+    if (b.type === "heading" && b.level === 2 && part !== "note") {
+      part = "section";
+      step += 1;
+      return { kind: "head" as const, step };
+    }
+    if (look === "guide" && b.type === "horizontalRule" && part !== "note") {
+      part = "note";
+      return { kind: "rule" as const };
+    }
+    return { kind: part };
+  });
+  return kinds.map((k, i) => {
+    const next = kinds[i + 1]?.kind;
+    const end = next === undefined || next === "head" || next === "rule" ? " card-end" : "";
+    if (k.kind === "head") return { className: `card-part card-head${end}`, step: k.step };
+    if (k.kind === "section") return { className: `card-part${end}` };
+    if (k.kind === "note") return { className: `card-part card-note${kinds[i - 1]?.kind === "rule" ? " card-note-first" : ""}${end}` };
+    // The FAQ shows questions only: what comes before the first one is never drawn.
+    if (k.kind === "lead" && look === "faq") return { className: "page-hidden", ...(i === 0 ? { hidden: true as const } : {}) };
+    return { className: "" };
+  });
 }

@@ -5094,6 +5094,22 @@ msgstr "Back"
 msgid "手入力（空にすると、標高から自動）"
 msgstr "Typed by hand (empty = from the elevation)"
 
+#: src/components/admin/BlockEditor.tsx
+msgid "斜体"
+msgstr "Italic"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "下線"
+msgstr "Underline"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "ここはページに表示されません"
+msgstr "This part is not shown on the page"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "写真を消す"
+msgstr "Remove photo"
+
 #: src/components/admin/RouteEditor.tsx:612
 msgid "手入力（空にすると、線から自動）"
 msgstr "Typed by hand (empty = from the line)"

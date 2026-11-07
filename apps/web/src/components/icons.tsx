@@ -114,6 +114,30 @@ export const WarningIcon = () => (
   </Icon>
 );
 
+export const LinkIcon = () => (
+  <Icon>
+    <path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1" />
+    <path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1" />
+  </Icon>
+);
+
+export const UndoIcon = () => (
+  <Icon>
+    <path d="M8 5 3.5 9.5 8 14" />
+    <path d="M4 9.5h10.5a5.5 5.5 0 0 1 0 11H10" />
+  </Icon>
+);
+
+export const TrashIcon = () => (
+  <Icon>
+    <path d="M4 6.5h16" />
+    <path d="M9 6.5V4h6v2.5" />
+    <path d="M6 6.5 7 20h10l1-13.5" />
+    <path d="M10 10.5v6" />
+    <path d="M14 10.5v6" />
+  </Icon>
+);
+
 export const ClosedIcon = () => (
   <Icon>
     <circle cx="12" cy="12" r="9" />

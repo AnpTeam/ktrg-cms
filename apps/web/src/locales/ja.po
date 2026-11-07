@@ -5068,6 +5068,22 @@ msgstr "必要なこと"
 msgid "必須"
 msgstr "必須"
 
+#: src/components/admin/BlockEditor.tsx
+msgid "斜体"
+msgstr "斜体"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "下線"
+msgstr "下線"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "ここはページに表示されません"
+msgstr "ここはページに表示されません"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "写真を消す"
+msgstr "写真を消す"
+
 #: src/components/admin/GradingFields.tsx:39
 msgid "急な登り下りや、わかりにくい所がある。はしごやくさりが出ることもある。"
 msgstr "急な登り下りや、わかりにくい所がある。はしごやくさりが出ることもある。"
