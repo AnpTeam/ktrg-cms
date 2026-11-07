@@ -71,7 +71,9 @@ export function authRoutes(getServices: () => AuthServices, opts: RouteOptions) 
       "/session/rotate",
       async ({ authSession, set }) => {
         if (!authSession.rotateDue) return { ok: true as const, rotated: false };
-        http.setToken(set, await getServices().session.rotate(authSession.id), authSession.expiresAt);
+        const token = await getServices().session.rotate(authSession.id);
+        if (!token) return { ok: true as const, rotated: false };
+        http.setToken(set, token, authSession.expiresAt);
         return { ok: true as const, rotated: true };
       },
       { auth: "me.manage", rateLimit: { sessionRotateUser: "user.id" } },

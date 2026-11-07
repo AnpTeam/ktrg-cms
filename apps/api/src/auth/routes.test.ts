@@ -247,8 +247,22 @@ describe("POST /auth/session/rotate", () => {
     expect(next).not.toBe(cookie);
     expect((await t.get("session", cookie)).status).toBe(200);
     expect((await t.get("session", next)).status).toBe(200);
+    expect((await t.get("session", cookie)).status).toBe(200); // a slow request sent before the change
+    t.sessions.rows[0]!.rotatedAt = new Date(Date.now() - 2 * 3600 * 1000);
+    expect((await t.get("session", next)).status).toBe(200);
     expect((await t.get("session", cookie)).status).toBe(401);
     expect(await (await t.post("session/rotate", undefined, next)).json()).toEqual({ ok: true, rotated: false });
+  });
+
+  test("asking again straight after sets no second cookie: the old one stays good", async () => {
+    const t = setup();
+    const { cookie } = await t.login();
+    t.sessions.rows[0]!.rotatedAt = new Date(Date.now() - 31 * 24 * 3600 * 1000);
+    await t.post("session/rotate", undefined, cookie);
+    const again = await t.post("session/rotate", undefined, cookie);
+    expect(await again.json()).toEqual({ ok: true, rotated: false });
+    expect(again.headers.get("set-cookie")).toBeNull();
+    expect((await t.get("session", cookie)).status).toBe(200);
   });
 });
 

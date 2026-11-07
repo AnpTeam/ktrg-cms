@@ -33,9 +33,11 @@ export function createMemorySessionStore(users: Map<string, AuthUser>) {
       const row = rows.find((r) => r.id === id);
       if (row) Object.assign(row, { lastSeenAt, expiresAt });
     },
-    async rotate(id, tokenHash, at) {
+    async rotate(id, tokenHash, at, notAfter) {
       const row = rows.find((r) => r.id === id);
-      if (row) Object.assign(row, { previousTokenHash: row.previousTokenHash ?? row.tokenHash, tokenHash, rotatedAt: at });
+      if (!row || row.rotatedAt > notAfter) return false;
+      Object.assign(row, { previousTokenHash: row.previousTokenHash ?? row.tokenHash, tokenHash, rotatedAt: at });
+      return true;
     },
     async settle(id) {
       const row = rows.find((r) => r.id === id);

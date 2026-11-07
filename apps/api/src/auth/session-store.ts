@@ -1,4 +1,4 @@
-import { and, eq, ne, or, sql } from "drizzle-orm";
+import { and, eq, ne, or, sql, lte } from "drizzle-orm";
 import type { Db } from "../db/client";
 import { sessions, users } from "../db/schema";
 import type { SessionStore } from "./session-service";
@@ -58,11 +58,13 @@ export function createDrizzleSessionStore(db: Db): SessionStore {
       await db.update(sessions).set({ lastSeenAt, expiresAt }).where(eq(sessions.id, id));
     },
 
-    async rotate(id, tokenHash, at) {
-      await db
+    async rotate(id, tokenHash, at, notAfter) {
+      const changed = await db
         .update(sessions)
         .set({ previousTokenHash: sql`coalesce(${sessions.previousTokenHash}, ${sessions.tokenHash})`, tokenHash, rotatedAt: at })
-        .where(eq(sessions.id, id));
+        .where(and(eq(sessions.id, id), lte(sessions.rotatedAt, notAfter)))
+        .returning({ id: sessions.id });
+      return changed.length > 0;
     },
 
     async settle(id) {
