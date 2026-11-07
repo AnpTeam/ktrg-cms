@@ -125,6 +125,24 @@ export function publicAccessPoint(p: RouteRow["accessPoints"][number]): RouteRow
   return rest;
 }
 
+/** What a coming-soon course keeps from visitors: its name and numbers are listed, its reading is still a draft. */
+const NOT_YET_PUBLIC: Partial<PublicRoute> = {
+  descriptionJa: null,
+  descriptionEn: null,
+  accessPoints: [],
+  videoUrl: null,
+  videoUpdatedAt: null,
+  videoSubtitles: false,
+  videoUrlEn: null,
+  videoSubtitlesEn: false,
+  historyJa: null,
+  historyEn: null,
+  accessJa: null,
+  accessEn: null,
+  sourceJa: null,
+  sourceEn: null,
+};
+
 function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolean, visibleSpotIds: ReadonlySet<string> = new Set()): PublicRoute {
   // A line nobody has checked is not shown: not the line, not its silhouette, not the box around it.
   const shown = r.lineVerified ? r.geometry : null;
@@ -168,6 +186,7 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     sideLines: withLine && shown ? sideLinesOf(shown, visibleSpotIds) : [],
     rides: withLine && shown ? ridesOf(shown, visibleSpotIds) : [],
     bounds: boundsOf(shown),
+    ...(publishedSpotCount > 0 ? {} : NOT_YET_PUBLIC),
   };
 }
 

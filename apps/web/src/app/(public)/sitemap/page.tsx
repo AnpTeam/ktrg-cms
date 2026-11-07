@@ -66,7 +66,7 @@ export default async function SitemapPage() {
         <LinkRow href="/routes">
           <Trans>ルートの一覧</Trans>
         </LinkRow>
-        {routes.map((route) => (
+        {routes.filter((route) => route.status === "ready").map((route) => (
           <LinkRow key={route.id} href={`/routes/${route.id}`}>
             <Localized value={pickText(i18n.locale, route.nameJa, route.nameEn)} tag={false} />
           </LinkRow>

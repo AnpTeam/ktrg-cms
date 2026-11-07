@@ -353,6 +353,12 @@ describe("what visitors see", () => {
 });
 
 describe("history, access and photo", () => {
+  /** A course's reading reaches visitors once one of its stamp places is published. */
+  const open = async (routeId: string) => {
+    const s = await spot(routeId);
+    await mem.store.setPublished(ADMIN, s.id, true);
+  };
+
   test("they are saved in both languages, blank becomes empty, and a photo must be an https link", async () => {
     const r = await route();
     const saved = await svc.updateRoute(ADMIN, r.id, r.updatedAt, {
@@ -366,6 +372,7 @@ describe("history, access and photo", () => {
     for (const bad of ["http://example.com/a.jpg", "javascript:alert(1)", "/images/a.jpg", "x".repeat(501)]) {
       expect(await svc.updateRoute(ADMIN, r.id, cur.updatedAt, { photoUrl: bad })).toEqual({ ok: false, reason: "invalid_photo_url" });
     }
+    await open(r.id);
     expect((await svc.publicRoute(r.id))?.route).toMatchObject({ historyJa: "役行者が修行した道", photoUrl: "https://example.com/koyama.jpg" });
   });
 
@@ -377,6 +384,7 @@ describe("history, access and photo", () => {
       sourceEn: "   ",
     });
     expect(saved.ok && saved.value).toMatchObject({ photoCredit: "撮影：山田 [Commons](https://commons.wikimedia.org/)", sourceJa: "葛城修験日本遺産", sourceEn: null });
+    await open(r.id);
     expect((await svc.publicRoute(r.id))?.route).toMatchObject({ photoCredit: "撮影：山田 [Commons](https://commons.wikimedia.org/)", sourceJa: "葛城修験日本遺産" });
   });
 });
@@ -437,9 +445,12 @@ describe("the route's other points (turns, toilets, danger ...)", () => {
     const water = await spot(r.id, { nameJa: "水場", kind: "drinking_water", ...verified, permissionConfirmed: true });
     await svc.publishSpot(ADMIN, water.id);
     expect((await svc.publicRoutes())[0]?.status).toBe("soon"); // only a water point is public: no stamp place yet
+    await svc.updateRoute(ADMIN, r.id, (await svc.getRoute(r.id))!.route.updatedAt, { descriptionJa: "説明" });
+    expect((await svc.publicRoute(r.id))?.route.descriptionJa).toBeNull();
     await svc.publishSpot(ADMIN, stamp.id);
     const detail = await svc.publicRoute(r.id);
     expect(detail?.route.status).toBe("ready");
+    expect(detail?.route.descriptionJa).toBe("説明"); // the first stamp place opens the course
     expect(detail?.spots.map((x) => x.nameJa)).toEqual(["経塚"]);
     expect(detail?.points.map((x) => [x.nameJa, x.kind])).toEqual([["水場", "drinking_water"]]);
     const row = (await svc.listRoutes())[0]!;
