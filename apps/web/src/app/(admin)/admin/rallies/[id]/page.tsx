@@ -49,7 +49,7 @@ export default async function EditRallyPage({ params }: { params: Promise<{ id: 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4">
       <AdminBack href="/admin/rallies">
-        <Trans>ラリー</Trans>
+        <Trans>ラリー一覧にもどる</Trans>
       </AdminBack>
       <RallyEditor initial={body.rally} memberIds={memberIds} candidates={candidates} otherCandidates={other} routeNames={routeNames} locale={i18n.locale} />
     </div>

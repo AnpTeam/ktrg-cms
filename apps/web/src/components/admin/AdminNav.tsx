@@ -38,7 +38,7 @@ export function AdminNav({ lists, isAdmin, footer }: { lists: { key: string; tit
     { key: "rallies", href: `${base}/rallies`, label: t`ラリー`, icon: <FlagIcon /> },
     { key: "visits", href: `${base}/visits`, label: t`アクセス解析`, icon: <GlobeIcon /> },
     { key: "attention", href: `${base}/attention`, label: t`直すところ`, icon: <WarningIcon /> },
-    ...lists.filter((l) => l.key !== "site-pages").map((l) => ({ key: l.key, href: `${base}/${l.key}`, label: l.title, icon: LIST_ICONS[l.key] ?? <DocumentIcon /> })),
+    ...lists.filter((l) => l.key !== "site-pages" && l.key !== "authors").map((l) => ({ key: l.key, href: `${base}/${l.key}`, label: l.title, icon: LIST_ICONS[l.key] ?? <DocumentIcon /> })),
     { key: "pages", href: `${base}/pages`, label: t`ページ`, icon: <DocumentIcon /> },
     // The site settings are for an admin only (the API refuses an editor).
     ...(isAdmin ? [{ key: "settings", href: `${base}/settings`, label: t`詳細設定`, icon: <GearIcon /> }] : []),
@@ -48,7 +48,7 @@ export function AdminNav({ lists, isAdmin, footer }: { lists: { key: string; tit
     { keys: ["attention"] },
     { keys: ["dashboard"] },
     { title: t`ルートとラリー`, keys: ["routes", "rallies", "stamps", "places", "directory"] },
-    { title: t`サイトの内容`, keys: ["notices", "banners", "furigana", "pages", "posts", "authors"] },
+    { title: t`サイトの内容`, keys: ["notices", "banners", "furigana", "pages", "posts"] },
     { title: t`コミュニティ`, keys: ["comments", "users"] },
     { title: t`運営`, keys: ["visits", "audit", "settings"] },
   ];
@@ -72,7 +72,8 @@ export function AdminNav({ lists, isAdmin, footer }: { lists: { key: string; tit
           <div key={i} className={`flex flex-col gap-1 ${i > 0 ? "mt-2 border-t border-line pt-3" : ""}`}>
             {group.title ? <p className="px-4 pb-1 text-base font-bold text-muted lg:group-data-[folded=true]:hidden">{group.title}</p> : null}
             {group.items.map((item) => {
-              const active = item.key === "dashboard" ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
+              // 書き手 is part of the blog, so the blog stays lit there.
+              const active = item.key === "dashboard" ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`) || (item.key === "posts" && pathname.startsWith(`${base}/authors`));
               return (
                 <Link
                   key={item.href}

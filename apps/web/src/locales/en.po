@@ -5156,6 +5156,21 @@ msgstr "Community"
 msgid "運営"
 msgstr "Running the site"
 
+msgid "ルート一覧にもどる"
+msgstr "Back to the route list"
+
+msgid "一覧へ戻る"
+msgstr "Back to the list"
+
+msgid "ページへ戻る"
+msgstr "Back to pages"
+
+msgid "ブログへ戻る"
+msgstr "Back to the blog"
+
+msgid "書き手を管理する"
+msgstr "Manage writers"
+
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "Remove photo"
