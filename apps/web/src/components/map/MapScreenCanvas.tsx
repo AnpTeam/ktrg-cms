@@ -1,5 +1,6 @@
 "use client";
 
+import { mapMemory, type MapCamera } from "@/lib/map-memory";
 import { MapHelp } from "./MapHelp";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -53,6 +54,7 @@ export function MapScreenCanvas({
   onSelectStop,
   onSelectMound,
   focusPlaceId = null,
+  startCamera = null,
   coveredPx,
   coveredLeftPx = 0,
   controlsTopPx = 0,
@@ -73,6 +75,8 @@ export function MapScreenCanvas({
   onSelectMound: (routeId: string, stopId: string) => void;
   /** A place of the open course to bring into view and open once, when the page was asked for it. */
   focusPlaceId?: string | null;
+  /** The view to come back to; the course and stop it shows are then not framed again until they change. */
+  startCamera?: MapCamera | null;
   /** How much of the map's bottom the sheet and the tab bar cover right now: what is framed stays clear of it. */
   coveredPx: number;
   /** On a desktop: how much of the map's left side the panel covers, so what is framed stays clear of it. */
@@ -177,16 +181,19 @@ export function MapScreenCanvas({
         map = new ml.Map({
           container: containerRef.current,
           style: mapStyleSource(settings, i18n.locale),
-          center: START_CENTER,
-          zoom: 8.6,
+          center: startCamera?.center ?? START_CENTER,
+          zoom: startCamera?.zoom ?? 8.6,
           // Tilted a little from the start, so the mountains read as a landscape. Three fingers change it (MapHelp).
-          pitch: 45,
+          pitch: startCamera?.pitch ?? 45,
+          bearing: startCamera?.bearing ?? 0,
           minZoom: zoomLimits.min,
           maxZoom: zoomLimits.max,
           dragRotate: false,
           pitchWithRotate: false,
           attributionControl: { compact: false },
         });
+        // The saved centre is measured inside the padding it was saved with.
+        if (startCamera) map.setPadding(startCamera.padding);
         map.touchZoomRotate.disableRotation();
         // A drag by the visitor (not the camera following them) ends following, and north goes back up.
         map.on("dragstart", () => {
@@ -213,6 +220,7 @@ export function MapScreenCanvas({
         map.on("moveend", () => {
           if (!map) return;
           const c = map.getCenter();
+          mapMemory.camera = { center: [c.lng, c.lat], zoom: map.getZoom(), pitch: map.getPitch(), bearing: map.getBearing(), padding: map.getPadding() };
           setAutoId(revealedRouteId(routesRef.current, { lat: c.lat, lng: c.lng }, map.getZoom(), REVEAL_ZOOM));
           setView((v) => v + 1);
         });
@@ -258,7 +266,7 @@ export function MapScreenCanvas({
       map?.remove();
       mapRef.current = null;
     };
-  }, [settings, i18n.locale]);
+  }, [settings, i18n.locale]); // eslint-disable-line react-hooks/exhaustive-deps -- startCamera only sets the first view
 
   // What is drawn: the rectangles (all of them, or only the chosen course) and the shown course's path.
   useEffect(() => {
@@ -372,9 +380,18 @@ export function MapScreenCanvas({
   const flat = camera.pitch < 5;
   const toggleTilt = () => mapRef.current?.easeTo({ pitch: flat ? 45 : 0, ...(following ? {} : { bearing: 0 }), duration: 400 });
 
+  // Back from another page, the view stays as it was until the visitor chooses something else (undefined: nothing kept).
+  const keptRoute = useRef(startCamera ? routeId : undefined);
+  const keptStop = useRef(startCamera ? stopId : undefined);
+
   // Where the camera goes: all the areas at first, a chosen course when there is one.
   useEffect(() => {
     const map = mapRef.current;
+    if (keptRoute.current === routeId && navEnds === 0) {
+      if (ready) map?.fire("moveend"); // no move happens, and the pins read the view from this event
+      return;
+    }
+    keptRoute.current = undefined;
     if (!map || !ready) return;
     const points = route ? framePoints(route.line || !lines[route.id] ? route : { ...route, line: lines[route.id] ?? null }) : routes.flatMap((r) => (r.area ? framePoints(r) : []));
     const bounds = boundsOf(points);
@@ -403,6 +420,8 @@ export function MapScreenCanvas({
 
   // A chosen stop is brought into view above the sheet.
   useEffect(() => {
+    if (keptStop.current === stopId) return;
+    keptStop.current = undefined;
     const map = mapRef.current;
     const stop = focus?.stops?.find((s) => s.id === stopId);
     if (!map || !ready || !stop) return;
