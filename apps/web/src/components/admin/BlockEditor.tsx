@@ -11,6 +11,7 @@ import { useLingui } from "@lingui/react/macro";
 import { ChevronDownIcon, ChevronUpIcon, ImageIcon, LinkIcon, ListIcon, PlusIcon, TrashIcon, UndoIcon } from "@/components/icons";
 import { bodyToDoc, cardParts, docToBody, moveBlock, type PageLook } from "@/lib/admin/block-doc";
 import { isWebUrl } from "@/lib/format";
+import { nextNote } from "@/lib/rich-text-edit";
 import { inputClass } from "./fields";
 import { PhotoUpload } from "./PhotoUpload";
 
@@ -23,7 +24,7 @@ type Kind = "paragraph" | "h2" | "h3" | "list" | "rule" | "photo";
 type Panel = { kind: "link"; href: string; bad: boolean } | { kind: "photo" } | null;
 
 const SHOWN =
-  "tiptap-page min-h-72 rounded-xl border-2 border-line bg-paper p-4 text-lg leading-8 text-ink [&_a]:font-bold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4 [&_h2]:mt-5 [&_h2]:border-l-[6px] [&_h2]:border-accent [&_h2]:pl-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-snug [&_h3]:mt-4 [&_h3]:text-xl [&_h3]:font-bold [&_hr]:my-6 [&_hr]:border-line [&_img]:my-4 [&_img]:rounded-xl [&_p]:my-3 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_.ProseMirror-selectednode]:outline-4 [&_.ProseMirror-selectednode]:outline-accent";
+  "tiptap-page min-h-72 rounded-xl border-2 border-line bg-paper p-4 text-lg leading-8 text-ink [&_a]:font-bold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4 [&_h2]:mt-5 [&_h2]:border-l-[6px] [&_h2]:border-accent [&_h2]:pl-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-snug [&_h3]:mt-4 [&_h3]:text-xl [&_h3]:font-bold [&_hr]:my-6 [&_hr]:border-line [&_img]:my-4 [&_img]:rounded-xl [&_p]:my-3 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_.ProseMirror-selectednode]:outline-4 [&_.ProseMirror-selectednode]:outline-accent [&_.note-mark]:rounded [&_.note-mark]:bg-surface [&_.note-mark]:px-1 [&_.note-mark]:text-base [&_.note-mark]:font-bold [&_.note-mark]:text-accent [&_.note-line]:text-base [&_.note-line]:text-muted";
 const BUTTON = "tap-target inline-flex items-center gap-1 rounded-full border-2 border-line bg-paper px-4 text-base font-bold disabled:opacity-40";
 const ACTIVE = "border-ink bg-ink text-paper";
 
@@ -136,6 +137,27 @@ function pageCards(look: PageLook, hiddenLabel: string) {
   });
 }
 
+/** The marks of a footnote and the lines that hold the notes, set apart. They stay plain text, so the saved format is unchanged. */
+const footnotes = Extension.create({
+  name: "footnotes",
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        props: {
+          decorations: ({ doc }) => {
+            const shown: Decoration[] = [];
+            doc.descendants((node, at) => {
+              if (node.isText) for (const m of node.text!.matchAll(/\[\^[\w-]+\]/g)) shown.push(Decoration.inline(at + m.index, at + m.index + m[0].length, { class: "note-mark" }));
+              else if (node.type.name === "paragraph" && /^\[\^[\w-]+\]:/.test(node.textContent)) shown.push(Decoration.node(at, at + node.nodeSize, { class: "note-line" }));
+            });
+            return DecorationSet.create(doc, shown);
+          },
+        },
+      }),
+    ];
+  },
+});
+
 /** Where a new block goes: over the empty line the cursor is on, else after the block it is in. */
 function place(editor: Editor, block: JSONContent, caret: ((start: number) => void) | null) {
   const { $from } = editor.state.selection;
@@ -146,7 +168,7 @@ function place(editor: Editor, block: JSONContent, caret: ((start: number) => vo
   caret?.(start);
 }
 
-export function BlockEditor({ id, lang, label, value, onChange, look }: { id: string; lang: string; label: string; value: string; onChange: (v: string) => void; /** Draw the text as this page will: its headings as cards. */ look?: PageLook }) {
+export function BlockEditor({ id, lang, label, value, onChange, look, notes = false }: { id: string; lang: string; label: string; value: string; onChange: (v: string) => void; /** Offer footnotes: only where one text is drawn as a whole, or a note cannot find its mark. */ notes?: boolean; /** Draw the text as this page will: its headings as cards. */ look?: PageLook }) {
   const { t } = useLingui();
   const written = useRef(value);
 
@@ -164,6 +186,7 @@ export function BlockEditor({ id, lang, label, value, onChange, look }: { id: st
       }),
       Photo.configure({ allowBase64: false }),
       ...(look ? [pageCards(look, t`ここはページに表示されません`)] : []),
+      ...(notes ? [footnotes] : []),
     ],
     content: bodyToDoc(value),
     editorProps: {
@@ -185,10 +208,10 @@ export function BlockEditor({ id, lang, label, value, onChange, look }: { id: st
   }, [editor, value]);
 
   // Only drawn once the editor exists: its state hook takes the editor it starts with and sees nothing until a transaction.
-  return editor ? <Blocks editor={editor} id={id} closingNote={look === "guide"} /> : <div className={`${SHOWN} animate-pulse`} aria-busy="true" />;
+  return editor ? <Blocks editor={editor} id={id} closingNote={look === "guide"} notes={notes} /> : <div className={`${SHOWN} animate-pulse`} aria-busy="true" />;
 }
 
-function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closingNote: boolean }) {
+function Blocks({ editor, id, closingNote, notes }: { editor: Editor; id: string; closingNote: boolean; notes: boolean }) {
   const { t } = useLingui();
   const [panel, setPanel] = useState<Panel>(null);
   const [plusAt, setPlusAt] = useState<{ x: number; y: number } | null>(null);
@@ -283,6 +306,16 @@ function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closi
     else chain.extendMarkRange("link").setLink({ href: address }).run();
     setPanel(null);
   };
+  // The mark at the caret, its note on a new line at the end, and the caret there to write it.
+  const addNote = () => {
+    const n = nextNote(docToBody(editor.getJSON()));
+    editor.chain().focus().setTextSelection(editor.state.selection.to).insertContent(`[^${n}]`).run();
+    editor
+      .chain()
+      .insertContentAt(editor.state.doc.content.size, { type: "paragraph", content: [{ type: "text", text: `[^${n}]: ` }] })
+      .focus("end")
+      .run();
+  };
   const addPhoto = (src: string) => {
     place(editor, { type: "image", attrs: { src, alt: "" } }, (start) => editor.commands.setNodeSelection(start));
     setPanel(null);
@@ -296,7 +329,7 @@ function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closi
   return (
     <div className="flex flex-col gap-2">
       <div className="sticky top-[4.75rem] z-10 flex flex-col gap-2">
-        <div role="toolbar" aria-label={t`文章の書式`} aria-controls={id} className="flex flex-wrap items-center gap-1 rounded-xl border-2 border-line bg-paper p-1">
+        <div role="toolbar" aria-label={t`文章の書式`} aria-controls={id} className="flex flex-wrap items-center gap-0.5 rounded-xl border-2 border-line bg-paper p-1">
           <Tool name={t`追加`} pressed={menuOpen} onClick={openPlus}>
             <PlusIcon size={24} />
           </Tool>
@@ -319,6 +352,13 @@ function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closi
           <Tool name={t`リンク`} pressed={state.link} disabled={inHeading} onClick={() => setPanel(panel?.kind === "link" ? null : { kind: "link", href: state.link ? String(editor.getAttributes("link").href ?? "") : "", bad: false })}>
             <LinkIcon />
           </Tool>
+          {notes ? (
+            <Tool name={t`脚注`} disabled={inHeading} onClick={addNote}>
+              <span className="text-base font-bold">
+                [<sup>1</sup>]
+              </span>
+            </Tool>
+          ) : null}
           <Tool name={t`写真`} pressed={panel?.kind === "photo"} onClick={() => setPanel(panel?.kind === "photo" ? null : { kind: "photo" })}>
             <ImageIcon />
           </Tool>

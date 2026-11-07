@@ -7,8 +7,7 @@ test("no window.confirm, alert or prompt in the app", async () => {
   const root = join(import.meta.dir, "..");
   const found: string[] = [];
   for await (const file of new Glob("**/*.{ts,tsx}").scan(root)) {
-    // shortcut: PR #357 replaces the one confirm left in NavigationHud, remove this exception once it is merged.
-    if (file.includes(".test.") || file.endsWith("NavigationHud.tsx")) continue;
+    if (file.includes(".test.")) continue;
     const text = await Bun.file(join(root, file)).text();
     if (/(?:window\.|(?<![.\w]))(?:confirm|alert|prompt)\(/.test(text)) found.push(file);
   }

@@ -65,6 +65,7 @@ export function MultilingualField({
   onTranslations,
   multiline = false,
   blocks = false,
+  notes = false,
   required = false,
   invalid = false,
 }: {
@@ -81,6 +82,8 @@ export function MultilingualField({
   multiline?: boolean;
   /** A page's text: the block editor instead of a plain box. */
   blocks?: boolean;
+  /** Offer footnotes in the block editor. */
+  notes?: boolean;
   required?: boolean;
   invalid?: boolean;
 }) {
@@ -98,7 +101,7 @@ export function MultilingualField({
   }
   const box = (boxId: string, lang: string, value: string, onChange: (v: string) => void, ariaLabel?: string) =>
     blocks ? (
-      <BlockEditorLoader id={boxId} lang={lang} label={ariaLabel ?? label} value={value} onChange={onChange} />
+      <BlockEditorLoader id={boxId} lang={lang} label={ariaLabel ?? label} value={value} onChange={onChange} notes={notes} />
     ) : multiline ? (
       <>
         <RichTextToolbar targetId={boxId} value={value} onChange={onChange} />

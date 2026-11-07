@@ -5107,6 +5107,14 @@ msgid "ここはページに表示されません"
 msgstr "This part is not shown on the page"
 
 #: src/components/admin/BlockEditor.tsx
+msgid "公開と記事の情報"
+msgstr "Publishing and details"
+
+#: src/components/admin/BlockEditor.tsx
+msgid "脚注"
+msgstr "Footnote"
+
+#: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "Remove photo"
 
