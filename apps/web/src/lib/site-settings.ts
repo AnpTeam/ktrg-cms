@@ -1,7 +1,7 @@
 import type { Entry } from "./gsi-large-style";
 import { defaultMapSettings, sanitizeMapSettings, type MapSettings } from "./map-settings";
 
-// Server side: the settings an admin chose for the whole site (管理 > サイト全体の設定), read from the API for every page
+// Server side: the settings an admin chose for the whole site (管理 > 詳細設定), read from the API for every page
 // view. Until one is saved, or when the API cannot be reached, the built-in default applies, so a map never fails to appear.
 
 type PublicSettings = { ok?: unknown; mapStyle?: unknown; homeSections?: { tourism?: unknown } | null };

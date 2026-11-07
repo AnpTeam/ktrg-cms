@@ -804,14 +804,11 @@ msgstr "Access and transport"
 msgid "アクセス・交通の補足"
 msgstr "Getting there: extra notes"
 
-#: src/app/(admin)/admin/visits/page.tsx:62
-#: src/components/admin/AdminNav.tsx:39
-msgid "アクセスの地域"
-msgstr "Where visits come from"
+msgid "アクセス解析"
+msgstr "Analytics"
 
-#: src/app/(admin)/admin/visits/page.tsx:10
-msgid "アクセスの地域（管理）"
-msgstr "Where visits come from (admin)"
+msgid "アクセス解析（管理）"
+msgstr "Analytics (admin)"
 
 #: src/components/admin/GoalsForm.tsx:15
 msgid "アクセス数"
@@ -1749,14 +1746,11 @@ msgstr "Settings that affect the whole site. What you change here shows on visit
 msgid "サイトマップ"
 msgstr "Site map"
 
-#: src/app/(admin)/admin/settings/page.tsx:22
-#: src/components/admin/AdminNav.tsx:44
-msgid "サイト全体の設定"
-msgstr "Site-wide settings"
+msgid "詳細設定"
+msgstr "Advanced settings"
 
-#: src/app/(admin)/admin/settings/page.tsx:11
-msgid "サイト全体の設定（管理）"
-msgstr "Site-wide settings (admin)"
+msgid "詳細設定（管理）"
+msgstr "Advanced settings (admin)"
 
 #: src/components/admin/DuplicateFinder.tsx:53
 msgid "さがしています…"
@@ -2576,15 +2570,8 @@ msgstr "Page not found"
 msgid "ページが開かれた回数を、接続元のおおよその地域（国・都道府県・市）ごとに数えています。IPアドレスや個人は記録しません。市や町の位置は、実際の場所とずれることがあります。"
 msgstr "Page views counted by the approximate region of the connection (country, prefecture, city). No IP address or person is recorded. A city or town can differ from where the visitor really is."
 
-#: src/app/(admin)/admin/pages/page.tsx:34
-#: src/components/admin/AdminNav.tsx:42
-msgid "ページの文章"
-msgstr "Page text"
-
-#: src/app/(admin)/admin/pages/[key]/page.tsx:14
-#: src/app/(admin)/admin/pages/page.tsx:15
-msgid "ページの文章（管理）"
-msgstr "Page text (admin)"
+msgid "ページ（管理）"
+msgstr "Pages (admin)"
 
 #: src/components/settings/PrefsForm.tsx:121
 msgid "ページの漢字すべてに、読みがなをつけます。"
@@ -5156,6 +5143,33 @@ msgstr "Needs work ({needsWorkCount})"
 
 msgid "現在の場所"
 msgstr "You are here"
+
+msgid "ルートとラリー"
+msgstr "Routes and rallies"
+
+msgid "サイトの内容"
+msgstr "Site content"
+
+msgid "コミュニティ"
+msgstr "Community"
+
+msgid "運営"
+msgstr "Running the site"
+
+msgid "ルート一覧にもどる"
+msgstr "Back to the route list"
+
+msgid "一覧へ戻る"
+msgstr "Back to the list"
+
+msgid "ページへ戻る"
+msgstr "Back to pages"
+
+msgid "ブログへ戻る"
+msgstr "Back to the blog"
+
+msgid "書き手を管理する"
+msgstr "Manage writers"
 
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
