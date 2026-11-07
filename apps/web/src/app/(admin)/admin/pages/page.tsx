@@ -12,7 +12,7 @@ import type { ListMeta } from "@/lib/admin/lists/config";
 
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
-  return { title: i18n._(msg`ページの文章（管理）`) };
+  return { title: i18n._(msg`ページ（管理）`) };
 }
 
 /** The fixed pages whose text can be replaced: the editor sees the FAQ and how to play, an admin the terms and privacy too. */
@@ -32,7 +32,7 @@ export default async function PageTextList() {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-5">
       <h1 className="text-3xl font-bold">
-        <Trans>ページの文章</Trans>
+        <Trans>ページ</Trans>
       </h1>
       <p className="text-lg text-muted">
         <Trans>アプリにもともと入っている固定のページの文章を、ここで書きかえられます。何も書かなければ、もとの文章が表示されます。</Trans>

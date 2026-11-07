@@ -10,7 +10,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return page ? { title: customPageIn(page, i18n.locale).title } : {};
 }
 
-// A page an editor made in the admin (管理 > ページの文章 > 新しいページ). Only published ones are found.
+// A page an editor made in the admin (管理 > ページ > 新しいページ). Only published ones are found.
 export default async function CustomPage({ params }: { params: Promise<{ slug: string }> }) {
   const i18n = await initLingui();
   const page = await customPage((await params).slug);

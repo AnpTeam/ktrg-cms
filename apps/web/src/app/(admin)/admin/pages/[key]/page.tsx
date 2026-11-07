@@ -17,7 +17,7 @@ import { builtInPages } from "@/lib/page-text-server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
-  return { title: i18n._(msg`ページの文章（管理）`) };
+  return { title: i18n._(msg`ページ（管理）`) };
 }
 
 export default async function EditPageText({ params }: { params: Promise<{ key: string }> }) {
@@ -44,7 +44,7 @@ export default async function EditPageText({ params }: { params: Promise<{ key: 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-4">
       <AdminBack href="/admin/pages">
-        <Trans>ページの文章</Trans>
+        <Trans>ページへ戻る</Trans>
       </AdminBack>
       <PageTextEditor pageKey={key as PageKey} saved={saved} builtIn={builtIn} locale={i18n.locale} home={home} />
     </div>

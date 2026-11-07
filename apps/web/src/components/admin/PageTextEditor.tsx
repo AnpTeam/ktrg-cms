@@ -16,7 +16,7 @@ import { showToast } from "@/lib/admin/toast";
 
 type Lang = "ja" | "en";
 
-// 管理 > ページの文章 > one page. Each language has a title and a text. A language that was never written starts from
+// 管理 > ページ > one page. Each language has a title and a text. A language that was never written starts from
 // the text the app has now, so nothing is typed from nothing; emptying both boxes brings the built-in page back.
 export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { pageKey: PageKey; saved: PageText | null; home?: HomeData; builtIn: PageText; locale: string }) {
   const { t } = useLingui();

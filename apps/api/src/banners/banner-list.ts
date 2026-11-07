@@ -1,11 +1,12 @@
 import { publicCache } from "../lib/public-cache";
 import { Elysia, t, type Static } from "elysia";
 import { createMemoryListStore } from "../admin-lists/list-memory-store";
-import type { ListDef } from "../admin-lists/list-routes";
+import { rowOut, type ListDef } from "../admin-lists/list-routes";
 import { createListService } from "../admin-lists/list-service";
 import { bad, ok, type ListRow, type ListRules, type ListStore } from "../admin-lists/list-types";
 import type { AuditWriter } from "../audit/audit-log";
-import type { KitServices } from "../auth/route-kit";
+import { fail } from "../auth/http";
+import { routeKit, type KitServices, type RouteOptions } from "../auth/route-kit";
 import { cleanTranslations } from "../db/translations";
 import { isPhotoUrl } from "../lib/https-url";
 import { translationsSchema } from "../lib/schemas";
@@ -22,17 +23,21 @@ export const BANNER_FIELDS = {
   altEn: t.Union([t.String({ maxLength: 200 }), t.Null()]),
   /** The other content languages (admin entry; visitors see ja / en). */
   translations: t.Optional(translationsSchema({ alt: 200 })),
-  sortOrder: t.Integer({ minimum: 0, maximum: 999 }),
   published: t.Boolean(),
 };
 
 const bannerFields = t.Object(BANNER_FIELDS);
 export type BannerFields = Static<typeof bannerFields>;
-export type BannerRow = ListRow & BannerFields;
+/** `sortOrder` is not a field of the form: a new banner goes last, and the arrows on the banner page move it. */
+export type BannerRow = ListRow & BannerFields & { sortOrder: number };
 
 export interface BannerStore extends ListStore<BannerRow, BannerFields> {
   /** Published banners in their order (then oldest first). */
   listPublic(): Promise<BannerRow[]>;
+  /** Every banner, in the same order. */
+  listOrdered(): Promise<BannerRow[]>;
+  /** Puts them in this order. False unless `ids` is every banner, once each. */
+  reorder(actor: string, ids: string[]): Promise<boolean>;
 }
 
 export const BANNER_AUDIT = { create: "banner.create", update: "banner.update", delete: "banner.delete" } as const;
@@ -60,16 +65,32 @@ export const bannerRules = (photoHosts: readonly string[] = []): ListRules<Banne
 export type BannerService = ReturnType<typeof createBannerService>;
 
 export function createBannerService(deps: { store: BannerStore; photoHosts?: readonly string[] }) {
-  return { ...createListService({ store: deps.store, rules: bannerRules(deps.photoHosts) }), publicBanners: () => deps.store.listPublic() };
+  return {
+    ...createListService({ store: deps.store, rules: bannerRules(deps.photoHosts) }),
+    publicBanners: () => deps.store.listPublic(),
+    ordered: () => deps.store.listOrdered(),
+    reorder: (actor: string, ids: string[]) => deps.store.reorder(actor, ids),
+  };
 }
 
 /** In-memory banners for tests and the dev page. */
 export function createMemoryBannerStore(audit: AuditWriter, opts: { now?: () => Date } = {}) {
-  const list = createMemoryListStore<BannerFields>(audit, BANNER_AUDIT, opts);
+  const list = createMemoryListStore<BannerFields & { sortOrder: number }>(audit, BANNER_AUDIT, opts);
+  const ordered = () => [...list.rows.values()].sort((a, b) => a.sortOrder - b.sortOrder || a.createdAt.getTime() - b.createdAt.getTime());
   const store: BannerStore = {
     ...list.store,
+    create: (actor, fields) => list.store.create(actor, { ...fields, sortOrder: Math.max(0, ...[...list.rows.values()].map((b) => b.sortOrder)) + 1 }),
     async listPublic() {
-      return [...list.rows.values()].filter((b) => b.published).sort((a, b) => a.sortOrder - b.sortOrder || a.createdAt.getTime() - b.createdAt.getTime());
+      return ordered().filter((b) => b.published);
+    },
+    async listOrdered() {
+      return ordered();
+    },
+    async reorder(actor, ids) {
+      if (ids.length !== list.rows.size || new Set(ids).size !== ids.length || !ids.every((id) => list.rows.has(id))) return false;
+      ids.forEach((id, i) => (list.rows.get(id)!.sortOrder = i + 1));
+      await audit.record({ actorUserId: actor, action: "banner.reorder", targetId: null });
+      return true;
     },
   };
   return { store, rows: list.rows };
@@ -89,8 +110,8 @@ export const bannerList: ListDef<"banners", typeof BANNER_FIELDS, BannerRow, Ban
   ui: {
     title: { ja: "バナー", en: "Banners" },
     intro: {
-      ja: "ホームの上に流れる写真です。使ってよい写真だけを載せてください（横長、約1600×1000）。小さい番号から順に表示します。",
-      en: "The photos that scroll at the top of the home page. Only use photos the project may use (landscape, about 1600 × 1000). They show in order, smallest number first.",
+      ja: "ホームの上に流れる写真です。使ってよい写真だけを載せてください（横長、約1600×1000）。上から順に表示します。矢印で順番を変えられます。",
+      en: "The photos that scroll at the top of the home page. Only use photos the project may use (landscape, about 1600 × 1000). They show from the top down; use the arrows to change the order.",
     },
     newLabel: { ja: "新しいバナー", en: "New banner" },
     deleteWarning: { ja: "このバナーを削除します。よろしいですか？（写真のファイルは残ります）", en: "Delete this banner? (The photo file itself is kept.)" },
@@ -120,14 +141,6 @@ export const bannerList: ListDef<"banners", typeof BANNER_FIELDS, BannerRow, Ban
         required: true,
       },
       {
-        name: "sortOrder",
-        kind: "number",
-        label: { ja: "順番", en: "Order" },
-        hint: { ja: "小さい番号から表示します（0〜999）。", en: "Smallest number first (0 to 999)." },
-        required: true,
-        inList: { text: { ja: "順番 {value}", en: "Order {value}" } },
-      },
-      {
         name: "published",
         kind: "boolean",
         label: { ja: "公開する（ホームに表示する）", en: "Publish (show on the home page)" },
@@ -136,6 +149,19 @@ export const bannerList: ListDef<"banners", typeof BANNER_FIELDS, BannerRow, Ban
     ],
   },
 };
+
+/** The banner page: every banner in the order visitors see them, and the arrows that change it. */
+export function bannerOrderRoutes(getServices: () => BannerServices, opts: RouteOptions) {
+  const { plugins } = routeKit(getServices, opts);
+  return new Elysia({ prefix: "/admin", detail: { tags: ["Admin content"] } })
+    .use(plugins)
+    .get("/banners/order", async () => ({ ok: true as const, items: (await getServices().banners.ordered()).map(rowOut) }), { auth: "banner.manage" })
+    .put(
+      "/banners/order",
+      async ({ user, body, set }) => ((await getServices().banners.reorder(user.id, body.ids)) ? { ok: true as const } : fail(set, 422, "validation_failed")),
+      { auth: "banner.manage", rateLimit: { adminWriteUser: "user.id" }, body: t.Object({ ids: t.Array(t.String({ format: "uuid" }), { maxItems: 1000 }) }) },
+    );
+}
 
 /** What visitors get: published banners in order, without the admin's fields. */
 export function publicBannerRoutes(getBanners: () => BannerService) {

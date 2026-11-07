@@ -7,7 +7,7 @@ import { barPercent, countryName, regionName, type VisitSummary } from "@/lib/ad
 
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
-  return { title: i18n._(msg`アクセスの地域（管理）`) };
+  return { title: i18n._(msg`アクセス解析（管理）`) };
 }
 
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
@@ -59,7 +59,7 @@ export default async function VisitsPage({ searchParams }: { searchParams: Promi
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-5">
       <h1 className="text-3xl font-bold">
-        <Trans>アクセスの地域</Trans>
+        <Trans>アクセス解析</Trans>
       </h1>
       <p className="text-lg text-muted">
         <Trans>ページが開かれた回数を、接続元のおおよその地域（国・都道府県・市）ごとに数えています。IPアドレスや個人は記録しません。市や町の位置は、実際の場所とずれることがあります。</Trans>

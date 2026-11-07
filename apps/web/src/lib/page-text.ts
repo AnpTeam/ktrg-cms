@@ -1,4 +1,4 @@
-// The text of a fixed page (FAQ, how to play, terms, privacy) when an editor has written it in 管理 > ページの文章.
+// The text of a fixed page (FAQ, how to play, terms, privacy) when an editor has written it in 管理 > ページ.
 // It is typed in a small plain format, so an editor needs no markup beyond what the rest of the site already reads
 // (links and footnotes, see rich-text.ts):
 //   the first paragraphs, before any heading        the opening text of the page
