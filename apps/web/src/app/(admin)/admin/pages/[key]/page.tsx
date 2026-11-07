@@ -44,7 +44,7 @@ export default async function EditPageText({ params }: { params: Promise<{ key: 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-4">
       <AdminBack href="/admin/pages">
-        <Trans>ページの文章へ戻る</Trans>
+        <Trans>ページの文章</Trans>
       </AdminBack>
       <PageTextEditor pageKey={key as PageKey} saved={saved} builtIn={builtIn} locale={i18n.locale} home={home} />
     </div>

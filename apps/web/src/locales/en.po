@@ -2586,10 +2586,6 @@ msgstr "Page text"
 msgid "ページの文章（管理）"
 msgstr "Page text (admin)"
 
-#: src/app/(admin)/admin/pages/[key]/page.tsx:29
-msgid "ページの文章へ戻る"
-msgstr "Back to page text"
-
 #: src/components/settings/PrefsForm.tsx:121
 msgid "ページの漢字すべてに、読みがなをつけます。"
 msgstr "Adds a reading over every kanji on the page."
@@ -3262,11 +3258,6 @@ msgstr "Could not load the routes. Please wait a moment and reopen the page."
 msgid "ルート一覧"
 msgstr "All routes"
 
-#: src/app/(admin)/admin/routes/[id]/page.tsx:37
-#: src/app/(admin)/admin/routes/new/page.tsx:23
-msgid "ルート一覧にもどる"
-msgstr "Back to the route list"
-
 #: src/components/admin/useChecklistLabels.ts:11
 msgid "ルート名（日本語）"
 msgstr "Route name (Japanese)"
@@ -3332,11 +3323,6 @@ msgstr "List"
 #: src/app/(admin)/admin/pages/page.tsx:73
 msgid "一覧で見る・削除する"
 msgstr "See the list and delete"
-
-#: src/app/(admin)/admin/[list]/[id]/page.tsx:31
-#: src/app/(admin)/admin/[list]/new/page.tsx:26
-msgid "一覧へ戻る"
-msgstr "Back to the list"
 
 #: src/components/map/TrailMap.tsx:584
 msgid "上のボタンを押すと、{restName}や{shopsName}などが地図と一覧に出ます。"
@@ -5167,6 +5153,9 @@ msgstr "Filter by {label}"
 
 msgid "手直しが必要（{needsWorkCount}）"
 msgstr "Needs work ({needsWorkCount})"
+
+msgid "現在の場所"
+msgstr "You are here"
 
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
