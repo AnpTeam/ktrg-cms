@@ -7623,3 +7623,11 @@ msgstr "選びなおす"
 #: src/components/auth/authUi.tsx
 msgid "日本"
 msgstr "日本"
+
+#: src/components/RouteStats.tsx
+msgid "体力"
+msgstr "体力"
+
+#: src/components/RouteStats.tsx
+msgid "技術"
+msgstr "技術"
