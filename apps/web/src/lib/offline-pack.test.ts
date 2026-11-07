@@ -82,6 +82,22 @@ test("a download where most tiles failed is not kept as saved", async () => {
   expect(fake.stores.has("ktrg-pack-r1")).toBe(false);
 });
 
+test("an update that fails keeps the pack already saved", async () => {
+  globalThis.fetch = (async (u: string) => site(u)) as unknown as typeof fetch;
+  const saved = await savePack("r1", ["u/1", "u/2"], () => {}, 5000);
+
+  // The signal goes while the pages are fetched.
+  globalThis.fetch = (async () => new Response("", { status: 500 })) as unknown as typeof fetch;
+  await expect(savePack("r1", ["u/1", "u/2"], () => {}, 9000)).rejects.toThrow();
+  expect(await readPack("r1")).toEqual(saved);
+
+  // The pages arrive, and then most of the tiles do not.
+  globalThis.fetch = (async (u: string) => (u.startsWith("u/") ? new Response("", { status: 500 }) : site(u))) as unknown as typeof fetch;
+  await expect(savePack("r1", ["u/1", "u/2"], () => {}, 9000)).rejects.toThrow();
+  expect(await readPack("r1")).toEqual(saved);
+  expect(await fake.stores.get("ktrg-pack-r1")?.get("u/1")?.text()).toBe("x".repeat(1000));
+});
+
 test("age and size read plainly", () => {
   const now = 10 * 24 * 3600_000;
   expect(packAge(now - 30_000, now)).toEqual({ n: 0, unit: "minute" });

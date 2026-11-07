@@ -91,15 +91,20 @@ async function savePages(routeId: string, cache: Cache): Promise<void> {
 /**
  * Downloads the tiles of a course. Tiles that do not exist (sea, outside GSI's coverage answer 404) are skipped; the pack
  * only fails when most of them could not be fetched, so one bad moment of signal does not leave a half map labelled "saved".
- * The description is written last: a download that is cut off shows as not saved.
+ * The description is written last: a download that is cut off shows as not saved. An update that fails keeps the pack already
+ * saved, which may be the only map the visitor has: it is written over in place, and a tile is only replaced by a good copy.
  */
 export async function savePack(routeId: string, urls: string[], onProgress: (done: number, total: number) => void, now = Date.now()): Promise<PackInfo> {
   const cache = await caches.open(packCacheName(routeId));
+  const hadPack = (await cache.match(META_URL)) !== undefined;
+  const giveUp = async (): Promise<never> => {
+    if (!hadPack) await caches.delete(packCacheName(routeId));
+    throw new Error("pack incomplete");
+  };
   try {
     await savePages(routeId, cache);
   } catch {
-    await caches.delete(packCacheName(routeId));
-    throw new Error("pack incomplete");
+    return giveUp();
   }
   let done = 0;
   let stored = 0;
@@ -122,10 +127,7 @@ export async function savePack(routeId: string, urls: string[], onProgress: (don
       }),
     );
   }
-  if (urls.length === 0 || stored < urls.length * 0.75) {
-    await caches.delete(packCacheName(routeId));
-    throw new Error("pack incomplete");
-  }
+  if (urls.length === 0 || stored < urls.length * 0.75) return giveUp();
   const info: PackInfo = { savedAt: now, bytes, tiles: stored };
   await cache.put(META_URL, new Response(JSON.stringify(info), { headers: { "content-type": "application/json" } }));
   return info;
