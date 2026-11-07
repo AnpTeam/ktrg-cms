@@ -5024,6 +5024,10 @@ msgid "下線"
 msgstr "Underline"
 
 #: src/components/admin/BlockEditor.tsx
+msgid "ここはページに表示されません"
+msgstr "This part is not shown on the page"
+
+#: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "Remove photo"
 

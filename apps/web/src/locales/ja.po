@@ -4998,6 +4998,10 @@ msgid "下線"
 msgstr "下線"
 
 #: src/components/admin/BlockEditor.tsx
+msgid "ここはページに表示されません"
+msgstr "ここはページに表示されません"
+
+#: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "写真を消す"
 

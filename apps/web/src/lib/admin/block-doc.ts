@@ -123,3 +123,37 @@ export function moveBlock(state: EditorState, by: -1 | 1): Transaction | null {
   const at = selection.from + by * doc.child(other).nodeSize;
   return tr.setSelection(selection instanceof NodeSelection ? NodeSelection.create(tr.doc, at) : TextSelection.near(tr.doc.resolve(at))).scrollIntoView();
 }
+
+/** The pages whose headings become cards. */
+export type PageLook = "faq" | "guide";
+
+/**
+ * How a page will draw each top-level block, so the editor can look the same: the split of parsePageBody (lib/page-text.ts),
+ * which a test holds it to. The document stays a flat list; these only name a class for each block.
+ */
+export function cardParts(blocks: readonly { type: string; level?: number }[], look: PageLook): { className: string; step?: number; hidden?: true }[] {
+  let part: "lead" | "section" | "note" = "lead";
+  let step = 0;
+  const kinds = blocks.map((b) => {
+    if (b.type === "heading" && b.level === 2 && part !== "note") {
+      part = "section";
+      step += 1;
+      return { kind: "head" as const, step };
+    }
+    if (look === "guide" && b.type === "horizontalRule" && part !== "note") {
+      part = "note";
+      return { kind: "rule" as const };
+    }
+    return { kind: part };
+  });
+  return kinds.map((k, i) => {
+    const next = kinds[i + 1]?.kind;
+    const end = next === undefined || next === "head" || next === "rule" ? " card-end" : "";
+    if (k.kind === "head") return { className: `card-part card-head${end}`, step: k.step };
+    if (k.kind === "section") return { className: `card-part${end}` };
+    if (k.kind === "note") return { className: `card-part card-note${kinds[i - 1]?.kind === "rule" ? " card-note-first" : ""}${end}` };
+    // The FAQ shows questions only: what comes before the first one is never drawn.
+    if (k.kind === "lead" && look === "faq") return { className: "page-hidden", ...(i === 0 ? { hidden: true as const } : {}) };
+    return { className: "" };
+  });
+}

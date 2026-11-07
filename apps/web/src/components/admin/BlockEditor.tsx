@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
-import type { JSONContent } from "@tiptap/core";
+import { Extension, type JSONContent } from "@tiptap/core";
 import Image from "@tiptap/extension-image";
-import { NodeSelection } from "@tiptap/pm/state";
+import { NodeSelection, Plugin } from "@tiptap/pm/state";
+import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { EditorContent, NodeViewWrapper, ReactNodeViewRenderer, useEditor, useEditorState, type Editor, type NodeViewProps } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useLingui } from "@lingui/react/macro";
 import { ChevronDownIcon, ChevronUpIcon, ImageIcon, LinkIcon, ListIcon, PlusIcon, TrashIcon, UndoIcon } from "@/components/icons";
-import { bodyToDoc, docToBody, moveBlock } from "@/lib/admin/block-doc";
+import { bodyToDoc, cardParts, docToBody, moveBlock, type PageLook } from "@/lib/admin/block-doc";
 import { isWebUrl } from "@/lib/format";
 import { inputClass } from "./fields";
 import { PhotoUpload } from "./PhotoUpload";
@@ -101,6 +102,40 @@ function Tool({ name, pressed, disabled, onClick, children }: { name: string; pr
 
 const GAP = <span aria-hidden="true" className="mx-1 h-7 w-px bg-line" />;
 
+// The FAQ and how to play draw their headings as cards (components/pages/PageViews.tsx). Here the same cards are drawn over the
+// flat document: each block gets a class (cardParts), and neighbouring blocks with the same background read as one card.
+const CARD =
+  "[&_.card-part]:m-0 [&_.card-part]:bg-surface [&_.card-part]:px-5 [&_.card-part]:py-1.5 [&_ul.card-part]:pl-10 [&_.card-part.card-head]:relative [&_.card-part.card-head]:mt-4 [&_.card-part.card-head]:rounded-t-3xl [&_.card-part.card-head]:border-l-0 [&_.card-part.card-head]:pb-1 [&_.card-part.card-head]:pt-5 [&_.card-part.card-head]:text-xl [&_.card-part.card-end]:rounded-b-3xl [&_.card-part.card-end]:pb-5";
+const LOOK: Record<PageLook, string> = {
+  faq: `${CARD} [&_.card-part.card-head]:pr-12 [&_.card-part.card-head]:text-ink [&_.card-part.card-head]:[font-family:inherit] [&_.card-head]:after:absolute [&_.card-head]:after:right-6 [&_.card-head]:after:top-6 [&_.card-head]:after:size-3 [&_.card-head]:after:rotate-45 [&_.card-head]:after:border-b-2 [&_.card-head]:after:border-r-2 [&_.card-head]:after:border-ink [&_.card-head]:after:content-[''] [&_.page-hidden]:text-muted [&_.page-hidden]:before:block [&_.page-hidden]:before:text-base [&_.page-hidden]:before:font-bold [&_.page-hidden]:before:content-[attr(data-label)]`,
+  guide: `${CARD} [&_.card-part.card-head]:pl-[5.25rem] [&_.card-part.card-head]:text-accent [&_.card-part.card-head.card-end]:min-h-[5.5rem] [&_.card-head]:before:absolute [&_.card-head]:before:left-5 [&_.card-head]:before:top-5 [&_.card-head]:before:grid [&_.card-head]:before:size-12 [&_.card-head]:before:place-items-center [&_.card-head]:before:rounded-full [&_.card-head]:before:bg-brand [&_.card-head]:before:text-2xl [&_.card-head]:before:text-on-brand [&_.card-head]:before:content-[attr(data-step)] [&_.card-head]:before:[font-family:var(--font-sans)] [&_.card-part:not(.card-note):not(.card-head)]:pl-[5.25rem] [&_.card-part.card-note]:relative [&_.card-part.card-note]:pl-12 [&_.card-part.card-note-first]:rounded-t-2xl [&_.card-part.card-note-first]:pt-4 [&_.card-part.card-note.card-end]:rounded-b-2xl [&_.card-part.card-note.card-end]:pb-4 [&_.card-note-first]:before:absolute [&_.card-note-first]:before:left-4 [&_.card-note-first]:before:text-xl [&_.card-note-first]:before:content-['ⓘ']`,
+};
+
+function pageCards(look: PageLook, hiddenLabel: string) {
+  return Extension.create({
+    name: "pageCards",
+    addProseMirrorPlugins() {
+      return [
+        new Plugin({
+          props: {
+            decorations: ({ doc }) => {
+              const blocks: { type: string; level?: number }[] = [];
+              doc.forEach((n) => blocks.push({ type: n.type.name, level: n.attrs.level as number | undefined }));
+              const parts = cardParts(blocks, look);
+              const shown: Decoration[] = [];
+              doc.forEach((n, at, i) => {
+                const { className, step, hidden } = parts[i]!;
+                if (className) shown.push(Decoration.node(at, at + n.nodeSize, { class: className, ...(step ? { "data-step": String(step) } : {}), ...(hidden ? { "data-label": hiddenLabel } : {}) }));
+              });
+              return DecorationSet.create(doc, shown);
+            },
+          },
+        }),
+      ];
+    },
+  });
+}
+
 /** Where a new block goes: over the empty line the cursor is on, else after the block it is in. */
 function place(editor: Editor, block: JSONContent, caret: ((start: number) => void) | null) {
   const { $from } = editor.state.selection;
@@ -111,7 +146,8 @@ function place(editor: Editor, block: JSONContent, caret: ((start: number) => vo
   caret?.(start);
 }
 
-export function BlockEditor({ id, lang, label, value, onChange, closingNote = false }: { id: string; lang: string; label: string; value: string; onChange: (v: string) => void; /** How to play: the line starts the closing note. */ closingNote?: boolean }) {
+export function BlockEditor({ id, lang, label, value, onChange, look }: { id: string; lang: string; label: string; value: string; onChange: (v: string) => void; /** Draw the text as this page will: its headings as cards. */ look?: PageLook }) {
+  const { t } = useLingui();
   const written = useRef(value);
 
   const editor = useEditor({
@@ -127,10 +163,11 @@ export function BlockEditor({ id, lang, label, value, onChange, closingNote = fa
         link: { openOnClick: false },
       }),
       Photo.configure({ allowBase64: false }),
+      ...(look ? [pageCards(look, t`ここはページに表示されません`)] : []),
     ],
     content: bodyToDoc(value),
     editorProps: {
-      attributes: { id, lang, role: "textbox", "aria-multiline": "true", "aria-label": label, class: SHOWN },
+      attributes: { id, lang, role: "textbox", "aria-multiline": "true", "aria-label": label, class: `${SHOWN} ${look ? LOOK[look] : ""}` },
     },
     onUpdate: ({ editor: e }) => {
       const next = docToBody(e.getJSON());
@@ -148,7 +185,7 @@ export function BlockEditor({ id, lang, label, value, onChange, closingNote = fa
   }, [editor, value]);
 
   // Only drawn once the editor exists: its state hook takes the editor it starts with and sees nothing until a transaction.
-  return editor ? <Blocks editor={editor} id={id} closingNote={closingNote} /> : <div className={`${SHOWN} animate-pulse`} aria-busy="true" />;
+  return editor ? <Blocks editor={editor} id={id} closingNote={look === "guide"} /> : <div className={`${SHOWN} animate-pulse`} aria-busy="true" />;
 }
 
 function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closingNote: boolean }) {
@@ -184,6 +221,8 @@ function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closi
     { kind: "photo", name: t`写真` },
     { kind: "rule", name: closingNote ? t`線（ここから下は注意書き）` : t`区切りの線` },
   ];
+  // A heading is saved as plain words: nothing done to its letters would last.
+  const inHeading = state.style === "h2" || state.style === "h3";
   const slashOpen = state.slash && !dismissed;
   if (!state.slash && dismissed) setDismissed(false);
   const menuOpen = slashOpen || plusAt !== null;
@@ -268,16 +307,16 @@ function Blocks({ editor, id, closingNote }: { editor: Editor; id: string; closi
             </Tool>
           ))}
           {GAP}
-          <Tool name={t`太字`} pressed={state.bold} onClick={() => editor.chain().focus().toggleBold().run()}>
+          <Tool name={t`太字`} pressed={state.bold} disabled={inHeading} onClick={() => editor.chain().focus().toggleBold().run()}>
             <span className="text-xl font-black">B</span>
           </Tool>
-          <Tool name={t`斜体`} pressed={state.italic} onClick={() => editor.chain().focus().toggleItalic().run()}>
+          <Tool name={t`斜体`} pressed={state.italic} disabled={inHeading} onClick={() => editor.chain().focus().toggleItalic().run()}>
             <span className="font-serif text-xl font-bold italic">I</span>
           </Tool>
-          <Tool name={t`下線`} pressed={state.underline} onClick={() => editor.chain().focus().toggleUnderline().run()}>
+          <Tool name={t`下線`} pressed={state.underline} disabled={inHeading} onClick={() => editor.chain().focus().toggleUnderline().run()}>
             <span className="text-xl font-bold underline underline-offset-2">U</span>
           </Tool>
-          <Tool name={t`リンク`} pressed={state.link} onClick={() => setPanel(panel?.kind === "link" ? null : { kind: "link", href: state.link ? String(editor.getAttributes("link").href ?? "") : "", bad: false })}>
+          <Tool name={t`リンク`} pressed={state.link} disabled={inHeading} onClick={() => setPanel(panel?.kind === "link" ? null : { kind: "link", href: state.link ? String(editor.getAttributes("link").href ?? "") : "", bad: false })}>
             <LinkIcon />
           </Tool>
           <Tool name={t`写真`} pressed={panel?.kind === "photo"} onClick={() => setPanel(panel?.kind === "photo" ? null : { kind: "photo" })}>
