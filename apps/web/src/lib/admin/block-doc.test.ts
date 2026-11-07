@@ -5,23 +5,52 @@ import Image from "@tiptap/extension-image";
 import StarterKit from "@tiptap/starter-kit";
 import { bodyToDoc, cardParts, docToBody, moveBlock } from "./block-doc";
 import { parsePageBody } from "@/lib/page-text";
+import { CardTitle, PageCard } from "./card-nodes";
 
 const roundTrip = (body: string) => docToBody(bodyToDoc(body));
 const schema = getSchema([StarterKit.configure({ heading: { levels: [2, 3] } }), Image]);
 
 describe("short text", () => {
-  const short = (body: string) => docToBody(bodyToDoc(body, true));
+  const short = (body: string) => docToBody(bodyToDoc(body, "short"));
   const shortSchema = getSchema([StarterKit.configure({ heading: false, bulletList: false, listItem: false, listKeymap: false, horizontalRule: false })]);
 
   test("every line comes back as written, and what only long text has stays words", () => {
     const body = ["一行目\n二行目", "- 箇条書きではない\n## 見出しではない", "---", "![写真ではない](https://e.com/a.jpg)", "**太字**と__斜体__と[リンク](https://e.com)[^1]", "[^1]: 注の文"].join("\n\n");
     expect(short(body)).toBe(body);
-    expect(bodyToDoc(body, true).content!.every((b) => b.type === "paragraph")).toBe(true);
+    expect(bodyToDoc(body, "short").content!.every((b) => b.type === "paragraph")).toBe(true);
   });
 
   test("the short editor's schema accepts it, and nothing stays nothing", () => {
-    expect(() => shortSchema.nodeFromJSON(bodyToDoc("- a\n\n## b\n\n---", true)).check()).not.toThrow();
+    expect(() => shortSchema.nodeFromJSON(bodyToDoc("- a\n\n## b\n\n---", "short")).check()).not.toThrow();
     expect(short("")).toBe("");
+  });
+});
+
+describe("card blocks", () => {
+  const cards = (body: string) => docToBody(bodyToDoc(body, "cards"));
+  const cardSchema = getSchema([StarterKit.configure({ heading: { levels: [2, 3] } }), Image, CardTitle, PageCard]);
+  const body = ["前の文", ":::card 題\n一つ目\n\n- 項目\n\n![写真](https://e.com/a.jpg)\n:::", ":::step 手順\n**太字**の文\n:::", ":::faq 問い\n答え\n:::", "後の文"].join("\n\n");
+
+  test("every kind comes back as written, and the real schema accepts it", () => {
+    expect(cards(body)).toBe(body);
+    expect(() => cardSchema.nodeFromJSON(bodyToDoc(body, "cards")).check()).not.toThrow();
+  });
+
+  test("an empty card is still valid, a heading inside stays words, and without cards ::: stays words", () => {
+    expect(() => cardSchema.nodeFromJSON(bodyToDoc(":::card\n:::", "cards")).check()).not.toThrow();
+    expect(cards(":::card\n:::")).toBe(":::card\n:::");
+    const typed = ":::card 題\n## 見出し\n\n---\n:::";
+    expect(() => cardSchema.nodeFromJSON(bodyToDoc(typed, "cards")).check()).not.toThrow();
+    expect(cards(typed)).toBe(":::card 題\n## 見出し\n\n---\n:::");
+    expect(bodyToDoc(":::card 題\n:::").content!.every((b) => b.type === "paragraph")).toBe(true);
+  });
+
+  test("a card moves whole", () => {
+    const doc = cardSchema.nodeFromJSON(bodyToDoc("前\n\n:::card 題\n本文\n:::", "cards"));
+    const state = EditorState.create({ doc, schema: cardSchema });
+    const inCard = state.apply(state.tr.setSelection(TextSelection.create(doc, 8)));
+    const moved = inCard.apply(moveBlock(inCard, -1)!);
+    expect(docToBody(moved.doc.toJSON())).toBe(":::card 題\n本文\n:::\n\n前");
   });
 });
 

@@ -78,16 +78,20 @@ export function plainRich(text: string): string {
 //   - a bullet list (one item per line)
 //   ![what the photo shows](https://example.com/a.jpg)   a photo, alone on its line, https only
 //   ---   a line across the page
+//   :::card a title, then the card's text, then ::: alone on a line   a card; :::step is a numbered step, :::faq a question that opens
 // A blank line starts a new paragraph. Everything else is a paragraph, keeping its line breaks. Still never HTML:
 // RichBody renders these as React elements. The inline markers are parsed by the same code as above, so links and
 // footnotes behave identically and the notes are numbered across the whole text.
+
+export type CardStyle = "card" | "step" | "faq";
 
 export type Block =
   | { kind: "p"; parts: Inline[] }
   | { kind: "h"; level: 2 | 3; parts: Inline[] }
   | { kind: "ul"; items: Inline[][] }
   | { kind: "photo"; src: string; alt: string }
-  | { kind: "rule" };
+  | { kind: "rule" }
+  | { kind: "card"; style: CardStyle; title: string; blocks: Block[] };
 
 export interface RichBody {
   blocks: Block[];
@@ -98,60 +102,78 @@ export const HEADING = /^(##|###)[ \t]+(.*)$/;
 export const ITEM = /^-[ \t]+(.*)$/;
 export const RULE = /^---[ \t]*$/;
 // Alone on its line, and https only: a photo address is loaded by the visitor's browser.
+export const CARD_OPEN = /^:::(card|step|faq)(?:[ \t]+(.*))?$/;
+export const CARD_CLOSE = /^:::[ \t]*$/;
 export const PHOTO = /^!\[([^\]\n]*)\]\((https:\/\/[^\s)]+)\)[ \t]*$/;
 
 export function parseBlocks(text: string): RichBody {
   const { lines, noteOf, mentioned } = withNotes(text);
-  const blocks: Block[] = [];
-  let paragraph: string[] = [];
-  let items: string[] | null = null;
+  const read = (lines: string[], inCard: boolean): Block[] => {
+    const blocks: Block[] = [];
+    let paragraph: string[] = [];
+    let items: string[] | null = null;
 
-  const endParagraph = () => {
-    const joined = paragraph.join("\n").trim();
-    if (joined) blocks.push({ kind: "p", parts: inline(joined, noteOf) });
-    paragraph = [];
-  };
-  const endList = () => {
-    if (items?.length) blocks.push({ kind: "ul", items: items.map((i) => inline(i, noteOf)) });
-    items = null;
-  };
-  const endBoth = () => {
-    endParagraph();
-    endList();
-  };
-
-  for (const line of lines) {
-    const heading = HEADING.exec(line);
-    const item = ITEM.exec(line);
-    const photo = PHOTO.exec(line);
-    if (heading) {
-      endBoth();
-      blocks.push({ kind: "h", level: heading[1] === "##" ? 2 : 3, parts: inline(heading[2]!.trim(), noteOf) });
-    } else if (photo) {
-      endBoth();
-      blocks.push({ kind: "photo", src: photo[2]!, alt: photo[1]!.trim() });
-    } else if (RULE.test(line)) {
-      endBoth();
-      blocks.push({ kind: "rule" });
-    } else if (item) {
+    const endParagraph = () => {
+      const joined = paragraph.join("\n").trim();
+      if (joined) blocks.push({ kind: "p", parts: inline(joined, noteOf) });
+      paragraph = [];
+    };
+    const endList = () => {
+      if (items?.length) blocks.push({ kind: "ul", items: items.map((i) => inline(i, noteOf)) });
+      items = null;
+    };
+    const endBoth = () => {
       endParagraph();
-      (items ??= []).push(item[1]!.trim());
-    } else if (line.trim() === "") {
-      endBoth();
-    } else {
       endList();
-      paragraph.push(line);
+    };
+
+    for (let at = 0; at < lines.length; at++) {
+      const line = lines[at]!;
+      const heading = HEADING.exec(line);
+      const item = ITEM.exec(line);
+      const photo = PHOTO.exec(line);
+      const card = inCard ? null : CARD_OPEN.exec(line);
+      if (card) {
+        endBoth();
+        // A card left open (the start of a long post, cut for a list) ends with the text.
+        const close = lines.findIndex((l, i) => i > at && CARD_CLOSE.test(l));
+        const end = close === -1 ? lines.length : close;
+        blocks.push({ kind: "card", style: card[1] as CardStyle, title: (card[2] ?? "").trim(), blocks: read(lines.slice(at + 1, end), true) });
+        at = end;
+      } else if (heading) {
+        endBoth();
+        blocks.push({ kind: "h", level: heading[1] === "##" ? 2 : 3, parts: inline(heading[2]!.trim(), noteOf) });
+      } else if (photo) {
+        endBoth();
+        blocks.push({ kind: "photo", src: photo[2]!, alt: photo[1]!.trim() });
+      } else if (RULE.test(line)) {
+        endBoth();
+        blocks.push({ kind: "rule" });
+      } else if (item) {
+        endParagraph();
+        (items ??= []).push(item[1]!.trim());
+      } else if (line.trim() === "") {
+        endBoth();
+      } else {
+        endList();
+        paragraph.push(line);
+      }
     }
-  }
-  endBoth();
+    endBoth();
+    return blocks;
+  };
+  const blocks = read(lines, false);
   // mentioned() last: the notes are known only once every block has been parsed.
   return { blocks, notes: mentioned() };
 }
 
+const blockWords = (b: Block): string[] =>
+  b.kind === "photo" || b.kind === "rule" ? [] : b.kind === "ul" ? b.items.map(words) : b.kind === "card" ? [b.title, ...b.blocks.flatMap(blockWords)] : [words(b.parts)];
+
 /** The words of a long text, for a card that shows the beginning of a post: headings and list items included, photos not. */
 export function plainBody(text: string): string {
   return parseBlocks(text)
-    .blocks.flatMap((b) => (b.kind === "photo" || b.kind === "rule" ? [] : b.kind === "ul" ? b.items.map(words) : [words(b.parts)]))
+    .blocks.flatMap(blockWords)
     .join(" ")
     .replace(/\s+/g, " ")
     .trim();

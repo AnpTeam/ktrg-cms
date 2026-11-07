@@ -7,6 +7,8 @@
 //   anything else rich-text.ts reads as a block      bold, lists, photos and smaller headings, inside a paragraph
 // Paragraphs are separated by a blank line. Pure functions; tests are in page-text.test.ts.
 
+import { CARD_CLOSE, CARD_OPEN } from "./rich-text";
+
 export const PAGE_KEYS = ["home", "faq", "guide", "terms", "privacy"] as const;
 export type PageKey = (typeof PAGE_KEYS)[number];
 export type PageLang = { title: string; body: string };
@@ -18,12 +20,21 @@ export interface PageDoc {
   note: string[];
 }
 
-const paragraphs = (lines: string[]) =>
-  lines
-    .join("\n")
-    .split(/\n\s*\n/)
-    .map((p) => p.trim())
-    .filter((p) => p !== "");
+const paragraphs = (lines: string[]) => {
+  const out: string[] = [];
+  let open = false; // inside a card
+  for (const raw of lines.join("\n").split(/\n\s*\n/)) {
+    const part = raw.trim();
+    if (part === "") continue;
+    const last = out[out.length - 1];
+    const nextStep = last !== undefined && /^:::step\b/.test(part) && /(^|\n):::step\b/.test(last) && /\n:::$/.test(last);
+    if (open || nextStep) out[out.length - 1] = `${last}\n\n${part}`;
+    else out.push(part);
+    const fences = part.split("\n").filter((l) => CARD_OPEN.test(l) || CARD_CLOSE.test(l)).length;
+    if (fences % 2 === 1) open = !open;
+  }
+  return out;
+};
 
 export function parsePageBody(body: string, closingNote = false): PageDoc {
   const doc: PageDoc = { lead: [], sections: [], note: [] };

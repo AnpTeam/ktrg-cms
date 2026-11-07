@@ -5,12 +5,14 @@ import { Extension, type JSONContent } from "@tiptap/core";
 import Image from "@tiptap/extension-image";
 import { NodeSelection, Plugin } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
-import { EditorContent, NodeViewWrapper, ReactNodeViewRenderer, useEditor, useEditorState, type Editor, type NodeViewProps } from "@tiptap/react";
+import { EditorContent, NodeViewContent, NodeViewWrapper, ReactNodeViewRenderer, useEditor, useEditorState, type Editor, type NodeViewProps } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useLingui } from "@lingui/react/macro";
 import { ChevronDownIcon, ChevronUpIcon, ImageIcon, LinkIcon, ListIcon, PlusIcon, TrashIcon, UndoIcon } from "@/components/icons";
+import { CardTitle, PageCard } from "@/lib/admin/card-nodes";
 import { bodyToDoc, cardParts, docToBody, moveBlock, type PageLook } from "@/lib/admin/block-doc";
 import { isWebUrl } from "@/lib/format";
+import type { CardStyle } from "@/lib/rich-text";
 import { nextNote } from "@/lib/rich-text-edit";
 import { inputClass } from "./fields";
 import { PhotoUpload } from "./PhotoUpload";
@@ -20,7 +22,7 @@ import { PhotoUpload } from "./PhotoUpload";
 // blocks move with buttons, not by dragging, so it works the same with a finger (and TipTap's drag handle needs its Yjs
 // collaboration packages).
 
-type Kind = "paragraph" | "h2" | "h3" | "list" | "rule" | "photo";
+type Kind = "paragraph" | "h2" | "h3" | "list" | "rule" | "photo" | CardStyle;
 type Panel = { kind: "link"; href: string; bad: boolean } | { kind: "photo" } | null;
 
 const SHOWN =
@@ -81,6 +83,55 @@ const Photo = Image.extend({
   },
 });
 
+/** A card in the text. Its number (a step) and its empty title come from `cardMarks`, as they depend on the blocks around it. */
+function CardView({ node, deleteNode }: NodeViewProps) {
+  const { t } = useLingui();
+  const kind = String(node.attrs.kind) as CardStyle;
+  return (
+    <NodeViewWrapper className={`relative rounded-3xl bg-surface p-5 ${kind === "step" ? "pl-[5.25rem]" : ""}`} data-kind={kind}>
+      <button type="button" contentEditable={false} onClick={deleteNode} aria-label={t`カードを消す`} className="tap-target absolute right-2 top-2 z-10 inline-grid place-items-center rounded-full bg-paper text-ink shadow">
+        <span className="pointer-events-none">
+          <TrashIcon />
+        </span>
+      </button>
+      <NodeViewContent />
+    </NodeViewWrapper>
+  );
+}
+
+const Card = PageCard.extend({
+  addNodeView() {
+    return ReactNodeViewRenderer(CardView);
+  },
+});
+
+/** A run of steps counts from one, as on the page; an empty title says what it is for. */
+function cardMarks(titleLabel: string) {
+  return Extension.create({
+    name: "cardMarks",
+    addProseMirrorPlugins() {
+      return [
+        new Plugin({
+          props: {
+            decorations: ({ doc }) => {
+              const shown: Decoration[] = [];
+              let step = 0;
+              doc.forEach((n, at) => {
+                const isStep = n.type.name === "pageCard" && n.attrs.kind === "step";
+                step = isStep ? step + 1 : 0;
+                if (isStep) shown.push(Decoration.node(at, at + n.nodeSize, { "data-step": String(step) }));
+                const title = n.type.name === "pageCard" ? n.firstChild : null;
+                if (title && title.content.size === 0) shown.push(Decoration.node(at + 1, at + 1 + title.nodeSize, { class: "card-title-empty", "data-label": titleLabel }));
+              });
+              return DecorationSet.create(doc, shown);
+            },
+          },
+        }),
+      ];
+    },
+  });
+}
+
 /** One button of the toolbar: an icon, with its name for screen readers and in a tooltip of our own. */
 function Tool({ name, pressed, disabled, onClick, children }: { name: string; pressed?: boolean; disabled?: boolean; onClick: (e: ReactMouseEvent<HTMLButtonElement>) => void; children: ReactNode }) {
   return (
@@ -107,6 +158,9 @@ const GAP = <span aria-hidden="true" className="mx-1 h-7 w-px bg-line" />;
 // flat document: each block gets a class (cardParts), and neighbouring blocks with the same background read as one card.
 const CARD =
   "[&_.card-part]:m-0 [&_.card-part]:bg-surface [&_.card-part]:px-5 [&_.card-part]:py-1.5 [&_ul.card-part]:pl-10 [&_.card-part.card-head]:relative [&_.card-part.card-head]:mt-4 [&_.card-part.card-head]:rounded-t-3xl [&_.card-part.card-head]:border-l-0 [&_.card-part.card-head]:pb-1 [&_.card-part.card-head]:pt-5 [&_.card-part.card-head]:text-xl [&_.card-part.card-end]:rounded-b-3xl [&_.card-part.card-end]:pb-5";
+// Card blocks, drawn by CardView; the same look as components/pages/Cards.tsx.
+const CARD_BLOCK =
+  "[&_[data-kind]]:my-4 [&_[data-card-title]]:text-xl [&_[data-card-title]]:font-bold [&_[data-card-title]]:leading-snug [&_[data-card-title]]:pr-12 [&_[data-kind=card]_[data-card-title]]:text-accent [&_[data-kind=step]_[data-card-title]]:text-accent [&_.card-title-empty]:before:text-muted [&_.card-title-empty]:before:content-[attr(data-label)] [&_[data-step]]:relative [&_[data-step]]:before:absolute [&_[data-step]]:before:left-5 [&_[data-step]]:before:top-5 [&_[data-step]]:before:z-10 [&_[data-step]]:before:grid [&_[data-step]]:before:size-12 [&_[data-step]]:before:place-items-center [&_[data-step]]:before:rounded-full [&_[data-step]]:before:bg-brand [&_[data-step]]:before:text-2xl [&_[data-step]]:before:font-bold [&_[data-step]]:before:text-on-brand [&_[data-step]]:before:content-[attr(data-step)]";
 const LOOK: Record<PageLook, string> = {
   faq: `${CARD} [&_.card-part.card-head]:pr-12 [&_.card-part.card-head]:text-ink [&_.card-part.card-head]:[font-family:inherit] [&_.card-head]:after:absolute [&_.card-head]:after:right-6 [&_.card-head]:after:top-6 [&_.card-head]:after:size-3 [&_.card-head]:after:rotate-45 [&_.card-head]:after:border-b-2 [&_.card-head]:after:border-r-2 [&_.card-head]:after:border-ink [&_.card-head]:after:content-[''] [&_.page-hidden]:text-muted [&_.page-hidden]:before:block [&_.page-hidden]:before:text-base [&_.page-hidden]:before:font-bold [&_.page-hidden]:before:content-[attr(data-label)]`,
   guide: `${CARD} [&_.card-part.card-head]:pl-[5.25rem] [&_.card-part.card-head]:text-accent [&_.card-part.card-head.card-end]:min-h-[5.5rem] [&_.card-head]:before:absolute [&_.card-head]:before:left-5 [&_.card-head]:before:top-5 [&_.card-head]:before:grid [&_.card-head]:before:size-12 [&_.card-head]:before:place-items-center [&_.card-head]:before:rounded-full [&_.card-head]:before:bg-brand [&_.card-head]:before:text-2xl [&_.card-head]:before:text-on-brand [&_.card-head]:before:content-[attr(data-step)] [&_.card-head]:before:[font-family:var(--font-sans)] [&_.card-part:not(.card-note):not(.card-head)]:pl-[5.25rem] [&_.card-part.card-note]:relative [&_.card-part.card-note]:pl-12 [&_.card-part.card-note-first]:rounded-t-2xl [&_.card-part.card-note-first]:pt-4 [&_.card-part.card-note.card-end]:rounded-b-2xl [&_.card-part.card-note.card-end]:pb-4 [&_.card-note-first]:before:absolute [&_.card-note-first]:before:left-4 [&_.card-note-first]:before:text-xl [&_.card-note-first]:before:content-['ⓘ']`,
@@ -158,19 +212,21 @@ const footnotes = Extension.create({
   },
 });
 
-/** Where a new block goes: over the empty line the cursor is on, else after the block it is in. */
+/** Where a new block goes: over the empty line the cursor is on, else after the block it is in. Inside a card it stays inside, except another card, which goes after it. */
 function place(editor: Editor, block: JSONContent, caret: ((start: number) => void) | null) {
   const { $from } = editor.state.selection;
-  const top = $from.depth >= 1;
-  const emptyLine = $from.depth === 1 && $from.parent.isTextblock && $from.parent.content.size === 0;
-  const start = emptyLine ? $from.before(1) : top ? $from.after(1) : editor.state.selection.to;
-  editor.chain().focus().insertContentAt(emptyLine ? { from: start, to: $from.after(1) } : start, block).run();
+  const level = block.type !== "pageCard" && $from.depth >= 2 && $from.node(1).type.name === "pageCard" ? 2 : 1;
+  const top = $from.depth >= level;
+  const emptyLine = $from.depth === level && $from.parent.type.name === "paragraph" && $from.parent.content.size === 0;
+  const start = emptyLine ? $from.before(level) : top ? $from.after(level) : editor.state.selection.to;
+  editor.chain().focus().insertContentAt(emptyLine ? { from: start, to: $from.after(level) } : start, block).run();
   caret?.(start);
 }
 
-export function BlockEditor({ id, lang, label, value, onChange, look, notes = false, short = false }: { id: string; lang: string; label: string; value: string; onChange: (v: string) => void; /** Offer footnotes: only where one text is drawn as a whole, or a note cannot find its mark. */ notes?: boolean; /** A text the page draws with RichText: paragraphs, bold, italic, underline, links and footnotes, nothing else. */ short?: boolean; /** Draw the text as this page will: its headings as cards. */ look?: PageLook }) {
+export function BlockEditor({ id, lang, label, value, onChange, look, notes = false, short = false, cards = false }: { id: string; lang: string; label: string; value: string; onChange: (v: string) => void; /** Offer footnotes: only where one text is drawn as a whole, or a note cannot find its mark. */ notes?: boolean; /** A text the page draws with RichText: paragraphs, bold, italic, underline, links and footnotes, nothing else. */ short?: boolean; /** Offer card blocks: only where the page draws the whole text with RichBody. */ cards?: boolean; /** Draw the text as this page will: its headings as cards. */ look?: PageLook }) {
   const { t } = useLingui();
   const written = useRef(value);
+  const mode = short ? "short" : cards ? "cards" : undefined;
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -188,10 +244,11 @@ export function BlockEditor({ id, lang, label, value, onChange, look, notes = fa
       ...(short ? [] : [Photo.configure({ allowBase64: false })]),
       ...(look ? [pageCards(look, t`ここはページに表示されません`)] : []),
       ...(notes ? [footnotes] : []),
+      ...(cards ? [CardTitle, Card, cardMarks(t`題を入力`)] : []),
     ],
-    content: bodyToDoc(value, short),
+    content: bodyToDoc(value, mode),
     editorProps: {
-      attributes: { id, lang, role: "textbox", "aria-multiline": "true", "aria-label": label, class: `${SHOWN} ${short ? "min-h-32" : "min-h-72"} ${look ? LOOK[look] : ""}` },
+      attributes: { id, lang, role: "textbox", "aria-multiline": "true", "aria-label": label, class: `${SHOWN} ${short ? "min-h-32" : "min-h-72"} ${look ? LOOK[look] : ""} ${cards ? CARD_BLOCK : ""}` },
     },
     onUpdate: ({ editor: e }) => {
       const next = docToBody(e.getJSON());
@@ -205,14 +262,14 @@ export function BlockEditor({ id, lang, label, value, onChange, look, notes = fa
   useEffect(() => {
     if (!editor || value === written.current) return;
     written.current = value;
-    editor.commands.setContent(bodyToDoc(value, short), { emitUpdate: false });
-  }, [editor, value, short]);
+    editor.commands.setContent(bodyToDoc(value, mode), { emitUpdate: false });
+  }, [editor, value, mode]);
 
   // Only drawn once the editor exists: its state hook takes the editor it starts with and sees nothing until a transaction.
-  return editor ? <Blocks editor={editor} id={id} closingNote={look === "guide"} notes={notes} short={short} /> : <div className={`${SHOWN} animate-pulse`} aria-busy="true" />;
+  return editor ? <Blocks editor={editor} id={id} closingNote={look === "guide"} notes={notes} short={short} cards={cards} /> : <div className={`${SHOWN} animate-pulse`} aria-busy="true" />;
 }
 
-function Blocks({ editor, id, closingNote, notes, short }: { editor: Editor; id: string; closingNote: boolean; notes: boolean; short: boolean }) {
+function Blocks({ editor, id, closingNote, notes, short, cards }: { editor: Editor; id: string; closingNote: boolean; notes: boolean; short: boolean; cards: boolean }) {
   const { t } = useLingui();
   const [panel, setPanel] = useState<Panel>(null);
   const [plusAt, setPlusAt] = useState<{ x: number; y: number } | null>(null);
@@ -232,6 +289,8 @@ function Blocks({ editor, id, closingNote, notes, short }: { editor: Editor; id:
         link: e.isActive("link"),
         // Both slashes: a Japanese keyboard types the wide one.
         slash: !short && empty && $from.depth === 1 && $from.parent.type.name === "paragraph" && /^[/／]$/.test($from.parent.textContent),
+        inCard: e.isActive("pageCard"),
+        inTitle: e.isActive("cardTitle"),
         canUndo: e.can().undo(),
       };
     },
@@ -244,9 +303,12 @@ function Blocks({ editor, id, closingNote, notes, short }: { editor: Editor; id:
     { kind: "list", name: t`箇条書き` },
     { kind: "photo", name: t`写真` },
     { kind: "rule", name: closingNote ? t`線（ここから下は注意書き）` : t`区切りの線` },
+    ...(cards ? ([{ kind: "card", name: t`カード` }, { kind: "step", name: t`手順` }, { kind: "faq", name: t`たたむ質問` }] as const) : []),
   ];
+  // A card cannot hold headings or lines.
+  const shownItems = state.inCard ? items.filter((i) => i.kind !== "h2" && i.kind !== "h3" && i.kind !== "rule") : items;
   // A heading is saved as plain words: nothing done to its letters would last.
-  const inHeading = state.style === "h2" || state.style === "h3";
+  const inHeading = state.style === "h2" || state.style === "h3" || state.inTitle;
   const slashOpen = state.slash && !dismissed;
   if (!state.slash && dismissed) setDismissed(false);
   const menuOpen = slashOpen || plusAt !== null;
@@ -259,6 +321,7 @@ function Blocks({ editor, id, closingNote, notes, short }: { editor: Editor; id:
       editor.chain().deleteRange({ from: $from.start(), to: $from.end() }).run();
     }
     if (kind === "photo") setPanel({ kind: "photo" });
+    else if (kind === "card" || kind === "step" || kind === "faq") place(editor, { type: "pageCard", attrs: { kind }, content: [{ type: "cardTitle" }, { type: "paragraph" }] }, (start) => editor.commands.setTextSelection(start + 2));
     else if (kind === "rule") place(editor, { type: "horizontalRule" }, (start) => editor.commands.setTextSelection(start + 2));
     else if (kind === "list") place(editor, { type: "bulletList", content: [{ type: "listItem", content: [{ type: "paragraph" }] }] }, (start) => editor.commands.setTextSelection(start + 3));
     else place(editor, kind === "paragraph" ? { type: "paragraph" } : { type: "heading", attrs: { level: kind === "h2" ? 2 : 3 } }, (start) => editor.commands.setTextSelection(start + 1));
@@ -270,8 +333,8 @@ function Blocks({ editor, id, closingNote, notes, short }: { editor: Editor; id:
     const dom = editor.view.dom;
     const onKey = (e: KeyboardEvent) => {
       if (e.isComposing) return;
-      if (e.key === "ArrowDown" || e.key === "ArrowUp") setActive((i) => (i + (e.key === "ArrowDown" ? 1 : items.length - 1)) % items.length);
-      else if (e.key === "Enter") add(items[active]!.kind);
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") setActive((i) => (i + (e.key === "ArrowDown" ? 1 : shownItems.length - 1)) % shownItems.length);
+      else if (e.key === "Enter") add(shownItems[active]!.kind);
       else if (e.key === "Escape") setDismissed(true);
       else return;
       e.preventDefault();
@@ -338,7 +401,7 @@ function Blocks({ editor, id, closingNote, notes, short }: { editor: Editor; id:
               </Tool>
               {GAP}
               {items.slice(0, 4).map((item) => (
-                <Tool key={item.kind} name={item.name} pressed={state.style === item.kind} onClick={() => setStyle(item.kind)}>
+                <Tool key={item.kind} name={item.name} pressed={state.style === item.kind} disabled={state.inTitle || (state.inCard && (item.kind === "h2" || item.kind === "h3"))} onClick={() => setStyle(item.kind)}>
                   {item.kind === "list" ? <ListIcon /> : { paragraph: "¶", h2: "H2", h3: "H3" }[item.kind as string]}
                 </Tool>
               ))}
@@ -447,7 +510,7 @@ function Blocks({ editor, id, closingNote, notes, short }: { editor: Editor; id:
         <>
           {plusAt ? <div className="fixed inset-0 z-30" onClick={() => setPlusAt(null)} /> : null}
           <ul role="menu" aria-label={t`追加するもの`} style={{ left: at.x, ...(at.y + 340 > room ? { bottom: room - at.y + 44 } : { top: at.y }) }} className="fixed z-40 flex w-64 flex-col gap-1 rounded-xl border-2 border-line bg-paper p-2 shadow-xl">
-            {items.map((item, i) => (
+            {shownItems.map((item, i) => (
               <li key={item.kind} role="none">
                 <button
                   type="button"
