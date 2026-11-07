@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import Image from "next/image";
 import { useLingui } from "@lingui/react/macro";
 import { buttonStyle } from "@/components/button";
 import { WarningIcon } from "@/components/icons";
+import { CreditCaption } from "@/components/PhotoCredit";
+import type { MapPhoto } from "@/lib/map-screen";
 
 // The two moments a navigation stops to ask something, as cards in the middle of the screen: at a stamp place, and just past one.
 
@@ -12,20 +15,29 @@ const COVER = "fixed inset-0 z-40 flex items-center justify-center bg-black/50 p
 /** Long enough to read and answer with a walking pole in one hand. */
 const PASSED_WAIT_S = 20;
 
-/** At a stamp place: the stamp button, up front. "Later" leaves the small button at the bottom of the screen. */
-export function ArrivalPrompt({ name, nameLang, onLater, children }: { name: string; nameLang: "ja" | "en"; onLater: () => void; children: ReactNode }) {
+/** At a stamp place: its photo, and the stamp button up front. "Later" leaves the small button at the bottom of the screen. */
+export function ArrivalPrompt({ name, nameLang, photo, onLater, children }: { name: string; nameLang: "ja" | "en"; photo: MapPhoto | null; onLater: () => void; children: (later: ReactNode) => ReactNode }) {
   const { t } = useLingui();
+  const later = (
+    <button type="button" onClick={onLater} className={buttonStyle("secondary", "lg", "flex shrink-0")}>
+      {t`あとで`}
+    </button>
+  );
   return (
     <div className={COVER}>
-      <section role="dialog" aria-modal="true" aria-labelledby="nav-arrived" className={`${CARD} flex flex-col gap-3`}>
-        <p className="text-lg font-bold text-accent">{t`着きました`}</p>
-        <h2 id="nav-arrived" lang={nameLang} className="font-serif text-2xl font-bold leading-snug">
-          {name}
-        </h2>
-        {children}
-        <button type="button" onClick={onLater} className={buttonStyle("secondary", "md", "flex w-full")}>
-          {t`あとで`}
-        </button>
+      <section role="dialog" aria-modal="true" aria-labelledby="nav-arrived" className="max-h-full w-full max-w-sm overflow-y-auto rounded-2xl bg-paper text-ink shadow-2xl">
+        {/* With no photo the same deep red as a course's banner, so every arrival looks the same. */}
+        <div className="relative aspect-[16/9]" style={{ background: "linear-gradient(135deg, #6f241c, #b04a40)" }}>
+          {photo ? <Image src={photo.src} alt={photo.alt} fill sizes="24rem" className="object-cover" unoptimized={photo.src.startsWith("https://")} /> : null}
+        </div>
+        <div className="flex flex-col gap-1 p-5">
+          <CreditCaption credit={photo?.credit} className="mb-1" />
+          <p className="text-lg font-bold text-accent">{t`着きました`}</p>
+          <h2 id="nav-arrived" lang={nameLang} className="font-serif text-2xl font-bold leading-snug">
+            {name}
+          </h2>
+          <div className="mt-2">{children(later)}</div>
+        </div>
       </section>
     </div>
   );

@@ -77,7 +77,7 @@ async function beginNavigation(route: MapScreenRoute, start: ReturnType<typeof u
   const stampStops = route.stops?.filter((s) => !s.noStamp) ?? [];
   if (stampStops.length === 0) return false;
   const fetched = route.line === null && route.hasLine ? await getRouteLine(route.id) : null;
-  const stops: Record<string, NavStopInfo> = Object.fromEntries(stampStops.map((s) => [s.id, { name: s.name, nameLang: s.nameLang, status: s.status }]));
+  const stops: Record<string, NavStopInfo> = Object.fromEntries(stampStops.map((s) => [s.id, { name: s.name, nameLang: s.nameLang, status: s.status, photo: s.photo ?? route.photo }]));
   start({ routeId: route.id, routeName: route.name, access: route.accessPoints, stops, model: modelFromMapRoute(route, fetched) });
   return true;
 }
@@ -354,9 +354,11 @@ export function NavigationToast() {
   const targetAlongM = targetAt >= 0 ? (session.model.stopAlongM[targetAt] ?? null) : null;
   const profile = st.mode === "line" && st.alongM !== null && targetAlongM !== null ? legProfile(session.model.line, session.model.cum, st.alongM, targetAlongM) : null;
 
-  const stampButton =
-    st.inRadius && st.targetId && target ? (
+  const canStamp = Boolean(st.inRadius && st.targetId && target);
+  const stampButton = (aside?: ReactNode) =>
+    st.targetId && target && canStamp ? (
       <StampHere
+        aside={aside}
         spotId={st.targetId}
         status={target.status}
         alreadyStamped={false}
@@ -368,11 +370,11 @@ export function NavigationToast() {
     ) : null;
 
   const passed = snap.passedId ? session.stops[snap.passedId] : undefined;
-  const arrived = stampButton !== null && laterId !== st.targetId && !passed;
+  const arrived = canStamp && laterId !== st.targetId && !passed;
   const prompts = passed ? (
     <PassedPrompt key={snap.passedId} name={passed.name} nameLang={passed.nameLang} onGoOn={skipPassed} onGoBack={returnToPassed} />
   ) : arrived && target ? (
-    <ArrivalPrompt key={st.targetId} name={target.name} nameLang={target.nameLang} onLater={() => setLaterId(st.targetId)}>
+    <ArrivalPrompt key={st.targetId} name={target.name} nameLang={target.nameLang} photo={target.photo} onLater={() => setLaterId(st.targetId)}>
       {stampButton}
     </ArrivalPrompt>
   ) : null;
@@ -431,7 +433,7 @@ export function NavigationToast() {
           {offRouteCard}
           {far ? null : progressLine}
           {far || !profile ? null : <NavElevation profile={profile} />}
-          {far || arrived ? null : stampButton}
+          {far || arrived ? null : stampButton()}
           <div className={far ? "" : "grid grid-cols-2 gap-2"}>
             {far ? null : <NavTargetPicker />}
             <button type="button" onClick={() => setEnding(true)} className={buttonStyle("secondary", "md", "flex w-full")}>
@@ -467,7 +469,7 @@ export function NavigationToast() {
       </div>
       {offRouteBlock}
       {note ? <p className="text-base leading-snug">{note}</p> : null}
-      {arrived ? null : stampButton}
+      {arrived ? null : stampButton()}
       {prompts}
     </section>
   );

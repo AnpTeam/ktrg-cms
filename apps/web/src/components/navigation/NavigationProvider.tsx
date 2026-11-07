@@ -1,5 +1,6 @@
 "use client";
 
+import type { MapPhoto } from "@/lib/map-screen";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createNavigationController, type NavigationController, type NavSnapshot } from "@/lib/navigation/controller";
 import { requestPath, type PathAnswer } from "@/lib/navigation/path-client";
@@ -28,6 +29,8 @@ export interface NavStopInfo {
   name: string;
   nameLang: "ja" | "en";
   status: "open" | "caution" | "closed";
+  /** Shown on the arrival card. */
+  photo: MapPhoto | null;
 }
 
 interface NavigationApi {
