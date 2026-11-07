@@ -5162,6 +5162,12 @@ msgstr "Routes affected"
 msgid "赤いものは、直すまで訪問者に見えません。名前を押すと、そのルートの編集画面が開きます。"
 msgstr "Visitors cannot see the red items until they are fixed. Press a name to open that route in the editor."
 
+msgid "{label}でしぼりこむ"
+msgstr "Filter by {label}"
+
+msgid "手直しが必要（{needsWorkCount}）"
+msgstr "Needs work ({needsWorkCount})"
+
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "Remove photo"
