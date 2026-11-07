@@ -17,7 +17,7 @@ const choice = (on: boolean) =>
   `tap-target flex flex-col items-start gap-1 rounded-xl border-2 px-4 py-3 text-left ${on ? "border-ink bg-paper ring-2 ring-ink" : "border-line bg-paper hover:bg-surface"}`;
 
 /**
- * 管理 > サイト全体の設定. What is chosen here is what every visitor sees, at once: the screen says so at the top and asks
+ * 管理 > 詳細設定. What is chosen here is what every visitor sees, at once: the screen says so at the top and asks
  * again before saving. The first setting is the look of the map (the base map, the terrain shading, and how calm the
  * colours are); the preview map follows the choices before anything is saved.
  */

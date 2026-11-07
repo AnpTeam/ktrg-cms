@@ -10,7 +10,7 @@ import type { KitServices } from "../auth/route-kit";
 const maybe = (max: number) => t.Union([t.String({ maxLength: max }), t.Null()]);
 
 /**
- * A page an editor makes (管理 > ページの文章 > 新しいページ), shown to visitors at /p/<slug> once published. The text uses the
+ * A page an editor makes (管理 > ページ > 新しいページ), shown to visitors at /p/<slug> once published. The text uses the
  * same small format as the built-in pages' text (a `## heading` starts a section; see the web app's lib/page-text.ts).
  * Japanese is the page's language; the English title and text are shown to English visitors when they are written.
  */

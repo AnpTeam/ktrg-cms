@@ -1,5 +1,5 @@
 // How the trail map looks. One setting set, shared by every map and every visitor: an admin chooses it in
-// 管理 > サイト全体の設定 (kept in the database, read from the API), and the built-in default below applies until then.
+// 管理 > 詳細設定 (kept in the database, read from the API), and the built-in default below applies until then.
 // Pure functions, unit-tested.
 
 /**

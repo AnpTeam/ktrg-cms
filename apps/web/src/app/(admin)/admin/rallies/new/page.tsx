@@ -33,7 +33,7 @@ export default async function NewRallyPage() {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4">
       <AdminBack href="/admin/rallies">
-        <Trans>ラリー</Trans>
+        <Trans>ラリー一覧にもどる</Trans>
       </AdminBack>
       <RallyCreate places={places.body.candidates} courses={courses.body.candidates} routeNames={routeNames} locale={i18n.locale} />
     </div>

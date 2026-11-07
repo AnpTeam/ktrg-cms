@@ -804,14 +804,11 @@ msgstr "アクセス・交通"
 msgid "アクセス・交通の補足"
 msgstr "アクセス・交通の補足"
 
-#: src/app/(admin)/admin/visits/page.tsx:62
-#: src/components/admin/AdminNav.tsx:39
-msgid "アクセスの地域"
-msgstr "アクセスの地域"
+msgid "アクセス解析"
+msgstr "アクセス解析"
 
-#: src/app/(admin)/admin/visits/page.tsx:10
-msgid "アクセスの地域（管理）"
-msgstr "アクセスの地域（管理）"
+msgid "アクセス解析（管理）"
+msgstr "アクセス解析（管理）"
 
 #: src/components/admin/GoalsForm.tsx:15
 msgid "アクセス数"
@@ -1749,14 +1746,11 @@ msgstr "サイトの全体に関わる設定です。ここで変えたことは
 msgid "サイトマップ"
 msgstr "サイトマップ"
 
-#: src/app/(admin)/admin/settings/page.tsx:22
-#: src/components/admin/AdminNav.tsx:44
-msgid "サイト全体の設定"
-msgstr "サイト全体の設定"
+msgid "詳細設定"
+msgstr "詳細設定"
 
-#: src/app/(admin)/admin/settings/page.tsx:11
-msgid "サイト全体の設定（管理）"
-msgstr "サイト全体の設定（管理）"
+msgid "詳細設定（管理）"
+msgstr "詳細設定（管理）"
 
 #: src/components/admin/DuplicateFinder.tsx:53
 msgid "さがしています…"
@@ -2576,15 +2570,8 @@ msgstr "ページが見つかりません"
 msgid "ページが開かれた回数を、接続元のおおよその地域（国・都道府県・市）ごとに数えています。IPアドレスや個人は記録しません。市や町の位置は、実際の場所とずれることがあります。"
 msgstr "ページが開かれた回数を、接続元のおおよその地域（国・都道府県・市）ごとに数えています。IPアドレスや個人は記録しません。市や町の位置は、実際の場所とずれることがあります。"
 
-#: src/app/(admin)/admin/pages/page.tsx:34
-#: src/components/admin/AdminNav.tsx:42
-msgid "ページの文章"
-msgstr "ページの文章"
-
-#: src/app/(admin)/admin/pages/[key]/page.tsx:14
-#: src/app/(admin)/admin/pages/page.tsx:15
-msgid "ページの文章（管理）"
-msgstr "ページの文章（管理）"
+msgid "ページ（管理）"
+msgstr "ページ（管理）"
 
 #: src/components/settings/PrefsForm.tsx:121
 msgid "ページの漢字すべてに、読みがなをつけます。"
