@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-// Plain, heavy-stroke icons. Always shown next to a word, never alone.
+// Plain, heavy-stroke icons, shown next to a word. The one exception: the English course rows (RouteStats), where the word is screen-reader text and a title.
 function Icon({ children, size = 28 }: { children: ReactNode; size?: number }) {
   return (
     <svg
