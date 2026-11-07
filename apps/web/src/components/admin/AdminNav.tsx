@@ -36,17 +36,24 @@ export function AdminNav({ lists, isAdmin, footer }: { lists: { key: string; tit
     ...(isAdmin ? [{ key: "dashboard", href: base, label: t`ダッシュボード`, icon: <ChartIcon /> }] : []),
     { key: "routes", href: `${base}/routes`, label: t`ルート`, icon: <RouteIcon /> },
     { key: "rallies", href: `${base}/rallies`, label: t`ラリー`, icon: <FlagIcon /> },
-    { key: "visits", href: `${base}/visits`, label: t`アクセスの地域`, icon: <GlobeIcon /> },
+    { key: "visits", href: `${base}/visits`, label: t`アクセス解析`, icon: <GlobeIcon /> },
     { key: "attention", href: `${base}/attention`, label: t`直すところ`, icon: <WarningIcon /> },
     ...lists.filter((l) => l.key !== "site-pages").map((l) => ({ key: l.key, href: `${base}/${l.key}`, label: l.title, icon: LIST_ICONS[l.key] ?? <DocumentIcon /> })),
-    { key: "pages", href: `${base}/pages`, label: t`ページの文章`, icon: <DocumentIcon /> },
+    { key: "pages", href: `${base}/pages`, label: t`ページ`, icon: <DocumentIcon /> },
     // The site settings are for an admin only (the API refuses an editor).
-    ...(isAdmin ? [{ key: "settings", href: `${base}/settings`, label: t`サイト全体の設定`, icon: <GearIcon /> }] : []),
+    ...(isAdmin ? [{ key: "settings", href: `${base}/settings`, label: t`詳細設定`, icon: <GearIcon /> }] : []),
   ];
-  // Menu sections, split by a line. A list the app does not know yet joins the section of notices and banners.
-  const SECTIONS = [["attention"], ["dashboard"], ["routes", "rallies", "places", "directory"], ["notices", "banners", "furigana", "pages"], ["visits", "stamps", "users", "audit"], ["settings"]];
-  const known = new Set(SECTIONS.flat());
-  const sections = SECTIONS.map((keys, i) => [...keys.flatMap((k) => ready.filter((r) => r.key === k)), ...(i === 3 ? ready.filter((r) => !known.has(r.key)) : [])]).filter((g) => g.length > 0);
+  // Menu sections, split by a line. A list the app does not know yet joins the site's content.
+  const SECTIONS: { title?: string; keys: string[] }[] = [
+    { keys: ["attention"] },
+    { keys: ["dashboard"] },
+    { title: t`ルートとラリー`, keys: ["routes", "rallies", "stamps", "places", "directory"] },
+    { title: t`サイトの内容`, keys: ["notices", "banners", "furigana", "pages", "posts", "authors"] },
+    { title: t`コミュニティ`, keys: ["comments", "users"] },
+    { title: t`運営`, keys: ["visits", "audit", "settings"] },
+  ];
+  const known = new Set(SECTIONS.flatMap((s) => s.keys));
+  const sections = SECTIONS.map((s, i) => ({ title: s.title, items: [...s.keys.flatMap((k) => ready.filter((r) => r.key === k)), ...(i === 3 ? ready.filter((r) => !known.has(r.key)) : [])] })).filter((s) => s.items.length > 0);
 
   return (
     <nav aria-label={t`管理メニュー`} className="flex flex-col gap-1">
@@ -63,7 +70,8 @@ export function AdminNav({ lists, isAdmin, footer }: { lists: { key: string; tit
       <div id="admin-menu" className={`${open ? "flex" : "hidden"} flex-col gap-1 lg:flex`}>
         {sections.map((group, i) => (
           <div key={i} className={`flex flex-col gap-1 ${i > 0 ? "mt-2 border-t border-line pt-3" : ""}`}>
-            {group.map((item) => {
+            {group.title ? <p className="px-4 pb-1 text-base font-bold text-muted lg:group-data-[folded=true]:hidden">{group.title}</p> : null}
+            {group.items.map((item) => {
               const active = item.key === "dashboard" ? pathname === item.href : pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
                 <Link

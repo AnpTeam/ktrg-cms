@@ -78,7 +78,7 @@ export const defaultHomeSections: HomeSections = { tourism: false };
 export const SETTING_KEYS = { mapStyle: "map_style", dashboardGoals: "dashboard_goals", homeSections: "home_sections", largeStyle: "large_style" } as const;
 
 /**
- * The fixed pages whose text an editor can replace (管理 > ページの文章): the home page's words, the FAQ and how to play, and
+ * The fixed pages whose text an editor can replace (管理 > ページ): the home page's words, the FAQ and how to play, and
  * the terms and the privacy policy. Until a page has its own text, the page built into the app is shown. The legal two are for an
  * admin only (`site.manage`).
  */

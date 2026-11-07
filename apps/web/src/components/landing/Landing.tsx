@@ -63,7 +63,7 @@ export function Landing({
   introVideo: EmbedVideo | null;
   slides: BannerSlide[];
   posts: BlogPost[];
-  /** The tourism cards are shown only when an admin switched them on (管理 > サイト全体の設定). */
+  /** The tourism cards are shown only when an admin switched them on (管理 > 詳細設定). */
   showTourism: boolean;
   /** For a signed-in visitor: shown in place of the hero (and the sign-up buttons are left out). */
   top?: ReactNode;

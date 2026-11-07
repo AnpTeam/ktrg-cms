@@ -1,6 +1,6 @@
 import type { PageText } from "./page-text";
 
-// The words of the home page an editor can replace (管理 > ページの文章 > ホーム). The page's layout, its buttons and the
+// The words of the home page an editor can replace (管理 > ページ > ホーム). The page's layout, its buttons and the
 // numbers stay in the app. Each language's words are kept as JSON in the fixed page's body, so a box left empty shows the
 // app's own words for that box only. Pure functions; tests are in home-text.test.ts.
 

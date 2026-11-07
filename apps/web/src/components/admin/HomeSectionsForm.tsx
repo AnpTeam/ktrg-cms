@@ -8,7 +8,7 @@ import { errorKeyFromApi, isServerCode } from "@/lib/api-error";
 import { confirmDialog } from "@/components/ConfirmDialog";
 import { showToast } from "@/lib/admin/toast";
 
-/** 管理 > サイト全体の設定 > ホームページ: which optional sections visitors see. Each one is off until it is turned on here. */
+/** 管理 > 詳細設定 > ホームページ: which optional sections visitors see. Each one is off until it is turned on here. */
 export function HomeSectionsForm({ initial }: { initial: { tourism: boolean } }) {
   const { t } = useLingui();
   const messages = useErrorMessages();
