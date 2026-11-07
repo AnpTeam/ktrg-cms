@@ -46,14 +46,6 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      # Each step runs the root script if it exists, so CI stays green on the
-      # skeleton and starts enforcing as scripts are added.
-      - name: Type-check
-        run: bun run --if-present typecheck
-
-      - name: Lint
-        run: bun run --if-present lint
-
       # Fails when a message has no English text (it would show Japanese on the English site); extracts first.
       - name: English strings are complete
         run: bun run --cwd apps/web check:catalogs
@@ -68,7 +60,28 @@ jobs:
         run: bun run --cwd apps/api db:migrate:ci
 
       - name: Unit tests
-        run: bun run --if-present test
+        run: bun run test
 
+  # Needs no database, so it runs beside `check` instead of after it.
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.3
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Type-check
+        run: bun run typecheck
+
+      - name: Lint
+        run: bun run lint
+
+      # Not `--if-present` from the root: the root has no build script, so that step did nothing.
       - name: Build (Next.js)
-        run: bun run --if-present build
+        run: bun run --cwd apps/web build
