@@ -17,7 +17,7 @@ import { formatUpdated } from "@/lib/format";
 
 type Field = "displayName" | "origin" | "ageRange" | "gender" | "foundVia";
 
-const dangerButton = "tap-target flex min-h-12 w-full items-center justify-center rounded-full bg-danger px-6 text-xl font-bold text-on-brand disabled:opacity-60";
+const dangerButton = "tap-target flex min-h-12 w-full items-center justify-center rounded-full bg-danger px-6 text-xl font-bold text-paper disabled:opacity-60";
 const rowBox = "tap-target flex items-center justify-between gap-3 px-4 py-3 text-left";
 const row = `w-full ${rowBox}`;
 

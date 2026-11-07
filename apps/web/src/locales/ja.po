@@ -6543,10 +6543,6 @@ msgctxt "tab title"
 msgid "葛城修験"
 msgstr "葛城修験"
 
-#: src/components/admin/AdminShell.tsx:17
-msgid "葛城修験 管理"
-msgstr "葛城修験 管理"
-
 #: src/components/IntroFlow.tsx:192
 #: src/components/landing/Landing.tsx:144
 msgid "葛城修験とは"

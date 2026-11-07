@@ -566,7 +566,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
               >
                 {TAB_ICONS[id]}
                 {labels.tab[id]}
-                {id === "check" && missingRequired > 0 ? <span className="ml-2 rounded-full bg-danger px-2 text-base text-white">{missingRequired}</span> : null}
+                {id === "check" && missingRequired > 0 ? <span className="ml-2 rounded-full bg-danger px-2 text-base text-paper">{missingRequired}</span> : null}
               </button>
             ))}
           </nav>
@@ -893,7 +893,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                         .filter((i) => i.required === required)
                         .map((i) => (
                           <li key={i.id} className="flex flex-wrap items-center gap-3 rounded-xl bg-paper p-3">
-                            <span className={`w-20 shrink-0 rounded-lg px-3 py-1 text-center text-base font-bold ${i.done ? "bg-moss text-paper" : required ? "bg-danger text-white" : "bg-surface"}`}>{i.done ? t`できた` : t`まだ`}</span>
+                            <span className={`w-20 shrink-0 rounded-lg px-3 py-1 text-center text-base font-bold ${i.done ? "bg-moss text-paper" : required ? "bg-danger text-paper" : "bg-surface"}`}>{i.done ? t`できた` : t`まだ`}</span>
                             <span className="min-w-0 flex-1 text-lg">{labels.item[i.id]}</span>
                             {!i.done ? (
                               <button type="button" onClick={() => setSection(i.tab)} className="tap-target rounded-full border border-ink px-4 text-base font-bold">
