@@ -362,8 +362,8 @@ export function spreadLabels(boxes: readonly LabelBox[], area: { left: number; t
 }
 
 /**
- * The same for a course's stops. Stops merge only when the visitor chose 「近い場所をまとめて表示する」; otherwise every stop
- * keeps its own pin, and only pins that sit exactly on top of each other (a few px) share one, since they cannot be told apart.
+ * The same for a course's stops. Stops merge only when the visitor chose 「近い場所をまとめて表示する」; otherwise only pins
+ * that sit exactly on top of each other (a few px) are looked at, and `samePlaceOnly` decides whether they share one.
  */
 export function stopMergePx(mergeEarly: boolean): number {
   return mergeEarly ? 44 : 3;
@@ -371,6 +371,11 @@ export function stopMergePx(mergeEarly: boolean): number {
 
 /** Pins this close together (in metres) cannot be pulled apart by zooming: they are chosen from a list instead. */
 export const SAME_PLACE_M = 30;
+
+/** With merging off, a group stays together only if it really is one spot: stops that zooming can pull apart just overlap until then. */
+export function samePlaceOnly(groups: readonly string[][], positionOf: (id: string) => Position): string[][] {
+  return groups.flatMap((ids) => (spreadMeters(ids.map(positionOf)) <= SAME_PLACE_M ? [ids] : ids.map((id) => [id])));
+}
 
 /** The widest distance, in metres, between the first of these points and any other (a straight line). */
 export function spreadMeters(points: readonly Position[]): number {

@@ -8,7 +8,7 @@ import { useLingui } from "@lingui/react/macro";
 import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import { MinusIcon, PlusIcon, WarningIcon } from "@/components/icons";
 import { clusterByPixels } from "@/lib/cluster";
-import { areaCollection, courseDotState, COURSE_DOT_PX, estimateGroupBox, framePoints, groupLabelLines, MERGE_PX, namesThatFit, revealedRouteId, SAME_PLACE_M, spreadLabels, spreadMeters, stopMergePx, type LabelBox, type MapScreenPoint, type MapScreenRoute, type MapScreenStop } from "@/lib/map-screen";
+import { areaCollection, courseDotState, COURSE_DOT_PX, estimateGroupBox, framePoints, groupLabelLines, MERGE_PX, namesThatFit, revealedRouteId, SAME_PLACE_M, samePlaceOnly, spreadLabels, spreadMeters, stopMergePx, type LabelBox, type MapScreenPoint, type MapScreenRoute, type MapScreenStop } from "@/lib/map-screen";
 import { defaultLayers, moundStops, offeredLayers, type MapLayer } from "@/lib/map-layers";
 import { groupOf } from "@/lib/places";
 import { PlaceGroupPicture } from "@/components/PlaceIcon";
@@ -529,15 +529,18 @@ export function MapScreenCanvas({
     if (focus?.stops) {
       const next = nextStopId(focus.stops);
       const stopById = new Map(focus.stops.map((s) => [s.id, s]));
-      // Stops merge into numbered groups only when the visitor chose it; otherwise each keeps its own pin (see stopMergePx).
-      const stopGroups = clusterByPixels(focus.stops.map((s) => pixel(s.id, s.position)), stopMergePx(mergeStops));
+      // Stops merge into numbered groups only when the visitor chose it. Otherwise each keeps its own pin, overlapping until
+      // zoomed in; stops on one spot, which no zoom can part, share a pin with a small count that opens the list.
+      const nearby = clusterByPixels(focus.stops.map((s) => pixel(s.id, s.position)), stopMergePx(mergeStops));
+      const stopGroups = mergeStops ? nearby : samePlaceOnly(nearby, (id) => stopById.get(id)!.position);
       for (const ids of stopGroups) {
         const members = ids.map((id) => stopById.get(id)!);
-        if (members.length === 1) {
-          const s = members[0]!;
+        if (members.length === 1 || !mergeStops) {
+          const s = members.find((m) => m.id === stopId) ?? members[0]!;
+          const shared = members.length > 1;
           const el = createMarkerElement({
             order: s.order,
-            label: s.label,
+            label: shared ? t`ここに${members.length}か所あります。押すと一覧を開きます` : s.label,
             kind: s.noStamp ? "neutral" : markerKind(s.stamped, s.id === next),
             status: s.status,
             sideTrip: s.sideTrip,
@@ -547,9 +550,11 @@ export function MapScreenCanvas({
             stamped: s.stamped === true,
             onSelect: () => {
               setPopup(null);
-              onSelectStop(focus.id, s.id);
+              if (shared) setPick(members);
+              else onSelectStop(focus.id, s.id);
             },
           });
+          if (shared) el.dataset.count = String(members.length);
           el.setAttribute("aria-pressed", String(s.id === stopId));
           put(el, s.position, "bottom");
         } else {

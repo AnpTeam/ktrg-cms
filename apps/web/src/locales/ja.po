@@ -3716,6 +3716,10 @@ msgstr "先に、線を描いてください。"
 msgid "先に、都道府県を選んでください。"
 msgstr "先に、都道府県を選んでください。"
 
+#: src/components/map/MapScreenCanvas.tsx
+msgid "ここに{0}か所あります。押すと一覧を開きます"
+msgstr "ここに{0}か所あります。押すと一覧を開きます"
+
 #: src/components/admin/PlacePanel.tsx:79
 msgid "先に「この経由地を保存」してください。"
 msgstr "先に「この経由地を保存」してください。"

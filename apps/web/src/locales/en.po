@@ -3736,6 +3736,10 @@ msgstr "Showing the first {total} only."
 msgid "入れた文字が、そのまま表示されます。体力度・技術度を選んだときは、そちらを先に表示します。"
 msgstr "Shown exactly as typed. When a physical or technical level is chosen, those are shown instead."
 
+#: src/components/map/MapScreenCanvas.tsx
+msgid "ここに{0}か所あります。押すと一覧を開きます"
+msgstr "{0} places here. Tap to see the list"
+
 #: src/components/admin/PlacePanel.tsx:169
 msgid "入れると、この場所のスタンプが、ふつうの赤い印の代わりにこの絵になります。正方形で、背景が透明な画像がきれいです。"
 msgstr "When set, this place's stamp shows this picture instead of the plain red seal. A square image with a transparent background looks best."
