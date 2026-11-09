@@ -27,6 +27,7 @@ import { createMemoryVisitStore } from "./visits/visits";
 import { createMemorySiteSettingsStore } from "./site-settings/site-settings";
 import { createMemoryPlaceStore } from "./places/place-directory";
 import { createMemoryAuthorStore } from "./posts/author-list";
+import { createMemoryTagStore } from "./posts/tag-list";
 import { createMemoryCommentStore } from "./posts/comments";
 import { createMemoryFuriganaStore } from "./furigana/furigana-words";
 import { createMemoryBannerStore } from "./banners/banner-list";
@@ -102,6 +103,7 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       furigana: createMemoryFuriganaStore(audit.writer).store,
       comments: createMemoryCommentStore(audit.writer).store,
       authors: createMemoryAuthorStore(audit.writer).store,
+      tags: createMemoryTagStore(audit.writer).store,
       places: createMemoryPlaceStore(audit.writer).store,
       siteSettings: createMemorySiteSettingsStore(audit.writer),
       visits: createMemoryVisitStore(),
@@ -408,6 +410,8 @@ describe("user B cannot touch user A", () => {
     "PATCH /api/v1/admin/lists/comments/:id": () => ({ updatedAt: new Date().toISOString(), status: "approved" }),
     "POST /api/v1/admin/lists/authors": () => ({ nameJa: "x", nameEn: null, photoUrl: null }),
     "PATCH /api/v1/admin/lists/authors/:id": () => ({ updatedAt: new Date().toISOString() }),
+    "POST /api/v1/admin/lists/tags": () => ({ nameJa: "x", nameEn: null }),
+    "PATCH /api/v1/admin/lists/tags/:id": () => ({ updatedAt: new Date().toISOString() }),
     "PATCH /api/v1/admin/lists/posts/:id": () => ({ updatedAt: new Date().toISOString() }),
     "PATCH /api/v1/admin/lists/notices/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/lists/banners": () => ({ imageUrl: "https://example.com/a.jpg", altJa: "x", altEn: null, sortOrder: 0, published: false }),

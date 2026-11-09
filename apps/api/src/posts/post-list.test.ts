@@ -195,3 +195,24 @@ describe("pages (posts of the kind page)", () => {
     expect(made.ok && made.value.kind).toBe("post");
   });
 });
+
+describe("tags", () => {
+  const TAG = "22222222-2222-4222-8222-222222222222";
+  const OTHER = "33333333-3333-4333-8333-333333333333";
+
+  test("a post keeps its tags once each, and the blog can list one tag's posts", async () => {
+    const audit = createMemoryAuditWriter();
+    const svc = createPostService({ store: createMemoryPostStore(audit.writer).store, now: () => NOW, tagExists: async (id) => id === TAG || id === OTHER });
+    const a = await svc.create(actor, post({ published: true, tagIds: [TAG, TAG] }));
+    await svc.create(actor, post({ published: true, tagIds: [OTHER] }));
+    expect(a.ok && a.value.tagIds).toEqual([TAG]);
+    expect((await svc.publicPosts(TAG)).map((p) => p.id)).toEqual([a.ok ? a.value.id : ""]);
+    expect(await svc.publicPosts()).toHaveLength(2);
+  });
+
+  test("a tag that does not exist is refused", async () => {
+    const audit = createMemoryAuditWriter();
+    const svc = createPostService({ store: createMemoryPostStore(audit.writer).store, now: () => NOW, tagExists: async () => false });
+    expect(await svc.create(actor, post({ tagIds: [TAG] }))).toMatchObject({ ok: false });
+  });
+});

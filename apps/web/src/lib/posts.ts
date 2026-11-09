@@ -27,11 +27,22 @@ export interface BlogPost {
   spotId: string | null;
   /** YYYY-MM-DD, Japan time: the day the post is dated. */
   publishedOn: string;
+  /** The post's tags (missing in an answer from before tags). */
+  tags?: PostTag[];
+}
+
+export type PostTag = { id: string; nameJa: string; nameEn: string | null };
+
+/** Every tag on these posts, once each, in the order they first appear. */
+export function tagsOf(posts: readonly BlogPost[]): PostTag[] {
+  const seen = new Map<string, PostTag>();
+  for (const p of posts) for (const t of p.tags ?? []) if (!seen.has(t.id)) seen.set(t.id, t);
+  return [...seen.values()];
 }
 
 /** The newest posts a visitor may read; an empty list when there are none or the API cannot be reached. */
-export async function listPosts(): Promise<BlogPost[]> {
-  return (await fetchPublicPosts()) ?? [];
+export async function listPosts(tag?: string): Promise<BlogPost[]> {
+  return (await fetchPublicPosts(tag)) ?? [];
 }
 
 /** One post, or null when it is a draft, dated ahead, or not there (the page then shows "not found"). */

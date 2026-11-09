@@ -22,6 +22,8 @@ export function formValues(config: ListMeta, item: ListItem | null): FormValues 
     if (f.kind === "boolean") out[f.name] = item?.[f.name] === true;
     else if (f.kind === "hours") out[f.name] = item?.[f.name] ? JSON.stringify(item[f.name]) : "";
     else if (f.kind === "select" && !item) out[f.name] = f.options?.[0]?.value ?? "";
+    // Several ids, held as one comma-separated string so the form's values stay plain text.
+    else if (f.kind === "relations") out[f.name] = Array.isArray(item?.[f.name]) ? (item[f.name] as string[]).join(",") : "";
     else for (const name of apiNames({ ...config, fields: [f] })) {
       const v = item?.[name];
       out[name] = typeof v === "string" ? v : typeof v === "number" ? String(v) : "";
@@ -46,6 +48,9 @@ export function toPayload(config: ListMeta, values: FormValues): Record<string, 
         break;
       case "hours":
         out[f.name] = hoursPayload(text(f.name));
+        break;
+      case "relations":
+        out[f.name] = text(f.name).split(",").filter(Boolean);
         break;
       case "number":
       case "decimal":

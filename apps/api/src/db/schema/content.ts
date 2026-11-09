@@ -420,6 +420,15 @@ export const blogAuthors = pgTable("blog_authors", {
   updatedAt: updatedAt(),
 });
 
+/** A tag blog posts can be filed under (see posts/tag-list.ts). */
+export const blogTags = pgTable("blog_tags", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  nameJa: text("name_ja").notNull(),
+  nameEn: text("name_en"),
+  createdAt: createdAt(),
+  updatedAt: updatedAt(),
+});
+
 /** The video links a route used to have, one row each time the link is replaced or removed (newest last), so a mistake can be put back. */
 export const routeVideoHistory = pgTable(
   "route_video_history",
@@ -504,6 +513,8 @@ export const blogPosts = pgTable(
     kind: text("kind", { enum: ["post", "page"] }).notNull().default("post"),
     // A page's address, lower-case letters, digits and hyphens; null for a post.
     slug: text("slug").unique(),
+    // The tags of the post (blog_tags ids). An array, not a join table: a post has a few, and a deleted tag is skipped on reading.
+    tagIds: uuid("tag_ids").array().notNull().default(sql`'{}'::uuid[]`),
     published: boolean("published").notNull().default(false),
     createdAt: createdAt(),
     updatedAt: updatedAt(),

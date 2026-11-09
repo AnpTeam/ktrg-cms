@@ -34,7 +34,7 @@ export async function relationChoices(meta: ListMeta, locale: string): Promise<R
   const targets = new Map<string, Choice[]>();
   const out: Record<string, Choice[]> = {};
   for (const f of meta.fields) {
-    const target = f.kind === "route" ? "routes" : f.kind === "relation" ? f.to : undefined;
+    const target = f.kind === "route" ? "routes" : f.kind === "relation" || f.kind === "relations" ? f.to : undefined;
     if (!target) continue;
     if (!targets.has(target)) targets.set(target, await choicesOf(target, locale));
     out[f.name] = targets.get(target)!;

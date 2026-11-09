@@ -27,7 +27,7 @@ export default async function AdminListPage({ params }: { params: Promise<{ list
 
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-5">
-      {meta.key === "authors" ? (
+      {meta.key === "authors" || meta.key === "tags" ? (
         <AdminBack href="/admin/posts">
           <Trans>ブログへ戻る</Trans>
         </AdminBack>
@@ -35,9 +35,14 @@ export default async function AdminListPage({ params }: { params: Promise<{ list
       <h1 className="text-3xl font-bold">{title}</h1>
       <p className="text-lg text-muted">{pick(meta.intro, i18n.locale)}</p>
       {meta.key === "posts" ? (
-        <Link href="/admin/authors" className="tap-target inline-flex w-fit items-center text-base underline underline-offset-4">
-          <Trans>書き手を管理する</Trans>
-        </Link>
+        <div className="flex flex-wrap gap-x-6">
+          <Link href="/admin/authors" className="tap-target inline-flex w-fit items-center text-base underline underline-offset-4">
+            <Trans>書き手を管理する</Trans>
+          </Link>
+          <Link href="/admin/tags" className="tap-target inline-flex w-fit items-center text-base underline underline-offset-4">
+            <Trans>タグを管理する</Trans>
+          </Link>
+        </div>
       ) : null}
       {page ? (
         <AdminListTable meta={meta} initial={page} locale={i18n.locale} choices={choices} />

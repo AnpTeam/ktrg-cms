@@ -52,6 +52,7 @@ import {
   stamps,
   trailNotices,
   blogPosts,
+  blogTags,
   blogPostTranslations,
   trailNoticeTranslations,
   users,
@@ -1803,6 +1804,22 @@ describe.skipIf(!url)("blog comments, writers and pages on real PostgreSQL", () 
     // A writer who is deleted leaves the post, and the post falls back to the account.
     expect(await authors.remove(editor, writer.id)).toBe(true);
     expect(await posts.getPublic(byWriter.id, "2026-10-21")).toMatchObject({ writer: null, accountName: "編集者" });
+  });
+
+  test("a post carries its tags by name, a deleted tag is left out, and the blog lists one tag's posts", async () => {
+    const editor = (await otp.findOrCreateUser(`${tag}-tags@example.test`)).id;
+    const [t1, t2] = await db.insert(blogTags).values([{ nameJa: `${tag} 行事` }, { nameJa: `${tag} 消える` }]).returning();
+    const make = async (title: string, tagIds: string[]) => {
+      const row = await posts.create(editor, { titleJa: `${tag} ${title}`, titleEn: null, bodyJa: "本文", bodyEn: null, authorNameJa: null, authorNameEn: null, coverPhotoUrl: null, coverCredit: null, authorPhotoUrl: null, placeId: null, routeId: null, spotId: null, authorId: null, publishedOn: "2026-10-01", tagIds, published: true });
+      postIds.push(row.id);
+      return row;
+    };
+    const a = await make("a", [t1!.id, t2!.id]);
+    await make("b", []);
+    await db.delete(blogTags).where(eq(blogTags.id, t2!.id));
+    expect((await posts.getPublic(a.id, "2026-10-21"))!.tags).toEqual([{ id: t1!.id, nameJa: `${tag} 行事`, nameEn: null }]);
+    expect((await posts.listPublic("2026-10-21", t1!.id)).map((p) => p.id)).toEqual([a.id]);
+    await db.delete(blogTags).where(eq(blogTags.id, t1!.id));
   });
 
   test("a page is a post of the kind page: its address is unique, it is read by address, and never shows in the blog", async () => {

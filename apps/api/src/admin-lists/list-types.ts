@@ -69,8 +69,9 @@ export type Tone = "neutral" | "good" | "warn" | "bad" | "info";
  * - route: one of the routes, or none (null)
  * - relation: one row of another list (`to`: that list's key), or none (null). Stored as its id; the list's own rules check
  *   that the row exists, as they do for a route. `route` is the same thing aimed at the routes.
+ * - relations: any number of rows of another list (`to`), stored as an array of ids; the form shows them as tick boxes.
  */
-export type FieldKind = "bilingual" | "bilingual-long" | "text" | "url" | "image" | "number" | "decimal" | "date" | "datetime" | "boolean" | "select" | "route" | "relation" | "hours";
+export type FieldKind = "bilingual" | "bilingual-long" | "text" | "url" | "image" | "number" | "decimal" | "date" | "datetime" | "boolean" | "select" | "route" | "relation" | "relations" | "hours";
 
 export interface FieldUi {
   /** The API field; for a bilingual field the stem ("title" → titleJa / titleEn). */

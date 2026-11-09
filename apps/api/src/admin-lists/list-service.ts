@@ -90,8 +90,8 @@ export function createListService<R extends ListRow, F>(deps: { store: ListStore
    */
   const danglingRelation = async (values: Record<string, unknown>): Promise<boolean> => {
     for (const [field, exists] of Object.entries(deps.relations ?? {})) {
-      const id = values[field];
-      if (typeof id === "string" && id !== "" && !(await exists(id))) return true;
+      const value = values[field];
+      for (const id of Array.isArray(value) ? value : [value]) if (typeof id === "string" && id !== "" && !(await exists(id))) return true;
     }
     return false;
   };

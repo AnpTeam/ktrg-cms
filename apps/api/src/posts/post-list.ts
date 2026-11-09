@@ -48,17 +48,19 @@ export const POST_FIELDS = {
   kind: t.Optional(t.Union([t.Literal("post"), t.Literal("page")])),
   /** A page's address; ignored for a post. */
   slug: t.Optional(nullable(60)),
+  /** The post's tags (see tag-list.ts), at most ten. */
+  tagIds: t.Optional(t.Array(t.String({ format: "uuid" }), { maxItems: 10 })),
   published: t.Boolean(),
 };
 
 const postFields = t.Object(POST_FIELDS);
 export type PostFields = Static<typeof postFields>;
 /** The account behind a post is read with it (never saved from the form): its name and photo are the byline when the post names no one. */
-export type PostRow = ListRow & PostFields & { authorUserId?: string | null; accountName?: string | null; accountPhotoUrl?: string | null; writer?: { nameJa: string; nameEn: string | null; photoUrl: string | null } | null };
+export type PostRow = ListRow & PostFields & { authorUserId?: string | null; accountName?: string | null; accountPhotoUrl?: string | null; tags?: { id: string; nameJa: string; nameEn: string | null }[]; writer?: { nameJa: string; nameEn: string | null; photoUrl: string | null } | null };
 
 export interface PostStore extends ListStore<PostRow, PostFields> {
-  /** Published posts dated `today` (YYYY-MM-DD) or earlier, newest first, at most PUBLIC_POSTS_LIMIT. */
-  listPublic(today: string): Promise<PostRow[]>;
+  /** Published posts dated `today` (YYYY-MM-DD) or earlier, newest first, at most PUBLIC_POSTS_LIMIT; only one tag's with `tagId`. */
+  listPublic(today: string, tagId?: string): Promise<PostRow[]>;
   /** One post, only if a visitor may read it on `today`. */
   getPublic(id: string, today: string): Promise<PostRow | null>;
   /** The page or post holding an address, whatever its state (an address is used once). */
@@ -107,13 +109,14 @@ export const postRules = (photoHosts: readonly string[] = [], store?: Pick<PostS
     if (out[k] !== null && !isPhotoUrl(out[k]!, photoHosts)) return bad("invalid_photo_url");
   }
   if (out.translations !== undefined) out.translations = cleanTranslations(out.translations);
+  if (out.tagIds !== undefined) out.tagIds = [...new Set(out.tagIds)];
   return ok(out);
 };
 
 export type PostService = ReturnType<typeof createPostService>;
 
 /** The admin list of blog posts, and what visitors read. */
-export function createPostService(deps: { store: PostStore; photoHosts?: readonly string[]; now?: () => Date; placeExists?: (id: string) => Promise<boolean>; routeExists?: (id: string) => Promise<boolean>; spotExists?: (id: string) => Promise<boolean>; authorExists?: (id: string) => Promise<boolean> }) {
+export function createPostService(deps: { store: PostStore; photoHosts?: readonly string[]; now?: () => Date; placeExists?: (id: string) => Promise<boolean>; routeExists?: (id: string) => Promise<boolean>; spotExists?: (id: string) => Promise<boolean>; authorExists?: (id: string) => Promise<boolean>; tagExists?: (id: string) => Promise<boolean> }) {
   const now = deps.now ?? (() => new Date());
   return {
     ...createListService({ store: deps.store, rules: postRules(deps.photoHosts, deps.store), relations: {
@@ -121,31 +124,34 @@ export function createPostService(deps: { store: PostStore; photoHosts?: readonl
         ...(deps.routeExists ? { routeId: deps.routeExists } : {}),
         ...(deps.spotExists ? { spotId: deps.spotExists } : {}),
         ...(deps.authorExists ? { authorId: deps.authorExists } : {}),
+        ...(deps.tagExists ? { tagIds: deps.tagExists } : {}),
       },
     }),
-    publicPosts: () => deps.store.listPublic(todayInJapan(now())),
+    publicPosts: (tagId?: string) => deps.store.listPublic(todayInJapan(now()), tagId),
     publicPost: (id: string) => deps.store.getPublic(id, todayInJapan(now())),
     publicPages: () => deps.store.listPublicPages(todayInJapan(now())),
     publicPage: (slug: string) => deps.store.getPublicPage(slug, todayInJapan(now())),
   };
 }
 
-/** In-memory posts for tests and the dev page. */
-export function createMemoryPostStore(audit: AuditWriter, opts: { now?: () => Date } = {}) {
+/** In-memory posts for tests and the dev page; `tags` (a tag store's rows) names the tags on what visitors read. */
+export function createMemoryPostStore(audit: AuditWriter, opts: { now?: () => Date; tags?: ReadonlyMap<string, { id: string; nameJa: string; nameEn: string | null }> } = {}) {
   const list = createMemoryListStore<PostFields>(audit, POST_AUDIT, opts);
   const readable = (p: PostRow, today: string) => p.published && p.publishedOn <= today;
+  const withTags = (p: PostRow): PostRow => ({ ...p, tags: (p.tagIds ?? []).flatMap((id) => { const t = opts.tags?.get(id); return t ? [{ id: t.id, nameJa: t.nameJa, nameEn: t.nameEn }] : []; }) });
   const isPage = (p: PostRow) => p.kind === "page";
   const store: PostStore = {
     ...list.store,
-    async listPublic(today) {
+    async listPublic(today, tagId) {
       return [...list.rows.values()]
-        .filter((p) => readable(p, today) && !isPage(p))
+        .filter((p) => readable(p, today) && !isPage(p) && (!tagId || (p.tagIds ?? []).includes(tagId)))
         .sort((a, b) => b.publishedOn.localeCompare(a.publishedOn) || b.createdAt.getTime() - a.createdAt.getTime())
-        .slice(0, PUBLIC_POSTS_LIMIT);
+        .slice(0, PUBLIC_POSTS_LIMIT)
+        .map(withTags);
     },
     async getPublic(id, today) {
       const post = list.rows.get(id);
-      return post && readable(post, today) && !isPage(post) ? post : null;
+      return post && readable(post, today) && !isPage(post) ? withTags(post) : null;
     },
     async findBySlug(slug) {
       return [...list.rows.values()].find((p) => p.slug === slug) ?? null;
@@ -256,6 +262,7 @@ export const postList: ListDef<"posts", typeof POST_FIELDS, PostRow, PostService
         hint: { ja: "この記事だけ別の名前にしたいときに入れます。上の「書いた人」より優先されます。空のままでかまいません。", en: "For a one-off name on this post only; it wins over \"Written by\" above. May be left empty." },
       },
       { name: "authorPhotoUrl", kind: "image", side: true, label: { ja: "書いた人の写真", en: "Author's photo" }, hint: { ja: "空のままにすると、プロフィールの写真が使われます。", en: "Left empty, the profile photo is used." } },
+      { name: "tagIds", kind: "relations", side: true, to: "tags", label: { ja: "タグ", en: "Tags" }, hint: { ja: "あてはまるものを選びます（いくつでも）。タグは「タグを管理する」でつくります。", en: "Pick any that fit. Tags are made in Manage tags." } },
       { name: "routeId", kind: "route", side: true, label: { ja: "この記事のルート", en: "The route this post is about" }, noneLabel: { ja: "（なし）", en: "(none)" } },
       {
         name: "spotId",
@@ -307,10 +314,14 @@ const pageOut = (p: PostRow) => ({ slug: p.slug ?? "", titleJa: p.titleJa, title
 /** What visitors read, no login: published posts whose day has come, newest first, one post by its id, and the pages. */
 export function publicPostRoutes(getPosts: () => PostService) {
   return new Elysia({ detail: { tags: ["Content"] } })
-    .get("/posts", async ({ set }) => {
-      publicCache(set);
-      return { ok: true as const, posts: (await getPosts().publicPosts()).map(listOut) };
-    })
+    .get(
+      "/posts",
+      async ({ query, set }) => {
+        publicCache(set);
+        return { ok: true as const, posts: (await getPosts().publicPosts(query.tag)).map(listOut) };
+      },
+      { query: t.Object({ tag: t.Optional(t.String({ format: "uuid" })) }) },
+    )
     .get(
       "/posts/:id",
       async ({ params, set }) => {

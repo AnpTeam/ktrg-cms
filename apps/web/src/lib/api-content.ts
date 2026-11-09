@@ -271,8 +271,8 @@ export async function fetchPublicNotices(): Promise<TrailNotice[] | null> {
 }
 
 /** Published blog posts whose day has come, newest first (the API decides, in Japan time). */
-export const fetchPublicPosts = cache(async (): Promise<BlogPost[] | null> => {
-  return okBody<{ posts: BlogPost[] }>(await getJson("/posts"))?.posts ?? null;
+export const fetchPublicPosts = cache(async (tag?: string): Promise<BlogPost[] | null> => {
+  return okBody<{ posts: BlogPost[] }>(await getJson(tag ? `/posts?tag=${encodeURIComponent(tag)}` : "/posts"))?.posts ?? null;
 });
 
 /** One blog post, or null when it is a draft, dated ahead, or not there. */
