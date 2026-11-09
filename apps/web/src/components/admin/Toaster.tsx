@@ -21,7 +21,7 @@ export function Toaster() {
   if (!toast) return null;
   const error = toast.kind === "error";
   return (
-    <div key={toast.id} className={`toast-in fixed inset-x-4 top-20 z-50 mx-auto flex max-w-xl items-start gap-3 rounded-2xl border-2 border-paper/40 p-4 text-paper shadow-2xl ${error ? "bg-danger" : "bg-moss"}`}>
+    <div key={toast.id} className={`${toast.leaving ? "toast-out pointer-events-none" : "toast-in"} fixed inset-x-4 top-20 z-50 mx-auto flex max-w-xl items-start gap-3 rounded-2xl border-2 border-paper/40 p-4 text-paper shadow-2xl ${error ? "bg-danger" : "bg-moss"}`}>
       <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-paper text-ink">
         {error ? <AlertIcon size={20} /> : <TickIcon size={20} />}
       </span>

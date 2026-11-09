@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, jest, test } from "bun:test";
-import { readToast, showToast, subscribeToast, TOAST_OK_MS } from "./toast";
+import { readToast, showToast, subscribeToast, TOAST_LEAVE_MS, TOAST_OK_MS } from "./toast";
 
 beforeEach(() => {
   jest.useFakeTimers();
@@ -12,6 +12,8 @@ test("good news closes itself; an error stays", () => {
   jest.advanceTimersByTime(TOAST_OK_MS - 1);
   expect(readToast()?.text).toBe("saved");
   jest.advanceTimersByTime(1);
+  expect(readToast()?.leaving).toBe(true);
+  jest.advanceTimersByTime(TOAST_LEAVE_MS);
   expect(readToast()).toBeNull();
 
   showToast({ kind: "error", text: "failed" });
