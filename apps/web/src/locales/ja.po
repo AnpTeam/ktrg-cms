@@ -3824,6 +3824,9 @@ msgstr "全体を見る"
 msgid "公式サイトで、もっと知る"
 msgstr "公式サイトで、もっと知る"
 
+msgid "サイトで見る"
+msgstr "サイトで見る"
+
 #: src/components/admin/PageTextEditor.tsx:74
 #: src/components/admin/PublicSiteLink.tsx:32
 msgid "公開サイトで見る"

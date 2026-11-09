@@ -7,13 +7,17 @@ import { PublicSiteLink } from "./PublicSiteLink";
 import { AdminNav } from "./AdminNav";
 
 // The frame of every admin page: a menu on the left (folded behind a button on a narrow screen) that ends with who is signed
-// in, the language, the theme and a way back to the site visitors see, and the page itself.
+// in, the language and the theme, and the page itself. Its top holds the way to the same page on the site visitors see.
 export function AdminShell({ name, role, lists, children }: { name: string | null; role: "editor" | "admin" | null; lists: { key: string; title: string }[]; children: ReactNode }) {
   return (
     <AdminFrame
       aside={
         <>
-          <SidebarToggle />
+          {/* The site link left of the fold button; folded, they stack. */}
+          <div className="mb-3 flex items-center gap-2 lg:group-data-[folded=true]:flex-col">
+            <PublicSiteLink />
+            <SidebarToggle />
+          </div>
           <AdminNav
             lists={lists}
             isAdmin={role === "admin"}
@@ -22,7 +26,6 @@ export function AdminShell({ name, role, lists, children }: { name: string | nul
                 <p className="text-base text-muted">{name ? <Trans>{name} さんでログイン中</Trans> : <Trans>管理者としてログイン中</Trans>}</p>
                 <LocaleSwitcher />
                 <ThemeSwitcher />
-                <PublicSiteLink />
               </div>
             }
           />
