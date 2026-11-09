@@ -6845,6 +6845,10 @@ msgstr "How the map looks to visitors (the Map screen and the route pages). The 
 msgid "許可してくれた人"
 msgstr "Who gave permission"
 
+#: src/components/admin/PlacePanel.tsx
+msgid "許可が未確認"
+msgstr "Permission not checked"
+
 #: src/components/admin/PlacePanel.tsx:227
 msgid "許可確認済み"
 msgstr "Permission confirmed"

@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { pointKinds, stampableByDefault, type PointKind } from "@/lib/point-kinds";
 import { publishBlockers, type PlaceDraft, type PublishBlocker } from "@/lib/admin/route-draft";
@@ -86,6 +86,15 @@ export function PlacePanel(p: PlacePanelProps) {
   };
   const statusName: Record<SpotStatus, string> = { open: t`通常`, caution: t`注意`, closed: t`通行止め` };
   const id = `place-${place.key}`;
+  const settings = useRef<HTMLDetailsElement>(null);
+  // What to tick for each reason the place cannot be published yet: the button under 公開する takes the admin there.
+  const blockerField: Partial<Record<PublishBlocker, string>> = { no_coordinates: `${id}-lat`, position_not_verified: `${id}-verified`, permission_required: `${id}-permission` };
+  const goTo = (fieldId: string) => {
+    if (fieldId === `${id}-permission` && settings.current) settings.current.open = true;
+    const el = document.getElementById(fieldId);
+    el?.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    el?.focus({ preventScroll: true });
+  };
 
   return (
     <li className={`rounded-2xl border-2 ${p.selected ? "border-ink" : "border-line"} bg-paper`}>
@@ -205,8 +214,12 @@ export function PlacePanel(p: PlacePanelProps) {
             </Field>
           </fieldset>
 
-          <details className="rounded-xl bg-surface p-4">
-            <summary className="tap-target flex cursor-pointer items-center text-lg font-bold">{isStamp ? t`スタンプ・状態・許可の設定` : t`状態・許可の設定`}</summary>
+          {/* Open at first, so the permission tick is in view; it can be folded away. */}
+          <details ref={settings} open className="rounded-xl bg-surface p-4">
+            <summary className="tap-target flex cursor-pointer flex-wrap items-center gap-x-3 text-lg font-bold">
+              {isStamp ? t`スタンプ・状態・許可の設定` : t`状態・許可の設定`}
+              {place.permissionConfirmed ? null : <span className="rounded-full border-2 border-danger px-2 text-base text-danger">{t`許可が未確認`}</span>}
+            </summary>
             <div className="mt-3 flex flex-col gap-5">
               {isStamp ? (
                 <Field label={t`スタンプを押せる範囲（メートル）`} htmlFor={`${id}-radius`} hint={t`この経由地から、この距離の中にいるとスタンプを押せます。`}>
@@ -260,9 +273,20 @@ export function PlacePanel(p: PlacePanelProps) {
                 </button>
                 {blockers.length > 0 ? (
                   <ul className="list-disc pl-6 text-base text-muted">
-                    {blockers.map((b) => (
-                      <li key={b}>{blockerText[b]}</li>
-                    ))}
+                    {blockers.map((b) => {
+                      const target = blockerField[b];
+                      return (
+                        <li key={b}>
+                          {target ? (
+                            <button type="button" onClick={() => goTo(target)} className="tap-target text-left font-bold text-accent underline underline-offset-4">
+                              {blockerText[b]}
+                            </button>
+                          ) : (
+                            blockerText[b]
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
                 ) : null}
               </>
