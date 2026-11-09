@@ -4,7 +4,7 @@ import type { MarkerKind } from "@/lib/map";
 import type { StopRole } from "@/lib/route-stops";
 import type { PointKind } from "@/lib/point-kinds";
 import { pointIconSvg } from "@/lib/point-icons";
-import { placeIconSvg } from "@/lib/place-icons";
+import { placePicture } from "@/lib/place-icons";
 import type { PlaceCategory, PlaceGroup } from "@/lib/places";
 
 // Everything on the map is a real <button>: it can be reached with the keyboard, has a big tap
@@ -162,10 +162,11 @@ function pinSvg(order: number | null, shape: "tear" | "flag", role: StopRole | n
   return svg;
 }
 
-/** A place (toilet, shop ...): a rounded square with its coloured picture, so it never looks like a numbered stop. */
+/** A place (toilet, shop ...): a small circle with its coloured picture, smaller than a stop's pin so the course stands out. */
 export function createPlaceMarkerElement({
   group,
   category,
+  icon,
   label,
   closed,
   photo = false,
@@ -174,6 +175,8 @@ export function createPlaceMarkerElement({
   group: PlaceGroup;
   /** What the place is: its coloured picture. */
   category: PlaceCategory;
+  /** The picture chosen for it, drawn instead of its category's. */
+  icon?: string | null;
   label: string;
   /** Closed or gone: a diagonal bar over the picture. */
   closed: boolean;
@@ -191,10 +194,10 @@ export function createPlaceMarkerElement({
 
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.setAttribute("viewBox", "0 0 24 24");
-  svg.setAttribute("width", "17");
-  svg.setAttribute("height", "17");
+  svg.setAttribute("width", "15");
+  svg.setAttribute("height", "15");
   svg.setAttribute("aria-hidden", "true");
-  svg.innerHTML = placeIconSvg[category]; // fixed markup from lib/place-icons.ts
+  svg.innerHTML = placePicture(category, icon); // fixed markup from lib/place-icons.ts, never the name as typed
   el.appendChild(svg);
   if (photo) {
     el.dataset.photo = "true";

@@ -66,6 +66,7 @@ export default async function PlacePage({ params }: Props) {
         <PlaceFacts
           place={{
             category: place.category,
+            icon: place.icon ?? null,
             name: name?.text ?? place.nameJa,
             address: pickText(locale, place.addressJa ?? "", place.addressEn ?? null)?.text || null,
             phone: place.phone ?? null,

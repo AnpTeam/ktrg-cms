@@ -10,12 +10,15 @@ import type { KitServices } from "../auth/route-kit";
 import { parseFacilities, planPlaces, type ExistingPlace } from "../import/field-sheets";
 import { routeKit, type RouteOptions } from "../auth/route-kit";
 import { cleanTranslations } from "../db/translations";
-import { placeCategories } from "../db/schema";
+import { placeCategories, spotKinds } from "../db/schema";
 import { cleanHours, closedDaysText, hasBackwardPeriod, hoursText, OPENING_HOURS } from "./opening-hours";
 import { isPhotoUrl } from "../lib/https-url";
 import { oneOf, translationsSchema } from "../lib/schemas";
 
 const maybe = (max: number) => t.Union([t.String({ maxLength: max }), t.Null()]);
+
+/** The pictures a place may wear: every category's and every waypoint kind's (the web app draws each). */
+export const PLACE_ICONS = [...new Set<string>([...placeCategories, ...spotKinds])];
 
 /**
  * A place in the directory (shops, cafes, toilets, vending machines ... along the courses). The words are flat
@@ -30,6 +33,8 @@ export const PLACE_FIELDS = {
   nameEn: maybe(200),
   /** How the Japanese name is read, typed by a person. */
   nameKana: t.Optional(maybe(200)),
+  /** A picture other than its category's (one of PLACE_ICONS); null or left out draws the category's. */
+  icon: t.Optional(t.Union([oneOf(PLACE_ICONS), t.Null()])),
   descriptionJa: maybe(2000),
   descriptionEn: maybe(2000),
   hoursJa: maybe(300),
@@ -322,6 +327,13 @@ export const placeDirectoryList: ListDef<"directory", typeof PLACE_FIELDS, Place
         label: { ja: "名前の読み", en: "Reading of the name" },
         hint: { ja: "漢字の上に出るふりがなです。辞書には任せず、人が入れます。", en: "The furigana over the kanji. Typed by a person, never left to a dictionary." },
       },
+      {
+        name: "icon",
+        kind: "icon",
+        label: { ja: "アイコン", en: "Icon" },
+        hint: { ja: "地図や一覧に出る絵です。選ばなければ、種類の絵になります。", en: "The picture on the map and in lists. Left empty, it is the picture of the category." },
+        options: PLACE_ICONS.map((value) => ({ value, label: { ja: value, en: value } })),
+      },
       { name: "routeId", kind: "route", label: { ja: "近いルート", en: "Nearby route" }, noneLabel: { ja: "（なし）", en: "(none)" }, inList: {} },
       {
         name: "nearSpotId",
@@ -411,6 +423,7 @@ export function publicPlaceRoutes(getPlaces: () => PlaceService, log: (message: 
         nameJa: p.nameJa,
         nameEn: p.nameEn,
         nameKana: p.nameKana ?? null,
+        icon: p.icon ?? null,
         descriptionJa: p.descriptionJa,
         descriptionEn: p.descriptionEn,
         // Hours entered as data win; a place with only the older text keeps showing that.

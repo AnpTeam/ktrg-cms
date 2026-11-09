@@ -49,6 +49,7 @@ export default async function PlacesPage({ searchParams }: Props) {
             name: name?.text ?? p.nameJa,
             nameLang: name?.lang ?? "ja",
             category: p.category,
+            icon: p.icon ?? null,
             status: p.status,
             routes: p.routes,
             hours: pickText(i18n.locale, p.hoursJa, p.hoursEn)?.text ?? null,

@@ -46,7 +46,7 @@ export default async function SpotPage({ params, searchParams }: Props) {
         .slice(0, 8)
         .map((p) => {
           const name = pickText(i18n.locale, p.nameJa, p.nameEn);
-          return { id: p.id, name: name?.text ?? p.nameJa, nameLang: name?.lang ?? "ja", category: p.category, meters: p.meters };
+          return { id: p.id, name: name?.text ?? p.nameJa, nameLang: name?.lang ?? "ja", category: p.category, icon: p.icon ?? null, meters: p.meters };
         })
     : [];
 

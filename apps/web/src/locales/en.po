@@ -6358,6 +6358,9 @@ msgstr "Send the confirmation number"
 msgid "移動の手段"
 msgstr "Way of travelling"
 
+msgid "種類の絵"
+msgstr "Picture of its category"
+
 #: src/components/admin/DirectoryPicker.tsx:157
 #: src/components/admin/map-editor/PlaceList.tsx:99
 #: src/components/admin/PlacePanel.tsx:116

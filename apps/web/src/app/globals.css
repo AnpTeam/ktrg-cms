@@ -534,16 +534,19 @@ rt {
 }
 
 /*
- * Places along the course (toilets, shops ...) and merged groups. A place is a rounded square with a
- * picture, so it never looks like a numbered stop (a circle); closed places carry a diagonal bar.
+ * Places along the course (toilets, shops ...) and merged groups. A place is a small white circle with a
+ * picture and no number, smaller than a stop's teardrop pin; closed places carry a diagonal bar.
  */
 .place-marker {
   position: relative;
   display: grid;
   place-items: center;
-  width: 1.625rem;
-  height: 1.625rem;
-  border-radius: 0.4rem;
+  /* A small circle: smaller than a stop's pin, so the course and its stamp places stand out. The tap area is larger (::before). */
+  width: 1.5rem;
+  height: 1.5rem;
+  /* Not the 3rem every button gets: that stretched the marker into a tall pill. */
+  min-height: 0;
+  border-radius: 9999px;
   border: 2px solid var(--color-ink);
   /* White in every theme: the pictures are drawn for it. */
   background: #fff;
@@ -556,7 +559,8 @@ rt {
 .place-marker::before {
   content: "";
   position: absolute;
-  inset: -0.55rem;
+  /* 1.5rem + 2 x 0.75rem: the 3rem (48 px) every tap target gets. */
+  inset: -0.75rem;
 }
 
 .place-marker[data-closed="true"]::after {

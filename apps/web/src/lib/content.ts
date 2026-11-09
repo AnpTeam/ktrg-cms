@@ -246,6 +246,8 @@ export interface PlaceItem {
   nameJa: string;
   nameEn: string | null;
   nameKana?: string | null;
+  /** The picture chosen for it; null or left out draws its category's. */
+  icon?: string | null;
   /** The waypoint it is closest to; null or left out when none. */
   nearSpotId?: string | null;
   /** The course numbers (1 to 19) this place serves. */
@@ -290,6 +292,7 @@ export function toMapPlace(locale: string, p: PlaceItem): MapPlace {
   return {
     id: p.id,
     category: p.category,
+    icon: p.icon ?? null,
     name: name?.text ?? p.nameJa,
     nameLang: name?.lang ?? "ja",
     hours: pickText(locale, p.hoursJa, p.hoursEn)?.text ?? null,
@@ -357,7 +360,7 @@ export function inlinePlaces(locale: string, places: readonly PlaceItem[]): Reco
   return Object.fromEntries(
     places.map((p) => {
       const name = pickText(locale, p.nameJa, p.nameEn);
-      return [p.id, { id: p.id, name: name?.text ?? p.nameJa, nameLang: name?.lang ?? "ja", category: p.category, hours: pickText(locale, p.hoursJa, p.hoursEn)?.text ?? null }];
+      return [p.id, { id: p.id, name: name?.text ?? p.nameJa, nameLang: name?.lang ?? "ja", category: p.category, icon: p.icon ?? null, hours: pickText(locale, p.hoursJa, p.hoursEn)?.text ?? null }];
     }),
   );
 }

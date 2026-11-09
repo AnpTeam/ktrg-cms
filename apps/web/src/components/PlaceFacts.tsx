@@ -7,6 +7,7 @@ import type { PlaceCategory, PlaceStatus } from "@/lib/places";
 
 export interface PlaceFactsData {
   category: PlaceCategory;
+  icon?: string | null;
   name: string;
   address: string | null;
   phone: string | null;
@@ -36,7 +37,7 @@ export function PlaceFacts({ place }: { place: PlaceFactsData }) {
   return (
     <div className="rounded-3xl bg-surface p-5">
       <div className="mb-3 flex items-center gap-3">
-        <PlaceIcon category={place.category} size={32} />
+        <PlaceIcon category={place.category} icon={place.icon} size={32} />
         <p className="text-xl font-bold leading-snug">{place.name}</p>
       </div>
       <dl className="divide-y divide-line/30">

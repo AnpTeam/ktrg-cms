@@ -51,6 +51,8 @@ export interface Coord {
 export interface MapPlace {
   id: string;
   category: PlaceCategory;
+  /** The picture chosen for it; null or left out draws its category's. */
+  icon?: string | null;
   name: string;
   nameLang: "ja" | "en";
   /** Opening hours, closed days and a short description; null when not given. */

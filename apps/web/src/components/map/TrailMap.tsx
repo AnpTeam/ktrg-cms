@@ -265,6 +265,7 @@ export function TrailMap({
         const el = createPlaceMarkerElement({
           group: groupOf(place.category),
           category: place.category,
+          icon: place.icon,
           label: place.name,
           closed: place.status === "closed" || place.status === "gone",
           onSelect: () => setSelected({ kind: "place", id: place.id }),

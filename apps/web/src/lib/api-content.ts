@@ -84,6 +84,7 @@ export function placeItemFromApi(p: PublicPlace, order: number | null): PlaceIte
     nameJa: p.nameJa,
     nameEn: p.nameEn,
     nameKana: p.nameKana ?? null,
+    icon: p.icon ?? null,
     nearSpotId: p.nearSpotId ?? null,
     routes: order === null ? [] : [order],
     position: { lat: p.lat, lng: p.lng, verified: true },

@@ -1,5 +1,6 @@
 import { pointIconSvg } from "./point-icons";
-import type { PlaceCategory, PlaceGroup } from "./places";
+import { isPointKind, pointKinds } from "./point-kinds";
+import { placeCategories, type PlaceCategory, type PlaceGroup } from "./places";
 
 /**
  * A small coloured picture for each kind of place in the directory (24 x 24 grid, flat colours, drawn for a white disc),
@@ -42,6 +43,16 @@ export const placeIconSvg: Record<PlaceCategory, string> = {
   parking: pointIconSvg.parking,
   other: pointIconSvg.other,
 };
+
+/** Every picture an editor may choose for a place: each category's and each waypoint kind's (the API's PLACE_ICONS). */
+export const placeIconKeys: readonly string[] = [...new Set<string>([...placeCategories, ...pointKinds])];
+
+/** The picture a place wears: the one chosen for it, else its category's. An unknown name falls back too. */
+export function placePicture(category: PlaceCategory, icon?: string | null): string {
+  if (icon && (placeCategories as readonly string[]).includes(icon)) return placeIconSvg[icon as PlaceCategory];
+  if (icon && isPointKind(icon)) return pointIconSvg[icon];
+  return placeIconSvg[category];
+}
 
 /** The picture that stands for a whole group of places (a chip that turns the group on or off). */
 export const groupPictureCategory: Record<PlaceGroup, PlaceCategory> = {

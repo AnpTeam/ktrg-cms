@@ -36,6 +36,13 @@ describe("changing one field of a place", () => {
     const changed = await call("PATCH", `/admin/lists/directory/${item.id}`, { updatedAt: item.updatedAt, nameJa: "新しい名前" });
     expect(changed.status).toBe(200);
     expect(changed.body.item).toMatchObject({ nameJa: "新しい名前", category: "parking", status: "seasonal" });
+
+    // An icon: one of the known pictures, kept when another field changes; an unknown one is refused.
+    const withIcon = await call("PATCH", `/admin/lists/directory/${item.id}`, { updatedAt: changed.body.item.updatedAt, icon: "temple" });
+    expect(withIcon.body.item.icon).toBe("temple");
+    expect((await call("PATCH", `/admin/lists/directory/${item.id}`, { updatedAt: withIcon.body.item.updatedAt, icon: "dragon" })).status).toBe(422);
+    const renamed = await call("PATCH", `/admin/lists/directory/${item.id}`, { updatedAt: withIcon.body.item.updatedAt, nameJa: "また新しい名前" });
+    expect(renamed.body.item.icon).toBe("temple");
   });
 });
 
