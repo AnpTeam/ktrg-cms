@@ -311,7 +311,7 @@ rt {
   height: 100%;
   overflow: visible;
   transform-origin: 50% 100%;
-  transition: transform 120ms ease-out;
+  transition: transform 150ms var(--ease-standard);
 }
 .map-marker .pin-shape {
   /* A solid dark pin with a white outline reads on any map tile; the dark is fixed, not the theme's ink, so a dark page does not turn it pale. */
@@ -492,17 +492,26 @@ rt {
 /* The header menu drops down from the top on a phone, and grows out of the rail's button from 768 px. Reduced motion: it just appears. */
 @media (prefers-reduced-motion: no-preference) {
   .menu-drop {
-    animation: menu-drop 160ms ease-out;
+    animation: menu-drop 160ms var(--ease-enter);
   }
   @media (min-width: 768px) {
     .menu-drop {
-      animation: menu-pop 140ms ease-out;
+      animation: menu-pop 150ms var(--ease-enter);
     }
   }
 }
 @media (prefers-reduced-motion: no-preference) {
   .toast-in {
-    animation: toast-in 200ms ease-out;
+    animation: toast-in 200ms var(--ease-enter);
+  }
+  .toast-out {
+    animation: toast-out 150ms var(--ease-leave) forwards;
+  }
+}
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(-0.5rem);
   }
 }
 @keyframes toast-in {
@@ -763,7 +772,7 @@ html[data-size="xlarge"] {
  * only after a short wait (a quick page change never flashes it). Reduced motion: the seal just sits there.
  */
 .loading-fade {
-  animation: loading-fade 200ms ease-out 300ms both;
+  animation: loading-fade 200ms var(--ease-enter) 300ms both;
 }
 @keyframes loading-fade {
   from {
@@ -814,7 +823,7 @@ html[data-size="xlarge"] {
 /* A stamp that has just been given lands on the page: it starts a little large and light, and presses down once. */
 @media (prefers-reduced-motion: no-preference) {
   .stamp-land {
-    animation: stamp-land 450ms ease-out both;
+    animation: stamp-land 450ms var(--ease-enter) both;
   }
 }
 @keyframes stamp-land {
@@ -982,10 +991,11 @@ body.map-screen-active .site-footer {
    it has keyboard focus. (A page's sticky bar used to tuck away too; the user found that bad on the route page.) */
 @media (max-width: 767px) {
   [data-tabbar] {
-    transition: translate 220ms ease;
+    transition: translate 220ms var(--ease-enter);
   }
   html[data-bars="hidden"] [data-tabbar]:not(:focus-within) {
     translate: 0 100%;
+    transition-timing-function: var(--ease-leave);
   }
   /* Things kept above the tab bar (the navigation strip) follow it down. */
   html[data-bars="hidden"]:not(:has([data-tabbar]:focus-within)) {
@@ -1003,6 +1013,13 @@ body.map-screen-active .site-footer {
    no value makes the whole `bottom` invalid, and the buttons then fall to the end of the page, off the screen. */
 :root {
   --tabbar-room: 0px;
+}
+/* Motion: things that arrive slow down into place (enter), things that go speed up as they leave (leave), and a move from
+   one place to another does both (standard). 150 to 300 ms for the screen; the stamp moment is a show and takes longer. */
+:root {
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-enter: cubic-bezier(0, 0, 0.2, 1);
+  --ease-leave: cubic-bezier(0.4, 0, 1, 1);
 }
 @media (max-width: 767px) {
   :root {
