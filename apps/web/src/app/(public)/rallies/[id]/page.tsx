@@ -7,7 +7,7 @@ import { BackLink } from "@/components/BackLink";
 import { CertificateButton } from "@/components/CertificateButton";
 import { CreditCaption } from "@/components/PhotoCredit";
 import { LastUpdated } from "@/components/LastUpdated";
-import { RallyBookmark } from "@/components/RallyBookmark";
+import { SaveBookmark } from "@/components/SaveBookmark";
 import { RallyNearbyStamp } from "@/components/RallyNearbyStamp";
 import { Bar, SlotList } from "@/components/RallyViews";
 import { RoutePhoto } from "@/components/RoutePhoto";
@@ -111,7 +111,7 @@ export default async function RallyPage({ params, searchParams }: Props) {
             {stamped === 0 ? <Trans>いますぐはじめる</Trans> : <Trans>つづきをはじめる</Trans>}
           </Link>
           {canStampHere ? <RallyNearbyStamp places={detail.places} held={held} locale={i18n.locale} rallyName={name} quiet={stamped === 0} /> : null}
-          <RallyBookmark rallyId={rally.id} />
+          <SaveBookmark id={rally.id} />
         </section>
       ) : null}
 

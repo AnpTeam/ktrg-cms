@@ -1,3 +1,4 @@
+import { SaveBookmark } from "@/components/SaveBookmark";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -131,6 +132,7 @@ export default async function BlogPostPage({ params }: Props) {
           ) : null}
           <time dateTime={post.publishedOn}>{formatDay(locale, post.publishedOn)}</time>
         </p>
+        <SaveBookmark id={post.id} wide={false} />
       </header>
 
       {post.coverPhotoUrl ? (

@@ -3,6 +3,7 @@ import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { BookmarkList } from "@/components/BookmarkList";
 import { listRallies, listRoutes } from "@/lib/content";
+import { listPosts } from "@/lib/posts";
 import { initLingui } from "@/i18n/server";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,7 +19,7 @@ export default async function BookmarksPage() {
       <h1 className="px-4 text-3xl font-bold wide:text-4xl">
         <Trans>ブックマーク</Trans>
       </h1>
-      <BookmarkList locale={i18n.locale} routes={await listRoutes()} rallies={await listRallies()} />
+      <BookmarkList locale={i18n.locale} routes={await listRoutes()} rallies={await listRallies()} posts={await listPosts()} />
     </div>
   );
 }
