@@ -79,6 +79,8 @@ export interface SpotRow {
   routeId: string;
   nameJa: string;
   nameEn: string | null;
+  /** How the Japanese name is read (see lib ruby markup), typed by a person. */
+  nameKana: string | null;
   descriptionJa: string | null;
   descriptionEn: string | null;
   /** Its story (where the name comes from, what happened there). */
@@ -157,6 +159,7 @@ export interface RouteFields {
 export interface SpotFields {
   nameJa: string;
   nameEn: string | null;
+  nameKana: string | null;
   descriptionJa: string | null;
   descriptionEn: string | null;
   /** Its story (where the name comes from, what happened there). */

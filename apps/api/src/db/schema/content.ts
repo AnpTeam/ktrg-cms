@@ -159,6 +159,8 @@ export const spots = pgTable(
     routeId: uuid("route_id")
       .notNull()
       .references(() => routes.id, { onDelete: "restrict" }),
+    // How the Japanese name is read, typed by a person (a temple's or a mound's name is not left to a dictionary).
+    nameKana: text("name_kana"),
     // Entered by an admin from an official source.
     lat: doublePrecision("lat"),
     lng: doublePrecision("lng"),
@@ -691,6 +693,8 @@ export const places = pgTable(
     nearSpotId: uuid("near_spot_id").references(() => spots.id, { onDelete: "set null" }),
     // Structured hours (places/opening-hours.ts); when set, visitors read the text built from it instead of the older hours text.
     openingHours: jsonb("opening_hours").$type<OpeningHours>(),
+    // How the Japanese name is read, typed by a person.
+    nameKana: text("name_kana"),
     lat: doublePrecision("lat"),
     lng: doublePrecision("lng"),
     positionVerified: boolean("position_verified").notNull().default(false),

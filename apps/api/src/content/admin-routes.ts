@@ -128,6 +128,7 @@ const routeProps = {
 const spotProps = {
   nameJa: t.String({ minLength: 1, maxLength: 200 }),
   nameEn: nullable(t.String({ maxLength: 200 })),
+  nameKana: nullable(t.String({ maxLength: 200 })),
   descriptionJa: nullable(t.String({ maxLength: 20000 })),
   descriptionEn: nullable(t.String({ maxLength: 20000 })),
   historyJa: nullable(t.String({ maxLength: 20000 })),

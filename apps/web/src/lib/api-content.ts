@@ -166,6 +166,7 @@ export function routeDetailFromApi(
 export function spotDetailFromApi(s: PublicSpot, route: Pick<PublicRoute, "id" | "nameJa" | "nameEn">, stamped = false): SpotDetail {
   return {
     ...spotListItemFromApi(s, stamped),
+    nameKana: s.nameKana ?? null,
     routeId: route.id,
     routeNameJa: route.nameJa,
     routeNameEn: route.nameEn,

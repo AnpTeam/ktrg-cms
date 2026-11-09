@@ -421,6 +421,13 @@
       "when": 1794189559765,
       "tag": "0059_sharp_warlock",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1794201819594,
+      "tag": "0060_yielding_thor_girl",
+      "breakpoints": true
     }
   ]
 }

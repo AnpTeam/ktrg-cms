@@ -13,7 +13,7 @@ import type { MeServices } from "./me/me-routes";
 import { createListReader } from "./admin-lists/list-service";
 import type { ListReadStore } from "./admin-lists/list-types";
 import type { AuditListRow, AuditListServices } from "./audit/audit-list";
-import { createFuriganaService, type FuriganaServices, type FuriganaStore } from "./furigana/furigana-words";
+import { createFuriganaService, nameReadings, type FuriganaServices, type FuriganaStore } from "./furigana/furigana-words";
 import { createBannerService, type BannerServices, type BannerStore } from "./banners/banner-list";
 import type { PlaceListRow, PlaceListServices } from "./content/place-list";
 import { createPlaceService, type PlaceServices, type PlaceStore } from "./places/place-directory";
@@ -135,7 +135,11 @@ export function createServices(deps: ServiceDeps): Services {
     posts,
     // The other generated admin lists: home banners, the audit log, every place, accounts and their roles.
     banners: createBannerService({ store: stores.banners, photoHosts: deps.photoHosts }),
-    furigana: createFuriganaService({ store: stores.furigana }),
+    // The readings typed with course, published waypoint and published place names join the words list.
+    furigana: createFuriganaService({
+      store: stores.furigana,
+      names: () => nameReadings(stores.content, stores.places),
+    }),
     authors: createAuthorService({ store: stores.authors, photoHosts: deps.photoHosts }),
     tags: createTagService({ store: stores.tags }),
     comments: createCommentService({ store: stores.comments, postVisible: async (id) => (await posts.publicPost(id)) !== null }),

@@ -28,6 +28,8 @@ export const PLACE_FIELDS = {
   openingHours: t.Union([OPENING_HOURS, t.Null()]),
   nameJa: t.String({ minLength: 1, maxLength: 200 }),
   nameEn: maybe(200),
+  /** How the Japanese name is read, typed by a person. */
+  nameKana: t.Optional(maybe(200)),
   descriptionJa: maybe(2000),
   descriptionEn: maybe(2000),
   hoursJa: maybe(300),
@@ -72,7 +74,7 @@ const isWebLink = (v: string) => {
   }
 };
 
-const NULLABLE_TEXT = ["nameEn", "descriptionJa", "descriptionEn", "hoursJa", "hoursEn", "closedDaysJa", "closedDaysEn", "positionSource", "addressJa", "addressEn", "phone", "website", "photoUrl", "photoCredit", "listingNote"] as const;
+const NULLABLE_TEXT = ["nameEn", "nameKana", "descriptionJa", "descriptionEn", "hoursJa", "hoursEn", "closedDaysJa", "closedDaysEn", "positionSource", "addressJa", "addressEn", "phone", "website", "photoUrl", "photoCredit", "listingNote"] as const;
 
 /**
  * Trims every text and clears a blank one; a link must be https; a position needs both numbers; "checked" needs a
@@ -314,6 +316,12 @@ export const placeDirectoryList: ListDef<"directory", typeof PLACE_FIELDS, Place
         inList: {},
       },
       { name: "name", kind: "bilingual", label: { ja: "名前", en: "Name" }, required: true },
+      {
+        name: "nameKana",
+        kind: "ruby",
+        label: { ja: "名前の読み", en: "Reading of the name" },
+        hint: { ja: "漢字の上に出るふりがなです。辞書には任せず、人が入れます。", en: "The furigana over the kanji. Typed by a person, never left to a dictionary." },
+      },
       { name: "routeId", kind: "route", label: { ja: "近いルート", en: "Nearby route" }, noneLabel: { ja: "（なし）", en: "(none)" }, inList: {} },
       {
         name: "nearSpotId",
@@ -402,6 +410,7 @@ export function publicPlaceRoutes(getPlaces: () => PlaceService, log: (message: 
         nearSpotId: p.nearSpotId,
         nameJa: p.nameJa,
         nameEn: p.nameEn,
+        nameKana: p.nameKana ?? null,
         descriptionJa: p.descriptionJa,
         descriptionEn: p.descriptionEn,
         // Hours entered as data win; a place with only the older text keeps showing that.

@@ -6401,6 +6401,14 @@ msgstr "経由地の一覧"
 msgid "経由地の公開をやめた"
 msgstr "経由地の公開をやめた"
 
+#: src/components/admin/PlacePanel.tsx
+msgid "名前の読み"
+msgstr "名前の読み"
+
+#: src/components/admin/PlacePanel.tsx
+msgid "漢字の上に出るふりがなです。寺社や経塚の名前は、辞書には任せず人が入れます。"
+msgstr "漢字の上に出るふりがなです。寺社や経塚の名前は、辞書には任せず人が入れます。"
+
 #: src/components/admin/PlacePanel.tsx:107
 msgid "経由地の名前"
 msgstr "経由地の名前"

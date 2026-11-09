@@ -158,6 +158,8 @@ export interface GalleryPhoto {
 
 export interface SpotDetail extends SpotListItem {
   routeId: string;
+  /** How the Japanese name is read, typed by a person. */
+  nameKana?: string | null;
   routeNameJa: string;
   routeNameEn: string | null;
   descriptionJa: string | null;
