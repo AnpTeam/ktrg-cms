@@ -84,6 +84,10 @@ export const AUDIT_ACTIONS = {
   "author.create": "author",
   "author.update": "author",
   "author.delete": "author",
+  /** Blog tags (admin-lists): made, changed, deleted. */
+  "tag.create": "tag",
+  "tag.update": "tag",
+  "tag.delete": "tag",
   /** Blog comments (admin-lists): status changed, deleted. */
   "comment.update": "comment",
   "comment.delete": "comment",

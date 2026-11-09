@@ -25,6 +25,7 @@ import type { NoticeServices } from "./notices/notice-routes";
 import { createNoticeService } from "./notices/notice-service";
 import type { NoticeStore } from "./notices/notice-types";
 import { createAuthorService, type AuthorServices, type AuthorStore } from "./posts/author-list";
+import { createTagService, type TagServices, type TagStore } from "./posts/tag-list";
 import { createCommentService, type CommentServices, type CommentStore } from "./posts/comments";
 import { createPostService, type PostServices, type PostStore } from "./posts/post-list";
 import type { ContentServices } from "./content/admin-routes";
@@ -46,7 +47,7 @@ import { createUploadService } from "./uploads/upload-service";
 import type { FileStorage } from "./uploads/upload-storage";
 
 /** Everything the routes use. */
-export type Services = AuthServices & PasskeyServices & PasswordServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & PostServices & CommentServices & AuthorServices & BannerServices & PlaceServices & SiteSettingsServices & VisitServices & DashboardServices & AuditListServices & PlaceListServices & UserListServices & GuestServices & FuriganaServices & NavigationServices;
+export type Services = AuthServices & PasskeyServices & PasswordServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & PostServices & CommentServices & AuthorServices & TagServices & BannerServices & PlaceServices & SiteSettingsServices & VisitServices & DashboardServices & AuditListServices & PlaceListServices & UserListServices & GuestServices & FuriganaServices & NavigationServices;
 
 /** What the services are built from: the storage (database or in-memory) and the outside world. */
 export interface ServiceDeps {
@@ -67,6 +68,7 @@ export interface ServiceDeps {
     furigana: FuriganaStore;
     comments: CommentStore;
     authors: AuthorStore;
+    tags: TagStore;
     places: PlaceStore;
     siteSettings: SiteSettingsStore;
     visits: VisitStore;
@@ -103,7 +105,7 @@ export function createServices(deps: ServiceDeps): Services {
   const { stores, mailer, secret, now } = deps;
   const rateLimit = createRateLimiter({ store: stores.rateLimit, secret, now });
   const stamps = createStampService({ store: stores.stamps });
-  const posts = createPostService({ store: stores.posts, photoHosts: deps.photoHosts, now, placeExists: async (id) => (await stores.places.get(id)) !== null, routeExists: async (id) => (await stores.content.getRoute(id)) !== null, spotExists: async (id) => (await stores.content.getSpot(id)) !== null, authorExists: async (id) => (await stores.authors.get(id)) !== null });
+  const posts = createPostService({ store: stores.posts, photoHosts: deps.photoHosts, now, placeExists: async (id) => (await stores.places.get(id)) !== null, routeExists: async (id) => (await stores.content.getRoute(id)) !== null, spotExists: async (id) => (await stores.content.getSpot(id)) !== null, authorExists: async (id) => (await stores.authors.get(id)) !== null, tagExists: async (id) => (await stores.tags.get(id)) !== null });
   const settings = createSiteSettingsService({ store: stores.siteSettings });
   const visits = createVisitService({ store: stores.visits, now });
   const routing = withDailyCap(deps.routing ?? createRoutingService({}), rateLimit);
@@ -135,6 +137,7 @@ export function createServices(deps: ServiceDeps): Services {
     banners: createBannerService({ store: stores.banners, photoHosts: deps.photoHosts }),
     furigana: createFuriganaService({ store: stores.furigana }),
     authors: createAuthorService({ store: stores.authors, photoHosts: deps.photoHosts }),
+    tags: createTagService({ store: stores.tags }),
     comments: createCommentService({ store: stores.comments, postVisible: async (id) => (await posts.publicPost(id)) !== null }),
     places: createPlaceService({ store: stores.places, photoHosts: deps.photoHosts, routeExists: async (id) => (await stores.content.getRoute(id)) !== null, spotExists: async (id) => (await stores.content.getSpot(id)) !== null, routeSpots: async (id) => (await stores.content.getRoute(id))?.spots ?? [], routeIds: async () => (await stores.content.listRoutes()).map((r) => r.id) }),
     siteSettings: settings,

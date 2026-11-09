@@ -170,6 +170,32 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
             <RelationPicker id={id} to={f.to ?? ""} locale={locale} value={text(f.name)} choices={choices[f.name] ?? []} max={MAX_RELATION_CHOICES} noneLabel={f.noneLabel ? pick(f.noneLabel, locale) : "—"} onChange={set(f.name)} />
           </Field>
         );
+      case "relations": {
+        // Any number of rows of a short list (tags): tick boxes, not a search.
+        const picked = new Set(text(f.name).split(",").filter(Boolean));
+        const all = choices[f.name] ?? [];
+        return (
+          <fieldset key={f.name} className="flex flex-col gap-2">
+            <legend className="text-lg font-bold">{label}</legend>
+            {hint ? <p className="text-base text-muted">{hint}</p> : null}
+            {all.length === 0 ? <p className="text-base text-muted">{t`まだ、ありません。`}</p> : null}
+            <div className="flex flex-wrap gap-x-5 gap-y-1">
+              {all.map((c) => (
+                <label key={c.id} className="tap-target inline-flex items-center gap-2 text-lg">
+                  <input
+                    type="checkbox"
+                    className="size-5"
+                    checked={picked.has(c.id)}
+                    disabled={busy}
+                    onChange={() => set(f.name)(all.filter((x) => (x.id === c.id ? !picked.has(c.id) : picked.has(x.id))).map((x) => x.id).join(","))}
+                  />
+                  {c.name}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        );
+      }
       case "hours":
         return (
           <Field key={f.name} label={label} hint={hint} htmlFor={id}>

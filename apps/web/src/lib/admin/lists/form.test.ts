@@ -114,3 +114,11 @@ describe("the generic admin form", () => {
     expect(itemHref({ ...noticesList, ops: { create: false, edit: false, delete: false } }, row)).toBeNull();
   });
 });
+
+test("several picked rows travel as one comma-separated value and go out as a list", () => {
+  const tags: ListMeta = { key: "posts", title: l("p"), intro: l("p"), ops: { create: true, edit: true, delete: true }, titleField: "title", fields: [{ name: "tagIds", kind: "relations", to: "tags", label: l("t") }] } as ListMeta;
+  const values = formValues(tags, { id: "x", createdAt: "", updatedAt: "", tagIds: ["a", "b"] });
+  expect(values.tagIds).toBe("a,b");
+  expect(toPayload(tags, values).tagIds).toEqual(["a", "b"]);
+  expect(toPayload(tags, { tagIds: "" }).tagIds).toEqual([]);
+});

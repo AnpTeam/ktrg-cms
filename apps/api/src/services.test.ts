@@ -10,6 +10,7 @@ import { createMemoryVisitStore } from "./visits/visits";
 import { createMemorySiteSettingsStore } from "./site-settings/site-settings";
 import { createMemoryPlaceStore } from "./places/place-directory";
 import { createMemoryAuthorStore } from "./posts/author-list";
+import { createMemoryTagStore } from "./posts/tag-list";
 import { createMemoryCommentStore } from "./posts/comments";
 import { createMemoryFuriganaStore } from "./furigana/furigana-words";
 import { createMemoryBannerStore } from "./banners/banner-list";
@@ -45,6 +46,7 @@ function build(photoHosts?: string[]) {
       furigana: createMemoryFuriganaStore(audit.writer).store,
       comments: createMemoryCommentStore(audit.writer).store,
       authors: createMemoryAuthorStore(audit.writer).store,
+      tags: createMemoryTagStore(audit.writer).store,
       places: createMemoryPlaceStore(audit.writer).store,
       siteSettings: createMemorySiteSettingsStore(audit.writer),
       visits: createMemoryVisitStore(),

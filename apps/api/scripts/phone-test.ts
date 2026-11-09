@@ -28,6 +28,7 @@ import { createMemoryVisitStore } from "../src/visits/visits";
 import { createMemorySiteSettingsStore } from "../src/site-settings/site-settings";
 import { createMemoryPlaceStore } from "../src/places/place-directory";
 import { createMemoryAuthorStore } from "../src/posts/author-list";
+import { createMemoryTagStore } from "../src/posts/tag-list";
 import { createMemoryCommentStore } from "../src/posts/comments";
 import { createMemoryFuriganaStore } from "../src/furigana/furigana-words";
 import { createMemoryBannerStore } from "../src/banners/banner-list";
@@ -75,6 +76,7 @@ const audit = {
   },
 };
 const stampMem = createMemoryStampStore(audit);
+const tagStore = createMemoryTagStore(audit);
 // Same wiring as the app (src/services.ts), with in-memory stores and the console mailer.
 const services = createServices({
   stores: {
@@ -89,11 +91,12 @@ const services = createServices({
     stamps: stampMem.store,
     stampList: stampMem.listStore,
     notices: createMemoryNoticeStore(audit).store,
-    posts: createMemoryPostStore(audit).store,
+    posts: createMemoryPostStore(audit, { tags: tagStore.rows }).store,
     banners: createMemoryBannerStore(audit).store,
     furigana: createMemoryFuriganaStore(audit).store,
     comments: createMemoryCommentStore(audit).store,
     authors: createMemoryAuthorStore(audit).store,
+    tags: tagStore.store,
     places: createMemoryPlaceStore(audit).store,
     siteSettings: createMemorySiteSettingsStore(audit),
     visits: createMemoryVisitStore(),

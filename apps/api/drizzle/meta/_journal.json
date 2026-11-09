@@ -414,6 +414,13 @@
       "when": 1794187674955,
       "tag": "0058_dashing_molten_man",
       "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1794189559765,
+      "tag": "0059_sharp_warlock",
+      "breakpoints": true
     }
   ]
 }

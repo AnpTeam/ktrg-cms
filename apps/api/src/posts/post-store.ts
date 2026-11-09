@@ -1,8 +1,8 @@
-import { and, asc, desc, eq, inArray, lte, sql } from "drizzle-orm";
+import { and, arrayContains, asc, desc, eq, inArray, lte, sql } from "drizzle-orm";
 import { afterCursor, newestFirst, sameInstant } from "../admin-lists/list-sql";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
-import { blogAuthors, blogPosts, blogPostTranslations, users } from "../db/schema";
+import { blogAuthors, blogPosts, blogPostTranslations, blogTags, users } from "../db/schema";
 import { emptyTexts, flattenTexts, POST_TEXT, splitTexts, type Texts } from "../db/translations";
 import { POST_AUDIT, PUBLIC_POSTS_LIMIT, type PostRow, type PostStore } from "./post-list";
 
@@ -26,6 +26,9 @@ async function withTexts(q: Reader, rows: (typeof blogPosts.$inferSelect)[]): Pr
   const writers = new Map(
     (writerIds.length === 0 ? [] : await q.select().from(blogAuthors).where(inArray(blogAuthors.id, writerIds))).map((a) => [a.id, { nameJa: a.nameJa, nameEn: a.nameEn, photoUrl: a.photoUrl }]),
   );
+  // The tags of these posts by id; a deleted tag is simply not found, and left out.
+  const tagIds = [...new Set(rows.flatMap((r) => r.tagIds))];
+  const tags = new Map((tagIds.length === 0 ? [] : await q.select().from(blogTags).where(inArray(blogTags.id, tagIds))).map((t) => [t.id, { id: t.id, nameJa: t.nameJa, nameEn: t.nameEn }]));
   return rows.map((r) => {
     const w = words.get(r.id) ?? emptyTexts(POST_TEXT);
     const account = r.authorUserId ? accounts.get(r.authorUserId) : undefined;
@@ -52,6 +55,8 @@ async function withTexts(q: Reader, rows: (typeof blogPosts.$inferSelect)[]): Pr
       publishedOn: r.publishedOn,
       kind: r.kind,
       slug: r.slug,
+      tagIds: r.tagIds,
+      tags: r.tagIds.flatMap((id) => tags.get(id) ?? []),
       published: r.published,
       createdAt: r.createdAt,
       updatedAt: r.updatedAt,
@@ -131,11 +136,11 @@ export function createDrizzlePostStore(db: Db): PostStore {
       });
     },
 
-    async listPublic(today) {
+    async listPublic(today, tagId) {
       const rows = await db
         .select()
         .from(blogPosts)
-        .where(and(readable(today), isPost))
+        .where(and(readable(today), isPost, tagId ? arrayContains(blogPosts.tagIds, [tagId]) : undefined))
         .orderBy(desc(blogPosts.publishedOn), desc(blogPosts.createdAt))
         .limit(PUBLIC_POSTS_LIMIT);
       return withTexts(db, rows);

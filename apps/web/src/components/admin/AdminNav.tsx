@@ -38,7 +38,7 @@ export function AdminNav({ lists, isAdmin, footer }: { lists: { key: string; tit
     { key: "rallies", href: `${base}/rallies`, label: t`ラリー`, icon: <FlagIcon /> },
     { key: "visits", href: `${base}/visits`, label: t`アクセス解析`, icon: <GlobeIcon /> },
     { key: "attention", href: `${base}/attention`, label: t`直すところ`, icon: <WarningIcon /> },
-    ...lists.filter((l) => l.key !== "authors").map((l) => ({ key: l.key, href: `${base}/${l.key}`, label: l.title, icon: LIST_ICONS[l.key] ?? <DocumentIcon /> })),
+    ...lists.filter((l) => l.key !== "authors" && l.key !== "tags").map((l) => ({ key: l.key, href: `${base}/${l.key}`, label: l.title, icon: LIST_ICONS[l.key] ?? <DocumentIcon /> })),
     { key: "pages", href: `${base}/pages`, label: t`ページ`, icon: <DocumentIcon /> },
     // The site settings are for an admin only (the API refuses an editor).
     ...(isAdmin ? [{ key: "settings", href: `${base}/settings`, label: t`詳細設定`, icon: <GearIcon /> }] : []),
