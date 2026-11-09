@@ -759,8 +759,7 @@ html[data-size="xlarge"] {
 }
 
 /*
- * The loading screen: a seal that is pressed down again and again, with a ring that spreads like ink. It shows
- * only after a short wait (a quick page change never flashes it). Reduced motion: the seal just sits there.
+ * The loading screen (grey blocks in the shape of a page) shows only after a short wait: a quick page change never flashes it.
  */
 .loading-fade {
   animation: loading-fade 200ms ease-out 300ms both;
@@ -771,43 +770,6 @@ html[data-size="xlarge"] {
   }
   to {
     opacity: 1;
-  }
-}
-@media (prefers-reduced-motion: no-preference) {
-  .loading-seal {
-    animation: seal-press 1400ms ease-in-out infinite;
-  }
-  .loading-ring {
-    animation: seal-ring 1400ms ease-out infinite;
-  }
-}
-@keyframes seal-press {
-  0%,
-  100% {
-    transform: scale(1.18) rotate(-4deg);
-    opacity: 0.55;
-  }
-  40% {
-    transform: scale(1) rotate(-2deg);
-    opacity: 1;
-  }
-  70% {
-    transform: scale(1) rotate(-2deg);
-    opacity: 1;
-  }
-}
-@keyframes seal-ring {
-  0%,
-  35% {
-    transform: scale(1);
-    opacity: 0;
-  }
-  40% {
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(1.7);
-    opacity: 0;
   }
 }
 
