@@ -10,6 +10,7 @@ import { RichText } from "@/components/RichText";
 import { RouteStats } from "@/components/RouteStats";
 import { StampHere } from "@/components/StampHere";
 import { useRouteLine } from "./useRouteLine";
+import { useCategoryNames } from "./PlacesPanel";
 import { NAV_HANDOFF_MS, NAV_RESUME_EVENT, NavigationResume, NavigationStart } from "@/components/navigation/NavigationHud";
 import { useNavigation } from "@/components/navigation/NavigationProvider";
 import { StampFace } from "@/components/StampFace";
@@ -17,7 +18,7 @@ import { StatusWord } from "@/components/StatusWord";
 import { formatUpdated } from "@/lib/format";
 import { LOW_QUERY, WIDE_QUERY, watchQuery } from "@/lib/screen";
 import { mapMemory, resumeFrom } from "@/lib/map-memory";
-import { sheetHeightPx, type MapScreenRoute, type MapScreenStop, type SheetSnap } from "@/lib/map-screen";
+import { sheetHeightPx, type MapScreenPoint, type MapScreenRoute, type MapScreenStop, type SheetSnap } from "@/lib/map-screen";
 import type { MapSettings } from "@/lib/map-settings";
 import type { StampMock } from "@/lib/stamp-flow";
 import { MapScreenCanvasLoader } from "./MapScreenCanvasLoader";
@@ -82,6 +83,8 @@ export function MapScreen({
   const [stopId, setStopId] = useState<string | null>(returning ? returning.stopId : initialRouteId ? initialStopId : null);
   // The stop was opened from the sutra mound pins, not from its course: it is then shown without the course's numbering.
   const [viaMounds, setViaMounds] = useState(returning?.viaMounds ?? false);
+  // A nearby place (a shop, a toilet ...) tapped on the map: shown in the sheet over the course or stop, which 戻る brings back.
+  const [place, setPlace] = useState<MapScreenPoint | null>(null);
   // Coming back to the map during a navigation: the navigation has the bottom of the screen; the sheet waits below.
   const [snap, setSnap] = useState<SheetSnap>(returning?.snap ?? (initialRouteId ? "half" : nav.session ? "hidden" : "peek"));
   useEffect(() => {
@@ -151,7 +154,7 @@ export function MapScreen({
   }, [navRouteId]);
 
   const route = routes.find((r) => r.id === routeId) ?? null;
-  const chosen = route !== null;
+  const chosen = route !== null || place !== null;
   const stop = route?.stops?.find((s) => s.id === stopId) ?? null;
 
   // At its top resting place the sheet covers the whole page, so the site's own top bar steps aside.
@@ -198,6 +201,7 @@ export function MapScreen({
   // On a narrow screen the sheet rises to show what was chosen; on a desktop the panel just shows it.
   const chooseRoute = useCallback(
     (id: string) => {
+      setPlace(null);
       setRouteId(id);
       setStopId(null);
       setViaMounds(false);
@@ -208,6 +212,7 @@ export function MapScreen({
   );
   const chooseStop = useCallback(
     (routeId: string, id: string, fromMounds = false) => {
+      setPlace(null);
       setRouteId(routeId);
       setStopId(id);
       setViaMounds(fromMounds);
@@ -216,20 +221,31 @@ export function MapScreen({
     },
     [wide, openSheet],
   );
+  const choosePlace = useCallback(
+    (p: MapScreenPoint) => {
+      setPlace(p);
+      setFolded(false);
+      if (!wide) openSheet((s) => (s === "peek" || s === "hidden" ? "half" : s));
+    },
+    [wide, openSheet],
+  );
   const back = useCallback(() => {
-    if (stopId) setStopId(null);
+    if (place) {
+      setPlace(null);
+      if (!routeId && !wide) setSnap("peek");
+    } else if (stopId) setStopId(null);
     else {
       setRouteId(null);
       if (!wide) setSnap("peek");
     }
-  }, [stopId, wide]);
+  }, [place, routeId, stopId, wide]);
 
   useEffect(() => {
-    if (!routeId) return;
+    if (!routeId && !place) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && !document.querySelector("dialog[open]") && back(); // Esc in a dialog closes only the dialog
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [routeId, back]);
+  }, [routeId, place, back]);
 
   const routeName = route?.name ?? "";
 
@@ -245,7 +261,9 @@ export function MapScreen({
   // The banner at the top of the chosen course or stop: its photo (a stop without one shows its course's) with the
   // name written over it. A course's is lower, so its buttons are in view with the sheet at half height.
   const photo = stop?.photo ?? route?.photo ?? null;
-  const hero = route ? (
+  const hero = place ? (
+    <SheetHero short photo={place.photo ?? null} title={place.name} lang={place.nameLang} eyebrow={route ? <span lang={route.nameLang}>{routeName}</span> : null} backLabel={t`戻る`} onBack={back} />
+  ) : route ? (
     <SheetHero
       short={!stop}
       photo={photo}
@@ -265,13 +283,14 @@ export function MapScreen({
     />
   ) : null;
 
-  const detailBody =
-    stop && route ? (
+  const detailBody = place ? (
+    <PointPanel point={place} />
+  ) : stop && route ? (
       <StopPanel route={route} stop={stop} showNumber={!viaMounds} locale={locale} loginHref={loginHref} stampMock={stampMock} />
     ) : route ? (
       <RoutePanel route={route} onChooseStop={(id) => chooseStop(route.id, id)} />
     ) : null;
-  const hasDetail = route !== null;
+  const hasDetail = route !== null || place !== null;
 
   const homeBody = (
     <div className="flex flex-col gap-5 px-4 pb-4">
@@ -297,6 +316,7 @@ export function MapScreen({
         onSelectRoute={chooseRoute}
         onSelectStop={chooseStop}
         onSelectMound={(routeId, id) => chooseStop(routeId, id, true)}
+        onSelectPlace={choosePlace}
         focusPlaceId={initialPlaceId}
         startCamera={returning?.camera ?? null}
         coveredPx={wide ? 0 : sheetHeightPx(snap, available) + bottomPx}
@@ -321,7 +341,7 @@ export function MapScreen({
           {route ? t`区間の情報を見る` : t`区間の一覧を見る`}
         </button>
       ) : null}
-      <MapSheet panel={wide} folded={wide && folded} onFold={() => setFolded(!folded)} rail={<RouteChips column routes={routes} onChoose={chooseRoute} selectedId={routeId} />} snap={snap} onSnap={setSnap} available={available} belowBanner={!wide && navBannerPx > 0} tabPx={bottomPx} header={showDetailInSheet ? null : homeHeader} contentKey={`${routeId ?? ""}/${stopId ?? ""}`}>
+      <MapSheet panel={wide} folded={wide && folded} onFold={() => setFolded(!folded)} rail={<RouteChips column routes={routes} onChoose={chooseRoute} selectedId={routeId} />} snap={snap} onSnap={setSnap} available={available} belowBanner={!wide && navBannerPx > 0} tabPx={bottomPx} header={showDetailInSheet ? null : homeHeader} contentKey={`${routeId ?? ""}/${stopId ?? ""}/${place?.id ?? ""}`}>
         {showDetailInSheet ? (
           <div className="flex flex-col gap-4">
             {hero}
@@ -487,6 +507,28 @@ function RoutePanel({
       ) : null}
 
       {route.elevations ? <ElevationProfile elevations={route.elevations} distanceKm={route.distanceKm} routeLine={fetched?.line} lineElevations={fetched?.elevations} /> : null}
+    </div>
+  );
+}
+
+/** A nearby place in the sheet: what kind it is, when it is open, and its few words. */
+function PointPanel({ point }: { point: MapScreenPoint }) {
+  const { t } = useLingui();
+  const categoryNames = useCategoryNames();
+  return (
+    <div className="flex flex-col gap-4 px-4 pb-4">
+      <p className="text-xl font-bold">{categoryNames[point.category]}</p>
+      {point.hours ? (
+        <dl className="grid grid-cols-[4.5rem_1fr] gap-x-3 border-y border-line/40 py-2 text-lg leading-7">
+          <dt className="text-muted">{t`時間`}</dt>
+          <dd className="min-w-0 break-words">{point.hours}</dd>
+        </dl>
+      ) : null}
+      {point.description ? (
+        <div className="whitespace-pre-line text-lg leading-8">
+          <RichText text={point.description} />
+        </div>
+      ) : null}
     </div>
   );
 }

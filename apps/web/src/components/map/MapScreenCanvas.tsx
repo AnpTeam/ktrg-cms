@@ -20,7 +20,6 @@ import { getRouteLine } from "@/lib/navigation/line-client";
 import { useCursorMarker } from "./useCursorMarker";
 import { createClusterElement, createMarkerElement, createPinElement, createPlaceMarkerElement, createCourseDot } from "./MapMarker";
 import { MapPickList } from "./MapPickList";
-import { MapPopup } from "./MapPopup";
 
 // The map of the home screen (WBS 3.2.10). Each course is an outlined rectangle with a pin in the middle that
 // carries its name. Zoom in over a course and its stops appear by themselves; choose a course and the others fold
@@ -57,6 +56,7 @@ export function MapScreenCanvas({
   onSelectRoute,
   onSelectStop,
   onSelectMound,
+  onSelectPlace,
   focusPlaceId = null,
   startCamera = null,
   coveredPx,
@@ -77,6 +77,8 @@ export function MapScreenCanvas({
   onSelectStop: (routeId: string, stopId: string) => void;
   /** A sutra mound chosen from the 経塚 pins (outside of its course): the page shows it without the course's number. */
   onSelectMound: (routeId: string, stopId: string) => void;
+  /** A nearby place (a shop, a toilet ...) chosen on the map: the page shows it in the sheet, as it does a stop. */
+  onSelectPlace: (place: MapScreenPoint) => void;
   /** A place of the open course to bring into view and open once, when the page was asked for it. */
   focusPlaceId?: string | null;
   /** The view to come back to; the course and stop it shows are then not framed again until they change. */
@@ -121,8 +123,11 @@ export function MapScreenCanvas({
   const [view, setView] = useState(0);
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
-  // A place's photo popup, and the list that opens when pins stand on the same spot.
-  const [popup, setPopup] = useState<MapScreenPoint | null>(null);
+  // The list that opens when pins stand on the same spot.
+  const selectPlaceRef = useRef(onSelectPlace);
+  useEffect(() => {
+    selectPlaceRef.current = onSelectPlace;
+  }, [onSelectPlace]);
   const [pick, setPick] = useState<MapScreenStop[] | null>(null);
   const [autoId, setAutoId] = useState<string | null>(null);
   // The pin whose name is showing. Names stay out of sight until a pin is tapped once (a second tap opens it), except for
@@ -207,10 +212,9 @@ export function MapScreenCanvas({
           map?.easeTo({ bearing: 0, duration: 400 });
         });
         map.on("error", () => {});
-        // Touching the map itself (not a pin) puts away the popup and the list.
+        // Touching the map itself (not a pin) puts away the list.
         map.on("click", (e) => {
           if ((e.originalEvent.target as HTMLElement | null)?.closest(".place-marker, .map-marker, .map-cluster, .map-dot, .map-pin")) return;
-          setPopup(null);
           setPick(null);
           setRevealed(null);
         });
@@ -417,7 +421,7 @@ export function MapScreenCanvas({
     if (!map || !ready || !place) return;
     const timer = setTimeout(() => {
       map.easeTo({ center: [place.position.lng, place.position.lat], zoom: Math.max(map.getZoom(), 17), padding: padding(), duration: 600 });
-      setPopup(place);
+      selectPlaceRef.current(place);
     }, 900);
     return () => clearTimeout(timer);
   }, [ready, focusPlaceId]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -549,7 +553,6 @@ export function MapScreenCanvas({
             place: s.kind,
             stamped: s.stamped === true,
             onSelect: () => {
-              setPopup(null);
               if (shared) setPick(members);
               else onSelectStop(focus.id, s.id);
             },
@@ -631,12 +634,10 @@ export function MapScreenCanvas({
               closed: false,
               photo: !!p.photo,
               onSelect: () => {
-                if (p.photo || p.description) {
-                  // A place with a photo or a few words opens a popup (the map moves only to keep the pin in view).
-                  setPick(null);
-                  setPopup(p);
-                  map.easeTo({ center: [p.position.lng, p.position.lat], padding: padding(), duration: 400 });
-                } else map.easeTo({ center: [p.position.lng, p.position.lat], zoom: Math.max(map.getZoom(), 16), duration: 400 });
+                // The sheet shows the place, as it does a stop; the map moves only to keep the pin in view.
+                setPick(null);
+                selectPlaceRef.current(p);
+                map.easeTo({ center: [p.position.lng, p.position.lat], padding: padding(), duration: 400 });
               },
             }),
             p.position,
@@ -719,7 +720,6 @@ export function MapScreenCanvas({
         })}
       </div>
 
-      {popup && !pick ? <MapPopup photo={popup.photo ?? null} name={popup.name} nameLang={popup.nameLang} text={popup.description ?? null} sub={popup.hours ?? null} bottomPx={coveredPx} onClose={() => setPopup(null)} /> : null}
       {pick && focus ? (
         <MapPickList
           items={pick.map((s) => ({ id: s.id, order: s.order, name: s.name, nameLang: s.nameLang }))}
