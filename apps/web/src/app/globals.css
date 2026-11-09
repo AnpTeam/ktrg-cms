@@ -21,6 +21,7 @@
   --color-ink: #1f1b1a; /* body text */
   --color-muted: #4f4845; /* secondary text */
   --color-paper: #fcfaf5; /* page background: warm washi paper (和紙) */
+  --check-tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23fcfaf5' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); /* the tick of a checked box, in the paper colour */
   --color-surface: #f6f2ea; /* panels, rows, empty slots: a deeper paper tone */
   --color-brand: #cc6256; /* the brand red: buttons, the active tab, icons, the bar beside headings. Not for text on white */
   --color-on-brand: #ffffff; /* the words on the brand red (large bold text only) */
@@ -167,6 +168,7 @@
     --color-ink: #eee5d3;
     --color-muted: #bcab92;
     --color-paper: #0b0908; /* 墨 (sumi ink): almost black, with a breath of warmth */
+    --check-tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%230b0908' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); /* the tick of a checked box, in the paper colour */
     --color-surface: #181311;
     --color-brand: #cc6256; /* the same brand red */
     --color-on-brand: #ffffff;
@@ -194,6 +196,7 @@
   --color-ink: #eee5d3;
   --color-muted: #bcab92;
   --color-paper: #0b0908; /* warm dark brown-black */
+  --check-tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%230b0908' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); /* the tick of a checked box, in the paper colour */
   --color-surface: #181311;
   --color-brand: #cc6256; /* the same brand red */
   --color-on-brand: #ffffff;
@@ -215,6 +218,7 @@
   --color-ink: #1f1b1a; /* body text */
   --color-muted: #4f4845; /* secondary text */
   --color-paper: #fcfaf5; /* page background: warm washi paper (和紙) */
+  --check-tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23fcfaf5' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); /* the tick of a checked box, in the paper colour */
   --color-surface: #f6f2ea; /* panels, rows, empty slots: a deeper paper tone */
   --color-brand: #cc6256; /* the brand red: buttons, the active tab, icons, the bar beside headings. Not for text on white */
   --color-on-brand: #ffffff; /* the words on the brand red (large bold text only) */
@@ -1340,6 +1344,66 @@ body.map-nav-mode .map-layer-pills {
     }
     select option:checked {
       font-weight: bold;
+    }
+  }
+}
+
+/*
+ * Checkboxes, radios and switches drawn by the site (no library): the real <input> stays, only its look changes, so
+ * keyboards, screen readers and forms work as before. Sizes come from the size-* class on each input. A ticked box is the
+ * readable deep red (accent), never the lighter brand red, so it keeps 3:1 against the page in both themes.
+ */
+@layer base {
+  input[type="checkbox"],
+  input[type="radio"] {
+    appearance: none;
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    /* Not the 3rem of other inputs: the label around a box is what you tap. */
+    min-height: 0;
+    margin: 0;
+    border: 2px solid var(--color-ink);
+    border-radius: 0.25rem;
+    background: var(--color-paper) center / 85% no-repeat;
+    cursor: pointer;
+    vertical-align: middle;
+  }
+  input[type="radio"] {
+    border-radius: 9999px;
+  }
+  input[type="checkbox"]:checked {
+    border-color: var(--color-accent);
+    background-color: var(--color-accent);
+    background-image: var(--check-tick);
+  }
+  input[type="radio"]:checked {
+    border-color: var(--color-accent);
+    background-color: var(--color-accent);
+    box-shadow: inset 0 0 0 0.2rem var(--color-paper);
+  }
+  /* A switch: a track with a knob, off on the left in grey, on to the right in the deep red. */
+  input[type="checkbox"][role="switch"] {
+    width: 3.5rem;
+    height: 2rem;
+    border-color: var(--color-line);
+    border-radius: 9999px;
+    background: radial-gradient(circle at 0.875rem 50%, var(--color-muted) 0.6rem, transparent 0.65rem) var(--color-surface);
+  }
+  input[type="checkbox"][role="switch"]:checked {
+    border-color: var(--color-accent);
+    background: radial-gradient(circle at calc(100% - 0.875rem) 50%, var(--color-paper) 0.6rem, transparent 0.65rem) var(--color-accent);
+  }
+  input[type="checkbox"]:disabled,
+  input[type="radio"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  /* Windows high contrast draws its own colours: give the inputs back to the system there. */
+  @media (forced-colors: active) {
+    input[type="checkbox"],
+    input[type="radio"] {
+      appearance: auto;
     }
   }
 }
