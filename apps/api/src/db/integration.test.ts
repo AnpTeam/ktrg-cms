@@ -781,6 +781,20 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
     });
   });
 
+  test("stamp store: stamps moved from a guest keep the time they were earned", async () => {
+    await inRollback(async (tx) => {
+      await seed(tx);
+      const store = createDrizzleStampStore(tx as unknown as typeof db);
+      const [route] = await tx.select().from(routes).orderBy(asc(routes.sortOrder)).offset(3).limit(1);
+      const [a] = await tx.select().from(spots).where(eq(spots.routeId, route!.id)).orderBy(asc(spots.sortOrder));
+      const [me] = await tx.insert(users).values({}).returning({ id: users.id });
+      const earned = new Date("2026-05-03T01:00:00.000Z");
+      expect(await store.awardMany(me!.id, [{ spotId: a!.id, flagged: false, createdAt: earned }])).toEqual({ added: 1, already: 0 });
+      const [row] = await tx.select({ createdAt: stamps.createdAt }).from(stamps).where(eq(stamps.userId, me!.id));
+      expect(row!.createdAt.toISOString()).toBe(earned.toISOString());
+    });
+  });
+
   test("stamp store: one stamp per visitor and place, finishes saved in the same step, revoke hides it and is audited", async () => {
     await inRollback(async (tx) => {
       await seed(tx);

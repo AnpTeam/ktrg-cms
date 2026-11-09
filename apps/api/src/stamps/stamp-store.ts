@@ -35,7 +35,7 @@ export function createDrizzleStampStore(db: Db): StampStore {
         await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`stamps.${userId}`}))`);
         const made = await tx
           .insert(stamps)
-          .values(items.map((i) => ({ userId, spotId: i.spotId, flagged: i.flagged, flagReason: i.flagged ? "low_accuracy" : null })))
+          .values(items.map((i) => ({ userId, spotId: i.spotId, createdAt: i.createdAt, flagged: i.flagged, flagReason: i.flagged ? "low_accuracy" : null })))
           .onConflictDoNothing()
           .returning({ id: stamps.id });
         if (made.length) await recordFinished(tx, userId);

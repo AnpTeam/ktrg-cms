@@ -58,11 +58,11 @@ export function createGuestService({ stamps, secret, now = () => new Date() }: {
       return { cookie: encodeGuest(all, secret), restored, total: all.length };
     },
 
-    /** Moves the guest's stamps to the account (a place the account already holds is left as it is). Returns how many were new. */
+    /** Moves the guest's stamps to the account, dated when they were earned (a place the account already holds is left as it is). Returns how many were new. */
     async claim(userId: string, cookie: string | null | undefined): Promise<{ added: number; already: number }> {
       const held = list(cookie);
       const places = await stamps.stampPlaces(held.map((s) => s.spotId));
-      return stamps.awardMany(userId, held.filter((s) => places.has(s.spotId)));
+      return stamps.awardMany(userId, held.filter((s) => places.has(s.spotId)).map((s) => ({ spotId: s.spotId, flagged: s.flagged, createdAt: new Date(s.at * 1000) })));
     },
   };
 }
