@@ -5635,6 +5635,9 @@ msgstr "Not chosen"
 msgid "本人かどうか、確認します"
 msgstr "Confirming it is you"
 
+msgid "詳細"
+msgstr "Details"
+
 #: src/components/admin/PageTextEditor.tsx:114
 msgid "本文"
 msgstr "Text"
