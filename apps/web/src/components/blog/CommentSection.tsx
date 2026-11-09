@@ -9,6 +9,7 @@ import { errorKeyFromApi, isServerCode } from "@/lib/api-error";
 import { formatDay, japanDay } from "@/lib/format";
 import type { PostComment } from "@/lib/posts";
 import { buttonStyle } from "@/components/button";
+import { TickIcon } from "@/components/icons";
 
 const MAX = 1000;
 
@@ -23,6 +24,8 @@ export function CommentSection({ postId, comments, signedIn, locale, loginHref }
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
+  // A held comment: the thanks takes the box's place, so it shows where the reader is already looking.
+  const [held, setHeld] = useState(false);
 
   async function send() {
     if (busy || text.trim() === "") return;
@@ -38,7 +41,7 @@ export function CommentSection({ postId, comments, signedIn, locale, loginHref }
       const json = (await res.json().catch(() => null)) as { ok?: unknown; error?: unknown; held?: boolean; comment?: PostComment | null } | null;
       if (res.ok && json?.ok === true) {
         setText("");
-        if (json.held) setNote({ kind: "ok", text: t`コメントを受け付けました。スタッフが確認すると、ここに表示されます。` });
+        if (json.held) setHeld(true);
         else if (json.comment) setList((now) => [...now, json.comment!]);
       } else {
         setNote({ kind: "error", text: messages[json?.ok === false && isServerCode(json.error) ? json.error : errorKeyFromApi(res.status, json)] });
@@ -74,7 +77,18 @@ export function CommentSection({ postId, comments, signedIn, locale, loginHref }
         ))}
       </ul>
 
-      {signedIn ? (
+      {signedIn && held ? (
+        <div role="status" className="flex flex-col gap-3 rounded-2xl border-2 border-moss bg-paper p-4">
+          <p className="flex items-center gap-3 text-lg font-bold text-moss">
+            <TickIcon size={28} />
+            {t`コメントを受け付けました`}
+          </p>
+          <p className="text-lg leading-8">{t`スタッフが確認すると、ここに表示されます。`}</p>
+          <button type="button" onClick={() => setHeld(false)} className={buttonStyle("secondary", "md", "inline-flex w-fit")}>
+            {t`もう一つ書く`}
+          </button>
+        </div>
+      ) : signedIn ? (
         <form
           onSubmit={(e) => {
             e.preventDefault();
