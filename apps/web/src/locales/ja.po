@@ -6073,6 +6073,9 @@ msgstr "辞書の読み（確認待ち）"
 msgid "選んだ読みを承認する（{0}件）"
 msgstr "選んだ読みを承認する（{0}件）"
 
+msgid "漢字を入れると、ここで漢字ごとに読みを入れられます。"
+msgstr "漢字を入れると、ここで漢字ごとに読みを入れられます。"
+
 #: src/components/admin/RubyEditor.tsx:27
 msgid "漢字ごとの読み"
 msgstr "漢字ごとの読み"

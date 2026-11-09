@@ -299,11 +299,12 @@ export const furiganaList: ListDef<"furigana", typeof FURIGANA_FIELDS, FuriganaR
       { name: "word", kind: "text", label: { ja: "言葉", en: "Word" }, hint: { ja: "ページに書いてあるとおりに書きます。例：葛城山", en: "As it is written on the page. For example: 葛城山" }, required: true },
       {
         name: "reading",
-        kind: "text",
+        kind: "ruby",
+        of: "word",
         label: { ja: "読み", en: "Reading" },
         hint: {
-          ja: "ひらがなで言葉全体の読みを書きます。例：かつらぎさん。送りがなが中にある言葉（取り扱い）は、漢字のすぐあとに読みを書きます。例：取{と}り扱{あつか}い",
-          en: "The whole word's reading in hiragana. For example: かつらぎさん. For a word with kana inside it, write each reading right after its kanji. For example: 取{と}り扱{あつか}い",
+          ja: "上の言葉の漢字ごとに、ひらがなで読みを入れます（ルートや経由地の名前と同じ入れ方です）。",
+          en: "Type the reading in hiragana under each run of kanji in the word above (the same as for route and waypoint names).",
         },
         required: true,
         inList: { text: { ja: "読み：{value}", en: "Reading: {value}" } },

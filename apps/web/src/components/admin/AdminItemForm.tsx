@@ -209,7 +209,7 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
         // The reading over the Japanese name, typed per run of kanji (the same editor as a course's name).
         return (
           <Field key={f.name} label={label} hint={hint}>
-            <RubyEditor name={text("nameJa")} value={text(f.name)} onChange={set(f.name)} />
+            <RubyEditor name={text(f.of ?? "nameJa")} value={text(f.name)} onChange={set(f.name)} />
           </Field>
         );
       case "hours":

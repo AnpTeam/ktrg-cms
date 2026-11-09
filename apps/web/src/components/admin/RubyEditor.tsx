@@ -20,7 +20,7 @@ export function RubyEditor({ name, value, onChange }: { name: string; value: str
   const join = (i: number) => commit(parts.flatMap((p, j) => (j === i ? [{ text: p.text + parts[i + 1]!.text, reading: null }] : j === i + 1 ? [] : [p])));
   const hasKanjiRun = parts.some((p) => isKanji(p.text[0] ?? ""));
 
-  if (name.trim() === "" || !hasKanjiRun) return <p className="text-base text-muted">{t`日本語の名前に漢字があると、ここで読みを入れられます。`}</p>;
+  if (name.trim() === "" || !hasKanjiRun) return <p className="text-base text-muted">{t`漢字を入れると、ここで漢字ごとに読みを入れられます。`}</p>;
   return (
     <div className="flex flex-col gap-2">
       {/* The name in one row, a reading box under each run of kanji, and the split / join buttons under those. */}
