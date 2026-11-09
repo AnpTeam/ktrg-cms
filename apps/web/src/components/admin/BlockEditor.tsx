@@ -3,13 +3,15 @@
 import { useEffect, useRef, useState, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
 import { Extension, type JSONContent } from "@tiptap/core";
 import Image from "@tiptap/extension-image";
+import { TableKit } from "@tiptap/extension-table";
 import { NodeSelection, Plugin, TextSelection } from "@tiptap/pm/state";
 import { Decoration, DecorationSet } from "@tiptap/pm/view";
 import { EditorContent, NodeViewContent, NodeViewWrapper, ReactNodeViewRenderer, useEditor, useEditorState, type Editor, type NodeViewProps } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useLingui } from "@lingui/react/macro";
-import { ChevronDownIcon, ChevronUpIcon, ImageIcon, LinkIcon, ListIcon, PlusIcon, TrashIcon, UndoIcon } from "@/components/icons";
-import { CardTitle, PageCard } from "@/lib/admin/card-nodes";
+import { ChevronDownIcon, ChevronUpIcon, ImageIcon, LinkIcon, ListIcon, PinIcon, PlusIcon, TrashIcon, UndoIcon } from "@/components/icons";
+import { CardTitle, PageCard, PlaceBlock } from "@/lib/admin/card-nodes";
+import { fetchRelation } from "@/lib/admin/lists/relation-lookup";
 import { noteProblems, noteSpots, renumberNotes } from "@/lib/admin/footnotes";
 import { bodyToDoc, cardParts, docToBody, moveBlock, type PageLook } from "@/lib/admin/block-doc";
 import { isWebUrl } from "@/lib/format";
@@ -17,17 +19,18 @@ import type { CardStyle } from "@/lib/rich-text";
 import { nextNote } from "@/lib/rich-text-edit";
 import { inputClass } from "./fields";
 import { PhotoUpload } from "./PhotoUpload";
+import { RelationPicker } from "./RelationPicker";
 
 // A page's text as blocks, like a word processor: what is typed looks like the page, and nobody writes ## or **. The text
 // saved is still the site's plain format (lib/admin/block-doc.ts). "＋ 追加" or a "/" on an empty line lists the blocks; the
 // blocks move with buttons, not by dragging, so it works the same with a finger (and TipTap's drag handle needs its Yjs
 // collaboration packages).
 
-type Kind = "paragraph" | "h2" | "h3" | "list" | "rule" | "photo" | CardStyle;
-type Panel = { kind: "link"; href: string; bad: boolean } | { kind: "photo" } | null;
+type Kind = "paragraph" | "h2" | "h3" | "list" | "rule" | "photo" | "table" | "place" | CardStyle;
+type Panel = { kind: "link"; href: string; bad: boolean } | { kind: "photo" } | { kind: "place" } | null;
 
 const SHOWN =
-  "tiptap-page rounded-xl border-2 border-line bg-paper p-4 text-lg leading-8 text-ink [&_a]:font-bold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4 [&_h2]:mt-5 [&_h2]:border-l-[6px] [&_h2]:border-accent [&_h2]:pl-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-snug [&_h3]:mt-4 [&_h3]:text-xl [&_h3]:font-bold [&_hr]:my-6 [&_hr]:border-line [&_img]:my-4 [&_img]:rounded-xl [&_p]:my-3 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_.ProseMirror-selectednode]:outline-4 [&_.ProseMirror-selectednode]:outline-accent [&_.note-mark]:rounded [&_.note-mark]:bg-surface [&_.note-mark]:px-1 [&_.note-mark]:text-base [&_.note-mark]:font-bold [&_.note-mark]:text-accent [&_.note-line]:text-base [&_.note-line]:text-muted [&_.note-problem]:after:ml-1 [&_.note-problem]:after:font-normal [&_.note-problem]:after:text-danger [&_.note-problem]:after:content-[attr(data-label)]";
+  "tiptap-page rounded-xl border-2 border-line bg-paper p-4 text-lg leading-8 text-ink [&_a]:font-bold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4 [&_h2]:mt-5 [&_h2]:border-l-[6px] [&_h2]:border-accent [&_h2]:pl-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-snug [&_h3]:mt-4 [&_h3]:text-xl [&_h3]:font-bold [&_hr]:my-6 [&_hr]:border-line [&_img]:my-4 [&_img]:rounded-xl [&_p]:my-3 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_.ProseMirror-selectednode]:outline-4 [&_.ProseMirror-selectednode]:outline-accent [&_.tableWrapper]:my-4 [&_.tableWrapper]:overflow-x-auto [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-line [&_td]:px-3 [&_td]:align-top [&_th]:border [&_th]:border-line [&_th]:bg-surface [&_th]:px-3 [&_th]:text-left [&_th]:align-top [&_td_p]:my-1 [&_th_p]:my-1 [&_.selectedCell]:bg-accent/10 [&_.note-mark]:rounded [&_.note-mark]:bg-surface [&_.note-mark]:px-1 [&_.note-mark]:text-base [&_.note-mark]:font-bold [&_.note-mark]:text-accent [&_.note-line]:text-base [&_.note-line]:text-muted [&_.note-problem]:after:ml-1 [&_.note-problem]:after:font-normal [&_.note-problem]:after:text-danger [&_.note-problem]:after:content-[attr(data-label)]";
 const BUTTON = "tap-target inline-flex items-center gap-1 rounded-full border-2 border-line bg-paper px-4 text-base font-bold disabled:opacity-40";
 const ACTIVE = "border-ink bg-ink text-paper";
 
@@ -103,6 +106,43 @@ function CardView({ node, deleteNode }: NodeViewProps) {
 const Card = PageCard.extend({
   addNodeView() {
     return ReactNodeViewRenderer(CardView);
+  },
+});
+
+/** A place of the directory in the text: its name, as the page will show its card. The name is looked up by its id. */
+function PlaceView({ node, deleteNode, selected }: NodeViewProps) {
+  const { t, i18n } = useLingui();
+  const id = String(node.attrs.id ?? "");
+  const [found, setFound] = useState<{ id: string; name: string; detail?: string } | null | undefined>(undefined);
+  useEffect(() => {
+    let live = true;
+    void fetchRelation("directory", id, i18n.locale).then((one) => live && setFound(one));
+    return () => {
+      live = false;
+    };
+  }, [id, i18n.locale]);
+  return (
+    <NodeViewWrapper className={`relative my-3 flex items-center gap-3 rounded-3xl bg-surface p-4 pr-16 ${selected ? "outline-4 outline-accent" : ""}`} data-place-id={id}>
+      <span className="shrink-0 text-brand" contentEditable={false}>
+        <PinIcon />
+      </span>
+      <span className="min-w-0" contentEditable={false}>
+        <span className="block text-base text-muted">{t`場所`}</span>
+        <span className="block text-lg font-bold">{found === undefined ? t`読み込んでいます…` : found ? found.name : t`この場所は見つかりません（ページには出ません）`}</span>
+        {found?.detail ? <span className="block text-base text-muted">{found.detail}</span> : null}
+      </span>
+      <button type="button" contentEditable={false} onClick={deleteNode} aria-label={t`場所を消す`} className="tap-target absolute right-2 top-1/2 inline-grid -translate-y-1/2 place-items-center rounded-full bg-paper text-ink shadow">
+        <span className="pointer-events-none">
+          <TrashIcon />
+        </span>
+      </button>
+    </NodeViewWrapper>
+  );
+}
+
+const Place = PlaceBlock.extend({
+  addNodeView() {
+    return ReactNodeViewRenderer(PlaceView);
   },
 });
 
@@ -257,7 +297,7 @@ export function BlockEditor({ id, lang, label, value, onChange, look, notes = fa
       ...(short ? [] : [Photo.configure({ allowBase64: false })]),
       ...(look ? [pageCards(look, t`ここはページに表示されません`)] : []),
       ...(notes ? [footnotes(t`本文で使われていません`, t`注の文がありません`)] : []),
-      ...(cards ? [CardTitle, Card, cardMarks(t`題を入力`)] : []),
+      ...(cards ? [CardTitle, Card, cardMarks(t`題を入力`), Place, TableKit.configure({ table: { resizable: false } })] : []),
     ],
     content: bodyToDoc(value, mode),
     editorProps: {
@@ -283,7 +323,7 @@ export function BlockEditor({ id, lang, label, value, onChange, look, notes = fa
 }
 
 function Blocks({ editor, id, closingNote, notes, short, cards }: { editor: Editor; id: string; closingNote: boolean; notes: boolean; short: boolean; cards: boolean }) {
-  const { t } = useLingui();
+  const { t, i18n } = useLingui();
   const [panel, setPanel] = useState<Panel>(null);
   const [plusAt, setPlusAt] = useState<{ x: number; y: number } | null>(null);
   const [active, setActive] = useState(0);
@@ -304,6 +344,7 @@ function Blocks({ editor, id, closingNote, notes, short, cards }: { editor: Edit
         slash: !short && empty && $from.depth === 1 && $from.parent.type.name === "paragraph" && /^[/／]$/.test($from.parent.textContent),
         inCard: e.isActive("pageCard"),
         inTitle: e.isActive("cardTitle"),
+        inTable: e.isActive("table"),
         canUndo: e.can().undo(),
       };
     },
@@ -316,10 +357,18 @@ function Blocks({ editor, id, closingNote, notes, short, cards }: { editor: Edit
     { kind: "list", name: t`箇条書き` },
     { kind: "photo", name: t`写真` },
     { kind: "rule", name: closingNote ? t`線（ここから下は注意書き）` : t`区切りの線` },
-    ...(cards ? ([{ kind: "card", name: t`カード` }, { kind: "step", name: t`手順` }, { kind: "faq", name: t`たたむ質問` }] as const) : []),
+    ...(cards
+      ? ([
+          { kind: "card", name: t`カード` },
+          { kind: "step", name: t`手順` },
+          { kind: "faq", name: t`たたむ質問` },
+          { kind: "table", name: t`表` },
+          { kind: "place", name: t`場所` },
+        ] as const)
+      : []),
   ];
-  // A card cannot hold headings or lines.
-  const shownItems = state.inCard ? items.filter((i) => i.kind !== "h2" && i.kind !== "h3" && i.kind !== "rule") : items;
+  // A card cannot hold headings, lines, tables or places.
+  const shownItems = state.inCard ? items.filter((i) => !["h2", "h3", "rule", "table", "place"].includes(i.kind)) : items;
   // A heading is saved as plain words: nothing done to its letters would last.
   const inHeading = state.style === "h2" || state.style === "h3" || state.inTitle;
   const slashOpen = state.slash && !dismissed;
@@ -334,6 +383,12 @@ function Blocks({ editor, id, closingNote, notes, short, cards }: { editor: Edit
       editor.chain().deleteRange({ from: $from.start(), to: $from.end() }).run();
     }
     if (kind === "photo") setPanel({ kind: "photo" });
+    else if (kind === "place") setPanel({ kind: "place" });
+    else if (kind === "table") {
+      const cell = (type: string) => ({ type, content: [{ type: "paragraph" }] });
+      const row = (type: string) => ({ type: "tableRow", content: [cell(type), cell(type)] });
+      place(editor, { type: "table", content: [row("tableHeader"), row("tableCell"), row("tableCell")] }, (start) => editor.commands.setTextSelection(start + 4));
+    }
     else if (kind === "card" || kind === "step" || kind === "faq") place(editor, { type: "pageCard", attrs: { kind }, content: [{ type: "cardTitle" }, { type: "paragraph" }] }, (start) => editor.commands.setTextSelection(start + 2));
     else if (kind === "rule") place(editor, { type: "horizontalRule" }, (start) => editor.commands.setTextSelection(start + 2));
     else if (kind === "list") place(editor, { type: "bulletList", content: [{ type: "listItem", content: [{ type: "paragraph" }] }] }, (start) => editor.commands.setTextSelection(start + 3));
@@ -414,12 +469,12 @@ function Blocks({ editor, id, closingNote, notes, short, cards }: { editor: Edit
         <div role="toolbar" aria-label={t`文章の書式`} aria-controls={id} className="flex flex-wrap items-center gap-0.5 rounded-xl border-2 border-line bg-paper p-1">
           {short ? null : (
             <>
-              <Tool name={t`追加`} pressed={menuOpen} onClick={openPlus}>
+              <Tool name={t`追加`} pressed={menuOpen} disabled={state.inTable} onClick={openPlus}>
                 <PlusIcon size={24} />
               </Tool>
               {GAP}
               {items.slice(0, 4).map((item) => (
-                <Tool key={item.kind} name={item.name} pressed={state.style === item.kind} disabled={state.inTitle || (state.inCard && (item.kind === "h2" || item.kind === "h3"))} onClick={() => setStyle(item.kind)}>
+                <Tool key={item.kind} name={item.name} pressed={state.style === item.kind} disabled={state.inTitle || state.inTable || (state.inCard && (item.kind === "h2" || item.kind === "h3"))} onClick={() => setStyle(item.kind)}>
                   {item.kind === "list" ? <ListIcon /> : { paragraph: "¶", h2: "H2", h3: "H3" }[item.kind as string]}
                 </Tool>
               ))}
@@ -465,7 +520,48 @@ function Blocks({ editor, id, closingNote, notes, short, cards }: { editor: Edit
           </Tool>
         </div>
 
-        {panel ? (
+        {state.inTable ? (
+          <div role="group" aria-label={t`表`} className="flex flex-wrap items-center gap-2 rounded-xl border-2 border-line bg-surface p-2">
+            <button type="button" onClick={() => editor.chain().focus().addRowAfter().run()} className={BUTTON}>
+              {t`行を追加`}
+            </button>
+            <button type="button" onClick={() => editor.chain().focus().addColumnAfter().run()} className={BUTTON}>
+              {t`列を追加`}
+            </button>
+            <button type="button" disabled={!editor.can().deleteRow()} onClick={() => editor.chain().focus().deleteRow().run()} className={BUTTON}>
+              {t`行を消す`}
+            </button>
+            <button type="button" disabled={!editor.can().deleteColumn()} onClick={() => editor.chain().focus().deleteColumn().run()} className={BUTTON}>
+              {t`列を消す`}
+            </button>
+            <button type="button" onClick={() => editor.chain().focus().deleteTable().run()} className={BUTTON}>
+              {t`表を消す`}
+            </button>
+            <span className="text-base text-muted">{t`1行目は見出しになります。`}</span>
+          </div>
+        ) : null}
+
+        {panel?.kind === "place" ? (
+          <div className="flex flex-col gap-2 rounded-xl border-2 border-line bg-surface p-3 shadow-lg">
+            <p className="text-base font-bold">{t`記事に入れる場所`}</p>
+            <RelationPicker
+              id={`${id}-place`}
+              to="directory"
+              locale={i18n.locale}
+              value=""
+              choices={[]}
+              max={0}
+              noneLabel={t`場所の一覧から、名前で探してください。公開中の場所だけがページに出ます。`}
+              onChange={(placeId) => {
+                if (placeId) place(editor, { type: "placeBlock", attrs: { id: placeId } }, (start) => editor.commands.setNodeSelection(start));
+                setPanel(null);
+              }}
+            />
+            <button type="button" onClick={() => setPanel(null)} className={`${BUTTON} self-start`}>
+              {t`閉じる`}
+            </button>
+          </div>
+        ) : panel ? (
           <div className="flex flex-col gap-2 rounded-xl border-2 border-line bg-surface p-3 shadow-lg">
             {panel.kind === "link" ? (
               <>

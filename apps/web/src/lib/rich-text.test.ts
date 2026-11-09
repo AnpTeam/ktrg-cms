@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { parseBlocks, parseRich, plainBody, plainRich } from "./rich-text";
+import { parseBlocks, parseRich, plainBody, plainRich, type Block } from "./rich-text";
 
 describe("rich text", () => {
   test("a link keeps its words and only http(s) addresses become links", () => {
@@ -125,5 +125,29 @@ describe("bold and rules", () => {
     expect(parseRich("2 ** 3").body).toEqual(["2 ** 3"]);
     expect(parseBlocks("a\n---\nb").blocks.map((b) => b.kind)).toEqual(["p", "rule", "p"]);
     expect(parseBlocks("--- a").blocks.map((b) => b.kind)).toEqual(["p"]);
+  });
+});
+
+describe("places and tables in a long text", () => {
+  const id = "6e644ae9-c252-43c2-96b1-2941f4e7a280";
+
+  test("a ::place line is a place; a wrong id stays words", () => {
+    expect(parseBlocks(`前\n::place ${id}\n後`).blocks.map((b) => b.kind)).toEqual(["p", "place", "p"]);
+    expect(parseBlocks("::place 12345").blocks[0]!.kind).toBe("p");
+  });
+
+  test("table lines are one table: first row the headings, the --- line skipped, bold, links and \| in cells", () => {
+    const { blocks } = parseBlocks("| 名前 | 時間 |\n| --- | --- |\n| **茶屋** | 9時 |\n| [駅](https://example.com) | a \\| b |\n\n後");
+    expect(blocks.map((b) => b.kind)).toEqual(["table", "p"]);
+    const table = blocks[0] as Extract<Block, { kind: "table" }>;
+    expect(table.head).toEqual([["名前"], ["時間"]]);
+    expect(table.rows).toEqual([
+      [[{ bold: ["茶屋"] }], ["9時"]],
+      [[{ href: "https://example.com", label: "駅" }], ["a | b"]],
+    ]);
+  });
+
+  test("table words count for the summary; a place has none", () => {
+    expect(plainBody(`| A | B |\n| c | d |\n::place ${id}`)).toBe("A B c d");
   });
 });

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { CustomPageView } from "@/components/pages/PageViews";
 import { initLingui } from "@/i18n/server";
 import { customPage, customPageIn } from "@/lib/page-text-server";
+import { inlinePlaces, listPlaces } from "@/lib/content";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const i18n = await initLingui();
@@ -13,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 // A page an editor made in the admin (管理 > ページ > 新しいページ). Only published ones are found.
 export default async function CustomPage({ params }: { params: Promise<{ slug: string }> }) {
   const i18n = await initLingui();
-  const page = await customPage((await params).slug);
+  const [page, places] = await Promise.all([params.then((p) => customPage(p.slug)), listPlaces()]);
   if (!page) notFound();
-  return <CustomPageView {...customPageIn(page, i18n.locale)} />;
+  return <CustomPageView {...customPageIn(page, i18n.locale)} places={inlinePlaces(i18n.locale, places)} />;
 }

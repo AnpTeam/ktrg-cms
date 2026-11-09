@@ -31,3 +31,15 @@ export const PageCard = Node.create({
   parseHTML: () => [{ tag: "div[data-card]" }],
   renderHTML: () => ["div", { "data-card": "" }, 0],
 });
+
+/** A place of the directory in the text (a ::place line): one unit holding the place's id; BlockEditor draws its name. */
+export const PlaceBlock = Node.create({
+  name: "placeBlock",
+  group: "block",
+  atom: true,
+  selectable: true,
+  draggable: false,
+  addAttributes: () => ({ id: { default: "" } }),
+  parseHTML: () => [{ tag: "div[data-place-id]", getAttrs: (el) => ({ id: (el as HTMLElement).dataset.placeId ?? "" }) }],
+  renderHTML: ({ node }) => ["div", { "data-place-id": String(node.attrs.id) }],
+});

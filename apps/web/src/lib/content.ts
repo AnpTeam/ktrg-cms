@@ -4,6 +4,7 @@ import type { PointKind } from "./point-kinds";
 import { pickText } from "./pick-text";
 import { getMyStamps } from "./my-stamps";
 import type { MapPlace, PlaceCategory, PlaceStatus } from "./places";
+import type { InlinePlace } from "@/components/places/PlaceInline";
 import type { RallyItem } from "./rally-model";
 import { samplePlaces } from "./sample-places";
 import { sampleRoutes, sampleSpots } from "./sample-content";
@@ -343,4 +344,17 @@ export async function getSpot(id: string): Promise<SpotDetail | undefined> {
   if (!spot) return undefined;
   const [route, mine] = await Promise.all([fetchPublicRoute(spot.routeId), getMyStamps()]);
   return route ? spotDetailFromApi(spot, route.route, mine.ids.has(spot.id)) : undefined;
+}
+
+/** The text names a directory place (a ::place line), so its page must load the places. */
+export const mentionsPlace = (text: string | null | undefined): boolean => !!text && /^::place[ \t]/m.test(text);
+
+/** The places a long text may name with ::place lines, by id, in the visitor's language (RichBody `places`). */
+export function inlinePlaces(locale: string, places: readonly PlaceItem[]): Record<string, InlinePlace> {
+  return Object.fromEntries(
+    places.map((p) => {
+      const name = pickText(locale, p.nameJa, p.nameEn);
+      return [p.id, { id: p.id, name: name?.text ?? p.nameJa, nameLang: name?.lang ?? "ja", category: p.category, hours: pickText(locale, p.hoursJa, p.hoursEn)?.text ?? null }];
+    }),
+  );
 }

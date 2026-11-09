@@ -5249,6 +5249,36 @@ msgstr "書き手を管理する"
 msgid "運営"
 msgstr "運営"
 
+msgid "1行目は見出しになります。"
+msgstr "1行目は見出しになります。"
+
+msgid "この場所は見つかりません（ページには出ません）"
+msgstr "この場所は見つかりません（ページには出ません）"
+
+msgid "列を消す"
+msgstr "列を消す"
+
+msgid "列を追加"
+msgstr "列を追加"
+
+msgid "場所の一覧から、名前で探してください。公開中の場所だけがページに出ます。"
+msgstr "場所の一覧から、名前で探してください。公開中の場所だけがページに出ます。"
+
+msgid "場所を消す"
+msgstr "場所を消す"
+
+msgid "行を消す"
+msgstr "行を消す"
+
+msgid "表"
+msgstr "表"
+
+msgid "表を消す"
+msgstr "表を消す"
+
+msgid "記事に入れる場所"
+msgstr "記事に入れる場所"
+
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "写真を消す"

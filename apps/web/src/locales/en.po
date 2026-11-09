@@ -5275,6 +5275,36 @@ msgstr "Manage writers"
 msgid "運営"
 msgstr "Running the site"
 
+msgid "1行目は見出しになります。"
+msgstr "The first row is the headings."
+
+msgid "この場所は見つかりません（ページには出ません）"
+msgstr "Place not found (it will not show on the page)"
+
+msgid "列を消す"
+msgstr "Delete column"
+
+msgid "列を追加"
+msgstr "Add column"
+
+msgid "場所の一覧から、名前で探してください。公開中の場所だけがページに出ます。"
+msgstr "Search the places directory by name. Only published places show on the page."
+
+msgid "場所を消す"
+msgstr "Remove place"
+
+msgid "行を消す"
+msgstr "Delete row"
+
+msgid "表"
+msgstr "Table"
+
+msgid "表を消す"
+msgstr "Delete table"
+
+msgid "記事に入れる場所"
+msgstr "Place to add to the post"
+
 #: src/components/admin/BlockEditor.tsx
 msgid "写真を消す"
 msgstr "Remove photo"

@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 import { parseBlocks, type Block } from "@/lib/rich-text";
 import { FaqCard, StepCard } from "./pages/Cards";
+import { PlaceInline, type InlinePlace } from "./places/PlaceInline";
 import { Inlines } from "./RichText";
 
 /**
@@ -12,12 +13,14 @@ import { Inlines } from "./RichText";
  *
  * `anchor` makes the footnote ids unique on the page (the post's id), so the links work without a hook and the
  * addresses stay the same between renders — a footnote can be linked to from outside.
+ *
+ * `places`: the directory places a ::place line may name, by id. A place not in it (a draft, or one taken off) is left out.
  */
-export function RichBody({ text, lang, anchor }: { text: string; lang?: string; anchor: string }) {
+export function RichBody({ text, lang, anchor, places = {} }: { text: string; lang?: string; anchor: string; places?: Record<string, InlinePlace> }) {
   const { blocks, notes } = parseBlocks(text);
   return (
     <div lang={lang} className="flex flex-col gap-5">
-      <Blocks blocks={blocks} anchor={anchor} />
+      <Blocks blocks={blocks} anchor={anchor} places={places} />
       {notes.length > 0 ? (
         <ol className="mt-2 max-w-prose list-decimal space-y-1 pl-6 text-base text-muted">
           {notes.map((n) => (
@@ -34,7 +37,7 @@ export function RichBody({ text, lang, anchor }: { text: string; lang?: string; 
 type CardBlock = Extract<Block, { kind: "card" }>;
 const isStep = (b: Block | undefined): b is CardBlock => b?.kind === "card" && b.style === "step";
 
-function Blocks({ blocks, anchor }: { blocks: Block[]; anchor: string }) {
+function Blocks({ blocks, anchor, places }: { blocks: Block[]; anchor: string; places: Record<string, InlinePlace> }) {
   const out: ReactNode[] = [];
   for (let i = 0; i < blocks.length; i++) {
     const block = blocks[i]!;
@@ -46,36 +49,71 @@ function Blocks({ blocks, anchor }: { blocks: Block[]; anchor: string }) {
         <ol key={i} className="flex flex-col gap-4">
           {run.map((step, n) => (
             <StepCard key={n} n={n + 1} title={step.title} heading="h3">
-              <Inside blocks={step.blocks} anchor={anchor} />
+              <Inside blocks={step.blocks} anchor={anchor} places={places} />
             </StepCard>
           ))}
         </ol>,
       );
       i += run.length - 1;
-    } else out.push(<OneBlock key={i} block={block} anchor={anchor} />);
+    } else out.push(<OneBlock key={i} block={block} anchor={anchor} places={places} />);
   }
   return out;
 }
 
-const Inside = ({ blocks, anchor }: { blocks: Block[]; anchor: string }) => (
+const Inside = ({ blocks, anchor, places }: { blocks: Block[]; anchor: string; places: Record<string, InlinePlace> }) => (
   <div className="flex flex-col gap-3">
-    <Blocks blocks={blocks} anchor={anchor} />
+    <Blocks blocks={blocks} anchor={anchor} places={places} />
   </div>
 );
 
-function OneBlock({ block, anchor }: { block: Block; anchor: string }) {
+function OneBlock({ block, anchor, places }: { block: Block; anchor: string; places: Record<string, InlinePlace> }) {
+  if (block.kind === "place") {
+    const place = places[block.id];
+    return place ? <PlaceInline place={place} /> : null;
+  }
+  if (block.kind === "table") {
+    return (
+      // A wide table scrolls sideways on a phone instead of squeezing its words; the box can take the focus so a keyboard can scroll it.
+      <div tabIndex={0} className="max-w-full overflow-x-auto rounded-xl border border-line">
+        <table className="w-full border-collapse text-lg leading-7">
+          {block.head.length ? (
+            <thead className="bg-surface">
+              <tr>
+                {block.head.map((cell, j) => (
+                  <th key={j} scope="col" className="border-b-2 border-line px-3 py-2 text-left font-bold">
+                    <Inlines parts={cell} ids={anchor} />
+                  </th>
+                ))}
+              </tr>
+            </thead>
+          ) : null}
+          <tbody>
+            {block.rows.map((row, r) => (
+              <tr key={r} className="border-t border-line/40">
+                {row.map((cell, j) => (
+                  <td key={j} className="px-3 py-2 align-top">
+                    <Inlines parts={cell} ids={anchor} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
   if (block.kind === "card") {
     if (block.style === "faq") {
       return (
         <FaqCard question={block.title}>
-          <Inside blocks={block.blocks} anchor={anchor} />
+          <Inside blocks={block.blocks} anchor={anchor} places={places} />
         </FaqCard>
       );
     }
     return (
       <section className="flex flex-col gap-1 rounded-3xl bg-surface p-5">
         {block.title ? <h3 className="text-xl font-bold leading-snug text-accent">{block.title}</h3> : null}
-        <Inside blocks={block.blocks} anchor={anchor} />
+        <Inside blocks={block.blocks} anchor={anchor} places={places} />
       </section>
     );
   }

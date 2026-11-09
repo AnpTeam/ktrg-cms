@@ -79,6 +79,8 @@ export function plainRich(text: string): string {
 //   ![what the photo shows](https://example.com/a.jpg)   a photo, alone on its line, https only
 //   ---   a line across the page
 //   :::card a title, then the card's text, then ::: alone on a line   a card; :::step is a numbered step, :::faq a question that opens
+//   ::place <id>   a place of the directory, drawn as its card (nothing when it is not published)
+//   | a | b |   a table: lines starting and ending with |, the first row the headings; a | --- | line is skipped; \| is a | in a cell
 // A blank line starts a new paragraph. Everything else is a paragraph, keeping its line breaks. Still never HTML:
 // RichBody renders these as React elements. The inline markers are parsed by the same code as above, so links and
 // footnotes behave identically and the notes are numbered across the whole text.
@@ -91,7 +93,9 @@ export type Block =
   | { kind: "ul"; items: Inline[][] }
   | { kind: "photo"; src: string; alt: string }
   | { kind: "rule" }
-  | { kind: "card"; style: CardStyle; title: string; blocks: Block[] };
+  | { kind: "card"; style: CardStyle; title: string; blocks: Block[] }
+  | { kind: "place"; id: string }
+  | { kind: "table"; head: Inline[][]; rows: Inline[][][] };
 
 export interface RichBody {
   blocks: Block[];
@@ -104,6 +108,19 @@ export const RULE = /^---[ \t]*$/;
 // Alone on its line, and https only: a photo address is loaded by the visitor's browser.
 export const CARD_OPEN = /^:::(card|step|faq)(?:[ \t]+(.*))?$/;
 export const CARD_CLOSE = /^:::[ \t]*$/;
+export const PLACE = /^::place[ \t]+([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})[ \t]*$/i;
+export const TABLE_ROW = /^\|.*\|[ \t]*$/;
+export const TABLE_RULE = /^\|(?:[ \t]*:?-{3,}:?[ \t]*\|)+[ \t]*$/;
+
+/** The cells of a table line, as typed: split on | (but not \|), the outer bars dropped. */
+export function tableCells(line: string): string[] {
+  return line
+    .trim()
+    .slice(1, -1)
+    .split(/(?<!\\)\|/)
+    .map((c) => c.replace(/\\\|/g, "|").trim());
+}
+
 export const PHOTO = /^!\[([^\]\n]*)\]\((https:\/\/[^\s)]+)\)[ \t]*$/;
 
 export function parseBlocks(text: string): RichBody {
@@ -133,7 +150,21 @@ export function parseBlocks(text: string): RichBody {
       const item = ITEM.exec(line);
       const photo = PHOTO.exec(line);
       const card = inCard ? null : CARD_OPEN.exec(line);
-      if (card) {
+      const place = PLACE.exec(line);
+      if (place) {
+        endBoth();
+        blocks.push({ kind: "place", id: place[1]!.toLowerCase() });
+      } else if (TABLE_ROW.test(line)) {
+        endBoth();
+        let end = at;
+        while (end < lines.length && TABLE_ROW.test(lines[end]!)) end++;
+        const [head = [], ...rows] = lines
+          .slice(at, end)
+          .filter((l) => !TABLE_RULE.test(l))
+          .map((l) => tableCells(l).map((c) => inline(c, noteOf)));
+        blocks.push({ kind: "table", head, rows });
+        at = end - 1;
+      } else if (card) {
         endBoth();
         // A card left open (the start of a long post, cut for a list) ends with the text.
         const close = lines.findIndex((l, i) => i > at && CARD_CLOSE.test(l));
@@ -168,7 +199,7 @@ export function parseBlocks(text: string): RichBody {
 }
 
 const blockWords = (b: Block): string[] =>
-  b.kind === "photo" || b.kind === "rule" ? [] : b.kind === "ul" ? b.items.map(words) : b.kind === "card" ? [b.title, ...b.blocks.flatMap(blockWords)] : [words(b.parts)];
+  b.kind === "photo" || b.kind === "rule" || b.kind === "place" ? [] : b.kind === "table" ? [...b.head, ...b.rows.flat()].map(words) : b.kind === "ul" ? b.items.map(words) : b.kind === "card" ? [b.title, ...b.blocks.flatMap(blockWords)] : [words(b.parts)];
 
 /** The words of a long text, for a card that shows the beginning of a post: headings and list items included, photos not. */
 export function plainBody(text: string): string {
