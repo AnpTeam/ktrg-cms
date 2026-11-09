@@ -117,8 +117,12 @@ export interface PublicPlace {
   id: string;
   category: string;
   routeId: string | null;
+  /** The waypoint it is closest to. */
+  nearSpotId?: string | null;
   nameJa: string;
   nameEn: string | null;
+  /** How the Japanese name is read, typed by a person. */
+  nameKana?: string | null;
   descriptionJa: string | null;
   descriptionEn: string | null;
   hoursJa: string | null;

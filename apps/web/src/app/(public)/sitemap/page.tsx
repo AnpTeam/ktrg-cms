@@ -60,6 +60,9 @@ export default async function SitemapPage() {
         <LinkRow href="/map">
           <Trans>葛城修験の地図</Trans>
         </LinkRow>
+        <LinkRow href="/places">
+          <Trans>お店と施設</Trans>
+        </LinkRow>
       </Group>
 
       <Group title={<Trans>ルート</Trans>}>

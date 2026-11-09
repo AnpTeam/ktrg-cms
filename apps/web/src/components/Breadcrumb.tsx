@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { ChevronIcon } from "./icons";
 
-/** A breadcrumb step. Not used yet: tried on the admin, where the back button read better; kept for the places directory (tourist information, gourmet, souvenirs). */
+/** A breadcrumb step, used by the places directory (/places/<id>). Tried on the admin, where the back button read better. */
 export function Breadcrumb({ href, children }: { href: string; children: ReactNode }) {
   const { t } = useLingui();
   return (

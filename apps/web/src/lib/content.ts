@@ -244,6 +244,9 @@ export interface PlaceItem {
   category: PlaceCategory;
   nameJa: string;
   nameEn: string | null;
+  nameKana?: string | null;
+  /** The waypoint it is closest to; null or left out when none. */
+  nearSpotId?: string | null;
   /** The course numbers (1 to 19) this place serves. */
   routes: number[];
   position: { lat: number; lng: number; verified: boolean };

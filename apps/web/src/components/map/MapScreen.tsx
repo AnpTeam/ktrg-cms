@@ -529,6 +529,11 @@ function PointPanel({ point }: { point: MapScreenPoint }) {
           <RichText text={point.description} />
         </div>
       ) : null}
+      {point.directory ? (
+        <Link href={`/places/${point.id}`} className={buttonStyle("secondary", "md", "flex")}>
+          {t`くわしく見る`}
+        </Link>
+      ) : null}
     </div>
   );
 }

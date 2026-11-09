@@ -17,6 +17,9 @@ export function SiteFooter({ locale, variant = "page" }: { locale: string; varia
         <Link prefetch={false} href="/blog" className={link}>
           <Trans>ブログ</Trans>
         </Link>
+        <Link prefetch={false} href="/places" className={link}>
+          <Trans>お店と施設</Trans>
+        </Link>
         <Link prefetch={false} href="/faq" className={link}>
           <Trans>よくあるご質問</Trans>
         </Link>
