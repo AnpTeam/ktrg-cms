@@ -2,7 +2,7 @@ import { and, asc, eq, sql } from "drizzle-orm";
 import { afterCursor, newestFirst, sameInstant } from "../admin-lists/list-sql";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
-import { blogComments, blogPostTranslations, users } from "../db/schema";
+import { blogComments, blogPostTranslations, blogPosts, users } from "../db/schema";
 import { COMMENT_AUDIT, type CommentRow, type CommentStore } from "./comments";
 
 const select = (db: Pick<Db, "select">) =>
@@ -11,6 +11,7 @@ const select = (db: Pick<Db, "select">) =>
       id: blogComments.id,
       postId: blogComments.postId,
       postTitle: sql<string>`coalesce(${blogPostTranslations.title}, '')`,
+      postPhotoUrl: blogPosts.coverPhotoUrl,
       authorName: users.displayName,
       body: blogComments.body,
       status: blogComments.status,
@@ -19,6 +20,7 @@ const select = (db: Pick<Db, "select">) =>
     })
     .from(blogComments)
     .leftJoin(users, eq(users.id, blogComments.userId))
+    .leftJoin(blogPosts, eq(blogPosts.id, blogComments.postId))
     .leftJoin(blogPostTranslations, and(eq(blogPostTranslations.blogPostId, blogComments.postId), eq(blogPostTranslations.locale, "ja")));
 
 export function createDrizzleCommentStore(db: Db): CommentStore {

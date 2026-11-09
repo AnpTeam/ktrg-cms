@@ -22,6 +22,8 @@ export interface CommentRow extends ListRow {
   postId: string;
   /** The post's Japanese title, for the staff's list. */
   postTitle: string;
+  /** The post's cover photo, a small picture beside the comment in the staff's list; null when it has none. */
+  postPhotoUrl: string | null;
   /** The writer's profile name; null when they have none or the account is gone. */
   authorName: string | null;
   body: string;
@@ -74,7 +76,7 @@ export function createMemoryCommentStore(audit: AuditWriter, opts: { now?: () =>
     ...memoryReader(rows),
     async create(userId, postId, body, status) {
       const at = stamp();
-      const row: CommentRow = { id: crypto.randomUUID(), postId, postTitle: opts.titles?.get(postId) ?? "", authorName: opts.names?.get(userId) ?? null, body, status, createdAt: at, updatedAt: at };
+      const row: CommentRow = { id: crypto.randomUUID(), postId, postTitle: opts.titles?.get(postId) ?? "", postPhotoUrl: null, authorName: opts.names?.get(userId) ?? null, body, status, createdAt: at, updatedAt: at };
       rows.set(row.id, row);
       return row;
     },

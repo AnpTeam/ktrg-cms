@@ -1670,6 +1670,60 @@ msgstr "See this route"
 msgid "コピーしました"
 msgstr "Copied"
 
+msgid "（題名なし）"
+msgstr "(No title)"
+
+msgid "{0}さんのコメントを選ぶ"
+msgstr "Select the comment by {0}"
+
+msgid "{0}件のコメントを削除します。元に戻せません。"
+msgstr "Delete {0} comments? This cannot be undone."
+
+msgid "{0}件を公開しました。"
+msgstr "{0} shown."
+
+msgid "{0}件を削除しました。"
+msgstr "{0} deleted."
+
+msgid "{0}件を確認待ちに戻しました。"
+msgstr "{0} set back to waiting."
+
+msgid "{0}件を選択中"
+msgstr "{0} selected"
+
+msgid "{0}件を非表示にしました。"
+msgstr "{0} hidden."
+
+msgid "このコメントを削除します。元に戻せません。"
+msgstr "Delete this comment? This cannot be undone."
+
+msgid "コメント（管理）"
+msgstr "Comments (admin)"
+
+msgid "コメントはありません。"
+msgstr "No comments."
+
+msgid "コメントをさがす"
+msgstr "Search comments"
+
+msgid "コメントを読み込めませんでした。しばらくしてから、ページを開き直してください。"
+msgstr "The comments could not be loaded. Please try opening the page again in a while."
+
+msgid "確認待ち"
+msgstr "Waiting"
+
+msgid "確認待ちのコメントはありません。"
+msgstr "No comments are waiting."
+
+msgid "記事を見る"
+msgstr "View the post"
+
+msgid "非表示"
+msgstr "Hidden"
+
+msgid "非表示にする"
+msgstr "Hide"
+
 #: src/components/blog/CommentSection.tsx:55
 msgid "コメント"
 msgstr "Comments"
