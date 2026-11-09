@@ -286,6 +286,7 @@ export function SiteHeader({
             {/* From 1024 px these links are always in the sidebar's footer, so the menu leaves them out. */}
             <ul className="flex flex-col border-t-2 border-line pt-2 wide:hidden">
               {[
+                { path: "/places", label: t`お店と施設` },
                 { path: "/faq", label: t`よくあるご質問` },
                 { path: "/terms", label: t`利用規約` },
                 { path: "/privacy", label: t`プライバシーポリシー` },

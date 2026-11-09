@@ -1801,6 +1801,28 @@ msgstr "Website"
 msgid "サイトの全体に関わる設定です。ここで変えたことは、すぐに訪問者の画面に反映されます。"
 msgstr "Settings that affect the whole site. What you change here shows on visitors' screens at once."
 
+msgid "お店と施設"
+msgstr "Shops and facilities"
+
+msgid "この条件に合う場所はありません。"
+msgstr "No places match."
+
+msgid "すべてのルート"
+msgstr "All routes"
+
+msgid "ルート{0}"
+msgstr "Route {0}"
+
+msgid "絞り込む"
+msgstr "Filter"
+
+msgid "近くの道"
+msgstr "On the trail nearby"
+
+msgid "道の近くのトイレ、お店、駅やバス停などです。営業時間は変わることがあるので、出かける前に確かめてください。"
+msgstr "Toilets, shops, stations, bus stops and more near the trail. Opening hours can change, so check before you go."
+
+
 #: src/app/(public)/sitemap/page.tsx:15
 #: src/app/(public)/sitemap/page.tsx:50
 #: src/components/SiteFooter.tsx:27

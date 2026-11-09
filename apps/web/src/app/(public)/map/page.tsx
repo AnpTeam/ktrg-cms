@@ -141,6 +141,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
                 photo: p.photoUrl ? { src: p.photoUrl, alt: placeName?.text ?? p.nameJa, credit: p.photoCredit ?? null } : null,
                 description: about,
                 hours,
+                directory: true,
               };
             }),
         ];

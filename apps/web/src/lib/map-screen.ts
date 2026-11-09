@@ -89,6 +89,8 @@ export interface MapScreenPoint {
   photo?: MapPhoto | null;
   description?: string | null;
   hours?: string | null;
+  /** A place of the directory (it has its own page at /places/<id>); guide points along the course do not. */
+  directory?: boolean;
 }
 
 /** One course as the home map needs it. Texts are already in the visitor's language. */

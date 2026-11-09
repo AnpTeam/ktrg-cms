@@ -83,6 +83,8 @@ export function placeItemFromApi(p: PublicPlace, order: number | null): PlaceIte
     category: placeCategories.find((c) => c === p.category) ?? "other",
     nameJa: p.nameJa,
     nameEn: p.nameEn,
+    nameKana: p.nameKana ?? null,
+    nearSpotId: p.nearSpotId ?? null,
     routes: order === null ? [] : [order],
     position: { lat: p.lat, lng: p.lng, verified: true },
     hoursJa: p.hoursJa,

@@ -105,3 +105,16 @@ export function groupCounts(places: readonly { category: PlaceCategory }[]): Par
   }
   return counts;
 }
+
+/**
+ * The places the directory page lists: one group and one course when asked (either may be left out), never a place that
+ * is gone (its own page still opens from an old link), by Japanese name.
+ */
+export function directoryList<T extends { category: PlaceCategory; routes: number[]; status: PlaceStatus; nameJa: string }>(
+  places: readonly T[],
+  pick: { group?: PlaceGroup; route?: number },
+): T[] {
+  return places
+    .filter((p) => p.status !== "gone" && (!pick.group || groupOf(p.category) === pick.group) && (pick.route === undefined || p.routes.includes(pick.route)))
+    .sort((a, b) => a.nameJa.localeCompare(b.nameJa, "ja"));
+}
