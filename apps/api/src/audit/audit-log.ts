@@ -76,6 +76,10 @@ export const AUDIT_ACTIONS = {
   "furigana.create": "furigana",
   "furigana.update": "furigana",
   "furigana.delete": "furigana",
+  /** A dictionary suggestion was approved (it becomes a person's word). */
+  "furigana.approve": "furigana",
+  /** The dictionary read the site again (the hourly job has no account). */
+  "furigana.refresh": "furigana",
   /** The places directory (admin-lists): made, changed (including published or not), deleted. */
   "place.create": "place",
   "place.update": "place",

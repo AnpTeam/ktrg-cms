@@ -2,6 +2,8 @@ name: Purge deleted accounts
 
 # Accounts that asked to be deleted are erased 3 days later. Something has to ask the API to do it: this
 # workflow does, every hour. The API only answers when it is sent the secret (CRON_SECRET).
+# The same run has the furigana dictionary read the site again: its new readings wait on the admin's
+# ふりがな page until a person approves them, so this step never changes what visitors see.
 #
 # Setup (once): in the repository settings add the VARIABLE APP_URL (the site's address, for example
 # https://example.com, no trailing slash) and the SECRET CRON_SECRET (the same value as the API's CRON_SECRET,
@@ -41,6 +43,17 @@ jobs:
           status=$(curl --silent --show-error --max-time 60 --output response.json --write-out "%{http_code}" \
             --request POST --header "Authorization: Bearer $CRON_SECRET" \
             "$APP_URL/api/v1/internal/purge-deletions")
+          echo "HTTP $status"
+          cat response.json
+          echo
+          [ "$status" = "200" ]
+      - name: Ask the API to read the site again for furigana suggestions
+        if: ${{ vars.APP_URL != '' }}
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          status=$(curl --silent --show-error --max-time 120 --output response.json --write-out "%{http_code}"             --request POST --header "Authorization: Bearer $CRON_SECRET"             "$APP_URL/api/v1/internal/furigana-refresh")
           echo "HTTP $status"
           cat response.json
           echo

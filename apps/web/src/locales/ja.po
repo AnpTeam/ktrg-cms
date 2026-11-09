@@ -5937,6 +5937,66 @@ msgstr "港・フェリー乗り場"
 msgid "準備中"
 msgstr "準備中"
 
+#: src/components/admin/FuriganaOverview.tsx
+msgid "{n}件の読みを承認しました。訪れる人に表示されます。"
+msgstr "{n}件の読みを承認しました。訪れる人に表示されます。"
+
+#: src/components/admin/FuriganaOverview.tsx
+msgid "すべての名前に読みがあります。"
+msgstr "すべての名前に読みがあります。"
+
+#: src/components/admin/FuriganaOverview.tsx
+msgid "サイトの文章を辞書が読んで、読みを考えたものです。人が確かめて承認するまで、訪れる人には表示されません。同じ字でも読み方が変わる言葉は、文に合う読みか確かめてください。1時間ごとにも読み直します。"
+msgstr "サイトの文章を辞書が読んで、読みを考えたものです。人が確かめて承認するまで、訪れる人には表示されません。同じ字でも読み方が変わる言葉は、文に合う読みか確かめてください。1時間ごとにも読み直します。"
+
+#: src/components/admin/FuriganaOverview.tsx
+msgid "場所"
+msgstr "場所"
+
+#: src/components/admin/FuriganaOverview.tsx
+msgid "寺社・経塚・行場などの名前は、辞書には任せず人が読みを入れます。それぞれの編集画面の「名前の読み」で入れてください。"
+msgstr "寺社・経塚・行場などの名前は、辞書には任せず人が読みを入れます。それぞれの編集画面の「名前の読み」で入れてください。"
+
+#: src/components/admin/FuriganaOverview.tsx
+msgid "承認"
+msgstr "承認"
+
+#: src/components/admin/FuriganaOverview.tsx
+msgid "新しい言葉はありませんでした。"
+msgstr "新しい言葉はありませんでした。"
+
+#: src/components/admin/FuriganaOverview.tsx
+msgid "直す"
+msgstr "直す"
+
+#: src/components/admin/FuriganaOverview.tsx
+msgid "確認待ちの読みはありません。"
+msgstr "確認待ちの読みはありません。"
+
+#: src/components/admin/FuriganaOverview.tsx
+msgid "表示している読み"
+msgstr "表示している読み"
+
+#: src/components/admin/FuriganaOverview.tsx
+msgid "読みを入れてほしい名前"
+msgstr "読みを入れてほしい名前"
+
+#: src/components/admin/FuriganaOverview.tsx
+msgid "辞書で読み直す"
+msgstr "辞書で読み直す"
+
+#: src/components/admin/FuriganaOverview.tsx
+msgid "辞書の読みが{n}件ふえました。確認してください。"
+msgstr "辞書の読みが{n}件ふえました。確認してください。"
+
+#: src/components/admin/FuriganaOverview.tsx
+msgid "辞書の読み（確認待ち）"
+msgstr "辞書の読み（確認待ち）"
+
+#: src/components/admin/FuriganaOverview.tsx
+msgid "選んだ読みを承認する（{0}件）"
+msgstr "選んだ読みを承認する（{0}件）"
+
 #: src/components/admin/RubyEditor.tsx:27
 msgid "漢字ごとの読み"
 msgstr "漢字ごとの読み"

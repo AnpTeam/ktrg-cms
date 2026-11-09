@@ -44,3 +44,31 @@ describe("POST /internal/purge-deletions", () => {
     expect(calls()).toBe(0);
   });
 });
+
+describe("POST /internal/furigana-refresh", () => {
+  const hit = (cronSecret: string | undefined, authorization?: string) => {
+    let calls = 0;
+    const app = new Elysia({ prefix: "/api/v1" }).use(
+      purgeRoutes(() => ({ me: { purgeDue: async () => 0 }, furigana: { refresh: async () => (calls++, { added: 3, removed: 1 }) } }) as never, cronSecret),
+    );
+    const res = app.handle(new Request("http://localhost/api/v1/internal/furigana-refresh", { method: "POST", headers: authorization ? { authorization } : {} }));
+    return { res, calls: () => calls };
+  };
+
+  test("the right secret has the dictionary read the site and returns only counts", async () => {
+    const { res, calls } = hit(secret, `Bearer ${secret}`);
+    const r = await res;
+    expect(r.status).toBe(200);
+    expect(await r.json()).toEqual({ ok: true, added: 3, removed: 1 });
+    expect(calls()).toBe(1);
+  });
+
+  test("a wrong secret is refused and nothing runs; with no secret set up the route does not exist", async () => {
+    const wrong = hit(secret, "Bearer wrong");
+    expect((await wrong.res).status).toBe(401);
+    expect(wrong.calls()).toBe(0);
+    const none = hit(undefined, `Bearer ${secret}`);
+    expect((await none.res).status).toBe(404);
+    expect(none.calls()).toBe(0);
+  });
+});

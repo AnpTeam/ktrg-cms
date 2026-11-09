@@ -39,7 +39,7 @@ import { authorList } from "./posts/author-list";
 import { createDrizzleCommentStore } from "./posts/comment-store";
 import { commentAdminRoutes, commentList, publicCommentRoutes } from "./posts/comments";
 import { createDrizzleFuriganaStore } from "./furigana/furigana-store";
-import { furiganaList, publicFuriganaRoutes } from "./furigana/furigana-words";
+import { adminFuriganaRoutes, furiganaList, publicFuriganaRoutes } from "./furigana/furigana-words";
 import { bannerList, bannerOrderRoutes, publicBannerRoutes } from "./banners/banner-list";
 import { createDrizzleBannerStore } from "./banners/banner-store";
 import { placeDirectoryList, placeImportRoutes, publicPlaceRoutes } from "./places/place-directory";
@@ -176,6 +176,7 @@ export function createApp(
     .use(publicBannerRoutes(() => getServices().banners))
     .use(listReadRoutes(furiganaList, getServices, opts))
     .use(listWriteRoutes(furiganaList, getServices, opts))
+    .use(adminFuriganaRoutes(getServices, opts))
     .use(publicFuriganaRoutes(() => getServices().furigana))
     .use(listReadRoutes(authorList, getServices, opts))
     .use(listWriteRoutes(authorList, getServices, opts))

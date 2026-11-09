@@ -5,7 +5,9 @@ import type { ListDef } from "../admin-lists/list-routes";
 import { createListService } from "../admin-lists/list-service";
 import { bad, ok, type ListRow, type ListRules, type ListStore } from "../admin-lists/list-types";
 import type { AuditWriter } from "../audit/audit-log";
-import type { KitServices } from "../auth/route-kit";
+import { routeKit, type KitServices, type RouteOptions } from "../auth/route-kit";
+import { dictionaryWords, type Tokenizer } from "./dictionary";
+import { hasHardKanji } from "./kyoiku-kanji";
 
 /**
  * The readings furigana is drawn from: a word as it is written and its reading. Visitors who turn furigana on get every
@@ -21,15 +23,34 @@ export const FURIGANA_FIELDS = {
 
 const furiganaFields = t.Object(FURIGANA_FIELDS);
 export type FuriganaFields = Static<typeof furiganaFields>;
-export type FuriganaRow = ListRow & FuriganaFields;
+export type FuriganaRow = ListRow & FuriganaFields & { pending?: boolean };
 
+/**
+ * The words list. `list` (the admin table) and `all` (what visitors get) hold only a person's words; the dictionary's
+ * suggestions wait apart (`pending`) until approved. Changing a suggestion in the form makes it a person's word.
+ */
 export interface FuriganaStore extends ListStore<FuriganaRow, FuriganaFields> {
-  /** Every word and its marked-up reading. */
+  /** Every word a person typed or approved, with its marked-up reading. */
   all(): Promise<{ word: string; reading: string }[]>;
   findByWord(word: string): Promise<FuriganaRow | null>;
+  /** The dictionary's suggestions still waiting, in the order of the words. */
+  pending(): Promise<FuriganaRow[]>;
+  /** Make these suggestions a person's words; the number approved. */
+  approve(actor: string, ids: string[]): Promise<number>;
+  /** The dictionary's latest suggestions take the place of the waiting ones; a word already in the list (either kind) is kept. */
+  setSuggestions(actor: string | null, words: { word: string; reading: string }[]): Promise<{ added: number; removed: number }>;
 }
 
-export const FURIGANA_AUDIT = { create: "furigana.create", update: "furigana.update", delete: "furigana.delete" } as const;
+export const FURIGANA_AUDIT = { create: "furigana.create", update: "furigana.update", delete: "furigana.delete", approve: "furigana.approve", refresh: "furigana.refresh" } as const;
+
+/** A course, published waypoint or published place whose name has a hard kanji but no reading yet: a person should type it. */
+export interface UnreadName {
+  kind: "route" | "spot" | "place";
+  id: string;
+  /** The course a waypoint is on (to open its editor). */
+  routeId?: string;
+  nameJa: string;
+}
 
 const KANJI = /[㐀-䶿一-鿿豈-﫿々〆ヶ]/u;
 const isKanji = (ch: string) => KANJI.test(ch);
@@ -103,6 +124,39 @@ export type FuriganaService = ReturnType<typeof createFuriganaService>;
 
 type Named = { nameJa: string; nameKana?: string | null };
 
+/** Every Japanese text field of a row (the keys ending in "Ja"), one line at a time. */
+const jaLines = (row: object): string[] =>
+  Object.entries(row).flatMap(([k, v]) => (k.endsWith("Ja") && typeof v === "string" ? v.split(/[\r\n]+/) : []));
+
+/**
+ * The site's published Japanese text, for the dictionary: courses that have a published place (a 準備中 course shows only
+ * its name), published waypoints and places, and the blog posts and notices visitors can read. Never a draft.
+ */
+export async function siteTexts(sources: {
+  routes: () => Promise<(Named & { publishedSpotCount: number })[]>;
+  spots: () => Promise<object[]>;
+  places: () => Promise<object[]>;
+  posts: () => Promise<object[]>;
+  notices: () => Promise<object[]>;
+}): Promise<string[]> {
+  const [routes, ...rest] = await Promise.all([sources.routes(), sources.spots(), sources.places(), sources.posts(), sources.notices()]);
+  return [...routes.flatMap((r) => (r.publishedSpotCount > 0 ? jaLines(r) : [r.nameJa])), ...rest.flat().flatMap(jaLines)];
+}
+
+/** Courses, published waypoints and published places whose name holds a hard kanji but has no reading typed yet. */
+export async function unreadNames(
+  content: { listRoutes(): Promise<(Named & { id: string })[]>; listPublishedSpots(): Promise<(Named & { id: string; routeId: string })[]> },
+  places: { listPublic(): Promise<(Named & { id: string })[]> },
+): Promise<UnreadName[]> {
+  const [routes, spots, listed] = await Promise.all([content.listRoutes(), content.listPublishedSpots(), places.listPublic()]);
+  const needs = (n: Named) => !n.nameKana && hasHardKanji(n.nameJa);
+  return [
+    ...routes.filter(needs).map((r) => ({ kind: "route" as const, id: r.id, nameJa: r.nameJa })),
+    ...spots.filter(needs).map((s) => ({ kind: "spot" as const, id: s.id, routeId: s.routeId, nameJa: s.nameJa })),
+    ...listed.filter(needs).map((p) => ({ kind: "place" as const, id: p.id, nameJa: p.nameJa })),
+  ];
+}
+
 /** The readings people typed with course names and with published waypoint and place names (a draft's name never shows). */
 export async function nameReadings(
   content: { listRoutes(): Promise<Named[]>; listPublishedSpots(): Promise<Named[]> },
@@ -112,9 +166,35 @@ export async function nameReadings(
   return [...routes, ...spots, ...listed].flatMap((r) => (r.nameKana ? [{ word: r.nameJa, reading: r.nameKana }] : []));
 }
 
-export function createFuriganaService(deps: { store: FuriganaStore; names?: () => Promise<{ word: string; reading: string }[]> }) {
+export function createFuriganaService(deps: {
+  store: FuriganaStore;
+  names?: () => Promise<{ word: string; reading: string }[]>;
+  /** The site's published text, for the dictionary to read. */
+  texts?: () => Promise<string[]>;
+  tokenizer?: () => Promise<Tokenizer>;
+  /** Names that still need a reading typed. */
+  unread?: () => Promise<UnreadName[]>;
+}) {
   return {
     ...createListService({ store: deps.store, rules: furiganaRules(deps.store) }),
+    /**
+     * Read the site's text with the dictionary again. New words become suggestions (waiting, never shown); suggestions for
+     * words that are gone are dropped; a person's word and a name with a typed reading are never touched or suggested.
+     */
+    async refresh(actor: string | null): Promise<{ added: number; removed: number }> {
+      if (!deps.texts || !deps.tokenizer) return { added: 0, removed: 0 };
+      const [texts, tokenizer, words, names] = await Promise.all([deps.texts(), deps.tokenizer(), deps.store.all(), deps.names?.() ?? []]);
+      const known = new Set([...words.map((w) => w.word), ...names.map((n) => n.word.trim())]);
+      const found = dictionaryWords(tokenizer, texts, (w) => known.has(w));
+      const suggestions = [...found].flatMap(([word, reading]) => {
+        const markup = alignReading(word, reading);
+        return markup ? [{ word, reading: markup }] : [];
+      });
+      return deps.store.setSuggestions(actor, suggestions);
+    },
+    pending: () => deps.store.pending(),
+    approve: (actor: string, ids: string[]) => deps.store.approve(actor, ids),
+    unread: async () => (await deps.unread?.()) ?? [],
     /**
      * What the page needs: every word with its reading. The readings typed with a course's, waypoint's or place's own name
      * come first (each in the marked-up form; a reading that does not fit its name is left out); the words list wins over them.
@@ -142,10 +222,51 @@ export function createFuriganaService(deps: { store: FuriganaStore; names?: () =
 /** In-memory words for tests and the dev page. */
 export function createMemoryFuriganaStore(audit: AuditWriter, opts: { now?: () => Date } = {}) {
   const list = createMemoryListStore<FuriganaFields>(audit, FURIGANA_AUDIT, opts);
+  const rows = list.rows as Map<string, FuriganaRow>;
+  const mine = () => [...rows.values()].filter((r) => !r.pending);
   const store: FuriganaStore = {
     ...list.store,
+    async list(after, limit) {
+      return (await list.store.list(after, Number.MAX_SAFE_INTEGER)).filter((r) => !(r as FuriganaRow).pending).slice(0, limit);
+    },
+    async update(actor, id, expected, changes) {
+      const r = await list.store.update(actor, id, expected, changes);
+      if (r && r !== "conflict") (r as FuriganaRow).pending = false;
+      return r;
+    },
     async all() {
-      return [...list.rows.values()].map(({ word, reading }) => ({ word, reading }));
+      return mine().map(({ word, reading }) => ({ word, reading }));
+    },
+    async pending() {
+      return [...rows.values()].filter((r) => r.pending).sort((a, b) => a.word.localeCompare(b.word, "ja"));
+    },
+    async approve(actor, ids) {
+      let n = 0;
+      for (const id of ids) {
+        const r = rows.get(id);
+        if (r?.pending) {
+          r.pending = false;
+          n++;
+          await audit.record({ actorUserId: actor, action: FURIGANA_AUDIT.approve, targetId: id });
+        }
+      }
+      return n;
+    },
+    async setSuggestions(actor, words) {
+      const wanted = new Map(words.map((w) => [w.word, w.reading]));
+      let removed = 0;
+      for (const [id, r] of rows) if (r.pending && !wanted.has(r.word)) (rows.delete(id), removed++);
+      const present = new Set([...rows.values()].map((r) => r.word));
+      let added = 0;
+      for (const [word, reading] of wanted) {
+        if (present.has(word)) continue;
+        const at = new Date();
+        rows.set(crypto.randomUUID(), { id: "", word, reading, pending: true, createdAt: at, updatedAt: at });
+        added++;
+      }
+      for (const [id, r] of rows) if (r.id === "") r.id = id;
+      await audit.record({ actorUserId: actor, action: FURIGANA_AUDIT.refresh, targetId: null });
+      return { added, removed };
     },
     async findByWord(word) {
       return [...list.rows.values()].find((r) => r.word === word) ?? null;
@@ -168,8 +289,8 @@ export const furiganaList: ListDef<"furigana", typeof FURIGANA_FIELDS, FuriganaR
   ui: {
     title: { ja: "ふりがな", en: "Furigana" },
     intro: {
-      ja: "「ふりがなをつける」を選んだ人に、ここの言葉の読みを漢字の上に表示します。小学校で習わない漢字を含む言葉だけ載せてください。",
-      en: "For visitors who turn furigana on, the reading of each word here is shown over its kanji. Only add words that have a kanji not taught in elementary school.",
+      ja: "「ふりがなをつける」を選んだ人に、読みを漢字の上に表示します。下の一覧は、人が入れた読みと承認した辞書の読みで、訪れる人に表示されます。辞書の読みは、承認するまで表示されません。",
+      en: "For visitors who turn furigana on, readings are shown over the kanji. The list below holds readings typed by a person and approved dictionary readings; visitors see these. A dictionary reading is not shown until it is approved.",
     },
     newLabel: { ja: "新しい言葉", en: "New word" },
     deleteWarning: { ja: "この言葉のふりがなを削除します。よろしいですか？", en: "Delete the furigana of this word?" },
@@ -190,6 +311,35 @@ export const furiganaList: ListDef<"furigana", typeof FURIGANA_FIELDS, FuriganaR
     ],
   },
 };
+
+/**
+ * The ふりがな page's own actions (`furigana.manage`): what is waiting (dictionary suggestions, names with no reading),
+ * approving suggestions, and reading the site again now. Writes are rate limited and audited by the store.
+ */
+export function adminFuriganaRoutes(getServices: () => FuriganaServices, opts: RouteOptions) {
+  const { plugins } = routeKit(getServices, opts);
+  const svc = () => getServices().furigana;
+  return new Elysia({ prefix: "/admin/furigana", detail: { tags: ["Admin lists"] } })
+    .use(plugins)
+    .get(
+      "/overview",
+      async () => {
+        const [pending, unread] = await Promise.all([svc().pending(), svc().unread()]);
+        return { ok: true as const, pending: pending.map(({ id, word, reading }) => ({ id, word, reading })), unread };
+      },
+      { auth: "furigana.manage", detail: { summary: "Dictionary suggestions waiting, and names that still need a reading" } },
+    )
+    .post(
+      "/approve",
+      async ({ user, body }) => ({ ok: true as const, approved: await svc().approve(user.id, body.ids) }),
+      { auth: "furigana.manage", rateLimit: { adminWriteUser: "user.id" }, body: t.Object({ ids: t.Array(t.String({ format: "uuid" }), { minItems: 1, maxItems: 500 }) }) },
+    )
+    .post(
+      "/refresh",
+      async ({ user }) => ({ ok: true as const, ...(await svc().refresh(user.id)) }),
+      { auth: "furigana.manage", rateLimit: { adminWriteUser: "user.id" }, detail: { summary: "Read the site's text with the dictionary again now" } },
+    );
+}
 
 /** What visitors get when they turn furigana on: every word with its reading. A few minutes old at most. */
 export function publicFuriganaRoutes(getFurigana: () => FuriganaService) {

@@ -380,9 +380,11 @@ describe("user B cannot touch user A", () => {
     "POST /api/v1/auth/password/undo",
     // Not for people: a scheduler calls it with a bearer secret (404 without one configured); see internal/purge-routes.test.ts.
     "POST /api/v1/internal/purge-deletions",
+    "POST /api/v1/internal/furigana-refresh",
   ]);
   /** A well-formed body for each logged-in route that needs one (validation runs before the guard). */
   const BODIES: Record<string, () => unknown> = {
+    "POST /api/v1/admin/furigana/approve": () => ({ ids: [crypto.randomUUID()] }),
     "PATCH /api/v1/auth/passkeys/:id": () => ({ label: "x" }),
     "PUT /api/v1/auth/password": () => ({ password: "yamabushi-walk" }),
     "PUT /api/v1/admin/routes/:id/shared-spots/:spotId": () => ({ position: 0 }),
