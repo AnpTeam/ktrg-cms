@@ -16,6 +16,7 @@ import { HoursInput } from "./HoursInput";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoLinkDetails } from "./PhotoLinkDetails";
 import { PhotoUpload } from "./PhotoUpload";
+import { IconPicker } from "./IconPicker";
 import { PositionMap } from "./PositionMap";
 import { RelationPicker } from "./RelationPicker";
 import { UserActions } from "./UserActions";
@@ -197,6 +198,13 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
           </fieldset>
         );
       }
+      case "icon":
+        // The place's picture, chosen from tiles; "none" leaves its category's picture.
+        return (
+          <Field key={f.name} label={label} hint={hint}>
+            <IconPicker label={label} category={text("category")} value={text(f.name)} options={(f.options ?? []).map((o) => o.value)} onChange={set(f.name)} />
+          </Field>
+        );
       case "ruby":
         // The reading over the Japanese name, typed per run of kanji (the same editor as a course's name).
         return (

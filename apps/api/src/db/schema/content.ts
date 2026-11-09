@@ -698,6 +698,8 @@ export const places = pgTable(
     openingHours: jsonb("opening_hours").$type<OpeningHours>(),
     // How the Japanese name is read, typed by a person.
     nameKana: text("name_kana"),
+    // The picture chosen for it (PLACE_ICONS in places/place-directory.ts); null draws the picture of its category.
+    icon: text("icon"),
     lat: doublePrecision("lat"),
     lng: doublePrecision("lng"),
     positionVerified: boolean("position_verified").notNull().default(false),

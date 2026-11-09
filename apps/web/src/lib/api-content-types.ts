@@ -123,6 +123,8 @@ export interface PublicPlace {
   nameEn: string | null;
   /** How the Japanese name is read, typed by a person. */
   nameKana?: string | null;
+  /** The picture chosen for it; null draws its category's. */
+  icon?: string | null;
   descriptionJa: string | null;
   descriptionEn: string | null;
   hoursJa: string | null;

@@ -13,6 +13,7 @@ export interface DirectoryRow {
   name: string;
   nameLang: "ja" | "en";
   category: PlaceCategory;
+  icon?: string | null;
   status: PlaceStatus;
   /** The course numbers it serves. */
   routes: number[];
@@ -104,7 +105,7 @@ export function DirectoryView({
           {rows.map((p) => (
             <li key={p.id}>
               <Link href={`/places/${p.id}`} className="flex items-center gap-3 py-3 no-underline">
-                <PlaceIcon category={p.category} />
+                <PlaceIcon category={p.category} icon={p.icon} />
                 <span className="min-w-0 flex-1">
                   <span lang={p.nameLang} className="block text-lg font-bold leading-snug">
                     {p.name}

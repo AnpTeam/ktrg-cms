@@ -82,7 +82,7 @@ export default async function BlogPostPage({ params }: Props) {
         .slice(0, NEARBY_MAX)
         .map(({ p, meters }) => {
           const name = pickText(locale, p.nameJa, p.nameEn);
-          return { id: p.id, name: name?.text ?? p.nameJa, nameLang: name?.lang ?? "ja", category: p.category, meters };
+          return { id: p.id, name: name?.text ?? p.nameJa, nameLang: name?.lang ?? "ja", category: p.category, icon: p.icon ?? null, meters };
         })
     : [];
   const hours = place ? pickText(locale, place.hoursJa ?? "", place.hoursEn) : null;
@@ -113,7 +113,7 @@ export default async function BlogPostPage({ params }: Props) {
             ) : null}
             {place ? (
               <a href="#place" className={chip}>
-                <PlaceIcon category={place.category} size={20} />
+                <PlaceIcon category={place.category} icon={place.icon} size={20} />
                 <Localized value={placeName} />
               </a>
             ) : null}
@@ -173,6 +173,7 @@ export default async function BlogPostPage({ params }: Props) {
                   <PlaceFacts
                     place={{
                       category: place.category,
+                      icon: place.icon ?? null,
                       name: placeName?.text ?? place.nameJa,
                       address: pickText(locale, place.addressJa ?? "", place.addressEn ?? null)?.text || null,
                       phone: place.phone ?? null,

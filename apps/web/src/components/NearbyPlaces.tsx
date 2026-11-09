@@ -12,6 +12,7 @@ export interface Nearby {
   name: string;
   nameLang: "ja" | "en";
   category: PlaceCategory;
+  icon?: string | null;
   meters: number;
 }
 
@@ -25,7 +26,7 @@ export function NearbyPlaces({ places }: { places: Nearby[] }) {
       {places.map((p) => (
         <li key={p.id} className="border-t border-line/30 first:border-t-0">
           <Link href={`/places/${p.id}`} className="flex items-center justify-between gap-3 py-3 no-underline">
-            <PlaceIcon category={p.category} />
+            <PlaceIcon category={p.category} icon={p.icon} />
             <span className="min-w-0 flex-1">
               <span lang={p.nameLang} className="block text-lg font-bold leading-snug">
                 {p.name}

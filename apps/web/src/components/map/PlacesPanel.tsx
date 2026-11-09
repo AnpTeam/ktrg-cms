@@ -147,7 +147,7 @@ export function PlaceList({
               className={`tap-target flex w-full items-center gap-3 py-2 text-left ${place.id === selectedId ? "bg-surface" : ""}`}
             >
               <span className="shrink-0 text-accent">
-                <PlaceIcon category={place.category} />
+                <PlaceIcon category={place.category} icon={place.icon} />
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block text-lg font-bold leading-snug" lang={place.nameLang}>
@@ -196,7 +196,7 @@ export function PlaceCard({
       <div className="flex items-start justify-between gap-3">
         <p className="flex items-start gap-3 text-xl font-bold leading-snug">
           <span className="mt-0.5 shrink-0 text-accent">
-            <PlaceIcon category={place.category} />
+            <PlaceIcon category={place.category} icon={place.icon} />
           </span>
           <span lang={place.nameLang}>{place.name}</span>
         </p>

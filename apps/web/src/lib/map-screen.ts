@@ -82,6 +82,8 @@ export interface MapScreenPoint {
   id: string;
   /** The place picture group it is drawn with (see lib/places.ts). */
   category: PlaceCategory;
+  /** The picture chosen for a directory place; null or left out draws its category's. */
+  icon?: string | null;
   name: string;
   nameLang: "ja" | "en";
   position: Position;

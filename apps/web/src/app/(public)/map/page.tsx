@@ -135,6 +135,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
               return {
                 id: p.id,
                 category: p.category,
+                icon: p.icon ?? null,
                 name: placeName?.text ?? p.nameJa,
                 nameLang: placeName?.lang ?? "ja",
                 position: { lat: p.position.lat, lng: p.position.lng },
