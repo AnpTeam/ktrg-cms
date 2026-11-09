@@ -1801,30 +1801,6 @@ msgstr "サイト"
 msgid "サイトの全体に関わる設定です。ここで変えたことは、すぐに訪問者の画面に反映されます。"
 msgstr "サイトの全体に関わる設定です。ここで変えたことは、すぐに訪問者の画面に反映されます。"
 
-msgid "{number} / {total}か所"
-msgstr "{number} / {total}か所"
-
-msgid "なし"
-msgstr "なし"
-
-msgid "前の場所から"
-msgstr "前の場所から"
-
-msgid "押しました"
-msgstr "押しました"
-
-msgid "押せます"
-msgstr "押せます"
-
-msgid "移動の時間"
-msgstr "移動の時間"
-
-msgid "約{minutes}分"
-msgstr "約{minutes}分"
-
-msgid "道から"
-msgstr "道から"
-
 #: src/app/(public)/sitemap/page.tsx:15
 #: src/app/(public)/sitemap/page.tsx:50
 #: src/components/SiteFooter.tsx:27
@@ -1942,6 +1918,30 @@ msgstr "スタンプのバックアップ"
 #: src/components/GuestBackup.tsx:34
 msgid "スタンプのバックアップリンク"
 msgstr "スタンプのバックアップリンク"
+
+msgid "{number} / {total}か所"
+msgstr "{number} / {total}か所"
+
+msgid "なし"
+msgstr "なし"
+
+msgid "前の場所から"
+msgstr "前の場所から"
+
+msgid "押しました"
+msgstr "押しました"
+
+msgid "押せます"
+msgstr "押せます"
+
+msgid "移動の時間"
+msgstr "移動の時間"
+
+msgid "約{minutes}分"
+msgstr "約{minutes}分"
+
+msgid "道から"
+msgstr "道から"
 
 #: src/components/map/MapScreen.tsx:426
 #: src/components/SpotSheet.tsx:95
