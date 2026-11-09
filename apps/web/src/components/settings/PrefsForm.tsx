@@ -82,7 +82,7 @@ export function PrefsForm({
         role="switch"
         checked={prefs[key]}
         onChange={(e) => setPrefs({ ...prefs, [key]: e.target.checked })}
-        className="size-7 shrink-0 accent-[var(--color-brand)]"
+        className="shrink-0"
       />
     </label>
   );
