@@ -1,4 +1,11 @@
-type Status = "open" | "caution" | "closed";
+export type Status = "open" | "caution" | "closed";
+
+/** A status read after the page was drawn with `shown`. */
+export type LiveStatus = { spotId: string; shown: Status; status: Status };
+
+/** The newer status, unless it was read for another place or before the page was drawn again with a new one. */
+export const liveStatus = (latest: LiveStatus | null, spotId: string, shown: Status): Status =>
+  latest && latest.spotId === spotId && latest.shown === shown ? latest.status : shown;
 
 /** The statuses in the answer of GET /spots/status; anything else in it is left out. */
 export function parseStatuses(body: unknown): Map<string, Status> | null {

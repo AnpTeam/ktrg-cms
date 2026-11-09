@@ -11,6 +11,7 @@ import { buzz, playThud, unlockAudio } from "@/lib/stamp-feel";
 import { announceProgress, type StampProgress } from "@/lib/stamp-progress";
 import { track } from "@/lib/track";
 import { StampFace } from "./StampFace";
+import { useLiveStatus } from "./useLiveStatus";
 import { useStampMessages } from "./useStampMessages";
 import { buttonStyle } from "@/components/button";
 
@@ -36,7 +37,7 @@ const QUEUED_READ_MS = 4000;
 
 export function StampHere({
   spotId,
-  status,
+  status: shownStatus,
   alreadyStamped,
   stampImage,
   loginHref,
@@ -66,6 +67,8 @@ export function StampHere({
 }) {
   const { t, i18n } = useLingui();
   const router = useRouter();
+  // A page left open learns of a closure without being reloaded.
+  const status = useLiveStatus(spotId, shownStatus);
   const [phase, setPhase] = useState<Phase>({ name: "idle" });
   const dialog = useRef<HTMLDialogElement>(null);
   const busy = phase.name === "locating" || phase.name === "sending";
