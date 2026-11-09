@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
 import { HeroSlides, type HeroSlide } from "@/components/landing/HeroSlides";
 import type { BannerSlide } from "@/lib/banners";
@@ -14,7 +15,11 @@ const secondary = buttonStyle("secondary", "lg", "inline-flex");
 
 const FALLBACK: HeroSlide = { src: "/home/top_slider_img01.jpg", alt: "", unoptimized: false };
 
-export function LandingHero({ slides, locale, line }: { slides: BannerSlide[]; locale: string; line: string }) {
+/**
+ * `title` (a signed-in visitor's greeting) takes the line's place, with the line kept small above it; `children` take the
+ * buttons' place on the patterned band below (their progress, instead of signing up).
+ */
+export function LandingHero({ slides, locale, line, title, children }: { slides: BannerSlide[]; locale: string; line: string; title?: ReactNode; children?: ReactNode }) {
   const photos: HeroSlide[] = slides.flatMap((s) => (s.src ? [{ src: s.src, alt: locale === "ja" ? s.altJa : s.altEn, credit: s.credit, unoptimized: true }] : []));
   return (
     <section aria-labelledby="hero-title" className="overflow-hidden bg-surface">
@@ -22,16 +27,20 @@ export function LandingHero({ slides, locale, line }: { slides: BannerSlide[]; l
         <HeroSlides slides={photos.length > 0 ? photos : [FALLBACK]}>
           <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
           <div className="absolute inset-0 mx-auto flex max-w-6xl flex-col justify-end p-4 @[34rem]:p-8 @[42rem]:p-10">
+            {title ? (
+              <p className="font-serif text-lg font-bold text-white [text-shadow:0_1px_6px_rgb(0_0_0/0.7)] @[34rem]:text-xl">{line}</p>
+            ) : null}
             <h1 id="hero-title" className="font-serif text-3xl font-bold leading-snug text-white [text-shadow:0_1px_8px_rgb(0_0_0/0.7)] @[34rem]:text-4xl @[42rem]:text-5xl">
               <span className="sr-only">
                 <Trans>葛城修験</Trans>{" "}
               </span>
-              {line}
+              {title ?? line}
             </h1>
           </div>
         </HeroSlides>
       </div>
       <div className="pattern-shippo">
+      {children ? <div className="mx-auto max-w-6xl py-6 @[34rem]:px-6">{children}</div> : (
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-5 py-6 @[34rem]:px-10 @[42rem]:flex-row @[42rem]:items-center @[42rem]:justify-between">
         <div className="flex flex-wrap items-center gap-3">
           <Link href="/register" className={primary}>
@@ -48,6 +57,7 @@ export function LandingHero({ slides, locale, line }: { slides: BannerSlide[]; l
           </Link>
         </p>
       </div>
+      )}
       </div>
     </section>
   );

@@ -51,21 +51,18 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   const ready = routes.filter((r) => r.status === "ready");
   const badges = ready.filter((r) => nodeState({ status: r.status, stamped: r.stampedCount, total: r.spotCount }) === "complete").length;
-  const tile = "tap-target flex flex-col items-center justify-center gap-1 rounded-3xl bg-surface px-2 py-3 text-center";
+  const tile = "tap-target flex flex-col items-center justify-center gap-1 rounded-3xl bg-paper px-2 py-3 text-center shadow-sm";
 
-  // A dashboard: a greeting, how far along they are with the next place, three numbers that each lead somewhere, and the
-  // course to go on with. The banners (current events) come above it (Landing puts them first when there is a dashboard).
-  const top = (
-    <div className="flex flex-col gap-5 pt-2 wide:grid wide:grid-cols-2 wide:items-start wide:gap-x-8">
-      <h1 className="px-4 text-2xl font-bold leading-snug wide:col-span-2">
-        {name ? <Trans>{name}さん、こんにちは。</Trans> : <Trans>おかえりなさい。</Trans>}
-      </h1>
-
-      <div className="mx-4 rounded-3xl bg-surface py-5 wide:col-start-1 wide:row-start-2">
+  // A dashboard: the greeting over the photos; under them, on the patterned band, how far along they are with the next place
+  // and three numbers that each lead somewhere; then the course to go on with.
+  const greeting = name ? <Trans>{name}さん、こんにちは。</Trans> : <Trans>おかえりなさい。</Trans>;
+  const heroBody = (
+    <div className="flex flex-col gap-4 wide:grid wide:grid-cols-2 wide:items-center wide:gap-x-8">
+      <div className="mx-4 rounded-3xl bg-paper py-5 shadow-sm">
         <ProgressSummary stamped={stamped} total={total} next={nextPlace} />
       </div>
 
-      <div className="grid grid-cols-3 gap-3 px-4 wide:col-start-1 wide:row-start-3">
+      <div className="grid grid-cols-3 gap-3 px-4">
         <Link href="/rallies" className={tile}>
           <span className="text-base text-muted"><Trans>ラリー</Trans></span>
           <span className="text-2xl font-bold tabular-nums text-accent">{stamped}<span className="text-lg text-muted"> / {total}</span></span>
@@ -79,15 +76,19 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           <span className="text-2xl font-bold tabular-nums text-accent">{viewer.bookmarks.length}</span>
         </Link>
       </div>
+    </div>
+  );
 
+  const top = (
+    <div className="flex flex-col gap-5 wide:grid wide:grid-cols-2 wide:items-start wide:gap-x-8">
       {target ? (
-        <div className="wide:col-start-2 wide:row-span-2 wide:row-start-2">
+        <div className="wide:col-span-2">
           <ContinueCard route={target} next={next} locale={i18n.locale} />
         </div>
       ) : null}
 
       {prefs.setupDone ? null : (
-        <Link href="/welcome" className="tap-target mx-4 flex flex-col rounded-3xl bg-surface p-5 wide:col-span-2 wide:row-start-4">
+        <Link href="/welcome" className="tap-target mx-4 flex flex-col rounded-3xl bg-surface p-5 wide:col-span-2">
           <span className="text-xl font-bold text-accent">
             <Trans>見やすさを設定しませんか</Trans>
           </span>
@@ -99,5 +100,5 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
     </div>
   );
 
-  return <Landing {...page} top={top} />;
+  return <Landing {...page} top={top} greeting={greeting} heroBody={heroBody} />;
 }
