@@ -1732,9 +1732,17 @@ msgstr "コメント"
 msgid "コメントする"
 msgstr "コメントする"
 
-#: src/components/blog/CommentSection.tsx:41
-msgid "コメントを受け付けました。スタッフが確認すると、ここに表示されます。"
-msgstr "コメントを受け付けました。スタッフが確認すると、ここに表示されます。"
+#: src/components/blog/CommentSection.tsx
+msgid "コメントを受け付けました"
+msgstr "コメントを受け付けました"
+
+#: src/components/blog/CommentSection.tsx
+msgid "スタッフが確認すると、ここに表示されます。"
+msgstr "スタッフが確認すると、ここに表示されます。"
+
+#: src/components/blog/CommentSection.tsx
+msgid "もう一つ書く"
+msgstr "もう一つ書く"
 
 #: src/components/blog/CommentSection.tsx:86
 msgid "コメントを書く"
