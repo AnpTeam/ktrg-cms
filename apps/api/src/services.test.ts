@@ -11,7 +11,6 @@ import { createMemorySiteSettingsStore } from "./site-settings/site-settings";
 import { createMemoryPlaceStore } from "./places/place-directory";
 import { createMemoryAuthorStore } from "./posts/author-list";
 import { createMemoryCommentStore } from "./posts/comments";
-import { createMemorySitePageStore } from "./pages/site-pages";
 import { createMemoryFuriganaStore } from "./furigana/furigana-words";
 import { createMemoryBannerStore } from "./banners/banner-list";
 import { memoryReader } from "./admin-lists/list-memory-store";
@@ -44,7 +43,6 @@ function build(photoHosts?: string[]) {
     posts: createMemoryPostStore(audit.writer).store,
       banners: createMemoryBannerStore(audit.writer).store,
       furigana: createMemoryFuriganaStore(audit.writer).store,
-      sitePages: createMemorySitePageStore(audit.writer).store,
       comments: createMemoryCommentStore(audit.writer).store,
       authors: createMemoryAuthorStore(audit.writer).store,
       places: createMemoryPlaceStore(audit.writer).store,

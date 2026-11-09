@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, lte, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, lte, sql } from "drizzle-orm";
 import { afterCursor, newestFirst, sameInstant } from "../admin-lists/list-sql";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
@@ -50,6 +50,8 @@ async function withTexts(q: Reader, rows: (typeof blogPosts.$inferSelect)[]): Pr
       accountPhotoUrl: account?.photo ?? null,
       translations: w.translations,
       publishedOn: r.publishedOn,
+      kind: r.kind,
+      slug: r.slug,
       published: r.published,
       createdAt: r.createdAt,
       updatedAt: r.updatedAt,
@@ -71,6 +73,8 @@ async function saveTexts(tx: Tx, postId: string, texts: Texts<(typeof POST_TEXT)
 
 /** Published and dated today or earlier: what a visitor may read. */
 const readable = (today: string) => and(eq(blogPosts.published, true), lte(blogPosts.publishedOn, today));
+const isPost = eq(blogPosts.kind, "post");
+const isPage = eq(blogPosts.kind, "page");
 
 export function createDrizzlePostStore(db: Db): PostStore {
   return {
@@ -131,14 +135,29 @@ export function createDrizzlePostStore(db: Db): PostStore {
       const rows = await db
         .select()
         .from(blogPosts)
-        .where(readable(today))
+        .where(and(readable(today), isPost))
         .orderBy(desc(blogPosts.publishedOn), desc(blogPosts.createdAt))
         .limit(PUBLIC_POSTS_LIMIT);
       return withTexts(db, rows);
     },
 
     async getPublic(id, today) {
-      const [row] = await db.select().from(blogPosts).where(and(eq(blogPosts.id, id), readable(today))).limit(1);
+      const [row] = await db.select().from(blogPosts).where(and(eq(blogPosts.id, id), readable(today), isPost)).limit(1);
+      return row ? (await withTexts(db, [row]))[0]! : null;
+    },
+
+    async findBySlug(slug) {
+      const [row] = await db.select().from(blogPosts).where(eq(blogPosts.slug, slug)).limit(1);
+      return row ? (await withTexts(db, [row]))[0]! : null;
+    },
+
+    async listPublicPages(today) {
+      const rows = await db.select().from(blogPosts).where(and(readable(today), isPage)).orderBy(asc(blogPosts.createdAt)).limit(PUBLIC_POSTS_LIMIT);
+      return withTexts(db, rows);
+    },
+
+    async getPublicPage(slug, today) {
+      const [row] = await db.select().from(blogPosts).where(and(eq(blogPosts.slug, slug), readable(today), isPage)).limit(1);
       return row ? (await withTexts(db, [row]))[0]! : null;
     },
   };

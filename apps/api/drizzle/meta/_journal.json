@@ -407,6 +407,13 @@
       "when": 1794040228626,
       "tag": "0057_polite_solo",
       "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1794187674955,
+      "tag": "0058_dashing_molten_man",
+      "breakpoints": true
     }
   ]
 }

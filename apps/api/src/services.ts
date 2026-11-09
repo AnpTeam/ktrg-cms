@@ -13,7 +13,6 @@ import type { MeServices } from "./me/me-routes";
 import { createListReader } from "./admin-lists/list-service";
 import type { ListReadStore } from "./admin-lists/list-types";
 import type { AuditListRow, AuditListServices } from "./audit/audit-list";
-import { createSitePageService, type SitePageServices, type SitePageStore } from "./pages/site-pages";
 import { createFuriganaService, type FuriganaServices, type FuriganaStore } from "./furigana/furigana-words";
 import { createBannerService, type BannerServices, type BannerStore } from "./banners/banner-list";
 import type { PlaceListRow, PlaceListServices } from "./content/place-list";
@@ -47,7 +46,7 @@ import { createUploadService } from "./uploads/upload-service";
 import type { FileStorage } from "./uploads/upload-storage";
 
 /** Everything the routes use. */
-export type Services = AuthServices & PasskeyServices & PasswordServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & PostServices & CommentServices & AuthorServices & BannerServices & PlaceServices & SiteSettingsServices & VisitServices & DashboardServices & AuditListServices & PlaceListServices & UserListServices & GuestServices & FuriganaServices & SitePageServices & NavigationServices;
+export type Services = AuthServices & PasskeyServices & PasswordServices & MeServices & ContentServices & UploadServices & RallyAdminServices & StampServices & StampListServices & NoticeServices & PostServices & CommentServices & AuthorServices & BannerServices & PlaceServices & SiteSettingsServices & VisitServices & DashboardServices & AuditListServices & PlaceListServices & UserListServices & GuestServices & FuriganaServices & NavigationServices;
 
 /** What the services are built from: the storage (database or in-memory) and the outside world. */
 export interface ServiceDeps {
@@ -66,7 +65,6 @@ export interface ServiceDeps {
     posts: PostStore;
     banners: BannerStore;
     furigana: FuriganaStore;
-    sitePages: SitePageStore;
     comments: CommentStore;
     authors: AuthorStore;
     places: PlaceStore;
@@ -136,7 +134,6 @@ export function createServices(deps: ServiceDeps): Services {
     // The other generated admin lists: home banners, the audit log, every place, accounts and their roles.
     banners: createBannerService({ store: stores.banners, photoHosts: deps.photoHosts }),
     furigana: createFuriganaService({ store: stores.furigana }),
-    sitePages: createSitePageService({ store: stores.sitePages }),
     authors: createAuthorService({ store: stores.authors, photoHosts: deps.photoHosts }),
     comments: createCommentService({ store: stores.comments, postVisible: async (id) => (await posts.publicPost(id)) !== null }),
     places: createPlaceService({ store: stores.places, photoHosts: deps.photoHosts, routeExists: async (id) => (await stores.content.getRoute(id)) !== null, spotExists: async (id) => (await stores.content.getSpot(id)) !== null, routeSpots: async (id) => (await stores.content.getRoute(id))?.spots ?? [], routeIds: async () => (await stores.content.listRoutes()).map((r) => r.id) }),

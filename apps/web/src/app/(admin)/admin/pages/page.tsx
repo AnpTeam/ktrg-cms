@@ -5,10 +5,7 @@ import { Trans } from "@lingui/react/macro";
 import { initLingui } from "@/i18n/server";
 import { adminGet } from "@/lib/admin/admin-fetch";
 import { ChevronIcon } from "@/components/icons";
-import { itemName } from "@/lib/admin/lists/config";
-import type { ListItem } from "@/lib/admin/lists/config";
 import type { PageKey, PageText } from "@/lib/page-text";
-import type { ListMeta } from "@/lib/admin/lists/config";
 
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
@@ -20,8 +17,6 @@ export default async function PageTextList() {
   const i18n = await initLingui();
   const { body } = await adminGet<{ ok: true; pages: Partial<Record<PageKey, PageText | null>> }>("/settings/pages");
   const pages = body?.ok ? body.pages : {};
-  const made = await adminGet<{ ok: true; items: ListItem[] }>("/lists/site-pages");
-  const madePages = made.body?.ok ? made.body.items : [];
   const names: Record<PageKey, { name: string; hint: string }> = {
     home: { name: i18n._(msg`ホーム`), hint: i18n._(msg`トップページの見出しと説明です。`) },
     faq: { name: i18n._(msg`よくあるご質問`), hint: i18n._(msg`質問と答えの一覧です。`) },
@@ -58,40 +53,12 @@ export default async function PageTextList() {
         })}
       </ul>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
-        <h2 className="text-2xl font-bold">
-          <Trans>つくったページ</Trans>
-        </h2>
-        <Link href="/admin/site-pages/new" className="tap-target inline-flex items-center rounded-full bg-ink px-5 text-lg font-bold text-paper">
-          <Trans>新しいページ</Trans>
+      <p className="border-t border-line pt-5 text-lg text-muted">
+        <Trans>自分でつくるページは、「記事とページ」で書きます（種類を「ページ」にします）。</Trans>{" "}
+        <Link href="/admin/posts" className="font-bold text-accent underline underline-offset-4">
+          <Trans>記事とページへ</Trans>
         </Link>
-      </div>
-      <p className="text-lg text-muted">
-        <Trans>自分でページをつくれます。公開すると、サイトの「/p/アドレス」で見られます。サイトマップにも載ります。</Trans>
       </p>
-      {madePages.length > 0 ? (
-        <Link href="/admin/site-pages" className="w-fit text-base font-bold text-accent underline underline-offset-4">
-          <Trans>一覧で見る・削除する</Trans>
-        </Link>
-      ) : null}
-      {madePages.length === 0 ? (
-        <p className="rounded-2xl bg-surface p-6 text-lg">
-          <Trans>つくったページはまだありません。</Trans>
-        </p>
-      ) : (
-        <ul className="flex flex-col divide-y divide-line rounded-2xl border border-line">
-          {madePages.map((item) => (
-            <li key={item.id} className="p-3">
-              <Link href={`/admin/site-pages/${item.id}`} className="text-xl font-bold text-accent underline underline-offset-4">
-                {itemName({ titleField: "title" } as ListMeta, item, i18n.locale)}
-              </Link>
-              <p className="text-base text-muted">
-                /p/{String(item.slug)} ・ {item.published ? <Trans>公開中</Trans> : <Trans>下書き</Trans>}
-              </p>
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 }

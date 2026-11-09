@@ -36,8 +36,6 @@ import { createDrizzleAuthorStore } from "./posts/author-store";
 import { authorList } from "./posts/author-list";
 import { createDrizzleCommentStore } from "./posts/comment-store";
 import { commentAdminRoutes, commentList, publicCommentRoutes } from "./posts/comments";
-import { createDrizzleSitePageStore } from "./pages/site-page-store";
-import { publicSitePageRoutes, sitePageList } from "./pages/site-pages";
 import { createDrizzleFuriganaStore } from "./furigana/furigana-store";
 import { furiganaList, publicFuriganaRoutes } from "./furigana/furigana-words";
 import { bannerList, bannerOrderRoutes, publicBannerRoutes } from "./banners/banner-list";
@@ -86,7 +84,6 @@ function getServices(): Services {
         posts: createDrizzlePostStore(db),
         banners: createDrizzleBannerStore(db),
         furigana: createDrizzleFuriganaStore(db),
-        sitePages: createDrizzleSitePageStore(db),
         comments: createDrizzleCommentStore(db),
         authors: createDrizzleAuthorStore(db),
         places: createDrizzlePlaceStore(db),
@@ -177,9 +174,6 @@ export function createApp(
     .use(listReadRoutes(furiganaList, getServices, opts))
     .use(listWriteRoutes(furiganaList, getServices, opts))
     .use(publicFuriganaRoutes(() => getServices().furigana))
-    .use(listReadRoutes(sitePageList, getServices, opts))
-    .use(listWriteRoutes(sitePageList, getServices, opts))
-    .use(publicSitePageRoutes(() => getServices().sitePages))
     .use(listReadRoutes(authorList, getServices, opts))
     .use(listWriteRoutes(authorList, getServices, opts))
     .use(listReadRoutes(commentList, getServices, opts))

@@ -500,6 +500,10 @@ export const blogPosts = pgTable(
     authorUserId: uuid("author_user_id").references(() => users.id, { onDelete: "set null" }),
     // The day the post is dated and from which visitors see it (YYYY-MM-DD, Japan time).
     publishedOn: date("published_on", { mode: "string" }).notNull(),
+    // A blog post (in the blog, dated, with comments) or a page (at /p/<slug>, never in the blog). Pages used to be site_pages.
+    kind: text("kind", { enum: ["post", "page"] }).notNull().default("post"),
+    // A page's address, lower-case letters, digits and hyphens; null for a post.
+    slug: text("slug").unique(),
     published: boolean("published").notNull().default(false),
     createdAt: createdAt(),
     updatedAt: updatedAt(),

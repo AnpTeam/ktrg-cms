@@ -28,7 +28,6 @@ import { createMemorySiteSettingsStore } from "./site-settings/site-settings";
 import { createMemoryPlaceStore } from "./places/place-directory";
 import { createMemoryAuthorStore } from "./posts/author-list";
 import { createMemoryCommentStore } from "./posts/comments";
-import { createMemorySitePageStore } from "./pages/site-pages";
 import { createMemoryFuriganaStore } from "./furigana/furigana-words";
 import { createMemoryBannerStore } from "./banners/banner-list";
 import { memoryReader } from "./admin-lists/list-memory-store";
@@ -101,7 +100,6 @@ function setup(opts: { adminEmails?: string[] } = {}) {
       posts: createMemoryPostStore(audit.writer).store,
       banners: createMemoryBannerStore(audit.writer).store,
       furigana: createMemoryFuriganaStore(audit.writer).store,
-      sitePages: createMemorySitePageStore(audit.writer).store,
       comments: createMemoryCommentStore(audit.writer).store,
       authors: createMemoryAuthorStore(audit.writer).store,
       places: createMemoryPlaceStore(audit.writer).store,
@@ -351,7 +349,7 @@ describe("user B cannot touch user A", () => {
     "GET /api/v1/notices",
     // The furigana words visitors read (see furigana/furigana-words.test.ts).
     "GET /api/v1/furigana/words",
-    // The pages editors make (see pages/site-pages.test.ts).
+    // The pages editors make: posts of the kind "page" (see posts/post-list.test.ts).
     "GET /api/v1/site-pages",
     "GET /api/v1/site-pages/:slug",
     // Published blog posts (see posts/post-list.test.ts).
@@ -414,8 +412,6 @@ describe("user B cannot touch user A", () => {
     "PATCH /api/v1/admin/lists/notices/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/lists/banners": () => ({ imageUrl: "https://example.com/a.jpg", altJa: "x", altEn: null, sortOrder: 0, published: false }),
     "PATCH /api/v1/admin/lists/banners/:id": () => ({ updatedAt: new Date().toISOString() }),
-    "POST /api/v1/admin/lists/site-pages": () => ({ slug: "x", titleJa: "x", titleEn: null, bodyJa: "", bodyEn: null, published: false }),
-    "PATCH /api/v1/admin/lists/site-pages/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/lists/furigana": () => ({ word: "葛城", reading: "かつらぎ" }),
     "PATCH /api/v1/admin/lists/furigana/:id": () => ({ updatedAt: new Date().toISOString() }),
     "POST /api/v1/admin/lists/directory": () => ({

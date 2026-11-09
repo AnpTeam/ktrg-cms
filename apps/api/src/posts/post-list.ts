@@ -44,6 +44,10 @@ export const POST_FIELDS = {
   translations: t.Optional(translationsSchema({ title: 200, body: 20000, authorName: 100 })),
   /** YYYY-MM-DD, Japan time: the day the post is dated and from which visitors see it. */
   publishedOn: t.String({ format: "date" }),
+  /** A blog post, or a page at /p/<slug> (not in the blog, no comments). Left out = a post. */
+  kind: t.Optional(t.Union([t.Literal("post"), t.Literal("page")])),
+  /** A page's address; ignored for a post. */
+  slug: t.Optional(nullable(60)),
   published: t.Boolean(),
 };
 
@@ -57,7 +61,15 @@ export interface PostStore extends ListStore<PostRow, PostFields> {
   listPublic(today: string): Promise<PostRow[]>;
   /** One post, only if a visitor may read it on `today`. */
   getPublic(id: string, today: string): Promise<PostRow | null>;
+  /** The page or post holding an address, whatever its state (an address is used once). */
+  findBySlug(slug: string): Promise<PostRow | null>;
+  /** Published pages dated `today` or earlier, oldest first; and one of them by its address. */
+  listPublicPages(today: string): Promise<PostRow[]>;
+  getPublicPage(slug: string, today: string): Promise<PostRow | null>;
 }
+
+/** A page's address: lower-case letters, digits and single hyphens ("access-guide"). */
+const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export const POST_AUDIT = { create: "post.create", update: "post.update", delete: "post.delete" } as const;
 
@@ -69,8 +81,20 @@ const PHOTOS = ["coverPhotoUrl", "authorPhotoUrl"] as const;
  * The Japanese title and body are required (not just spaces), blank English and blank optional text are cleared,
  * and each photo is an https link (on one of `photoHosts`, PHOTO_HOSTS, when that is set).
  */
-export const postRules = (photoHosts: readonly string[] = []): ListRules<PostFields> => async (fields) => {
+export const postRules = (photoHosts: readonly string[] = [], store?: Pick<PostStore, "findBySlug">): ListRules<PostFields> => async (fields) => {
   const out = { ...fields };
+  if (out.kind === undefined && !("id" in fields)) out.kind = "post";
+  if (out.kind === "page") {
+    // A page needs its own address. On an edit the rules see the whole row (with its id), so a page never clashes with itself.
+    const slug = out.slug?.trim().toLowerCase() ?? "";
+    if (!SLUG.test(slug)) return bad("validation_failed");
+    const taken = store ? await store.findBySlug(slug) : null;
+    if (taken && taken.id !== (fields as { id?: string }).id) return bad("conflict");
+    out.slug = slug;
+  } else if (out.slug !== undefined) {
+    // shortcut: a post's address is only cleared when it is sent; one left from a page that became a post is unused but still taken.
+    out.slug = null;
+  }
   for (const k of REQUIRED) {
     if (out[k] === undefined) continue;
     out[k] = out[k].trim();
@@ -92,7 +116,7 @@ export type PostService = ReturnType<typeof createPostService>;
 export function createPostService(deps: { store: PostStore; photoHosts?: readonly string[]; now?: () => Date; placeExists?: (id: string) => Promise<boolean>; routeExists?: (id: string) => Promise<boolean>; spotExists?: (id: string) => Promise<boolean>; authorExists?: (id: string) => Promise<boolean> }) {
   const now = deps.now ?? (() => new Date());
   return {
-    ...createListService({ store: deps.store, rules: postRules(deps.photoHosts), relations: {
+    ...createListService({ store: deps.store, rules: postRules(deps.photoHosts, deps.store), relations: {
         ...(deps.placeExists ? { placeId: deps.placeExists } : {}),
         ...(deps.routeExists ? { routeId: deps.routeExists } : {}),
         ...(deps.spotExists ? { spotId: deps.spotExists } : {}),
@@ -101,6 +125,8 @@ export function createPostService(deps: { store: PostStore; photoHosts?: readonl
     }),
     publicPosts: () => deps.store.listPublic(todayInJapan(now())),
     publicPost: (id: string) => deps.store.getPublic(id, todayInJapan(now())),
+    publicPages: () => deps.store.listPublicPages(todayInJapan(now())),
+    publicPage: (slug: string) => deps.store.getPublicPage(slug, todayInJapan(now())),
   };
 }
 
@@ -108,17 +134,27 @@ export function createPostService(deps: { store: PostStore; photoHosts?: readonl
 export function createMemoryPostStore(audit: AuditWriter, opts: { now?: () => Date } = {}) {
   const list = createMemoryListStore<PostFields>(audit, POST_AUDIT, opts);
   const readable = (p: PostRow, today: string) => p.published && p.publishedOn <= today;
+  const isPage = (p: PostRow) => p.kind === "page";
   const store: PostStore = {
     ...list.store,
     async listPublic(today) {
       return [...list.rows.values()]
-        .filter((p) => readable(p, today))
+        .filter((p) => readable(p, today) && !isPage(p))
         .sort((a, b) => b.publishedOn.localeCompare(a.publishedOn) || b.createdAt.getTime() - a.createdAt.getTime())
         .slice(0, PUBLIC_POSTS_LIMIT);
     },
     async getPublic(id, today) {
       const post = list.rows.get(id);
-      return post && readable(post, today) ? post : null;
+      return post && readable(post, today) && !isPage(post) ? post : null;
+    },
+    async findBySlug(slug) {
+      return [...list.rows.values()].find((p) => p.slug === slug) ?? null;
+    },
+    async listPublicPages(today) {
+      return [...list.rows.values()].filter((p) => isPage(p) && readable(p, today)).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+    },
+    async getPublicPage(slug, today) {
+      return [...list.rows.values()].find((p) => isPage(p) && p.slug === slug && readable(p, today)) ?? null;
     },
   };
   return { store, rows: list.rows };
@@ -136,16 +172,34 @@ export const postList: ListDef<"posts", typeof POST_FIELDS, PostRow, PostService
   service: (s) => s.posts,
   ops: { create: true, edit: true, delete: true },
   ui: {
-    title: { ja: "ブログ", en: "Blog" },
+    title: { ja: "記事とページ", en: "Posts and pages" },
     intro: {
-      ja: "ブログの記事です。「公開する」にチェックを入れ、「日付」の日になると、訪れる人に表示されます。見出しを押すと直せます。",
-      en: "The blog posts. A post appears to visitors once it is published and its date has arrived. Select a heading to edit it.",
+      ja: "ブログの記事と、自分でつくるページです。記事はブログに、ページは「/p/アドレス」に出ます。「公開する」にチェックを入れ、「日付」の日になると、訪れる人に表示されます。",
+      en: "Blog posts, and pages you make yourself. A post appears in the blog, a page at /p/<address>. It shows once it is published and its date has arrived.",
     },
-    newLabel: { ja: "新しい記事", en: "New post" },
+    newLabel: { ja: "新しい記事・ページ", en: "New post or page" },
     deleteWarning: { ja: "この記事を削除します。よろしいですか？（写真のファイルは残ります）", en: "Delete this post? (The photo files themselves are kept.)" },
     titleField: "title",
     fields: [
       { name: "title", kind: "bilingual", label: { ja: "見出し", en: "Title" }, required: true },
+      {
+        name: "kind",
+        kind: "select",
+        label: { ja: "種類", en: "Type" },
+        options: [
+          { value: "post", label: { ja: "ブログ記事", en: "Blog post" } },
+          { value: "page", label: { ja: "ページ", en: "Page" } },
+        ],
+        required: true,
+        inList: {},
+      },
+      {
+        name: "slug",
+        kind: "text",
+        label: { ja: "ページのアドレス（ページだけ）", en: "Page address (pages only)" },
+        hint: { ja: "半角の小文字・数字・ハイフンだけ。例：access-guide（サイトでは /p/access-guide になります）。ブログ記事では使いません。", en: "Lower-case letters, digits and hyphens, e.g. access-guide (the page is then at /p/access-guide). Not used for a blog post." },
+        inList: { text: { ja: "/p/{value}", en: "/p/{value}" } },
+      },
       {
         name: "body",
         kind: "bilingual-long",
@@ -247,7 +301,10 @@ const listOut = (post: PostRow) => {
   return { ...out, bodyJa: out.bodyJa.slice(0, LIST_BODY_CHARS), bodyEn: out.bodyEn === null ? null : out.bodyEn.slice(0, LIST_BODY_CHARS) };
 };
 
-/** What visitors read, no login: published posts whose day has come, newest first, and one post by its id. */
+/** A page as visitors get it at /p/<slug> (the same answer site_pages used to give). */
+const pageOut = (p: PostRow) => ({ slug: p.slug ?? "", titleJa: p.titleJa, titleEn: p.titleEn, bodyJa: p.bodyJa, bodyEn: p.bodyEn });
+
+/** What visitors read, no login: published posts whose day has come, newest first, one post by its id, and the pages. */
 export function publicPostRoutes(getPosts: () => PostService) {
   return new Elysia({ detail: { tags: ["Content"] } })
     .get("/posts", async ({ set }) => {
@@ -262,5 +319,18 @@ export function publicPostRoutes(getPosts: () => PostService) {
         return post ? { ok: true as const, post: publicOut(post) } : fail(set, 404, "not_found");
       },
       { params: uuidParams },
+    )
+    .get("/site-pages", async ({ set }) => {
+      publicCache(set);
+      return { ok: true as const, pages: (await getPosts().publicPages()).map((p) => ({ slug: p.slug ?? "", titleJa: p.titleJa, titleEn: p.titleEn })) };
+    })
+    .get(
+      "/site-pages/:slug",
+      async ({ params, set }) => {
+        publicCache(set);
+        const p = await getPosts().publicPage(params.slug);
+        return { ok: true as const, page: p ? pageOut(p) : null };
+      },
+      { params: t.Object({ slug: t.String({ maxLength: 60 }) }) },
     );
 }

@@ -5585,6 +5585,12 @@ msgstr "Nothing is written"
 msgid "書きかえると、「案です」の表示や更新日の表示は出なくなります。日付などは、本文に書いてください。"
 msgstr "Once rewritten, the \"this is a draft\" notice and the updated date are no longer shown. Put a date in the text yourself."
 
+msgid "自分でつくるページは、「記事とページ」で書きます（種類を「ページ」にします）。"
+msgstr "Pages you make yourself are written in Posts and pages (set the type to Page)."
+
+msgid "記事とページへ"
+msgstr "Go to Posts and pages"
+
 #: src/app/(admin)/admin/pages/page.tsx:51
 msgid "書きかえ済み"
 msgstr "Rewritten"
