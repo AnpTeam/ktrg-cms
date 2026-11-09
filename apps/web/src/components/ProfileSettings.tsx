@@ -79,7 +79,7 @@ export function ProfileSettings({
     if (!confirming && el.open) el.close();
   }, [confirming]);
 
-  // `close: false` keeps the sheet open: after a plain 日本 / 海外, the list of prefectures or countries comes next.
+  // `close: false` keeps the sheet open: after a plain 日本 / 海外 (or 選びなおす) the next choice comes in the same sheet.
   async function save(change: Partial<Record<Field | "originPlace", string | null>>, close = true) {
     if (busy) return;
     setBusy(true);
@@ -154,7 +154,7 @@ export function ProfileSettings({
 
   // A choice in the sheet is saved at once; choosing the chosen one again clears it.
   const picker: Record<Exclude<Field, "displayName">, ReactNode> = {
-    origin: <OriginPicker value={{ origin, place: originPlace }} onChange={(v) => save({ origin: v.origin, originPlace: v.place }, v.origin === null || v.place !== null)} />,
+    origin: <OriginPicker value={{ origin, place: originPlace }} onChange={(v) => save({ origin: v.origin, originPlace: v.place }, v.place !== null)} />,
     ageRange: <AgeRangePicker value={ageRange} onChange={(v) => save({ ageRange: v })} />,
     gender: <GenderPicker value={gender} onChange={(v) => save({ gender: v })} />,
     foundVia: <FoundViaPicker value={foundVia} onChange={(v) => save({ foundVia: v })} />,
