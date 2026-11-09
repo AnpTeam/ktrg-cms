@@ -79,7 +79,8 @@ export function ProfileSettings({
     if (!confirming && el.open) el.close();
   }, [confirming]);
 
-  async function save(change: Partial<Record<Field | "originPlace", string | null>>) {
+  // `close: false` keeps the sheet open: after a plain 日本 / 海外, the list of prefectures or countries comes next.
+  async function save(change: Partial<Record<Field | "originPlace", string | null>>, close = true) {
     if (busy) return;
     setBusy(true);
     setError(null);
@@ -89,7 +90,7 @@ export function ProfileSettings({
         const status = typeof res.error.status === "number" ? res.error.status : 0;
         setError(status === 0 ? "network" : failureFromApi(status, res.error.value));
       } else {
-        setEditing(null);
+        if (close) setEditing(null);
         setSaved(true);
         router.refresh();
       }
@@ -153,7 +154,7 @@ export function ProfileSettings({
 
   // A choice in the sheet is saved at once; choosing the chosen one again clears it.
   const picker: Record<Exclude<Field, "displayName">, ReactNode> = {
-    origin: <OriginPicker value={{ origin, place: originPlace }} onChange={(v) => save({ origin: v.origin, originPlace: v.place })} />,
+    origin: <OriginPicker value={{ origin, place: originPlace }} onChange={(v) => save({ origin: v.origin, originPlace: v.place }, v.origin === null || v.place !== null)} />,
     ageRange: <AgeRangePicker value={ageRange} onChange={(v) => save({ ageRange: v })} />,
     gender: <GenderPicker value={gender} onChange={(v) => save({ gender: v })} />,
     foundVia: <FoundViaPicker value={foundVia} onChange={(v) => save({ foundVia: v })} />,
