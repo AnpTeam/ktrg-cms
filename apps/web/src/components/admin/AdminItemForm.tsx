@@ -28,7 +28,7 @@ import { showToast } from "@/lib/admin/toast";
 // updatedAt it loaded, so nobody overwrites a newer save. Read-only fields are shown as text. When the API asks for a
 // fresh login (a role change), the "confirm it is you" dialog opens and the save is tried again.
 /** How each list's long text is drawn for visitors, which decides its editor. Anything else is shown as typed: a plain box. */
-const LONG_TEXT: Record<string, "blocks" | "short"> = { posts: "blocks", "site-pages": "blocks", directory: "short" };
+const LONG_TEXT: Record<string, "blocks" | "short"> = { posts: "blocks", directory: "short" };
 
 export function AdminItemForm({ meta: config, initial, locale, choices }: { meta: ListMeta; initial: ListItem | null; locale: string; choices: Record<string, { id: string; name: string; detail?: string }[]> }) {
   const { t } = useLingui();

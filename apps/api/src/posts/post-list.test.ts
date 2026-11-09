@@ -162,3 +162,36 @@ describe("blog posts", () => {
     expect(one.post.bodyJa).toHaveLength(long.length);
   });
 });
+
+describe("pages (posts of the kind page)", () => {
+  const page = (over: Record<string, unknown> = {}) => post({ kind: "page", slug: "access-guide", published: true, ...over });
+
+  test("a page is read by its address, never in the blog, and only once published", async () => {
+    const s = setup();
+    const made = await s.svc.create(actor, page({ slug: " Access-Guide ", published: false }));
+    if (!made.ok) throw new Error("not made");
+    expect(made.value).toMatchObject({ kind: "page", slug: "access-guide" });
+    expect(await s.svc.publicPage("access-guide")).toBeNull();
+    const saved = await s.svc.update(actor, made.value.id, made.value.updatedAt.toISOString(), { published: true });
+    expect(saved.ok).toBe(true);
+    expect((await s.svc.publicPage("access-guide"))?.titleJa).toBe("金剛山の秋");
+    expect((await s.svc.publicPages()).map((p) => p.slug)).toEqual(["access-guide"]);
+    expect(await s.svc.publicPosts()).toEqual([]);
+    expect(await s.svc.publicPost(made.value.id)).toBeNull();
+  });
+
+  test("an address is lower-case letters, digits and hyphens, used once; a post needs none", async () => {
+    const s = setup();
+    for (const slug of ["", null, "Has Space", "日本語", "a/b", "-x", "x--y", "x_y"]) expect(await s.svc.create(actor, page({ slug }))).toMatchObject({ ok: false });
+    expect((await s.svc.create(actor, page())).ok).toBe(true);
+    expect(await s.svc.create(actor, page())).toEqual({ ok: false, reason: "conflict" });
+    const plain = await s.svc.create(actor, post({ slug: "ignored" }));
+    expect(plain.ok && plain.value).toMatchObject({ kind: "post", slug: null });
+  });
+
+  test("a post sent without a kind is a blog post", async () => {
+    const s = setup();
+    const made = await s.svc.create(actor, post());
+    expect(made.ok && made.value.kind).toBe("post");
+  });
+});

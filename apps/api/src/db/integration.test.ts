@@ -26,14 +26,12 @@ import { createDrizzleSiteSettingsStore } from "../site-settings/site-settings-s
 import { createDrizzlePostStore } from "../posts/post-store";
 import { createDrizzleCommentStore } from "../posts/comment-store";
 import { createDrizzleAuthorStore } from "../posts/author-store";
-import { createDrizzleSitePageStore } from "../pages/site-page-store";
 import { createDrizzleUserListStore } from "../users/user-list";
 import {
   auditLog,
   banners,
   blogAuthors,
   blogComments,
-  sitePages,
   bannerTranslations,
   courseCompletions,
   otpCodes,
@@ -1744,18 +1742,15 @@ describe.skipIf(!url)("blog comments, writers and pages on real PostgreSQL", () 
   const posts = createDrizzlePostStore(db);
   const comments = createDrizzleCommentStore(db);
   const authors = createDrizzleAuthorStore(db);
-  const pages = createDrizzleSitePageStore(db);
   const tag = `cm${randomUUID().slice(0, 8)}`;
   const postIds: string[] = [];
   const authorIds: string[] = [];
-  const pageIds: string[] = [];
 
   afterAll(async () => {
-    const all = [...postIds, ...authorIds, ...pageIds];
+    const all = [...postIds, ...authorIds];
     if (all.length) await db.delete(auditLog).where(inArray(auditLog.targetId, all));
     if (postIds.length) await db.delete(blogPosts).where(inArray(blogPosts.id, postIds));
     if (authorIds.length) await db.delete(blogAuthors).where(inArray(blogAuthors.id, authorIds));
-    if (pageIds.length) await db.delete(sitePages).where(inArray(sitePages.id, pageIds));
     await db.delete(users).where(like(users.email, `${tag}-%`));
     await client.end();
   });
@@ -1810,19 +1805,19 @@ describe.skipIf(!url)("blog comments, writers and pages on real PostgreSQL", () 
     expect(await posts.getPublic(byWriter.id, "2026-10-21")).toMatchObject({ writer: null, accountName: "編集者" });
   });
 
-  test("a page's address is unique; taking another page's address is a conflict, and delete removes it", async () => {
+  test("a page is a post of the kind page: its address is unique, it is read by address, and never shows in the blog", async () => {
     const editor = (await otp.findOrCreateUser(`${tag}-pages@example.test`)).id;
     const make = async (slug: string) => {
-      const row = await pages.create(editor, { slug, titleJa: `${tag} ${slug}`, titleEn: null, bodyJa: "本文", bodyEn: null, published: true });
-      pageIds.push(row.id);
+      const row = await posts.create(editor, { titleJa: `${tag} ${slug}`, titleEn: null, bodyJa: "本文", bodyEn: null, authorNameJa: null, authorNameEn: null, coverPhotoUrl: null, coverCredit: null, authorPhotoUrl: null, placeId: null, routeId: null, spotId: null, authorId: null, publishedOn: "2026-10-01", kind: "page", slug, published: true });
+      postIds.push(row.id);
       return row;
     };
     const a = await make(`${tag}-a`);
-    const b = await make(`${tag}-b`);
     await expect(make(`${tag}-a`)).rejects.toThrow(); // the database holds the address unique
-    expect(await pages.update(editor, b.id, b.updatedAt, { slug: a.slug })).toBe("conflict");
-    expect(await pages.update(editor, b.id, b.updatedAt, { titleEn: "B" })).toMatchObject({ titleEn: "B" });
-    expect(await pages.remove(editor, a.id)).toBe(true);
-    expect(await pages.get(a.id)).toBeNull();
+    expect(await posts.findBySlug(a.slug!)).toMatchObject({ id: a.id, kind: "page" });
+    expect(await posts.getPublicPage(a.slug!, "2026-10-21")).toMatchObject({ id: a.id, titleJa: `${tag} ${tag}-a` });
+    expect(await posts.getPublic(a.id, "2026-10-21")).toBeNull(); // not a blog post
+    expect((await posts.listPublic("2026-10-21")).some((p) => p.id === a.id)).toBe(false);
+    expect((await posts.listPublicPages("2026-10-21")).some((p) => p.id === a.id)).toBe(true);
   });
 });
