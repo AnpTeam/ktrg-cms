@@ -4,10 +4,10 @@ import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
 import { EmptyState } from "@/components/EmptyState";
-import { PostCard } from "@/components/blog/PostCard";
+import { PostRow } from "@/components/blog/PostRow";
 import { initLingui } from "@/i18n/server";
 import { listPosts, tagsOf } from "@/lib/posts";
-import { TagChips } from "@/components/blog/TagChips";
+import { TagTabs } from "@/components/blog/TagTabs";
 import { ChevronIcon, ChevronLeftIcon } from "@/components/icons";
 import { buttonStyle } from "@/components/button";
 
@@ -16,17 +16,18 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: i18n._(msg`ブログ`) };
 }
 
-/** Posts on a page after the big first one. */
-const PER_PAGE = 9;
+/** Rows on a page after the top story. */
+const PER_PAGE = 15;
 
-// The blog, as a magazine: the newest post large, then the rest as cards, a few pages of them. The API sends only what a
+// The blog, laid out like a news site: topics as tabs, the newest post as the top story (photo and headline), then the rest as
+// rows of headline and small photo, a few pages of them. The API sends only what a
 // visitor may read, so this page never decides about drafts or posts dated ahead.
 export default async function BlogPage({ searchParams }: { searchParams: Promise<{ page?: string; tag?: string }> }) {
   const i18n = await initLingui();
   const query = await searchParams;
   const all = await listPosts();
   const tags = tagsOf(all);
-  // One tag's posts: all as cards (no big first one). An unknown tag shows every post.
+  // One tag's posts: all as rows (no top story). An unknown tag shows every post.
   const tag = tags.find((t) => t.id === query.tag);
   const posts = tag ? await listPosts(tag.id) : all;
   const feature = tag ? undefined : posts[0];
@@ -42,13 +43,13 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
   const pager = buttonStyle("secondary", "md", "inline-flex");
 
   return (
-    <div className="flex flex-col gap-8 pt-2">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 pt-2">
       <div className="flex flex-col gap-4 px-4 wide:px-0">
         <BackLink href="/">
           <Trans>ホーム</Trans>
         </BackLink>
-        <div className="flex flex-col gap-2 border-b-2 border-ink pb-4">
-          <h1 className="font-serif text-4xl font-bold">
+        <div className="flex flex-col gap-1">
+          <h1 className="font-serif text-3xl font-bold text-accent">
             <Trans>ブログ</Trans>
           </h1>
           <p className="max-w-prose text-lg leading-8 text-muted">
@@ -58,13 +59,8 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
       </div>
 
       {tags.length > 0 ? (
-        <div className="flex flex-col gap-3 px-4 wide:px-0">
-          <TagChips tags={tags} locale={i18n.locale} current={tag?.id} label={i18n._(msg`タグ`)} />
-          {tag ? (
-            <Link href="/blog" className="tap-target inline-flex w-fit items-center text-base font-bold text-accent underline underline-offset-4">
-              <Trans>すべての記事を見る</Trans>
-            </Link>
-          ) : null}
+        <div className="wide:px-0">
+          <TagTabs tags={tags} locale={i18n.locale} current={tag?.id} label={i18n._(msg`タグ`)} allLabel={i18n._(msg`すべて`)} />
         </div>
       ) : null}
 
@@ -74,21 +70,14 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
         </EmptyState>
       ) : (
         <>
-          {page === 1 && feature ? (
-            <div className="px-4 wide:px-0">
-              <PostCard post={feature} locale={i18n.locale} size="feature" />
-            </div>
-          ) : null}
+          {page === 1 && feature ? <PostRow post={feature} locale={i18n.locale} lead /> : null}
 
           {shown.length > 0 ? (
-            <section className="flex flex-col gap-4 px-4 wide:px-0">
-              <h2 className="text-2xl font-bold">
-                <Trans>新しい記事</Trans>
-              </h2>
-              <ul className="grid gap-5 sm:grid-cols-2 wide:grid-cols-3">
+            <section aria-label={i18n._(msg`新しい記事`)} className="px-4 wide:px-0">
+              <ul className="divide-y divide-line border-y border-line">
                 {shown.map((post) => (
                   <li key={post.id}>
-                    <PostCard post={post} locale={i18n.locale} />
+                    <PostRow post={post} locale={i18n.locale} />
                   </li>
                 ))}
               </ul>

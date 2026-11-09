@@ -17,7 +17,7 @@ import { SectionBanner } from "@/components/SectionBanner";
 import { Avatar } from "@/components/blog/Avatar";
 import { CommentSection } from "@/components/blog/CommentSection";
 import { RouteCard, SpotCard } from "@/components/blog/LinkedCards";
-import { PostCard } from "@/components/blog/PostCard";
+import { PostRow } from "@/components/blog/PostRow";
 import { ShareButtons } from "@/components/blog/ShareButtons";
 import { initLingui } from "@/i18n/server";
 import { getSpot, listPlaces, listRoutes } from "@/lib/content";
@@ -26,7 +26,7 @@ import { pickText } from "@/lib/pick-text";
 import { distanceMeters } from "@/lib/places";
 import { getPost, listComments, listPosts, neighbours } from "@/lib/posts";
 import { getViewer } from "@/lib/viewer";
-import { ChevronIcon, ChevronLeftIcon } from "@/components/icons";
+import { ChevronIcon, ChevronLeftIcon, CommentIcon } from "@/components/icons";
 import { buttonStyle } from "@/components/button";
 
 type Props = { params: Promise<{ id: string }> };
@@ -119,7 +119,7 @@ export default async function BlogPostPage({ params }: Props) {
             ) : null}
           </p>
         ) : null}
-        <h1 className="max-w-4xl text-3xl font-bold leading-snug md:text-4xl">
+        <h1 className="max-w-4xl text-2xl font-bold leading-snug md:text-3xl">
           <Localized value={title} />
         </h1>
         <SaveBookmark id={post.id} wide={false} />
@@ -133,6 +133,13 @@ export default async function BlogPostPage({ params }: Props) {
             </span>
           ) : null}
           <time dateTime={post.publishedOn}>{formatDay(locale, post.publishedOn)}</time>
+          <a href="#comments-title" className="inline-flex items-center gap-1 text-accent no-underline hover:underline">
+            <CommentIcon />
+            <span className="sr-only">
+              <Trans>コメント</Trans>
+            </span>
+            <span className="tabular-nums">{comments.length}</span>
+          </a>
         </p>
         <TagChips tags={post.tags ?? []} locale={locale} label={i18n._(msg`タグ`)} />
       </header>
@@ -241,10 +248,10 @@ export default async function BlogPostPage({ params }: Props) {
             <h2 className="border-l-[6px] border-accent pl-3 text-2xl font-bold">
               <Trans>ほかの記事</Trans>
             </h2>
-            <ul className="flex flex-col gap-4">
+            <ul className="divide-y divide-line border-y border-line">
               {others.map((p) => (
                 <li key={p.id}>
-                  <PostCard post={p} locale={locale} />
+                  <PostRow post={p} locale={locale} />
                 </li>
               ))}
             </ul>

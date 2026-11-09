@@ -5257,9 +5257,6 @@ msgstr "Back to the route list"
 msgid "一覧へ戻る"
 msgstr "Back to the list"
 
-msgid "すべての記事を見る"
-msgstr "See all posts"
-
 msgid "タグ"
 msgstr "Tags"
 
