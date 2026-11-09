@@ -6845,6 +6845,10 @@ msgstr "訪問者が見る地図（マップ画面、ルートのページ）の
 msgid "許可してくれた人"
 msgstr "許可してくれた人"
 
+#: src/components/admin/PlacePanel.tsx
+msgid "許可が未確認"
+msgstr "許可が未確認"
+
 #: src/components/admin/PlacePanel.tsx:227
 msgid "許可確認済み"
 msgstr "許可確認済み"
