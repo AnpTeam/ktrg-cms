@@ -73,7 +73,7 @@ export function SidebarToggle() {
       aria-controls="admin-sidebar"
       aria-label={label}
       title={label}
-      className={`tap-target mb-3 hidden items-center justify-center rounded-full border-2 border-line text-ink hover:bg-surface lg:flex ${hidden ? "mx-auto" : ""}`}
+      className="tap-target hidden items-center justify-center rounded-full border-2 border-line text-ink hover:bg-surface lg:flex"
     >
       <PanelIcon />
     </button>
