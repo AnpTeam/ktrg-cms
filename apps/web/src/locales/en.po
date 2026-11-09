@@ -6073,6 +6073,9 @@ msgstr "Dictionary readings (waiting for approval)"
 msgid "選んだ読みを承認する（{0}件）"
 msgstr "Approve selected ({0})"
 
+msgid "漢字を入れると、ここで漢字ごとに読みを入れられます。"
+msgstr "Once there are kanji, type the reading for each here."
+
 #: src/components/admin/RubyEditor.tsx:27
 msgid "漢字ごとの読み"
 msgstr "Reading for each kanji"

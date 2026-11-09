@@ -87,6 +87,8 @@ export interface FieldUi {
   to?: string;
   /** For a route or relation field: what "none" means. */
   noneLabel?: Label;
+  /** A "ruby" field: the field whose words it reads (default nameJa). */
+  of?: string;
   /** For a select field: the values it offers. */
   options?: { value: string; label: Label; tone?: Tone }[];
   /** Shown on the form but never sent (the API does not take it). */
