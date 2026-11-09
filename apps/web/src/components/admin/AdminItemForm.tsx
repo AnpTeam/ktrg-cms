@@ -40,6 +40,8 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
   // The other content languages of the bilingual fields ({ de: { title } }), kept beside the plain values.
   const [words, setWords] = useState<Translations>(() => (initial?.translations ?? {}) as Translations);
   const [busy, setBusy] = useState(false);
+  // A form with `side` fields shows them on a second tab (詳細), so the text keeps the whole width.
+  const [tab, setTab] = useState<"main" | "side">("main");
 
   const missing = missingRequired(config, values);
   const wordChange = saved ? translationsChange((saved.translations ?? {}) as Translations, words) : null;
@@ -249,13 +251,41 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
         </div>
       ) : null}
 
-      <div className={sideFields.length > 0 ? "grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]" : "contents"}>
+      {sideFields.length > 0 ? (
+        <div role="tablist" aria-label={t`編集する内容`} className="flex flex-wrap gap-2">
+          {(["main", "side"] as const).map((id) => {
+            const unfilled = missing.filter((name) => config.fields.some((f) => f.name === name && Boolean(f.side) === (id === "side"))).length;
+            return (
+              <button
+                key={id}
+                type="button"
+                role="tab"
+                id={`form-tab-${id}`}
+                aria-selected={tab === id}
+                aria-controls={`form-panel-${id}`}
+                onClick={() => setTab(id)}
+                className={`tap-target inline-flex items-center gap-2 rounded-full border-2 px-5 text-lg font-bold ${tab === id ? "border-ink bg-ink text-paper" : "border-line"}`}
+              >
+                {id === "main" ? t`本文` : t`詳細`}
+                {/* Only on the other tab: what is missing there cannot be seen from here. */}
+                {editable && unfilled > 0 && tab !== id ? <span className="rounded-full bg-danger px-2 text-base text-paper">{unfilled}</span> : null}
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+      {/* Both panels stay drawn (one hidden), so the editor and what was typed survive a switch. */}
+      <div id="form-panel-main" role={sideFields.length > 0 ? "tabpanel" : undefined} aria-labelledby={sideFields.length > 0 ? "form-tab-main" : undefined} hidden={sideFields.length > 0 && tab !== "main"}>
         <Section title={t`内容`}>
           {config.fields.filter((f) => !f.side).map(input)}
           {editable && missing.length > 0 ? <p className="text-base text-muted">{t`「必須」の欄をすべて入れると保存できます。`}</p> : null}
         </Section>
-        {sideFields.length > 0 ? <Section title={t`公開と記事の情報`}>{sideFields.map(input)}</Section> : null}
       </div>
+      {sideFields.length > 0 ? (
+        <div id="form-panel-side" role="tabpanel" aria-labelledby="form-tab-side" hidden={tab !== "side"}>
+          <Section title={t`公開と記事の情報`}>{sideFields.map(input)}</Section>
+        </div>
+      ) : null}
 
       {saved && config.ops.delete ? (
         <Section title={t`削除`}>
