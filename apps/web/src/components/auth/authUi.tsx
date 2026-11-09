@@ -121,6 +121,7 @@ export function OriginPicker({ value, onChange }: { value: OriginAnswer; onChang
       <label htmlFor="origin-place" className="text-lg font-bold">
         {side === "japan" ? t`都道府県を選択してください` : t`国を選択してください`}
       </label>
+      <p className="-mt-2 text-base text-muted">{t`答えなくても大丈夫です。`}</p>
       <select id="origin-place" value={place ?? ""} onChange={(e) => pick(e.target.value)} className={inputClass}>
         <option value="">{t`選んでください`}</option>
         {side === "japan"
