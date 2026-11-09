@@ -13,7 +13,9 @@ import type { MeServices } from "./me/me-routes";
 import { createListReader } from "./admin-lists/list-service";
 import type { ListReadStore } from "./admin-lists/list-types";
 import type { AuditListRow, AuditListServices } from "./audit/audit-list";
-import { createFuriganaService, nameReadings, type FuriganaServices, type FuriganaStore } from "./furigana/furigana-words";
+import { loadTokenizer } from "./furigana/dictionary";
+import { createFuriganaService, nameReadings, siteTexts, unreadNames, type FuriganaServices, type FuriganaStore } from "./furigana/furigana-words";
+import { todayInJapan } from "./notices/notice-service";
 import { createBannerService, type BannerServices, type BannerStore } from "./banners/banner-list";
 import type { PlaceListRow, PlaceListServices } from "./content/place-list";
 import { createPlaceService, type PlaceServices, type PlaceStore } from "./places/place-directory";
@@ -139,6 +141,17 @@ export function createServices(deps: ServiceDeps): Services {
     furigana: createFuriganaService({
       store: stores.furigana,
       names: () => nameReadings(stores.content, stores.places),
+      // kuromoji reads the published text; its readings wait for a person on the ふりがな page.
+      tokenizer: loadTokenizer,
+      texts: () =>
+        siteTexts({
+          routes: () => stores.content.listRoutes(),
+          spots: () => stores.content.listPublishedSpots(),
+          places: () => stores.places.listPublic(),
+          posts: async () => [...(await posts.publicPosts()), ...(await posts.publicPages())],
+          notices: () => stores.notices.listPublic(todayInJapan(now ? now() : new Date())),
+        }),
+      unread: () => unreadNames(stores.content, stores.places),
     }),
     authors: createAuthorService({ store: stores.authors, photoHosts: deps.photoHosts }),
     tags: createTagService({ store: stores.tags }),

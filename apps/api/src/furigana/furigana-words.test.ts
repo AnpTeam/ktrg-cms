@@ -1,7 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { createMemoryAuditWriter } from "../audit/audit-log";
 import { createMemoryContentStore } from "../content/content-memory-store";
-import { alignReading, createFuriganaService, createMemoryFuriganaStore, nameReadings } from "./furigana-words";
+import { alignReading, createFuriganaService, createMemoryFuriganaStore, nameReadings, siteTexts, unreadNames } from "./furigana-words";
+import type { Tokenizer } from "./dictionary";
 
 describe("alignReading", () => {
   test("a whole-word reading goes over the kanji it belongs to", () => {
@@ -89,5 +90,92 @@ describe("which names give readings", () => {
     const words = (await nameReadings(content, places)).map((n) => n.word);
     expect(words.sort()).toEqual(["葛城の道", "茶屋", "転法輪寺"].sort());
     expect(words).not.toContain(draft!.nameJa);
+  });
+});
+
+describe("dictionary suggestions", () => {
+  const admin = "11111111-1111-4111-8111-111111111111";
+  // Each text is one word with its reading, as a pretend dictionary.
+  const READINGS: Record<string, string> = { 渓谷: "ケイコク", 鎖場: "クサリバ", 祠: "ホコラ" };
+  const tokenizer: Tokenizer = { tokenize: (text) => [{ surface_form: text, reading: READINGS[text] }] };
+  const setup = (texts: string[], names: { word: string; reading: string }[] = []) => {
+    const audit = createMemoryAuditWriter();
+    const { store } = createMemoryFuriganaStore(audit.writer);
+    const site = { texts };
+    const s = createFuriganaService({ store, names: async () => names, texts: async () => site.texts, tokenizer: async () => tokenizer });
+    return { s, site, audit };
+  };
+
+  test("suggestions wait: visitors never get them until a person approves", async () => {
+    const { s } = setup(["渓谷", "鎖場"]);
+    expect(await s.refresh(null)).toEqual({ added: 2, removed: 0 });
+    expect(await s.words()).toEqual({});
+    const pending = await s.pending();
+    expect(pending.map((p) => p.word).sort()).toEqual(["渓谷", "鎖場"]);
+    expect(await s.approve(admin, [pending.find((p) => p.word === "渓谷")!.id])).toBe(1);
+    expect(await s.words()).toEqual({ 渓谷: "渓谷{けいこく}" });
+    expect((await s.pending()).map((p) => p.word)).toEqual(["鎖場"]);
+  });
+
+  test("a suggestion corrected in the form becomes a person's word", async () => {
+    const { s } = setup(["祠"]);
+    await s.refresh(null);
+    const [row] = await s.pending();
+    const r = await s.update(admin, row!.id, row!.updatedAt, { word: "祠", reading: "ほこら" });
+    expect(r.ok).toBe(true);
+    expect(await s.words()).toEqual({ 祠: "祠{ほこら}" });
+    expect(await s.pending()).toEqual([]);
+  });
+
+  test("reading again drops suggestions for words that are gone, and never touches a person's word or a typed name", async () => {
+    const { s, site } = setup(["渓谷", "鎖場", "祠"], [{ word: "祠", reading: "ほこら" }]);
+    await s.create(admin, { word: "鎖場", reading: "くさりば" });
+    expect(await s.refresh(null)).toEqual({ added: 1, removed: 0 });
+    site.texts = ["鎖場"];
+    expect(await s.refresh(null)).toEqual({ added: 0, removed: 1 });
+    expect(await s.pending()).toEqual([]);
+    expect(await s.words()).toEqual({ 祠: "祠{ほこら}", 鎖場: "鎖場{くさりば}" });
+  });
+
+  test("the admin table lists only a person's words", async () => {
+    const { s } = setup(["渓谷"]);
+    await s.refresh(null);
+    await s.create(admin, { word: "鎖場", reading: "くさりば" });
+    const page = await s.list(undefined);
+    expect(page.items.map((r) => r.word)).toEqual(["鎖場"]);
+  });
+});
+
+describe("what the dictionary reads, and which names need a reading", () => {
+  test("a 準備中 course gives only its name; drafts are never read", async () => {
+    const texts = await siteTexts({
+      routes: async () => [
+        { nameJa: "葛城の道", descriptionJa: "渓谷を歩く道", publishedSpotCount: 1 },
+        { nameJa: "準備中の道", descriptionJa: "まだ秘密の説明", publishedSpotCount: 0 },
+      ],
+      spots: async () => [{ nameJa: "転法輪寺", descriptionJa: "一行目\n二行目", nameEn: "Tenporinji" }],
+      places: async () => [],
+      posts: async () => [{ titleJa: "お知らせ", bodyJa: "本文" }],
+      notices: async () => [],
+    });
+    expect(texts).toContain("渓谷を歩く道");
+    expect(texts).toContain("準備中の道");
+    expect(texts).not.toContain("まだ秘密の説明");
+    expect(texts).toContain("二行目");
+    expect(texts).not.toContain("Tenporinji");
+  });
+
+  test("names with a hard kanji and no reading are listed; typed ones and easy ones are not", async () => {
+    const unread = await unreadNames(
+      {
+        listRoutes: async () => [{ id: "r1", nameJa: "葛城の道", nameKana: null }, { id: "r2", nameJa: "山の道", nameKana: null }],
+        listPublishedSpots: async () => [{ id: "s1", routeId: "r1", nameJa: "転法輪寺", nameKana: "てんぽうりんじ" }, { id: "s2", routeId: "r1", nameJa: "鴨山口神社", nameKana: null }],
+      },
+      { listPublic: async () => [{ id: "p1", nameJa: "茶屋", nameKana: null }] },
+    );
+    expect(unread).toEqual([
+      { kind: "route", id: "r1", nameJa: "葛城の道" },
+      { kind: "spot", id: "s2", routeId: "r1", nameJa: "鴨山口神社" },
+    ]);
   });
 });

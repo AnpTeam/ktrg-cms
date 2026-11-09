@@ -1,3 +1,4 @@
+import { FuriganaOverview } from "@/components/admin/FuriganaOverview";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { msg } from "@lingui/core/macro";
@@ -44,8 +45,19 @@ export default async function AdminListPage({ params }: { params: Promise<{ list
           </Link>
         </div>
       ) : null}
+      {meta.key === "furigana" ? (
+        <>
+          <FuriganaOverview />
+          <h2 className="text-xl font-bold text-accent">
+            <Trans>表示している読み</Trans>
+          </h2>
+        </>
+      ) : null}
       {page ? (
-        <AdminListTable meta={meta} initial={page} locale={i18n.locale} choices={choices} />
+        <AdminListTable
+          // The ふりがな page changes this list from above it (approving a reading): drawn afresh when the server's first page changes.
+          key={meta.key === "furigana" ? `${page.total ?? ""}:${page.items[0]?.id ?? ""}` : undefined}
+          meta={meta} initial={page} locale={i18n.locale} choices={choices} />
       ) : (
         <p role="alert" className="rounded-2xl bg-surface p-6 text-lg font-bold text-danger">
           <Trans>{title}を読み込めませんでした。しばらくしてから、ページを開き直してください。</Trans>

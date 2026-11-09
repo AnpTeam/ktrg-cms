@@ -21,6 +21,7 @@
         "@sinclair/typebox": "^0.34.52",
         "drizzle-orm": "^0.45.4",
         "elysia": "^1.4.30",
+        "kuromoji": "^0.1.2",
         "nodemailer": "^10.3.1",
         "postgres": "^4.0.0",
       },

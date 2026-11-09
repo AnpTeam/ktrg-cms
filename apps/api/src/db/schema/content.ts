@@ -408,6 +408,9 @@ export const furiganaWords = pgTable("furigana_words", {
   id: uuid("id").primaryKey().defaultRandom(),
   word: text("word").notNull().unique(),
   reading: text("reading").notNull(),
+  // A dictionary's suggestion that no person has approved yet: visitors never get it. A person's word (typed, approved or
+  // corrected) is false.
+  pending: boolean("pending").notNull().default(false),
   createdAt: createdAt(),
   updatedAt: updatedAt(),
 });
