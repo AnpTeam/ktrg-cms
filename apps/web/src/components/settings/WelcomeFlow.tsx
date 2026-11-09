@@ -141,7 +141,7 @@ export function WelcomeFlow({
           <h1 className="font-serif text-3xl font-bold leading-snug text-accent">{t`登録ありがとうございます`}</h1>
           <p className="max-w-prose text-lg leading-8">{t`あなたのことを、少しだけ教えてください。答えなくても大丈夫です。あとから変えられます。`}</p>
         </div>
-        <div className="flex flex-col gap-6 rounded-lg bg-surface p-4">
+        <div className="flex flex-col gap-6">
           <AgeRangePicker value={ageRange} onChange={setAgeRange} />
           <GenderPicker value={gender} onChange={setGender} />
           <FoundViaPicker value={foundVia} onChange={setFoundVia} />
