@@ -129,6 +129,12 @@ export async function savePack(routeId: string, urls: string[], onProgress: (don
     );
   }
   if (urls.length === 0 || stored < urls.length * 0.75) return giveUp();
+  // Tiles of the last pack this one no longer uses (another base map, a changed course area) would only fill the phone.
+  const wanted = new Set(urls);
+  for (const req of await cache.keys()) {
+    const url = typeof req === "string" ? req : req.url;
+    if (!wanted.has(url) && !url.endsWith(META_URL) && !url.endsWith(lineUrl(routeId))) await cache.delete(req);
+  }
   const info: PackInfo = { savedAt: now, bytes, tiles: stored };
   await cache.put(META_URL, new Response(JSON.stringify(info), { headers: { "content-type": "application/json" } }));
   return info;

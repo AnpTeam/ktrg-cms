@@ -9,7 +9,7 @@ function fakeCaches() {
   const open = async (name: string) => {
     const s = stores.get(name) ?? new Map<string, Response>();
     stores.set(name, s);
-    return { put: async (u: string, r: Response) => void s.set(u, r), match: async (u: string) => s.get(u)?.clone(), delete: async (u: string) => s.delete(u) };
+    return { put: async (u: string, r: Response) => void s.set(u, r), match: async (u: string) => s.get(u)?.clone(), delete: async (u: string) => s.delete(u), keys: async () => [...s.keys()] };
   };
   return { stores, caches: { open, keys: async () => [...stores.keys()], has: async (n: string) => stores.has(n), delete: async (n: string) => stores.delete(n) } };
 }
@@ -116,4 +116,13 @@ test("age and size read plainly", () => {
   expect(megabytes(800_000)).toBe("0.8");
   expect(megabytes(100)).toBe("0.1");
   expect(megabytes(12_400_000)).toBe("12");
+});
+
+test("an update drops the tiles the new pack no longer uses, and keeps the course line", async () => {
+  globalThis.fetch = (async (u: string) => site(u)) as unknown as typeof fetch;
+  await savePack("r1", ["u/1", "u/2"], () => {});
+  await savePack("r1", ["u/2", "u/3"], () => {});
+  const kept = [...(fake.stores.get("ktrg-pack-r1")?.keys() ?? [])];
+  expect(kept).not.toContain("u/1");
+  expect(kept).toEqual(expect.arrayContaining(["u/2", "u/3", "/__pack-meta", "/api/v1/routes/r1"]));
 });
