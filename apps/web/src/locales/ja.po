@@ -3984,6 +3984,9 @@ msgstr "最終更新：{day}"
 msgid "最高 {highest}m"
 msgstr "最高 {highest}m"
 
+msgid "写真を大きく見る"
+msgstr "写真を大きく見る"
+
 #: src/components/admin/map-editor/MapEditor.tsx:1162
 #: src/components/admin/PlacePanel.tsx:153
 #: src/components/admin/SiteSettingsForm.tsx:41

@@ -1,3 +1,4 @@
+import { Zoomable } from "@/components/Zoomable";
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { parseBlocks, type Block } from "@/lib/rich-text";
@@ -101,7 +102,9 @@ function OneBlock({ block, anchor }: { block: Block; anchor: string }) {
   if (block.kind === "photo") {
     return (
       <figure className="relative aspect-[4/3] overflow-hidden rounded-xl bg-surface">
-        <Image src={block.src} alt={block.alt} fill sizes="(min-width: 768px) 36rem, 100vw" className="object-cover" unoptimized />
+        <Zoomable src={block.src} alt={block.alt}>
+          <Image src={block.src} alt={block.alt} fill sizes="(min-width: 768px) 36rem, 100vw" className="object-cover" unoptimized />
+        </Zoomable>
       </figure>
     );
   }

@@ -1,5 +1,6 @@
 import { CoverWatch } from "@/components/CoverWatch";
 import type { ReactNode } from "react";
+import { Zoomable } from "@/components/Zoomable";
 import Image from "next/image";
 import { Trans } from "@lingui/react/macro";
 import { ElevationProfile } from "@/components/ElevationProfile";
@@ -151,8 +152,10 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             // installed app it also runs behind the Dynamic Island (globals.css).
             <div data-cover className="relative order-1 aspect-[4/3] w-full overflow-hidden bg-surface @4xl:order-none @4xl:aspect-video @4xl:rounded-2xl">
               <CoverWatch />
-              <Image src={photo.src} alt={photo.alt} fill priority sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" unoptimized={photo.src.startsWith("https://")} />
-              <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-b from-transparent to-paper @4xl:hidden" />
+              <Zoomable src={photo.src} alt={photo.alt}>
+                <Image src={photo.src} alt={photo.alt} fill priority sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" unoptimized={photo.src.startsWith("https://")} />
+              </Zoomable>
+              <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-b from-transparent to-paper @4xl:hidden" />
               {/* In line with the back button (the top bar's row); lower only where the sample notice button holds that corner. */}
               <div className="cover-credit contents">
                 <CreditToggle credit={photo.credit} />
