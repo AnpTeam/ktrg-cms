@@ -4,6 +4,7 @@ import { Trans } from "@lingui/react/macro";
 import { pickText, type SpotDetail } from "@/lib/content";
 import { HeroPhoto } from "./map/HeroPhoto";
 import { Localized } from "./Localized";
+import { NameRuby } from "./Ruby";
 import { NearbyPlaces, type Nearby } from "./NearbyPlaces";
 import { LastUpdated } from "@/components/LastUpdated";
 import { NearestPlaces, type NearestGroup } from "./NearestPlaces";
@@ -53,8 +54,8 @@ export function SpotSheet({
   return (
     <article className="flex flex-col gap-6">
       <header className="px-4">
-        <h1 className="text-3xl font-bold">
-          <Localized value={pickText(locale, spot.nameJa, spot.nameEn)} />
+        <h1 className="text-3xl font-bold has-[rt]:pt-3">
+          <NameRuby title={pickText(locale, spot.nameJa, spot.nameEn)} reading={spot.nameKana} />
         </h1>
         <p className="mt-2 text-lg text-muted">
           <Localized value={pickText(locale, spot.routeNameJa, spot.routeNameEn)} />

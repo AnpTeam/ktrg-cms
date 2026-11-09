@@ -30,6 +30,8 @@ export interface PlaceDraft {
   stopBy: boolean;
   nameJa: string;
   nameEn: string;
+  /** How the Japanese name is read, typed by a person ("" = none). */
+  nameKana: string;
   descriptionJa: string;
   descriptionEn: string;
   /** Its story: where the name comes from, what happened there. */
@@ -124,7 +126,7 @@ const s = (v: string | null | undefined) => v ?? "";
 export function placeFromServer(p: AdminSpot): PlaceDraft {
   return {
     key: p.id, id: p.id, updatedAt: p.updatedAt, published: p.published, kind: p.kind, stampable: p.stampable, stopBy: p.stopBy,
-    nameJa: p.nameJa, nameEn: s(p.nameEn), descriptionJa: s(p.descriptionJa), descriptionEn: s(p.descriptionEn), historyJa: s(p.historyJa), historyEn: s(p.historyEn), translations: p.translations ?? {}, stampImageUrl: s(p.stampImageUrl), photoUrl: s(p.photoUrl), photoCredit: s(p.photoCredit), sourceJa: s(p.sourceJa), sourceEn: s(p.sourceEn), photos: p.photos ?? [],
+    nameJa: p.nameJa, nameEn: s(p.nameEn), nameKana: s(p.nameKana), descriptionJa: s(p.descriptionJa), descriptionEn: s(p.descriptionEn), historyJa: s(p.historyJa), historyEn: s(p.historyEn), translations: p.translations ?? {}, stampImageUrl: s(p.stampImageUrl), photoUrl: s(p.photoUrl), photoCredit: s(p.photoCredit), sourceJa: s(p.sourceJa), sourceEn: s(p.sourceEn), photos: p.photos ?? [],
     lat: p.lat, lng: p.lng, positionVerified: p.positionVerified, positionSource: s(p.positionSource), radiusM: p.radiusM,
     status: p.status, statusNoteJa: s(p.statusNoteJa), statusNoteEn: s(p.statusNoteEn),
     permissionConfirmed: p.permissionConfirmed, permissionNote: s(p.permissionNote),
@@ -177,7 +179,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
 
 export const newPlace = (key: string, lat: number | null, lng: number | null, n: number, kind: PointKind = "other"): PlaceDraft => ({
   key, id: null, updatedAt: null, published: false, kind, stampable: stampableByDefault(kind), stopBy: false,
-  nameJa: stampableByDefault(kind) ? `経由地${n}` : "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
+  nameJa: stampableByDefault(kind) ? `経由地${n}` : "", nameEn: "", nameKana: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
   translations: {}, stampImageUrl: "", photoUrl: "", photoCredit: "", sourceJa: "", sourceEn: "", photos: [], lat, lng, positionVerified: false, positionSource: "", radiusM: 50, status: "open", statusNoteJa: "", statusNoteEn: "",
   permissionConfirmed: false, permissionNote: "",
 });

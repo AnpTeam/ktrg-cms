@@ -85,6 +85,7 @@ export interface PublicSpot {
   routeId: string;
   nameJa: string;
   nameEn: string | null;
+  nameKana?: string | null;
   descriptionJa: string | null;
   descriptionEn: string | null;
   historyJa?: string | null;

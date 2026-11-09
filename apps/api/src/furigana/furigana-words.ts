@@ -101,12 +101,40 @@ const isKanjiIn = (word: string) => [...word].some(isKanji);
 
 export type FuriganaService = ReturnType<typeof createFuriganaService>;
 
-export function createFuriganaService(deps: { store: FuriganaStore }) {
+type Named = { nameJa: string; nameKana?: string | null };
+
+/** The readings people typed with course names and with published waypoint and place names (a draft's name never shows). */
+export async function nameReadings(
+  content: { listRoutes(): Promise<Named[]>; listPublishedSpots(): Promise<Named[]> },
+  places: { listPublic(): Promise<Named[]> },
+): Promise<{ word: string; reading: string }[]> {
+  const [routes, spots, listed] = await Promise.all([content.listRoutes(), content.listPublishedSpots(), places.listPublic()]);
+  return [...routes, ...spots, ...listed].flatMap((r) => (r.nameKana ? [{ word: r.nameJa, reading: r.nameKana }] : []));
+}
+
+export function createFuriganaService(deps: { store: FuriganaStore; names?: () => Promise<{ word: string; reading: string }[]> }) {
   return {
     ...createListService({ store: deps.store, rules: furiganaRules(deps.store) }),
-    /** What the page needs: every word with its reading. */
+    /**
+     * What the page needs: every word with its reading. The readings typed with a course's, waypoint's or place's own name
+     * come first (each in the marked-up form; a reading that does not fit its name is left out); the words list wins over them.
+     * Two places written the same way but read differently keep their readings on their own pages only: the name is left out
+     * here, so neither reading is shown for the other.
+     */
     async words(): Promise<Record<string, string>> {
-      return Object.fromEntries((await deps.store.all()).map((w) => [w.word, w.reading]));
+      const [names, words] = await Promise.all([deps.names?.() ?? [], deps.store.all()]);
+      const found = new Map<string, Set<string>>();
+      for (const n of names) {
+        const word = n.word.trim();
+        const reading = n.reading.trim();
+        if (!isKanjiIn(word) || /\s/.test(word)) continue;
+        const markup = reading.includes("{") ? (validMarkup(word, reading) ? reading : null) : alignReading(word, reading);
+        if (markup) found.set(word, (found.get(word) ?? new Set()).add(markup));
+      }
+      const out: Record<string, string> = {};
+      for (const [word, readings] of found) if (readings.size === 1) out[word] = [...readings][0]!;
+      for (const w of words) out[w.word] = w.reading;
+      return out;
     },
   };
 }

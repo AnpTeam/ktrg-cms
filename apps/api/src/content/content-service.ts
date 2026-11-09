@@ -29,6 +29,8 @@ export interface PublicSpot {
   routeId: string;
   nameJa: string;
   nameEn: string | null;
+  /** How the Japanese name is read (marked-up or plain hiragana), or null. */
+  nameKana: string | null;
   descriptionJa: string | null;
   descriptionEn: string | null;
   /** Its story: where the name comes from, what happened there. */
@@ -211,6 +213,7 @@ function toPublicSpot(s: SpotRow): PublicSpot {
     routeId: s.routeId,
     nameJa: s.nameJa,
     nameEn: s.nameEn,
+    nameKana: s.nameKana,
     descriptionJa: s.descriptionJa,
     descriptionEn: s.descriptionEn,
     historyJa: s.historyJa,
@@ -343,7 +346,7 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (!n) return bad("validation_failed");
       out.nameJa = n;
     }
-    for (const k of ["nameEn", "descriptionJa", "descriptionEn", "historyJa", "historyEn", "statusNoteJa", "statusNoteEn", "permissionNote", "positionSource", "sourceJa", "sourceEn", "photoCredit"] as const) {
+    for (const k of ["nameEn", "nameKana", "descriptionJa", "descriptionEn", "historyJa", "historyEn", "statusNoteJa", "statusNoteEn", "permissionNote", "positionSource", "sourceJa", "sourceEn", "photoCredit"] as const) {
       const v = text(input[k]);
       if (v !== undefined) out[k] = v;
     }

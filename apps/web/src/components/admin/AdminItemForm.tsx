@@ -10,6 +10,7 @@ import { displayValue, MAX_RELATION_CHOICES, pick, type FieldUi, type ListItem, 
 import { changedFields, formValues, missingRequired, toPayload, type FormValues } from "@/lib/admin/lists/form";
 import { listRequest, type ListAnswer, type ListPage, type OneItem } from "@/lib/admin/lists/list-client";
 import { translationsChange, type Translations } from "@/lib/admin/content-locales";
+import { RubyEditor } from "./RubyEditor";
 import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
 import { HoursInput } from "./HoursInput";
 import { PhotoSlot } from "./PhotoSlot";
@@ -196,6 +197,13 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
           </fieldset>
         );
       }
+      case "ruby":
+        // The reading over the Japanese name, typed per run of kanji (the same editor as a course's name).
+        return (
+          <Field key={f.name} label={label} hint={hint}>
+            <RubyEditor name={text("nameJa")} value={text(f.name)} onChange={set(f.name)} />
+          </Field>
+        );
       case "hours":
         return (
           <Field key={f.name} label={label} hint={hint} htmlFor={id}>
