@@ -70,61 +70,66 @@ export function PrefsForm({
     router.refresh();
   }
 
+  // One row of a list: the words on the left, the switch on the right.
   const switchRow = (key: "mergeStops" | "placesOnMap" | "furigana" | "contrast" | "calm", title: string, hint: string) => (
-    <label className="tap-target flex cursor-pointer items-start gap-4 rounded-xl border-2 border-line bg-surface p-4">
+    <label className="tap-target flex cursor-pointer items-center gap-4 px-4 py-3">
+      <span className="min-w-0 flex-1">
+        <span className="block text-lg font-bold">{title}</span>
+        <span className="mt-0.5 block text-base text-muted">{hint}</span>
+      </span>
       <input
         type="checkbox"
         role="switch"
         checked={prefs[key]}
         onChange={(e) => setPrefs({ ...prefs, [key]: e.target.checked })}
-        className="mt-1 size-7 shrink-0 accent-[var(--color-brand)]"
+        className="size-7 shrink-0 accent-[var(--color-brand)]"
       />
-      <span>
-        <span className="block text-xl font-bold">{title}</span>
-        <span className="mt-1 block text-lg text-muted">{hint}</span>
-      </span>
     </label>
   );
+  const list = "divide-y divide-line/40 overflow-hidden rounded-xl bg-surface";
+  // The あ in each size tile, in pixels so the four keep their difference whatever size the page is showing now.
+  const sample: Record<TextSize, number> = { small: 18, standard: 24, large: 30, xlarge: 36 };
 
   return (
     <div className="flex flex-col gap-8">
       <fieldset className="flex flex-col gap-3">
         <legend className="mb-1 text-2xl font-bold">{t`文字とボタンの大きさ`}</legend>
-        {textSizes.map((size) => {
-          const on = prefs.size === size;
-          return (
-            <label
-              key={size}
-              className={`tap-target flex cursor-pointer items-center gap-4 rounded-xl border-2 p-4 ${
-                on ? "border-brand bg-surface shadow-[inset_0_0_0_2px_var(--color-brand)]" : "border-line"
-              }`}
-            >
-              <input
-                type="radio"
-                name="size"
-                value={size}
-                checked={on}
-                onChange={() => setPrefs({ ...prefs, size })}
-                className="size-7 shrink-0 accent-[var(--color-brand)]"
-              />
-              <span>
-                <span className="block text-xl font-bold">{sizes[size].name}</span>
-                <span className="block text-lg text-muted">{sizes[size].hint}</span>
-              </span>
-            </label>
-          );
-        })}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {textSizes.map((size) => {
+            const on = prefs.size === size;
+            return (
+              <label
+                key={size}
+                className={`tap-target flex cursor-pointer flex-col items-center justify-end gap-1 rounded-xl border-2 px-2 pb-3 pt-4 text-center has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent ${
+                  on ? "border-brand bg-surface shadow-[inset_0_0_0_2px_var(--color-brand)]" : "border-line bg-paper"
+                }`}
+              >
+                <input type="radio" name="size" value={size} checked={on} onChange={() => setPrefs({ ...prefs, size })} className="sr-only" />
+                <span aria-hidden="true" className="font-serif font-bold leading-none" style={{ fontSize: sample[size] }}>
+                  あ
+                </span>
+                <span className="text-lg font-bold">{sizes[size].name}</span>
+              </label>
+            );
+          })}
+        </div>
+        <p className="text-lg text-muted" aria-live="polite">
+          {sizes[prefs.size].hint}
+        </p>
       </fieldset>
 
       <fieldset className="flex flex-col gap-3">
         <legend className="mb-1 text-2xl font-bold">{t`見やすさ`}</legend>
-        {switchRow("furigana", t`ふりがなをつける`, t`ページの漢字すべてに、読みがなをつけます。`)}
-        {switchRow("contrast", t`くっきり表示`, t`文字と背景の差を大きくし、線を太く、リンクに下線をつけます。`)}
-        {switchRow("calm", t`動きをへらす`, t`アニメーションや、ふわっと動く表示をやめます。`)}
+        <div className={list}>
+          {switchRow("furigana", t`ふりがなをつける`, t`ページの漢字すべてに、読みがなをつけます。`)}
+          {switchRow("contrast", t`くっきり表示`, t`文字と背景の差を大きくし、線を太く、リンクに下線をつけます。`)}
+          {switchRow("calm", t`動きをへらす`, t`アニメーションや、ふわっと動く表示をやめます。`)}
+        </div>
       </fieldset>
 
       <fieldset className="flex flex-col gap-3">
         <legend className="mb-1 text-2xl font-bold">{t`地図の見せ方`}</legend>
+        <div className={list}>
         {switchRow(
           "mergeStops",
           t`近い場所をまとめて表示する`,
@@ -135,6 +140,7 @@ export function PrefsForm({
           t`まわりの場所を最初から出す`,
           t`トイレやお店などを、地図を開いたときから表示します。`,
         )}
+        </div>
       </fieldset>
 
       {message ? (

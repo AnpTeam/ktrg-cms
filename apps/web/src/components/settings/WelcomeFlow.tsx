@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { AgeRangePicker, FoundViaPicker, GenderPicker } from "@/components/auth/AboutYou";
@@ -8,8 +9,12 @@ import { PasswordInput } from "@/components/auth/PasswordInput";
 import { useReauth } from "@/components/auth/ReauthDialog";
 import { PrefsForm } from "@/components/settings/PrefsForm";
 import { PrivacyNote } from "@/components/PrivacyNote";
+import { TickIcon } from "@/components/icons";
+import { buttonStyle } from "@/components/button";
 import { api } from "@/lib/api";
 import { setPassword } from "@/lib/auth-client";
+import { persistPrefs } from "@/lib/prefs-client";
+import { defaultPrefs } from "@/lib/prefs";
 import type { AgeRange, AuthFailure, FoundVia, Gender } from "@/lib/auth-flow";
 import type { Prefs } from "@/lib/prefs";
 
@@ -35,7 +40,10 @@ export function WelcomeFlow({
   askPassword: boolean;
 }) {
   const { t } = useLingui();
+  const router = useRouter();
   const [step, setStep] = useState<"password" | "about" | "prefs">(askPassword ? "password" : askAbout ? "about" : "prefs");
+  // The steps this visitor goes through, for the "n / N" at the top.
+  const steps = [...(askPassword ? ["password"] : []), ...(askAbout ? ["about"] : []), "prefs"];
   const [password, setTypedPassword] = useState("");
   const { guard, dialog } = useReauth();
   const [ageRange, setAgeRange] = useState<AgeRange | null>(null);
@@ -79,9 +87,32 @@ export function WelcomeFlow({
     else setError(res.code === "cancelled" ? null : res.code);
   }
 
+  // スキップ at the top of every step, so nobody has to scroll to find the way past it. On the last step it is
+  // 「あとで決める」: the usual sizes, and on to where the visitor was going.
+  async function skip() {
+    setError(null);
+    if (step === "password") return setStep(askAbout ? "about" : "prefs");
+    if (step === "about") return setStep("prefs");
+    setBusy(true);
+    await persistPrefs({ ...defaultPrefs, setupDone: true }, signedIn);
+    router.replace(next);
+    router.refresh();
+  }
+  const top = (
+    <div className="flex items-center justify-between gap-3">
+      <p className="text-lg font-bold text-muted tabular-nums">
+        {steps.indexOf(step) + 1} / {steps.length}
+      </p>
+      <button type="button" disabled={busy} onClick={() => void skip()} className={buttonStyle("secondary", "md", "inline-flex")}>
+        {t`スキップ`}
+      </button>
+    </div>
+  );
+
   if (step === "password") {
     return (
       <form onSubmit={savePassword} className="flex flex-col gap-6" noValidate>
+        {top}
         <h1 className="font-serif text-3xl font-bold">{t`パスワードを決めますか？`}</h1>
         <p className="text-lg">{t`決めなくても大丈夫です。決めておくと、メールを待たずにログインできます。あとから「ログインの方法」でも決められます。`}</p>
         <PasswordInput label={t`パスワード`} value={password} onChange={setTypedPassword} autoComplete="new-password" hint={t`8文字以上にしてください。記号はなくてもかまいません。`} />
@@ -102,11 +133,19 @@ export function WelcomeFlow({
   if (step === "about") {
     return (
       <div className="flex flex-col gap-6">
-        <h1 className="font-serif text-3xl font-bold">{t`登録ありがとうございます`}</h1>
-        <p className="text-lg">{t`あなたのことを、少しだけ教えてください。答えなくても大丈夫です。あとから変えられます。`}</p>
-        <AgeRangePicker value={ageRange} onChange={setAgeRange} />
-        <GenderPicker value={gender} onChange={setGender} />
-        <FoundViaPicker value={foundVia} onChange={setFoundVia} />
+        {top}
+        <div className="pattern-shippo flex flex-col items-center gap-3 rounded-lg bg-surface px-5 py-7 text-center">
+          <span aria-hidden="true" className="grid size-20 place-items-center rounded-full bg-brand text-on-brand shadow-md">
+            <TickIcon size={44} />
+          </span>
+          <h1 className="font-serif text-3xl font-bold leading-snug text-accent">{t`登録ありがとうございます`}</h1>
+          <p className="max-w-prose text-lg leading-8">{t`あなたのことを、少しだけ教えてください。答えなくても大丈夫です。あとから変えられます。`}</p>
+        </div>
+        <div className="flex flex-col gap-6">
+          <AgeRangePicker value={ageRange} onChange={setAgeRange} />
+          <GenderPicker value={gender} onChange={setGender} />
+          <FoundViaPicker value={foundVia} onChange={setFoundVia} />
+        </div>
         <PrivacyNote />
         <AuthError code={error} />
         <div className="flex flex-col gap-3">
@@ -123,7 +162,8 @@ export function WelcomeFlow({
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="font-serif text-3xl font-bold">{askAbout ? t`見やすさを選びましょう` : t`登録ありがとうございます`}</h1>
+      {top}
+      <h1 className="font-serif text-3xl font-bold text-accent">{askAbout ? t`見やすさを選びましょう` : t`登録ありがとうございます`}</h1>
       <p className="text-lg">{t`見やすさを、あなたに合わせましょう。大きさは、選ぶとすぐに変わります。`}</p>
       <PrefsForm initial={initial} signedIn={signedIn} mode="setup" next={next} />
     </div>
