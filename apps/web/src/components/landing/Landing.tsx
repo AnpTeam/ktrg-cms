@@ -10,7 +10,6 @@ import { StampGrid } from "@/components/StampGrid";
 import { Localized } from "@/components/Localized";
 import { PlaceLine } from "@/components/PlaceLine";
 import { RoutePill } from "@/components/RoutePill";
-import { BannerCarousel } from "@/components/landing/BannerCarousel";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { LandingMap } from "@/components/landing/LandingMap";
 import { BlogCard } from "@/components/landing/BlogCard";
@@ -55,6 +54,8 @@ export function Landing({
   posts,
   showTourism,
   top,
+  greeting,
+  heroBody,
   text,
 }: {
   locale: string;
@@ -65,8 +66,11 @@ export function Landing({
   posts: BlogPost[];
   /** The tourism cards are shown only when an admin switched them on (管理 > 詳細設定). */
   showTourism: boolean;
-  /** For a signed-in visitor: shown in place of the hero (and the sign-up buttons are left out). */
+  /** For a signed-in visitor: shown under the hero (and the stamp rally's explanation is left out). */
   top?: ReactNode;
+  /** For a signed-in visitor: the greeting over the hero's photo, and what the band under it shows in place of signing up. */
+  greeting?: ReactNode;
+  heroBody?: ReactNode;
   /** What an editor wrote in place of the app's words. */
   text?: HomeText;
 }) {
@@ -79,20 +83,14 @@ export function Landing({
     // the screen's, so the admin's phone-shaped preview shows the phone layout on a desktop.
     <div className="@container">
     <div className="grid grid-cols-1 gap-10 pt-4 @[42rem]:grid-cols-2 @[42rem]:gap-x-8 @[42rem]:pt-0">
-      {/* With a dashboard (someone who has stamps or an account) the banners, the current events, come first. */}
-      {top && slides.length > 0 ? (
-        <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
-          <BannerCarousel slides={slides} />
-        </div>
-      ) : null}
+      {/* The same photos for everyone; a signed-in visitor's greeting and progress take the line's and the buttons' place. */}
+      <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
+        <LandingHero slides={slides} locale={locale} line={w.heroLine} title={greeting}>
+          {heroBody}
+        </LandingHero>
+      </div>
 
-      {top ? (
-        <div className="@[42rem]:col-span-2">{top}</div>
-      ) : (
-        <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
-          <LandingHero slides={slides} locale={locale} line={w.heroLine} />
-        </div>
-      )}
+      {top ? <div className="@[42rem]:col-span-2">{top}</div> : null}
 
       {top ? null : (
         <section aria-labelledby="rally-title" className="flex flex-col gap-3 @[42rem]:col-span-2">
