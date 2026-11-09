@@ -17,7 +17,7 @@ export function publicPathFor(adminPath: string): string | null {
     case "places":
       return one ? `/spots/${one}` : null;
     case "pages":
-      return one === "home" ? "/" : one;
+      return one === "home" ? "/" : one ? `/${one}` : null;
     case "rallies":
       return id === "new" ? null : one ? `/rallies/${one}` : "/rallies";
     case "posts":
