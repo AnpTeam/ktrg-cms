@@ -1,6 +1,6 @@
 import { NodeSelection, TextSelection, type EditorState, type Transaction } from "@tiptap/pm/state";
 import type { JSONContent } from "@tiptap/core";
-import { CARD_CLOSE, CARD_OPEN, HEADING, inline, ITEM, PHOTO, RULE, type Inline } from "@/lib/rich-text";
+import { CARD_CLOSE, CARD_OPEN, HEADING, inline, ITEM, PHOTO, PLACE, RULE, TABLE_ROW, TABLE_RULE, tableCells, type Inline } from "@/lib/rich-text";
 
 // The block editor's document and the plain text the site stores (the format of lib/rich-text.ts), both ways. The text stays
 // the stored form, so the public pages need no editor code and every page written before keeps working. Written here and not
@@ -60,6 +60,31 @@ export function bodyToDoc(body: string, mode?: "short" | "cards"): JSONContent {
   for (let at = 0; at < lines.length; at++) {
     const line = lines[at]!;
     const card = mode === "cards" ? CARD_OPEN.exec(line) : null;
+    const place = mode === "cards" ? PLACE.exec(line) : null;
+    if (place) {
+      endParagraph();
+      endList();
+      content.push({ type: "placeBlock", attrs: { id: place[1]!.toLowerCase() } });
+      continue;
+    }
+    if (mode === "cards" && TABLE_ROW.test(line)) {
+      endParagraph();
+      endList();
+      let end = at;
+      while (end < lines.length && TABLE_ROW.test(lines[end]!)) end++;
+      const rows = lines.slice(at, end).filter((l) => !TABLE_RULE.test(l)).map(tableCells);
+      const width = Math.max(...rows.map((r) => r.length));
+      content.push({
+        type: "table",
+        content: rows.map((cells, r) => ({
+          type: "tableRow",
+          // Every row as wide as the widest: a table needs even rows.
+          content: Array.from({ length: width }, (_, c) => ({ type: r === 0 ? "tableHeader" : "tableCell", content: [{ type: "paragraph", content: inlineContent(cells[c] ?? "") }] })),
+        })),
+      });
+      at = end - 1;
+      continue;
+    }
     if (card) {
       endParagraph();
       endList();
@@ -124,7 +149,26 @@ const listLines = (list: JSONContent): string[] =>
     return [`- ${own.join(" ")}`, ...blocks.filter(isList).flatMap(listLines)];
   });
 
+/** A cell's words on one line: its paragraphs joined, and a | written \| so it does not end the cell. */
+const cellText = (cell: JSONContent): string =>
+  (cell.content ?? [])
+    .map((p) => inlineText(p.content).replace(/\n/g, " ").trim())
+    .filter((t) => t !== "")
+    .join(" ")
+    .replace(/\|/g, "\\|");
+
 function blockText(block: JSONContent): string {
+  if (block.type === "placeBlock") {
+    const id = String(block.attrs?.id ?? "");
+    return PLACE.test(`::place ${id}`) ? `::place ${id}` : "";
+  }
+  if (block.type === "table") {
+    const rows = (block.content ?? []).map((row) => `| ${(row.content ?? []).map(cellText).join(" | ")} |`);
+    if (rows.length === 0) return "";
+    const width = block.content?.[0]?.content?.length ?? 1;
+    // The first row is the headings: the line under it says so to anyone reading the text.
+    return [rows[0], `|${" --- |".repeat(width)}`, ...rows.slice(1)].join("\n");
+  }
   if (block.type === "pageCard") {
     const [title, ...inside] = block.content ?? [];
     const words = inside.map(blockText).filter((b) => b !== "").join("\n\n");

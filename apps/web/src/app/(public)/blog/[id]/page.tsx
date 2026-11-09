@@ -20,7 +20,7 @@ import { RouteCard, SpotCard } from "@/components/blog/LinkedCards";
 import { PostRow } from "@/components/blog/PostRow";
 import { ShareButtons } from "@/components/blog/ShareButtons";
 import { initLingui } from "@/i18n/server";
-import { getSpot, listPlaces, listRoutes } from "@/lib/content";
+import { getSpot, inlinePlaces, listPlaces, listRoutes, mentionsPlace } from "@/lib/content";
 import { formatDay } from "@/lib/format";
 import { pickText } from "@/lib/pick-text";
 import { distanceMeters } from "@/lib/places";
@@ -59,7 +59,7 @@ export default async function BlogPostPage({ params }: Props) {
     listPosts(),
     listComments(post.id),
     post.routeId || post.placeId ? listRoutes() : Promise.resolve([]),
-    post.placeId ? listPlaces() : Promise.resolve([]),
+    post.placeId || mentionsPlace(post.bodyJa) || mentionsPlace(post.bodyEn) ? listPlaces() : Promise.resolve([]),
     post.spotId ? getSpot(post.spotId) : Promise.resolve(undefined),
   ]);
 
@@ -157,7 +157,7 @@ export default async function BlogPostPage({ params }: Props) {
         <div className="flex min-w-0 flex-col gap-10">
           {body ? (
             <div className="px-4 wide:px-0">
-              <RichBody text={body.text} lang={body.lang} anchor={post.id} />
+              <RichBody text={body.text} lang={body.lang} anchor={post.id} places={inlinePlaces(locale, places)} />
             </div>
           ) : null}
 

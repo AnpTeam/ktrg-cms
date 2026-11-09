@@ -5,7 +5,8 @@ import Image from "@tiptap/extension-image";
 import StarterKit from "@tiptap/starter-kit";
 import { bodyToDoc, cardParts, docToBody, moveBlock } from "./block-doc";
 import { parsePageBody } from "@/lib/page-text";
-import { CardTitle, PageCard } from "./card-nodes";
+import { CardTitle, PageCard, PlaceBlock } from "./card-nodes";
+import { TableKit } from "@tiptap/extension-table";
 
 const roundTrip = (body: string) => docToBody(bodyToDoc(body));
 const schema = getSchema([StarterKit.configure({ heading: { levels: [2, 3] } }), Image]);
@@ -136,5 +137,23 @@ describe("block document", () => {
     const up = state.apply(moveBlock(state, -1)!);
     expect(docToBody(up.doc.toJSON())).toBe("二\n\n一\n\n三");
     expect(moveBlock(up, -1)).toBeNull();
+  });
+});
+
+describe("place and table blocks", () => {
+  const cards = (body: string) => docToBody(bodyToDoc(body, "cards"));
+  const schema = getSchema([StarterKit.configure({ heading: { levels: [2, 3] } }), Image, CardTitle, PageCard, PlaceBlock, TableKit]);
+  const id = "6e644ae9-c252-43c2-96b1-2941f4e7a280";
+  const body = ["前の文", `::place ${id}`, "| 名前 | **時間** |\n| --- | --- |\n| [茶屋](https://e.com) | 9時 |\n| a \\| b |  |", "後の文"].join("\n\n");
+
+  test("both come back as written, and the real schema accepts them", () => {
+    expect(cards(body)).toBe(body);
+    expect(() => schema.nodeFromJSON(bodyToDoc(body, "cards")).check()).not.toThrow();
+  });
+
+  test("a table with no --- line gets one; uneven rows are filled; without cards the lines stay words", () => {
+    expect(cards("| a | b |\n| c |")).toBe("| a | b |\n| --- | --- |\n| c |  |");
+    expect(docToBody(bodyToDoc(`| a | b |\n\n::place ${id}`))).toBe(`| a | b |\n\n::place ${id}`);
+    expect(bodyToDoc("| a | b |").content?.[0]?.type).toBe("paragraph");
   });
 });

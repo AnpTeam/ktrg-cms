@@ -6,6 +6,7 @@ import { FaqCard, StepCard } from "@/components/pages/Cards";
 import { buttonStyle } from "@/components/button";
 import { Notice } from "@/components/Notice";
 import { RichBody } from "@/components/RichBody";
+import type { InlinePlace } from "@/components/places/PlaceInline";
 import { Inlines } from "@/components/RichText";
 import { SectionBanner } from "@/components/SectionBanner";
 import type { Help } from "@/lib/help-content";
@@ -18,9 +19,9 @@ import { termsContent } from "@/lib/terms-content";
 // The fixed text pages, drawn from their content.
 
 /** An editor's text: paragraphs, lists, photos and the rest of what lib/rich-text.ts reads. */
-function Body({ text }: { text: string }) {
+function Body({ text, places }: { text: string; places?: Record<string, InlinePlace> }) {
   const id = useId();
-  return <RichBody text={text} anchor={id} />;
+  return <RichBody text={text} anchor={id} places={places} />;
 }
 
 /** How to play: numbered steps and nothing else to read. */
@@ -181,7 +182,8 @@ export function PolicyView({ policy }: { policy: Policy }) {
 }
 
 /** A page an editor made in the admin (/p/<address>). */
-export function CustomPageView({ title, doc }: { title: string; doc: PageDoc }) {
+/** `places`: the directory places its ::place lines may name. */
+export function CustomPageView({ title, doc, places }: { title: string; doc: PageDoc; places?: Record<string, InlinePlace> }) {
   return (
     <div className="page-narrow flex flex-col gap-8 pt-2">
       <div className="flex flex-col gap-6 px-4">
@@ -193,7 +195,7 @@ export function CustomPageView({ title, doc }: { title: string; doc: PageDoc }) 
       {doc.lead.length > 0 ? (
         <div className="flex flex-col gap-3 px-4">
           {doc.lead.map((text, i) => (
-            <Paragraph key={i} text={text} />
+            <Paragraph key={i} text={text} places={places} />
           ))}
         </div>
       ) : null}
@@ -201,7 +203,7 @@ export function CustomPageView({ title, doc }: { title: string; doc: PageDoc }) 
         <section key={i} className="flex flex-col gap-3 px-4">
           <SectionBanner>{section.heading}</SectionBanner>
           {section.paragraphs.map((text, j) => (
-            <Paragraph key={j} text={text} />
+            <Paragraph key={j} text={text} places={places} />
           ))}
         </section>
       ))}
