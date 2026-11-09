@@ -5,17 +5,17 @@ import { BookmarkIcon } from "./icons";
 import { useBookmarks } from "./useBookmarks";
 import { buttonStyle } from "@/components/button";
 
-/** Saves the rally to the bookmarks (the same list as the routes: on the account when signed in, on the device when not). */
-export function RallyBookmark({ rallyId }: { rallyId: string }) {
+/** Saves a rally or a blog post to the bookmarks (one list with the routes: on the account when signed in, on the device when not). */
+export function SaveBookmark({ id, wide = true }: { id: string; wide?: boolean }) {
   const { t } = useLingui();
   const { list, toggle } = useBookmarks();
-  const saved = list.includes(rallyId);
+  const saved = list.includes(id);
   return (
     <button
       type="button"
-      onClick={() => toggle(rallyId)}
+      onClick={() => toggle(id)}
       aria-pressed={saved}
-      className={buttonStyle("secondary", "lg", "inline-flex w-full")}
+      className={buttonStyle("secondary", wide ? "lg" : "md", wide ? "inline-flex w-full" : "inline-flex w-fit")}
     >
       <BookmarkIcon filled={saved} />
       {saved ? t`ブックマーク済み` : t`ブックマークする`}

@@ -10,6 +10,7 @@ import { NearbyPlaces, type Nearby } from "@/components/NearbyPlaces";
 import { CreditCaption } from "@/components/PhotoCredit";
 import { PlaceFacts } from "@/components/PlaceFacts";
 import { PlaceIcon } from "@/components/PlaceIcon";
+import { SaveBookmark } from "@/components/SaveBookmark";
 import { RichBody } from "@/components/RichBody";
 import { RoutePhoto } from "@/components/RoutePhoto";
 import { SectionBanner } from "@/components/SectionBanner";
@@ -121,6 +122,7 @@ export default async function BlogPostPage({ params }: Props) {
         <h1 className="max-w-4xl text-3xl font-bold leading-snug md:text-4xl">
           <Localized value={title} />
         </h1>
+        <SaveBookmark id={post.id} wide={false} />
         <p className="flex flex-wrap items-center gap-x-4 gap-y-2 text-lg text-muted">
           {author ? (
             <span className="flex items-center gap-2">

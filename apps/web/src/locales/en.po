@@ -3263,6 +3263,9 @@ msgstr "Route description"
 msgid "ルートの順番を変えた"
 msgstr "Reordered the routes"
 
+msgid "ルートやラリー、ブログの記事で、しおりのボタンを押すと、ここに保存されます。ログインしていれば、アカウントに保存されます。"
+msgstr "Press the bookmark button on a route, a rally or a blog post and it is saved here. When you are signed in, it is saved to your account."
+
 #: src/components/BookmarkList.tsx:37
 msgid "ルートやラリーのページで、しおりのボタンを押すと、ここに保存されます。ログインしていれば、アカウントに保存されます。"
 msgstr "Press the bookmark button on a route or rally page and it is saved here. When you are signed in, it is saved to your account."
