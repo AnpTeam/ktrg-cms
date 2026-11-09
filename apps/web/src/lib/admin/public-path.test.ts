@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { publicPathFor } from "./PublicSiteLink";
+import { publicPathFor } from "./public-path";
 
 test("an admin page leads to its own page on the site, or to none", () => {
   expect(publicPathFor("/admin/routes/abc")).toBe("/routes/abc");
