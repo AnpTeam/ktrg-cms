@@ -2,7 +2,8 @@ import type { ComponentProps } from "react";
 import Link from "next/link";
 import { Trans } from "@lingui/react/macro";
 import { pickText, type SpotDetail } from "@/lib/content";
-import { HeroPhoto } from "./map/HeroPhoto";
+import { CoverPhoto } from "./CoverPhoto";
+import { SpotStats, type StopPlace } from "./SpotStats";
 import { Localized } from "./Localized";
 import { NameRuby } from "./Ruby";
 import { NearbyPlaces, type Nearby } from "./NearbyPlaces";
@@ -31,6 +32,7 @@ export function SpotSheet({
   stampProgress,
   nearby = [],
   nearest = [],
+  place,
 }: {
   spot: SpotDetail;
   locale: string;
@@ -39,6 +41,8 @@ export function SpotSheet({
   nearby?: Nearby[];
   /** The nearest stations, bus stops and parking, a tab for each. */
   nearest?: NearestGroup[];
+  /** Its number on the course and the walk from the stop before, when the course is known. */
+  place?: StopPlace;
   /** Development only: pretend answers for the stamp button. */
   stampMock?: StampMock;
   /** Where the spot's course stood before this stamp, for the "stamp collected" popup. */
@@ -50,43 +54,33 @@ export function SpotSheet({
   const history = pickText(locale, spot.historyJa ?? null, spot.historyEn ?? null);
   const source = pickText(locale, spot.sourceJa ?? null, spot.sourceEn ?? null);
   const gallery = spot.gallery ?? [];
+  const photo = spot.photoUrl ? { src: spot.photoUrl, alt: pickText(locale, spot.nameJa, spot.nameEn)?.text ?? spot.nameJa, credit: spot.photoCredit ?? null } : null;
 
   return (
     <article className="flex flex-col gap-6">
-      <header className="px-4">
-        <h1 className="text-3xl font-bold has-[rt]:pt-3">
+      {photo ? <CoverPhoto photo={photo} /> : null}
+      <header className={`relative px-4 ${photo ? "-mt-20" : ""}`}>
+        <h1 className="text-4xl font-bold leading-tight has-[rt]:pt-4">
           <NameRuby title={pickText(locale, spot.nameJa, spot.nameEn)} reading={spot.nameKana} />
         </h1>
         <p className="mt-2 text-lg text-muted">
           <Localized value={pickText(locale, spot.routeNameJa, spot.routeNameEn)} />
         </p>
-      </header>
-
-      {spot.photoUrl ? (
-        <div className="px-4">
-          <HeroPhoto photo={{ src: spot.photoUrl, alt: pickText(locale, spot.nameJa, spot.nameEn)?.text ?? spot.nameJa, credit: spot.photoCredit ?? null }} placeholder={false} />
+        <div className="mt-5">
+          <SpotStats spot={spot} place={place} />
         </div>
-      ) : null}
-
-      {/* Only a place with a (checked) position can be shown on the map; the map opens on this course and this stop. */}
-      {spot.position ? (
-        <div className="px-4">
-          <Link
-            href={`${"/map"}?route=${encodeURIComponent(spot.routeId)}&stop=${encodeURIComponent(spot.id)}`}
-            className={buttonStyle("secondary", "md", "inline-flex")}
-          >
+        {/* Only a place with a (checked) position can be shown on the map; the map opens on this course and this stop. */}
+        {spot.position ? (
+          <Link href={`/map?route=${encodeURIComponent(spot.routeId)}&stop=${encodeURIComponent(spot.id)}`} className={buttonStyle("secondary", "md", "mt-5 inline-flex")}>
             <Trans>地図で見る</Trans>
           </Link>
-        </div>
-      ) : null}
+        ) : null}
+      </header>
 
-      <StatusBanner
-        status={spot.status}
-        noteJa={spot.statusNoteJa}
-        noteEn={spot.statusNoteEn}
-        updatedAt={spot.statusUpdatedAt}
-        locale={locale}
-      />
+      {/* The grid already says the status; the block is for what needs more: caution, closed, or a note. */}
+      {spot.status !== "open" || spot.statusNoteJa || spot.statusNoteEn ? (
+        <StatusBanner status={spot.status} noteJa={spot.statusNoteJa} noteEn={spot.statusNoteEn} updatedAt={spot.statusUpdatedAt} locale={locale} />
+      ) : null}
 
       {stampable ? (
       <section className="mx-4 flex items-center gap-4 rounded-3xl bg-surface p-4">
@@ -100,15 +94,6 @@ export function SpotSheet({
           </p>
         </div>
       </section>
-      ) : null}
-
-      {stampable && spot.stamped !== null ? (
-        <section className="flex items-center gap-4 px-4">
-          <StampFace state={spot.stamped ? "stamped" : "empty"} image={spot.stampImageUrl} rough className="h-14 w-14 shrink-0" />
-          <p className="text-xl font-bold">
-            {spot.stamped ? <Trans>スタンプを押しました</Trans> : <Trans>まだスタンプを押していません</Trans>}
-          </p>
-        </section>
       ) : null}
 
       {description ? (

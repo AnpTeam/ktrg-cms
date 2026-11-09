@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
 import { SpotSheet } from "@/components/SpotSheet";
-import { getSpot, listPlaces, listRoutes, pickText, toMapPlace } from "@/lib/content";
+import type { StopPlace } from "@/components/SpotStats";
+import { getRoute, getSpot, listPlaces, listRoutes, pickText, toMapPlace } from "@/lib/content";
 import type { NearestGroup } from "@/components/NearestPlaces";
 import { sortByDistance } from "@/lib/places";
 import type { Nearby } from "@/components/NearbyPlaces";
@@ -30,7 +31,12 @@ export default async function SpotPage({ params, searchParams }: Props) {
   if (!found) notFound();
   const spot = found;
   // The places list is needed only with a position (nearby and nearest); the routes always (the stamp popup shows the course's progress).
-  const [allPlaces, allRoutes] = await Promise.all([spot.position ? listPlaces() : [], listRoutes()]);
+  const [allPlaces, allRoutes, detail] = await Promise.all([spot.position ? listPlaces() : [], listRoutes(), getRoute(spot.routeId)]);
+  // Its number among the course's stamp places, and the walk from the stop before (the course page works both out).
+  const stamps = (detail?.spots ?? []).filter((s) => s.stampable !== false);
+  const at = stamps.findIndex((s) => s.id === spot.id);
+  const fromPrev = detail?.spots.find((s) => s.id === spot.id)?.fromPrev;
+  const place: StopPlace | undefined = at >= 0 ? { number: at + 1, total: stamps.length, fromPrev } : fromPrev ? { number: 0, total: 0, fromPrev } : undefined;
   const course = allRoutes.find((r) => r.id === spot.routeId);
   const stampProgress = course && course.spotCount > 0 ? { rallyName: pickText(i18n.locale, course.nameJa, course.nameEn)?.text ?? course.nameJa, place: pickText(i18n.locale, spot.nameJa, spot.nameEn)?.text ?? spot.nameJa, before: course.stampedCount ?? 0, total: course.spotCount } : undefined;
   // Toilets, shops and the like within a few minutes' walk, nearest first (a straight line, not the walking distance).
@@ -65,7 +71,7 @@ export default async function SpotPage({ params, searchParams }: Props) {
           <Trans>ルートにもどる</Trans>
         </BackLink>
       </div>
-      <SpotSheet stampMock={stampMock} stampProgress={stampProgress} nearby={near} nearest={nearest} spot={spot} locale={i18n.locale} loginHref={`${"/login"}?next=${encodeURIComponent(`/spots/${spot.id}`)}`} />
+      <SpotSheet place={place} stampMock={stampMock} stampProgress={stampProgress} nearby={near} nearest={nearest} spot={spot} locale={i18n.locale} loginHref={`${"/login"}?next=${encodeURIComponent(`/spots/${spot.id}`)}`} />
     </div>
   );
 }

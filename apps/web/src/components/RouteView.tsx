@@ -1,11 +1,9 @@
-import { CoverWatch } from "@/components/CoverWatch";
 import type { ReactNode } from "react";
-import { Zoomable } from "@/components/Zoomable";
-import Image from "next/image";
 import { Trans } from "@lingui/react/macro";
 import { ElevationProfile } from "@/components/ElevationProfile";
 import { EmptyState } from "@/components/EmptyState";
 import { ExpandableText } from "@/components/ExpandableText";
+import { CoverPhoto } from "@/components/CoverPhoto";
 import { NameRuby } from "@/components/Ruby";
 import { AccessList } from "@/components/AccessList";
 import { FileVideoPlayer } from "@/components/FileVideo";
@@ -18,7 +16,6 @@ import { RouteJourney } from "@/components/RouteJourney";
 import { RouteStats } from "@/components/RouteStats";
 import { StopList } from "@/components/StopList";
 import { BookmarkButton } from "@/components/BookmarkButton";
-import { CreditToggle } from "@/components/PhotoCredit";
 import type { MapStop } from "@/components/map/TrailMap";
 import { TrailMapLoader } from "@/components/map/TrailMapLoader";
 import type { RouteDetail } from "@/lib/content";
@@ -140,21 +137,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
         <div className={SIDE}>
           {/* The cover: in one column the photo runs edge to edge and fades into the page at the bottom, and the name sits on the
               fade, so photo and title read as one. In two columns it is a plain framed photo with the name under it. */}
-          {photo ? (
-            // data-cover: on a phone the top bar goes see-through and this photo runs up behind it to the top of the screen; in the
-            // installed app it also runs behind the Dynamic Island (globals.css).
-            <div data-cover className="relative order-1 aspect-[4/3] w-full overflow-hidden bg-surface @4xl:order-none @4xl:aspect-video @4xl:rounded-2xl">
-              <CoverWatch />
-              <Zoomable src={photo.src} alt={photo.alt}>
-                <Image src={photo.src} alt={photo.alt} fill priority sizes="(min-width: 1024px) 40vw, 100vw" className="object-cover" unoptimized={photo.src.startsWith("https://")} />
-              </Zoomable>
-              <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-b from-transparent to-paper @4xl:hidden" />
-              {/* In line with the back button (the top bar's row); lower only where the sample notice button holds that corner. */}
-              <div className="cover-credit contents">
-                <CreditToggle credit={photo.credit} />
-              </div>
-            </div>
-          ) : null}
+          {photo ? <CoverPhoto photo={photo} className="order-1 @4xl:order-none" /> : null}
           <header className={`relative order-2 px-4 @4xl:order-none @4xl:mt-0 @4xl:px-0 ${photo ? "-mt-20" : ""}`}>
             {/* In Japanese the name can carry its reading over it; the heading sits a little lower to give the reading room. */}
             <h1 className="min-w-0 text-4xl font-bold leading-tight has-[rt]:pt-4 @4xl:text-4xl">
