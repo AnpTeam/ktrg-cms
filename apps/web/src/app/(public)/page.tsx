@@ -1,10 +1,9 @@
 import { Trans } from "@lingui/react/macro";
 import Link from "next/link";
-import { ProgressSummary } from "@/components/ProgressSummary";
-import { ContinueCard } from "@/components/landing/ContinueCard";
+import { HomeProgress } from "@/components/landing/HomeProgress";
 import { Landing } from "@/components/landing/Landing";
 import { listBanners, slidesToShow } from "@/lib/banners";
-import { getRoute, listRoutes, pickText, sampleContentEnabled, type RouteSummary } from "@/lib/content";
+import { getRoute, listRoutes, sampleContentEnabled, type RouteSummary } from "@/lib/content";
 import { listNotices } from "@/lib/notices";
 import { homeTextFor } from "@/lib/page-text-server";
 import { listPosts } from "@/lib/posts";
@@ -43,54 +42,28 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const name = viewer.name;
   const target = courseToContinue(routes);
   const [prefs, found] = await Promise.all([getPrefs(), target ? getRoute(target.id) : undefined]);
-  // The next places to stamp on that course, in order (a side trip and a closed place are left out).
-  const next = found ? found.spots.filter((s) => s.stamped === false && s.status !== "closed" && !s.stopBy).slice(0, 3) : [];
-
-  const first = next[0];
-  const nextPlace = first && target ? { id: first.id, name: pickText(i18n.locale, first.nameJa, first.nameEn)?.text ?? first.nameJa, routeName: pickText(i18n.locale, target.nameJa, target.nameEn)?.text ?? target.nameJa } : null;
 
   const ready = routes.filter((r) => r.status === "ready");
   const badges = ready.filter((r) => nodeState({ status: r.status, stamped: r.stampedCount, total: r.spotCount }) === "complete").length;
-  const tile = "tap-target flex flex-col items-center justify-center gap-1 rounded-3xl bg-paper px-2 py-3 text-center shadow-sm";
 
-  // A dashboard: the greeting over the photos; under them, on the patterned band, how far along they are with the next place
-  // and three numbers that each lead somewhere; then the course to go on with.
+  // The greeting over the photos; under them, on the patterned band, one section that reads as a sentence: the course to
+  // go on with, its next place, its seals, and the counts as plain links (docs/design-language.md, phase 2).
   const greeting = name ? <Trans>{name}さん、こんにちは。</Trans> : <Trans>おかえりなさい。</Trans>;
   const heroBody = (
-    // Two columns by the room this band has (a container query), not the screen: a phone on its side gets the wide layout
-    // but only about 650 px here, and two columns squeezed the stamp sentence to one character a line.
-    <div className="@container">
-    <div className="flex flex-col gap-4 @3xl:grid @3xl:grid-cols-2 @3xl:items-center @3xl:gap-x-8">
-      <div className="mx-4 rounded-3xl bg-paper py-5 shadow-sm">
-        <ProgressSummary stamped={stamped} total={total} next={nextPlace} />
-      </div>
-
-      <div className="grid grid-cols-3 gap-3 px-4">
-        <Link href="/rallies" className={tile}>
-          <span className="text-base text-muted"><Trans>ラリー</Trans></span>
-          <span className="whitespace-nowrap text-2xl font-bold tabular-nums text-accent">{stamped}<span className="text-lg text-muted"> / {total}</span></span>
-        </Link>
-        <Link href="/badges" className={tile}>
-          <span className="text-base text-muted"><Trans>バッジ</Trans></span>
-          <span className="whitespace-nowrap text-2xl font-bold tabular-nums text-accent">{badges}<span className="text-lg text-muted"> / {ready.length}</span></span>
-        </Link>
-        <Link href="/bookmarks" className={tile}>
-          <span className="text-base text-muted"><Trans>ブックマーク</Trans></span>
-          <span className="text-2xl font-bold tabular-nums text-accent">{viewer.bookmarks.length}</span>
-        </Link>
-      </div>
-    </div>
-    </div>
+    <HomeProgress
+      locale={i18n.locale}
+      route={target}
+      spots={found?.spots ?? []}
+      stamped={stamped}
+      total={total}
+      badges={badges}
+      readyCount={ready.length}
+      bookmarks={viewer.bookmarks.length}
+    />
   );
 
   const top = (
     <div className="flex flex-col gap-5 wide:grid wide:grid-cols-2 wide:items-start wide:gap-x-8">
-      {target ? (
-        <div className="wide:col-span-2">
-          <ContinueCard route={target} next={next} locale={i18n.locale} />
-        </div>
-      ) : null}
-
       {prefs.setupDone ? null : (
         <Link href="/welcome" className="tap-target mx-4 flex flex-col rounded-3xl bg-surface p-5 wide:col-span-2">
           <span className="text-xl font-bold text-accent">
