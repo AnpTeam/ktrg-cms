@@ -2201,6 +2201,10 @@ msgstr "Next"
 msgid "つぎの場所"
 msgstr "Next places"
 
+#: src/app/(public)/routes/[id]/page.tsx
+msgid "つぎのルート"
+msgstr "Next course"
+
 #: src/components/IntroFlow.tsx:280
 #: src/components/settings/WelcomeFlow.tsx:75
 msgid "つぎへ"

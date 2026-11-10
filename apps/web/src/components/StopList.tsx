@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useId, type ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
 import type { SpotListItem } from "@/lib/content";
 import { pickText } from "@/lib/pick-text";
@@ -17,7 +17,8 @@ import { TrailNode } from "./TrailNode";
 // the list reads as the order of the walk. Every place has its own page. A stamp place's node shows its state (seal =
 // stamped, ring = not yet, plain ring when signed out, dashed ring = closed right now); a place without a stamp (a toilet,
 // a station ...) has a plain ring and is marked "no stamp". A side trip (寄り道) has no number, only a small dashed dot.
-// Each is a card: photo, name, and the start of its description. The start and the goal carry a badge; a walk that comes
+// Each is a card: photo, name, its whole description and, when it is not open, the editor's note, so the walk reads on
+// this one page without opening each place (older visitors would rather scroll than tap in and back). The start and the goal carry a badge; a walk that comes
 // back to its start lists that place again at the end as the goal (both rows lead to its one page, with the same stamp).
 // Between two places on the way: how far it is along the line (or the boat or bus ride the editor gave).
 
@@ -72,6 +73,7 @@ const chip = "rounded-lg border-2 border-dashed border-line px-2 text-base font-
 const ROLE_BADGE = { start: "", goal: "badge-goal", turnaround: "badge-goal" } as const;
 
 export function StopList({ rows, hrefFor, locale }: { rows: WalkRow[]; hrefFor: (id: string) => string; locale: string }) {
+  const ids = useId();
   // The walk so far: the line is moss up to the last stamped place.
   const stampedUpTo = rows.reduce<boolean[]>((acc, { stop: s }) => [...acc, s.type === "stamp" ? s.spot.stamped === true : (acc[acc.length - 1] ?? false)], []);
   return (
@@ -93,7 +95,8 @@ export function StopList({ rows, hrefFor, locale }: { rows: WalkRow[]; hrefFor: 
             {index > 0 ? <Segment done={doneAbove} from="0" to={`calc(100% - ${NODE_CENTER})`} /> : null}
             {hasNext ? <Segment done={done} from={NODE_CENTER} to="0" /> : null}
             <Leg km={legKm} spot={stop.type === "stamp" && before?.type === "stamp" ? stop.spot : null} />
-            <Link href={hrefFor(item.id)} className="tap-target group relative grid items-start" style={{ gridTemplateColumns: `${COLUMN} 1fr` }}>
+            {/* Named by the place name alone: the whole card stays one big tap target, but a screen reader does not read the description as the link's name. */}
+            <Link href={hrefFor(item.id)} aria-labelledby={`${ids}-${index}`} className="tap-target group relative grid items-start" style={{ gridTemplateColumns: `${COLUMN} 1fr` }}>
               <span className="flex justify-center pt-3">{node}</span>
               <Card photo={photo} alt={name?.text ?? ""}>
                 {role ? (
@@ -101,7 +104,7 @@ export function StopList({ rows, hrefFor, locale }: { rows: WalkRow[]; hrefFor: 
                     {role === "start" ? <Trans>スタート</Trans> : role === "goal" ? <Trans>ゴール</Trans> : <Trans>折り返し</Trans>}
                   </span>
                 ) : null}
-                <span className="block text-xl font-bold leading-snug">
+                <span id={`${ids}-${index}`} className="block text-xl font-bold leading-snug">
                   <Localized value={name} />
                 </span>
                 {stop.type === "point" || sideTrip ? (
@@ -124,11 +127,11 @@ export function StopList({ rows, hrefFor, locale }: { rows: WalkRow[]; hrefFor: 
                   </span>
                 ) : null}
                 {description && description.text.trim() ? (
-                  <span className="mt-1 line-clamp-3 text-lg leading-7">
+                  <span className="mt-1 block whitespace-pre-line text-lg leading-7">
                     <span lang={description.lang}>{plainRich(description.text)}</span>
                   </span>
                 ) : null}
-                {stop.type === "stamp" ? <StampMeta spot={stop.spot} /> : null}
+                {stop.type === "stamp" ? <StampMeta spot={stop.spot} locale={locale} /> : null}
               </Card>
             </Link>
           </li>
@@ -169,9 +172,11 @@ function Leg({ km, spot }: { km: number | null; spot: SpotListItem | null }) {
   );
 }
 
-/** The status and the stamp. */
-function StampMeta({ spot }: { spot: SpotListItem }) {
+/** The status and the stamp, and the editor's note when the place is not simply open. */
+function StampMeta({ spot, locale }: { spot: SpotListItem; locale: string }) {
+  const note = spot.status === "open" ? null : pickText(locale, spot.statusNoteJa ?? null, spot.statusNoteEn ?? null);
   return (
+    <>
     <span className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-lg">
       <StatusWord status={spot.status} />
       {spot.stamped === true ? (
@@ -180,5 +185,11 @@ function StampMeta({ spot }: { spot: SpotListItem }) {
         </span>
       ) : null}
     </span>
+    {note && note.text.trim() ? (
+      <span lang={note.lang} className="mt-2 block rounded-xl bg-paper p-3 text-lg leading-7">
+        {note.text}
+      </span>
+    ) : null}
+    </>
   );
 }
