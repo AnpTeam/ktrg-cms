@@ -159,7 +159,8 @@ export function lineLengthKm(line: LineString): number {
   return Math.round(m / 10) / 100;
 }
 
-/** A rough shape for list pages: at most `maxPoints` points as [lng, lat]. */
-export function sketchOf(line: LineString, maxPoints = 40): [number, number][] {
-  return simplifyLine(line, maxPoints).coordinates.map(([lng, lat]) => [lng, lat]);
+/** A rough shape for list pages: at most `maxPoints` points as [lng, lat], with the height when the line has one
+ * (the landing page joins every course's heights into the ridge of the whole trail). */
+export function sketchOf(line: LineString, maxPoints = 40): Coordinates {
+  return simplifyLine(line, maxPoints).coordinates.map(([lng, lat, ele]) => (typeof ele === "number" ? [lng, lat, ele] : [lng, lat]));
 }

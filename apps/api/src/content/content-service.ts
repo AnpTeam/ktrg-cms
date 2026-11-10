@@ -94,7 +94,7 @@ export interface PublicRoute {
   /** "soon" until at least one place is published. */
   status: "ready" | "soon";
   publishedSpotCount: number;
-  sketch: [number, number][] | null;
+  sketch: [lng: number, lat: number, ele?: number][] | null;
   /** The drawn line (the detail only). */
   line: LineString | null;
   /** Side trips (寄り道) to published places, each a stretch out from the route (the detail only). */

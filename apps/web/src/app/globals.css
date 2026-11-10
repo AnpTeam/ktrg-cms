@@ -8,6 +8,14 @@
   }
 }
 
+/* Tall enough for a vertical (縦書き) headline: under this a phone on its side would run the headline off the screen,
+   so it is set horizontally there (docs/design-language.md, Typography). */
+@custom-variant tall {
+  @media (min-height: 500px) {
+    @slot;
+  }
+}
+
 /*
  * Accessibility base (WBS 1.1.10). The app is used outdoors, in sunlight, by
  * many older visitors, so these are defaults every screen inherits:
@@ -1410,4 +1418,25 @@ body.map-nav-mode .map-layer-pills {
       appearance: auto;
     }
   }
+}
+
+/* The landing story's chapters (docs/design-language.md, Layout and pace). Each has its own ground, so it reads on its
+   own with no script. When motion is allowed, StoryMotion adds .story-live: the chapters go see-through and the
+   wrapper's colour, crossfaded by the script, carries the ground instead. Inverse is ink on paper turned round, so it
+   stays the strongest contrast in both themes. */
+.story-ground-paper {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+}
+.story-ground-surface {
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+}
+.story-ground-inverse {
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+}
+.story-live [data-ground] {
+  background-color: transparent;
+  color: inherit;
 }

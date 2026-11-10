@@ -76,6 +76,11 @@ describe("sketchOf", () => {
     expect(s.length).toBeLessThanOrEqual(40);
     expect(s[0]).toHaveLength(2);
   });
+
+  test("keeps the height when the line has one", () => {
+    const s = sketchOf({ type: "LineString", coordinates: [[135, 34, 10], [135.01, 34.01, 250], [135.02, 34.02, 120]] }, 40);
+    expect(s.map((p) => p[2])).toEqual([10, 250, 120]);
+  });
 });
 
 describe("guide points on a leg", () => {

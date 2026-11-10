@@ -8117,3 +8117,9 @@ msgstr "Closures and the like will be shown here."
 
 msgid "お知らせをフィードで受け取る"
 msgstr "Follow the notices in a feed reader"
+
+#. placeholder {0}: ridge.courses
+#. placeholder {1}: ridge.topM
+#: src/components/landing/LandingStory.tsx:36
+msgid "海から山へ。{0}区間の道の高さを、順につなげた線です。いちばん高いところは約{1}m。"
+msgstr "From the sea to the mountains: the height of {0} courses, joined in order. The highest point is about {1} m."
