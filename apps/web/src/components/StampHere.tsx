@@ -10,6 +10,7 @@ import { distanceParts, type Problem, type StampMock } from "@/lib/stamp-flow";
 import { buzz, playThud, unlockAudio } from "@/lib/stamp-feel";
 import { announceProgress, type StampProgress } from "@/lib/stamp-progress";
 import { track } from "@/lib/track";
+import { LoadingOverlay } from "./LoadingOverlay";
 import { StampFace } from "./StampFace";
 import { useLiveStatus } from "./useLiveStatus";
 import { useStampMessages } from "./useStampMessages";
@@ -72,6 +73,8 @@ export function StampHere({
   const [phase, setPhase] = useState<Phase>({ name: "idle" });
   const dialog = useRef<HTMLDialogElement>(null);
   const busy = phase.name === "locating" || phase.name === "sending";
+  // Which press is current: "やめる" while finding the position bumps it, so a reading that arrives later is ignored.
+  const attempt = useRef(0);
 
   // The explanation is a native modal dialog: focus is trapped in it and Escape closes it.
   useEffect(() => {
@@ -83,8 +86,10 @@ export function StampHere({
 
   async function start() {
     unlockAudio();
+    const mine = ++attempt.current;
     setPhase({ name: "locating" });
     const position = mock ? await mockPosition(mock) : await readPosition();
+    if (attempt.current !== mine) return; // cancelled while finding the position
     if (!position.ok) {
       setPhase({ name: "problem", problem: position.reason });
       return;
@@ -153,6 +158,19 @@ export function StampHere({
 
   return (
     <div className={wrapper}>
+      {/* Finding the position can take a while under trees: the screen dims and says so. Sending is short and the server
+          decides it, so it has no way out. */}
+      {phase.name === "locating" ? (
+        <LoadingOverlay
+          label={t`いまの位置を調べています…`}
+          onCancel={() => {
+            attempt.current++;
+            setPhase({ name: "idle" });
+          }}
+        />
+      ) : phase.name === "sending" ? (
+        <LoadingOverlay label={t`スタンプを押しています…`} />
+      ) : null}
       {phase.name === "problem" ? (
         <div role="alert" className="flex flex-col gap-1 rounded-2xl border-2 border-caution bg-paper px-4 py-3 text-lg leading-7 shadow-lg">
           <p className="font-bold">{messages[phase.problem]}</p>

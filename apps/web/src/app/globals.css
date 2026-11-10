@@ -1443,3 +1443,32 @@ body.map-nav-mode .map-layer-pills {
   background-color: transparent;
   color: inherit;
 }
+
+/* LoadingOverlay: hidden for the first 300 ms (and not clickable: visibility), so a quick answer never flashes it.
+   Under reduced motion the global rule makes these instant but keeps the delay; the ring then stands complete. */
+.overlay-in {
+  animation: overlay-in 200ms var(--ease-enter) 300ms both;
+}
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+    visibility: hidden;
+  }
+  to {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+.seal-draw {
+  stroke-dasharray: 1;
+  animation: seal-draw 1.6s var(--ease-standard) infinite;
+}
+@keyframes seal-draw {
+  0% {
+    stroke-dashoffset: 1;
+  }
+  60%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
