@@ -57,7 +57,10 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   // and three numbers that each lead somewhere; then the course to go on with.
   const greeting = name ? <Trans>{name}さん、こんにちは。</Trans> : <Trans>おかえりなさい。</Trans>;
   const heroBody = (
-    <div className="flex flex-col gap-4 wide:grid wide:grid-cols-2 wide:items-center wide:gap-x-8">
+    // Two columns by the room this band has (a container query), not the screen: a phone on its side gets the wide layout
+    // but only about 650 px here, and two columns squeezed the stamp sentence to one character a line.
+    <div className="@container">
+    <div className="flex flex-col gap-4 @3xl:grid @3xl:grid-cols-2 @3xl:items-center @3xl:gap-x-8">
       <div className="mx-4 rounded-3xl bg-paper py-5 shadow-sm">
         <ProgressSummary stamped={stamped} total={total} next={nextPlace} />
       </div>
@@ -65,17 +68,18 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       <div className="grid grid-cols-3 gap-3 px-4">
         <Link href="/rallies" className={tile}>
           <span className="text-base text-muted"><Trans>ラリー</Trans></span>
-          <span className="text-2xl font-bold tabular-nums text-accent">{stamped}<span className="text-lg text-muted"> / {total}</span></span>
+          <span className="whitespace-nowrap text-2xl font-bold tabular-nums text-accent">{stamped}<span className="text-lg text-muted"> / {total}</span></span>
         </Link>
         <Link href="/badges" className={tile}>
           <span className="text-base text-muted"><Trans>バッジ</Trans></span>
-          <span className="text-2xl font-bold tabular-nums text-accent">{badges}<span className="text-lg text-muted"> / {ready.length}</span></span>
+          <span className="whitespace-nowrap text-2xl font-bold tabular-nums text-accent">{badges}<span className="text-lg text-muted"> / {ready.length}</span></span>
         </Link>
         <Link href="/bookmarks" className={tile}>
           <span className="text-base text-muted"><Trans>ブックマーク</Trans></span>
           <span className="text-2xl font-bold tabular-nums text-accent">{viewer.bookmarks.length}</span>
         </Link>
       </div>
+    </div>
     </div>
   );
 

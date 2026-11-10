@@ -36,7 +36,7 @@ export function ProgressSummary({
   return (
     <section className="px-4">
       <SectionBanner>{t`スタンプ`}</SectionBanner>
-      <div className="mt-4 flex items-center gap-5">
+      <div className="mt-4 flex flex-wrap items-center gap-5">
         <div
           role="progressbar"
           aria-label={t`スタンプの進み具合`}
@@ -64,7 +64,8 @@ export function ProgressSummary({
             <span className="mt-1 text-lg text-muted">/ {total}</span>
           </p>
         </div>
-        <p className="text-2xl font-bold leading-snug">{sentence}</p>
+        {/* At least 8 characters wide, or it goes under the ring rather than one character a line. */}
+        <p className="min-w-[8em] flex-1 text-2xl font-bold leading-snug">{sentence}</p>
       </div>
       {next ? (
         <Link href={`/spots/${next.id}`} className="tap-target mt-5 flex items-center justify-between gap-3 rounded-2xl bg-paper px-5 py-3">
