@@ -11,6 +11,7 @@ import { IntroVideo } from "@/components/IntroVideo";
 import { LastUpdated } from "@/components/LastUpdated";
 import { Notice } from "@/components/Notice";
 import { PlaceLine } from "@/components/PlaceLine";
+import { RidgeMark } from "@/components/RidgeMark";
 import { RichText } from "@/components/RichText";
 import { RouteJourney } from "@/components/RouteJourney";
 import { RouteStats } from "@/components/RouteStats";
@@ -25,6 +26,7 @@ import { pickText } from "@/lib/pick-text";
 import { pointsAsPlaces } from "@/lib/point-places";
 import { isGuidanceOnly, journeyOf, roleLabel, stopRoles, trailStops, walkRows } from "@/lib/route-stops";
 import type { MapPlace } from "@/lib/places";
+import type { Ridge } from "@/lib/ridge";
 import { parseVideoFile, parseVideoUrl } from "@/lib/video";
 
 /** Stops that have a position become map markers, numbered by their place in the list. */
@@ -85,6 +87,8 @@ export interface RouteViewProps {
   notices?: ReactNode;
   /** Offer the bookmark button (visitors only; the admin's preview leaves it out). */
   bookmarkable?: boolean;
+  /** The ridge of the whole trail, to mark where this course sits on it; left out in the admin's preview. */
+  ridge?: Ridge | null;
   /** The name of the "jump to a part" bar, for screen readers (a string: it is an attribute). */
   jumpLabel?: string;
   /** Show "スタンプ 3 / 14" over the walk: only for a visitor who has stamped somewhere (the admin's preview leaves it out). */
@@ -96,7 +100,7 @@ export interface RouteViewProps {
  * and the places (stamp places numbered, the others marked "no stamp") as a trail. The public page and the admin's live preview both render this, so what an
  * editor sees while typing is what visitors get. It reads no cookies and calls no server API.
  */
-export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref, offline, notices, showStampCount = false, jumpLabel = "", bookmarkable = false }: RouteViewProps) {
+export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref, offline, notices, showStampCount = false, jumpLabel = "", bookmarkable = false, ridge = null }: RouteViewProps) {
   const description = pickText(locale, route.descriptionJa, route.descriptionEn);
   const stops = buildStops(route, locale, spotHref, labels);
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
@@ -137,16 +141,31 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
         <div className={SIDE}>
           {/* The cover: in one column the photo runs edge to edge and fades into the page at the bottom, and the name sits on the
               fade, so photo and title read as one. In two columns it is a plain framed photo with the name under it. */}
-          {photo ? <CoverPhoto photo={photo} className="order-1 @4xl:order-none" /> : null}
+          {photo ? (
+            // Two columns, Japanese, a tall screen: the name also stands vertically beside the framed photo, like the label
+            // of a scroll (docs/design-language.md, phase 3). A copy for the eye only; the h1 below stays for screen readers.
+            // On a phone the cover is too short for it (its lower half fades into the page), so the name stays on the fade.
+            <div className="order-1 @4xl:order-none @4xl:flex @4xl:items-start @4xl:gap-5">
+              <CoverPhoto photo={photo} className="@4xl:min-w-0 @4xl:flex-1" />
+              <p aria-hidden="true" className="hidden shrink-0 font-serif text-4xl font-bold leading-snug tracking-widest text-accent tall:@4xl:block tall:[writing-mode:vertical-rl]">
+                <NameRuby title={title} reading={route.nameKana} />
+              </p>
+            </div>
+          ) : null}
           <header className={`relative order-2 px-4 @4xl:order-none @4xl:mt-0 @4xl:px-0 ${photo ? "-mt-20" : ""}`}>
             {/* In Japanese the name can carry its reading over it; the heading sits a little lower to give the reading room. */}
-            <h1 className="min-w-0 text-4xl font-bold leading-tight has-[rt]:pt-4 @4xl:text-4xl">
+            <h1 className={`min-w-0 text-4xl font-bold leading-tight has-[rt]:pt-4 @4xl:text-4xl ${photo ? "tall:@4xl:sr-only" : ""}`}>
               <NameRuby title={title} reading={route.nameKana} />
             </h1>
             {route.prefecture || route.municipality ? (
               <p className="mt-2 text-lg text-muted">
                 <PlaceLine prefecture={route.prefecture} place={municipalityName(locale, route.municipality)} locale={locale} />
               </p>
+            ) : null}
+            {ridge ? (
+              <div className="mt-4">
+                <RidgeMark ridge={ridge} order={route.order} />
+              </div>
             ) : null}
             <div className="mt-5">
               <RouteStats route={route} icons tips walkStyle={journey?.style ?? null} />
