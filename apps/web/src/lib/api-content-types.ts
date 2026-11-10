@@ -44,7 +44,8 @@ export interface PublicRoute {
   sortOrder: number;
   status: "ready" | "soon";
   publishedSpotCount: number;
-  sketch: [number, number][] | null;
+  /** [lng, lat] with the height when the line has one. */
+  sketch: [lng: number, lat: number, ele?: number][] | null;
   line: { type: "LineString"; coordinates: [number, number, number?][] } | null;
   /** Side trips (寄り道) to published places; in the detail only. */
   sideLines?: { spotId: string; coordinates: [number, number, number?][] }[];

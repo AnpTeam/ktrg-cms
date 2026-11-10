@@ -6,12 +6,12 @@ import { IntroVideo } from "@/components/IntroVideo";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { Notice } from "@/components/Notice";
 import { SectionBanner } from "@/components/SectionBanner";
-import { StampGrid } from "@/components/StampGrid";
 import { Localized } from "@/components/Localized";
 import { PlaceLine } from "@/components/PlaceLine";
 import { RoutePill } from "@/components/RoutePill";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { LandingMap } from "@/components/landing/LandingMap";
+import { LandingStory } from "@/components/landing/LandingStory";
 import { BlogCard } from "@/components/landing/BlogCard";
 import { TrailNotices } from "@/components/landing/TrailNotices";
 import { useHomeWords } from "@/components/landing/useHomeWords";
@@ -26,8 +26,6 @@ import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
 import type { EmbedVideo } from "@/lib/video";
 import { buttonStyle } from "@/components/button";
 
-const primary =
-  buttonStyle("primary", "lg", "flex");
 const secondary =
   buttonStyle("secondary", "lg", "flex");
 // Panels have no outline: a light grey fill with round corners, and room around them.
@@ -92,33 +90,11 @@ export function Landing({
 
       {top ? <div className="@[42rem]:col-span-2">{top}</div> : null}
 
+      {/* A first-time visitor: the story in chapters (what it is, the rally, where to start), edge to edge like the hero. */}
       {top ? null : (
-        <section aria-labelledby="rally-title" className="flex flex-col gap-3 @[42rem]:col-span-2">
-          <div className="px-4">
-            <SectionBanner>
-              <span id="rally-title">
-                {w.rallyHeading}
-              </span>
-            </SectionBanner>
-          </div>
-          <div className={`${panel} grid gap-5 @[42rem]:grid-cols-2 @[42rem]:items-center @[42rem]:gap-10`}>
-            <div className="flex flex-col gap-3">
-              <p className="font-serif text-2xl font-bold leading-snug">
-                {w.rallyLead}
-              </p>
-              <p className="max-w-prose text-lg leading-8">
-                {w.rallyText}
-              </p>
-              <Link href="/rallies" className={`${secondary} mt-1 @[42rem]:w-fit`}>
-                <Trans>ラリーを見る</Trans>
-              </Link>
-            </div>
-            {/* A sample of the seals: the page's own picture, so a screen reader skips it. */}
-            <div aria-hidden="true">
-              <StampGrid total={8} stamped={new Set([1, 2, 3])} showNext={false} columns={4} />
-            </div>
-          </div>
-        </section>
+        <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
+          <LandingStory routes={routes} w={w} />
+        </div>
       )}
 
       {firstRoutes.length > 0 ? (
@@ -169,6 +145,7 @@ export function Landing({
         <BlogCard posts={posts} locale={locale} />
       </div>
 
+      {top ? (
       <section aria-labelledby="story-title" className="flex flex-col gap-3 @[42rem]:col-span-2">
         <div className="px-4">
           <SectionBanner>
@@ -197,6 +174,7 @@ export function Landing({
           </figure>
         </div>
       </section>
+      ) : null}
 
       {introVideo ? (
         <section className="flex flex-col gap-3 @[42rem]:col-span-2">
@@ -296,22 +274,6 @@ export function Landing({
           {w.beforeNotice}
         </Notice>
       </section>
-
-      {top ? null : (
-        <section className="flex flex-col gap-3 px-4 @[42rem]:col-span-2 @[42rem]:hidden">
-          <SectionBanner>
-            {w.startHeading}
-          </SectionBanner>
-          <div className="flex flex-col gap-3">
-            <Link href="/register" className={primary}>
-              <Trans>新規登録</Trans>
-            </Link>
-            <Link href="/routes" className={secondary}>
-              <Trans>ルートをさがす</Trans>
-            </Link>
-          </div>
-        </section>
-      )}
 
       <footer className="flex flex-col gap-4 border-t-2 border-line px-4 pb-6 pt-6 @[42rem]:col-span-2">
         <p className="text-base text-muted">

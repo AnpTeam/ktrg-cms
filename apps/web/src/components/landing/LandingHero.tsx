@@ -23,14 +23,19 @@ export function LandingHero({ slides, locale, line, title, children }: { slides:
   const photos: HeroSlide[] = slides.flatMap((s) => (s.src ? [{ src: s.src, alt: locale === "ja" ? s.altJa : s.altEn, credit: s.credit, unoptimized: true }] : []));
   return (
     <section aria-labelledby="hero-title" className="overflow-hidden bg-surface">
-      <div className="relative h-80 @[34rem]:h-96 @[42rem]:h-[30rem]">
+      {/* A first-time visitor gets a taller picture with the line set vertically at the top right (the reading register);
+          a low screen keeps the line across the bottom. */}
+      <div className={`relative h-80 @[34rem]:h-96 @[42rem]:h-[30rem] ${title ? "" : "tall:h-[min(78svh,44rem)]"}`}>
         <HeroSlides slides={photos.length > 0 ? photos : [FALLBACK]}>
-          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
-          <div className="absolute inset-0 mx-auto flex max-w-6xl flex-col justify-end p-4 @[34rem]:p-8 @[42rem]:p-10">
+          <div className={`absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent ${title ? "" : "tall:bg-gradient-to-l tall:from-black/65 tall:via-black/10"}`} />
+          <div className={`absolute inset-0 mx-auto flex max-w-6xl flex-col justify-end p-4 @[34rem]:p-8 @[42rem]:p-10 ${title ? "" : "tall:items-end tall:justify-start tall:pt-8"}`}>
             {title ? (
               <p className="font-serif text-lg font-bold text-white [text-shadow:0_1px_6px_rgb(0_0_0/0.7)] @[34rem]:text-xl">{line}</p>
             ) : null}
-            <h1 id="hero-title" className="font-serif text-3xl font-bold leading-snug text-white [text-shadow:0_1px_8px_rgb(0_0_0/0.7)] @[34rem]:text-4xl @[42rem]:text-5xl">
+            <h1
+              id="hero-title"
+              className={`font-serif text-3xl font-bold leading-snug text-white [text-shadow:0_1px_8px_rgb(0_0_0/0.7)] @[34rem]:text-4xl @[42rem]:text-5xl ${title ? "" : "tall:max-h-full tall:tracking-widest tall:[writing-mode:vertical-rl]"}`}
+            >
               <span className="sr-only">
                 <Trans>葛城修験</Trans>{" "}
               </span>

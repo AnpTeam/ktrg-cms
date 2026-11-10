@@ -16,8 +16,8 @@ export { areaFromBounds, sketchFromPoints };
 // fetches it on the server. Pure mappers first (unit-tested), then the fetchers. Server code only: it is on the
 // client-boundary list, like the content module.
 
-/** A sketch from the API's list answer, which has only [lng, lat] and is already short. */
-function sketchFromList(sketch: [number, number][] | null): Sketch | null {
+/** A sketch from the API's list answer: [lng, lat] (and the height when known), already short. */
+function sketchFromList(sketch: [lng: number, lat: number, ele?: number][] | null): Sketch | null {
   return sketch && sketch.length >= 2 ? sketchFromPoints(sketch, 40) : null;
 }
 
