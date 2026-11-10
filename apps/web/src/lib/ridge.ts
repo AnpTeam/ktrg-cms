@@ -17,6 +17,8 @@ export interface Ridge {
   courses: number;
   /** Highest point drawn, in metres. */
   topM: number;
+  /** Where each course drawn runs along the line, [from, to] in the box's x, keyed by course order. */
+  spans: Map<number, [number, number]>;
 }
 
 export const RIDGE_WIDTH = 1000;
@@ -29,11 +31,13 @@ export function ridgePath(courses: readonly RidgeCourse[]): Ridge | null {
     .sort((a, b) => a.order - b.order);
   // [km along the trail, metres]
   const points: [number, number][] = [];
+  const kmSpans: [number, number, number][] = []; // [order, from km, to km]
   let start = 0;
   for (const c of known) {
     const eles = c.sketch!.elevations!;
     const km = c.distanceKm!;
     eles.forEach((m, i) => points.push([start + (km * i) / (eles.length - 1), m]));
+    kmSpans.push([c.order, start, start + km]);
     start += km;
   }
   if (points.length < 2) return null;
@@ -44,5 +48,6 @@ export function ridgePath(courses: readonly RidgeCourse[]): Ridge | null {
   const y = (m: number) => RIDGE_HEIGHT - ((m - lowM) / span) * (RIDGE_HEIGHT * 0.9);
   const x = (km: number) => (km / start) * RIDGE_WIDTH;
   const d = points.map(([km, m], i) => `${i === 0 ? "M" : "L"}${x(km).toFixed(1)} ${y(m).toFixed(1)}`).join(" ");
-  return { d, courses: known.length, topM: Math.round(topM) };
+  const spans = new Map(kmSpans.map(([order, a, b]) => [order, [x(a), x(b)] as [number, number]]));
+  return { d, courses: known.length, topM: Math.round(topM), spans };
 }

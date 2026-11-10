@@ -11,6 +11,7 @@ import { RouteView } from "@/components/RouteView";
 import Link from "next/link";
 import { ChevronIcon } from "@/components/icons";
 import { getRoute, listPlacesForRoute, listRoutes, pickText, toMapPlace } from "@/lib/content";
+import { ridgePath } from "@/lib/ridge";
 import { initLingui } from "@/i18n/server";
 import { getMapSettings } from "@/lib/site-settings";
 import { getMyStamps } from "@/lib/my-stamps";
@@ -73,6 +74,7 @@ export default async function RouteDetailPage({ params }: Props) {
         showStampCount={mine.ids.size > 0}
         jumpLabel={i18n._(msg`このページの項目`)}
         bookmarkable
+        ridge={ridgePath(routes)}
         notices={
           notices.length > 0 ? (
             <>

@@ -11,6 +11,9 @@ test("courses are laid end to end in course order, by their length", () => {
   expect(ridge.d.endsWith(`L${RIDGE_WIDTH.toFixed(1)} ${(RIDGE_HEIGHT * 0.1).toFixed(1)}`)).toBe(true);
   expect(ridge.courses).toBe(2);
   expect(ridge.topM).toBe(300);
+  // Each course knows its own stretch, for the mark on its page.
+  expect(ridge.spans.get(1)).toEqual([0, 250]);
+  expect(ridge.spans.get(2)).toEqual([250, 1000]);
 });
 
 test("a course without a profile or a length is left out, not guessed", () => {
