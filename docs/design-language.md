@@ -28,7 +28,7 @@ reading register (motion, big pictures, vertical text) goes there.
 
 1. **The ridge line.** The trail runs about 112 km from the sea at Tomogashima to Kongō. We hold its real geometry. On
    reading pages it is the thread that ties sections together: drawn from the real route, never a decorative squiggle.
-   One thin stroke in `line` or `brand`, about 1.5 px.
+   One fine stroke in `line` or `brand`, about 1 px; thicker only where it crosses a photo and would be lost.
 2. **Twenty-eight chapters.** Each sutra mound carries a chapter of the Lotus Sutra (序品 is the first). Long reading
    pages are split into chapters, not "features"; a chapter mark is its number and chapter name, set like a sutra book.
 3. **The seal.** The shu (朱) stamp is the only vermilion on the site, and only for stamps. It is the reward; keep it
@@ -40,12 +40,12 @@ reading register (motion, big pictures, vertical text) goes there.
 ## Typography
 
 - **Headings:** Mincho (`--font-serif`), body: UD Gothic (`--font-sans`). System fonts only, as now.
-- **Vertical headlines (縦書き)** on reading pages, Japanese only: `writing-mode: vertical-rl`, at least `text-3xl`,
-  short (one or two lines of up to about 14 characters). Body text is always horizontal.
-- **English is never vertical.** Our English pages set the same headline horizontally. A Japanese page put through a
-  browser translator (Google Translate) must also fall back to horizontal: gosenone shows what happens otherwise —
-  "The colorful Gosenone" turned on its side. Scope vertical styles to Japanese text and turn them off when the page
-  has been machine translated (Google adds a `translated-ltr` class to `<html>`; check this when building).
+- **Vertical headlines (縦書き)** on reading pages: `writing-mode: vertical-rl`, at least `text-3xl`, short (one or two
+  lines of up to about 14 characters). Body text is always horizontal.
+- **English may be vertical too**, set sideways the same way. Our own English headlines are written short so they
+  fit. A page machine-translated by the browser is left as it falls; we do not design for it.
+- **Vertical needs height.** On a low screen (a phone on its side, under about 500 px tall) a vertical headline is set
+  horizontally, or it would run off the screen.
 - **Measure:** body text 35 to 40 Japanese characters a line on reading pages, `leading-8` or more.
 - **Hierarchy by size and space, not by boxes.** A section title over open space, not a title inside a card.
 
@@ -59,7 +59,11 @@ paragraphs are exactly what not to copy.
 
 - **One idea per screen** on a phone: a picture, a headline, two or three short lines.
 - **Space is the separator.** Between sections, large vertical space (about one screen-third), not borders or cards.
-- **Pictures full width** on phones; on wide screens they may break the column on one side.
+- **Each section has its own ground**, so the visitor feels "this is the next thing now": paper, the deeper surface
+  tone, a band of ink (the night ridge), a full picture. When a new section takes most of the screen, the page
+  background crossfades to its ground (about 500 ms). Grounds come from the colour tokens; text on each keeps 7:1.
+- **Pictures full width** on phones; on wide screens they may break the column on one side. Wide screens are checked
+  page by page as each phase is built.
 - **At most one button per section**, at the end of the section, and one main button at the end of the page.
 
 ## Motion
@@ -69,8 +73,16 @@ paragraphs are exactly what not to copy.
 - **Never hide content waiting for motion.** The page is complete and readable with no JavaScript, with
   `prefers-reduced-motion: reduce`, and before scripts load. The reveal is added on top: elements are visible by
   default and only start hidden once a script has confirmed motion is allowed.
-- **No loading screens, no scroll hijacking, no parallax, nothing that moves by itself without a pause button.**
-- **No library.** An IntersectionObserver of about 20 lines does it; GSAP or similar would be a new dependency.
+- **No loading screen in front of a page's content, no scroll hijacking, no parallax, nothing that moves by itself
+  without a pause button.**
+- **A loading overlay for real waits.** When an action takes time (starting navigation, fetching a route or an
+  offline pack), the screen dims and a small looping mark plays (the ridge line drawing itself, or the seal) with a
+  sentence saying what is happening. It appears only after about 300 ms, so quick actions never flash it; it has a
+  cancel button when the action can be stopped; under reduced motion the mark stands still. This one may be used in the
+  tools register.
+- **GSAP is allowed** (agreed 2026-11-10) where it does the job better than plain CSS: drawing the ridge line on
+  scroll, section ground changes, staggered reveals. Reading pages only, loaded on those pages (not in the shared
+  bundle), with `gsap.matchMedia()` so reduced motion gets the final state. Plain CSS stays the choice for small things.
 - **Tools register:** only the feedback that already exists (menus, toasts, the stamp press).
 
 ## Pictures
@@ -89,11 +101,13 @@ Numbered so we can discuss them by number.
 - D1. Start from something real in Katsuragi before choosing a shape, a colour or a motion.
 - D2. Use the ridge line, the chapters and the seal as the site's marks.
 - D3. Let space separate sections on reading pages.
-- D4. Set short Japanese headlines vertically on reading pages; horizontal everywhere else.
+- D4. Set short headlines vertically on reading pages when the screen is tall enough; horizontal everywhere else.
 - D5. Write headlines as a person would say them about this place, not as slogans.
 - D6. Give every reading section one picture or drawing, captioned.
 - D7. Keep the tools register plain, fast and the same on every page.
-- D8. Check every page with large text, a phone on its side, dark mode and reduced motion.
+- D8. Check every page with large text, a phone on its side, dark mode and reduced motion. Dark mode is to be made
+  calmer: today's near-black (`#0b0908`) is harsher than the warm light look. It is retuned as the new look settles
+  (see Phases), keeping the 7:1 text rule.
 
 **Don't**
 
@@ -103,14 +117,16 @@ Numbered so we can discuss them by number.
 - N4. No pill badges for things that are not a status (for example "日本遺産・大阪・和歌山・奈良").
 - N5. No pale grey body text; body text keeps 7:1.
 - N6. No content that only appears after an animation, and no loading screen.
-- N7. No vertical English, and no vertical text in the tools register.
+- N7. No vertical text in the tools register.
 - N8. No carousel that moves by itself without a pause button.
 - N9. No more than one red button on a screen.
 - N10. No emoji as icons; one icon set, one stroke weight.
 
 ## Drawing brief
 
-Drawings will be made by our own team. To make them usable in light and dark mode and at every size:
+Drawings will be made by our own team. The SVG art already in the app (icons, stamp faces, the logo, empty-state art)
+is ours too and stays, unless the team decides to replace a piece. To make new drawings usable in light and dark mode
+and at every size:
 
 - **Line drawings in one colour** on a transparent background, so the site can tint them (ink on paper, light on
   dark). Colour paintings are welcome for the hero, with a version that works on the dark page.
@@ -123,6 +139,25 @@ Drawings will be made by our own team. To make them usable in light and dark mod
   4. A walker on the ridge, small, for empty states.
 - Each drawing gets a line in the source record with who drew it and when.
 
+## Navigation and screen sizes
+
+The app is a phone-first PWA that must also be good on a desktop. The navigation does not change with the register:
+a reading page keeps the same tab bar or side menu, so a visitor can always get back to the map or their stamps.
+
+| Screen | Navigation | Reading pages |
+|---|---|---|
+| Phone upright (360 to 430 px) | Bottom tab bar, as now | One column; vertical headlines; full-width pictures; the ridge line runs down the page |
+| Phone on its side (`wide:`, under 600 px tall) | Side menu, as now | Two columns where a picture sits beside its words; headlines horizontal (not enough height) |
+| Tablet (768 to 1024 px) | Upright: tab bar; on its side: side menu | One wide column with room around it; pictures may break out on one side |
+| Desktop (1280 px and up) | Side menu, as now | A reading column of about 40 characters beside large pictures; the ridge line runs across the page, west to east |
+
+- The tab bar never hides on scroll and is never covered: reading-page grounds and pictures stop at it, and the
+  loading overlay dims the page but not the tab bar unless the action blocks it.
+- Sizes are chosen by the room a section has (container queries), not only by the screen, so the side menu and large
+  text never squeeze a section (the lesson of the home page on a phone on its side, #415).
+- Every phase is checked at: 360 × 740, 390 × 844, 430 × 932, 844 × 390, 932 × 430, 768 × 1024, 1024 × 768,
+  1280 × 800, 1440 × 900 and 1920 × 1080, in light and dark, at the largest text setting and with reduced motion.
+
 ## Phases
 
 0. This document (agreed do and don't list).
@@ -130,10 +165,10 @@ Drawings will be made by our own team. To make them usable in light and dark mod
    line drawn on scroll, the chapters, how stamps work in three lines, one button. English set horizontally.
 2. Home for signed-in visitors: a sentence and the next place first, a strip of seals; fewer tiles and boxes.
 3. Course page header: a vertical title on the cover, with the course's own piece of the line as its mark.
-4. Tools register: remove card-in-card nesting and extra badges; one panel style.
+4. Tools register: remove card-in-card nesting and extra badges; one panel style; the loading overlay.
+5. Dark mode retuned to a calmer, warmer dark across both registers (can move earlier if it hurts sooner).
 
-## Open
+## Settled
 
-- How each English reading page should feel without vertical headlines (likely: a large horizontal Mincho title with
-  the ridge line under it).
-- Whether the council's own map art may be used beside our drawings.
+- English headlines may be vertical too (Typography).
+- The council's map art is a reference only; we do not reproduce it.
