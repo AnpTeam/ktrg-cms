@@ -419,7 +419,7 @@ function StopRows({ route, onChooseStop }: { route: MapScreenRoute; onChooseStop
   const rides = { ferry: (n: number) => t`船で約${n}分`, bus: (n: number) => t`バスで約${n}分`, train: (n: number) => t`電車で約${n}分`, other: (n: number) => t`乗り物で約${n}分` };
   return (
     <section>
-      <h3 className="pb-2 text-xl font-bold">{t`スタンプの場所`}</h3>
+      <h2 className="pb-2 text-xl font-bold">{t`スタンプの場所`}</h2>
       <ol className="flex flex-col gap-2">
         {shown.map((spot) => {
           const onMap = route.stops?.some((x) => x.id === spot.id) ?? false;

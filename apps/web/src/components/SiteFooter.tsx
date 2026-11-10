@@ -37,7 +37,7 @@ export function SiteFooter({ locale, variant = "page" }: { locale: string; varia
         </Link>
       </nav>
       {/* A credit line, kept small: Japanese name on the Japanese pages, English name on the English ones. */}
-      <p lang={locale === "ja" ? "ja" : "en"} className={`text-sm text-muted ${sidebar ? "mt-2 whitespace-pre-line" : "mt-3"}`}>
+      <p lang={locale === "ja" ? "ja" : "en"} className={`text-base text-muted ${sidebar ? "mt-2 whitespace-pre-line" : "mt-3"}`}>
         {/* In the narrow sidebar the legal form (一般財団法人) sits on its own line above the name. */}
         {locale !== "ja" ? foundationEn : sidebar ? foundationJa.replace(/^一般財団法人/, "一般財団法人\n") : foundationJa}
       </p>

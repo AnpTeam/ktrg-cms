@@ -75,11 +75,12 @@ export function DirectoryView({
       </nav>
 
       {routes.length > 0 ? (
-        <form action="/places" method="get" className="flex flex-wrap items-end gap-3 px-4 wide:px-0">
+        <form action="/places" method="get" autoComplete="off" className="flex flex-wrap items-end gap-3 px-4 wide:px-0">
           {group ? <input type="hidden" name="group" value={group} /> : null}
           <label className="flex min-w-0 flex-1 flex-col gap-1 text-lg font-bold">
             {t`ルート`}
-            <select name="route" defaultValue={route ?? ""} className="tap-target w-full rounded-xl border-2 border-line bg-paper px-4 text-lg font-normal text-ink">
+            {/* key, and autoComplete off on the form: after Back the browser would put the old choice back in the box while the list shows the new address */}
+            <select key={route ?? "all"} name="route" defaultValue={route ?? ""} className="tap-target w-full rounded-xl border-2 border-line bg-paper px-4 text-lg font-normal text-ink">
               <option value="">{t`すべてのルート`}</option>
               {routes.map((r) => (
                 <option key={r.order} value={r.order}>

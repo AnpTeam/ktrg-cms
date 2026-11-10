@@ -34,7 +34,7 @@ export function RoutePill({ route, name, place, photo, brief = false }: { route:
         {!brief || soon ? (
           <span className="flex flex-wrap items-center gap-x-2 text-base leading-snug text-muted">
             {place ? <span>{place}</span> : null}
-            {soon ? <span className="rounded-full bg-line/25 px-2 text-sm font-bold">{t`準備中`}</span> : null}
+            {soon ? <span className="rounded-full bg-line/25 px-2 text-base font-bold">{t`準備中`}</span> : null}
           </span>
         ) : null}
         <span className={`block text-xl font-bold leading-snug @2xl:text-2xl ${soon ? "text-muted" : "text-ink"}`}>{name}</span>

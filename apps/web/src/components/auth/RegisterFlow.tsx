@@ -175,7 +175,7 @@ export function RegisterFlow({ next, loginHref }: { next?: string; loginHref: st
       <ChoiceCard icon={<MailIcon />} title={t`メールで登録`} onClick={() => go("name")} />
       <p className="mt-2 text-lg">
         {t`登録済みの方は`}{" "}
-        <Link href={loginHref} className="font-bold">
+        <Link href={loginHref} className="tap-target inline-flex items-center font-bold text-accent underline underline-offset-4">
           {t`ログイン`}
         </Link>
       </p>
