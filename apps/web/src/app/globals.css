@@ -8,11 +8,14 @@
   }
 }
 
-/* Tall enough for a vertical (縦書き) headline: under this a phone on its side would run the headline off the screen,
-   so it is set horizontally there (docs/design-language.md, Typography). */
+/* Where a vertical (縦書き) headline is set: Japanese text only (English set sideways was unreadable), and only on a
+   screen tall enough for it; a phone on its side would run the headline off the screen. Everything that `tall:` lays
+   out exists for the vertical headline, so it follows the same rule (docs/design-language.md, Typography). */
 @custom-variant tall {
   @media (min-height: 500px) {
-    @slot;
+    &:lang(ja) {
+      @slot;
+    }
   }
 }
 
