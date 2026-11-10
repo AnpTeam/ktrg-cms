@@ -108,9 +108,9 @@ Numbered so we can discuss them by number.
 - D5. Write headlines as a person would say them about this place, not as slogans.
 - D6. Give every reading section one picture or drawing, captioned.
 - D7. Keep the tools register plain, fast and the same on every page.
-- D8. Check every page with large text, a phone on its side, dark mode and reduced motion. Dark mode is to be made
-  calmer: today's near-black (`#0b0908`) is harsher than the warm light look. It is retuned as the new look settles
-  (see Phases), keeping the 7:1 text rule.
+- D8. Check every page with large text, a phone on its side, dark mode and reduced motion. Dark mode is a warm
+  charcoal (`#1e1a17`, panels `#29241f`), not near-black; the dark band of a reading page (`night`) stays deeper than
+  the page in both themes. Every text pair keeps 7:1 (contrast.test.ts).
 
 **Don't**
 
