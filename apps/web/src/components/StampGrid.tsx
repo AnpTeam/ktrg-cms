@@ -74,7 +74,7 @@ export function StampGrid({
                     {name}
                   </span>
                 ) : null}
-                {state === "next" ? <span className="text-sm font-bold text-accent">{t`つぎ`}</span> : null}
+                {state === "next" ? <span className="text-base font-bold text-accent">{t`つぎ`}</span> : null}
               </p>
               <span className="sr-only">{name ? `${status} ${name}` : status}</span>
             </li>

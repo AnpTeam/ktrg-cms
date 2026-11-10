@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { buttonStyle } from "./button";
 import { ShareIcon } from "./icons";
@@ -10,15 +10,20 @@ import { ShareIcon } from "./icons";
 // page's jump bar: BookmarkButton.)
 export function ShareRoute({ route }: { route: { nameJa: string } }) {
   const { t } = useLingui();
-  const [copied, setCopied] = useState(false);
+  // A count, not a flag: a second copy restarts the 2.5 s, and leaving the page clears the timer.
+  const [copied, setCopied] = useState(0);
+  useEffect(() => {
+    if (!copied) return;
+    const id = setTimeout(() => setCopied(0), 2500);
+    return () => clearTimeout(id);
+  }, [copied]);
   const share = async () => {
     const url = window.location.href;
     try {
       if (typeof navigator.share === "function") await navigator.share({ title: route.nameJa, url });
       else {
         await navigator.clipboard.writeText(url);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2500);
+        setCopied((n) => n + 1);
       }
     } catch {
       // The person closed the share sheet, or the browser refused the clipboard: nothing to do.

@@ -91,8 +91,8 @@ export function IntroFlow({ seen, guide }: { seen: boolean; guide: { title: stri
   // The how-to-play words come from the server (the page text an editor wrote, else the built-in one); null only once the intro is seen.
   const help = { guideTitle: guide?.title ?? "", guideIntro: guide?.intro ?? "", steps: guide?.steps ?? [] };
   const installed = useSyncExternalStore(subscribeStandalone, isStandalone, () => true);
-  // The steps, in order; the home-screen step is left out once the app is opened from the home screen.
-  const steps = ["language", "about", "features", "play", ...(installed ? [] : ["install"]), "start"] as const;
+  // The steps, in order: three, kept short for older visitors; the home-screen step is added only when not yet installed.
+  const steps = ["language", "about", "play", ...(installed ? [] : ["install"])] as const;
   const STEPS = steps.length;
   const current = steps[step];
 
@@ -216,27 +216,6 @@ export function IntroFlow({ seen, guide }: { seen: boolean; guide: { title: stri
             </>
           ) : null}
 
-          {current === "features" ? (
-            <>
-              <h2 id="intro-title" className="text-3xl font-bold text-accent">
-                <Trans>このアプリでわかること</Trans>
-              </h2>
-              <ul className="flex flex-col gap-3">
-                {[
-                  { title: <Trans>地図とルート</Trans>, text: <Trans>全{TOTAL_ROUTES}区間の道すじを、地図で見られます。距離、時間、きつさ、行き方もわかります。</Trans> },
-                  { title: <Trans>場所の物語</Trans>, text: <Trans>経由地ごとに、写真と、名前の由来や歴史を読めます。近くの駅、バス停、駐車場もわかります。</Trans> },
-                  { title: <Trans>最新のお知らせ</Trans>, text: <Trans>通行止めなどの知らせを、確認した日づけで見られます。</Trans> },
-                  { title: <Trans>スタンプラリー</Trans>, text: <Trans>歩いた場所で、スタンプを集められます。登録しなくても始められます。</Trans> },
-                ].map((f, i) => (
-                  <li key={i} className="rounded-3xl bg-surface p-4">
-                    <h2 className="text-xl font-bold leading-snug text-accent">{f.title}</h2>
-                    <p className="mt-1 text-lg leading-7">{f.text}</p>
-                  </li>
-                ))}
-              </ul>
-            </>
-          ) : null}
-
           {current === "play" ? (
             <>
               <h2 id="intro-title" className="text-3xl font-bold text-accent">{help.guideTitle}</h2>
@@ -253,21 +232,14 @@ export function IntroFlow({ seen, guide }: { seen: boolean; guide: { title: stri
                   </li>
                 ))}
               </ol>
-            </>
-          ) : null}
-
-          {current === "install" ? <InstallStep /> : null}
-
-          {current === "start" ? (
-            <>
-              <h2 id="intro-title" className="text-3xl font-bold text-accent">
-                <Trans>さあ、歩きはじめましょう</Trans>
-              </h2>
               <p className="text-lg leading-8">
                 <Trans>まずは、歩きたい道をえらびます。登録しなくても、スタンプは押せます。</Trans>
               </p>
             </>
           ) : null}
+
+          {current === "install" ? <InstallStep /> : null}
+
         </div>
 
         <div className="flex flex-col gap-3">
