@@ -8,7 +8,9 @@ import { listNotices } from "@/lib/notices";
 import { OfflinePack } from "@/components/OfflinePack";
 import { ShareRoute } from "@/components/ShareRoute";
 import { RouteView } from "@/components/RouteView";
-import { getRoute, listPlacesForRoute, pickText, toMapPlace } from "@/lib/content";
+import Link from "next/link";
+import { ChevronIcon } from "@/components/icons";
+import { getRoute, listPlacesForRoute, listRoutes, pickText, toMapPlace } from "@/lib/content";
 import { initLingui } from "@/i18n/server";
 import { getMapSettings } from "@/lib/site-settings";
 import { getMyStamps } from "@/lib/my-stamps";
@@ -44,8 +46,11 @@ export default async function RouteDetailPage({ params }: Props) {
       </div>
     );
   }
-  // The places are looked up by the route's number, so they wait for the route.
-  const places = (await listPlacesForRoute(route.order)).map((p) => toMapPlace(i18n.locale, p));
+  // The places are looked up by the route's number, so they wait for the route; the course list gives the next course.
+  const [placeRows, routes] = await Promise.all([listPlacesForRoute(route.order), listRoutes()]);
+  const places = placeRows.map((p) => toMapPlace(i18n.locale, p));
+  const next = routes.filter((r) => r.order > route.order).sort((a, b) => a.order - b.order)[0];
+  const nextName = next ? pickText(i18n.locale, next.nameJa, next.nameEn) : null;
   const notices = allNotices.filter((n) => n.routeId === null || n.routeId === route.id);
 
   return (
@@ -79,6 +84,20 @@ export default async function RouteDetailPage({ params }: Props) {
           ) : null
         }
       />
+      {/* The trail goes on: the next course, so a walker reading the whole page does not have to go back to the list. */}
+      {next && nextName ? (
+        <Link href={`/routes/${next.id}`} className="tap-target mx-4 flex items-center justify-between gap-3 rounded-2xl bg-surface p-4 no-underline">
+          <span className="min-w-0">
+            <span className="block text-base text-muted">
+              <Trans>つぎのルート</Trans>
+            </span>
+            <span lang={nextName.lang} className="block text-xl font-bold leading-snug">
+              {next.order}. {nextName.text}
+            </span>
+          </span>
+          <ChevronIcon />
+        </Link>
+      ) : null}
       {/* Share: handy, but not what a visitor opens the page for, so it comes last (the bookmark is in the jump bar). */}
       <ShareRoute route={{ nameJa: route.nameJa }} />
     </div>
