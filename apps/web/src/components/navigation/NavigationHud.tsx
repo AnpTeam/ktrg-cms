@@ -7,6 +7,7 @@ import { getRouteLine } from "@/lib/navigation/line-client";
 import { loadResume } from "@/lib/navigation/resume";
 import { useLingui } from "@lingui/react/macro";
 import { Medal } from "@/components/Medal";
+import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { StampHere } from "@/components/StampHere";
 import { compassPoint, OFF_ROUTE_LOCKED_M, offRouteCardShown, type CompassPoint, type TurnKind } from "@/lib/navigation/geometry";
 import { modelFromMapRoute } from "@/lib/navigation/input";
@@ -197,6 +198,9 @@ export function NavigationToast() {
   if (!session) return null;
 
   const { snapshot: snap, routeName } = session;
+  // Just started and no position yet: the screen dims and says so rather than look frozen. A problem (denied, timed out)
+  // or a pause takes over with its own message; やめる ends the navigation.
+  const finding = snap.lastFixAtMs === null && !snap.problem && !snap.paused ? <LoadingOverlay label={t`いまの位置を調べています…`} onCancel={stop} /> : null;
   const st = snap.state;
   const target = st.targetId ? session.stops[st.targetId] : undefined;
   const turnWords: Record<TurnKind, string> = {
@@ -395,6 +399,7 @@ export function NavigationToast() {
       <>
         {prompts}
         {endPrompt}
+        {finding}
         {/* Phone: the top of the screen itself, from the status bar down (a solid box there keeps iOS from blurring it). */}
         <section ref={banner} aria-label={t`ナビ中：${routeName}`} className="fixed inset-x-0 top-0 z-30 flex max-h-[70dvh] flex-col gap-1 overflow-y-auto rounded-b-2xl border-b border-line/30 bg-paper px-4 pb-3 pt-[calc(0.75rem+var(--top-clear))] shadow-lg md:inset-x-auto md:left-[calc(50%-14rem)] md:top-[calc(0.5rem+var(--top-clear))] md:w-[28rem] md:rounded-2xl md:border-b-0 md:pt-3 md:shadow-2xl md:ring-1 md:ring-line/30">
           <div className="flex items-start gap-2">
@@ -455,6 +460,7 @@ export function NavigationToast() {
       aria-label={t`ナビ中：${routeName}`}
       className="fixed inset-x-3 bottom-[calc(max(0.75rem,var(--tabbar-room))+env(safe-area-inset-bottom))] z-30 flex max-h-[50dvh] transition-[bottom] duration-200 motion-reduce:transition-none flex-col gap-2 overflow-y-auto rounded-2xl bg-paper px-3 py-2 shadow-2xl ring-1 ring-line/30 md:inset-x-auto md:bottom-6 md:right-6 md:w-[24rem]"
     >
+      {finding}
       {/* The direction and distance come first; with large text the two buttons drop to their own row instead of cutting it short. */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="min-w-[12rem] flex-1">{main}</div>
