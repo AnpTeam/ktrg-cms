@@ -195,11 +195,6 @@ export function filterByPrefecture<T extends { prefecture: Prefecture | null }>(
   return prefecture ? routes.filter((r) => r.prefecture === prefecture) : routes;
 }
 
-/** Sections by prefecture only when every route has one; otherwise one plain ribbon. */
-export function canGroupByPrefecture(routes: { prefecture: Prefecture | null }[]) {
-  return routes.length > 0 && routes.every((r) => r.prefecture !== null);
-}
-
 /**
  * Sample content is for design review only. It is on by default in development and in Vercel preview
  * deployments (so all 19 courses can be looked at without touching any setting), and off in production

@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
 import { StampGrid } from "@/components/StampGrid";
 import { buttonStyle } from "@/components/button";
+import { Chapter } from "@/components/landing/Chapter";
 import { StoryMotion } from "@/components/landing/StoryMotion";
 import type { RouteSummary } from "@/lib/content";
 import type { HomeSlot } from "@/lib/home-text";
@@ -70,25 +71,6 @@ export function LandingStory({ routes, w }: { routes: RouteSummary[]; w: Record<
         </p>
       </Chapter>
     </StoryMotion>
-  );
-}
-
-/**
- * One chapter: its ground, a headline set vertically on the right when the screen is tall enough (else across the
- * top), and the words beside it, which fade up together when motion is on (`data-reveal`).
- */
-function Chapter({ ground, heading, id, children }: { ground: string; heading: string; id: string; children: ReactNode }) {
-  return (
-    <section data-ground aria-labelledby={id} className={`${ground} @container py-20 @[42rem]:py-28`}>
-      <div className="mx-auto flex max-w-5xl flex-col gap-8 px-5 tall:flex-row-reverse tall:items-start tall:gap-6 @[42rem]:px-10 tall:@[42rem]:gap-16">
-        <h2 id={id} className="font-serif text-3xl font-bold leading-snug tracking-widest text-inherit tall:max-h-[22rem] tall:[writing-mode:vertical-rl] @[42rem]:text-4xl">
-          {heading}
-        </h2>
-        <div data-reveal className="flex min-w-0 max-w-[40em] flex-1 flex-col gap-6">
-          {children}
-        </div>
-      </div>
-    </section>
   );
 }
 
