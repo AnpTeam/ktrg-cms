@@ -8127,3 +8127,7 @@ msgstr "海から山へ。{0}区間の道の高さを、順につなげた線で
 #: src/components/RidgeMark.tsx:27
 msgid "海から山への道のうち、太い線がこの区間です。"
 msgstr "海から山への道のうち、太い線がこの区間です。"
+
+#: src/components/landing/Landing.tsx
+msgid "ほかの{soonCount}区間は、準備中です。"
+msgstr "ほかの{soonCount}区間は、準備中です。"

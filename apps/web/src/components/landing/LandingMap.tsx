@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Trans, useLingui } from "@lingui/react/macro";
-import { SectionBanner } from "@/components/SectionBanner";
 import { englishMaxZoom, gsiTileListUrl } from "@/lib/map";
 import { rectangleRing } from "@/lib/map-screen";
 import type { RouteSummary } from "@/lib/content";
@@ -25,7 +24,8 @@ const worldY = (lat: number, z: number) => {
   return ((1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2) * TILE * 2 ** z;
 };
 
-export function LandingMap({ routes, heading }: { routes: RouteSummary[]; heading: string }) {
+/** The map of every course, edge to edge, inside the home page's 歩く道 chapter (which carries the heading). */
+export function LandingMap({ routes }: { routes: RouteSummary[] }) {
   const { t, i18n } = useLingui();
   const boxes = routes.flatMap((r) => (r.area ? [{ order: r.order, ring: rectangleRing(r.area) }] : []));
   if (boxes.length === 0) return null;
@@ -48,13 +48,7 @@ export function LandingMap({ routes, heading }: { routes: RouteSummary[]; headin
   const count = boxes.length;
 
   return (
-    // From 1024 px the page is a centred column: the negative margins take this back out to the edges of the area beside the sidebar.
-    <section className="flex flex-col gap-3 @[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
-      <div className="px-4 @[42rem]:mx-auto @[42rem]:w-full @[42rem]:max-w-6xl @[42rem]:px-10">
-        <SectionBanner>
-          {heading}
-        </SectionBanner>
-      </div>
+    <div className="flex flex-col gap-3">
       <div className="relative h-56 overflow-clip bg-paper [perspective:900px] @[42rem]:h-[28rem]">
         <div
           role="img"
@@ -98,11 +92,11 @@ export function LandingMap({ routes, heading }: { routes: RouteSummary[]; headin
           <Trans>国土地理院（地理院タイル）</Trans>
         </a>
       </div>
-      <div className="px-4 @[42rem]:mx-auto @[42rem]:w-full @[42rem]:max-w-6xl @[42rem]:px-10">
-        <Link href="/map" className={buttonStyle("secondary", "lg", "flex")}>
+      <div className="mx-auto w-full max-w-5xl px-5 @[42rem]:px-10">
+        <Link href="/map" className={buttonStyle("secondary", "lg", "flex w-full @[34rem]:w-fit")}>
           <Trans>マップをひらく</Trans>
         </Link>
       </div>
-    </section>
+    </div>
   );
 }
