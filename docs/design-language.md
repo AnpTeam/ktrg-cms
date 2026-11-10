@@ -42,8 +42,9 @@ reading register (motion, big pictures, vertical text) goes there.
 - **Headings:** Mincho (`--font-serif`), body: UD Gothic (`--font-sans`). System fonts only, as now.
 - **Vertical headlines (縦書き)** on reading pages: `writing-mode: vertical-rl`, at least `text-3xl`, short (one or two
   lines of up to about 14 characters). Body text is always horizontal.
-- **English may be vertical too**, set sideways the same way. Our own English headlines are written short so they
-  fit. A page machine-translated by the browser is left as it falls; we do not design for it.
+- **Vertical is for Japanese only.** English set sideways was tried (#417) and was unreadable, so English headlines
+  are set horizontally, large, in the same place. The rule lives in the `tall:` variant (Japanese text on a tall
+  screen), so nothing else has to remember it.
 - **Vertical needs height.** On a low screen (a phone on its side, under about 500 px tall) a vertical headline is set
   horizontally, or it would run off the screen.
 - **Measure:** body text 35 to 40 Japanese characters a line on reading pages, `leading-8` or more.
@@ -101,7 +102,7 @@ Numbered so we can discuss them by number.
 - D1. Start from something real in Katsuragi before choosing a shape, a colour or a motion.
 - D2. Use the ridge line, the chapters and the seal as the site's marks.
 - D3. Let space separate sections on reading pages.
-- D4. Set short headlines vertically on reading pages when the screen is tall enough; horizontal everywhere else.
+- D4. Set short Japanese headlines vertically on reading pages when the screen is tall enough; horizontal everywhere else.
 - D5. Write headlines as a person would say them about this place, not as slogans.
 - D6. Give every reading section one picture or drawing, captioned.
 - D7. Keep the tools register plain, fast and the same on every page.
@@ -117,7 +118,7 @@ Numbered so we can discuss them by number.
 - N4. No pill badges for things that are not a status (for example "日本遺産・大阪・和歌山・奈良").
 - N5. No pale grey body text; body text keeps 7:1.
 - N6. No content that only appears after an animation, and no loading screen.
-- N7. No vertical text in the tools register.
+- N7. No vertical English, and no vertical text in the tools register.
 - N8. No carousel that moves by itself without a pause button.
 - N9. No more than one red button on a screen.
 - N10. No emoji as icons; one icon set, one stroke weight.
@@ -170,5 +171,5 @@ a reading page keeps the same tab bar or side menu, so a visitor can always get 
 
 ## Settled
 
-- English headlines may be vertical too (Typography).
+- English headlines are horizontal; vertical is Japanese only (tried in #417, reverted).
 - The council's map art is a reference only; we do not reproduce it.
