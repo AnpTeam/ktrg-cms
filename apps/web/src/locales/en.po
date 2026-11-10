@@ -8127,7 +8127,3 @@ msgstr "From the sea to the mountains: the height of {0} courses, joined in orde
 #: src/components/RidgeMark.tsx:27
 msgid "海から山への道のうち、太い線がこの区間です。"
 msgstr "On the trail from the sea to the mountains, the thick line is this course."
-
-#: src/components/landing/Landing.tsx
-msgid "ほかの{soonCount}区間は、準備中です。"
-msgstr "The other {soonCount} courses are still being prepared."

@@ -46,7 +46,7 @@ reading register (motion, big pictures, vertical text) goes there.
   are set horizontally, large, in the same place. The rule lives in the `tall:` variant (Japanese text on a tall
   screen), so nothing else has to remember it.
 - **On a phone the vertical headline floats** at the right: the words run beside it and then use the full width under
-  it, so no column is kept for it. With room, headline and words stand side by side (\`Chapter\`).
+  it, so no column is kept for it. With room, headline and words stand side by side (`Chapter`).
 - **Vertical needs height.** On a low screen (a phone on its side, under about 500 px tall) a vertical headline is set
   horizontally, or it would run off the screen.
 - **Measure:** body text 35 to 40 Japanese characters a line on reading pages, `leading-8` or more.

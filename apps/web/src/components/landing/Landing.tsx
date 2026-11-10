@@ -10,7 +10,11 @@ import { LandingMap } from "@/components/landing/LandingMap";
 import { LandingStory } from "@/components/landing/LandingStory";
 import { Chapter, type Ground } from "@/components/landing/Chapter";
 import { StoryMotion } from "@/components/landing/StoryMotion";
-import { TrailRibbon } from "@/components/TrailRibbon";
+import { Localized } from "@/components/Localized";
+import { PlaceLine } from "@/components/PlaceLine";
+import { RoutePill } from "@/components/RoutePill";
+import { municipalityName } from "@/lib/municipalities";
+import { pickText } from "@/lib/pick-text";
 import { BlogCard } from "@/components/landing/BlogCard";
 import { TrailNotices } from "@/components/landing/TrailNotices";
 import { useHomeWords } from "@/components/landing/useHomeWords";
@@ -71,12 +75,8 @@ export function Landing({
   // Grounds for the chapters after the first ones: surface, paper, surface ... in page order.
   let turn = 0;
   const ground = (): Ground => (turn++ % 2 === 0 ? "story-ground-surface" : "story-ground-paper");
-  // The courses a visitor can walk now, in walking order (only a few open at first, far apart: 1 and 16). With none open
-  // yet, the first ones, so the section is never empty. The rest are counted in words and listed on /routes.
-  const inOrder = [...routes].sort((a, b) => a.order - b.order);
-  const open = inOrder.filter((r) => r.status === "ready");
-  const firstRoutes = (open.length > 0 ? open : inOrder).slice(0, PREVIEW_ROUTES);
-  const soonCount = routes.filter((r) => r.status === "soon").length;
+  // Published courses first (only a few at first, far apart: 1 and 16), then the ones being prepared; each keeps its number.
+  const firstRoutes = [...routes].sort((a, b) => Number(a.status === "soon") - Number(b.status === "soon") || a.order - b.order).slice(0, PREVIEW_ROUTES);
 
   return (
     // One column on a phone and a tablet; two columns on a desktop. Most sections span both. Sized by the page's own width, not
@@ -109,11 +109,33 @@ export function Landing({
               heading={w.routesHeading}
               id="routes-title"
               wide={
-                // The rows need the full width (a name, its numbers and a photo); beside a vertical heading they were squeezed.
+                // The capsules need the full width (the photo fades in from the right); beside a vertical heading they were squeezed.
                 <div className="flex flex-col gap-10">
-                  <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 @[42rem]:px-6">
-                    <TrailRibbon routes={firstRoutes} hrefFor={(route) => `/routes/${route.id}`} locale={locale} single />
-                    <div className="px-5 @[42rem]:px-4">
+                  <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-5 @[42rem]:px-10">
+                    <ul className="flex flex-col gap-3">
+                      {firstRoutes.map((route) => {
+                        const pill = (
+                          <RoutePill
+                            route={route}
+                            name={<Localized value={pickText(locale, route.nameJa, route.nameEn)} />}
+                            place={route.prefecture || route.municipality ? <PlaceLine prefecture={route.prefecture} place={municipalityName(locale, route.municipality)} locale={locale} /> : null}
+                            photo={route.photoUrl}
+                          />
+                        );
+                        return (
+                          <li key={route.id}>
+                            {route.status === "soon" ? (
+                              pill
+                            ) : (
+                              <Link href={`/routes/${route.id}`} className="block rounded-[1.75rem] hover:opacity-95 focus-visible:outline-offset-4">
+                                {pill}
+                              </Link>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    <div>
                       <Link href="/routes" className={`${secondary} w-full @[34rem]:w-fit`}>
                         <Trans>全{TOTAL_ROUTES}区間を見る</Trans>
                       </Link>
@@ -126,11 +148,7 @@ export function Landing({
                 </div>
               }
             >
-              {open.length > 0 && soonCount > 0 ? (
-                <p className="text-lg text-muted">
-                  <Trans>ほかの{soonCount}区間は、準備中です。</Trans>
-                </p>
-              ) : null}
+              {null}
             </Chapter>
           ) : null}
 
