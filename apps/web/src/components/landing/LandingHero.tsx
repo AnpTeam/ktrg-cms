@@ -52,7 +52,7 @@ export function LandingHero({ slides, locale, line, title, children }: { slides:
         </div>
         <p className="text-lg opacity-80">
           <Trans>登録済みの方は</Trans>{" "}
-          <Link href="/login" className="font-bold underline">
+          <Link href="/login" className="tap-target inline-flex items-center font-bold underline underline-offset-4">
             <Trans>ログイン</Trans>
           </Link>
         </p>

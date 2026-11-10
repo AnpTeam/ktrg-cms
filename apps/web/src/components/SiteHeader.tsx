@@ -301,7 +301,7 @@ export function SiteHeader({
                 </li>
               ))}
             </ul>
-            <p lang={locale === "ja" ? "ja" : "en"} className="text-sm text-muted wide:hidden">
+            <p lang={locale === "ja" ? "ja" : "en"} className="text-base text-muted wide:hidden">
               {locale === "ja" ? foundationJa : foundationEn}
             </p>
           </div>

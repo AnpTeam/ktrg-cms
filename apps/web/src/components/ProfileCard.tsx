@@ -53,7 +53,7 @@ export function ProfileCard({ publicId, name, origin, originPlace = null, ageRan
         ) : null}
         {foundVia ? <p className={`text-muted ${text}`}>{foundViaNames[foundVia]}</p> : null}
         {!readOnly && email ? <p className="break-all text-base text-muted">{email}</p> : null}
-        {publicId ? <p className={`text-muted ${readOnly ? "text-sm" : "mt-1 text-base"}`}>{t`ID: ${formatPublicId(publicId)}`}</p> : null}
+        {publicId ? <p className={`text-muted ${readOnly ? "text-base" : "mt-1 text-base"}`}>{t`ID: ${formatPublicId(publicId)}`}</p> : null}
       </div>
     </section>
   );

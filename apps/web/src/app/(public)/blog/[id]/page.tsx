@@ -91,7 +91,7 @@ export default async function BlogPostPage({ params }: Props) {
   const mapHref = place ? `/map?${placeRouteId ? `route=${encodeURIComponent(placeRouteId)}&` : ""}place=${encodeURIComponent(place.id)}` : null;
   const hasAbout = !!(route || spot || place);
 
-  const chip = "inline-flex w-fit items-center gap-2 rounded-full bg-surface py-1 pl-3 pr-4 text-base font-bold hover:bg-paper";
+  const chip = "tap-target inline-flex w-fit items-center gap-2 rounded-full bg-surface py-1 pl-3 pr-4 text-base font-bold hover:bg-paper";
 
   return (
     <article className="flex flex-col gap-8 pt-2">
@@ -133,7 +133,7 @@ export default async function BlogPostPage({ params }: Props) {
             </span>
           ) : null}
           <time dateTime={post.publishedOn}>{formatDay(locale, post.publishedOn)}</time>
-          <a href="#comments-title" className="inline-flex items-center gap-1 text-accent no-underline hover:underline">
+          <a href="#comments-title" className="tap-target inline-flex items-center justify-center gap-1 text-accent no-underline hover:underline">
             <CommentIcon />
             <span className="sr-only">
               <Trans>コメント</Trans>

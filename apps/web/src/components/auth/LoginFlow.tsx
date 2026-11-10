@@ -149,7 +149,7 @@ export function LoginFlow({ next, registerHref }: { next?: string; registerHref:
       <ChoiceCard icon={<LockIcon />} title={t`パスワードでログイン`} onClick={() => setStep("password")} />
       <p className="mt-2 text-lg">
         {t`はじめての方は`}{" "}
-        <Link href={registerHref} className="font-bold">
+        <Link href={registerHref} className="tap-target inline-flex items-center font-bold text-accent underline underline-offset-4">
           {t`新規登録`}
         </Link>
       </p>
