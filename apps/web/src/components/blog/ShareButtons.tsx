@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { buttonStyle } from "@/components/button";
 
@@ -16,15 +16,20 @@ export function ShareButtons({ title }: { title: string }) {
   const { t } = useLingui();
   const href = useSyncExternalStore(noop, url, () => "");
   const native = useSyncExternalStore(noop, canShare, () => false);
-  const [copied, setCopied] = useState(false);
+  // A count, not a flag: a second copy restarts the 2.5 s, and leaving the page clears the timer.
+  const [copied, setCopied] = useState(0);
+  useEffect(() => {
+    if (!copied) return;
+    const id = setTimeout(() => setCopied(0), 2500);
+    return () => clearTimeout(id);
+  }, [copied]);
   const [manual, setManual] = useState(false);
   const button = buttonStyle("secondary", "sm", "inline-flex");
 
   async function copy() {
     try {
       await navigator.clipboard.writeText(href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
+      setCopied((n) => n + 1);
     } catch {
       setManual(true);
     }

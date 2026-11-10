@@ -42,7 +42,8 @@ export function ChoiceCard({
       onClick={onClick}
       disabled={disabled}
       className={`tap-target flex min-h-[5rem] w-full items-center gap-4 rounded-full p-4 text-left disabled:opacity-60 ${
-        primary ? "bg-ink text-paper" : "border border-ink bg-surface text-ink hover:bg-paper"
+        // The main way in is an action, so brand red; white on it is held to large bold text, so a primary card has no hint.
+        primary ? "bg-brand text-on-brand" : "border border-ink bg-surface text-ink hover:bg-paper"
       }`}
     >
       <span
@@ -54,7 +55,7 @@ export function ChoiceCard({
       </span>
       <span className="min-w-0">
         <span className="block text-xl font-bold leading-snug">{title}</span>
-        {hint ? <span className="mt-0.5 block text-lg">{hint}</span> : null}
+        {hint && !primary ? <span className="mt-0.5 block text-lg">{hint}</span> : null}
       </span>
     </button>
   );
