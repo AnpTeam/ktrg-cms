@@ -8,6 +8,7 @@ import { useLingui } from "@lingui/react/macro";
 import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import { MinusIcon, PlusIcon, WarningIcon } from "@/components/icons";
 import { clusterByPixels } from "@/lib/cluster";
+import { pinPhotoSrc } from "@/lib/pin-photo";
 import { areaCollection, courseDotState, COURSE_DOT_PX, estimateGroupBox, framePoints, groupLabelLines, MERGE_PX, namesThatFit, revealedRouteId, SAME_PLACE_M, samePlaceOnly, spreadLabels, spreadMeters, stopMergePx, type LabelBox, type MapScreenPoint, type MapScreenRoute, type MapScreenStop } from "@/lib/map-screen";
 import { defaultLayers, moundStops, offeredLayers, type MapLayer } from "@/lib/map-layers";
 import { groupOf } from "@/lib/places";
@@ -551,6 +552,7 @@ export function MapScreenCanvas({
             noStamp: s.noStamp,
             role: s.role,
             place: s.kind,
+            photo: pinPhotoSrc(s.photo),
             stamped: s.stamped === true,
             onSelect: () => {
               if (shared) setPick(members);

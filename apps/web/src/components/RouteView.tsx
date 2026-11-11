@@ -63,6 +63,7 @@ export function buildStops(
         stamped,
         status,
         href: spotHref(item.id),
+        ...(item.photoUrl ? { photo: { src: item.photoUrl, alt: "" } } : {}),
         ...(item.stopBy ? { sideTrip: true } : {}),
         ...(stop.type === "point" ? { noStamp: true } : {}),
         ...(roles.has(item.id) ? { role: roles.get(item.id) } : {}),

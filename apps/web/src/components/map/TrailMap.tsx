@@ -7,6 +7,8 @@ import type { Map as MapLibreMap } from "maplibre-gl";
 import { ChevronIcon, ChevronLeftIcon, ExpandIcon, ListIcon, MinusIcon, PlusIcon, WarningIcon } from "@/components/icons";
 import { SampleNoticeButton } from "@/components/SampleNotice";
 import { clusterByPixels } from "@/lib/cluster";
+import { pinPhotoSrc } from "@/lib/pin-photo";
+import type { MapPhoto } from "@/lib/map-screen";
 import type { SpotStatus } from "@/lib/content";
 import {
   boundsOf,
@@ -55,6 +57,8 @@ export interface MapStop {
   role?: StopRole;
   /** What the place is, shown as a small picture on the pin. */
   kind?: PointKind;
+  /** The place's own uploaded photo: the pin's head shows it (see lib/pin-photo.ts). */
+  photo?: MapPhoto | null;
 }
 
 type Selection = { kind: "stop" | "place"; id: string } | null;
@@ -303,6 +307,7 @@ export function TrailMap({
           noStamp: stop.noStamp,
           role: stop.role,
           place: stop.kind,
+          photo: pinPhotoSrc(stop.photo),
           stamped: stop.stamped === true,
           onSelect: () => setSelected({ kind: "stop", id: stop.id }),
         });
