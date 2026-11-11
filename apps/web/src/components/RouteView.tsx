@@ -11,7 +11,6 @@ import { IntroVideo } from "@/components/IntroVideo";
 import { LastUpdated } from "@/components/LastUpdated";
 import { Notice } from "@/components/Notice";
 import { PlaceLine } from "@/components/PlaceLine";
-import { RidgeMark } from "@/components/RidgeMark";
 import { RichText } from "@/components/RichText";
 import { RouteJourney } from "@/components/RouteJourney";
 import { RouteStats } from "@/components/RouteStats";
@@ -26,7 +25,6 @@ import { pickText } from "@/lib/pick-text";
 import { pointsAsPlaces } from "@/lib/point-places";
 import { isGuidanceOnly, journeyOf, roleLabel, stopRoles, trailStops, walkRows } from "@/lib/route-stops";
 import type { MapPlace } from "@/lib/places";
-import type { Ridge } from "@/lib/ridge";
 import { parseVideoFile, parseVideoUrl } from "@/lib/video";
 
 /** Stops that have a position become map markers, numbered by their place in the list. */
@@ -87,8 +85,6 @@ export interface RouteViewProps {
   notices?: ReactNode;
   /** Offer the bookmark button (visitors only; the admin's preview leaves it out). */
   bookmarkable?: boolean;
-  /** The ridge of the whole trail, to mark where this course sits on it; left out in the admin's preview. */
-  ridge?: Ridge | null;
   /** The name of the "jump to a part" bar, for screen readers (a string: it is an attribute). */
   jumpLabel?: string;
   /** Show "スタンプ 3 / 14" over the walk: only for a visitor who has stamped somewhere (the admin's preview leaves it out). */
@@ -100,7 +96,7 @@ export interface RouteViewProps {
  * and the places (stamp places numbered, the others marked "no stamp") as a trail. The public page and the admin's live preview both render this, so what an
  * editor sees while typing is what visitors get. It reads no cookies and calls no server API.
  */
-export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref, offline, notices, showStampCount = false, jumpLabel = "", bookmarkable = false, ridge = null }: RouteViewProps) {
+export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref, offline, notices, showStampCount = false, jumpLabel = "", bookmarkable = false }: RouteViewProps) {
   const description = pickText(locale, route.descriptionJa, route.descriptionEn);
   const stops = buildStops(route, locale, spotHref, labels);
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
@@ -161,11 +157,6 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               <p className="mt-2 text-lg text-muted">
                 <PlaceLine prefecture={route.prefecture} place={municipalityName(locale, route.municipality)} locale={locale} />
               </p>
-            ) : null}
-            {ridge ? (
-              <div className="mt-4">
-                <RidgeMark ridge={ridge} order={route.order} />
-              </div>
             ) : null}
             <div className="mt-5">
               <RouteStats route={route} icons tips walkStyle={journey?.style ?? null} />
