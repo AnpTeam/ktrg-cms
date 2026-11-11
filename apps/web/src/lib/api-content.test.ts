@@ -25,6 +25,14 @@ const spot = (over: Partial<PublicSpot> = {}): PublicSpot => ({
   statusUpdatedAt: null, sortOrder: 1, ...over,
 });
 
+describe("a route answered before the cities list existed", () => {
+  // The site keeps API answers for a while (revalidate), so right after a deploy a cached answer can lack the field.
+  test("shows no cities instead of failing the page", () => {
+    const old = route({ municipalities: undefined } as unknown as Partial<PublicRoute>);
+    expect(routeSummaryFromApi(old, 1).municipalities).toEqual([]);
+  });
+});
+
 describe("area from the line's box", () => {
   test("centre and size in metres, never smaller than a tappable shape", () => {
     const a = areaFromBounds({ west: 135, south: 34, east: 135.1, north: 34.05 })!;

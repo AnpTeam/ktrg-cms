@@ -33,7 +33,8 @@ export function routeSummaryFromApi(r: PublicRoute, order: number, stampedCount 
     nameJa: r.nameJa,
     nameEn: r.nameEn,
     prefecture: prefectureOf(r.prefecture),
-    municipalities: r.municipalities,
+    // A cached answer from before the field existed has none (the site keeps answers for PUBLIC_REVALIDATE_S).
+    municipalities: r.municipalities ?? [],
     distanceKm: r.distanceKm,
     elevationGainM: r.elevationGainM,
     difficulty: r.difficulty,
