@@ -1,7 +1,7 @@
 # Landing story: one scroll from the sea to "さあ、はじめましょう"
 
 Status: **built** (2026-11-11), see the PRs on this subject. Real-phone checks (iOS status strip, install bar) are still open.
-(installed app, Japanese and English). It extends `docs/landing-journey-design.md` (the sticky scene, built in #436).
+It covers the first-time home page (Japanese and English) and extends `docs/landing-journey-design.md` (the sticky scene, built in #436).
 
 ## What the user saw, and why
 
