@@ -20,16 +20,17 @@ export function PrefectureFilter({
   const { t } = useLingui();
   if (available.length < 2) return null;
 
-  // Plain words (with the prefecture's mark) with a bar under the chosen one (no chips, no borders): never squeezed, the row scrolls instead.
+  // A pill with the prefecture's mark (a white round badge) and its name. The chosen one lifts off the page: white with a soft
+  // shadow on the light page, the panel tone with a faint ring on the dark one (the `lift` token). Never squeezed: the row scrolls.
   const tab = (selected: boolean) =>
-    `tap-target inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap border-b-4 px-1 text-lg ${
-      selected ? "border-brand font-bold text-ink" : "border-transparent text-muted hover:text-ink"
+    `tap-target inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full px-3 text-lg text-ink ${
+      selected ? "bg-lift font-bold shadow-md ring-1 ring-line/30" : "hover:bg-lift/70"
     }`;
 
   return (
     <nav aria-label={t`地域でしぼる`}>
       {/* One line. On a phone it scrolls sideways (the edges bleed to the screen's edge); from a tablet up it simply fits. */}
-      <ul className="flex flex-nowrap gap-5 overflow-x-auto px-4 [scrollbar-width:none] md:flex-wrap md:overflow-visible [&::-webkit-scrollbar]:hidden">
+      <ul className="flex flex-nowrap gap-2 overflow-x-auto px-4 py-2 [scrollbar-width:none] md:flex-wrap md:overflow-visible [&::-webkit-scrollbar]:hidden">
         <li>
           <Link href={base} aria-current={active ? undefined : "true"} className={tab(!active)}>
             <PrefectureIcon value="all" />

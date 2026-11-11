@@ -58,12 +58,13 @@ function ratio(a: string, b: string) {
   return (light + 0.05) / (dark + 0.05);
 }
 
-const names = ["accent", "brand", "caution", "danger", "goal", "ink", "line", "moss", "muted", "night", "on-brand", "on-goal", "on-night", "on-ruri", "on-shu", "paper", "ruri", "shu", "surface"];
+const names = ["accent", "brand", "caution", "danger", "goal", "ink", "lift", "line", "moss", "muted", "night", "on-brand", "on-goal", "on-night", "on-ruri", "on-shu", "paper", "ruri", "shu", "surface"];
 
 // Text must reach WCAG AAA (7:1).
 const text: [string, string][] = [
   ["ink", "paper"],
   ["ink", "surface"],
+  ["ink", "lift"],
   ["muted", "paper"],
   ["muted", "surface"],
   ["accent", "paper"],
