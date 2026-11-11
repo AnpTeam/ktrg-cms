@@ -1,5 +1,5 @@
-import { expect, test } from "bun:test";
-import { BEAT_STARTS, beatAt, drawnShare, motionMode, sealPoints, sealsPlaced, stageLine } from "./journey";
+import { describe, expect, test } from "bun:test";
+import { BEAT_STARTS, beatAt, drawnShare, moundSealPoints, motionMode, sealPoints, sealsPlaced, stageLine } from "./journey";
 import { RIDGE_HEIGHT, RIDGE_WIDTH, ridgePath } from "./ridge";
 
 test("the beat is the last one whose start the scroll has reached", () => {
@@ -94,4 +94,26 @@ test("motion allowed gives the scene, reduced motion gives the fade, calm gives 
 
 test("calm wins over reduced motion", () => {
   expect(motionMode({ reduce: true, calm: true })).toBe("static");
+});
+
+describe("seals by mound", () => {
+  const line: [number, number][] = [[0, 0], [100, 0]];
+  test("a mound with two places gets two seals side by side, the others one", () => {
+    const pts = moundSealPoints(line, [1, 2, 1], 0.1);
+    expect(pts.map(([x]) => x)).toEqual([0, 45, expect.closeTo(55, 6), 100]);
+  });
+  test("a pair at the end of the line stays on the line", () => {
+    expect(moundSealPoints(line, [1, 2], 0.1)).toEqual([[0, 0], [90, 0], [100, 0]]);
+    expect(moundSealPoints(line, [2, 1], 0.1)).toEqual([[0, 0], [10, 0], [100, 0]]);
+  });
+  test("one seal for each place, in order along the line", () => {
+    const groups = [1, 2, 1, 1, 2, 1];
+    const pts = moundSealPoints(line, groups, 0.05);
+    expect(pts).toHaveLength(groups.reduce((a, b) => a + b, 0));
+    for (let i = 1; i < pts.length; i++) expect(pts[i]![0]).toBeGreaterThan(pts[i - 1]![0]);
+  });
+  test("nothing for no mounds or a line that is not a line", () => {
+    expect(moundSealPoints(line, [])).toEqual([]);
+    expect(moundSealPoints([[3, 3]], [1, 2])).toEqual([]);
+  });
 });
