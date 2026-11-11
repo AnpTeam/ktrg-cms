@@ -7,6 +7,7 @@ import type { Prefecture, RouteSummary } from "@/lib/content";
 import { pickText } from "@/lib/pick-text";
 import { municipalityName } from "@/lib/municipalities";
 import { buildStops, type NodeState, type Stop } from "@/lib/ribbon";
+import { PinIcon, StampIcon } from "./icons";
 import { Localized } from "./Localized";
 import { PrefectureIcon } from "./PrefectureIcon";
 import { PlaceLine } from "./PlaceLine";
@@ -40,15 +41,21 @@ function RouteRow({ route, state, locale }: { route: RouteSummary; state: NodeSt
         <span className="absolute inset-0 bg-linear-to-r from-paper from-10% to-transparent to-90%" />
       </span>
       <span className="relative block min-w-0 py-4 pl-4 pr-[42%] xl:pl-1">
-        <span className="flex items-baseline gap-3">
-          <span className={`shrink-0 font-serif text-3xl font-bold leading-none tabular-nums ${soon ? "text-muted" : "text-accent"}`}>{route.order}</span>
+        <span className="flex items-center gap-3">
+          {/* The course's number on a round badge (as on the home list), grey while the course is not ready. */}
+          <span className={`badge-pattern grid size-10 shrink-0 place-items-center rounded-full font-serif text-xl font-bold tabular-nums ${soon ? "bg-line/25 text-muted" : "bg-brand text-on-brand"}`}>{route.order}</span>
           <span className="min-w-0 text-xl font-bold leading-snug group-hover:underline">
             <Localized value={name} />
           </span>
         </span>
         {route.prefecture || place ? (
-          <span className="mt-1 block text-lg leading-snug text-muted">
-            <PlaceLine prefecture={route.prefecture} place={place} locale={locale} />
+          <span className="mt-2 flex items-start gap-1.5 text-lg leading-snug text-muted">
+            <span aria-hidden="true" className="mt-0.5 shrink-0 text-brand [&_svg]:size-5">
+              <PinIcon />
+            </span>
+            <span>
+              <PlaceLine prefecture={route.prefecture} place={place} locale={locale} />
+            </span>
           </span>
         ) : null}
         {soon ? (
@@ -59,7 +66,10 @@ function RouteRow({ route, state, locale }: { route: RouteSummary; state: NodeSt
           <span className="mt-2 block">
             <RouteStats route={route} line />
             {spotCount > 0 ? (
-              <span className="mt-1 block text-lg font-bold tabular-nums">
+              <span className="mt-1.5 flex items-center gap-1.5 text-lg font-bold tabular-nums">
+                <span aria-hidden="true" className="shrink-0 text-brand [&_svg]:size-5">
+                  <StampIcon />
+                </span>
                 {stampedCount === null ? t`スタンプ場所 ${spotCount}か所` : t`スタンプ ${stampedCount} / ${spotCount}`}
               </span>
             ) : null}
