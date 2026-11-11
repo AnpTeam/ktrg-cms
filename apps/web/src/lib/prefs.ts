@@ -10,8 +10,6 @@ export type TextSize = (typeof textSizes)[number];
 export interface Prefs {
   /** Text and components together (everything is in rem): 87.5% (small, a choice for people who like it; buttons keep their size), 100%, 112.5% or 125% of the base size. */
   size: TextSize;
-  /** Merge stops that sit close together on the map into one numbered group. */
-  mergeStops: boolean;
   /** Show the nearby places (toilets, shops ...) on the map from the start. */
   placesOnMap: boolean;
   /** The first-time set-up was done or skipped, so it is not offered again. */
@@ -27,7 +25,7 @@ export interface Prefs {
 }
 
 /** The plain map and standard size: the simplest choices. */
-export const defaultPrefs: Prefs = { size: "standard", mergeStops: false, placesOnMap: false, setupDone: false, furigana: false, contrast: false, calm: false, updatedAt: 0 };
+export const defaultPrefs: Prefs = { size: "standard", placesOnMap: false, setupDone: false, furigana: false, contrast: false, calm: false, updatedAt: 0 };
 
 export const prefsCookie = "prefs";
 
@@ -41,7 +39,6 @@ export function sanitizePrefs(value: unknown): Prefs {
   const v = (typeof value === "object" && value !== null ? value : {}) as Record<string, unknown>;
   return {
     size: isSize(v.size) ? v.size : defaultPrefs.size,
-    mergeStops: typeof v.mergeStops === "boolean" ? v.mergeStops : defaultPrefs.mergeStops,
     placesOnMap: typeof v.placesOnMap === "boolean" ? v.placesOnMap : defaultPrefs.placesOnMap,
     setupDone: typeof v.setupDone === "boolean" ? v.setupDone : defaultPrefs.setupDone,
     furigana: v.furigana === true,

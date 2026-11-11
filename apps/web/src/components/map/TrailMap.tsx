@@ -6,7 +6,6 @@ import { useLingui } from "@lingui/react/macro";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import { ChevronIcon, ChevronLeftIcon, ExpandIcon, ListIcon, MinusIcon, PlusIcon, WarningIcon } from "@/components/icons";
 import { SampleNoticeButton } from "@/components/SampleNotice";
-import { clusterByPixels } from "@/lib/cluster";
 import type { SpotStatus } from "@/lib/content";
 import {
   boundsOf,
@@ -25,11 +24,9 @@ import { mapStyleSource } from "@/lib/large-map-style";
 import type { MapSettings } from "@/lib/map-settings";
 import type { StopRole } from "@/lib/route-stops";
 import type { PointKind } from "@/lib/point-kinds";
-import { SAME_PLACE_M, spreadMeters, stopMergePx } from "@/lib/map-screen";
 import { groupCounts, groupOf, sortByDistance, type Coord, type MapPlace, type PlaceGroup } from "@/lib/places";
-import { createClusterElement, createMarkerElement, createPlaceMarkerElement } from "./MapMarker";
+import { createMarkerElement, createPlaceMarkerElement } from "./MapMarker";
 import { useCursorMarker } from "./useCursorMarker";
-import { MapPickList } from "./MapPickList";
 import { PlaceCard, PlaceChips, PlaceList } from "./PlacesPanel";
 import { StopCard } from "./StopCard";
 
@@ -66,18 +63,11 @@ const NO_SIDE_LINES: Position[][] = [];
 // Keep every stop clear of the buttons: zoom buttons at the top right, the chip at the top left,
 // the "bigger" button and the credit line along the bottom.
 const FIT = { padding: { top: 76, bottom: 112, left: 56, right: 92 }, maxZoom: 16, animate: false } as const;
-// Markers closer than this on screen are shown as one numbered group (a stop is 3rem = 48 px wide).
-const CLUSTER_PX = 52;
 const buttonClass =
   "tap-target inline-flex items-center justify-center gap-2 rounded-full border border-ink bg-paper px-3 text-lg font-bold text-ink hover:bg-surface";
 // The small round controls laid over the map: a 48 px target (the older-reader rule) with a smaller circle drawn in it.
 const hit = "tap-target inline-flex items-center justify-center disabled:opacity-40";
 const disc = "flex size-9 items-center justify-center rounded-full border border-ink bg-paper/95 text-ink shadow-sm";
-
-const centerOf = (points: readonly Coord[]): Coord => ({
-  lat: points.reduce((n, p) => n + p.lat, 0) / points.length,
-  lng: points.reduce((n, p) => n + p.lng, 0) / points.length,
-});
 
 /**
  * The trail map (WBS 3.2.1, 3.2.2): GSI tiles, the route line, one numbered button per stop and, on
@@ -94,7 +84,6 @@ export function TrailMap({
   places,
   draft,
   settings,
-  mergeStops,
   placesFirst,
 }: {
   stops: MapStop[];
@@ -104,8 +93,6 @@ export function TrailMap({
   places: MapPlace[];
   draft: boolean;
   settings: MapSettings;
-  /** The visitor's choice: merge stops that are close together (off = every stop is its own button). */
-  mergeStops: boolean;
   /** The visitor's choice: show the nearby places from the start. */
   placesFirst: boolean;
 }) {
@@ -118,7 +105,6 @@ export function TrailMap({
   const expandRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const [mapGen, setMapGen] = useState(0); // bumped each time a map is created
-  const [view, setView] = useState(0); // bumped each time the map stops moving
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -128,8 +114,6 @@ export function TrailMap({
   const [showSide, setShowSide] = useState(false);
   const hasSide = sideLines.some((l) => l.length >= 2);
   const [selected, setSelected] = useState<Selection>(null);
-  // Pins that stand on one spot cannot be pulled apart by zooming: a short list chooses among them.
-  const [pick, setPick] = useState<MapStop[] | null>(null);
   // Every kind of place that exists on this course is on from the start when the visitor chose that.
   const [active, setActive] = useState<ReadonlySet<PlaceGroup>>(
     () => new Set(placesFirst ? (Object.keys(groupCounts(places)) as PlaceGroup[]) : []),
@@ -184,7 +168,6 @@ export function TrailMap({
         // A tile that cannot be fetched (weak signal) is normal, not an error to shout about: the
         // background shows and the tile is retried when the map moves.
         map.on("error", () => {});
-        map.on("moveend", () => setView((v) => v + 1));
         // The pins are smaller when zoomed out (the markers read this size from the map's own element).
         const sizePins = () => {
           containerRef.current?.style.setProperty("--pin", String(pinScale(map!.getZoom())));
@@ -232,17 +215,7 @@ export function TrailMap({
 
   useCursorMarker(mapRef, mlRef, mapGen);
 
-  // Zoom in on a group of markers (or on one spot when they all sit on the same point).
-  const zoomTo = (points: readonly Coord[]) => {
-    const map = mapRef.current;
-    const bounds = boundsOf(points);
-    if (!map || !bounds) return;
-    const [[w, s], [e, n]] = bounds;
-    if (w === e && s === n) map.easeTo({ center: [w, s], zoom: Math.min(map.getZoom() + 2, 17) });
-    else map.fitBounds(bounds, { padding: 90, maxZoom: 17 });
-  };
-
-  // Draw the markers. Merged groups depend on the zoom, so this runs again whenever the map settles.
+  // Draw the markers: one button per stop and place, the same at every zoom.
   useEffect(() => {
     const map = mapRef.current;
     const ml = mlRef.current;
@@ -252,89 +225,53 @@ export function TrailMap({
     buttons.clear();
     const put = (el: HTMLElement, at: Coord, anchor: "center" | "bottom" = "center") =>
       live.push(new ml.Marker({ element: el, anchor }).setLngLat([at.lng, at.lat]).addTo(map));
-    const pixel = (id: string, at: Coord) => {
-      const p = map.project([at.lng, at.lat]);
-      return { id, x: p.x, y: p.y };
-    };
 
-    // Places first, so the numbered stops sit on top of them.
-    const placeById = new Map(visiblePlaces.map((p) => [p.id, p]));
-    const group = (points: { id: string; x: number; y: number }[]) =>
-      mergeStops ? clusterByPixels(points, CLUSTER_PX) : points.map((p) => [p.id]);
-    for (const ids of group(visiblePlaces.map((p) => pixel(p.id, p.position)))) {
-      const members = ids.map((id) => placeById.get(id)!);
-      if (members.length === 1) {
-        const place = members[0]!;
-        const el = createPlaceMarkerElement({
-          group: groupOf(place.category),
-          category: place.category,
-          icon: place.icon,
-          label: place.name,
-          closed: place.status === "closed" || place.status === "gone",
-          onSelect: () => setSelected({ kind: "place", id: place.id }),
-        });
-        buttons.set(`place:${place.id}`, el);
-        put(el, place.position);
-      } else {
-        const count = members.length;
-        const el = createClusterElement({
-          text: String(count),
-          label: t`${count}か所の場所がここに集まっています。押すと拡大します`,
-          kind: "places",
-          onSelect: () => zoomTo(members.map((m) => m.position)),
-        });
-        put(el, centerOf(members.map((m) => m.position)));
-      }
+    // Places first, so the numbered stops sit on top of them. Every place and stop is its own button, never merged into a
+    // group (2026-11-11): a merged button gets in the way when moving the map. Pins on one spot overlap; the previous and
+    // next buttons reach each of them.
+    for (const place of visiblePlaces) {
+      const el = createPlaceMarkerElement({
+        group: groupOf(place.category),
+        category: place.category,
+        icon: place.icon,
+        label: place.name,
+        closed: place.status === "closed" || place.status === "gone",
+        onSelect: () => setSelected({ kind: "place", id: place.id }),
+      });
+      buttons.set(`place:${place.id}`, el);
+      put(el, place.position);
     }
 
     const next = nextStopId(stops);
-    const stopById = new Map(stops.map((s) => [s.id, s]));
-    // Pins that touch always merge (one would hide the other); the accessibility choice only makes them merge earlier.
-    for (const ids of clusterByPixels(stops.map((s) => pixel(s.id, s.position)), stopMergePx(mergeStops))) {
-      const members = ids.map((id) => stopById.get(id)!);
-      if (members.length === 1) {
-        const stop = members[0]!;
-        const el = createMarkerElement({
-          order: stop.order,
-          label: stop.label,
-          kind: stop.noStamp ? "neutral" : markerKind(stop.stamped, stop.id === next),
-          status: stop.status,
-          sideTrip: stop.sideTrip,
-          noStamp: stop.noStamp,
-          role: stop.role,
-          place: stop.kind,
-          stamped: stop.stamped === true,
-          onSelect: () => setSelected({ kind: "stop", id: stop.id }),
-        });
-        buttons.set(`stop:${stop.id}`, el);
-        put(el, stop.position, "bottom");
-      } else {
-        const orders = members.flatMap((m) => (m.order === null ? [] : [m.order]));
-        const text = orders.length > 1 ? `${Math.min(...orders)}–${Math.max(...orders)}` : String(members.length);
-        const el = createClusterElement({
-          text,
-          label: t`場所 ${text} がここに集まっています。押すと拡大します`,
-          kind: "stops",
-          // Pins on the same spot cannot be pulled apart by zooming: they are chosen from a list.
-          onSelect: () => (spreadMeters(members.map((m) => m.position)) <= SAME_PLACE_M ? setPick(members) : zoomTo(members.map((m) => m.position))),
-        });
-        put(el, centerOf(members.map((m) => m.position)));
-      }
+    for (const stop of stops) {
+      const el = createMarkerElement({
+        order: stop.order,
+        label: stop.label,
+        kind: stop.noStamp ? "neutral" : markerKind(stop.stamped, stop.id === next),
+        status: stop.status,
+        sideTrip: stop.sideTrip,
+        noStamp: stop.noStamp,
+        role: stop.role,
+        place: stop.kind,
+        stamped: stop.stamped === true,
+        onSelect: () => setSelected({ kind: "stop", id: stop.id }),
+      });
+      buttons.set(`stop:${stop.id}`, el);
+      put(el, stop.position, "bottom");
     }
 
     return () => {
       live.forEach((m) => m.remove());
       buttons.clear();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapGen, view, stops, visiblePlaces, mergeStops]);
+  }, [mapGen, stops, visiblePlaces]);
 
   // Mark the selected marker for screen readers and for the highlighted look.
   useEffect(() => {
     buttonByKey.current.forEach((el, key) =>
       el.setAttribute("aria-pressed", String(selected !== null && key === `${selected.kind}:${selected.id}`)),
     );
-  }, [selected, mapGen, view, visiblePlaces]);
+  }, [selected, mapGen, stops, visiblePlaces]);
 
   // Embedded: a finger scrolls the page. Expanded: the whole screen is the map, so one finger moves it.
   // Either way the map is resized and fitted again once the layout has settled.
@@ -448,7 +385,7 @@ export function TrailMap({
     );
   }
 
-  const stepper = !mergeStops && stops.length > 1;
+  const stepper = stops.length > 1;
 
   return (
     <section
@@ -491,18 +428,6 @@ export function TrailMap({
             {t`地図を読み込み中…`}
           </p>
         )}
-
-        {pick ? (
-          <MapPickList
-            items={pick.map((s) => ({ id: s.id, order: s.order, name: s.name, nameLang: s.nameLang }))}
-            bottomPx={0}
-            onPick={(id) => {
-              setPick(null);
-              setSelected({ kind: "stop", id });
-            }}
-            onClose={() => setPick(null)}
-          />
-        ) : null}
 
         {draft ? (
           <p className="absolute left-2 top-2 z-10 flex max-w-[calc(100%-4rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">

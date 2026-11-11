@@ -49,7 +49,6 @@ const subscribeWide = (onChange: () => void) => watchQuery(WIDE_QUERY, onChange)
 export function MapScreen({
   routes,
   settings,
-  mergeStops,
   locale,
   loginHref,
   stampMock,
@@ -64,7 +63,6 @@ export function MapScreen({
   initialPlaceId?: string | null;
   routes: MapScreenRoute[];
   settings: MapSettings;
-  mergeStops: boolean;
   locale: string;
   loginHref: string;
   /** Development only: pretend answers for the stamp button. */
@@ -323,7 +321,6 @@ export function MapScreen({
         coveredLeftPx={panelPx}
         controlsTopPx={wide ? 0 : navBannerPx}
         settings={settings}
-        mergeStops={mergeStops}
         user={nav.session?.snapshot.position ?? null}
         towardsDeg={nav.session?.snapshot.state.bearingDeg ?? null}
         far={nav.session?.snapshot.state.far ?? false}

@@ -7,8 +7,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { GeoJSONSource, Map as MapLibreMap, Marker } from "maplibre-gl";
 import { MinusIcon, PlusIcon, WarningIcon } from "@/components/icons";
-import { clusterByPixels } from "@/lib/cluster";
-import { areaCollection, courseDotState, COURSE_DOT_PX, estimateGroupBox, framePoints, groupLabelLines, MERGE_PX, namesThatFit, revealedRouteId, SAME_PLACE_M, samePlaceOnly, spreadLabels, spreadMeters, stopMergePx, type LabelBox, type MapScreenPoint, type MapScreenRoute, type MapScreenStop } from "@/lib/map-screen";
+import { areaCollection, courseDotState, COURSE_DOT_PX, framePoints, namesThatFit, revealedRouteId, spreadLabels, type LabelBox, type MapScreenPoint, type MapScreenRoute, } from "@/lib/map-screen";
 import { defaultLayers, moundStops, offeredLayers, type MapLayer } from "@/lib/map-layers";
 import { groupOf } from "@/lib/places";
 import { PlaceGroupPicture } from "@/components/PlaceIcon";
@@ -18,8 +17,7 @@ import { boundsOf, lineFeature, markerKind, nextStopId, pinScale, PIN_NUMBER_MIN
 import type { MapSettings } from "@/lib/map-settings";
 import { getRouteLine } from "@/lib/navigation/line-client";
 import { useCursorMarker } from "./useCursorMarker";
-import { createClusterElement, createMarkerElement, createPinElement, createPlaceMarkerElement, createCourseDot } from "./MapMarker";
-import { MapPickList } from "./MapPickList";
+import { createMarkerElement, createPinElement, createPlaceMarkerElement, createCourseDot } from "./MapMarker";
 
 // The map of the home screen (WBS 3.2.10). Each course is an outlined rectangle with a pin in the middle that
 // carries its name. Zoom in over a course and its stops appear by themselves; choose a course and the others fold
@@ -44,11 +42,6 @@ const EMPTY = { type: "FeatureCollection" as const, features: [] };
 // Where the camera starts before any area is known: the middle of the trail (Osaka, Wakayama, Nara).
 const START_CENTER: [number, number] = [135.35, 34.4];
 
-const centerOf = (points: readonly Position[]): Position => ({
-  lat: points.reduce((n, p) => n + p.lat, 0) / points.length,
-  lng: points.reduce((n, p) => n + p.lng, 0) / points.length,
-});
-
 export function MapScreenCanvas({
   routes,
   routeId,
@@ -63,7 +56,6 @@ export function MapScreenCanvas({
   coveredLeftPx = 0,
   controlsTopPx = 0,
   settings,
-  mergeStops,
   user = null,
   towardsDeg = null,
   far = false,
@@ -90,7 +82,6 @@ export function MapScreenCanvas({
   /** How far down the screen something sits over the top of the map (the navigation banner): the buttons go below it. */
   controlsTopPx?: number;
   settings: MapSettings;
-  mergeStops: boolean;
   /** While navigating: where the phone is (on this phone only), drawn as a dot, and which way the visitor walks. */
   user?: { lat: number; lng: number; headingDeg?: number } | null;
   /** While navigating: the way to the next stop (degrees from north), drawn as an arrow on the visitor's dot. */
@@ -128,7 +119,6 @@ export function MapScreenCanvas({
   useEffect(() => {
     selectPlaceRef.current = onSelectPlace;
   }, [onSelectPlace]);
-  const [pick, setPick] = useState<MapScreenStop[] | null>(null);
   const [autoId, setAutoId] = useState<string | null>(null);
   // The pin whose name is showing. Names stay out of sight until a pin is tapped once (a second tap opens it), except for
   // the courses alone in Japanese, where the tags are narrow enough to show all together.
@@ -212,10 +202,9 @@ export function MapScreenCanvas({
           map?.easeTo({ bearing: 0, duration: 400 });
         });
         map.on("error", () => {});
-        // Touching the map itself (not a pin) puts away the list.
+        // Touching the map itself (not a pin) puts away the name that is showing.
         map.on("click", (e) => {
-          if ((e.originalEvent.target as HTMLElement | null)?.closest(".place-marker, .map-marker, .map-cluster, .map-dot, .map-pin")) return;
-          setPick(null);
+          if ((e.originalEvent.target as HTMLElement | null)?.closest(".place-marker, .map-marker, .map-dot, .map-pin")) return;
           setRevealed(null);
         });
         // The numbered pins are smaller when zoomed out (the markers read this size from the map's own element).
@@ -248,7 +237,7 @@ export function MapScreenCanvas({
           map.addLayer({ id: `${GUIDE}-line`, type: "line", source: GUIDE, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#1d4ed8", "line-width": 4, "line-dasharray": [1.5, 1.5] } });
           map.on("click", `${AREAS}-fill`, (e) => {
             // A pin or tag standing on the area is the target, not the area under it.
-            if ((e.originalEvent.target as HTMLElement | null)?.closest(".place-marker, .map-marker, .map-cluster, .map-dot, .map-pin")) return;
+            if ((e.originalEvent.target as HTMLElement | null)?.closest(".place-marker, .map-marker, .map-dot, .map-pin")) return;
             const id = e.features?.[0]?.properties?.id;
             if (typeof id === "string") selectRouteRef.current(id);
           });
@@ -449,47 +438,12 @@ export function MapScreenCanvas({
       const p = map.project([at.lng, at.lat]);
       return { id, x: p.x, y: p.y };
     };
-    const zoomTo = (points: readonly Position[]) => {
-      const bounds = boundsOf(points);
-      if (bounds) map.fitBounds(bounds, { padding: padding(), maxZoom: 17 });
-    };
-
     // Pins: all of them while nothing is open. Once a course is open the others fold away; an opened course
     // with no stops of its own to show keeps its pin, so there is still something to read and press.
     const pinned = route ? [] : focus ? (focus.stops?.length ? [] : [focus]) : layers.has("courses") ? routes.filter((r) => r.area) : [];
-    const byId = new Map(pinned.map((r) => [r.id, r]));
-    // Courses merge only when the visitor chose 「近い場所をまとめて表示する」: by default each keeps its own dot. When merging,
-    // a group lists the names of the courses inside it.
-    const groups = mergeStops ? clusterByPixels(pinned.map((r) => pixel(r.id, r.area as Position)), MERGE_PX.pin) : pinned.map((r) => [r.id]);
-    const merged: { box: LabelBox; node: HTMLElement }[] = [];
-    const dots: { route: MapScreenRoute; box: LabelBox }[] = [];
-    for (const ids of groups) {
-      const members = ids.map((id) => byId.get(id)!);
-      if (members.length === 1) {
-        const r = members[0]!;
-        dots.push({ route: r, box: { ...pixel(r.id, r.area as Position), w: COURSE_DOT_PX, h: COURSE_DOT_PX } });
-      } else {
-        const sorted = [...members].sort((x, y) => x.order - y.order);
-        const orders = sorted.map((m) => m.order);
-        const text = `${orders[0]}–${orders[orders.length - 1]}`;
-        const lines = sorted.map((m) => `${m.order}. ${m.name}`);
-        // As many names as fit in the visible height; the rest are in the sheet's list.
-        // Two columns of groups fit side by side, so each group may use its share of the height.
-        const rows = Math.max(1, Math.ceil(groups.filter((g) => g.length > 1).length / 2));
-        // (The size estimate is generous, so the share is widened a little.)
-        const room = (((containerRef.current?.clientHeight ?? 700) - coveredRef.current - 100 - 16) / rows) * 1.35;
-        const { lines: shown, more } = groupLabelLines(lines, room);
-        const node = createClusterElement({
-          text,
-          label: t`区間 ${text} がここに集まっています。押すと拡大します`,
-          kind: "stops",
-          names: { lines: shown, more: more > 0 ? t`ほか ${more} 区間` : null },
-          onSelect: () => zoomTo(members.flatMap((m) => framePoints(m))),
-        });
-        const middle = map.project([centerOf(members.map((m) => m.area as Position)).lng, centerOf(members.map((m) => m.area as Position)).lat]);
-        merged.push({ box: { id: ids.join(","), x: middle.x, y: middle.y, ...estimateGroupBox(more > 0 ? [...shown, ""] : shown) }, node });
-      }
-    }
+    // Every course keeps its own dot, never merged into a group (2026-11-11): a merged button gets in the way when moving the
+    // map. Dots that touch are pushed just far enough apart to read and tap (below).
+    const dots: { route: MapScreenRoute; box: LabelBox }[] = pinned.map((r) => ({ route: r, box: { ...pixel(r.id, r.area as Position), w: COURSE_DOT_PX, h: COURSE_DOT_PX } }));
     // Dots near each other are pushed just far enough apart to read and tap; zoomed in they no longer touch, so they sit on
     // their own spots. Dots in view stay in the part of the map that can be seen; a dot well off it stays off it, or panning
     // would gather every far course at the edge.
@@ -518,104 +472,49 @@ export function MapScreenCanvas({
       );
     }
 
-    // The labels of merged groups must not cover each other or sit under the buttons and the sheet: every name stays readable.
-    if (merged.length > 0) {
-      const spread = spreadLabels(
-        merged.map((m) => m.box),
-        { left: 8 + leftRef.current, top: 100, right: (size?.clientWidth ?? 360) - 8, bottom: (size?.clientHeight ?? 700) - coveredRef.current - 8 },
-      );
-      merged.forEach((m, i) => {
-        const at = map.unproject([spread[i]!.x, spread[i]!.y]);
-        put(m.node, { lat: at.lat, lng: at.lng });
-      });
-    }
-
     if (focus?.stops) {
       const next = nextStopId(focus.stops);
-      const stopById = new Map(focus.stops.map((s) => [s.id, s]));
-      // Stops merge into numbered groups only when the visitor chose it. Otherwise each keeps its own pin, overlapping until
-      // zoomed in; stops on one spot, which no zoom can part, share a pin with a small count that opens the list.
-      const nearby = clusterByPixels(focus.stops.map((s) => pixel(s.id, s.position)), stopMergePx(mergeStops));
-      const stopGroups = mergeStops ? nearby : samePlaceOnly(nearby, (id) => stopById.get(id)!.position);
-      for (const ids of stopGroups) {
-        const members = ids.map((id) => stopById.get(id)!);
-        if (members.length === 1 || !mergeStops) {
-          const s = members.find((m) => m.id === stopId) ?? members[0]!;
-          const shared = members.length > 1;
-          const el = createMarkerElement({
-            order: s.order,
-            label: shared ? t`ここに${members.length}か所あります。押すと一覧を開きます` : s.label,
-            kind: s.noStamp ? "neutral" : markerKind(s.stamped, s.id === next),
-            status: s.status,
-            sideTrip: s.sideTrip,
-            noStamp: s.noStamp,
-            role: s.role,
-            place: s.kind,
-            stamped: s.stamped === true,
-            onSelect: () => {
-              if (shared) setPick(members);
-              else onSelectStop(focus.id, s.id);
-            },
-          });
-          if (shared) el.dataset.count = String(members.length);
-          el.setAttribute("aria-pressed", String(s.id === stopId));
-          put(el, s.position, "bottom");
-        } else {
-          const orders = members.flatMap((m) => (m.order === null ? [] : [m.order]));
-          const text = orders.length > 1 ? `${Math.min(...orders)}–${Math.max(...orders)}` : String(members.length);
-          put(
-            createClusterElement({
-              text,
-              label: t`場所 ${text} がここに集まっています。押すと拡大します`,
-              kind: "stops",
-              // Pins on the same spot cannot be pulled apart by zooming: they are chosen from a list.
-              onSelect: () => (spreadMeters(members.map((m) => m.position)) <= SAME_PLACE_M ? setPick(members) : zoomTo(members.map((m) => m.position))),
-            }),
-            centerOf(members.map((m) => m.position)),
-          );
-        }
+      // Every stop is its own pin, never merged (2026-11-11). Stops on one spot overlap; each is still in the sheet's list.
+      for (const s of focus.stops) {
+        const el = createMarkerElement({
+          order: s.order,
+          label: s.label,
+          kind: s.noStamp ? "neutral" : markerKind(s.stamped, s.id === next),
+          status: s.status,
+          sideTrip: s.sideTrip,
+          noStamp: s.noStamp,
+          role: s.role,
+          place: s.kind,
+          stamped: s.stamped === true,
+          onSelect: () => onSelectStop(focus.id, s.id),
+        });
+        el.setAttribute("aria-pressed", String(s.id === stopId));
+        put(el, s.position, "bottom");
       }
     }
 
     // The sutra mounds of every course, while no course is open (an open course shows its own stops).
     if (!focus && layers.has("mounds")) {
       const mounds = moundStops(routes);
-      const byMound = new Map(mounds.map((m) => [m.stop.id, m]));
-      const groups = mergeStops ? clusterByPixels(mounds.map((m) => pixel(m.stop.id, m.stop.position)), MERGE_PX.namedPin) : mounds.map((m) => [m.stop.id]);
-      for (const ids of groups) {
-        const members = ids.map((id) => byMound.get(id)!);
-        if (members.length === 1) {
-          const { route: owner, stop } = members[0]!;
-          const name = stop.name;
-          // A mound's name is long ("葛城第二十三経塚 倶戸羅・薬王菩薩本事品"): once tapped it shows beside the pin, cut short.
-          const showName = revealed === stop.id;
-          put(
-            createPinElement({
-              number: "経",
-              name: showName ? (name.length > 16 ? `${name.slice(0, 15)}…` : name) : null,
-              label: t`経塚 ${name}`,
-              soon: false,
-              onSelect: () => {
-                if (!showName) return setRevealed(stop.id);
-                setRevealed(null);
-                onSelectMound(owner.id, stop.id);
-              },
-            }),
-            stop.position,
-            "bottom",
-          );
-        } else {
-          const count = members.length;
-          put(
-            createClusterElement({
-              text: String(count),
-              label: t`経塚 ${count} か所がここに集まっています。押すと拡大します`,
-              kind: "stops",
-              onSelect: () => zoomTo(members.map((m) => m.stop.position)),
-            }),
-            centerOf(members.map((m) => m.stop.position)),
-          );
-        }
+      for (const { route: owner, stop } of mounds) {
+        const name = stop.name;
+        // A mound's name is long ("葛城第二十三経塚 倶戸羅・薬王菩薩本事品"): once tapped it shows beside the pin, cut short.
+        const showName = revealed === stop.id;
+        put(
+          createPinElement({
+            number: "経",
+            name: showName ? (name.length > 16 ? `${name.slice(0, 15)}…` : name) : null,
+            label: t`経塚 ${name}`,
+            soon: false,
+            onSelect: () => {
+              if (!showName) return setRevealed(stop.id);
+              setRevealed(null);
+              onSelectMound(owner.id, stop.id);
+            },
+          }),
+          stop.position,
+          "bottom",
+        );
       }
     }
 
@@ -636,7 +535,6 @@ export function MapScreenCanvas({
               photo: !!p.photo,
               onSelect: () => {
                 // The sheet shows the place, as it does a stop; the map moves only to keep the pin in view.
-                setPick(null);
                 selectPlaceRef.current(p);
                 map.easeTo({ center: [p.position.lng, p.position.lat], padding: padding(), duration: 400 });
               },
@@ -650,7 +548,7 @@ export function MapScreenCanvas({
     return () => live.forEach((m) => m.remove());
     // `t` changes only with the language, which reloads the page.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, mapGen, view, routes, routeId, autoId, stopId, mergeStops, layers, revealed]);
+  }, [ready, mapGen, view, routes, routeId, autoId, stopId, layers, revealed]);
 
   const zoom = (delta: 1 | -1) => {
     const map = mapRef.current;
@@ -720,18 +618,6 @@ export function MapScreenCanvas({
           );
         })}
       </div>
-
-      {pick && focus ? (
-        <MapPickList
-          items={pick.map((s) => ({ id: s.id, order: s.order, name: s.name, nameLang: s.nameLang }))}
-          bottomPx={coveredPx}
-          onPick={(id) => {
-            setPick(null);
-            onSelectStop(focus.id, id);
-          }}
-          onClose={() => setPick(null)}
-        />
-      ) : null}
 
       {draftShown ? (
         <p style={{ marginLeft: coveredLeftPx, ...(controlsTopPx > 0 ? { top: controlsTopPx } : {}) }} className="absolute left-3 top-[calc(4.5rem+var(--top-clear))] z-[4] flex max-w-[calc(100%-6rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">

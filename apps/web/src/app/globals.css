@@ -315,23 +315,6 @@ rt {
   position: absolute;
   inset: -6px -6px -2px;
 }
-/* Stops on one spot share a pin: how many, on the corner the number chip leaves free. */
-.map-marker[data-count]::after {
-  content: attr(data-count);
-  position: absolute;
-  top: -0.4rem;
-  left: -0.4rem;
-  min-width: 1.4rem;
-  height: 1.4rem;
-  border: 2px solid var(--color-paper);
-  border-radius: 9999px;
-  background: var(--pin-ink);
-  color: var(--pin-on);
-  font-size: 0.875rem;
-  font-weight: 700;
-  line-height: 1.1rem;
-  text-align: center;
-}
 .map-marker .map-pin-svg {
   display: block;
   width: 100%;
@@ -601,63 +584,6 @@ rt {
   /* Picked: a ring, not a bigger square, so it still leaves the pins beside it uncovered. */
   outline: 3px solid var(--color-accent);
   outline-offset: 1px;
-}
-
-.map-cluster {
-  display: grid;
-  place-items: center;
-  min-width: 3rem;
-  height: 3rem;
-  padding: 0 0.5rem;
-  border-radius: 9999px;
-  /* Like the stop pins: the vivid red with a white outline, so a group of stops reads at a glance on the pale tiles. */
-  border: 3px solid #fff;
-  background: #cc6256;
-  color: #fff;
-  font-size: 1.25rem;
-  font-weight: 800;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-  box-shadow: 0 1px 5px rgb(0 0 0 / 0.5);
-  cursor: pointer;
-}
-
-/* A group of places (toilets, shops ...): dark and square-ish, so it is never taken for a group of stops. */
-.map-cluster[data-kind="places"] {
-  border-radius: 0.75rem;
-  background: #2b2523;
-}
-
-/* A group of courses: the range of numbers, and under it the name of every course inside, so none is ever hidden. */
-.map-cluster[data-named="true"] {
-  grid-auto-flow: row;
-  justify-items: start;
-  gap: 0.25rem;
-  height: auto;
-  min-height: 3rem;
-  width: max-content;
-  max-width: 11rem;
-  padding: 0.4rem 0.6rem;
-  border-radius: 1rem;
-  text-align: left;
-  /* The course names are words on a card: light, with the red as its outline. */
-  background: var(--color-surface);
-  color: var(--color-ink);
-  border-color: #cc6256;
-}
-.map-cluster-count {
-  font-size: 1.125rem;
-}
-.map-cluster-names {
-  display: grid;
-  gap: 0.1rem;
-  font-size: 0.875rem;
-  font-weight: 700;
-  line-height: 1.15;
-}
-/* Names wrap onto a second line when they are long; they are never cut off. */
-.map-cluster-names > span {
-  overflow-wrap: anywhere;
 }
 
 /* A plain card: no line, round corners (24px), light grey fill. */

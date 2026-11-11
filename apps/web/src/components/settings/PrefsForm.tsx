@@ -71,7 +71,7 @@ export function PrefsForm({
   }
 
   // One row of a list: the words on the left, the switch on the right.
-  const switchRow = (key: "mergeStops" | "placesOnMap" | "furigana" | "contrast" | "calm", title: string, hint: string) => (
+  const switchRow = (key: "placesOnMap" | "furigana" | "contrast" | "calm", title: string, hint: string) => (
     <label className="tap-target flex cursor-pointer items-center gap-4 px-4 py-3">
       <span className="min-w-0 flex-1">
         <span className="block text-lg font-bold">{title}</span>
@@ -130,11 +130,6 @@ export function PrefsForm({
       <fieldset className="flex flex-col gap-3">
         <legend className="mb-1 text-2xl font-bold">{t`地図の見せ方`}</legend>
         <div className={list}>
-        {switchRow(
-          "mergeStops",
-          t`近い場所をまとめて表示する`,
-          t`オフのままだと、スタンプの場所を1つずつ表示します（おすすめ）。オンにすると、近い場所が「3〜5」のようにまとまります。`,
-        )}
         {switchRow(
           "placesOnMap",
           t`まわりの場所を最初から出す`,

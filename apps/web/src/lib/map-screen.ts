@@ -284,12 +284,8 @@ export function namesThatFit(pins: readonly { id: string; x: number; y: number; 
 }
 
 // ---- Pins that are too close ---------------------------------------------------------------------------------------
-
-/**
- * How far apart, in screen pixels, two pins must be to stay separate when the visitor chose to merge near places;
- * closer ones merge into one group. (A pin with its name beside it is wide, so it needs the most room.)
- */
-export const MERGE_PX = { pin: 50, namedPin: 120 } as const;
+// Pins are never merged into a group (2026-11-11): each course, stop, place and mound keeps its own button. Course dots
+// that touch are only pushed apart (`spreadLabels`).
 
 export type CourseDotState = "plain" | "done" | "soon";
 
@@ -308,19 +304,8 @@ export interface LabelBox {
   h: number;
 }
 
-/** About how big a merged group's label comes out: the count line plus each name on one or two lines. An estimate. */
-export function estimateGroupBox(names: readonly string[]): { w: number; h: number } {
-  const W = 176;
-  const lines = names.reduce((n, name) => {
-    const width = [...name].reduce((sum, ch) => sum + (ch.charCodeAt(0) > 0x2e80 ? 14 : 8), 0);
-    // Words wrap early, so the room is estimated generously: a label that is too roomy is harmless, one that is too small overlaps.
-    return n + Math.max(1, Math.ceil(width / 130));
-  }, 0);
-  return { w: W + 12, h: 52 + lines * 18 };
-}
-
 /**
- * Moves group labels apart so none covers another, and keeps each inside `area` (the part of the map that is
+ * Moves labels and dots apart so none covers another, and keeps each inside `area` (the part of the map that is
  * visible: clear of the buttons at the top and the sheet at the bottom). Each box moves as little as it can; the
  * order of the input decides which way a tie is broken, so the same input always gives the same result. A box too big
  * for the area is pinned to its top-left corner.
@@ -363,47 +348,6 @@ export function spreadLabels(boxes: readonly LabelBox[], area: { left: number; t
     if (!moved) break;
   }
   return out;
-}
-
-/**
- * The same for a course's stops. Stops merge only when the visitor chose 「近い場所をまとめて表示する」; otherwise only pins
- * that sit exactly on top of each other (a few px) are looked at, and `samePlaceOnly` decides whether they share one.
- */
-export function stopMergePx(mergeEarly: boolean): number {
-  return mergeEarly ? 44 : 3;
-}
-
-/** Pins this close together (in metres) cannot be pulled apart by zooming: they are chosen from a list instead. */
-export const SAME_PLACE_M = 30;
-
-/** With merging off, a group stays together only if it really is one spot: stops that zooming can pull apart just overlap until then. */
-export function samePlaceOnly(groups: readonly string[][], positionOf: (id: string) => Position): string[][] {
-  return groups.flatMap((ids) => (spreadMeters(ids.map(positionOf)) <= SAME_PLACE_M ? [ids] : ids.map((id) => [id])));
-}
-
-/** The widest distance, in metres, between the first of these points and any other (a straight line). */
-export function spreadMeters(points: readonly Position[]): number {
-  const first = points[0];
-  if (!first) return 0;
-  const rad = (d: number) => (d * Math.PI) / 180;
-  return Math.max(
-    0,
-    ...points.slice(1).map((p) => {
-      const h = Math.sin(rad(p.lat - first.lat) / 2) ** 2 + Math.cos(rad(first.lat)) * Math.cos(rad(p.lat)) * Math.sin(rad(p.lng - first.lng) / 2) ** 2;
-      return 2 * 6_371_000 * Math.asin(Math.min(1, Math.sqrt(h)));
-    }),
-  );
-}
-
-/**
- * The names printed in a merged group's label: as many as fit in `maxHeight` px (all of them when they fit), then how
- * many more there are. The rest are always in the sheet's list of courses, so no course is out of reach.
- */
-export function groupLabelLines(names: readonly string[], maxHeight = Infinity): { lines: string[]; more: number } {
-  let count = names.length;
-  // Leave room for the "n more" line once something is left out.
-  while (count > 1 && estimateGroupBox(names.slice(0, count)).h + (count < names.length ? 18 : 0) > maxHeight) count--;
-  return { lines: names.slice(0, count), more: names.length - count };
 }
 
 // ---- The bottom sheet ----------------------------------------------------------------------------------------

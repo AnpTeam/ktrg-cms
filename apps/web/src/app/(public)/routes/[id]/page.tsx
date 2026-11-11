@@ -65,7 +65,6 @@ export default async function RouteDetailPage({ params }: Props) {
         locale={i18n.locale}
         places={places}
         settings={settings}
-        mergeStops={prefs.mergeStops}
         placesFirst={prefs.placesOnMap}
         labels={{ stamped: i18n._(msg`スタンプ済み`), closed: i18n._(msg`閉鎖中`), start: i18n._(msg`スタート`), goal: i18n._(msg`ゴール`) }}
         spotHref={(id) => `/spots/${id}`}

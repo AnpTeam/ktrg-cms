@@ -34,7 +34,6 @@ function PreviewBody({ route, locale }: { route: ReturnType<typeof previewRoute>
       locale={locale}
       places={[]}
       settings={defaultMapSettings}
-      mergeStops={false}
       placesFirst={false}
       labels={{ stamped: t`スタンプ済み`, closed: t`閉鎖中`, start: t`スタート`, goal: t`ゴール` }}
       spotHref={() => "#"}
