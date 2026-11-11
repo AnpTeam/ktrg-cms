@@ -4380,6 +4380,14 @@ msgstr "前のリンクは、まだありません。"
 msgid "前の写真"
 msgstr "前の写真"
 
+#: src/components/map/TrailMap.tsx
+msgid "前の場所"
+msgstr "前の場所"
+
+#: src/components/map/TrailMap.tsx
+msgid "次の場所"
+msgstr "次の場所"
+
 #: src/components/landing/HeroSlides.tsx:88
 msgid "自動で切り替える"
 msgstr "自動で切り替える"

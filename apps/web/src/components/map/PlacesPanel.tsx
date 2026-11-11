@@ -76,19 +76,22 @@ export function PlaceChips({
   active,
   onToggle,
   label,
+  compact = false,
 }: {
   counts: Partial<Record<PlaceGroup, number>>;
   active: ReadonlySet<PlaceGroup>;
   onToggle: (group: PlaceGroup) => void;
   /** What the group of buttons is for, read out by screen readers (by default: showing the places on the map). */
   label?: string;
+  /** Small chips that wrap, for laying over the map (the default is a two-column grid of large ones). */
+  compact?: boolean;
 }) {
   const { t } = useLingui();
   const names = useGroupNames();
   const offered = placeGroups.filter((g) => (counts[g] ?? 0) > 0);
   if (offered.length === 0) return null;
   return (
-    <div role="group" aria-label={label ?? t`まわりの場所を地図に出す`} className="grid grid-cols-2 gap-2">
+    <div role="group" aria-label={label ?? t`まわりの場所を地図に出す`} className={compact ? "flex flex-wrap gap-1.5" : "grid grid-cols-2 gap-2"}>
       {offered.map((group) => {
         const on = active.has(group);
         return (
@@ -98,7 +101,7 @@ export function PlaceChips({
             aria-pressed={on}
             onClick={() => onToggle(group)}
             className={`tap-target flex items-center gap-2 rounded-full border border-ink px-3 py-1 text-left text-lg font-bold leading-tight ${
-              on ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-surface"
+              on ? "bg-ink text-paper" : compact ? "bg-paper/95 text-ink shadow-sm hover:bg-surface" : "bg-paper text-ink hover:bg-surface"
             }`}
           >
             <PlaceGroupPicture group={group} size={24} />
