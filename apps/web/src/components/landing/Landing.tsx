@@ -5,7 +5,9 @@ import { Trans } from "@lingui/react/macro";
 import { IntroVideo } from "@/components/IntroVideo";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { Notice } from "@/components/Notice";
+import { CoverWatch } from "@/components/CoverWatch";
 import { LandingHero } from "@/components/landing/LandingHero";
+import { ScrollProgress } from "@/components/landing/ScrollProgress";
 import { LandingMap } from "@/components/landing/LandingMap";
 import { Journey } from "@/components/landing/Journey";
 import { Chapter, type Ground } from "@/components/landing/Chapter";
@@ -83,6 +85,9 @@ export function Landing({
     // the screen's, so the admin's phone-shaped preview shows the phone layout on a desktop.
     // data-landing-top: the public layout drops its top padding for this page, so the photo starts at the top edge.
     <StoryMotion className="@container">
+    {/* The photo runs behind the status bar; the strip comes back once it has left (CoverWatch). The line shows how far the story goes. */}
+    <CoverWatch />
+    {top ? null : <ScrollProgress />}
     <div data-landing-top="" className="grid grid-cols-1 gap-10 @[42rem]:grid-cols-2 @[42rem]:gap-x-8">
       {/* The same photos for everyone; a signed-in visitor's greeting and progress take the line's and the buttons' place. */}
       {top ? (

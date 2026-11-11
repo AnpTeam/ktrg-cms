@@ -38,3 +38,7 @@ export function installNudgeShows(s: {
   if (s.dismissedDaysAgo !== null && s.dismissedDaysAgo < INSTALL_NUDGE_QUIET_DAYS) return false;
   return s.visits >= 2 || s.seconds >= INSTALL_NUDGE_AFTER_SECONDS;
 }
+
+/** The "scroll" cue at the bottom of the first screen shows until the visitor has scrolled this far (px). */
+export const CUE_GONE_AFTER_PX = 40;
+export const cueVisible = (scrollY: number): boolean => scrollY < CUE_GONE_AFTER_PX;
