@@ -147,7 +147,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               <CoverPhoto photo={photo} flat />
             </div>
           ) : null}
-          <header className={`relative order-2 px-4 @4xl:order-none ${photo ? "-mt-20" : ""}`}>
+          <header className={`relative order-2 px-4 @4xl:order-none @4xl:px-0 ${photo ? "-mt-20" : ""}`}>
             {/* In Japanese the name can carry its reading over it; the heading sits a little lower to give the reading room. */}
             <h1 className="min-w-0 text-4xl font-bold leading-tight has-[rt]:pt-4">
               <NameRuby title={title} reading={route.nameKana} />
