@@ -34,6 +34,8 @@
   --color-paper: #fcfaf5; /* page background: warm washi paper (和紙) */
   --check-tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23fcfaf5' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); /* the tick of a checked box, in the paper colour */
   --color-surface: #f6f2ea; /* panels, rows, empty slots: a deeper paper tone */
+  --color-night: #1f1b1a; /* the dark band of a reading page (the ridge at night): the ink colour */
+  --color-on-night: #fcfaf5; /* the words on the dark band */
   --color-brand: #cc6256; /* the brand red: buttons, the active tab, icons, the bar beside headings. Not for text on white */
   --color-on-brand: #ffffff; /* the words on the brand red (large bold text only) */
   --color-accent: #8e2a21; /* red you can READ: links, headings, focus ring (deep red) */
@@ -176,11 +178,13 @@
  */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-ink: #eee5d3;
-    --color-muted: #bcab92;
-    --color-paper: #0b0908; /* 墨 (sumi ink): almost black, with a breath of warmth */
-    --check-tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%230b0908' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); /* the tick of a checked box, in the paper colour */
-    --color-surface: #181311;
+    --color-ink: #ebe2d0; /* a touch softer, less glare */
+    --color-muted: #c0af96;
+    --color-paper: #1e1a17; /* warm charcoal (2026-11-10): calmer than the near-black it replaced */
+    --check-tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%231e1a17' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); /* the tick of a checked box, in the paper colour */
+    --color-surface: #29241f;
+    --color-night: #0b0908; /* the dark band stays night: deeper than the page (墨, sumi ink) */
+    --color-on-night: #ebe2d0;
     --color-brand: #cc6256; /* the same brand red */
     --color-on-brand: #ffffff;
     --color-accent: #f2a69b; /* the readable red on dark: soft coral */
@@ -204,11 +208,13 @@
  * same as above; contrast.test.ts fails if they ever drift apart.
  */
 :root[data-theme="dark"] {
-  --color-ink: #eee5d3;
-  --color-muted: #bcab92;
-  --color-paper: #0b0908; /* warm dark brown-black */
-  --check-tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%230b0908' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); /* the tick of a checked box, in the paper colour */
-  --color-surface: #181311;
+  --color-ink: #ebe2d0;
+  --color-muted: #c0af96;
+  --color-paper: #1e1a17; /* warm charcoal */
+  --check-tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%231e1a17' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); /* the tick of a checked box, in the paper colour */
+  --color-surface: #29241f;
+  --color-night: #0b0908;
+  --color-on-night: #ebe2d0;
   --color-brand: #cc6256; /* the same brand red */
   --color-on-brand: #ffffff;
   --color-accent: #f2a69b; /* the readable red on dark: soft coral */
@@ -231,6 +237,8 @@
   --color-paper: #fcfaf5; /* page background: warm washi paper (和紙) */
   --check-tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23fcfaf5' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); /* the tick of a checked box, in the paper colour */
   --color-surface: #f6f2ea; /* panels, rows, empty slots: a deeper paper tone */
+  --color-night: #1f1b1a; /* the dark band of a reading page (the ridge at night): the ink colour */
+  --color-on-night: #fcfaf5; /* the words on the dark band */
   --color-brand: #cc6256; /* the brand red: buttons, the active tab, icons, the bar beside headings. Not for text on white */
   --color-on-brand: #ffffff; /* the words on the brand red (large bold text only) */
   --color-accent: #8e2a21; /* red you can READ: links, headings, focus ring (deep red) */
@@ -1426,7 +1434,7 @@ body.map-nav-mode .map-layer-pills {
 /* The landing story's chapters (docs/design-language.md, Layout and pace). Each has its own ground, so it reads on its
    own with no script. When motion is allowed, StoryMotion adds .story-live: the chapters go see-through and the
    wrapper's colour, crossfaded by the script, carries the ground instead. Inverse is ink on paper turned round, so it
-   stays the strongest contrast in both themes. */
+   stays a dark band in both themes (the night tokens; in dark mode deeper than the page). */
 .story-ground-paper {
   background-color: var(--color-paper);
   color: var(--color-ink);
@@ -1436,8 +1444,8 @@ body.map-nav-mode .map-layer-pills {
   color: var(--color-ink);
 }
 .story-ground-inverse {
-  background-color: var(--color-ink);
-  color: var(--color-paper);
+  background-color: var(--color-night);
+  color: var(--color-on-night);
 }
 .story-live [data-ground] {
   background-color: transparent;
