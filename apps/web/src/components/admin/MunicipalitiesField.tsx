@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
+import { ArrowDownIcon, ArrowUpIcon, TrashIcon } from "@/components/icons";
 import { buttonStyle } from "@/components/button";
 import { englishCityName, municipalities, splitCities, type MunicipalityPrefecture } from "@/lib/municipalities";
 import { Field, inputClass, TextInput } from "./fields";
@@ -51,7 +52,8 @@ export function MunicipalitiesField({
     add(splitCities(typed));
     setTyped("");
   };
-  const small = buttonStyle("secondary", "sm", "inline-flex");
+  // Icon buttons, like the access points' rows: the name, then up and down, a divider, and the trash bin.
+  const iconButton = "tap-target inline-flex items-center justify-center rounded-full border-2 border-line px-3 text-ink disabled:opacity-40";
 
   return (
     <div className="flex flex-col gap-3">
@@ -73,14 +75,15 @@ export function MunicipalitiesField({
                   {city}
                   {en ? <span className="ml-2 text-base font-normal text-muted">（{en}）</span> : null}
                 </span>
-                <button type="button" disabled={i === 0} onClick={() => move(i, -1)} aria-label={t`${city}を上へ`} className={small}>
-                  {t`上へ`}
+                <button type="button" disabled={i === 0} onClick={() => move(i, -1)} aria-label={t`${city}を上へ`} className={iconButton}>
+                  <ArrowUpIcon size={22} />
                 </button>
-                <button type="button" disabled={i === value.length - 1} onClick={() => move(i, 1)} aria-label={t`${city}を下へ`} className={small}>
-                  {t`下へ`}
+                <button type="button" disabled={i === value.length - 1} onClick={() => move(i, 1)} aria-label={t`${city}を下へ`} className={iconButton}>
+                  <ArrowDownIcon size={22} />
                 </button>
-                <button type="button" onClick={() => remove(i)} aria-label={t`${city}を削除`} className={small}>
-                  {t`削除`}
+                <span aria-hidden="true" className="mx-1 h-8 w-px bg-line" />
+                <button type="button" onClick={() => remove(i)} aria-label={t`${city}を削除`} className={iconButton}>
+                  <TrashIcon />
                 </button>
               </li>
             );
