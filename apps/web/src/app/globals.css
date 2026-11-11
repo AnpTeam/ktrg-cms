@@ -1484,6 +1484,20 @@ body.map-nav-mode .map-layer-pills {
   }
 }
 
+/* Fold (components/Fold.tsx): in a wide box the two-column course page shows every section, so the content stays visible
+   (details::details-content, where the browser has it) and the heading stops being a button. Elsewhere it simply folds. */
+@container (min-width: 56rem) {
+  .fold::details-content {
+    content-visibility: visible;
+  }
+  .fold-summary {
+    pointer-events: none;
+    cursor: default;
+  }
+  .fold-chevron {
+    display: none;
+  }
+}
 /* The home banner's progress dot: it fills over the photo's time, and the next photo comes when it is full. Only without
    reduced motion; otherwise the dot stays full and nothing advances. */
 @media (prefers-reduced-motion: no-preference) {

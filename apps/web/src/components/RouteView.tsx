@@ -3,6 +3,7 @@ import { Trans } from "@lingui/react/macro";
 import { ElevationProfile } from "@/components/ElevationProfile";
 import { EmptyState } from "@/components/EmptyState";
 import { ExpandableText } from "@/components/ExpandableText";
+import { Fold } from "@/components/Fold";
 import { CoverPhoto } from "@/components/CoverPhoto";
 import { NameRuby } from "@/components/Ruby";
 import { AccessList } from "@/components/AccessList";
@@ -115,12 +116,6 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
   const trail = trailStops(route);
   const journey = journeyOf(trail, route.walkStyle ?? null);
   const rows = walkRows(trail, journey, route.line);
-  const jumps = [
-    trail.length > 0 ? { id: "walk", label: <Trans>道のり</Trans> } : null,
-    stops.length > 0 ? { id: "map", label: <Trans>地図</Trans> } : null,
-    video || videoFile ? { id: "video", label: <Trans>動画</Trans> } : null,
-    access || journey || route.accessPoints.length > 0 ? { id: "access", label: <Trans>行き方</Trans> } : null,
-  ].filter((j) => j !== null);
   const photo = route.photoUrl ? { src: route.photoUrl, alt: pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa, credit: route.photoCredit ?? null } : null;
 
   // One column (the phone, and the admin's narrow preview). When the box this sits in is wide (a desktop page), two
@@ -169,26 +164,15 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             ) : null}
           </header>
 
-          {jumps.length >= 2 || bookmarkable ? (
+          {bookmarkable ? (
             // Solid background on purpose: a see-through bar at the top edge brings back iOS's status-bar blur (globals.css).
-            // The bookmark, then links to the parts of a long page. It stays at the top while scrolling on a phone; two columns
-            // show everything at once. The bookmark stays put while the links scroll sideways on a narrow screen.
+            // The bookmark. It stays at the top while scrolling on a phone; two columns show it under the numbers instead.
+            // (The long page is folded into sections now, so there is no list of links to its parts.)
             <nav aria-label={jumpLabel} className="sticky top-[var(--top-clear)] z-20 order-3 flex items-center border-b border-line/30 bg-paper py-2 @4xl:hidden">
               {bookmarkable ? (
-                <div className="shrink-0 border-r border-line pl-4 pr-3">
+                <div className="shrink-0 pl-4 pr-3">
                   <BookmarkButton routeId={route.id} compact />
                 </div>
-              ) : null}
-              {jumps.length >= 2 ? (
-                <ul className="flex min-w-0 gap-2 overflow-x-auto px-3 [scrollbar-width:none]">
-                  {jumps.map((j) => (
-                    <li key={j.id} className="shrink-0">
-                      <a href={`#${j.id}`} className="tap-target inline-flex items-center rounded-full border border-line bg-paper px-4 text-lg font-bold text-ink hover:bg-surface">
-                        {j.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
               ) : null}
             </nav>
           ) : null}
@@ -204,20 +188,17 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           ) : null}
 
           {history ? (
-            <section className="order-10 px-4 @4xl:order-none @4xl:px-0">
-              <h2 className="text-xl font-bold">
-                <Trans>歴史・由来</Trans>
-              </h2>
-              <div className="mt-2">
+            <section className="order-5 px-4 @4xl:order-none @4xl:px-0">
+              <Fold open title={<Trans>歴史・由来</Trans>}>
                 <ExpandableText text={history.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
                   <RichText text={history.text} lang={history.lang} />
                 </ExpandableText>
-              </div>
-              {history.fallback ? (
-                <p className="mt-2 text-base text-muted">
-                  <Trans>この文章は日本語のみです。</Trans>
-                </p>
-              ) : null}
+                {history.fallback ? (
+                  <p className="mt-2 text-base text-muted">
+                    <Trans>この文章は日本語のみです。</Trans>
+                  </p>
+                ) : null}
+              </Fold>
             </section>
           ) : null}
 
@@ -233,24 +214,25 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           ) : null}
 
           {access || journey || route.accessPoints.length > 0 ? (
-            <section id="access" className="order-8 flex flex-col gap-4 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:px-0">
-              <h2 className="text-xl font-bold">
-                <Trans>アクセス・交通</Trans>
-              </h2>
-              {journey ? <RouteJourney journey={journey} locale={locale} /> : null}
-              {route.accessPoints.length > 0 ? <AccessList points={route.accessPoints} locale={locale} /> : null}
-              {access ? (
-                <div>
-                  <ExpandableText text={access.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
-                    <RichText text={access.text} lang={access.lang} />
-                  </ExpandableText>
-                  {access.fallback ? (
-                    <p className="mt-2 text-base text-muted">
-                      <Trans>この文章は日本語のみです。</Trans>
-                    </p>
+            <section id="access" className="order-6 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:px-0">
+              <Fold open title={<Trans>アクセス・交通</Trans>}>
+                <div className="flex flex-col gap-4">
+                  {journey ? <RouteJourney journey={journey} locale={locale} /> : null}
+                  {route.accessPoints.length > 0 ? <AccessList points={route.accessPoints} locale={locale} /> : null}
+                  {access ? (
+                    <div>
+                      <ExpandableText text={access.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
+                        <RichText text={access.text} lang={access.lang} />
+                      </ExpandableText>
+                      {access.fallback ? (
+                        <p className="mt-2 text-base text-muted">
+                          <Trans>この文章は日本語のみです。</Trans>
+                        </p>
+                      ) : null}
+                    </div>
                   ) : null}
                 </div>
-              ) : null}
+              </Fold>
             </section>
           ) : null}
 
@@ -258,56 +240,56 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
 
         <div className={SIDE}>
           {route.sketch?.elevations ? (
-            <section className="order-7 px-4 @4xl:order-none @4xl:px-0">
+            <section className="order-9 px-4 @4xl:order-none @4xl:px-0">
               <ElevationProfile elevations={route.sketch.elevations} distanceKm={route.distanceKm} routeLine={route.line} lineElevations={route.lineElevations} />
             </section>
           ) : null}
 
-          {offline ? <section className="order-7 px-4 @4xl:order-none @4xl:px-0">{offline}</section> : null}
+          {offline ? <section className="order-9 px-4 @4xl:order-none @4xl:px-0">{offline}</section> : null}
 
           {video || videoFile ? (
-            <section id="video" className="order-9 flex flex-col gap-3 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:px-0">
-              <h2 className="text-xl font-bold">
-                <Trans>ルートの動画</Trans>
-              </h2>
-              {video ? (
-                <IntroVideo video={video} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
-              ) : videoFile ? (
-                <FileVideoPlayer key={videoFile.src} video={videoFile} subtitles={englishVideo ? route.videoSubtitlesEn === true : route.videoSubtitles === true} language={englishVideo ? "en" : "ja"} version={route.updatedAt ?? null} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
-              ) : null}
-              {englishVideo ? null : <LastUpdated iso={route.videoUpdatedAt} locale={locale} />}
+            <section id="video" className="order-10 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:px-0">
+              <Fold title={<Trans>ルートの動画</Trans>}>
+                <div className="flex flex-col gap-3">
+                  {video ? (
+                    <IntroVideo video={video} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
+                  ) : videoFile ? (
+                    <FileVideoPlayer key={videoFile.src} video={videoFile} subtitles={englishVideo ? route.videoSubtitlesEn === true : route.videoSubtitles === true} language={englishVideo ? "en" : "ja"} version={route.updatedAt ?? null} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
+                  ) : null}
+                  {englishVideo ? null : <LastUpdated iso={route.videoUpdatedAt} locale={locale} />}
+                </div>
+              </Fold>
             </section>
           ) : null}
 
           {stops.length > 0 ? (
-            <section id="map" className="order-6 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:px-0">
-              <TrailMapLoader stops={stops} line={route.line} sideLines={route.sideLines?.map((s) => s.line)} places={mapPlaces} draft={draftPositions} settings={settings} mergeStops={mergeStops} placesFirst={placesFirst} />
+            <section id="map" className="order-8 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:px-0">
+              <Fold title={<Trans>地図</Trans>}>
+                <TrailMapLoader stops={stops} line={route.line} sideLines={route.sideLines?.map((s) => s.line)} places={mapPlaces} draft={draftPositions} settings={settings} mergeStops={mergeStops} placesFirst={placesFirst} />
+              </Fold>
             </section>
           ) : null}
 
           {trail.length === 0 ? (
-            <div className="order-5 @4xl:order-none">
+            <div className="order-7 @4xl:order-none">
               <EmptyState title={<Trans>スタンプの場所は、まだ準備中です。</Trans>}>
                 <Trans>公開できるようになったら、ここに場所の一覧が表示されます。</Trans>
               </EmptyState>
             </div>
           ) : (
-            <section id="walk" className="order-5 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none">
-              <div className="flex flex-wrap items-baseline justify-between gap-x-4 px-4 pb-2 @4xl:px-0">
-                <h2 className="text-xl font-bold">
-                  <Trans>道のり</Trans>
-                </h2>
-                {showStampCount && stampedCount !== null && spotCount > 0 ? (
-                  <p className="text-lg font-bold tabular-nums">
+            <section id="walk" className="order-7 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:px-0">
+              <Fold
+                title={<Trans>道のり</Trans>}
+                aside={
+                  showStampCount && stampedCount !== null && spotCount > 0 ? (
                     <Trans>
                       スタンプ {stampedCount} / {spotCount}
                     </Trans>
-                  </p>
-                ) : null}
-              </div>
-              <div className="px-4 @4xl:px-0">
+                  ) : null
+                }
+              >
                 <StopList rows={rows} hrefFor={spotHref} locale={locale} />
-              </div>
+              </Fold>
             </section>
           )}
 
