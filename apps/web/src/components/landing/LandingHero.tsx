@@ -18,9 +18,10 @@ const FALLBACK: HeroSlide = { src: "/home/top_slider_img01.jpg", alt: "", unopti
 
 /**
  * `title` (a signed-in visitor's greeting) takes the line's place, with the line kept small above it; `children` take the
- * buttons' place on the patterned band below (their progress, instead of signing up).
+ * buttons' place on the patterned band below (their progress, instead of signing up). `bare` leaves the band out: the
+ * landing journey (Journey.tsx) shows the photos alone as its first beat and puts the buttons in its last.
  */
-export function LandingHero({ slides, locale, line, title, children }: { slides: BannerSlide[]; locale: string; line: string; title?: ReactNode; children?: ReactNode }) {
+export function LandingHero({ slides, locale, line, title, children, bare = false }: { slides: BannerSlide[]; locale: string; line: string; title?: ReactNode; children?: ReactNode; bare?: boolean }) {
   const photos: HeroSlide[] = slides.flatMap((s) => (s.src ? [{ src: s.src, alt: locale === "ja" ? s.altJa : s.altEn, credit: s.credit, unoptimized: true }] : []));
   return (
     <section aria-labelledby="hero-title" className="overflow-hidden bg-surface">
@@ -48,7 +49,7 @@ export function LandingHero({ slides, locale, line, title, children }: { slides:
           </div>
         </HeroSlides>
       </div>
-      <div className="pattern-shippo">
+      {bare ? null : <div className="pattern-shippo">
       {children ? <div className="mx-auto max-w-6xl py-6 @[34rem]:px-6">{children}</div> : (
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-5 py-6 text-center @[34rem]:px-10 @[42rem]:flex-row @[42rem]:justify-between @[42rem]:text-left">
         <div className="flex flex-wrap items-center justify-center gap-3">
@@ -67,7 +68,7 @@ export function LandingHero({ slides, locale, line, title, children }: { slides:
         </p>
       </div>
       )}
-      </div>
+      </div>}
     </section>
   );
 }

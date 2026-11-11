@@ -17,6 +17,8 @@ export interface Ridge {
   courses: number;
   /** Highest point drawn, in metres. */
   topM: number;
+  /** The points `d` joins, as [x, y] in the same box, in order (what the landing journey places its seals along). */
+  points: [number, number][];
 }
 
 export const RIDGE_WIDTH = 1000;
@@ -43,6 +45,7 @@ export function ridgePath(courses: readonly RidgeCourse[]): Ridge | null {
   // A little room above the summit so the line never touches the edge.
   const y = (m: number) => RIDGE_HEIGHT - ((m - lowM) / span) * (RIDGE_HEIGHT * 0.9);
   const x = (km: number) => (km / start) * RIDGE_WIDTH;
-  const d = points.map(([km, m], i) => `${i === 0 ? "M" : "L"}${x(km).toFixed(1)} ${y(m).toFixed(1)}`).join(" ");
-  return { d, courses: known.length, topM: Math.round(topM) };
+  const drawn = points.map(([km, m]): [number, number] => [x(km), y(m)]);
+  const d = drawn.map(([px, py], i) => `${i === 0 ? "M" : "L"}${px.toFixed(1)} ${py.toFixed(1)}`).join(" ");
+  return { d, courses: known.length, topM: Math.round(topM), points: drawn };
 }

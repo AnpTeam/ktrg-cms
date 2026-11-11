@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { CreditBadge } from "@/components/PhotoCredit";
 
@@ -39,6 +39,14 @@ export function HeroSlides({ slides, children }: { slides: HeroSlide[]; children
   const [held, setHeld] = useState(false);
   // The visitor's own pause (WCAG 2.2.2: anything that moves by itself for over 5 s can be stopped).
   const [paused, setPaused] = useState(false);
+  // The landing journey (JourneyScene) says once that the visitor scrolled away from the first screen: stop advancing.
+  // Its own flag, not `held`: the pointer leaving would clear that one.
+  const [away, setAway] = useState(false);
+  useEffect(() => {
+    const onAway = () => setAway(true);
+    window.addEventListener("journey-scrolled", onAway, { once: true });
+    return () => window.removeEventListener("journey-scrolled", onAway);
+  }, []);
   const count = slides.length;
 
   function go(to: number) {
@@ -97,7 +105,7 @@ export function HeroSlides({ slides, children }: { slides: HeroSlide[]; children
                   <span
                     key={index}
                     onAnimationEnd={() => go(index + 1)}
-                    style={{ animationDuration: `${SLIDE_SECONDS}s`, animationPlayState: held || paused ? "paused" : "running" }}
+                    style={{ animationDuration: `${SLIDE_SECONDS}s`, animationPlayState: held || paused || away ? "paused" : "running" }}
                     className="hero-dot-fill absolute inset-0 origin-left rounded-full bg-white"
                   />
                 ) : null}

@@ -22,3 +22,9 @@ test("nothing to draw gives null", () => {
   expect(ridgePath([])).toBeNull();
   expect(ridgePath([course(1, 2)])).toBeNull();
 });
+
+test("the ridge returns the points it drew, the same ones as its path", () => {
+  const ridge = ridgePath([course(1, 1, [0, 100])])!;
+  expect(ridge.points).toEqual([[0, RIDGE_HEIGHT], [RIDGE_WIDTH, RIDGE_HEIGHT * 0.1]]);
+  expect(ridge.points.length).toBe((ridge.d.match(/[ML]/g) ?? []).length);
+});

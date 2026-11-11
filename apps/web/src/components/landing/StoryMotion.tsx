@@ -33,6 +33,7 @@ export function StoryMotion({ children, className = "" }: { children: ReactNode;
         mm.add("(prefers-reduced-motion: no-preference)", () => {
           // One chapter at a time: its headline first, then its blocks one after another, once.
           gsap.utils.toArray<HTMLElement>("[data-ground]", el).forEach((g) => {
+            if (g.closest("[data-journey]")) return; // the journey has its own scene (JourneyScene)
             const parts = Array.from(g.querySelectorAll<HTMLElement>(HIDDEN));
             if (parts.length === 0) return;
             gsap.set(parts, { autoAlpha: 0, y: 28, filter: "blur(6px)" });
@@ -50,6 +51,7 @@ export function StoryMotion({ children, className = "" }: { children: ReactNode;
           show(); // after gsap.set, in the same tick: no frame where the words are neither hidden nor positioned
           // The ridge draws as it passes: pathLength="1" on the path, so the dash is the whole line at any size.
           gsap.utils.toArray<SVGPathElement>("[data-ridge]", el).forEach((path) => {
+            if (path.closest("[data-journey]")) return;
             gsap.fromTo(path, { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, ease: "none", scrollTrigger: { trigger: path.ownerSVGElement ?? path, start: "top 90%", end: "bottom 45%", scrub: 0.6 } });
           });
         });

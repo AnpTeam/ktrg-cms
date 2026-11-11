@@ -69,6 +69,10 @@ paragraphs are exactly what not to copy.
 - **Pictures full width** on phones; on wide screens they may break the column on one side. Wide screens are checked
   page by page as each phase is built.
 - **At most one button per section**, at the end of the section, and one main button at the end of the page.
+- **The landing journey (2026-11-11, `docs/landing-journey-design.md`)** replaces the four stacked chapters for a
+  first-time visitor: with motion allowed, one sticky stage (350svh of native scroll) shows four beats in turn: the
+  sea (the photos), what Katsuragi Shugen is, the ridge with its 31 seals, the start. The stacked page below it is the
+  complete version, and stays what a visitor gets with no script, calm or reduced motion. A skip link comes first.
 
 ## Motion
 
@@ -80,7 +84,9 @@ paragraphs are exactly what not to copy.
   with reduced motion, calm, no JavaScript (`<noscript>`) or a failed GSAP load, the words are simply there. This
   replaces the earlier "visible by default" rule, which made the words show and then jump.
 - **No loading screen in front of a page's content, no scroll hijacking, no parallax, nothing that moves by itself
-  without a pause button.**
+  without a pause button.** The landing journey is scroll-linked by design, but the scrolling stays the browser's own
+  (a sticky stage, never a takeover of the wheel or touch), the beats follow the visitor's finger, and the photos stop
+  advancing once they scroll away. Reduced motion: the final scene at once and each beat fades in (opacity only).
 - **A loading overlay for real waits.** When an action takes time (starting navigation, fetching a route or an
   offline pack), the screen dims and a small looping mark plays (the ridge line drawing itself, or the seal) with a
   sentence saying what is happening. It appears only after about 300 ms, so quick actions never flash it; it has a
