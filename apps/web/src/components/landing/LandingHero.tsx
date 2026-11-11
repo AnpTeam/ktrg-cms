@@ -33,7 +33,7 @@ export function LandingHero({ slides, locale, line, title, children, bare = fals
           <div className="absolute inset-0 mx-auto flex max-w-6xl flex-col items-center justify-center gap-5 px-12 py-6 text-center">
             {/* The line and the title are one block: set vertically on a tall screen (the line to the right of the title, as
                 columns run right to left), across and centred on a low one. Signed in or not. */}
-            <div className="flex flex-col items-center gap-2 tall:block tall:max-h-[calc(100%-7rem)] tall:tracking-widest tall:[writing-mode:vertical-rl]">
+            <div className="flex flex-col items-center gap-2 tall:block tall:max-h-[calc(100%-7rem)] tall:tracking-[0.04em] tall:[writing-mode:vertical-rl]">
               {title ? (
                 <p className="font-serif text-lg font-bold text-white [text-shadow:0_1px_6px_rgb(0_0_0/0.7)] tall:ml-4 @[34rem]:text-xl">{line}</p>
               ) : null}

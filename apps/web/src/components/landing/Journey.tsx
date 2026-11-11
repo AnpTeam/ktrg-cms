@@ -41,7 +41,8 @@ export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; 
         <div data-beat="1">
           <Chapter ground="story-ground-inverse" heading={w.storyHeading} id="story-title">
             <p className="text-lg leading-9">{w.storyText}</p>
-            <dl className="grid grid-cols-3 gap-3 text-center">
+            {/* One ruled row per fact on a phone (English values are longer), three columns from a wider box. */}
+            <dl className="grid grid-cols-1 gap-3 @[34rem]:grid-cols-3 @[34rem]:text-center">
               <Fact term={<Trans>コース</Trans>} value={<Trans>全{TOTAL_ROUTES}区間</Trans>} />
               <Fact term={<Trans>長さ</Trans>} value={<Trans>約{TRAIL_KM}km</Trans>} />
               <Fact term={<Trans>経塚</Trans>} value={<Trans>{TOTAL_STAMPS}か所</Trans>} />
@@ -111,9 +112,9 @@ export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; 
 
 function Fact({ term, value }: { term: ReactNode; value: ReactNode }) {
   return (
-    <div className="flex flex-col gap-1 border-t border-current pt-3">
+    <div className="flex items-baseline justify-between gap-4 border-t border-current pt-3 @[34rem]:flex-col @[34rem]:items-stretch @[34rem]:justify-start @[34rem]:gap-1">
       <dt className="text-base opacity-90">{term}</dt>
-      <dd className="whitespace-nowrap text-lg font-bold @[34rem]:text-xl">{value}</dd>
+      <dd className="text-lg font-bold @[34rem]:text-xl">{value}</dd>
     </div>
   );
 }
