@@ -32,12 +32,8 @@ export function sealsPlaced(progress: number, total: number): number {
   return Math.min(total, Math.max(0, Math.floor(clamp01((p - 0.5) / (0.8 - 0.5)) * total)));
 }
 
-/**
- * `count` points spaced evenly by the length of the line (the first at its start, the last at its end; one point stands at
- * the middle). Nothing for a count of zero or a line of fewer than two points.
- */
-export function sealPoints(points: readonly [number, number][], count: number): [number, number][] {
-  if (count <= 0 || points.length < 2) return [];
+/** The point `distance` along a line, or null when the line has no length. */
+function pointAlong(points: readonly [number, number][], distance: number): { at: [number, number]; total: number } | null {
   const lengths: number[] = [];
   let total = 0;
   for (let i = 1; i < points.length; i++) {
@@ -47,22 +43,74 @@ export function sealPoints(points: readonly [number, number][], count: number): 
     lengths.push(len);
     total += len;
   }
-  if (total === 0) return [];
-  const at = (distance: number): [number, number] => {
-    let left = distance;
-    for (let i = 0; i < lengths.length; i++) {
-      const len = lengths[i]!;
-      if (len > 0 && left <= len) {
-        const [ax, ay] = points[i]!;
-        const [bx, by] = points[i + 1]!;
-        const t = left / len;
-        return [ax + (bx - ax) * t, ay + (by - ay) * t];
-      }
-      left -= len;
+  if (total === 0) return null;
+  let left = Math.min(total, Math.max(0, distance));
+  for (let i = 0; i < lengths.length; i++) {
+    const len = lengths[i]!;
+    if (len > 0 && left <= len) {
+      const [ax, ay] = points[i]!;
+      const [bx, by] = points[i + 1]!;
+      const t = left / len;
+      return { at: [ax + (bx - ax) * t, ay + (by - ay) * t], total };
     }
-    return [...points[points.length - 1]!];
-  };
-  return Array.from({ length: count }, (_, i) => at(count === 1 ? total / 2 : (total * i) / (count - 1)));
+    left -= len;
+  }
+  return { at: [...points[points.length - 1]!], total };
+}
+
+const lineLength = (points: readonly [number, number][]) => pointAlong(points, 0)?.total ?? 0;
+
+/**
+ * `count` points spaced evenly by the length of the line (the first at its start, the last at its end; one point stands at
+ * the middle). Nothing for a count of zero or a line of fewer than two points.
+ */
+export function sealPoints(points: readonly [number, number][], count: number): [number, number][] {
+  const total = lineLength(points);
+  if (count <= 0 || points.length < 2 || total === 0) return [];
+  return Array.from({ length: count }, (_, i) => pointAlong(points, count === 1 ? total / 2 : (total * i) / (count - 1))!.at);
+}
+
+/**
+ * One seal for every stamp place, grouped by mound: `groups[i]` is how many places mound i has (1 or 2). The mounds stand
+ * evenly along the line; a mound with two places gets two seals side by side, `pairGap` of the line's length apart,
+ * kept inside the line (a pair at an end stands against that end).
+ */
+export function moundSealPoints(points: readonly [number, number][], groups: readonly number[], pairGap = 0.022): [number, number][] {
+  const total = lineLength(points);
+  if (groups.length === 0 || points.length < 2 || total === 0) return [];
+  const centres = sealPoints(points, groups.length);
+  const gap = pairGap * total;
+  const out: [number, number][] = [];
+  groups.forEach((n, i) => {
+    const [cx, cy] = centres[i]!;
+    if (n < 2) {
+      out.push([cx, cy]);
+      return;
+    }
+    // Find the centre's distance along the line by searching, then spread the pair about it, inside the line.
+    const centre = distanceOf(points, [cx, cy]);
+    const start = Math.min(total - gap * (n - 1), Math.max(0, centre - (gap * (n - 1)) / 2));
+    for (let k = 0; k < n; k++) out.push(pointAlong(points, start + gap * k)!.at);
+  });
+  return out;
+}
+
+/** How far along the line a point that lies on it is. */
+function distanceOf(points: readonly [number, number][], p: [number, number]): number {
+  let travelled = 0;
+  let best = { d: Infinity, at: 0 };
+  for (let i = 1; i < points.length; i++) {
+    const [ax, ay] = points[i - 1]!;
+    const [bx, by] = points[i]!;
+    const len = Math.hypot(bx - ax, by - ay);
+    if (len > 0) {
+      const t = Math.min(1, Math.max(0, ((p[0] - ax) * (bx - ax) + (p[1] - ay) * (by - ay)) / (len * len)));
+      const d = Math.hypot(ax + (bx - ax) * t - p[0], ay + (by - ay) * t - p[1]);
+      if (d < best.d) best = { d, at: travelled + len * t };
+    }
+    travelled += len;
+  }
+  return best.at;
 }
 
 /** The line the stage draws: the real ridge, or, with no ridge data, a plain straight rise (never an invented profile). */

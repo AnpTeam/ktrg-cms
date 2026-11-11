@@ -37,7 +37,7 @@ words (`HomeSlot`), so an editor's text shows here and **no new copy is written*
 | 3 Seals | The same ridge. `TOTAL_STAMPS` small seals drop onto it one after another. | `rallyHeading`, `rallyLead`, `rallyText` | the last seal lands |
 | 4 Start | The stage settles. The two buttons and the login link arrive. | `startHeading` | the scene releases and the page scrolls on to the courses |
 
-Seals: placed **evenly by arc length along the drawn line**, not at the real positions. They stand for the rally, not for a
+Seals: placed **by mound, evenly by arc length along the drawn line** (28 mounds; mounds 3, 14 and 28 have two places and get a touching pair, so 31 seals; `moundSealPoints`, `MOUND_PLACES`), not at the real positions. On a phone each seal is 8 px with a 1 px ring (it was 12 px with a 2 px ring and read as a bead chain). They stand for the rally, not for a
 map, and the real coordinates are not ours to place until a person has checked them (CLAUDE.md, data rule). The scene
 says nothing a map would (no names on the seals).
 
