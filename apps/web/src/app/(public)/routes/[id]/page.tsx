@@ -55,12 +55,12 @@ export default async function RouteDetailPage({ params }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="px-4">
-        <BackLink href="/routes">
-          <Trans>ルート一覧</Trans>
-        </BackLink>
-      </div>
       <RouteView
+        back={
+          <BackLink href="/routes">
+            <Trans>ルート一覧</Trans>
+          </BackLink>
+        }
         route={route}
         locale={i18n.locale}
         places={places}

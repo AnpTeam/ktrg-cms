@@ -4380,6 +4380,14 @@ msgstr "No earlier links yet."
 msgid "前の写真"
 msgstr "Previous photo"
 
+#: src/components/map/TrailMap.tsx
+msgid "前の場所"
+msgstr "Previous place"
+
+#: src/components/map/TrailMap.tsx
+msgid "次の場所"
+msgstr "Next place"
+
 #: src/components/landing/HeroSlides.tsx:88
 msgid "自動で切り替える"
 msgstr "Resume the slideshow"

@@ -90,6 +90,8 @@ export interface RouteViewProps {
   jumpLabel?: string;
   /** Show "スタンプ 3 / 14" over the walk: only for a visitor who has stamped somewhere (the admin's preview leaves it out). */
   showStampCount?: boolean;
+  /** The "back to the list" link: it leads the left column (so on a wide page the map can start at the very top). */
+  back?: ReactNode;
 }
 
 /**
@@ -97,7 +99,7 @@ export interface RouteViewProps {
  * and the places (stamp places numbered, the others marked "no stamp") as a trail. The public page and the admin's live preview both render this, so what an
  * editor sees while typing is what visitors get. It reads no cookies and calls no server API.
  */
-export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref, offline, notices, showStampCount = false, jumpLabel = "", bookmarkable = false }: RouteViewProps) {
+export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref, offline, notices, showStampCount = false, jumpLabel = "", bookmarkable = false, back }: RouteViewProps) {
   const description = pickText(locale, route.descriptionJa, route.descriptionEn);
   const stops = buildStops(route, locale, spotHref, labels);
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
@@ -126,10 +128,16 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
   // and the climb; access, the video and the story come after. The two wrappers are
   // `contents` there, so they take no space of their own.
   const SIDE = "contents @4xl:flex @4xl:min-w-0 @4xl:flex-col @4xl:gap-6";
+  // The map's column: on a phone it takes no space of its own (the map is one of the folds); from @4xl it is stuck to the
+  // top of the screen at the screen's height, with its right edge and its top at the screen's (the page's own padding is
+  // pulled back: 2rem above, and on the right the page's 2.5rem plus the space beside a centred page, max-w-6xl = 72rem
+  // in app/(public)/layout.tsx: change them together).
+  const MAP_COLUMN = "contents @4xl:block @4xl:sticky @4xl:top-0 @4xl:-mt-8 @4xl:-mr-[calc(max(0px,(100vw-var(--rail,0px)-72rem)/2)+2.5rem)] @4xl:h-svh";
   return (
     <div className="@container flex flex-col gap-6">
-      <div className="flex flex-col gap-6 @4xl:grid @4xl:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] @4xl:items-start @4xl:gap-x-10">
+      <div className="flex flex-col gap-6 @4xl:grid @4xl:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] @4xl:items-start @4xl:gap-x-6">
         <div className={SIDE}>
+          {back ? <div className="order-0 px-4 @4xl:order-none">{back}</div> : null}
           {/* The cover: in one column the photo runs edge to edge and fades into the page at the bottom, and the name sits on the
               fade, so photo and title read as one. In two columns it is a plain framed photo with the name under it. */}
           {photo ? (
@@ -139,7 +147,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               <CoverPhoto photo={photo} flat />
             </div>
           ) : null}
-          <header className={`relative order-2 px-4 @4xl:order-none @4xl:px-0 ${photo ? "-mt-20" : ""}`}>
+          <header className={`relative order-2 px-4 @4xl:order-none ${photo ? "-mt-20" : ""}`}>
             {/* In Japanese the name can carry its reading over it; the heading sits a little lower to give the reading room. */}
             <h1 className="min-w-0 text-4xl font-bold leading-tight has-[rt]:pt-4">
               <NameRuby title={title} reading={route.nameKana} />
@@ -176,7 +184,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           {notices ? <div className="order-3 flex flex-col gap-3 @4xl:order-none @4xl:[&>section]:mx-0">{notices}</div> : null}
 
           {description ? (
-            <section className="order-4 px-4 @4xl:order-none @4xl:px-0">
+            <section className="order-4 px-4 @4xl:order-none">
               <ExpandableText text={description.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
                 <RichText text={description.text} lang={description.lang} />
               </ExpandableText>
@@ -184,7 +192,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           ) : null}
 
           {history ? (
-            <section className="order-5 px-4 @4xl:order-none @4xl:px-0">
+            <section className="order-5 px-4 @4xl:order-none">
               <Fold open title={<Trans>歴史・由来</Trans>}>
                 <ExpandableText text={history.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
                   <RichText text={history.text} lang={history.lang} />
@@ -199,7 +207,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           ) : null}
 
           {source ? (
-            <section className="order-11 px-4 @4xl:order-none @4xl:px-0">
+            <section className="order-11 px-4 @4xl:order-none">
               <h2 className="text-xl font-bold">
                 <Trans>出典</Trans>
               </h2>
@@ -210,7 +218,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           ) : null}
 
           {access || journey || route.accessPoints.length > 0 ? (
-            <section id="access" className="order-6 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:px-0">
+            <section id="access" className="order-6 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none">
               <Fold open title={<Trans>アクセス・交通</Trans>}>
                 <div className="flex flex-col gap-4">
                   {journey ? <RouteJourney journey={journey} locale={locale} /> : null}
@@ -232,19 +240,16 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             </section>
           ) : null}
 
-        </div>
-
-        <div className={SIDE}>
           {route.sketch?.elevations ? (
-            <section className="order-9 px-4 @4xl:order-none @4xl:px-0">
+            <section className="order-9 px-4 @4xl:order-none">
               <ElevationProfile elevations={route.sketch.elevations} distanceKm={route.distanceKm} routeLine={route.line} lineElevations={route.lineElevations} />
             </section>
           ) : null}
 
-          {offline ? <section className="order-9 px-4 @4xl:order-none @4xl:px-0">{offline}</section> : null}
+          {offline ? <section className="order-9 px-4 @4xl:order-none">{offline}</section> : null}
 
           {video || videoFile ? (
-            <section id="video" className="order-10 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:px-0">
+            <section id="video" className="order-10 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none">
               <Fold title={<Trans>ルートの動画</Trans>}>
                 <div className="flex flex-col gap-3">
                   {video ? (
@@ -258,14 +263,6 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             </section>
           ) : null}
 
-          {stops.length > 0 ? (
-            <section id="map" className="order-8 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:px-0">
-              <Fold title={<Trans>地図</Trans>}>
-                <TrailMapLoader stops={stops} line={route.line} sideLines={route.sideLines?.map((s) => s.line)} places={mapPlaces} draft={draftPositions} settings={settings} mergeStops={mergeStops} placesFirst={placesFirst} />
-              </Fold>
-            </section>
-          ) : null}
-
           {trail.length === 0 ? (
             <div className="order-7 @4xl:order-none">
               <EmptyState title={<Trans>スタンプの場所は、まだ準備中です。</Trans>}>
@@ -273,7 +270,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
               </EmptyState>
             </div>
           ) : (
-            <section id="walk" className="order-7 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:px-0">
+            <section id="walk" className="order-7 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none">
               <Fold
                 title={<Trans>道のり</Trans>}
                 aside={
@@ -290,6 +287,16 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           )}
 
         </div>
+
+        {stops.length > 0 ? (
+          <div className={MAP_COLUMN}>
+            <section id="map" className="order-8 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:h-full @4xl:px-0">
+              <Fold className="fold-bare" title={<Trans>地図</Trans>}>
+                <TrailMapLoader stops={stops} line={route.line} sideLines={route.sideLines?.map((s) => s.line)} places={mapPlaces} draft={draftPositions} settings={settings} mergeStops={mergeStops} placesFirst={placesFirst} />
+              </Fold>
+            </section>
+          </div>
+        ) : null}
       </div>
 
       <Notice>
