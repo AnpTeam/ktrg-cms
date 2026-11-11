@@ -65,7 +65,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
           {sample ? <SampleNoticeHost /> : null}
           <PrefsSync signedIn={viewer.signedIn} account={prefsState.account} device={prefsState.device} />
           {viewer.signedIn ? <SessionRotate /> : null}
-          <main id="main" className="pb-[calc(7rem+var(--nav-toast,0px))] md:pb-[calc(2.5rem+var(--nav-toast,0px))] md:pt-6 wide:pb-[calc(5rem+var(--nav-toast,0px))] wide:pt-8">
+          <main id="main" className="pb-[calc(7rem+var(--nav-toast,0px))] md:pb-[calc(2.5rem+var(--nav-toast,0px))] md:pt-6 md:has-[[data-landing-top]]:pt-0 wide:pb-[calc(5rem+var(--nav-toast,0px))] wide:pt-8 wide:has-[[data-landing-top]]:pt-0">
             <div className="wide:mx-auto wide:max-w-6xl wide:px-10">
               {viewer.signedIn ? null : <BrowserWarning />}
               {children}
