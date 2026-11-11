@@ -133,19 +133,15 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           {/* The cover: in one column the photo runs edge to edge and fades into the page at the bottom, and the name sits on the
               fade, so photo and title read as one. In two columns it is a plain framed photo with the name under it. */}
           {photo ? (
-            // Two columns, Japanese, a tall screen: the name also stands vertically beside the framed photo, like the label
-            // of a scroll (docs/design-language.md, phase 3). A copy for the eye only; the h1 below stays for screen readers.
-            // On a phone the cover is too short for it (its lower half fades into the page), so the name stays on the fade.
-            <div className="order-1 @4xl:order-none @4xl:flex @4xl:items-start @4xl:gap-5">
-              <CoverPhoto photo={photo} className="@4xl:min-w-0 @4xl:flex-1" />
-              <p aria-hidden="true" className="hidden shrink-0 font-serif text-4xl font-bold leading-snug tracking-widest text-accent tall:@4xl:block tall:[writing-mode:vertical-rl]">
-                <NameRuby title={title} reading={route.nameKana} />
-              </p>
+            // The same cover at every width (2026-11-11): the photo runs to the edge of its column and fades into the page, and
+            // the name sits on the fade, as on a phone. (The vertical name beside a framed photo is gone.)
+            <div className="order-1 @4xl:order-none">
+              <CoverPhoto photo={photo} flat />
             </div>
           ) : null}
-          <header className={`relative order-2 px-4 @4xl:order-none @4xl:mt-0 @4xl:px-0 ${photo ? "-mt-20" : ""}`}>
+          <header className={`relative order-2 px-4 @4xl:order-none @4xl:px-0 ${photo ? "-mt-20" : ""}`}>
             {/* In Japanese the name can carry its reading over it; the heading sits a little lower to give the reading room. */}
-            <h1 className={`min-w-0 text-4xl font-bold leading-tight has-[rt]:pt-4 @4xl:text-4xl ${photo ? "tall:@4xl:sr-only" : ""}`}>
+            <h1 className="min-w-0 text-4xl font-bold leading-tight has-[rt]:pt-4">
               <NameRuby title={title} reading={route.nameKana} />
             </h1>
             {route.prefecture || route.municipality ? (
