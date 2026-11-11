@@ -26,22 +26,23 @@ export function LandingHero({ slides, locale, line, title, children }: { slides:
     <section aria-labelledby="hero-title" className="overflow-hidden bg-surface">
       {/* The line and the logo sit in the middle of the photos. A first-time visitor gets a taller picture with the line set
           vertically (the reading register); a low screen keeps it across, still centred. */}
-      <div className={`relative h-80 @[34rem]:h-96 @[42rem]:h-[30rem] ${title ? "" : "tall:h-[min(78svh,44rem)]"}`}>
+      <div className="relative h-80 tall:h-[min(78svh,44rem)] @[34rem]:h-96 @[42rem]:h-[30rem]">
         <HeroSlides slides={photos.length > 0 ? photos : [FALLBACK]}>
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 mx-auto flex max-w-6xl flex-col items-center justify-center gap-5 px-12 py-6 text-center">
-            {title ? (
-              <p className="font-serif text-lg font-bold text-white [text-shadow:0_1px_6px_rgb(0_0_0/0.7)] @[34rem]:text-xl">{line}</p>
-            ) : null}
-            <h1
-              id="hero-title"
-              className={`font-serif text-3xl font-bold leading-snug text-white [text-shadow:0_1px_8px_rgb(0_0_0/0.7)] @[34rem]:text-4xl @[42rem]:text-5xl ${title ? "" : "tall:max-h-[calc(100%-7rem)] tall:tracking-widest tall:[writing-mode:vertical-rl]"}`}
-            >
-              <span className="sr-only">
-                <Trans>葛城修験</Trans>{" "}
-              </span>
-              {title ?? line}
-            </h1>
+            {/* The line and the title are one block: set vertically on a tall screen (the line to the right of the title, as
+                columns run right to left), across and centred on a low one. Signed in or not. */}
+            <div className="flex flex-col items-center gap-2 tall:block tall:max-h-[calc(100%-7rem)] tall:tracking-widest tall:[writing-mode:vertical-rl]">
+              {title ? (
+                <p className="font-serif text-lg font-bold text-white [text-shadow:0_1px_6px_rgb(0_0_0/0.7)] tall:ml-4 @[34rem]:text-xl">{line}</p>
+              ) : null}
+              <h1 id="hero-title" className="font-serif text-3xl font-bold leading-snug text-white [text-shadow:0_1px_8px_rgb(0_0_0/0.7)] @[34rem]:text-4xl @[42rem]:text-5xl">
+                <span className="sr-only">
+                  <Trans>葛城修験</Trans>{" "}
+                </span>
+                {title ?? line}
+              </h1>
+            </div>
             {/* The logo in white: its colours are theme tokens, so they are set to white for this one. */}
             <KatsuragiLogo className="h-14 w-auto shrink-0 [--color-brand:#fff] [--color-ink:#fff] [filter:drop-shadow(0_1px_4px_rgb(0_0_0/0.6))]" />
           </div>
