@@ -108,9 +108,9 @@ Numbered so we can discuss them by number.
 - D5. Write headlines as a person would say them about this place, not as slogans.
 - D6. Give every reading section one picture or drawing, captioned.
 - D7. Keep the tools register plain, fast and the same on every page.
-- D8. Check every page with large text, a phone on its side, dark mode and reduced motion. Dark mode is to be made
-  calmer: today's near-black (`#0b0908`) is harsher than the warm light look. It is retuned as the new look settles
-  (see Phases), keeping the 7:1 text rule.
+- D8. Check every page with large text, a phone on its side, dark mode and reduced motion. Dark mode is a warm
+  charcoal (`#1e1a17`, panels `#29241f`), not near-black; the dark band of a reading page (`night`) stays deeper than
+  the page in both themes. Every text pair keeps 7:1 (contrast.test.ts).
 
 **Don't**
 
@@ -167,7 +167,8 @@ a reading page keeps the same tab bar or side menu, so a visitor can always get 
 1. Landing for new visitors as a story: the hero with a vertical title, "from the sea to the mountains" with the real
    line drawn on scroll, the chapters, how stamps work in three lines, one button. English set horizontally.
 2. Home for signed-in visitors: a sentence and the next place first, a strip of seals; fewer tiles and boxes.
-3. Course page header: a vertical title on the cover, with the course's own piece of the line as its mark.
+3. Course page header: the name standing vertically beside the photo (two columns, Japanese). A mark of the course's
+   stretch of the whole ridge was tried (#420) and removed: on real data it was mostly other courses and needed a caption.
 4. Tools register: remove card-in-card nesting and extra badges; one panel style; the loading overlay.
 5. Dark mode retuned to a calmer, warmer dark across both registers (can move earlier if it hurts sooner).
 
