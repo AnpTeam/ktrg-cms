@@ -3,35 +3,36 @@ import { BEAT_STARTS, beatAt, drawnShare, moundSealPoints, motionMode, sealPoint
 import { RIDGE_HEIGHT, RIDGE_WIDTH, ridgePath } from "./ridge";
 
 test("the beat is the last one whose start the scroll has reached", () => {
-  expect(BEAT_STARTS).toEqual([0, 0.2, 0.5, 0.8]);
+  expect(BEAT_STARTS).toEqual([0, 0.25, 0.6]);
   expect(beatAt(0)).toBe(0);
-  expect(beatAt(0.19)).toBe(0);
-  expect(beatAt(0.2)).toBe(1);
-  expect(beatAt(0.5)).toBe(2);
-  expect(beatAt(0.8)).toBe(3);
-  expect(beatAt(1)).toBe(3);
+  expect(beatAt(0.24)).toBe(0);
+  expect(beatAt(0.25)).toBe(1);
+  expect(beatAt(0.3)).toBe(1);
+  expect(beatAt(0.6)).toBe(2);
+  expect(beatAt(0.7)).toBe(2);
+  expect(beatAt(1)).toBe(2);
 });
 
-test("a progress outside 0..1, or not a number, never leaves the four beats", () => {
+test("a progress outside 0..1, or not a number, never leaves the three beats", () => {
   expect(beatAt(-5)).toBe(0);
-  expect(beatAt(9)).toBe(3);
+  expect(beatAt(9)).toBe(2);
   expect(beatAt(Number.NaN)).toBe(0);
 });
 
-test("the ridge is undrawn until 0.15 and complete at 0.5", () => {
+test("the ridge is undrawn until 0.15 and complete at 0.55", () => {
   expect(drawnShare(0)).toBe(0);
   expect(drawnShare(0.15)).toBe(0);
-  expect(drawnShare(0.325)).toBeCloseTo(0.5, 5);
-  expect(drawnShare(0.5)).toBe(1);
+  expect(drawnShare(0.35)).toBeCloseTo(0.5, 5);
+  expect(drawnShare(0.55)).toBe(1);
   expect(drawnShare(1)).toBe(1);
   expect(drawnShare(Number.NaN)).toBe(0);
 });
 
-test("seals start dropping at 0.5 and are all placed at 0.8", () => {
-  expect(sealsPlaced(0.5, 31)).toBe(0);
-  expect(sealsPlaced(0.8, 31)).toBe(31);
+test("seals start dropping at 0.6 and are all placed at 0.9", () => {
+  expect(sealsPlaced(0.6, 31)).toBe(0);
+  expect(sealsPlaced(0.9, 31)).toBe(31);
   expect(sealsPlaced(1, 31)).toBe(31);
-  expect([15, 16]).toContain(sealsPlaced(0.65, 31));
+  expect([15, 16]).toContain(sealsPlaced(0.75, 31));
 });
 
 test("a count of seals is a whole number between 0 and the total, for any progress and any total", () => {

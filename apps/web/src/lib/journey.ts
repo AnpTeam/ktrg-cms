@@ -3,9 +3,9 @@
 
 import { RIDGE_HEIGHT, RIDGE_WIDTH, type Ridge } from "./ridge";
 
-/** Where each beat (sea, ridge, seals, start) begins, as a share of the scene's scroll. */
-export const BEAT_STARTS = [0, 0.2, 0.5, 0.8] as const;
-export type BeatIndex = 0 | 1 | 2 | 3;
+/** Where each beat (sea, ridge, seals) begins, as a share of the scene's scroll. The start is a chapter after the scene. */
+export const BEAT_STARTS = [0, 0.25, 0.6] as const;
+export type BeatIndex = 0 | 1 | 2;
 
 const clamp01 = (n: number) => (Number.isFinite(n) ? Math.min(1, Math.max(0, n)) : 0);
 
@@ -19,17 +19,17 @@ export function beatAt(progress: number): BeatIndex {
   return beat;
 }
 
-/** How much of the ridge is drawn: nothing until 0.15 of the scroll, all of it at 0.5. */
+/** How much of the ridge is drawn: nothing until 0.15 of the scroll, all of it at 0.55. */
 export function drawnShare(progress: number): number {
   const p = clamp01(progress);
-  return clamp01((p - 0.15) / (0.5 - 0.15));
+  return clamp01((p - 0.15) / (0.55 - 0.15));
 }
 
-/** How many of `total` seals have dropped: none until 0.5 of the scroll, all of them at 0.8. */
+/** How many of `total` seals have dropped: none until 0.6 of the scroll, all of them at 0.9. */
 export function sealsPlaced(progress: number, total: number): number {
   if (total <= 0) return 0;
   const p = clamp01(progress);
-  return Math.min(total, Math.max(0, Math.floor(clamp01((p - 0.5) / (0.8 - 0.5)) * total)));
+  return Math.min(total, Math.max(0, Math.floor(clamp01((p - 0.6) / (0.9 - 0.6)) * total)));
 }
 
 /** The point `distance` along a line, or null when the line has no length. */

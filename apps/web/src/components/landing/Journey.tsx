@@ -13,12 +13,13 @@ import { MOUND_PLACES, TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally"
 import { RIDGE_HEIGHT, RIDGE_WIDTH, ridgePath } from "@/lib/ridge";
 
 /**
- * The landing for a first-time visitor, as four beats (docs/landing-journey-design.md): the sea (the hero), the ridge (what
- * Katsuragi Shugen is, the real line of the whole trail), the seals (the stamp rally) and the start (the two buttons).
+ * The landing for a first-time visitor, as three beats (docs/landing-journey-design.md, docs/landing-story-design.md): the sea
+ * (the hero), the ridge (what Katsuragi Shugen is, the real line of the whole trail) and the seals (the stamp rally). The map,
+ * the video, the courses and the start (さあ、はじめましょう) follow as chapters (Landing.tsx).
  *
  * This is the complete page as plain stacked sections: the ridge is drawn, the seals are placed, every word and button is
  * there. It is what a visitor gets with no script, with calm on, or with reduced motion. JourneyScene (motion allowed) only
- * adds to it, through the data-* markers: data-journey (the whole), data-beat 0..3, data-ridge (the line), data-seal.
+ * adds to it, through the data-* markers: data-journey (the whole), data-beat 0..2, data-ridge (the line), data-seal.
  * The words are the editable home words, so an editor's text shows here too.
  */
 export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; routes: RouteSummary[]; locale: string; w: Record<HomeSlot, string> }) {
@@ -30,7 +31,7 @@ export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; 
   return (
     <JourneyScene seals={TOTAL_STAMPS}>
       {/* For anyone who does not want the introduction: a real link, first in the tab order. */}
-      <a href="#after-journey" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-40 focus:rounded-full focus:bg-paper focus:px-4 focus:py-2 focus:text-lg focus:font-bold focus:text-ink focus:underline">
+      <a href="#start-title" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-40 focus:rounded-full focus:bg-paper focus:px-4 focus:py-2 focus:text-lg focus:font-bold focus:text-ink focus:underline">
         <Trans>スキップ</Trans>
       </a>
       <div data-journey-stage>
@@ -41,6 +42,9 @@ export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; 
         <div data-beat="1">
           <Chapter ground="story-ground-inverse" heading={w.storyHeading} id="story-title">
             <p className="text-lg leading-9">{w.storyText}</p>
+            <Link href="/story" className="tap-target inline-flex items-center text-lg font-bold underline underline-offset-4">
+              <Trans>ストーリーを読む</Trans>
+            </Link>
             {/* One ruled row per fact on a phone (English values are longer), three columns from a wider box. */}
             <dl className="grid grid-cols-1 gap-3 @[34rem]:grid-cols-3 @[34rem]:text-center">
               <Fact term={<Trans>コース</Trans>} value={<Trans>全{TOTAL_ROUTES}区間</Trans>} />
@@ -84,25 +88,6 @@ export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; 
             <Link href="/rallies" className={buttonStyle("secondary", "lg", "flex w-full @[34rem]:w-fit")}>
               <Trans>ラリーを見る</Trans>
             </Link>
-          </Chapter>
-        </div>
-
-        <div data-beat="3">
-          <Chapter ground="story-ground-paper" heading={w.startHeading} id="start-title">
-            <div className="flex flex-col gap-3 @[34rem]:flex-row @[34rem]:items-center">
-              <Link href="/register" className={buttonStyle("primary", "lg", "flex")}>
-                <Trans>新規登録</Trans>
-              </Link>
-              <Link href="/routes" className={buttonStyle("secondary", "lg", "flex")}>
-                <Trans>ルートをさがす</Trans>
-              </Link>
-            </div>
-            <p className="text-lg">
-              <Trans>登録済みの方は</Trans>{" "}
-              <Link href="/login" className="tap-target inline-flex items-center font-bold underline underline-offset-4">
-                <Trans>ログイン</Trans>
-              </Link>
-            </p>
           </Chapter>
         </div>
       </div>

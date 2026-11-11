@@ -4379,6 +4379,10 @@ msgstr "前のリンクは、まだありません。"
 msgid "前の写真"
 msgstr "前の写真"
 
+#: src/components/landing/Journey.tsx
+msgid "ストーリーを読む"
+msgstr "ストーリーを読む"
+
 #: src/components/landing/ScrollCue.tsx
 msgid "スクロール"
 msgstr "スクロール"
