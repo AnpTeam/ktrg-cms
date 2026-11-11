@@ -7,7 +7,7 @@ import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { Notice } from "@/components/Notice";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { LandingMap } from "@/components/landing/LandingMap";
-import { LandingStory } from "@/components/landing/LandingStory";
+import { Journey } from "@/components/landing/Journey";
 import { Chapter, type Ground } from "@/components/landing/Chapter";
 import { StoryMotion } from "@/components/landing/StoryMotion";
 import { Localized } from "@/components/Localized";
@@ -84,24 +84,26 @@ export function Landing({
     <StoryMotion className="@container">
     <div className="grid grid-cols-1 gap-10 pt-4 @[42rem]:grid-cols-2 @[42rem]:gap-x-8 @[42rem]:pt-0">
       {/* The same photos for everyone; a signed-in visitor's greeting and progress take the line's and the buttons' place. */}
-      <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
-        <LandingHero slides={slides} locale={locale} line={w.heroLine} title={greeting}>
-          {heroBody}
-        </LandingHero>
-      </div>
-
-      {top ? <div className="@[42rem]:col-span-2">{top}</div> : null}
-
-      {/* A first-time visitor: the story in chapters (what it is, the rally, where to start), edge to edge like the hero. */}
-      {top ? null : (
+      {top ? (
+        <>
+          <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
+            <LandingHero slides={slides} locale={locale} line={w.heroLine} title={greeting}>
+              {heroBody}
+            </LandingHero>
+          </div>
+          <div className="@[42rem]:col-span-2">{top}</div>
+        </>
+      ) : (
+        // A first-time visitor: the journey (the photos, what it is, the rally, where to start), edge to edge like the hero.
         <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
-          <LandingStory routes={routes} w={w} />
+          <Journey slides={slides} routes={routes} locale={locale} w={w} />
         </div>
       )}
 
       {/* Everything below, for everyone, as chapters edge to edge: each its own ground, which crossfades as it arrives
-          (docs/design-language.md). Notices and the blog keep their own panels inside: safety first. */}
-      <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
+          (docs/design-language.md). Notices and the blog keep their own panels inside: safety first. The journey's skip
+          link lands here. */}
+      <div id="after-journey" className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
         <>
           {firstRoutes.length > 0 ? (
             <Chapter

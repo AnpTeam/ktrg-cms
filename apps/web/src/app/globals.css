@@ -1454,7 +1454,7 @@ body.map-nav-mode .map-layer-pills {
    words wait out of sight so they never show and then jump. StoryMotion removes .story-pending as it takes over, or at
    once when it will not animate; <noscript> and a failed load give them back too. */
 @media (prefers-reduced-motion: no-preference) {
-  html:not([data-calm]) .story-pending :is([data-reveal] > *, [data-ground] h2) {
+  html:not([data-calm]) .story-pending :is([data-reveal] > *, [data-ground] h2):not([data-journey] *) {
     opacity: 0;
   }
 }
