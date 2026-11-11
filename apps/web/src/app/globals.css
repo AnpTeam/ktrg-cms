@@ -1480,3 +1480,18 @@ body.map-nav-mode .map-layer-pills {
     stroke-dashoffset: 0;
   }
 }
+
+/* Fold (components/Fold.tsx): in a wide box the two-column course page shows every section, so the content stays visible
+   (details::details-content, where the browser has it) and the heading stops being a button. Elsewhere it simply folds. */
+@container (min-width: 56rem) {
+  .fold::details-content {
+    content-visibility: visible;
+  }
+  .fold-summary {
+    pointer-events: none;
+    cursor: default;
+  }
+  .fold-chevron {
+    display: none;
+  }
+}
