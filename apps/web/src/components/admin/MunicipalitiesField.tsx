@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { ArrowDownIcon, ArrowUpIcon, TrashIcon } from "@/components/icons";
 import { buttonStyle } from "@/components/button";
-import { englishCityName, municipalities, splitCities, type MunicipalityPrefecture } from "@/lib/municipalities";
+import { englishCityName, municipalities, splitCities, towns, type MunicipalityPrefecture } from "@/lib/municipalities";
 import { Field, inputClass, TextInput } from "./fields";
 
 /** The API accepts this many (api/src/content/admin-routes.ts). */
@@ -14,8 +14,9 @@ const PREFECTURES: readonly MunicipalityPrefecture[] = ["wakayama", "osaka", "na
 /**
  * The cities a course runs through, in walking order. A course can cross from one city into another, even from one
  * prefecture into the next (和歌山市 → 岬町), so cities are added one by one from the list of all three prefectures, then
- * moved up or down or taken off. The course's prefecture is not asked for: it follows the first listed city (route-draft). A town or village that is not a city is
- * typed in. The Japanese name is what is saved; the English page shows the English name of a listed city.
+ * moved up or down or taken off. A name that is in no list is typed in. The course's prefecture is not asked for: it
+ * follows the first listed city (route-draft). The Japanese name is what is saved; the English page shows the English name
+ * of a listed city, town or village.
  */
 export function MunicipalitiesField({
   id,
@@ -28,6 +29,8 @@ export function MunicipalitiesField({
 }) {
   const { t } = useLingui();
   const [typed, setTyped] = useState("");
+  const cityWord = t`市`;
+  const townWord = t`町・村`;
   const full = value.length >= MAX_CITIES;
   const prefName: Record<MunicipalityPrefecture, string> = { wakayama: t`和歌山県`, osaka: t`大阪府`, nara: t`奈良県` };
 
@@ -56,7 +59,7 @@ export function MunicipalitiesField({
       <Field
         label={t`市区町村`}
         htmlFor={id}
-        hint={t`通る順に並べます。市は一覧から選び、町や村は名前を入力して追加します（8つまで）。`}
+        hint={t`通る順に並べます。市・町・村は一覧から選びます。一覧にない地名は、下に入力して追加します（8つまで）。`}
       >
         <ol className="flex flex-col gap-2">
           {value.length === 0 ? <li className="text-lg text-muted">{t`未選択`}</li> : null}
@@ -94,10 +97,13 @@ export function MunicipalitiesField({
           }}
           className={inputClass}
         >
-          <option value="">{t`市を選んで追加`}</option>
-          {PREFECTURES.map((p) => (
-            <optgroup key={p} label={prefName[p]}>
-              {municipalities[p].map((c) => (
+          <option value="">{t`市や町を選んで追加`}</option>
+          {PREFECTURES.flatMap((p) => [
+            { key: `${p}-city`, label: `${prefName[p]} ${cityWord}`, list: municipalities[p] },
+            { key: `${p}-town`, label: `${prefName[p]} ${townWord}`, list: towns[p] },
+          ]).map((g) => (
+            <optgroup key={g.key} label={g.label}>
+              {g.list.map((c) => (
                 <option key={c.ja} value={c.ja}>
                   {c.ja}（{c.en}）
                 </option>
@@ -108,7 +114,7 @@ export function MunicipalitiesField({
       </Field>
       <div className="flex items-end gap-2">
         <div className="min-w-0 flex-1">
-          <Field label={t`町や村の名前`} htmlFor={`${id}-typed`}>
+          <Field label={t`一覧にない地名`} htmlFor={`${id}-typed`}>
             <TextInput id={`${id}-typed`} value={typed} onChange={setTyped} maxLength={100} />
           </Field>
         </div>

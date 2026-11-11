@@ -4384,12 +4384,20 @@ msgid "スクロール"
 msgstr "スクロール"
 
 #: src/components/admin/MunicipalitiesField.tsx
-msgid "通る順に並べます。市は一覧から選び、町や村は名前を入力して追加します（8つまで）。"
-msgstr "通る順に並べます。市は一覧から選び、町や村は名前を入力して追加します（8つまで）。"
+msgid "通る順に並べます。市・町・村は一覧から選びます。一覧にない地名は、下に入力して追加します（8つまで）。"
+msgstr "通る順に並べます。市・町・村は一覧から選びます。一覧にない地名は、下に入力して追加します（8つまで）。"
 
 #: src/components/admin/MunicipalitiesField.tsx
-msgid "市を選んで追加"
-msgstr "市を選んで追加"
+msgid "市や町を選んで追加"
+msgstr "市や町を選んで追加"
+
+#: src/components/admin/MunicipalitiesField.tsx
+msgid "市"
+msgstr "市"
+
+#: src/components/admin/MunicipalitiesField.tsx
+msgid "町・村"
+msgstr "町・村"
 
 #: src/components/admin/MunicipalitiesField.tsx
 msgid "{city}を上へ"
@@ -6221,8 +6229,8 @@ msgid "男性"
 msgstr "男性"
 
 #: src/components/admin/MunicipalityField.tsx:67
-msgid "町や村の名前"
-msgstr "町や村の名前"
+msgid "一覧にない地名"
+msgstr "一覧にない地名"
 
 #: src/components/navigation/NavigationHud.tsx:244
 msgid "画面が見えない間は、位置を止めています。"
