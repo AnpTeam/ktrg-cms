@@ -1822,7 +1822,6 @@ msgstr "On the trail nearby"
 msgid "道の近くのトイレ、お店、駅やバス停などです。営業時間は変わることがあるので、出かける前に確かめてください。"
 msgstr "Toilets, shops, stations, bus stops and more near the trail. Opening hours can change, so check before you go."
 
-
 #: src/app/(public)/sitemap/page.tsx:15
 #: src/app/(public)/sitemap/page.tsx:50
 #: src/components/SiteFooter.tsx:27
@@ -8139,3 +8138,11 @@ msgstr "Follow the notices in a feed reader"
 #: src/components/landing/LandingStory.tsx:36
 msgid "海から山へ。{0}区間の道の高さを、順につなげた線です。いちばん高いところは約{1}m。"
 msgstr "From the sea to the mountains: the height of {0} courses, joined in order. The highest point is about {1} m."
+
+#: src/components/admin/MunicipalityField.tsx
+msgid "いくつかの市や町を通るときは、歩く順に「、」で区切って入れます（例：和歌山市、岬町）。英語のページでは、市の名前は英語になり、町や村は入れた文字のまま表示されます。"
+msgstr "If the course passes through several cities or towns, enter them in walking order separated by "、" (for example 和歌山市、岬町). On the English page a city is shown in English; a town or village is shown as typed."
+
+#: src/components/RouteView.tsx
+msgid "歴史"
+msgstr "History"

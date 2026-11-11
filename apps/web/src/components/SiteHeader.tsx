@@ -73,6 +73,7 @@ export function SiteHeader({
   }, [pathname]);
   const goBack = () => (moved.current ? router.back() : router.push(parentOf(pathname)));
   const onMap = /^\/map\/?$/.test(pathname);
+  const onRoutes = /^\/routes\/?$/.test(pathname);
   const onLanding = onMap || (!signedIn && pathname === "/");
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
@@ -170,8 +171,8 @@ export function SiteHeader({
               : "site-header-bar relative mb-3 border-b border-line/30 bg-paper px-3 py-1 md:hidden"
         }
       >
-        <div className={`mx-auto grid max-w-xl items-center gap-2 ${onMap ? "pointer-events-none grid-cols-[auto_1fr_auto] [&>*]:pointer-events-auto" : "grid-cols-[1fr_auto_1fr]"}`}>
-          {TOP_LEVEL.test(pathname) ? (
+        <div className={`mx-auto grid max-w-xl items-center gap-2 ${onMap ? "pointer-events-none grid-cols-[auto_1fr_auto] [&>*]:pointer-events-auto" : onRoutes ? "grid-cols-[auto_1fr_auto]" : "grid-cols-[1fr_auto_1fr]"}`}>
+          {onRoutes ? null : TOP_LEVEL.test(pathname) ? (
             <span />
           ) : (
             <button
@@ -192,6 +193,8 @@ export function SiteHeader({
           ) : (
             <span />
           )}
+          {/* The course list: the page's title stands beside the logo, up in the bar (the page itself has no heading on a phone). */}
+          {onRoutes ? open ? <span /> : <p className="min-w-0 truncate font-serif text-2xl font-bold text-accent">{t`葛城修験の道`}</p> : null}
           {/* Open: the language drop-down takes the right end of the bar, so the bar and the menu read as one piece. */}
           <span className="justify-self-end">{open ? <LocaleSelect /> : sample ? <SampleNoticeButton /> : null}</span>
         </div>

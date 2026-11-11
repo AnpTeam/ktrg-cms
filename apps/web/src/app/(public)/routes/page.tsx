@@ -8,10 +8,8 @@ import { PrefectureFilter } from "@/components/PrefectureFilter";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { TrailRibbon } from "@/components/TrailRibbon";
 import { filterByPrefecture, isPrefecture, listRoutes, prefectures } from "@/lib/content";
-import { completedCount, nodeState } from "@/lib/ribbon";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
-import { TOTAL_ROUTES, TRAIL_KM } from "@/lib/rally";
 
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
@@ -34,30 +32,14 @@ export default async function RoutesPage({
   const available = prefectures.filter((p) => all.some((r) => r.prefecture === p));
   const base = "/routes";
 
-  const done = completedCount(
-    all.map((r) => nodeState({ status: r.status, stamped: r.stampedCount, total: r.spotCount })),
-    true,
-  );
-
   return (
     <div className="flex flex-col gap-6 wide:gap-8">
       <div className="flex flex-col gap-6 wide:flex-row wide:items-end wide:justify-between">
-      <section className="px-4">
+      {/* On a phone the top bar carries the title; the heading stays here for screen readers and for a wider page. */}
+      <section className="px-4 sr-only md:not-sr-only">
         <h1 className="text-3xl font-bold wide:text-4xl">
           <Trans>葛城修験の道</Trans>
         </h1>
-        <p className="mt-3 text-xl">
-          <Trans>
-            全{TOTAL_ROUTES}区間（約{TRAIL_KM}km）
-          </Trans>
-        </p>
-        {done !== null ? (
-          <p className="mt-1 text-xl font-bold">
-            <Trans>
-              歩き終えた区間 {done} / {TOTAL_ROUTES}
-            </Trans>
-          </p>
-        ) : null}
       </section>
 
       <div className="wide:shrink-0">
@@ -78,7 +60,7 @@ export default async function RoutesPage({
           </Link>
         </EmptyState>
       ) : (
-        <TrailRibbon routes={routes} hrefFor={(route) => `${base}/${route.id}`} locale={i18n.locale} />
+        <TrailRibbon routes={routes} hrefFor={(route) => `${base}/${route.id}`} locale={i18n.locale} headings={!active} />
       )}
 
       <Notice>

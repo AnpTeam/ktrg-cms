@@ -34,6 +34,7 @@
   --color-paper: #fcfaf5; /* page background: warm washi paper (和紙) */
   --check-tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23fcfaf5' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); /* the tick of a checked box, in the paper colour */
   --color-surface: #f6f2ea; /* panels, rows, empty slots: a deeper paper tone */
+  --color-lift: #ffffff; /* a chosen pill (prefecture tabs): white on the light page, the panel tone on the dark one */
   --color-night: #1f1b1a; /* the dark band of a reading page (the ridge at night): the ink colour */
   --color-on-night: #fcfaf5; /* the words on the dark band */
   --color-brand: #cc6256; /* the brand red: buttons, the active tab, icons, the bar beside headings. Not for text on white */
@@ -183,6 +184,7 @@
     --color-paper: #1e1a17; /* warm charcoal (2026-11-10): calmer than the near-black it replaced */
     --check-tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%231e1a17' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); /* the tick of a checked box, in the paper colour */
     --color-surface: #29241f;
+    --color-lift: #29241f;
     --color-night: #0b0908; /* the dark band stays night: deeper than the page (墨, sumi ink) */
     --color-on-night: #ebe2d0;
     --color-brand: #cc6256; /* the same brand red */
@@ -213,6 +215,7 @@
   --color-paper: #1e1a17; /* warm charcoal */
   --check-tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%231e1a17' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); /* the tick of a checked box, in the paper colour */
   --color-surface: #29241f;
+  --color-lift: #29241f;
   --color-night: #0b0908;
   --color-on-night: #ebe2d0;
   --color-brand: #cc6256; /* the same brand red */
@@ -237,6 +240,7 @@
   --color-paper: #fcfaf5; /* page background: warm washi paper (和紙) */
   --check-tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23fcfaf5' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); /* the tick of a checked box, in the paper colour */
   --color-surface: #f6f2ea; /* panels, rows, empty slots: a deeper paper tone */
+  --color-lift: #ffffff; /* a chosen pill (prefecture tabs): white on the light page, the panel tone on the dark one */
   --color-night: #1f1b1a; /* the dark band of a reading page (the ridge at night): the ink colour */
   --color-on-night: #fcfaf5; /* the words on the dark band */
   --color-brand: #cc6256; /* the brand red: buttons, the active tab, icons, the bar beside headings. Not for text on white */
