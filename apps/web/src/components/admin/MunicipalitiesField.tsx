@@ -13,18 +13,16 @@ const PREFECTURES: readonly MunicipalityPrefecture[] = ["wakayama", "osaka", "na
 
 /**
  * The cities a course runs through, in walking order. A course can cross from one city into another, even from one
- * prefecture into the next (和歌山市 → 岬町), so cities are added one by one from the list of all three prefectures
- * (the course's own prefecture first), then moved up or down or taken off. A town or village that is not a city is
+ * prefecture into the next (和歌山市 → 岬町), so cities are added one by one from the list of all three prefectures, then
+ * moved up or down or taken off. The course's prefecture is not asked for: it follows the first listed city (route-draft). A town or village that is not a city is
  * typed in. The Japanese name is what is saved; the English page shows the English name of a listed city.
  */
 export function MunicipalitiesField({
   id,
-  prefecture,
   value,
   onChange,
 }: {
   id: string;
-  prefecture: MunicipalityPrefecture | null;
   value: string[];
   onChange: (value: string[]) => void;
 }) {
@@ -32,8 +30,6 @@ export function MunicipalitiesField({
   const [typed, setTyped] = useState("");
   const full = value.length >= MAX_CITIES;
   const prefName: Record<MunicipalityPrefecture, string> = { wakayama: t`和歌山県`, osaka: t`大阪府`, nara: t`奈良県` };
-  // The course's own prefecture comes first: its cities are the likeliest.
-  const order = prefecture ? [prefecture, ...PREFECTURES.filter((p) => p !== prefecture)] : PREFECTURES;
 
   const add = (cities: readonly string[]) => {
     const next = [...value];
@@ -99,7 +95,7 @@ export function MunicipalitiesField({
           className={inputClass}
         >
           <option value="">{t`市を選んで追加`}</option>
-          {order.map((p) => (
+          {PREFECTURES.map((p) => (
             <optgroup key={p} label={prefName[p]}>
               {municipalities[p].map((c) => (
                 <option key={c.ja} value={c.ja}>

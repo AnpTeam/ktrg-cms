@@ -28,7 +28,7 @@ import { RubyEditor } from "./RubyEditor";
 import type { StopRole } from "@/lib/route-stops";
 import { backupKey, parseBackup, worthRestoring, writeBackup } from "@/lib/admin/draft-backup";
 import { draftProblems, keepLaterEdits, placeChanged, planSave, restoreHeld, withLegIds, type DraftProblem } from "@/lib/admin/save-plan";
-import type { AdminSharedSpot, Prefecture } from "@/lib/admin/types";
+import type { AdminSharedSpot } from "@/lib/admin/types";
 import { formatUpdated } from "@/lib/format";
 import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
 import { LivePreview } from "./LivePreview";
@@ -449,7 +449,6 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
     return confirmDialog({ title: t`経由地を消しますか？`, body: t`「${name}」は、ほかのコース（${where}）にも置いてあります。消すと、そこからも消えます。よろしいですか？`, yes: t`消す` });
   };
   const problemOf = (kind: DraftProblem["kind"], key?: string) => problems.some((p) => p.kind === kind && (!("key" in p) || p.key === key));
-  const prefName: Record<Prefecture, string> = { osaka: t`大阪府`, wakayama: t`和歌山県`, nara: t`奈良県` };
   // A walk that comes back to where it began (周回 or 往復); its first waypoint on the way is the start and the goal.
   const comesBack = draft.walkStyle === "loop" || draft.walkStyle === "out_and_back";
   const firstAlong = draft.places.find((p) => !p.stopBy) ?? null;
@@ -556,21 +555,8 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                     <RubyEditor name={draft.nameJa} value={draft.nameKana} onChange={text("nameKana")} />
                   </Field>
                   {problemOf("route_name") ? <p role="alert" className="text-base font-bold text-danger">{t`日本語の名前を入れてください。`}</p> : null}
-                  <div className="grid gap-4 sm:grid-cols-3">
-                    <Field label={t`都道府県`} htmlFor="route-pref">
-                      <select id="route-pref" value={draft.prefecture ?? ""} onChange={(e) => {
-                          const next = (e.target.value || null) as Prefecture | null;
-                          dispatch({ type: "prefecture", value: next });
-                        }} className={inputClass}>
-                        <option value="">{t`未選択`}</option>
-                        {(["wakayama", "osaka", "nara"] as const).map((p) => (
-                          <option key={p} value={p}>
-                            {prefName[p]}
-                          </option>
-                        ))}
-                      </select>
-                    </Field>
-                    <MunicipalitiesField id="route-muni" prefecture={draft.prefecture} value={draft.municipalities} onChange={(value) => dispatch({ type: "municipalities", value })} />
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <MunicipalitiesField id="route-muni" value={draft.municipalities} onChange={(value) => dispatch({ type: "municipalities", value })} />
                     <Field label={t`歩き方`} htmlFor="route-walk-style" hint={t`「スタート・ゴール」の見せ方が変わります。`}>
                       <select id="route-walk-style" value={draft.walkStyle ?? ""} onChange={(e) => dispatch({ type: "walkStyle", value: walkStyleOf(e.target.value) })} className={inputClass}>
                         <option value="">{t`未選択`}</option>

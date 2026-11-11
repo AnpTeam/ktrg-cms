@@ -472,6 +472,14 @@ describe("how the route is walked", () => {
 });
 
 describe("the cities of a route", () => {
+  test("the prefecture follows the first listed city; typed towns and an empty list leave it as it was", () => {
+    expect(run(fresh(), { type: "municipalities", value: ["御所市"] }).present.prefecture).toBe("nara");
+    expect(run(fresh(), { type: "municipalities", value: ["岬町", "堺市"] }).present.prefecture).toBe("osaka");
+    const inWakayama = initialState({ ...emptyDraft(), prefecture: "wakayama" });
+    expect(run(inWakayama, { type: "municipalities", value: ["岬町"] }).present.prefecture).toBe("wakayama");
+    expect(run(inWakayama, { type: "municipalities", value: [] }).present.prefecture).toBe("wakayama");
+    expect(run(fresh(), { type: "municipalities", value: ["岬町"] }).present.prefecture).toBeNull();
+  });
   test("the editor sets the list in walking order, it goes to the API and to the preview, and it comes back from the server", () => {
     const edited = run(fresh(), { type: "municipalities", value: ["和歌山市", "岬町"] });
     expect(edited.present.municipalities).toEqual(["和歌山市", "岬町"]);

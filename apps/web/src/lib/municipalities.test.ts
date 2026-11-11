@@ -1,7 +1,13 @@
 import { describe, expect, test } from "bun:test";
-import { municipalities, municipalityName, splitCities } from "./municipalities";
+import { municipalities, municipalityName, prefectureOfCity, splitCities } from "./municipalities";
 
 describe("municipalities", () => {
+  test("a listed city knows its prefecture, a typed town does not", () => {
+    expect(prefectureOfCity("和歌山市")).toBe("wakayama");
+    expect(prefectureOfCity("堺市")).toBe("osaka");
+    expect(prefectureOfCity("御所市")).toBe("nara");
+    expect(prefectureOfCity("岬町")).toBeNull();
+  });
   test("the number of cities per prefecture", () => {
     expect(municipalities.wakayama).toHaveLength(9);
     expect(municipalities.osaka).toHaveLength(33);

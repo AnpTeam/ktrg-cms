@@ -79,6 +79,12 @@ export const municipalities: Record<MunicipalityPrefecture, readonly Municipalit
 
 const allCities = new Map(Object.values(municipalities).flatMap((list) => list.map((c) => [c.ja, c.en] as const)));
 
+/** The prefecture of a listed city; null for a town or village that was typed in. */
+export function prefectureOfCity(ja: string): MunicipalityPrefecture | null {
+  for (const [p, list] of Object.entries(municipalities)) if (list.some((c) => c.ja === ja)) return p as MunicipalityPrefecture;
+  return null;
+}
+
 /** English names of every listed city, by its Japanese name. */
 export function englishCityName(ja: string): string | null {
   return allCities.get(ja) ?? null;
