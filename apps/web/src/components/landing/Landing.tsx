@@ -81,8 +81,9 @@ export function Landing({
   return (
     // One column on a phone and a tablet; two columns on a desktop. Most sections span both. Sized by the page's own width, not
     // the screen's, so the admin's phone-shaped preview shows the phone layout on a desktop.
+    // data-landing-top: the public layout drops its top padding for this page, so the photo starts at the top edge.
     <StoryMotion className="@container">
-    <div className="grid grid-cols-1 gap-10 @[42rem]:grid-cols-2 @[42rem]:gap-x-8">
+    <div data-landing-top="" className="grid grid-cols-1 gap-10 @[42rem]:grid-cols-2 @[42rem]:gap-x-8">
       {/* The same photos for everyone; a signed-in visitor's greeting and progress take the line's and the buttons' place. */}
       {top ? (
         <>
