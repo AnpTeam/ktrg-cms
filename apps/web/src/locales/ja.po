@@ -8170,3 +8170,15 @@ msgstr "いくつかの市や町を通るときは、歩く順に「、」で区
 #: src/components/RouteView.tsx
 msgid "歴史"
 msgstr "歴史"
+
+#: src/app/(public)/story/page.tsx
+msgid "このページは、公式サイト「日本遺産 葛城修験ストーリー」の文章と写真を、そのまま転載したものです。仮の内容で、のちに書き直します。"
+msgstr "このページは、公式サイト「日本遺産 葛城修験ストーリー」の文章と写真を、そのまま転載したものです。仮の内容で、のちに書き直します。"
+
+#: src/app/(public)/story/page.tsx
+msgid "文章は日本語のみです。"
+msgstr "文章は日本語のみです。"
+
+#: src/app/(public)/story/page.tsx
+msgid "元のページを見る"
+msgstr "元のページを見る"
