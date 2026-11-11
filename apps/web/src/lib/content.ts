@@ -37,7 +37,7 @@ export interface RouteSummary {
   nameJa: string;
   nameEn: string | null;
   prefecture: Prefecture | null;
-  municipality: string | null;
+  municipalities: string[];
   distanceKm: number | null;
   elevationGainM: number | null;
   difficulty: string | null;
@@ -216,7 +216,7 @@ function toSummary(r: RouteDetail): RouteSummary {
     nameJa: r.nameJa,
     nameEn: r.nameEn,
     prefecture: r.prefecture,
-    municipality: r.municipality,
+    municipalities: r.municipalities,
     distanceKm: r.distanceKm,
     elevationGainM: r.elevationGainM,
     difficulty: r.difficulty,

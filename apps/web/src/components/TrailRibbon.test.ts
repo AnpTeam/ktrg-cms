@@ -3,7 +3,7 @@ import type { RouteSummary } from "@/lib/content";
 import { buildStops } from "@/lib/ribbon";
 
 const route = (order: number, status: "ready" | "soon" = "ready"): RouteSummary =>
-  ({ id: `r${order}`, order, status, nameJa: `R${order}`, nameEn: null, prefecture: null, municipality: null, spotCount: 3, stampedCount: null } as RouteSummary);
+  ({ id: `r${order}`, order, status, nameJa: `R${order}`, nameEn: null, prefecture: null, municipalities: [] as string[], spotCount: 3, stampedCount: null } as RouteSummary);
 
 test("a jump in the course numbers is dashed, never a solid line between courses that do not meet", () => {
   // The home page at launch: only courses 1 and 16 open.

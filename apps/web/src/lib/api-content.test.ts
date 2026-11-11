@@ -15,7 +15,7 @@ import type { PublicRoute, PublicSpot } from "./api-content-types";
 
 const route = (over: Partial<PublicRoute> = {}): PublicRoute => ({
   id: "r1", nameJa: "甲山から孝子越え", nameEn: null, descriptionJa: null, descriptionEn: null, distanceKm: 9.3, elevationGainM: 379,
-  difficulty: null, nameKana: null, physicalLevel: null, technicalLevel: null, expectedTimeMin: null, prefecture: "wakayama", municipality: "和歌山市", videoUrl: null, historyJa: null, historyEn: null, accessJa: null, accessEn: null, photoUrl: null, sortOrder: 2,
+  difficulty: null, nameKana: null, physicalLevel: null, technicalLevel: null, expectedTimeMin: null, prefecture: "wakayama", municipalities: ["和歌山市"], videoUrl: null, historyJa: null, historyEn: null, accessJa: null, accessEn: null, photoUrl: null, sortOrder: 2,
   status: "ready", publishedSpotCount: 2, sketch: [[135, 34], [135.01, 34.01]], line: null,
   bounds: { west: 135, south: 34, east: 135.1, north: 34.05 }, ...over,
 });

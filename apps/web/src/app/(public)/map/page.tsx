@@ -152,7 +152,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
           name: name?.text ?? r.nameJa,
           nameLang: name?.lang ?? "ja",
           prefecture: r.prefecture,
-          municipality: municipalityName(locale, r.municipality),
+          municipality: municipalityName(locale, r.municipalities),
           distanceKm: r.distanceKm,
           elevationGainM: r.elevationGainM,
           expectedTimeMin: r.expectedTimeMin,

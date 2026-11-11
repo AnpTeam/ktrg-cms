@@ -34,13 +34,12 @@ import { Check, Field, inputClass, MultilingualField, NumberInput, Section, Text
 import { LivePreview } from "./LivePreview";
 import { MapEditorLoader } from "./map-editor/MapEditorLoader";
 import type { ElevationStatus } from "./map-editor/MapEditor";
-import { isListedMunicipality } from "@/lib/municipalities";
 import { stampableByDefault } from "@/lib/point-kinds";
 import { walkStyleOf } from "@/lib/walk-style";
 import { PublishedEditDialog, skipsPublishedWarning } from "./PublishedEditDialog";
 import { AccessPointsEditor } from "./AccessPointsEditor";
 import { GradingFields } from "./GradingFields";
-import { MunicipalityField } from "./MunicipalityField";
+import { MunicipalitiesField } from "./MunicipalitiesField";
 import { PhotoLinkDetails } from "./PhotoLinkDetails";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoUpload } from "./PhotoUpload";
@@ -561,8 +560,6 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                     <Field label={t`都道府県`} htmlFor="route-pref">
                       <select id="route-pref" value={draft.prefecture ?? ""} onChange={(e) => {
                           const next = (e.target.value || null) as Prefecture | null;
-                          // A city of the old prefecture does not belong to the new one: start the city again.
-                          if (isListedMunicipality(draft.prefecture, draft.municipality) && !isListedMunicipality(next, draft.municipality)) text("municipality")("");
                           dispatch({ type: "prefecture", value: next });
                         }} className={inputClass}>
                         <option value="">{t`未選択`}</option>
@@ -573,7 +570,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                         ))}
                       </select>
                     </Field>
-                    <MunicipalityField id="route-muni" prefecture={draft.prefecture} value={draft.municipality} onChange={text("municipality")} />
+                    <MunicipalitiesField id="route-muni" prefecture={draft.prefecture} value={draft.municipalities} onChange={(value) => dispatch({ type: "municipalities", value })} />
                     <Field label={t`歩き方`} htmlFor="route-walk-style" hint={t`「スタート・ゴール」の見せ方が変わります。`}>
                       <select id="route-walk-style" value={draft.walkStyle ?? ""} onChange={(e) => dispatch({ type: "walkStyle", value: walkStyleOf(e.target.value) })} className={inputClass}>
                         <option value="">{t`未選択`}</option>

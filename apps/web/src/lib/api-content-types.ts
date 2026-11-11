@@ -21,7 +21,7 @@ export interface PublicRoute {
   farDistanceM?: number | null;
   prefecture: string | null;
   walkStyle?: string | null;
-  municipality: string | null;
+  municipalities: string[];
   videoUrl: string | null;
   /** When the video was last put there or replaced (ISO); null for none. */
   videoUpdatedAt?: string | null;

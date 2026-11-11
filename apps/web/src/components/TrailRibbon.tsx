@@ -27,7 +27,7 @@ function RouteRow({ route, state, locale }: { route: RouteSummary; state: NodeSt
   const { t } = useLingui();
   const { spotCount, stampedCount } = route;
   const name = pickText(locale, route.nameJa, route.nameEn);
-  const place = municipalityName(locale, route.municipality);
+  const place = municipalityName(locale, route.municipalities);
   const soon = state === "soon";
 
   return (

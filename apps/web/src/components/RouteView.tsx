@@ -159,9 +159,9 @@ export function RouteView({ route, locale, places, settings, placesFirst, labels
             <h1 className="min-w-0 text-4xl font-bold leading-tight has-[rt]:pt-4">
               <NameRuby title={title} reading={route.nameKana} />
             </h1>
-            {route.prefecture || route.municipality ? (
+            {route.prefecture || route.municipalities.length > 0 ? (
               <p className="mt-2 text-lg text-muted">
-                <PlaceLine prefecture={route.prefecture} place={municipalityName(locale, route.municipality)} locale={locale} />
+                <PlaceLine prefecture={route.prefecture} place={municipalityName(locale, route.municipalities)} locale={locale} />
               </p>
             ) : null}
             <div className="mt-5">

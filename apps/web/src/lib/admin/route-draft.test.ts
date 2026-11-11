@@ -9,7 +9,7 @@ const fresh = () => initialState(emptyDraft());
 
 const serverRoute = (over: Partial<AdminRoute> = {}): AdminRoute => ({
   id: "r1", nameJa: "甲山から孝子越え", nameEn: null, translations: {}, descriptionJa: null, descriptionEn: null, distanceKm: null, elevationGainM: null,
-  difficulty: null, nameKana: null, physicalLevel: null, technicalLevel: null, expectedTimeMin: null, prefecture: "wakayama", walkStyle: null, municipality: null, geometry: null, lineVerified: false, lineSource: null,
+  difficulty: null, nameKana: null, physicalLevel: null, technicalLevel: null, expectedTimeMin: null, prefecture: "wakayama", walkStyle: null, municipalities: [], geometry: null, lineVerified: false, lineSource: null,
   videoUrl: null, videoUrlEn: null, videoSubtitlesEn: false, videoSubtitles: false, historyJa: null, historyEn: null, accessJa: null, accessEn: null, photoUrl: null, sortOrder: 2, createdAt: "2026-10-19T00:00:00.000Z", updatedAt: "2026-10-19T00:00:00.000Z", ...over,
 });
 const serverSpot = (id: string, over: Partial<AdminSpot> = {}): AdminSpot => ({
@@ -468,6 +468,17 @@ describe("how the route is walked", () => {
     expect(routeBody(edited.present).walkStyle).toBe("out_and_back");
     expect(previewRoute(edited.present, 1).walkStyle).toBe("out_and_back");
     expect(draftFromServer(serverRoute({ walkStyle: "loop" }), []).walkStyle).toBe("loop");
+  });
+});
+
+describe("the cities of a route", () => {
+  test("the editor sets the list in walking order, it goes to the API and to the preview, and it comes back from the server", () => {
+    const edited = run(fresh(), { type: "municipalities", value: ["和歌山市", "岬町"] });
+    expect(edited.present.municipalities).toEqual(["和歌山市", "岬町"]);
+    expect(routeBody(edited.present).municipalities).toEqual(["和歌山市", "岬町"]);
+    expect(previewRoute(edited.present, 1).municipalities).toEqual(["和歌山市", "岬町"]);
+    expect(draftFromServer(serverRoute({ municipalities: ["御所市"] }), []).municipalities).toEqual(["御所市"]);
+    expect(fresh().present.municipalities).toEqual([]);
   });
 });
 

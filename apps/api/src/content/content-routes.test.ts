@@ -199,6 +199,25 @@ describe("an admin edits a route and its places", () => {
     expect(listed.farDistanceM).toBe(8000);
   });
 
+  test("a route lists the cities it runs through in walking order; blanks and repeats are dropped, and visitors get the list", async () => {
+    const { call, cookie, route } = await created();
+    const patch = (body: unknown, updatedAt: string) => call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt, ...(body as object) } });
+    const fresh = () => ((call("GET", `/admin/routes/${route.id}`, { cookie }).then((r) => r.json())) as Promise<Json>).then((j) => j.route as Json);
+    expect(((await fresh()).municipalities as string[])).toEqual([]);
+    expect((await patch({ municipalities: ["和歌山市", " 岬町 ", "", "岬町"] }, route.updatedAt)).status).toBe(200);
+    const got = await fresh();
+    expect(got.municipalities).toEqual(["和歌山市", "岬町"]);
+    expect("municipality" in got).toBe(false);
+    const listed = (((await (await call("GET", "/routes")).json()) as Json).routes as Json[]).find((r) => r.id === route.id)!;
+    expect(listed.municipalities).toEqual(["和歌山市", "岬町"]);
+    const next = got.updatedAt as string;
+    expect((await patch({ municipalities: Array.from({ length: 9 }, (_, i) => `市${i}`) }, next)).status).toBe(422);
+    expect((await patch({ municipalities: ["あ".repeat(101)] }, next)).status).toBe(422);
+    expect((await patch({ municipalities: "和歌山市" }, next)).status).toBe(422);
+    expect((await patch({ municipalities: [] }, next)).status).toBe(200);
+    expect((await fresh()).municipalities).toEqual([]);
+  });
+
   test("a station position needs a source to be 'checked'; visitors never get an unchecked one", async () => {
     const { call, cookie, route, mem } = await created();
     const patch = (body: unknown, updatedAt: string) => call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt, ...(body as object) } });

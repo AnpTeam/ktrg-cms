@@ -29,7 +29,7 @@ export interface RouteBody {
   descriptionEn: string | null;
   prefecture: Prefecture | null;
   walkStyle: WalkStyle | null;
-  municipality: string | null;
+  municipalities: string[];
   distanceKm: number | null;
   elevationGainM: number | null;
   expectedTimeMin: number | null;
@@ -112,7 +112,7 @@ export function routeBody(d: RouteDraft): RouteBody {
     descriptionEn: nullIfEmpty(d.descriptionEn),
     prefecture: d.prefecture,
     walkStyle: d.walkStyle,
-    municipality: nullIfEmpty(d.municipality),
+    municipalities: d.municipalities,
     distanceKm: d.distanceKm,
     elevationGainM: d.elevationGainM,
     expectedTimeMin: d.expectedTimeMin,

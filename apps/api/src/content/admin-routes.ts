@@ -106,7 +106,8 @@ const routeProps = {
   farDistanceM: nullable(t.Integer({ minimum: 500, maximum: 200000 })),
   prefecture: t.Union([prefecture, t.Null()]),
   walkStyle: t.Union([walkStyle, t.Null()]),
-  municipality: nullable(t.String({ maxLength: 100 })),
+  // The cities the course runs through in walking order; the service trims them and drops blanks.
+  municipalities: t.Array(t.String({ maxLength: 100 }), { maxItems: 8 }),
   // Shape and range are checked by the service (parseLine); any JSON gets there.
   geometry: t.Unknown(),
   lineVerified: t.Boolean(),

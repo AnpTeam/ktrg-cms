@@ -36,7 +36,7 @@ export interface AdminRoute {
   farDistanceM?: number | null;
   prefecture: Prefecture | null;
   walkStyle: WalkStyle | null;
-  municipality: string | null;
+  municipalities: string[];
   geometry: AdminLine | null;
   lineVerified: boolean;
   lineSource: string | null;
