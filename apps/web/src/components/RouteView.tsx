@@ -86,8 +86,6 @@ export interface RouteViewProps {
   notices?: ReactNode;
   /** Offer the bookmark button (visitors only; the admin's preview leaves it out). */
   bookmarkable?: boolean;
-  /** The name of the "jump to a part" bar, for screen readers (a string: it is an attribute). */
-  jumpLabel?: string;
   /** Show "スタンプ 3 / 14" over the walk: only for a visitor who has stamped somewhere (the admin's preview leaves it out). */
   showStampCount?: boolean;
 }
@@ -97,7 +95,7 @@ export interface RouteViewProps {
  * and the places (stamp places numbered, the others marked "no stamp") as a trail. The public page and the admin's live preview both render this, so what an
  * editor sees while typing is what visitors get. It reads no cookies and calls no server API.
  */
-export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref, offline, notices, showStampCount = false, jumpLabel = "", bookmarkable = false }: RouteViewProps) {
+export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref, offline, notices, showStampCount = false, bookmarkable = false }: RouteViewProps) {
   const description = pickText(locale, route.descriptionJa, route.descriptionEn);
   const stops = buildStops(route, locale, spotHref, labels);
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
@@ -156,26 +154,13 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             <div className="mt-5">
               <RouteStats route={route} icons tips walkStyle={journey?.style ?? null} />
             </div>
-            {/* Two columns have no jump bar: the bookmark sits under the numbers, with its word. */}
+            {/* The bookmark sits under the numbers, with its word (it used to sit alone in a sticky bar on a phone). */}
             {bookmarkable ? (
-              <div className="mt-4 hidden @4xl:block">
+              <div className="mt-4">
                 <BookmarkButton routeId={route.id} />
               </div>
             ) : null}
           </header>
-
-          {bookmarkable ? (
-            // Solid background on purpose: a see-through bar at the top edge brings back iOS's status-bar blur (globals.css).
-            // The bookmark. It stays at the top while scrolling on a phone; two columns show it under the numbers instead.
-            // (The long page is folded into sections now, so there is no list of links to its parts.)
-            <nav aria-label={jumpLabel} className="sticky top-[var(--top-clear)] z-20 order-3 flex items-center border-b border-line/30 bg-paper py-2 @4xl:hidden">
-              {bookmarkable ? (
-                <div className="shrink-0 pl-4 pr-3">
-                  <BookmarkButton routeId={route.id} compact />
-                </div>
-              ) : null}
-            </nav>
-          ) : null}
 
           {notices ? <div className="order-3 flex flex-col gap-3 @4xl:order-none @4xl:[&>section]:mx-0">{notices}</div> : null}
 

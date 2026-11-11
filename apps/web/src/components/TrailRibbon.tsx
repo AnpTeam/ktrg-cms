@@ -15,12 +15,12 @@ import { RoutePhoto } from "./RoutePhoto";
 import { RouteStats } from "./RouteStats";
 
 // The 19 routes as one continuous trail (WBS 3.2.3). The order is the order of the walk. Each route is a row: its
-// number, name, place and numbers on one line, with a small photo at the side, rows divided by thin rules (no boxes, no
+// number, name, place and numbers, its photo fading in from the right, rows divided by thin rules (no boxes, no
 // progress line). One column until 1280 px, then two.
 
 /**
  * One course as a calm row (docs/design-language.md, the home and /routes lists): the number large in Mincho, the name,
- * the place, the numbers in words, and how far along in words; a small photo at the side. No badges over a photo.
+ * the place, the numbers in words, and how far along in words; its photo fades in from the right. No badges over a photo.
  */
 function RouteRow({ route, state, locale }: { route: RouteSummary; state: NodeState; locale: string }) {
   const { t } = useLingui();
@@ -30,11 +30,19 @@ function RouteRow({ route, state, locale }: { route: RouteSummary; state: NodeSt
   const soon = state === "soon";
 
   return (
-    <span className="flex items-start gap-4 py-3">
-      <span className="min-w-0 flex-1">
+    <span className="relative block overflow-hidden">
+      {/* The photo fades in from the right edge into the page (as the home capsules do, without the capsule); a course that
+          is not ready shows it soft and grey, so it reads as unfinished at a glance. */}
+      <span aria-hidden="true" className="absolute inset-y-0 right-0 block w-1/2 overflow-hidden @2xl:w-2/5">
+        <span className={`absolute inset-0 block ${soon ? "scale-110 blur-[4px] saturate-50" : ""}`}>
+          <RoutePhoto src={route.photoUrl} alt="" />
+        </span>
+        <span className="absolute inset-0 bg-linear-to-r from-paper from-10% to-transparent to-90%" />
+      </span>
+      <span className="relative block min-w-0 py-4 pl-4 pr-[42%] xl:pl-1">
         <span className="flex items-baseline gap-3">
-          <span className={`font-serif text-3xl font-bold leading-none tabular-nums ${soon ? "text-muted" : "text-accent"}`}>{route.order}</span>
-          <span className="min-w-0 text-xl font-bold leading-snug">
+          <span className={`shrink-0 font-serif text-3xl font-bold leading-none tabular-nums ${soon ? "text-muted" : "text-accent"}`}>{route.order}</span>
+          <span className="min-w-0 text-xl font-bold leading-snug group-hover:underline">
             <Localized value={name} />
           </span>
         </span>
@@ -58,12 +66,6 @@ function RouteRow({ route, state, locale }: { route: RouteSummary; state: NodeSt
           </span>
         )}
       </span>
-      {/* A course that is not ready shows its photo soft and grey, so it reads as unfinished at a glance. */}
-      <span className="relative mt-1 block aspect-[4/3] w-24 shrink-0 overflow-hidden rounded-lg bg-surface">
-        <span className={`absolute inset-0 block ${soon ? "scale-110 blur-[3px] saturate-50" : ""}`}>
-          <RoutePhoto src={route.photoUrl} alt="" />
-        </span>
-      </span>
     </span>
   );
 }
@@ -73,11 +75,11 @@ function StopRow({ stop, href, locale }: { stop: Stop; href: string; locale: str
   const row = <RouteRow route={route} state={state} locale={locale} />;
 
   return (
-    <li className="border-b border-line px-4 xl:px-1">
+    <li className="border-b border-line">
       {state === "soon" ? (
         <div>{row}</div>
       ) : (
-        <Link href={href} className="tap-target block hover:bg-surface focus-visible:outline-offset-4">
+        <Link href={href} className="group tap-target block focus-visible:outline-offset-4">
           {row}
         </Link>
       )}

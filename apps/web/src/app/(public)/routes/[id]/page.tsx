@@ -71,7 +71,6 @@ export default async function RouteDetailPage({ params }: Props) {
         spotHref={(id) => `/spots/${id}`}
         offline={<OfflinePack routeId={route.id} area={route.area} settings={settings} />}
         showStampCount={mine.ids.size > 0}
-        jumpLabel={i18n._(msg`このページの項目`)}
         bookmarkable
         notices={
           notices.length > 0 ? (
