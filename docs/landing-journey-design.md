@@ -27,7 +27,7 @@ blog, intro video, links, tourism), the map photo pins, the admin banners.
 
 ## Beats (Proposed)
 
-The scene is about **350 svh** of scroll with a 100 svh sticky stage. Four beats, the words are the existing editable home
+The scene is about **250 svh** of scroll with a 100 svh sticky stage. Three beats (the fourth, the start, moved to the end of the page: docs/landing-story-design.md), the words are the existing editable home
 words (`HomeSlot`), so an editor's text shows here and **no new copy is written**:
 
 | Beat | Stage | Words (slot) | Ends with |
@@ -47,7 +47,7 @@ If `ridgePath` returns null (no profile data yet) beats 2 and 3 use a plain stra
 
 - `lib/journey.ts` (pure, tested): `beatAt(progress)` returns which beat is current and each element's 0..1 progress; the
   seal positions from a path length and a count. No React, no DOM.
-- `components/landing/Journey.tsx` (server component): renders **all four beats as plain static sections** in reading order
+- `components/landing/Journey.tsx` (server component): renders **all three beats as plain static sections** in reading order
   with the ridge fully drawn and the seals placed. This is the complete page for no-JS, calm, reduced motion before the
   script, and search engines. It replaces `LandingHero` + `LandingStory` for a signed-out visitor.
 - `components/landing/JourneyScene.tsx` (client): when motion is allowed (`prefers-reduced-motion: no-preference` and not
@@ -101,7 +101,7 @@ If the visitor turns reduced motion on while the page is open, the scene is reve
 ## Testing
 
 - Unit: `lib/journey.ts` (beat boundaries, seal positions on a known path, counts of 0 and 1, null ridge).
-- Browser (Playwright, our own port): static markup has all four beats and both buttons with scripting off and with
+- Browser (Playwright, our own port): static markup has all three beats and both buttons with scripting off and with
   `reducedMotion: reduce`; with motion on, scrolling to the end shows the buttons at opacity 1; calm shows no inline
   opacity or transform on any beat.
 - A test that the home words still render in each beat (an editor's text appears).

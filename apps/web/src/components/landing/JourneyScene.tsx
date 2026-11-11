@@ -7,8 +7,8 @@ import { beatAt, drawnShare, motionMode, sealsPlaced } from "@/lib/journey";
  * The landing journey's motion (docs/landing-journey-design.md). `children` are the complete static page (Journey.tsx);
  * this only adds to it, and every way it can fail leaves that page as it was:
  *  - calm on, no script, GSAP failing to load: nothing happens (the page stays stacked and complete);
- *  - reduced motion: no scene; beats 1 to 3 fade in once as they arrive, nothing moves;
- *  - otherwise the scene: `.journey-live` turns the page into 350svh of scroll with one sticky stage, and a single
+ *  - reduced motion: no scene; the three beats fade in once as they arrive, nothing moves;
+ *  - otherwise the scene: `.journey-live` turns the page into 250svh of scroll with one sticky stage, and a single
  *    scrubbed trigger draws the ridge, drops the seals and picks the beat whose text shows (`data-active-beat`).
  * Turning reduced motion on while the page is open reverts to the plain page (gsap.matchMedia).
  */

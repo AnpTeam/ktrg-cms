@@ -1403,11 +1403,11 @@ body.map-nav-mode .map-layer-pills {
 }
 
 /* The landing journey's scene (JourneyScene adds .journey-live only when it takes over, so with no script, calm on or
-   reduced motion none of this applies and the stacked page, every word and button, shows). 350svh of scroll with one sticky
+   reduced motion none of this applies and the stacked page, every word and button, shows). 250svh of scroll with one sticky
    stage; the beats are laid over each other and one shows at a time (data-active-beat). min-height, never a fixed height:
    a long editor text grows the stage instead of being clipped. */
 .journey-live {
-  height: 350svh;
+  height: 250svh;
 }
 .journey-live [data-journey-stage] {
   position: sticky;
@@ -1424,7 +1424,7 @@ body.map-nav-mode .map-layer-pills {
 .journey-live [data-beat="0"] > section > div:first-child {
   height: 100svh; /* the photos fill the first screen */
 }
-/* Beats 1 to 3: the chapter fills the stage (its ground with it), the words centred, clear of the ridge along the bottom. */
+/* The three beats: the chapter fills the stage (its ground with it), the words centred, clear of the ridge along the bottom. */
 .journey-live [data-beat] {
   display: flex;
   flex-direction: column;
@@ -1442,8 +1442,7 @@ body.map-nav-mode .map-layer-pills {
 }
 .journey-live[data-active-beat="0"] [data-beat="0"],
 .journey-live[data-active-beat="1"] [data-beat="1"],
-.journey-live[data-active-beat="2"] [data-beat="2"],
-.journey-live[data-active-beat="3"] [data-beat="3"] {
+.journey-live[data-active-beat="2"] [data-beat="2"] {
   opacity: 1;
   visibility: visible;
   transition: opacity 0.5s;
@@ -1460,8 +1459,7 @@ body.map-nav-mode .map-layer-pills {
 .journey-live[data-active-beat="0"] [data-ridge-stage] {
   opacity: 0;
 }
-.journey-live[data-active-beat="2"] [data-ridge-stage],
-.journey-live[data-active-beat="3"] [data-ridge-stage] {
+.journey-live[data-active-beat="2"] [data-ridge-stage] {
   color: var(--color-ink);
 }
 
@@ -1553,4 +1551,19 @@ body.map-nav-mode .map-layer-pills {
     display: inline-block;
     animation: scroll-cue-bob 1.6s ease-in-out infinite;
   }
+}
+
+/* The outro mountains (the team's drawing, public/home/outro_mountains.svg): a skyline along the bottom of the Start chapter,
+   used as a mask over a colour token so it follows light and dark mode. The drawing fades out toward its bottom edge. */
+.outro-mountains {
+  background-color: var(--color-line);
+  opacity: 0.9;
+  -webkit-mask-image: url("/home/outro_mountains.svg");
+  mask-image: url("/home/outro_mountains.svg");
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  -webkit-mask-position: center bottom;
+  mask-position: center bottom;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 }

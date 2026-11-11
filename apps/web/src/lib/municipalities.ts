@@ -77,7 +77,85 @@ export const municipalities: Record<MunicipalityPrefecture, readonly Municipalit
   ],
 };
 
-const allCities = new Map(Object.values(municipalities).flatMap((list) => list.map((c) => [c.ja, c.en] as const)));
+/**
+ * The towns (町) and villages (村) of the same three prefectures, in the order of the prefecture's own list (by district,
+ * then by the Japanese syllabary of the readings). A course can run through one (岬町, 千早赤阪村), so it is picked like a city.
+ */
+export const towns: Record<MunicipalityPrefecture, readonly Municipality[]> = {
+  wakayama: [
+    m("紀美野町", "Kimino Town"),
+    m("かつらぎ町", "Katsuragi Town"),
+    m("九度山町", "Kudoyama Town"),
+    m("高野町", "Koya Town"),
+    m("湯浅町", "Yuasa Town"),
+    m("広川町", "Hirogawa Town"),
+    m("有田川町", "Aridagawa Town"),
+    m("美浜町", "Mihama Town"),
+    m("日高町", "Hidaka Town"),
+    m("由良町", "Yura Town"),
+    m("印南町", "Inami Town"),
+    m("みなべ町", "Minabe Town"),
+    m("日高川町", "Hidakagawa Town"),
+    m("白浜町", "Shirahama Town"),
+    m("上富田町", "Kamitonda Town"),
+    m("すさみ町", "Susami Town"),
+    m("那智勝浦町", "Nachikatsuura Town"),
+    m("太地町", "Taiji Town"),
+    m("古座川町", "Kozagawa Town"),
+    m("北山村", "Kitayama Village"),
+    m("串本町", "Kushimoto Town"),
+  ],
+  osaka: [
+    m("島本町", "Shimamoto Town"),
+    m("豊能町", "Toyono Town"),
+    m("能勢町", "Nose Town"),
+    m("忠岡町", "Tadaoka Town"),
+    m("熊取町", "Kumatori Town"),
+    m("田尻町", "Tajiri Town"),
+    m("岬町", "Misaki Town"),
+    m("太子町", "Taishi Town"),
+    m("河南町", "Kanan Town"),
+    m("千早赤阪村", "Chihayaakasaka Village"),
+  ],
+  nara: [
+    m("山添村", "Yamazoe Village"),
+    m("平群町", "Heguri Town"),
+    m("三郷町", "Sango Town"),
+    m("斑鳩町", "Ikaruga Town"),
+    m("安堵町", "Ando Town"),
+    m("川西町", "Kawanishi Town"),
+    m("三宅町", "Miyake Town"),
+    m("田原本町", "Tawaramoto Town"),
+    m("曽爾村", "Soni Village"),
+    m("御杖村", "Mitsue Village"),
+    m("高取町", "Takatori Town"),
+    m("明日香村", "Asuka Village"),
+    m("上牧町", "Kanmaki Town"),
+    m("王寺町", "Oji Town"),
+    m("広陵町", "Koryo Town"),
+    m("河合町", "Kawai Town"),
+    m("吉野町", "Yoshino Town"),
+    m("大淀町", "Oyodo Town"),
+    m("下市町", "Shimoichi Town"),
+    m("黒滝村", "Kurotaki Village"),
+    m("天川村", "Tenkawa Village"),
+    m("野迫川村", "Nosegawa Village"),
+    m("十津川村", "Totsukawa Village"),
+    m("下北山村", "Shimokitayama Village"),
+    m("上北山村", "Kamikitayama Village"),
+    m("川上村", "Kawakami Village"),
+    m("東吉野村", "Higashiyoshino Village"),
+  ],
+};
+
+const allCities = new Map([...Object.values(municipalities), ...Object.values(towns)].flatMap((list) => list.map((c) => [c.ja, c.en] as const)));
+
+/** The prefecture of a listed city, town or village; null for a name that was typed in. */
+export function prefectureOfCity(ja: string): MunicipalityPrefecture | null {
+  for (const [p, list] of Object.entries(municipalities)) if (list.some((c) => c.ja === ja)) return p as MunicipalityPrefecture;
+  for (const [p, list] of Object.entries(towns)) if (list.some((c) => c.ja === ja)) return p as MunicipalityPrefecture;
+  return null;
+}
 
 /** English names of every listed city, by its Japanese name. */
 export function englishCityName(ja: string): string | null {
@@ -86,8 +164,8 @@ export function englishCityName(ja: string): string | null {
 
 /**
  * A course can run from one city into another: it lists the cities in walking order (`route.municipalities`), and every
- * page shows them as "和歌山市 → 岬町". English pages get the English name of each listed city; a town or village that is
- * not in the list is shown as it was entered. null when there is nothing to show.
+ * page shows them as "和歌山市 → 岬町". English pages get the English name of each listed city, town or village; a name
+ * that is not in the lists is shown as it was entered. null when there is nothing to show.
  */
 export function municipalityName(locale: string, cities: readonly string[]): string | null {
   const parts = cities.map((p) => p.trim()).filter((p) => p !== "");

@@ -5,6 +5,7 @@ import { HeroSlides, type HeroSlide } from "@/components/landing/HeroSlides";
 import type { BannerSlide } from "@/lib/banners";
 import { buttonStyle } from "@/components/button";
 import { KatsuragiLogo } from "@/components/KatsuragiLogo";
+import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { ScrollCue } from "@/components/landing/ScrollCue";
 
 // The first screen of the landing page: the admin's banner photos run from edge to edge of the page, with the line over them,
@@ -29,7 +30,7 @@ export function LandingHero({ slides, locale, line, title, children, bare = fals
     <section data-cover aria-labelledby="hero-title" className="overflow-hidden bg-surface">
       {/* The line and the logo sit in the middle of the photos. A first-time visitor gets a taller picture with the line set
           vertically (the reading register); a low screen keeps it across, still centred. */}
-      <div className="relative h-80 tall:h-[min(78svh,44rem)] @[34rem]:h-96 @[42rem]:h-[30rem]">
+      <div className={`relative ${bare ? "h-[min(78svh,44rem)]" : "h-80 tall:h-[min(78svh,44rem)]"} @[34rem]:h-96 @[42rem]:h-[30rem]`}>
         <HeroSlides slides={photos.length > 0 ? photos : [FALLBACK]}>
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 mx-auto flex max-w-6xl flex-col items-center justify-center gap-5 px-12 py-6 text-center">
@@ -51,6 +52,12 @@ export function LandingHero({ slides, locale, line, title, children, bare = fals
           </div>
         </HeroSlides>
         {bare ? <ScrollCue /> : null}
+        {/* The first screen has no language question any more: the two languages sit at the top right of the photo. */}
+        {bare ? (
+          <div className="absolute right-3 top-[calc(0.75rem+var(--top-clear))] z-10">
+            <LocaleSwitcher />
+          </div>
+        ) : null}
       </div>
       {bare ? null : <div className="pattern-shippo">
       {children ? <div className="mx-auto max-w-6xl py-6 @[34rem]:px-6">{children}</div> : (

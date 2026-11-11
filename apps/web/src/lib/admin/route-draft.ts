@@ -6,6 +6,7 @@ import { capLegs, joinLegs, legsFromJoined, pathStops, reconcileLegs, sidePairs,
 import type { Translations } from "./content-locales";
 import type { AccessPoint } from "../access-points";
 import type { TechnicalLevel } from "../grading";
+import { prefectureOfCity } from "@/lib/municipalities";
 import type { AdminRoute, AdminSpot, Prefecture, SpotStatus, WalkStyle } from "./types";
 import { timesFromPrevious } from "../leg-times";
 import { estimateWalkMinutes } from "./walk-time";
@@ -224,7 +225,6 @@ export type DraftAction =
   /** The route's words in the other content languages. */
   | { type: "translations"; value: Translations }
   | { type: "accessPoints"; value: AccessPoint[] }
-  | { type: "prefecture"; value: Prefecture | null }
   /** The cities the course runs through, in walking order. */
   | { type: "municipalities"; value: string[] }
   | { type: "walkStyle"; value: WalkStyle | null }
@@ -349,10 +349,11 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       return { ...d, translations: a.value };
     case "accessPoints":
       return { ...d, accessPoints: a.value };
-    case "prefecture":
-      return { ...d, prefecture: a.value };
-    case "municipalities":
-      return { ...d, municipalities: a.value };
+    case "municipalities": {
+      // The prefecture is not asked for: it is the first listed city's. Typed towns and an empty list leave it as it was.
+      const first = a.value.map(prefectureOfCity).find((p) => p !== null);
+      return { ...d, municipalities: a.value, prefecture: first ?? d.prefecture };
+    }
     case "walkStyle":
       return { ...d, walkStyle: a.value };
     case "farDistanceM":

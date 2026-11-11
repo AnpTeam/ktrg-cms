@@ -70,7 +70,7 @@ paragraphs are exactly what not to copy.
   page by page as each phase is built.
 - **At most one button per section**, at the end of the section, and one main button at the end of the page.
 - **The landing journey (2026-11-11, `docs/landing-journey-design.md`)** replaces the four stacked chapters for a
-  first-time visitor: with motion allowed, one sticky stage (350svh of native scroll) shows four beats in turn: the
+  first-time visitor: with motion allowed, one sticky stage (250svh of native scroll) shows three beats in turn: the
   sea (the photos), what Katsuragi Shugen is, the ridge with its 31 seals, the start. The stacked page below it is the
   complete version, and stays what a visitor gets with no script, calm or reduced motion. A skip link comes first.
 
