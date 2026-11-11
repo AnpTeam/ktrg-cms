@@ -9,8 +9,8 @@ export type TextSize = (typeof TEXT_SIZES)[number];
 export interface Preferences {
   /** Text and components together: small 87.5%, standard 100%, large 112.5%, extra large 125% of the base size. */
   size: TextSize;
-  /** Merge stops that sit close together on the map into one numbered group. Off is the plain map. */
-  mergeStops: boolean;
+  /** No longer used: stops are never merged on the map (2026-11-11). Older apps still send it, so it is accepted and kept. */
+  mergeStops?: boolean;
   /** Show the nearby places (toilets, shops ...) on the map from the start. */
   placesOnMap: boolean;
   /** The first-time set-up has been done (or skipped), so it is not offered again. */

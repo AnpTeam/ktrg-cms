@@ -8,7 +8,6 @@ import { categoryOfKind } from "@/lib/point-kinds";
 import { getMapSettings } from "@/lib/site-settings";
 import { municipalityName } from "@/lib/municipalities";
 import { isStampMock } from "@/lib/stamp-flow";
-import { getPrefs } from "@/lib/server-prefs";
 import { getViewer, type Viewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
 
@@ -191,7 +190,7 @@ async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Vi
 // around; stamps and navigation are for accounts.
 export default async function MapPage({ searchParams }: { searchParams: Promise<{ as?: string; stamp?: string; route?: string; stop?: string; place?: string }> }) {
   // Everything the page needs is asked at once (each is a trip to the API): none of them waits for another.
-  const [i18n, viewer, params, prefs, settings, listed, places] = await Promise.all([initLingui(), getViewer(searchParams), searchParams, getPrefs(), getMapSettings(), listRoutes(), listPlaces()]);
+  const [i18n, viewer, params, settings, listed, places] = await Promise.all([initLingui(), getViewer(searchParams), searchParams, getMapSettings(), listRoutes(), listPlaces()]);
   const { stamp, route: wantedRoute, stop: wantedStop, place: wantedPlace } = params;
   // Development only: `?stamp=far` and so on pretends the answers of the stamping API, which does not exist yet.
   const stampMock = process.env.NODE_ENV !== "production" && isStampMock(stamp) ? stamp : undefined;
@@ -212,7 +211,6 @@ export default async function MapPage({ searchParams }: { searchParams: Promise<
       initialPlaceId={initialPlace?.id ?? null}
       routes={routes}
       settings={settings}
-      mergeStops={prefs.mergeStops}
       locale={i18n.locale}
       loginHref={`/login${next}`}
       stampMock={stampMock}

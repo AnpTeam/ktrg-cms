@@ -67,7 +67,8 @@ void [_ageCovered, _genderCovered, _foundViaCovered];
 export const preferencesSchema = t.Object(
   {
     size: t.Union([t.Literal("small"), t.Literal("standard"), t.Literal("large"), t.Literal("xlarge")]),
-    mergeStops: t.Boolean(),
+    // No longer used (stops are never merged, 2026-11-11): still accepted so a phone with the older app can save, and kept as it came.
+    mergeStops: t.Optional(t.Boolean()),
     placesOnMap: t.Boolean(),
     setupDone: t.Boolean(),
     // Added later, so older phones that do not send them still work: left out means off.

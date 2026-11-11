@@ -77,7 +77,6 @@ export interface RouteViewProps {
   locale: string;
   places: MapPlace[];
   settings: MapSettings;
-  mergeStops: boolean;
   placesFirst: boolean;
   labels: { stamped: string; closed: string; start: string; goal: string };
   /** Where a place's own page is. The admin's preview points these at nothing. */
@@ -99,7 +98,7 @@ export interface RouteViewProps {
  * and the places (stamp places numbered, the others marked "no stamp") as a trail. The public page and the admin's live preview both render this, so what an
  * editor sees while typing is what visitors get. It reads no cookies and calls no server API.
  */
-export function RouteView({ route, locale, places, settings, mergeStops, placesFirst, labels, spotHref, offline, notices, showStampCount = false, bookmarkable = false, back }: RouteViewProps) {
+export function RouteView({ route, locale, places, settings, placesFirst, labels, spotHref, offline, notices, showStampCount = false, bookmarkable = false, back }: RouteViewProps) {
   const description = pickText(locale, route.descriptionJa, route.descriptionEn);
   const stops = buildStops(route, locale, spotHref, labels);
   const draftPositions = route.spots.some((s) => s.position && !s.position.verified);
@@ -289,7 +288,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           <div className={MAP_COLUMN}>
             <section id="map" className="order-8 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:h-full @4xl:px-0">
               <Fold className="fold-bare" title={<Trans>地図</Trans>}>
-                <TrailMapLoader stops={stops} line={route.line} sideLines={route.sideLines?.map((s) => s.line)} places={mapPlaces} draft={draftPositions} settings={settings} mergeStops={mergeStops} placesFirst={placesFirst} />
+                <TrailMapLoader stops={stops} line={route.line} sideLines={route.sideLines?.map((s) => s.line)} places={mapPlaces} draft={draftPositions} settings={settings} placesFirst={placesFirst} />
               </Fold>
             </section>
           </div>

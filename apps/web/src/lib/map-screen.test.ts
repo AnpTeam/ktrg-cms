@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { samePlaceOnly, courseDotState, COURSE_DOT_PX, areaCollection, areaContains, estimateGroupBox, estimateLabel, framePoints, groupLabelLines, MERGE_PX, namesThatFit, nextSnap, rectangleRing, revealedRouteId, SAME_PLACE_M, sheetHeightPx, snapAfterDrag, spreadLabels, spreadMeters, stopMergePx, type LabelBox, type MapScreenRoute } from "./map-screen";
+import { courseDotState, COURSE_DOT_PX, areaCollection, areaContains, estimateLabel, framePoints, namesThatFit, nextSnap, rectangleRing, revealedRouteId, sheetHeightPx, snapAfterDrag, spreadLabels, type LabelBox, type MapScreenRoute } from "./map-screen";
 import { distanceMeters } from "./places";
 
 const route = (id: string, order: number, over: Partial<MapScreenRoute> = {}): MapScreenRoute => ({
@@ -175,12 +175,6 @@ describe("the bottom sheet", () => {
     expect(sheetHeightPx("full", room)).toBe(room); // the top resting place covers the whole page
   });
 
-  test("stops merge only when asked: off, just pins on top of each other share one", () => {
-    expect(stopMergePx(false)).toBeLessThan(8); // off: only pins right on top of each other share one
-    expect(stopMergePx(true)).toBeGreaterThan(stopMergePx(false));
-    expect(MERGE_PX.namedPin).toBeGreaterThan(MERGE_PX.pin);
-  });
-
   test("a course dot is finished only when every stamp is held", () => {
     const route = { status: "ready" as const, stampedCount: 3, spotCount: 3 };
     expect(courseDotState(route)).toBe("done");
@@ -208,13 +202,6 @@ describe("the bottom sheet", () => {
     expect(estimateLabel("葛城山").w).toBeGreaterThan(estimateLabel("abc").w);
   });
 
-  test("with merging off, only stops on one spot stay together", () => {
-    const at: Record<string, { lat: number; lng: number }> = { a: { lat: 34.3, lng: 135.1 }, b: { lat: 34.3001, lng: 135.1 }, c: { lat: 34.31, lng: 135.1 }, d: { lat: 34.32, lng: 135.1 } };
-    const positionOf = (id: string) => at[id]!;
-    expect(samePlaceOnly([["a", "b"]], positionOf)).toEqual([["a", "b"]]); // about 11 m apart
-    expect(samePlaceOnly([["a", "c"], ["d"]], positionOf)).toEqual([["a"], ["c"], ["d"]]); // about 1 km: they just overlap
-  });
-
   test("group labels are pushed apart and kept inside the visible area", () => {
     const area = { left: 0, top: 0, right: 400, bottom: 600 };
     const touching = [
@@ -231,21 +218,6 @@ describe("the bottom sheet", () => {
     // Too big for the area: pinned to the top-left corner, not thrown off screen.
     const [d] = spreadLabels([{ id: "d", x: 100, y: 100, w: 176, h: 900 }], area) as [LabelBox];
     expect(d.y - 450).toBe(0);
-  });
-
-  test("the estimated size of a group grows with its names", () => {
-    expect(estimateGroupBox(["a", "b", "c"]).h).toBeLessThan(estimateGroupBox(["a", "b", "c", "d", "e", "f"]).h);
-    expect(estimateGroupBox(["大福山から雲山峰を越えて長い名前の区間へ"]).h).toBeGreaterThan(estimateGroupBox(["大福山"]).h);
-  });
-
-  test("a merged group names its members, the first few and how many more", () => {
-    expect(groupLabelLines(["a", "b"])).toEqual({ lines: ["a", "b"], more: 0 });
-    const seven = ["a", "b", "c", "d", "e", "f", "g"];
-    expect(groupLabelLines(seven).more).toBe(0); // room enough: every name
-    const tight = groupLabelLines(seven, estimateGroupBox(seven.slice(0, 5)).h + 18);
-    expect(tight.lines).toEqual(["a", "b", "c", "d", "e"]);
-    expect(tight.more).toBe(2);
-    expect(groupLabelLines(seven, 1).lines).toEqual(["a"]); // never fewer than one name
   });
 
   test("a slow drag settles at the nearest resting place", () => {
@@ -270,17 +242,5 @@ describe("the bottom sheet", () => {
     expect(nextSnap("hidden")).toBe("half");
     expect(nextSnap("half")).toBe("full");
     expect(nextSnap("full")).toBe("half");
-  });
-});
-
-describe("pins on the same spot", () => {
-  test("pins within 30 m are chosen from a list; pins farther apart are pulled apart by zooming", () => {
-    const station = { lat: 34.2808, lng: 135.0027 };
-    const nextDoor = { lat: 34.28085, lng: 135.00275 }; // about 7 m away
-    const farther = { lat: 34.2825, lng: 135.0027 }; // about 190 m away
-    expect(spreadMeters([station, station])).toBe(0);
-    expect(spreadMeters([station, nextDoor])).toBeLessThanOrEqual(SAME_PLACE_M);
-    expect(spreadMeters([station, nextDoor, farther])).toBeGreaterThan(SAME_PLACE_M);
-    expect(spreadMeters([])).toBe(0);
   });
 });

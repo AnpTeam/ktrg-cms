@@ -8,7 +8,7 @@ import { placePicture } from "@/lib/place-icons";
 import type { PlaceCategory, PlaceGroup } from "@/lib/places";
 
 // Everything on the map is a real <button>: it can be reached with the keyboard, has a big tap
-// target and a spoken name. The look is in globals.css (.map-marker, .place-marker, .map-cluster),
+// target and a spoken name. The look is in globals.css (.map-marker, .place-marker),
 // by data attributes, so the state is a shape (seal, ring, dashed ring, amber border, barrier) and
 // never colour alone.
 
@@ -316,44 +316,6 @@ export function createCourseDot({
     text.textContent = name;
     el.append(text);
   }
-  el.setAttribute("aria-label", label);
-  el.addEventListener("click", onSelect);
-  return el;
-}
-
-/** Several markers too close to tell apart at this zoom: one button showing what is inside; a tap zooms in. */
-export function createClusterElement({
-  text,
-  label,
-  kind,
-  names,
-  onSelect,
-}: {
-  text: string;
-  label: string;
-  kind: "stops" | "places";
-  /** When given, the group also lists who is inside (a line each, then "+n more"), so no course name is ever hidden. */
-  names?: { lines: string[]; more: string | null };
-  onSelect: () => void;
-}): HTMLButtonElement {
-  const el = document.createElement("button");
-  el.type = "button";
-  el.className = "map-cluster";
-  el.dataset.kind = kind;
-  if (names) {
-    el.dataset.named = "true";
-    const count = document.createElement("span");
-    count.className = "map-cluster-count";
-    count.textContent = text;
-    const list = document.createElement("span");
-    list.className = "map-cluster-names";
-    for (const line of [...names.lines, ...(names.more ? [names.more] : [])]) {
-      const row = document.createElement("span");
-      row.textContent = line;
-      list.appendChild(row);
-    }
-    el.append(count, list);
-  } else el.textContent = text;
   el.setAttribute("aria-label", label);
   el.addEventListener("click", onSelect);
   return el;
