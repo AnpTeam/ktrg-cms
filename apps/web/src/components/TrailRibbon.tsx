@@ -6,7 +6,7 @@ import { Trans, useLingui } from "@lingui/react/macro";
 import type { Prefecture, RouteSummary } from "@/lib/content";
 import { pickText } from "@/lib/pick-text";
 import { municipalityName } from "@/lib/municipalities";
-import { connectorStates, nodeState, type NodeState } from "@/lib/ribbon";
+import { buildStops, type Kind, type NodeState, type Stop } from "@/lib/ribbon";
 import { Localized } from "./Localized";
 import { PrefectureIcon } from "./PrefectureIcon";
 import { PlaceLine } from "./PlaceLine";
@@ -17,8 +17,6 @@ import { RouteStats } from "./RouteStats";
 // The 19 routes as one continuous trail (WBS 3.2.3). The order is the order of the walk. Each route is a row: its
 // number, name, place and numbers in words, with a small photo at the side; the progress line runs down the left edge.
 // One column until 1280 px, then two.
-
-type Kind = "done" | "open" | "soon";
 
 const LINE_X = "1.25rem"; // the line's middle, from the left edge
 
@@ -32,28 +30,6 @@ function Segment({ kind, from, to }: { kind: Kind; from: string; to: string }) {
   return (
     <span aria-hidden="true" className={`absolute -translate-x-1/2 border-l-4 xl:hidden ${segmentClass[kind]}`} style={{ left: LINE_X, top: from, bottom: to }} />
   );
-}
-
-interface Stop {
-  route: RouteSummary;
-  state: NodeState;
-  above: Kind | null;
-  below: Kind | null;
-}
-
-export function buildStops(routes: RouteSummary[]): Stop[] {
-  const states = routes.map((route) => nodeState({ status: route.status, stamped: route.stampedCount, total: route.spotCount }));
-  const connectors = connectorStates(states);
-  // A jump in the numbers (the home page lists only open courses: 1, then 16) is dashed like a course not ready yet,
-  // so the line never claims two courses meet when others lie between them.
-  const gap = (i: number) => (routes[i]?.order ?? 0) - (routes[i - 1]?.order ?? 0) > 1;
-  const into = (i: number): Kind | null => (i === 0 ? null : states[i] === "soon" || gap(i) ? "soon" : connectors[i] === "done" ? "done" : "open");
-  return routes.map((route, i) => ({
-    route,
-    state: states[i] as NodeState,
-    above: into(i),
-    below: i === routes.length - 1 ? null : into(i + 1),
-  }));
 }
 
 /**
