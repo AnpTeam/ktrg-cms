@@ -103,7 +103,7 @@ export function RouteStats({ route, compact = false, icons = false, inline = fal
   if (icons) {
     // Icon, then a small label over the value, in even columns so the rows line up: two to a row, three where there is room.
     return (
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-3 @md:grid-cols-3">
+      <dl className="grid grid-cols-[repeat(auto-fit,minmax(9.5rem,1fr))] gap-x-4 gap-y-3">
         {items.map(({ label, value, icon, info }) => (
           <div key={label} className="flex min-w-0 items-center gap-2.5">
             <span className="shrink-0 text-brand">{icon}</span>
@@ -112,7 +112,7 @@ export function RouteStats({ route, compact = false, icons = false, inline = fal
                 {label}
                 {tips ? tip(info) : null}
               </dt>
-              <dd className="text-xl font-bold leading-snug tabular-nums">{value}</dd>
+              <dd className="whitespace-nowrap text-xl font-bold leading-snug tabular-nums">{value}</dd>
             </div>
           </div>
         ))}

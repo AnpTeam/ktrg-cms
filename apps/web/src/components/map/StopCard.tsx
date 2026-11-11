@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Trans } from "@lingui/react/macro";
+import { Trans, useLingui } from "@lingui/react/macro";
 import { StatusWord } from "@/components/StatusWord";
 import type { SpotStatus } from "@/lib/content";
-import { WarningIcon } from "@/components/icons";
+import { WarningIcon, XIcon } from "@/components/icons";
 import { buttonStyle } from "@/components/button";
 
-/** The small card shown under the map when a stop is tapped. The full sheet is its own page. */
+/** The small card shown over the map (at its bottom) when a stop is tapped. The full sheet is its own page. */
 export function StopCard({
   order,
   name,
@@ -16,6 +16,7 @@ export function StopCard({
   href,
   noStamp = false,
   draft,
+  onClose,
 }: {
   /** null for a side trip (寄り道): no number. */
   order: number | null;
@@ -26,12 +27,22 @@ export function StopCard({
   /** A place where no stamp can be collected. */
   noStamp?: boolean;
   draft: boolean;
+  /** Given when the card lies over the map: a close button at its corner. */
+  onClose?: () => void;
 }) {
+  const { t } = useLingui();
   return (
-    <div className="flex flex-col gap-2 rounded-xl border-2 border-line bg-paper p-4" role="status">
-      <p className="text-xl font-bold leading-snug">
-        {order === null ? "" : `${order}. `}<span lang={nameLang}>{name}</span>
-      </p>
+    <div className="flex flex-col gap-2 rounded-xl border-2 border-line bg-paper p-3" role="status">
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-xl font-bold leading-snug">
+          {order === null ? "" : `${order}. `}<span lang={nameLang}>{name}</span>
+        </p>
+        {onClose ? (
+          <button type="button" onClick={onClose} aria-label={t`閉じる`} className="tap-target -mr-2 -mt-2 inline-flex shrink-0 items-center justify-center">
+            <XIcon />
+          </button>
+        ) : null}
+      </div>
       <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-lg">
         <StatusWord status={status} />
         {noStamp ? (

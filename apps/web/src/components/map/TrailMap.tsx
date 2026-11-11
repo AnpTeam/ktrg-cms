@@ -4,7 +4,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import type { Map as MapLibreMap } from "maplibre-gl";
-import { ExpandIcon, MinusIcon, PlusIcon, WarningIcon } from "@/components/icons";
+import { ChevronIcon, ChevronLeftIcon, ExpandIcon, ListIcon, MinusIcon, PlusIcon, WarningIcon } from "@/components/icons";
 import { SampleNoticeButton } from "@/components/SampleNotice";
 import { clusterByPixels } from "@/lib/cluster";
 import type { SpotStatus } from "@/lib/content";
@@ -30,7 +30,7 @@ import { groupCounts, groupOf, sortByDistance, type Coord, type MapPlace, type P
 import { createClusterElement, createMarkerElement, createPlaceMarkerElement } from "./MapMarker";
 import { useCursorMarker } from "./useCursorMarker";
 import { MapPickList } from "./MapPickList";
-import { PlaceCard, PlaceChips, PlaceList, useGroupNames } from "./PlacesPanel";
+import { PlaceCard, PlaceChips, PlaceList } from "./PlacesPanel";
 import { StopCard } from "./StopCard";
 
 export interface MapStop {
@@ -70,6 +70,9 @@ const FIT = { padding: { top: 76, bottom: 112, left: 56, right: 92 }, maxZoom: 1
 const CLUSTER_PX = 52;
 const buttonClass =
   "tap-target inline-flex items-center justify-center gap-2 rounded-full border border-ink bg-paper px-3 text-lg font-bold text-ink hover:bg-surface";
+// The small round controls laid over the map: a 48 px target (the older-reader rule) with a smaller circle drawn in it.
+const hit = "tap-target inline-flex items-center justify-center disabled:opacity-40";
+const disc = "flex size-9 items-center justify-center rounded-full border border-ink bg-paper/95 text-ink shadow-sm";
 
 const centerOf = (points: readonly Coord[]): Coord => ({
   lat: points.reduce((n, p) => n + p.lat, 0) / points.length,
@@ -107,7 +110,6 @@ export function TrailMap({
   placesFirst: boolean;
 }) {
   const { t, i18n } = useLingui();
-  const groupNames = useGroupNames();
   const sectionRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -120,6 +122,7 @@ export function TrailMap({
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [listOpen, setListOpen] = useState(false);
   const [terrain, setTerrain] = useState(false);
   // Side trips (寄り道) are off at first: some places are worth a mention without being a stop on the way.
   const [showSide, setShowSide] = useState(false);
@@ -416,6 +419,7 @@ export function TrailMap({
     const place = places.find((p) => p.id === id);
     const map = mapRef.current;
     setSelected({ kind: "place", id });
+    setListOpen(false);
     if (!place || !map) return;
     map.easeTo({ center: [place.position.lng, place.position.lat], zoom: Math.max(map.getZoom(), 15.5) });
     const calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -435,8 +439,6 @@ export function TrailMap({
       ? terrain ? t`標高の色を消す` : t`標高の色を見る`
       : terrain ? t`地形の陰影を消す` : t`地形の陰影を見る`;
   const anyPlaces = places.length > 0;
-  const restName = groupNames.rest;
-  const shopsName = groupNames.shops;
 
   if (failed) {
     return (
@@ -446,11 +448,13 @@ export function TrailMap({
     );
   }
 
+  const stepper = !mergeStops && stops.length > 1;
+
   return (
     <section
       ref={sectionRef}
       aria-label={t`地図`}
-      className={expanded ? "trail-map fixed inset-0 z-30 flex flex-col gap-3 bg-paper p-3 pt-[calc(0.75rem+var(--top-clear))]" : "trail-map flex scroll-mt-2 flex-col gap-3"}
+      className={expanded ? "trail-map fixed inset-0 z-30 flex flex-col gap-3 bg-paper p-3 pt-[calc(0.75rem+var(--top-clear))]" : "trail-map flex scroll-mt-2 flex-col @4xl:h-full"}
     >
       {expanded ? (
         <div className="flex items-center justify-between gap-2">
@@ -466,11 +470,14 @@ export function TrailMap({
         </div>
       ) : null}
 
+      {/* Everything the visitor works the map with lies on it (2026-11-11): the small zoom and full-screen buttons at the
+          top right, the kinds of place at the bottom left, previous and next stop at the bottom right, and the stop's card
+          above them. On a wide page the map is the whole right column, to the screen's edges. */}
       <div
         className={
           expanded
             ? "relative min-h-0 flex-1 overflow-hidden rounded-xl border-2 border-line"
-            : "relative -mx-4 h-[min(46svh,36rem)] min-h-[18rem] overflow-hidden rounded-none border-x-0 border-y-2 border-line @4xl:mx-0 @4xl:rounded-xl @4xl:border-x-2"
+            : "relative -mx-4 h-[min(62svh,40rem)] min-h-[20rem] overflow-hidden border-y-2 border-line @4xl:mx-0 @4xl:h-full @4xl:min-h-0 @4xl:border-0"
         }
       >
         {/* MapLibre's own CSS makes its container position: relative, which would cancel an
@@ -498,7 +505,7 @@ export function TrailMap({
         ) : null}
 
         {draft ? (
-          <p className="absolute left-2 top-2 z-10 flex max-w-[calc(100%-5rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">
+          <p className="absolute left-2 top-2 z-10 flex max-w-[calc(100%-4rem)] items-center gap-1.5 rounded-lg border-2 border-caution bg-paper px-2 py-1 text-base font-bold leading-tight">
             <span className="text-caution">
               <WarningIcon />
             </span>
@@ -506,84 +513,87 @@ export function TrailMap({
           </p>
         ) : null}
 
-        <div className="absolute right-2 top-2 z-10 flex flex-col gap-2 print:hidden">
-          <button type="button" onClick={() => zoom(1)} aria-label={t`拡大`} className={buttonClass}>
-            <PlusIcon size={26} />
+        <div className="absolute right-1 top-1 z-10 flex flex-col print:hidden">
+          <button type="button" onClick={() => zoom(1)} aria-label={t`拡大`} className={hit}>
+            <span className={disc}>
+              <PlusIcon size={20} />
+            </span>
           </button>
-          <button type="button" onClick={() => zoom(-1)} aria-label={t`縮小`} className={buttonClass}>
-            <MinusIcon size={26} />
+          <button type="button" onClick={() => zoom(-1)} aria-label={t`縮小`} className={hit}>
+            <span className={disc}>
+              <MinusIcon size={20} />
+            </span>
           </button>
-        </div>
-
-        {expanded ? null : (
-          <div className="absolute bottom-9 left-2 z-10 print:hidden">
-            <button ref={expandRef} type="button" onClick={() => setExpanded(true)} className={buttonClass}>
-              <ExpandIcon />
-              {t`大きく表示`}
+          {expanded ? null : (
+            <button ref={expandRef} type="button" onClick={() => setExpanded(true)} aria-label={t`大きく表示`} className={hit}>
+              <span className={disc}>
+                <ExpandIcon />
+              </span>
             </button>
+          )}
+        </div>
+
+        <div className="pointer-events-none absolute inset-x-2 bottom-8 z-10 flex max-h-[calc(100%-4rem)] flex-col gap-2 print:hidden [&>*]:pointer-events-auto">
+          {selectedStop || selectedPlace ? (
+            <div className="min-h-0 overflow-y-auto rounded-xl shadow-md">
+              {selectedStop ? (
+                <StopCard
+                  order={selectedStop.order}
+                  name={selectedStop.name}
+                  nameLang={selectedStop.nameLang}
+                  status={selectedStop.status}
+                  href={selectedStop.href}
+                  noStamp={selectedStop.noStamp}
+                  draft={draft}
+                  onClose={() => setSelected(null)}
+                />
+              ) : selectedPlace ? (
+                <PlaceCard place={selectedPlace} meters={origin ? sortByDistance([selectedPlace], origin)[0]!.meters : null} onClose={() => setSelected(null)} />
+              ) : null}
+            </div>
+          ) : null}
+          <div className="flex items-end justify-between gap-2">
+            <div className="flex min-w-0 flex-wrap gap-1.5">
+              {anyPlaces ? <PlaceChips compact counts={counts} active={active} onToggle={toggleGroup} /> : null}
+              {hasSide ? (
+                <button type="button" aria-pressed={showSide} onClick={() => setShowSide((on) => !on)} className={`${buttonClass} ${showSide ? "!bg-ink !text-paper" : "bg-paper/95 shadow-sm"}`}>
+                  {t`寄り道の線を見る`}
+                </button>
+              ) : null}
+              {sortedPlaces.length > 0 ? (
+                <button type="button" aria-expanded={listOpen} onClick={() => setListOpen((on) => !on)} className={`${buttonClass} bg-paper/95 shadow-sm`}>
+                  <ListIcon />
+                  {t`まわりの場所`}
+                </button>
+              ) : null}
+            </div>
+            {stepper ? (
+              <div role="group" aria-label={t`場所を順に見る`} className="flex shrink-0 items-center rounded-full border border-ink bg-paper/95 shadow-sm">
+                <button type="button" onClick={() => goToStop(-1)} disabled={stopIndex === 0} aria-label={t`前の場所`} className={hit}>
+                  <ChevronLeftIcon />
+                </button>
+                <p aria-live="polite" className="min-w-[3.75rem] text-center text-lg font-bold tabular-nums">
+                  {stopIndex === -1 ? "－" : stopIndex + 1} / {stops.length}
+                </p>
+                <button type="button" onClick={() => goToStop(1)} disabled={stopIndex === stops.length - 1} aria-label={t`次の場所`} className={hit}>
+                  <ChevronIcon />
+                </button>
+              </div>
+            ) : null}
           </div>
-        )}
+        </div>
+
+        {listOpen && sortedPlaces.length > 0 ? (
+          <div className="absolute inset-0 z-20 overflow-y-auto bg-paper p-4">
+            <div className="mb-2 flex justify-end">
+              <button type="button" onClick={() => setListOpen(false)} className={buttonClass}>
+                {t`閉じる`}
+              </button>
+            </div>
+            <PlaceList items={sortedPlaces} fromLabel={fromLabel} selectedId={selectedPlace?.id ?? null} onSelect={showPlace} />
+          </div>
+        ) : null}
       </div>
-
-      {hasSide ? (
-        <button type="button" aria-pressed={showSide} onClick={() => setShowSide((on) => !on)} className={`${buttonClass} w-fit`}>
-          {t`寄り道の線を見る`}
-        </button>
-      ) : null}
-
-      {!mergeStops && stops.length > 1 ? (
-        <div role="group" aria-label={t`場所を順に見る`} className="flex items-stretch gap-2">
-          <button type="button" onClick={() => goToStop(-1)} disabled={stopIndex === 0} className={`${buttonClass} flex-1`}>
-            {t`＜ 前へ`}
-          </button>
-          <p aria-live="polite" className="flex min-w-[5.5rem] items-center justify-center text-xl font-bold tabular-nums">
-            {stopIndex === -1 ? "－" : stopIndex + 1} / {stops.length}
-          </p>
-          <button
-            type="button"
-            onClick={() => goToStop(1)}
-            disabled={stopIndex === stops.length - 1}
-            className={`${buttonClass} flex-1`}
-          >
-            {t`次へ ＞`}
-          </button>
-        </div>
-      ) : null}
-
-      {selectedStop ? (
-        <StopCard
-          order={selectedStop.order}
-          name={selectedStop.name}
-          nameLang={selectedStop.nameLang}
-          status={selectedStop.status}
-          href={selectedStop.href}
-          noStamp={selectedStop.noStamp}
-          draft={draft}
-        />
-      ) : null}
-      {selectedPlace ? (
-        <PlaceCard
-          place={selectedPlace}
-          meters={origin ? sortByDistance([selectedPlace], origin)[0]!.meters : null}
-          onClose={() => setSelected(null)}
-        />
-      ) : null}
-
-      {anyPlaces ? (
-        <div className="flex flex-col gap-2">
-          {expanded ? null : <p className="text-lg font-bold">{t`まわりの場所を地図に出す`}</p>}
-          <PlaceChips counts={counts} active={active} onToggle={toggleGroup} />
-        </div>
-      ) : null}
-
-      {!expanded && sortedPlaces.length > 0 ? (
-        <PlaceList items={sortedPlaces} fromLabel={fromLabel} selectedId={selectedPlace?.id ?? null} onSelect={showPlace} />
-      ) : null}
-      {!expanded && anyPlaces && sortedPlaces.length === 0 ? (
-        <p className="text-lg text-muted">
-          {t`上のボタンを押すと、${restName}や${shopsName}などが地図と一覧に出ます。`}
-        </p>
-      ) : null}
     </section>
   );
 }

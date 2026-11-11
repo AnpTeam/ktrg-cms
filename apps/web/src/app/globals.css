@@ -1513,3 +1513,21 @@ body.map-nav-mode .map-layer-pills {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
 }
+
+/* The map's fold on the wide course page: no heading, no rule, and the map fills the whole right column. */
+@container (min-width: 56rem) {
+  .fold-bare {
+    height: 100%;
+    border-bottom: 0;
+  }
+  .fold-bare::details-content {
+    height: 100%;
+  }
+  .fold-bare > summary {
+    display: none;
+  }
+  .fold-bare > div {
+    height: 100%;
+    padding-bottom: 0;
+  }
+}
