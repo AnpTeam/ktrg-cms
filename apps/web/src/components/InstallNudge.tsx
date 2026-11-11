@@ -32,6 +32,8 @@ export function InstallNudge() {
   const { t } = useLingui();
   const pathname = usePathname();
   const [show, setShow] = useState(false);
+  // InstallSteps reads the browser's user agent, which the server cannot: it is drawn only once the visitor has asked.
+  const [asked, setAsked] = useState(false);
   const started = useRef(0); // set on mount: Date.now() is not for render
   const dialog = useRef<HTMLDialogElement>(null);
 
@@ -59,6 +61,8 @@ export function InstallNudge() {
           dismissedDaysAgo: dismissedAt > 0 ? (Date.now() - dismissedAt) / DAY_MS : null,
           dialogOpen: document.querySelector("dialog[open]") !== null,
           inputFocused: typing,
+          // A stop page has the "Stamp here" button, the outbox says how many stamps wait, the navigation toast guides a walk.
+          blocked: /^\/spots\//.test(pathname) || document.querySelector("[data-stamp-outbox]") !== null || parseFloat(document.documentElement.style.getPropertyValue("--nav-toast")) > 0,
         }),
       );
     };
@@ -79,7 +83,10 @@ export function InstallNudge() {
           <p className="min-w-0 flex-1 text-base font-bold leading-snug">
             <Trans>ホーム画面に追加しましょう</Trans>
           </p>
-          <button type="button" onClick={() => dialog.current?.showModal()} className="tap-target shrink-0 rounded-full bg-brand px-4 text-base font-bold text-on-brand">
+          <button type="button" onClick={() => {
+              setAsked(true);
+              dialog.current?.showModal();
+            }} className="tap-target shrink-0 rounded-full bg-brand px-4 text-base font-bold text-on-brand">
             <Trans>追加のしかた</Trans>
           </button>
           <button type="button" onClick={dismiss} aria-label={t`あとで`} className="tap-target shrink-0 rounded-full px-3 text-base font-bold text-muted underline">
@@ -89,7 +96,7 @@ export function InstallNudge() {
       ) : null}
       <dialog ref={dialog} aria-labelledby="install-title" className="m-auto w-[calc(100%-2rem)] max-w-md rounded-3xl bg-paper p-5 text-ink backdrop:bg-black/60">
         <div className="flex flex-col gap-4">
-          <InstallSteps titleId="install-title" />
+          {asked ? <InstallSteps titleId="install-title" /> : null}
           <button type="button" onClick={() => dialog.current?.close()} className="tap-target flex min-h-12 w-full items-center justify-center rounded-full border-2 border-ink px-6 text-lg font-bold">
             <Trans>閉じる</Trans>
           </button>

@@ -30,7 +30,7 @@ export function LandingHero({ slides, locale, line, title, children, bare = fals
     <section data-cover aria-labelledby="hero-title" className="overflow-hidden bg-surface">
       {/* The line and the logo sit in the middle of the photos. A first-time visitor gets a taller picture with the line set
           vertically (the reading register); a low screen keeps it across, still centred. */}
-      <div className="relative h-80 tall:h-[min(78svh,44rem)] @[34rem]:h-96 @[42rem]:h-[30rem]">
+      <div className={`relative ${bare ? "h-[min(78svh,44rem)]" : "h-80 tall:h-[min(78svh,44rem)]"} @[34rem]:h-96 @[42rem]:h-[30rem]`}>
         <HeroSlides slides={photos.length > 0 ? photos : [FALLBACK]}>
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute inset-0 mx-auto flex max-w-6xl flex-col items-center justify-center gap-5 px-12 py-6 text-center">

@@ -20,7 +20,7 @@ export const INSTALL_NUDGE_QUIET_DAYS = 30;
 
 /**
  * Whether the small "add to home screen" bar shows: on a phone that has not installed the app, from the second visit or
- * after three minutes, never on the map, inside another app's browser, over a dialog or while someone is typing, and not
+ * after three minutes, never on the map, inside another app's browser, over a dialog, over stamping or navigation or while someone is typing, and not
  * for 30 days after it was dismissed.
  */
 export function installNudgeShows(s: {
@@ -33,8 +33,10 @@ export function installNudgeShows(s: {
   dismissedDaysAgo: number | null;
   dialogOpen: boolean;
   inputFocused: boolean;
+  /** A place where the bar would cover stamping or navigation: a stop page, the stamp outbox, the navigation toast. */
+  blocked: boolean;
 }): boolean {
-  if (!s.phone || s.installed || s.inAppBrowser || s.onMap || s.dialogOpen || s.inputFocused) return false;
+  if (!s.phone || s.installed || s.inAppBrowser || s.onMap || s.dialogOpen || s.inputFocused || s.blocked) return false;
   if (s.dismissedDaysAgo !== null && s.dismissedDaysAgo < INSTALL_NUDGE_QUIET_DAYS) return false;
   return s.visits >= 2 || s.seconds >= INSTALL_NUDGE_AFTER_SECONDS;
 }

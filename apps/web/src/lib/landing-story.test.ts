@@ -47,7 +47,7 @@ describe("previewRoutes", () => {
 });
 
 describe("installNudgeShows", () => {
-  const ok = { phone: true, installed: false, inAppBrowser: false, onMap: false, visits: 2, seconds: 0, dismissedDaysAgo: null, dialogOpen: false, inputFocused: false };
+  const ok = { phone: true, installed: false, inAppBrowser: false, onMap: false, visits: 2, seconds: 0, dismissedDaysAgo: null, dialogOpen: false, inputFocused: false, blocked: false };
   test("shows on a phone from the second visit", () => {
     expect(installNudgeShows(ok)).toBe(true);
   });
@@ -55,8 +55,8 @@ describe("installNudgeShows", () => {
     expect(installNudgeShows({ ...ok, visits: 1, seconds: 179 })).toBe(false);
     expect(installNudgeShows({ ...ok, visits: 1, seconds: 180 })).toBe(true);
   });
-  test("never when installed, in another app's browser, on a computer, on the map, over a dialog or a typing field", () => {
-    for (const no of [{ installed: true }, { inAppBrowser: true }, { phone: false }, { onMap: true }, { dialogOpen: true }, { inputFocused: true }]) {
+  test("never when installed, in another app's browser, on a computer, on the map, over a dialog or a typing field, or where it would cover stamping or navigation", () => {
+    for (const no of [{ installed: true }, { inAppBrowser: true }, { phone: false }, { onMap: true }, { dialogOpen: true }, { inputFocused: true }, { blocked: true }]) {
       expect(installNudgeShows({ ...ok, ...no })).toBe(false);
     }
   });

@@ -143,7 +143,7 @@ export function StampOutbox({ userKey }: { userKey: string }) {
   if (pending === 0 && refused.length === 0 && accepted === 0) return askDialog;
 
   return (
-    <div className="fixed inset-x-3 bottom-[calc(5.5rem+var(--nav-toast,0px)+env(safe-area-inset-bottom))] z-20 flex flex-col gap-2 md:inset-x-auto md:bottom-[calc(1.5rem+var(--nav-toast,0px))] md:right-6 md:w-[24rem]">
+    <div data-stamp-outbox="" className="fixed inset-x-3 bottom-[calc(5.5rem+var(--nav-toast,0px)+env(safe-area-inset-bottom))] z-20 flex flex-col gap-2 md:inset-x-auto md:bottom-[calc(1.5rem+var(--nav-toast,0px))] md:right-6 md:w-[24rem]">
       {refused.length > 0 ? (
         <div role="alert" className="flex flex-col gap-2 rounded-2xl border-2 border-caution bg-paper p-4 shadow-2xl">
           <p className="text-lg font-bold leading-snug">{t`送信待ちだった${count}件のスタンプは、受け付けられませんでした。`}</p>

@@ -16,3 +16,17 @@ test("the install steps live on their own and the later bar uses them", () => {
   expect(existsSync(join(src, "components", "InstallSteps.tsx"))).toBe(true);
   expect(readFileSync(join(src, "components", "InstallNudge.tsx"), "utf8")).toContain("InstallSteps");
 });
+
+// Review finding (2026-11-11): InstallSteps reads navigator.userAgent, which differs on the server (Node's own `navigator`),
+// so it must only be drawn after the visitor has asked for it, never in the first render.
+test("the install steps are drawn only after the visitor asks", () => {
+  const nudge = readFileSync(join(src, "components", "InstallNudge.tsx"), "utf8");
+  expect(nudge).toMatch(/asked\s*\?\s*<InstallSteps/);
+});
+
+// Review finding: the bar must not sit over the stamp button, the outbox or the navigation toast, and the first photo must be
+// as tall in English as in Japanese (the line wraps to four lines in English and the language buttons would sit on it).
+test("the hero is as tall in every language when it is the journey's first screen", () => {
+  const hero = readFileSync(join(src, "components", "landing", "LandingHero.tsx"), "utf8");
+  expect(hero).toMatch(/bare\s*\?\s*"h-\[min\(78svh,44rem\)\]/);
+});
