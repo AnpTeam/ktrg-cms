@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import type { RouteSummary } from "@/lib/content";
-import { buildStops } from "./TrailRibbon";
+import { buildStops } from "@/lib/ribbon";
 
 const route = (order: number, status: "ready" | "soon" = "ready"): RouteSummary =>
   ({ id: `r${order}`, order, status, nameJa: `R${order}`, nameEn: null, prefecture: null, municipality: null, spotCount: 3, stampedCount: null } as RouteSummary);
