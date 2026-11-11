@@ -10,7 +10,8 @@ const OTHER = "__other";
 /**
  * The city of a course: a list of the cities of the chosen prefecture (the Japanese name is saved, and the English
  * page shows the English name), so nobody types a name two ways. A town or village that is not a city is entered by
- * choosing 「その他」 and typing it.
+ * choosing 「その他」 and typing it; a course that crosses from one city into another is typed there too, the names
+ * in walking order separated by 、 (lib/municipalities.ts shows them as "A → B").
  */
 export function MunicipalityField({
   id,
@@ -64,7 +65,7 @@ export function MunicipalityField({
         </select>
       </Field>
       {other ? (
-        <Field label={t`町や村の名前`} htmlFor={`${id}-other`} hint={t`英語のページには、入れた文字がそのまま表示されます。`}>
+        <Field label={t`町や村の名前`} htmlFor={`${id}-other`} hint={t`いくつかの市や町を通るときは、歩く順に「、」で区切って入れます（例：和歌山市、岬町）。英語のページでは、市の名前は英語になり、町や村は入れた文字のまま表示されます。`}>
           <TextInput id={`${id}-other`} value={value} onChange={onChange} maxLength={100} />
         </Field>
       ) : null}

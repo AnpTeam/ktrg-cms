@@ -34,4 +34,11 @@ describe("municipalities", () => {
     expect(municipalityName("en", "  ")).toBeNull();
     expect(municipalityName("en", null)).toBeNull();
   });
+
+  test("a course that crosses from one city into another lists them in order, each named for the page's language", () => {
+    expect(municipalityName("ja", "和歌山市、岬町")).toBe("和歌山市 → 岬町");
+    expect(municipalityName("en", "和歌山市、岬町")).toBe("Wakayama City → 岬町");
+    expect(municipalityName("en", "和歌山市, 海南市,")).toBe("Wakayama City → Kainan City");
+    expect(municipalityName("ja", "、")).toBeNull();
+  });
 });

@@ -89,8 +89,16 @@ export function isListedMunicipality(prefecture: MunicipalityPrefecture | null, 
 
 const allCities = new Map(Object.values(municipalities).flatMap((list) => list.map((c) => [c.ja, c.en] as const)));
 
-/** The name to show: English pages get the English name of a listed city; anything else is shown as it was stored. */
+/**
+ * A course can run from one city into another: the stored value then lists them in walking order, separated by 、 (for
+ * example 和歌山市、岬町), and every page shows them as "和歌山市 → 岬町". No new column: it is the same text.
+ */
+const SEPARATOR = /[、,，]/;
+
+/** The name to show: English pages get the English name of each listed city; anything else is shown as it was stored. */
 export function municipalityName(locale: string, stored: string | null): string | null {
-  if (stored === null || stored.trim() === "") return null;
-  return locale === "en" ? (allCities.get(stored.trim()) ?? stored) : stored;
+  if (stored === null) return null;
+  const parts = stored.split(SEPARATOR).map((p) => p.trim()).filter((p) => p !== "");
+  if (parts.length === 0) return null;
+  return parts.map((p) => (locale === "en" ? (allCities.get(p) ?? p) : p)).join(" → ");
 }

@@ -59,9 +59,9 @@ export function RouteStats({ route, compact = false, icons = false, inline = fal
 
   if (line) {
     const parts = items.filter((i) => i.info || i.label === t`距離` || i.label === t`時間`);
-    // Spaced, not dotted, and each with its picture: when it wraps no separator is left at the start of a line.
+    // Two columns of picture and number, so the pictures of one column stand in one line (a wrapping row let them drift).
     return (
-      <p className="flex flex-wrap gap-x-4 gap-y-1 text-base font-bold tabular-nums">
+      <p className="grid grid-cols-[minmax(6.75rem,max-content)_max-content] justify-start gap-x-5 gap-y-1 text-base font-bold tabular-nums">
         {parts.map((part) => (
           <span key={part.label} className="inline-flex items-center gap-1.5 whitespace-nowrap">
             <span aria-hidden="true" className="shrink-0 text-brand [&_svg]:size-5">
