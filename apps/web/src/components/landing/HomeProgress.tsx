@@ -90,8 +90,17 @@ export function HomeProgress({
           ) : null}
         </div>
 
-        {/* This course's seals, the next one ringed with つぎ. Each seal says its state in words to a screen reader. */}
-        {route && spots.length > 0 ? <StampGrid total={spots.length} stamped={sealed} columns={4} className="w-full max-w-xs @3xl:w-72" /> : null}
+        {/* This course's seals, the next one ringed with つぎ. Each seal says its state in words to a screen reader. A phone:
+            four to a row. Stacked with room (a tablet): one strip across the width, as many as fit, so the right side is
+            not left empty. Beside the words (@3xl): a compact block of four again. */}
+        {route && spots.length > 0 ? (
+          <StampGrid
+            total={spots.length}
+            stamped={sealed}
+            columns={4}
+            className="w-full max-w-xs @[26rem]:max-w-none @[26rem]:grid-cols-[repeat(auto-fill,minmax(4.5rem,1fr))] @3xl:w-72 @3xl:max-w-xs @3xl:grid-cols-4"
+          />
+        ) : null}
       </div>
 
       <div className="flex flex-col gap-4 border-t border-line/40 pt-4 @[34rem]:flex-row @[34rem]:items-center @[34rem]:justify-between">
