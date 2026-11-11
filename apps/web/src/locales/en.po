@@ -4380,6 +4380,14 @@ msgstr "No earlier links yet."
 msgid "前の写真"
 msgstr "Previous photo"
 
+#: src/components/landing/HeroSlides.tsx:88
+msgid "自動で切り替える"
+msgstr "Resume the slideshow"
+
+#: src/components/landing/HeroSlides.tsx:88
+msgid "自動の切り替えを止める"
+msgstr "Pause the slideshow"
+
 #: src/components/admin/VideoHistory.tsx:27
 msgid "前の動画のリンク"
 msgstr "Earlier video links"

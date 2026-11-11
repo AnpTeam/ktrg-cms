@@ -13,7 +13,7 @@ type Stats = Pick<RouteSummary, "distanceKm" | "elevationGainM" | "expectedTimeM
  * on one line; the default stacks a small label over a big value; `icons` puts an icon beside each (the route page);
  * `inline` is label and value side by side, inside the parent's own row (RoutePill): in a narrow container only distance and time.
  */
-export function RouteStats({ route, compact = false, icons = false, inline = false, walkStyle = null, tips = !compact }: { route: Stats; compact?: boolean; icons?: boolean; inline?: boolean; walkStyle?: WalkStyle | null; /** The "i" beside the two levels. Off where the stats sit inside a link (the trail list). */ tips?: boolean }) {
+export function RouteStats({ route, compact = false, icons = false, inline = false, line = false, walkStyle = null, tips = !compact }: { route: Stats; compact?: boolean; icons?: boolean; inline?: boolean; /** Distance, time and the two levels as one line of words ("24.2km 5時間40分 体力度2"), for the course list. */ line?: boolean; walkStyle?: WalkStyle | null; /** The "i" beside the two levels. Off where the stats sit inside a link (the trail list). */ tips?: boolean }) {
   const { t, i18n } = useLingui();
   const numbers = new Intl.NumberFormat(i18n.locale === "ja" ? "ja-JP" : "en-US", {
     maximumFractionDigits: 1,
@@ -56,6 +56,18 @@ export function RouteStats({ route, compact = false, icons = false, inline = fal
     ) : null;
 
   if (items.length === 0) return null;
+
+  if (line) {
+    const parts = items.filter((i) => i.info || i.label === t`距離` || i.label === t`時間`).map((i) => (i.info ? `${i.label}${i.value}` : i.value));
+    // Spaced, not dotted: when it wraps no separator is left at the start of a line.
+    return (
+      <p className="flex flex-wrap gap-x-4 text-base font-bold tabular-nums">
+        {parts.map((part) => (
+          <span key={part}>{part}</span>
+        ))}
+      </p>
+    );
+  }
 
   if (inline) {
     return (

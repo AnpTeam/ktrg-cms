@@ -24,14 +24,14 @@ export function CreditCaption({ credit, className = "" }: { credit: string | nul
 }
 
 /**
- * On a photo, bottom right: "ⓘ who took it / where it is from". The colours are fixed (white on dark) like the other
- * text over photos, so it reads on any picture. It sits in a box that is `relative`, and must not be inside a link.
+ * On a photo, bottom left, small and faint: the hero banner's credit. White with a shadow, so it reads on any picture;
+ * the link stays underlined. It sits in a box that is `relative`, and must not be inside a link.
  */
 export function CreditBadge({ credit }: { credit: string | null | undefined }) {
   if (!credit?.trim()) return null;
   return (
-    <p className="absolute bottom-2 right-2 flex max-w-[85%] items-start gap-1.5 rounded-lg bg-black/75 px-2 py-1 text-base leading-snug text-white">
-      <span className="mt-0.5 shrink-0 [&_svg]:size-5">
+    <p className="absolute bottom-2 left-3 flex max-w-[70%] items-start gap-1 text-sm leading-snug text-white/70 [text-shadow:0_1px_4px_rgb(0_0_0/0.8)]">
+      <span className="mt-0.5 shrink-0 [&_svg]:size-4">
         <InfoIcon />
       </span>
       <span className="line-clamp-2 min-w-0 break-words">

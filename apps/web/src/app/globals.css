@@ -1432,9 +1432,8 @@ body.map-nav-mode .map-layer-pills {
 }
 
 /* The landing story's chapters (docs/design-language.md, Layout and pace). Each has its own ground, so it reads on its
-   own with no script. When motion is allowed, StoryMotion adds .story-live: the chapters go see-through and the
-   wrapper's colour, crossfaded by the script, carries the ground instead. Inverse is ink on paper turned round, so it
-   stays a dark band in both themes (the night tokens; in dark mode deeper than the page). */
+   own with no script, and keeps it (no crossfade between them). Inverse is ink on paper turned round, so it stays a
+   dark band in both themes (the night tokens; in dark mode deeper than the page). */
 .story-ground-paper {
   background-color: var(--color-paper);
   color: var(--color-ink);
@@ -1447,9 +1446,13 @@ body.map-nav-mode .map-layer-pills {
   background-color: var(--color-night);
   color: var(--color-on-night);
 }
-.story-live [data-ground] {
-  background-color: transparent;
-  color: inherit;
+/* Before StoryMotion runs, and only when the visitor allows motion (calm is a server-rendered attribute on <html>), the
+   words wait out of sight so they never show and then jump. StoryMotion removes .story-pending as it takes over, or at
+   once when it will not animate; <noscript> and a failed load give them back too. */
+@media (prefers-reduced-motion: no-preference) {
+  html:not([data-calm]) .story-pending :is([data-reveal] > *, [data-ground] h2) {
+    opacity: 0;
+  }
 }
 
 /* LoadingOverlay: hidden for the first 300 ms (and not clickable: visibility), so a quick answer never flashes it.
@@ -1494,4 +1497,15 @@ body.map-nav-mode .map-layer-pills {
   .fold-chevron {
     display: none;
   }
+}
+/* The home banner's progress dot: it fills over the photo's time, and the next photo comes when it is full. Only without
+   reduced motion; otherwise the dot stays full and nothing advances. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-dot-fill {
+    animation: hero-dot-fill linear both;
+  }
+}
+@keyframes hero-dot-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }

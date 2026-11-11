@@ -6,7 +6,7 @@ import { Trans, useLingui } from "@lingui/react/macro";
 import type { Prefecture, RouteSummary } from "@/lib/content";
 import { pickText } from "@/lib/pick-text";
 import { municipalityName } from "@/lib/municipalities";
-import { buildStops, type Kind, type NodeState, type Stop } from "@/lib/ribbon";
+import { buildStops, type NodeState, type Stop } from "@/lib/ribbon";
 import { Localized } from "./Localized";
 import { PrefectureIcon } from "./PrefectureIcon";
 import { PlaceLine } from "./PlaceLine";
@@ -15,22 +15,8 @@ import { RoutePhoto } from "./RoutePhoto";
 import { RouteStats } from "./RouteStats";
 
 // The 19 routes as one continuous trail (WBS 3.2.3). The order is the order of the walk. Each route is a row: its
-// number, name, place and numbers in words, with a small photo at the side; the progress line runs down the left edge.
-// One column until 1280 px, then two.
-
-const LINE_X = "1.25rem"; // the line's middle, from the left edge
-
-const segmentClass: Record<Kind, string> = {
-  done: "border-solid border-moss",
-  open: "border-solid border-line",
-  soon: "border-dashed border-line",
-};
-
-function Segment({ kind, from, to }: { kind: Kind; from: string; to: string }) {
-  return (
-    <span aria-hidden="true" className={`absolute -translate-x-1/2 border-l-4 xl:hidden ${segmentClass[kind]}`} style={{ left: LINE_X, top: from, bottom: to }} />
-  );
-}
+// number, name, place and numbers on one line, with a small photo at the side, rows divided by thin rules (no boxes, no
+// progress line). One column until 1280 px, then two.
 
 /**
  * One course as a calm row (docs/design-language.md, the home and /routes lists): the number large in Mincho, the name,
@@ -63,7 +49,7 @@ function RouteRow({ route, state, locale }: { route: RouteSummary; state: NodeSt
           </span>
         ) : (
           <span className="mt-2 block">
-            <RouteStats route={route} compact />
+            <RouteStats route={route} line />
             {spotCount > 0 ? (
               <span className="mt-1 block text-lg font-bold tabular-nums">
                 {stampedCount === null ? t`スタンプ場所 ${spotCount}か所` : t`スタンプ ${stampedCount} / ${spotCount}`}
@@ -87,21 +73,11 @@ function StopRow({ stop, href, locale }: { stop: Stop; href: string; locale: str
   const row = <RouteRow route={route} state={state} locale={locale} />;
 
   return (
-    <li className="relative pl-10 pr-4 xl:p-0">
-      {/* The progress line: down the left edge, with a mark by the course's number. */}
-      {stop.above ? <Segment kind={stop.above} from="0" to="calc(100% - 1.75rem)" /> : null}
-      {stop.below ? <Segment kind={stop.below} from="1.75rem" to="0" /> : null}
-      <span
-        aria-hidden="true"
-        className={`absolute size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] bg-paper xl:hidden ${
-          state === "complete" ? "border-shu bg-shu" : state === "inProgress" ? "border-moss" : state === "soon" ? "border-dashed border-line" : "border-line"
-        }`}
-        style={{ left: LINE_X, top: "1.75rem" }}
-      />
+    <li className="border-b border-line px-4 xl:px-1">
       {state === "soon" ? (
         <div>{row}</div>
       ) : (
-        <Link href={href} className="tap-target block rounded-lg hover:bg-surface focus-visible:outline-offset-4">
+        <Link href={href} className="tap-target block hover:bg-surface focus-visible:outline-offset-4">
           {row}
         </Link>
       )}
@@ -109,11 +85,10 @@ function StopRow({ stop, href, locale }: { stop: Stop; href: string; locale: str
   );
 }
 
-function GroupHeading({ prefecture, next, first }: { prefecture: Prefecture; next: Kind | null; first: boolean }) {
+function GroupHeading({ prefecture }: { prefecture: Prefecture }) {
   return (
-    <li className="relative xl:col-span-full" role="presentation">
-      {next ? <Segment kind={next} from={first ? "50%" : "0"} to="0" /> : null}
-      <h2 className="flex items-center gap-2 py-3 pl-10 pr-4 text-lg font-bold text-muted xl:px-1 xl:pb-2 xl:pt-6">
+    <li className="xl:col-span-full" role="presentation">
+      <h2 className="flex items-center gap-2 px-4 pb-2 pt-6 text-lg font-bold text-muted xl:px-1">
         <PrefectureIcon value={prefecture} />
         <PrefectureName value={prefecture} />
       </h2>
@@ -127,14 +102,13 @@ export function TrailRibbon({ routes, hrefFor, locale }: { routes: RouteSummary[
   const grouped = routes.length > 0 && routes.every((r) => r.prefecture !== null);
 
   return (
-    // One column with the progress line down its left; from 1280 px the rows sit in two columns (a row needs about
-    // 420 px for its name, numbers and photo) and the line gives way to the large numbers.
-    <ol className="xl:grid xl:grid-cols-2 xl:gap-x-8 xl:gap-y-2 xl:px-4">
+    // One column; from 1280 px the rows sit in two columns (a row needs about 420 px for its name, numbers and photo).
+    <ol className="border-t border-line xl:grid xl:grid-cols-2 xl:gap-x-8 xl:px-4">
       {stops.map((stop, i) => {
         const prev = stops[i - 1]?.route.prefecture;
         const heading =
           grouped && stop.route.prefecture && stop.route.prefecture !== prev ? (
-            <GroupHeading key={`h-${stop.route.id}`} prefecture={stop.route.prefecture} next={stop.above ?? stop.below} first={i === 0} />
+            <GroupHeading key={`h-${stop.route.id}`} prefecture={stop.route.prefecture} />
           ) : null;
         return (
           <FragmentWith key={stop.route.id} heading={heading}>
