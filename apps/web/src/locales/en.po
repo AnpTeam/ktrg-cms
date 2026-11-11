@@ -4379,18 +4379,6 @@ msgstr "No earlier links yet."
 msgid "前の写真"
 msgstr "Previous photo"
 
-#: src/components/InstallNudge.tsx
-msgid "ホーム画面に追加"
-msgstr "Add to home screen"
-
-#: src/components/InstallNudge.tsx
-msgid "追加のしかた"
-msgstr "How to add it"
-
-#: src/components/landing/Journey.tsx
-msgid "ストーリーを読む"
-msgstr "Read the story"
-
 #: src/components/landing/ScrollCue.tsx
 msgid "スクロール"
 msgstr "Scroll"
@@ -8182,3 +8170,27 @@ msgstr "If the course passes through several cities or towns, enter them in walk
 #: src/components/RouteView.tsx
 msgid "歴史"
 msgstr "History"
+
+#: src/app/(public)/story/page.tsx
+msgid "このページは、公式サイト「日本遺産 葛城修験ストーリー」の文章と写真を、そのまま転載したものです。仮の内容で、のちに書き直します。"
+msgstr "This page is the text and photos of the official “Japan Heritage Katsuragi Shugen Story” page, copied as they are. It is temporary and will be rewritten."
+
+#: src/app/(public)/story/page.tsx
+msgid "文章は日本語のみです。"
+msgstr "The text is in Japanese only."
+
+#: src/app/(public)/story/page.tsx
+msgid "元のページを見る"
+msgstr "Open the original page"
+
+#: src/components/InstallNudge.tsx
+msgid "ホーム画面に追加"
+msgstr "Add to home screen"
+
+#: src/components/InstallNudge.tsx
+msgid "追加のしかた"
+msgstr "How to add it"
+
+#: src/components/landing/Journey.tsx
+msgid "ストーリーを読む"
+msgstr "Read the story"
