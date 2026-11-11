@@ -1483,3 +1483,15 @@ body.map-nav-mode .map-layer-pills {
     stroke-dashoffset: 0;
   }
 }
+
+/* The home banner's progress dot: it fills over the photo's time, and the next photo comes when it is full. Only without
+   reduced motion; otherwise the dot stays full and nothing advances. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-dot-fill {
+    animation: hero-dot-fill linear both;
+  }
+}
+@keyframes hero-dot-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
