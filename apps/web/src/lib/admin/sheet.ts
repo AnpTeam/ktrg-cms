@@ -1,5 +1,6 @@
 import type { ErrorKey } from "../api-error";
 import { pointKinds, type PointKind } from "../point-kinds";
+import { splitCities } from "../municipalities";
 import type { AdminRoute, AdminSpot, Prefecture } from "./types";
 
 // The spreadsheet import (admin routes page): the columns of the template, reading its rows, and running the
@@ -15,7 +16,7 @@ export const HELP_SHEET = "書き方";
 /** The API allows 300 writes per 15 minutes per admin; one import stays well under it. */
 export const IMPORT_WRITE_LIMIT = 250;
 
-type Kind = "text" | "whole" | "number" | "prefecture" | "lat" | "lng" | "kind" | "yesno";
+type Kind = "text" | "cities" | "whole" | "number" | "prefecture" | "lat" | "lng" | "kind" | "yesno";
 interface Column {
   key: string;
   header: string;
@@ -27,7 +28,8 @@ export const ROUTE_COLUMNS: readonly Column[] = [
   { key: "nameJa", header: "名前（日本語）", kind: "text" },
   { key: "nameEn", header: "名前（英語）", kind: "text" },
   { key: "prefecture", header: "都道府県", kind: "prefecture" },
-  { key: "municipality", header: "市町村", kind: "text" },
+  // Several cities in walking order, separated by 、 (or , or ，).
+  { key: "municipalities", header: "市町村", kind: "cities" },
   { key: "distanceKm", header: "距離（km）", kind: "number" },
   { key: "elevationGainM", header: "登る高さ（m）", kind: "whole" },
   { key: "difficulty", header: "難しさ", kind: "text" },
@@ -107,7 +109,7 @@ export interface RowProblem {
 export type RouteChanges = Partial<
   Pick<
     AdminRoute,
-    | "nameJa" | "nameEn" | "prefecture" | "municipality" | "distanceKm" | "elevationGainM" | "difficulty" | "expectedTimeMin"
+    | "nameJa" | "nameEn" | "prefecture" | "municipalities" | "distanceKm" | "elevationGainM" | "difficulty" | "expectedTimeMin"
     | "descriptionJa" | "descriptionEn" | "historyJa" | "historyEn" | "accessJa" | "accessEn" | "videoUrl"
   >
 >;
@@ -141,7 +143,7 @@ function prefectureOf(s: string): Prefecture | null {
   return null;
 }
 
-type Value = string | number | boolean | undefined;
+type Value = string | number | boolean | string[] | undefined;
 
 /** The typed values of a row's cells (blank = undefined), plus what was wrong with the others. */
 function readCells(columns: readonly Column[], row: SheetRow, sheet: "route" | "place", problems: RowProblem[]): Record<string, Value> {
@@ -151,6 +153,10 @@ function readCells(columns: readonly Column[], row: SheetRow, sheet: "route" | "
     if (raw === "") continue;
     const bad = (problem: ProblemKind) => problems.push({ sheet, line: row.line, column: c.header, problem });
     if (c.kind === "text") out[c.key] = raw;
+    else if (c.kind === "cities") {
+      const cities = splitCities(raw);
+      if (cities.length > 0) out[c.key] = cities;
+    }
     else if (c.kind === "prefecture") {
       const p = prefectureOf(raw);
       if (p) out[c.key] = p;

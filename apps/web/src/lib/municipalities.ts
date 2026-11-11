@@ -77,28 +77,25 @@ export const municipalities: Record<MunicipalityPrefecture, readonly Municipalit
   ],
 };
 
-/** The cities to choose from for a prefecture (none when no prefecture is chosen). */
-export function municipalitiesOf(prefecture: MunicipalityPrefecture | null): readonly Municipality[] {
-  return prefecture ? municipalities[prefecture] : [];
-}
-
-/** Is this stored name one of the listed cities of the prefecture? (If not, it was typed by hand.) */
-export function isListedMunicipality(prefecture: MunicipalityPrefecture | null, value: string): boolean {
-  return municipalitiesOf(prefecture).some((c) => c.ja === value);
-}
-
 const allCities = new Map(Object.values(municipalities).flatMap((list) => list.map((c) => [c.ja, c.en] as const)));
 
-/**
- * A course can run from one city into another: the stored value then lists them in walking order, separated by 、 (for
- * example 和歌山市、岬町), and every page shows them as "和歌山市 → 岬町". No new column: it is the same text.
- */
-const SEPARATOR = /[、,，]/;
+/** English names of every listed city, by its Japanese name. */
+export function englishCityName(ja: string): string | null {
+  return allCities.get(ja) ?? null;
+}
 
-/** The name to show: English pages get the English name of each listed city; anything else is shown as it was stored. */
-export function municipalityName(locale: string, stored: string | null): string | null {
-  if (stored === null) return null;
-  const parts = stored.split(SEPARATOR).map((p) => p.trim()).filter((p) => p !== "");
+/**
+ * A course can run from one city into another: it lists the cities in walking order (`route.municipalities`), and every
+ * page shows them as "和歌山市 → 岬町". English pages get the English name of each listed city; a town or village that is
+ * not in the list is shown as it was entered. null when there is nothing to show.
+ */
+export function municipalityName(locale: string, cities: readonly string[]): string | null {
+  const parts = cities.map((p) => p.trim()).filter((p) => p !== "");
   if (parts.length === 0) return null;
   return parts.map((p) => (locale === "en" ? (allCities.get(p) ?? p) : p)).join(" → ");
+}
+
+/** A cell with several cities (a spreadsheet's 市町村 column), in walking order, separated by 、 , or ，. */
+export function splitCities(cell: string): string[] {
+  return cell.split(/[、,，]/).map((p) => p.trim()).filter((p) => p !== "");
 }

@@ -18,7 +18,7 @@
 export const route02Draft = {
   nameJa: "甲山から孝子越え",
   prefecture: "wakayama",
-  municipality: "和歌山市",
+  municipalities: ["和歌山市"],
   distanceKm: 9.4,
   elevationGainM: 379,
   /** The walked path, [lat, lng] pairs, in order. */

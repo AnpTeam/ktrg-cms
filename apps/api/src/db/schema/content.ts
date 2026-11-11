@@ -119,7 +119,8 @@ export const routes = pgTable(
     // How the route is walked: one_way, loop (ends where it began) or out_and_back (to a turnaround and back the same
     // way). Validated in the API; null until an admin picks one (the route page then says nothing about it).
     walkStyle: text("walk_style"),
-    municipality: text("municipality"),
+    // The cities the course runs through, in walking order (a course can cross from one city into another).
+    municipalities: text("municipalities").array().notNull().default(sql`'{}'::text[]`),
     // GeoJSON line drawn on the map.
     geometry: jsonb("geometry"),
     // Like a place's position: the line stays hidden from visitors until a person has checked it against an

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { isListedMunicipality, municipalities, municipalitiesOf, municipalityName } from "./municipalities";
+import { municipalities, municipalityName, splitCities } from "./municipalities";
 
 describe("municipalities", () => {
   test("the number of cities per prefecture", () => {
@@ -15,30 +15,25 @@ describe("municipalities", () => {
     }
   });
 
-  test("a prefecture with none chosen offers no cities", () => {
-    expect(municipalitiesOf(null)).toEqual([]);
-    expect(municipalitiesOf("nara").map((c) => c.ja)).toContain("葛城市");
-  });
-
-  test("tells a listed city from one typed by hand", () => {
-    expect(isListedMunicipality("wakayama", "和歌山市")).toBe(true);
-    expect(isListedMunicipality("wakayama", "岬町")).toBe(false);
-    expect(isListedMunicipality("nara", "和歌山市")).toBe(false);
-    expect(isListedMunicipality(null, "和歌山市")).toBe(false);
-  });
-
   test("English pages show the English name of a listed city, anything else as typed", () => {
-    expect(municipalityName("en", "和歌山市")).toBe("Wakayama City");
-    expect(municipalityName("ja", "和歌山市")).toBe("和歌山市");
-    expect(municipalityName("en", "岬町")).toBe("岬町");
-    expect(municipalityName("en", "  ")).toBeNull();
-    expect(municipalityName("en", null)).toBeNull();
+    expect(municipalityName("en", ["和歌山市"])).toBe("Wakayama City");
+    expect(municipalityName("ja", ["和歌山市"])).toBe("和歌山市");
+    expect(municipalityName("en", ["岬町"])).toBe("岬町");
+    expect(municipalityName("en", ["  "])).toBeNull();
+    expect(municipalityName("en", [])).toBeNull();
   });
 
   test("a course that crosses from one city into another lists them in order, each named for the page's language", () => {
-    expect(municipalityName("ja", "和歌山市、岬町")).toBe("和歌山市 → 岬町");
-    expect(municipalityName("en", "和歌山市、岬町")).toBe("Wakayama City → 岬町");
-    expect(municipalityName("en", "和歌山市, 海南市,")).toBe("Wakayama City → Kainan City");
-    expect(municipalityName("ja", "、")).toBeNull();
+    expect(municipalityName("ja", ["和歌山市", "岬町"])).toBe("和歌山市 → 岬町");
+    expect(municipalityName("en", ["和歌山市", "岬町"])).toBe("Wakayama City → 岬町");
+    expect(municipalityName("en", ["和歌山市", " ", "海南市"])).toBe("Wakayama City → Kainan City");
+  });
+
+  test("a sheet cell with several cities is split in walking order, whatever comma it uses", () => {
+    expect(splitCities("和歌山市、岬町")).toEqual(["和歌山市", "岬町"]);
+    expect(splitCities(" 和歌山市 , 海南市，紀の川市, ")).toEqual(["和歌山市", "海南市", "紀の川市"]);
+    expect(splitCities("和歌山市")).toEqual(["和歌山市"]);
+    expect(splitCities("、")).toEqual([]);
+    expect(splitCities("")).toEqual([]);
   });
 });

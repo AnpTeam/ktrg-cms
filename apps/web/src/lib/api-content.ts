@@ -33,7 +33,7 @@ export function routeSummaryFromApi(r: PublicRoute, order: number, stampedCount 
     nameJa: r.nameJa,
     nameEn: r.nameEn,
     prefecture: prefectureOf(r.prefecture),
-    municipality: r.municipality,
+    municipalities: r.municipalities,
     distanceKm: r.distanceKm,
     elevationGainM: r.elevationGainM,
     difficulty: r.difficulty,

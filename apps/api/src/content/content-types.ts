@@ -33,7 +33,8 @@ export interface RouteRow {
   farDistanceM: number | null;
   prefecture: Prefecture | null;
   walkStyle: WalkStyle | null;
-  municipality: string | null;
+  /** The cities the route runs through, in walking order (empty when not entered). */
+  municipalities: string[];
   geometry: LineString | null;
   /** True once a person has checked the line against an official source (lineSource). Visitors see the line only then. */
   lineVerified: boolean;
@@ -136,7 +137,8 @@ export interface RouteFields {
   farDistanceM: number | null;
   prefecture: Prefecture | null;
   walkStyle: WalkStyle | null;
-  municipality: string | null;
+  /** The cities the route runs through, in walking order (empty when not entered). */
+  municipalities: string[];
   /** An unchecked line from the request; the service validates it. null removes the line. */
   geometry: unknown;
   lineVerified: boolean;

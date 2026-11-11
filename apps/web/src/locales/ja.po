@@ -4379,6 +4379,26 @@ msgstr "前のリンクは、まだありません。"
 msgid "前の写真"
 msgstr "前の写真"
 
+#: src/components/admin/MunicipalitiesField.tsx
+msgid "通る順に並べます。市は一覧から選び、町や村は名前を入力して追加します（8つまで）。"
+msgstr "通る順に並べます。市は一覧から選び、町や村は名前を入力して追加します（8つまで）。"
+
+#: src/components/admin/MunicipalitiesField.tsx
+msgid "市を選んで追加"
+msgstr "市を選んで追加"
+
+#: src/components/admin/MunicipalitiesField.tsx
+msgid "{city}を上へ"
+msgstr "{city}を上へ"
+
+#: src/components/admin/MunicipalitiesField.tsx
+msgid "{city}を下へ"
+msgstr "{city}を下へ"
+
+#: src/components/admin/MunicipalitiesField.tsx
+msgid "{city}を削除"
+msgstr "{city}を削除"
+
 #: src/components/map/TrailMap.tsx
 msgid "前の場所"
 msgstr "前の場所"

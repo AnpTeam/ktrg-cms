@@ -17,6 +17,16 @@ describe("readRouteRows", () => {
     expect(r.rows[0]!.changes).toEqual({ nameJa: "一番", prefecture: "osaka" }); // blank cells are not "empty it"
   });
 
+  test("市町村 may list several cities in walking order; a cell with no readable city is left alone", () => {
+    const r = readRouteRows([
+      row(2, { ルート番号: "1", 市町村: "和歌山市、岬町" }),
+      row(3, { ルート番号: "2", 市町村: "和歌山市" }),
+      row(4, { ルート番号: "3", 市町村: "、" }),
+    ]);
+    expect(r.problems).toEqual([]);
+    expect(r.rows.map((x) => x.changes)).toEqual([{ municipalities: ["和歌山市", "岬町"] }, { municipalities: ["和歌山市"] }, {}]);
+  });
+
   test("a row with a wrong cell is left out whole, with the column named", () => {
     const r = readRouteRows([
       row(2, { ルート番号: "1", 都道府県: "東京" }),

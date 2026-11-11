@@ -75,7 +75,7 @@ export interface PublicRoute {
   farDistanceM: number | null;
   prefecture: Prefecture | null;
   walkStyle: WalkStyle | null;
-  municipality: string | null;
+  municipalities: string[];
   videoUrl: string | null;
   videoUpdatedAt: Date | null;
   videoSubtitles: boolean;
@@ -165,7 +165,7 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     farDistanceM: r.farDistanceM,
     prefecture: r.prefecture,
     walkStyle: r.walkStyle,
-    municipality: r.municipality,
+    municipalities: r.municipalities,
     videoUrl: r.videoUrl,
     videoUpdatedAt: r.videoUpdatedAt,
     videoSubtitles: r.videoSubtitles,
@@ -240,6 +240,16 @@ function toPublicSpot(s: SpotRow): PublicSpot {
 
 
 /** Blank text becomes null (an optional field left empty). */
+/** The cities of a route as saved: trimmed, blanks dropped, and a city that repeats the one before it dropped; the order is kept. */
+export function cleanCities(list: readonly string[]): string[] {
+  const out: string[] = [];
+  for (const raw of list) {
+    const city = raw.trim();
+    if (city !== "" && city !== out[out.length - 1]) out.push(city);
+  }
+  return out;
+}
+
 const text = (v: string | null | undefined): string | null | undefined =>
   v === undefined ? undefined : v === null ? null : v.trim() === "" ? null : v.trim();
 
@@ -265,10 +275,11 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (!n) return bad("validation_failed");
       out.nameJa = n;
     }
-    for (const k of ["nameEn", "descriptionJa", "descriptionEn", "difficulty", "nameKana", "municipality", "historyJa", "historyEn", "accessJa", "accessEn", "sourceJa", "sourceEn", "photoCredit"] as const) {
+    for (const k of ["nameEn", "descriptionJa", "descriptionEn", "difficulty", "nameKana", "historyJa", "historyEn", "accessJa", "accessEn", "sourceJa", "sourceEn", "photoCredit"] as const) {
       const v = text(input[k]);
       if (v !== undefined) out[k] = v;
     }
+    if (input.municipalities !== undefined) out.municipalities = cleanCities(input.municipalities);
     if (input.translations !== undefined) out.translations = cleanTranslations(input.translations);
     if (input.distanceKm !== undefined) out.distanceKm = input.distanceKm;
     if (input.elevationGainM !== undefined) out.elevationGainM = input.elevationGainM;

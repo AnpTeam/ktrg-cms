@@ -120,7 +120,7 @@ export function Landing({
                           <RoutePill
                             route={route}
                             name={<Localized value={pickText(locale, route.nameJa, route.nameEn)} />}
-                            place={route.prefecture || route.municipality ? <PlaceLine prefecture={route.prefecture} place={municipalityName(locale, route.municipality)} locale={locale} /> : null}
+                            place={route.prefecture || route.municipalities.length > 0 ? <PlaceLine prefecture={route.prefecture} place={municipalityName(locale, route.municipalities)} locale={locale} /> : null}
                             photo={route.photoUrl}
                           />
                         );

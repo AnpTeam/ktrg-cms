@@ -79,7 +79,8 @@ export interface RouteDraft {
   sourceEn: string;
   prefecture: Prefecture | null;
   walkStyle: WalkStyle | null;
-  municipality: string;
+  /** The cities the course runs through, in walking order. */
+  municipalities: string[];
   distanceKm: number | null;
   /** True once someone typed a distance: drawing no longer overwrites it. */
   distanceManual: boolean;
@@ -116,7 +117,7 @@ export interface RouteDraft {
 
 export const emptyDraft = (): RouteDraft => ({
   id: null, updatedAt: null, nameJa: "", nameEn: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
-  accessJa: "", accessEn: "", translations: {}, photoUrl: "", photoCredit: "", sourceJa: "", sourceEn: "", prefecture: null, walkStyle: null, municipality: "",
+  accessJa: "", accessEn: "", translations: {}, photoUrl: "", photoCredit: "", sourceJa: "", sourceEn: "", prefecture: null, walkStyle: null, municipalities: [],
   distanceKm: null, distanceManual: false, elevationGainM: null, climbManual: false, expectedTimeMin: null, timeManual: false,
   difficulty: "", nameKana: "", accessPoints: [], farDistanceM: null, physicalLevel: null, technicalLevel: null, videoUrl: "", videoUrlEn: "", videoSubtitlesEn: false, videoSubtitles: false, line: [], legs: [], lineVerified: false, lineSource: "", places: [],
 });
@@ -162,7 +163,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
     descriptionEn: s(route.descriptionEn), historyJa: s(route.historyJa), historyEn: s(route.historyEn),
     accessJa: s(route.accessJa), accessEn: s(route.accessEn), translations: route.translations ?? {}, photoUrl: s(route.photoUrl),
     photoCredit: s(route.photoCredit), sourceJa: s(route.sourceJa), sourceEn: s(route.sourceEn),
-    prefecture: route.prefecture, walkStyle: route.walkStyle, municipality: s(route.municipality),
+    prefecture: route.prefecture, walkStyle: route.walkStyle, municipalities: [...route.municipalities],
     distanceKm: route.distanceKm,
     // A saved distance that is not the line's own length was typed by hand: keep it when the line changes.
     distanceManual: route.distanceKm !== null && (line.length < 2 || route.distanceKm !== walkedStats(line, legs).km),
@@ -212,7 +213,6 @@ export type TextField =
   | "photoCredit"
   | "sourceJa"
   | "sourceEn"
-  | "municipality"
   | "difficulty"
   | "nameKana"
   | "videoUrl"
@@ -225,6 +225,8 @@ export type DraftAction =
   | { type: "translations"; value: Translations }
   | { type: "accessPoints"; value: AccessPoint[] }
   | { type: "prefecture"; value: Prefecture | null }
+  /** The cities the course runs through, in walking order. */
+  | { type: "municipalities"; value: string[] }
   | { type: "walkStyle"; value: WalkStyle | null }
   | { type: "physicalLevel"; value: number | null }
   | { type: "farDistanceM"; value: number | null }
@@ -349,6 +351,8 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       return { ...d, accessPoints: a.value };
     case "prefecture":
       return { ...d, prefecture: a.value };
+    case "municipalities":
+      return { ...d, municipalities: a.value };
     case "walkStyle":
       return { ...d, walkStyle: a.value };
     case "farDistanceM":
@@ -525,7 +529,7 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
     nameEn: nz(d.nameEn),
     prefecture: d.prefecture,
     walkStyle: d.walkStyle,
-    municipality: nz(d.municipality),
+    municipalities: d.municipalities,
     distanceKm: d.distanceKm,
     elevationGainM: d.elevationGainM,
     difficulty: nz(d.difficulty),
