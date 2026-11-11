@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { BEAT_STARTS, beatAt, drawnShare, sealPoints, sealsPlaced, stageLine } from "./journey";
+import { BEAT_STARTS, beatAt, drawnShare, motionMode, sealPoints, sealsPlaced, stageLine } from "./journey";
 import { RIDGE_HEIGHT, RIDGE_WIDTH, ridgePath } from "./ridge";
 
 test("the beat is the last one whose start the scroll has reached", () => {
@@ -84,4 +84,14 @@ test("with ridge data the stage draws the ridge's own line and points", () => {
   const line = stageLine(ridge);
   expect(line.d).toBe(ridge.d);
   expect(line.points).toBe(ridge.points);
+});
+
+test("motion allowed gives the scene, reduced motion gives the fade, calm gives the plain page", () => {
+  expect(motionMode({ reduce: false, calm: false })).toBe("scene");
+  expect(motionMode({ reduce: true, calm: false })).toBe("fade");
+  expect(motionMode({ reduce: false, calm: true })).toBe("static");
+});
+
+test("calm wins over reduced motion", () => {
+  expect(motionMode({ reduce: true, calm: true })).toBe("static");
 });

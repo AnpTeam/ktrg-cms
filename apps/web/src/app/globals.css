@@ -1459,6 +1459,69 @@ body.map-nav-mode .map-layer-pills {
   }
 }
 
+/* The landing journey's scene (JourneyScene adds .journey-live only when it takes over, so with no script, calm on or
+   reduced motion none of this applies and the stacked page, every word and button, shows). 350svh of scroll with one sticky
+   stage; the beats are laid over each other and one shows at a time (data-active-beat). min-height, never a fixed height:
+   a long editor text grows the stage instead of being clipped. */
+.journey-live {
+  height: 350svh;
+}
+.journey-live [data-journey-stage] {
+  position: sticky;
+  top: 0;
+  min-height: 100svh;
+  display: grid;
+  overflow-x: clip;
+  background-color: var(--color-night);
+  color: var(--color-on-night);
+}
+.journey-live [data-journey-stage] > * {
+  grid-area: 1 / 1;
+}
+.journey-live [data-beat="0"] > section > div:first-child {
+  height: 100svh; /* the photos fill the first screen */
+}
+/* Beats 1 to 3: the chapter fills the stage (its ground with it), the words centred, clear of the ridge along the bottom. */
+.journey-live [data-beat] {
+  display: flex;
+  flex-direction: column;
+}
+.journey-live [data-beat]:not([data-beat="0"]) > section {
+  flex: 1;
+  justify-content: center;
+  padding-top: 3rem;
+  padding-bottom: 13rem;
+}
+.journey-live [data-beat] {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s, visibility 0s 0.5s;
+}
+.journey-live[data-active-beat="0"] [data-beat="0"],
+.journey-live[data-active-beat="1"] [data-beat="1"],
+.journey-live[data-active-beat="2"] [data-beat="2"],
+.journey-live[data-active-beat="3"] [data-beat="3"] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.5s;
+}
+/* The ridge and its seals stay once they appear, along the bottom of the stage, above the text. */
+.journey-live [data-ridge-stage] {
+  align-self: end;
+  z-index: 1;
+  background: transparent;
+  padding-bottom: 2.5rem;
+  pointer-events: none;
+  transition: opacity 0.5s, color 0.5s;
+}
+.journey-live[data-active-beat="0"] [data-ridge-stage] {
+  opacity: 0;
+}
+.journey-live[data-active-beat="2"] [data-ridge-stage],
+.journey-live[data-active-beat="3"] [data-ridge-stage] {
+  color: var(--color-ink);
+}
+
 /* LoadingOverlay: hidden for the first 300 ms (and not clickable: visibility), so a quick answer never flashes it.
    Under reduced motion the global rule makes these instant but keeps the delay; the ring then stands complete. */
 .overlay-in {

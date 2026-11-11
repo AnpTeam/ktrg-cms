@@ -74,3 +74,9 @@ export function stageLine(ridge: Ridge | null): { d: string; points: [number, nu
   ];
   return { d: points.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`).join(" "), points };
 }
+
+/** What the scene does for this visitor: the full scroll scene, only a fade-in of each beat, or nothing (calm wins). */
+export function motionMode(env: { reduce: boolean; calm: boolean }): "scene" | "fade" | "static" {
+  if (env.calm) return "static";
+  return env.reduce ? "fade" : "scene";
+}

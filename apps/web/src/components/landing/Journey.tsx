@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
 import { buttonStyle } from "@/components/button";
 import { Chapter } from "@/components/landing/Chapter";
+import { JourneyScene } from "@/components/landing/JourneyScene";
 import { LandingHero } from "@/components/landing/LandingHero";
 import type { BannerSlide } from "@/lib/banners";
 import type { RouteSummary } from "@/lib/content";
@@ -26,7 +27,7 @@ export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; 
   const seals = sealPoints(line.points, TOTAL_STAMPS);
 
   return (
-    <div data-journey>
+    <JourneyScene seals={TOTAL_STAMPS}>
       {/* For anyone who does not want the introduction: a real link, first in the tab order. */}
       <a href="#after-journey" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-40 focus:rounded-full focus:bg-paper focus:px-4 focus:py-2 focus:text-lg focus:font-bold focus:text-ink focus:underline">
         <Trans>スキップ</Trans>
@@ -102,7 +103,7 @@ export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; 
           </Chapter>
         </div>
       </div>
-    </div>
+    </JourneyScene>
   );
 }
 
