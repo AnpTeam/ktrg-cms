@@ -1424,7 +1424,7 @@ body.map-nav-mode .map-layer-pills {
 .journey-live [data-beat="0"] > section > div:first-child {
   height: 100svh; /* the photos fill the first screen */
 }
-/* Beats 1 to 3: the chapter fills the stage (its ground with it), the words centred, clear of the ridge along the bottom. */
+/* The three beats: the chapter fills the stage (its ground with it), the words centred, clear of the ridge along the bottom. */
 .journey-live [data-beat] {
   display: flex;
   flex-direction: column;
