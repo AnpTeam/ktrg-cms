@@ -63,19 +63,22 @@ paragraphs are exactly what not to copy.
 - **One idea per screen** on a phone: a picture, a headline, two or three short lines.
 - **Space is the separator.** Between sections, large vertical space (about one screen-third), not borders or cards.
 - **Each section has its own ground**, so the visitor feels "this is the next thing now": paper, the deeper surface
-  tone, a band of ink (the night ridge), a full picture. When a new section takes most of the screen, the page
-  background crossfades to its ground (about 500 ms). Grounds come from the colour tokens; text on each keeps 7:1.
+  tone, a band of ink (the night ridge), a full picture. The grounds change at the section's edge and stay still: the
+  page background used to crossfade between them (2026-11-11) and flashed grey and cream, so that is gone. Grounds
+  come from the colour tokens; text on each keeps 7:1.
 - **Pictures full width** on phones; on wide screens they may break the column on one side. Wide screens are checked
   page by page as each phase is built.
 - **At most one button per section**, at the end of the section, and one main button at the end of the page.
 
 ## Motion
 
-- **Reading register only.** One reveal per section: the headline and its lines fade up a short distance (about 12 px,
-  600 ms, `--ease-enter`), lines 80 ms apart. The ridge line may draw as it scrolls into view.
-- **Never hide content waiting for motion.** The page is complete and readable with no JavaScript, with
-  `prefers-reduced-motion: reduce`, and before scripts load. The reveal is added on top: elements are visible by
-  default and only start hidden once a script has confirmed motion is allowed.
+- **Reading register only.** One reveal per section: the headline, then each block, rise about 28 px out of a slight
+  blur and fade in (1 s, `power3.out`), 140 ms apart, once, as the section arrives. The ridge line may draw as it
+  scrolls into view.
+- **Words may wait out of sight before the script runs (2026-11-11), but only for a visitor who allows motion.** The
+  hiding is CSS under `prefers-reduced-motion: no-preference` and with calm off (`.story-pending` in `StoryMotion`);
+  with reduced motion, calm, no JavaScript (`<noscript>`) or a failed GSAP load, the words are simply there. This
+  replaces the earlier "visible by default" rule, which made the words show and then jump.
 - **No loading screen in front of a page's content, no scroll hijacking, no parallax, nothing that moves by itself
   without a pause button.**
 - **A loading overlay for real waits.** When an action takes time (starting navigation, fetching a route or an

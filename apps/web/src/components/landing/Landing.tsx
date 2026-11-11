@@ -81,7 +81,7 @@ export function Landing({
   return (
     // One column on a phone and a tablet; two columns on a desktop. Most sections span both. Sized by the page's own width, not
     // the screen's, so the admin's phone-shaped preview shows the phone layout on a desktop.
-    <div className="@container">
+    <StoryMotion className="@container">
     <div className="grid grid-cols-1 gap-10 pt-4 @[42rem]:grid-cols-2 @[42rem]:gap-x-8 @[42rem]:pt-0">
       {/* The same photos for everyone; a signed-in visitor's greeting and progress take the line's and the buttons' place. */}
       <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
@@ -102,7 +102,7 @@ export function Landing({
       {/* Everything below, for everyone, as chapters edge to edge: each its own ground, which crossfades as it arrives
           (docs/design-language.md). Notices and the blog keep their own panels inside: safety first. */}
       <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
-        <StoryMotion>
+        <>
           {firstRoutes.length > 0 ? (
             <Chapter
               ground="story-ground-paper"
@@ -241,7 +241,7 @@ export function Landing({
             </ul>
             <Notice>{w.beforeNotice}</Notice>
           </Chapter>
-        </StoryMotion>
+        </>
       </div>
 
       <footer className="flex flex-col gap-4 border-t-2 border-line px-4 pb-6 pt-6 @[42rem]:col-span-2">
@@ -255,7 +255,7 @@ export function Landing({
         <LocaleSwitcher />
       </footer>
     </div>
-    </div>
+    </StoryMotion>
   );
 }
 
