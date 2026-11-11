@@ -1,22 +1,21 @@
-import Image from "next/image";
 import type { Metadata } from "next";
-import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
-import { Notice } from "@/components/Notice";
 import { initLingui } from "@/i18n/server";
-import { STORY_SECTIONS, STORY_SOURCE_URL } from "@/lib/story-copy";
+import { TRAIL_KM } from "@/lib/rally";
+import { STORY_SECTIONS, STORY_SOURCE_URL, storyParagraph } from "@/lib/story-text";
+
+const TITLE = { ja: "葛城修験のものがたり", en: "The story of Katsuragi Shugen" };
 
 export async function generateMetadata(): Promise<Metadata> {
   const i18n = await initLingui();
-  return { title: i18n._(msg`日本遺産 葛城修験ストーリー`) };
+  return { title: TITLE[i18n.locale === "en" ? "en" : "ja"] };
 }
 
-// The official story page, copied as it is for now and to be rewritten (docs/landing-story-design.md). Reading register:
-// a calm column, open space between chapters, no boxes. The words are the source's Japanese; English visitors are told so.
+// Our own telling of the story (lib/story-text.ts). Reading register: a calm column, open space between chapters, no boxes.
 export default async function StoryPage() {
   const i18n = await initLingui();
-  const english = i18n.locale === "en";
+  const locale = i18n.locale === "en" ? "en" : "ja";
 
   return (
     <div className="page-narrow flex flex-col gap-10 pb-10 pt-2">
@@ -24,43 +23,28 @@ export default async function StoryPage() {
         <BackLink href="/">
           <Trans>ホーム</Trans>
         </BackLink>
-        <h1 className="font-serif text-3xl font-bold leading-snug">
-          <Trans>日本遺産 葛城修験ストーリー</Trans>
-        </h1>
+        <h1 className="font-serif text-3xl font-bold leading-snug">{TITLE[locale]}</h1>
       </div>
 
-      <Notice>
-        <Trans>このページは、公式サイト「日本遺産 葛城修験ストーリー」の文章と写真を、そのまま転載したものです。仮の内容で、のちに書き直します。</Trans>
-        {english ? (
-          <>
-            {" "}
-            <Trans>文章は日本語のみです。</Trans>
-          </>
-        ) : null}{" "}
-        <a href={STORY_SOURCE_URL} className="tap-target inline-flex items-center font-bold underline underline-offset-4">
-          <Trans>元のページを見る</Trans>
-        </a>
-      </Notice>
-
       {STORY_SECTIONS.map((section, i) => (
-        <section key={section.heading} aria-labelledby={`story-${i}`} lang="ja" className="flex flex-col gap-6 px-4">
+        <section key={section.heading.ja} aria-labelledby={`story-${i}`} className="flex flex-col gap-6 px-4">
           <h2 id={`story-${i}`} className="font-serif text-2xl font-bold leading-snug">
-            {section.heading}
+            {section.heading[locale]}
           </h2>
-          {section.blocks.map((block, k) =>
-            "text" in block ? (
-              <p key={k} className="max-w-[40em] text-lg leading-9">
-                {block.text}
-              </p>
-            ) : (
-              <figure key={block.src} className="flex flex-col gap-2">
-                <Image src={block.src} alt="" width={block.width} height={block.height} sizes="(min-width: 768px) 543px, 100vw" className="h-auto w-full max-w-[543px] rounded-lg" />
-                <figcaption className="text-base text-muted">{block.caption}</figcaption>
-              </figure>
-            ),
-          )}
+          {section.paragraphs.map((p) => (
+            <p key={p.ja} className="max-w-[40em] text-lg leading-9">
+              {storyParagraph(p, locale, TRAIL_KM)}
+            </p>
+          ))}
         </section>
       ))}
+
+      <p className="px-4 text-base text-muted">
+        {locale === "en" ? "The facts follow the official Japan Heritage site for Katsuragi Shugen: " : "内容は、日本遺産「葛城修験」の公式サイトをもとにしています。"}
+        <a href={STORY_SOURCE_URL} target="_blank" rel="noopener noreferrer" className="tap-target inline-flex items-center font-bold underline underline-offset-4">
+          {locale === "en" ? "official site" : "公式サイト"}
+        </a>
+      </p>
     </div>
   );
 }

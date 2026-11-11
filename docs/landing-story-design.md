@@ -3,6 +3,8 @@
 Status: **built** (2026-11-11), see the PRs on this subject. Real-phone checks (iOS status strip, install bar) are still open.
 It covers the first-time home page (Japanese and English) and extends `docs/landing-journey-design.md` (the sticky scene, built in #436).
 
+> **Update 2026-11-11:** the copy is gone. `/story` is now our own wording in Japanese and English (`lib/story-text.ts`, four chapters, no photos, a credit line linking the official site). The paragraphs below describe the first version and are kept for the record.
+
 ## What the user saw, and why
 
 | # | Seen on the phone | Cause found in the code |
