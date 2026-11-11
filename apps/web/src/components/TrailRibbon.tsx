@@ -90,18 +90,21 @@ function StopRow({ stop, href, locale }: { stop: Stop; href: string; locale: str
 function GroupHeading({ prefecture }: { prefecture: Prefecture }) {
   return (
     <li className="xl:col-span-full" role="presentation">
-      <h2 className="flex items-center gap-2 px-4 pb-2 pt-6 text-lg font-bold text-muted xl:px-1">
-        <PrefectureIcon value={prefecture} />
-        <PrefectureName value={prefecture} />
+      <h2 className="px-4 pb-3 pt-6 xl:px-1">
+        {/* The crest in its white badge and the name, on a raised pill (the `lift` token: white on light, the panel tone on dark). */}
+        <span className="inline-flex items-center gap-2 rounded-full bg-lift py-1 pl-1 pr-4 text-lg font-bold text-ink shadow-md ring-1 ring-line/20">
+          <PrefectureIcon value={prefecture} />
+          <PrefectureName value={prefecture} />
+        </span>
       </h2>
     </li>
   );
 }
 
-export function TrailRibbon({ routes, hrefFor, locale }: { routes: RouteSummary[]; hrefFor: (route: RouteSummary) => string; locale: string }) {
+export function TrailRibbon({ routes, hrefFor, locale, headings = true }: { routes: RouteSummary[]; hrefFor: (route: RouteSummary) => string; locale: string; /** Prefecture headings between the courses (off when one prefecture is already chosen: the tab says it). */ headings?: boolean }) {
   const stops = buildStops(routes);
   // Sections by prefecture only when every route has one; otherwise one plain trail.
-  const grouped = routes.length > 0 && routes.every((r) => r.prefecture !== null);
+  const grouped = headings && routes.length > 0 && routes.every((r) => r.prefecture !== null);
 
   return (
     // One column; from 1280 px the rows sit in two columns (a row needs about 420 px for its name, numbers and photo).

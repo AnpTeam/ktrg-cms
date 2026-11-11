@@ -60,7 +60,7 @@ export default async function RoutesPage({
           </Link>
         </EmptyState>
       ) : (
-        <TrailRibbon routes={routes} hrefFor={(route) => `${base}/${route.id}`} locale={i18n.locale} />
+        <TrailRibbon routes={routes} hrefFor={(route) => `${base}/${route.id}`} locale={i18n.locale} headings={!active} />
       )}
 
       <Notice>
