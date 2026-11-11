@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { installNudgeShows, previewRoutes, progressOf } from "./landing-story";
+import { cueVisible, installNudgeShows, previewRoutes, progressOf } from "./landing-story";
 
 describe("progressOf", () => {
   test("0 before the top, 1 past the bottom, linear between", () => {
@@ -12,6 +12,15 @@ describe("progressOf", () => {
     expect(progressOf(300, 500, 500)).toBe(0);
     expect(progressOf(300, 500, 100)).toBe(0);
     expect(progressOf(Number.NaN, 0, 100)).toBe(0);
+  });
+});
+
+describe("cueVisible", () => {
+  test("the scroll cue shows until the visitor has scrolled about 40 px", () => {
+    expect(cueVisible(0)).toBe(true);
+    expect(cueVisible(39)).toBe(true);
+    expect(cueVisible(40)).toBe(false);
+    expect(cueVisible(-30)).toBe(true); // iOS rubber-band above the top
   });
 });
 
