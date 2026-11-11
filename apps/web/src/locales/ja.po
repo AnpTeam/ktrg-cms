@@ -4379,6 +4379,14 @@ msgstr "前のリンクは、まだありません。"
 msgid "前の写真"
 msgstr "前の写真"
 
+#: src/components/InstallNudge.tsx
+msgid "ホーム画面に追加"
+msgstr "ホーム画面に追加"
+
+#: src/components/InstallNudge.tsx
+msgid "追加のしかた"
+msgstr "追加のしかた"
+
 #: src/components/landing/Journey.tsx
 msgid "ストーリーを読む"
 msgstr "ストーリーを読む"
