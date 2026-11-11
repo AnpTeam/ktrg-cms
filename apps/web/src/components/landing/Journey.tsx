@@ -8,8 +8,8 @@ import { LandingHero } from "@/components/landing/LandingHero";
 import type { BannerSlide } from "@/lib/banners";
 import type { RouteSummary } from "@/lib/content";
 import type { HomeSlot } from "@/lib/home-text";
-import { sealPoints, stageLine } from "@/lib/journey";
-import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
+import { moundSealPoints, stageLine } from "@/lib/journey";
+import { MOUND_PLACES, TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
 import { RIDGE_HEIGHT, RIDGE_WIDTH, ridgePath } from "@/lib/ridge";
 
 /**
@@ -24,7 +24,8 @@ import { RIDGE_HEIGHT, RIDGE_WIDTH, ridgePath } from "@/lib/ridge";
 export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; routes: RouteSummary[]; locale: string; w: Record<HomeSlot, string> }) {
   const ridge = ridgePath(routes);
   const line = stageLine(ridge);
-  const seals = sealPoints(line.points, TOTAL_STAMPS);
+  // One seal for every stamp place, grouped by mound: a mound with two places (3, 14, 28) gets a pair.
+  const seals = moundSealPoints(line.points, MOUND_PLACES);
 
   return (
     <JourneyScene seals={TOTAL_STAMPS}>
@@ -40,7 +41,8 @@ export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; 
         <div data-beat="1">
           <Chapter ground="story-ground-inverse" heading={w.storyHeading} id="story-title">
             <p className="text-lg leading-9">{w.storyText}</p>
-            <dl className="grid grid-cols-3 gap-3 text-center">
+            {/* One ruled row per fact on a phone (English values are longer), three columns from a wider box. */}
+            <dl className="grid grid-cols-1 gap-3 @[34rem]:grid-cols-3 @[34rem]:text-center">
               <Fact term={<Trans>コース</Trans>} value={<Trans>全{TOTAL_ROUTES}区間</Trans>} />
               <Fact term={<Trans>長さ</Trans>} value={<Trans>約{TRAIL_KM}km</Trans>} />
               <Fact term={<Trans>経塚</Trans>} value={<Trans>{TOTAL_STAMPS}か所</Trans>} />
@@ -61,7 +63,7 @@ export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; 
                 key={i}
                 data-seal
                 // The ring is the figure's own text colour (pale on the night stage, ink on paper): the shu fill alone is under 3:1 on night.
-                className="absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-shu ring-2 ring-current @[42rem]:size-4"
+                className="absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-shu ring-1 ring-current @[42rem]:size-3 @[42rem]:ring-2"
                 style={{ left: `${(x / RIDGE_WIDTH) * 100}%`, top: `${(y / RIDGE_HEIGHT) * 100}%` }}
               />
             ))}
@@ -110,9 +112,9 @@ export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; 
 
 function Fact({ term, value }: { term: ReactNode; value: ReactNode }) {
   return (
-    <div className="flex flex-col gap-1 border-t border-current pt-3">
+    <div className="flex items-baseline justify-between gap-4 border-t border-current pt-3 @[34rem]:flex-col @[34rem]:items-stretch @[34rem]:justify-start @[34rem]:gap-1">
       <dt className="text-base opacity-90">{term}</dt>
-      <dd className="whitespace-nowrap text-lg font-bold @[34rem]:text-xl">{value}</dd>
+      <dd className="text-lg font-bold @[34rem]:text-xl">{value}</dd>
     </div>
   );
 }

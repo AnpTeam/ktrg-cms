@@ -133,6 +133,7 @@ Numbered so we can discuss them by number.
 - N8. No carousel that moves by itself without a pause button.
 - N9. No more than one red button on a screen.
 - N10. No emoji as icons; one icon set, one stroke weight.
+- N11. No title tracked wider than 0.05 em, and none at all for Latin titles (wide tracking looked machine-made; `title-tracking.test.ts` enforces it on the home page).
 
 ## Drawing brief
 

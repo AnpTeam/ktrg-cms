@@ -15,7 +15,7 @@ export function Chapter({ ground, heading, id, children, wide }: { ground: Groun
       <div className="mx-auto flow-root w-full max-w-5xl px-5 @[42rem]:px-10 tall:@[42rem]:flex tall:@[42rem]:flex-row-reverse tall:@[42rem]:items-start tall:@[42rem]:gap-16">
         <h2
           id={id}
-          className="mb-8 font-serif text-3xl font-bold leading-snug tracking-widest text-inherit tall:float-right tall:mb-4 tall:ml-5 tall:max-h-[22rem] tall:[writing-mode:vertical-rl] @[42rem]:text-4xl tall:@[42rem]:float-none tall:@[42rem]:m-0"
+          className="mb-8 font-serif text-3xl font-bold leading-snug tracking-normal text-inherit tall:float-right tall:mb-4 tall:ml-5 tall:max-h-[22rem] tall:[writing-mode:vertical-rl] @[42rem]:text-4xl tall:@[42rem]:float-none tall:@[42rem]:m-0"
         >
           {heading}
         </h2>

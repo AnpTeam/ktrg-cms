@@ -5,6 +5,7 @@ import { HeroSlides, type HeroSlide } from "@/components/landing/HeroSlides";
 import type { BannerSlide } from "@/lib/banners";
 import { buttonStyle } from "@/components/button";
 import { KatsuragiLogo } from "@/components/KatsuragiLogo";
+import { ScrollCue } from "@/components/landing/ScrollCue";
 
 // The first screen of the landing page: the admin's banner photos run from edge to edge of the page, with the line over them,
 // and under them the buttons. With no banner yet, one photo of the trail (public/home, from the Japan Heritage council, reused
@@ -24,7 +25,8 @@ const FALLBACK: HeroSlide = { src: "/home/top_slider_img01.jpg", alt: "", unopti
 export function LandingHero({ slides, locale, line, title, children, bare = false }: { slides: BannerSlide[]; locale: string; line: string; title?: ReactNode; children?: ReactNode; bare?: boolean }) {
   const photos: HeroSlide[] = slides.flatMap((s) => (s.src ? [{ src: s.src, alt: locale === "ja" ? s.altJa : s.altEn, credit: s.credit, unoptimized: true }] : []));
   return (
-    <section aria-labelledby="hero-title" className="overflow-hidden bg-surface">
+    // data-cover: like a course page's photo, the picture runs behind the status bar of the installed app (globals.css).
+    <section data-cover aria-labelledby="hero-title" className="overflow-hidden bg-surface">
       {/* The line and the logo sit in the middle of the photos. A first-time visitor gets a taller picture with the line set
           vertically (the reading register); a low screen keeps it across, still centred. */}
       <div className="relative h-80 tall:h-[min(78svh,44rem)] @[34rem]:h-96 @[42rem]:h-[30rem]">
@@ -33,7 +35,7 @@ export function LandingHero({ slides, locale, line, title, children, bare = fals
           <div className="absolute inset-0 mx-auto flex max-w-6xl flex-col items-center justify-center gap-5 px-12 py-6 text-center">
             {/* The line and the title are one block: set vertically on a tall screen (the line to the right of the title, as
                 columns run right to left), across and centred on a low one. Signed in or not. */}
-            <div className="flex flex-col items-center gap-2 tall:block tall:max-h-[calc(100%-7rem)] tall:tracking-widest tall:[writing-mode:vertical-rl]">
+            <div className="flex flex-col items-center gap-2 tall:block tall:max-h-[calc(100%-7rem)] tall:tracking-[0.04em] tall:[writing-mode:vertical-rl]">
               {title ? (
                 <p className="font-serif text-lg font-bold text-white [text-shadow:0_1px_6px_rgb(0_0_0/0.7)] tall:ml-4 @[34rem]:text-xl">{line}</p>
               ) : null}
@@ -48,6 +50,7 @@ export function LandingHero({ slides, locale, line, title, children, bare = fals
             <KatsuragiLogo className="h-14 w-auto shrink-0 [--color-brand:#fff] [--color-ink:#fff] [filter:drop-shadow(0_1px_4px_rgb(0_0_0/0.6))]" />
           </div>
         </HeroSlides>
+        {bare ? <ScrollCue /> : null}
       </div>
       {bare ? null : <div className="pattern-shippo">
       {children ? <div className="mx-auto max-w-6xl py-6 @[34rem]:px-6">{children}</div> : (
