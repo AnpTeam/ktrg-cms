@@ -29,10 +29,12 @@ export interface MarkerOptions {
   stamped?: boolean;
   /** What the place is (a station, a toilet ...): drawn as a small picture on the pin's corner. */
   place?: PointKind;
+  /** The stop's own photo (already checked by `pinPhotoSrc`): the pin's head shows it, with the number in a chip at the upper left. */
+  photo?: string | null;
   onSelect: () => void;
 }
 
-export function createMarkerElement({ order, label, kind, status, sideTrip, noStamp, role, stamped, place, onSelect }: MarkerOptions): HTMLButtonElement {
+export function createMarkerElement({ order, label, kind, status, sideTrip, noStamp, role, stamped, place, photo, onSelect }: MarkerOptions): HTMLButtonElement {
   const el = document.createElement("button");
   el.type = "button";
   el.className = "map-marker";
@@ -40,7 +42,9 @@ export function createMarkerElement({ order, label, kind, status, sideTrip, noSt
   if (noStamp) el.dataset.noStamp = "true";
   if (role && !sideTrip) el.dataset.role = role;
   el.dataset.status = status;
-  el.appendChild(pinSvg(sideTrip ? null : order, noStamp ? "flag" : "tear", role && !sideTrip ? role : null, !!stamped, place ?? null));
+  // A photo pin is bigger (its photo has to be recognisable): the page's CSS sizes it by this attribute.
+  if (photo) el.dataset.photo = "true";
+  el.appendChild(pinSvg(sideTrip ? null : order, noStamp ? "flag" : "tear", role && !sideTrip ? role : null, !!stamped, place ?? null, photo ?? null));
   el.setAttribute("aria-label", label);
   el.setAttribute("aria-pressed", "false");
   el.addEventListener("click", onSelect);
@@ -56,7 +60,7 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 const TEAR = "M27 14.5a12 12 0 0 0-24 0C3 23.5 8.2 31.5 12.9 37.7a2.7 2.7 0 0 0 4.2 0C21.8 31.5 27 23.5 27 14.5Z";
 const FLAG = "M6 3h18a3 3 0 0 1 3 3v17a3 3 0 0 1-3 3h-6.5L15 33l-2.5-7H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3Z";
 
-function pinSvg(order: number | null, shape: "tear" | "flag", role: StopRole | null, stamped: boolean, place: PointKind | null): SVGSVGElement {
+function pinSvg(order: number | null, shape: "tear" | "flag", role: StopRole | null, stamped: boolean, place: PointKind | null, photo: string | null): SVGSVGElement {
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.setAttribute("viewBox", "0 0 30 40");
   svg.setAttribute("class", "map-pin-svg");
@@ -85,7 +89,32 @@ function pinSvg(order: number | null, shape: "tear" | "flag", role: StopRole | n
     svg.appendChild(defs);
   }
   svg.appendChild(body);
-  if (place) {
+  if (photo) {
+    // The stop's own photo in the head, cropped round (the clip's id is the same on every pin: one shape, so a repeat is harmless).
+    // If it cannot be loaded the image is dropped and the head is the pin's plain colour; the chip still carries the number.
+    const defs = document.createElementNS(SVG_NS, "defs");
+    const clip = document.createElementNS(SVG_NS, "clipPath");
+    clip.setAttribute("id", "pin-photo-clip");
+    const hole = document.createElementNS(SVG_NS, "circle");
+    hole.setAttribute("cx", "15");
+    hole.setAttribute("cy", "14.5");
+    hole.setAttribute("r", "9.4");
+    clip.appendChild(hole);
+    defs.appendChild(clip);
+    svg.appendChild(defs);
+    const img = document.createElementNS(SVG_NS, "image");
+    img.setAttribute("href", photo);
+    img.setAttribute("x", "5.6");
+    img.setAttribute("y", "5.1");
+    img.setAttribute("width", "18.8");
+    img.setAttribute("height", "18.8");
+    img.setAttribute("preserveAspectRatio", "xMidYMid slice");
+    img.setAttribute("clip-path", "url(#pin-photo-clip)");
+    img.setAttribute("class", "pin-photo");
+    img.addEventListener("error", () => img.remove());
+    svg.appendChild(img);
+  }
+  if (place && !photo) {
     // The kind of place as a coloured picture on a white disc in the head, with the number in a chip on the upper right.
     const disc = document.createElementNS(SVG_NS, "circle");
     disc.setAttribute("cx", "15");
@@ -107,15 +136,18 @@ function pinSvg(order: number | null, shape: "tear" | "flag", role: StopRole | n
   bar.setAttribute("class", "pin-bar");
   svg.appendChild(bar);
   if (order !== null) {
-    if (place) {
+    if (place || photo) {
+      // With a picture the number sits in a chip on a corner: the upper left for a photo (the check and the seal take the
+      // upper right), the upper right for a kind of place.
+      const chipX = photo ? "4.5" : "25.5";
       const chip = document.createElementNS(SVG_NS, "g");
-      chip.setAttribute("class", "pin-chip");
+      chip.setAttribute("class", photo ? "pin-chip pin-chip-photo" : "pin-chip");
       const ring = document.createElementNS(SVG_NS, "circle");
-      ring.setAttribute("cx", "25.5");
+      ring.setAttribute("cx", chipX);
       ring.setAttribute("cy", "4.5");
       ring.setAttribute("r", "6.3");
       const num = document.createElementNS(SVG_NS, "text");
-      num.setAttribute("x", "25.5");
+      num.setAttribute("x", chipX);
       num.setAttribute("y", "5");
       if (String(order).length > 1) num.setAttribute("font-size", "7.4");
       num.textContent = String(order);
@@ -138,7 +170,7 @@ function pinSvg(order: number | null, shape: "tear" | "flag", role: StopRole | n
       svg.appendChild(text);
     }
   }
-  if (stamped && !role && !place && shape === "tear") {
+  if (stamped && !role && (!place || photo) && shape === "tear") {
     // Stamped: a small white badge with a check on the upper right, so it is not the colour alone that says "done".
     const badge = document.createElementNS(SVG_NS, "g");
     badge.setAttribute("class", "pin-check");
@@ -153,7 +185,7 @@ function pinSvg(order: number | null, shape: "tear" | "flag", role: StopRole | n
   }
   if (role && stamped) {
     const seal = document.createElementNS(SVG_NS, "circle");
-    seal.setAttribute("cx", "4.5");
+    seal.setAttribute("cx", photo ? "25.5" : "4.5");
     seal.setAttribute("cy", "5");
     seal.setAttribute("r", "4.6");
     seal.setAttribute("class", "pin-seal");

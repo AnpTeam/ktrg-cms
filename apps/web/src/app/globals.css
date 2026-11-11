@@ -365,6 +365,23 @@ rt {
   dominant-baseline: central;
   font-variant-numeric: tabular-nums;
 }
+/* A stop with its own photo: a bigger pin (the photo has to be recognisable; 54 px wide, over the 48 px touch minimum), the
+   number in a chip at the upper left, dark on white so it reads on any photo, and kept at every zoom (the chips of
+   place pins hide when far out; this number is what ties the pin to its stop). */
+.map-marker[data-photo] {
+  width: calc(3.4rem * var(--pin, 1));
+  height: calc(4.5rem * var(--pin, 1));
+}
+.map-marker .pin-chip-photo circle {
+  stroke: var(--pin-ink);
+  stroke-width: 1;
+}
+.map-marker .pin-chip-photo text {
+  fill: var(--pin-ink);
+}
+[data-far] .map-marker .pin-chip.pin-chip-photo {
+  display: inline;
+}
 .map-marker .pin-seal {
   fill: var(--color-shu);
   stroke: var(--pin-on);
