@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Trans, useLingui } from "@lingui/react/macro";
 import type { Prefecture } from "@/lib/content";
+import { PrefectureIcon } from "./PrefectureIcon";
 import { PrefectureName } from "./PrefectureName";
 
 /**
@@ -19,9 +20,9 @@ export function PrefectureFilter({
   const { t } = useLingui();
   if (available.length < 2) return null;
 
-  // Plain words with a bar under the chosen one (no chips, no borders): never squeezed, the row scrolls instead.
+  // Plain words (with the prefecture's mark) with a bar under the chosen one (no chips, no borders): never squeezed, the row scrolls instead.
   const tab = (selected: boolean) =>
-    `tap-target inline-flex shrink-0 items-center justify-center whitespace-nowrap border-b-4 px-1 text-lg ${
+    `tap-target inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap border-b-4 px-1 text-lg ${
       selected ? "border-brand font-bold text-ink" : "border-transparent text-muted hover:text-ink"
     }`;
 
@@ -31,6 +32,7 @@ export function PrefectureFilter({
       <ul className="flex flex-nowrap gap-5 overflow-x-auto px-4 [scrollbar-width:none] md:flex-wrap md:overflow-visible [&::-webkit-scrollbar]:hidden">
         <li>
           <Link href={base} aria-current={active ? undefined : "true"} className={tab(!active)}>
+            <PrefectureIcon value="all" />
             <Trans>すべて</Trans>
           </Link>
         </li>
@@ -41,6 +43,7 @@ export function PrefectureFilter({
               aria-current={active === prefecture ? "true" : undefined}
               className={tab(active === prefecture)}
             >
+              <PrefectureIcon value={prefecture} />
               <PrefectureName value={prefecture} />
             </Link>
           </li>

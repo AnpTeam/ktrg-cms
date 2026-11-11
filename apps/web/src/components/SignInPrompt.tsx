@@ -8,17 +8,14 @@ import { buttonStyle } from "@/components/button";
 /**
  * Shown to a visitor with no account, where progress would be. Stamps work without one (they are kept in this browser), so
  * it explains what an account adds (they are not lost, and there is a certificate) and offers the two ways in.
- * `compact` (the long lists) keeps to the one line and two plain links (no panel, no buttons), so the list is not pushed off the first screen; the
+ * `compact` (the long lists) keeps to two plain links (no sentence, no panel, no buttons), so the list is not pushed off the first screen; the
  * explanation and the backup link are on the profile page.
  */
 export async function SignInPrompt({ compact = false }: { compact?: boolean }) {
   await initLingui();
   if (compact) {
     return (
-      <section className="mx-4 flex flex-col gap-1">
-        <p className="text-lg">
-          <Trans>登録しなくても、スタンプは押せます。</Trans>
-        </p>
+      <section className="mx-4">
         <p className="flex flex-wrap items-center gap-x-4 text-lg font-bold">
           <Link href="/register" className="tap-target inline-flex items-center underline underline-offset-4">
             <Trans>新規登録</Trans>

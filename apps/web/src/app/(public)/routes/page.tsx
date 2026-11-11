@@ -35,7 +35,8 @@ export default async function RoutesPage({
   return (
     <div className="flex flex-col gap-6 wide:gap-8">
       <div className="flex flex-col gap-6 wide:flex-row wide:items-end wide:justify-between">
-      <section className="px-4">
+      {/* On a phone the top bar carries the title; the heading stays here for screen readers and for a wider page. */}
+      <section className="px-4 sr-only md:not-sr-only">
         <h1 className="text-3xl font-bold wide:text-4xl">
           <Trans>葛城修験の道</Trans>
         </h1>

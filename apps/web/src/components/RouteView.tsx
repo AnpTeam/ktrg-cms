@@ -4,6 +4,7 @@ import { ElevationProfile } from "@/components/ElevationProfile";
 import { EmptyState } from "@/components/EmptyState";
 import { ExpandableText } from "@/components/ExpandableText";
 import { Fold } from "@/components/Fold";
+import { FoldJumps } from "@/components/FoldJumps";
 import { CoverPhoto } from "@/components/CoverPhoto";
 import { NameRuby } from "@/components/Ruby";
 import { AccessList } from "@/components/AccessList";
@@ -114,6 +115,14 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
   const trail = trailStops(route);
   const journey = journeyOf(trail, route.walkStyle ?? null);
   const rows = walkRows(trail, journey, route.line);
+  // The titles in the sticky bar: each opens its fold (an id on the section that holds it).
+  const jumps = [
+    history ? { id: "history", label: <Trans>歴史</Trans> } : null,
+    access || journey || route.accessPoints.length > 0 ? { id: "access", label: <Trans>アクセス</Trans> } : null,
+    trail.length > 0 ? { id: "walk", label: <Trans>道のり</Trans> } : null,
+    stops.length > 0 ? { id: "map", label: <Trans>地図</Trans> } : null,
+    video || videoFile ? { id: "video", label: <Trans>動画</Trans> } : null,
+  ].filter((j) => j !== null);
   const photo = route.photoUrl ? { src: route.photoUrl, alt: pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa, credit: route.photoCredit ?? null } : null;
 
   // One column (the phone, and the admin's narrow preview). When the box this sits in is wide (a desktop page), two
@@ -154,13 +163,15 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
             <div className="mt-5">
               <RouteStats route={route} icons tips walkStyle={journey?.style ?? null} />
             </div>
-            {/* The bookmark sits under the numbers, with its word (it used to sit alone in a sticky bar on a phone). */}
+            {/* Two columns have no sticky bar: the bookmark sits under the numbers, with its word. */}
             {bookmarkable ? (
-              <div className="mt-4">
+              <div className="mt-4 hidden @4xl:block">
                 <BookmarkButton routeId={route.id} />
               </div>
             ) : null}
           </header>
+
+          {jumps.length >= 2 || bookmarkable ? <FoldJumps routeId={bookmarkable ? route.id : null} items={jumps} /> : null}
 
           {notices ? <div className="order-3 flex flex-col gap-3 @4xl:order-none @4xl:[&>section]:mx-0">{notices}</div> : null}
 
@@ -173,7 +184,7 @@ export function RouteView({ route, locale, places, settings, mergeStops, placesF
           ) : null}
 
           {history ? (
-            <section className="order-5 px-4 @4xl:order-none @4xl:px-0">
+            <section id="history" className="order-5 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:px-0">
               <Fold open title={<Trans>歴史・由来</Trans>}>
                 <ExpandableText text={history.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
                   <RichText text={history.text} lang={history.lang} />

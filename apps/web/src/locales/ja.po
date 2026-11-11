@@ -4380,6 +4380,10 @@ msgstr "前のリンクは、まだありません。"
 msgid "前の写真"
 msgstr "前の写真"
 
+#: src/components/RouteView.tsx
+msgid "歴史"
+msgstr "歴史"
+
 #: src/components/landing/HeroSlides.tsx:88
 msgid "自動で切り替える"
 msgstr "自動で切り替える"
