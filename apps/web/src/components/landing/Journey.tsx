@@ -60,7 +60,8 @@ export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; 
               <span
                 key={i}
                 data-seal
-                className="absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-shu @[42rem]:size-4"
+                // The ring is the figure's own text colour (pale on the night stage, ink on paper): the shu fill alone is under 3:1 on night.
+                className="absolute size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-shu ring-2 ring-current @[42rem]:size-4"
                 style={{ left: `${(x / RIDGE_WIDTH) * 100}%`, top: `${(y / RIDGE_HEIGHT) * 100}%` }}
               />
             ))}
