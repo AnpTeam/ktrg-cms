@@ -28,7 +28,7 @@ export function AccessList({ points, locale }: { points: AccessPoint[]; locale: 
   const { t } = useLingui();
   const externalLabel = t`（外部サイトが新しいタブで開きます）`;
   return (
-    <ul className="flex flex-col gap-3 rounded-2xl bg-surface p-4">
+    <ul className="flex flex-col gap-3 rounded-[1.75rem] bg-surface p-4">
       {points.map((p, i) => {
         const name = pickText(locale, p.nameJa, p.nameEn);
         const note = pickText(locale, p.noteJa, p.noteEn);

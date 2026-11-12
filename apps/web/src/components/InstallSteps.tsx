@@ -28,14 +28,14 @@ export function InstallSteps({ titleId }: { titleId: string }) {
   }, []);
   return (
     <>
-      <h2 id={titleId} className="text-3xl font-bold text-accent">
+      <h2 id={titleId} className="font-serif text-3xl font-bold text-accent">
         <Trans>ホーム画面に追加しましょう</Trans>
       </h2>
       <p className="text-lg leading-8">
         <Trans>ホーム画面に追加すると、アプリのようにすぐ開けます。山の中でも、探す手間がかかりません。</Trans>
       </p>
       {isInAppBrowser(ua) ? (
-        <p className="rounded-3xl bg-surface p-4 text-lg leading-8">
+        <p className="rounded-[1.75rem] bg-surface p-4 text-lg leading-8">
           <Trans>いま開いているのは、ほかのアプリの中のブラウザです。Safari や Chrome で開きなおしてから、追加してください。</Trans>
         </p>
       ) : offer ? (
@@ -43,13 +43,13 @@ export function InstallSteps({ titleId }: { titleId: string }) {
           <Trans>ホーム画面に追加する</Trans>
         </button>
       ) : ios ? (
-        <ol className="flex list-decimal flex-col gap-3 rounded-3xl bg-surface p-4 pl-9 text-lg leading-8">
+        <ol className="flex list-decimal flex-col gap-3 rounded-[1.75rem] bg-surface p-4 pl-9 text-lg leading-8">
           <li><Trans>Safari で、画面の下（または上）にある共有ボタン（□に↑）を押します。</Trans></li>
           <li><Trans>メニューを下へ動かして、「ホーム画面に追加」を押します。</Trans></li>
           <li><Trans>右上の「追加」を押すと、できあがりです。</Trans></li>
         </ol>
       ) : (
-        <p className="rounded-3xl bg-surface p-4 text-lg leading-8">
+        <p className="rounded-[1.75rem] bg-surface p-4 text-lg leading-8">
           <Trans>ブラウザのメニュー（⋮ や ⋯）から、「ホーム画面に追加」または「アプリをインストール」をえらびます。</Trans>
         </p>
       )}

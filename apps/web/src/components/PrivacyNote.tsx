@@ -9,7 +9,7 @@ import { Trans } from "@lingui/react/macro";
  */
 export function PrivacyNote() {
   return (
-    <p className="rounded-2xl bg-surface p-4 text-base leading-7">
+    <p className="rounded-[1.75rem] bg-surface p-4 text-base leading-7">
       <Trans>
         いただいた情報は、どんな方がこのアプリを使っているかを知るためだけに使います。個人が分からない形でまとめます。くわしくは
         <Link href="/privacy" className="font-bold underline">

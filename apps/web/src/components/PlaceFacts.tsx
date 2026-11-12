@@ -35,7 +35,7 @@ export function PlaceFacts({ place }: { place: PlaceFactsData }) {
     ...(place.website ? ([[t`Webサイト`, <a key="web" href={place.website} target="_blank" rel="noopener noreferrer" className="break-all font-bold text-accent underline underline-offset-4">{place.website}</a>]] as [string, React.ReactNode][]) : []),
   ];
   return (
-    <div className="rounded-3xl bg-surface p-5">
+    <div className="rounded-[1.75rem] bg-surface p-5">
       <div className="mb-3 flex items-center gap-3">
         <PlaceIcon category={place.category} icon={place.icon} size={32} />
         <p className="text-xl font-bold leading-snug">{place.name}</p>
