@@ -58,7 +58,7 @@ export function OfflinePack({ routeId, area, settings }: { routeId: string; area
   const percent = progress ? Math.min(100, Math.round((progress.done / Math.max(1, progress.total)) * 100)) : 0;
 
   return (
-    <section aria-labelledby="offline-pack" className="flex flex-col gap-3 rounded-lg bg-surface p-4 print:hidden">
+    <section aria-labelledby="offline-pack" className="flex flex-col gap-3 rounded-[1.75rem] bg-surface p-4 print:hidden">
       <h2 id="offline-pack" className="flex items-center gap-2 text-xl font-bold">
         <span aria-hidden="true" className="text-accent">
           <DownloadIcon />

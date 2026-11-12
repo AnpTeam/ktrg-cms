@@ -5,13 +5,11 @@ import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { BackLink } from "@/components/BackLink";
 import { CertificateButton } from "@/components/CertificateButton";
-import { CreditCaption } from "@/components/PhotoCredit";
+import { CoverPhoto } from "@/components/CoverPhoto";
 import { LastUpdated } from "@/components/LastUpdated";
 import { SaveBookmark } from "@/components/SaveBookmark";
 import { RallyNearbyStamp } from "@/components/RallyNearbyStamp";
 import { Bar, SlotList } from "@/components/RallyViews";
-import { RoutePhoto } from "@/components/RoutePhoto";
-import { SectionBanner } from "@/components/SectionBanner";
 import { Medal } from "@/components/Medal";
 import { StampGrid } from "@/components/StampGrid";
 import { StampLegend } from "@/components/StampLegend";
@@ -54,6 +52,7 @@ export default async function RallyPage({ params, searchParams }: Props) {
   const canStampHere = !done && detail.places.some((p) => p.lat !== null && !offersNoStamp(p.status) && !heldSet.has(p.id));
   const button = buttonStyle("primary", "lg", "flex w-full");
   const quietButton = buttonStyle("secondary", "lg", "flex w-full");
+  const photo = detail.photoUrl ? { src: detail.photoUrl, alt: name, credit: detail.photoCredit ?? null } : null;
   // One main button at a time: the way to the first place until something is stamped, then the stamp button for the place you are at.
 
   return (
@@ -64,22 +63,24 @@ export default async function RallyPage({ params, searchParams }: Props) {
         </BackLink>
       </div>
 
-      <div className="flex flex-col gap-4 px-4">
-        <h1 className="text-3xl font-bold leading-snug wide:text-4xl">{name}</h1>
+      {/* The course page's cover: the photo runs to the edge and fades into the page, and the name sits on the fade. */}
+      {photo ? (
+        <div className="wide:max-w-2xl">
+          <CoverPhoto photo={photo} flat />
+        </div>
+      ) : null}
+      <header className={`relative flex flex-col gap-4 px-4 ${photo ? "-mt-20" : ""}`}>
+        <h1 className="font-serif text-3xl font-bold leading-snug text-accent wide:text-4xl">{name}</h1>
         {isSoon(rally) ? (
           <p className="inline-block w-fit rounded-lg border-2 border-dashed border-line px-3 text-xl font-bold text-muted">
             <Trans>準備中</Trans>
           </p>
         ) : null}
-        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl bg-surface md:max-w-2xl">
-          <RoutePhoto src={detail.photoUrl} alt={name} />
-        </div>
-        <CreditCaption credit={detail.photoCredit} />
-      </div>
+      </header>
 
       {done ? (
         // A finished rally: the closed medal, in place of the count and the bar.
-        <section className="frame pattern-shippo mx-4 flex flex-col items-center gap-3 p-6 text-center">
+        <section className="pattern-shippo mx-4 flex flex-col items-center gap-3 rounded-[1.75rem] bg-surface p-6 text-center">
           <Medal number={rally.total} done stamped={rally.total} total={rally.total} className="h-44 w-auto" />
           <p className="font-serif text-3xl font-bold text-accent">
             <Trans>コンプリート！</Trans>
@@ -95,7 +96,7 @@ export default async function RallyPage({ params, searchParams }: Props) {
           {viewer.signedIn ? <CertificateButton title={name} total={rally.total} locale={i18n.locale} /> : null}
         </section>
       ) : (
-        <section className="frame mx-4 flex flex-col gap-3 p-4">
+        <section className="mx-4 flex flex-col gap-3 rounded-[1.75rem] bg-surface p-4">
           <p className="text-6xl font-bold leading-none tabular-nums text-accent">
             {stamped}
             <span className="ml-2 text-3xl text-muted">/ {rally.total}</span>
@@ -118,9 +119,9 @@ export default async function RallyPage({ params, searchParams }: Props) {
 
       {rally.total > 0 ? (
         <section className="flex flex-col gap-3 px-4">
-          <SectionBanner>
+          <h2 className="border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">
             <Trans>スタンプ</Trans>
-          </SectionBanner>
+          </h2>
           <div className="-mx-4">
             <StampLegend />
           </div>
@@ -130,10 +131,10 @@ export default async function RallyPage({ params, searchParams }: Props) {
 
       {rally.total > 0 ? (
         <section className="flex flex-col gap-3 px-4">
-          <SectionBanner>
+          <h2 className="border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">
             <Trans>めぐる場所</Trans>
-          </SectionBanner>
-          <div className="rounded-3xl bg-surface">
+          </h2>
+          <div className="rounded-[1.75rem] bg-surface">
             <SlotList rally={rally} locale={i18n.locale} />
           </div>
         </section>

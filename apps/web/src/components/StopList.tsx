@@ -53,7 +53,7 @@ function SideNode({ solid = false }: { solid?: boolean }) {
 
 function Card({ photo, alt, children }: { photo: string | null; alt: string; children: ReactNode }) {
   return (
-    <span className="my-1.5 block overflow-hidden rounded-2xl bg-surface group-hover:bg-[color-mix(in_srgb,var(--color-muted)_14%,var(--color-surface))]">
+    <span className="my-1.5 block overflow-hidden rounded-[1.75rem] bg-surface group-hover:bg-[color-mix(in_srgb,var(--color-muted)_14%,var(--color-surface))]">
       {photo ? (
         <span className="relative block aspect-[16/9]">
           <RoutePhoto src={photo} alt={alt} />

@@ -156,7 +156,7 @@ export function RouteView({ route, locale, places, settings, placesFirst, labels
           ) : null}
           <header className={`relative order-2 px-4 @4xl:order-none ${photo ? "-mt-20" : ""}`}>
             {/* In Japanese the name can carry its reading over it; the heading sits a little lower to give the reading room. */}
-            <h1 className="min-w-0 text-4xl font-bold leading-tight has-[rt]:pt-4">
+            <h1 className="min-w-0 font-serif text-4xl font-bold leading-tight text-accent has-[rt]:pt-4">
               <NameRuby title={title} reading={route.nameKana} />
             </h1>
             {route.prefecture || route.municipalities.length > 0 ? (
@@ -189,7 +189,7 @@ export function RouteView({ route, locale, places, settings, placesFirst, labels
 
           {history ? (
             <section id="history" className="order-5 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none">
-              <Fold open title={<Trans>歴史・由来</Trans>}>
+              <Fold open title={<span className="border-l-4 border-brand pl-3 font-serif text-accent"><Trans>歴史・由来</Trans></span>}>
                 <ExpandableText text={history.text} className="max-w-prose whitespace-pre-line text-lg leading-8">
                   <RichText text={history.text} lang={history.lang} />
                 </ExpandableText>
@@ -204,7 +204,7 @@ export function RouteView({ route, locale, places, settings, placesFirst, labels
 
           {source ? (
             <section className="order-11 px-4 @4xl:order-none">
-              <h2 className="text-xl font-bold">
+              <h2 className="border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">
                 <Trans>出典</Trans>
               </h2>
               <div className="mt-2 max-w-prose whitespace-pre-line text-base leading-7 text-muted">
@@ -215,7 +215,7 @@ export function RouteView({ route, locale, places, settings, placesFirst, labels
 
           {access || journey || route.accessPoints.length > 0 ? (
             <section id="access" className="order-6 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none">
-              <Fold open title={<Trans>アクセス・交通</Trans>}>
+              <Fold open title={<span className="border-l-4 border-brand pl-3 font-serif text-accent"><Trans>アクセス・交通</Trans></span>}>
                 <div className="flex flex-col gap-4">
                   {journey ? <RouteJourney journey={journey} locale={locale} /> : null}
                   {route.accessPoints.length > 0 ? <AccessList points={route.accessPoints} locale={locale} /> : null}
@@ -246,7 +246,7 @@ export function RouteView({ route, locale, places, settings, placesFirst, labels
 
           {video || videoFile ? (
             <section id="video" className="order-10 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none">
-              <Fold title={<Trans>ルートの動画</Trans>}>
+              <Fold title={<span className="border-l-4 border-brand pl-3 font-serif text-accent"><Trans>ルートの動画</Trans></span>}>
                 <div className="flex flex-col gap-3">
                   {video ? (
                     <IntroVideo video={video} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
@@ -268,7 +268,7 @@ export function RouteView({ route, locale, places, settings, placesFirst, labels
           ) : (
             <section id="walk" className="order-7 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none">
               <Fold
-                title={<Trans>道のり</Trans>}
+                title={<span className="border-l-4 border-brand pl-3 font-serif text-accent"><Trans>道のり</Trans></span>}
                 aside={
                   showStampCount && stampedCount !== null && spotCount > 0 ? (
                     <Trans>
@@ -287,7 +287,7 @@ export function RouteView({ route, locale, places, settings, placesFirst, labels
         {stops.length > 0 ? (
           <div className={MAP_COLUMN}>
             <section id="map" className="order-8 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:h-full @4xl:px-0">
-              <Fold className="fold-bare" title={<Trans>地図</Trans>}>
+              <Fold className="fold-bare" title={<span className="border-l-4 border-brand pl-3 font-serif text-accent"><Trans>地図</Trans></span>}>
                 <TrailMapLoader stops={stops} line={route.line} sideLines={route.sideLines?.map((s) => s.line)} places={mapPlaces} draft={draftPositions} settings={settings} placesFirst={placesFirst} />
               </Fold>
             </section>

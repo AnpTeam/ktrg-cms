@@ -63,7 +63,7 @@ export function RouteJourney({ journey, locale }: { journey: Journey; locale: st
   const { start, goal, style, turnaround } = journey;
   const note = "text-lg";
   return (
-    <div className="flex flex-col gap-3 rounded-2xl bg-surface p-4">
+    <div className="flex flex-col gap-3 rounded-[1.75rem] bg-surface p-4">
       {style === "loop" ? (
         <>
           <Row badge={<StartGoalWords />} stop={start} locale={locale} tone="both" />
