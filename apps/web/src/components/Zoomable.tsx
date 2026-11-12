@@ -26,7 +26,8 @@ export function Zoomable({ src, alt, children }: { src: string; alt: string; chi
         // Black and white in both themes, not colour tokens: a photo reads best on black, and dark mode would swap paper and ink.
         className="m-0 h-dvh max-h-none w-screen max-w-none bg-black p-0"
       >
-        <div className="flex h-full flex-col p-3">
+        {/* Under the status strip of an installed iPhone app a tap is taken by the system, so the close button starts below it (--top-clear). */}
+        <div className="flex h-full flex-col p-3 pt-[calc(0.75rem+var(--top-clear))]">
           <div className="flex justify-end">
             <button type="button" aria-label={t`閉じる`} className="tap-target grid size-12 place-items-center rounded-full bg-white text-black">
               <XIcon size={24} />
