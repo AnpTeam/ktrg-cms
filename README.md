@@ -7,8 +7,6 @@ A bilingual (Japanese / English) installable web app (PWA) with a built-in CMS f
 
 Walkers follow a map of 19 trail routes, tap **Stamp here** at each of the 31 sutra mound places (経塚), and keep their progress on a personal stamp card. The server checks that the phone is really near the place. Admins manage routes, places, videos, status and notices from the same app.
 
-> **Status:** in development, not yet launched. The API and web app run locally and are deployed from `main` (see `MAINTAINING.md`). Project rules and decisions are in `CLAUDE.md`.
-
 ## Features
 
 - Trail map with 19 routes and 31 mound places, route guides with embedded videos, and navigation while walking
@@ -69,3 +67,7 @@ Geolocation and passkeys need HTTPS, so phone testing uses an HTTPS tunnel. Ever
 | `MAINTAINING.md` | Running the live site: deploys, backups, secrets, monitoring, troubleshooting |
 | `CLAUDE.md` | Project rules, security rules and settled decisions |
 | `docs/design-language.md` | How visitor-side screens should look and move |
+
+---
+
+This project is built with Claude Code.
