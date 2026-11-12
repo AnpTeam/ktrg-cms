@@ -396,7 +396,7 @@ export function TrailMap({
     <section
       ref={sectionRef}
       aria-label={t`地図`}
-      className={expanded ? "trail-map fixed inset-0 z-30 flex flex-col gap-3 bg-paper p-3 pt-[calc(0.75rem+var(--top-clear))]" : "trail-map flex scroll-mt-2 flex-col @4xl:h-full"}
+      className={expanded ? "trail-map fixed inset-0 z-30 flex flex-col gap-3 bg-paper p-3 pt-[calc(0.75rem+var(--top-clear))]" : "trail-map relative flex scroll-mt-2 flex-col gap-2 @4xl:h-full"}
     >
       {expanded ? (
         <div className="flex items-center justify-between gap-2">
@@ -463,56 +463,6 @@ export function TrailMap({
           )}
         </div>
 
-        <div className="pointer-events-none absolute inset-x-2 bottom-8 z-10 flex max-h-[calc(100%-4rem)] flex-col gap-2 print:hidden [&>*]:pointer-events-auto">
-          {selectedStop || selectedPlace ? (
-            <div className="min-h-0 overflow-y-auto rounded-xl shadow-md">
-              {selectedStop ? (
-                <StopCard
-                  order={selectedStop.order}
-                  name={selectedStop.name}
-                  nameLang={selectedStop.nameLang}
-                  status={selectedStop.status}
-                  href={selectedStop.href}
-                  noStamp={selectedStop.noStamp}
-                  draft={draft}
-                  onClose={() => setSelected(null)}
-                />
-              ) : selectedPlace ? (
-                <PlaceCard place={selectedPlace} meters={origin ? sortByDistance([selectedPlace], origin)[0]!.meters : null} onClose={() => setSelected(null)} />
-              ) : null}
-            </div>
-          ) : null}
-          <div className="flex items-end justify-between gap-2">
-            <div className="flex min-w-0 flex-wrap gap-1.5">
-              {anyPlaces ? <PlaceChips compact counts={counts} active={active} onToggle={toggleGroup} /> : null}
-              {hasSide ? (
-                <button type="button" aria-pressed={showSide} onClick={() => setShowSide((on) => !on)} className={`${buttonClass} ${showSide ? "!bg-ink !text-paper" : "bg-paper/95 shadow-sm"}`}>
-                  {t`寄り道の線を見る`}
-                </button>
-              ) : null}
-              {sortedPlaces.length > 0 ? (
-                <button type="button" aria-expanded={listOpen} onClick={() => setListOpen((on) => !on)} className={`${buttonClass} bg-paper/95 shadow-sm`}>
-                  <ListIcon />
-                  {t`まわりの場所`}
-                </button>
-              ) : null}
-            </div>
-            {stepper ? (
-              <div role="group" aria-label={t`場所を順に見る`} className="flex shrink-0 items-center rounded-full border border-ink bg-paper/95 shadow-sm">
-                <button type="button" onClick={() => goToStop(-1)} disabled={stopIndex === 0} aria-label={t`前の場所`} className={hit}>
-                  <ChevronLeftIcon />
-                </button>
-                <p aria-live="polite" className="min-w-[3.75rem] text-center text-lg font-bold tabular-nums">
-                  {stopIndex === -1 ? "－" : stopIndex + 1} / {stops.length}
-                </p>
-                <button type="button" onClick={() => goToStop(1)} disabled={stopIndex === stops.length - 1} aria-label={t`次の場所`} className={hit}>
-                  <ChevronIcon />
-                </button>
-              </div>
-            ) : null}
-          </div>
-        </div>
-
         {listOpen && sortedPlaces.length > 0 ? (
           <div className="absolute inset-0 z-20 overflow-y-auto bg-paper p-4">
             <div className="mb-2 flex justify-end">
@@ -524,6 +474,58 @@ export function TrailMap({
           </div>
         ) : null}
       </div>
+      <div className={`flex flex-col gap-2 px-3 pb-2 print:hidden ${expanded ? "" : "@4xl:pointer-events-none @4xl:absolute @4xl:inset-x-2 @4xl:bottom-8 @4xl:z-10 @4xl:max-h-[calc(100%-4rem)] @4xl:p-0 @4xl:[&>*]:pointer-events-auto"}`}>
+        {selectedStop || selectedPlace ? (
+          <div className="order-2 min-h-0 overflow-y-auto rounded-xl shadow-md @4xl:order-none">
+            {selectedStop ? (
+              <StopCard
+                order={selectedStop.order}
+                name={selectedStop.name}
+                nameLang={selectedStop.nameLang}
+                status={selectedStop.status}
+                href={selectedStop.href}
+                noStamp={selectedStop.noStamp}
+                draft={draft}
+                onClose={() => setSelected(null)}
+              />
+            ) : selectedPlace ? (
+              <PlaceCard place={selectedPlace} meters={origin ? sortByDistance([selectedPlace], origin)[0]!.meters : null} onClose={() => setSelected(null)} />
+            ) : null}
+          </div>
+        ) : null}
+        {/* On a phone the row dissolves into the block (contents) so the stepper stays right under the map, then the stop's card, then the chips. */}
+          <div className="contents @4xl:flex @4xl:flex-row @4xl:items-end @4xl:justify-between @4xl:gap-2">
+          {/* Under the map: one tidy two-column grid of the kinds of place and the two other buttons. Over the map (4xl): small chips that wrap. */}
+              <div className="order-3 grid min-w-0 grid-cols-2 gap-2 @4xl:order-none @4xl:flex @4xl:flex-wrap @4xl:gap-1.5">
+            {anyPlaces ? <PlaceChips compact className="contents @4xl:flex @4xl:flex-wrap @4xl:gap-1.5" counts={counts} active={active} onToggle={toggleGroup} /> : null}
+            {hasSide ? (
+              <button type="button" aria-pressed={showSide} onClick={() => setShowSide((on) => !on)} className={`${buttonClass} w-full justify-start @4xl:w-auto ${showSide ? "!bg-ink !text-paper" : "bg-paper/95 shadow-sm"}`}>
+                {t`寄り道の線を見る`}
+              </button>
+            ) : null}
+            {sortedPlaces.length > 0 ? (
+              <button type="button" aria-expanded={listOpen} onClick={() => setListOpen((on) => !on)} className={`${buttonClass} w-full justify-start bg-paper/95 shadow-sm @4xl:w-auto`}>
+                <ListIcon />
+                {t`まわりの場所`}
+              </button>
+            ) : null}
+          </div>
+          {stepper ? (
+            <div role="group" aria-label={t`場所を順に見る`} className="order-1 flex shrink-0 items-center self-end rounded-full border border-ink bg-paper/95 shadow-sm @4xl:order-none @4xl:self-auto">
+              <button type="button" onClick={() => goToStop(-1)} disabled={stopIndex === 0} aria-label={t`前の場所`} className={hit}>
+                <ChevronLeftIcon />
+              </button>
+              <p aria-live="polite" className="min-w-[3.75rem] text-center text-lg font-bold tabular-nums">
+                {stopIndex === -1 ? "－" : stopIndex + 1} / {stops.length}
+              </p>
+              <button type="button" onClick={() => goToStop(1)} disabled={stopIndex === stops.length - 1} aria-label={t`次の場所`} className={hit}>
+                <ChevronIcon />
+              </button>
+            </div>
+          ) : null}
+        </div>
+      </div>
+
     </section>
   );
 }

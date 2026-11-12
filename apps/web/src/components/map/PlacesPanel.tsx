@@ -77,6 +77,7 @@ export function PlaceChips({
   onToggle,
   label,
   compact = false,
+  className,
 }: {
   counts: Partial<Record<PlaceGroup, number>>;
   active: ReadonlySet<PlaceGroup>;
@@ -85,13 +86,15 @@ export function PlaceChips({
   label?: string;
   /** Small chips that wrap, for laying over the map (the default is a two-column grid of large ones). */
   compact?: boolean;
+  /** Replaces the wrapper's layout classes (the TrailMap lays the chips in its own grid with the other buttons). */
+  className?: string;
 }) {
   const { t } = useLingui();
   const names = useGroupNames();
   const offered = placeGroups.filter((g) => (counts[g] ?? 0) > 0);
   if (offered.length === 0) return null;
   return (
-    <div role="group" aria-label={label ?? t`まわりの場所を地図に出す`} className={compact ? "flex flex-wrap gap-1.5" : "grid grid-cols-2 gap-2"}>
+    <div role="group" aria-label={label ?? t`まわりの場所を地図に出す`} className={className ?? (compact ? "flex flex-wrap gap-1.5" : "grid grid-cols-2 gap-2")}>
       {offered.map((group) => {
         const on = active.has(group);
         return (
@@ -100,13 +103,14 @@ export function PlaceChips({
             type="button"
             aria-pressed={on}
             onClick={() => onToggle(group)}
-            className={`tap-target flex items-center gap-2 rounded-full border border-ink px-3 py-1 text-left text-lg font-bold leading-tight ${
+            className={`tap-target flex border border-ink text-left text-lg font-bold leading-tight ${compact ? "flex-wrap items-center gap-x-2 gap-y-1 rounded-2xl px-3 py-2 @4xl:flex-nowrap @4xl:gap-2 @4xl:rounded-full @4xl:py-1" : "items-center gap-2 rounded-full px-3 py-1"} ${
               on ? "bg-ink text-paper" : compact ? "bg-paper/95 text-ink shadow-sm hover:bg-surface" : "bg-paper text-ink hover:bg-surface"
             }`}
           >
             <PlaceGroupPicture group={group} size={24} />
-            <span className="min-w-0 flex-1">{names[group]}</span>
-            <span className="tabular-nums">{counts[group]}</span>
+            {/* A tile under the map (icon and count above, the name across the full width below); one pill over it. */}
+            <span className={compact ? "order-3 w-full min-w-0 @4xl:order-none @4xl:w-auto @4xl:flex-1" : "min-w-0 flex-1"}>{names[group]}</span>
+            <span className={`tabular-nums ${compact ? "ml-auto @4xl:ml-0" : ""}`}>{counts[group]}</span>
           </button>
         );
       })}

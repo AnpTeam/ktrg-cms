@@ -34,17 +34,18 @@ function RouteRow({ route, state, locale }: { route: RouteSummary; state: NodeSt
     <span className="relative flex h-full flex-col justify-center overflow-hidden">
       {/* The photo fades in from the right edge into the page (as the home capsules do, without the capsule); a course that
           is not ready shows it soft and grey, so it reads as unfinished at a glance. */}
-      <span aria-hidden="true" className="absolute inset-y-0 right-0 block w-1/2 overflow-hidden @2xl:w-2/5">
+      <span aria-hidden="true" className="absolute inset-y-0 right-0 block w-2/5 overflow-hidden @2xl:w-1/3">
         <span className={`absolute inset-0 block ${soon ? "scale-110 blur-[4px] saturate-50" : ""}`}>
           <RoutePhoto src={route.photoUrl} alt="" />
         </span>
         <span className="absolute inset-0 bg-linear-to-r from-paper from-10% to-transparent to-90%" />
       </span>
-      <span className="relative block min-w-0 py-4 pl-4 pr-[42%] xl:pl-1">
+      <span className="relative block min-w-0 py-4 pl-4 pr-[36%] xl:pl-1">
         <span className="flex items-center gap-3">
           {/* The course's number on a round badge (as on the home list), grey while the course is not ready. */}
           <span className={`badge-pattern grid size-10 shrink-0 place-items-center rounded-full font-serif text-xl font-bold tabular-nums ${soon ? "bg-line/25 text-muted" : "bg-brand-strong text-on-brand-strong"}`}>{route.order}</span>
-          <span className="min-w-0 text-xl font-bold leading-snug group-hover:underline">
+          {/* text-pretty: never a lone last character on a line of its own (辺, え, へ) */}
+          <span className="min-w-0 text-pretty text-xl font-bold leading-snug group-hover:underline">
             <NameRuby title={name} reading={route.nameKana} />
           </span>
         </span>
