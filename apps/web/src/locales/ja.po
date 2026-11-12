@@ -4387,6 +4387,13 @@ msgstr "表示と設定"
 
 msgid "このアプリについて"
 msgstr "このアプリについて"
+#: src/components/landing/DeskPanel.tsx
+msgid "海"
+msgstr "海"
+
+#: src/components/landing/DeskPanel.tsx
+msgid "稜線"
+msgstr "稜線"
 
 #: src/components/BackToTop.tsx
 msgid "ページの先頭へ"

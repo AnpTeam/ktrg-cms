@@ -19,6 +19,7 @@ export function SutraScroll() {
   return (
     <div
       aria-hidden="true"
+      data-decor="scroll"
       className="decor-drift pointer-events-none absolute bottom-6 -right-20 -z-10 w-[22rem] rotate-[-7deg] opacity-[0.16] @[42rem]:right-6 @[42rem]:w-[30rem]"
       style={{ "--drift": "-26svh" } as CSSProperties}
     >
@@ -69,27 +70,34 @@ export function KuzuVine() {
   );
 }
 
+/** The wave band 青海波 along the bottom of its box, fading upward. `id` names the pattern (one per drawing on a page). */
+export function Waves({ id, className = "-z-10" }: { id: string; className?: string }) {
+  const rings = (r: number) => `M0 ${30 - r} A${r} ${r} 0 0 1 ${r} 30 M${60 - r} 30 A${r} ${r} 0 0 1 60 ${30 - r} M${30 - r} 60 A${r} ${r} 0 0 1 ${30 + r} 60`;
+  return (
+    <div aria-hidden="true" className={`decor-waves pointer-events-none absolute inset-x-0 bottom-0 ${className} h-[55%] opacity-[0.12]`}>
+      <svg className="size-full" {...line} strokeWidth={1.2}>
+        <defs>
+          <pattern id={id} width="60" height="60" patternUnits="userSpaceOnUse">
+            <path d={`${rings(28)} ${rings(19)} ${rings(10)}`} />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill={`url(#${id})`} stroke="none" />
+      </svg>
+    </div>
+  );
+}
+
 /**
  * A ringed staff (the shakujō a mountain monk carries: a large ring on a stem, small rings hanging from it) at the left,
  * and a band of waves along the bottom that fades upward: the walk starts at the sea.
  */
 export function StaffAndWaves() {
-  const rings = (r: number) => `M0 ${30 - r} A${r} ${r} 0 0 1 ${r} 30 M${60 - r} 30 A${r} ${r} 0 0 1 60 ${30 - r} M${30 - r} 60 A${r} ${r} 0 0 1 ${30 + r} 60`;
   return (
     <>
-      <div aria-hidden="true" className="decor-waves pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[55%] opacity-[0.12]">
-        <svg className="size-full" {...line} strokeWidth={1.2}>
-          <defs>
-            <pattern id="seigaiha" width="60" height="60" patternUnits="userSpaceOnUse">
-              <path d={`${rings(28)} ${rings(19)} ${rings(10)}`} />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#seigaiha)" stroke="none" />
-        </svg>
-      </div>
+      <Waves id="seigaiha" />
       <div
         aria-hidden="true"
-        className="decor-drift pointer-events-none absolute -left-2 top-6 -z-10 h-[26rem] w-16 opacity-[0.14] @[42rem]:left-8"
+        className="decor-drift pointer-events-none absolute -left-2 top-[calc(1.5rem+var(--top-clear))] -z-10 h-[26rem] w-16 opacity-[0.22] @[42rem]:left-8"
         style={{ "--drift": "-22svh" } as CSSProperties}
       >
         <svg viewBox="0 0 80 520" className="h-full w-full" preserveAspectRatio="xMidYMin meet" {...line}>

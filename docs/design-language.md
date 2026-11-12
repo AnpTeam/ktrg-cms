@@ -112,6 +112,8 @@ paragraphs are exactly what not to copy.
 - Every picture has a caption or credit line in text, and `alt` that says what it shows.
 - Sizes are declared (aspect ratio) so nothing jumps while loading; below the first screen they load lazily.
 
+On a desk the scene's picture panel uses course photos (never banner photos), under a gradient so no text sits on a photo; the credit shows at the panel's corner (docs/landing-desktop-design.md).
+
 ## Do and don't
 
 Numbered so we can discuss them by number.
