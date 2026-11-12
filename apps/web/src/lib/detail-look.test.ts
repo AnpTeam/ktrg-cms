@@ -48,7 +48,7 @@ test("the rally page takes the course cover, Mincho title and group titles", () 
   const h2s = [...r.matchAll(/<h2 className="([^"]*)"/g)].map((m) => m[1]);
   expect(h2s.length).toBe(2);
   for (const c of h2s) expect(c).toBe(GROUP_TITLE);
-  expect(r).toMatch(/pattern-shippo mx-4 flex flex-col items-center gap-3 rounded-\[1\.75rem\] bg-surface p-6/);
+  expect(r).toMatch(/pattern-shippo order-4 mx-4 flex flex-col items-center gap-3 rounded-\[1\.75rem\] bg-surface p-6/);
 });
 
 test("stamping and status pieces stay on the rally page", () => {
