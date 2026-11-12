@@ -11,10 +11,11 @@ export function StampLegend() {
     { state: "next", label: t`つぎ` },
   ];
   return (
-    <ul className="grid grid-cols-3 gap-2 px-4 text-center text-lg">
+    // One tidy row, the seal and its word side by side (three columns across the page's width spread them far apart).
+    <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 text-lg">
       {items.map(({ state, label }) => (
-        <li key={state} className="flex flex-col items-center gap-1">
-          <Seal state={state} className="size-14" />
+        <li key={state} className="flex items-center gap-2">
+          <Seal state={state} className="size-10" />
           <span className="font-bold">{label}</span>
         </li>
       ))}
