@@ -1,6 +1,6 @@
 # Landing on a desktop: a split-screen journey
 
-Status: **draft for review, nothing built.** Written 2026-11-12 from the user's choices that day (see "Decided"). It extends
+Status: **approved 2026-11-12, plan in `docs/landing-desktop-plan.md`, nothing built.** Written 2026-11-12 from the user's choices that day (see "Decided"). It extends
 `docs/landing-story-design.md` (the phone journey) and `docs/landing-journey-design.md` (the sticky scene). Phones and tablets
 keep what they have; this is only what a wide, tall screen gets.
 
@@ -34,9 +34,9 @@ Same three beats and the same words; the DOM does not change much, the layout do
   - **Left, about 5/12:** the beat's chapter (headline, words, link or button, facts). Vertical headline in Japanese as today.
     It stays centred in the column and fades between beats as now.
   - **Right, about 7/12: the picture panel**, a nearly square-cornered panel that fills the stage height with a margin. It holds,
-    from back to front: a photo (the first banner photo, else `public/home/top_slider_img01.jpg`) under a ground-coloured
-    gradient so it is only a hint; the wave band; the ridge drawn large across the panel (drawn from the first scroll, done by
-    half, as on the phone); the seals dropping onto it in the last beat; the staff and the sutra scroll as drifting decoration.
+    from back to front: a course photo (see "Decided in review") under a ground-coloured gradient so it is only a hint; the
+    wave band; the ridge drawn large across the panel (drawn from the first scroll, done by half, as on the phone); the seals
+    dropping onto it in the last beat. The staff and the sutra scroll stay with their chapters in the left column.
     The panel's ground follows the beat (night for the story, surface for the stamp rally) with the existing colour transition.
   - **Step marker** on the left edge of the stage: three numbered steps (01 sea, 02 ridge, 03 mounds; Japanese 海, 稜線, 経塚) with the
     active one filled. It answers "is the page really scrolling" on a desktop, and doubles as the keyboard-visible progress.
@@ -73,9 +73,8 @@ Panning the trail sideways across the screen (considered, not chosen); a new map
   off; a resize from desktop to phone width and back swaps layouts without a reload.
 - Not verifiable here: a real large monitor and a real trackpad or mouse wheel.
 
-## Open questions for the user
+## Decided in review (the user, 2026-11-12)
 
-1. The panel's photo: use the first banner photo (changes when the admin changes banners) or always the same trail photo?
-   Proposed: the first banner photo.
-2. Step marker words: 海 / 稜線 / 経塚 and Sea / Ridge / Mounds. Proposed as written.
-3. About 300 svh of scroll on desktop (a little longer than the phone's 250 svh, because each beat has more to show). Proposed.
+1. **The panel's photos are course photos**, not banner photos: the first two published courses that have a photo (published first, in course order), the first behind the story beat and the second behind the stamp rally beat, crossfading. With no course photo yet, the first banner photo, else `public/home/top_slider_img01.jpg`. The photo credit of the course is shown at the panel's corner.
+2. **Step marker words:** 海 / 稜線 / 経塚 and Sea / Ridge / Mounds.
+3. **About 300 svh** of scroll on desktop.
