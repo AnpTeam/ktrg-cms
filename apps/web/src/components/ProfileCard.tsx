@@ -37,7 +37,7 @@ export function ProfileCard({ publicId, name, origin, originPlace = null, ageRan
   const text = readOnly ? "text-base" : "text-lg";
 
   return (
-    <section aria-label={t`プロフィール`} className={`mx-4 flex items-center rounded-3xl bg-surface ${readOnly ? "gap-3 p-3" : "gap-4 p-5"}`}>
+    <section aria-label={t`プロフィール`} className={`mx-4 flex items-center rounded-[1.75rem] bg-surface ${readOnly ? "gap-3 p-3" : "pattern-shippo gap-4 p-5"}`}>
       <span className={`flex shrink-0 items-center justify-center rounded-full bg-brand text-on-brand ${readOnly ? "size-10 [&_svg]:size-5" : "size-14 [&_svg]:size-7"}`}>
         <UserIcon />
       </span>

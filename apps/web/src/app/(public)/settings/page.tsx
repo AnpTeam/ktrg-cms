@@ -24,7 +24,7 @@ export default async function SettingsPage({ searchParams }: { searchParams: Pro
       <BackLink href={home}>
         <Trans>ホーム</Trans>
       </BackLink>
-      <h1 className="font-serif text-3xl font-bold">
+      <h1 className="font-serif text-3xl font-bold text-accent">
         <Trans>見やすさの設定</Trans>
       </h1>
       <p className="text-lg">
