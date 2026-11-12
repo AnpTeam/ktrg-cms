@@ -19,7 +19,7 @@ Settings the API reads are listed in `.env.example`. Real values live in Vercel 
 
 All of this is in `/admin`. See `docs/ADMIN-GUIDE.md` for the screens.
 
-- **Replace a route's video:** Routes, open the route, the photos and video section. Paste a YouTube or Vimeo link, or upload an MP4/WebM. An empty link hides the video. The links it had before are listed under the field ("Earlier video links"); "Put this link back" fills the field again, and you save as usual.
+- **Replace a route's video:** Routes, open the route, the photos and video section. Paste a YouTube link, or upload an MP4/WebM. An empty link hides the video. The links it had before are listed under the field ("Earlier video links"); "Put this link back" fills the field again, and you save as usual.
 - **Add a route:** Routes, new route. It shows as 準備中 until it has published waypoints.
 - **Publish a waypoint or a place:** its position must be ticked as checked against a named source, and (for places) the listing permission ticked. The database refuses to publish otherwise.
 - **A closure or hazard:** Notices. Enter the source link, the date you checked it, and an end date. Old notices disappear on their end date.
