@@ -22,10 +22,13 @@ export function MunicipalitiesField({
   id,
   value,
   onChange,
+  invalid = false,
 }: {
   id: string;
   value: string[];
   onChange: (value: string[]) => void;
+  /** Shown red after a save was refused because no city or town is chosen. */
+  invalid?: boolean;
 }) {
   const { t } = useLingui();
   const [typed, setTyped] = useState("");
@@ -58,11 +61,12 @@ export function MunicipalitiesField({
     <div className="flex flex-col gap-3">
       <Field
         label={t`市区町村`}
+        required
+        status={value.length === 0 ? t`未選択` : undefined}
         htmlFor={id}
         hint={t`通る順に並べます。市・町・村は一覧から選びます。一覧にない地名は、下に入力して追加します（8つまで）。`}
       >
         <ol className="flex flex-col gap-2">
-          {value.length === 0 ? <li className="text-lg text-muted">{t`未選択`}</li> : null}
           {value.map((city, i) => {
             const en = englishCityName(city);
             return (
@@ -95,7 +99,8 @@ export function MunicipalitiesField({
           onChange={(e) => {
             if (e.target.value) add([e.target.value]);
           }}
-          className={inputClass}
+          aria-invalid={invalid || undefined}
+          className={`${inputClass} ${invalid ? "border-danger" : ""}`}
         >
           <option value="">{t`市や町を選んで追加`}</option>
           {PREFECTURES.flatMap((p) => [

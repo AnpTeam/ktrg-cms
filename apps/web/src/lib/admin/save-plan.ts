@@ -307,6 +307,7 @@ export function keepLaterEdits(fromServer: RouteDraft, atStart: RouteDraft, now:
 
 export type DraftProblem =
   | { kind: "route_name" }
+  | { kind: "route_municipalities" }
   | { kind: "place_name"; key: string }
   | { kind: "place_position"; key: string }
   | { kind: "video_link" }
@@ -342,6 +343,7 @@ export function videoLinkLooksValid(raw: string): boolean {
 export function draftProblems(d: RouteDraft): DraftProblem[] {
   const out: DraftProblem[] = [];
   if (d.nameJa.trim() === "") out.push({ kind: "route_name" });
+  if (d.municipalities.length === 0) out.push({ kind: "route_municipalities" }); // required: the course list and the pages name where it is
   if (!videoLinkLooksValid(d.videoUrl)) out.push({ kind: "video_link" });
   if (!videoLinkLooksValid(d.videoUrlEn)) out.push({ kind: "video_link_en" });
   if (!photoLinkLooksValid(d.photoUrl)) out.push({ kind: "photo_link" });
