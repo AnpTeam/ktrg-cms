@@ -28,6 +28,7 @@ export function JourneyScene({ children, seals }: { children: ReactNode; seals: 
     // Everything the scene touched, put back: the class, the active beat and every inline style.
     const reset = (clear: (targets: Element[], vars: object) => void) => {
       el.classList.remove("journey-live");
+      el.style.removeProperty("--journey");
       delete el.dataset.activeBeat;
       ridge?.style.removeProperty("stroke-dasharray");
       ridge?.style.removeProperty("stroke-dashoffset");
@@ -73,6 +74,7 @@ export function JourneyScene({ children, seals }: { children: ReactNode; seals: 
                 away = true;
                 window.dispatchEvent(new Event("journey-scrolled")); // the photos stop advancing (HeroSlides)
               }
+              el.style.setProperty("--journey", p.toFixed(3)); // the drawings drift with it (.decor-drift)
               draw(drawnShare(p));
               const n = sealsPlaced(p, seals);
               if (n !== placed) {

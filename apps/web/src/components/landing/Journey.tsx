@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Trans } from "@lingui/react/macro";
 import { buttonStyle } from "@/components/button";
 import { Chapter } from "@/components/landing/Chapter";
+import { SutraScroll, StaffAndWaves } from "@/components/landing/Decor";
 import { JourneyScene } from "@/components/landing/JourneyScene";
 import { LandingHero } from "@/components/landing/LandingHero";
 import type { BannerSlide } from "@/lib/banners";
@@ -40,7 +41,7 @@ export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; 
         </div>
 
         <div data-beat="1">
-          <Chapter ground="story-ground-inverse" heading={w.storyHeading} id="story-title">
+          <Chapter ground="story-ground-inverse" heading={w.storyHeading} id="story-title" decoration={<StaffAndWaves />}>
             <p className="text-lg leading-9">{w.storyText}</p>
             <Link href="/story" className="tap-target inline-flex items-center text-lg font-bold underline underline-offset-4">
               <Trans>ストーリーを読む</Trans>
@@ -82,7 +83,7 @@ export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; 
         </figure>
 
         <div data-beat="2">
-          <Chapter ground="story-ground-surface" heading={w.rallyHeading} id="rally-title">
+          <Chapter ground="story-ground-surface" heading={w.rallyHeading} id="rally-title" decoration={<SutraScroll />}>
             <p className="font-serif text-2xl font-bold leading-snug">{w.rallyLead}</p>
             <p className="text-lg leading-9">{w.rallyText}</p>
             <Link href="/rallies" className={buttonStyle("secondary", "lg", "flex w-full @[34rem]:w-fit")}>

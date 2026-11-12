@@ -54,6 +54,17 @@ export function StoryMotion({ children, className = "" }: { children: ReactNode;
             if (path.closest("[data-journey]")) return;
             gsap.fromTo(path, { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, ease: "none", scrollTrigger: { trigger: path.ownerSVGElement ?? path, start: "top 90%", end: "bottom 45%", scrub: 0.6 } });
           });
+          // The decorations (Decor.tsx) move gently: `data-parallax` drifts a few percent against the scroll while its chapter
+          // passes, and `data-grow` (the kuzu vine) is uncovered from the top as the chapter scrolls by. Both leave the scene's
+          // own drawings alone (they follow --journey), and neither runs for reduced motion or calm.
+          gsap.utils.toArray<HTMLElement>("[data-parallax]", el).forEach((d) => {
+            if (d.closest("[data-journey]")) return;
+            gsap.fromTo(d, { yPercent: -6 }, { yPercent: 6, ease: "none", scrollTrigger: { trigger: d.closest("[data-ground]") ?? d, start: "top bottom", end: "bottom top", scrub: true } });
+          });
+          gsap.utils.toArray<HTMLElement>("[data-grow]", el).forEach((d) => {
+            if (d.closest("[data-journey]")) return;
+            gsap.fromTo(d, { clipPath: "inset(0 0 100% 0)" }, { clipPath: "inset(0 0 0% 0)", ease: "none", scrollTrigger: { trigger: d.closest("[data-ground]") ?? d, start: "top 70%", end: "bottom 55%", scrub: true } });
+          });
         });
         stop = () => mm.revert();
       })

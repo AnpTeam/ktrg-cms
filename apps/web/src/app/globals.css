@@ -1553,6 +1553,18 @@ body.map-nav-mode .map-layer-pills {
   }
 }
 
+/* Decorations that follow the scroll scene (components/landing/Decor.tsx): JourneyScene hands its progress over as --journey
+   (0 to 1); with no scene it is not set and they stand where they are drawn. Transform only, and gentle (--drift is how far
+   the whole scene moves them). The wave band fades upward so it has no hard top edge. */
+.decor-drift {
+  transform: translate3d(0, calc((var(--journey, 0.5) - 0.5) * var(--drift, -24svh)), 0);
+  will-change: transform;
+}
+.decor-waves {
+  -webkit-mask-image: linear-gradient(to top, black, transparent);
+  mask-image: linear-gradient(to top, black, transparent);
+}
+
 /* The outro mountains (the team's drawing, public/home/outro_mountains.svg): a skyline along the bottom of the Start chapter,
    used as a mask over a colour token so it follows light and dark mode. The drawing fades out toward its bottom edge. */
 .outro-mountains {

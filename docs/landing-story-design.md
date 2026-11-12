@@ -120,3 +120,8 @@ The sticky scene keeps three beats; the rest are the existing chapters, moved in
 - **Removing the first-visit screen** loses the one place a visitor chose a language. The button on the photo replaces it; if people miss it, a second chance is the install bar's text.
 - **Scroll length.** Seven chapters is a long page for a first visit. The skip link and the progress line are the mitigation; shorten later if it feels long.
 - **Install prompt timing** (3 minutes, second visit, 30 days) are first guesses.
+
+## Decorations and short screens (2026-11-12)
+
+- Our own drawings stand behind three chapters and drift gently (rules in `docs/design-language.md`, Motion): the sutra scroll, the kuzu vine, the ringed staff over waves. The Start chapter fades in from the ground above it (`SeamFade`).
+- A screen shorter than 38rem (a phone on its side) keeps the stacked page instead of the sticky scene, because the stage is one screen tall and the story words and the ridge would not fit (JourneyScene, a media query inside gsap.matchMedia, so turning the phone swaps without a reload).
