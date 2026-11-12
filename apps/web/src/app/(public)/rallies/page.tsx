@@ -4,7 +4,7 @@ import { msg } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { EmptyState } from "@/components/EmptyState";
 import { Notice } from "@/components/Notice";
-import { FeaturedRally, RallyCard } from "@/components/RallyViews";
+import { FeaturedRally, RallyCard, RallyHero } from "@/components/RallyViews";
 import { SectionBanner } from "@/components/SectionBanner";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { listRallies } from "@/lib/content";
@@ -46,6 +46,8 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
           ?
         </Link>
       </div>
+
+      <RallyHero />
 
       {/* Signed out: a reason to sign in and the rallies, never a false "0 stamps". */}
       {viewer.signedIn ? null : <SignInPrompt compact />}

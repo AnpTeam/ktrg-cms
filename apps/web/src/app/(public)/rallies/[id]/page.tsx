@@ -56,8 +56,11 @@ export default async function RallyPage({ params, searchParams }: Props) {
   // One main button at a time: the way to the first place until something is stamped, then the stamp button for the place you are at.
 
   return (
-    <div className="flex flex-col gap-6 pt-2 wide:pt-0">
-      <div className="px-4">
+    // A phone: one column in this order (back, photo, name, progress, buttons, stamps, places). From a wide screen: the words on the
+    // left and the stamp faces in a column of their own on the right (as the course page keeps its map), which stays in view.
+    <div className="flex flex-col gap-6 pt-2 wide:grid wide:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] wide:items-start wide:gap-x-8 wide:pt-0">
+      <div className="contents wide:flex wide:min-w-0 wide:flex-col wide:gap-6">
+      <div className="order-1 px-4 wide:order-none">
         <BackLink href="/rallies">
           <Trans>ラリー</Trans>
         </BackLink>
@@ -65,11 +68,11 @@ export default async function RallyPage({ params, searchParams }: Props) {
 
       {/* The course page's cover: the photo runs to the edge and fades into the page, and the name sits on the fade. */}
       {photo ? (
-        <div className="wide:max-w-2xl">
+        <div className="order-2 wide:order-none">
           <CoverPhoto photo={photo} flat />
         </div>
       ) : null}
-      <header className={`relative flex flex-col gap-4 px-4 ${photo ? "-mt-20" : ""}`}>
+      <header className={`relative order-3 flex flex-col gap-4 px-4 wide:order-none ${photo ? "-mt-20" : ""}`}>
         <h1 className="font-serif text-3xl font-bold leading-snug text-accent wide:text-4xl">{name}</h1>
         {isSoon(rally) ? (
           <p className="inline-block w-fit rounded-lg border-2 border-dashed border-line px-3 text-xl font-bold text-muted">
@@ -80,7 +83,7 @@ export default async function RallyPage({ params, searchParams }: Props) {
 
       {done ? (
         // A finished rally: the closed medal, in place of the count and the bar.
-        <section className="pattern-shippo mx-4 flex flex-col items-center gap-3 rounded-[1.75rem] bg-surface p-6 text-center">
+        <section className="pattern-shippo order-4 mx-4 flex flex-col items-center gap-3 rounded-[1.75rem] bg-surface p-6 text-center wide:order-none">
           <Medal number={rally.total} done stamped={rally.total} total={rally.total} className="h-44 w-auto" />
           <p className="font-serif text-3xl font-bold text-accent">
             <Trans>コンプリート！</Trans>
@@ -96,7 +99,7 @@ export default async function RallyPage({ params, searchParams }: Props) {
           {viewer.signedIn ? <CertificateButton title={name} total={rally.total} locale={i18n.locale} /> : null}
         </section>
       ) : (
-        <section className="mx-4 flex flex-col gap-3 rounded-[1.75rem] bg-surface p-4">
+        <section className="order-4 mx-4 flex flex-col gap-3 rounded-[1.75rem] bg-surface p-4 wide:order-none">
           <p className="text-6xl font-bold leading-none tabular-nums text-accent">
             {stamped}
             <span className="ml-2 text-3xl text-muted">/ {rally.total}</span>
@@ -108,7 +111,7 @@ export default async function RallyPage({ params, searchParams }: Props) {
       )}
 
       {!isSoon(rally) ? (
-        <section className="mx-4 flex flex-col gap-3">
+        <section className="order-5 mx-4 flex flex-col gap-3 wide:order-none">
           <Link href={startHref} className={stamped === 0 ? button : quietButton}>
             {stamped === 0 ? <Trans>いますぐはじめる</Trans> : <Trans>つづきをはじめる</Trans>}
           </Link>
@@ -118,19 +121,7 @@ export default async function RallyPage({ params, searchParams }: Props) {
       ) : null}
 
       {rally.total > 0 ? (
-        <section className="flex flex-col gap-3 px-4">
-          <h2 className="border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">
-            <Trans>スタンプ</Trans>
-          </h2>
-          <div className="-mx-4">
-            <StampLegend />
-          </div>
-          <StampGrid total={rally.total} stamped={stampedNumbers(rally)} showNext={rally.stamped !== null} />
-        </section>
-      ) : null}
-
-      {rally.total > 0 ? (
-        <section className="flex flex-col gap-3 px-4">
+        <section className="order-7 flex flex-col gap-3 px-4 wide:order-none">
           <h2 className="border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">
             <Trans>めぐる場所</Trans>
           </h2>
@@ -139,6 +130,20 @@ export default async function RallyPage({ params, searchParams }: Props) {
           </div>
         </section>
       ) : null}
+      </div>
+
+      {/* The stamp faces: on a phone they come after the buttons, on a wide screen they stand in the right column. */}
+      <div className="order-6 wide:sticky wide:top-4 wide:order-none">
+      {rally.total > 0 ? (
+        <section className="flex flex-col gap-3 px-4 wide:rounded-[1.75rem] wide:bg-surface wide:p-6">
+          <h2 className="border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">
+            <Trans>スタンプ</Trans>
+          </h2>
+          <StampLegend />
+          <StampGrid total={rally.total} stamped={stampedNumbers(rally)} showNext={rally.stamped !== null} />
+        </section>
+      ) : null}
+      </div>
     </div>
   );
 }

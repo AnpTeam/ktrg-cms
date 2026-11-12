@@ -10,6 +10,8 @@ import { SectionBanner } from "./SectionBanner";
 import { StampGrid } from "./StampGrid";
 import { StampLegend } from "./StampLegend";
 import { buttonStyle } from "@/components/button";
+import { Seal } from "./Seal";
+import { SutraScroll } from "./landing/Decor";
 
 const nameOf = (locale: string, ja: string, en: string | null) => pickText(locale, ja, en)?.text ?? ja;
 
@@ -65,7 +67,7 @@ export function FeaturedRally({ rally, locale, account }: { rally: RallyItem; lo
             </span>
           </p>
         ) : null}
-        <div className="-mx-4 mt-3">
+        <div className="mt-3">
           <StampLegend />
         </div>
         <div className="mt-4">
@@ -198,5 +200,27 @@ export function RallyCard({ rally, locale, account }: { rally: RallyItem; locale
         ) : null}
       </details>
     </li>
+  );
+}
+
+/** The top of the rally list: what a rally is, with a sutra scroll behind and the three kinds of seal in a row. Decoration and a sentence, no numbers. */
+export function RallyHero() {
+  return (
+    <section className="@container pattern-shippo relative isolate mx-4 flex flex-col gap-3 overflow-hidden rounded-[1.75rem] bg-surface p-6 wide:p-8">
+      <SutraScroll />
+      <p className="font-serif text-2xl font-bold leading-snug text-accent wide:text-3xl">
+        <Trans>歩いて、スタンプを集めよう。</Trans>
+      </p>
+      <p className="max-w-[32em] text-lg leading-8">
+        <Trans>行き先の近くでボタンを押すと、スタンプがたまります。位置は、押した一回だけ調べ、保存しません。</Trans>
+      </p>
+      <div aria-hidden="true" className="mt-1 flex items-center gap-3">
+        <Seal state="stamped" className="size-14" />
+        <Seal state="stamped" className="size-14" />
+        <Seal state="next" className="size-14" />
+        <Seal state="empty" className="size-14" />
+        <Seal state="empty" className="size-14" />
+      </div>
+    </section>
   );
 }
