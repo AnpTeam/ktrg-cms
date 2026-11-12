@@ -30,3 +30,18 @@ test("the hero is as tall in every language when it is the journey's first scree
   const hero = readFileSync(join(src, "components", "landing", "LandingHero.tsx"), "utf8");
   expect(hero).toMatch(/bare\s*\?\s*"h-\[min\(78svh,44rem\)\]/);
 });
+
+// 2026-11-12, real iPhone: the logo bar that appeared after the first scroll stayed over the page (about 120 px of a phone
+// screen) and added nothing, the tab bar has Home. On the signed-out home page the bar now shows only while the menu is open.
+test("the home page's logo bar is not shown just because the visitor scrolled", () => {
+  const header = readFileSync(join(src, "components", "SiteHeader.tsx"), "utf8");
+  expect(header).not.toMatch(/setScrolled|SHOW_MENU_AFTER/);
+  expect(header).toMatch(/const hidden = onLanding && !onMap && !open;/);
+});
+
+// 2026-11-12, real iPhone: in Japanese the vertical line is tall, so the logo under it sank onto the "スクロール" cue. The first
+// photo keeps the cue's zone free, so the line and the logo are centred above it.
+test("the first photo keeps room for the scroll cue under the logo", () => {
+  const hero = readFileSync(join(src, "components", "landing", "LandingHero.tsx"), "utf8");
+  expect(hero).toMatch(/bare \? "pb-\[calc\(9\.5rem\+env\(safe-area-inset-bottom\)\)\] md:pb-24"/);
+});
