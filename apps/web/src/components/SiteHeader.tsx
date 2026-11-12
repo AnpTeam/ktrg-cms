@@ -246,19 +246,23 @@ export function SiteHeader({
             </MenuGroup>
 
             <MenuGroup title={t`表示と設定`}>
-              <div className="flex flex-col gap-2">
-                <p className="text-lg font-bold">{t`画面の明るさ`}</p>
-                <div className="flex flex-wrap items-center gap-3">
+              {/* Brightness and language side by side, each its own section (a label over a full-width control). */}
+              <div className="grid grid-cols-2 gap-3 [&_button]:w-full [&_button]:justify-center [&_select]:w-full">
+                <div className="flex min-w-0 flex-col gap-1">
+                  <p className="text-lg font-bold">{t`画面の明るさ`}</p>
                   <ThemeSwitcher />
+                </div>
+                <div className="flex min-w-0 flex-col gap-1">
+                  <p className="text-lg font-bold">{t`言語`}</p>
                   <LocaleSelect />
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <Link prefetch={false} href="/settings" className={buttonStyle("secondary", "md", "flex w-full justify-start")}>
-                  {t`見やすさの設定`}
-                </Link>
-                <p className="text-base text-muted">{t`文字やボタンの大きさ、地図の見せ方`}</p>
                 <QuickActions prefs={prefs} signedIn={signedIn} />
+                <MenuLinks>
+                  <MenuLink href="/settings" label={t`見やすさの設定`} />
+                </MenuLinks>
+                <p className="text-base text-muted">{t`文字やボタンの大きさ、地図の見せ方`}</p>
               </div>
             </MenuGroup>
 

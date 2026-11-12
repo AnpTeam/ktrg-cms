@@ -4,15 +4,36 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { persistPrefs } from "@/lib/prefs-client";
-import { CalmIcon, ContrastIcon, SoundOnIcon } from "./icons";
 import { setSound, useSound } from "@/lib/stamp-feel";
-import { textSizes, type Prefs } from "@/lib/prefs";
+import type { Prefs } from "@/lib/prefs";
 
 type Toggle = "furigana" | "contrast" | "calm";
 
+/** One switch: its name over two choices as a joined pill (as a city site's 標準 | 拡大): the chosen one is ink. */
+function Choice({ label, options }: { label: string; options: { text: string; on: boolean; pick: () => void }[] }) {
+  return (
+    <div role="group" aria-label={label} className="flex min-w-0 flex-col gap-1">
+      <span className="text-base font-bold">{label}</span>
+      <span className="flex overflow-hidden rounded-full border border-ink">
+        {options.map((o) => (
+          <button
+            key={o.text}
+            type="button"
+            aria-pressed={o.on}
+            onClick={o.pick}
+            className={`tap-target min-w-0 flex-1 whitespace-nowrap px-1 text-base font-bold ${o.on ? "bg-selected text-on-selected" : "bg-paper text-ink hover:bg-surface"}`}
+          >
+            {o.text}
+          </button>
+        ))}
+      </span>
+    </div>
+  );
+}
+
 /**
- * Four big switches for the accessibility choices people reach for most: furigana, text size, contrast, calm. They sit
- * at the top of the menu and change the page at once; the full list is in the settings.
+ * The accessibility choices people reach for most as five compact switches in two columns (text size, furigana, contrast, calm, sound), each a
+ * two-way pill. They sit in the menu and change the page at once; the full list is in the settings.
  */
 export function QuickActions({ prefs, signedIn }: { prefs: Prefs; signedIn: boolean }) {
   const { t } = useLingui();
@@ -31,36 +52,27 @@ export function QuickActions({ prefs, signedIn }: { prefs: Prefs; signedIn: bool
     await persistPrefs(next, signedIn);
     router.refresh();
   }
-  const flip = (key: Toggle) => change({ ...current, [key]: !current[key] });
-  const bigger = () => change({ ...current, size: textSizes[(textSizes.indexOf(current.size) + 1) % textSizes.length]! });
+  const flip = (key: Toggle, value: boolean) => current[key] !== value && change({ ...current, [key]: value });
+  const grown = current.size === "large" || current.size === "xlarge";
 
-  const button = (on: boolean) =>
-    `flex min-h-14 min-w-0 flex-col items-center justify-center rounded-full border px-1 py-1 text-center text-base font-bold leading-tight ${on ? "border-selected bg-selected text-on-selected" : "border-line bg-paper text-ink"}`;
-  const sizeName = { small: t`小`, standard: t`ふつう`, large: t`大`, xlarge: t`特大` }[current.size];
+  const none = t`なし`;
+  const yes = t`あり`;
+  const plain = t`ふつう`;
 
   return (
-    <div role="group" aria-label={t`見やすさのクイック設定`} className="grid grid-cols-3 gap-2">
-      <button type="button" aria-pressed={current.furigana} onClick={() => flip("furigana")} className={button(current.furigana)}>
-        <span aria-hidden="true" className="text-base leading-none">あ</span>
-        {t`ふりがな`}
-      </button>
-      <button type="button" onClick={bigger} className={button(current.size !== "standard")} aria-label={t`文字の大きさ: ${sizeName}（押すと変わります）`}>
-        <span aria-hidden="true" className="text-base leading-none">文</span>
-        {t`文字 ${sizeName}`}
-      </button>
-      <button type="button" aria-pressed={current.contrast} onClick={() => flip("contrast")} className={button(current.contrast)}>
-        <span className="[&_svg]:size-5"><ContrastIcon /></span>
-        {t`くっきり`}
-      </button>
-      <button type="button" aria-pressed={current.calm} onClick={() => flip("calm")} className={button(current.calm)}>
-        <span className="[&_svg]:size-5"><CalmIcon /></span>
-        {t`動きなし`}
-      </button>
+    <div role="group" aria-label={t`見やすさのクイック設定`} className="grid grid-cols-2 gap-3">
+      <Choice
+        label={t`文字サイズ`}
+        options={[
+          { text: t`標準`, on: current.size === "standard", pick: () => change({ ...current, size: "standard" }) },
+          { text: t`拡大`, on: grown, pick: () => !grown && change({ ...current, size: "large" }) },
+        ]}
+      />
+      <Choice label={t`ふりがな`} options={[{ text: none, on: !current.furigana, pick: () => flip("furigana", false) }, { text: yes, on: current.furigana, pick: () => flip("furigana", true) }]} />
+      <Choice label={t`配色`} options={[{ text: plain, on: !current.contrast, pick: () => flip("contrast", false) }, { text: t`くっきり`, on: current.contrast, pick: () => flip("contrast", true) }]} />
+      <Choice label={t`動き`} options={[{ text: plain, on: !current.calm, pick: () => flip("calm", false) }, { text: none, on: current.calm, pick: () => flip("calm", true) }]} />
       {/* The stamp sound: kept on this device only, off until chosen. */}
-      <button type="button" aria-pressed={sound} onClick={() => setSound(!sound)} className={button(sound)}>
-        <span className="[&_svg]:size-5"><SoundOnIcon /></span>
-        {t`音`}
-      </button>
+      <Choice label={t`音`} options={[{ text: none, on: !sound, pick: () => setSound(false) }, { text: yes, on: sound, pick: () => setSound(true) }]} />
     </div>
   );
 }

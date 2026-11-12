@@ -8232,3 +8232,19 @@ msgstr "Information only"
 
 msgid "ここにはスタンプはありません。"
 msgstr "There is no stamp here."
+
+#: src/components/QuickActions.tsx
+msgid "文字サイズ"
+msgstr "Text size"
+
+#: src/components/QuickActions.tsx
+msgid "配色"
+msgstr "Colours"
+
+#: src/components/QuickActions.tsx
+msgid "動き"
+msgstr "Motion"
+
+#: src/components/QuickActions.tsx
+msgid "あり"
+msgstr "On"
