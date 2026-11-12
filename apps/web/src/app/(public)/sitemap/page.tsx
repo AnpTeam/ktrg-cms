@@ -30,7 +30,7 @@ function Group({ title, children }: { title: React.ReactNode; children: React.Re
   return (
     <section className="flex flex-col gap-3 px-4">
       <SectionBanner>{title}</SectionBanner>
-      <ul className="divide-y divide-line/30 rounded-3xl bg-surface px-5 py-2">{children}</ul>
+      <ul className="divide-y divide-line/30 rounded-[1.75rem] bg-surface px-5 py-2">{children}</ul>
     </section>
   );
 }
@@ -47,7 +47,7 @@ export default async function SitemapPage() {
         <BackLink href="/">
           <Trans>ホーム</Trans>
         </BackLink>
-        <h1 className="text-3xl font-bold"><Trans>サイトマップ</Trans></h1>
+        <h1 className="font-serif text-3xl font-bold text-accent"><Trans>サイトマップ</Trans></h1>
       </div>
 
       <Group title={<Trans>ホーム</Trans>}>

@@ -20,10 +20,10 @@ export default async function LicensesPage() {
         <BackLink href="/">
           <Trans>ホーム</Trans>
         </BackLink>
-        <h1 className="text-3xl font-bold">{help.licensesTitle}</h1>
+        <h1 className="font-serif text-3xl font-bold text-accent">{help.licensesTitle}</h1>
         <p className="text-lg">{help.licensesIntro}</p>
       </div>
-      <dl className="mx-4 flex flex-col gap-4 rounded-3xl bg-surface p-5">
+      <dl className="mx-4 flex flex-col gap-4 rounded-[1.75rem] bg-surface p-5">
         {help.credits.map((credit) => (
           <div key={credit.name}>
             <dt className="text-lg font-bold">{credit.name}</dt>

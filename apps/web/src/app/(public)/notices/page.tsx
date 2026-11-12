@@ -22,7 +22,7 @@ export default async function NoticesPage() {
         <Trans>ホーム</Trans>
       </BackLink>
       <div className="flex flex-col gap-2 border-b-2 border-ink pb-4">
-        <h1 className="font-serif text-4xl font-bold">
+        <h1 className="font-serif text-3xl font-bold text-accent">
           <Trans>お知らせ</Trans>
         </h1>
         <p className="max-w-prose text-lg leading-8 text-muted">

@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: i18n.locale === "ja" ? "体力度と技術度について" : "About the physical and technical levels" };
 }
 
-const panel = "mx-4 flex flex-col gap-3 rounded-3xl bg-surface p-5 text-lg leading-8";
+const panel = "mx-4 flex flex-col gap-3 rounded-[1.75rem] bg-surface p-5 text-lg leading-8";
 
 // How the two levels on a route are worked out. Written in our own words; the idea follows the mountain grading used in Nagano
 // Prefecture (信州 山のグレーディング). The numbers are a guide: the person who edits the route chooses the saved level.
@@ -38,7 +38,7 @@ export default async function GradingPage() {
         <BackLink href="/routes">
           <Trans>ルート一覧</Trans>
         </BackLink>
-        <h1 className="text-3xl font-bold">
+        <h1 className="font-serif text-3xl font-bold text-accent">
           <Trans>体力度と技術度について</Trans>
         </h1>
         <p className="text-lg leading-8">
@@ -47,7 +47,7 @@ export default async function GradingPage() {
       </div>
 
       <section id="physical" className={`${panel} scroll-mt-24`}>
-        <h2 className="text-2xl font-bold">
+        <h2 className="border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">
           <Trans>体力度（1〜10）</Trans>
         </h2>
         <p>
@@ -81,7 +81,7 @@ export default async function GradingPage() {
       </section>
 
       <section id="technical" className={`${panel} scroll-mt-24`}>
-        <h2 className="text-2xl font-bold">
+        <h2 className="border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">
           <Trans>技術度（A〜E）</Trans>
         </h2>
         <p>
