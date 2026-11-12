@@ -30,8 +30,9 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
     <div className="flex flex-col gap-6 pt-2 wide:pt-0">
       {/* One column in this order, on a phone and on a desktop alike: the title, you, the rally you are in, then the rest as cards side by side. */}
       {/* The title, with the badges and how to play to its side ("?"): how to play lives here, with the stamps, and nowhere else. */}
-      <div className="flex items-center gap-3 px-4">
-        <h1 className="min-w-0 flex-1 font-serif text-3xl font-bold text-accent wide:text-4xl">
+      {/* On a phone the top bar carries the title (as on the course list); the heading stays for screen readers and a wider page. */}
+      <div className="flex items-center justify-end gap-3 px-4 md:justify-start">
+        <h1 className="min-w-0 flex-1 font-serif text-3xl font-bold text-accent wide:text-4xl sr-only md:not-sr-only">
           <Trans>ラリー</Trans>
         </h1>
         <Link href="/badges" className="tap-target inline-flex items-center rounded-full bg-surface px-5 text-xl font-bold text-accent">
