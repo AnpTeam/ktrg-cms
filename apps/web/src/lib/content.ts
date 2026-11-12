@@ -2,6 +2,7 @@ import { fetchPublicPlaces, fetchPublicRallies, fetchPublicRoute, ralliesFromApi
 import type { RouteArea } from "./map-screen";
 import type { PointKind } from "./point-kinds";
 import { pickText } from "./pick-text";
+import { prefectureOfCity } from "./municipalities";
 import { getMyStamps } from "./my-stamps";
 import type { MapPlace, PlaceCategory, PlaceStatus } from "./places";
 import type { InlinePlace } from "@/components/places/PlaceInline";
@@ -186,6 +187,33 @@ export { pickText, type Picked } from "./pick-text";
 
 export function isPrefecture(value: string | undefined): value is Prefecture {
   return prefectures.some((p) => p === value);
+}
+
+/** Every prefecture a course passes through: its own, and those of the cities, towns and villages listed for it (in walking order). */
+export function prefecturesOf(route: { prefecture: Prefecture | null; municipalities: readonly string[] }): Prefecture[] {
+  const found = new Set<Prefecture>();
+  if (route.prefecture) found.add(route.prefecture);
+  for (const city of route.municipalities) {
+    const p = prefectureOfCity(city);
+    if (p) found.add(p);
+  }
+  return [...found];
+}
+
+/** The courses that pass through every chosen prefecture (so Osaka and Nara keeps the ones that cross between them); none chosen keeps all. */
+export function filterByPrefectures<T extends { prefecture: Prefecture | null; municipalities: readonly string[] }>(routes: T[], chosen: readonly Prefecture[]): T[] {
+  if (chosen.length === 0) return routes;
+  return routes.filter((r) => {
+    const through = prefecturesOf(r);
+    return chosen.every((p) => through.includes(p));
+  });
+}
+
+/** `?pref=osaka,nara` as a list of known prefectures, in the order given, without repeats. */
+export function parsePrefectures(raw: string | undefined): Prefecture[] {
+  const out: Prefecture[] = [];
+  for (const part of (raw ?? "").split(",")) if (isPrefecture(part) && !out.includes(part)) out.push(part);
+  return out;
 }
 
 export function filterByPrefecture<T extends { prefecture: Prefecture | null }>(
