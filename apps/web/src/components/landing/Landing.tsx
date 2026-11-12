@@ -12,7 +12,6 @@ import { LandingMap } from "@/components/landing/LandingMap";
 import { Journey } from "@/components/landing/Journey";
 import { Chapter, type Ground } from "@/components/landing/Chapter";
 import { StoryMotion } from "@/components/landing/StoryMotion";
-import { Localized } from "@/components/Localized";
 import { PlaceLine } from "@/components/PlaceLine";
 import { RoutePill } from "@/components/RoutePill";
 import { KuzuVine, SeamFade, StaffAndWaves, SutraScroll } from "@/components/landing/Decor";
@@ -31,6 +30,7 @@ import { previewRoutes } from "@/lib/landing-story";
 import { TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
 import type { EmbedVideo } from "@/lib/video";
 import { buttonStyle } from "@/components/button";
+import { NameRuby } from "@/components/Ruby";
 
 const secondary =
   buttonStyle("secondary", "lg", "flex");
@@ -391,7 +391,7 @@ function CourseCapsules({ list, locale, reveal = false }: { list: RouteSummary[]
         const pill = (
           <RoutePill
             route={route}
-            name={<Localized value={pickText(locale, route.nameJa, route.nameEn)} />}
+            name={<NameRuby title={pickText(locale, route.nameJa, route.nameEn)} reading={route.nameKana} />}
             place={route.prefecture || route.municipalities.length > 0 ? <PlaceLine prefecture={route.prefecture} place={municipalityName(locale, route.municipalities)} locale={locale} /> : null}
             photo={route.photoUrl}
           />

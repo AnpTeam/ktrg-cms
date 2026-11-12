@@ -102,6 +102,8 @@ export interface MapScreenRoute {
   order: number;
   name: string;
   nameLang: "ja" | "en";
+  /** The reading a person typed for the name (名前の読み), shown over it in the course list. */
+  nameKana?: string | null;
   prefecture: "osaka" | "wakayama" | "nara" | null;
   municipality: string | null;
   distanceKm: number | null;
