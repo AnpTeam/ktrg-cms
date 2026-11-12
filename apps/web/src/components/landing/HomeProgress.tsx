@@ -41,7 +41,7 @@ export function HomeProgress({
   const sealed = new Set(spots.flatMap((s, i) => (s.stamped ? [i + 1] : [])));
 
   return (
-    <section aria-labelledby="home-next" className="@container mx-auto flex max-w-5xl flex-col gap-6 px-5 @[34rem]:px-6">
+    <section aria-labelledby="home-next" className="@container mx-auto flex w-full max-w-5xl flex-col gap-6 px-5 @[34rem]:px-6">
       <div className="flex flex-col gap-6 @3xl:grid @3xl:grid-cols-[1fr_auto] @3xl:items-start @3xl:gap-12">
         <div className="flex min-w-0 flex-col gap-4">
           <h2 id="home-next" className="text-2xl font-bold leading-snug">

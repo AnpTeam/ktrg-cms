@@ -15,7 +15,7 @@ import { StoryMotion } from "@/components/landing/StoryMotion";
 import { Localized } from "@/components/Localized";
 import { PlaceLine } from "@/components/PlaceLine";
 import { RoutePill } from "@/components/RoutePill";
-import { KuzuVine, SeamFade } from "@/components/landing/Decor";
+import { KuzuVine, SeamFade, StaffAndWaves, SutraScroll } from "@/components/landing/Decor";
 import { BackToTop } from "@/components/BackToTop";
 import { municipalityName } from "@/lib/municipalities";
 import { pickText } from "@/lib/pick-text";
@@ -59,7 +59,6 @@ export function Landing({
   showTourism,
   top,
   greeting,
-  heroBody,
   text,
 }: {
   locale: string;
@@ -72,9 +71,8 @@ export function Landing({
   showTourism: boolean;
   /** For a signed-in visitor: shown under the hero (and the stamp rally's explanation is left out). */
   top?: ReactNode;
-  /** For a signed-in visitor: the greeting over the hero's photo, and what the band under it shows in place of signing up. */
+  /** For a signed-in visitor: the greeting over the hero's photo. */
   greeting?: ReactNode;
-  heroBody?: ReactNode;
   /** What an editor wrote in place of the app's words. */
   text?: HomeText;
 }) {
@@ -223,16 +221,11 @@ export function Landing({
     <CoverWatch />
     {top ? null : <ScrollProgress />}
     <div data-landing-top="" className="grid grid-cols-1 gap-10 @[42rem]:grid-cols-2 @[42rem]:gap-x-8">
-      {/* The same photos for everyone; a signed-in visitor's greeting and progress take the line's and the buttons' place. */}
+      {/* The same photos for everyone; a signed-in visitor's greeting takes the line's place, and their walk is the first chapter below. */}
       {top ? (
-        <>
-          <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
-            <LandingHero slides={slides} locale={locale} line={w.heroLine} title={greeting}>
-              {heroBody}
-            </LandingHero>
-          </div>
-          <div className="@[42rem]:col-span-2">{top}</div>
-        </>
+        <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
+          <LandingHero slides={slides} locale={locale} line={w.heroLine} title={greeting} bare />
+        </div>
       ) : (
         // A first-time visitor: the journey (the photos, what it is, the rally, where to start), edge to edge like the hero.
         <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
@@ -247,25 +240,33 @@ export function Landing({
       <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
         {top ? (
           <>
+            {/* 1: your walk. The same chapter system as a first visit (ground, drawing, seam, reveal) without the scene: a returning
+                walker goes straight to where they left off. */}
+            <section data-ground className={`${ground()} @container relative isolate overflow-hidden py-16 @[42rem]:py-24`}>
+              <SutraScroll />
+              {top}
+            </section>
+
+            {/* 2: the courses. */}
             {firstRoutes.length > 0 ? (
               <Chapter
-                ground="story-ground-paper"
+                ground={ground()}
                 heading={w.routesHeading}
                 id="routes-title"
+                decoration={
+                  <>
+                    <SeamFade from={drawn[drawn.length - 2] ?? null} to={drawn[drawn.length - 1]!} />
+                    <KuzuVine />
+                  </>
+                }
                 wide={
                   // The capsules need the full width (the photo fades in from the right); beside a vertical heading they were squeezed.
-                  <div className="flex flex-col gap-10">
-                    <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-5 @[42rem]:px-10">
-                      <CourseCapsules list={firstRoutes} locale={locale} />
-                      <div>
-                        <Link href="/routes" className={`${secondary} w-full @[34rem]:w-fit`}>
-                          <Trans>全{TOTAL_ROUTES}区間を見る</Trans>
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="flex flex-col gap-3">
-                      <p className="mx-auto w-full max-w-5xl px-5 text-xl font-bold @[42rem]:px-10">{w.mapHeading}</p>
-                      <LandingMap routes={routes} />
+                  <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-5 @[42rem]:px-10">
+                    <CourseCapsules list={firstRoutes} locale={locale} reveal />
+                    <div data-reveal>
+                      <Link href="/routes" className={`${secondary} w-full @[34rem]:w-fit`}>
+                        <Trans>全{TOTAL_ROUTES}区間を見る</Trans>
+                      </Link>
                     </div>
                   </div>
                 }
@@ -274,9 +275,31 @@ export function Landing({
               </Chapter>
             ) : null}
 
+            {/* 3: the map of every course, a chapter of its own. */}
+            <Chapter
+              ground={ground()}
+              heading={w.mapHeading}
+              id="map-title"
+              decoration={<SeamFade from={drawn[drawn.length - 2] ?? null} to={drawn[drawn.length - 1]!} />}
+              wide={<LandingMap routes={routes} />}
+            >
+              {null}
+            </Chapter>
+
             {noticesAndBlog}
 
-            <Chapter ground="story-ground-inverse" heading={w.storyHeading} id="story-title">
+            {/* 4: what it is, in a few words, on the dark ground as in the story. */}
+            <Chapter
+              ground="story-ground-inverse"
+              heading={w.storyHeading}
+              id="story-title"
+              decoration={
+                <>
+                  <SeamFade from="story-ground-paper" to="story-ground-inverse" />
+                  <StaffAndWaves />
+                </>
+              }
+            >
               {/* Our own wording of well-known facts. */}
               <p className="text-lg leading-9">{w.storyText}</p>
               <dl>

@@ -46,36 +46,35 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
   const ready = routes.filter((r) => r.status === "ready");
   const badges = ready.filter((r) => nodeState({ status: r.status, stamped: r.stampedCount, total: r.spotCount }) === "complete").length;
 
-  // The greeting over the photos; under them, on the patterned band, one section that reads as a sentence: the course to
-  // go on with, its next place, its seals, and the counts as plain links (docs/design-language.md, phase 2).
+  // The greeting over the photos; under them, the first chapter reads as a sentence: the course to go on with, its next place,
+  // its seals, and the counts as plain links (docs/design-language.md, phase 2), then the chapters of the home page.
   const greeting = name ? <Trans>{name}さん、こんにちは。</Trans> : <Trans>おかえりなさい。</Trans>;
-  const heroBody = (
-    <HomeProgress
-      locale={i18n.locale}
-      route={target}
-      spots={found?.spots ?? []}
-      stamped={stamped}
-      total={total}
-      badges={badges}
-      readyCount={ready.length}
-      bookmarks={viewer.bookmarks.length}
-    />
-  );
-
   const top = (
-    <div className="flex flex-col gap-5 wide:grid wide:grid-cols-2 wide:items-start wide:gap-x-8">
+    <div className="flex flex-col gap-8">
+      <HomeProgress
+        locale={i18n.locale}
+        route={target}
+        spots={found?.spots ?? []}
+        stamped={stamped}
+        total={total}
+        badges={badges}
+        readyCount={ready.length}
+        bookmarks={viewer.bookmarks.length}
+      />
       {prefs.setupDone ? null : (
-        <Link href="/welcome" className="tap-target mx-4 flex flex-col rounded-3xl bg-surface p-5 wide:col-span-2">
-          <span className="text-xl font-bold text-accent">
-            <Trans>見やすさを設定しませんか</Trans>
-          </span>
-          <span className="mt-1 text-lg">
-            <Trans>文字やボタンの大きさ、地図の見せ方を選べます。</Trans>
+        <Link href="/welcome" className="tap-target mx-auto flex w-full max-w-5xl flex-col px-5 @[34rem]:px-6">
+          <span className="flex flex-col rounded-[1.75rem] bg-paper/80 p-5">
+            <span className="text-xl font-bold text-accent">
+              <Trans>見やすさを設定しませんか</Trans>
+            </span>
+            <span className="mt-1 text-lg">
+              <Trans>文字やボタンの大きさ、地図の見せ方を選べます。</Trans>
+            </span>
           </span>
         </Link>
       )}
     </div>
   );
 
-  return <Landing {...page} top={top} greeting={greeting} heroBody={heroBody} />;
+  return <Landing {...page} top={top} greeting={greeting} />;
 }
