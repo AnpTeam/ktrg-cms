@@ -12,6 +12,7 @@ import { PointKindName } from "./PointKindName";
 import { RoutePhoto } from "./RoutePhoto";
 import { StatusWord } from "./StatusWord";
 import { TrailNode } from "./TrailNode";
+import { offersNoStamp } from "@/lib/spot-status";
 
 // The places of one route, drawn like the trail on the route list: a numbered node per place and a line between them, so
 // the list reads as the order of the walk. Every place has its own page. A stamp place's node shows its state (seal =
@@ -26,7 +27,7 @@ const COLUMN = "3.25rem"; // the node column; the line runs through its middle
 const NODE_CENTER = "2.125rem"; // the row has 0.75rem above the 44 px node
 
 function nodeFor(spot: SpotListItem): NodeState {
-  if (spot.status === "closed") return "soon";
+  if (offersNoStamp(spot.status)) return "soon";
   if (spot.stamped === null) return "neutral";
   return spot.stamped ? "complete" : "notStarted";
 }

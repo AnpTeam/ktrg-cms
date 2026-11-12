@@ -1,6 +1,6 @@
 import type { ListRow } from "../admin-lists/list-types";
 
-export type SpotStatus = "open" | "caution" | "closed";
+export type SpotStatus = "open" | "caution" | "closed" | "info";
 
 /** What the stamping rules need to know about a place. */
 export interface StampSpot {

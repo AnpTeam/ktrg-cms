@@ -10,7 +10,7 @@ import type { AccessPoint } from "../access-points";
 
 export type Prefecture = "osaka" | "wakayama" | "nara";
 export type { PointKind, WalkStyle };
-export type SpotStatus = "open" | "caution" | "closed";
+export type SpotStatus = "open" | "caution" | "closed" | "info";
 
 export interface AdminLine {
   type: "LineString";

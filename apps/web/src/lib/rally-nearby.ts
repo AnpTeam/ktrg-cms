@@ -1,5 +1,6 @@
 import type { PublicRallyDetail } from "./api-content-types";
 import { distanceMeters } from "./places";
+import { offersNoStamp } from "@/lib/spot-status";
 
 export type RallyPlace = PublicRallyDetail["places"][number];
 
@@ -18,7 +19,7 @@ export function nearestToStamp(
 ): { place: RallyPlace; distanceM: number; near: boolean } | null {
   let best: { place: RallyPlace; distanceM: number } | null = null;
   for (const p of places) {
-    if (held.has(p.id) || p.status === "closed" || p.lat === null || p.lng === null) continue;
+    if (held.has(p.id) || offersNoStamp(p.status) || p.lat === null || p.lng === null) continue;
     const distanceM = distanceMeters(at, { lat: p.lat, lng: p.lng });
     if (!best || distanceM < best.distanceM) best = { place: p, distanceM };
   }

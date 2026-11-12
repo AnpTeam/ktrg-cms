@@ -4379,6 +4379,12 @@ msgstr "前のリンクは、まだありません。"
 msgid "前の写真"
 msgstr "前の写真"
 
+msgid "案内のみ"
+msgstr "案内のみ"
+
+msgid "ここにはスタンプはありません。"
+msgstr "ここにはスタンプはありません。"
+
 #: src/components/BackToTop.tsx
 msgid "ページの先頭へ"
 msgstr "ページの先頭へ"

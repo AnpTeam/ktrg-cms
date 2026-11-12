@@ -36,7 +36,7 @@ type StampPlace = StampSpot & { lat: number; lng: number };
 
 // A draft, a navigation point and a place without a checked position all look like a place that is not there.
 const isStampPlace = (spot: StampSpot | null): spot is StampPlace =>
-  !!spot && spot.published && spot.stampable && spot.positionVerified && spot.lat !== null && spot.lng !== null;
+  !!spot && spot.published && spot.stampable && spot.status !== "info" && spot.positionVerified && spot.lat !== null && spot.lng !== null;
 
 /** The place checks of a stamp (open, close enough, accurate enough), shared by an account's stamp and a guest's. */
 async function check(r: Reading, store: StampStore, now: Date): Promise<Result<{ spot: StampPlace; flagged: boolean; scannedAt: Date | null }>> {

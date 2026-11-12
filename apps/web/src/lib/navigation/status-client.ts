@@ -1,4 +1,4 @@
-export type Status = "open" | "caution" | "closed";
+export type Status = "open" | "caution" | "closed" | "info";
 
 /** A status read after the page was drawn with `shown`. */
 export type LiveStatus = { spotId: string; shown: Status; status: Status };
@@ -13,7 +13,7 @@ export function parseStatuses(body: unknown): Map<string, Status> | null {
   if (!Array.isArray(spots)) return null;
   const out = new Map<string, Status>();
   for (const s of spots as { id?: unknown; status?: unknown }[]) {
-    if (typeof s?.id === "string" && (s.status === "open" || s.status === "caution" || s.status === "closed")) out.set(s.id, s.status);
+    if (typeof s?.id === "string" && (s.status === "open" || s.status === "caution" || s.status === "closed" || s.status === "info")) out.set(s.id, s.status);
   }
   return out;
 }

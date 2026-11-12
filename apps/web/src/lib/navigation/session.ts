@@ -8,6 +8,7 @@
 //   within OFF_ROUTE_M of it ("path"), otherwise point straight at the stop ("straight").
 // - A new path is asked for only while guided straight, so walking along a path costs no requests.
 
+import { offersNoStamp } from "@/lib/spot-status";
 import {
   bearingDeg,
   cumulativeDistances,
@@ -45,7 +46,7 @@ export const PASSED_AWAY_M = 100;
 export interface NavStop extends Stop {
   /** The check-in radius of the place, in metres. */
   radiusM: number;
-  status?: "open" | "caution" | "closed";
+  status?: "open" | "caution" | "closed" | "info";
 }
 
 export interface NavReading {
@@ -203,7 +204,7 @@ export function applyFix(model: NavModel, prev: NavState, reading: NavReading, s
   const base = { ...initialState(), ignoredFixes: prev.ignoredFixes, headingDeg: reading.headingDeg ?? prev.headingDeg };
   // The visitor may pick a stop themselves (forcedId); it is honoured only while it can still be stamped, else the nearest wins.
   const forcedAt = forcedId === null ? -1 : model.stops.findIndex((s) => s.id === forcedId);
-  const forcedOk = forcedAt >= 0 && !stamped.has(forcedId!) && model.stops[forcedAt]!.status !== "closed";
+  const forcedOk = forcedAt >= 0 && !stamped.has(forcedId!) && !offersNoStamp(model.stops[forcedAt]!.status);
   const i = forcedOk ? forcedAt : nearestTarget(model.stops, stamped, reading);
   if (i === null) return base;
   const stop = model.stops[i]!;

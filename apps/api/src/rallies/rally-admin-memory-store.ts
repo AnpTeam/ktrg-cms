@@ -7,7 +7,7 @@ export interface MemoryPlace extends RallyPlace {
   stampable: boolean;
   sortOrder: number;
   /** Shown to visitors with the rally's courses; open when not given. */
-  status?: "open" | "caution" | "closed";
+  status?: "open" | "caution" | "closed" | "info";
 }
 
 /**

@@ -14,7 +14,7 @@ export interface PlaceListRow extends ListRow {
   nameJa: string;
   nameEn: string | null;
   kind: (typeof spotKinds)[number];
-  status: "open" | "caution" | "closed";
+  status: "open" | "caution" | "closed" | "info";
   published: boolean;
   /** Visitors can stamp here (the switch on a waypoint). */
   stampable: boolean;
@@ -139,6 +139,7 @@ export const placeList: ReadDef<"places", PlaceListRow, PlaceListServices> = {
           { value: "open", label: { ja: "通常", en: "Normal" } },
           { value: "caution", label: { ja: "注意", en: "Caution" } },
           { value: "closed", label: { ja: "通行止め", en: "Closed" } },
+          { value: "info", label: { ja: "案内のみ", en: "Information only" } },
         ],
         inList: {},
       },

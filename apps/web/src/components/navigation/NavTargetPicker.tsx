@@ -6,6 +6,7 @@ import { distanceM } from "@/lib/navigation/geometry";
 import { distanceParts } from "@/lib/stamp-flow";
 import { useNavigation } from "./NavigationProvider";
 import { buttonStyle } from "@/components/button";
+import { offersNoStamp } from "@/lib/spot-status";
 
 /**
  * 「ほかの場所へ向かう」: pick any stop still to stamp as the target instead of the nearest one (to skip one on purpose, or to
@@ -44,7 +45,7 @@ export function NavTargetPicker() {
         <ul className="mt-4 flex flex-col gap-2">
           {left.map((s) => {
             const info = session.stops[s.id];
-            const closed = s.status === "closed";
+            const closed = offersNoStamp(s.status);
             const now = snap.state.targetId === s.id;
             return (
               <li key={s.id}>

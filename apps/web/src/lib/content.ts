@@ -26,7 +26,7 @@ import type { AccessPoint } from "./access-points";
 export const prefectures = ["osaka", "wakayama", "nara"] as const;
 export type Prefecture = (typeof prefectures)[number];
 
-export type SpotStatus = "open" | "caution" | "closed";
+export type SpotStatus = "open" | "caution" | "closed" | "info";
 
 export interface RouteSummary {
   id: string;

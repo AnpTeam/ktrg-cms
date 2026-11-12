@@ -6,7 +6,7 @@ import { Localized } from "./Localized";
 
 /**
  * The status block on a spot. Open is a calm line. Caution has a thick amber
- * border. Closed has a striped barrier bar and says plainly that stamps cannot
+ * border. Information only is a calm panel (no stamp is offered there). Closed has a striped barrier bar and says plainly that stamps cannot
  * be collected. Neither uses red: vermilion is reserved for the stamp seal.
  */
 export function StatusBanner({
@@ -56,6 +56,21 @@ export function StatusBanner({
       <section className="mx-4 rounded-xl border-4 border-caution p-4">
         <p className="text-2xl">
           <StatusWord status="caution" />
+        </p>
+        {details}
+      </section>
+    );
+  }
+
+  // Information only: the place exists, but it offers no stamp. A calm note, not a barrier: nothing is wrong or blocked.
+  if (status === "info") {
+    return (
+      <section className="mx-4 rounded-[1.75rem] bg-surface p-4">
+        <p className="text-xl">
+          <StatusWord status="info" />
+        </p>
+        <p className="mt-2 text-lg font-bold">
+          <Trans>ここにはスタンプはありません。</Trans>
         </p>
         {details}
       </section>

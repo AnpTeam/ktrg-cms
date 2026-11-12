@@ -1,0 +1,1 @@
+ALTER TYPE "public"."spot_status" ADD VALUE 'info';

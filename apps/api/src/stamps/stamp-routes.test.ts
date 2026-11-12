@@ -105,6 +105,12 @@ describe("collecting a stamp", () => {
     expect(((await (await stamp(cookies.bob)).json()) as Json).stamp.alreadyStamped).toBe(false);
   });
 
+  test("an information place offers no stamp: it looks like a place that is not there", async () => {
+    const { stamp, cookies, answer, mem } = await setup();
+    mem.spots.set(SPOT_ID, spot({ status: "info" }));
+    expect(await answer(await stamp(cookies.alice))).toEqual([404, "not_found"]);
+  });
+
   test("too far, rough GPS, closed place: refused with their own codes", async () => {
     const { stamp, cookies, answer, mem } = await setup();
     expect(await answer(await stamp(cookies.alice, { lat: HERE.lat + 0.01 }))).toEqual([409, "too_far"]);
