@@ -22,11 +22,14 @@ export function ScrollProgress() {
       if (!frame) frame = requestAnimationFrame(update);
     };
     update();
+    // This marker is the page's scroll indicator, so the system bar is hidden while it is shown (two bars side by side confused people).
+    document.documentElement.dataset.ownScroll = "";
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll);
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      delete document.documentElement.dataset.ownScroll;
       if (frame) cancelAnimationFrame(frame);
     };
   }, []);

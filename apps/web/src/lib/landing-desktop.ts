@@ -12,6 +12,8 @@ export const PHONE_SCROLL_SVH = 250;
 
 /** What a beat needs under its words for the ridge to show at least in part (the stage reserves more, 13rem, but a short screen may squeeze it). */
 export const RIDGE_ROOM_PX = 96;
+/** On a phone the ridge lies under the words (its drawing, caption and padding are about this tall), so a beat must leave all of it. */
+export const PHONE_RIDGE_ROOM_PX = 232;
 
 export type PanelPhoto = { src: string; credit: string | null };
 
