@@ -17,3 +17,12 @@ test("the words of a shorter card are centred in its row, not stuck to the top",
   expect(src).toMatch(/relative flex h-full flex-col justify-center overflow-hidden/);
   expect(src).not.toMatch(/relative block h-full overflow-hidden/);
 });
+
+// 2026-11-12 (user): the course name on /routes always carries its reading, whatever the furigana setting says, because the
+// kanji of a name are hard for some Japanese readers too. NameRuby draws the typed reading (nameKana) as <ruby> itself, which
+// the page-wide furigana layer leaves alone, and falls back to the plain name when there is no reading or the page is English.
+test("the course name in the list is drawn with its typed reading, not as plain text", () => {
+  expect(src).toMatch(/import \{ NameRuby \} from "@\/components\/Ruby";/);
+  expect(src).toMatch(/<NameRuby title=\{name\} reading=\{route\.nameKana\} \/>/);
+  expect(src).not.toMatch(/<Localized value=\{name\} \/>/);
+});
