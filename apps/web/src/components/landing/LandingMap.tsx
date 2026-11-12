@@ -49,7 +49,7 @@ export function LandingMap({ routes }: { routes: RouteSummary[] }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="relative h-56 overflow-clip bg-paper [perspective:900px] @[42rem]:h-[28rem]">
+      <div className="relative h-56 overflow-clip bg-paper [perspective:900px] @[42rem]:h-[28rem] desk:h-[70svh]">
         <div
           role="img"
           aria-label={t`全${count}区間のある場所を示した図`}

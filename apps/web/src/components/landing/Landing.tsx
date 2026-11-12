@@ -100,6 +100,7 @@ export function Landing({
                 ground={startGround}
                 heading={w.startHeading}
                 id="start-title"
+                horizontal
                 decoration={
                   <>
                     <SeamFade from={startFrom} to={startGround} />
@@ -143,7 +144,7 @@ export function Landing({
   // The intro film, when one is set. The ground comes from the caller (it alternates on the signed-in page).
   const videoChapter = (g: Ground) =>
     introVideo ? (
-      <Chapter ground={g} heading={w.videoHeading} id="video-title">
+      <Chapter ground={g} heading={w.videoHeading} id="video-title" roomy>
         <div>
           <IntroVideo video={introVideo} title={locale === "ja" ? "葛城修験の紹介動画" : "Katsuragi Shugen introduction video"} />
           <p className="mt-2 text-base text-muted">
@@ -362,7 +363,7 @@ function Fact({ term, value }: { term: ReactNode; value: ReactNode }) {
 /** The courses as wide capsules (the photo fades in from the right). `reveal` lets StoryMotion raise them one by one. */
 function CourseCapsules({ list, locale, reveal = false }: { list: RouteSummary[]; locale: string; reveal?: boolean }) {
   return (
-    <ul data-reveal={reveal ? "" : undefined} className="flex flex-col gap-3">
+    <ul data-reveal={reveal ? "" : undefined} className="flex flex-col gap-3 desk:grid desk:grid-cols-2 min-[90rem]:grid-cols-3">
       {list.map((route) => {
         const pill = (
           <RoutePill

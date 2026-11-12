@@ -4379,6 +4379,14 @@ msgstr "No earlier links yet."
 msgid "前の写真"
 msgstr "Previous photo"
 
+#: src/components/landing/DeskPanel.tsx
+msgid "海"
+msgstr "Sea"
+
+#: src/components/landing/DeskPanel.tsx
+msgid "稜線"
+msgstr "Ridge"
+
 #: src/components/BackToTop.tsx
 msgid "ページの先頭へ"
 msgstr "Back to top"
