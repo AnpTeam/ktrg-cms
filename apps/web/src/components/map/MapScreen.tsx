@@ -27,6 +27,7 @@ import { SheetHero } from "./SheetHero";
 import { RoutePhoto } from "@/components/RoutePhoto";
 import { RoutePill } from "@/components/RoutePill";
 import { buttonStyle } from "@/components/button";
+import { NameRuby } from "@/components/Ruby";
 
 // The map tab (WBS 3.2.10): a map of the whole trail with a bottom sheet that never hides it. Nothing is
 // chosen at first: the sheet offers the 19 courses. Choose a course (on the map or in the
@@ -394,7 +395,7 @@ function CourseList({ routes, onChoose, locale }: { routes: MapScreenRoute[]; on
             <RoutePill
               route={r}
               brief
-              name={<span lang={r.nameLang}>{r.name}</span>}
+              name={r.nameKana ? <NameRuby title={{ text: r.name, lang: r.nameLang, fallback: false }} reading={r.nameKana} /> : <span lang={r.nameLang}>{r.name}</span>}
               place={r.prefecture || r.municipality ? <PlaceLine prefecture={r.prefecture} place={r.municipality} locale={locale} /> : null}
               photo={r.photo?.src ?? null}
             />
