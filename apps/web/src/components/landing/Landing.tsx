@@ -131,9 +131,11 @@ export function Landing({
   const firstRoutes = previewRoutes(routes, PREVIEW_ROUTES);
   const storyRoutes = previewRoutes(routes, STORY_ROUTES);
 
-  const noticesAndBlog = (
-    <div data-ground className="story-ground-paper flex flex-col gap-10 pb-20">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 @[42rem]:px-6">
+  // `underMountains`: right after the Start chapter, where the team's mountains end. Their colour goes on down as the ground
+  // (class outro-ground), and the words stand in one surface panel on it: text straight on that grey would miss 7:1.
+  const noticesAndBlog = (underMountains: boolean) => (
+    <div data-ground className={`${underMountains ? "outro-ground px-4" : "story-ground-paper"} flex flex-col gap-10 pb-20`}>
+      <div className={`mx-auto flex w-full max-w-5xl flex-col gap-10 @[42rem]:px-6 ${underMountains && (notices.length > 0 || posts.length > 0) ? "rounded-[1.75rem] bg-surface py-8" : ""}`}>
         <TrailNotices notices={notices} locale={locale} limit={2} />
         <BlogCard posts={posts} locale={locale} />
       </div>
@@ -286,7 +288,7 @@ export function Landing({
               {null}
             </Chapter>
 
-            {noticesAndBlog}
+            {noticesAndBlog(false)}
 
             {/* 4: what it is, in a few words, on the dark ground as in the story. */}
             <Chapter
@@ -350,7 +352,7 @@ export function Landing({
             {/* 7: the start. The progress line ends here (data-story-end); the team's mountains stand along its bottom. */}
             {startChapter()}
 
-            {noticesAndBlog}
+            {noticesAndBlog(true)}
           </>
         )}
 

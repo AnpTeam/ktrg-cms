@@ -107,6 +107,14 @@
     scrollbar-color: color-mix(in srgb, var(--color-line) 55%, transparent) transparent;
   }
 
+  /* Pages with their own progress marker (ScrollProgress) hide the system bar: it is not the only way to scroll (touch, wheel, keys). */
+  html[data-own-scroll] {
+    scrollbar-width: none;
+  }
+  html[data-own-scroll]::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Chrome, Edge and Safari that do not read scrollbar-color/width yet. */
   ::-webkit-scrollbar {
     width: 10px;
@@ -1743,6 +1751,10 @@ body.map-nav-mode .map-layer-pills {
 
 /* The outro mountains (the team's drawing, public/home/outro_mountains.svg): a skyline along the bottom of the Start chapter,
    used as a mask over a colour token so it follows light and dark mode. The drawing fades out toward its bottom edge. */
+/* The mountains' colour continued below them as a ground (the same grey and the same 90% over paper), down to the next chapter. */
+.outro-ground {
+  background-color: color-mix(in srgb, var(--color-line) 90%, var(--color-paper));
+}
 .outro-mountains {
   background-color: var(--color-line);
   opacity: 0.9;

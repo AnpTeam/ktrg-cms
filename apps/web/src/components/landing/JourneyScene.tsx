@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { beatAt, drawnShare, motionMode, sealsPlaced } from "@/lib/journey";
-import { RIDGE_ROOM_PX, SCENE_QUERY, beatsFit } from "@/lib/landing-desktop";
+import { DESK_QUERY, PHONE_RIDGE_ROOM_PX, RIDGE_ROOM_PX, SCENE_QUERY, beatsFit } from "@/lib/landing-desktop";
 
 /**
  * The landing journey's motion (docs/landing-journey-design.md). `children` are the complete static page (Journey.tsx);
@@ -59,9 +59,15 @@ export function JourneyScene({ children, seals }: { children: ReactNode; seals: 
           // reserved zone, so it is not counted as words (a short screen may squeeze it). A taller beat (a long editor text, a big
           // text-size setting) would be cut off and out of reach, so the stacked page stays.
           // shortcut: measured when the scene starts (and when a query changes), not on every resize; upgrade if editors report clipping.
-          const needs = beats.map((b) => {
+          // The chapter stretches to fill the stage (flex: 1), so its scrollHeight is never less than the screen and said "fits" for
+          // any text. The words' own box is measured instead, plus the chapter's top padding and the ridge's room (a desk has the
+          // ridge in the other column, a phone has it under the words).
+          const room = window.matchMedia(DESK_QUERY).matches ? RIDGE_ROOM_PX : PHONE_RIDGE_ROOM_PX;
+          const needs = beats.map((b, i) => {
             const chapter = (b.firstElementChild as HTMLElement | null) ?? b;
-            return chapter.scrollHeight - (parseFloat(getComputedStyle(chapter).paddingBottom) || 0) + RIDGE_ROOM_PX;
+            if (i === 0) return chapter.scrollHeight - (parseFloat(getComputedStyle(chapter).paddingBottom) || 0) + RIDGE_ROOM_PX; // the photos beat has no ridge text
+            const words = chapter.querySelector<HTMLElement>(":scope > div") ?? chapter;
+            return words.offsetHeight + (parseFloat(getComputedStyle(chapter).paddingTop) || 0) + room;
           });
           if (!beatsFit(needs, window.innerHeight)) {
             el.classList.remove("journey-live");
