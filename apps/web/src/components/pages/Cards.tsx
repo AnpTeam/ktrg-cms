@@ -7,7 +7,7 @@ import { ChevronIcon } from "@/components/icons";
 /** A numbered step. Goes inside an <ol>; the number is drawn here, so screen readers are told it once by the list. */
 export function StepCard({ n, title, heading: Heading = "h2", children }: { n: number; title: string; heading?: "h2" | "h3"; children: ReactNode }) {
   return (
-    <li className="flex gap-4 rounded-3xl bg-surface p-5">
+    <li className="flex gap-4 rounded-[1.75rem] bg-surface p-5">
       <span aria-hidden="true" className="flex size-12 shrink-0 items-center justify-center rounded-full bg-brand text-2xl font-bold text-on-brand">
         {n}
       </span>
@@ -22,7 +22,7 @@ export function StepCard({ n, title, heading: Heading = "h2", children }: { n: n
 /** A question that opens to its answer (a native <details>, so it works with the keyboard and without scripts). */
 export function FaqCard({ question, open = false, children }: { question: string; open?: boolean; children: ReactNode }) {
   return (
-    <details className="group rounded-3xl bg-surface" open={open}>
+    <details className="group rounded-[1.75rem] bg-surface" open={open}>
       <summary className="tap-target flex cursor-pointer list-none items-center justify-between gap-3 p-5 text-xl font-bold leading-snug [&::-webkit-details-marker]:hidden">
         <span>{question}</span>
         <span className="shrink-0 transition-transform group-open:rotate-90">

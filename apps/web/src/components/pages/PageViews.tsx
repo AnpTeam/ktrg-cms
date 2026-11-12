@@ -32,7 +32,7 @@ export function GuideView({ help }: { help: Help }) {
         <BackLink href="/rallies">
           <Trans>ラリー</Trans>
         </BackLink>
-        <h1 className="text-3xl font-bold">{help.guideTitle}</h1>
+        <h1 className="font-serif text-3xl font-bold text-accent">{help.guideTitle}</h1>
         <div className="max-w-prose whitespace-pre-line text-lg leading-8">
           <Body text={help.guideIntro} />
         </div>
@@ -62,7 +62,7 @@ export function FaqView({ help, open = false }: { help: Help; open?: boolean }) 
         <BackLink href="/guide">
           <Trans>遊び方</Trans>
         </BackLink>
-        <h1 className="text-3xl font-bold">{help.faqTitle}</h1>
+        <h1 className="font-serif text-3xl font-bold text-accent">{help.faqTitle}</h1>
       </div>
       <ul className="mx-4 flex flex-col gap-3">
         {help.faqs.map((faq, i) => (
