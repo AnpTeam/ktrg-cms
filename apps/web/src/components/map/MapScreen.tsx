@@ -372,7 +372,7 @@ function RouteChips({ routes, onChoose, selectedId, column = false }: { routes: 
             aria-label={label}
             aria-pressed={r.id === selectedId}
             className={`tap-target grid size-12 shrink-0 place-items-center rounded-full border-[3px] text-lg font-bold tracking-[-0.05em] ${
-              r.id === selectedId ? "bg-brand text-on-brand" : r.status === "soon" ? "hover:bg-line/40" : "bg-paper text-ink hover:bg-surface"
+              r.id === selectedId ? "bg-selected text-on-selected" : r.status === "soon" ? "hover:bg-line/40" : "bg-paper text-ink hover:bg-surface"
             } ${r.status === "soon" ? SOON_CIRCLE : "border-brand"}`}
           >
             {r.order}
@@ -438,7 +438,7 @@ function StopRows({ route, onChooseStop }: { route: MapScreenRoute; onChooseStop
                   {leg ? <span className="tabular-nums">{leg.mode ? rides[leg.mode](leg.minutes) : t`歩いて約${leg.minutes}分`}</span> : null}
                 </span>
               </span>
-              <span className={`absolute right-3 top-3 grid size-8 place-items-center rounded-full text-lg font-bold tabular-nums ${spot.stamped ? "bg-shu text-on-shu" : "badge-pattern bg-brand text-on-brand"}`}>{spot.order}</span>
+              <span className={`absolute right-3 top-3 grid size-8 place-items-center rounded-full text-lg font-bold tabular-nums ${spot.stamped ? "bg-shu text-on-shu" : "badge-pattern bg-brand-strong text-on-brand-strong"}`}>{spot.order}</span>
             </>
           );
           const rowClass = "tap-target relative block w-full overflow-hidden rounded-[1.75rem] bg-surface text-left";

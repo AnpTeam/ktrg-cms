@@ -2776,9 +2776,13 @@ msgstr "Other vehicle"
 msgid "ほかの場所へ"
 msgstr "Another place"
 
-#: src/components/navigation/NavTargetPicker.tsx:38
-msgid "ほかの場所へ ✓"
-msgstr "Another place ✓"
+#: src/components/navigation/NavTargetPicker.tsx
+msgid "選択中"
+msgstr "chosen"
+
+#: src/components/admin/AdminItemForm.tsx
+msgid "はい"
+msgstr "yes"
 
 #: src/components/admin/AdminListTable.tsx:234
 msgid "ほかの絞りこみ"

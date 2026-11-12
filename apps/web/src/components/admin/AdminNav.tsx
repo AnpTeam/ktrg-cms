@@ -80,7 +80,7 @@ export function AdminNav({ lists, isAdmin, footer }: { lists: { key: string; tit
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   title={item.label}
-                  className={`tap-target flex items-center gap-3 rounded-full px-4 text-lg font-bold lg:group-data-[folded=true]:justify-center lg:group-data-[folded=true]:rounded-[1.125rem] lg:group-data-[folded=true]:px-0 ${active ? "bg-brand text-on-brand" : "text-ink hover:bg-surface"}`}
+                  className={`tap-target flex items-center gap-3 rounded-full px-4 text-lg font-bold lg:group-data-[folded=true]:justify-center lg:group-data-[folded=true]:rounded-[1.125rem] lg:group-data-[folded=true]:px-0 ${active ? "bg-selected text-on-selected" : "text-ink hover:bg-surface"}`}
                 >
                   <span className="shrink-0">{item.icon}</span>
                   <span className="lg:group-data-[folded=true]:sr-only">{item.label}</span>

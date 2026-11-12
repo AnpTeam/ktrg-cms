@@ -69,7 +69,7 @@ export function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, o
             ) : null}
             <span
               aria-hidden="true"
-              className={`flex shrink-0 items-center justify-center rounded-full text-base font-bold ${p.stampable ? "size-9 bg-brand text-on-brand" : "size-7 border-2 border-ink bg-paper"} ${p.stopBy ? "border-dashed" : ""}`}
+              className={`flex shrink-0 items-center justify-center rounded-full text-base font-bold ${p.stampable ? "size-9 bg-brand-strong text-on-brand-strong" : "size-7 border-2 border-ink bg-paper"} ${p.stopBy ? "border-dashed" : ""}`}
             >
               {p.stampable ? p.number : ""}
             </span>

@@ -131,7 +131,7 @@ export function TabBar({ footer }: { footer?: ReactNode }) {
                   if (open && active) e.preventDefault();
                   setOpen(false);
                 }}
-                className={`${item}${miniItem} ${active && !open ? "bg-brand text-on-brand" : "text-ink hover:bg-paper"}`}
+                className={`${item}${miniItem} ${active && !open ? "bg-selected text-on-selected" : "text-ink hover:bg-paper"}`}
               >
                 {icon}
                 {label}

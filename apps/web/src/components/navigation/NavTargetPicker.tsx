@@ -7,6 +7,7 @@ import { distanceParts } from "@/lib/stamp-flow";
 import { useNavigation } from "./NavigationProvider";
 import { buttonStyle } from "@/components/button";
 import { offersNoStamp } from "@/lib/spot-status";
+import { TickIcon } from "@/components/icons";
 
 /**
  * 「ほかの場所へ向かう」: pick any stop still to stamp as the target instead of the nearest one (to skip one on purpose, or to
@@ -36,7 +37,13 @@ export function NavTargetPicker() {
   return (
     <>
       <button type="button" onClick={() => dialog.current?.showModal()} className={buttonStyle("secondary", "md", "flex w-full")}>
-        {snap.forcedId ? t`ほかの場所へ ✓` : t`ほかの場所へ`}
+        {t`ほかの場所へ`}
+        {snap.forcedId ? (
+          <>
+            <TickIcon size={22} />
+            <span className="sr-only">{t`選択中`}</span>
+          </>
+        ) : null}
       </button>
       <dialog ref={dialog} aria-labelledby="nav-target-title" className="m-auto max-h-[80dvh] w-[calc(100%-2rem)] max-w-sm overflow-y-auto rounded-3xl bg-paper p-5 text-ink backdrop:bg-black/60">
         <h2 id="nav-target-title" className="text-2xl font-bold">

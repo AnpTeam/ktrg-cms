@@ -196,7 +196,7 @@ export function routeLineLayers(sourceId: string, approximate: boolean): LayerSp
 export function sideLineLayers(sourceId: string): LayerSpecification[] {
   return [
     { id: `${sourceId}-casing`, type: "line", source: sourceId, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#ffffff", "line-width": 4.5, "line-opacity": 0.8 } },
-    { id: `${sourceId}-line`, type: "line", source: sourceId, layout: { "line-cap": "butt", "line-join": "round" }, paint: { "line-color": "#1d4ed8", "line-width": 2.5, "line-dasharray": [2, 1.5] } },
+    { id: `${sourceId}-line`, type: "line", source: sourceId, layout: { "line-cap": "butt", "line-join": "round" }, paint: { "line-color": "#1e50a2" /* ruri (light: the map stays light) */, "line-width": 2.5, "line-dasharray": [2, 1.5] } },
   ];
 }
 

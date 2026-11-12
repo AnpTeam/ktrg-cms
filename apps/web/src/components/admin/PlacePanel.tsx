@@ -99,7 +99,7 @@ export function PlacePanel(p: PlacePanelProps) {
   return (
     <li className={`rounded-2xl border-2 ${p.selected ? "border-ink" : "border-line"} bg-paper`}>
       <div className="flex flex-wrap items-center gap-3 p-3">
-        <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand text-lg font-bold text-on-brand">
+        <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-strong text-lg font-bold text-on-brand-strong">
           {p.number}
         </span>
         <button type="button" onClick={p.onSelect} aria-expanded={p.selected} className="min-w-0 flex-1 text-left text-xl font-bold text-accent underline underline-offset-4">

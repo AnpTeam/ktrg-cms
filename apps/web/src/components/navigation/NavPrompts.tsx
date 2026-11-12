@@ -26,8 +26,8 @@ export function ArrivalPrompt({ name, nameLang, photo, onLater, children }: { na
   return (
     <div className={COVER}>
       <section role="dialog" aria-modal="true" aria-labelledby="nav-arrived" className="max-h-full w-full max-w-sm overflow-y-auto rounded-2xl bg-paper text-ink shadow-2xl">
-        {/* With no photo the same deep red as a course's banner, so every arrival looks the same. */}
-        <div className="relative aspect-[16/9]" style={{ background: "linear-gradient(135deg, #6f241c, #b04a40)" }}>
+        {/* With no photo the night ground with the 七宝 pattern, as on a course's banner, so every arrival looks the same. */}
+        <div className="pattern-shippo pattern-on-night relative aspect-[16/9] bg-night">
           {photo ? <Image src={photo.src} alt={photo.alt} fill sizes="24rem" className="object-cover" unoptimized={photo.src.startsWith("https://")} /> : null}
         </div>
         <div className="flex flex-col gap-1 p-5">

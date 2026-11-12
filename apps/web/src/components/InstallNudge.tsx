@@ -86,7 +86,7 @@ export function InstallNudge() {
           <button type="button" onClick={() => {
               setAsked(true);
               dialog.current?.showModal();
-            }} className="tap-target shrink-0 rounded-full bg-brand px-4 text-base font-bold text-on-brand">
+            }} className="tap-target shrink-0 rounded-full bg-ink px-4 text-base font-bold text-paper">
             <Trans>追加のしかた</Trans>
           </button>
           <button type="button" onClick={dismiss} aria-label={t`あとで`} className="tap-target shrink-0 rounded-full px-3 text-base font-bold text-muted underline">

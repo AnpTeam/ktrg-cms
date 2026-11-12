@@ -45,8 +45,12 @@
   --color-lift: #ffffff; /* a chosen pill (prefecture tabs): white on the light page, the panel tone on the dark one */
   --color-night: #1f1b1a; /* the dark band of a reading page (the ridge at night): the ink colour */
   --color-on-night: #fcfaf5; /* the words on the dark band */
-  --color-brand: #cc6256; /* the brand red: buttons, the active tab, icons, the bar beside headings. Not for text on white */
+  --color-brand: #cc6256; /* the brand red: action buttons, icons, the bar beside headings. Not for text on white, not for a selected state (that is ink) */
   --color-on-brand: #ffffff; /* the words on the brand red (large bold text only) */
+  --color-brand-strong: #983a30; /* the red behind words and numbers (course and stop numbers): white on it is 7:1 */
+  --color-on-brand-strong: #ffffff; /* the words on brand-strong */
+  --color-selected: #1f1b1a; /* a selected or active control (active tab, toggle on, saved): ink. Selected is ink, doing is red */
+  --color-on-selected: #fcfaf5; /* the words and icons on a selected control */
   --color-accent: #8e2a21; /* red you can READ: links, headings, focus ring (deep red) */
   --color-moss: #14532d; /* done, open, trail progress: moss (苔) */
   --color-shu: #b3321b; /* the stamp seal only: vermilion (朱). Never text, never a warning */
@@ -197,6 +201,10 @@
     --color-on-night: #ebe2d0;
     --color-brand: #cc6256; /* the same brand red */
     --color-on-brand: #ffffff;
+    --color-brand-strong: #e0837a; /* lighter on dark, with dark words: 7:1 */
+    --color-on-brand-strong: #0b0908;
+    --color-selected: #ebe2d0; /* the ink colour of the dark palette */
+    --color-on-selected: #1e1a17;
     --color-accent: #f2a69b; /* the readable red on dark: soft coral */
     --color-moss: #8fd6a5;
     --color-shu: #e8603f;
@@ -228,6 +236,10 @@
   --color-on-night: #ebe2d0;
   --color-brand: #cc6256; /* the same brand red */
   --color-on-brand: #ffffff;
+  --color-brand-strong: #e0837a; /* lighter on dark, with dark words: 7:1 */
+  --color-on-brand-strong: #0b0908;
+  --color-selected: #ebe2d0; /* the ink colour of the dark palette */
+  --color-on-selected: #1e1a17;
   --color-accent: #f2a69b; /* the readable red on dark: soft coral */
   --color-moss: #8fd6a5;
   --color-shu: #e8603f;
@@ -251,8 +263,12 @@
   --color-lift: #ffffff; /* a chosen pill (prefecture tabs): white on the light page, the panel tone on the dark one */
   --color-night: #1f1b1a; /* the dark band of a reading page (the ridge at night): the ink colour */
   --color-on-night: #fcfaf5; /* the words on the dark band */
-  --color-brand: #cc6256; /* the brand red: buttons, the active tab, icons, the bar beside headings. Not for text on white */
+  --color-brand: #cc6256; /* the brand red: action buttons, icons, the bar beside headings. Not for text on white, not for a selected state (that is ink) */
   --color-on-brand: #ffffff; /* the words on the brand red (large bold text only) */
+  --color-brand-strong: #983a30; /* the red behind words and numbers (course and stop numbers): white on it is 7:1 */
+  --color-on-brand-strong: #ffffff; /* the words on brand-strong */
+  --color-selected: #1f1b1a; /* a selected or active control (active tab, toggle on, saved): ink. Selected is ink, doing is red */
+  --color-on-selected: #fcfaf5; /* the words and icons on a selected control */
   --color-accent: #8e2a21; /* red you can READ: links, headings, focus ring (deep red) */
   --color-moss: #14532d; /* done, open, trail progress: moss (苔) */
   --color-shu: #b3321b; /* the stamp seal only: vermilion (朱). Never text, never a warning */
@@ -671,6 +687,11 @@ html[data-size="xlarge"] {
   mask-size: 40px 40px;
 }
 
+/* 七宝 on the night ground (a place with no photo): in the words' colour instead of the brand red, which would not show. */
+.pattern-on-night::before {
+  background-color: var(--color-on-night);
+}
+
 /* The same 七宝 in a course's number badge, in the badge's own text colour so it shows on the red. Decoration only. */
 .badge-pattern {
   isolation: isolate;
@@ -683,7 +704,7 @@ html[data-size="xlarge"] {
   z-index: -1;
   pointer-events: none;
   background-color: currentColor;
-  opacity: 0.2;
+  opacity: 0.12; /* faint enough that the pattern never lowers the number's contrast */
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='black' stroke-width='1.6'%3E%3Ccircle cx='0' cy='0' r='20'/%3E%3Ccircle cx='40' cy='0' r='20'/%3E%3Ccircle cx='0' cy='40' r='20'/%3E%3Ccircle cx='40' cy='40' r='20'/%3E%3Ccircle cx='20' cy='20' r='20'/%3E%3C/g%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='black' stroke-width='1.6'%3E%3Ccircle cx='0' cy='0' r='20'/%3E%3Ccircle cx='40' cy='0' r='20'/%3E%3Ccircle cx='0' cy='40' r='20'/%3E%3Ccircle cx='40' cy='40' r='20'/%3E%3Ccircle cx='20' cy='20' r='20'/%3E%3C/g%3E%3C/svg%3E");
   -webkit-mask-size: 20px 20px;

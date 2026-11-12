@@ -154,14 +154,14 @@ export function RallyCard({ rally, locale, account }: { rally: RallyItem; locale
           </span>
         </summary>
         {rally.kind === "course" ? (
-          <span aria-hidden="true" className="badge-pattern pointer-events-none absolute right-4 top-4 grid size-8 place-items-center rounded-full bg-brand text-lg font-bold tabular-nums text-on-brand">
+          <span aria-hidden="true" className="badge-pattern pointer-events-none absolute right-4 top-4 grid size-8 place-items-center rounded-full bg-brand-strong text-lg font-bold tabular-nums text-on-brand-strong">
             {order}
           </span>
         ) : null}
         {rally.kind === "mounds" ? (
           // The list below says the same in words, so a screen reader skips the book pages.
           <div aria-hidden="true" className="border-t border-line p-4">
-            <p aria-hidden="true" className="mb-3 font-serif text-xl font-bold tracking-[0.4em] text-accent">
+            <p aria-hidden="true" className="mb-3 font-serif text-xl font-bold tracking-[0.05em] text-accent">
               {t`納経帳`}
             </p>
             <StampGrid

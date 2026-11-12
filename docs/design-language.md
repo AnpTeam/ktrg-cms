@@ -58,6 +58,12 @@ Use the existing tokens in `globals.css`; nothing new is needed. On reading page
 pictures; the page stays paper, ink and one brand-red mark per screen. Body text keeps 7:1 — gosenone's pale grey
 paragraphs are exactly what not to copy.
 
+**Selected is ink, doing is red (2026-11-12).** White on the brand red is only 3.85:1, so words on it must be 20 px bold
+or larger, which only the action button is. A control that is selected, active or on (the active tab, a toggle, a saved
+bookmark, a chosen answer) is `bg-selected text-on-selected` (ink). A number on red (course and stop numbers, avatar
+initials) is `bg-brand-strong text-on-brand-strong`, 7:1 in both themes. `contrast-usage.test.ts` fails when small text
+lands on a colour under 4.5:1.
+
 ## Layout and pace (reading register)
 
 - **One idea per screen** on a phone: a picture, a headline, two or three short lines.

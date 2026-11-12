@@ -43,7 +43,7 @@ function RouteRow({ route, state, locale }: { route: RouteSummary; state: NodeSt
       <span className="relative block min-w-0 py-4 pl-4 pr-[42%] xl:pl-1">
         <span className="flex items-center gap-3">
           {/* The course's number on a round badge (as on the home list), grey while the course is not ready. */}
-          <span className={`badge-pattern grid size-10 shrink-0 place-items-center rounded-full font-serif text-xl font-bold tabular-nums ${soon ? "bg-line/25 text-muted" : "bg-brand text-on-brand"}`}>{route.order}</span>
+          <span className={`badge-pattern grid size-10 shrink-0 place-items-center rounded-full font-serif text-xl font-bold tabular-nums ${soon ? "bg-line/25 text-muted" : "bg-brand-strong text-on-brand-strong"}`}>{route.order}</span>
           <span className="min-w-0 text-xl font-bold leading-snug group-hover:underline">
             <Localized value={name} />
           </span>

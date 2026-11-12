@@ -70,7 +70,7 @@ export function StampGrid({
               <p aria-hidden="true" className="flex shrink-0 flex-col items-center gap-1 border-l border-line/40 pl-2">
                 <span className="text-base font-bold tabular-nums text-muted">{number}</span>
                 {name ? (
-                  <span className={`font-serif text-xl leading-tight tracking-widest [text-orientation:upright] [writing-mode:vertical-rl] ${state === "empty" ? "font-normal" : "font-bold"}`}>
+                  <span className={`font-serif text-xl leading-tight [text-orientation:upright] [writing-mode:vertical-rl] ${state === "empty" ? "font-normal" : "font-bold"}`}>
                     {name}
                   </span>
                 ) : null}

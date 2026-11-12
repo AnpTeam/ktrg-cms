@@ -44,7 +44,7 @@ export function RoutePill({ route, name, place, photo, brief = false }: { route:
           </span>
         )}
       </span>
-      <span className={`badge-pattern absolute right-3 top-3 grid size-8 place-items-center rounded-full text-lg font-bold tabular-nums @2xl:size-7 ${soon ? "bg-line/25 text-muted" : "bg-brand text-on-brand"}`}>
+      <span className={`badge-pattern absolute right-3 top-3 grid size-8 place-items-center rounded-full text-lg font-bold tabular-nums @2xl:size-7 ${soon ? "bg-line/25 text-muted" : "bg-brand-strong text-on-brand-strong"}`}>
         {order}
       </span>
       {!soon && spotCount > 0 ? (

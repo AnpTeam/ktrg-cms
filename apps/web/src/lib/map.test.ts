@@ -146,7 +146,7 @@ describe("side trips and pin size", () => {
 
   test("a side trip is a thinner dashed blue line than the route's own", () => {
     const [casing, line] = sideLineLayers("side");
-    expect(line!.paint).toMatchObject({ "line-color": "#1d4ed8", "line-dasharray": [2, 1.5] });
+    expect(line!.paint).toMatchObject({ "line-color": "#1e50a2", "line-dasharray": [2, 1.5] });
     const main = routeLineLayers("route", false);
     expect(width(line)).toBeLessThan(width(main[1]));
     expect(width(casing)).toBeLessThan(width(main[0]));

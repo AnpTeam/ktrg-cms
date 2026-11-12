@@ -35,7 +35,7 @@ export function PreviewFrame({ locale: adminLocale, canWiden = true, children }:
           {locale === "en" ? "日本語" : "English"}
         </button>
         {canWiden ? (
-          <button type="button" aria-pressed={wide} onClick={() => setWide(!wide)} className="rounded-full bg-surface px-3 py-2.5 text-sm font-bold aria-pressed:bg-brand aria-pressed:text-on-brand">
+          <button type="button" aria-pressed={wide} onClick={() => setWide(!wide)} className="rounded-full bg-surface px-3 py-2.5 text-sm font-bold aria-pressed:bg-selected aria-pressed:text-on-selected">
             {t`パソコン幅`}
           </button>
         ) : null}
