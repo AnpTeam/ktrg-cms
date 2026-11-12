@@ -70,7 +70,9 @@ export function SiteHeader({
   }, [pathname]);
   const goBack = () => (moved.current ? router.back() : router.push(parentOf(pathname)));
   const onMap = /^\/map\/?$/.test(pathname);
-  const onRoutes = /^\/routes\/?$/.test(pathname);
+  // The lists that carry their title up in the bar beside the logo (the page itself has no heading on a phone).
+  const barTitle = /^\/routes\/?$/.test(pathname) ? t`葛城修験の道` : /^\/rallies\/?$/.test(pathname) ? t`ラリー` : null;
+  const onRoutes = barTitle !== null;
   const onLanding = onMap || (!signedIn && pathname === "/");
   // The logo bar of the signed-out home page shows only while the menu is open: scrolling never brings it over the page.
   const hidden = onLanding && !onMap && !open;
@@ -184,7 +186,7 @@ export function SiteHeader({
             <span />
           )}
           {/* The course list: the page's title stands beside the logo, up in the bar (the page itself has no heading on a phone). */}
-          {onRoutes ? open ? <span /> : <p className="min-w-0 truncate font-serif text-2xl font-bold text-accent">{t`葛城修験の道`}</p> : null}
+          {onRoutes ? open ? <span /> : <p className="min-w-0 truncate font-serif text-2xl font-bold text-accent">{barTitle}</p> : null}
           {/* Open: the language drop-down takes the right end of the bar, so the bar and the menu read as one piece. */}
           <span className="justify-self-end">{open ? <LocaleSelect /> : sample ? <SampleNoticeButton /> : null}</span>
         </div>

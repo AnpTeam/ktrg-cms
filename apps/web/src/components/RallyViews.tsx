@@ -127,7 +127,7 @@ export function RallyCard({ rally, locale, account }: { rally: RallyItem; locale
       <li className="rounded-[1.75rem] bg-surface/60 p-4">
         <p className="text-base text-muted">{kind}</p>
         <p className="text-xl font-bold leading-snug">{name}</p>
-        <p className="mt-1 inline-block rounded-lg border-2 border-dashed border-line px-2 text-lg font-bold text-muted">
+        <p className="mt-1 inline-block rounded-full border-2 border-dashed border-line px-3 text-lg font-bold text-muted">
           {t`準備中`}
         </p>
       </li>

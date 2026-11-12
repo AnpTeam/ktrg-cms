@@ -16,7 +16,7 @@ export async function SignInPrompt({ compact = false }: { compact?: boolean }) {
   await initLingui();
   if (compact) {
     return (
-      <section className="mx-4 rounded-2xl bg-surface px-4">
+      <section className="mx-4 rounded-[1.75rem] bg-surface px-5">
         <Dismissible storageKey="ktrg-signin-prompt-closed">
           <p className="flex flex-wrap items-center gap-x-4 text-lg font-bold">
             <Link href="/register" className="tap-target inline-flex items-center underline underline-offset-4">
