@@ -131,16 +131,23 @@ export function Landing({
   const firstRoutes = previewRoutes(routes, PREVIEW_ROUTES);
   const storyRoutes = previewRoutes(routes, STORY_ROUTES);
 
-  // `underMountains`: right after the Start chapter, where the team's mountains end. Their colour goes on down as the ground
-  // (class outro-ground), and the words stand in one surface panel on it: text straight on that grey would miss 7:1.
-  const noticesAndBlog = (underMountains: boolean) => (
-    <div data-ground className={`${underMountains ? "outro-ground px-4" : "story-ground-paper"} flex flex-col gap-10 pb-20`}>
-      <div className={`mx-auto flex w-full max-w-5xl flex-col gap-10 @[42rem]:px-6 ${underMountains && (notices.length > 0 || posts.length > 0) ? "rounded-[1.75rem] bg-surface py-8" : ""}`}>
-        <TrailNotices notices={notices} locale={locale} limit={2} />
-        <BlogCard posts={posts} locale={locale} />
+  // `underMountains`: right after the Start chapter, where the team's mountains end. The mountains fade into the Start chapter's
+  // ground, so this block keeps that same ground (no panel of its own) and, at its end, fades into the ground of the next chapter.
+  const noticesAndBlog = (underMountains: boolean) => {
+    const base: Ground = underMountains ? (drawn[drawn.length - 1] ?? "story-ground-paper") : "story-ground-paper";
+    const next = base === "story-ground-surface" ? "paper" : "surface"; // the chapter after alternates
+    return (
+      <div data-ground className={`${base} ${underMountains ? "relative isolate pb-28" : "pb-20"} flex flex-col gap-10`}>
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-10 @[42rem]:px-6">
+          <TrailNotices notices={notices} locale={locale} limit={2} />
+          <BlogCard posts={posts} locale={locale} />
+        </div>
+        {underMountains ? (
+          <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-28" style={{ background: `linear-gradient(to bottom, transparent, var(--color-${next}))` }} />
+        ) : null}
       </div>
-    </div>
-  );
+    );
+  };
   // The intro film, when one is set. The ground comes from the caller (it alternates on the signed-in page).
   const videoChapter = (g: Ground) =>
     introVideo ? (
