@@ -30,7 +30,7 @@ test("the drawings stand behind the words in the chapters that were plain", () =
 test("the Start chapter fades in from the ground above it", () => {
   const landing = read("components", "landing", "Landing.tsx");
   expect(landing).toMatch(/<SeamFade from=\{startFrom\} to=\{startGround\}\s*\/>/);
-  expect(read("components", "landing", "Decor.tsx")).toMatch(/if \(!from \|\| from === to\) return null;/);
+  expect(read("components", "landing", "Decor.tsx")).toMatch(/if \(!from \|\| from === to \|\| from === "story-ground-sea"\) return null;/);
 });
 
 test("the scene hands its progress to the drawings as --journey, and takes it back when it leaves", () => {

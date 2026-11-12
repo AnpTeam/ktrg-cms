@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 // each on its own ground with one of our line drawings behind it, rising in as it arrives (StoryMotion; still with reduced motion).
 const LOOK: { ground: Ground; Drawing: () => React.JSX.Element }[] = [
   { ground: "story-ground-paper", Drawing: SutraScroll }, // the sutra buried at the mounds
-  { ground: "story-ground-inverse", Drawing: StaffAndWaves }, // the walk starts at the sea
+  { ground: "story-ground-sea", Drawing: StaffAndWaves }, // the walk starts at the sea: deep sea blue, not night
   { ground: "story-ground-surface", Drawing: KuzuVine }, // the villages, the kuzu vine of 葛城
   { ground: "story-ground-paper", Drawing: SutraScroll },
 ];
@@ -53,10 +53,13 @@ export default async function StoryPage() {
               ground={ground}
               heading={section.heading[locale]}
               id={`story-${i}`}
+              // A longer, softer seam: the chapter starts lower so no word sits on the blend (--seam is the blend's height).
+              // The sea chapter gets much more air: a tall quiet blue above its words, and a wide field of waves below that melts away.
+              className={ground === "story-ground-sea" ? "pt-56 pb-64 [--seam:16rem] [--waves:70%] @[42rem]:pt-80 @[42rem]:pb-80 @[42rem]:[--seam:22rem]" : "pt-32 [--seam:9rem] @[42rem]:pt-44 @[42rem]:[--seam:12rem]"}
               decoration={
                 <>
                   <SeamFade from={from} to={ground} />
-                  <Drawing />
+                  {ground === "story-ground-sea" ? <StaffAndWaves fadeTo={LOOK[(i + 1) % LOOK.length]!.ground} /> : <Drawing />}
                 </>
               }
             >

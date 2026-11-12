@@ -45,6 +45,8 @@
   --color-lift: #ffffff; /* a chosen pill (prefecture tabs): white on the light page, the panel tone on the dark one */
   --color-night: #1f1b1a; /* the dark band of a reading page (the ridge at night): the ink colour */
   --color-on-night: #fcfaf5; /* the words on the dark band */
+  --color-sea: #1b3140; /* the sea (the story's first chapter): deep blue-slate, so the walk that starts at the shore reads as water, not night */
+  --color-on-sea: #fcfaf5;
   --color-brand: #cc6256; /* the brand red: action buttons, icons, the bar beside headings. Not for text on white, not for a selected state (that is ink) */
   --color-on-brand: #ffffff; /* the words on the brand red (large bold text only) */
   --color-brand-strong: #983a30; /* the red behind words and numbers (course and stop numbers): white on it is 7:1 */
@@ -207,6 +209,8 @@
     --color-lift: #29241f;
     --color-night: #0b0908; /* the dark band stays night: deeper than the page (墨, sumi ink) */
     --color-on-night: #ebe2d0;
+    --color-sea: #0e1c26; /* the sea (the story's first chapter): deep blue-slate, so the walk that starts at the shore reads as water, not night */
+    --color-on-sea: #ebe2d0;
     --color-brand: #cc6256; /* the same brand red */
     --color-on-brand: #ffffff;
     --color-brand-strong: #e0837a; /* lighter on dark, with dark words: 7:1 */
@@ -242,6 +246,8 @@
   --color-lift: #29241f;
   --color-night: #0b0908;
   --color-on-night: #ebe2d0;
+  --color-sea: #0e1c26; /* the sea (the story's first chapter): deep blue-slate, so the walk that starts at the shore reads as water, not night */
+  --color-on-sea: #ebe2d0;
   --color-brand: #cc6256; /* the same brand red */
   --color-on-brand: #ffffff;
   --color-brand-strong: #e0837a; /* lighter on dark, with dark words: 7:1 */
@@ -271,6 +277,8 @@
   --color-lift: #ffffff; /* a chosen pill (prefecture tabs): white on the light page, the panel tone on the dark one */
   --color-night: #1f1b1a; /* the dark band of a reading page (the ridge at night): the ink colour */
   --color-on-night: #fcfaf5; /* the words on the dark band */
+  --color-sea: #1b3140; /* the sea (the story's first chapter): deep blue-slate, so the walk that starts at the shore reads as water, not night */
+  --color-on-sea: #fcfaf5;
   --color-brand: #cc6256; /* the brand red: action buttons, icons, the bar beside headings. Not for text on white, not for a selected state (that is ink) */
   --color-on-brand: #ffffff; /* the words on the brand red (large bold text only) */
   --color-brand-strong: #983a30; /* the red behind words and numbers (course and stop numbers): white on it is 7:1 */
@@ -1435,6 +1443,10 @@ body.map-nav-mode .map-layer-pills {
 .story-ground-inverse {
   background-color: var(--color-night);
   color: var(--color-on-night);
+}
+.story-ground-sea {
+  background-color: var(--color-sea);
+  color: var(--color-on-sea);
 }
 /* Before StoryMotion runs, and only when the visitor allows motion (calm is a server-rendered attribute on <html>), the
    words wait out of sight so they never show and then jump. StoryMotion removes .story-pending as it takes over, or at

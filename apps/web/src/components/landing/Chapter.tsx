@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-export type Ground = "story-ground-paper" | "story-ground-surface" | "story-ground-inverse";
+export type Ground = "story-ground-paper" | "story-ground-surface" | "story-ground-inverse" | "story-ground-sea";
 
 /**
  * One chapter of a reading page (docs/design-language.md): its own ground, a headline set vertically for Japanese on a
@@ -11,9 +11,9 @@ export type Ground = "story-ground-paper" | "story-ground-surface" | "story-grou
  * (a stacking context of the chapter's own, so it never covers text). On a desk (docs/landing-desktop-design.md) `horizontal`
  * sets the headline across the page above the words, and `roomy` lets the words column (a film) use the width.
  */
-export function Chapter({ ground, heading, id, children, wide, decoration, horizontal, roomy }: { ground: Ground; heading: ReactNode; id: string; children: ReactNode; wide?: ReactNode; decoration?: ReactNode; horizontal?: boolean; roomy?: boolean }) {
+export function Chapter({ ground, heading, id, children, wide, decoration, horizontal, roomy, className = "" }: { ground: Ground; heading: ReactNode; id: string; children: ReactNode; wide?: ReactNode; decoration?: ReactNode; horizontal?: boolean; roomy?: boolean; /** Extra classes for the section (the story gives room above a longer seam fade). */ className?: string }) {
   return (
-    <section data-ground aria-labelledby={id} className={`${ground} @container ${decoration ? "relative isolate overflow-hidden" : ""} flex flex-col gap-10 py-20 @[42rem]:py-28`}>
+    <section data-ground aria-labelledby={id} className={`${ground} @container ${decoration ? "relative isolate overflow-hidden" : ""} flex flex-col gap-10 py-20 @[42rem]:py-28 ${className}`}>
       {decoration}
       <div className={`mx-auto flow-root w-full max-w-5xl px-5 @[42rem]:px-10 tall:@[42rem]:flex tall:@[42rem]:flex-row-reverse tall:@[42rem]:items-start tall:@[42rem]:gap-16 ${horizontal ? "desk:@[42rem]:flex-col! desk:@[42rem]:items-stretch! desk:@[42rem]:gap-8!" : ""}`}>
         <h2

@@ -74,7 +74,7 @@ export function KuzuVine() {
 export function Waves({ id, className = "-z-10" }: { id: string; className?: string }) {
   const rings = (r: number) => `M0 ${30 - r} A${r} ${r} 0 0 1 ${r} 30 M${60 - r} 30 A${r} ${r} 0 0 1 60 ${30 - r} M${30 - r} 60 A${r} ${r} 0 0 1 ${30 + r} 60`;
   return (
-    <div aria-hidden="true" className={`decor-waves pointer-events-none absolute inset-x-0 bottom-0 ${className} h-[55%] opacity-[0.12]`}>
+    <div aria-hidden="true" className={`decor-waves pointer-events-none absolute inset-x-0 bottom-0 ${className} h-[var(--waves,55%)] opacity-[0.12]`}>
       <svg className="size-full" {...line} strokeWidth={1.2}>
         <defs>
           <pattern id={id} width="60" height="60" patternUnits="userSpaceOnUse">
@@ -91,10 +91,18 @@ export function Waves({ id, className = "-z-10" }: { id: string; className?: str
  * A ringed staff (the shakujō a mountain monk carries: a large ring on a stem, small rings hanging from it) at the left,
  * and a band of waves along the bottom that fades upward: the walk starts at the sea.
  */
-export function StaffAndWaves() {
+export function StaffAndWaves({ fadeTo }: { fadeTo?: Ground } = {}) {
   return (
     <>
       <Waves id="seigaiha" />
+      {/* The waves run on to the chapter's foot and melt into the next ground, in one eased ramp, so they are never cut off. */}
+      {fadeTo ? (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[var(--seam,9rem)]"
+          style={{ background: `linear-gradient(to bottom, transparent 0%, color-mix(in srgb, ${TOKEN[fadeTo]} 25%, transparent) 30%, color-mix(in srgb, ${TOKEN[fadeTo]} 70%, transparent) 65%, ${TOKEN[fadeTo]} 100%)` }}
+        />
+      ) : null}
       <div
         aria-hidden="true"
         className="decor-drift pointer-events-none absolute -left-2 top-[calc(1.5rem+var(--top-clear))] -z-10 h-[26rem] w-16 opacity-[0.22] @[42rem]:left-8"
@@ -119,6 +127,7 @@ const TOKEN: Record<Ground, string> = {
   "story-ground-paper": "var(--color-paper)",
   "story-ground-surface": "var(--color-surface)",
   "story-ground-inverse": "var(--color-night)",
+  "story-ground-sea": "var(--color-sea)",
 };
 
 /**
@@ -126,15 +135,16 @@ const TOKEN: Record<Ground, string> = {
  * first stretch (a gradient from its colour) with two slow mist banks across it. Nothing when the grounds are the same.
  */
 export function SeamFade({ from, to }: { from: Ground | null; to: Ground }) {
-  if (!from || from === to) return null;
+  // The sea chapter melts into the next ground by itself (StaffAndWaves fadeTo), so the next chapter adds no seam of its own.
+  if (!from || from === to || from === "story-ground-sea") return null;
   const color = TOKEN[from];
   return (
     // Shorter than a chapter's top padding (4rem; 7rem from 42rem), so no word ever sits on the blend; eased stops, not a straight
     // ramp (a straight one shows as a band); and not clipped: the mist banks fade out by themselves (a clip gave a hard line).
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[clamp(4rem,14vw,7rem)]"
-      style={{ background: `linear-gradient(to bottom, ${color} 0%, color-mix(in srgb, ${color} 60%, transparent) 35%, color-mix(in srgb, ${color} 20%, transparent) 70%, transparent 100%)` }}
+      className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[var(--seam,clamp(4rem,14vw,7rem))]"
+      style={{ background: `linear-gradient(to bottom, ${color} 0%, color-mix(in srgb, ${color} 45%, transparent) 30%, color-mix(in srgb, ${color} 14%, transparent) 62%, transparent 100%)` }}
     >
       <span data-parallax="" className="absolute -left-10 -top-4 h-12 w-3/4 rounded-full opacity-60 blur-2xl" style={{ background: color }} />
       <span data-parallax="" className="absolute -right-12 top-0 h-10 w-2/3 rounded-full opacity-50 blur-2xl" style={{ background: color }} />
