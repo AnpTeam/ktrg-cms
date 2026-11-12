@@ -428,14 +428,20 @@ describe("unsaved places", () => {
 });
 
 describe("checks before saving", () => {
+  test("a route with no city or town is a problem; one city fixes it", () => {
+    const none = run(fresh(), { type: "text", field: "nameJa", value: "甲山" });
+    expect(draftProblems(none.present)).toEqual([{ kind: "route_municipalities" }]);
+    const one = run(none, { type: "municipalities", value: ["和歌山市"] });
+    expect(draftProblems(one.present)).toEqual([]);
+  });
   test("a blank route or place name, and a video link that is not YouTube or Vimeo", () => {
     let s = run(fresh(), { type: "addPlace", key: "a", lat: 1, lng: 1 }, { type: "place", key: "a", patch: { nameJa: "  " } });
-    expect(draftProblems(s.present)).toEqual([{ kind: "route_name" }, { kind: "place_name", key: "a" }]);
+    expect(draftProblems(s.present)).toEqual([{ kind: "route_name" }, { kind: "route_municipalities" }, { kind: "place_name", key: "a" }]);
     s = run(s, { type: "text", field: "videoUrl", value: "https://example.com/x" });
     expect(draftProblems(s.present).map((p) => p.kind)).toContain("video_link");
   });
   test("a position with only one of its two numbers is a problem the person must fix", () => {
-    let s = run(fresh(), { type: "text", field: "nameJa", value: "甲山" }, { type: "addPlace", key: "a", lat: 34, lng: 135 });
+    let s = run(fresh(), { type: "text", field: "nameJa", value: "甲山" }, { type: "municipalities", value: ["和歌山市"] }, { type: "addPlace", key: "a", lat: 34, lng: 135 });
     s = run(s, { type: "place", key: "a", patch: { lng: null } });
     expect(draftProblems(s.present)).toEqual([{ kind: "place_position", key: "a" }]);
   });
