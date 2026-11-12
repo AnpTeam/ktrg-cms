@@ -14,7 +14,7 @@ import { Chapter, type Ground } from "@/components/landing/Chapter";
 import { StoryMotion } from "@/components/landing/StoryMotion";
 import { PlaceLine } from "@/components/PlaceLine";
 import { RoutePill } from "@/components/RoutePill";
-import { KuzuVine, SeamFade, StaffAndWaves, SutraScroll } from "@/components/landing/Decor";
+import { EnNoGyoja, KuzuVine, SeamFade, StaffAndWaves, SutraScroll } from "@/components/landing/Decor";
 import { BackToTop } from "@/components/BackToTop";
 import { municipalityName } from "@/lib/municipalities";
 import { pickText } from "@/lib/pick-text";
@@ -308,7 +308,7 @@ export function Landing({
                 <Fact term={<Trans>経塚</Trans>} value={<Trans>{TOTAL_STAMPS}か所</Trans>} />
               </dl>
               <figure className="flex flex-col gap-2">
-                <Image src="/home/story_img.png" alt="" width={834} height={547} sizes="(min-width: 1024px) 560px, 100vw" className="h-auto w-full max-w-md rounded-lg" />
+                <EnNoGyoja className="h-auto w-full max-w-xs" />
                 <figcaption className="text-base opacity-90">{w.storyCaption}</figcaption>
               </figure>
             </Chapter>
