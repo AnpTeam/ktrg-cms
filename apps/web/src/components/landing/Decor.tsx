@@ -55,7 +55,7 @@ function KuzuLeaf({ x, y, turn }: { x: number; y: number; turn: number }) {
 /** The kuzu vine along the right edge of a chapter. `data-grow` lets StoryMotion grow it down the chapter as it scrolls by. */
 export function KuzuVine() {
   return (
-    <div aria-hidden="true" data-parallax="" className="pointer-events-none absolute right-0 top-8 -z-10 h-[44rem] w-28 opacity-[0.2] @[42rem]:right-6 @[42rem]:w-32">
+    <div aria-hidden="true" data-parallax="" className="pointer-events-none absolute right-0 top-8 -z-10 h-[44rem] w-28 opacity-[0.4] @[42rem]:right-6 @[42rem]:w-32">
       <svg data-grow="" viewBox="0 0 120 600" className="h-full w-full" preserveAspectRatio="xMaxYMin meet" {...line}>
         <path d="M60 0 C55 40 30 60 38 100 S90 150 82 200 S30 260 46 300 S92 360 78 420 S30 470 50 520 S70 570 60 600" />
         <KuzuLeaf x={38} y={100} turn={-52} />
@@ -129,9 +129,15 @@ export function SeamFade({ from, to }: { from: Ground | null; to: Ground }) {
   if (!from || from === to) return null;
   const color = TOKEN[from];
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[clamp(7rem,26vw,12rem)] overflow-hidden" style={{ background: `linear-gradient(to bottom, ${color}, transparent)` }}>
-      <span data-parallax="" className="absolute -left-10 top-0 h-16 w-3/4 rounded-full opacity-70 blur-2xl" style={{ background: color }} />
-      <span data-parallax="" className="absolute -right-12 top-6 h-14 w-2/3 rounded-full opacity-60 blur-2xl" style={{ background: color }} />
+    // Shorter than a chapter's top padding (4rem; 7rem from 42rem), so no word ever sits on the blend; eased stops, not a straight
+    // ramp (a straight one shows as a band); and not clipped: the mist banks fade out by themselves (a clip gave a hard line).
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[clamp(4rem,14vw,7rem)]"
+      style={{ background: `linear-gradient(to bottom, ${color} 0%, color-mix(in srgb, ${color} 60%, transparent) 35%, color-mix(in srgb, ${color} 20%, transparent) 70%, transparent 100%)` }}
+    >
+      <span data-parallax="" className="absolute -left-10 -top-4 h-12 w-3/4 rounded-full opacity-60 blur-2xl" style={{ background: color }} />
+      <span data-parallax="" className="absolute -right-12 top-0 h-10 w-2/3 rounded-full opacity-50 blur-2xl" style={{ background: color }} />
     </div>
   );
 }

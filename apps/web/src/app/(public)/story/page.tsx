@@ -32,7 +32,8 @@ export default async function StoryPage() {
     <StoryMotion className="@container">
       <ScrollProgress />
       <div className="@[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
-        <header data-ground className="story-ground-surface @container relative isolate flex flex-col gap-8 overflow-hidden px-5 pb-16 pt-6 @[42rem]:px-10 @[42rem]:pb-24">
+        <header data-ground className="story-ground-surface @container relative isolate flex flex-col gap-8 overflow-hidden -mt-3 px-5 pb-16 pt-9 md:mt-0 md:pt-6 @[42rem]:px-10 @[42rem]:pb-24">
+          {/* -mt-3: on a phone the bar leaves a 12 px strip of page colour under it; the ground now starts right at the bar. */}
           <KuzuVine />
           <div className="mx-auto flex w-full max-w-5xl flex-col gap-10">
             <BackLink href="/">
@@ -68,7 +69,9 @@ export default async function StoryPage() {
           );
         })}
 
-        <p className="story-ground-paper px-5 pb-16 pt-10 text-base text-muted @[42rem]:px-10">
+        {/* The story ends on the team's mountains (as the landing's start chapter does), the source line standing above them. */}
+        <p className="story-ground-paper relative isolate overflow-hidden px-5 pb-[clamp(9rem,34vw,22rem)] pt-10 text-base text-muted @[42rem]:px-10">
+          <span aria-hidden="true" className="outro-mountains pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[clamp(7rem,30vw,20rem)]" />
           <span className="mx-auto block w-full max-w-5xl">
             {locale === "en" ? "The facts follow the official Japan Heritage site for Katsuragi Shugen: " : "内容は、日本遺産「葛城修験」の公式サイトをもとにしています。"}
             <a href={STORY_SOURCE_URL} target="_blank" rel="noopener noreferrer" className="tap-target inline-flex items-center font-bold underline underline-offset-4">
