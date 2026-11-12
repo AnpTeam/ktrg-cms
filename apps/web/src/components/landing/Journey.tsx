@@ -4,12 +4,14 @@ import { Trans } from "@lingui/react/macro";
 import { buttonStyle } from "@/components/button";
 import { Chapter } from "@/components/landing/Chapter";
 import { SutraScroll, StaffAndWaves } from "@/components/landing/Decor";
+import { DeskPanel } from "@/components/landing/DeskPanel";
 import { JourneyScene } from "@/components/landing/JourneyScene";
 import { LandingHero } from "@/components/landing/LandingHero";
 import type { BannerSlide } from "@/lib/banners";
 import type { RouteSummary } from "@/lib/content";
 import type { HomeSlot } from "@/lib/home-text";
 import { moundSealPoints, stageLine } from "@/lib/journey";
+import { panelPhotos } from "@/lib/landing-desktop";
 import { MOUND_PLACES, TOTAL_ROUTES, TOTAL_STAMPS, TRAIL_KM } from "@/lib/rally";
 import { RIDGE_HEIGHT, RIDGE_WIDTH, ridgePath } from "@/lib/ridge";
 
@@ -91,6 +93,10 @@ export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; 
             </Link>
           </Chapter>
         </div>
+
+        {/* A desktop's picture panel and step marker (drawn only there, only while the scene is live; see DeskPanel). The photos are
+            course photos, then the first banner photo, then the trail photo of the Japan Heritage council. */}
+        <DeskPanel photos={panelPhotos(routes, slides.find((s) => s.src)?.src ?? null, "/home/top_slider_img01.jpg")} />
       </div>
     </JourneyScene>
   );
