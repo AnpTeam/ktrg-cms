@@ -10,6 +10,9 @@ export const DESK_QUERY = "(min-width: 1024px) and (min-height: 38rem)";
 export const DESK_SCROLL_SVH = 300;
 export const PHONE_SCROLL_SVH = 250;
 
+/** What a beat needs under its words for the ridge to show at least in part (the stage reserves more, 13rem, but a short screen may squeeze it). */
+export const RIDGE_ROOM_PX = 96;
+
 export type PanelPhoto = { src: string; credit: string | null };
 
 /**

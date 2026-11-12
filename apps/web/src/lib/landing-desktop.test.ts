@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { DESK_QUERY, DESK_SCROLL_SVH, PHONE_SCROLL_SVH, SCENE_QUERY, beatsFit, panelPhotos } from "./landing-desktop";
+import { DESK_QUERY, DESK_SCROLL_SVH, PHONE_SCROLL_SVH, RIDGE_ROOM_PX, SCENE_QUERY, beatsFit, panelPhotos } from "./landing-desktop";
 
 const course = (order: number, status: "ready" | "soon", photoUrl: string | null, photoCredit?: string | null) => ({ order, status, photoUrl, photoCredit });
 const FALLBACK = "/home/top_slider_img01.jpg";
@@ -11,6 +11,7 @@ describe("the desktop gate", () => {
     expect(DESK_QUERY).not.toContain("max-height");
     expect(DESK_SCROLL_SVH).toBe(300);
     expect(PHONE_SCROLL_SVH).toBe(250);
+    expect(RIDGE_ROOM_PX).toBe(96);
   });
 });
 
