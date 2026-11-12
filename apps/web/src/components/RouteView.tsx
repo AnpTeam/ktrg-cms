@@ -246,7 +246,7 @@ export function RouteView({ route, locale, places, settings, placesFirst, labels
 
           {video || videoFile ? (
             <section id="video" className="order-10 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none">
-              <Fold title={<span className="border-l-4 border-brand pl-3 font-serif text-accent"><Trans>ルートの動画</Trans></span>}>
+              <Fold open title={<span className="border-l-4 border-brand pl-3 font-serif text-accent"><Trans>ルートの動画</Trans></span>}>
                 <div className="flex flex-col gap-3">
                   {video ? (
                     <IntroVideo video={video} title={pickText(locale, route.nameJa, route.nameEn)?.text ?? route.nameJa} />
@@ -268,6 +268,7 @@ export function RouteView({ route, locale, places, settings, placesFirst, labels
           ) : (
             <section id="walk" className="order-7 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none">
               <Fold
+                open
                 title={<span className="border-l-4 border-brand pl-3 font-serif text-accent"><Trans>道のり</Trans></span>}
                 aside={
                   showStampCount && stampedCount !== null && spotCount > 0 ? (
@@ -287,7 +288,7 @@ export function RouteView({ route, locale, places, settings, placesFirst, labels
         {stops.length > 0 ? (
           <div className={MAP_COLUMN}>
             <section id="map" className="order-8 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none @4xl:h-full @4xl:px-0">
-              <Fold className="fold-bare" title={<span className="border-l-4 border-brand pl-3 font-serif text-accent"><Trans>地図</Trans></span>}>
+              <Fold open className="fold-bare" title={<span className="border-l-4 border-brand pl-3 font-serif text-accent"><Trans>地図</Trans></span>}>
                 <TrailMapLoader stops={stops} line={route.line} sideLines={route.sideLines?.map((s) => s.line)} places={mapPlaces} draft={draftPositions} settings={settings} placesFirst={placesFirst} />
               </Fold>
             </section>
