@@ -60,7 +60,7 @@ export function LocaleSelect() {
         rememberLocale(next);
         router.refresh();
       }}
-      className="min-h-11 rounded-full border border-ink bg-paper px-2.5 text-base font-bold text-ink hover:bg-surface"
+      className="min-h-12 rounded-full border border-ink bg-paper px-3.5 text-base font-bold text-ink hover:bg-surface"
     >
       {locales.map((locale) => (
         <option key={locale} value={locale} lang={locale}>

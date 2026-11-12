@@ -254,11 +254,11 @@ export function SiteHeader({
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <Link prefetch={false} href="/settings" className={buttonStyle("secondary", "md", "flex w-full justify-start")}>
-                  {t`見やすさの設定`}
-                </Link>
-                <p className="text-base text-muted">{t`文字やボタンの大きさ、地図の見せ方`}</p>
                 <QuickActions prefs={prefs} signedIn={signedIn} />
+                <MenuLinks>
+                  <MenuLink href="/settings" label={t`見やすさの設定`} />
+                </MenuLinks>
+                <p className="text-base text-muted">{t`文字やボタンの大きさ、地図の見せ方`}</p>
               </div>
             </MenuGroup>
 

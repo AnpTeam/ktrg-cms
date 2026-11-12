@@ -8232,3 +8232,19 @@ msgstr "案内のみ"
 
 msgid "ここにはスタンプはありません。"
 msgstr "ここにはスタンプはありません。"
+
+#: src/components/QuickActions.tsx
+msgid "文字サイズ"
+msgstr "文字サイズ"
+
+#: src/components/QuickActions.tsx
+msgid "配色"
+msgstr "配色"
+
+#: src/components/QuickActions.tsx
+msgid "動き"
+msgstr "動き"
+
+#: src/components/QuickActions.tsx
+msgid "あり"
+msgstr "あり"
