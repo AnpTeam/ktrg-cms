@@ -105,3 +105,4 @@ Add the people who should be told as alert contacts (email). When the Database m
 GitHub, Vercel, Supabase and Cloudflare R2 accounts, and the OpenRouteService key: @mzxrq (the repository owner).
 Domain: the free Vercel address, nothing else to manage until launch.
 Sign-in email (the SMTP mailbox behind `SMTP_USER` and `MAIL_FROM`): still Anupap (mailto:anupap@ndr.co.jp) @AnpTeam. Move it to a mailbox the owner controls before launch.
+After any repository transfer or rename, re-point the Vercel Git connection (Project, Settings, Git) at the new repository and check that the newest commit on `main` has a `Vercel` status; a transfer once stopped deploys without any error.
