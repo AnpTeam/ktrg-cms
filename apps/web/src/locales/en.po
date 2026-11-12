@@ -4379,11 +4379,21 @@ msgstr "No earlier links yet."
 msgid "前の写真"
 msgstr "Previous photo"
 
-msgid "案内のみ"
-msgstr "Information only"
+msgid "しおりと読みもの"
+msgstr "Bookmarks and reading"
 
-msgid "ここにはスタンプはありません。"
-msgstr "There is no stamp here."
+msgid "表示と設定"
+msgstr "Display and settings"
+
+msgid "このアプリについて"
+msgstr "About this app"
+#: src/components/landing/DeskPanel.tsx
+msgid "海"
+msgstr "Sea"
+
+#: src/components/landing/DeskPanel.tsx
+msgid "稜線"
+msgstr "Ridge"
 
 #: src/components/BackToTop.tsx
 msgid "ページの先頭へ"
@@ -8212,3 +8222,9 @@ msgstr "How to add it"
 #: src/components/landing/Journey.tsx
 msgid "ストーリーを読む"
 msgstr "Read the story"
+
+msgid "案内のみ"
+msgstr "Information only"
+
+msgid "ここにはスタンプはありません。"
+msgstr "There is no stamp here."

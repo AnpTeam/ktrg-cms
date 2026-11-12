@@ -36,7 +36,9 @@ test("the hero is as tall in every language when it is the journey's first scree
 // whole ridge in reading order); it is a media query, so turning the phone swaps between the two without a reload.
 test("the scroll scene runs only on a screen tall enough to hold a beat", () => {
   const scene = readFileSync(join(src, "components", "landing", "JourneyScene.tsx"), "utf8");
-  expect(scene).toMatch(/\(prefers-reduced-motion: no-preference\) and \(min-height: 38rem\)/);
+  // The query itself lives in one place (lib/landing-desktop.ts) and the scene uses it.
+  expect(scene).toMatch(/mm\.add\(mode === "scene" \? SCENE_QUERY/);
+  expect(readFileSync(join(src, "lib", "landing-desktop.ts"), "utf8")).toMatch(/\(prefers-reduced-motion: no-preference\) and \(min-height: 38rem\)/);
 });
 
 // 2026-11-12, real iPhone: the logo bar that appeared after the first scroll stayed over the page (about 120 px of a phone

@@ -74,7 +74,7 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
 
           {shown.length > 0 ? (
             <section aria-label={i18n._(msg`新しい記事`)} className="px-4 wide:px-0">
-              <ul className="divide-y divide-line border-y border-line">
+              <ul className="flex flex-col gap-3">
                 {shown.map((post) => (
                   <li key={post.id}>
                     <PostRow post={post} locale={i18n.locale} />

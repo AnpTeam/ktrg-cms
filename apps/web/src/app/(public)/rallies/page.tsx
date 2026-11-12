@@ -31,7 +31,7 @@ export default async function StampsPage({ searchParams }: { searchParams: Promi
       {/* One column in this order, on a phone and on a desktop alike: the title, you, the rally you are in, then the rest as cards side by side. */}
       {/* The title, with the badges and how to play to its side ("?"): how to play lives here, with the stamps, and nowhere else. */}
       <div className="flex items-center gap-3 px-4">
-        <h1 className="min-w-0 flex-1 text-3xl font-bold wide:text-4xl">
+        <h1 className="min-w-0 flex-1 font-serif text-3xl font-bold text-accent wide:text-4xl">
           <Trans>ラリー</Trans>
         </h1>
         <Link href="/badges" className="tap-target inline-flex items-center rounded-full bg-surface px-5 text-xl font-bold text-accent">

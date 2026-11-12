@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 import { beatAt, drawnShare, motionMode, sealsPlaced } from "@/lib/journey";
+import { RIDGE_ROOM_PX, SCENE_QUERY, beatsFit } from "@/lib/landing-desktop";
 
 /**
  * The landing journey's motion (docs/landing-journey-design.md). `children` are the complete static page (Journey.tsx);
@@ -44,7 +45,7 @@ export function JourneyScene({ children, seals }: { children: ReactNode; seals: 
         const mm = gsap.matchMedia();
         // The scene needs a screen tall enough to hold a beat (a phone on its side is not: the story would be cut off and the
         // ridge out of reach), so a short screen keeps the stacked page. matchMedia re-checks it when the phone is turned.
-        mm.add(mode === "scene" ? "(prefers-reduced-motion: no-preference) and (min-height: 38rem)" : "(prefers-reduced-motion: reduce)", () => {
+        mm.add(mode === "scene" ? SCENE_QUERY : "(prefers-reduced-motion: reduce)", () => {
           if (mode === "fade") {
             // Reduced motion: the final scene as it is (ridge drawn, seals placed); each later beat only fades in, once.
             beats.forEach((beat) => {
@@ -54,6 +55,19 @@ export function JourneyScene({ children, seals }: { children: ReactNode; seals: 
           }
           el.classList.add("journey-live");
           el.dataset.activeBeat = "0";
+          // A beat's words plus a little room for the ridge must fit the screen. The chapter's own bottom padding is the ridge's
+          // reserved zone, so it is not counted as words (a short screen may squeeze it). A taller beat (a long editor text, a big
+          // text-size setting) would be cut off and out of reach, so the stacked page stays.
+          // shortcut: measured when the scene starts (and when a query changes), not on every resize; upgrade if editors report clipping.
+          const needs = beats.map((b) => {
+            const chapter = (b.firstElementChild as HTMLElement | null) ?? b;
+            return chapter.scrollHeight - (parseFloat(getComputedStyle(chapter).paddingBottom) || 0) + RIDGE_ROOM_PX;
+          });
+          if (!beatsFit(needs, window.innerHeight)) {
+            el.classList.remove("journey-live");
+            delete el.dataset.activeBeat;
+            return;
+          }
           // pathLength="1" on the line: the dash is the whole line at any size.
           // Set by hand, not with gsap: it writes these as rounded px values, and the draw needs fractions of 1.
           const draw = (share: number) => ridge?.style.setProperty("stroke-dashoffset", String(1 - share));

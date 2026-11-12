@@ -36,18 +36,20 @@ export function PostRow({ post, locale, lead = false }: { post: BlogPost; locale
     );
   }
   return (
-    <Link href={`/blog/${post.id}`} className="tap-target group flex items-start gap-4 py-4 no-underline">
-      <span className="flex min-w-0 flex-1 flex-col gap-1">
+    // A capsule like the course list's: the words on the left, the photo fading in from the right.
+    <Link href={`/blog/${post.id}`} className="tap-target group relative block overflow-hidden rounded-[1.75rem] bg-surface no-underline">
+      {post.coverPhotoUrl ? (
+        <span className="absolute inset-y-0 right-0 block w-2/5 overflow-hidden">
+          <RoutePhoto src={post.coverPhotoUrl} alt="" />
+          <span aria-hidden="true" className="absolute inset-0 bg-linear-to-r from-surface from-20% to-transparent to-85%" />
+        </span>
+      ) : null}
+      <span className={`relative flex min-h-24 flex-col justify-center gap-1 py-3 pl-5 ${post.coverPhotoUrl ? "pr-[42%]" : "pr-5"}`}>
         <span className="line-clamp-3 text-lg font-bold leading-snug text-ink group-hover:underline">
           <Localized value={title} />
         </span>
         {meta}
       </span>
-      {post.coverPhotoUrl ? (
-        <span className="relative block size-24 shrink-0 overflow-hidden rounded-md bg-surface">
-          <RoutePhoto src={post.coverPhotoUrl} alt="" />
-        </span>
-      ) : null}
     </Link>
   );
 }
