@@ -53,7 +53,7 @@ export function StatusBanner({
 
   if (status === "caution") {
     return (
-      <section className="mx-4 rounded-xl border-4 border-caution p-4">
+      <section className="mx-4 rounded-[1.75rem] border-4 border-caution p-5">
         <p className="text-2xl">
           <StatusWord status="caution" />
         </p>
@@ -78,13 +78,13 @@ export function StatusBanner({
   }
 
   return (
-    <section className="mx-4 overflow-hidden rounded-xl border-4 border-ink">
+    <section className="mx-4 overflow-hidden rounded-[1.75rem] border-4 border-ink">
       {/* Barrier stripes: closed reads as "blocked" even at a glance, without red. */}
       <div
         aria-hidden="true"
         className="h-3 bg-[repeating-linear-gradient(135deg,var(--color-ink)_0_12px,var(--color-surface)_12px_24px)]"
       />
-      <div className="p-4">
+      <div className="p-5">
         <p className="text-2xl">
           <StatusWord status="closed" />
         </p>
