@@ -31,7 +31,7 @@ function RouteRow({ route, state, locale }: { route: RouteSummary; state: NodeSt
   const soon = state === "soon";
 
   return (
-    <span className="relative block overflow-hidden">
+    <span className="relative block h-full overflow-hidden">
       {/* The photo fades in from the right edge into the page (as the home capsules do, without the capsule); a course that
           is not ready shows it soft and grey, so it reads as unfinished at a glance. */}
       <span aria-hidden="true" className="absolute inset-y-0 right-0 block w-1/2 overflow-hidden @2xl:w-2/5">
@@ -85,7 +85,8 @@ function StopRow({ stop, href, locale }: { stop: Stop; href: string; locale: str
   const row = <RouteRow route={route} state={state} locale={locale} />;
 
   return (
-    <li className="border-b border-line">
+    // A grid cell (two columns): the li is one stretched cell so a row beside a taller one still fills its height.
+    <li className="grid border-b border-line">
       {state === "soon" ? (
         <div>{row}</div>
       ) : (
