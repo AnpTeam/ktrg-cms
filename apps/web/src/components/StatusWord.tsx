@@ -1,6 +1,6 @@
 import { Trans } from "@lingui/react/macro";
 import type { SpotStatus } from "@/lib/content";
-import { CheckIcon, ClosedIcon, WarningIcon } from "./icons";
+import { CheckIcon, ClosedIcon, InfoIcon, WarningIcon } from "./icons";
 
 // Kept in its own file on purpose: client components (the map's stop card) import it, and it
 // must not pull the content module, and with it the sample data, into the browser bundle.
@@ -11,6 +11,14 @@ export function StatusWord({ status }: { status: SpotStatus }) {
       <span className="inline-flex items-center gap-1 font-bold">
         <ClosedIcon />
         <Trans>閉鎖中</Trans>
+      </span>
+    );
+  }
+  if (status === "info") {
+    return (
+      <span className="inline-flex items-center gap-1 font-bold">
+        <InfoIcon />
+        <Trans>案内のみ</Trans>
       </span>
     );
   }

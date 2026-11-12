@@ -49,7 +49,7 @@ export function StampHere({
   onStamped,
 }: {
   spotId: string;
-  status: "open" | "caution" | "closed";
+  status: "open" | "caution" | "closed" | "info";
   /** The visitor already holds this stamp (before this visit). */
   alreadyStamped: boolean;
   /** The place's own stamp picture, shown in the "stamped" message. */
@@ -185,7 +185,9 @@ export function StampHere({
         </div>
       ) : null}
 
-      {status === "closed" ? (
+      {status === "info" ? (
+        <p className="rounded-xl bg-paper/95 px-3 py-1 text-center text-base text-muted">{t`ここにはスタンプはありません。`}</p>
+      ) : status === "closed" ? (
         <>
           <div className="flex gap-2">
             {aside}

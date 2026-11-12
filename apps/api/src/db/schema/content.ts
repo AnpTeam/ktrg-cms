@@ -29,7 +29,7 @@ import { users } from "./auth";
 export const contentLocales = ["ja", "en", "de", "fr", "th", "es"] as const;
 export const contentLocale = pgEnum("content_locale", contentLocales);
 
-export const spotStatus = pgEnum("spot_status", ["open", "caution", "closed"]);
+export const spotStatus = pgEnum("spot_status", ["open", "caution", "closed", "info"]);
 
 /**
  * What a waypoint (a point on a route) is. Whether visitors can stamp there is a separate switch (`spots.stampable`),

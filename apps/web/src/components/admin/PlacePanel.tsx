@@ -84,7 +84,7 @@ export function PlacePanel(p: PlacePanelProps) {
     position_not_verified: t`位置を公式の情報で確認し、「位置を確認した」にチェックを入れて情報源を書いてください。`,
     permission_required: t`現地の許可を確認し、「許可確認済み」にチェックを入れてください。`,
   };
-  const statusName: Record<SpotStatus, string> = { open: t`通常`, caution: t`注意`, closed: t`通行止め` };
+  const statusName: Record<SpotStatus, string> = { open: t`通常`, caution: t`注意`, closed: t`通行止め`, info: t`案内のみ` };
   const id = `place-${place.key}`;
   const settings = useRef<HTMLDetailsElement>(null);
   // What to tick for each reason the place cannot be published yet: the button under 公開する takes the admin there.
@@ -236,6 +236,7 @@ export function PlacePanel(p: PlacePanelProps) {
                   <option value="open">{statusName.open}</option>
                   <option value="caution">{statusName.caution}</option>
                   <option value="closed">{statusName.closed}</option>
+                  <option value="info">{statusName.info}</option>
                 </select>
                 <MultilingualField id={`${id}-note`} label={t`状態のひとこと`} field="statusNote" ja={place.statusNoteJa} en={place.statusNoteEn} translations={place.translations} onJa={(v) => p.onChange({ statusNoteJa: v })} onEn={(v) => p.onChange({ statusNoteEn: v })} onTranslations={(v) => p.onChange({ translations: v })} />
               </fieldset>

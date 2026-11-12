@@ -5,6 +5,7 @@ import { ChevronIcon } from "@/components/icons";
 import { Localized } from "@/components/Localized";
 import { StampGrid } from "@/components/StampGrid";
 import { pickText, type RouteSummary, type SpotListItem } from "@/lib/content";
+import { offersNoStamp } from "@/lib/spot-status";
 
 const link = "tap-target inline-flex items-center gap-1 font-bold underline underline-offset-4 tabular-nums";
 
@@ -35,7 +36,7 @@ export function HomeProgress({
   bookmarks: number;
 }) {
   const started = (route?.stampedCount ?? 0) > 0;
-  const next = spots.filter((s) => s.stamped === false && s.status !== "closed" && !s.stopBy).slice(0, 3);
+  const next = spots.filter((s) => s.stamped === false && !offersNoStamp(s.status) && !s.stopBy).slice(0, 3);
   const [first, ...more] = next;
   const sealed = new Set(spots.flatMap((s, i) => (s.stamped ? [i + 1] : [])));
 

@@ -146,7 +146,7 @@ export function createDrizzleRallyAdminStore(db: Db): RallyAdminStore {
       const rallyText = flattenTexts(RALLY_TEXT, names, (t) => t.rallyId);
       const spotText = flattenTexts(SPOT_TEXT, spotNames, (t) => t.spotId);
       const routeText = flattenTexts(ROUTE_TEXT, routeNames, (t) => t.routeId);
-      const stampsOf = new Map<string, { id: string; status: "open" | "caution" | "closed" }[]>();
+      const stampsOf = new Map<string, { id: string; status: "open" | "caution" | "closed" | "info" }[]>();
       for (const s of stampSpots) stampsOf.set(s.routeId, [...(stampsOf.get(s.routeId) ?? []), { id: s.id, status: s.status }]);
       return rows.map((r): PublicRally => {
         const t = rallyText.get(r.id) ?? emptyTexts(RALLY_TEXT);

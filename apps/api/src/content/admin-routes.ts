@@ -67,7 +67,7 @@ const kind = t.Union([
   t.Literal("campsite"),
   t.Literal("other"),
 ]);
-const status = t.Union([t.Literal("open"), t.Literal("caution"), t.Literal("closed")]);
+const status = t.Union([t.Literal("open"), t.Literal("caution"), t.Literal("closed"), t.Literal("info")]);
 const uuid = t.String({ format: "uuid" });
 const idParams = t.Object({ id: uuid });
 

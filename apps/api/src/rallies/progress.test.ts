@@ -36,6 +36,12 @@ describe("placeProgress (a course's stamp places, or a rally of places)", () => 
     expect(p).toMatchObject({ total: 1, stamped: 0, complete: false, lastStampedAt: null });
   });
 
+  test("an information place is not a stamp place: it is left out of the total and never blocks finishing", () => {
+    const withInfo = [member("a"), member("b", { status: "info" })];
+    expect(placeProgress({ members: withInfo, stamps: [stamp("a", "2026-10-10T00:00:00Z")] })).toMatchObject({ total: 1, stamped: 1, waived: 0, complete: true });
+    expect(placeProgress({ members: [member("b", { status: "info" })], stamps: [] })).toMatchObject({ total: 0, complete: false });
+  });
+
   test("a closed place counts as done, until it reopens, unless it was stamped", () => {
     const closed = [member("a"), member("b", { status: "closed" })];
     expect(placeProgress({ members: closed, stamps: [stamp("a", "2026-10-10T00:00:00Z")] })).toMatchObject({ stamped: 1, waived: 1, complete: true });

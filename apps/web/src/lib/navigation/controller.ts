@@ -8,6 +8,7 @@ import type { LinePoint } from "./geometry";
 import { createPositionWatcher, type GeoApi, type VisibilityApi } from "./position-watcher";
 import { PATH_BACKOFF_MS, shouldAskForPath, type LastAsk, type PathAnswer } from "./path-client";
 import { applyFix, initialState, MAX_ACCURACY_M, movementHeading, stopsBehind, trackOf, wantsPath, type NavModel, type NavPath, type NavReading, type NavState } from "./session";
+import { offersNoStamp } from "@/lib/spot-status";
 
 export interface NavSnapshot {
   state: NavState;
@@ -68,7 +69,7 @@ export function createNavigationController(deps: ControllerDeps) {
   // What the guidance does not head for. With only skipped stops left it heads for those rather than saying all is done.
   const finished = (): ReadonlySet<string> => {
     const done = new Set([...stamped, ...skipped]);
-    return model.stops.some((s) => !done.has(s.id) && s.status !== "closed") ? done : stamped;
+    return model.stops.some((s) => !done.has(s.id) && !offersNoStamp(s.status)) ? done : stamped;
   };
   let snap: NavSnapshot = { state: initialState(), stamped, stampsKnown, paused: false, problem: null, lastFixAtMs: null, position: null, pathLine: null, forcedId: null, passedId: null };
 
@@ -187,7 +188,7 @@ export function createNavigationController(deps: ControllerDeps) {
       const behind = snap.state.alongM === null ? [] : stopsBehind(model, snap.passedId, snap.state.alongM);
       const wide = new Set([...skipped, snap.passedId, ...behind]);
       // Walking off the last stop: nothing lies ahead, so only the passed one is dropped.
-      skipped = model.stops.some((s) => !wide.has(s.id) && !stamped.has(s.id) && s.status !== "closed") ? wide : new Set([...skipped, snap.passedId]);
+      skipped = model.stops.some((s) => !wide.has(s.id) && !stamped.has(s.id) && !offersNoStamp(s.status)) ? wide : new Set([...skipped, snap.passedId]);
       emit({ passedId: null, ...(last ? { state: applyFix(model, snap.state, last, finished(), path, forced) } : {}) });
     },
     /** Go back to the stop just passed. */
@@ -198,10 +199,10 @@ export function createNavigationController(deps: ControllerDeps) {
       emit({ passedId: null, forcedId: id, ...(last ? { state: applyFix(model, snap.state, last, finished(), path, forced) } : {}) });
     },
     /** The stops' latest statuses: a stop closed during the walk is no longer headed for, one reopened is again. */
-    setStatuses(statuses: ReadonlyMap<string, "open" | "caution" | "closed">) {
+    setStatuses(statuses: ReadonlyMap<string, "open" | "caution" | "closed" | "info">) {
       if (!model.stops.some((s) => statuses.has(s.id) && statuses.get(s.id) !== s.status)) return;
       model = { ...model, stops: model.stops.map((s) => ({ ...s, status: statuses.get(s.id) ?? s.status })) };
-      if (forced !== null && statuses.get(forced) === "closed") forced = null;
+      if (forced !== null && offersNoStamp(statuses.get(forced))) forced = null;
       emit({ forcedId: forced, ...(last ? { state: applyFix(model, snap.state, last, finished(), path, forced) } : {}) });
     },
     /** After a successful stamp: move on at once, without waiting for the server's list. */

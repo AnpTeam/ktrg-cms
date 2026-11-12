@@ -8222,3 +8222,9 @@ msgstr "追加のしかた"
 #: src/components/landing/Journey.tsx
 msgid "ストーリーを読む"
 msgstr "ストーリーを読む"
+
+msgid "案内のみ"
+msgstr "案内のみ"
+
+msgid "ここにはスタンプはありません。"
+msgstr "ここにはスタンプはありません。"

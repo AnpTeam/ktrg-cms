@@ -2,6 +2,7 @@
 // No React, no browser, no network, and no coordinates: only distances and counts.
 
 import type { NavModel, NavState } from "./session";
+import { offersNoStamp } from "@/lib/spot-status";
 
 /**
  * Walking pace for the time left: 50 m a minute, 3 km/h.
@@ -30,7 +31,7 @@ export function courseProgress(model: NavModel, state: NavState, stamped: Readon
   const left: (number | null)[] = [];
   let done = 0;
   model.stops.forEach((s, i) => {
-    if (stamped.has(s.id) || s.status === "closed") done++;
+    if (stamped.has(s.id) || offersNoStamp(s.status)) done++;
     else left.push(model.stopAlongM[i] ?? null);
   });
 

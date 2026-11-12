@@ -229,9 +229,9 @@ export const fetchPublicSpot = cache(async (id: string): Promise<PublicSpot | nu
   return okBody<{ spot: PublicSpot }>(await getJson(`/spots/${encodeURIComponent(id)}`))?.spot ?? null;
 });
 
-/** A course is finished when it has places and every one is stamped, a closed one counting as done (the server's rule, rallies/progress.ts). */
+/** A course is finished when it has places and every one is stamped, a closed one counting as done and an information place not counting at all (the server's rule, rallies/progress.ts). */
 const courseFinished = (spots: readonly { id: string; status: string }[], stamped: ReadonlySet<string>) =>
-  spots.length > 0 && spots.every((s) => stamped.has(s.id) || s.status === "closed");
+  spots.some((s) => s.status !== "info") && spots.every((s) => stamped.has(s.id) || s.status === "closed" || s.status === "info");
 
 /**
  * The rallies the CMS publishes, as the stamp page shows them. A rally of places has one slot for each place; a rally of

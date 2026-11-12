@@ -13,7 +13,7 @@ export type SpotKind = (typeof spotKinds)[number];
 export type Prefecture = "osaka" | "wakayama" | "nara";
 export type TechnicalLevel = "A" | "B" | "C" | "D" | "E";
 export type WalkStyle = "one_way" | "loop" | "out_and_back";
-export type SpotStatus = "open" | "caution" | "closed";
+export type SpotStatus = "open" | "caution" | "closed" | "info";
 
 /** A route as the admin sees it. */
 export interface RouteRow {

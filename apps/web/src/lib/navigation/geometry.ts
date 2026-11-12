@@ -1,3 +1,4 @@
+import { offersNoStamp } from "@/lib/spot-status";
 // The maths of navigating a route spot to spot, with no React, no browser and no network, so it is unit-tested.
 //
 // A route line is a list of [lng, lat] points. The stops (stamp places) are ordered along it. A LEG is the part of the
@@ -120,14 +121,14 @@ export function cutLegs(line: readonly LinePoint[], cum: readonly number[], stop
  * the course anywhere and walk it either way (the user's rule, 2026-10-20). Null when none are left.
  */
 export function nearestTarget(
-  stops: readonly (Stop & { status?: "open" | "caution" | "closed" })[],
+  stops: readonly (Stop & { status?: "open" | "caution" | "closed" | "info" })[],
   stamped: ReadonlySet<string>,
   from: LatLng,
 ): number | null {
   let best: number | null = null;
   let bestM = Number.POSITIVE_INFINITY;
   stops.forEach((s, i) => {
-    if (stamped.has(s.id) || s.status === "closed") return;
+    if (stamped.has(s.id) || offersNoStamp(s.status)) return;
     const d = distanceM(from, s);
     if (d < bestM) {
       bestM = d;

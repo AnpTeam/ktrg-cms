@@ -4,7 +4,7 @@
 // count. Finishing is saved (rally-store.ts), so a saved finish stands even if more places or courses are added
 // later. Pure functions, unit-tested; rally-store.ts reads the data and calls them.
 
-export type SpotStatus = "open" | "caution" | "closed";
+export type SpotStatus = "open" | "caution" | "closed" | "info";
 
 /** A stamp place of a course or of a rally of places. */
 export interface PlaceMember {
@@ -47,7 +47,8 @@ export function placeProgress(input: { members: readonly PlaceMember[]; stamps: 
   let waived = 0;
   let last: Date | null = null;
   for (const m of input.members) {
-    if (!m.published) continue;
+    // An information place (it exists, but offers no stamp) is not part of the count at all.
+    if (!m.published || m.status === "info") continue;
     total++;
     const at = held.get(m.spotId);
     if (at) {

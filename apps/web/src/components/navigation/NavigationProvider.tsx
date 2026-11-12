@@ -30,7 +30,7 @@ export interface NavSession {
 export interface NavStopInfo {
   name: string;
   nameLang: "ja" | "en";
-  status: "open" | "caution" | "closed";
+  status: "open" | "caution" | "closed" | "info";
   /** Shown on the arrival card. */
   photo: MapPhoto | null;
 }
