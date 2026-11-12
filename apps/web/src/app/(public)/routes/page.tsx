@@ -7,7 +7,7 @@ import { Notice } from "@/components/Notice";
 import { PrefectureFilter } from "@/components/PrefectureFilter";
 import { SignInPrompt } from "@/components/SignInPrompt";
 import { TrailRibbon } from "@/components/TrailRibbon";
-import { filterByPrefecture, isPrefecture, listRoutes, prefectures } from "@/lib/content";
+import { filterByPrefectures, listRoutes, parsePrefectures, prefecturesOf, prefectures } from "@/lib/content";
 import { getViewer } from "@/lib/viewer";
 import { initLingui } from "@/i18n/server";
 
@@ -25,11 +25,11 @@ export default async function RoutesPage({
 }) {
   const i18n = await initLingui();
   const [viewer, { pref }, all] = await Promise.all([getViewer(searchParams), searchParams, listRoutes()]);
-  const active = isPrefecture(pref) ? pref : undefined;
+  const active = parsePrefectures(pref);
 
   // Routes that are ready come first, the coming-soon ones after; each keeps its own number (route.order), and the sort is stable.
-  const routes = [...filterByPrefecture(all, active)].sort((a, b) => Number(a.status === "soon") - Number(b.status === "soon"));
-  const available = prefectures.filter((p) => all.some((r) => r.prefecture === p));
+  const routes = [...filterByPrefectures(all, active)].sort((a, b) => Number(a.status === "soon") - Number(b.status === "soon"));
+  const available = prefectures.filter((p) => all.some((r) => prefecturesOf(r).includes(p)));
   const base = "/routes";
 
   return (
@@ -60,7 +60,7 @@ export default async function RoutesPage({
           </Link>
         </EmptyState>
       ) : (
-        <TrailRibbon routes={routes} hrefFor={(route) => `${base}/${route.id}`} locale={i18n.locale} headings={!active} />
+        <TrailRibbon routes={routes} hrefFor={(route) => `${base}/${route.id}`} locale={i18n.locale} headings={false} />
       )}
 
       <Notice>

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { filterByPrefecture, isPrefecture, pickText, sampleContentEnabled } from "./content";
+import { filterByPrefecture, filterByPrefectures, isPrefecture, parsePrefectures, pickText, prefecturesOf, sampleContentEnabled } from "./content";
 import { formatDayTime, formatUpdated } from "./format";
 
 describe("pickText", () => {
@@ -76,5 +76,29 @@ describe("sampleContentEnabled", () => {
   test("the flag decides when it is set", () => {
     expect(sampleContentEnabled({ NODE_ENV: "production", SHOW_SAMPLE_CONTENT: "1" })).toBe(true);
     expect(sampleContentEnabled({ NODE_ENV: "development", SHOW_SAMPLE_CONTENT: "0" })).toBe(false);
+  });
+});
+
+describe("courses through several prefectures", () => {
+  const r = (id: string, prefecture: "osaka" | "wakayama" | "nara" | null, municipalities: string[]) => ({ id, prefecture, municipalities });
+  const routes = [r("a", "wakayama", ["和歌山市", "海南市"]), r("b", "osaka", ["河内長野市", "御所市"]), r("c", "nara", ["御所市"]), r("d", null, [])];
+
+  test("a course's prefectures are its own plus those of its listed cities", () => {
+    expect(prefecturesOf(routes[1]!).sort()).toEqual(["nara", "osaka"]);
+    expect(prefecturesOf(routes[3]!)).toEqual([]);
+  });
+
+  test("choosing prefectures keeps the courses that pass through all of them", () => {
+    expect(filterByPrefectures(routes, ["osaka"]).map((x) => x.id)).toEqual(["b"]);
+    expect(filterByPrefectures(routes, ["osaka", "nara"]).map((x) => x.id)).toEqual(["b"]);
+    expect(filterByPrefectures(routes, ["nara"]).map((x) => x.id)).toEqual(["b", "c"]);
+    expect(filterByPrefectures(routes, ["wakayama", "nara"])).toEqual([]);
+    expect(filterByPrefectures(routes, [])).toHaveLength(4);
+  });
+
+  test("the address ?pref=osaka,nara is read, ignoring unknown and repeated names", () => {
+    expect(parsePrefectures("osaka,nara")).toEqual(["osaka", "nara"]);
+    expect(parsePrefectures("nara,tokyo,nara")).toEqual(["nara"]);
+    expect(parsePrefectures(undefined)).toEqual([]);
   });
 });
