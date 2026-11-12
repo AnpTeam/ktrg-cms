@@ -28,7 +28,7 @@ export default async function LoginPage({ searchParams }: Props) {
       <BackLink href={home}>
         <Trans>ホーム</Trans>
       </BackLink>
-      <h1 className="font-serif text-3xl font-bold">
+      <h1 className="font-serif text-3xl font-bold text-accent">
         <Trans>ログイン</Trans>
       </h1>
       <div className="frame pattern-shippo p-5">

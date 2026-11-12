@@ -13,7 +13,7 @@ export default async function PasswordUndoPage() {
   await initLingui();
   return (
     <div className="page-form flex flex-col gap-6 px-4">
-      <h1 className="font-serif text-3xl font-bold">
+      <h1 className="font-serif text-3xl font-bold text-accent">
         <Trans>パスワードの変更を取り消す</Trans>
       </h1>
       <div className="frame p-5">

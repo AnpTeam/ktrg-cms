@@ -116,7 +116,7 @@ export function PasskeyManager({ locale, hasEmail }: { locale: string; hasEmail:
             const number = index + 1;
             const added = formatDay(locale, japanDay(item.createdAt));
             return (
-            <li key={item.id} className="flex items-center gap-4 rounded-3xl bg-surface p-4">
+            <li key={item.id} className="flex items-center gap-4 rounded-[1.75rem] bg-surface p-4">
               <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-brand text-on-brand [&_svg]:size-6">
                 <KeyIcon />
               </span>
