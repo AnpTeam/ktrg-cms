@@ -1182,6 +1182,12 @@ body:has([data-sample-notice]) .cover-credit > details {
     display: none;
   }
 }
+@media (display-mode: standalone) {
+  /* The journey's words start below iOS's top blur too (the page's own padding does not reach the pinned stage). */
+  .journey-live [data-beat]:not([data-beat="0"]) {
+    padding-top: var(--top-clear);
+  }
+}
 @media (display-mode: standalone) and (max-width: 767px) {
   body:has([data-cover]) .site-header-bar {
     padding-top: calc(0.25rem + var(--top-clear));

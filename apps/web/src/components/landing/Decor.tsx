@@ -97,7 +97,7 @@ export function StaffAndWaves() {
       <Waves id="seigaiha" />
       <div
         aria-hidden="true"
-        className="decor-drift pointer-events-none absolute -left-2 top-6 -z-10 h-[26rem] w-16 opacity-[0.14] @[42rem]:left-8"
+        className="decor-drift pointer-events-none absolute -left-2 top-[calc(1.5rem+var(--top-clear))] -z-10 h-[26rem] w-16 opacity-[0.22] @[42rem]:left-8"
         style={{ "--drift": "-22svh" } as CSSProperties}
       >
         <svg viewBox="0 0 80 520" className="h-full w-full" preserveAspectRatio="xMidYMin meet" {...line}>
