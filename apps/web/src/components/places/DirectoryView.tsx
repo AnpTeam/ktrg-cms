@@ -100,12 +100,12 @@ export function DirectoryView({
       </p>
 
       {rows.length === 0 ? (
-        <p className="mx-4 rounded-2xl bg-surface p-5 text-lg wide:mx-0">{t`この条件に合う場所はありません。`}</p>
+        <p className="mx-4 rounded-[1.75rem] bg-surface p-5 text-lg wide:mx-0">{t`この条件に合う場所はありません。`}</p>
       ) : (
-        <ul className="mx-4 divide-y divide-line/30 rounded-3xl bg-surface px-4 wide:mx-0">
+        <ul className="mx-4 flex flex-col gap-3 wide:mx-0">
           {rows.map((p) => (
-            <li key={p.id}>
-              <Link href={`/places/${p.id}`} className="flex items-center gap-3 py-3 no-underline">
+            <li key={p.id} className="rounded-[1.75rem] bg-surface">
+              <Link href={`/places/${p.id}`} className="tap-target flex items-center gap-3 rounded-[1.75rem] px-4 py-3 no-underline">
                 <PlaceIcon category={p.category} icon={p.icon} />
                 <span className="min-w-0 flex-1">
                   <span lang={p.nameLang} className="block text-lg font-bold leading-snug">
