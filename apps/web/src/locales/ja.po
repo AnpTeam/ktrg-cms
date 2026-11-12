@@ -4379,6 +4379,10 @@ msgstr "前のリンクは、まだありません。"
 msgid "前の写真"
 msgstr "前の写真"
 
+#: src/components/BackToTop.tsx
+msgid "ページの先頭へ"
+msgstr "ページの先頭へ"
+
 #: src/components/landing/ScrollCue.tsx
 msgid "スクロール"
 msgstr "スクロール"

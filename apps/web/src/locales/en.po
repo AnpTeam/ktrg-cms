@@ -4379,6 +4379,10 @@ msgstr "No earlier links yet."
 msgid "前の写真"
 msgstr "Previous photo"
 
+#: src/components/BackToTop.tsx
+msgid "ページの先頭へ"
+msgstr "Back to top"
+
 #: src/components/landing/ScrollCue.tsx
 msgid "スクロール"
 msgstr "Scroll"
