@@ -8,7 +8,7 @@ import { pickText } from "@/lib/pick-text";
 import { municipalityName } from "@/lib/municipalities";
 import { buildStops, type NodeState, type Stop } from "@/lib/ribbon";
 import { PinIcon, StampIcon } from "./icons";
-import { Localized } from "./Localized";
+import { NameRuby } from "@/components/Ruby";
 import { PrefectureIcon } from "./PrefectureIcon";
 import { PlaceLine } from "./PlaceLine";
 import { PrefectureName } from "./PrefectureName";
@@ -45,7 +45,7 @@ function RouteRow({ route, state, locale }: { route: RouteSummary; state: NodeSt
           {/* The course's number on a round badge (as on the home list), grey while the course is not ready. */}
           <span className={`badge-pattern grid size-10 shrink-0 place-items-center rounded-full font-serif text-xl font-bold tabular-nums ${soon ? "bg-line/25 text-muted" : "bg-brand-strong text-on-brand-strong"}`}>{route.order}</span>
           <span className="min-w-0 text-xl font-bold leading-snug group-hover:underline">
-            <Localized value={name} />
+            <NameRuby title={name} reading={route.nameKana} />
           </span>
         </span>
         {route.prefecture || place ? (
