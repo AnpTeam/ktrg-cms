@@ -49,3 +49,18 @@ test("the step marker's words exist in both languages", () => {
     expect(po).toMatch(new RegExp(`msgid "海"\r?\nmsgstr "${sea}"`));
   }
 });
+
+test("the chapters after the scene use the width of a desk: a tall map, a wide film, a grid of courses, a horizontal start", () => {
+  const landing = read("components", "landing", "Landing.tsx");
+  expect(landing).toMatch(/desk:grid-cols-2/);
+  expect(landing).toMatch(/min-\[90rem\]:grid-cols-3/);
+  expect(landing).toMatch(/<Chapter ground=\{g\} heading=\{w\.videoHeading\} id="video-title" roomy>/);
+  expect(landing).toMatch(/id="start-title"\s+horizontal/);
+  expect(read("components", "landing", "LandingMap.tsx")).toMatch(/desk:h-\[70svh\]/);
+  const chapter = read("components", "landing", "Chapter.tsx");
+  expect(chapter).toMatch(/horizontal/);
+  expect(chapter).toMatch(/roomy/);
+  // desk is declared after tall, so its resets win.
+  const css = read("app", "globals.css");
+  expect(css.indexOf("@custom-variant desk")).toBeGreaterThan(css.indexOf("@custom-variant tall"));
+});
