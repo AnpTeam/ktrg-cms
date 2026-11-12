@@ -9,7 +9,6 @@ import { HeroPhoto } from "@/components/map/HeroPhoto";
 import { PlaceFacts } from "@/components/PlaceFacts";
 import { RichText } from "@/components/RichText";
 import { NameRuby } from "@/components/Ruby";
-import { SectionBanner } from "@/components/SectionBanner";
 import { GroupName } from "@/components/places/GroupName";
 import { initLingui } from "@/i18n/server";
 import { getSpot, listPlaces, listRoutes, pickText } from "@/lib/content";
@@ -51,7 +50,7 @@ export default async function PlacePage({ params }: Props) {
       </div>
 
       <div className="flex flex-col gap-4 px-4">
-        <h1 lang={name?.lang} className="font-serif text-3xl font-bold leading-snug has-[rt]:pt-3">
+        <h1 lang={name?.lang} className="font-serif text-3xl font-bold leading-snug text-accent has-[rt]:pt-3">
           <NameRuby title={name} reading={place.nameKana} />
         </h1>
         {place.photoUrl ? <HeroPhoto photo={{ src: place.photoUrl, alt: name?.text ?? place.nameJa, credit: place.photoCredit ?? null }} placeholder={false} /> : null}
@@ -84,9 +83,9 @@ export default async function PlacePage({ params }: Props) {
 
       {course || near ? (
         <section className="flex flex-col gap-4 px-4">
-          <SectionBanner>
+          <h2 className="border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">
             <Trans>近くの道</Trans>
-          </SectionBanner>
+          </h2>
           {near ? <SpotCard spot={near} locale={locale} /> : null}
           {course ? <RouteCard route={course} locale={locale} /> : null}
         </section>
