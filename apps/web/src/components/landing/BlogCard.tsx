@@ -17,7 +17,7 @@ export const HOME_POSTS = 3;
 export function BlogCard({ posts, locale }: { posts: BlogPost[]; locale: string }) {
   if (posts.length === 0) return null;
   return (
-    <section className="mx-4 rounded-3xl bg-surface p-5">
+    <section className="mx-auto w-full max-w-5xl px-5 @[42rem]:px-10">
       <h2 className="text-2xl font-bold text-accent">
         <Trans>ブログ</Trans>
       </h2>
@@ -38,7 +38,7 @@ export function BlogCard({ posts, locale }: { posts: BlogPost[]; locale: string 
           </li>
         ))}
       </ul>
-      <Link href="/blog" className="tap-target mt-2 flex items-center justify-between gap-3 rounded-full bg-paper px-5 text-xl font-bold text-accent">
+      <Link href="/blog" className="tap-target mt-2 flex items-center justify-between gap-3 rounded-full bg-surface px-5 text-xl font-bold text-accent">
         <Trans>ブログをすべて見る</Trans>
         <ChevronIcon />
       </Link>
