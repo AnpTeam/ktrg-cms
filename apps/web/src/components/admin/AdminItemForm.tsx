@@ -12,7 +12,7 @@ import { listRequest, type ListAnswer, type ListPage, type OneItem } from "@/lib
 import { translationsChange, type Translations } from "@/lib/admin/content-locales";
 import { RubyEditor } from "./RubyEditor";
 import { TickIcon } from "@/components/icons";
-import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
+import { adminTab, adminTabRow, Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
 import { HoursInput } from "./HoursInput";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoLinkDetails } from "./PhotoLinkDetails";
@@ -300,7 +300,7 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
       ) : null}
 
       {sideFields.length > 0 ? (
-        <div role="tablist" aria-label={t`編集する内容`} className="flex flex-wrap gap-2">
+        <div role="tablist" aria-label={t`編集する内容`} className={adminTabRow}>
           {(["main", "side"] as const).map((id) => {
             const unfilled = missing.filter((name) => config.fields.some((f) => f.name === name && Boolean(f.side) === (id === "side"))).length;
             return (
@@ -312,7 +312,7 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
                 aria-selected={tab === id}
                 aria-controls={`form-panel-${id}`}
                 onClick={() => setTab(id)}
-                className={`tap-target inline-flex items-center gap-2 rounded-full border-2 px-5 text-lg font-bold ${tab === id ? "border-ink bg-ink text-paper" : "border-line"}`}
+                className={adminTab(tab === id)}
               >
                 {id === "main" ? t`本文` : t`詳細`}
                 {/* Only on the other tab: what is missing there cannot be seen from here. */}
