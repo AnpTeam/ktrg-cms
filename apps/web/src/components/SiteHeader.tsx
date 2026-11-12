@@ -184,7 +184,7 @@ export function SiteHeader({
             <span />
           )}
           {/* The course list: the page's title stands beside the logo, up in the bar (the page itself has no heading on a phone). */}
-          {onRoutes ? open ? <span /> : <p className="min-w-0 truncate font-serif text-2xl font-bold text-accent">{t`葛城修験の道`}</p> : null}
+          {onRoutes ? open ? <span /> : <p className="line-clamp-2 min-w-0 font-serif text-xl font-bold leading-tight text-accent tall:text-2xl">{t`葛城修験の道`}</p> : null}
           {/* Open: the language drop-down takes the right end of the bar, so the bar and the menu read as one piece. */}
           <span className="justify-self-end">{open ? <LocaleSelect /> : sample ? <SampleNoticeButton /> : null}</span>
         </div>

@@ -22,7 +22,7 @@ export function RoutePill({ route, name, place, photo, brief = false }: { route:
   const soon = route.status === "soon";
 
   return (
-    <span className="@container relative block overflow-hidden rounded-[1.75rem] bg-surface">
+    <span className="@container relative flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-surface">
       <span className="absolute inset-y-0 right-0 block w-2/5 overflow-hidden @2xl:w-1/2">
         {/* A course that is not ready shows its photo blurred (the scale hides the soft edge), as in the course list. */}
         <span className={`absolute inset-0 block ${soon ? "scale-110 blur-[6px] saturate-50" : ""}`}>
@@ -30,7 +30,7 @@ export function RoutePill({ route, name, place, photo, brief = false }: { route:
         </span>
         <span aria-hidden="true" className="absolute inset-0 bg-linear-to-r from-surface from-20% to-transparent to-85%" />
       </span>
-      <span className="relative flex min-h-24 flex-col justify-center py-3 pl-4 pr-[34%] @2xl:py-4 @2xl:pl-5 @2xl:pr-[38%]">
+      <span className="relative flex min-h-24 flex-1 flex-col justify-center py-3 pl-4 pr-[34%] @2xl:py-4 @2xl:pl-5 @2xl:pr-[38%]">
         {!brief || soon ? (
           <span className="flex flex-wrap items-center gap-x-2 text-base leading-snug text-muted">
             {place ? <span>{place}</span> : null}

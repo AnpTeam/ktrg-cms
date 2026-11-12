@@ -67,7 +67,8 @@ export function RouteStats({ route, compact = false, icons = false, inline = fal
             <span aria-hidden="true" className="shrink-0 text-brand [&_svg]:size-5">
               {part.icon}
             </span>
-            {part.info ? `${part.label}${part.value}` : part.value}
+            {/* English: the short words (Fitness, Skill) so the row fits beside the photo; Japanese keeps 体力度 and 技術度. */}
+            {part.info ? (i18n.locale === "ja" ? `${part.label}${part.value}` : `${part.short ?? part.label} ${part.value}`) : part.value}
           </span>
         ))}
       </p>
