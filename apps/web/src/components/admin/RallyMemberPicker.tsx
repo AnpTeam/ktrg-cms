@@ -101,7 +101,7 @@ export function RallyMemberPicker({
               const text = label.get(id) ?? id;
               return (
                 <li key={id} className="flex flex-wrap items-center gap-3 p-2 sm:flex-nowrap">
-                  <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand text-base font-bold text-on-brand">
+                  <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-strong text-base font-bold text-on-brand-strong">
                     {i + 1}
                   </span>
                   <span className="min-w-0 flex-1 text-lg">{text}</span>

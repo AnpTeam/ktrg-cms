@@ -63,7 +63,7 @@ function Tiles<K extends string>({
         return (
           <label
             key={key}
-            className={`${tile} ${on ? "border-brand bg-brand text-on-brand" : "border-line bg-paper text-ink"}`}
+            className={`${tile} ${on ? "border-selected bg-selected text-on-selected" : "border-line bg-paper text-ink"}`}
           >
             <input
               type="radio"

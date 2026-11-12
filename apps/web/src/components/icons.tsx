@@ -432,6 +432,22 @@ export const SortIcon = ({ size }: Sized = {}) => (
 );
 
 /** A plain tick (CheckIcon has a ring round it). */
+/** A circle, half filled: stronger contrast. */
+export const ContrastIcon = ({ size }: Sized = {}) => (
+  <Icon size={size}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" />
+  </Icon>
+);
+
+/** Two calm waves: motion off. */
+export const CalmIcon = ({ size }: Sized = {}) => (
+  <Icon size={size}>
+    <path d="M3 9.5c3-2 6 2 9 0s6-2 9 0" />
+    <path d="M3 15.5c3-2 6 2 9 0s6-2 9 0" />
+  </Icon>
+);
+
 export const TickIcon = ({ size }: Sized = {}) => (
   <Icon size={size}>
     <path d="m5 12.5 4.5 4.5L19 7" />

@@ -11,6 +11,7 @@ import { changedFields, formValues, missingRequired, toPayload, type FormValues 
 import { listRequest, type ListAnswer, type ListPage, type OneItem } from "@/lib/admin/lists/list-client";
 import { translationsChange, type Translations } from "@/lib/admin/content-locales";
 import { RubyEditor } from "./RubyEditor";
+import { TickIcon } from "@/components/icons";
 import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
 import { HoursInput } from "./HoursInput";
 import { PhotoSlot } from "./PhotoSlot";
@@ -128,11 +129,16 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
     const label = pick(f.label, locale);
     const hint = f.hint ? pick(f.hint, locale) : undefined;
     if (f.readOnly || !editable) {
-      const shown = f.kind === "boolean" ? (saved?.[f.name] === true ? "✓" : "—") : saved ? (displayValue(f, saved, locale, routeName) ?? "—") : "—";
+      const shown = f.kind === "boolean" ? (saved?.[f.name] === true ? (
+          <>
+            <TickIcon size={22} />
+            <span className="sr-only">{t`はい`}</span>
+          </>
+        ) : "—") : saved ? (displayValue(f, saved, locale, routeName) ?? "—") : "—";
       return (
         <div key={f.name} className="flex flex-col gap-1">
           <p className="text-base font-bold">{label}</p>
-          <p className="break-all text-lg">{shown}</p>
+          <p className="flex items-center break-all text-lg">{shown}</p>
         </div>
       );
     }

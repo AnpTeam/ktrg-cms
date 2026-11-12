@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { persistPrefs } from "@/lib/prefs-client";
+import { CalmIcon, ContrastIcon, SoundOnIcon } from "./icons";
 import { setSound, useSound } from "@/lib/stamp-feel";
 import { textSizes, type Prefs } from "@/lib/prefs";
 
@@ -34,7 +35,7 @@ export function QuickActions({ prefs, signedIn }: { prefs: Prefs; signedIn: bool
   const bigger = () => change({ ...current, size: textSizes[(textSizes.indexOf(current.size) + 1) % textSizes.length]! });
 
   const button = (on: boolean) =>
-    `flex min-h-14 min-w-0 flex-col items-center justify-center rounded-full border px-1 py-1 text-center text-base font-bold leading-tight ${on ? "border-brand bg-brand text-on-brand" : "border-line bg-paper text-ink"}`;
+    `flex min-h-14 min-w-0 flex-col items-center justify-center rounded-full border px-1 py-1 text-center text-base font-bold leading-tight ${on ? "border-selected bg-selected text-on-selected" : "border-line bg-paper text-ink"}`;
   const sizeName = { small: t`小`, standard: t`ふつう`, large: t`大`, xlarge: t`特大` }[current.size];
 
   return (
@@ -48,16 +49,16 @@ export function QuickActions({ prefs, signedIn }: { prefs: Prefs; signedIn: bool
         {t`文字 ${sizeName}`}
       </button>
       <button type="button" aria-pressed={current.contrast} onClick={() => flip("contrast")} className={button(current.contrast)}>
-        <span aria-hidden="true" className="text-base leading-none">◐</span>
+        <span className="[&_svg]:size-5"><ContrastIcon /></span>
         {t`くっきり`}
       </button>
       <button type="button" aria-pressed={current.calm} onClick={() => flip("calm")} className={button(current.calm)}>
-        <span aria-hidden="true" className="text-base leading-none">≈</span>
+        <span className="[&_svg]:size-5"><CalmIcon /></span>
         {t`動きなし`}
       </button>
       {/* The stamp sound: kept on this device only, off until chosen. */}
       <button type="button" aria-pressed={sound} onClick={() => setSound(!sound)} className={button(sound)}>
-        <span aria-hidden="true" className="text-base leading-none">♪</span>
+        <span className="[&_svg]:size-5"><SoundOnIcon /></span>
         {t`音`}
       </button>
     </div>

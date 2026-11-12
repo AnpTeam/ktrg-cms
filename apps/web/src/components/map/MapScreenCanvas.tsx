@@ -229,13 +229,13 @@ export function MapScreenCanvas({
           started = true;
           map.addSource(AREAS, { type: "geojson", data: EMPTY });
           map.addLayer({ id: `${AREAS}-fill`, type: "fill", source: AREAS, paint: { "fill-color": "#cc6256", "fill-opacity": ["case", ["get", "selected"], 0.06, 0.05] } });
-          map.addLayer({ id: `${AREAS}-line`, type: "line", source: AREAS, paint: { "line-color": "#a8362b", "line-width": ["case", ["get", "selected"], 3, 1.5], "line-opacity": ["case", ["get", "selected"], 0.95, 0.35] } });
+          map.addLayer({ id: `${AREAS}-line`, type: "line", source: AREAS, paint: { "line-color": "#8e2a21" /* accent (light: the map stays light) */, "line-width": ["case", ["get", "selected"], 3, 1.5], "line-opacity": ["case", ["get", "selected"], 0.95, 0.35] } });
           map.addSource(SIDE, { type: "geojson", data: EMPTY });
           for (const layer of sideLineLayers(SIDE)) map.addLayer(layer);
           map.addSource(DETAIL, { type: "geojson", data: EMPTY });
           for (const layer of routeLineLayers(DETAIL, false)) map.addLayer(layer);
           map.addSource(GUIDE, { type: "geojson", data: EMPTY });
-          map.addLayer({ id: `${GUIDE}-line`, type: "line", source: GUIDE, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#1d4ed8", "line-width": 4, "line-dasharray": [1.5, 1.5] } });
+          map.addLayer({ id: `${GUIDE}-line`, type: "line", source: GUIDE, layout: { "line-cap": "round", "line-join": "round" }, paint: { "line-color": "#1e50a2" /* ruri (light: the map stays light) */, "line-width": 4, "line-dasharray": [1.5, 1.5] } });
           map.on("click", `${AREAS}-fill`, (e) => {
             // A pin or tag standing on the area is the target, not the area under it.
             if ((e.originalEvent.target as HTMLElement | null)?.closest(".place-marker, .map-marker, .map-dot, .map-pin")) return;

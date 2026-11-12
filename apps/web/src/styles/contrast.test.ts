@@ -58,7 +58,7 @@ function ratio(a: string, b: string) {
   return (light + 0.05) / (dark + 0.05);
 }
 
-const names = ["accent", "brand", "caution", "danger", "goal", "ink", "lift", "line", "moss", "muted", "night", "on-brand", "on-goal", "on-night", "on-ruri", "on-shu", "paper", "ruri", "shu", "surface"];
+const names = ["accent", "brand", "brand-strong", "caution", "danger", "goal", "ink", "lift", "line", "moss", "muted", "night", "on-brand", "on-brand-strong", "on-goal", "on-night", "on-ruri", "on-selected", "on-shu", "paper", "ruri", "selected", "shu", "surface"];
 
 // Text must reach WCAG AAA (7:1).
 const text: [string, string][] = [
@@ -77,6 +77,8 @@ const text: [string, string][] = [
   ["paper", "moss"], // label on a moss fill
   ["on-ruri", "ruri"], // Start / Goal badge
   ["on-night", "night"], // the dark band of a reading page
+  ["on-selected", "selected"], // a selected or active control: selected is ink, doing is red
+  ["on-brand-strong", "brand-strong"], // course and stop numbers on the red
 ];
 
 // Borders and the focus ring must reach 3:1 (WCAG 1.4.11).
@@ -90,12 +92,15 @@ const parts: [string, string][] = [
   ["moss", "paper"], // progress bar fill
   ["caution", "paper"], // warning icon and border
   ["caution", "surface"],
+  ["brand-strong", "paper"], // a number badge stands out from the page
+  ["brand-strong", "surface"],
+  ["selected", "surface"], // the active tab against the tab bar
 ];
 
 // The numeral inside a stamped seal: large bold text, held to 4.5:1.
 const seal: [string, string][] = [["on-shu", "shu"]];
 
-// Words on the brand red (#CC6256, chosen by the team): buttons, banners and the active tab. Only
+// Words on the brand red (#CC6256, chosen by the team): action buttons and banners. Only
 // large bold text may sit on it (WCAG large text needs 3:1; white on this red is about 3.85:1), so
 // every such label must be text-lg bold or bigger. Small text uses the deep "accent" red instead.
 const onBrand: [string, string][] = [["on-brand", "brand"]];

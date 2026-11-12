@@ -77,7 +77,7 @@ export function MoveButtons({ name, canEarlier, canLater, onMove, busy, stacked 
 /** The round number of a row in an ordered list. */
 export function OrderBadge({ n }: { n: number }) {
   return (
-    <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand text-lg font-bold text-on-brand">
+    <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-strong text-lg font-bold text-on-brand-strong">
       {n}
     </span>
   );

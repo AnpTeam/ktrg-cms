@@ -33,8 +33,8 @@ export function SheetHero({
     <div>
       {/* It grows with its words, so a long name never runs under the back button. */}
       <div
-        className={`relative flex flex-col justify-end pt-[calc(7.25rem+var(--sheet-top,0px))] wide:pt-16 ${short ? "aspect-[2/1]" : "aspect-[4/3]"}`}
-        style={{ background: "linear-gradient(135deg, #6f241c, #b04a40)" }}
+        // With no photo: the night ground with the 七宝 pattern, in both themes.
+        className={`pattern-shippo pattern-on-night relative flex flex-col justify-end bg-night pt-[calc(7.25rem+var(--sheet-top,0px))] wide:pt-16 ${short ? "aspect-[2/1]" : "aspect-[4/3]"}`}
       >
         {photo ? <Image src={photo.src} alt="" fill sizes="(min-width: 1024px) 26rem, 100vw" className="object-cover" unoptimized={photo.src.startsWith("https://")} /> : null}
         {/* Dark under the words, so white reads on any photo. */}

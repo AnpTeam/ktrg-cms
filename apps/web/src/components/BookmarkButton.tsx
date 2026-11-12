@@ -22,7 +22,7 @@ export function BookmarkButton({ routeId, compact = false }: { routeId: string; 
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => setNote(null), 2500);
   };
-  const look = saved ? "border-brand bg-brand text-on-brand" : "border-ink bg-paper text-ink hover:bg-surface";
+  const look = saved ? "border-selected bg-selected text-on-selected" : "border-ink bg-paper text-ink hover:bg-surface";
   return (
     <span className="relative inline-flex">
       <button
