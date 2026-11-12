@@ -24,6 +24,7 @@ export function JourneyScene({ children, seals }: { children: ReactNode; seals: 
     if (mode === "static") return;
 
     const ridge = el.querySelector<SVGPathElement>("[data-ridge]");
+    const ridgeSvg = ridge?.ownerSVGElement ?? null;
     const dots = Array.from(el.querySelectorAll<HTMLElement>("[data-seal]"));
     const beats = Array.from(el.querySelectorAll<HTMLElement>("[data-beat]")).filter((b) => b.dataset.beat !== "0");
     // Everything the scene touched, put back: the class, the active beat and every inline style.
@@ -31,8 +32,7 @@ export function JourneyScene({ children, seals }: { children: ReactNode; seals: 
       el.classList.remove("journey-live");
       el.style.removeProperty("--journey");
       delete el.dataset.activeBeat;
-      ridge?.style.removeProperty("stroke-dasharray");
-      ridge?.style.removeProperty("stroke-dashoffset");
+      ridgeSvg?.style.removeProperty("clip-path");
       clear([...dots, ...beats], { clearProps: "all" });
     };
 
@@ -74,10 +74,10 @@ export function JourneyScene({ children, seals }: { children: ReactNode; seals: 
             delete el.dataset.activeBeat;
             return;
           }
-          // pathLength="1" on the line: the dash is the whole line at any size.
-          // Set by hand, not with gsap: it writes these as rounded px values, and the draw needs fractions of 1.
-          const draw = (share: number) => ridge?.style.setProperty("stroke-dashoffset", String(1 - share));
-          ridge?.style.setProperty("stroke-dasharray", "1");
+          // The line is revealed with a clip from the left, not a dash: with vector-effect non-scaling-stroke the dash is measured in
+          // screen pixels but the line in drawing units, and in the desktop panel (stretched unevenly) a fully drawn line stopped at
+          // about 90%. The elevation line only runs left to right, so a clip shows exactly the share drawn.
+          const draw = (share: number) => ridgeSvg?.style.setProperty("clip-path", `inset(-8px ${((1 - share) * 100).toFixed(2)}% -8px -8px)`);
           draw(0);
           gsap.set(dots, { opacity: 0, scale: 0.6 });
           let placed = 0;
