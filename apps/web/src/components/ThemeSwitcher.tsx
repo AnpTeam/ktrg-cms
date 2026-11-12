@@ -42,29 +42,3 @@ export function ThemeSwitcher() {
     </button>
   );
 }
-
-/** The three choices as separate joined buttons (Auto | Light | Dark), the chosen one in ink: the menu's version. */
-export function ThemeChoice() {
-  const { t } = useLingui();
-  const theme = useSyncExternalStore(subscribe, read, () => "auto" as Theme);
-  const options: { value: Theme; text: string }[] = [
-    { value: "auto", text: t`自動` },
-    { value: "light", text: t`ライト` },
-    { value: "dark", text: t`ダーク` },
-  ];
-  return (
-    <span role="group" aria-label={t`画面の明るさ`} className="flex overflow-hidden rounded-full border border-ink">
-      {options.map((o) => (
-        <button
-          key={o.value}
-          type="button"
-          aria-pressed={theme === o.value}
-          onClick={() => write(o.value)}
-          className={`tap-target min-w-0 flex-1 whitespace-nowrap px-0.5 text-base font-bold ${theme === o.value ? "bg-selected text-on-selected" : "bg-paper text-ink hover:bg-surface"}`}
-        >
-          {o.text}
-        </button>
-      ))}
-    </span>
-  );
-}

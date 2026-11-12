@@ -16,7 +16,7 @@ import { LocaleSelect } from "./LocaleSwitcher";
 import { foundationEn, foundationJa } from "@/lib/terms-content";
 import { useMenu } from "./MenuProvider";
 import { SampleNoticeButton } from "./SampleNotice";
-import { ThemeChoice } from "./ThemeSwitcher";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 import { confirmDialog } from "@/components/ConfirmDialog";
 import { buttonStyle } from "@/components/button";
 
@@ -247,10 +247,10 @@ export function SiteHeader({
 
             <MenuGroup title={t`表示と設定`}>
               {/* Brightness and language side by side, each its own section (a label over a full-width control). */}
-              <div className="grid grid-cols-2 gap-3 [&_select]:w-full">
+              <div className="grid grid-cols-2 gap-3 [&_button]:w-full [&_button]:justify-center [&_select]:w-full">
                 <div className="flex min-w-0 flex-col gap-1">
                   <p className="text-lg font-bold">{t`画面の明るさ`}</p>
-                  <ThemeChoice />
+                  <ThemeSwitcher />
                 </div>
                 <div className="flex min-w-0 flex-col gap-1">
                   <p className="text-lg font-bold">{t`言語`}</p>
