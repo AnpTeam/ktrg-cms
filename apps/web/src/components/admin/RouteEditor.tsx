@@ -30,7 +30,7 @@ import { backupKey, parseBackup, worthRestoring, writeBackup } from "@/lib/admin
 import { draftProblems, keepLaterEdits, placeChanged, planSave, restoreHeld, withLegIds, type DraftProblem } from "@/lib/admin/save-plan";
 import type { AdminSharedSpot } from "@/lib/admin/types";
 import { formatUpdated } from "@/lib/format";
-import { Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
+import { adminTab, adminTabRow, Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
 import { LivePreview } from "./LivePreview";
 import { MapEditorLoader } from "./map-editor/MapEditorLoader";
 import type { ElevationStatus } from "./map-editor/MapEditor";
@@ -516,9 +516,9 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
       ) : null}
 
       {/* Narrow screens: one thing at a time. */}
-      <div className="flex gap-2 xl:hidden" role="tablist" aria-label={t`表示の切り替え`}>
+      <div className={`${adminTabRow} xl:hidden`} role="tablist" aria-label={t`表示の切り替え`}>
         {(["edit", "preview"] as const).map((id) => (
-          <button key={id} type="button" role="tab" aria-selected={view === id} onClick={() => setView(id)} className={`tap-target flex-1 rounded-full border-2 text-lg font-bold ${view === id ? "border-ink bg-ink text-paper" : "border-line"}`}>
+          <button key={id} type="button" role="tab" aria-selected={view === id} onClick={() => setView(id)} className={`${adminTab(view === id)} flex-1`}>
             {id === "edit" ? t`入力` : t`プレビュー`}
           </button>
         ))}
@@ -527,7 +527,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
       {/* The map tab uses the whole width (the map and its waypoint list); every other tab has the live preview beside it. */}
       <div className={`grid gap-6 ${section === "map" ? "" : "xl:grid-cols-[minmax(0,1fr)_27rem]"}`}>
         <div className={`flex min-w-0 flex-col gap-5 ${view === "edit" ? "" : "hidden xl:flex"}`}>
-          <nav aria-label={t`編集する内容`} className="flex flex-wrap gap-2" role="tablist">
+          <nav aria-label={t`編集する内容`} className={adminTabRow} role="tablist">
             {TABS.map((id) => (
               <button
                 key={id}
@@ -537,7 +537,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                 aria-selected={section === id}
                 aria-controls="editor-panel"
                 onClick={() => setSection(id)}
-                className={`tap-target inline-flex items-center gap-2 rounded-full border-2 px-4 text-lg font-bold ${section === id ? "border-ink bg-ink text-paper" : "border-line"}`}
+                className={adminTab(section === id)}
               >
                 {TAB_ICONS[id]}
                 {labels.tab[id]}

@@ -8,6 +8,14 @@ import { PlusIcon } from "@/components/icons";
 
 // The small pieces every admin form is made of. Big controls, a visible label, and a hint line when it helps.
 
+/**
+ * A tab in the admin: the same look as the visitor's prefecture tabs (the icon and the name, a bar under the chosen one; no
+ * pills, no borders). A row of them never squeezes: put it in `adminTabRow`, which scrolls sideways when it is too long.
+ */
+export const adminTab = (selected: boolean) =>
+  `tap-target inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap border-b-4 px-1 text-lg ${selected ? "border-brand font-bold text-ink" : "border-transparent text-muted hover:text-ink"}`;
+export const adminTabRow = "flex flex-nowrap gap-5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
+
 export const inputClass = "tap-target w-full rounded-xl border-2 border-line bg-paper px-4 text-lg text-ink disabled:opacity-60";
 
 export function Field({ label, hint, children, htmlFor, required = false, status }: { label: string; hint?: ReactNode; children: ReactNode; htmlFor?: string; required?: boolean; /** A short state beside the label ("not chosen yet"). */ status?: string }) {
