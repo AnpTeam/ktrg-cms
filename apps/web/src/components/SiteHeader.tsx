@@ -3,7 +3,7 @@
 import { getOutbox } from "@/lib/stamp-outbox";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { logOut } from "@/lib/auth-client";
 import { clearSavedPages } from "@/lib/offline-pack";
@@ -18,11 +18,10 @@ import { useMenu } from "./MenuProvider";
 import { SampleNoticeButton } from "./SampleNotice";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { confirmDialog } from "@/components/ConfirmDialog";
+import { buttonStyle } from "@/components/button";
 
 const barButton =
   "inline-flex min-h-11 items-center gap-1.5 rounded-full border border-ink bg-paper px-2.5 text-base font-bold text-ink hover:bg-surface [&>svg]:size-6";
-const wideButton =
-  "tap-target flex w-full items-center justify-center rounded-full px-5 text-lg font-bold";
 
 // The four tab pages: nothing is "behind" them, so the bar has no back button there.
 const TOP_LEVEL = /^\/(map|routes|rallies)?\/?$/;
@@ -197,110 +196,116 @@ export function SiteHeader({
           id="site-menu"
           // A link to the page we are already on does not change the path, so close here to show the tap worked.
           onClick={(e) => e.target instanceof Element && e.target.closest("a") && setOpen(false)}
-          className="menu-drop fixed inset-0 overflow-y-auto overscroll-contain bg-surface pb-28 pt-[var(--top-clear)] md:inset-auto md:right-auto md:w-[26rem] md:max-h-[calc(100dvh-1.5rem)] md:rounded-2xl md:border-2 md:border-brand md:pb-0 md:pt-0 md:shadow-xl"
+          className="menu-drop fixed inset-0 overflow-y-auto overscroll-contain bg-paper pb-28 pt-[var(--top-clear)] md:inset-auto md:right-auto md:w-[26rem] md:max-h-[calc(100dvh-1.5rem)] md:rounded-2xl md:border-2 md:border-brand md:pb-0 md:pt-0 md:shadow-xl"
         >
-          <div className="mx-auto flex max-w-xl flex-col gap-5 px-4 py-5">
+          <div className="mx-auto flex max-w-xl flex-col gap-8 px-4 py-5">
             {/* From 768 px the bar is not drawn (the rail has the menu button), so the top row of the popover holds both. */}
             <div className="flex items-center justify-between gap-2 md:justify-end">
-              <span className="text-2xl font-bold md:hidden">{t`メニュー`}</span>
+              <h1 className="font-serif text-3xl font-bold text-accent md:hidden">{t`メニュー`}</h1>
               {/* On a phone the Menu tab below closes it; the popover has no tab to press. */}
               <button type="button" onClick={() => setOpen(false)} className="tap-target hidden items-center gap-2 rounded-full border border-ink px-3 text-lg font-bold md:inline-flex">
                 <CloseIcon />
                 {t`閉じる`}
               </button>
             </div>
-            {signedIn ? (
-              <div className="flex flex-col gap-3">
-                {/* Who is signed in, for a glance; changing it is on the profile page (the account settings item below). */}
-                <div className="-mx-4">
-                  <ProfileCard {...profile} locale={locale} readOnly />
-                </div>
-                <button
-                  type="button"
-                  onClick={signOut}
-                  disabled={leaving}
-                  className={`${wideButton} border border-ink bg-paper text-ink hover:bg-surface disabled:opacity-60`}
-                >
-                  {t`ログアウト`}
-                </button>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                <Link prefetch={false} href={loginHref} className={`${wideButton} bg-ink text-paper`}>
-                  {t`ログイン`}
-                </Link>
-                <Link prefetch={false} href={registerHref} className={`${wideButton} border border-ink text-ink hover:bg-surface`}>
-                  {t`新規登録`}
-                </Link>
-              </div>
-            )}
 
-            {signedIn ? (
-              <Link prefetch={false} href="/profile" className="tap-target flex items-center gap-3 rounded-full border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
-                <GearIcon />
-                <span className="min-w-0 flex-1">{t`アカウント設定`}</span>
-                <ChevronIcon />
-              </Link>
-            ) : null}
-            {staff ? (
-              <Link prefetch={false} href="/admin" className="tap-target flex items-center gap-3 rounded-full border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
-                <GearIcon />
-                <span className="min-w-0 flex-1">{t`管理画面`}</span>
-                <ChevronIcon />
-              </Link>
-            ) : null}
-            <Link prefetch={false} href="/bookmarks" className="tap-target flex items-center gap-3 rounded-full border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
-              <BookmarkIcon />
-              <span className="min-w-0 flex-1">{t`ブックマーク`}</span>
-              <ChevronIcon />
-            </Link>
-            <Link prefetch={false} href="/blog" className="tap-target flex items-center gap-3 rounded-full border border-ink bg-paper px-4 text-xl font-bold hover:bg-surface">
-              <DocumentIcon />
-              <span className="min-w-0 flex-1">{t`ブログ`}</span>
-              <ChevronIcon />
-            </Link>
-
-            <div className="flex flex-col gap-2 border-t-2 border-line pt-4">
-              <p className="text-lg font-bold">{t`画面の明るさ`}</p>
-              <div className="flex flex-wrap items-center gap-3">
-                <ThemeSwitcher />
-                <LocaleSelect />
-              </div>
-            </div>
-            <div className="flex flex-col gap-2 border-t-2 border-line pt-4">
-              <Link prefetch={false}
-                href="/settings"
-                className="tap-target flex items-center rounded-full border border-ink px-4 text-lg font-bold text-ink hover:bg-paper"
-              >
-                {t`見やすさの設定`}
-              </Link>
-              <p className="text-base text-muted">{t`文字やボタンの大きさ、地図の見せ方`}</p>
-              <QuickActions prefs={prefs} signedIn={signedIn} />
-            </div>
-            {/* From 1024 px these links are always in the sidebar's footer, so the menu leaves them out. */}
-            <ul className="flex flex-col border-t-2 border-line pt-2 wide:hidden">
-              {[
-                { path: "/places", label: t`お店と施設` },
-                { path: "/faq", label: t`よくあるご質問` },
-                { path: "/terms", label: t`利用規約` },
-                { path: "/privacy", label: t`プライバシーポリシー` },
-                { path: "/licenses", label: t`ライセンス情報` },
-                { path: "/sitemap", label: t`サイトマップ` },
-              ].map(({ path, label }) => (
-                <li key={path}>
-                  <Link prefetch={false} href={path} className="tap-target flex items-center justify-between py-1 text-lg font-bold">
-                    {label}
-                    <ChevronIcon />
+            <MenuGroup title={t`アカウント`}>
+              {signedIn ? (
+                <>
+                  {/* Who is signed in, for a glance; changing it is on the profile page (the account settings item below). */}
+                  <div className="-mx-4">
+                    <ProfileCard {...profile} locale={locale} readOnly />
+                  </div>
+                  <MenuLinks>
+                    <MenuLink href="/profile" icon={<GearIcon />} label={t`アカウント設定`} />
+                    {staff ? <MenuLink href="/admin" icon={<GearIcon />} label={t`管理画面`} /> : null}
+                  </MenuLinks>
+                  <button type="button" onClick={signOut} disabled={leaving} className={buttonStyle("secondary", "lg", "flex w-full")}>
+                    {t`ログアウト`}
+                  </button>
+                </>
+              ) : (
+                <div className="pattern-shippo flex flex-col gap-3 rounded-lg bg-surface p-4">
+                  <Link prefetch={false} href={loginHref} className={buttonStyle("action", "lg", "flex w-full")}>
+                    {t`ログイン`}
                   </Link>
-                </li>
-              ))}
-            </ul>
-            <p lang={locale === "ja" ? "ja" : "en"} className="text-base text-muted wide:hidden">
-              {locale === "ja" ? foundationJa : foundationEn}
-            </p>
+                  <Link prefetch={false} href={registerHref} className={buttonStyle("secondary", "lg", "flex w-full")}>
+                    {t`新規登録`}
+                  </Link>
+                </div>
+              )}
+            </MenuGroup>
+
+            <MenuGroup title={t`しおりと読みもの`}>
+              <MenuLinks>
+                <MenuLink href="/bookmarks" icon={<BookmarkIcon />} label={t`ブックマーク`} />
+                <MenuLink href="/blog" icon={<DocumentIcon />} label={t`ブログ`} />
+              </MenuLinks>
+            </MenuGroup>
+
+            <MenuGroup title={t`表示と設定`}>
+              <div className="flex flex-col gap-2">
+                <p className="text-lg font-bold">{t`画面の明るさ`}</p>
+                <div className="flex flex-wrap items-center gap-3">
+                  <ThemeSwitcher />
+                  <LocaleSelect />
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Link prefetch={false} href="/settings" className={buttonStyle("secondary", "md", "flex w-full justify-start")}>
+                  {t`見やすさの設定`}
+                </Link>
+                <p className="text-base text-muted">{t`文字やボタンの大きさ、地図の見せ方`}</p>
+                <QuickActions prefs={prefs} signedIn={signedIn} />
+              </div>
+            </MenuGroup>
+
+            {/* From 1024 px these links are always in the sidebar's footer, so the menu leaves them out. */}
+            <div className="flex flex-col gap-4 wide:hidden">
+              <MenuGroup title={t`このアプリについて`}>
+                <MenuLinks>
+                  <MenuLink href="/places" label={t`お店と施設`} />
+                  <MenuLink href="/faq" label={t`よくあるご質問`} />
+                  <MenuLink href="/terms" label={t`利用規約`} />
+                  <MenuLink href="/privacy" label={t`プライバシーポリシー`} />
+                  <MenuLink href="/licenses" label={t`ライセンス情報`} />
+                  <MenuLink href="/sitemap" label={t`サイトマップ`} />
+                </MenuLinks>
+              </MenuGroup>
+              <p lang={locale === "ja" ? "ja" : "en"} className="text-base text-muted">
+                {locale === "ja" ? foundationJa : foundationEn}
+              </p>
+            </div>
           </div>
         </div>
       ) : null}
     </header>
+  );
+}
+
+/** One group of the menu: a heading with the red bar (as on the rally page) over its content. */
+function MenuGroup({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="flex flex-col gap-3">
+      <h2 className="border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">{title}</h2>
+      {children}
+    </section>
+  );
+}
+
+/** Links onward in one panel (small corners), a line between rows; links are ink, not buttons. */
+function MenuLinks({ children }: { children: ReactNode }) {
+  return <ul className="flex flex-col divide-y divide-line/60 overflow-hidden rounded-lg bg-surface">{children}</ul>;
+}
+
+function MenuLink({ href, label, icon }: { href: string; label: string; icon?: ReactNode }) {
+  return (
+    <li>
+      <Link prefetch={false} href={href} className="tap-target flex items-center gap-3 px-4 py-1 text-lg font-bold hover:bg-paper">
+        {icon}
+        <span className="min-w-0 flex-1">{label}</span>
+        <ChevronIcon />
+      </Link>
+    </li>
   );
 }
