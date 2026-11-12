@@ -29,7 +29,7 @@ export default async function BadgesPage() {
         <BackLink href="/rallies">
           <Trans>ラリー</Trans>
         </BackLink>
-        <h1 className="text-3xl font-bold wide:text-4xl">
+        <h1 className="font-serif text-3xl font-bold text-accent wide:text-4xl">
           <Trans>バッジ</Trans>
         </h1>
         <p className="text-2xl font-bold tabular-nums text-accent">
@@ -50,7 +50,7 @@ export default async function BadgesPage() {
             const done = states[i] === "complete";
             return (
               <li key={r.id}>
-                <Link href={`/routes/${r.id}`} className="tap-target flex h-full flex-col items-center gap-2 rounded-3xl bg-surface p-4 text-center">
+                <Link href={`/routes/${r.id}`} className="tap-target flex h-full flex-col items-center gap-2 rounded-[1.75rem] bg-surface p-4 text-center">
                   <Medal number={r.order} done={done} stamped={r.stampedCount ?? 0} total={r.spotCount} className="h-32 w-auto" />
                   <span className="text-lg font-bold leading-snug">
                     <Localized value={pickText(i18n.locale, r.nameJa, r.nameEn)} tag={false} />
