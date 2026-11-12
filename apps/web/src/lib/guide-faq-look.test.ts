@@ -18,3 +18,7 @@ test("step and question cards are capsules without strokes", () => {
   expect(cards).toMatch(/rounded-\[1\.75rem\] bg-surface/);
   expect(cards).not.toMatch(/rounded-3xl|border-2/);
 });
+
+test("the block editor's card wrapper matches the capsule card", () => {
+  expect(read("components", "admin", "BlockEditor.tsx")).toMatch(/relative rounded-\[1\.75rem\] bg-surface p-5/);
+});

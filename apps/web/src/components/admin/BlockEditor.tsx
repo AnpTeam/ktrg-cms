@@ -92,7 +92,7 @@ function CardView({ node, deleteNode }: NodeViewProps) {
   const { t } = useLingui();
   const kind = String(node.attrs.kind) as CardStyle;
   return (
-    <NodeViewWrapper className={`relative rounded-3xl bg-surface p-5 ${kind === "step" ? "pl-[5.25rem]" : ""}`} data-kind={kind}>
+    <NodeViewWrapper className={`relative rounded-[1.75rem] bg-surface p-5 ${kind === "step" ? "pl-[5.25rem]" : ""}`} data-kind={kind}>
       <button type="button" contentEditable={false} onClick={deleteNode} aria-label={t`カードを消す`} className="tap-target absolute right-2 top-2 z-10 inline-grid place-items-center rounded-full bg-paper text-ink shadow">
         <span className="pointer-events-none">
           <TrashIcon />
