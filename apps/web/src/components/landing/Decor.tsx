@@ -135,3 +135,41 @@ export function SeamFade({ from, to }: { from: Ground | null; to: Ground }) {
     </div>
   );
 }
+
+/**
+ * En no Gyōja 役行者 (役小角), the mountain ascetic who is said to have founded Shugendō, seated with his ringed staff 錫杖
+ * and a sutra scroll, a ridge and the rising sun behind him. Our own line drawing (nothing traced from a photo or a statue),
+ * in the text colour at the same weight as the other drawings, so it follows light and dark mode. Decoration beside a caption
+ * that names him: hidden from screen readers.
+ */
+export function EnNoGyoja({ className = "" }: { className?: string }) {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 300 330" className={className} {...line} strokeWidth={2.2}>
+      {/* The rising sun, and two ridges (the far one fainter). */}
+      <circle cx="62" cy="74" r="24" opacity="0.5" />
+      <path d="M0 262 C36 226 64 212 96 240 S164 196 204 226 S268 236 300 204" opacity="0.4" />
+      <path d="M0 292 C44 262 84 262 120 284 S206 258 300 276" opacity="0.7" />
+      {/* The robe: shoulders, sleeves, the hem over the crossed legs, and a few folds. */}
+      <path d="M126 106 C98 114 82 142 80 188 L72 250 C100 270 182 270 210 250 L202 188 C200 142 184 114 154 106" fill="currentColor" fillOpacity="0.07" />
+      <path d="M140 128 V256 M112 172 C108 202 108 228 112 250 M168 172 C172 202 172 228 168 250" opacity="0.7" />
+      <path d="M80 188 C68 204 68 226 84 236 M202 188 C220 194 230 202 232 212" />
+      <path d="M62 264 C92 290 188 290 218 264" />
+      {/* The head: the small hood (頭巾), brows, a long beard. */}
+      <circle cx="140" cy="80" r="24" />
+      <path d="M130 40 h20 l-3 13 h-14 z" fill="currentColor" fillOpacity="0.12" />
+      <path d="M118 66 C120 50 160 50 162 66" />
+      <path d="M128 81 q5 -3 9 0 M143 81 q5 -3 9 0 M141 84 v7 M135 99 h10" />
+      <path d="M121 92 C123 114 132 130 140 142 C148 130 157 114 159 92" />
+      <path d="M126 106 L140 130 L154 106" />
+      {/* The sutra scroll in his left hand. */}
+      <path d="M58 220 h30 a7 7 0 0 1 0 14 h-30 a7 7 0 0 1 0 -14 z M66 227 h14" />
+      {/* The ringed staff in his right hand: a large ring, three small rings hanging from it, the shaft. */}
+      <circle cx="232" cy="52" r="20" />
+      <circle cx="209" cy="62" r="6" />
+      <circle cx="255" cy="62" r="6" />
+      <circle cx="232" cy="80" r="6" />
+      <path d="M232 86 V304 M220 304 h24" />
+      <ellipse cx="232" cy="214" rx="8" ry="10" fill="currentColor" fillOpacity="0.12" />
+    </svg>
+  );
+}
