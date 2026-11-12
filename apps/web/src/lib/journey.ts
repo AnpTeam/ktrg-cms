@@ -19,10 +19,10 @@ export function beatAt(progress: number): BeatIndex {
   return beat;
 }
 
-/** How much of the ridge is drawn: nothing until 0.15 of the scroll, all of it at 0.55. */
+/** How much of the ridge is drawn: it starts growing at 0.02 of the scroll (so scrolling always shows something move), all of it at 0.5. */
 export function drawnShare(progress: number): number {
   const p = clamp01(progress);
-  return clamp01((p - 0.15) / (0.55 - 0.15));
+  return clamp01((p - 0.02) / (0.5 - 0.02));
 }
 
 /** How many of `total` seals have dropped: none until 0.6 of the scroll, all of them at 0.9. */

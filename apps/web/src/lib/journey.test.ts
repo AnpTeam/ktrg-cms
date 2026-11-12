@@ -19,11 +19,15 @@ test("a progress outside 0..1, or not a number, never leaves the three beats", (
   expect(beatAt(Number.NaN)).toBe(0);
 });
 
-test("the ridge is undrawn until 0.15 and complete at 0.55", () => {
+// 2026-11-12 (real iPhone): the first stretch of scroll changed nothing, so it was hard to tell the page was scrolling. The
+// ridge now grows from the first pixel (a 0.02 grace for a touch that only brushes the screen) and is complete by 0.5.
+test("the ridge starts growing at 0.02, so any real scroll moves it, and is complete at 0.5", () => {
   expect(drawnShare(0)).toBe(0);
-  expect(drawnShare(0.15)).toBe(0);
-  expect(drawnShare(0.35)).toBeCloseTo(0.5, 5);
-  expect(drawnShare(0.55)).toBe(1);
+  expect(drawnShare(0.02)).toBe(0);
+  expect(drawnShare(0.05)).toBeGreaterThan(0);
+  expect(drawnShare(0.26)).toBeCloseTo(0.5, 5);
+  expect(drawnShare(0.5)).toBe(1);
+  expect(drawnShare(0.6)).toBe(1);
   expect(drawnShare(1)).toBe(1);
   expect(drawnShare(Number.NaN)).toBe(0);
 });

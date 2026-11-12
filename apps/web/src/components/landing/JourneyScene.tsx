@@ -8,6 +8,7 @@ import { beatAt, drawnShare, motionMode, sealsPlaced } from "@/lib/journey";
  * this only adds to it, and every way it can fail leaves that page as it was:
  *  - calm on, no script, GSAP failing to load: nothing happens (the page stays stacked and complete);
  *  - reduced motion: no scene; the three beats fade in once as they arrive, nothing moves;
+ *  - a screen shorter than 38rem (a phone on its side): no scene, the stacked page;
  *  - otherwise the scene: `.journey-live` turns the page into 250svh of scroll with one sticky stage, and a single
  *    scrubbed trigger draws the ridge, drops the seals and picks the beat whose text shows (`data-active-beat`).
  * Turning reduced motion on while the page is open reverts to the plain page (gsap.matchMedia).
@@ -41,7 +42,9 @@ export function JourneyScene({ children, seals }: { children: ReactNode; seals: 
         if (gone) return;
         gsap.registerPlugin(ScrollTrigger);
         const mm = gsap.matchMedia();
-        mm.add(mode === "scene" ? "(prefers-reduced-motion: no-preference)" : "(prefers-reduced-motion: reduce)", () => {
+        // The scene needs a screen tall enough to hold a beat (a phone on its side is not: the story would be cut off and the
+        // ridge out of reach), so a short screen keeps the stacked page. matchMedia re-checks it when the phone is turned.
+        mm.add(mode === "scene" ? "(prefers-reduced-motion: no-preference) and (min-height: 38rem)" : "(prefers-reduced-motion: reduce)", () => {
           if (mode === "fade") {
             // Reduced motion: the final scene as it is (ridge drawn, seals placed); each later beat only fades in, once.
             beats.forEach((beat) => {
