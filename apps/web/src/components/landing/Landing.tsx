@@ -15,6 +15,7 @@ import { StoryMotion } from "@/components/landing/StoryMotion";
 import { Localized } from "@/components/Localized";
 import { PlaceLine } from "@/components/PlaceLine";
 import { RoutePill } from "@/components/RoutePill";
+import { BackToTop } from "@/components/BackToTop";
 import { municipalityName } from "@/lib/municipalities";
 import { pickText } from "@/lib/pick-text";
 import { BlogCard } from "@/components/landing/BlogCard";
@@ -319,6 +320,7 @@ export function Landing({
           <Trans>のものです。</Trans>
         </p>
         <LocaleSwitcher />
+        <BackToTop />
       </footer>
     </div>
     </StoryMotion>
