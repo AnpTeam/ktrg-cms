@@ -36,7 +36,9 @@ export function LandingHero({ slides, locale, line, title, children, bare = fals
           <div className={`absolute inset-0 mx-auto flex max-w-6xl flex-col items-center justify-center gap-5 px-12 py-6 ${bare ? "pb-[calc(9.5rem+env(safe-area-inset-bottom))] md:pb-24" : ""} text-center`}>
             {/* The line and the title are one block: set vertically on a tall screen (the line to the right of the title, as
                 columns run right to left), across and centred on a low one. Signed in or not. */}
-            <div className="flex flex-col items-center gap-2 tall:block tall:max-h-[calc(100%-7rem)] tall:tracking-[0.04em] tall:[writing-mode:vertical-rl]">
+            {/* A greeting holds the visitor's name, of any length, so it is set across: a vertical column is capped at the picture's height
+                and a long one broke mid-phrase ("adminさ / ん、こんに / ちは。") on a low window. Only the line alone is vertical. */}
+            <div className={`flex flex-col items-center gap-2 ${title ? "" : "tall:block tall:max-h-[calc(100%-7rem)] tall:tracking-[0.04em] tall:[writing-mode:vertical-rl]"}`}>
               {title ? (
                 <p className="font-serif text-lg font-bold text-white [text-shadow:0_1px_6px_rgb(0_0_0/0.7)] tall:ml-4 @[34rem]:text-xl">{line}</p>
               ) : null}
