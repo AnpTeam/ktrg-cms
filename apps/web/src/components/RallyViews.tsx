@@ -42,7 +42,7 @@ export function FeaturedRally({ rally, locale, account }: { rally: RallyItem; lo
   return (
     <section className="flex flex-col gap-3 px-4">
       <SectionBanner>{rally.lastStampedAt ? t`いまのラリー` : t`はじめのラリー`}</SectionBanner>
-      <div className="frame pattern-shippo p-4">
+      <div className="pattern-shippo rounded-[1.75rem] bg-surface p-5">
         {rally.lastStampedAt ? (
           <p className="text-base text-muted">{t`最後に押した日時　${when}`}</p>
         ) : null}
@@ -124,7 +124,7 @@ export function RallyCard({ rally, locale, account }: { rally: RallyItem; locale
 
   if (isSoon(rally)) {
     return (
-      <li className="rounded-xl border-2 border-dashed border-line p-4">
+      <li className="rounded-[1.75rem] bg-surface/60 p-4">
         <p className="text-base text-muted">{kind}</p>
         <p className="text-xl font-bold leading-snug">{name}</p>
         <p className="mt-1 inline-block rounded-lg border-2 border-dashed border-line px-2 text-lg font-bold text-muted">
@@ -136,11 +136,11 @@ export function RallyCard({ rally, locale, account }: { rally: RallyItem; locale
 
   const stamped = rally.stamped ?? 0;
   return (
-    <li className="rounded-3xl bg-surface">
+    <li className="relative rounded-[1.75rem] bg-surface">
       <details className="group">
         <summary className="tap-target flex cursor-pointer list-none flex-col gap-2 p-4 [&::-webkit-details-marker]:hidden">
-          <span className="text-base text-muted">{kind}</span>
-          <span className="text-xl font-bold leading-snug text-accent">{name}</span>
+          <span className="pr-10 text-base text-muted">{kind}</span>
+          <span className="pr-10 text-xl font-bold leading-snug text-accent">{name}</span>
           <span className="flex items-center gap-3">
             <span className="text-2xl font-bold tabular-nums">
               {stamped} / {rally.total}
@@ -153,6 +153,11 @@ export function RallyCard({ rally, locale, account }: { rally: RallyItem; locale
             </span>
           </span>
         </summary>
+        {rally.kind === "course" ? (
+          <span aria-hidden="true" className="badge-pattern pointer-events-none absolute right-4 top-4 grid size-8 place-items-center rounded-full bg-brand text-lg font-bold tabular-nums text-on-brand">
+            {order}
+          </span>
+        ) : null}
         {rally.kind === "mounds" ? (
           // The list below says the same in words, so a screen reader skips the book pages.
           <div aria-hidden="true" className="border-t border-line p-4">

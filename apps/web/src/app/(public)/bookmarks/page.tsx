@@ -16,7 +16,7 @@ export default async function BookmarksPage() {
   const i18n = await initLingui();
   return (
     <div className="flex flex-col gap-6 pt-2 wide:pt-0">
-      <h1 className="px-4 text-3xl font-bold wide:text-4xl">
+      <h1 className="px-4 font-serif text-3xl font-bold text-accent wide:text-4xl">
         <Trans>ブックマーク</Trans>
       </h1>
       <BookmarkList locale={i18n.locale} routes={await listRoutes()} rallies={await listRallies()} posts={await listPosts()} />
