@@ -21,8 +21,6 @@ import { confirmDialog } from "@/components/ConfirmDialog";
 
 const barButton =
   "inline-flex min-h-11 items-center gap-1.5 rounded-full border border-ink bg-paper px-2.5 text-base font-bold text-ink hover:bg-surface [&>svg]:size-6";
-// How far the signed-out home page is scrolled (in px) before its menu button appears.
-const SHOW_MENU_AFTER = 240;
 const wideButton =
   "tap-target flex w-full items-center justify-center rounded-full px-5 text-lg font-bold";
 
@@ -75,15 +73,8 @@ export function SiteHeader({
   const onMap = /^\/map\/?$/.test(pathname);
   const onRoutes = /^\/routes\/?$/.test(pathname);
   const onLanding = onMap || (!signedIn && pathname === "/");
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    if (!onLanding || onMap) return;
-    const onScroll = () => setScrolled(window.scrollY > SHOW_MENU_AFTER);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [onLanding, onMap]);
-  const hidden = onLanding && !onMap && !scrolled && !open;
+  // The logo bar of the signed-out home page shows only while the menu is open: scrolling never brings it over the page.
+  const hidden = onLanding && !onMap && !open;
   const panelRef = useRef<HTMLDivElement>(null);
 
   // 768 px and up: the menu is a popover beside the rail button, and the page behind it may scroll.
