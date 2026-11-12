@@ -14,7 +14,7 @@ export default async function RestorePage() {
   await initLingui();
   return (
     <div className="flex flex-col gap-6 pt-2 wide:pt-0">
-      <h1 className="px-4 text-3xl font-bold wide:text-4xl">
+      <h1 className="font-serif px-4 text-3xl font-bold text-accent wide:text-4xl">
         <Trans>スタンプをもどす</Trans>
       </h1>
       <RestoreStamps />

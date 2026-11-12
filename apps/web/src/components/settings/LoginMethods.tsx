@@ -24,7 +24,7 @@ function EmailMethod({ email, locale, onAdded }: { email: string | null; locale:
 
   if (email) {
     return (
-      <div className="rounded-3xl bg-surface p-4">
+      <div className="rounded-[1.75rem] bg-surface p-4">
         <p className="text-lg text-muted">{t`メールアドレス`}</p>
         <p className="break-all text-xl font-bold">{email}</p>
       </div>
@@ -44,8 +44,8 @@ function EmailMethod({ email, locale, onAdded }: { email: string | null; locale:
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-3xl bg-surface p-4">
-      <h2 className="text-2xl font-bold">{t`メールアドレスを追加する`}</h2>
+    <div className="flex flex-col gap-4 rounded-[1.75rem] bg-surface p-4">
+      <h2 className="border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">{t`メールアドレスを追加する`}</h2>
       <p className="text-lg">{t`いまは、顔・指紋だけでログインしています。メールを追加すると、端末をなくしても、メールの番号でログインできます。`}</p>
       {sentTo ? (
         <EmailCodeStep

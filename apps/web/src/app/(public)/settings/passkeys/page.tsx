@@ -22,7 +22,7 @@ export default async function PasskeysPage({ searchParams }: { searchParams: Pro
       <BackLink href="/profile">
         <Trans>プロフィール</Trans>
       </BackLink>
-      <h1 className="text-3xl font-bold">
+      <h1 className="font-serif text-3xl font-bold text-accent">
         <Trans>ログインの方法</Trans>
       </h1>
       {viewer.signedIn ? (
