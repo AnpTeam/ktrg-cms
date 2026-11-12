@@ -9,19 +9,19 @@ import type { Prefs } from "@/lib/prefs";
 
 type Toggle = "furigana" | "contrast" | "calm";
 
-/** One row: its name on the left, two choices as a joined pill on the right (as a city site's 標準 | 拡大): the chosen one is ink. */
+/** One switch: its name over two choices as a joined pill (as a city site's 標準 | 拡大): the chosen one is ink. */
 function Choice({ label, options }: { label: string; options: { text: string; on: boolean; pick: () => void }[] }) {
   return (
-    <div role="group" aria-label={label} className="flex items-center justify-between gap-3 px-4 py-2">
-      <span className="min-w-0 text-lg font-bold">{label}</span>
-      <span className="inline-flex shrink-0 overflow-hidden rounded-full border border-ink">
+    <div role="group" aria-label={label} className="flex min-w-0 flex-col gap-1">
+      <span className="text-base font-bold">{label}</span>
+      <span className="flex overflow-hidden rounded-full border border-ink">
         {options.map((o) => (
           <button
             key={o.text}
             type="button"
             aria-pressed={o.on}
             onClick={o.pick}
-            className={`tap-target min-w-20 px-3 text-base font-bold ${o.on ? "bg-selected text-on-selected" : "bg-paper text-ink hover:bg-surface"}`}
+            className={`tap-target min-w-0 flex-1 whitespace-nowrap px-1 text-base font-bold ${o.on ? "bg-selected text-on-selected" : "bg-paper text-ink hover:bg-surface"}`}
           >
             {o.text}
           </button>
@@ -32,7 +32,7 @@ function Choice({ label, options }: { label: string; options: { text: string; on
 }
 
 /**
- * The accessibility choices people reach for most as five short rows (text size, furigana, contrast, calm, sound), each a
+ * The accessibility choices people reach for most as five compact switches in two columns (text size, furigana, contrast, calm, sound), each a
  * two-way pill. They sit in the menu and change the page at once; the full list is in the settings.
  */
 export function QuickActions({ prefs, signedIn }: { prefs: Prefs; signedIn: boolean }) {
@@ -60,7 +60,7 @@ export function QuickActions({ prefs, signedIn }: { prefs: Prefs; signedIn: bool
   const plain = t`ふつう`;
 
   return (
-    <div role="group" aria-label={t`見やすさのクイック設定`} className="flex flex-col divide-y divide-line/60 overflow-hidden rounded-lg bg-surface">
+    <div role="group" aria-label={t`見やすさのクイック設定`} className="grid grid-cols-2 gap-x-3 gap-y-3 rounded-lg bg-surface p-3">
       <Choice
         label={t`文字サイズ`}
         options={[
