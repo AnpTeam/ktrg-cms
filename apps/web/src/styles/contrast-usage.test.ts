@@ -109,7 +109,7 @@ describe("the scanner", () => {
 });
 
 describe("words on a filled background are large enough for its contrast", () => {
-  const all = files(src).flatMap((path) => pairsIn(readFileSync(path, "utf8"), relative(src, path)));
+  const all = files(src).flatMap((path) => pairsIn(readFileSync(path, "utf8"), relative(src, path).replaceAll("\\", "/"))); // forward slashes on Windows too (ICON_ONLY names them so)
   test("the scan finds the app's class strings", () => {
     expect(all.length).toBeGreaterThan(50);
   });
