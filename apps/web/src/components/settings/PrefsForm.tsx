@@ -86,14 +86,14 @@ export function PrefsForm({
       />
     </label>
   );
-  const list = "divide-y divide-line/40 overflow-hidden rounded-xl bg-surface";
+  const list = "divide-y divide-line/40 overflow-hidden rounded-[1.75rem] bg-surface";
   // The あ in each size tile, in pixels so the four keep their difference whatever size the page is showing now.
   const sample: Record<TextSize, number> = { small: 18, standard: 24, large: 30, xlarge: 36 };
 
   return (
     <div className="flex flex-col gap-8">
       <fieldset className="flex flex-col gap-3">
-        <legend className="mb-1 text-2xl font-bold">{t`文字とボタンの大きさ`}</legend>
+        <legend className="mb-2 border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">{t`文字とボタンの大きさ`}</legend>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {textSizes.map((size) => {
             const on = prefs.size === size;
@@ -119,7 +119,7 @@ export function PrefsForm({
       </fieldset>
 
       <fieldset className="flex flex-col gap-3">
-        <legend className="mb-1 text-2xl font-bold">{t`見やすさ`}</legend>
+        <legend className="mb-2 border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">{t`見やすさ`}</legend>
         <div className={list}>
           {switchRow("furigana", t`ふりがなをつける`, t`ページの漢字すべてに、読みがなをつけます。`)}
           {switchRow("contrast", t`くっきり表示`, t`文字と背景の差を大きくし、線を太く、リンクに下線をつけます。`)}
@@ -128,7 +128,7 @@ export function PrefsForm({
       </fieldset>
 
       <fieldset className="flex flex-col gap-3">
-        <legend className="mb-1 text-2xl font-bold">{t`地図の見せ方`}</legend>
+        <legend className="mb-2 border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">{t`地図の見せ方`}</legend>
         <div className={list}>
         {switchRow(
           "placesOnMap",

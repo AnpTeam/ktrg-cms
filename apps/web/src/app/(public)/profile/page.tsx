@@ -22,7 +22,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
   const viewer = await getViewer(searchParams);
   return (
     <div className="flex flex-col gap-6 pt-2 wide:pt-0">
-      <h1 className="px-4 text-3xl font-bold wide:text-4xl">
+      <h1 className="px-4 font-serif text-3xl font-bold text-accent wide:text-4xl">
         <Trans>プロフィール</Trans>
       </h1>
       {viewer.signedIn ? (

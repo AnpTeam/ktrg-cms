@@ -187,8 +187,8 @@ export function ProfileSettings({
       ) : null}
 
       <section className="flex flex-col gap-2">
-        <h2 className="px-4 text-xl font-bold text-accent">{t`プロフィール`}</h2>
-        <ul className="mx-4 divide-y divide-line/30 overflow-hidden rounded-3xl bg-surface">
+        <h2 className="mx-4 border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">{t`プロフィール`}</h2>
+        <ul className="mx-4 divide-y divide-line/30 overflow-hidden rounded-[1.75rem] bg-surface">
           {rows.map((r) => (
             <li key={r.field}>
               <button
@@ -217,8 +217,8 @@ export function ProfileSettings({
       </section>
 
       <section className="flex flex-col gap-2">
-        <h2 className="px-4 text-xl font-bold text-accent">{t`ログイン`}</h2>
-        <Link href="/settings/passkeys" className={`mx-4 flex items-center justify-between rounded-3xl bg-surface ${rowBox}`}>
+        <h2 className="mx-4 border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">{t`ログイン`}</h2>
+        <Link href="/settings/passkeys" className={`mx-4 flex items-center justify-between rounded-[1.75rem] bg-surface ${rowBox}`}>
           <span className="text-lg font-bold">{t`ログインの方法`}</span>
           <ChevronIcon />
         </Link>
@@ -226,7 +226,7 @@ export function ProfileSettings({
 
       {deletionDueAt ? null : (
         <section className="flex flex-col gap-2">
-          <h2 className="px-4 text-xl font-bold text-danger">{t`アカウントの削除`}</h2>
+          <h2 className="mx-4 border-l-4 border-danger pl-3 font-serif text-xl font-bold text-danger">{t`アカウントの削除`}</h2>
           <div className="mx-4 flex flex-col gap-3 rounded-3xl border-2 border-danger/40 p-4">
             <p className="text-lg leading-7">{t`アカウントと、集めたスタンプなどの記録を、すべて消します。依頼から3日のあいだは、取り消せます。`}</p>
             <button type="button" onClick={() => setConfirming(true)} className="tap-target w-full rounded-full border-2 border-danger px-4 text-lg font-bold text-danger hover:bg-paper">
