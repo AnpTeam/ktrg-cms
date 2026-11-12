@@ -2254,9 +2254,9 @@ msgstr "It is sent automatically once connected. The server checks it then, so i
 msgid "つながると、自動で送ります。つながりにくいときは、30秒ごとにもう一度試します。"
 msgstr "It is sent automatically once connected. When the signal is weak, it tries again every 30 seconds."
 
-#: src/components/admin/RubyEditor.tsx:49
-msgid "つなぐ"
-msgstr "Join"
+#: src/components/admin/RubyEditor.tsx
+msgid "となりの漢字と、ひとつの読みにします（例：粉 ＋ 河 → こかわ）。"
+msgstr "Makes one reading with the next kanji (e.g. 粉 + 河 → こかわ)."
 
 #: src/components/admin/RouteEditor.tsx:896
 msgid "できた"
@@ -4378,22 +4378,6 @@ msgstr "No earlier links yet."
 #: src/components/landing/HeroSlides.tsx:57
 msgid "前の写真"
 msgstr "Previous photo"
-
-msgid "しおりと読みもの"
-msgstr "Bookmarks and reading"
-
-msgid "表示と設定"
-msgstr "Display and settings"
-
-msgid "このアプリについて"
-msgstr "About this app"
-#: src/components/landing/DeskPanel.tsx
-msgid "海"
-msgstr "Sea"
-
-#: src/components/landing/DeskPanel.tsx
-msgid "稜線"
-msgstr "Ridge"
 
 #: src/components/BackToTop.tsx
 msgid "ページの先頭へ"
@@ -8222,6 +8206,22 @@ msgstr "How to add it"
 #: src/components/landing/Journey.tsx
 msgid "ストーリーを読む"
 msgstr "Read the story"
+
+msgid "しおりと読みもの"
+msgstr "Bookmarks and reading"
+
+msgid "表示と設定"
+msgstr "Display and settings"
+
+msgid "このアプリについて"
+msgstr "About this app"
+#: src/components/landing/DeskPanel.tsx
+msgid "海"
+msgstr "Sea"
+
+#: src/components/landing/DeskPanel.tsx
+msgid "稜線"
+msgstr "Ridge"
 
 msgid "案内のみ"
 msgstr "Information only"

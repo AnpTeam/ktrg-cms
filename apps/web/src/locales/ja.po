@@ -2254,9 +2254,9 @@ msgstr "つながると、自動で送ります。そのときにサーバーが
 msgid "つながると、自動で送ります。つながりにくいときは、30秒ごとにもう一度試します。"
 msgstr "つながると、自動で送ります。つながりにくいときは、30秒ごとにもう一度試します。"
 
-#: src/components/admin/RubyEditor.tsx:49
-msgid "つなぐ"
-msgstr "つなぐ"
+#: src/components/admin/RubyEditor.tsx
+msgid "となりの漢字と、ひとつの読みにします（例：粉 ＋ 河 → こかわ）。"
+msgstr "となりの漢字と、ひとつの読みにします（例：粉 ＋ 河 → こかわ）。"
 
 #: src/components/admin/RouteEditor.tsx:896
 msgid "できた"
@@ -4378,22 +4378,6 @@ msgstr "前のリンクは、まだありません。"
 #: src/components/landing/HeroSlides.tsx:57
 msgid "前の写真"
 msgstr "前の写真"
-
-msgid "しおりと読みもの"
-msgstr "しおりと読みもの"
-
-msgid "表示と設定"
-msgstr "表示と設定"
-
-msgid "このアプリについて"
-msgstr "このアプリについて"
-#: src/components/landing/DeskPanel.tsx
-msgid "海"
-msgstr "海"
-
-#: src/components/landing/DeskPanel.tsx
-msgid "稜線"
-msgstr "稜線"
 
 #: src/components/BackToTop.tsx
 msgid "ページの先頭へ"
@@ -8222,6 +8206,22 @@ msgstr "追加のしかた"
 #: src/components/landing/Journey.tsx
 msgid "ストーリーを読む"
 msgstr "ストーリーを読む"
+
+msgid "しおりと読みもの"
+msgstr "しおりと読みもの"
+
+msgid "表示と設定"
+msgstr "表示と設定"
+
+msgid "このアプリについて"
+msgstr "このアプリについて"
+#: src/components/landing/DeskPanel.tsx
+msgid "海"
+msgstr "海"
+
+#: src/components/landing/DeskPanel.tsx
+msgid "稜線"
+msgstr "稜線"
 
 msgid "案内のみ"
 msgstr "案内のみ"
