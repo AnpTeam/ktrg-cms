@@ -83,10 +83,18 @@ paragraphs are exactly what not to copy.
   hiding is CSS under `prefers-reduced-motion: no-preference` and with calm off (`.story-pending` in `StoryMotion`);
   with reduced motion, calm, no JavaScript (`<noscript>`) or a failed GSAP load, the words are simply there. This
   replaces the earlier "visible by default" rule, which made the words show and then jump.
-- **No loading screen in front of a page's content, no scroll hijacking, no parallax, nothing that moves by itself
-  without a pause button.** The landing journey is scroll-linked by design, but the scrolling stays the browser's own
+- **No loading screen in front of a page's content, no scroll hijacking, no parallax on words or photos, nothing that moves by
+  itself without a pause button.** The landing journey is scroll-linked by design, but the scrolling stays the browser's own
   (a sticky stage, never a takeover of the wheel or touch), the beats follow the visitor's finger, and the photos stop
   advancing once they scroll away. Reduced motion: the final scene at once and each beat fades in (opacity only).
+- **Gentle drift on decorations only (2026-11-12, asked for by the user: the grounds were too plain).** The landing chapters
+  carry our own line drawings tied to Katsuragi Shugen (`components/landing/Decor.tsx`): a sutra scroll 経巻 on the stamp
+  rally, the kuzu vine 葛 on the courses, a ringed staff 錫杖 over waves 青海波 on the story, and a soft fade where the Start
+  chapter meets the ground above it. They are drawn in the chapter's text colour at low strength (never a hard-coded
+  colour, never over the 7:1 of the words), hidden from screen readers, and move only by transform or clip: at most about
+  a tenth of a screen, following the scroll (the scroll scene's `--journey`, or StoryMotion's `data-parallax` and
+  `data-grow`). Words and photos never drift. Reduced motion and calm: they stand still, fully drawn. New drawings follow
+  the same rules and stay our own (never AI images).
 - **A loading overlay for real waits.** When an action takes time (starting navigation, fetching a route or an
   offline pack), the screen dims and a small looping mark plays (the ridge line drawing itself, or the seal) with a
   sentence saying what is happening. It appears only after about 300 ms, so quick actions never flash it; it has a

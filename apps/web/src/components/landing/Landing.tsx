@@ -15,6 +15,7 @@ import { StoryMotion } from "@/components/landing/StoryMotion";
 import { Localized } from "@/components/Localized";
 import { PlaceLine } from "@/components/PlaceLine";
 import { RoutePill } from "@/components/RoutePill";
+import { KuzuVine, SeamFade } from "@/components/landing/Decor";
 import { municipalityName } from "@/lib/municipalities";
 import { pickText } from "@/lib/pick-text";
 import { BlogCard } from "@/components/landing/BlogCard";
@@ -80,7 +81,52 @@ export function Landing({
   // Grounds for the chapters after the first ones: surface, paper, surface ... in page order. The journey ends on a surface
   // ground, so the first-time story starts on paper.
   let turn = top ? 0 : 1;
-  const ground = (): Ground => (turn++ % 2 === 0 ? "story-ground-surface" : "story-ground-paper");
+  // The grounds drawn so far, so the Start chapter can fade in from it (SeamFade).
+  const drawn: Ground[] = [];
+  const ground = (): Ground => {
+    const g: Ground = turn++ % 2 === 0 ? "story-ground-surface" : "story-ground-paper";
+    drawn.push(g);
+    return g;
+  };
+
+  // 7: the start. It reads the ground above it before taking its own (the order of the calls is the page's order).
+  const startChapter = () => {
+    const startFrom = drawn[drawn.length - 1] ?? null;
+    const startGround = ground();
+    return (
+      <div data-story-end>
+              <Chapter
+                ground={startGround}
+                heading={w.startHeading}
+                id="start-title"
+                decoration={
+                  <>
+                    <SeamFade from={startFrom} to={startGround} />
+                    <span aria-hidden="true" className="outro-mountains pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[clamp(7rem,30vw,20rem)]" />
+                  </>
+                }
+              >
+                <div className="flex flex-col gap-3 @[34rem]:flex-row @[34rem]:flex-wrap @[34rem]:items-center">
+                  <Link href="/register" className={buttonStyle("primary", "lg", "flex")}>
+                    <Trans>新規登録</Trans>
+                  </Link>
+                  <Link href="/routes" className={buttonStyle("secondary", "lg", "flex")}>
+                    <Trans>ルートをさがす</Trans>
+                  </Link>
+                  <Link href="/rallies" className={buttonStyle("secondary", "lg", "flex")}>
+                    <Trans>ラリーを見る</Trans>
+                  </Link>
+                </div>
+                <p className="text-lg">
+                  <Trans>登録済みの方は</Trans>{" "}
+                  <Link href="/login" className="tap-target inline-flex items-center font-bold underline underline-offset-4">
+                    <Trans>ログイン</Trans>
+                  </Link>
+                </p>
+              </Chapter>
+            </div>
+    );
+  };
   // Published courses first (only a few at first, far apart: 1 and 16), then the ones being prepared; each keeps its number.
   const firstRoutes = previewRoutes(routes, PREVIEW_ROUTES);
   const storyRoutes = previewRoutes(routes, STORY_ROUTES);
@@ -260,6 +306,7 @@ export function Landing({
                 ground={ground()}
                 heading={w.routesHeading}
                 id="routes-title"
+                decoration={<KuzuVine />}
                 wide={
                   <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-5 @[42rem]:px-10">
                     <CourseCapsules list={storyRoutes} locale={locale} reveal />
@@ -276,32 +323,7 @@ export function Landing({
             ) : null}
 
             {/* 7: the start. The progress line ends here (data-story-end); the team's mountains stand along its bottom. */}
-            <div data-story-end>
-              <Chapter
-                ground={ground()}
-                heading={w.startHeading}
-                id="start-title"
-                decoration={<span aria-hidden="true" className="outro-mountains pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[clamp(7rem,30vw,20rem)]" />}
-              >
-                <div className="flex flex-col gap-3 @[34rem]:flex-row @[34rem]:flex-wrap @[34rem]:items-center">
-                  <Link href="/register" className={buttonStyle("primary", "lg", "flex")}>
-                    <Trans>新規登録</Trans>
-                  </Link>
-                  <Link href="/routes" className={buttonStyle("secondary", "lg", "flex")}>
-                    <Trans>ルートをさがす</Trans>
-                  </Link>
-                  <Link href="/rallies" className={buttonStyle("secondary", "lg", "flex")}>
-                    <Trans>ラリーを見る</Trans>
-                  </Link>
-                </div>
-                <p className="text-lg">
-                  <Trans>登録済みの方は</Trans>{" "}
-                  <Link href="/login" className="tap-target inline-flex items-center font-bold underline underline-offset-4">
-                    <Trans>ログイン</Trans>
-                  </Link>
-                </p>
-              </Chapter>
-            </div>
+            {startChapter()}
 
             {noticesAndBlog}
           </>
