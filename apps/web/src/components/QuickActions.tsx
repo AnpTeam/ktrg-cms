@@ -60,7 +60,7 @@ export function QuickActions({ prefs, signedIn }: { prefs: Prefs; signedIn: bool
   const plain = t`ふつう`;
 
   return (
-    <div role="group" aria-label={t`見やすさのクイック設定`} className="grid grid-cols-2 gap-x-3 gap-y-3 rounded-lg bg-surface p-3">
+    <div role="group" aria-label={t`見やすさのクイック設定`} className="grid grid-cols-2 gap-3">
       <Choice
         label={t`文字サイズ`}
         options={[
