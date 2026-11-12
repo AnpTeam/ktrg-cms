@@ -54,3 +54,14 @@ describe("beatsFit", () => {
     expect(beatsFit([600], Number.NaN)).toBe(false);
   });
 });
+
+// Scrolling back up to the banner scrubs the ridge line back to nothing; at the banner the stage must vanish at once, or its
+// 0.5 s fade shows the line being un-drawn from its end.
+test("the ridge stage hides at once at the banner (no opacity fade)", async () => {
+  const { readFileSync } = await import("node:fs");
+  const css = readFileSync(new URL("../app/globals.css", import.meta.url), "utf8").replace(/\r\n/g, "\n");
+  const m = css.match(/\.journey-live\[data-active-beat="0"\] \[data-ridge-stage\] \{([^}]*)\}/);
+  expect(m).not.toBeNull();
+  expect(m![1]).toContain("opacity: 0");
+  expect(m![1]).toMatch(/transition:\s*color/); // only the colour is eased, never the opacity
+});

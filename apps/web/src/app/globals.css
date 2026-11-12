@@ -1499,8 +1499,10 @@ body.map-nav-mode .map-layer-pills {
   pointer-events: none;
   transition: opacity 0.5s, color 0.5s;
 }
+/* At the banner it vanishes at once: scrolling back up scrubs the line back to nothing, and a 0.5 s fade would show it un-drawing. */
 .journey-live[data-active-beat="0"] [data-ridge-stage] {
   opacity: 0;
+  transition: color 0.5s;
 }
 .journey-live[data-active-beat="2"] [data-ridge-stage] {
   color: var(--color-ink);
