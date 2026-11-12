@@ -72,6 +72,14 @@ The "Where visits come from" screen reads the place from the headers Vercel adds
 
 After changing a value in Vercel, redeploy (the old value stays until the next deploy).
 
+## After moving or renaming the repository
+
+Vercel keeps deploying from the old GitHub path and silently stops (it happened on 2026-11-11: merges #441 to #449 were not live until it was fixed). Afterwards, in Vercel open Settings, Git and check the repository, then confirm the next merge to `main` shows a "Vercel" status on its commit. Also re-check the Vercel GitHub App is installed on the new owner and that the commit author is a member of the Vercel team.
+
+## Scheduled jobs that need setup
+
+Two repository settings are not set yet, so these jobs do nothing: the **variable** `APP_URL` (the site's address, no trailing slash) is used by "Keep the site warm" and by the purge job, and the **secret** `CRON_SECRET` (the same value as the API's) only by the purge job. "Purge deleted accounts" is disabled on purpose until launch: set both, then enable it in the Actions tab.
+
 ## Monitoring (UptimeRobot)
 
 Set up once, in the UptimeRobot account (the free plan checks every 5 minutes and emails you when a check fails). Use the live site's address in place of `https://SITE`.
@@ -94,7 +102,6 @@ Add the people who should be told as alert contacts (email). When the Database m
 
 ## Who to ask
 
-Vercel and Supabase Accounts:
-Anupap (mailto:anupap@ndr.co.jp) @AnpTeam
-Domain and email:
-Anupap (mailto:anupap@ndr.co.jp) @AnpTeam
+GitHub, Vercel, Supabase and Cloudflare R2 accounts, and the OpenRouteService key: @mzxrq (the repository owner).
+Domain: the free Vercel address, nothing else to manage until launch.
+Sign-in email (the SMTP mailbox behind `SMTP_USER` and `MAIL_FROM`): still Anupap (mailto:anupap@ndr.co.jp) @AnpTeam. Move it to a mailbox the owner controls before launch.
