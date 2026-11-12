@@ -58,7 +58,7 @@ function ratio(a: string, b: string) {
   return (light + 0.05) / (dark + 0.05);
 }
 
-const names = ["accent", "brand", "brand-strong", "caution", "danger", "goal", "ink", "lift", "line", "moss", "muted", "night", "on-brand", "on-brand-strong", "on-goal", "on-night", "on-ruri", "on-selected", "on-shu", "paper", "ruri", "selected", "shu", "surface"];
+const names = ["accent", "brand", "brand-strong", "caution", "danger", "goal", "ink", "lift", "line", "moss", "muted", "night", "on-brand", "on-brand-strong", "on-goal", "on-night", "on-ruri", "on-sea", "on-selected", "on-shu", "paper", "ruri", "sea", "selected", "shu", "surface"];
 
 // Text must reach WCAG AAA (7:1).
 const text: [string, string][] = [
@@ -77,6 +77,7 @@ const text: [string, string][] = [
   ["paper", "moss"], // label on a moss fill
   ["on-ruri", "ruri"], // Start / Goal badge
   ["on-night", "night"], // the dark band of a reading page
+  ["on-sea", "sea"], // the story's sea chapter
   ["on-selected", "selected"], // a selected or active control: selected is ink, doing is red
   ["on-brand-strong", "brand-strong"], // course and stop numbers on the red
 ];

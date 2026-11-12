@@ -119,6 +119,7 @@ const TOKEN: Record<Ground, string> = {
   "story-ground-paper": "var(--color-paper)",
   "story-ground-surface": "var(--color-surface)",
   "story-ground-inverse": "var(--color-night)",
+  "story-ground-sea": "var(--color-sea)",
 };
 
 /**
@@ -133,8 +134,8 @@ export function SeamFade({ from, to }: { from: Ground | null; to: Ground }) {
     // ramp (a straight one shows as a band); and not clipped: the mist banks fade out by themselves (a clip gave a hard line).
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[clamp(4rem,14vw,7rem)]"
-      style={{ background: `linear-gradient(to bottom, ${color} 0%, color-mix(in srgb, ${color} 60%, transparent) 35%, color-mix(in srgb, ${color} 20%, transparent) 70%, transparent 100%)` }}
+      className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[var(--seam,clamp(4rem,14vw,7rem))]"
+      style={{ background: `linear-gradient(to bottom, ${color} 0%, color-mix(in srgb, ${color} 45%, transparent) 30%, color-mix(in srgb, ${color} 14%, transparent) 62%, transparent 100%)` }}
     >
       <span data-parallax="" className="absolute -left-10 -top-4 h-12 w-3/4 rounded-full opacity-60 blur-2xl" style={{ background: color }} />
       <span data-parallax="" className="absolute -right-12 top-0 h-10 w-2/3 rounded-full opacity-50 blur-2xl" style={{ background: color }} />
