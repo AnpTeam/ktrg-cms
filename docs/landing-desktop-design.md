@@ -1,6 +1,6 @@
 # Landing on a desktop: a split-screen journey
 
-Status: **approved 2026-11-12, plan in `docs/landing-desktop-plan.md`, nothing built.** Written 2026-11-12 from the user's choices that day (see "Decided"). It extends
+Status: **built 2026-11-12 on feat/landing-desktop (plan in `docs/landing-desktop-plan.md`).** The map keeps its heading above it (no overlay card): less DOM, same reading order. Written 2026-11-12 from the user's choices that day (see "Decided"). It extends
 `docs/landing-story-design.md` (the phone journey) and `docs/landing-journey-design.md` (the sticky scene). Phones and tablets
 keep what they have; this is only what a wide, tall screen gets.
 
