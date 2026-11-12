@@ -68,7 +68,7 @@ export function ElevationChart({ line, elevations, onHover }: { line: readonly L
   const down = Math.round(loss);
 
   return (
-    <figure className="flex flex-col gap-3 rounded-3xl bg-surface p-4">
+    <figure className="flex flex-col gap-3 rounded-[1.75rem] bg-surface p-4">
       <figcaption className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <span className="text-xl font-bold">{t`標高のようす`}</span>
         <span className="flex flex-wrap gap-x-4 text-lg tabular-nums">

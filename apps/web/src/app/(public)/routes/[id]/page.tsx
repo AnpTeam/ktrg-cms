@@ -39,8 +39,8 @@ export default async function RouteDetailPage({ params }: Props) {
         <BackLink href="/routes">
           <Trans>ルート一覧</Trans>
         </BackLink>
-        <h1 className="text-3xl font-bold">{pickText(i18n.locale, route.nameJa, route.nameEn)?.text}</h1>
-        <p className="rounded-2xl bg-surface p-4 text-lg font-bold">
+        <h1 className="font-serif text-3xl font-bold text-accent">{pickText(i18n.locale, route.nameJa, route.nameEn)?.text}</h1>
+        <p className="rounded-[1.75rem] bg-surface p-4 text-lg font-bold">
           <Trans>この区間は、準備中です。</Trans>
         </p>
       </div>
@@ -84,7 +84,7 @@ export default async function RouteDetailPage({ params }: Props) {
       />
       {/* The trail goes on: the next course, so a walker reading the whole page does not have to go back to the list. */}
       {next && nextName ? (
-        <Link href={`/routes/${next.id}`} className="tap-target mx-4 flex items-center justify-between gap-3 rounded-2xl bg-surface p-4 no-underline">
+        <Link href={`/routes/${next.id}`} className="tap-target mx-4 flex items-center justify-between gap-3 rounded-[1.75rem] bg-surface p-4 no-underline">
           <span className="min-w-0">
             <span className="block text-base text-muted">
               <Trans>つぎのルート</Trans>

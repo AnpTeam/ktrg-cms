@@ -40,7 +40,7 @@ export function ElevationProfile({
   const line = area.replace(/ L[\d.]+ [\d.]+ L[\d.]+ [\d.]+ Z$/, "");
 
   return (
-    <figure className="flex flex-col gap-3 rounded-3xl bg-surface p-4">
+    <figure className="flex flex-col gap-3 rounded-[1.75rem] bg-surface p-4">
       <figcaption className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <span className="text-xl font-bold">{t`標高のようす`}</span>
         <span className="flex gap-4 text-lg tabular-nums">
