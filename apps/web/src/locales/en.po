@@ -4379,6 +4379,14 @@ msgstr "No earlier links yet."
 msgid "前の写真"
 msgstr "Previous photo"
 
+msgid "しおりと読みもの"
+msgstr "Bookmarks and reading"
+
+msgid "表示と設定"
+msgstr "Display and settings"
+
+msgid "このアプリについて"
+msgstr "About this app"
 #: src/components/landing/DeskPanel.tsx
 msgid "海"
 msgstr "Sea"

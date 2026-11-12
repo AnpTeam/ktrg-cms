@@ -4379,6 +4379,14 @@ msgstr "前のリンクは、まだありません。"
 msgid "前の写真"
 msgstr "前の写真"
 
+msgid "しおりと読みもの"
+msgstr "しおりと読みもの"
+
+msgid "表示と設定"
+msgstr "表示と設定"
+
+msgid "このアプリについて"
+msgstr "このアプリについて"
 #: src/components/landing/DeskPanel.tsx
 msgid "海"
 msgstr "海"
