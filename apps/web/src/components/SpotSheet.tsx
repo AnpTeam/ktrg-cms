@@ -60,7 +60,7 @@ export function SpotSheet({
     <article className="flex flex-col gap-6">
       {photo ? <CoverPhoto photo={photo} /> : null}
       <header className={`relative px-4 ${photo ? "-mt-20" : ""}`}>
-        <h1 className="text-4xl font-bold leading-tight has-[rt]:pt-4">
+        <h1 className="font-serif text-4xl font-bold leading-tight text-accent has-[rt]:pt-4">
           <NameRuby title={pickText(locale, spot.nameJa, spot.nameEn)} reading={spot.nameKana} />
         </h1>
         <p className="mt-2 text-lg text-muted">
@@ -83,7 +83,7 @@ export function SpotSheet({
       ) : null}
 
       {stampable ? (
-      <section className="mx-4 flex items-center gap-4 rounded-3xl bg-surface p-4">
+      <section className="mx-4 flex items-center gap-4 rounded-[1.75rem] bg-surface p-4">
         <StampFace state="empty" image={spot.stampImageUrl} className="h-14 w-14 shrink-0 rounded-full!" />
         <div>
           <p className="text-xl font-bold">
@@ -98,7 +98,7 @@ export function SpotSheet({
 
       {description ? (
         <section className="px-4">
-          <h2 className="text-xl font-bold">
+          <h2 className="border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">
             <Trans>説明</Trans>
           </h2>
           {/* Editors type plain text; line breaks are kept. Never raw HTML. */}
@@ -115,7 +115,7 @@ export function SpotSheet({
 
       {history ? (
         <section className="px-4">
-          <h2 className="text-xl font-bold">
+          <h2 className="border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">
             <Trans>歴史・由来</Trans>
           </h2>
           <div className="mt-2 max-w-prose whitespace-pre-line text-lg leading-8">
@@ -131,7 +131,7 @@ export function SpotSheet({
 
       {source ? (
         <section className="px-4">
-          <h2 className="text-xl font-bold">
+          <h2 className="border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">
             <Trans>出典</Trans>
           </h2>
           <div className="mt-2 max-w-prose whitespace-pre-line text-base leading-7 text-muted">
@@ -142,7 +142,7 @@ export function SpotSheet({
 
       {gallery.length > 0 ? (
         <section className="px-4">
-          <h2 className="mb-2 text-xl font-bold">
+          <h2 className="mb-2 border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">
             <Trans>写真</Trans>
           </h2>
           <SpotGallery photos={gallery} alt={pickText(locale, spot.nameJa, spot.nameEn)?.text ?? spot.nameJa} />
@@ -150,20 +150,25 @@ export function SpotSheet({
       ) : null}
 
       {nearby.length > 0 ? (
-        <section className="mx-4 rounded-3xl bg-surface p-4">
-          <h2 className="mb-1 text-xl font-bold">
+        // The title stands over open space, the list sits in the capsule (design language: no title inside a card).
+        <section className="px-4">
+          <h2 className="mb-2 border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">
             <Trans>まわりにあるもの</Trans>
           </h2>
-          <NearbyPlaces places={nearby} />
+          <div className="rounded-[1.75rem] bg-surface px-5 py-2">
+            <NearbyPlaces places={nearby} />
+          </div>
         </section>
       ) : null}
 
       {nearest.length > 0 ? (
-        <section className="mx-4 rounded-3xl bg-surface p-4">
-          <h2 className="mb-2 text-xl font-bold">
+        <section className="px-4">
+          <h2 className="mb-2 border-l-4 border-brand pl-3 font-serif text-xl font-bold text-accent">
             <Trans>最寄り</Trans>
           </h2>
-          <NearestPlaces groups={nearest} />
+          <div className="rounded-[1.75rem] bg-surface p-5">
+            <NearestPlaces groups={nearest} />
+          </div>
         </section>
       ) : null}
 
