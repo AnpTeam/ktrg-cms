@@ -115,7 +115,7 @@ export function CommentInbox({ initial, locale }: { initial: CommentPage; locale
           void load(tab, 1);
         }}
       >
-        <input type="search" value={words} onChange={(e) => setWords(e.target.value)} aria-label={t`コメントをさがす`} placeholder={t`コメントをさがす`} className="tap-target min-w-0 flex-1 rounded-xl border-2 border-line bg-paper px-4 text-lg" />
+        <input type="search" value={words} onChange={(e) => setWords(e.target.value)} aria-label={t`コメントをさがす`} placeholder={t`コメントをさがす`} className="tap-target min-w-0 flex-1 rounded-full border border-line bg-paper px-4 text-lg" />
         <button type="submit" disabled={busy} className="tap-target rounded-full bg-ink px-5 text-lg font-bold text-paper">
           {t`探す`}
         </button>

@@ -8417,6 +8417,10 @@ msgstr "地図をクリックしてください（やめる）"
 msgid "地図で位置を決める"
 msgstr "地図で位置を決める"
 
+#: src/components/admin/RouteTable.tsx
+msgid "あるとよい {0}"
+msgstr "あるとよい {0}"
+
 #: src/components/admin/PlacePanel.tsx
 msgid "「状態のひとこと」（日本語）を書いてください。「現在、立ち入りできません」など、訪れる人に伝えたいことです。"
 msgstr "「状態のひとこと」（日本語）を書いてください。「現在、立ち入りできません」など、訪れる人に伝えたいことです。"

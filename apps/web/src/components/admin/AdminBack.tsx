@@ -5,7 +5,7 @@ import { ChevronLeftIcon } from "@/components/icons";
 /** The way back to a list at the top of an admin page: a button, so it is easy to see. */
 export function AdminBack({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <Link href={href} className="tap-target inline-flex w-fit items-center gap-1 rounded-full border-2 border-ink bg-surface px-4 text-lg font-bold text-ink hover:bg-paper">
+    <Link href={href} className="tap-target inline-flex w-fit items-center gap-1 rounded-full border border-line bg-surface px-4 text-lg font-bold text-ink hover:bg-paper">
       <ChevronLeftIcon />
       {children}
     </Link>

@@ -924,7 +924,7 @@ export function MapEditor(props: MapEditorProps) {
       <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t`道すじ`}>
         {/* One button for the GPX file; its arrow offers the other thing to do with one (take only the heights). */}
         <div className="relative inline-flex">
-          <button type="button" onClick={() => fileInput.current?.click()} className="inline-flex h-11 min-h-0 min-w-0 items-center justify-center rounded-l-lg border border-ink bg-ink px-3 text-sm font-bold text-paper">
+          <button type="button" onClick={() => fileInput.current?.click()} className="inline-flex h-11 min-h-0 min-w-0 items-center justify-center rounded-l-lg border border-line bg-ink px-3 text-sm font-bold text-paper">
             {t`GPXファイルから読み込む`}
           </button>
           <button
@@ -938,7 +938,7 @@ export function MapEditor(props: MapEditorProps) {
             ▾
           </button>
           {gpxMenu ? (
-            <div role="menu" className="absolute left-0 top-full z-30 mt-1 flex min-w-64 flex-col rounded-lg border border-ink bg-paper p-1 shadow-lg">
+            <div role="menu" className="absolute left-0 top-full z-30 mt-1 flex min-w-64 flex-col rounded-full border border-line bg-paper p-1 shadow-lg">
               <button type="button" role="menuitem" onClick={() => { setGpxMenu(false); fileInput.current?.click(); }} className="rounded-md px-3 py-2 text-left text-sm font-bold hover:bg-surface">
                 {t`線と標高を読み込む`}
               </button>
@@ -991,7 +991,7 @@ export function MapEditor(props: MapEditorProps) {
       </div>
 
       {activePair ? (
-        <div role="group" aria-label={t`選んだ区間`} className="flex flex-wrap items-center gap-2 rounded-xl border border-ink bg-surface px-3 py-2">
+        <div role="group" aria-label={t`選んだ区間`} className="flex flex-wrap items-center gap-2 rounded-xl border border-line bg-surface px-3 py-2">
           <span className="min-w-0 flex-1 basis-60 truncate text-sm font-bold" title={legName} aria-live="polite">
             {t`選んだ区間：${legName}`}
           </span>
@@ -1001,7 +1001,7 @@ export function MapEditor(props: MapEditorProps) {
               aria-label={t`移動の手段`}
               value={activeLeg?.ride?.mode ?? "walk"}
               onChange={(e) => setRide(e.target.value as RideMode | "walk", activeLeg?.ride?.minutes ?? 20)}
-              className="h-11 min-h-0 rounded-lg border border-line bg-paper px-2 text-sm font-bold"
+              className="h-11 min-h-0 rounded-full border border-line bg-paper px-2 text-sm font-bold"
             >
               <option value="walk">{t`歩く`}</option>
               {RIDE_MODES.map((m) => (
@@ -1019,7 +1019,7 @@ export function MapEditor(props: MapEditorProps) {
                   aria-label={t`かかる時間（分）`}
                   value={activeLeg.ride.minutes}
                   onChange={(e) => setRide(activeLeg.ride!.mode, Number(e.target.value) || 1)}
-                  className="h-11 min-h-0 w-20 rounded-lg border border-line bg-paper px-2 text-sm font-bold"
+                  className="h-11 min-h-0 w-20 rounded-full border border-line bg-paper px-2 text-sm font-bold"
                 />
                 <span className="text-sm">{t`分`}</span>
               </>
@@ -1049,7 +1049,7 @@ export function MapEditor(props: MapEditorProps) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t`場所の名前で探す（例：西念寺）`}
-          className="tap-target min-w-0 basis-40 flex-1 rounded-xl border-2 border-line bg-paper px-4 text-lg"
+          className="tap-target min-w-0 basis-40 flex-1 rounded-full border border-line bg-paper px-4 text-lg"
         />
         <button type="submit" disabled={searching || !query.trim()} className={`${toolClass} border-line bg-paper`}>
           {searching ? t`探しています…` : t`探す`}
@@ -1081,7 +1081,7 @@ export function MapEditor(props: MapEditorProps) {
       </p>
 
       {waypoints ? (
-        <div role="group" aria-label={t`GPXの地点`} className="flex flex-col gap-3 rounded-xl border border-ink bg-paper p-4">
+        <div role="group" aria-label={t`GPXの地点`} className="flex flex-col gap-3 rounded-xl border border-line bg-paper p-4">
           <p className="text-lg font-bold">{t`名前のついた地点が${waypoints.length}か所ありました。経由地として追加しますか？`}</p>
           <ul className="max-h-40 list-disc overflow-auto pl-6 text-base">
             {waypoints.map((w, i) => (
@@ -1093,7 +1093,7 @@ export function MapEditor(props: MapEditorProps) {
             <button type="button" onClick={addWaypoints} className="tap-target rounded-full bg-ink px-6 text-lg font-bold text-paper">
               {t`追加する`}
             </button>
-            <button type="button" onClick={() => setWaypoints(null)} className="tap-target rounded-full border-2 border-line px-6 text-lg font-bold">
+            <button type="button" onClick={() => setWaypoints(null)} className="tap-target rounded-full border border-line px-6 text-lg font-bold">
               {t`追加しない`}
             </button>
           </div>
@@ -1124,7 +1124,7 @@ export function MapEditor(props: MapEditorProps) {
               <label htmlFor="leg-pick" className="sr-only">
                 {t`描く区間`}
               </label>
-              <select id="leg-pick" value={activeId ?? ""} onChange={(e) => pickLeg(e.target.value)} className="h-11 min-h-0 max-w-64 truncate rounded-lg border border-line bg-paper px-2 text-sm font-bold">
+              <select id="leg-pick" value={activeId ?? ""} onChange={(e) => pickLeg(e.target.value)} className="h-11 min-h-0 max-w-64 truncate rounded-full border border-line bg-paper px-2 text-sm font-bold">
                 <option value="">{t`区間を選ぶ`}</option>
                 {pairs.map((pair) => (
                   <option key={pairId(pair)} value={pairId(pair)}>

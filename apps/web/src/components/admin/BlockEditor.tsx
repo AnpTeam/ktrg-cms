@@ -30,8 +30,8 @@ type Kind = "paragraph" | "h2" | "h3" | "list" | "rule" | "photo" | "table" | "p
 type Panel = { kind: "link"; href: string; bad: boolean } | { kind: "photo" } | { kind: "place" } | null;
 
 const SHOWN =
-  "tiptap-page rounded-xl border-2 border-line bg-paper p-4 text-lg leading-8 text-ink [&_a]:font-bold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4 [&_h2]:mt-5 [&_h2]:border-l-[6px] [&_h2]:border-accent [&_h2]:pl-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-snug [&_h3]:mt-4 [&_h3]:text-xl [&_h3]:font-bold [&_hr]:my-6 [&_hr]:border-line [&_img]:my-4 [&_img]:rounded-xl [&_p]:my-3 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_.ProseMirror-selectednode]:outline-4 [&_.ProseMirror-selectednode]:outline-accent [&_.tableWrapper]:my-4 [&_.tableWrapper]:overflow-x-auto [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-line [&_td]:px-3 [&_td]:align-top [&_th]:border [&_th]:border-line [&_th]:bg-surface [&_th]:px-3 [&_th]:text-left [&_th]:align-top [&_td_p]:my-1 [&_th_p]:my-1 [&_.selectedCell]:bg-accent/10 [&_.note-mark]:rounded [&_.note-mark]:bg-surface [&_.note-mark]:px-1 [&_.note-mark]:text-base [&_.note-mark]:font-bold [&_.note-mark]:text-accent [&_.note-line]:text-base [&_.note-line]:text-muted [&_.note-problem]:after:ml-1 [&_.note-problem]:after:font-normal [&_.note-problem]:after:text-danger [&_.note-problem]:after:content-[attr(data-label)]";
-const BUTTON = "tap-target inline-flex items-center gap-1 rounded-full border-2 border-line bg-paper px-4 text-base font-bold disabled:opacity-40";
+  "tiptap-page rounded-xl border border-line bg-paper p-4 text-lg leading-8 text-ink [&_a]:font-bold [&_a]:text-accent [&_a]:underline [&_a]:underline-offset-4 [&_h2]:mt-5 [&_h2]:border-l-[6px] [&_h2]:border-accent [&_h2]:pl-3 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:leading-snug [&_h3]:mt-4 [&_h3]:text-xl [&_h3]:font-bold [&_hr]:my-6 [&_hr]:border-line [&_img]:my-4 [&_img]:rounded-xl [&_p]:my-3 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_.ProseMirror-selectednode]:outline-4 [&_.ProseMirror-selectednode]:outline-accent [&_.tableWrapper]:my-4 [&_.tableWrapper]:overflow-x-auto [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-line [&_td]:px-3 [&_td]:align-top [&_th]:border [&_th]:border-line [&_th]:bg-surface [&_th]:px-3 [&_th]:text-left [&_th]:align-top [&_td_p]:my-1 [&_th_p]:my-1 [&_.selectedCell]:bg-accent/10 [&_.note-mark]:rounded [&_.note-mark]:bg-surface [&_.note-mark]:px-1 [&_.note-mark]:text-base [&_.note-mark]:font-bold [&_.note-mark]:text-accent [&_.note-line]:text-base [&_.note-line]:text-muted [&_.note-problem]:after:ml-1 [&_.note-problem]:after:font-normal [&_.note-problem]:after:text-danger [&_.note-problem]:after:content-[attr(data-label)]";
+const BUTTON = "tap-target inline-flex items-center gap-1 rounded-full border border-line bg-paper px-4 text-base font-bold disabled:opacity-40";
 const ACTIVE = "border-ink bg-ink text-paper";
 
 /** A photo in the text, its description right under it: nobody has to look for a button or scroll to write one. */
@@ -466,7 +466,7 @@ function Blocks({ editor, id, closingNote, notes, short, cards }: { editor: Edit
   return (
     <div className="flex flex-col gap-2">
       <div className="sticky top-[4.75rem] z-10 flex flex-col gap-2">
-        <div role="toolbar" aria-label={t`文章の書式`} aria-controls={id} className="flex flex-wrap items-center gap-0.5 rounded-xl border-2 border-line bg-paper p-1">
+        <div role="toolbar" aria-label={t`文章の書式`} aria-controls={id} className="flex flex-wrap items-center gap-0.5 rounded-xl border border-line bg-paper p-1">
           {short ? null : (
             <>
               <Tool name={t`追加`} pressed={menuOpen} disabled={state.inTable} onClick={openPlus}>
@@ -521,7 +521,7 @@ function Blocks({ editor, id, closingNote, notes, short, cards }: { editor: Edit
         </div>
 
         {state.inTable ? (
-          <div role="group" aria-label={t`表`} className="flex flex-wrap items-center gap-2 rounded-xl border-2 border-line bg-surface p-2">
+          <div role="group" aria-label={t`表`} className="flex flex-wrap items-center gap-2 rounded-xl border border-line bg-surface p-2">
             <button type="button" onClick={() => editor.chain().focus().addRowAfter().run()} className={BUTTON}>
               {t`行を追加`}
             </button>
@@ -542,7 +542,7 @@ function Blocks({ editor, id, closingNote, notes, short, cards }: { editor: Edit
         ) : null}
 
         {panel?.kind === "place" ? (
-          <div className="flex flex-col gap-2 rounded-xl border-2 border-line bg-surface p-3 shadow-lg">
+          <div className="flex flex-col gap-2 rounded-xl border border-line bg-surface p-3 shadow-lg">
             <p className="text-base font-bold">{t`記事に入れる場所`}</p>
             <RelationPicker
               id={`${id}-place`}
@@ -562,7 +562,7 @@ function Blocks({ editor, id, closingNote, notes, short, cards }: { editor: Edit
             </button>
           </div>
         ) : panel ? (
-          <div className="flex flex-col gap-2 rounded-xl border-2 border-line bg-surface p-3 shadow-lg">
+          <div className="flex flex-col gap-2 rounded-xl border border-line bg-surface p-3 shadow-lg">
             {panel.kind === "link" ? (
               <>
                 <div className="flex flex-wrap items-center gap-2">
@@ -623,7 +623,7 @@ function Blocks({ editor, id, closingNote, notes, short, cards }: { editor: Edit
       {menuOpen && at ? (
         <>
           {plusAt ? <div className="fixed inset-0 z-30" onClick={() => setPlusAt(null)} /> : null}
-          <ul role="menu" aria-label={t`追加するもの`} style={{ left: at.x, ...(at.y + 340 > room ? { bottom: room - at.y + 44 } : { top: at.y }) }} className="fixed z-40 flex w-64 flex-col gap-1 rounded-xl border-2 border-line bg-paper p-2 shadow-xl">
+          <ul role="menu" aria-label={t`追加するもの`} style={{ left: at.x, ...(at.y + 340 > room ? { bottom: room - at.y + 44 } : { top: at.y }) }} className="fixed z-40 flex w-64 flex-col gap-1 rounded-xl border border-line bg-paper p-2 shadow-xl">
             {shownItems.map((item, i) => (
               <li key={item.kind} role="none">
                 <button

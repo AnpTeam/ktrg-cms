@@ -5,6 +5,7 @@ import { useLingui } from "@lingui/react/macro";
 import { BlockEditorLoader } from "./BlockEditorLoader";
 import { ADDED_LOCALES, LOCALE_NAMES, MAX_LANGUAGES, moveLanguage, nextLanguage, startLanguages, withTranslation, type AddedLocale, type Translations } from "@/lib/admin/content-locales";
 import { PlusIcon } from "@/components/icons";
+import { InfoTip } from "./InfoTip";
 
 // The small pieces every admin form is made of. Big controls, a visible label, and a hint line when it helps.
 
@@ -16,19 +17,27 @@ export const adminTab = (selected: boolean) =>
   `tap-target inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap border-b-4 px-1 text-lg ${selected ? "border-brand font-bold text-ink" : "border-transparent text-muted hover:text-ink"}`;
 export const adminTabRow = "flex flex-nowrap gap-5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden";
 
-export const inputClass = "tap-target w-full rounded-xl border-2 border-line bg-paper px-4 text-lg text-ink disabled:opacity-60";
+// Admin controls: a thin line-coloured border (ink is kept for filled primary buttons and the selected tab), and the same pill
+// shape as the buttons; a text area, which grows tall, has a softer corner instead.
+const inputShell = "tap-target w-full border border-line bg-paper px-4 text-lg text-ink disabled:opacity-60";
+export const inputClass = `${inputShell} rounded-full`;
+const textAreaClass = `${inputShell} rounded-2xl`;
 
 export function Field({ label, hint, children, htmlFor, required = false, status }: { label: string; hint?: ReactNode; children: ReactNode; htmlFor?: string; required?: boolean; /** A short state beside the label ("not chosen yet"). */ status?: string }) {
   const { t } = useLingui();
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={htmlFor} className="text-base font-bold">
-        {label}
-        {required ? <span className="ml-2 rounded-md bg-surface px-2 py-0.5 text-sm font-bold text-accent">{t`必須`}</span> : null}
-        {status ? <span className="ml-3 text-base font-normal text-muted">{status}</span> : null}
-      </label>
+      <InfoTip
+        hint={hint}
+        label={
+          <label htmlFor={htmlFor} className="text-base font-bold">
+            {label}
+            {required ? <span className="ml-2 rounded-full bg-surface px-2 py-0.5 text-sm font-bold text-accent">{t`必須`}</span> : null}
+            {status ? <span className="ml-3 text-base font-normal text-muted">{status}</span> : null}
+          </label>
+        }
+      />
       {children}
-      {hint ? <p className="text-base text-muted">{hint}</p> : null}
     </div>
   );
 }
@@ -51,7 +60,7 @@ export function TextInput({ id, value, onChange, lang, maxLength, placeholder, i
 }
 
 export function TextArea({ id, value, onChange, lang, rows = 6, maxLength = 20000, ariaLabel, placeholder }: { id: string; value: string; onChange: (v: string) => void; lang?: string; placeholder?: string; rows?: number; maxLength?: number; ariaLabel?: string }) {
-  return <textarea id={id} lang={lang} rows={rows} maxLength={maxLength} value={value} aria-label={ariaLabel} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} className={`${inputClass} py-3 leading-7`} />;
+  return <textarea id={id} lang={lang} rows={rows} maxLength={maxLength} value={value} aria-label={ariaLabel} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} className={`${textAreaClass} py-3 leading-7`} />;
 }
 
 /**
@@ -143,7 +152,7 @@ export function MultilingualField({
         setTab("ja");
       }}
       aria-label={t`${LOCALE_NAMES[l]}を削除`}
-      className="tap-target shrink-0 rounded-full border-2 border-line px-4 text-base font-bold"
+      className="tap-target shrink-0 rounded-full border border-line px-4 text-base font-bold"
     >
       {t`削除`}
     </button>
@@ -157,7 +166,7 @@ export function MultilingualField({
         setShown([...shown, next]);
         setTab(next);
       }}
-      className="tap-target shrink-0 rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-50"
+      className="tap-target shrink-0 rounded-full border border-line px-4 text-base font-bold disabled:opacity-50"
     >
       <span className="inline-flex items-center gap-1">
         <PlusIcon size={20} />
@@ -168,7 +177,7 @@ export function MultilingualField({
   const title = (
     <legend className="text-base font-bold">
       {label}
-      {required ? <span className="ml-2 rounded-md bg-surface px-2 py-0.5 text-sm font-bold text-accent">{t`必須`}</span> : null}
+      {required ? <span className="ml-2 rounded-full bg-surface px-2 py-0.5 text-sm font-bold text-accent">{t`必須`}</span> : null}
     </legend>
   );
   const note = (

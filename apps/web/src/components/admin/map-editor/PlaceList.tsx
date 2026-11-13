@@ -8,7 +8,7 @@ import { TrashIcon } from "./icons";
 import { ArrowDownIcon, ArrowUpIcon } from "@/components/icons";
 import type { MapEditorProps } from "./MapEditor";
 
-const fieldClass = "h-11 min-h-0 min-w-36 rounded-lg border border-line bg-paper px-2 text-base";
+const fieldClass = "h-11 min-h-0 min-w-36 rounded-full border border-line bg-paper px-2 text-base";
 const chipToggle = (on: boolean) =>
   `inline-flex h-11 min-h-0 min-w-0 items-center justify-center rounded-full border px-3 text-sm font-bold ${on ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"}`;
 
