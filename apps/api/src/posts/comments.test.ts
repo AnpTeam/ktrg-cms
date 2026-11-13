@@ -18,10 +18,10 @@ describe("blog comments", () => {
     const { svc } = setup();
     const held = await svc.add(reader, "participant", post, "  よい記事です  ");
     expect(held.ok && held.value).toMatchObject({ body: "よい記事です", status: "pending", authorName: "山田" });
-    expect((await svc.approved(post)).length).toBe(0);
+    expect((await svc.approved(post))?.length).toBe(0);
     const own = await svc.add(staff, "editor", post, "ありがとう");
     expect(own.ok && own.value.status).toBe("approved");
-    expect((await svc.approved(post)).map((c) => c.body)).toEqual(["ありがとう"]);
+    expect((await svc.approved(post))?.map((c) => c.body)).toEqual(["ありがとう"]);
   });
 
   test("approving a held comment shows it; hiding takes it down; a stale copy is a conflict; deleting is audited", async () => {
@@ -30,11 +30,11 @@ describe("blog comments", () => {
     if (!held.ok) throw new Error("not made");
     const shown = await svc.setStatus(staff, held.value.id, held.value.updatedAt.toISOString(), "approved");
     expect(shown.ok && shown.value.status).toBe("approved");
-    expect((await svc.approved(post)).length).toBe(1);
+    expect((await svc.approved(post))?.length).toBe(1);
     expect(await svc.setStatus(staff, held.value.id, held.value.updatedAt.toISOString(), "hidden")).toEqual({ ok: false, reason: "conflict" });
     if (!shown.ok) throw new Error();
     await svc.setStatus(staff, held.value.id, shown.value.updatedAt.toISOString(), "hidden");
-    expect((await svc.approved(post)).length).toBe(0);
+    expect((await svc.approved(post))?.length).toBe(0);
     expect((await svc.remove(staff, held.value.id)).ok).toBe(true);
     expect(audit.rows.map((r) => r.action)).toEqual(["comment.update", "comment.update", "comment.delete"]);
   });
@@ -44,5 +44,18 @@ describe("blog comments", () => {
     expect(await svc.add(reader, "participant", post, "   ")).toMatchObject({ ok: false });
     expect(await svc.add(reader, "participant", post, "x".repeat(COMMENT_MAX + 1))).toMatchObject({ ok: false });
     expect(await svc.add(reader, "participant", "44444444-4444-4444-8444-444444444444", "hi")).toEqual({ ok: false, reason: "not_found" });
+  });
+
+  test("a post that is set back to a draft shows no comments to visitors, and they come back when it is published again", async () => {
+    const audit = createMemoryAuditWriter();
+    const mem = createMemoryCommentStore(audit.writer);
+    let visible = true;
+    const svc = createCommentService({ store: mem.store, postVisible: async () => visible });
+    await svc.add(staff, "editor", post, "ありがとう");
+    expect((await svc.approved(post))?.length).toBe(1);
+    visible = false;
+    expect(await svc.approved(post)).toBeNull(); // the same "not there" the post itself gives
+    visible = true;
+    expect((await svc.approved(post))?.length).toBe(1); // kept, only not shown while the post is hidden
   });
 });
