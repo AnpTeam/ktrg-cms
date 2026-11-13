@@ -8420,3 +8420,7 @@ msgstr "地図で位置を決める"
 #: src/components/admin/RouteTable.tsx
 msgid "あるとよい {0}"
 msgstr "あるとよい {0}"
+
+#: src/components/OfflinePack.tsx
+msgid "オフライン"
+msgstr "オフライン"
