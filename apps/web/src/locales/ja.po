@@ -8256,3 +8256,11 @@ msgstr "パソコンの画面の写真"
 #: src/components/admin/HomeTextFields.tsx
 msgid "空のままにすると、ルートの写真が使われます。日本語の欄に入れた写真は、英語の画面でも使われます。"
 msgstr "空のままにすると、ルートの写真が使われます。日本語の欄に入れた写真は、英語の画面でも使われます。"
+
+#: src/components/admin/PageTextEditor.tsx
+msgid "文章を書きかえる"
+msgstr "文章を書きかえる"
+
+#: src/components/admin/PageTextEditor.tsx
+msgid "欄には、いまサイトに出ている文章が入っています。書きかえた欄だけが保存されます。写真はバナー、コースはルート、お知らせはお知らせの画面で変えられます。"
+msgstr "欄には、いまサイトに出ている文章が入っています。書きかえた欄だけが保存されます。写真はバナー、コースはルート、お知らせはお知らせの画面で変えられます。"

@@ -8256,3 +8256,11 @@ msgstr "Photos for the desktop screen"
 #: src/components/admin/HomeTextFields.tsx
 msgid "空のままにすると、ルートの写真が使われます。日本語の欄に入れた写真は、英語の画面でも使われます。"
 msgstr "If left empty, a course's photo is used. A photo set in the Japanese box is also used on the English screen."
+
+#: src/components/admin/PageTextEditor.tsx
+msgid "文章を書きかえる"
+msgstr "Edit the words"
+
+#: src/components/admin/PageTextEditor.tsx
+msgid "欄には、いまサイトに出ている文章が入っています。書きかえた欄だけが保存されます。写真はバナー、コースはルート、お知らせはお知らせの画面で変えられます。"
+msgstr "Each box holds the words the site shows now. Only the boxes you change are saved. Photos are changed in Banners, courses in Routes, and notices in Notices."

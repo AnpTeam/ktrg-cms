@@ -7,7 +7,7 @@ import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode } from "@/lib/api-error";
 import type { PageKey, PageLang, PageText } from "@/lib/page-text";
 import { BlockEditorLoader } from "./BlockEditorLoader";
-import { Field, Section, TextInput } from "./fields";
+import { Field, Section, TextInput, adminTab, adminTabRow } from "./fields";
 import { HomeTextFields } from "./HomeTextFields";
 import { PagePreview, type HomeData } from "./PagePreview";
 
@@ -25,6 +25,7 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
   const [done, setDone] = useState<PageText>(() => ({ ja: start("ja"), en: start("en") }));
   const [text, setText] = useState<PageText>(done);
   const [busy, setBusy] = useState(false);
+  const [view, setView] = useState<"edit" | "preview">("edit");
   const dirty = JSON.stringify(text) !== JSON.stringify(done);
   const edit = (lang: Lang, patch: Partial<PageLang>) => {
     showToast(null);
@@ -80,7 +81,7 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
         {t`ここは、本番のサイトの文章です。保存すると、すぐにすべての訪問者の画面が変わります。`}
       </p>
       {pageKey === "home" ? (
-        <p className="rounded-2xl bg-surface p-4 text-base leading-7">{t`空の欄には、もとの文章が表示されます。写真はバナー、コースはルート、お知らせはお知らせの画面で変えられます。`}</p>
+        <p className="rounded-2xl bg-surface p-4 text-base leading-7">{t`欄には、いまサイトに出ている文章が入っています。書きかえた欄だけが保存されます。写真はバナー、コースはルート、お知らせはお知らせの画面で変えられます。`}</p>
       ) : (
       <div className="rounded-2xl bg-surface p-4 text-base leading-7">
         <p className="font-bold">{t`書き方`}</p>
@@ -93,11 +94,26 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
       </div>
       )}
 
-      {/* Only the home page: it is boxes. The block editor already looks like the page. */}
-      <div className={pageKey === "home" ? "grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]" : ""}>
+      {/* Only the home page: it is boxes. The block editor already looks like the page. The preview is its own tab (a phone frame
+          beside the boxes was too small to read and too narrow for the boxes). */}
+      {pageKey === "home" ? (
+        <div role="tablist" aria-label={t`表示`} className={adminTabRow}>
+          <button type="button" role="tab" aria-selected={view === "edit"} onClick={() => setView("edit")} className={adminTab(view === "edit")}>
+            {t`文章を書きかえる`}
+          </button>
+          <button type="button" role="tab" aria-selected={view === "preview"} onClick={() => setView("preview")} className={adminTab(view === "preview")}>
+            {t`プレビュー`}
+          </button>
+        </div>
+      ) : null}
       <div className="flex min-w-0 flex-col gap-5">
+      {pageKey === "home" && view === "preview" ? (
+        <div className="mx-auto w-full max-w-[26rem]">
+          <PagePreview text={text} locale={locale} home={home} />
+        </div>
+      ) : null}
       {langs.map(({ lang, name }) => pageKey === "home" ? (
-        <HomeTextFields key={lang} lang={lang} title={name} body={text[lang].body} showBuiltIn={lang === (locale === "en" ? "en" : "ja")} onBody={(body) => edit(lang, { body })} />
+        view === "edit" ? <HomeTextFields key={lang} lang={lang} title={name} body={text[lang].body} showBuiltIn={lang === (locale === "en" ? "en" : "ja")} onBody={(body) => edit(lang, { body })} /> : null
       ) : (
         <Section key={lang} title={name}>
           <Field label={t`題`} htmlFor={`${pageKey}-${lang}-title`}>
@@ -111,12 +127,6 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
           </button>
         </Section>
       ))}
-      </div>
-      {pageKey === "home" ? (
-        <div className="lg:sticky lg:top-24 lg:self-start">
-          <PagePreview text={text} locale={locale} home={home} />
-        </div>
-      ) : null}
       </div>
       <p className="text-base text-muted" lang={locale}>
         {t`ほかの言語（ドイツ語など）の訪問者には、English の文章が表示されます。`}
