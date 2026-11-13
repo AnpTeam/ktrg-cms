@@ -48,7 +48,10 @@ export function createCommentService(deps: { store: CommentStore; postVisible: (
   const reader: ListReader<CommentRow> = createListReader({ store: deps.store });
   return {
     ...reader,
-    approved: (postId: string) => deps.store.listApproved(postId, PUBLIC_COMMENTS_LIMIT),
+    /** A post's approved comments for visitors; null when the post is not one a visitor may read (a draft keeps its comments, hidden). */
+    async approved(postId: string): Promise<CommentRow[] | null> {
+      return (await deps.postVisible(postId)) ? deps.store.listApproved(postId, PUBLIC_COMMENTS_LIMIT) : null;
+    },
     /** Writes a comment under a post a visitor may read; the staff's go live at once, everyone else's wait. */
     async add(userId: string, role: Role, postId: string, text: string): Promise<Result<CommentRow>> {
       const body = text.trim();
@@ -171,7 +174,14 @@ export function publicCommentRoutes(getServices: () => CommentServices, opts: Ro
   const out = (c: CommentRow) => ({ id: c.id, body: c.body, authorName: c.authorName, createdAt: c.createdAt.toISOString() });
   return new Elysia({ detail: { tags: ["Content"] } })
     .use(plugins)
-    .get("/posts/:id/comments", async ({ params }) => ({ ok: true as const, comments: (await getServices().comments.approved(params.id)).map(out) }), { params: uuidParams })
+    .get(
+      "/posts/:id/comments",
+      async ({ params, set }) => {
+        const comments = await getServices().comments.approved(params.id);
+        return comments ? { ok: true as const, comments: comments.map(out) } : fail(set, 404, "not_found");
+      },
+      { params: uuidParams },
+    )
     .post(
       "/posts/:id/comments",
       async ({ user, params, body, set }) => {
