@@ -46,7 +46,7 @@ export function PreviewFrame({ locale: adminLocale, canWiden = true, sideBySide 
           {locale !== adminLang && otherI18n ? <I18nProvider i18n={otherI18n}>{children(locale)}</I18nProvider> : children(locale)}
         </div>
       ) : (
-      <div className={`mx-auto w-full ${wide ? "max-w-5xl" : "max-w-[26rem]"} overflow-hidden rounded-[2rem] border-4 border-ink bg-paper shadow-sm`}>
+      <div className={`mx-auto w-full ${wide ? "max-w-5xl" : "max-w-[26rem]"} overflow-hidden bg-paper ${sideBySide ? "border border-line 2xl:rounded-[2rem] 2xl:border-4 2xl:border-ink 2xl:shadow-sm" : "rounded-[2rem] border-4 border-ink shadow-sm"}`}>
         <div className="relative flex max-h-[min(44rem,calc(100dvh-14rem))] flex-col gap-6 overflow-y-auto overflow-x-hidden py-6" data-testid="live-preview">
           {locale !== adminLang && otherI18n ? <I18nProvider i18n={otherI18n}>{children(locale)}</I18nProvider> : children(locale)}
         </div>
