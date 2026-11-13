@@ -794,6 +794,33 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
     });
   });
 
+  test("stamp store: a far place a minute after the last stamp is flagged fast_travel; a revoked stamp is not the last one", async () => {
+    await inRollback(async (tx) => {
+      await seed(tx);
+      const store = createDrizzleStampStore(tx as unknown as typeof db);
+      const [route] = await tx.select().from(routes).orderBy(asc(routes.sortOrder)).offset(3).limit(1);
+      const [a, b] = await tx.select().from(spots).where(eq(spots.routeId, route!.id)).orderBy(asc(spots.sortOrder));
+      const [c] = await tx.select().from(spots).where(sql`${spots.id} not in (${a!.id}, ${b!.id})`).limit(1);
+      // b is about 3.3 km north of a.
+      await tx.update(spots).set({ lat: 34.3, lng: 135.1 }).where(eq(spots.id, a!.id));
+      await tx.update(spots).set({ lat: 34.33, lng: 135.1 }).where(eq(spots.id, b!.id));
+      const [me] = await tx.insert(users).values({}).returning({ id: users.id });
+      const at = (iso: string) => new Date(iso);
+      const flagOf = async (spotId: string) => (await tx.select({ f: stamps.flagged, r: stamps.flagReason }).from(stamps).where(and(eq(stamps.userId, me!.id), eq(stamps.spotId, spotId))))[0];
+
+      await store.award(me!.id, a!.id, { flagged: false, flagReason: null, scannedAt: at("2026-11-10T09:00:00Z"), travel: { lat: 34.3, lng: 135.1, at: at("2026-11-10T09:00:00Z") } });
+      await store.award(me!.id, b!.id, { flagged: false, flagReason: null, scannedAt: at("2026-11-10T09:01:00Z"), travel: { lat: 34.33, lng: 135.1, at: at("2026-11-10T09:01:00Z") } });
+      expect(await flagOf(a!.id)).toEqual({ f: false, r: null });
+      expect(await flagOf(b!.id)).toEqual({ f: true, r: "fast_travel" });
+
+      // With b revoked, the last stamp that stands is a: a third place a minute after b is judged against a.
+      await tx.update(stamps).set({ revokedAt: new Date() }).where(and(eq(stamps.userId, me!.id), eq(stamps.spotId, b!.id)));
+      await tx.update(spots).set({ lat: 34.3002, lng: 135.1 }).where(eq(spots.id, c!.id)); // about 20 m from a
+      await store.award(me!.id, c!.id, { flagged: false, flagReason: null, scannedAt: at("2026-11-10T09:02:00Z"), travel: { lat: 34.3002, lng: 135.1, at: at("2026-11-10T09:02:00Z") } });
+      expect(await flagOf(c!.id)).toEqual({ f: false, r: null });
+    });
+  });
+
   test("stamp store: one stamp per visitor and place, finishes saved in the same step, revoke hides it and is audited", async () => {
     await inRollback(async (tx) => {
       await seed(tx);
