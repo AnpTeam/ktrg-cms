@@ -14,14 +14,14 @@ function Choice({ label, options }: { label: string; options: { text: string; on
   return (
     <div role="group" aria-label={label} className="flex min-w-0 flex-col gap-1">
       <span className="text-base font-bold">{label}</span>
-      <span className="flex overflow-hidden rounded-full border border-ink">
+      <span className="flex flex-wrap overflow-hidden rounded-full border border-ink">
         {options.map((o) => (
           <button
             key={o.text}
             type="button"
             aria-pressed={o.on}
             onClick={o.pick}
-            className={`tap-target min-w-0 flex-1 whitespace-nowrap px-1 text-base font-bold ${o.on ? "bg-selected text-on-selected" : "bg-paper text-ink hover:bg-surface"}`}
+            className={`tap-target min-w-fit flex-1 whitespace-nowrap px-2 text-base font-bold ${o.on ? "bg-selected text-on-selected" : "bg-paper text-ink hover:bg-surface"}`}
           >
             {o.text}
           </button>
