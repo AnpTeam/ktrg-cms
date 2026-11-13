@@ -8460,3 +8460,27 @@ msgstr "Write the status note (Japanese) of an info-only place before publishing
 #: src/components/OfflinePack.tsx
 msgid "オフライン"
 msgstr "Offline"
+
+#: src/components/InstallSteps.tsx
+msgid "右上の「追加」を押します。"
+msgstr "Tap "Add" at the top right."
+
+#: src/components/InstallSteps.tsx
+msgid "ホーム画面に、葛城修験のアイコンが並びます。これで完了です。"
+msgstr "The Katsuragi Shugendō icon appears on your home screen. That is all."
+
+#: src/components/InstallSteps.tsx
+msgid "Safari の下のバーで、共有ボタンを押します"
+msgstr "Tap the Share button in the bar at the bottom of Safari"
+
+#: src/components/InstallSteps.tsx
+msgid "メニューの「ホーム画面に追加」を押します"
+msgstr "Tap "Add to Home Screen" in the menu"
+
+#: src/components/InstallSteps.tsx
+msgid "右上の「追加」を押します"
+msgstr "Tap "Add" at the top right"
+
+#: src/components/InstallSteps.tsx
+msgid "ホーム画面に葛城修験のアイコンが並びます"
+msgstr "The Katsuragi Shugendō icon appears on your home screen"

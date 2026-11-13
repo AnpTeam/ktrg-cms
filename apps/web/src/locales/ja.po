@@ -8460,3 +8460,27 @@ msgstr "「案内のみ」の場所は、「状態のひとこと」（日本語
 #: src/components/OfflinePack.tsx
 msgid "オフライン"
 msgstr "オフライン"
+
+#: src/components/InstallSteps.tsx
+msgid "右上の「追加」を押します。"
+msgstr "右上の「追加」を押します。"
+
+#: src/components/InstallSteps.tsx
+msgid "ホーム画面に、葛城修験のアイコンが並びます。これで完了です。"
+msgstr "ホーム画面に、葛城修験のアイコンが並びます。これで完了です。"
+
+#: src/components/InstallSteps.tsx
+msgid "Safari の下のバーで、共有ボタンを押します"
+msgstr "Safari の下のバーで、共有ボタンを押します"
+
+#: src/components/InstallSteps.tsx
+msgid "メニューの「ホーム画面に追加」を押します"
+msgstr "メニューの「ホーム画面に追加」を押します"
+
+#: src/components/InstallSteps.tsx
+msgid "右上の「追加」を押します"
+msgstr "右上の「追加」を押します"
+
+#: src/components/InstallSteps.tsx
+msgid "ホーム画面に葛城修験のアイコンが並びます"
+msgstr "ホーム画面に葛城修験のアイコンが並びます"
