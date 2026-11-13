@@ -605,10 +605,13 @@ export function MapEditor(props: MapEditorProps) {
   }, []);
 
   // ---- toolbar actions -------------------------------------------------------------------------------------
+  // Read through `latest`, not `props`: these run from a timeout right after a new line was set (GPX, connect, snap), and
+  // the `props` of the render that started the timeout still hold the old line.
   function fit() {
     const map = mapRef.current;
     if (!map) return;
-    const pts = [...props.line.map((p) => ({ lng: p[0], lat: p[1] })), ...props.places.flatMap((p) => (p.lat === null || p.lng === null ? [] : [{ lat: p.lat, lng: p.lng }]))];
+    const { line, places } = latest.current;
+    const pts = [...line.map((p) => ({ lng: p[0], lat: p[1] })), ...places.flatMap((p) => (p.lat === null || p.lng === null ? [] : [{ lat: p.lat, lng: p.lng }]))];
     const b = boundsOf(pts);
     if (b) map.fitBounds(b, { padding: 60, maxZoom: 15, duration: 400 });
   }
@@ -617,7 +620,7 @@ export function MapEditor(props: MapEditorProps) {
     const map = mapRef.current;
     const pair = pairs.find((p) => pairId(p) === id);
     if (!map || !pair) return;
-    const leg = legOf(props.legs, pair.from.key, pair.to.key);
+    const leg = legOf(latest.current.legs, pair.from.key, pair.to.key);
     const b = boundsOf([...(leg?.points ?? []).map((p) => ({ lng: p[0], lat: p[1] })), { lat: pair.from.lat, lng: pair.from.lng }, { lat: pair.to.lat, lng: pair.to.lng }]);
     if (b) map.fitBounds(b, { padding: 80, maxZoom: 16, duration: 400 });
   }

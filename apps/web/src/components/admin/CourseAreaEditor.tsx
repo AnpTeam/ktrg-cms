@@ -146,12 +146,14 @@ export function CourseAreaEditor({ area, line, places, onChange }: { area: Bound
     const next = { ...box, ...patch };
     onChange(boundsFromBox(next));
   };
+  // A new box (from the course, or a small one in the middle of the view) is brought into view: at the wide first zoom a 4 km
+  // box is a few pixels, and its four handles would sit on top of each other.
   const start = () => {
     const map = mapRef.current;
-    const fromCourse = padBounds(automatic);
-    if (fromCourse) return onChange(fromCourse);
     const c = map ? map.getCenter() : { lat: KONGO[1], lng: KONGO[0] };
-    onChange(boundsFromBox({ lat: c.lat, lng: c.lng, widthM: 4000, heightM: 3000 }));
+    const next = padBounds(automatic) ?? boundsFromBox({ lat: c.lat, lng: c.lng, widthM: 4000, heightM: 3000 });
+    onChange(next);
+    map?.fitBounds([[next.west, next.south], [next.east, next.north]], { padding: 80, maxZoom: 14, duration: 400 });
   };
 
   const button = "tap-target inline-flex items-center justify-center rounded-full border border-ink bg-paper px-5 text-base font-bold hover:bg-surface";
