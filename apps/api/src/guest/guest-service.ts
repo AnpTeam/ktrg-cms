@@ -1,6 +1,7 @@
 import type { Result } from "../content/content-types";
 import type { Finished } from "../stamps/stamp-types";
 import type { Reading, StampService } from "../stamps/stamp-service";
+import { withTravel, type Fix } from "../stamps/travel";
 import { decodeGuest, encodeGuest, GUEST_MAX, type GuestStamp } from "./guest-cookie";
 
 /**
@@ -62,7 +63,19 @@ export function createGuestService({ stamps, secret, now = () => new Date() }: {
     async claim(userId: string, cookie: string | null | undefined): Promise<{ added: number; already: number }> {
       const held = list(cookie);
       const places = await stamps.stampPlaces(held.map((s) => s.spotId));
-      return stamps.awardMany(userId, held.filter((s) => places.has(s.spotId)).map((s) => ({ spotId: s.spotId, flagged: s.flagged, createdAt: new Date(s.at * 1000) })));
+      // The stamps were checked one by one on the phone's cookie, so the walk between them is judged here, oldest first.
+      let prev: Fix | null = null;
+      const items = held
+        .filter((s) => places.has(s.spotId))
+        .sort((a, b) => a.at - b.at)
+        .map((s) => {
+          const place = places.get(s.spotId)!;
+          const here: Fix = { lat: place.lat, lng: place.lng, at: new Date(s.at * 1000) };
+          const { flagged, flagReason } = withTravel({ flagged: s.flagged, flagReason: s.flagged ? "low_accuracy" : null }, prev, here);
+          prev = here;
+          return { spotId: s.spotId, flagged, flagReason, createdAt: here.at };
+        });
+      return stamps.awardMany(userId, items);
     },
   };
 }

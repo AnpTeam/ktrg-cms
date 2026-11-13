@@ -2,6 +2,7 @@ import { memoryReader } from "../admin-lists/list-memory-store";
 import type { AuditWriter } from "../audit/audit-log";
 import type { ListReadStore } from "../admin-lists/list-types";
 import type { StampListRow, StampSpot, StampStore } from "./stamp-types";
+import { withTravel, type Fix } from "./travel";
 
 /**
  * In-memory twin for tests: one stamp per visitor and place, revoked ones hidden from the visitor's list.
@@ -11,7 +12,8 @@ import type { StampListRow, StampSpot, StampStore } from "./stamp-types";
 export function createMemoryStampStore(audit: AuditWriter, opts: { now?: () => Date } = {}) {
   const now = opts.now ?? (() => new Date());
   const spots = new Map<string, StampSpot>();
-  const stamps = new Map<string, StampListRow & { userId: string; spotId: string }>();
+  // `at` is when the stamp was pressed (the phone's time for an offline one), which is what a walk is judged by.
+  const stamps = new Map<string, StampListRow & { userId: string; spotId: string; at: Date }>();
   let n = 0;
   // Valid UUIDs, because the routes validate ids as such.
   const uuid = () => `00000000-0000-4000-8000-${String(++n).padStart(12, "0")}`;
@@ -27,7 +29,7 @@ export function createMemoryStampStore(audit: AuditWriter, opts: { now?: () => D
     async awardMany(userId, items) {
       let added = 0;
       for (const i of items) {
-        if (!(await store.award(userId, i.spotId, { flagged: i.flagged, flagReason: i.flagged ? "low_accuracy" : null })).created) continue;
+        if (!(await store.award(userId, i.spotId, { flagged: i.flagged, flagReason: i.flagReason ?? (i.flagged ? "low_accuracy" : null) })).created) continue;
         added++;
         const row = [...stamps.values()].find((s) => s.userId === userId && s.spotId === i.spotId);
         if (row) row.createdAt = i.createdAt;
@@ -38,7 +40,11 @@ export function createMemoryStampStore(audit: AuditWriter, opts: { now?: () => D
       const have = [...stamps.values()].find((s) => s.userId === userId && s.spotId === spotId);
       if (have) return { created: false, createdAt: have.createdAt, flagged: have.flagged, revoked: have.revoked, finished: nothing() };
       const at = now();
-      const row = { id: uuid(), createdAt: at, updatedAt: at, userId, spotId, memberId: userId.slice(0, 8), spotName: "", flagged: flag.flagged, flagReason: flag.flagReason, revoked: false };
+      const latest = [...stamps.values()].filter((s) => s.userId === userId && !s.revoked).sort((a, b) => b.at.getTime() - a.at.getTime())[0];
+      const place = latest && spots.get(latest.spotId);
+      const prev: Fix | null = latest && place?.lat != null && place.lng != null ? { lat: place.lat, lng: place.lng, at: latest.at } : null;
+      const { flagged, flagReason } = withTravel(flag, prev, flag.travel);
+      const row = { id: uuid(), createdAt: at, updatedAt: at, at: flag.scannedAt ?? at, userId, spotId, memberId: userId.slice(0, 8), spotName: "", flagged, flagReason, revoked: false };
       stamps.set(row.id, row);
       return { created: true, createdAt: at, flagged: row.flagged, revoked: false, finished: nothing() };
     },
@@ -59,7 +65,7 @@ export function createMemoryStampStore(audit: AuditWriter, opts: { now?: () => D
   };
   // The list shows what the database list shows: no user id, no place id.
   const reader = memoryReader(stamps);
-  const strip = ({ userId: _u, spotId: _s, ...row }: (typeof stamps extends Map<string, infer R> ? R : never)) => row;
+  const strip = ({ userId: _u, spotId: _s, at: _a, ...row }: (typeof stamps extends Map<string, infer R> ? R : never)) => row;
   const listStore: ListReadStore<StampListRow> = {
     list: async (after, limit) => (await reader.list(after, limit)).map(strip),
     get: async (id) => {

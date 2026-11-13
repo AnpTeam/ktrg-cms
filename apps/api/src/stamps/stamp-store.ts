@@ -4,6 +4,7 @@ import type { Db } from "../db/client";
 import { courseCompletions, rallyCompletions, spots, stamps } from "../db/schema";
 import { ralliesForPlace, recordFinished } from "../rallies/rally-store";
 import type { StampStore } from "./stamp-types";
+import { withTravel, type Fix } from "./travel";
 
 const spotColumns = {
   id: spots.id,
@@ -35,7 +36,7 @@ export function createDrizzleStampStore(db: Db): StampStore {
         await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`stamps.${userId}`}))`);
         const made = await tx
           .insert(stamps)
-          .values(items.map((i) => ({ userId, spotId: i.spotId, createdAt: i.createdAt, flagged: i.flagged, flagReason: i.flagged ? "low_accuracy" : null })))
+          .values(items.map((i) => ({ userId, spotId: i.spotId, createdAt: i.createdAt, flagged: i.flagged, flagReason: i.flagReason ?? (i.flagged ? "low_accuracy" : null) })))
           .onConflictDoNothing()
           .returning({ id: stamps.id });
         if (made.length) await recordFinished(tx, userId);
@@ -47,10 +48,20 @@ export function createDrizzleStampStore(db: Db): StampStore {
       return db.transaction(async (tx) => {
         // Two stamps by one visitor at once would each miss the other when working out a finish: serialise them per user.
         await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`stamps.${userId}`}))`);
+        // The visitor's latest stamp that still stands (revoked ones do not count), by the time it was pressed.
+        const [last] = await tx
+          .select({ lat: spots.lat, lng: spots.lng, at: sql<Date>`coalesce(${stamps.scannedAt}, ${stamps.createdAt})` })
+          .from(stamps)
+          .innerJoin(spots, eq(spots.id, stamps.spotId))
+          .where(and(eq(stamps.userId, userId), isNull(stamps.revokedAt)))
+          .orderBy(desc(sql`coalesce(${stamps.scannedAt}, ${stamps.createdAt})`))
+          .limit(1);
+        const prev: Fix | null = last && last.lat !== null && last.lng !== null ? { lat: last.lat, lng: last.lng, at: new Date(last.at) } : null;
+        const { flagged, flagReason } = withTravel(flag, prev, flag.travel);
         // The unique index (user, place) decides a race between two taps: one row, the other sees it.
         const [made] = await tx
           .insert(stamps)
-          .values({ userId, spotId, flagged: flag.flagged, flagReason: flag.flagReason, scannedAt: flag.scannedAt ?? null })
+          .values({ userId, spotId, flagged, flagReason, scannedAt: flag.scannedAt ?? null })
           .onConflictDoNothing()
           .returning({ createdAt: stamps.createdAt, flagged: stamps.flagged });
         if (!made) {

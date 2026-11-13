@@ -1,4 +1,5 @@
 import type { ListRow } from "../admin-lists/list-types";
+import type { Fix } from "./travel";
 
 export type SpotStatus = "open" | "caution" | "closed" | "info";
 
@@ -51,9 +52,13 @@ export interface StampStore {
   /** Several places in one query (a guest's whole cookie); an id that is not there is left out. */
   findSpots(ids: string[]): Promise<StampSpot[]>;
   /** Saves many stamps for one visitor at once (a guest signing up), each with the time it was earned: one transaction, finishes worked out once at the end. */
-  awardMany(userId: string, items: { spotId: string; flagged: boolean; createdAt: Date }[]): Promise<{ added: number; already: number }>;
+  awardMany(userId: string, items: { spotId: string; flagged: boolean; flagReason?: string | null; createdAt: Date }[]): Promise<{ added: number; already: number }>;
   /** Saves the stamp (one per visitor and place) and, in the same transaction, the courses and rallies it finishes. */
-  award(userId: string, spotId: string, flag: { flagged: boolean; flagReason: string | null; scannedAt?: Date | null }): Promise<Awarded>;
+  /**
+   * `travel` is where and when this stamp was pressed: the store compares it with the visitor's latest stamp that is not
+   * revoked and adds `fast_travel` to the flag when no walker could have covered the distance (flag, never block).
+   */
+  award(userId: string, spotId: string, flag: { flagged: boolean; flagReason: string | null; scannedAt?: Date | null; travel?: Fix }): Promise<Awarded>;
   /** The visitor's own stamps that are not revoked. */
   listMine(userId: string): Promise<{ spotId: string; routeId: string; createdAt: Date }[]>;
   /** When the visitor finished each rally (saved at the moment the last stamp was awarded). */
