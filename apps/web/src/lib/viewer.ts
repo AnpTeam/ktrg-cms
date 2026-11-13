@@ -5,6 +5,7 @@
 import { cache } from "react";
 import { ageRanges, foundVias, genders, origins, type AgeRange, type FoundVia, type Gender, type Origin } from "./auth-flow";
 import { accountPrefs, type Prefs } from "./prefs";
+import { readJson } from "@/lib/read-json";
 
 export interface Viewer {
   signedIn: boolean;
@@ -90,7 +91,7 @@ const sessionViewer = cache(async (): Promise<Viewer> => {
       cache: "no-store",
       signal: AbortSignal.timeout(6000), // a slow API must not look like a signed-out visitor
     });
-    const body = await res.json().catch(() => null);
+    const body = await readJson(res);
     const ms = Date.now() - started;
     if (ms > 1000 || res.status >= 500) console.warn(`[web] /me answered ${res.status} in ${ms} ms`);
     return viewerFromMe(res.status, body);

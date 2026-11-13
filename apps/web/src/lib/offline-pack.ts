@@ -2,6 +2,7 @@ import type { RouteArea } from "./map-screen";
 import { gsiTileUrl, vectorTileUrl, zoomLimits } from "./map";
 import type { MapSettings } from "./map-settings";
 import { tileUrls } from "./offline-tiles";
+import { readJson } from "@/lib/read-json";
 
 // The offline map of one course (Phase B, slice B5; docs/phase-b-offline-plan.md): the map tiles around it, kept in
 // Cache Storage under one cache per course, so deleting a course is deleting that cache. The worker (app/sw.ts) answers
@@ -84,7 +85,7 @@ async function savePages(routeId: string, cache: Cache): Promise<void> {
   }
   const res = await fetch(lineUrl(routeId));
   if (!res.ok) return; // a course without a line is fine: the navigation then guides to the stops
-  const line = ((await res.json().catch(() => null)) as { route?: { line?: unknown } } | null)?.route?.line ?? null;
+  const line = (await readJson<{ route?: { line?: unknown } }>(res))?.route?.line ?? null;
   if (line) await cache.put(lineUrl(routeId), new Response(JSON.stringify({ route: { line } }), { headers: { "content-type": "application/json" } }));
 }
 

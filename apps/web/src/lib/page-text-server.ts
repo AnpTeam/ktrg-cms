@@ -4,13 +4,14 @@ import { homePhotosIn, homeTextIn, type HomeText } from "./home-text";
 import { writePageBody, type PageKey, type PageText } from "./page-text";
 import { privacyPolicy, type Policy } from "./privacy-content";
 import { termsContent } from "./terms-content";
+import { readJson } from "@/lib/read-json";
 
 // Server side: reads a fixed page's own text for page-content.ts. An API that cannot be reached shows the built-in page.
 
 async function savedPage(key: PageKey): Promise<PageText | null> {
   try {
     const res = await fetch(`${process.env.API_ORIGIN ?? "http://localhost:3001"}/api/v1/pages/${key}`, { next: { revalidate: 15 }, signal: AbortSignal.timeout(3000) });
-    const json = (await res.json().catch(() => null)) as { ok?: unknown; page?: PageText | null } | null;
+    const json = await readJson<{ ok?: unknown; page?: PageText | null }>(res);
     return res.ok && json?.ok === true ? (json.page ?? null) : null;
   } catch {
     return null;
@@ -68,7 +69,7 @@ export function builtInPages(): Record<PageKey, PageText> {
 export async function customPage(slug: string): Promise<CustomPage | null> {
   try {
     const res = await fetch(`${process.env.API_ORIGIN ?? "http://localhost:3001"}/api/v1/site-pages/${encodeURIComponent(slug)}`, { next: { revalidate: 15 }, signal: AbortSignal.timeout(3000) });
-    const json = (await res.json().catch(() => null)) as { ok?: unknown; page?: CustomPage | null } | null;
+    const json = await readJson<{ ok?: unknown; page?: CustomPage | null }>(res);
     return res.ok && json?.ok === true ? (json.page ?? null) : null;
   } catch {
     return null;
@@ -79,7 +80,7 @@ export async function customPage(slug: string): Promise<CustomPage | null> {
 export async function customPages(): Promise<CustomPage[]> {
   try {
     const res = await fetch(`${process.env.API_ORIGIN ?? "http://localhost:3001"}/api/v1/site-pages`, { next: { revalidate: 15 }, signal: AbortSignal.timeout(3000) });
-    const json = (await res.json().catch(() => null)) as { ok?: unknown; pages?: CustomPage[] } | null;
+    const json = await readJson<{ ok?: unknown; pages?: CustomPage[] }>(res);
     return res.ok && json?.ok === true ? (json.pages ?? []) : [];
   } catch {
     return [];

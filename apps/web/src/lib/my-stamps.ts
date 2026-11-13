@@ -4,6 +4,7 @@
 
 import { cache } from "react";
 import { parseMyCompletions, parseMyStampRows, type MyStampRow } from "./stamp-flow";
+import { readJson } from "@/lib/read-json";
 
 export interface MyStamps {
   /** Place ids the visitor has stamped (revoked stamps are not in the API's answer). */
@@ -43,7 +44,7 @@ export const getMyStamps = cache(async (): Promise<MyStamps> => {
       cache: "no-store",
       signal: AbortSignal.timeout(2500),
     });
-    const body = await res.json().catch(() => null);
+    const body = await readJson(res);
     const rows = parseMyStampRows(res.status, body);
     return rows ? myStampsFromRows(rows, parseMyCompletions(res.status, body)) : noStamps;
   } catch {

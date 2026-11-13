@@ -22,6 +22,7 @@ function sketchFromList(sketch: [lng: number, lat: number, ele?: number][] | nul
 }
 
 import { walkStyleOf } from "./walk-style";
+import { readJson } from "@/lib/read-json";
 
 const prefectureOf = (p: string | null): Prefecture | null => (p === "osaka" || p === "wakayama" || p === "nara" ? p : null);
 
@@ -205,7 +206,7 @@ async function getJson(path: string): Promise<{ status: number; body: unknown } 
     // Public content is the same for everyone, so Next keeps the answer for a while: opening a tab or switching language
     // then costs no trip to the API. An edit in the admin reaches visitors within this time (plus the API's own 10 s).
     const res = await fetch(`${origin()}/api/v1${path}`, { next: { revalidate: PUBLIC_REVALIDATE_S }, signal: AbortSignal.timeout(3000) });
-    return { status: res.status, body: await res.json().catch(() => null) };
+    return { status: res.status, body: await readJson(res) };
   } catch {
     return null; // the API is not reachable: the caller shows an empty state, never a crash
   }

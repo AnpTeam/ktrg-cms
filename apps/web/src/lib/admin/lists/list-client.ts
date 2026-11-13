@@ -1,5 +1,6 @@
 import { errorKeyFromApi, isServerCode, type ErrorKey } from "../../api-error";
 import type { ListItem } from "./config";
+import { readJson } from "@/lib/read-json";
 
 // The browser side of /api/v1/admin/lists/<key>. Same answers as admin-client.ts's `outcome()`: `{ ok: true, data }`
 // or `{ ok: false, key }` naming the sentence to show; it never throws ("network" when there is no signal).
@@ -16,7 +17,7 @@ export async function listRequest<T>(method: "GET" | "POST" | "PATCH" | "PUT" | 
       headers: body === undefined ? undefined : { "content-type": "application/json" },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
-    const json = (await res.json().catch(() => null)) as { ok?: unknown; error?: unknown } | null;
+    const json = await readJson<{ ok?: unknown; error?: unknown }>(res);
     if (res.ok && json?.ok === true) return { ok: true, data: json as T };
     if (json?.ok === false && isServerCode(json.error)) return { ok: false, key: json.error };
     return { ok: false, key: errorKeyFromApi(res.status, json) };

@@ -11,6 +11,7 @@ import { LargeStyleUpload } from "./LargeStyleUpload";
 import { MapStylePreview } from "./MapStylePreview";
 import { confirmDialog } from "@/components/ConfirmDialog";
 import { showToast } from "@/lib/admin/toast";
+import { readJson } from "@/lib/read-json";
 
 
 const choice = (on: boolean) =>
@@ -56,7 +57,7 @@ export function SiteSettingsForm({ initial }: { initial: MapSettings }) {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ base: s.base, terrain: s.terrain, terrainOpacity: s.terrainOpacity, saturation: s.saturation, contrast: s.contrast, labelScale: s.labelScale, iconScale: s.iconScale, lineScale: s.lineScale }),
       });
-      const json = (await res.json().catch(() => null)) as { ok?: unknown; error?: unknown } | null;
+      const json = await readJson<{ ok?: unknown; error?: unknown }>(res);
       if (res.ok && json?.ok === true) {
         setSaved(s);
         showToast({ kind: "ok", text: t`保存しました。サイトの地図に反映されています。` });

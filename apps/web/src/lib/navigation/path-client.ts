@@ -3,6 +3,7 @@
 // never throws. The visitor's position is sent for this one request and is not kept by the server.
 
 import { distanceM, type LatLng, type LinePoint } from "./geometry";
+import { readJson } from "@/lib/read-json";
 
 /** Never ask more often than this, whatever happens. */
 export const PATH_MIN_INTERVAL_MS = 30_000;
@@ -41,7 +42,7 @@ export async function requestPath(spotId: string, from: LatLng): Promise<PathAns
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ spotId, lat: from.lat, lng: from.lng }),
     });
-    return parsePathResponse(res.status, await res.json().catch(() => null));
+    return parsePathResponse(res.status, await readJson(res));
   } catch {
     return { ok: false, backOff: false };
   }
