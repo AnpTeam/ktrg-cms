@@ -5,6 +5,7 @@ import { useLingui } from "@lingui/react/macro";
 import { BlockEditorLoader } from "./BlockEditorLoader";
 import { ADDED_LOCALES, LOCALE_NAMES, MAX_LANGUAGES, moveLanguage, nextLanguage, startLanguages, withTranslation, type AddedLocale, type Translations } from "@/lib/admin/content-locales";
 import { PlusIcon } from "@/components/icons";
+import { InfoTip } from "./InfoTip";
 
 // The small pieces every admin form is made of. Big controls, a visible label, and a hint line when it helps.
 
@@ -26,13 +27,17 @@ export function Field({ label, hint, children, htmlFor, required = false, status
   const { t } = useLingui();
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={htmlFor} className="text-base font-bold">
-        {label}
-        {required ? <span className="ml-2 rounded-full bg-surface px-2 py-0.5 text-sm font-bold text-accent">{t`必須`}</span> : null}
-        {status ? <span className="ml-3 text-base font-normal text-muted">{status}</span> : null}
-      </label>
+      <InfoTip
+        hint={hint}
+        label={
+          <label htmlFor={htmlFor} className="text-base font-bold">
+            {label}
+            {required ? <span className="ml-2 rounded-full bg-surface px-2 py-0.5 text-sm font-bold text-accent">{t`必須`}</span> : null}
+            {status ? <span className="ml-3 text-base font-normal text-muted">{status}</span> : null}
+          </label>
+        }
+      />
       {children}
-      {hint ? <p className="text-base text-muted">{hint}</p> : null}
     </div>
   );
 }
