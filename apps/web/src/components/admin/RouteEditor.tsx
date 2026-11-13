@@ -477,11 +477,12 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
         }}
         onCancel={() => setPendingEdit(null)}
       />
-      {/* Title bar: always in reach, with the one button that matters. */}
-      <div className="sticky top-0 z-20 -mx-4 flex flex-wrap items-center gap-3 border-b border-line bg-paper px-4 py-3 lg:-mx-8 lg:px-8">
+      {/* Title bar: always in reach, with the one button that matters. On a narrow window the name goes on its own line under the
+          buttons (squeezed beside them it would be one letter wide), and the saved line wraps instead of being pushed out. */}
+      <div className="sticky top-0 z-20 -mx-4 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-line bg-paper px-4 py-3 lg:-mx-8 lg:px-8">
         {back}
-        <h1 className="min-w-0 flex-1 break-words text-2xl font-bold">{isNew ? t`新しいルート` : draft.nameJa || t`（名前がありません）`}</h1>
-        <p className="text-base text-muted" aria-live="polite">
+        <h1 className="order-last min-w-0 basis-full break-words text-2xl font-bold lg:order-none lg:basis-0 lg:flex-1">{isNew ? t`新しいルート` : draft.nameJa || t`（名前がありません）`}</h1>
+        <p className="min-w-0 flex-1 text-base text-muted lg:flex-none" aria-live="polite">
           {dirty ? t`保存していない変更があります` : isNew ? "" : t`保存済み（更新 ${formatUpdated(locale, draft.updatedAt ?? new Date().toISOString())}）`}
         </p>
         <button type="button" disabled={!dirty || saving || busyKey !== null} onClick={save} className="tap-target rounded-full bg-ink px-8 text-xl font-bold text-paper disabled:opacity-40">
