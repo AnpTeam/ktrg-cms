@@ -11,8 +11,10 @@ export function createDrizzleVisitStore(db: Db): VisitStore {
         .values({ day, ...place, path, views: 1 })
         .onConflictDoUpdate({ target: [visitCounts.day, visitCounts.country, visitCounts.region, visitCounts.city, visitCounts.path], set: { views: sql`${visitCounts.views} + 1` } });
     },
-    async daily(from, to) {
-      return db.select({ day: sql<string>`${visitCounts.day}::text`, views: sql<number>`sum(${visitCounts.views})::int` }).from(visitCounts).where(between(visitCounts.day, from, to)).groupBy(visitCounts.day).orderBy(visitCounts.day);
+    async daily(from, to, prefix = null) {
+      // starts_with() takes the prefix as a value, so a % or _ in it is not a pattern.
+      const where = and(between(visitCounts.day, from, to), prefix === null ? undefined : sql`starts_with(${visitCounts.path}, ${prefix})`);
+      return db.select({ day: sql<string>`${visitCounts.day}::text`, views: sql<number>`sum(${visitCounts.views})::int` }).from(visitCounts).where(where).groupBy(visitCounts.day).orderBy(visitCounts.day);
     },
     async summary(from, to, prefix): Promise<VisitSummary> {
       // starts_with() takes the prefix as a value, so a % or _ in it is not a pattern.

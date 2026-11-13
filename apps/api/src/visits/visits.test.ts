@@ -106,6 +106,15 @@ describe("counting", () => {
     expect((await svc.summary("2026-10-27", "2026-10-27", "/routes")).total).toBe(1);
     expect((await svc.summary("2026-10-01", "2026-10-27", "/routes")).total).toBe(2);
   });
+
+  test("the daily series follows the same range and page prefix", async () => {
+    const { svc, store } = setup();
+    await store.add("2026-10-01", { country: "JP", region: "29", city: "" }, "/routes/1");
+    await store.add("2026-10-01", { country: "JP", region: "29", city: "" }, "/rallies/1");
+    await store.add("2026-10-02", { country: "JP", region: "29", city: "" }, "/routes/1");
+    expect(await svc.daily("2026-10-01", "2026-10-02", null)).toEqual([{ day: "2026-10-01", views: 2 }, { day: "2026-10-02", views: 1 }]);
+    expect(await svc.daily("2026-10-01", "2026-10-02", "/routes")).toEqual([{ day: "2026-10-01", views: 1 }, { day: "2026-10-02", views: 1 }]);
+  });
 });
 
 describe("the routes", () => {
@@ -133,7 +142,7 @@ describe("the routes", () => {
   test("anyone can send a view; editors and admins can read the counts; participants and visitors cannot", async () => {
     const { call } = await setup();
     expect((await call(null, "POST", "/visits", { path: "/routes/1" })).status).toBe(200);
-    expect((await call("editor", "GET", "/admin/visits")).body).toMatchObject({ ok: true, total: 1, byCountry: [{ country: "JP", views: 1 }] });
+    expect((await call("editor", "GET", "/admin/visits")).body).toMatchObject({ ok: true, total: 1, byCountry: [{ country: "JP", views: 1 }], daily: [{ views: 1 }] });
     expect((await call("admin", "GET", "/admin/visits?path=/rallies")).body.total).toBe(0);
     expect((await call("participant", "GET", "/admin/visits")).status).toBe(403);
     expect((await call(null, "GET", "/admin/visits")).status).toBe(401);
