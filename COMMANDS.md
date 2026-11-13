@@ -55,6 +55,27 @@ curl -X POST http://localhost:3001/api/v1/auth/otp/request \
 Needs `OTP_HMAC_SECRET` (32+ characters) in `.env` in production, and a
 database with the `otp_codes` table.
 
+## Importers (read the field team's files)
+
+Both live in `apps/api/src/import/` and are run by hand, never by the app.
+
+```bash
+# Prints one route's Navivi export (stops, legs, optional raw_track.gpx) as JSON. Read-only: nothing is written.
+bun run apps/api/src/import/navivi-cli.ts <folder> <route number>
+
+# Loads the field sheets as DRAFTS (nothing is published, no position is marked as checked). Without --apply it only
+# prints what it would do. Safe to run again: what is already there is found and not added twice.
+cd apps/api
+bun --env-file=../../.env src/import/field-sheets-cli.ts --stops <stops.csv> --places <places.csv> [--mounds <points.geojson>] [--apply]
+```
+
+The field-sheet loader refuses a database that is not on this computer unless `--allow-remote` is given: use that only
+when you mean it (CLAUDE.md: never run migrations or tools against a non-local database by habit).
+
+GPX is read in two places on purpose: `apps/api/src/import/gpx.ts` (the Navivi CLI and the GPX export) and
+`apps/web/src/lib/admin/gpx.ts` (the route editor in the browser). They are separate because the web app and the API
+share no package; if a third copy is ever needed, make a `packages/shared` then (CLAUDE.md: only when real duplication appears).
+
 ## Database (Drizzle)
 
 ```bash
