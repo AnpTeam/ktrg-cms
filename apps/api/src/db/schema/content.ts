@@ -132,7 +132,7 @@ export const routes = pgTable(
     // official source (named in line_source). Changing the line cancels the check.
     lineVerified: boolean("line_verified").notNull().default(false),
     lineSource: text("line_source"),
-    // YouTube / Vimeo only; the host is checked in the API.
+    // YouTube only; the host is checked in the API.
     videoUrl: text("video_url"),
     // When the video was last put there or replaced (shown under it as "last updated").
     videoUpdatedAt: timestamp("video_updated_at", { withTimezone: true }),
@@ -468,19 +468,6 @@ export const blogComments = pgTable(
   (t) => [index("blog_comments_post_idx").on(t.postId, t.status, t.createdAt)],
 );
 
-/** A page an editor makes, shown at /p/<slug> once published (see pages/). The text is in the page-text format. */
-export const sitePages = pgTable("site_pages", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  slug: text("slug").notNull().unique(),
-  titleJa: text("title_ja").notNull(),
-  titleEn: text("title_en"),
-  bodyJa: text("body_ja").notNull().default(""),
-  bodyEn: text("body_en"),
-  published: boolean("published").notNull().default(false),
-  createdAt: createdAt(),
-  updatedAt: updatedAt(),
-});
-
 /** A photo in the carousel at the top of the home page, in `sort_order`. A draft until published. Its words (the
  * description read out by screen readers) are in banner_translations. */
 export const banners = pgTable("banners", {
@@ -520,7 +507,7 @@ export const blogPosts = pgTable(
     authorUserId: uuid("author_user_id").references(() => users.id, { onDelete: "set null" }),
     // The day the post is dated and from which visitors see it (YYYY-MM-DD, Japan time).
     publishedOn: date("published_on", { mode: "string" }).notNull(),
-    // A blog post (in the blog, dated, with comments) or a page (at /p/<slug>, never in the blog). Pages used to be site_pages.
+    // A blog post (in the blog, dated, with comments) or a page (at /p/<slug>, never in the blog).
     kind: text("kind", { enum: ["post", "page"] }).notNull().default("post"),
     // A page's address, lower-case letters, digits and hyphens; null for a post.
     slug: text("slug").unique(),
@@ -576,7 +563,7 @@ export const routeTranslations = pgTable(
     access: text("access"),
     // Where the words come from (出典), in this language.
     source: text("source"),
-    // The video for this language (YouTube / Vimeo / an uploaded file). The Japanese video stays in routes.video_url; the English site shows this one when the English row has it, and the Japanese video otherwise.
+    // The video for this language (YouTube / an uploaded file). The Japanese video stays in routes.video_url; the English site shows this one when the English row has it, and the Japanese video otherwise.
     videoUrl: text("video_url"),
     // Subtitles were uploaded beside this language's video (a .vtt named like it); the player asks for them only then. Used by the English row; the Japanese video's flag is routes.video_subtitles.
     videoSubtitles: boolean("video_subtitles").notNull().default(false),

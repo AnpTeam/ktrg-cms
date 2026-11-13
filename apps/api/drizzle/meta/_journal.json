@@ -470,6 +470,13 @@
       "when": 1794532655732,
       "tag": "0066_happy_shockwave",
       "breakpoints": true
+    },
+    {
+      "idx": 67,
+      "version": "7",
+      "when": 1794539317717,
+      "tag": "0067_drop_site_pages",
+      "breakpoints": true
     }
   ]
 }

@@ -10,6 +10,7 @@ import { formatDay, japanDay } from "@/lib/format";
 import type { PostComment } from "@/lib/posts";
 import { buttonStyle } from "@/components/button";
 import { TickIcon } from "@/components/icons";
+import { readJson } from "@/lib/read-json";
 
 const MAX = 1000;
 
@@ -38,7 +39,7 @@ export function CommentSection({ postId, comments, signedIn, locale, loginHref }
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ body: text }),
       });
-      const json = (await res.json().catch(() => null)) as { ok?: unknown; error?: unknown; held?: boolean; comment?: PostComment | null } | null;
+      const json = await readJson<{ ok?: unknown; error?: unknown; held?: boolean; comment?: PostComment | null }>(res);
       if (res.ok && json?.ok === true) {
         setText("");
         if (json.held) setHeld(true);

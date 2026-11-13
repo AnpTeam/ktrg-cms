@@ -22,6 +22,7 @@ function sketchFromList(sketch: [lng: number, lat: number, ele?: number][] | nul
 }
 
 import { walkStyleOf } from "./walk-style";
+import { readJson } from "@/lib/read-json";
 
 const prefectureOf = (p: string | null): Prefecture | null => (p === "osaka" || p === "wakayama" || p === "nara" ? p : null);
 
@@ -205,7 +206,7 @@ async function getJson(path: string): Promise<{ status: number; body: unknown } 
     // Public content is the same for everyone, so Next keeps the answer for a while: opening a tab or switching language
     // then costs no trip to the API. An edit in the admin reaches visitors within this time (plus the API's own 10 s).
     const res = await fetch(`${origin()}/api/v1${path}`, { next: { revalidate: PUBLIC_REVALIDATE_S }, signal: AbortSignal.timeout(3000) });
-    return { status: res.status, body: await res.json().catch(() => null) };
+    return { status: res.status, body: await readJson(res) };
   } catch {
     return null; // the API is not reachable: the caller shows an empty state, never a crash
   }
@@ -276,8 +277,22 @@ export async function fetchPublicNotices(): Promise<TrailNotice[] | null> {
 }
 
 /** Published blog posts whose day has come, newest first (the API decides, in Japan time). */
+// The API answers a page of posts at a time and says where the next one starts (`next`). The blog builds its tag tabs, its pager and
+// the "older / newer" links from the whole list, so every page is read; this many is far more than a trail blog will hold.
+const MAX_POST_PAGES = 20;
 export const fetchPublicPosts = cache(async (tag?: string): Promise<BlogPost[] | null> => {
-  return okBody<{ posts: BlogPost[] }>(await getJson(tag ? `/posts?tag=${encodeURIComponent(tag)}` : "/posts"))?.posts ?? null;
+  const posts: BlogPost[] = [];
+  let offset = 0;
+  for (let page = 0; page < MAX_POST_PAGES; page++) {
+    const query = new URLSearchParams(tag ? { tag } : {});
+    if (offset > 0) query.set("offset", String(offset));
+    const body = okBody<{ posts: BlogPost[]; next?: number | null }>(await getJson(query.size ? `/posts?${query}` : "/posts"));
+    if (!body) return page === 0 ? null : posts; // a later page that cannot be read ends the list there
+    posts.push(...body.posts);
+    if (body.next == null) break; // an answer from before `next` existed is one whole list
+    offset = body.next;
+  }
+  return posts;
 });
 
 /** One blog post, or null when it is a draft, dated ahead, or not there. */

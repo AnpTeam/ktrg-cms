@@ -96,6 +96,23 @@ describe("blog posts", () => {
     expect(await s.svc.publicPosts()).toHaveLength(PUBLIC_POSTS_LIMIT);
   });
 
+  test("the list goes on past one page: `next` says where the following page starts and is null on the last, so no post is out of reach", async () => {
+    const s = setup();
+    for (let i = 0; i < PUBLIC_POSTS_LIMIT + 3; i++) {
+      await s.svc.create(actor, post({ titleJa: `記事${i}`, publishedOn: `2026-09-${String((i % 28) + 1).padStart(2, "0")}`, published: true }));
+    }
+    const first = await s.svc.publicPostsPage();
+    expect(first.posts).toHaveLength(PUBLIC_POSTS_LIMIT);
+    expect(first.next).toBe(PUBLIC_POSTS_LIMIT);
+    const second = await s.svc.publicPostsPage(undefined, first.next!);
+    expect(second.posts).toHaveLength(3);
+    expect(second.next).toBeNull();
+    const ids = [...first.posts, ...second.posts].map((p) => p.id);
+    expect(new Set(ids).size).toBe(PUBLIC_POSTS_LIMIT + 3); // none twice, none missing
+    expect(first.posts.at(-1)!.publishedOn >= second.posts[0]!.publishedOn).toBe(true); // still newest first across the pages
+    expect((await s.svc.publicPostsPage(undefined, 1000)).posts).toEqual([]);
+  });
+
   test("a post may be about a place of the directory; one that does not exist is refused", async () => {
     const audit = createMemoryAuditWriter();
     const known = "22222222-2222-4222-8222-222222222222";

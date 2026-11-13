@@ -38,7 +38,7 @@ export function useErrorMessages(): Record<ErrorKey, string> {
     invalid_display_name: t`お名前に使えない文字が含まれているか、長すぎます（40文字まで）。`,
     // Admin: routes and places
     conflict: t`別の人が先に保存しました。読み込み直してから、もう一度お試しください。`,
-    invalid_video_url: t`動画のリンクは、https:// で始まるYouTube・Vimeo、またはアップロードした動画（.mp4・.webm）のものだけ使えます。`,
+    invalid_video_url: t`動画のリンクは、https:// で始まるYouTube、またはアップロードした動画（.mp4・.webm）のものだけ使えます。`,
     invalid_line: t`ルートの線が正しくありません。日本の中に、2点以上の線を描いてください。`,
     invalid_photo_url: t`写真のリンクは、https:// で始まるものだけ使えます。`,
     route_has_places: t`経由地が残っているルートは消せません。先に経由地を消してください。`,

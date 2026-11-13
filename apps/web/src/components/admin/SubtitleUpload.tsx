@@ -5,6 +5,7 @@ import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode, type ErrorKey } from "@/lib/api-error";
 import { MAX_SUBTITLE_BYTES, toVtt } from "@/lib/admin/subtitles";
+import { readJson } from "@/lib/read-json";
 
 type Sent = { ok: true } | { ok: false; key: ErrorKey };
 
@@ -21,7 +22,7 @@ async function uploadSubtitles(file: File, videoUrl: string): Promise<Sent> {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ videoUrl, size: body.size }),
     });
-    const json = (await res.json().catch(() => null)) as { ok?: unknown; error?: unknown; upload?: { uploadUrl?: unknown } } | null;
+    const json = await readJson<{ ok?: unknown; error?: unknown; upload?: { uploadUrl?: unknown } }>(res);
     const uploadUrl = json?.upload?.uploadUrl;
     if (!res.ok || json?.ok !== true || typeof uploadUrl !== "string") {
       return { ok: false, key: json?.ok === false && isServerCode(json.error) ? json.error : errorKeyFromApi(res.status, json) };

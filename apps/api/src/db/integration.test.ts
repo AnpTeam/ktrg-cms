@@ -27,6 +27,13 @@ import { createDrizzlePostStore } from "../posts/post-store";
 import { createDrizzleCommentStore } from "../posts/comment-store";
 import { createDrizzleAuthorStore } from "../posts/author-store";
 import { createDrizzleUserListStore } from "../users/user-list";
+import { createDrizzleAuditListStore } from "../audit/audit-list";
+import { createDrizzleDashboardStore } from "../dashboard/dashboard-store";
+import { createDrizzleFuriganaStore } from "../furigana/furigana-store";
+import { createDrizzlePlaceListStore } from "../content/place-list";
+import { createDrizzleTagStore } from "../posts/tag-store";
+import { TAG_AUDIT } from "../posts/tag-list";
+import { createDrizzleVisitStore } from "../visits/visit-store";
 import {
   auditLog,
   banners,
@@ -34,6 +41,7 @@ import {
   blogComments,
   bannerTranslations,
   courseCompletions,
+  furiganaWords,
   otpCodes,
   places,
   placeTranslations,
@@ -56,6 +64,7 @@ import {
   blogPostTranslations,
   trailNoticeTranslations,
   users,
+  visitCounts,
   webauthnChallenges,
 } from "./schema";
 import { seed } from "./seed";
@@ -146,6 +155,16 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
 
       expect(results.filter(Boolean)).toHaveLength(5);
       expect((await otp.latest(e))!.attempts).toBe(5);
+    });
+
+    test("8 parallel requests for one email inside the cooldown: exactly one code is stored", async () => {
+      const e = email("otp-race");
+      const entry = () => ({ email: e, codeHash: "r".repeat(64), expiresAt: new Date(Date.now() + 10 * 60_000) });
+      const recent = new Date(Date.now() + 9 * 60_000); // a code that expires after this was issued inside the cooldown
+      const results = await Promise.all(Array.from({ length: 8 }, () => otp.insertUnlessRecent(entry(), recent)));
+      expect(results.filter(Boolean)).toHaveLength(1);
+      expect(await db.select().from(otpCodes).where(eq(otpCodes.email, e))).toHaveLength(1);
+      expect(await otp.insertUnlessRecent(entry(), new Date(Date.now() + 11 * 60_000))).toBe(true); // once the cooldown has passed, a new code is added
     });
 
     test("a code can be marked used only once, even in parallel", async () => {
@@ -791,6 +810,33 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       expect(await store.awardMany(me!.id, [{ spotId: a!.id, flagged: false, createdAt: earned }])).toEqual({ added: 1, already: 0 });
       const [row] = await tx.select({ createdAt: stamps.createdAt }).from(stamps).where(eq(stamps.userId, me!.id));
       expect(row!.createdAt.toISOString()).toBe(earned.toISOString());
+    });
+  });
+
+  test("stamp store: a far place a minute after the last stamp is flagged fast_travel; a revoked stamp is not the last one", async () => {
+    await inRollback(async (tx) => {
+      await seed(tx);
+      const store = createDrizzleStampStore(tx as unknown as typeof db);
+      const [route] = await tx.select().from(routes).orderBy(asc(routes.sortOrder)).offset(3).limit(1);
+      const [a, b] = await tx.select().from(spots).where(eq(spots.routeId, route!.id)).orderBy(asc(spots.sortOrder));
+      const [c] = await tx.select().from(spots).where(sql`${spots.id} not in (${a!.id}, ${b!.id})`).limit(1);
+      // b is about 3.3 km north of a.
+      await tx.update(spots).set({ lat: 34.3, lng: 135.1 }).where(eq(spots.id, a!.id));
+      await tx.update(spots).set({ lat: 34.33, lng: 135.1 }).where(eq(spots.id, b!.id));
+      const [me] = await tx.insert(users).values({}).returning({ id: users.id });
+      const at = (iso: string) => new Date(iso);
+      const flagOf = async (spotId: string) => (await tx.select({ f: stamps.flagged, r: stamps.flagReason }).from(stamps).where(and(eq(stamps.userId, me!.id), eq(stamps.spotId, spotId))))[0];
+
+      await store.award(me!.id, a!.id, { flagged: false, flagReason: null, scannedAt: at("2026-11-10T09:00:00Z"), travel: { lat: 34.3, lng: 135.1, at: at("2026-11-10T09:00:00Z") } });
+      await store.award(me!.id, b!.id, { flagged: false, flagReason: null, scannedAt: at("2026-11-10T09:01:00Z"), travel: { lat: 34.33, lng: 135.1, at: at("2026-11-10T09:01:00Z") } });
+      expect(await flagOf(a!.id)).toEqual({ f: false, r: null });
+      expect(await flagOf(b!.id)).toEqual({ f: true, r: "fast_travel" });
+
+      // With b revoked, the last stamp that stands is a: a third place a minute after b is judged against a.
+      await tx.update(stamps).set({ revokedAt: new Date() }).where(and(eq(stamps.userId, me!.id), eq(stamps.spotId, b!.id)));
+      await tx.update(spots).set({ lat: 34.3002, lng: 135.1 }).where(eq(spots.id, c!.id)); // about 20 m from a
+      await store.award(me!.id, c!.id, { flagged: false, flagReason: null, scannedAt: at("2026-11-10T09:02:00Z"), travel: { lat: 34.3002, lng: 135.1, at: at("2026-11-10T09:02:00Z") } });
+      expect(await flagOf(c!.id)).toEqual({ f: false, r: null });
     });
   });
 
@@ -1836,5 +1882,173 @@ describe.skipIf(!url)("blog comments, writers and pages on real PostgreSQL", () 
     expect(await posts.getPublic(a.id, "2026-10-21")).toBeNull(); // not a blog post
     expect((await posts.listPublic("2026-10-21")).some((p) => p.id === a.id)).toBe(false);
     expect((await posts.listPublicPages("2026-10-21")).some((p) => p.id === a.id)).toBe(true);
+  });
+});
+
+// The stores that only the admin lists and reports use. Each test runs in a transaction that is always rolled back, so it
+// changes nothing real and can start from an empty table.
+describe.skipIf(!url)("list and report stores on real PostgreSQL", () => {
+  const { db, client } = connect();
+  type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+  class Rollback extends Error {}
+  const asDb = (tx: Tx) => tx as unknown as typeof db;
+
+  afterAll(async () => {
+    await client.end();
+  });
+
+  async function inRollback(body: (tx: Tx) => Promise<void>) {
+    let failure: unknown;
+    await db
+      .transaction(async (tx) => {
+        try {
+          await body(tx);
+        } catch (err) {
+          failure = err;
+        }
+        throw new Rollback();
+      })
+      .catch((err) => {
+        if (!(err instanceof Rollback)) throw err;
+      });
+    if (failure) throw failure;
+  }
+
+  const admin = async (tx: Tx) => (await tx.insert(users).values({ role: "admin" }).returning({ id: users.id }))[0]!.id;
+
+  test("visits: views add up per day, place and page; ranges, page prefixes (a % is not a pattern) and the city rule hold", async () => {
+    await inRollback(async (tx) => {
+      await tx.delete(visitCounts);
+      const store = createDrizzleVisitStore(asDb(tx));
+      const sakai = { country: "JP", region: "Osaka", city: "Sakai" };
+      const nara = { country: "JP", region: "Nara", city: "" };
+      for (let i = 0; i < 5; i++) await store.add("2026-11-10", sakai, "/routes");
+      await store.add("2026-11-10", nara, "/routes/abc");
+      await store.add("2026-11-11", sakai, "/routes");
+      await store.add("2026-12-01", sakai, "/routes"); // outside the range below
+
+      expect(await store.daily("2026-11-01", "2026-11-30")).toEqual([{ day: "2026-11-10", views: 6 }, { day: "2026-11-11", views: 1 }]);
+      expect(await store.daily("2026-11-01", "2026-11-30", "/routes/")).toEqual([{ day: "2026-11-10", views: 1 }]);
+      const s = await store.summary("2026-11-01", "2026-11-30", null);
+      expect(s.total).toBe(7);
+      expect(s.byCountry).toEqual([{ country: "JP", views: 7 }]);
+      expect(s.byRegion.map((r) => [r.region, r.views])).toEqual([["Osaka", 6], ["Nara", 1]]);
+      expect(s.byCity).toEqual([{ country: "JP", region: "Osaka", city: "Sakai", views: 6 }]); // a city under the minimum is not named
+      expect(s.hiddenCityViews).toBe(1);
+      expect(s.topPages).toEqual([{ path: "/routes", views: 6 }, { path: "/routes/abc", views: 1 }]);
+      expect((await store.summary("2026-11-01", "2026-11-30", "/%")).total).toBe(0);
+      expect((await store.summary("2026-11-01", "2026-11-30", "/routes/")).total).toBe(1);
+    });
+  });
+
+  test("dashboard: totals, the recent window, days in Japan time, origin split and stamps per course", async () => {
+    await inRollback(async (tx) => {
+      await seed(tx);
+      const store = createDrizzleDashboardStore(asDb(tx));
+      const from = new Date(Date.now() - 3_600_000);
+      const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo" }).format(new Date());
+      // The table may already hold rows (a development database), so everything below is a change from this point.
+      const before = await store.totals();
+      const sinceBefore = await store.since(from);
+      const dayBefore = (await store.daily(from)).find((d) => d.day === today) ?? { stamps: 0, signups: 0 };
+      const [u] = await tx.insert(users).values({ origin: "wakayama" }).returning({ id: users.id });
+      const [spot] = await tx.select().from(spots).limit(1);
+      await tx.insert(stamps).values({ userId: u!.id, spotId: spot!.id, flagged: true });
+
+      const after = await store.totals();
+      expect(after).toMatchObject({ stamps: before.stamps + 1, stampers: before.stampers + 1, signups: before.signups + 1, flagged: before.flagged + 1 });
+      expect(await store.since(from)).toMatchObject({ stamps: sinceBefore.stamps + 1, signups: sinceBefore.signups + 1 });
+      expect((await store.daily(from)).find((d) => d.day === today)).toMatchObject({ stamps: dayBefore.stamps + 1, signups: dayBefore.signups + 1 });
+      expect((await store.originSplit()).find((o) => o.origin === "wakayama")?.users).toBeGreaterThanOrEqual(1);
+      const top = (await store.stampsByRoute(from, 50)).find((r) => r.routeId === spot!.routeId);
+      expect(top).toMatchObject({ stamps: 1 });
+      expect(typeof top!.name).toBe("string"); // the course's Japanese name
+    });
+  });
+
+  test("tags: a stale save is a conflict, delete says whether anything went, and every change is audited", async () => {
+    await inRollback(async (tx) => {
+      await tx.delete(blogTags);
+      const actor = await admin(tx);
+      const store = createDrizzleTagStore(asDb(tx));
+      const a = await store.create(actor, { nameJa: "山", nameEn: "Mountain" });
+      const b = await store.create(actor, { nameJa: "川", nameEn: null });
+      expect((await store.list(null, 10)).map((x) => x.id).sort()).toEqual([a.id, b.id].sort());
+      expect(await store.get(a.id)).toMatchObject({ nameJa: "山", nameEn: "Mountain" });
+      expect(await store.update(actor, a.id, a.updatedAt, { nameEn: "Peak" })).toMatchObject({ nameEn: "Peak" });
+      expect(await store.update(actor, a.id, a.updatedAt, { nameEn: "Stale" })).toBe("conflict");
+      expect(await store.update(actor, randomUUID(), a.updatedAt, { nameEn: "x" })).toBeNull();
+      expect(await store.remove(actor, b.id)).toBe(true);
+      expect(await store.remove(actor, b.id)).toBe(false);
+      const audit = await tx.select({ action: auditLog.action }).from(auditLog).where(inArray(auditLog.targetId, [a.id, b.id]));
+      expect(audit.map((r) => r.action).sort()).toEqual([TAG_AUDIT.create, TAG_AUDIT.create, TAG_AUDIT.delete, TAG_AUDIT.update].sort());
+    });
+  });
+
+  test("furigana: suggestions wait and never reach visitors until approved; a refresh replaces only the waiting ones", async () => {
+    await inRollback(async (tx) => {
+      await tx.delete(furiganaWords);
+      const actor = await admin(tx);
+      const store = createDrizzleFuriganaStore(asDb(tx));
+      await store.create(actor, { word: "葛城", reading: "かつらぎ" });
+      // the word already there is kept as it is
+      expect(await store.setSuggestions(actor, [{ word: "葛城", reading: "x" }, { word: "修験", reading: "しゅげん" }, { word: "行者", reading: "ぎょうじゃ" }])).toEqual({ added: 2, removed: 0 });
+      const waiting = await store.pending();
+      expect(waiting.map((w) => w.word).sort()).toEqual(["修験", "行者"]);
+      expect(await store.all()).toEqual([{ word: "葛城", reading: "かつらぎ" }]); // visitors get none of the waiting ones
+      expect((await store.list(null, 10)).map((r) => r.word)).toEqual(["葛城"]);
+      expect(await store.approve(actor, [waiting[0]!.id])).toBe(1);
+      expect(await store.approve(actor, [waiting[0]!.id])).toBe(0); // already approved
+      expect(await store.all()).toHaveLength(2);
+      // the one still waiting is replaced; the approved one stays
+      expect(await store.setSuggestions(actor, [{ word: "新語", reading: "しんご" }])).toEqual({ added: 1, removed: 1 });
+      expect((await store.findByWord("新語"))?.pending).toBe(true);
+      expect(await store.all()).toHaveLength(2);
+    });
+  });
+
+  test("places list: every place with its Japanese name, pages that neither repeat nor skip (places made in one step share a time), one by id", async () => {
+    await inRollback(async (tx) => {
+      await seed(tx);
+      const store = createDrizzlePlaceListStore(asDb(tx));
+      const everything = await store.list(null, 1000);
+      expect(everything.length).toBe(SEED_SPOTS.length);
+      expect(everything.every((p) => p.nameJa !== "")).toBe(true);
+      const seen: string[] = [];
+      let cursor: { createdAt: Date; id: string } | null = null;
+      for (;;) {
+        const page = await store.list(cursor, 10);
+        seen.push(...page.map((p) => p.id));
+        if (page.length < 10) break;
+        const last: { createdAt: Date; id: string } = page[page.length - 1]!;
+        cursor = { createdAt: last.createdAt, id: last.id };
+      }
+      expect(seen).toHaveLength(everything.length);
+      expect(new Set(seen).size).toBe(everything.length);
+      expect(await store.get(everything[0]!.id)).toMatchObject({ id: everything[0]!.id, nameJa: everything[0]!.nameJa });
+      expect(await store.get(randomUUID())).toBeNull();
+    });
+  });
+
+  test("audit list: entries come with the actor's profile name, in pages, and one by id", async () => {
+    await inRollback(async (tx) => {
+      const [actor] = await tx.insert(users).values({ role: "admin", displayName: "管理者" }).returning({ id: users.id });
+      const ids: string[] = [];
+      for (let i = 0; i < 3; i++) {
+        const target = randomUUID();
+        ids.push(target);
+        await writeAudit(tx, { actorUserId: actor!.id, action: TAG_AUDIT.create, targetId: target });
+      }
+      const store = createDrizzleAuditListStore(asDb(tx));
+      const first = await store.list(null, 2);
+      expect(first).toHaveLength(2);
+      expect(first.every((e) => e.actorName === "管理者")).toBe(true);
+      const last = first[1]!;
+      const rest = await store.list({ createdAt: last.createdAt, id: last.id }, 10);
+      const mine = [...first, ...rest].filter((e) => e.targetId !== null && ids.includes(e.targetId));
+      expect(new Set(mine.map((e) => e.id)).size).toBe(3);
+      expect(await store.get(first[0]!.id)).toMatchObject({ id: first[0]!.id, actorName: "管理者" });
+      expect(await store.get(randomUUID())).toBeNull();
+    });
   });
 });

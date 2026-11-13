@@ -28,6 +28,11 @@ export interface OtpStore {
   /** The newest code issued to this email, or null if none. */
   latest(email: string): Promise<OtpRow | null>;
   insert(row: { email: string; codeHash: string; expiresAt: Date }): Promise<void>;
+  /**
+   * Adds the code unless this email already has one that expires after `recent` (one issued inside the cooldown). The check
+   * and the insert are one step per email, so parallel requests cannot each add a code. Returns whether it was added.
+   */
+  insertUnlessRecent(row: { email: string; codeHash: string; expiresAt: Date }, recent: Date): Promise<boolean>;
   /** Delete every code that expired before this time (they hold an email address). */
   pruneExpired(before: Date): Promise<void>;
   /**
@@ -113,18 +118,14 @@ export function createOtpService({
       const email = normalizeEmail(rawEmail);
       const issuedAt = now();
 
-      // The code's age is derived from its expiry: created = expiresAt - TTL.
-      const latest = await store.latest(email);
-      if (latest && latest.expiresAt.getTime() - OTP_TTL_MS + OTP_COOLDOWN_MS > issuedAt.getTime()) {
-        return;
-      }
-
+      // The code's age is derived from its expiry (created = expiresAt - TTL): a code that expires after `recent` was issued
+      // inside the cooldown, and then nothing is stored or sent.
       const code = generateOtpCode();
-      await store.insert({
-        email,
-        codeHash: hashOtpCode(secret, email, code),
-        expiresAt: new Date(issuedAt.getTime() + OTP_TTL_MS),
-      });
+      const added = await store.insertUnlessRecent(
+        { email, codeHash: hashOtpCode(secret, email, code), expiresAt: new Date(issuedAt.getTime() + OTP_TTL_MS) },
+        new Date(issuedAt.getTime() + OTP_TTL_MS - OTP_COOLDOWN_MS),
+      );
+      if (!added) return;
       // Tidy up codes that expired over a day ago: nobody needs them, and they hold an email.
       await store.pruneExpired(new Date(issuedAt.getTime() - OTP_PRUNE_AFTER_MS)).catch(() => {});
 

@@ -136,13 +136,14 @@ export function createDrizzlePostStore(db: Db): PostStore {
       });
     },
 
-    async listPublic(today, tagId) {
+    async listPublic(today, tagId, offset = 0, limit = PUBLIC_POSTS_LIMIT) {
       const rows = await db
         .select()
         .from(blogPosts)
         .where(and(readable(today), isPost, tagId ? arrayContains(blogPosts.tagIds, [tagId]) : undefined))
-        .orderBy(desc(blogPosts.publishedOn), desc(blogPosts.createdAt))
-        .limit(PUBLIC_POSTS_LIMIT);
+        .orderBy(desc(blogPosts.publishedOn), desc(blogPosts.createdAt), desc(blogPosts.id)) // the id keeps pages from repeating or skipping posts made at one instant
+        .limit(limit)
+        .offset(offset);
       return withTexts(db, rows);
     },
 

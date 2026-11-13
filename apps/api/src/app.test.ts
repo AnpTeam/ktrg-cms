@@ -55,7 +55,7 @@ describe("parseEnv", () => {
     expect(parseEnv({ ...prod, VERCEL: "1", TRUST_PROXY: "false" }, () => {}).TRUST_PROXY).toBe(false);
   });
 
-  test("production without PHOTO_HOSTS logs a warning; with it, nothing", () => {
+  test("production with neither PHOTO_HOSTS nor a photo bucket logs a warning; with either, nothing", () => {
     const prod = { NODE_ENV: "production", OTP_HMAC_SECRET: "k".repeat(32), TRUST_PROXY: "true" };
     const lines: string[] = [];
     parseEnv(prod, (l) => lines.push(l));
@@ -63,6 +63,10 @@ describe("parseEnv", () => {
     const quiet: string[] = [];
     parseEnv({ ...prod, PHOTO_HOSTS: "photos.example.com" }, (l) => quiet.push(l));
     expect(quiet).toEqual([]);
+    // With the photo bucket set up, its own host is the default (photoHostsFor), so there is nothing to warn about.
+    const bucket: string[] = [];
+    parseEnv({ ...prod, R2_ACCOUNT_ID: "a", R2_ACCESS_KEY_ID: "b", R2_SECRET_ACCESS_KEY: "c", R2_BUCKET_NAME: "d", R2_PUBLIC_URL: "https://pub-1.r2.dev" }, (l) => bucket.push(l));
+    expect(bucket).toEqual([]);
     const dev: string[] = [];
     parseEnv({}, (l) => dev.push(l));
     expect(dev).toEqual([]);

@@ -60,7 +60,8 @@ export type PostRow = ListRow & PostFields & { authorUserId?: string | null; acc
 
 export interface PostStore extends ListStore<PostRow, PostFields> {
   /** Published posts dated `today` (YYYY-MM-DD) or earlier, newest first, at most PUBLIC_POSTS_LIMIT; only one tag's with `tagId`. */
-  listPublic(today: string, tagId?: string): Promise<PostRow[]>;
+  /** Published posts, newest first: `limit` of them (default one page), after skipping `offset`. */
+  listPublic(today: string, tagId?: string, offset?: number, limit?: number): Promise<PostRow[]>;
   /** One post, only if a visitor may read it on `today`. */
   getPublic(id: string, today: string): Promise<PostRow | null>;
   /** The page or post holding an address, whatever its state (an address is used once). */
@@ -118,6 +119,11 @@ export type PostService = ReturnType<typeof createPostService>;
 /** The admin list of blog posts, and what visitors read. */
 export function createPostService(deps: { store: PostStore; photoHosts?: readonly string[]; now?: () => Date; placeExists?: (id: string) => Promise<boolean>; routeExists?: (id: string) => Promise<boolean>; spotExists?: (id: string) => Promise<boolean>; authorExists?: (id: string) => Promise<boolean>; tagExists?: (id: string) => Promise<boolean> }) {
   const now = deps.now ?? (() => new Date());
+  /** One page of the blog, and where the next one starts (null on the last): the list can go on past PUBLIC_POSTS_LIMIT. */
+  async function publicPostsPage(tagId?: string, offset = 0): Promise<{ posts: PostRow[]; next: number | null }> {
+    const rows = await deps.store.listPublic(todayInJapan(now()), tagId, offset, PUBLIC_POSTS_LIMIT + 1); // one more, to know if there is a next page
+    return { posts: rows.slice(0, PUBLIC_POSTS_LIMIT), next: rows.length > PUBLIC_POSTS_LIMIT ? offset + PUBLIC_POSTS_LIMIT : null };
+  }
   return {
     ...createListService({ store: deps.store, rules: postRules(deps.photoHosts, deps.store), relations: {
         ...(deps.placeExists ? { placeId: deps.placeExists } : {}),
@@ -127,7 +133,8 @@ export function createPostService(deps: { store: PostStore; photoHosts?: readonl
         ...(deps.tagExists ? { tagIds: deps.tagExists } : {}),
       },
     }),
-    publicPosts: (tagId?: string) => deps.store.listPublic(todayInJapan(now()), tagId),
+    publicPosts: async (tagId?: string) => (await publicPostsPage(tagId)).posts,
+    publicPostsPage,
     publicPost: (id: string) => deps.store.getPublic(id, todayInJapan(now())),
     publicPages: () => deps.store.listPublicPages(todayInJapan(now())),
     publicPage: (slug: string) => deps.store.getPublicPage(slug, todayInJapan(now())),
@@ -142,11 +149,11 @@ export function createMemoryPostStore(audit: AuditWriter, opts: { now?: () => Da
   const isPage = (p: PostRow) => p.kind === "page";
   const store: PostStore = {
     ...list.store,
-    async listPublic(today, tagId) {
+    async listPublic(today, tagId, offset = 0, limit = PUBLIC_POSTS_LIMIT) {
       return [...list.rows.values()]
         .filter((p) => readable(p, today) && !isPage(p) && (!tagId || (p.tagIds ?? []).includes(tagId)))
         .sort((a, b) => b.publishedOn.localeCompare(a.publishedOn) || b.createdAt.getTime() - a.createdAt.getTime())
-        .slice(0, PUBLIC_POSTS_LIMIT)
+        .slice(offset, offset + limit)
         .map(withTags);
     },
     async getPublic(id, today) {
@@ -308,7 +315,7 @@ const listOut = (post: PostRow) => {
   return { ...out, bodyJa: out.bodyJa.slice(0, LIST_BODY_CHARS), bodyEn: out.bodyEn === null ? null : out.bodyEn.slice(0, LIST_BODY_CHARS) };
 };
 
-/** A page as visitors get it at /p/<slug> (the same answer site_pages used to give). */
+/** A page as visitors get it at /p/<slug>. */
 const pageOut = (p: PostRow) => ({ slug: p.slug ?? "", titleJa: p.titleJa, titleEn: p.titleEn, bodyJa: p.bodyJa, bodyEn: p.bodyEn });
 
 /** What visitors read, no login: published posts whose day has come, newest first, one post by its id, and the pages. */
@@ -318,9 +325,10 @@ export function publicPostRoutes(getPosts: () => PostService) {
       "/posts",
       async ({ query, set }) => {
         publicCache(set);
-        return { ok: true as const, posts: (await getPosts().publicPosts(query.tag)).map(listOut) };
+        const page = await getPosts().publicPostsPage(query.tag, query.offset);
+        return { ok: true as const, posts: page.posts.map(listOut), next: page.next };
       },
-      { query: t.Object({ tag: t.Optional(t.String({ format: "uuid" })) }) },
+      { query: t.Object({ tag: t.Optional(t.String({ format: "uuid" })), offset: t.Optional(t.Numeric({ minimum: 0, maximum: 100_000 })) }) },
     )
     .get(
       "/posts/:id",

@@ -18,6 +18,7 @@ import { PagePreview, type HomeData } from "./PagePreview";
 
 import { confirmDialog } from "@/components/ConfirmDialog";
 import { showToast } from "@/lib/admin/toast";
+import { readJson } from "@/lib/read-json";
 
 type Lang = "ja" | "en";
 
@@ -73,7 +74,7 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
         headers: { "content-type": "application/json" },
         body: JSON.stringify(text),
       });
-      const json = (await res.json().catch(() => null)) as { ok?: unknown; error?: unknown } | null;
+      const json = await readJson<{ ok?: unknown; error?: unknown }>(res);
       if (res.ok && json?.ok === true) {
         setDone(text);
         showToast({ kind: "ok", text: t`保存しました。サイトに反映されています。` });

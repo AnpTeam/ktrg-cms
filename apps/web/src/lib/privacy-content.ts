@@ -84,7 +84,7 @@ const ja: Policy = {
       heading: "外部のサービス",
       items: [
         { term: "地図", text: "地図を表示すると、国土地理院の地図データを読み込むため、お使いの端末の通信先情報（IPアドレスなど）がそこに伝わります。" },
-        { term: "動画", text: "動画は、再生ボタンを押したときだけ、YouTubeまたはVimeoから読み込みます。" },
+        { term: "動画", text: "動画は、再生ボタンを押したときだけ、YouTubeから読み込みます。" },
         { term: "道案内", text: "道案内の間、位置をOpenRouteServiceへ送って道順を描きます。位置は保存しません。" },
         { term: "利用状況の集計", text: "このアプリの運営に使っているホスティング事業者（Vercel）の集計機能と、上の「どちらの地域からのアクセスか」の集計で、ページの閲覧数などを個人が分からない形で数えます。Cookieは使いません。" },
         { term: "メールの送信", text: "ログイン用の番号は、メール配信を行う事業者を通して送ります。事業者名は公開までに書きます。" },
@@ -182,7 +182,7 @@ const en: Policy = {
           term: "Map",
           text: "Showing the map loads map data from the Geospatial Information Authority of Japan, so your device's connection details (such as its IP address) reach that service.",
         },
-        { term: "Video", text: "Videos load from YouTube or Vimeo only when you press play." },
+        { term: "Video", text: "Videos load from YouTube only when you press play." },
         { term: "Navigation", text: "While you navigate, your position is sent to OpenRouteService to draw a path. It is not stored." },
         { term: "Usage counts", text: "The hosting provider's analytics (Vercel) and our own regional count described above tally page views and similar events in a form that does not identify anyone. Neither uses cookies." },
         {

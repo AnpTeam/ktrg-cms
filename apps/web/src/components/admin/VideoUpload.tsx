@@ -5,6 +5,7 @@ import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode, type ErrorKey } from "@/lib/api-error";
 import { hasFastStart, MAX_VIDEO_BYTES, sniffVideo } from "@/lib/admin/video-file";
+import { readJson } from "@/lib/read-json";
 
 type Sent = { ok: true; url: string; fastStart: boolean } | { ok: false; key: ErrorKey };
 
@@ -40,7 +41,7 @@ async function uploadVideo(file: File, onProgress: (share: number) => void): Pro
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ name: file.name, contentType: kind.type, size: file.size }),
     });
-    const json = (await res.json().catch(() => null)) as { ok?: unknown; error?: unknown; upload?: { url?: unknown; uploadUrl?: unknown } } | null;
+    const json = await readJson<{ ok?: unknown; error?: unknown; upload?: { url?: unknown; uploadUrl?: unknown } }>(res);
     const upload = json?.upload;
     if (!res.ok || json?.ok !== true || typeof upload?.url !== "string" || typeof upload.uploadUrl !== "string") {
       return { ok: false, key: json?.ok === false && isServerCode(json.error) ? json.error : errorKeyFromApi(res.status, json) };

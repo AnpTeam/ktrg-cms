@@ -26,7 +26,6 @@ function galleryOf(photo: MapPhoto | null, stops: MapScreenStop[] | null): MapPh
 /**
  * What the map needs for each course. The detailed map (path, stops, what a stop's sheet says) is prepared
  * only for courses whose stops have positions, which today is the one draft course; the rest show their area.
- * TODO(WBS 2.2.1): when the API exists, load a course's detail when it is chosen instead of for all of them.
  */
 async function mapRoutes(routes: RouteSummary[], places: PlaceItem[], viewer: Viewer, locale: string, words: { stamped: string; closed: string; start: string; goal: string }): Promise<MapScreenRoute[]> {
   return Promise.all(

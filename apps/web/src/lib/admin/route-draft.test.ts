@@ -459,10 +459,12 @@ describe("checks before saving", () => {
     const one = run(none, { type: "municipalities", value: ["和歌山市"] });
     expect(draftProblems(one.present)).toEqual([]);
   });
-  test("a blank route or place name, and a video link that is not YouTube or Vimeo", () => {
+  test("a blank route or place name, and a video link that is not YouTube", () => {
     let s = run(fresh(), { type: "addPlace", key: "a", lat: 1, lng: 1 }, { type: "place", key: "a", patch: { nameJa: "  " } });
     expect(draftProblems(s.present)).toEqual([{ kind: "route_name" }, { kind: "route_municipalities" }, { kind: "place_name", key: "a" }]);
     s = run(s, { type: "text", field: "videoUrl", value: "https://example.com/x" });
+    expect(draftProblems(s.present).map((p) => p.kind)).toContain("video_link");
+    s = run(s, { type: "text", field: "videoUrl", value: "https://vimeo.com/123456789" });
     expect(draftProblems(s.present).map((p) => p.kind)).toContain("video_link");
   });
   test("a position with only one of its two numbers is a problem the person must fix", () => {
