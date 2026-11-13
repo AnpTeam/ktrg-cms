@@ -8404,3 +8404,15 @@ msgstr "South-west corner"
 #: src/components/admin/CourseAreaEditor.tsx
 msgid "南東の角"
 msgstr "South-east corner"
+
+#: src/components/admin/map-editor/MapEditor.tsx
+msgid "地図をクリックすると、「{locatingName}」の位置を決めます。やめるには、もう一度ボタンを押すか、Escキーを押します。"
+msgstr "Click the map to set the position of \"{locatingName}\". To cancel, press the button again or press Esc."
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "地図をクリックしてください（やめる）"
+msgstr "Click the map (cancel)"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "地図で位置を決める"
+msgstr "Set position on the map"

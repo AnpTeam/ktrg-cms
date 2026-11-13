@@ -13,10 +13,13 @@ const chipToggle = (on: boolean) =>
   `inline-flex h-11 min-h-0 min-w-0 items-center justify-center rounded-full border px-3 text-sm font-bold ${on ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"}`;
 
 /** Every waypoint of the route in one list: its name, its kind and its two switches can all be changed here. */
-export function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchPlace, onAddEndAt, onReorderPlaces, insertAfter, onInsertAfter, onDrawSubCourse, back }: Pick<MapEditorProps, "places" | "selectedKey" | "onSelectPlace" | "onRemovePlace" | "onPatchPlace" | "onAddEndAt" | "onReorderPlaces"> & {
+export function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchPlace, onAddEndAt, onReorderPlaces, insertAfter, onInsertAfter, onDrawSubCourse, locating, onLocate, back }: Pick<MapEditorProps, "places" | "selectedKey" | "onSelectPlace" | "onRemovePlace" | "onPatchPlace" | "onAddEndAt" | "onReorderPlaces"> & {
   insertAfter: string | null;
   onInsertAfter: (key: string) => void;
   onDrawSubCourse: (key: string) => void;
+  /** The waypoint waiting for a click on the map to get its position, and the switch for it. */
+  locating: string | null;
+  onLocate: (key: string) => void;
   /** The way back over earlier stops (戻る道): its legs so far (stop keys), the stops it may go back to next, and what to do. */
   back: { legs: { from: string; to: string }[]; options: string[]; onAdd: (toKey: string) => void; onRemoveLast: () => void; onDraw: (index: number) => void };
 }) {
@@ -131,7 +134,14 @@ export function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, o
                   {t`同じ場所に終点を追加`}
                 </button>
               ) : null}
-              {p.lat === null ? <span className="text-sm font-bold text-danger">{t`位置なし`}</span> : null}
+              {p.lat === null ? (
+                <>
+                  <span className="text-sm font-bold text-danger">{t`位置なし`}</span>
+                  <button type="button" aria-pressed={locating === p.key} onClick={(e) => { e.stopPropagation(); onLocate(p.key); }} className={chipToggle(locating === p.key)}>
+                    {locating === p.key ? t`地図をクリックしてください（やめる）` : t`地図で位置を決める`}
+                  </button>
+                </>
+              ) : null}
             </div>
             <div className="col-start-2 col-end-4 flex flex-wrap items-center gap-2">
               <button type="button" disabled={i === 0} onClick={(e) => { e.stopPropagation(); move(i, -1); }} aria-label={t`${p.name || p.number}を前へ`} title={t`順番を前へ`} className={chipToggle(false)}>
