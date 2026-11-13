@@ -68,7 +68,7 @@ export function GradingFields({
             ))}
           </select>
           {suggestion && suggestion.level !== draft.physicalLevel ? (
-            <button type="button" onClick={() => onPhysical(suggestion.level)} className="tap-target rounded-full border-2 border-line px-3 text-base font-bold">
+            <button type="button" onClick={() => onPhysical(suggestion.level)} className="tap-target rounded-full border border-line px-3 text-base font-bold">
               {t`目安を使う`}
             </button>
           ) : null}

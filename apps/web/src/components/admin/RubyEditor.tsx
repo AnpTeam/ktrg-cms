@@ -5,11 +5,11 @@ import { Fragment, type ReactNode } from "react";
 import { isKanji, isPerKanji, partsFor, serializeRuby, type RubyPart } from "@/lib/ruby";
 import { LinkIcon } from "../icons";
 
-const tiny = "inline-flex h-11 min-h-0 items-center justify-center whitespace-nowrap rounded-md border border-line px-3 text-sm font-bold hover:bg-surface";
+const tiny = "inline-flex h-11 min-h-0 items-center justify-center whitespace-nowrap rounded-full border border-line px-3 text-sm font-bold hover:bg-surface";
 // Round, icon only: it sits in the gap between two reading boxes, which says what it joins.
 const link = "inline-flex size-11 min-h-0 min-w-0 items-center justify-center rounded-full border border-line text-ink hover:bg-surface [&_svg]:size-5";
 // A real minimum width, so a reading is never cut off; a long name scrolls sideways instead.
-const box = "h-11 min-h-0 w-full min-w-[3.5em] rounded-lg border-2 border-line bg-paper px-2 text-base";
+const box = "h-11 min-h-0 w-full min-w-[3.5em] rounded-full border border-line bg-paper px-2 text-base";
 
 /**
  * The reading of a name, typed over each run of kanji (葛城 → かつらぎ), not for the whole name. A run can be split into

@@ -118,7 +118,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
       <div className="flex flex-wrap items-end gap-3">
         <label className="flex min-w-60 flex-1 flex-col gap-1 text-base font-bold">
           {t`ルートをさがす`}
-          <input type="search" value={query} onChange={(e) => { setQuery(e.target.value); setPage(1); }} placeholder={t`名前の一部を入力`} className="tap-target rounded-xl border-2 border-line bg-paper px-4 text-lg font-normal" />
+          <input type="search" value={query} onChange={(e) => { setQuery(e.target.value); setPage(1); }} placeholder={t`名前の一部を入力`} className="tap-target rounded-full border border-line bg-paper px-4 text-lg font-normal" />
         </label>
       </div>
       <div className="flex flex-col gap-3 rounded-2xl bg-surface p-3 md:hidden">

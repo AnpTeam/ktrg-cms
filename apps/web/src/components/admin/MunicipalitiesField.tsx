@@ -55,7 +55,7 @@ export function MunicipalitiesField({
     setTyped("");
   };
   // Icon buttons, like the access points' rows: the name, then up and down, a divider, and the trash bin.
-  const iconButton = "tap-target inline-flex items-center justify-center rounded-full border-2 border-line px-3 text-ink disabled:opacity-40";
+  const iconButton = "tap-target inline-flex items-center justify-center rounded-full border border-line px-3 text-ink disabled:opacity-40";
 
   return (
     <div className="flex flex-col gap-3">
@@ -70,7 +70,7 @@ export function MunicipalitiesField({
           {value.map((city, i) => {
             const en = englishCityName(city);
             return (
-              <li key={`${i}-${city}`} className="flex flex-wrap items-center gap-2 rounded-xl border-2 border-line bg-paper px-3 py-2">
+              <li key={`${i}-${city}`} className="flex flex-wrap items-center gap-2 rounded-xl border border-line bg-paper px-3 py-2">
                 <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-full bg-ink text-base font-bold text-paper">
                   {i + 1}
                 </span>

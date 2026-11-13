@@ -70,7 +70,7 @@ export function UserActions({ item, locale, onItem }: { item: ListItem; locale: 
               <br />
               {t`理由：${String(item.restrictionReason ?? "")}`}
             </p>
-            <button type="button" disabled={busy} onClick={() => void run(() => listRequest<{ item?: ListItem }>("DELETE", `users/${id}/restriction`), t`制限を解除しました。`)} className="tap-target w-fit rounded-full border-2 border-ink px-6 text-lg font-bold disabled:opacity-50">
+            <button type="button" disabled={busy} onClick={() => void run(() => listRequest<{ item?: ListItem }>("DELETE", `users/${id}/restriction`), t`制限を解除しました。`)} className="tap-target w-fit rounded-full border border-line px-6 text-lg font-bold disabled:opacity-50">
               {t`制限を解除する`}
             </button>
           </div>
@@ -104,7 +104,7 @@ export function UserActions({ item, locale, onItem }: { item: ListItem; locale: 
                 <p className="whitespace-pre-line text-lg">{appeal}</p>
               </div>
             ) : null}
-            <button type="button" disabled={busy} onClick={() => void run(() => listRequest<{ item?: ListItem }>("DELETE", `users/${id}/deletion-request`), t`削除の予約を取り消しました。`)} className="tap-target w-fit rounded-full border-2 border-ink px-6 text-lg font-bold disabled:opacity-50">
+            <button type="button" disabled={busy} onClick={() => void run(() => listRequest<{ item?: ListItem }>("DELETE", `users/${id}/deletion-request`), t`削除の予約を取り消しました。`)} className="tap-target w-fit rounded-full border border-line px-6 text-lg font-bold disabled:opacity-50">
               {t`削除の予約を取り消す`}
             </button>
           </div>

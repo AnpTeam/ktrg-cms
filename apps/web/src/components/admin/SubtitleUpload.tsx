@@ -58,7 +58,7 @@ export function SubtitleUpload({ videoUrl, uploaded, onUploaded, language = "ja"
 
   return (
     <div className="flex flex-col gap-1">
-      <label className="tap-target inline-flex w-fit cursor-pointer items-center rounded-full border-2 border-line px-5 text-lg font-bold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-accent has-[:disabled]:opacity-40">
+      <label className="tap-target inline-flex w-fit cursor-pointer items-center rounded-full border border-line px-5 text-lg font-bold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-accent has-[:disabled]:opacity-40">
         {busy ? t`送っています…` : t`字幕をアップロード（.srt / .vtt）`}
         <input
           type="file"
