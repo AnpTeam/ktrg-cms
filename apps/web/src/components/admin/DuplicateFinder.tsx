@@ -46,7 +46,7 @@ export function DuplicateFinder({ meta, locale, choices, onChanged }: { meta: Li
   }
 
   return (
-    <details className="rounded-2xl border-2 border-line p-4">
+    <details className="rounded-2xl border border-line p-4">
       <summary className="cursor-pointer text-lg font-bold">{t`重複している場所をさがす`}</summary>
       <div className="mt-3 flex flex-col gap-3">
         <p className="text-base text-muted">{t`同じ名前で、位置が近い（150m以内、または位置が未入力）場所を、グループにして出します。各グループの先頭が、いちばん情報がそろっている場所です（残すのにおすすめ）。`}</p>
@@ -73,7 +73,7 @@ export function DuplicateFinder({ meta, locale, choices, onChanged }: { meta: Li
                 return (
                   <li key={p.id} className="flex items-start gap-3 py-2">
                     <div className="min-w-0 flex-1">
-                      {i === 0 ? <span className="mr-2 rounded-md bg-ink px-2 py-0.5 text-sm font-bold text-paper">{t`残すのにおすすめ`}</span> : null}
+                      {i === 0 ? <span className="mr-2 rounded-full bg-ink px-2 py-0.5 text-sm font-bold text-paper">{t`残すのにおすすめ`}</span> : null}
                       {href ? (
                         <Link href={href} target="_blank" className="text-lg font-bold text-accent underline underline-offset-4">
                           {itemName(meta, p, locale)}
@@ -82,7 +82,7 @@ export function DuplicateFinder({ meta, locale, choices, onChanged }: { meta: Li
                       <p className="text-base text-muted">{itemFacts(meta, p, locale, routeName).join(" ・ ")}</p>
                       {typeof p.addressJa === "string" && p.addressJa ? <p className="text-base text-muted">{p.addressJa}</p> : null}
                     </div>
-                    <button type="button" disabled={busy} onClick={() => void remove([p.id])} className="tap-target shrink-0 rounded-full border-2 border-line px-3 text-base font-bold text-danger disabled:opacity-50">
+                    <button type="button" disabled={busy} onClick={() => void remove([p.id])} className="tap-target shrink-0 rounded-full border border-line px-3 text-base font-bold text-danger disabled:opacity-50">
                       {t`削除`}
                     </button>
                   </li>

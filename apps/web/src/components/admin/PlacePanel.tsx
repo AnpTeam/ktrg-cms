@@ -106,8 +106,8 @@ export function PlacePanel(p: PlacePanelProps) {
         <button type="button" onClick={p.onSelect} aria-expanded={p.selected} className="min-w-0 flex-1 text-left text-xl font-bold text-accent underline underline-offset-4">
           {place.nameJa || t`（名前がありません）`}
         </button>
-        <span className="rounded-lg bg-surface px-3 py-1 text-base">{kindName[place.kind]}</span>
-        <span className={`rounded-lg px-3 py-1 text-base font-bold ${place.published ? "bg-moss text-paper" : "bg-surface text-ink"}`}>{place.published ? t`公開中` : t`下書き`}</span>
+        <span className="rounded-full bg-surface px-3 py-1 text-base">{kindName[place.kind]}</span>
+        <span className={`rounded-full px-3 py-1 text-base font-bold ${place.published ? "bg-moss text-paper" : "bg-surface text-ink"}`}>{place.published ? t`公開中` : t`下書き`}</span>
         {p.dirty ? <span className="text-base font-bold text-accent">{t`未保存`}</span> : null}
         {!place.published && !p.selected && blockers.filter((b) => b !== "unsaved").length > 0 ? (
           <p className="w-full pl-[3.25rem] text-base text-muted">{t`公開まで、あと${blockers.filter((b) => b !== "unsaved").length}つ`}</p>
@@ -268,7 +268,7 @@ export function PlacePanel(p: PlacePanelProps) {
             {place.published ? (
               <div className="flex flex-wrap items-center gap-3">
                 <p className="text-lg font-bold">{t`この経由地は公開されています。`}</p>
-                <button type="button" disabled={p.busy} onClick={p.onUnpublish} className="tap-target rounded-full border border-ink px-5 text-lg font-bold disabled:opacity-40">
+                <button type="button" disabled={p.busy} onClick={p.onUnpublish} className="tap-target rounded-full border border-line px-5 text-lg font-bold disabled:opacity-40">
                   {t`公開をやめる`}
                 </button>
               </div>
@@ -302,10 +302,10 @@ export function PlacePanel(p: PlacePanelProps) {
           <div className="flex flex-wrap gap-2">
             {p.canMoveUp || p.canMoveDown ? (
               <>
-                <button type="button" disabled={!p.canMoveUp} onClick={() => p.onMove(-1)} className="tap-target rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-40">
+                <button type="button" disabled={!p.canMoveUp} onClick={() => p.onMove(-1)} className="tap-target rounded-full border border-line px-4 text-base font-bold disabled:opacity-40">
                   {t`順番を前へ`}
                 </button>
-                <button type="button" disabled={!p.canMoveDown} onClick={() => p.onMove(1)} className="tap-target rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-40">
+                <button type="button" disabled={!p.canMoveDown} onClick={() => p.onMove(1)} className="tap-target rounded-full border border-line px-4 text-base font-bold disabled:opacity-40">
                   {t`順番を後ろへ`}
                 </button>
               </>

@@ -11,7 +11,7 @@ import { useLingui } from "@lingui/react/macro";
 export function PhotoLinkDetails({ children, open = false }: { children: ReactNode; open?: boolean }) {
   const { t } = useLingui();
   return (
-    <details open={open || undefined} className="rounded-xl border-2 border-line px-4 py-2">
+    <details open={open || undefined} className="rounded-xl border border-line px-4 py-2">
       <summary className="tap-target flex cursor-pointer items-center text-lg font-bold">{t`リンクを直接入れる`}</summary>
       <div className="pb-2 pt-1">{children}</div>
     </details>

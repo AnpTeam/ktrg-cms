@@ -22,7 +22,7 @@ function photoName(url: string): string {
     return url;
   }
 }
-const smallButton = "tap-target rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-40";
+const smallButton = "tap-target rounded-full border border-line px-4 text-base font-bold disabled:opacity-40";
 
 /**
  * The gallery of one waypoint: the photos in the order visitors see them, each with the credit that goes under it.

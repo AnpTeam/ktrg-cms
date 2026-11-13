@@ -100,7 +100,7 @@ export function RankedRows({ rows, total, unit, more, show = 8 }: { rows: { key:
       <ul className="flex flex-col gap-3">{rows.slice(0, show).map((r, i) => row(r, i))}</ul>
       {rows.length > show ? (
         <details className="group">
-          <summary className="tap-target inline-flex cursor-pointer items-center rounded-full border border-ink px-5 text-base font-bold">{more}</summary>
+          <summary className="tap-target inline-flex cursor-pointer items-center rounded-full border border-line px-5 text-base font-bold">{more}</summary>
           <ul className="mt-3 flex flex-col gap-3">{rows.slice(show).map((r, i) => row(r, i + show))}</ul>
         </details>
       ) : null}

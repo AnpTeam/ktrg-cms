@@ -73,7 +73,7 @@ export function PhotoUpload({ onUploaded, disabled = false }: { onUploaded: (url
   return (
     <div className="flex flex-col gap-1">
       <div className="flex flex-wrap gap-2">
-        <label className="tap-target inline-flex w-fit cursor-pointer items-center rounded-full border-2 border-line px-5 text-lg font-bold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-accent has-[:disabled]:opacity-40">
+        <label className="tap-target inline-flex w-fit cursor-pointer items-center rounded-full border border-line px-5 text-lg font-bold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-accent has-[:disabled]:opacity-40">
           {busy ? t`送っています…` : t`写真をアップロード`}
           <input
             type="file"

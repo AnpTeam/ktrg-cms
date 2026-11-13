@@ -40,7 +40,7 @@ export function PhotoLibraryButton({ onPicked, disabled = false }: { onPicked: (
         type="button"
         disabled={disabled}
         onClick={() => setOpen(true)}
-        className="tap-target inline-flex w-fit items-center rounded-full border-2 border-line px-5 text-lg font-bold disabled:opacity-40"
+        className="tap-target inline-flex w-fit items-center rounded-full border border-line px-5 text-lg font-bold disabled:opacity-40"
       >
         {t`アップロード済みの写真から選ぶ`}
       </button>
@@ -126,7 +126,7 @@ function PhotoLibraryDialog({ onClose, onPick }: { onClose: () => void; onPick: 
             </h2>
             <p className="text-base text-muted">{t`アップロード済みの写真です。選んで「この写真を使う」を押すと、その写真のリンクが入ります。`}</p>
           </div>
-          <button type="button" onClick={() => ref.current?.close()} className="tap-target rounded-full border-2 border-line px-5 text-lg font-bold">
+          <button type="button" onClick={() => ref.current?.close()} className="tap-target rounded-full border border-line px-5 text-lg font-bold">
             {t`閉じる`}
           </button>
         </div>

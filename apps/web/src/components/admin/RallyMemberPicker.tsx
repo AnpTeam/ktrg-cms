@@ -35,10 +35,10 @@ export function RallyMemberPicker({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap gap-2">
-        <button type="button" disabled={disabled} onClick={() => onChange(tickAll(selected, allIds, true))} className="tap-target rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-40">
+        <button type="button" disabled={disabled} onClick={() => onChange(tickAll(selected, allIds, true))} className="tap-target rounded-full border border-line px-4 text-base font-bold disabled:opacity-40">
           {t`すべて選ぶ`}
         </button>
-        <button type="button" disabled={disabled || selected.length === 0} onClick={() => onChange([])} className="tap-target rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-40">
+        <button type="button" disabled={disabled || selected.length === 0} onClick={() => onChange([])} className="tap-target rounded-full border border-line px-4 text-base font-bold disabled:opacity-40">
           {t`すべて外す`}
         </button>
         <p className="tap-target flex items-center text-lg font-bold">{t`選んだ数：${selected.length} / ${allIds.length}`}</p>
@@ -106,10 +106,10 @@ export function RallyMemberPicker({
                   </span>
                   <span className="min-w-0 flex-1 text-lg">{text}</span>
                   <div className="flex gap-2">
-                    <button type="button" disabled={disabled || i === 0} onClick={() => onChange(moveId(selected, id, -1))} aria-label={t`${text} を1つ前へ`} className="tap-target min-w-14 rounded-full border-2 border-line px-3 text-base font-bold disabled:opacity-40">
+                    <button type="button" disabled={disabled || i === 0} onClick={() => onChange(moveId(selected, id, -1))} aria-label={t`${text} を1つ前へ`} className="tap-target min-w-14 rounded-full border border-line px-3 text-base font-bold disabled:opacity-40">
                       {t`前へ`}
                     </button>
-                    <button type="button" disabled={disabled || i === selected.length - 1} onClick={() => onChange(moveId(selected, id, 1))} aria-label={t`${text} を1つ後ろへ`} className="tap-target min-w-14 rounded-full border-2 border-line px-3 text-base font-bold disabled:opacity-40">
+                    <button type="button" disabled={disabled || i === selected.length - 1} onClick={() => onChange(moveId(selected, id, 1))} aria-label={t`${text} を1つ後ろへ`} className="tap-target min-w-14 rounded-full border border-line px-3 text-base font-bold disabled:opacity-40">
                       {t`後ろへ`}
                     </button>
                   </div>
