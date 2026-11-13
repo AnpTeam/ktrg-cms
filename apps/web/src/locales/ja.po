@@ -8456,3 +8456,7 @@ msgstr "見せるだけの場所です。スタンプは押せません。「現
 #: src/components/useErrorMessages.ts
 msgid "「案内のみ」の場所は、「状態のひとこと」（日本語）を書いてから公開してください。"
 msgstr "「案内のみ」の場所は、「状態のひとこと」（日本語）を書いてから公開してください。"
+
+#: src/components/OfflinePack.tsx
+msgid "オフライン"
+msgstr "オフライン"
