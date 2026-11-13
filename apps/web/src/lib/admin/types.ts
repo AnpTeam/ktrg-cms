@@ -34,6 +34,8 @@ export interface AdminRoute {
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
   farDistanceM?: number | null;
+  /** The editor's own box for the overview map (degrees); null or left out: the automatic one. */
+  area?: { west: number; south: number; east: number; north: number } | null;
   prefecture: Prefecture | null;
   walkStyle: WalkStyle | null;
   municipalities: string[];

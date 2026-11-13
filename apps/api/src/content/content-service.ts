@@ -105,6 +105,12 @@ export interface PublicRoute {
   bounds: { west: number; south: number; east: number; north: number } | null;
 }
 
+/** Japan with some margin (the same box the route line is held to), and no bigger than about 220 km each way. */
+export function areaOk(a: { west: number; south: number; east: number; north: number }): boolean {
+  const { west, south, east, north } = a;
+  return [west, south, east, north].every(Number.isFinite) && west >= 122 && east <= 154 && south >= 20 && north <= 46 && west < east && south < north && east - west <= 2.5 && north - south <= 2;
+}
+
 function boundsOf(line: LineString | null): PublicRoute["bounds"] {
   if (!line) return null;
   let west = Infinity;
@@ -187,7 +193,8 @@ function toPublicRoute(r: RouteRow, publishedSpotCount: number, withLine: boolea
     line: withLine && shown ? plainLine(shown) : null,
     sideLines: withLine && shown ? sideLinesOf(shown, visibleSpotIds) : [],
     rides: withLine && shown ? ridesOf(shown, visibleSpotIds) : [],
-    bounds: boundsOf(shown),
+    // The editor's own box wins; else the box around the checked line (none while the line is hidden).
+    bounds: r.area ?? boundsOf(shown),
     ...(publishedSpotCount > 0 ? {} : NOT_YET_PUBLIC),
   };
 }
@@ -285,6 +292,10 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
     if (input.elevationGainM !== undefined) out.elevationGainM = input.elevationGainM;
     if (input.expectedTimeMin !== undefined) out.expectedTimeMin = input.expectedTimeMin;
     if (input.farDistanceM !== undefined) out.farDistanceM = input.farDistanceM;
+    if (input.area !== undefined) {
+      if (input.area !== null && !areaOk(input.area)) return bad("validation_failed");
+      out.area = input.area;
+    }
     if (input.accessPoints !== undefined) {
       // A row with no Japanese name is an empty row left in the form: dropped. The rest are trimmed.
       const rows: NonNullable<StoredRouteFields["accessPoints"]> = [];

@@ -38,6 +38,7 @@ export interface RouteBody {
   accessPoints: AccessPoint[];
   physicalLevel: number | null;
   farDistanceM: number | null;
+  area: { west: number; south: number; east: number; north: number } | null;
   technicalLevel: TechnicalLevel | null;
   videoUrl: string | null;
   videoUrlEn: string | null;
@@ -121,6 +122,7 @@ export function routeBody(d: RouteDraft): RouteBody {
     accessPoints: d.accessPoints,
     physicalLevel: d.physicalLevel,
     farDistanceM: d.farDistanceM,
+    area: d.area,
     technicalLevel: d.technicalLevel,
     videoUrl: nullIfEmpty(d.videoUrl),
     videoUrlEn: nullIfEmpty(d.videoUrlEn),

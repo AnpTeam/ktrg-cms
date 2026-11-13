@@ -22,6 +22,9 @@ import { users } from "./auth";
 
 // Table definitions follow section 9.4 of the system design document.
 
+/** A box on the map, in degrees (an editor's own area for a course; see routes.area). */
+export type CourseArea = { west: number; south: number; east: number; north: number };
+
 /**
  * The languages content can be written in (admin entry; the visitor site still speaks ja and en only). Kept apart
  * from user_locale, the website language a visitor picks, so a content language never becomes a website choice.
@@ -114,6 +117,8 @@ export const routes = pgTable(
     expectedTimeMin: integer("expected_time_min"),
     // Farther than this from the course (metres), navigation offers train and bus instead of a long walk; null = the app default (5 km).
     farDistanceM: integer("far_distance_m"),
+    // The box drawn for the course on the overview map, set by an editor (a course not open yet can have one too); null = the box around its checked line.
+    area: jsonb("area").$type<CourseArea>(),
     // Osaka, Wakayama or Nara (validated in the API).
     prefecture: text("prefecture"),
     // How the route is walked: one_way, loop (ends where it began) or out_and_back (to a turnaround and back the same

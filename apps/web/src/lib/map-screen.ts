@@ -206,7 +206,7 @@ export interface AreaCollection {
   type: "FeatureCollection";
   features: {
     type: "Feature";
-    properties: { id: string; order: number; selected: boolean };
+    properties: { id: string; order: number; selected: boolean; /** Not open yet (準備中): drawn lighter and dashed. */ soon: boolean };
     geometry: { type: "Polygon"; coordinates: [number, number][][] };
   }[];
 }
@@ -218,7 +218,7 @@ export function areaCollection(routes: readonly MapScreenRoute[], selectedId: st
     type: "FeatureCollection",
     features: shown.map((r) => ({
       type: "Feature",
-      properties: { id: r.id, order: r.order, selected: r.id === selectedId },
+      properties: { id: r.id, order: r.order, selected: r.id === selectedId, soon: r.status === "soon" },
       geometry: { type: "Polygon", coordinates: [rectangleRing(r.area as RouteArea).map((p): [number, number] => [p.lng, p.lat])] },
     })),
   };

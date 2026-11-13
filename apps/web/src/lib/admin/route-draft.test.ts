@@ -65,6 +65,18 @@ describe("legs", () => {
     // one step to undo
     expect(run(s, { type: "undo" }).present.legs).toEqual([]);
   });
+  test("a course area is part of the draft: saved, loaded again, undone, and drawn in the preview in place of the automatic box", () => {
+    const box = { west: 135.0, south: 34.2, east: 135.3, north: 34.4 };
+    let s = run(fresh(), { type: "area", value: box });
+    expect(routeBody(s.present).area).toEqual(box);
+    expect(isDirty(s.present, fresh().present)).toBe(true);
+    expect(previewRoute(s.present, 1).area?.lat).toBeCloseTo(34.3, 6); // no line at all, and the box still shows
+    expect(draftFromServer(serverRoute({ area: box }), []).area).toEqual(box);
+    expect(draftFromServer(serverRoute(), []).area).toBeNull();
+    s = run(s, { type: "area", value: null });
+    expect(routeBody(s.present).area).toBeNull();
+    expect(run(s, { type: "undo" }).present.area).toEqual(box);
+  });
   test("a line the stops do not follow stays one loose line, until it is cut on purpose", () => {
     const line: [number, number][] = [[135, 34], [135.005, 34.005], [135.01, 34.01]];
     let s = run(fresh(), { type: "line", points: line });

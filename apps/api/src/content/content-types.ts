@@ -1,6 +1,6 @@
 import type { AttentionInput } from "./attention";
 import type { ErrorCode } from "../lib/api-errors";
-import type { AccessPoint, SpotPhoto, spotKinds } from "../db/schema/content";
+import type { AccessPoint, CourseArea, SpotPhoto, spotKinds } from "../db/schema/content";
 import type { ROUTE_TEXT, SPOT_TEXT, Translations } from "../db/translations";
 import type { LineString } from "./line";
 
@@ -31,6 +31,8 @@ export interface RouteRow {
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
   farDistanceM: number | null;
+  /** The editor's own box for the overview map (null: the automatic one). */
+  area: CourseArea | null;
   prefecture: Prefecture | null;
   walkStyle: WalkStyle | null;
   /** The cities the route runs through, in walking order (empty when not entered). */
@@ -135,6 +137,8 @@ export interface RouteFields {
   technicalLevel: TechnicalLevel | null;
   expectedTimeMin: number | null;
   farDistanceM: number | null;
+  /** The editor's own box for the overview map (null: the automatic one). */
+  area: CourseArea | null;
   prefecture: Prefecture | null;
   walkStyle: WalkStyle | null;
   /** The cities the route runs through, in walking order (empty when not entered). */
