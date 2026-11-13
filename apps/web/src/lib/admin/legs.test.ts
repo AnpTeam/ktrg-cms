@@ -1,6 +1,10 @@
 import { describe, expect, test } from "bun:test";
 import {
   anchorsFromPoints,
+  backChoices,
+  backLeg,
+  backPairs,
+  pairId,
   capLegs,
   guideRoute,
   insertGuidePoint,
@@ -239,5 +243,69 @@ describe("guide points", () => {
     const own: Leg = { ...leg(A, B), via: [P(135.002, 34.002)] };
     const moved = reconcileLegs([stop("a", 34.0001, 135.0001), B], [own]);
     expect(moved[0]!.via).toEqual([P(135.002, 34.002)]);
+  });
+});
+
+describe("return legs (a route that goes back over its own way)", () => {
+  const places = [
+    { key: "a", lat: 34.0, lng: 135.0, stopBy: false },
+    { key: "b", lat: 34.01, lng: 135.01, stopBy: false },
+    { key: "c", lat: 34.02, lng: 135.02, stopBy: false },
+  ];
+  const stops = pathStops(places);
+  const ab: Leg = { from: "a", to: "b", points: [[135.0, 34.0], [135.01, 34.01]] };
+  const bc: Leg = { from: "b", to: "c", points: [[135.01, 34.01], [135.02, 34.02]] };
+  // The way back: c to b, then b to a (stops are not repeated in the list; the legs say where the line returns to).
+  const cb: Leg = { from: "c", to: "b", points: [[135.02, 34.02], [135.015, 34.012], [135.01, 34.01]], back: true };
+  const ba: Leg = { from: "b", to: "a", points: [[135.01, 34.01], [135.0, 34.0]], back: true };
+
+  test("the return legs are pairs of stops in the order they were added", () => {
+    expect(backPairs(stops, [ab, bc, cb, ba]).map((p) => [p.from.key, p.to.key])).toEqual([["c", "b"], ["b", "a"]]);
+    expect(backPairs(stops, [ab, bc])).toEqual([]);
+  });
+
+  test("the joined line runs the route, then the way back, each leg once", () => {
+    const { line } = joinLegs(stops, [ab, bc, cb, ba]);
+    expect(line).toEqual([[135.0, 34.0], [135.01, 34.01], [135.02, 34.02], [135.015, 34.012], [135.01, 34.01], [135.0, 34.0]]);
+  });
+
+  test("a return leg stays while both its stops stand, and is dropped when one is removed; nothing changed keeps the same array", () => {
+    const legs = [ab, bc, cb, ba];
+    expect(reconcileLegs(stops, legs)).toBe(legs);
+    const without = pathStops(places.filter((p) => p.key !== "a"));
+    expect(reconcileLegs(without, legs).map((l) => [l.from, l.to])).toEqual([["b", "c"], ["c", "b"]]);
+  });
+
+  test("moving a stop drags the end of the return leg that meets it", () => {
+    const moved = pathStops(places.map((p) => (p.key === "c" ? { ...p, lat: 34.03 } : p)));
+    const kept = reconcileLegs(moved, [ab, bc, cb, ba]);
+    const back = kept.find((l) => l.back && l.from === "c")!;
+    expect(back.points[0]).toEqual([135.02, 34.03]);
+    expect(back.back).toBe(true);
+  });
+
+  test("a joined line with elevations is handed back to every leg, return legs included", () => {
+    const legs = [ab, bc, cb, ba];
+    const withEle = joinLegs(stops, legs).line.map((p): LngLatEle => [p[0], p[1], 100]);
+    const given = legsFromJoined(stops, legs, withEle)!;
+    expect(given.find((l) => l.from === "b" && l.to === "a")!.points.every((p) => p[2] === 100)).toBe(true);
+    expect(given.find((l) => l.from === "c" && l.to === "b")!.back).toBe(true);
+  });
+
+  test("where a return path can go on: from the last stop, then from where it got to, only back to earlier stops", () => {
+    expect(backChoices(stops, [ab, bc])).toEqual({ end: stops[2]!, options: [stops[0]!, stops[1]!] });
+    expect(backChoices(stops, [ab, bc, cb])).toEqual({ end: stops[1]!, options: [stops[0]!] });
+    expect(backChoices(stops, [ab, bc, cb, ba])).toEqual({ end: stops[0]!, options: [] });
+    expect(backChoices([], [])).toEqual({ end: null, options: [] });
+  });
+
+  test("a new return leg is a straight leg between the two stops, marked as a return leg", () => {
+    expect(backLeg(stops[2]!, stops[1]!)).toEqual({ from: "c", to: "b", points: [[135.02, 34.02], [135.01, 34.01]], back: true });
+  });
+
+  test("every leg has its own id: a route leg by the stop it runs to, a return leg by both stops (two legs can end on the same stop)", () => {
+    expect(pairId({ from: stops[0]!, to: stops[1]! })).toBe("b");
+    expect(pairId({ from: stops[2]!, to: stops[1]!, back: true })).toBe("back:c:b");
+    expect(pairId({ from: stops[2]!, to: stops[1]!, back: true })).not.toBe(pairId({ from: stops[0]!, to: stops[1]! }));
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { lineLengthKm, parseLine, sketchOf, simplifyLine, type LineString } from "./line";
+import { lineLengthKm, parseLine, ridesOf, sketchOf, simplifyLine, type LineString } from "./line";
 
 const line = (coordinates: LineString["coordinates"]): LineString => ({ type: "LineString", coordinates });
 const wiggle = (n: number) =>
@@ -103,5 +103,20 @@ describe("guide points on a leg", () => {
     ["not a list", "x"],
   ])("are refused: %s", (_n, via) => {
     expect(withVia(via).ok).toBe(false);
+  });
+});
+
+describe("return legs", () => {
+  const A = "11111111-1111-4111-8111-111111111111";
+  const B = "22222222-2222-4222-8222-222222222222";
+  const coordinates = [[135, 34], [135.01, 34.01]];
+  test("a leg marked as a return leg keeps its mark; a ride on it is not read as a ride to the place it returns to", () => {
+    const r = parseLine({ type: "LineString", coordinates, legs: [{ from: B, to: A, coordinates, back: true, ride: { mode: "ferry", minutes: 20 } }] });
+    expect(r.ok && r.line.legs?.[0]?.back).toBe(true);
+    if (r.ok) expect(ridesOf(r.line, new Set([A, B]))).toEqual([]);
+  });
+  test("anything but true is not a return leg", () => {
+    const r = parseLine({ type: "LineString", coordinates, legs: [{ from: A, to: B, coordinates, back: "yes" }] });
+    expect(r.ok && r.line.legs?.[0]?.back).toBeUndefined();
   });
 });

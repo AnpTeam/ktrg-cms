@@ -726,6 +726,34 @@ msgstr "Loaded the GPX file. Once there are two or more waypoints, it is cut int
 msgid "GPXファイルを読み込めませんでした。道すじ（トラック）か、名前のついた地点が入ったファイルを選んでください。"
 msgstr "Could not read the GPX file. Choose a file with a path (track) or named points."
 
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "【戻り】"
+msgstr "[Return] "
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "戻る道"
+msgstr "Way back"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "最後の経由地から、通った経由地をたどって戻る線です。戻る先を選んで、線を足していきます（例：14 → 5 → 4 → 1）。"
+msgstr "A line that goes back from the last waypoint over the waypoints already passed. Pick where it returns to and add lines one by one (for example 14 → 5 → 4 → 1)."
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "戻る先"
+msgstr "Return to"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "戻る先を選ぶ"
+msgstr "Choose where to return to"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "戻りの線を足す"
+msgstr "Add a return line"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "いちばん後ろの戻りの線を消す"
+msgstr "Remove the last return line"
+
 #: src/components/admin/map-editor/MapEditor.tsx:664
 msgid "GPXファイルを読み込めませんでした。道すじ（トラック）の入ったファイルを選んでください。"
 msgstr "The GPX file could not be read. Choose a file with a track."

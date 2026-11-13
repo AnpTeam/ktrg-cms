@@ -1,5 +1,5 @@
 import type { LayerSpecification } from "maplibre-gl";
-import { legOf, type Leg, type Stop } from "./legs";
+import { legOf, pairId, type Leg, type Stop } from "./legs";
 import type { LngLatEle } from "./line";
 
 // What the map editor draws for the legs of a route: one feature for each pair of stops, so a leg can be told from the others
@@ -30,7 +30,7 @@ const xy = (points: readonly (readonly (number | undefined)[])[]): [number, numb
  * With no legs, `loose` (a line that has not been cut into legs) is shown as one feature.
  */
 export function legFeatures(
-  pairs: readonly { from: Stop; to: Stop; side?: true }[],
+  pairs: readonly { from: Stop; to: Stop; side?: true; back?: true }[],
   legs: readonly Leg[],
   activeId: string | null,
   preview: { id: string; points: readonly LngLatEle[] } | null,
@@ -40,10 +40,12 @@ export function legFeatures(
   if (legs.length === 0 && loose.length >= 2) {
     return { type: "FeatureCollection", features: [{ type: "Feature", properties: { id: "", state: "drawn", active: false, side: false }, geometry: { type: "LineString", coordinates: xy(loose) } }] };
   }
-  const features: LegFeatures["features"] = pairs.map(({ from, to, side }) => {
+  const features: LegFeatures["features"] = pairs.map(({ from, to, side, back }) => {
+    const id = pairId({ from, to, back });
     const leg = legOf(legs, from.key, to.key);
-    const points = preview && preview.id === to.key ? preview.points : leg ? leg.points : [[from.lng, from.lat], [to.lng, to.lat]];
-    return { type: "Feature", properties: { id: to.key, state: leg || preview?.id === to.key ? "drawn" : "missing", active: to.key === activeId, side: !!side }, geometry: { type: "LineString", coordinates: xy(points) } };
+    const points = preview && preview.id === id ? preview.points : leg ? leg.points : [[from.lng, from.lat], [to.lng, to.lat]];
+    // A return leg is drawn like a side trip (the second colour), so the way back is told from the way out.
+    return { type: "Feature", properties: { id, state: leg || preview?.id === id ? "drawn" : "missing", active: id === activeId, side: !!side || !!back }, geometry: { type: "LineString", coordinates: xy(points) } };
   });
   return { type: "FeatureCollection", features };
 }

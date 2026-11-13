@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { pointKinds, type PointKind } from "@/lib/point-kinds";
 import { useKindLabels } from "../PlacePanel";
@@ -12,9 +13,20 @@ const chipToggle = (on: boolean) =>
   `inline-flex h-11 min-h-0 min-w-0 items-center justify-center rounded-full border px-3 text-sm font-bold ${on ? "border-ink bg-ink text-paper" : "border-line bg-paper text-ink hover:bg-surface"}`;
 
 /** Every waypoint of the route in one list: its name, its kind and its two switches can all be changed here. */
-export function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchPlace, onAddEndAt, onReorderPlaces, insertAfter, onInsertAfter, onDrawSubCourse }: Pick<MapEditorProps, "places" | "selectedKey" | "onSelectPlace" | "onRemovePlace" | "onPatchPlace" | "onAddEndAt" | "onReorderPlaces"> & { insertAfter: string | null; onInsertAfter: (key: string) => void; onDrawSubCourse: (key: string) => void }) {
+export function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, onPatchPlace, onAddEndAt, onReorderPlaces, insertAfter, onInsertAfter, onDrawSubCourse, back }: Pick<MapEditorProps, "places" | "selectedKey" | "onSelectPlace" | "onRemovePlace" | "onPatchPlace" | "onAddEndAt" | "onReorderPlaces"> & {
+  insertAfter: string | null;
+  onInsertAfter: (key: string) => void;
+  onDrawSubCourse: (key: string) => void;
+  /** The way back over earlier stops (戻る道): its legs so far (stop keys), the stops it may go back to next, and what to do. */
+  back: { legs: { from: string; to: string }[]; options: string[]; onAdd: (toKey: string) => void; onRemoveLast: () => void; onDraw: (index: number) => void };
+}) {
   const { t } = useLingui();
   const kindName = useKindLabels();
+  const [backTo, setBackTo] = useState("");
+  const nameOfKey = (key: string) => {
+    const p = places.find((x) => x.key === key);
+    return p ? `${p.number}. ${p.name || ""}`.trim() : "";
+  };
   const stamps = places.filter((p) => p.stampable).length;
   const others = places.length - stamps;
   // The first stop of the path: a round trip ends where it began, so this is where an end point can be added.
@@ -135,6 +147,52 @@ export function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, o
           </li>
         ))}
       </ol>
+      {back.legs.length > 0 || back.options.length > 0 ? (
+        <div className="mt-4 flex flex-col gap-2 rounded-lg bg-paper p-3">
+          <h3 className="text-base font-bold">{t`戻る道`}</h3>
+          <p className="text-base text-muted">{t`最後の経由地から、通った経由地をたどって戻る線です。戻る先を選んで、線を足していきます（例：14 → 5 → 4 → 1）。`}</p>
+          {back.legs.length > 0 ? (
+            <ol className="flex flex-col gap-1">
+              {back.legs.map((l, i) => (
+                <li key={`${l.from}>${l.to}`} className="flex flex-wrap items-center gap-2 text-base">
+                  <span className="min-w-0 flex-1">{`${nameOfKey(l.from)} → ${nameOfKey(l.to)}`}</span>
+                  <button type="button" onClick={() => back.onDraw(i)} className={chipToggle(false)}>
+                    {t`線を描く`}
+                  </button>
+                  {i === back.legs.length - 1 ? (
+                    <button type="button" onClick={back.onRemoveLast} aria-label={t`いちばん後ろの戻りの線を消す`} title={t`いちばん後ろの戻りの線を消す`} className={chipToggle(false)}>
+                      <TrashIcon />
+                    </button>
+                  ) : null}
+                </li>
+              ))}
+            </ol>
+          ) : null}
+          {back.options.length > 0 ? (
+            <div className="flex flex-wrap items-center gap-2">
+              <select aria-label={t`戻る先`} value={backTo} onChange={(e) => setBackTo(e.target.value)} className={fieldClass}>
+                <option value="">{t`戻る先を選ぶ`}</option>
+                {back.options.map((key) => (
+                  <option key={key} value={key}>
+                    {nameOfKey(key)}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                disabled={backTo === ""}
+                onClick={() => {
+                  back.onAdd(backTo);
+                  setBackTo("");
+                }}
+                className={chipToggle(backTo !== "")}
+              >
+                {t`戻りの線を足す`}
+              </button>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </section>
   );
 }
