@@ -517,8 +517,8 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
         </div>
       ) : null}
 
-      {/* Narrow screens: one thing at a time. */}
-      <div className={`${adminTabRow} xl:hidden`} role="tablist" aria-label={t`表示の切り替え`}>
+      {/* Narrower than 2xl: one thing at a time (the form needs the room; beside a 27rem preview it is under 500 px wide at 1280). */}
+      <div className={`${adminTabRow} 2xl:hidden`} role="tablist" aria-label={t`表示の切り替え`}>
         {(["edit", "preview"] as const).map((id) => (
           <button key={id} type="button" role="tab" aria-selected={view === id} onClick={() => setView(id)} className={`${adminTab(view === id)} flex-1`}>
             {id === "edit" ? t`入力` : t`プレビュー`}
@@ -527,8 +527,8 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
       </div>
 
       {/* The map tab uses the whole width (the map and its waypoint list); every other tab has the live preview beside it. */}
-      <div className={`grid gap-6 ${section === "map" ? "" : "xl:grid-cols-[minmax(0,1fr)_27rem]"}`}>
-        <div className={`flex min-w-0 flex-col gap-5 ${view === "edit" ? "" : "hidden xl:flex"}`}>
+      <div className={`grid gap-6 ${section === "map" ? "" : "2xl:grid-cols-[minmax(0,1fr)_27rem]"}`}>
+        <div className={`flex min-w-0 flex-col gap-5 ${view === "edit" ? "" : "hidden 2xl:flex"}`}>
           <nav aria-label={t`編集する内容`} className={adminTabRow} role="tablist">
             {TABS.map((id) => (
               <button
@@ -889,9 +889,9 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
           ) : null}
         </div>
 
-        <div className={`min-w-0 ${view === "preview" ? "" : section === "map" ? "hidden" : "hidden xl:block"}`}>
+        <div className={`min-w-0 ${view === "preview" ? "" : section === "map" ? "hidden" : "hidden 2xl:block"}`}>
           {/* Never taller than the screen (so its bottom is always reachable), and the browser is told not to re-anchor the page to it while it scrolls inside. */}
-          <div className="xl:sticky xl:top-24 xl:max-h-[calc(100dvh-7rem)] xl:overflow-y-auto [contain:paint] [overflow-anchor:none]">
+          <div className="2xl:sticky 2xl:top-24 2xl:max-h-[calc(100dvh-7rem)] 2xl:overflow-y-auto [contain:paint] [overflow-anchor:none]">
             <LivePreview draft={draft} order={order} locale={locale} />
           </div>
         </div>

@@ -19,7 +19,7 @@ export function LivePreview({ draft, order, locale }: { draft: RouteDraft; order
 
   return (
     <div className="flex flex-col gap-2">
-      <PreviewFrame locale={locale}>{(lang) => <PreviewBody route={route} locale={lang} />}</PreviewFrame>
+      <PreviewFrame locale={locale} sideBySide>{(lang) => <PreviewBody route={route} locale={lang} />}</PreviewFrame>
       <p className="text-base text-muted">{t`公開前の経由地も、ここには表示されます。`}</p>
     </div>
   );
