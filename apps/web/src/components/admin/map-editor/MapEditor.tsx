@@ -166,6 +166,12 @@ export function MapEditor(props: MapEditorProps) {
   // "Add after this" in the list turns it off again (afterOff) until another tool is used.
   const [afterOff, setAfterOff] = useState(false);
   const insertAfterRef = useRef<string | null>(null);
+  // A waypoint that has no position yet: the next click on the map gives it one (any tool; the click is not used for anything else).
+  const [locating, setLocating] = useState<string | null>(null);
+  const locatingRef = useRef<string | null>(null);
+  useEffect(() => {
+    locatingRef.current = locating;
+  });
   const insertAfter = mode === "place" && !afterOff ? props.selectedKey : null;
   useEffect(() => {
     insertAfterRef.current = insertAfter;
@@ -295,6 +301,13 @@ export function MapEditor(props: MapEditorProps) {
     },
     mapClick: (e) => {
       const m = modeRef.current;
+      const locate = locatingRef.current;
+      if (locate) {
+        setLocating(null);
+        latest.current.onMovePlace(locate, e.lngLat.lat, e.lngLat.lng);
+        latest.current.onSelectPlace(locate);
+        return;
+      }
       if (m === "place") {
         const after = insertAfterRef.current ?? undefined;
         return latest.current.onAddPlace(e.lngLat.lat, e.lngLat.lng, after);
@@ -456,9 +469,9 @@ export function MapEditor(props: MapEditorProps) {
   useEffect(() => {
     const map = mapRef.current;
     if (!ready || !map) return;
-    map.getCanvas().style.cursor = mode === "place" || ((mode === "draw" || mode === "guide") && activePair) ? "crosshair" : "";
+    map.getCanvas().style.cursor = locating || mode === "place" || ((mode === "draw" || mode === "guide") && activePair) ? "crosshair" : "";
     for (const { marker } of markers.current.values()) marker.setDraggable(mode === "pan" || mode === "place");
-  }, [mode, ready, activePair]);
+  }, [mode, ready, activePair, locating]);
 
   // ---- the points of the chosen leg ----------------------------------------------------------------------------
   useEffect(() => {
@@ -590,6 +603,7 @@ export function MapEditor(props: MapEditorProps) {
       else if (key === "l") actions.current.chooseTool("draw");
       else if (key === "g") actions.current.chooseTool("guide");
       else if (key === "e" && modeRef.current === "draw") actions.current.toggleEraser();
+      else if (e.key === "Escape" && locatingRef.current) setLocating(null);
       else if (e.key === "Escape" && (modeRef.current === "draw" || modeRef.current === "guide")) actions.current.leaveDraw();
       else if (e.key === "Delete" || e.key === "Backspace") {
         e.preventDefault();
@@ -868,7 +882,10 @@ export function MapEditor(props: MapEditorProps) {
   const hasPlaces = props.places.length > 0;
   const selectedSide = props.places.some((p) => p.key === props.selectedKey && p.stopBy);
   const afterName = insertAfter ? (nameOf.get(insertAfter) ?? "") : "";
-  const hint = looseLine
+  const locatingName = locating ? nameOf.get(locating) ?? "" : "";
+  const hint = locating
+    ? t`地図をクリックすると、「${locatingName}」の位置を決めます。やめるには、もう一度ボタンを押すか、Escキーを押します。`
+    : looseLine
     ? t`この線は、経由地の順番や位置と合わないため、区間に分けていません。経由地の順番と位置を直してから「区間に分ける」を押すか、区間を描くと、その区間から線が置き換わります（「元に戻す」で戻せます）。`
     : mode === "place"
       ? insertAfter
@@ -1233,6 +1250,8 @@ export function MapEditor(props: MapEditorProps) {
             setNote(null);
             setMode("draw");
           }}
+          locating={locating}
+          onLocate={(key) => setLocating((cur) => (cur === key ? null : key))}
           onInsertAfter={(key) => {
             if (insertAfter === key) return setAfterOff(true);
             props.onSelectPlace(key);
