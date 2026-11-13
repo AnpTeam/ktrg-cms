@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
-import { useHomeWords } from "@/components/landing/useHomeWords";
 import { HOME_PHOTO_SLOTS, parseHomeText, writeHomeText, type HomePhotoSlot, type HomeSlot } from "@/lib/home-text";
 import { Field, Section, TextArea, TextInput } from "./fields";
 import { PhotoLinkDetails } from "./PhotoLinkDetails";
@@ -12,9 +11,8 @@ import { PhotoUpload } from "./PhotoUpload";
 const LONG: readonly HomeSlot[] = ["rallyText", "storyText"];
 
 /** One language's boxes for the home page, in the page's own order. An empty box shows the app's words, given here as a hint. */
-export function HomeTextFields({ lang, title, body, showBuiltIn, onBody }: { lang: "ja" | "en"; title: string; body: string; showBuiltIn: boolean; onBody: (body: string) => void }) {
+export function HomeTextFields({ lang, title, body, builtIn, onBody }: { lang: "ja" | "en"; title: string; body: string; /** The app's own words in this language (null while they load). */ builtIn: Record<HomeSlot, string> | null; onBody: (body: string) => void }) {
   const { t } = useLingui();
-  const builtIn = useHomeWords();
   const text = parseHomeText(body);
   const groups: { name: string; slots: { slot: HomeSlot; label: string }[] }[] = [
     { name: t`いちばん上`, slots: [{ slot: "heroLine", label: t`写真の上の言葉` }] },
@@ -66,10 +64,10 @@ export function HomeTextFields({ lang, title, body, showBuiltIn, onBody }: { lan
   // box is and its original. What is typed is kept here as typed; the body stores only words that differ from the app's own, so
   // a box left as it was keeps following the app, and a cleared box shows the original again after a save.
   const [typed, setTyped] = useState<Partial<Record<HomeSlot, string>>>({});
-  const shown = (slot: HomeSlot) => typed[slot] ?? text[slot] ?? (showBuiltIn ? builtIn[slot] : "");
+  const shown = (slot: HomeSlot) => typed[slot] ?? text[slot] ?? (builtIn ? builtIn[slot] : "");
   const change = (slot: HomeSlot, value: string) => {
     setTyped((cur) => ({ ...cur, [slot]: value }));
-    edit(slot, showBuiltIn && value === builtIn[slot] ? "" : value);
+    edit(slot, builtIn && value === builtIn[slot] ? "" : value);
   };
   const edit = (slot: HomeSlot | HomePhotoSlot, value: string) => {
     const next = { ...text };
@@ -85,7 +83,7 @@ export function HomeTextFields({ lang, title, body, showBuiltIn, onBody }: { lan
           <legend className="text-lg font-bold">{group.name}</legend>
           {group.slots.map(({ slot, label }) => {
             const id = `home-${lang}-${slot}`;
-            const hint = showBuiltIn ? builtIn[slot] : undefined;
+            const hint = builtIn ? builtIn[slot] : undefined;
             return (
               <Field key={slot} label={label} htmlFor={id}>
                 {LONG.includes(slot) ? (

@@ -10,7 +10,7 @@ import { useLingui } from "@lingui/react/macro";
  * button offers the other one. The page's own labels follow the frame's language too, so Japanese text is never shown with
  * English labels (or the other way round).
  */
-export function PreviewFrame({ locale: adminLocale, canWiden = true, children }: { locale: string; canWiden?: boolean; children: (locale: "ja" | "en") => ReactNode }) {
+export function PreviewFrame({ locale: adminLocale, canWiden = true, plain = false, extra, children }: { locale: string; canWiden?: boolean; /** No phone frame: the page runs the full width, as a visitor sees it. */ plain?: boolean; /** More buttons beside the language button. */ extra?: ReactNode; children: (locale: "ja" | "en") => ReactNode }) {
   const { t } = useLingui();
   const adminLang = adminLocale === "en" ? "en" : "ja";
   const [locale, setLocale] = useState<"ja" | "en">(adminLang);
@@ -34,17 +34,24 @@ export function PreviewFrame({ locale: adminLocale, canWiden = true, children }:
         <button type="button" onClick={toggleLanguage} lang={locale === "en" ? "ja" : "en"} className="rounded-full bg-surface px-3 py-2.5 text-sm font-bold">
           {locale === "en" ? "日本語" : "English"}
         </button>
+        {extra}
         {canWiden ? (
           <button type="button" aria-pressed={wide} onClick={() => setWide(!wide)} className="rounded-full bg-surface px-3 py-2.5 text-sm font-bold aria-pressed:bg-selected aria-pressed:text-on-selected">
             {t`パソコン幅`}
           </button>
         ) : null}
       </div>
+      {plain ? (
+        <div className="relative flex flex-col overflow-x-clip rounded-2xl border border-line bg-paper" data-testid="live-preview">
+          {locale !== adminLang && otherI18n ? <I18nProvider i18n={otherI18n}>{children(locale)}</I18nProvider> : children(locale)}
+        </div>
+      ) : (
       <div className={`mx-auto w-full ${wide ? "max-w-5xl" : "max-w-[26rem]"} overflow-hidden rounded-[2rem] border-4 border-ink bg-paper shadow-sm`}>
         <div className="relative flex max-h-[min(44rem,calc(100dvh-14rem))] flex-col gap-6 overflow-y-auto overflow-x-hidden py-6" data-testid="live-preview">
           {locale !== adminLang && otherI18n ? <I18nProvider i18n={otherI18n}>{children(locale)}</I18nProvider> : children(locale)}
         </div>
       </div>
+      )}
     </div>
   );
 }
