@@ -19,6 +19,17 @@ export const isPhotoUrl = (v: string, hosts: readonly string[]): boolean => {
   }
 };
 
+/**
+ * The host names a photo link may use. PHOTO_HOSTS wins. In production without it, only the photo bucket's own host
+ * (R2_PUBLIC_URL), so an editor cannot point visitors' browsers at a stranger's server. Empty means any https host:
+ * development, or production with neither set (the startup warns about that).
+ */
+export function photoHostsFor(o: { photoHosts?: string; r2PublicUrl?: string; production: boolean }): readonly string[] {
+  const listed = o.photoHosts?.split(",").map((h) => h.trim().toLowerCase()).filter(Boolean) ?? [];
+  if (listed.length > 0 || !o.production || !o.r2PublicUrl) return listed;
+  return [new URL(o.r2PublicUrl).hostname]; // R2_PUBLIC_URL is checked as an https address at startup (parse-env)
+}
+
 /** Wikimedia Commons serves the photos the editor's photo finder picks; always allowed when photo hosts are restricted. */
 const WIKIMEDIA_HOSTS = ["upload.wikimedia.org"];
 
