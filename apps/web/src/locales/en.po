@@ -8264,3 +8264,7 @@ msgstr "Edit the words"
 #: src/components/admin/PageTextEditor.tsx
 msgid "欄には、いまサイトに出ている文章が入っています。書きかえた欄だけが保存されます。写真はバナー、コースはルート、お知らせはお知らせの画面で変えられます。"
 msgstr "Each box holds the words the site shows now. Only the boxes you change are saved. Photos are changed in Banners, courses in Routes, and notices in Notices."
+
+#: src/components/admin/PagePreview.tsx
+msgid "スマホ幅"
+msgstr "Phone width"

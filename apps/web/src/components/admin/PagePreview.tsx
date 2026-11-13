@@ -17,6 +17,8 @@ export function PagePreview({ text, locale, home }: { text: PageText; locale: st
   const { t } = useLingui();
   const shown = useDeferredValue(text);
   const [calm, setCalm] = useState(false);
+  // Phone: the page in a phone-shaped frame (a narrow box makes the page choose its phone layout); else the full width of the screen.
+  const [phone, setPhone] = useState(false);
   // "No animation" is the visitor's calm setting: the page reads it from <html> when it starts, so the page is started again
   // (key) and the setting is put back as it was when the switch goes off or the tab closes.
   useEffect(() => {
@@ -27,15 +29,24 @@ export function PagePreview({ text, locale, home }: { text: PageText; locale: st
       if (!before) root.removeAttribute("data-calm");
     };
   }, [calm]);
-  const calmButton = (
-    <button type="button" aria-pressed={calm} onClick={() => setCalm(!calm)} className="rounded-full bg-surface px-3 py-2.5 text-sm font-bold aria-pressed:bg-selected aria-pressed:text-on-selected">
-      {t`動きなし`}
-    </button>
+  const pill = "rounded-full bg-surface px-3 py-2.5 text-sm font-bold aria-pressed:bg-selected aria-pressed:text-on-selected";
+  const buttons = (
+    <>
+      <button type="button" aria-pressed={!phone} onClick={() => setPhone(false)} className={pill}>
+        {t`パソコン幅`}
+      </button>
+      <button type="button" aria-pressed={phone} onClick={() => setPhone(true)} className={pill}>
+        {t`スマホ幅`}
+      </button>
+      <button type="button" aria-pressed={calm} onClick={() => setCalm(!calm)} className={pill}>
+        {t`動きなし`}
+      </button>
+    </>
   );
   return (
-    <PreviewFrame locale={locale} canWiden={false} plain extra={calmButton}>
+    <PreviewFrame locale={locale} canWiden={false} plain={!phone} extra={buttons}>
       {(lang) => (
-        <div inert key={`${lang}-${calm}`}>
+        <div inert key={`${lang}-${calm}-${phone}`}>
           {home ? <Landing {...home} locale={lang} text={homeTextIn(shown, lang)} /> : null}
         </div>
       )}
