@@ -32,6 +32,7 @@ import type { AdminSharedSpot } from "@/lib/admin/types";
 import { formatUpdated } from "@/lib/format";
 import { adminTab, adminTabRow, Check, Field, inputClass, MultilingualField, NumberInput, Section, TextInput } from "./fields";
 import { LivePreview } from "./LivePreview";
+import { CourseAreaEditor } from "./CourseAreaEditor";
 import { MapEditorLoader } from "./map-editor/MapEditorLoader";
 import type { ElevationStatus } from "./map-editor/MapEditor";
 import { stampableByDefault } from "@/lib/point-kinds";
@@ -654,6 +655,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
             ) : null}
 
             {section === "map" ? (
+              <>
               <Section title={t`地図と線`} id="map-section">
                 {draft.id ? (
                   <NearbyPlacesManager
@@ -743,6 +745,13 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                   {draft.lineVerified && draft.lineSource.trim() === "" ? <p role="alert" className="text-base font-bold text-danger">{t`情報源を入れないと、「確認した」は保存されません。`}</p> : null}
                 </fieldset>
               </Section>
+              <CourseAreaEditor
+                area={draft.area}
+                line={draft.line}
+                places={draft.places.flatMap((p) => (p.lat !== null && p.lng !== null ? [{ lat: p.lat, lng: p.lng }] : []))}
+                onChange={(value) => dispatch({ type: "area", value })}
+              />
+              </>
             ) : null}
 
             {section === "places" ? (

@@ -228,8 +228,12 @@ export function MapScreenCanvas({
           if (started || cancelled || !map || !map.isStyleLoaded()) return;
           started = true;
           map.addSource(AREAS, { type: "geojson", data: EMPTY });
-          map.addLayer({ id: `${AREAS}-fill`, type: "fill", source: AREAS, paint: { "fill-color": "#cc6256", "fill-opacity": ["case", ["get", "selected"], 0.06, 0.05] } });
-          map.addLayer({ id: `${AREAS}-line`, type: "line", source: AREAS, paint: { "line-color": "#8e2a21" /* accent (light: the map stays light) */, "line-width": ["case", ["get", "selected"], 3, 1.5], "line-opacity": ["case", ["get", "selected"], 0.95, 0.35] } });
+          // A course not open yet (soon) is the same box, lighter and dashed, so the map shows it is there but not open.
+          const OPEN = ["!", ["get", "soon"]] as never;
+          const SOON = ["get", "soon"] as never;
+          map.addLayer({ id: `${AREAS}-fill`, type: "fill", source: AREAS, paint: { "fill-color": "#cc6256", "fill-opacity": ["case", ["get", "soon"], 0.025, ["get", "selected"], 0.06, 0.05] } });
+          map.addLayer({ id: `${AREAS}-line`, type: "line", source: AREAS, filter: OPEN, paint: { "line-color": "#8e2a21" /* accent (light: the map stays light) */, "line-width": ["case", ["get", "selected"], 3, 1.5], "line-opacity": ["case", ["get", "selected"], 0.95, 0.35] } });
+          map.addLayer({ id: `${AREAS}-line-soon`, type: "line", source: AREAS, filter: SOON, paint: { "line-color": "#8e2a21", "line-width": ["case", ["get", "selected"], 2.5, 1.5], "line-opacity": ["case", ["get", "selected"], 0.8, 0.28], "line-dasharray": [3, 2] } });
           map.addSource(SIDE, { type: "geojson", data: EMPTY });
           for (const layer of sideLineLayers(SIDE)) map.addLayer(layer);
           map.addSource(DETAIL, { type: "geojson", data: EMPTY });

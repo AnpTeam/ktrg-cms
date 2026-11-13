@@ -94,7 +94,12 @@ describe("areaCollection", () => {
 
   test("a chosen course: only its own area stays, the others fold away", () => {
     const fc = areaCollection(routes, "b");
-    expect(fc.features.map((f) => f.properties)).toEqual([{ id: "b", order: 2, selected: true }]);
+    expect(fc.features.map((f) => f.properties)).toEqual([{ id: "b", order: 2, selected: true, soon: false }]);
+  });
+
+  test("a course that is not open yet (準備中) is drawn too, marked soon, so the map looks like the course is there", () => {
+    const fc = areaCollection([route("a", 1), route("s", 2, { status: "soon" })], null);
+    expect(fc.features.map((f) => [f.properties.id, f.properties.soon])).toEqual([["a", false], ["s", true]]);
   });
 
   test("a chosen course without an area draws nothing", () => {

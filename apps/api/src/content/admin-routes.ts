@@ -104,6 +104,8 @@ const routeProps = {
   expectedTimeMin: nullable(t.Integer({ minimum: 0, maximum: 20000 })),
   // How far from the course counts as far, in metres (500 m to 200 km); null = the default.
   farDistanceM: nullable(t.Integer({ minimum: 500, maximum: 200000 })),
+  // The box drawn for the course on the overview map, in degrees; null = the automatic box. The service checks the shape (inside Japan, not too big).
+  area: t.Union([t.Object({ west: t.Number(), south: t.Number(), east: t.Number(), north: t.Number() }), t.Null()]),
   prefecture: t.Union([prefecture, t.Null()]),
   walkStyle: t.Union([walkStyle, t.Null()]),
   // The cities the course runs through in walking order; the service trims them and drops blanks.

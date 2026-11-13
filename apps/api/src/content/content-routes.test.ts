@@ -199,6 +199,24 @@ describe("an admin edits a route and its places", () => {
     expect(listed.farDistanceM).toBe(8000);
   });
 
+  test("a course area is a box inside Japan set by an editor; visitors get it as the course's bounds, also before the course is open, and null brings the automatic box back", async () => {
+    const { call, cookie, route } = await created();
+    const patch = (body: unknown, updatedAt: string) => call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt, ...(body as object) } });
+    const area = { west: 135.0, south: 34.2, east: 135.3, north: 34.4 };
+    // A box that is upside down, outside Japan or as big as a country is refused.
+    expect((await patch({ area: { west: 135.3, south: 34.2, east: 135.0, north: 34.4 } }, route.updatedAt)).status).toBe(422);
+    expect((await patch({ area: { west: -30, south: 20, east: -29, north: 21 } }, route.updatedAt)).status).toBe(422);
+    expect((await patch({ area: { west: 125, south: 24, east: 145, north: 44 } }, route.updatedAt)).status).toBe(422);
+    const saved = (await patch({ area }, route.updatedAt)).status;
+    expect(saved).toBe(200);
+    const bounds = async () => (((await (await call("GET", "/routes")).json()) as Json).routes as Json[]).find((r) => r.id === route.id)!.bounds;
+    expect(await bounds()).toEqual(area); // no line, no published place yet: the box still shows
+    const fresh = ((await (await call("GET", `/admin/routes/${route.id}`, { cookie })).json()) as Json).route as Json;
+    expect(fresh.area).toEqual(area);
+    expect((await patch({ area: null }, fresh.updatedAt as string)).status).toBe(200);
+    expect(await bounds()).toBeNull();
+  });
+
   test("a route lists the cities it runs through in walking order; blanks and repeats are dropped, and visitors get the list", async () => {
     const { call, cookie, route } = await created();
     const patch = (body: unknown, updatedAt: string) => call("PATCH", `/admin/routes/${route.id}`, { cookie, body: { updatedAt, ...(body as object) } });

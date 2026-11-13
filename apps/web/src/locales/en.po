@@ -8336,3 +8336,55 @@ msgstr "Each box holds the words the site shows now. Only the boxes you change a
 #: src/components/admin/PagePreview.tsx
 msgid "スマホ幅"
 msgstr "Phone width"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "コースの範囲"
+msgstr "Course area"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "訪れる人の、全体の地図に出る四角です。ふだんは、確かめた線のまわりに自動で決まります。ここで手で決めると、まだ公開していないルートも、「準備中」として地図に出ます。"
+msgstr "The box shown for the course on the visitors' overview map. Normally it is set automatically around the checked line. Set it by hand and a course that is not open yet also appears on the map, marked as coming soon."
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "コースの範囲の地図"
+msgstr "Map of the course area"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "いまは、手で決めた四角です。"
+msgstr "The box is set by hand."
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "いまは、自動の四角です（点線）。"
+msgstr "The box is automatic (dotted line)."
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "四すみの四角をドラッグすると大きさが、まん中の丸をドラッグすると位置が変わります。"
+msgstr "Drag a square at a corner to resize the box, or the circle in the middle to move it."
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "手で決める"
+msgstr "Set by hand"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "線と経由地から作りなおす"
+msgstr "Rebuild from the line and stops"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "自動にもどす"
+msgstr "Back to automatic"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "中心の緯度"
+msgstr "Centre latitude"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "中心の経度"
+msgstr "Centre longitude"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "横の長さ"
+msgstr "Width"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "縦の長さ"
+msgstr "Height"
