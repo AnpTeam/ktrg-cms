@@ -809,8 +809,8 @@ msgid "Yahoo!マップ"
 msgstr "Yahoo! Maps"
 
 #: src/components/admin/RouteEditor.tsx:656
-msgid "YouTube か Vimeo、またはアップロードした動画の、https:// で始まるリンクにしてください。"
-msgstr "Use an https:// link to YouTube or Vimeo, or to an uploaded video."
+msgid "YouTube、またはアップロードした動画の、https:// で始まるリンクにしてください。"
+msgstr "Use an https:// link to YouTube or to an uploaded video."
 
 #: src/components/admin/RouteEditor.tsx:665
 msgid "YouTube、またはアップロードした動画の、https:// で始まるリンクにしてください。"
@@ -4553,12 +4553,12 @@ msgid "動画のページをひらく"
 msgstr "Open the video page"
 
 #: src/components/admin/RouteEditor.tsx:650
-msgid "動画のリンク（YouTube・Vimeo、またはアップロードした動画）"
-msgstr "Video link (YouTube, Vimeo or an uploaded video)"
+msgid "動画のリンク（YouTube、またはアップロードした動画）"
+msgstr "Video link (YouTube or an uploaded video)"
 
 #: src/components/useErrorMessages.ts:36
-msgid "動画のリンクは、https:// で始まるYouTube・Vimeo、またはアップロードした動画（.mp4・.webm）のものだけ使えます。"
-msgstr "Video links must start with https:// and point to YouTube, Vimeo or an uploaded video (.mp4 or .webm)."
+msgid "動画のリンクは、https:// で始まるYouTube、またはアップロードした動画（.mp4・.webm）のものだけ使えます。"
+msgstr "Video links must start with https:// and point to YouTube or an uploaded video (.mp4 or .webm)."
 
 #: src/components/admin/VideoUpload.tsx:81
 msgid "動画をアップロード"

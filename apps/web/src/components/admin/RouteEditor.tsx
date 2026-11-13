@@ -609,13 +609,13 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                   </Field>
                   {problemOf("photo_link") ? <p role="alert" className="text-base font-bold text-danger">{t`写真のリンクは、https:// で始まるものだけ使えます。`}</p> : null}
                   <PhotoSlot url={draft.photoUrl} className="max-w-md" />
-                  <Field label={t`動画のリンク（YouTube・Vimeo、またはアップロードした動画）`} htmlFor="route-video" hint={t`https:// で始まるリンクを入れます。空にすると、動画は表示されません。`}>
+                  <Field label={t`動画のリンク（YouTube、またはアップロードした動画）`} htmlFor="route-video" hint={t`https:// で始まるリンクを入れます。空にすると、動画は表示されません。`}>
                     <TextInput id="route-video" value={draft.videoUrl} onChange={text("videoUrl")} maxLength={500} invalid={problemOf("video_link")} />
                   </Field>
                   <VideoUpload onUploaded={text("videoUrl")} />
                   {draft.id ? <VideoHistory routeId={draft.id} onPick={text("videoUrl")} /> : null}
                   {parseVideoFile(draft.videoUrl) ? <SubtitleUpload videoUrl={draft.videoUrl} uploaded={draft.videoSubtitles} onUploaded={() => dispatch({ type: "videoSubtitles", value: true })} /> : null}
-                  {problemOf("video_link") ? <p role="alert" className="text-base font-bold text-danger">{t`YouTube か Vimeo、またはアップロードした動画の、https:// で始まるリンクにしてください。`}</p> : null}
+                  {problemOf("video_link") ? <p role="alert" className="text-base font-bold text-danger">{t`YouTube、またはアップロードした動画の、https:// で始まるリンクにしてください。`}</p> : null}
                 </Section>
 
                 <Section title={t`英語版の動画`}>

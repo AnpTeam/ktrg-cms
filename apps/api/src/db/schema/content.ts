@@ -132,7 +132,7 @@ export const routes = pgTable(
     // official source (named in line_source). Changing the line cancels the check.
     lineVerified: boolean("line_verified").notNull().default(false),
     lineSource: text("line_source"),
-    // YouTube / Vimeo only; the host is checked in the API.
+    // YouTube only; the host is checked in the API.
     videoUrl: text("video_url"),
     // When the video was last put there or replaced (shown under it as "last updated").
     videoUpdatedAt: timestamp("video_updated_at", { withTimezone: true }),
@@ -576,7 +576,7 @@ export const routeTranslations = pgTable(
     access: text("access"),
     // Where the words come from (出典), in this language.
     source: text("source"),
-    // The video for this language (YouTube / Vimeo / an uploaded file). The Japanese video stays in routes.video_url; the English site shows this one when the English row has it, and the Japanese video otherwise.
+    // The video for this language (YouTube / an uploaded file). The Japanese video stays in routes.video_url; the English site shows this one when the English row has it, and the Japanese video otherwise.
     videoUrl: text("video_url"),
     // Subtitles were uploaded beside this language's video (a .vtt named like it); the player asks for them only then. Used by the English row; the Japanese video's flag is routes.video_subtitles.
     videoSubtitles: boolean("video_subtitles").notNull().default(false),

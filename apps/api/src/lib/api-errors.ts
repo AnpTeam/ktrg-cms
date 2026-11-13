@@ -42,7 +42,7 @@ export const ERROR_CODES = {
 
   // --- Admin content (routes and places) ---------------------------------------------------
   conflict: "409: someone saved this first; reload it and try again",
-  invalid_video_url: "400: only https links on YouTube or Vimeo are accepted",
+  invalid_video_url: "400: only https links on YouTube (or an uploaded video) are accepted",
   invalid_line: "400: the route line is not a line inside Japan with 2 to 50,000 points",
   invalid_photo_url: "400: a photo address must be a link that starts with https://",
   route_has_places: "409: a route that still has places cannot be deleted",

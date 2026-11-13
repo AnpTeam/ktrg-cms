@@ -136,7 +136,7 @@ export interface RouteDetail extends RouteSummary {
   lineElevations?: (number | null)[] | null;
   /** Side trips (寄り道): the stretch out to a stop-by place, apart from the main line. */
   sideLines?: { spotId: string; line: { lat: number; lng: number }[] }[];
-  /** The guidance video's address (the CMS `video_url`); only YouTube and Vimeo links are shown (`parseVideoUrl`). */
+  /** The guidance video's address (the CMS `video_url`); only YouTube links are shown (`parseVideoUrl`). */
   videoUrl: string | null;
   /** When the video was last put there or replaced (ISO); null when not known. */
   videoUpdatedAt?: string | null;
