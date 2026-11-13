@@ -468,19 +468,6 @@ export const blogComments = pgTable(
   (t) => [index("blog_comments_post_idx").on(t.postId, t.status, t.createdAt)],
 );
 
-/** A page an editor makes, shown at /p/<slug> once published (see pages/). The text is in the page-text format. */
-export const sitePages = pgTable("site_pages", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  slug: text("slug").notNull().unique(),
-  titleJa: text("title_ja").notNull(),
-  titleEn: text("title_en"),
-  bodyJa: text("body_ja").notNull().default(""),
-  bodyEn: text("body_en"),
-  published: boolean("published").notNull().default(false),
-  createdAt: createdAt(),
-  updatedAt: updatedAt(),
-});
-
 /** A photo in the carousel at the top of the home page, in `sort_order`. A draft until published. Its words (the
  * description read out by screen readers) are in banner_translations. */
 export const banners = pgTable("banners", {
@@ -520,7 +507,7 @@ export const blogPosts = pgTable(
     authorUserId: uuid("author_user_id").references(() => users.id, { onDelete: "set null" }),
     // The day the post is dated and from which visitors see it (YYYY-MM-DD, Japan time).
     publishedOn: date("published_on", { mode: "string" }).notNull(),
-    // A blog post (in the blog, dated, with comments) or a page (at /p/<slug>, never in the blog). Pages used to be site_pages.
+    // A blog post (in the blog, dated, with comments) or a page (at /p/<slug>, never in the blog).
     kind: text("kind", { enum: ["post", "page"] }).notNull().default("post"),
     // A page's address, lower-case letters, digits and hyphens; null for a post.
     slug: text("slug").unique(),
