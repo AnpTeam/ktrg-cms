@@ -1,3 +1,4 @@
+import { photoLinkLooksValid } from "./admin/save-plan";
 import type { PageText } from "./page-text";
 
 // The words of the home page an editor can replace (管理 > ページ > ホーム). The page's layout, its buttons and the
@@ -25,7 +26,10 @@ export const HOME_SLOTS = [
   "startHeading",
 ] as const;
 export type HomeSlot = (typeof HOME_SLOTS)[number];
-export type HomeText = Partial<Record<HomeSlot, string>>;
+/** The desktop's picture panel, one photo for the ridge chapter and one for the rally chapter (the sea is the banner photos). */
+export const HOME_PHOTO_SLOTS = ["photoRidge", "photoRally"] as const;
+export type HomePhotoSlot = (typeof HOME_PHOTO_SLOTS)[number];
+export type HomeText = Partial<Record<HomeSlot | HomePhotoSlot, string>>;
 
 /** The words as typed (spaces kept, for the editor); anything that is not a known box is dropped. */
 export function parseHomeText(body: string): HomeText {
@@ -37,7 +41,7 @@ export function parseHomeText(body: string): HomeText {
   }
   if (typeof raw !== "object" || raw === null) return {};
   const text: HomeText = {};
-  for (const slot of HOME_SLOTS) {
+  for (const slot of [...HOME_SLOTS, ...HOME_PHOTO_SLOTS]) {
     const value = (raw as Record<string, unknown>)[slot];
     if (typeof value === "string" && value !== "") text[slot] = value;
   }
@@ -52,4 +56,14 @@ export function writeHomeText(text: HomeText): string {
 export function homeTextIn(page: PageText | null | undefined, locale: string): HomeText {
   const typed = parseHomeText(page?.[locale === "ja" ? "ja" : "en"].body ?? "");
   return Object.fromEntries(Object.entries(typed).filter(([, v]) => v.trim() !== "").map(([k, v]) => [k, v.trim()]));
+}
+
+/** The chapter photos a visitor sees: the https link in their language, else the Japanese one, else null (the app's own photo). */
+export function homePhotosIn(page: PageText | null | undefined, locale: string): (string | null)[] {
+  const own = parseHomeText(page?.[locale === "ja" ? "ja" : "en"].body ?? "");
+  const ja = parseHomeText(page?.ja.body ?? "");
+  return HOME_PHOTO_SLOTS.map((slot) => {
+    const link = (own[slot] ?? ja[slot] ?? "").trim();
+    return link !== "" && photoLinkLooksValid(link) ? link : null;
+  });
 }

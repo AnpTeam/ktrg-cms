@@ -60,6 +60,7 @@ export function Landing({
   top,
   greeting,
   text,
+  chapterPhotos,
 }: {
   locale: string;
   routes: RouteSummary[];
@@ -75,6 +76,8 @@ export function Landing({
   greeting?: ReactNode;
   /** What an editor wrote in place of the app's words. */
   text?: HomeText;
+  /** The editor's own photos for the desktop picture panel (ridge, rally); null where none is set. */
+  chapterPhotos?: (string | null)[];
 }) {
   const w = useHomeWords(text);
   // Grounds for the chapters after the first ones: surface, paper, surface ... in page order. The journey ends on a surface
@@ -238,7 +241,7 @@ export function Landing({
       ) : (
         // A first-time visitor: the journey (the photos, what it is, the rally, where to start), edge to edge like the hero.
         <div className="@[42rem]:col-span-2 @[42rem]:mx-[calc((100%-100vw+var(--rail))/2)]">
-          <Journey slides={slides} routes={routes} locale={locale} w={w} />
+          <Journey slides={slides} routes={routes} locale={locale} w={w} chapterPhotos={chapterPhotos} />
         </div>
       )}
 

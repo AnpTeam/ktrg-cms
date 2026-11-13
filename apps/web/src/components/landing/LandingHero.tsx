@@ -54,9 +54,9 @@ export function LandingHero({ slides, locale, line, title, children, bare = fals
           </div>
         </HeroSlides>
         {bare ? <ScrollCue /> : null}
-        {/* The first screen has no language question any more: the two languages sit at the top right of the photo. */}
+        {/* The first screen has no language question any more: the two languages sit at the top left of the photo (the photo's progress dots are top right). */}
         {bare ? (
-          <div className="absolute right-3 top-[calc(0.75rem+var(--top-clear))] z-10">
+          <div className="absolute left-3 top-[calc(0.75rem+var(--top-clear))] z-10">
             <LocaleSwitcher />
           </div>
         ) : null}

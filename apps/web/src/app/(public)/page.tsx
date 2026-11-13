@@ -5,7 +5,7 @@ import { Landing } from "@/components/landing/Landing";
 import { listBanners, slidesToShow } from "@/lib/banners";
 import { getRoute, listRoutes, sampleContentEnabled, type RouteSummary } from "@/lib/content";
 import { listNotices } from "@/lib/notices";
-import { homeTextFor } from "@/lib/page-text-server";
+import { homePhotosFor, homeTextFor } from "@/lib/page-text-server";
 import { listPosts } from "@/lib/posts";
 import { getHomeSections } from "@/lib/site-settings";
 import { homeIntroVideo } from "@/lib/video";
@@ -27,11 +27,11 @@ function courseToContinue(routes: RouteSummary[]): RouteSummary | undefined {
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ as?: string }> }) {
   // The visitor and the page's data do not depend on each other: one round of requests.
   const i18n = await initLingui();
-  const [viewer, all, notices, banners, posts, sections, text] = await Promise.all([getViewer(searchParams), listRoutes(), listNotices(), listBanners(), listPosts(), getHomeSections(), homeTextFor(i18n.locale)]);
+  const [viewer, all, notices, banners, posts, sections, text, chapterPhotos] = await Promise.all([getViewer(searchParams), listRoutes(), listNotices(), listBanners(), listPosts(), getHomeSections(), homeTextFor(i18n.locale), homePhotosFor(i18n.locale)]);
   const routes = all;
   const introVideo = homeIntroVideo();
   const slides = slidesToShow(banners, sampleContentEnabled());
-  const page = { locale: i18n.locale, routes, notices, introVideo, slides, posts, showTourism: sections.tourism, text };
+  const page = { locale: i18n.locale, routes, notices, introVideo, slides, posts, showTourism: sections.tourism, text, chapterPhotos };
 
   const stamped = routes.reduce((n, r) => n + (r.stampedCount ?? 0), 0);
   // Someone with no account and no stamp yet gets the landing page for a first-time visitor; anyone with progress (a guest's

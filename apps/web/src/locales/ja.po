@@ -8248,3 +8248,11 @@ msgstr "動き"
 #: src/components/QuickActions.tsx
 msgid "あり"
 msgstr "あり"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "パソコンの画面の写真"
+msgstr "パソコンの画面の写真"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "空のままにすると、ルートの写真が使われます。日本語の欄に入れた写真は、英語の画面でも使われます。"
+msgstr "空のままにすると、ルートの写真が使われます。日本語の欄に入れた写真は、英語の画面でも使われます。"

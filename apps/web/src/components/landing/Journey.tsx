@@ -25,7 +25,7 @@ import { RIDGE_HEIGHT, RIDGE_WIDTH, ridgePath } from "@/lib/ridge";
  * adds to it, through the data-* markers: data-journey (the whole), data-beat 0..2, data-ridge (the line), data-seal.
  * The words are the editable home words, so an editor's text shows here too.
  */
-export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; routes: RouteSummary[]; locale: string; w: Record<HomeSlot, string> }) {
+export function Journey({ slides, routes, locale, w, chapterPhotos = [] }: { slides: BannerSlide[]; routes: RouteSummary[]; locale: string; w: Record<HomeSlot, string>; chapterPhotos?: (string | null)[] }) {
   const ridge = ridgePath(routes);
   const line = stageLine(ridge);
   // One seal for every stamp place, grouped by mound: a mound with two places (3, 14, 28) gets a pair.
@@ -96,7 +96,7 @@ export function Journey({ slides, routes, locale, w }: { slides: BannerSlide[]; 
 
         {/* A desktop's picture panel and step marker (drawn only there, only while the scene is live; see DeskPanel). The photos are
             course photos, then the first banner photo, then the trail photo of the Japan Heritage council. */}
-        <DeskPanel photos={panelPhotos(routes, slides.find((s) => s.src)?.src ?? null, "/home/top_slider_img01.jpg")} />
+        <DeskPanel photos={panelPhotos(routes, slides.find((s) => s.src)?.src ?? null, "/home/top_slider_img01.jpg", 2, chapterPhotos)} />
       </div>
     </JourneyScene>
   );

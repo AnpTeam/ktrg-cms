@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { homeTextIn, parseHomeText, writeHomeText } from "./home-text";
+import { homePhotosIn, homeTextIn, parseHomeText, writeHomeText } from "./home-text";
 
 describe("home page words", () => {
   test("survive being written and read", () => {
@@ -21,5 +21,16 @@ describe("home page words", () => {
     expect(homeTextIn(page, "ja")).toEqual({ heroLine: "言葉" });
     expect(homeTextIn(page, "en")).toEqual({});
     expect(homeTextIn(null, "ja")).toEqual({});
+  });
+});
+
+describe("home page chapter photos", () => {
+  test("are kept like the words, and read from the visitor's language, then Japanese; only https links count", () => {
+    const text = { photoRidge: "https://img.example/ridge.jpg" };
+    expect(parseHomeText(writeHomeText(text))).toEqual(text);
+    const page = { ja: { title: "", body: '{"photoRidge":"https://a.example/r.jpg","photoRally":"http://insecure.example/x.jpg"}' }, en: { title: "", body: '{"photoRally":"https://b.example/y.jpg"}' } };
+    expect(homePhotosIn(page, "ja")).toEqual(["https://a.example/r.jpg", null]);
+    expect(homePhotosIn(page, "en")).toEqual(["https://a.example/r.jpg", "https://b.example/y.jpg"]);
+    expect(homePhotosIn(null, "en")).toEqual([null, null]);
   });
 });
