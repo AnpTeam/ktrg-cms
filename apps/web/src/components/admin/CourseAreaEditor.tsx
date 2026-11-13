@@ -62,7 +62,14 @@ export function CourseAreaEditor({ area, line, places, onChange }: { area: Bound
           m.addLayer({ id: "route-line", type: "line", source: "route", filter: ["==", ["geometry-type"], "LineString"], paint: { "line-color": "#6d28d9", "line-width": 3 } });
           m.addLayer({ id: "route-stops", type: "circle", source: "route", filter: ["==", ["geometry-type"], "Point"], paint: { "circle-radius": 4, "circle-color": "#ffffff", "circle-stroke-color": "#6d28d9", "circle-stroke-width": 2 } });
           const report = (b: Bounds) => latest.current.onChange(b);
-          const show = (b: Bounds) => (m.getSource("area") as GeoJSONSource).setData(polygon(b));
+          // While a handle is dragged the outline and every other handle follow it, so none is left behind.
+          const follow = (b: Bounds, dragged: Corner | "centre") => {
+            (m.getSource("area") as GeoJSONSource).setData(polygon(b));
+            const h = handles.current;
+            if (!h) return;
+            for (const k of CORNERS) if (k !== dragged) h.corners[k].setLngLat(cornerAt(b, k));
+            if (dragged !== "centre") h.centre.setLngLat(centreOf(b));
+          };
           const dot = (cls: string) => {
             const el = document.createElement("div");
             el.className = cls;
@@ -73,18 +80,21 @@ export function CourseAreaEditor({ area, line, places, onChange }: { area: Bound
             const marker = new ml.Marker({ element: dot("size-4 cursor-grab rounded-[3px] border-2 border-white bg-ink shadow-md active:cursor-grabbing"), draggable: true });
             marker.on("drag", () => {
               const cur = latest.current.area;
-              if (cur) show(dragCorner(cur, c, marker.getLngLat()));
+              if (cur) follow(dragCorner(cur, c, marker.getLngLat()), c);
             });
             marker.on("dragend", () => {
               const cur = latest.current.area;
-              if (cur) report(dragCorner(cur, c, marker.getLngLat()));
+              if (!cur) return;
+              const b = dragCorner(cur, c, marker.getLngLat());
+              report(b);
+              marker.setLngLat(cornerAt(b, c)); // a corner that could not go that far returns to the box's real corner
             });
             corner[c] = marker;
           }
           const centre = new ml.Marker({ element: dot("size-7 cursor-move rounded-full border-2 border-white bg-brand shadow-md"), draggable: true });
           centre.on("drag", () => {
             const cur = latest.current.area;
-            if (cur) show(moveBox(cur, centre.getLngLat()));
+            if (cur) follow(moveBox(cur, centre.getLngLat()), "centre");
           });
           centre.on("dragend", () => {
             const cur = latest.current.area;
@@ -146,6 +156,13 @@ export function CourseAreaEditor({ area, line, places, onChange }: { area: Bound
     const next = { ...box, ...patch };
     onChange(boundsFromBox(next));
   };
+  // One corner typed in: the opposite corner stays, like dragging it.
+  const setCorner = (c: Corner, patch: { lat?: number; lng?: number }) => {
+    if (!area) return;
+    const [lng, lat] = cornerAt(area, c);
+    onChange(dragCorner(area, c, { lat, lng, ...patch }));
+  };
+  const cornerLabel: Record<Corner, string> = { nw: t`北西の角`, ne: t`北東の角`, sw: t`南西の角`, se: t`南東の角` };
   // A new box (from the course, or a small one in the middle of the view) is brought into view: at the wide first zoom a 4 km
   // box is a few pixels, and its four handles would sit on top of each other.
   const start = () => {
@@ -189,11 +206,11 @@ export function CourseAreaEditor({ area, line, places, onChange }: { area: Bound
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="flex flex-col gap-1 text-base font-bold" htmlFor="area-lat">
             {t`中心の緯度`}
-            <NumberInput id="area-lat" value={Math.round(box.lat * 1e6) / 1e6} min={20} max={46} step={0.0001} onChange={(v) => v !== null && set({ lat: v })} />
+            <NumberInput id="area-lat" value={Math.round(box.lat * 1e6) / 1e6} min={20} max={46} step={0.0001} wide onChange={(v) => v !== null && set({ lat: v })} />
           </label>
           <label className="flex flex-col gap-1 text-base font-bold" htmlFor="area-lng">
             {t`中心の経度`}
-            <NumberInput id="area-lng" value={Math.round(box.lng * 1e6) / 1e6} min={122} max={154} step={0.0001} onChange={(v) => v !== null && set({ lng: v })} />
+            <NumberInput id="area-lng" value={Math.round(box.lng * 1e6) / 1e6} min={122} max={154} step={0.0001} wide onChange={(v) => v !== null && set({ lng: v })} />
           </label>
           <label className="flex flex-col gap-1 text-base font-bold" htmlFor="area-width">
             {t`横の長さ`}
@@ -203,6 +220,26 @@ export function CourseAreaEditor({ area, line, places, onChange }: { area: Bound
             {t`縦の長さ`}
             <NumberInput id="area-height" value={Math.round(box.heightM)} min={500} max={200000} integer suffix="m" onChange={(v) => v !== null && set({ heightM: v })} />
           </label>
+        </div>
+      ) : null}
+      {area ? (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {CORNERS.map((c) => {
+            const [lng, lat] = cornerAt(area, c);
+            return (
+              <fieldset key={c} className="flex flex-col gap-2 rounded-xl border border-line p-3">
+                <legend className="px-1 text-base font-bold">{cornerLabel[c]}</legend>
+                <label className="flex flex-col gap-1 text-base font-bold" htmlFor={`area-${c}-lat`}>
+                  {t`緯度`}
+                  <NumberInput id={`area-${c}-lat`} value={lat} min={20} max={46} step={0.0001} wide onChange={(v) => v !== null && setCorner(c, { lat: v })} />
+                </label>
+                <label className="flex flex-col gap-1 text-base font-bold" htmlFor={`area-${c}-lng`}>
+                  {t`経度`}
+                  <NumberInput id={`area-${c}-lng`} value={lng} min={122} max={154} step={0.0001} wide onChange={(v) => v !== null && setCorner(c, { lng: v })} />
+                </label>
+              </fieldset>
+            );
+          })}
         </div>
       ) : null}
     </Section>
