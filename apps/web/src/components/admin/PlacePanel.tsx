@@ -9,6 +9,7 @@ import { RubyEditor } from "./RubyEditor";
 import { Check, Field, inputClass, MultilingualField, NumberInput, TextInput } from "./fields";
 import { GalleryEditor } from "./GalleryEditor";
 import { PhotoLinkDetails } from "./PhotoLinkDetails";
+import { InfoTip } from "./InfoTip";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoUpload } from "./PhotoUpload";
 
@@ -146,21 +147,25 @@ export function PlacePanel(p: PlacePanelProps) {
             </select>
           </Field>
 
-          <div className="flex flex-col gap-1">
-            <Check id={`${id}-stampable`} checked={place.stampable} onChange={(v) => p.onChange({ stampable: v })}>
-              {t`スタンプを押せる`}
-            </Check>
-            <p className="pl-9 text-base text-muted">
-              {isStamp ? t`ここに着いた人が、スタンプを押せます。公開するには、現地の許可の確認が必要です。` : t`スタンプは押せません。場所のページは見られます。公開するには、現地の許可の確認が必要です。`}
-            </p>
-          </div>
+          <InfoTip
+            indent
+            label={
+              <Check id={`${id}-stampable`} checked={place.stampable} onChange={(v) => p.onChange({ stampable: v })}>
+                {t`スタンプを押せる`}
+              </Check>
+            }
+            hint={isStamp ? t`ここに着いた人が、スタンプを押せます。公開するには、現地の許可の確認が必要です。` : t`スタンプは押せません。場所のページは見られます。公開するには、現地の許可の確認が必要です。`}
+          />
 
-          <div className="flex flex-col gap-1">
-            <Check id={`${id}-stopby`} checked={place.stopBy} onChange={(v) => p.onChange({ stopBy: v })}>
-              {t`寄り道（道すじから少しはずれた、任意の立ち寄り先）`}
-            </Check>
-            <p className="pl-9 text-base text-muted">{t`チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。代わりに、一つ前の経由地から、この場所までの寄り道の線（青い細い点線）を、地図で描けます。分かれ道に経由地を置き、その次にこの場所を並べてください。`}</p>
-          </div>
+          <InfoTip
+            indent
+            label={
+              <Check id={`${id}-stopby`} checked={place.stopBy} onChange={(v) => p.onChange({ stopBy: v })}>
+                {t`寄り道（道すじから少しはずれた、任意の立ち寄り先）`}
+              </Check>
+            }
+            hint={t`チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。代わりに、一つ前の経由地から、この場所までの寄り道の線（青い細い点線）を、地図で描けます。分かれ道に経由地を置き、その次にこの場所を並べてください。`}
+          />
 
           </Group>
 
