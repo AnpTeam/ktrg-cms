@@ -43,7 +43,7 @@ function Issues({ issues, words }: { issues: string[]; words: Record<string, str
 function Tile({ n, urgent = false, children }: { n: number; urgent?: boolean; children: React.ReactNode }) {
   return (
     <div className={`flex flex-col rounded-lg bg-surface p-4 ${urgent && n > 0 ? "border-l-4 border-danger" : ""}`}>
-      <span className={`font-serif text-4xl font-bold tabular-nums ${urgent && n > 0 ? "text-danger" : ""}`}>{n}</span>
+      <span className={`text-4xl font-bold tabular-nums ${urgent && n > 0 ? "text-danger" : ""}`}>{n}</span>
       <span className="text-lg font-bold">{children}</span>
     </div>
   );

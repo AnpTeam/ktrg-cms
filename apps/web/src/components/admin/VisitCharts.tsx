@@ -113,7 +113,7 @@ export function Kpi({ label, value, note }: { label: string; value: ReactNode; n
   return (
     <div className="flex min-w-0 flex-col gap-1 rounded-3xl bg-surface p-5">
       <p className="text-base font-bold text-muted">{label}</p>
-      <p className="font-serif text-4xl font-bold tabular-nums leading-none">{value}</p>
+      <p className="text-4xl font-bold tabular-nums leading-none">{value}</p>
       {note ? <p className="text-base text-muted">{note}</p> : null}
     </div>
   );
