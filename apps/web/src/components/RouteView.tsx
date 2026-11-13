@@ -18,6 +18,7 @@ import { RouteJourney } from "@/components/RouteJourney";
 import { RouteStats } from "@/components/RouteStats";
 import { StopList } from "@/components/StopList";
 import { BookmarkButton } from "@/components/BookmarkButton";
+import { BOOKMARK_ANCHOR } from "@/lib/page-anchors";
 import type { MapStop } from "@/components/map/TrailMap";
 import { TrailMapLoader } from "@/components/map/TrailMapLoader";
 import type { RouteDetail } from "@/lib/content";
@@ -167,10 +168,16 @@ export function RouteView({ route, locale, places, settings, placesFirst, labels
             <div className="mt-5">
               <RouteStats route={route} icons tips walkStyle={journey?.style ?? null} />
             </div>
-            {/* Two columns have no sticky bar: the bookmark sits under the numbers, with its word. */}
-            {bookmarkable ? (
-              <div className="mt-4 hidden @4xl:block">
-                <BookmarkButton routeId={route.id} />
+            {/* The buttons under the numbers, at every width: the bookmark with its word, and the offline map. On a phone the
+                bookmark turns into the icon in the sticky bar once this one has scrolled away (FoldJumps). The offline card opens below the row. */}
+            {bookmarkable || offline ? (
+              <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-3">
+                {bookmarkable ? (
+                  <span id={BOOKMARK_ANCHOR}>
+                    <BookmarkButton routeId={route.id} />
+                  </span>
+                ) : null}
+                {offline}
               </div>
             ) : null}
           </header>
@@ -241,8 +248,6 @@ export function RouteView({ route, locale, places, settings, placesFirst, labels
               <ElevationProfile elevations={route.sketch.elevations} distanceKm={route.distanceKm} routeLine={route.line} lineElevations={route.lineElevations} />
             </section>
           ) : null}
-
-          {offline ? <section className="order-9 px-4 @4xl:order-none">{offline}</section> : null}
 
           {video || videoFile ? (
             <section id="video" className="order-10 px-4 scroll-mt-[calc(5rem+var(--top-clear))] @4xl:order-none">

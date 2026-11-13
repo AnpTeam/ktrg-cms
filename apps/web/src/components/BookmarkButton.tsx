@@ -31,12 +31,12 @@ export function BookmarkButton({ routeId, compact = false }: { routeId: string; 
         aria-label={compact ? label : undefined}
         title={compact ? label : undefined}
         onClick={press}
-        className={`tap-target inline-flex items-center justify-center gap-2 rounded-full border font-bold ${compact ? "px-0" : "px-5 text-lg"} ${look}`}
+        className={`tap-target inline-flex items-center justify-center gap-1.5 rounded-full border font-bold ${compact ? "px-0" : "px-3 text-base"} ${look}`}
       >
         <BookmarkIcon filled={saved} />
         {compact ? null : label}
       </button>
-      <span role="status" className={compact ? "absolute left-0 top-full z-10 mt-2 whitespace-nowrap" : "ml-3 self-center"}>
+      <span role="status" className={compact ? "absolute left-0 top-full z-10 mt-2 whitespace-nowrap" : note ? "ml-3 self-center" : ""}>
         {note ? <span className={`text-base font-bold ${compact ? "rounded-lg bg-ink px-3 py-1.5 text-paper shadow-lg" : "text-muted"}`}>{note}</span> : null}
       </span>
     </span>

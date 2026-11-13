@@ -12,11 +12,14 @@ const noSubscribe = () => () => {};
 
 // Keeps the map around a course on the phone, for walking where there is no signal (lib/offline-pack.ts; the worker
 // serves the tiles). Only in the built site, where the worker runs. The visitor chooses; nothing is saved unasked.
+// It is a button for the row of buttons under the course's numbers (beside the bookmark); pressing it opens the card with the
+// explanation and the save, update and delete buttons. Put it inside a wrapping flex row: the card takes the full width below.
 export function OfflinePack({ routeId, area, settings }: { routeId: string; area: RouteArea | null; settings: Pick<MapSettings, "base" | "terrain"> }) {
   const { t } = useLingui();
   const [pack, setPack] = useState<PackInfo | null>(null);
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(null);
   const [failed, setFailed] = useState(false);
+  const [open, setOpen] = useState(false);
   // The clock is read when a pack is loaded or saved, not while drawing, so the age text stays steady between renders.
   const [now, setNow] = useState(0);
   // False while the server draws the page, so the first browser render matches it.
@@ -58,7 +61,21 @@ export function OfflinePack({ routeId, area, settings }: { routeId: string; area
   const percent = progress ? Math.min(100, Math.round((progress.done / Math.max(1, progress.total)) * 100)) : 0;
 
   return (
-    <section aria-labelledby="offline-pack" className="flex flex-col gap-3 rounded-[1.75rem] bg-surface p-4 print:hidden">
+    <>
+      <button
+        type="button"
+        aria-expanded={open}
+        aria-controls="offline-pack-card"
+        aria-label={t`オフラインで使う`}
+        title={t`オフラインで使う`}
+        onClick={() => setOpen(!open)}
+        className="tap-target inline-flex items-center justify-center gap-1.5 rounded-full border border-ink bg-paper px-3 text-base font-bold text-ink hover:bg-surface aria-expanded:bg-surface print:hidden"
+      >
+        {pack && !progress ? <CheckIcon /> : <DownloadIcon />}
+        {progress ? `${percent}%` : t`オフライン`}
+      </button>
+      {open ? (
+    <section id="offline-pack-card" aria-labelledby="offline-pack" className="flex basis-full flex-col gap-3 rounded-[1.75rem] bg-surface p-4 print:hidden">
       <h2 id="offline-pack" className="flex items-center gap-2 text-xl font-bold">
         <span aria-hidden="true" className="text-accent">
           <DownloadIcon />
@@ -103,5 +120,7 @@ export function OfflinePack({ routeId, area, settings }: { routeId: string; area
         </p>
       ) : null}
     </section>
+      ) : null}
+    </>
   );
 }

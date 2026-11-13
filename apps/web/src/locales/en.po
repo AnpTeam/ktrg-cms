@@ -8457,6 +8457,10 @@ msgstr "A place that is only shown. No stamp can be taken there. You can write t
 msgid "「案内のみ」の場所は、「状態のひとこと」（日本語）を書いてから公開してください。"
 msgstr "Write the status note (Japanese) of an info-only place before publishing it."
 
+#: src/components/OfflinePack.tsx
+msgid "オフライン"
+msgstr "Offline"
+
 #: src/components/InstallSteps.tsx
 msgid "右上の「追加」を押します。"
 msgstr "Tap "Add" at the top right."
