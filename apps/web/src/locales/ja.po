@@ -331,6 +331,46 @@ msgstr "{name}を空にして、もとの文章に戻す"
 msgid "{nameEn} (end)"
 msgstr "{nameEn} (end)"
 
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "{0}回"
+msgstr "{0}回"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "1日あたり"
+msgstr "1日あたり"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "いちばん多い日"
+msgstr "いちばん多い日"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "もっと見る"
+msgstr "もっと見る"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "合計"
+msgstr "合計"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "回"
+msgstr "回"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "日ごとのアクセス"
+msgstr "日ごとのアクセス"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "日本から"
+msgstr "日本から"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "期間とページをえらぶ"
+msgstr "期間とページをえらぶ"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "過去{0}日"
+msgstr "過去{0}日"
+
 #: src/components/StampGrid.tsx:52
 msgid "{number}番 スタンプ済み"
 msgstr "{number}番 スタンプ済み"

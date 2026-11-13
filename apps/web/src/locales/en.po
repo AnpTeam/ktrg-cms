@@ -331,6 +331,46 @@ msgstr "Empty {name} and go back to the built-in text"
 msgid "{nameEn} (end)"
 msgstr "{nameEn} (end)"
 
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "{0}回"
+msgstr "{0} views"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "1日あたり"
+msgstr "Per day"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "いちばん多い日"
+msgstr "Busiest day"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "もっと見る"
+msgstr "Show more"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "合計"
+msgstr "Total"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "回"
+msgstr "views"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "日ごとのアクセス"
+msgstr "Views per day"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "日本から"
+msgstr "From Japan"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "期間とページをえらぶ"
+msgstr "Choose the dates and page"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "過去{0}日"
+msgstr "Last {0} days"
+
 #: src/components/StampGrid.tsx:52
 msgid "{number}番 スタンプ済み"
 msgstr "No. {number}, stamped"
