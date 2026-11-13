@@ -120,7 +120,7 @@ export function RallyEditor({
     <div className="flex flex-col gap-5">
       {/* The same title bar as the route editor: the name, the state, and the one button that matters, always in reach. */}
       <div className="sticky top-0 z-20 -mx-4 flex flex-wrap items-center gap-3 border-b border-line bg-paper px-4 py-3 lg:-mx-8 lg:px-8">
-        <h1 className="min-w-0 flex-1 break-words text-2xl font-bold">{title}</h1>
+        <h1 className="order-last min-w-0 basis-full break-words text-2xl font-bold lg:order-none lg:basis-0 lg:flex-1">{title}</h1>
         <Chip tone={saved.published ? "good" : "neutral"}>{saved.published ? t`公開中` : t`下書き`}</Chip>
         <button
           type="button"
