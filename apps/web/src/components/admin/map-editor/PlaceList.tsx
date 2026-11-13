@@ -124,6 +124,9 @@ export function PlaceList({ places, selectedKey, onSelectPlace, onRemovePlace, o
               <button type="button" aria-pressed={p.stopBy} onClick={() => onPatchPlace(p.key, { stopBy: !p.stopBy })} className={chipToggle(p.stopBy)}>
                 {t`寄り道`}
               </button>
+              <button type="button" aria-pressed={!!p.info} onClick={() => onPatchPlace(p.key, { info: !p.info })} className={chipToggle(!!p.info)} title={t`見せるだけの場所です。スタンプは押せません。「現在、立ち入りできません」などを書けます。`}>
+                {t`案内のみ`}
+              </button>
               {p.published ? (
                 <span title={t`公開中の経由地は削除できません。編集すると下書きに戻ります。`} className="rounded-full bg-moss px-2.5 py-0.5 text-sm font-bold text-paper">
                   {t`公開中`}

@@ -211,8 +211,9 @@ export const spots = pgTable(
     ),
     check(
       "spots_publish_requires_permission",
-      // Every place that visitors can open needs the site's permission, with a stamp or without (a place has its own page).
-      sql`not ${t.published} or ${t.permissionConfirmed}`,
+      // Every place that visitors can open needs the site's permission, with a stamp or without (a place has its own page). An
+      // info-only place (status `info`: described, nobody is sent there) needs its note instead, checked when publishing.
+      sql`not ${t.published} or ${t.permissionConfirmed} or ${t.status} = 'info'`,
     ),
     check(
       "spots_publish_requires_verified_position",

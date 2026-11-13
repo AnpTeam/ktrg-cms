@@ -477,6 +477,13 @@
       "when": 1794539317717,
       "tag": "0067_drop_site_pages",
       "breakpoints": true
+    },
+    {
+      "idx": 68,
+      "version": "7",
+      "when": 1794551104586,
+      "tag": "0068_info_spot_needs_no_permission",
+      "breakpoints": true
     }
   ]
 }

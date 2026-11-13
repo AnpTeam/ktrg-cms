@@ -24,6 +24,7 @@ import {
   type TextField,
   type RouteDraft,
 } from "@/lib/admin/route-draft";
+import { infoPatch } from "@/lib/admin/route-draft";
 import { RubyEditor } from "./RubyEditor";
 import type { StopRole } from "@/lib/route-stops";
 import { backupKey, parseBackup, worthRestoring, writeBackup } from "@/lib/admin/draft-backup";
@@ -461,7 +462,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
     const startOnly = comesBack;
     const roleOf = (key: string): StopRole | undefined =>
       key === along[0]?.key ? (startOnly ? "both" : "start") : !startOnly && along.length > 1 && key === along.at(-1)!.key ? "goal" : undefined;
-    return draft.places.map((p) => ({ key: p.key, lat: p.lat, lng: p.lng, number: p.stampable ? ++stamp : null, name: p.nameJa, stampable: p.stampable, stopBy: p.stopBy, kind: p.kind, published: p.published, role: roleOf(p.key) }));
+    return draft.places.map((p) => ({ key: p.key, lat: p.lat, lng: p.lng, number: p.stampable ? ++stamp : null, name: p.nameJa, stampable: p.stampable, stopBy: p.stopBy, kind: p.kind, published: p.published, role: roleOf(p.key), info: p.status === "info" }));
   })();
   const text = (field: TextField) => (value: string) => dispatch({ type: "text", field, value });
   const checks = useMemo(() => checklist(factsFromDraft(draft)), [draft]);
@@ -726,7 +727,10 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                   onPatchPlace={(key, patch) => {
                     const p = draft.places.find((x) => x.key === key);
                     // A new waypoint's stamp switch follows its kind; a saved one keeps what was chosen for it.
-                    if (p) guarded(key, { type: "place", key, patch: patch.kind && p.id === null ? { ...patch, stampable: stampableByDefault(patch.kind) } : patch });
+                    if (!p) return;
+                    const { info, ...rest } = patch;
+                    const base = rest.kind && p.id === null ? { ...rest, stampable: stampableByDefault(rest.kind) } : rest;
+                    guarded(key, { type: "place", key, patch: info === undefined ? base : { ...base, ...infoPatch(info, p) } });
                   }}
                   onSnap={async (points) => {
                     const res = await outcome(api.admin["route-snap"].post({ points }));

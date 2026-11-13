@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { draftFromServer, draftReducer, emptyDraft, initialState, isDirty, placeFromServer, previewRoute, publishBlockers, type DraftAction, type DraftState } from "./route-draft";
+import { draftFromServer, draftReducer, emptyDraft, infoPatch, initialState, isDirty, placeFromServer, previewRoute, publishBlockers, type DraftAction, type DraftState } from "./route-draft";
 import { draftProblems, placeChanged, planSave, placeBody, keepLaterEdits, restoreHeld, routeBody, videoLinkLooksValid, withLegIds } from "./save-plan";
 import type { AdminRoute, AdminSpot } from "./types";
 import { estimateWalkMinutes } from "./walk-time";
@@ -344,6 +344,21 @@ describe("places", () => {
 
 describe("publish blockers", () => {
   const p = (over = {}) => ({ ...placeFromServer(serverSpot("s1")), ...over });
+  test("an info-only place needs a checked position and its note, not the site's permission", () => {
+    const base = { lat: 34, lng: 135, positionVerified: true, positionSource: "公式", status: "info" as const };
+    expect(publishBlockers(p(base))).toEqual(["note_required"]);
+    expect(publishBlockers(p({ ...base, statusNoteJa: "  " }))).toEqual(["note_required"]);
+    expect(publishBlockers(p({ ...base, statusNoteJa: "現在、立ち入りできません。" }))).toEqual([]);
+    expect(publishBlockers(p({ lat: 34, lng: 135, status: "info", statusNoteJa: "x" }))).toEqual(["position_not_verified"]);
+  });
+  test("turning 案内のみ on sets the status and fills the note once; turning it off keeps what was written", () => {
+    const on = infoPatch(true, p());
+    expect(on).toMatchObject({ status: "info" });
+    expect(on.statusNoteJa).toContain("立ち入り");
+    expect(on.statusNoteEn).not.toBe("");
+    expect(infoPatch(true, p({ statusNoteJa: "私の文", statusNoteEn: "my text" }))).toEqual({ status: "info", statusNoteJa: "私の文", statusNoteEn: "my text" });
+    expect(infoPatch(false, p({ status: "info", statusNoteJa: "私の文" }))).toEqual({ status: "open" });
+  });
   test("in the order the API checks them", () => {
     expect(publishBlockers(p())).toEqual(["no_coordinates", "permission_required"]);
     expect(publishBlockers(p({ lat: 34, lng: 135 }))).toEqual(["position_not_verified", "permission_required"]);

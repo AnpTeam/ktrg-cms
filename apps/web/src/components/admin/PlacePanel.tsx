@@ -3,7 +3,7 @@
 import { useRef, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { pointKinds, stampableByDefault, type PointKind } from "@/lib/point-kinds";
-import { publishBlockers, type PlaceDraft, type PublishBlocker } from "@/lib/admin/route-draft";
+import { infoPatch, publishBlockers, type PlaceDraft, type PublishBlocker } from "@/lib/admin/route-draft";
 import type { SpotStatus } from "@/lib/admin/types";
 import { RubyEditor } from "./RubyEditor";
 import { Check, Field, inputClass, MultilingualField, NumberInput, TextInput } from "./fields";
@@ -78,19 +78,21 @@ export function PlacePanel(p: PlacePanelProps) {
   const blockers = publishBlockers(place, p.dirty);
   const kindName = useKindLabels();
   const isStamp = place.stampable;
+  const isInfo = place.status === "info";
   const blockerText: Record<PublishBlocker, string> = {
     unsaved: t`先に「この経由地を保存」してください。`,
     no_coordinates: t`位置を決めてください（地図に置くか、緯度と経度を入れます）。`,
     position_not_verified: t`位置を公式の情報で確認し、「位置を確認した」にチェックを入れて情報源を書いてください。`,
     permission_required: t`現地の許可を確認し、「許可確認済み」にチェックを入れてください。`,
+    note_required: t`「状態のひとこと」（日本語）を書いてください。「現在、立ち入りできません」など、訪れる人に伝えたいことです。`,
   };
   const statusName: Record<SpotStatus, string> = { open: t`通常`, caution: t`注意`, closed: t`通行止め`, info: t`案内のみ` };
   const id = `place-${place.key}`;
   const settings = useRef<HTMLDetailsElement>(null);
   // What to tick for each reason the place cannot be published yet: the button under 公開する takes the admin there.
-  const blockerField: Partial<Record<PublishBlocker, string>> = { no_coordinates: `${id}-lat`, position_not_verified: `${id}-verified`, permission_required: `${id}-permission` };
+  const blockerField: Partial<Record<PublishBlocker, string>> = { no_coordinates: `${id}-lat`, position_not_verified: `${id}-verified`, permission_required: `${id}-permission`, note_required: `${id}-note` };
   const goTo = (fieldId: string) => {
-    if (fieldId === `${id}-permission` && settings.current) settings.current.open = true;
+    if ((fieldId === `${id}-permission` || fieldId === `${id}-note`) && settings.current) settings.current.open = true;
     const el = document.getElementById(fieldId);
     el?.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     el?.focus({ preventScroll: true });
@@ -162,6 +164,15 @@ export function PlacePanel(p: PlacePanelProps) {
             <p className="pl-9 text-base text-muted">{t`チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。代わりに、一つ前の経由地から、この場所までの寄り道の線（青い細い点線）を、地図で描けます。分かれ道に経由地を置き、その次にこの場所を並べてください。`}</p>
           </div>
 
+          <div className="flex flex-col gap-1">
+            <Check id={`${id}-info`} checked={isInfo} onChange={(v) => p.onChange(infoPatch(v, place))}>
+              {t`案内のみ（スタンプなし）`}
+            </Check>
+            <p className="pl-9 text-base text-muted">
+              {t`見せるだけの場所です。立ち入りできない場所などに使います。スタンプは押せず、コースやラリーの数にも入りません。「状態のひとこと」に、「現在、立ち入りできません」などを書きます。公開には、現地の許可の確認は要りません。`}
+            </p>
+          </div>
+
           </Group>
 
           <Group title={t`写真`}>
@@ -178,17 +189,19 @@ export function PlacePanel(p: PlacePanelProps) {
             <PhotoSlot url={place.photoUrl} className="max-w-md" />
           </Group>
 
-          <Group>
-            <p className="text-base font-bold">{t`この場所のスタンプの絵`}</p>
-            <p className="text-base text-muted">{t`入れると、この場所のスタンプが、ふつうの赤い印の代わりにこの絵になります。正方形で、背景が透明な画像がきれいです。`}</p>
-            <PhotoUpload onUploaded={(url) => p.onChange({ stampImageUrl: url })} />
-            <PhotoSlot url={place.stampImageUrl} className="max-w-32" />
-            {place.stampImageUrl ? (
-              <button type="button" className="self-start text-base font-bold text-accent underline" onClick={() => p.onChange({ stampImageUrl: "" })}>
-                {t`絵をはずす`}
-              </button>
-            ) : null}
-          </Group>
+          {isInfo ? null : (
+            <Group>
+              <p className="text-base font-bold">{t`この場所のスタンプの絵`}</p>
+              <p className="text-base text-muted">{t`入れると、この場所のスタンプが、ふつうの赤い印の代わりにこの絵になります。正方形で、背景が透明な画像がきれいです。`}</p>
+              <PhotoUpload onUploaded={(url) => p.onChange({ stampImageUrl: url })} />
+              <PhotoSlot url={place.stampImageUrl} className="max-w-32" />
+              {place.stampImageUrl ? (
+                <button type="button" className="self-start text-base font-bold text-accent underline" onClick={() => p.onChange({ stampImageUrl: "" })}>
+                  {t`絵をはずす`}
+                </button>
+              ) : null}
+            </Group>
+          )}
 
           <Group>
             <GalleryEditor photos={place.photos} onChange={(photos) => p.onChange({ photos })} name={place.nameJa} lat={place.lat} lng={place.lng} />
@@ -221,7 +234,7 @@ export function PlacePanel(p: PlacePanelProps) {
               {place.permissionConfirmed ? null : <span className="rounded-full border-2 border-danger px-2 text-base text-danger">{t`許可が未確認`}</span>}
             </summary>
             <div className="mt-3 flex flex-col gap-5">
-              {isStamp ? (
+              {isStamp && !isInfo ? (
                 <Field label={t`スタンプを押せる範囲（メートル）`} htmlFor={`${id}-radius`} hint={t`この経由地から、この距離の中にいるとスタンプを押せます。`}>
                   <div className="flex items-center gap-3">
                     <input id={`${id}-radius`} type="range" min={10} max={500} step={5} value={place.radiusM} onChange={(e) => p.onChange({ radiusM: Number(e.target.value) })} className="h-10 w-full max-w-sm accent-[var(--color-brand)]" />

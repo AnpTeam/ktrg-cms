@@ -1,0 +1,2 @@
+ALTER TABLE "spots" DROP CONSTRAINT "spots_publish_requires_permission";--> statement-breakpoint
+ALTER TABLE "spots" ADD CONSTRAINT "spots_publish_requires_permission" CHECK (not "spots"."published" or "spots"."permission_confirmed" or "spots"."status" = 'info');
