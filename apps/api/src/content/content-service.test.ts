@@ -493,6 +493,15 @@ describe("a place's story and gallery", () => {
     expect(await svc.createSpot(ADMIN, r.id, { nameJa: "x", photos: [{ url: "https://a.example/p.jpg", credit: null, sourceUrl: "javascript:alert(1)" }] })).toEqual({ ok: false, reason: "invalid_photo_url" });
   });
 
+  test("the main photo keeps the page it was found on; a source that is not https is refused", async () => {
+    const r = await route();
+    const s = await spot(r.id, { photoUrl: "https://upload.wikimedia.org/m.jpg", photoSourceUrl: " https://commons.wikimedia.org/wiki/File:M.jpg " });
+    expect(s).toMatchObject({ photoSourceUrl: "https://commons.wikimedia.org/wiki/File:M.jpg" });
+    expect(await svc.createSpot(ADMIN, r.id, { nameJa: "y", photoUrl: "https://upload.wikimedia.org/m.jpg", photoSourceUrl: "javascript:alert(1)" })).toEqual({ ok: false, reason: "invalid_photo_url" });
+    const cleared = await svc.updateSpot(ADMIN, s.id, s.updatedAt, { photoSourceUrl: "  " });
+    expect(cleared.ok && cleared.value).toMatchObject({ photoSourceUrl: null });
+  });
+
   test("with PHOTO_HOSTS set, the gallery takes those hosts and Wikimedia, nothing else", async () => {
     const limited = createContentService({ store: mem.store, photoHosts: ["photos.example.com"] });
     const r = await route();

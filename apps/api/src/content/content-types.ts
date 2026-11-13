@@ -104,6 +104,8 @@ export interface SpotRow {
   stampImageUrl: string | null;
   photoUrl: string | null;
   photoCredit: string | null;
+  /** The page the main photo was found on. */
+  photoSourceUrl: string | null;
   /** More photos of the place, in order. */
   photos: SpotPhoto[];
   status: SpotStatus;
@@ -184,6 +186,8 @@ export interface SpotFields {
   stampImageUrl: string | null;
   photoUrl: string | null;
   photoCredit: string | null;
+  /** The page the main photo was found on. */
+  photoSourceUrl: string | null;
   /** More photos of the place, in order. */
   photos: SpotPhoto[];
   status: SpotStatus;

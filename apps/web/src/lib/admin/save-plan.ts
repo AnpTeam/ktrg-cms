@@ -65,6 +65,7 @@ export interface PlaceBody {
   stampImageUrl: string | null;
   photoUrl: string | null;
   photoCredit: string | null;
+  photoSourceUrl: string | null;
   sourceJa: string | null;
   sourceEn: string | null;
   photos: GalleryPhoto[];
@@ -152,6 +153,7 @@ export function placeBody(p: PlaceDraft): PlaceBody {
     stampImageUrl: nullIfEmpty(p.stampImageUrl),
     photoUrl: nullIfEmpty(p.photoUrl),
     photoCredit: nullIfEmpty(p.photoCredit),
+    photoSourceUrl: nullIfEmpty(p.photoSourceUrl),
     sourceJa: nullIfEmpty(p.sourceJa),
     sourceEn: nullIfEmpty(p.sourceEn),
     photos: p.photos.filter((x) => x.url.trim() !== ""),
