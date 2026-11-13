@@ -88,7 +88,7 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
   return (
     <div className="flex flex-col gap-5">
       <div className="sticky top-0 z-20 -mx-4 flex flex-wrap items-center gap-3 border-b border-line bg-paper px-4 py-3 lg:-mx-8 lg:px-8">
-        <h1 className="min-w-0 flex-1 text-2xl font-bold">{names[pageKey]}</h1>
+        <h1 className="order-last min-w-0 basis-full break-words text-2xl font-bold lg:order-none lg:basis-0 lg:flex-1">{names[pageKey]}</h1>
         <p className="text-base text-muted" aria-live="polite">
           {dirty ? t`保存していない変更があります` : t`保存済み`}
         </p>
