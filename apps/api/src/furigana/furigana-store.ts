@@ -1,9 +1,15 @@
-import { and, asc, eq, inArray, notInArray, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { afterCursor, newestFirst, sameInstant } from "../admin-lists/list-sql";
+import { auditRow } from "../audit/audit-log";
 import { writeAudit } from "../audit/audit-store";
 import type { Db } from "../db/client";
-import { furiganaWords } from "../db/schema";
+import { auditLog, furiganaWords } from "../db/schema";
 import { FURIGANA_AUDIT, type FuriganaStore } from "./furigana-words";
+
+// PostgreSQL carries at most 65,535 values in one statement, and the dictionary may suggest every word on the site: long lists
+// are written in parts of this size.
+const CHUNK = 1000;
+const inParts = <T>(items: readonly T[]): T[][] => Array.from({ length: Math.ceil(items.length / CHUNK) }, (_, i) => items.slice(i * CHUNK, (i + 1) * CHUNK));
 
 const UNIQUE_VIOLATION = "23505";
 const isUniqueViolation = (err: unknown) => (err as { code?: string; cause?: { code?: string } })?.code === UNIQUE_VIOLATION || (err as { cause?: { code?: string } })?.cause?.code === UNIQUE_VIOLATION;
@@ -68,23 +74,26 @@ export function createDrizzleFuriganaStore(db: Db): FuriganaStore {
           .set({ pending: false, updatedAt: sql`clock_timestamp()` })
           .where(and(inArray(furiganaWords.id, ids), eq(furiganaWords.pending, true)))
           .returning({ id: furiganaWords.id });
-        for (const { id } of done) await writeAudit(tx, { actorUserId: actor, action: FURIGANA_AUDIT.approve, targetId: id });
+        if (done.length > 0) await tx.insert(auditLog).values(done.map(({ id }) => auditRow({ actorUserId: actor, action: FURIGANA_AUDIT.approve, targetId: id }))); // one statement, not one per word
         return done.length;
       });
     },
     async setSuggestions(actor, words) {
       return db.transaction(async (tx) => {
-        const wanted = words.map((w) => w.word);
-        const gone = await tx
-          .delete(furiganaWords)
-          .where(and(eq(furiganaWords.pending, true), wanted.length ? notInArray(furiganaWords.word, wanted) : sql`true`))
-          .returning({ id: furiganaWords.id });
+        // The waiting suggestions the dictionary no longer makes. Found here, not with `not in (every wanted word)`, which would
+        // carry every word as a value.
+        const wanted = new Set(words.map((w) => w.word));
+        const waiting = await tx.select({ id: furiganaWords.id, word: furiganaWords.word }).from(furiganaWords).where(eq(furiganaWords.pending, true));
+        const stale = waiting.filter((w) => !wanted.has(w.word)).map((w) => w.id);
+        for (const part of inParts(stale)) await tx.delete(furiganaWords).where(inArray(furiganaWords.id, part));
         // A word already in the list, a person's or a suggestion, stays as it is.
-        const made = words.length
-          ? await tx.insert(furiganaWords).values(words.map((w) => ({ ...w, pending: true }))).onConflictDoNothing({ target: furiganaWords.word }).returning({ id: furiganaWords.id })
-          : [];
+        let added = 0;
+        for (const part of inParts(words)) {
+          const made = await tx.insert(furiganaWords).values(part.map((w) => ({ ...w, pending: true }))).onConflictDoNothing({ target: furiganaWords.word }).returning({ id: furiganaWords.id });
+          added += made.length;
+        }
         await writeAudit(tx, { actorUserId: actor, action: FURIGANA_AUDIT.refresh, targetId: null });
-        return { added: made.length, removed: gone.length };
+        return { added, removed: stale.length };
       });
     },
     async findByWord(word) {
