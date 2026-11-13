@@ -51,6 +51,7 @@ export const ERROR_CODES = {
   position_not_verified: "409: the position has not been checked against an official source",
   source_required: "400: name the source when the position is marked as checked",
   permission_required: "409: the site's permission is not confirmed",
+  note_required: "409: an info-only place needs its note before it is published",
 
   // --- Stamping (GPS check-in) --------------------------------------------------------------
   spot_closed: "409: the place is closed, so no stamp can be collected there",

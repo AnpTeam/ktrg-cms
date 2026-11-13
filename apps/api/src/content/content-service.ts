@@ -263,6 +263,16 @@ const text = (v: string | null | undefined): string | null | undefined =>
   v === undefined ? undefined : v === null ? null : v.trim() === "" ? null : v.trim();
 
 /** `photoHosts` (PHOTO_HOSTS): when not empty, photos may only come from these host names. */
+/**
+ * What still stops a place that has a checked position from being public. A place visitors can stamp or visit needs the site's
+ * permission. An info-only place (status `info`: it is described, nobody is sent there, no stamp) needs its note instead
+ * (the "no entry" wording), because the permission is about people standing on that land.
+ */
+export function publishGap(s: { status: string; permissionConfirmed: boolean; statusNoteJa: string | null }): "permission_required" | "note_required" | null {
+  if (s.status === "info") return (s.statusNoteJa ?? "").trim() ? null : "note_required";
+  return s.permissionConfirmed ? null : "permission_required";
+}
+
 export function createContentService(deps: { store: ContentStore; photoHosts?: readonly string[]; publicRoutesTtlMs?: number }) {
   const { store } = deps;
   // shortcut: the public route list (which reads every route's line to draw its silhouette) is kept per process for
@@ -496,8 +506,12 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (current.published) {
         // A published place must keep passing every publish rule.
         if (!verifiedNow) return bad("position_not_verified");
-        // Every place needs the site's permission to stay public, with a stamp or without.
-        if (!(changes.permissionConfirmed ?? current.permissionConfirmed)) return bad("permission_required");
+        const gap = publishGap({
+          status: changes.status ?? current.status,
+          permissionConfirmed: changes.permissionConfirmed ?? current.permissionConfirmed,
+          statusNoteJa: changes.statusNoteJa !== undefined ? changes.statusNoteJa : current.statusNoteJa,
+        });
+        if (gap) return bad(gap);
         if (changes.lat === null) return bad("no_coordinates");
       }
       const r = await store.updateSpot(actor, id, date(expected), changes);
@@ -512,7 +526,8 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       if (!s) return bad("not_found");
       if (s.lat === null || s.lng === null) return bad("no_coordinates");
       if (!s.positionVerified) return bad("position_not_verified");
-      if (!s.permissionConfirmed) return bad("permission_required");
+      const gap = publishGap(s);
+      if (gap) return bad(gap);
       const r = await store.setPublished(actor, id, true);
       if (!r) return bad("not_found");
       // The store re-checks the same rules inside the write; a place changed in between stays unpublished.

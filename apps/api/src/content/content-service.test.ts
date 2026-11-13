@@ -194,6 +194,20 @@ describe("places", () => {
     expect(published.ok && published.value.published).toBe(true);
   });
 
+  test("an info-only place (nobody stands there) needs a checked position and a note, not the site's permission", async () => {
+    const r = await route();
+    const s = await spot(r.id, { lat: 34.3, lng: 135.1, positionVerified: true, positionSource: "葛城修験 公式サイト", status: "info" });
+    expect(await svc.publishSpot(ADMIN, s.id)).toEqual({ ok: false, reason: "note_required" });
+    const noted = await svc.updateSpot(ADMIN, s.id, s.updatedAt, { statusNoteJa: "現在、立ち入りできません。" });
+    if (!noted.ok) throw new Error(noted.reason);
+    const published = await svc.publishSpot(ADMIN, s.id);
+    expect(published.ok && published.value).toMatchObject({ published: true, permissionConfirmed: false });
+    // Once public it keeps its note, and an ordinary place is still refused without permission.
+    expect(await svc.updateSpot(ADMIN, s.id, published.ok ? published.value.updatedAt : s.updatedAt, { statusNoteJa: "  " })).toEqual({ ok: false, reason: "note_required" });
+    const plain = await spot(r.id, { lat: 34.3, lng: 135.1, positionVerified: true, positionSource: "公式サイト" });
+    expect(await svc.publishSpot(ADMIN, plain.id)).toEqual({ ok: false, reason: "permission_required" });
+  });
+
   test("checking a position needs a source; moving a place cancels the check", async () => {
     const r = await route();
     const s = await spot(r.id, { lat: 34.3, lng: 135.1 });
