@@ -98,7 +98,7 @@ export function createMemoryContentStore(audit: AuditWriter, opts: { now?: () =>
       const at = stampTime();
       const row: SpotRow = {
         id: uuid(), routeId, nameEn: null, nameKana: null, descriptionJa: null, descriptionEn: null, historyJa: null, historyEn: null, lat: null, lng: null,
-        positionVerified: false, positionSource: null, radiusM: 50, kind: "other", stampable: false, stopBy: false, stampImageUrl: null, photoUrl: null, photoCredit: null, photos: [], status: "open", statusNoteJa: null, statusNoteEn: null, sourceJa: null, sourceEn: null,
+        positionVerified: false, positionSource: null, radiusM: 50, kind: "other", stampable: false, stopBy: false, stampImageUrl: null, photoUrl: null, photoCredit: null, photoSourceUrl: null, photos: [], status: "open", statusNoteJa: null, statusNoteEn: null, sourceJa: null, sourceEn: null,
         statusUpdatedAt: null, sortOrder: sortedSpots(routeId).length + 1, published: false, permissionConfirmed: false,
         permissionNote: null, createdAt: at, updatedAt: at, ...fields,
         translations: mergeTranslations({}, fields.translations),

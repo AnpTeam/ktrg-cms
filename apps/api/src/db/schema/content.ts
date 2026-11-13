@@ -183,6 +183,8 @@ export const spots = pgTable(
     stopBy: boolean("stop_by").notNull().default(false),
     photoUrl: text("photo_url"),
     photoCredit: text("photo_credit"),
+    // The page the main photo was found on (Wikimedia Commons, a site), when it is not our own.
+    photoSourceUrl: text("photo_source_url"),
     // A picture to use as this place's stamp, in place of the plain seal.
     stampImageUrl: text("stamp_image_url"),
     // More photos of the place, in order (the first photo above is its main one).

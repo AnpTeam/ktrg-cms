@@ -46,6 +46,7 @@ export interface PublicSpot {
   stampImageUrl: string | null;
   photoUrl: string | null;
   photoCredit: string | null;
+  photoSourceUrl: string | null;
   sourceJa: string | null;
   sourceEn: string | null;
   /** More photos of the place, in order, each with who took it when that is known. */
@@ -233,6 +234,7 @@ function toPublicSpot(s: SpotRow): PublicSpot {
     stampImageUrl: s.stampImageUrl,
     photoUrl: s.photoUrl,
     photoCredit: s.photoCredit,
+    photoSourceUrl: s.photoSourceUrl,
     sourceJa: s.sourceJa,
     sourceEn: s.sourceEn,
     photos: s.photos,
@@ -384,6 +386,11 @@ export function createContentService(deps: { store: ContentStore; photoHosts?: r
       const v = text(input.photoUrl);
       if (v && !isPhotoUrl(v, photoHosts)) return bad("invalid_photo_url");
       out.photoUrl = v;
+    }
+    if (input.photoSourceUrl !== undefined) {
+      const v = text(input.photoSourceUrl);
+      if (v && !isHttpsUrl(v)) return bad("invalid_photo_url");
+      out.photoSourceUrl = v;
     }
     if (input.stampImageUrl !== undefined) {
       const v = text(input.stampImageUrl);

@@ -7,8 +7,7 @@ import { publishBlockers, type PlaceDraft, type PublishBlocker } from "@/lib/adm
 import type { SpotStatus } from "@/lib/admin/types";
 import { RubyEditor } from "./RubyEditor";
 import { Check, Field, inputClass, MultilingualField, NumberInput, TextInput } from "./fields";
-import { GalleryEditor } from "./GalleryEditor";
-import { PhotoLinkDetails } from "./PhotoLinkDetails";
+import { PhotoListEditor } from "./PhotoListEditor";
 import { InfoTip } from "./InfoTip";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoUpload } from "./PhotoUpload";
@@ -66,10 +65,11 @@ export function useKindLabels(): Record<PointKind, string> {
 /** A block of the place form, set off by a rule above it (and a heading, when it has none of its own). */
 function Group({ title, first = false, children }: { title?: string; first?: boolean; children: ReactNode }) {
   return (
-    <section className={`flex flex-col gap-5 ${first ? "" : "border-t-2 border-line pt-6"}`}>
-      {title ? <h4 className="text-xl font-bold">{title}</h4> : null}
+    // A fieldset, so the title sits on its line (the same as every other group).
+    <fieldset className={`flex min-w-0 flex-col gap-5 ${first ? "" : "border-t-2 border-line pt-3"}`}>
+      {title ? <legend className="pr-3 text-xl font-bold">{title}</legend> : null}
       {children}
-    </section>
+    </fieldset>
   );
 }
 
@@ -167,40 +167,33 @@ export function PlacePanel(p: PlacePanelProps) {
             hint={t`チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。代わりに、一つ前の経由地から、この場所までの寄り道の線（青い細い点線）を、地図で描けます。分かれ道に経由地を置き、その次にこの場所を並べてください。`}
           />
 
+          {isStamp || place.stampImageUrl ? (
+            <div className="flex flex-col gap-2">
+              <p className="text-base font-bold">{t`この場所のスタンプの絵`}</p>
+              <p className="text-base text-muted">{t`入れると、この場所のスタンプが、ふつうの赤い印の代わりにこの絵になります。正方形で、背景が透明な画像がきれいです。`}</p>
+              <PhotoUpload onUploaded={(url) => p.onChange({ stampImageUrl: url })} />
+              <PhotoSlot url={place.stampImageUrl} className="max-w-32" />
+              {place.stampImageUrl ? (
+                <button type="button" className="self-start text-base font-bold text-accent underline" onClick={() => p.onChange({ stampImageUrl: "" })}>
+                  {t`絵をはずす`}
+                </button>
+              ) : null}
+            </div>
+          ) : null}
           </Group>
 
           <Group title={t`写真`}>
-            <PhotoUpload onUploaded={(url) => p.onChange({ photoUrl: url })} />
-            <PhotoLinkDetails open={p.invalidPhoto}>
-              <Field label={t`写真のリンク`} htmlFor={`${id}-photo`} hint={t`https:// で始まるリンクを入れます。空にすると、写真は表示されません。`}>
-                <TextInput id={`${id}-photo`} value={place.photoUrl} onChange={(v) => p.onChange({ photoUrl: v })} maxLength={500} invalid={p.invalidPhoto} />
-              </Field>
-            </PhotoLinkDetails>
-            <Field label={t`写真の出どころ`} htmlFor={`${id}-photo-credit`} hint={t`写真の下に ℹ︎ と一緒に表示されます。リンクは [表示する文字](https://…) と書きます。`}>
-              <TextInput id={`${id}-photo-credit`} value={place.photoCredit} onChange={(v) => p.onChange({ photoCredit: v })} maxLength={500} />
-            </Field>
-            {p.invalidPhoto ?<p role="alert" className="text-base font-bold text-danger">{t`写真のリンクは、https:// で始まるものだけ使えます。`}</p> : null}
-            <PhotoSlot url={place.photoUrl} className="max-w-md" />
+            <PhotoListEditor
+              stored={{ photoUrl: place.photoUrl, photoCredit: place.photoCredit, photoSourceUrl: place.photoSourceUrl, photos: place.photos }}
+              onChange={(next) => p.onChange(next)}
+              name={place.nameJa}
+              lat={place.lat}
+              lng={place.lng}
+            />
+            {p.invalidPhoto ? <p role="alert" className="text-base font-bold text-danger">{t`写真のリンクは、https:// で始まるものだけ使えます。`}</p> : null}
           </Group>
 
-          <Group>
-            <p className="text-base font-bold">{t`この場所のスタンプの絵`}</p>
-            <p className="text-base text-muted">{t`入れると、この場所のスタンプが、ふつうの赤い印の代わりにこの絵になります。正方形で、背景が透明な画像がきれいです。`}</p>
-            <PhotoUpload onUploaded={(url) => p.onChange({ stampImageUrl: url })} />
-            <PhotoSlot url={place.stampImageUrl} className="max-w-32" />
-            {place.stampImageUrl ? (
-              <button type="button" className="self-start text-base font-bold text-accent underline" onClick={() => p.onChange({ stampImageUrl: "" })}>
-                {t`絵をはずす`}
-              </button>
-            ) : null}
-          </Group>
-
-          <Group>
-            <GalleryEditor photos={place.photos} onChange={(photos) => p.onChange({ photos })} name={place.nameJa} lat={place.lat} lng={place.lng} />
-          </Group>
-
-          <fieldset className="flex flex-col gap-3 border-t-2 border-line pt-6">
-            <legend className="text-base font-bold">{t`位置`}</legend>
+          <Group title={t`位置`}>
             <div className="flex flex-wrap gap-4">
               <Field label={t`緯度`} htmlFor={`${id}-lat`}>
                 <NumberInput id={`${id}-lat`} value={place.lat} min={-90} max={90} onChange={(v) => p.onChange({ lat: v })} />
@@ -217,7 +210,7 @@ export function PlacePanel(p: PlacePanelProps) {
             <Field label={t`確認した情報源（サイト名やリンク）`} htmlFor={`${id}-source`}>
               <TextInput id={`${id}-source`} value={place.positionSource} onChange={(v) => p.onChange({ positionSource: v })} maxLength={500} />
             </Field>
-          </fieldset>
+          </Group>
 
           {/* Open at first, so the permission tick is in view; it can be folded away. */}
           <details ref={settings} open className="rounded-xl bg-surface p-4">

@@ -8420,3 +8420,19 @@ msgstr "Set position on the map"
 #: src/components/admin/RouteTable.tsx
 msgid "あるとよい {0}"
 msgstr "Nice to have: {0}"
+
+#: src/components/admin/PhotoListEditor.tsx
+msgid "先頭の写真が、この経由地のメイン写真です。ほかの写真は、この経由地のページに順に並びます。他の人が撮った写真は、撮った人と使用条件を、「出どころ」に書いてください。"
+msgstr "The first photo is the main photo of this waypoint. The others are shown in order on its page. For a photo taken by someone else, write who took it and its license under \"Credit\"."
+
+#: src/components/admin/PhotoListEditor.tsx
+msgid "外す"
+msgstr "Remove"
+
+#: src/components/admin/PhotoListEditor.tsx
+msgid "メイン写真"
+msgstr "Main photo"
+
+#: src/components/admin/PhotoListEditor.tsx
+msgid "写真は、まだありません。"
+msgstr "There are no photos yet."
