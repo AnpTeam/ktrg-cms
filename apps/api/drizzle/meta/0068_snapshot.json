@@ -1,5 +1,5 @@
 {
-  "id": "08161768-99e9-4927-8b80-c9423e5c4f43",
+  "id": "5185b53a-4326-4564-8163-6786a22f31bc",
   "prevId": "9ca36f7b-96d9-43f9-8eb2-602fd432b00a",
   "version": "7",
   "dialect": "postgresql",
@@ -2922,6 +2922,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "photo_source_url": {
+          "name": "photo_source_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "stamp_image_url": {
           "name": "stamp_image_url",
           "type": "text",
@@ -3055,7 +3061,7 @@
         },
         "spots_publish_requires_permission": {
           "name": "spots_publish_requires_permission",
-          "value": "not \"spots\".\"published\" or \"spots\".\"permission_confirmed\" or \"spots\".\"status\" = 'info'"
+          "value": "not \"spots\".\"published\" or \"spots\".\"permission_confirmed\""
         },
         "spots_publish_requires_verified_position": {
           "name": "spots_publish_requires_verified_position",

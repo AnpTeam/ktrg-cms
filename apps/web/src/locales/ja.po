@@ -8421,6 +8421,22 @@ msgstr "地図で位置を決める"
 msgid "あるとよい {0}"
 msgstr "あるとよい {0}"
 
+#: src/components/admin/PhotoListEditor.tsx
+msgid "先頭の写真が、この経由地のメイン写真です。ほかの写真は、この経由地のページに順に並びます。他の人が撮った写真は、撮った人と使用条件を、「出どころ」に書いてください。"
+msgstr "先頭の写真が、この経由地のメイン写真です。ほかの写真は、この経由地のページに順に並びます。他の人が撮った写真は、撮った人と使用条件を、「出どころ」に書いてください。"
+
+#: src/components/admin/PhotoListEditor.tsx
+msgid "外す"
+msgstr "外す"
+
+#: src/components/admin/PhotoListEditor.tsx
+msgid "メイン写真"
+msgstr "メイン写真"
+
+#: src/components/admin/PhotoListEditor.tsx
+msgid "写真は、まだありません。"
+msgstr "写真は、まだありません。"
+
 #: src/components/admin/PlacePanel.tsx
 msgid "「状態のひとこと」（日本語）を書いてください。「現在、立ち入りできません」など、訪れる人に伝えたいことです。"
 msgstr "「状態のひとこと」（日本語）を書いてください。「現在、立ち入りできません」など、訪れる人に伝えたいことです。"

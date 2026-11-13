@@ -481,8 +481,15 @@
     {
       "idx": 68,
       "version": "7",
-      "when": 1794551104586,
-      "tag": "0068_info_spot_needs_no_permission",
+      "when": 1794550581139,
+      "tag": "0068_spot_photo_source_url",
+      "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "7",
+      "when": 1794554827658,
+      "tag": "0069_info_spot_needs_no_permission",
       "breakpoints": true
     }
   ]
