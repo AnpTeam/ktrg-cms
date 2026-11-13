@@ -315,7 +315,7 @@ const listOut = (post: PostRow) => {
   return { ...out, bodyJa: out.bodyJa.slice(0, LIST_BODY_CHARS), bodyEn: out.bodyEn === null ? null : out.bodyEn.slice(0, LIST_BODY_CHARS) };
 };
 
-/** A page as visitors get it at /p/<slug> (the same answer site_pages used to give). */
+/** A page as visitors get it at /p/<slug>. */
 const pageOut = (p: PostRow) => ({ slug: p.slug ?? "", titleJa: p.titleJa, titleEn: p.titleEn, bodyJa: p.bodyJa, bodyEn: p.bodyEn });
 
 /** What visitors read, no login: published posts whose day has come, newest first, one post by its id, and the pages. */
