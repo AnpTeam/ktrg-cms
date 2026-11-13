@@ -77,6 +77,19 @@ describe("legs", () => {
     expect(routeBody(s.present).area).toBeNull();
     expect(run(s, { type: "undo" }).present.area).toEqual(box);
   });
+  test("a return path (c to b, then b to a) is joined after the route, counts in the distance, is saved with its mark and survives a reload", () => {
+    let s = run(withStops(), { type: "setLegs", legs: [{ from: "a", to: "b", points: [[135, 34], [135.01, 34.01]] }, { from: "b", to: "c", points: [[135.01, 34.01], [135, 34.02]] }] });
+    const out = s.present.distanceKm!;
+    s = run(s, { type: "setLeg", leg: { from: "c", to: "b", points: [[135, 34.02], [135.01, 34.01]], back: true } }, { type: "setLeg", leg: { from: "b", to: "a", points: [[135.01, 34.01], [135, 34]], back: true } });
+    expect(s.present.legs.map((l) => [l.from, l.to, !!l.back])).toEqual([["a", "b", false], ["b", "c", false], ["c", "b", true], ["b", "a", true]]);
+    expect(s.present.line).toEqual([[135, 34], [135.01, 34.01], [135, 34.02], [135.01, 34.01], [135, 34]]);
+    expect(s.present.distanceKm!).toBeGreaterThan(out * 1.9);
+    // Saved with the mark; a stop that is removed takes its return legs with it.
+    expect(routeBody(s.present).geometry?.legs?.filter((l) => l.back).map((l) => [l.from, l.to])).toEqual([["c", "b"], ["b", "a"]]);
+    expect(run(s, { type: "removePlace", key: "a" }).present.legs.filter((l) => l.back).map((l) => [l.from, l.to])).toEqual([["c", "b"]]);
+    // Undo takes back the way back in one step per leg.
+    expect(run(s, { type: "undo" }).present.legs.filter((l) => l.back)).toHaveLength(1);
+  });
   test("a line the stops do not follow stays one loose line, until it is cut on purpose", () => {
     const line: [number, number][] = [[135, 34], [135.005, 34.005], [135.01, 34.01]];
     let s = run(fresh(), { type: "line", points: line });

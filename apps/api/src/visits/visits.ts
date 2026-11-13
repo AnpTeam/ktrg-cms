@@ -31,8 +31,8 @@ export interface VisitStore {
   /** Adds one view to the day's count for this place and page. */
   add(day: string, place: Place, path: string): Promise<void>;
   summary(from: string, to: string, pathPrefix: string | null): Promise<VisitSummary>;
-  /** Views per day, for a range (days with none are left out). */
-  daily(from: string, to: string): Promise<{ day: string; views: number }[]>;
+  /** Views per day, for a range and optionally one page (a path prefix); days with none are left out. */
+  daily(from: string, to: string, pathPrefix?: string | null): Promise<{ day: string; views: number }[]>;
 }
 
 // Pages that are about one person or one sign-in step are not counted at all.
@@ -84,7 +84,7 @@ export function createVisitService(deps: { store: VisitStore; now?: () => Date }
       return true;
     },
     summary: (from: string, to: string, pathPrefix: string | null) => deps.store.summary(from, to, pathPrefix),
-    daily: (from: string, to: string) => deps.store.daily(from, to),
+    daily: (from: string, to: string, pathPrefix: string | null = null) => deps.store.daily(from, to, pathPrefix),
     today: () => todayInJapan(now()),
   };
 }
@@ -99,9 +99,9 @@ export function createMemoryVisitStore(): VisitStore {
       row.views++;
       rows.set(key, row);
     },
-    async daily(from, to) {
+    async daily(from, to, prefix = null) {
       const m = new Map<string, number>();
-      for (const r of rows.values()) if (r.day >= from && r.day <= to) m.set(r.day, (m.get(r.day) ?? 0) + r.views);
+      for (const r of rows.values()) if (r.day >= from && r.day <= to && (prefix === null || r.path.startsWith(prefix))) m.set(r.day, (m.get(r.day) ?? 0) + r.views);
       return [...m].map(([day, views]) => ({ day, views })).sort((a, b) => a.day.localeCompare(b.day));
     },
     async summary(from, to, prefix) {
@@ -158,7 +158,9 @@ export function visitRoutes(getServices: () => VisitServices, opts: RouteOptions
         const from = query.from ?? new Date(Date.parse(`${to}T00:00:00Z`) - 29 * 86_400_000).toISOString().slice(0, 10);
         const days = (Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000;
         if (!(days >= 0) || days > MAX_RANGE_DAYS) return fail(set, 422, "validation_failed");
-        return { ok: true as const, from, to, minCityViews: MIN_CITY_VIEWS, ...(await svc.summary(from, to, query.path ?? null)) };
+        const path = query.path ?? null;
+        const [summary, daily] = await Promise.all([svc.summary(from, to, path), svc.daily(from, to, path)]);
+        return { ok: true as const, from, to, minCityViews: MIN_CITY_VIEWS, ...summary, daily };
       },
       { auth: "visit.read", query: t.Object({ from: t.Optional(DAY), to: t.Optional(DAY), path: t.Optional(t.String({ maxLength: 200 })) }), detail: { summary: "Page views by place" } },
     );

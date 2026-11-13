@@ -8,7 +8,7 @@ import { isAllSmooth } from "@/lib/admin/drawn-path";
 import { parseGpx, type GpxWaypoint } from "@/lib/admin/gpx";
 import { applyGpxElevations } from "@/lib/admin/gpx-elevation";
 import { LEG_HIT, LEG_SOURCE, legFeatures, legLayers } from "@/lib/admin/leg-map";
-import { guideRoute, insertAnchor, insertGuidePoint, legFromPath, legOf, MAX_GUIDE_POINTS, moveAnchor, moveGuidePoint, pairsOf, pathOfLeg, pathStops, pointsFromAnchors, removeAnchors, removeGuidePoint, RIDE_MODES, setAllCurves, sidePairs, toggleAnchorCurve, type GuidePoint, type Leg, type Path, type RideMode, type Stop } from "@/lib/admin/legs";
+import { backChoices, backLeg, backPairs, guideRoute, insertAnchor, insertGuidePoint, legFromPath, legOf, MAX_GUIDE_POINTS, moveAnchor, moveGuidePoint, pairId, pairsOf, pathOfLeg, pathStops, pointsFromAnchors, removeAnchors, removeGuidePoint, RIDE_MODES, setAllCurves, sidePairs, toggleAnchorCurve, type GuidePoint, type Leg, type Path, type RideMode, type Stop } from "@/lib/admin/legs";
 import { simplify, type LngLatEle } from "@/lib/admin/line";
 import { legTime } from "@/lib/leg-times";
 import { searchPlaces, type PlaceHit } from "@/lib/admin/place-search";
@@ -131,17 +131,18 @@ function withEnds(line: readonly LngLatEle[], from: Stop, to: Stop): LngLatEle[]
   return [[from.lng, from.lat], ...line.slice(1, -1), [to.lng, to.lat]];
 }
 
-type Pair = { from: Stop; to: Stop; side?: true };
+type Pair = { from: Stop; to: Stop; side?: true; back?: true };
 
 /** The leg of a chosen waypoint: the one that starts there, or the side trip that leads to it. */
 const legOfWaypoint = (pairs: readonly Pair[], key: string | null): Pair | undefined =>
-  pairs.find((p) => !p.side && p.from.key === key) ?? pairs.find((p) => p.side && p.to.key === key);
+  pairs.find((p) => !p.side && !p.back && p.from.key === key) ?? pairs.find((p) => p.side && p.to.key === key);
 
 /** The leg to start drawing: the one of the chosen waypoint, else the first pair without a leg, else the first pair. */
 function firstLeg(pairs: readonly Pair[], legs: readonly Leg[], selectedKey: string | null): string | null {
   const own = legOfWaypoint(pairs, selectedKey);
   const empty = pairs.find((p) => !legOf(legs, p.from.key, p.to.key));
-  return (own ?? empty ?? pairs[0])?.to.key ?? null;
+  const first = own ?? empty ?? pairs[0];
+  return first ? pairId(first) : null;
 }
 
 export function MapEditor(props: MapEditorProps) {
@@ -207,10 +208,19 @@ export function MapEditor(props: MapEditorProps) {
   // ---- the stops, the legs between them, and the one being worked on -----------------------------------------------
   const stops = useMemo(() => pathStops(props.places), [props.places]);
   // The legs of the route, then the side trips out to the stop-by places. A leg is named by the stop it runs to (unique, also for a side trip).
-  const pairs: Pair[] = useMemo(() => [...pairsOf(stops), ...sidePairs(props.places).map((p) => ({ ...p, side: true as const }))], [stops, props.places]);
+  // Then the way back (return legs, 戻る道): a leg per pair of stops, named by both its stops (it can end on a stop another leg ends on).
+  const pairs: Pair[] = useMemo(
+    () => [...pairsOf(stops), ...sidePairs(props.places).map((p) => ({ ...p, side: true as const })), ...backPairs(stops, props.legs).map((p) => ({ ...p, back: true as const }))],
+    [stops, props.places, props.legs],
+  );
+  // A leg drawn again on a return pair stays a return leg (the places that build legs do not know about the kinds).
+  const backKeys = new Set(pairs.filter((p) => p.back).map((p) => `${p.from.key}>${p.to.key}`));
+  const tagBack = (leg: Leg): Leg => (backKeys.has(`${leg.from}>${leg.to}`) && !leg.back ? { ...leg, back: true } : leg);
+  const setLeg = (leg: Leg) => props.onSetLeg(tagBack(leg));
+  const setLegs = (legs: Leg[]) => props.onSetLegs(legs.map(tagBack));
   // The chosen leg is read as nothing once its pair of stops is gone, and the chosen point only counts on the leg it was chosen on.
-  const activePair = pairs.find((p) => p.to.key === chosenId) ?? null;
-  const activeId = activePair ? activePair.to.key : null;
+  const activePair = pairs.find((p) => pairId(p) === chosenId) ?? null;
+  const activeId = activePair ? pairId(activePair) : null;
   const anchorIdx = anchorAt && anchorAt.from === activeId ? anchorAt.index : null;
   const setAnchorIdx = (index: number | null) => setAnchorAt(index === null ? null : { from: activeId, index });
   const activeLeg = activePair ? legOf(props.legs, activePair.from.key, activePair.to.key) : undefined;
@@ -222,7 +232,7 @@ export function MapEditor(props: MapEditorProps) {
   function editPath(update: (p: Path) => Path) {
     if (!activePair) return;
     const next = update(activePath);
-    props.onSetLeg({ ...legFromPath(activePair.from, activePair.to, next), ...(activeLeg?.ride ? { ride: activeLeg.ride } : {}), ...(activeLeg?.via ? { via: activeLeg.via } : {}) });
+    setLeg({ ...legFromPath(activePair.from, activePair.to, next), ...(activeLeg?.ride ? { ride: activeLeg.ride } : {}), ...(activeLeg?.via ? { via: activeLeg.via } : {}) });
   }
 
   /**
@@ -257,10 +267,10 @@ export function MapEditor(props: MapEditorProps) {
     }
     setWorking(false);
     if (!line) {
-      props.onSetLeg({ from: from.key, to: to.key, points: own?.points ?? [[from.lng, from.lat], [to.lng, to.lat]], ...keep });
+      setLeg({ from: from.key, to: to.key, points: own?.points ?? [[from.lng, from.lat], [to.lng, to.lat]], ...keep });
       return setNote(message || t`道が見つかりませんでした。ガイド点は残してあります。`);
     }
-    props.onSetLeg({ from: from.key, to: to.key, points: withEnds(simplify(roundLine(line), MAX_POINTS), from, to), ...keep });
+    setLeg({ from: from.key, to: to.key, points: withEnds(simplify(roundLine(line), MAX_POINTS), from, to), ...keep });
     setNote(
       fellBack
         ? t`道の探索サービスが使えなかったため、地図の道（国土地理院）で探しました。いつもと違う道になることがあります。形をよく確かめてください。「元に戻す」で、もとの線にもどせます。`
@@ -272,7 +282,7 @@ export function MapEditor(props: MapEditorProps) {
   function changeGuides(via: GuidePoint[]) {
     if (!activePair) return;
     const base: Leg = activeLeg ?? { from: activePair.from.key, to: activePair.to.key, points: [[activePair.from.lng, activePair.from.lat], [activePair.to.lng, activePair.to.lat]] };
-    props.onSetLeg({ ...base, via: via.length > 0 ? via : undefined }); // (an undefined member is not saved)
+    setLeg({ ...base, via: via.length > 0 ? via : undefined }); // (an undefined member is not saved)
     setNote(via.length > 0 ? t`ガイド点を変えました。「道を探す」を押すと、この点を通る道を探します（探すのは1回だけです）。` : t`ガイド点をすべて消しました。線はそのままです。`);
   }
 
@@ -331,7 +341,7 @@ export function MapEditor(props: MapEditorProps) {
     previewAnchor: (i, at) => {
       if (!activePair) return;
       const moved = moveAnchor(activePath, i, [at.lat, at.lng]);
-      actions.current.redraw({ id: activePair.to.key, points: pointsFromAnchors(activePair.from, activePair.to, moved.anchors, moved.curves) });
+      actions.current.redraw({ id: pairId(activePair), points: pointsFromAnchors(activePair.from, activePair.to, moved.anchors, moved.curves) });
     },
     dropAnchor: (i, at) => {
       justDragged.current = true;
@@ -371,7 +381,7 @@ export function MapEditor(props: MapEditorProps) {
   if (seenSelected !== props.selectedKey) {
     setSeenSelected(props.selectedKey);
     const own = legOfWaypoint(pairs, props.selectedKey);
-    if (own) setActiveId(own.to.key);
+    if (own) setActiveId(pairId(own));
   }
 
   // ---- the map, created once -----------------------------------------------------------------------------------
@@ -605,7 +615,7 @@ export function MapEditor(props: MapEditorProps) {
 
   function fitLeg(id: string | null) {
     const map = mapRef.current;
-    const pair = pairs.find((p) => p.to.key === id);
+    const pair = pairs.find((p) => pairId(p) === id);
     if (!map || !pair) return;
     const leg = legOf(props.legs, pair.from.key, pair.to.key);
     const b = boundsOf([...(leg?.points ?? []).map((p) => ({ lng: p[0], lat: p[1] })), { lat: pair.from.lat, lng: pair.from.lng }, { lat: pair.to.lat, lng: pair.to.lng }]);
@@ -689,8 +699,8 @@ export function MapEditor(props: MapEditorProps) {
       built.push({ from: from.key, to: to.key, points: withEnds(r.line, from, to) });
     }
     setWorking(false);
-    props.onSetLegs([...props.legs.filter((l) => !built.some((b) => b.from === l.from && b.to === l.to)), ...built]);
-    setTimeout(() => (activePair ? fitLeg(activePair.to.key) : fit()), 100);
+    setLegs([...props.legs.filter((l) => !built.some((b) => b.from === l.from && b.to === l.to)), ...built]);
+    setTimeout(() => (activePair ? fitLeg(pairId(activePair)) : fit()), 100);
     setNote(
       kind === "direct"
         ? t`${count}つの区間を、まっすぐにつなぎました。形を確かめてから、保存してください。`
@@ -737,8 +747,8 @@ export function MapEditor(props: MapEditorProps) {
     }
     setWorking(false);
     if (allStraight) return setNote(lastMessage || t`道が見つかりませんでした。`);
-    props.onSetLegs([...props.legs.filter((l) => !made.some((b) => b.from === l.from && b.to === l.to)), ...made]);
-    setTimeout(() => (activePair ? fitLeg(activePair.to.key) : fit()), 100);
+    setLegs([...props.legs.filter((l) => !made.some((b) => b.from === l.from && b.to === l.to)), ...made]);
+    setTimeout(() => (activePair ? fitLeg(pairId(activePair)) : fit()), 100);
     setNote(
       useService
         ? t`線を道に沿わせました。形を確かめてから、保存してください。「元に戻す」で、もとの線にもどせます。`
@@ -754,7 +764,7 @@ export function MapEditor(props: MapEditorProps) {
       return leg && leg.points.length >= 3 ? [{ p, leg }] : [];
     });
     if (have.length === 0) return setNote(t`先に、線を描いてください。`);
-    props.onSetLegs([
+    setLegs([
       ...props.legs.filter((l) => !have.some(({ leg }) => leg === l)),
       ...have.map(({ p, leg }): Leg => ({ from: leg.from, to: leg.to, points: withEnds(simplify(smoothLine(leg.points), MAX_POINTS), p.from, p.to), ...(leg.ride ? { ride: leg.ride } : {}), ...(leg.via ? { via: leg.via } : {}), ...(leg.side ? { side: true as const } : {}) })),
     ]);
@@ -820,14 +830,14 @@ export function MapEditor(props: MapEditorProps) {
     );
   };
 
-  const legLabel = (pair: { from: Stop; to: Stop; side?: true }) => `${pair.side ? t`【サブコース】` : ""}${nameOf.get(pair.from.key) ?? ""} → ${nameOf.get(pair.to.key) ?? ""}`;
+  const legLabel = (pair: { from: Stop; to: Stop; side?: true; back?: true }) => `${pair.side ? t`【サブコース】` : pair.back ? t`【戻り】` : ""}${nameOf.get(pair.from.key) ?? ""} → ${nameOf.get(pair.to.key) ?? ""}`;
   const rideName: Record<RideMode, string> = { ferry: t`船`, bus: t`バス`, train: t`電車`, other: t`ほかの乗り物` };
   /** Walk, or ride (a ferry from a port ...) for this long: the leg is made (straight) when it has no line yet. */
   function setRide(mode: RideMode | "walk", minutes: number) {
     if (!activePair) return;
     const base: Leg = activeLeg ?? { from: activePair.from.key, to: activePair.to.key, points: [[activePair.from.lng, activePair.from.lat], [activePair.to.lng, activePair.to.lat]] };
     const plain: Leg = { ...base, ride: undefined }; // (an undefined member is not saved)
-    props.onSetLeg(mode === "walk" ? plain : { ...plain, ride: { mode, minutes: Math.min(1440, Math.max(1, Math.round(minutes))) } });
+    setLeg(mode === "walk" ? plain : { ...plain, ride: { mode, minutes: Math.min(1440, Math.max(1, Math.round(minutes))) } });
   }
   // How long the leg takes to walk (from its line, and its climb once the heights are filled in): " · 25 min (1.2 km)".
   const timeText = (pair: { from: Stop; to: Stop }) => {
@@ -1093,7 +1103,7 @@ export function MapEditor(props: MapEditorProps) {
               <select id="leg-pick" value={activeId ?? ""} onChange={(e) => pickLeg(e.target.value)} className="h-11 min-h-0 max-w-64 truncate rounded-lg border border-line bg-paper px-2 text-sm font-bold">
                 <option value="">{t`区間を選ぶ`}</option>
                 {pairs.map((pair) => (
-                  <option key={pair.to.key} value={pair.to.key}>
+                  <option key={pairId(pair)} value={pairId(pair)}>
                     {`${legOf(props.legs, pair.from.key, pair.to.key) ? "● " : "○ "}${legLabel(pair)}${timeText(pair)}`}
                   </option>
                 ))}
@@ -1187,6 +1197,32 @@ export function MapEditor(props: MapEditorProps) {
       {props.places.length > 0 ? <PlaceList
           {...props}
           insertAfter={insertAfter}
+          back={{
+            legs: pairs.filter((p) => p.back).map((p) => ({ from: p.from.key, to: p.to.key })),
+            options: backChoices(stops, props.legs).options.map((st) => st.key),
+            onAdd: (toKey) => {
+              const { end, options } = backChoices(stops, props.legs);
+              const to = options.find((st) => st.key === toKey);
+              if (!end || !to) return;
+              setLeg(backLeg(end, to));
+              setActiveId(pairId({ from: end, to, back: true }));
+              setAfterOff(false);
+              setNote(null);
+              setMode("draw");
+            },
+            onRemoveLast: () => {
+              const last = pairs.filter((p) => p.back).at(-1);
+              if (last) props.onClearLeg(last.from.key, last.to.key);
+            },
+            onDraw: (index) => {
+              const pair = pairs.filter((p) => p.back)[index];
+              if (!pair) return;
+              setActiveId(pairId(pair));
+              setAfterOff(false);
+              setNote(null);
+              setMode("draw");
+            },
+          }}
           onDrawSubCourse={(key) => {
             props.onSelectPlace(key);
             setActiveId(key); // a side trip's leg is named by the place it runs to

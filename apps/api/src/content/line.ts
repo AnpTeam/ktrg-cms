@@ -6,7 +6,7 @@ type Coordinates = [lng: number, lat: number, ele?: number][];
  * One stretch of the route between two waypoints (their ids), as the editor draws it. `side` marks a side trip (寄り道):
  * a stretch from a waypoint on the route out to a stop-by place, shown to visitors apart from the main line.
  */
-export type RouteLeg = { from: string; to: string; coordinates: Coordinates; side?: true; ride?: Ride; via?: GuidePoint[] };
+export type RouteLeg = { from: string; to: string; coordinates: Coordinates; side?: true; /** A stretch walked again after the last stop, back over earlier stops (a loop): joined after the route's own legs. */ back?: true; ride?: Ride; via?: GuidePoint[] };
 
 /**
  * A guide point ([lng, lat]) of a leg: an invisible mark the editor gives the route-finding service so it knows which way to
@@ -79,7 +79,7 @@ export function parseLine(input: unknown): { ok: true; line: LineString } | { ok
   let points = 0;
   for (const leg of legs) {
     if (typeof leg !== "object" || leg === null) return { ok: false };
-    const { from, to, coordinates: legCoordinates, side, ride, via } = leg as { from?: unknown; to?: unknown; coordinates?: unknown; side?: unknown; ride?: unknown; via?: unknown };
+    const { from, to, coordinates: legCoordinates, side, back, ride, via } = leg as { from?: unknown; to?: unknown; coordinates?: unknown; side?: unknown; back?: unknown; ride?: unknown; via?: unknown };
     const c = parseCoordinates(legCoordinates);
     if (typeof from !== "string" || typeof to !== "string" || !ID.test(from) || !ID.test(to) || !c) return { ok: false };
     points += c.length;
@@ -88,7 +88,7 @@ export function parseLine(input: unknown): { ok: true; line: LineString } | { ok
     if (ride !== undefined && ride !== null && !parsedRide) return { ok: false };
     const parsedVia = via === undefined || via === null ? [] : parseGuidePoints(via);
     if (!parsedVia) return { ok: false };
-    parsedLegs.push({ from, to, coordinates: c, ...(side === true ? { side: true as const } : {}), ...(parsedRide ? { ride: parsedRide } : {}), ...(parsedVia.length > 0 ? { via: parsedVia } : {}) });
+    parsedLegs.push({ from, to, coordinates: c, ...(side === true ? { side: true as const } : {}), ...(back === true ? { back: true as const } : {}), ...(parsedRide ? { ride: parsedRide } : {}), ...(parsedVia.length > 0 ? { via: parsedVia } : {}) });
   }
   return { ok: true, line: { type: "LineString", coordinates: out, ...(parsedLegs.length > 0 ? { legs: parsedLegs } : {}) } };
 }
@@ -98,7 +98,7 @@ export const plainLine = (line: LineString): LineString => ({ type: "LineString"
 
 /** The stretches that are ridden, not walked, each named by the place it leads to; only those whose place is in `visible`. */
 export const ridesOf = (line: LineString, visible: ReadonlySet<string>): { spotId: string; mode: Ride["mode"]; minutes: number }[] =>
-  (line.legs ?? []).filter((l) => l.ride && !l.side && visible.has(l.to)).map((l) => ({ spotId: l.to, ...l.ride! }));
+  (line.legs ?? []).filter((l) => l.ride && !l.side && !l.back && visible.has(l.to)).map((l) => ({ spotId: l.to, ...l.ride! }));
 
 /** The side-trip stretches of a line, each named by the place it leads to; only those whose place is in `visible`. */
 export const sideLinesOf = (line: LineString, visible: ReadonlySet<string>): { spotId: string; coordinates: Coordinates }[] =>

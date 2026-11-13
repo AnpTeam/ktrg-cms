@@ -149,6 +149,7 @@ function legsFromServer(route: AdminRoute, places: PlaceDraft[], line: LngLatEle
     to: l.to,
     points: l.coordinates.map((c): LngLatEle => (c[2] === undefined ? [c[0], c[1]] : [c[0], c[1], c[2]])),
     ...(l.side ? { side: true as const } : {}),
+    ...(l.back ? { back: true as const } : {}),
     ...(l.ride ? { ride: l.ride } : {}),
     ...(l.via && l.via.length > 0 ? { via: l.via } : {}),
   }));
@@ -386,7 +387,7 @@ function apply(d: RouteDraft, a: DraftAction): RouteDraft {
       if (stops.length < 2) return { ...withLine(d, a.points, []), legs: [] };
       const cut = splitLine(stops, a.points);
       // A new track replaces the route's own stretches; the side trips drawn by hand stay.
-      return cut.length > 0 ? withLegs(d, [...cut, ...d.legs.filter((l) => l.side)]) : { ...withLine(d, a.points, []), legs: [] };
+      return cut.length > 0 ? withLegs(d, [...cut, ...d.legs.filter((l) => l.side || l.back)]) : { ...withLine(d, a.points, []), legs: [] };
     }
     case "setLeg":
       return withLegs(d, [...d.legs.filter((l) => !(l.from === a.leg.from && l.to === a.leg.to)), a.leg]);
@@ -526,7 +527,9 @@ export function previewRoute(d: RouteDraft, order: number): RouteDetail {
   const lngs = d.line.map((p) => p[0]);
   const bounds = d.line.length >= 2 ? { west: Math.min(...lngs), east: Math.max(...lngs), south: Math.min(...lats), north: Math.max(...lats) } : null;
   const stamps = stampPlaces(d);
-  const times = timesFromPrevious(stamps.map((p) => ({ id: p.id ?? p.key, position: p.lat !== null && p.lng !== null ? { lat: p.lat, lng: p.lng } : null, stopBy: p.stopBy })), d.line, d.legs.flatMap((l) => (l.ride && !l.side ? [{ spotId: l.to, ...l.ride }] : [])));
+  // The way back (return legs) doubles over earlier stops, so the time from each stop to the next is read from the route's own legs only.
+  const outLine = d.legs.some((l) => l.back) ? joinLegs(pathStops(d.places), d.legs.filter((l) => !l.back)).line : d.line;
+  const times = timesFromPrevious(stamps.map((p) => ({ id: p.id ?? p.key, position: p.lat !== null && p.lng !== null ? { lat: p.lat, lng: p.lng } : null, stopBy: p.stopBy })), outLine, d.legs.flatMap((l) => (l.ride && !l.side && !l.back ? [{ spotId: l.to, ...l.ride }] : [])));
   return {
     id: d.id ?? "new",
     order,

@@ -19,7 +19,7 @@ type Coordinates = [number, number, number?][];
 export interface RouteLine {
   type: "LineString";
   coordinates: Coordinates;
-  legs?: { from: string; to: string; coordinates: Coordinates; side?: true; ride?: Ride; via?: [number, number][] }[];
+  legs?: { from: string; to: string; coordinates: Coordinates; side?: true; back?: true; ride?: Ride; via?: [number, number][] }[];
 }
 
 export interface RouteBody {
@@ -136,7 +136,7 @@ export function routeBody(d: RouteDraft): RouteBody {
     sourceEn: nullIfEmpty(d.sourceEn),
     photoUrl: nullIfEmpty(d.photoUrl),
     photoCredit: nullIfEmpty(d.photoCredit),
-    geometry: d.line.length >= 2 ? { type: "LineString", coordinates: d.line.map(coordinate), ...(d.legs.length > 0 ? { legs: d.legs.map((l) => ({ from: l.from, to: l.to, coordinates: l.points.map(coordinate), ...(l.side ? { side: true as const } : {}), ...(l.ride ? { ride: l.ride } : {}), ...(l.via && l.via.length > 0 ? { via: l.via } : {}) })) } : {}) } : null,
+    geometry: d.line.length >= 2 ? { type: "LineString", coordinates: d.line.map(coordinate), ...(d.legs.length > 0 ? { legs: d.legs.map((l) => ({ from: l.from, to: l.to, coordinates: l.points.map(coordinate), ...(l.side ? { side: true as const } : {}), ...(l.back ? { back: true as const } : {}), ...(l.ride ? { ride: l.ride } : {}), ...(l.via && l.via.length > 0 ? { via: l.via } : {}) })) } : {}) } : null,
     // "Checked" needs a named source (the server refuses it otherwise): without one the line is saved as not checked yet.
     lineVerified: d.lineVerified && d.lineSource.trim() !== "",
     lineSource: nullIfEmpty(d.lineSource),

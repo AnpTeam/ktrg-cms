@@ -16,7 +16,7 @@ export interface AdminLine {
   type: "LineString";
   coordinates: [number, number, number?][];
   /** The route cut into the stretches between waypoints (ids of the waypoints), when it was drawn that way. */
-  legs?: { from: string; to: string; coordinates: [number, number, number?][]; side?: true; ride?: { mode: "ferry" | "bus" | "train" | "other"; minutes: number }; via?: [number, number][] }[];
+  legs?: { from: string; to: string; coordinates: [number, number, number?][]; side?: true; back?: true; ride?: { mode: "ferry" | "bus" | "train" | "other"; minutes: number }; via?: [number, number][] }[];
 }
 
 export interface AdminRoute {

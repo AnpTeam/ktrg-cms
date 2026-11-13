@@ -331,6 +331,46 @@ msgstr "Empty {name} and go back to the built-in text"
 msgid "{nameEn} (end)"
 msgstr "{nameEn} (end)"
 
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "{0}回"
+msgstr "{0} views"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "1日あたり"
+msgstr "Per day"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "いちばん多い日"
+msgstr "Busiest day"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "もっと見る"
+msgstr "Show more"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "合計"
+msgstr "Total"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "回"
+msgstr "views"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "日ごとのアクセス"
+msgstr "Views per day"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "日本から"
+msgstr "From Japan"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "期間とページをえらぶ"
+msgstr "Choose the dates and page"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "過去{0}日"
+msgstr "Last {0} days"
+
 #: src/components/StampGrid.tsx:52
 msgid "{number}番 スタンプ済み"
 msgstr "No. {number}, stamped"
@@ -685,6 +725,34 @@ msgstr "Loaded the GPX file. Once there are two or more waypoints, it is cut int
 #: src/components/admin/map-editor/MapEditor.tsx:642
 msgid "GPXファイルを読み込めませんでした。道すじ（トラック）か、名前のついた地点が入ったファイルを選んでください。"
 msgstr "Could not read the GPX file. Choose a file with a path (track) or named points."
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "【戻り】"
+msgstr "[Return] "
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "戻る道"
+msgstr "Way back"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "最後の経由地から、通った経由地をたどって戻る線です。戻る先を選んで、線を足していきます（例：14 → 5 → 4 → 1）。"
+msgstr "A line that goes back from the last waypoint over the waypoints already passed. Pick where it returns to and add lines one by one (for example 14 → 5 → 4 → 1)."
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "戻る先"
+msgstr "Return to"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "戻る先を選ぶ"
+msgstr "Choose where to return to"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "戻りの線を足す"
+msgstr "Add a return line"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "いちばん後ろの戻りの線を消す"
+msgstr "Remove the last return line"
 
 #: src/components/admin/map-editor/MapEditor.tsx:664
 msgid "GPXファイルを読み込めませんでした。道すじ（トラック）の入ったファイルを選んでください。"
@@ -4890,58 +4958,6 @@ msgstr "Move the map there"
 msgid "地図を表示できませんでした。"
 msgstr "The map could not be shown."
 
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "コースの範囲"
-msgstr "Course area"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "訪れる人の、全体の地図に出る四角です。ふだんは、確かめた線のまわりに自動で決まります。ここで手で決めると、まだ公開していないルートも、「準備中」として地図に出ます。"
-msgstr "The box shown for the course on the visitors' overview map. Normally it is set automatically around the checked line. Set it by hand and a course that is not open yet also appears on the map, marked as coming soon."
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "コースの範囲の地図"
-msgstr "Map of the course area"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "いまは、手で決めた四角です。"
-msgstr "The box is set by hand."
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "いまは、自動の四角です（点線）。"
-msgstr "The box is automatic (dotted line)."
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "四すみの四角をドラッグすると大きさが、まん中の丸をドラッグすると位置が変わります。"
-msgstr "Drag a square at a corner to resize the box, or the circle in the middle to move it."
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "手で決める"
-msgstr "Set by hand"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "線と経由地から作りなおす"
-msgstr "Rebuild from the line and stops"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "自動にもどす"
-msgstr "Back to automatic"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "中心の緯度"
-msgstr "Centre latitude"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "中心の経度"
-msgstr "Centre longitude"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "横の長さ"
-msgstr "Width"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "縦の長さ"
-msgstr "Height"
-
 #: src/components/admin/SiteSettingsForm.tsx:107
 msgid "地図を見やすくする"
 msgstr "Make the map easier on the eyes"
@@ -8320,3 +8336,55 @@ msgstr "Each box holds the words the site shows now. Only the boxes you change a
 #: src/components/admin/PagePreview.tsx
 msgid "スマホ幅"
 msgstr "Phone width"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "コースの範囲"
+msgstr "Course area"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "訪れる人の、全体の地図に出る四角です。ふだんは、確かめた線のまわりに自動で決まります。ここで手で決めると、まだ公開していないルートも、「準備中」として地図に出ます。"
+msgstr "The box shown for the course on the visitors' overview map. Normally it is set automatically around the checked line. Set it by hand and a course that is not open yet also appears on the map, marked as coming soon."
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "コースの範囲の地図"
+msgstr "Map of the course area"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "いまは、手で決めた四角です。"
+msgstr "The box is set by hand."
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "いまは、自動の四角です（点線）。"
+msgstr "The box is automatic (dotted line)."
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "四すみの四角をドラッグすると大きさが、まん中の丸をドラッグすると位置が変わります。"
+msgstr "Drag a square at a corner to resize the box, or the circle in the middle to move it."
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "手で決める"
+msgstr "Set by hand"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "線と経由地から作りなおす"
+msgstr "Rebuild from the line and stops"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "自動にもどす"
+msgstr "Back to automatic"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "中心の緯度"
+msgstr "Centre latitude"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "中心の経度"
+msgstr "Centre longitude"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "横の長さ"
+msgstr "Width"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "縦の長さ"
+msgstr "Height"

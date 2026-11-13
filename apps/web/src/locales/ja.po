@@ -331,6 +331,46 @@ msgstr "{name}を空にして、もとの文章に戻す"
 msgid "{nameEn} (end)"
 msgstr "{nameEn} (end)"
 
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "{0}回"
+msgstr "{0}回"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "1日あたり"
+msgstr "1日あたり"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "いちばん多い日"
+msgstr "いちばん多い日"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "もっと見る"
+msgstr "もっと見る"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "合計"
+msgstr "合計"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "回"
+msgstr "回"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "日ごとのアクセス"
+msgstr "日ごとのアクセス"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "日本から"
+msgstr "日本から"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "期間とページをえらぶ"
+msgstr "期間とページをえらぶ"
+
+#: src/app/(admin)/admin/visits/page.tsx
+msgid "過去{0}日"
+msgstr "過去{0}日"
+
 #: src/components/StampGrid.tsx:52
 msgid "{number}番 スタンプ済み"
 msgstr "{number}番 スタンプ済み"
@@ -685,6 +725,34 @@ msgstr "GPXファイルを読み込みました。経由地を2つ以上置く�
 #: src/components/admin/map-editor/MapEditor.tsx:642
 msgid "GPXファイルを読み込めませんでした。道すじ（トラック）か、名前のついた地点が入ったファイルを選んでください。"
 msgstr "GPXファイルを読み込めませんでした。道すじ（トラック）か、名前のついた地点が入ったファイルを選んでください。"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "【戻り】"
+msgstr "【戻り】"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "戻る道"
+msgstr "戻る道"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "最後の経由地から、通った経由地をたどって戻る線です。戻る先を選んで、線を足していきます（例：14 → 5 → 4 → 1）。"
+msgstr "最後の経由地から、通った経由地をたどって戻る線です。戻る先を選んで、線を足していきます（例：14 → 5 → 4 → 1）。"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "戻る先"
+msgstr "戻る先"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "戻る先を選ぶ"
+msgstr "戻る先を選ぶ"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "戻りの線を足す"
+msgstr "戻りの線を足す"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "いちばん後ろの戻りの線を消す"
+msgstr "いちばん後ろの戻りの線を消す"
 
 #: src/components/admin/map-editor/MapEditor.tsx:664
 msgid "GPXファイルを読み込めませんでした。道すじ（トラック）の入ったファイルを選んでください。"
@@ -4890,58 +4958,6 @@ msgstr "地図を動かす"
 msgid "地図を表示できませんでした。"
 msgstr "地図を表示できませんでした。"
 
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "コースの範囲"
-msgstr "コースの範囲"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "訪れる人の、全体の地図に出る四角です。ふだんは、確かめた線のまわりに自動で決まります。ここで手で決めると、まだ公開していないルートも、「準備中」として地図に出ます。"
-msgstr "訪れる人の、全体の地図に出る四角です。ふだんは、確かめた線のまわりに自動で決まります。ここで手で決めると、まだ公開していないルートも、「準備中」として地図に出ます。"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "コースの範囲の地図"
-msgstr "コースの範囲の地図"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "いまは、手で決めた四角です。"
-msgstr "いまは、手で決めた四角です。"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "いまは、自動の四角です（点線）。"
-msgstr "いまは、自動の四角です（点線）。"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "四すみの四角をドラッグすると大きさが、まん中の丸をドラッグすると位置が変わります。"
-msgstr "四すみの四角をドラッグすると大きさが、まん中の丸をドラッグすると位置が変わります。"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "手で決める"
-msgstr "手で決める"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "線と経由地から作りなおす"
-msgstr "線と経由地から作りなおす"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "自動にもどす"
-msgstr "自動にもどす"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "中心の緯度"
-msgstr "中心の緯度"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "中心の経度"
-msgstr "中心の経度"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "横の長さ"
-msgstr "横の長さ"
-
-#: src/components/admin/CourseAreaEditor.tsx
-msgid "縦の長さ"
-msgstr "縦の長さ"
-
 #: src/components/admin/SiteSettingsForm.tsx:107
 msgid "地図を見やすくする"
 msgstr "地図を見やすくする"
@@ -8320,3 +8336,55 @@ msgstr "欄には、いまサイトに出ている文章が入っています。
 #: src/components/admin/PagePreview.tsx
 msgid "スマホ幅"
 msgstr "スマホ幅"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "コースの範囲"
+msgstr "コースの範囲"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "訪れる人の、全体の地図に出る四角です。ふだんは、確かめた線のまわりに自動で決まります。ここで手で決めると、まだ公開していないルートも、「準備中」として地図に出ます。"
+msgstr "訪れる人の、全体の地図に出る四角です。ふだんは、確かめた線のまわりに自動で決まります。ここで手で決めると、まだ公開していないルートも、「準備中」として地図に出ます。"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "コースの範囲の地図"
+msgstr "コースの範囲の地図"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "いまは、手で決めた四角です。"
+msgstr "いまは、手で決めた四角です。"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "いまは、自動の四角です（点線）。"
+msgstr "いまは、自動の四角です（点線）。"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "四すみの四角をドラッグすると大きさが、まん中の丸をドラッグすると位置が変わります。"
+msgstr "四すみの四角をドラッグすると大きさが、まん中の丸をドラッグすると位置が変わります。"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "手で決める"
+msgstr "手で決める"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "線と経由地から作りなおす"
+msgstr "線と経由地から作りなおす"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "自動にもどす"
+msgstr "自動にもどす"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "中心の緯度"
+msgstr "中心の緯度"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "中心の経度"
+msgstr "中心の経度"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "横の長さ"
+msgstr "横の長さ"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "縦の長さ"
+msgstr "縦の長さ"
