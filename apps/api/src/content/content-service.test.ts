@@ -194,6 +194,20 @@ describe("places", () => {
     expect(published.ok && published.value.published).toBe(true);
   });
 
+  test("an info-only place (nobody stands there) needs a checked position and a note, not the site's permission", async () => {
+    const r = await route();
+    const s = await spot(r.id, { lat: 34.3, lng: 135.1, positionVerified: true, positionSource: "葛城修験 公式サイト", status: "info" });
+    expect(await svc.publishSpot(ADMIN, s.id)).toEqual({ ok: false, reason: "note_required" });
+    const noted = await svc.updateSpot(ADMIN, s.id, s.updatedAt, { statusNoteJa: "現在、立ち入りできません。" });
+    if (!noted.ok) throw new Error(noted.reason);
+    const published = await svc.publishSpot(ADMIN, s.id);
+    expect(published.ok && published.value).toMatchObject({ published: true, permissionConfirmed: false });
+    // Once public it keeps its note, and an ordinary place is still refused without permission.
+    expect(await svc.updateSpot(ADMIN, s.id, published.ok ? published.value.updatedAt : s.updatedAt, { statusNoteJa: "  " })).toEqual({ ok: false, reason: "note_required" });
+    const plain = await spot(r.id, { lat: 34.3, lng: 135.1, positionVerified: true, positionSource: "公式サイト" });
+    expect(await svc.publishSpot(ADMIN, plain.id)).toEqual({ ok: false, reason: "permission_required" });
+  });
+
   test("checking a position needs a source; moving a place cancels the check", async () => {
     const r = await route();
     const s = await spot(r.id, { lat: 34.3, lng: 135.1 });
@@ -491,6 +505,15 @@ describe("a place's story and gallery", () => {
     const r = await route();
     expect(await svc.createSpot(ADMIN, r.id, { nameJa: "x", photos: [{ url: "http://a.example/p.jpg", credit: null, sourceUrl: null }] })).toEqual({ ok: false, reason: "invalid_photo_url" });
     expect(await svc.createSpot(ADMIN, r.id, { nameJa: "x", photos: [{ url: "https://a.example/p.jpg", credit: null, sourceUrl: "javascript:alert(1)" }] })).toEqual({ ok: false, reason: "invalid_photo_url" });
+  });
+
+  test("the main photo keeps the page it was found on; a source that is not https is refused", async () => {
+    const r = await route();
+    const s = await spot(r.id, { photoUrl: "https://upload.wikimedia.org/m.jpg", photoSourceUrl: " https://commons.wikimedia.org/wiki/File:M.jpg " });
+    expect(s).toMatchObject({ photoSourceUrl: "https://commons.wikimedia.org/wiki/File:M.jpg" });
+    expect(await svc.createSpot(ADMIN, r.id, { nameJa: "y", photoUrl: "https://upload.wikimedia.org/m.jpg", photoSourceUrl: "javascript:alert(1)" })).toEqual({ ok: false, reason: "invalid_photo_url" });
+    const cleared = await svc.updateSpot(ADMIN, s.id, s.updatedAt, { photoSourceUrl: "  " });
+    expect(cleared.ok && cleared.value).toMatchObject({ photoSourceUrl: null });
   });
 
   test("with PHOTO_HOSTS set, the gallery takes those hosts and Wikimedia, nothing else", async () => {

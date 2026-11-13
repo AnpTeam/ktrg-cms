@@ -1165,6 +1165,24 @@ describe.skipIf(!url)("seed on real PostgreSQL", () => {
       });
     });
 
+    test("an info-only place is published with its Japanese note and no permission; without the note the database refuses", async () => {
+      await inRollback(async (tx) => {
+        await withAdmin(tx, async (store, actor) => {
+          const list = await store.listRoutes();
+          const [s] = await tx.select().from(spots).where(eq(spots.routeId, list[3]!.id)).limit(1);
+          const before = await store.getSpot(s!.id);
+          const ready = await store.updateSpot(actor, s!.id, before!.updatedAt, {
+            lat: 34.3, lng: 135.1, positionVerified: true, positionSource: "公式", permissionConfirmed: false, status: "info",
+          });
+          if (ready === null || ready === "conflict" || ready === "has_stamps") throw new Error(String(ready));
+          expect(await store.setPublished(actor, s!.id, true)).toMatchObject({ published: false }); // no note yet
+          const noted = await store.updateSpot(actor, s!.id, ready.updatedAt, { statusNoteJa: "現在、立ち入りできません。" });
+          expect(noted).toMatchObject({ status: "info" });
+          expect(await store.setPublished(actor, s!.id, true)).toMatchObject({ published: true, permissionConfirmed: false });
+        });
+      });
+    });
+
     test("publishing writes one audit row, a second publish writes none, and the database still guards the rules", async () => {
       await inRollback(async (tx) => {
         await withAdmin(tx, async (store, actor) => {
