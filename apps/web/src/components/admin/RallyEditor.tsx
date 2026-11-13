@@ -126,7 +126,7 @@ export function RallyEditor({
           type="button"
           onClick={() => setPublished(!saved.published)}
           disabled={busy || namesChanged || membersChanged || (!saved.published && saved.memberCount === 0)}
-          className={`tap-target rounded-full px-8 text-xl font-bold disabled:opacity-40 ${saved.published ? "border-2 border-ink bg-paper text-ink" : "bg-ink text-paper"}`}
+          className={`tap-target rounded-full px-8 text-xl font-bold disabled:opacity-40 ${saved.published ? "border border-line bg-paper text-ink" : "bg-ink text-paper"}`}
         >
           {saved.published ? t`公開をやめる` : t`公開する`}
         </button>
@@ -187,7 +187,7 @@ export function RallyEditor({
               >
                 {t`つくり方を変える`}
               </button>
-              <button type="button" onClick={() => { setSwitching(false); setNewIds([]); }} disabled={busy} className="tap-target rounded-full border-2 border-line px-6 text-lg font-bold disabled:opacity-50">
+              <button type="button" onClick={() => { setSwitching(false); setNewIds([]); }} disabled={busy} className="tap-target rounded-full border border-line px-6 text-lg font-bold disabled:opacity-50">
                 {t`やめる`}
               </button>
             </div>
@@ -195,7 +195,7 @@ export function RallyEditor({
             {saved.published && newIds.length === 0 ? <p className="text-base text-muted">{t`公開中のラリーは、からにできません。1つ以上えらんでください。`}</p> : null}
           </div>
         ) : (
-          <button type="button" onClick={() => setSwitching(true)} disabled={busy} className="tap-target w-fit rounded-full border-2 border-line px-6 text-lg font-bold disabled:opacity-50">
+          <button type="button" onClick={() => setSwitching(true)} disabled={busy} className="tap-target w-fit rounded-full border border-line px-6 text-lg font-bold disabled:opacity-50">
             {t`つくり方を変える…`}
           </button>
         )}

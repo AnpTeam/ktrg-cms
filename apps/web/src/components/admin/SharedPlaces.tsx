@@ -10,7 +10,7 @@ import type { AdminSharedSpot } from "@/lib/admin/types";
 import { listRequest, type ListAnswer, type ListPage } from "@/lib/admin/lists/list-client";
 import type { ErrorKey } from "@/lib/api-error";
 
-const chip = "tap-target inline-flex items-center justify-center rounded-full border-2 border-line bg-paper px-4 text-base font-bold hover:bg-surface disabled:opacity-40";
+const chip = "tap-target inline-flex items-center justify-center rounded-full border border-line bg-paper px-4 text-base font-bold hover:bg-surface disabled:opacity-40";
 
 type Found = { id: string; name: string; routeId: string };
 
@@ -138,7 +138,7 @@ export function SharedPlaces({ routeId, initial, lent, routeNames, locale }: { r
                     const n = Math.max(0, Math.min(1000, Math.trunc(Number(e.target.value))));
                     if (Number.isFinite(n) && n !== s.position) void move(s.id, n);
                   }}
-                  className="h-11 w-20 rounded-lg border border-line bg-paper px-2 text-lg"
+                  className="h-11 w-20 rounded-full border border-line bg-paper px-2 text-lg"
                 />
               </label>
               <button type="button" disabled={busy !== null} onClick={() => void remove(s.id)} className={`${chip} border-danger text-danger`}>
@@ -155,7 +155,7 @@ export function SharedPlaces({ routeId, initial, lent, routeNames, locale }: { r
       ) : null}
       {adding ? (
         <div className="flex flex-col gap-2">
-          <input type="search" autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`名前で探す`} aria-label={t`名前で探す`} className="h-12 rounded-lg border border-line bg-paper px-3 text-lg" />
+          <input type="search" autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t`名前で探す`} aria-label={t`名前で探す`} className="h-12 rounded-full border border-line bg-paper px-3 text-lg" />
           {found !== null && results.length === 0 ? <p className="text-base text-muted">{t`見つかりませんでした。`}</p> : null}
           <ul className="flex flex-col gap-2">
             {results.map((f) => (

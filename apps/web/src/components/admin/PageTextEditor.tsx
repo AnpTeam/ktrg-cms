@@ -152,7 +152,7 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
             <Field label={t`本文`} htmlFor={`${pageKey}-${lang}-body`}>
               <BlockEditorLoader id={`${pageKey}-${lang}-body`} lang={lang} label={`${name} ${t`本文`}`} value={text[lang].body} onChange={(v) => edit(lang, { body: v })} look={pageKey === "faq" || pageKey === "guide" ? pageKey : undefined} />
             </Field>
-            <button type="button" onClick={() => edit(lang, { title: "", body: "" })} className="tap-target w-fit rounded-full border-2 border-line px-5 text-base font-bold">
+            <button type="button" onClick={() => edit(lang, { title: "", body: "" })} className="tap-target w-fit rounded-full border border-line px-5 text-base font-bold">
               {t`${name}を空にして、もとの文章に戻す`}
             </button>
           </Section>

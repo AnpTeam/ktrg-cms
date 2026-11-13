@@ -67,7 +67,7 @@ export function PlaceImport({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <details className="rounded-2xl border-2 border-line p-4">
+    <details className="rounded-2xl border border-line p-4">
       <summary className="cursor-pointer text-lg font-bold">{t`シート（CSV）から取り込む`}</summary>
       <div className="mt-3 flex flex-col gap-3">
         <p className="text-base text-muted">{t`現地調査のシート（CSV）を選ぶと、まず件数を表示します。取り込んだ場所はすべて下書きで、位置は「未確認」のままです。すでにある場所は追加しません。`}</p>

@@ -59,7 +59,7 @@ export function FilterGroup({ label, options, value, onChange, disabled }: { lab
 /** Up and down arrows for a list whose order matters (the walking order of routes, the order rallies are shown in). */
 export function MoveButtons({ name, canEarlier, canLater, onMove, busy, stacked }: { name: string; canEarlier: boolean; canLater: boolean; onMove: (step: -1 | 1) => void; busy: boolean; stacked?: boolean }) {
   const { t } = useLingui();
-  const button = "tap-target flex size-12 items-center justify-center rounded-full border-2 border-line disabled:opacity-40";
+  const button = "tap-target flex size-12 items-center justify-center rounded-full border border-line disabled:opacity-40";
   const earlier = t`${name} を1つ前へ`;
   const later = t`${name} を1つ後ろへ`;
   return (

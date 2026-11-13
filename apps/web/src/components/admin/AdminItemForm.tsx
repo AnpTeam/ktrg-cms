@@ -289,7 +289,7 @@ export function AdminItemForm({ meta: config, initial, locale, choices }: { meta
             {dirty ? t`保存していない変更があります` : saved ? t`保存済み` : ""}
           </p>
           {saved && reviewable ? (
-            <button type="button" onClick={() => void save(true)} disabled={!canSave} className="tap-target rounded-full border-2 border-ink px-6 text-lg font-bold disabled:opacity-40">
+            <button type="button" onClick={() => void save(true)} disabled={!canSave} className="tap-target rounded-full border border-line px-6 text-lg font-bold disabled:opacity-40">
               {t`保存して次へ`}
             </button>
           ) : null}

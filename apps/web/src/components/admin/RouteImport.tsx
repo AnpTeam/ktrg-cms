@@ -137,7 +137,7 @@ export function RouteImport({ routes, onImported }: { routes: AdminRoute[]; onIm
   // New routes are only made one after another (the next number each time), so a row that jumps ahead is not counted.
   let next = routes.length + 1;
   const creating = (preview?.routes ?? []).filter((r) => r.number === next && ++next).length;
-  const button = "tap-target inline-flex items-center rounded-full border-2 border-line px-5 text-lg font-bold";
+  const button = "tap-target inline-flex items-center rounded-full border border-line px-5 text-lg font-bold";
   const quiet = "tap-target inline-flex items-center px-2 text-base underline underline-offset-4";
 
   return (
@@ -164,7 +164,7 @@ export function RouteImport({ routes, onImported }: { routes: AdminRoute[]; onIm
                 setPreview(null);
                 setReport(null);
               }}
-              className="tap-target rounded-xl border-2 border-line bg-paper p-2 text-base font-normal"
+              className="tap-target rounded-full border border-line bg-paper px-4 text-base font-normal"
             />
           </label>
           <label className="flex flex-col gap-1 text-base font-bold">
@@ -174,7 +174,7 @@ export function RouteImport({ routes, onImported }: { routes: AdminRoute[]; onIm
               multiple
               accept="image/jpeg,image/png,image/webp"
               onChange={(e) => setPhotos([...(e.target.files ?? [])])}
-              className="tap-target rounded-xl border-2 border-line bg-paper p-2 text-base font-normal"
+              className="tap-target rounded-full border border-line bg-paper px-4 text-base font-normal"
             />
           </label>
           <button type="button" disabled={!sheet || progress !== null} onClick={check} className={`${button} self-start disabled:opacity-40`}>

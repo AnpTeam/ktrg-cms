@@ -87,16 +87,23 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
     setBusy(false);
   }
 
-  const missing = (r: AdminRouteSummary) =>
-    (items.get(r.id) ?? [])
-      .filter((i) => !i.done)
-      .map((i) => (
-        <li key={i.id}>
-          <Link href={`/admin/routes/${r.id}?tab=${i.tab}`} className={`inline-flex items-center rounded-md px-3 py-2.5 text-base ${i.required ? "bg-danger font-bold text-paper" : "bg-surface text-ink"}`}>
-            {i.required ? t`必要：${labels.item[i.id]}` : t`あるとよい：${labels.item[i.id]}`}
-          </Link>
-        </li>
-      ));
+  // What the route still lacks: each required item is a pill of its own (the person must act on those); the nice-to-have
+  // ones are folded into one pill with a count, so a route with many of them does not make a tall row.
+  const missing = (r: AdminRouteSummary) => {
+    const open = (items.get(r.id) ?? []).filter((i) => !i.done);
+    const wanted = open.filter((i) => !i.required);
+    const pill = (key: string, tab: string, tone: "bad" | "neutral", text: string, title?: string) => (
+      <li key={key}>
+        <Link href={`/admin/routes/${r.id}?tab=${tab}`} title={title} className="inline-flex rounded-full no-underline hover:opacity-80">
+          <Chip tone={tone}>{text}</Chip>
+        </Link>
+      </li>
+    );
+    return [
+      ...open.filter((i) => i.required).map((i) => pill(i.id, i.tab, "bad", t`必要：${labels.item[i.id]}`)),
+      ...(wanted.length ? [pill("wanted", wanted[0]!.tab, "neutral", t`あるとよい ${wanted.length}`, wanted.map((i) => labels.item[i.id]).join("、"))] : []),
+    ];
+  };
   const stateChip = (r: AdminRouteSummary) => <Chip tone={routeState(r) === "published" ? "good" : "neutral"}>{stateLabel[routeState(r)]}</Chip>;
   const onSort = (key: string) => {
     setSort(nextSort(sort, key));
@@ -118,7 +125,7 @@ export function RouteTable({ initial, locale }: { initial: AdminRouteSummary[]; 
       <div className="flex flex-wrap items-end gap-3">
         <label className="flex min-w-60 flex-1 flex-col gap-1 text-base font-bold">
           {t`ルートをさがす`}
-          <input type="search" value={query} onChange={(e) => { setQuery(e.target.value); setPage(1); }} placeholder={t`名前の一部を入力`} className="tap-target rounded-xl border-2 border-line bg-paper px-4 text-lg font-normal" />
+          <input type="search" value={query} onChange={(e) => { setQuery(e.target.value); setPage(1); }} placeholder={t`名前の一部を入力`} className="tap-target rounded-full border border-line bg-paper px-4 text-lg font-normal" />
         </label>
       </div>
       <div className="flex flex-col gap-3 rounded-2xl bg-surface p-3 md:hidden">

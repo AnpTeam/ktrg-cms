@@ -8,6 +8,7 @@ import type { SpotStatus } from "@/lib/admin/types";
 import { RubyEditor } from "./RubyEditor";
 import { Check, Field, inputClass, MultilingualField, NumberInput, TextInput } from "./fields";
 import { PhotoListEditor } from "./PhotoListEditor";
+import { InfoTip } from "./InfoTip";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoUpload } from "./PhotoUpload";
 
@@ -105,8 +106,8 @@ export function PlacePanel(p: PlacePanelProps) {
         <button type="button" onClick={p.onSelect} aria-expanded={p.selected} className="min-w-0 flex-1 text-left text-xl font-bold text-accent underline underline-offset-4">
           {place.nameJa || t`（名前がありません）`}
         </button>
-        <span className="rounded-lg bg-surface px-3 py-1 text-base">{kindName[place.kind]}</span>
-        <span className={`rounded-lg px-3 py-1 text-base font-bold ${place.published ? "bg-moss text-paper" : "bg-surface text-ink"}`}>{place.published ? t`公開中` : t`下書き`}</span>
+        <span className="rounded-full bg-surface px-3 py-1 text-base">{kindName[place.kind]}</span>
+        <span className={`rounded-full px-3 py-1 text-base font-bold ${place.published ? "bg-moss text-paper" : "bg-surface text-ink"}`}>{place.published ? t`公開中` : t`下書き`}</span>
         {p.dirty ? <span className="text-base font-bold text-accent">{t`未保存`}</span> : null}
         {!place.published && !p.selected && blockers.filter((b) => b !== "unsaved").length > 0 ? (
           <p className="w-full pl-[3.25rem] text-base text-muted">{t`公開まで、あと${blockers.filter((b) => b !== "unsaved").length}つ`}</p>
@@ -146,21 +147,25 @@ export function PlacePanel(p: PlacePanelProps) {
             </select>
           </Field>
 
-          <div className="flex flex-col gap-1">
-            <Check id={`${id}-stampable`} checked={place.stampable} onChange={(v) => p.onChange({ stampable: v })}>
-              {t`スタンプを押せる`}
-            </Check>
-            <p className="pl-9 text-base text-muted">
-              {isStamp ? t`ここに着いた人が、スタンプを押せます。公開するには、現地の許可の確認が必要です。` : t`スタンプは押せません。場所のページは見られます。公開するには、現地の許可の確認が必要です。`}
-            </p>
-          </div>
+          <InfoTip
+            indent
+            label={
+              <Check id={`${id}-stampable`} checked={place.stampable} onChange={(v) => p.onChange({ stampable: v })}>
+                {t`スタンプを押せる`}
+              </Check>
+            }
+            hint={isStamp ? t`ここに着いた人が、スタンプを押せます。公開するには、現地の許可の確認が必要です。` : t`スタンプは押せません。場所のページは見られます。公開するには、現地の許可の確認が必要です。`}
+          />
 
-          <div className="flex flex-col gap-1">
-            <Check id={`${id}-stopby`} checked={place.stopBy} onChange={(v) => p.onChange({ stopBy: v })}>
-              {t`寄り道（道すじから少しはずれた、任意の立ち寄り先）`}
-            </Check>
-            <p className="pl-9 text-base text-muted">{t`チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。代わりに、一つ前の経由地から、この場所までの寄り道の線（青い細い点線）を、地図で描けます。分かれ道に経由地を置き、その次にこの場所を並べてください。`}</p>
-          </div>
+          <InfoTip
+            indent
+            label={
+              <Check id={`${id}-stopby`} checked={place.stopBy} onChange={(v) => p.onChange({ stopBy: v })}>
+                {t`寄り道（道すじから少しはずれた、任意の立ち寄り先）`}
+              </Check>
+            }
+            hint={t`チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。代わりに、一つ前の経由地から、この場所までの寄り道の線（青い細い点線）を、地図で描けます。分かれ道に経由地を置き、その次にこの場所を並べてください。`}
+          />
 
           {isStamp || place.stampImageUrl ? (
             <div className="flex flex-col gap-2">
@@ -256,7 +261,7 @@ export function PlacePanel(p: PlacePanelProps) {
             {place.published ? (
               <div className="flex flex-wrap items-center gap-3">
                 <p className="text-lg font-bold">{t`この経由地は公開されています。`}</p>
-                <button type="button" disabled={p.busy} onClick={p.onUnpublish} className="tap-target rounded-full border border-ink px-5 text-lg font-bold disabled:opacity-40">
+                <button type="button" disabled={p.busy} onClick={p.onUnpublish} className="tap-target rounded-full border border-line px-5 text-lg font-bold disabled:opacity-40">
                   {t`公開をやめる`}
                 </button>
               </div>
@@ -290,10 +295,10 @@ export function PlacePanel(p: PlacePanelProps) {
           <div className="flex flex-wrap gap-2">
             {p.canMoveUp || p.canMoveDown ? (
               <>
-                <button type="button" disabled={!p.canMoveUp} onClick={() => p.onMove(-1)} className="tap-target rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-40">
+                <button type="button" disabled={!p.canMoveUp} onClick={() => p.onMove(-1)} className="tap-target rounded-full border border-line px-4 text-base font-bold disabled:opacity-40">
                   {t`順番を前へ`}
                 </button>
-                <button type="button" disabled={!p.canMoveDown} onClick={() => p.onMove(1)} className="tap-target rounded-full border-2 border-line px-4 text-base font-bold disabled:opacity-40">
+                <button type="button" disabled={!p.canMoveDown} onClick={() => p.onMove(1)} className="tap-target rounded-full border border-line px-4 text-base font-bold disabled:opacity-40">
                   {t`順番を後ろへ`}
                 </button>
               </>
