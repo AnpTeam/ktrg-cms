@@ -57,6 +57,13 @@ describe("otp request", () => {
     expect(sent).toHaveLength(1);
   });
 
+  test("two requests at the same moment send one code, not two (the check and the insert are one step)", async () => {
+    const { service, rows, sent } = setup();
+    await Promise.all([service.request("a@example.com"), service.request("a@example.com"), service.request("A@example.com")]);
+    expect(rows).toHaveLength(1);
+    expect(sent).toHaveLength(1);
+  });
+
   test("a request after the cooldown issues a new code", async () => {
     const { service, rows, sent, advance } = setup();
     await service.request("a@example.com");

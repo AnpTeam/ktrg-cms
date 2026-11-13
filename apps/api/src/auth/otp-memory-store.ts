@@ -24,6 +24,12 @@ export function createMemoryOtpStore(
     async insert(row) {
       rows.push({ id: String(nextId++), attempts: 0, usedAt: null, ...row });
     },
+    async insertUnlessRecent(row, recent) {
+      // No await between the check and the push, so parallel callers cannot both pass.
+      if (rows.some((r) => r.email === row.email && r.expiresAt > recent)) return false;
+      rows.push({ id: String(nextId++), attempts: 0, usedAt: null, ...row });
+      return true;
+    },
     async pruneExpired(before) {
       for (let i = rows.length - 1; i >= 0; i--) if (rows[i]!.expiresAt < before) rows.splice(i, 1);
     },
