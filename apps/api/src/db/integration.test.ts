@@ -157,6 +157,16 @@ describe.skipIf(!url)("Drizzle stores on real PostgreSQL", () => {
       expect((await otp.latest(e))!.attempts).toBe(5);
     });
 
+    test("8 parallel requests for one email inside the cooldown: exactly one code is stored", async () => {
+      const e = email("otp-race");
+      const entry = () => ({ email: e, codeHash: "r".repeat(64), expiresAt: new Date(Date.now() + 10 * 60_000) });
+      const recent = new Date(Date.now() + 9 * 60_000); // a code that expires after this was issued inside the cooldown
+      const results = await Promise.all(Array.from({ length: 8 }, () => otp.insertUnlessRecent(entry(), recent)));
+      expect(results.filter(Boolean)).toHaveLength(1);
+      expect(await db.select().from(otpCodes).where(eq(otpCodes.email, e))).toHaveLength(1);
+      expect(await otp.insertUnlessRecent(entry(), new Date(Date.now() + 11 * 60_000))).toBe(true); // once the cooldown has passed, a new code is added
+    });
+
     test("a code can be marked used only once, even in parallel", async () => {
       const e = email("otp-used");
       await otp.insert({ email: e, codeHash: "d".repeat(64), expiresAt: future() });

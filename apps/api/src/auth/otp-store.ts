@@ -1,4 +1,4 @@
-import { and, desc, eq, isNull, lt, ne, sql } from "drizzle-orm";
+import { and, desc, eq, gt, isNull, lt, ne, sql } from "drizzle-orm";
 import type { Db } from "../db/client";
 import { writeAudit } from "../audit/audit-store";
 import { auditLog, otpCodes, users } from "../db/schema";
@@ -25,6 +25,17 @@ export function createDrizzleOtpStore(db: Db): OtpStore {
 
     async insert(row) {
       await db.insert(otpCodes).values(row);
+    },
+
+    async insertUnlessRecent(row, recent) {
+      return db.transaction(async (tx) => {
+        // One request at a time per email: without the lock, two parallel ones both see no recent code and both add one.
+        await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`otp.${row.email}`}))`);
+        const [recentOne] = await tx.select({ id: otpCodes.id }).from(otpCodes).where(and(eq(otpCodes.email, row.email), gt(otpCodes.expiresAt, recent))).limit(1);
+        if (recentOne) return false;
+        await tx.insert(otpCodes).values(row);
+        return true;
+      });
     },
 
     async pruneExpired(before) {
