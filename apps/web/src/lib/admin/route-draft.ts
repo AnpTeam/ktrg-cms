@@ -44,6 +44,8 @@ export interface PlaceDraft {
   stampImageUrl: string;
   photoUrl: string;
   photoCredit: string;
+  /** The page the main photo was found on (empty when it is our own). */
+  photoSourceUrl: string;
   /** Where the words come from (出典). */
   sourceJa: string;
   sourceEn: string;
@@ -130,7 +132,7 @@ const s = (v: string | null | undefined) => v ?? "";
 export function placeFromServer(p: AdminSpot): PlaceDraft {
   return {
     key: p.id, id: p.id, updatedAt: p.updatedAt, published: p.published, kind: p.kind, stampable: p.stampable, stopBy: p.stopBy,
-    nameJa: p.nameJa, nameEn: s(p.nameEn), nameKana: s(p.nameKana), descriptionJa: s(p.descriptionJa), descriptionEn: s(p.descriptionEn), historyJa: s(p.historyJa), historyEn: s(p.historyEn), translations: p.translations ?? {}, stampImageUrl: s(p.stampImageUrl), photoUrl: s(p.photoUrl), photoCredit: s(p.photoCredit), sourceJa: s(p.sourceJa), sourceEn: s(p.sourceEn), photos: p.photos ?? [],
+    nameJa: p.nameJa, nameEn: s(p.nameEn), nameKana: s(p.nameKana), descriptionJa: s(p.descriptionJa), descriptionEn: s(p.descriptionEn), historyJa: s(p.historyJa), historyEn: s(p.historyEn), translations: p.translations ?? {}, stampImageUrl: s(p.stampImageUrl), photoUrl: s(p.photoUrl), photoCredit: s(p.photoCredit), photoSourceUrl: s(p.photoSourceUrl), sourceJa: s(p.sourceJa), sourceEn: s(p.sourceEn), photos: p.photos ?? [],
     lat: p.lat, lng: p.lng, positionVerified: p.positionVerified, positionSource: s(p.positionSource), radiusM: p.radiusM,
     status: p.status, statusNoteJa: s(p.statusNoteJa), statusNoteEn: s(p.statusNoteEn),
     permissionConfirmed: p.permissionConfirmed, permissionNote: s(p.permissionNote),
@@ -185,7 +187,7 @@ export function draftFromServer(route: AdminRoute, spots: AdminSpot[]): RouteDra
 export const newPlace = (key: string, lat: number | null, lng: number | null, n: number, kind: PointKind = "other"): PlaceDraft => ({
   key, id: null, updatedAt: null, published: false, kind, stampable: stampableByDefault(kind), stopBy: false,
   nameJa: stampableByDefault(kind) ? `経由地${n}` : "", nameEn: "", nameKana: "", descriptionJa: "", descriptionEn: "", historyJa: "", historyEn: "",
-  translations: {}, stampImageUrl: "", photoUrl: "", photoCredit: "", sourceJa: "", sourceEn: "", photos: [], lat, lng, positionVerified: false, positionSource: "", radiusM: 50, status: "open", statusNoteJa: "", statusNoteEn: "",
+  translations: {}, stampImageUrl: "", photoUrl: "", photoCredit: "", photoSourceUrl: "", sourceJa: "", sourceEn: "", photos: [], lat, lng, positionVerified: false, positionSource: "", radiusM: 50, status: "open", statusNoteJa: "", statusNoteEn: "",
   permissionConfirmed: false, permissionNote: "",
 });
 
@@ -488,7 +490,7 @@ export const isDirty = (draft: RouteDraft, saved: RouteDraft): boolean => JSON.s
 
 // ---- publish rules ------------------------------------------------------------------------------------------
 
-export type PublishBlocker = "no_coordinates" | "position_not_verified" | "permission_required" | "unsaved";
+export type PublishBlocker = "no_coordinates" | "position_not_verified" | "permission_required" | "note_required" | "unsaved";
 
 /**
  * What still stops a place from being published, in the order the API checks it (the API decides in the end).
@@ -499,8 +501,23 @@ export function publishBlockers(p: PlaceDraft, dirty = false): PublishBlocker[] 
   if (p.id === null || dirty) out.push("unsaved");
   if (p.lat === null || p.lng === null) out.push("no_coordinates");
   else if (!p.positionVerified || !p.positionSource.trim()) out.push("position_not_verified");
-  if (!p.permissionConfirmed) out.push("permission_required");
+  // An info-only place (nobody is sent there) needs its note instead of the site's permission; the API checks the same.
+  if (p.status === "info") {
+    if (!p.statusNoteJa.trim()) out.push("note_required");
+  } else if (!p.permissionConfirmed) out.push("permission_required");
   return out;
+}
+
+const INFO_NOTE_JA = "現在、この場所には立ち入りできません。";
+const INFO_NOTE_EN = "This place is currently closed to visitors (no entry).";
+
+/**
+ * Turning 案内のみ on or off for a waypoint: on is the status `info` (described, no stamp, not counted) with a ready-made
+ * "no entry" note when none is written yet; off goes back to 通常 and keeps whatever note was written.
+ */
+export function infoPatch(on: boolean, p: Pick<PlaceDraft, "statusNoteJa" | "statusNoteEn">): Pick<Partial<PlaceDraft>, "status" | "statusNoteJa" | "statusNoteEn"> {
+  if (!on) return { status: "open" };
+  return { status: "info", statusNoteJa: p.statusNoteJa.trim() ? p.statusNoteJa : INFO_NOTE_JA, statusNoteEn: p.statusNoteEn.trim() ? p.statusNoteEn : INFO_NOTE_EN };
 }
 
 // ---- the live preview ---------------------------------------------------------------------------------------

@@ -55,6 +55,7 @@ export function useErrorMessages(): Record<ErrorKey, string> {
     position_not_verified: t`位置を公式の情報で確認していません。確認してから「位置を確認した」にチェックを入れてください。`,
     source_required: t`位置を確認した情報源（サイトの名前やリンク）を書いてください。`,
     permission_required: t`現地の許可がまだ確認できていません。許可を得たら「許可確認済み」にチェックを入れてください。`,
+    note_required: t`「案内のみ」の場所は、「状態のひとこと」（日本語）を書いてから公開してください。`,
     // Admin: rallies
     rally_empty: t`中身のないラリーは公開できません。公開中のラリーを空にすることもできません。`,
     invalid_rally_members: t`経由地でつくったラリーにはスタンプを押せる経由地を、コースでつくったラリーにはコースを入れてください。同じものは一度だけです。`,

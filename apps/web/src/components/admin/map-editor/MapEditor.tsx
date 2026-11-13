@@ -36,6 +36,8 @@ export interface EditorPlace {
   published: boolean;
   /** Where the walk starts and ends (blue and orange pins), as visitors see it. */
   role?: StopRole;
+  /** An info-only place (案内のみ): described on the map, no stamp. */
+  info?: boolean;
 }
 
 /** What the list under the map can change on a waypoint. */
@@ -44,6 +46,8 @@ export interface PlacePatch {
   kind?: PointKind;
   stampable?: boolean;
   stopBy?: boolean;
+  /** 案内のみ on or off (the editor fills in the status and the ready-made note). */
+  info?: boolean;
 }
 
 export type ElevationStatus = "idle" | "loading" | "partial";

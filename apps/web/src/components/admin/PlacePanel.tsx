@@ -3,12 +3,11 @@
 import { useRef, type ReactNode } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { pointKinds, stampableByDefault, type PointKind } from "@/lib/point-kinds";
-import { publishBlockers, type PlaceDraft, type PublishBlocker } from "@/lib/admin/route-draft";
+import { infoPatch, publishBlockers, type PlaceDraft, type PublishBlocker } from "@/lib/admin/route-draft";
 import type { SpotStatus } from "@/lib/admin/types";
 import { RubyEditor } from "./RubyEditor";
 import { Check, Field, inputClass, MultilingualField, NumberInput, TextInput } from "./fields";
-import { GalleryEditor } from "./GalleryEditor";
-import { PhotoLinkDetails } from "./PhotoLinkDetails";
+import { PhotoListEditor } from "./PhotoListEditor";
 import { InfoTip } from "./InfoTip";
 import { PhotoSlot } from "./PhotoSlot";
 import { PhotoUpload } from "./PhotoUpload";
@@ -66,10 +65,11 @@ export function useKindLabels(): Record<PointKind, string> {
 /** A block of the place form, set off by a rule above it (and a heading, when it has none of its own). */
 function Group({ title, first = false, children }: { title?: string; first?: boolean; children: ReactNode }) {
   return (
-    <section className={`flex flex-col gap-5 ${first ? "" : "border-t-2 border-line pt-6"}`}>
-      {title ? <h4 className="text-xl font-bold">{title}</h4> : null}
+    // A fieldset, so the title sits on its line (the same as every other group).
+    <fieldset className={`flex min-w-0 flex-col gap-5 ${first ? "" : "border-t-2 border-line pt-3"}`}>
+      {title ? <legend className="pr-3 text-xl font-bold">{title}</legend> : null}
       {children}
-    </section>
+    </fieldset>
   );
 }
 
@@ -79,19 +79,21 @@ export function PlacePanel(p: PlacePanelProps) {
   const blockers = publishBlockers(place, p.dirty);
   const kindName = useKindLabels();
   const isStamp = place.stampable;
+  const isInfo = place.status === "info";
   const blockerText: Record<PublishBlocker, string> = {
     unsaved: t`先に「この経由地を保存」してください。`,
     no_coordinates: t`位置を決めてください（地図に置くか、緯度と経度を入れます）。`,
     position_not_verified: t`位置を公式の情報で確認し、「位置を確認した」にチェックを入れて情報源を書いてください。`,
     permission_required: t`現地の許可を確認し、「許可確認済み」にチェックを入れてください。`,
+    note_required: t`「状態のひとこと」（日本語）を書いてください。「現在、立ち入りできません」など、訪れる人に伝えたいことです。`,
   };
   const statusName: Record<SpotStatus, string> = { open: t`通常`, caution: t`注意`, closed: t`通行止め`, info: t`案内のみ` };
   const id = `place-${place.key}`;
   const settings = useRef<HTMLDetailsElement>(null);
   // What to tick for each reason the place cannot be published yet: the button under 公開する takes the admin there.
-  const blockerField: Partial<Record<PublishBlocker, string>> = { no_coordinates: `${id}-lat`, position_not_verified: `${id}-verified`, permission_required: `${id}-permission` };
+  const blockerField: Partial<Record<PublishBlocker, string>> = { no_coordinates: `${id}-lat`, position_not_verified: `${id}-verified`, permission_required: `${id}-permission`, note_required: `${id}-note` };
   const goTo = (fieldId: string) => {
-    if (fieldId === `${id}-permission` && settings.current) settings.current.open = true;
+    if ((fieldId === `${id}-permission` || fieldId === `${id}-note`) && settings.current) settings.current.open = true;
     const el = document.getElementById(fieldId);
     el?.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
     el?.focus({ preventScroll: true });
@@ -167,40 +169,43 @@ export function PlacePanel(p: PlacePanelProps) {
             hint={t`チェックを入れると、「経由地をつないで道をつくる」で、この点は通りません。代わりに、一つ前の経由地から、この場所までの寄り道の線（青い細い点線）を、地図で描けます。分かれ道に経由地を置き、その次にこの場所を並べてください。`}
           />
 
+          <InfoTip
+            indent
+            label={
+              <Check id={`${id}-info`} checked={isInfo} onChange={(v) => p.onChange(infoPatch(v, place))}>
+                {t`案内のみ（スタンプなし）`}
+              </Check>
+            }
+            hint={t`見せるだけの場所です。立ち入りできない場所などに使います。スタンプは押せず、コースやラリーの数にも入りません。「状態のひとこと」に、「現在、立ち入りできません」などを書きます。公開には、現地の許可の確認は要りません。`}
+          />
+
+          {isInfo ? null : isStamp || place.stampImageUrl ? (
+            <div className="flex flex-col gap-2">
+              <p className="text-base font-bold">{t`この場所のスタンプの絵`}</p>
+              <p className="text-base text-muted">{t`入れると、この場所のスタンプが、ふつうの赤い印の代わりにこの絵になります。正方形で、背景が透明な画像がきれいです。`}</p>
+              <PhotoUpload onUploaded={(url) => p.onChange({ stampImageUrl: url })} />
+              <PhotoSlot url={place.stampImageUrl} className="max-w-32" />
+              {place.stampImageUrl ? (
+                <button type="button" className="self-start text-base font-bold text-accent underline" onClick={() => p.onChange({ stampImageUrl: "" })}>
+                  {t`絵をはずす`}
+                </button>
+              ) : null}
+            </div>
+          ) : null}
           </Group>
 
           <Group title={t`写真`}>
-            <PhotoUpload onUploaded={(url) => p.onChange({ photoUrl: url })} />
-            <PhotoLinkDetails open={p.invalidPhoto}>
-              <Field label={t`写真のリンク`} htmlFor={`${id}-photo`} hint={t`https:// で始まるリンクを入れます。空にすると、写真は表示されません。`}>
-                <TextInput id={`${id}-photo`} value={place.photoUrl} onChange={(v) => p.onChange({ photoUrl: v })} maxLength={500} invalid={p.invalidPhoto} />
-              </Field>
-            </PhotoLinkDetails>
-            <Field label={t`写真の出どころ`} htmlFor={`${id}-photo-credit`} hint={t`写真の下に ℹ︎ と一緒に表示されます。リンクは [表示する文字](https://…) と書きます。`}>
-              <TextInput id={`${id}-photo-credit`} value={place.photoCredit} onChange={(v) => p.onChange({ photoCredit: v })} maxLength={500} />
-            </Field>
-            {p.invalidPhoto ?<p role="alert" className="text-base font-bold text-danger">{t`写真のリンクは、https:// で始まるものだけ使えます。`}</p> : null}
-            <PhotoSlot url={place.photoUrl} className="max-w-md" />
+            <PhotoListEditor
+              stored={{ photoUrl: place.photoUrl, photoCredit: place.photoCredit, photoSourceUrl: place.photoSourceUrl, photos: place.photos }}
+              onChange={(next) => p.onChange(next)}
+              name={place.nameJa}
+              lat={place.lat}
+              lng={place.lng}
+            />
+            {p.invalidPhoto ? <p role="alert" className="text-base font-bold text-danger">{t`写真のリンクは、https:// で始まるものだけ使えます。`}</p> : null}
           </Group>
 
-          <Group>
-            <p className="text-base font-bold">{t`この場所のスタンプの絵`}</p>
-            <p className="text-base text-muted">{t`入れると、この場所のスタンプが、ふつうの赤い印の代わりにこの絵になります。正方形で、背景が透明な画像がきれいです。`}</p>
-            <PhotoUpload onUploaded={(url) => p.onChange({ stampImageUrl: url })} />
-            <PhotoSlot url={place.stampImageUrl} className="max-w-32" />
-            {place.stampImageUrl ? (
-              <button type="button" className="self-start text-base font-bold text-accent underline" onClick={() => p.onChange({ stampImageUrl: "" })}>
-                {t`絵をはずす`}
-              </button>
-            ) : null}
-          </Group>
-
-          <Group>
-            <GalleryEditor photos={place.photos} onChange={(photos) => p.onChange({ photos })} name={place.nameJa} lat={place.lat} lng={place.lng} />
-          </Group>
-
-          <fieldset className="flex flex-col gap-3 border-t-2 border-line pt-6">
-            <legend className="text-base font-bold">{t`位置`}</legend>
+          <Group title={t`位置`}>
             <div className="flex flex-wrap gap-4">
               <Field label={t`緯度`} htmlFor={`${id}-lat`}>
                 <NumberInput id={`${id}-lat`} value={place.lat} min={-90} max={90} onChange={(v) => p.onChange({ lat: v })} />
@@ -217,7 +222,7 @@ export function PlacePanel(p: PlacePanelProps) {
             <Field label={t`確認した情報源（サイト名やリンク）`} htmlFor={`${id}-source`}>
               <TextInput id={`${id}-source`} value={place.positionSource} onChange={(v) => p.onChange({ positionSource: v })} maxLength={500} />
             </Field>
-          </fieldset>
+          </Group>
 
           {/* Open at first, so the permission tick is in view; it can be folded away. */}
           <details ref={settings} open className="rounded-xl bg-surface p-4">
@@ -226,7 +231,7 @@ export function PlacePanel(p: PlacePanelProps) {
               {place.permissionConfirmed ? null : <span className="rounded-full border-2 border-danger px-2 text-base text-danger">{t`許可が未確認`}</span>}
             </summary>
             <div className="mt-3 flex flex-col gap-5">
-              {isStamp ? (
+              {isStamp && !isInfo ? (
                 <Field label={t`スタンプを押せる範囲（メートル）`} htmlFor={`${id}-radius`} hint={t`この経由地から、この距離の中にいるとスタンプを押せます。`}>
                   <div className="flex items-center gap-3">
                     <input id={`${id}-radius`} type="range" min={10} max={500} step={5} value={place.radiusM} onChange={(e) => p.onChange({ radiusM: Number(e.target.value) })} className="h-10 w-full max-w-sm accent-[var(--color-brand)]" />

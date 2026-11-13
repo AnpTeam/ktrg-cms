@@ -323,7 +323,21 @@ export function createDrizzleContentStore(db: Db): ContentStore {
               eq(spots.id, id),
               eq(spots.published, !published),
               // Publishing re-checks the rules in the same statement, so a place another admin moved a moment ago is not published.
-              published ? and(isNotNull(spots.lat), isNotNull(spots.lng), eq(spots.positionVerified, true), eq(spots.permissionConfirmed, true)) : undefined,
+              published
+                ? and(
+                    isNotNull(spots.lat),
+                    isNotNull(spots.lng),
+                    eq(spots.positionVerified, true),
+                    // The same rule as publishGap(): the site's permission, or for an info-only place its note.
+                    or(
+                      eq(spots.permissionConfirmed, true),
+                      and(
+                        eq(spots.status, "info"),
+                        sql`exists (select 1 from ${spotTranslations} where ${spotTranslations.spotId} = ${spots.id} and ${spotTranslations.locale} = 'ja' and btrim(coalesce(${spotTranslations.statusNote}, '')) <> '')`,
+                      ),
+                    ),
+                  )
+                : undefined,
             ),
           )
           .returning();

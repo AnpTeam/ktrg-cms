@@ -149,6 +149,7 @@ const spotProps = {
   stampImageUrl: nullable(t.String({ maxLength: 500 })),
   photoUrl: nullable(t.String({ maxLength: 500 })),
   photoCredit: nullable(t.String({ maxLength: 500 })),
+  photoSourceUrl: nullable(t.String({ maxLength: 500 })),
   sourceJa: nullable(t.String({ maxLength: 2000 })),
   sourceEn: nullable(t.String({ maxLength: 2000 })),
   // The gallery: up to 12 photos; the credit says who took one that is not ours.

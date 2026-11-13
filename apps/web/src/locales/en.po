@@ -8421,6 +8421,42 @@ msgstr "Set position on the map"
 msgid "あるとよい {0}"
 msgstr "Nice to have: {0}"
 
+#: src/components/admin/PhotoListEditor.tsx
+msgid "先頭の写真が、この経由地のメイン写真です。ほかの写真は、この経由地のページに順に並びます。他の人が撮った写真は、撮った人と使用条件を、「出どころ」に書いてください。"
+msgstr "The first photo is the main photo of this waypoint. The others are shown in order on its page. For a photo taken by someone else, write who took it and its license under \"Credit\"."
+
+#: src/components/admin/PhotoListEditor.tsx
+msgid "外す"
+msgstr "Remove"
+
+#: src/components/admin/PhotoListEditor.tsx
+msgid "メイン写真"
+msgstr "Main photo"
+
+#: src/components/admin/PhotoListEditor.tsx
+msgid "写真は、まだありません。"
+msgstr "There are no photos yet."
+
+#: src/components/admin/PlacePanel.tsx
+msgid "「状態のひとこと」（日本語）を書いてください。「現在、立ち入りできません」など、訪れる人に伝えたいことです。"
+msgstr "Write the note (Japanese) in the status note field: what visitors should know, such as that the place is currently closed to entry."
+
+#: src/components/admin/PlacePanel.tsx
+msgid "案内のみ（スタンプなし）"
+msgstr "Info only (no stamp)"
+
+#: src/components/admin/PlacePanel.tsx
+msgid "見せるだけの場所です。立ち入りできない場所などに使います。スタンプは押せず、コースやラリーの数にも入りません。「状態のひとこと」に、「現在、立ち入りできません」などを書きます。公開には、現地の許可の確認は要りません。"
+msgstr "A place that is only shown, for example one visitors cannot enter. No stamp can be taken there and it is not counted in courses or rallies. Write a note such as that it is currently closed to entry in the status note. Publishing does not need the on-site permission."
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "見せるだけの場所です。スタンプは押せません。「現在、立ち入りできません」などを書けます。"
+msgstr "A place that is only shown. No stamp can be taken there. You can write that it is currently closed to entry."
+
+#: src/components/useErrorMessages.ts
+msgid "「案内のみ」の場所は、「状態のひとこと」（日本語）を書いてから公開してください。"
+msgstr "Write the status note (Japanese) of an info-only place before publishing it."
+
 #: src/components/OfflinePack.tsx
 msgid "オフライン"
 msgstr "Offline"
