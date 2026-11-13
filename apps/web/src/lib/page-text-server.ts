@@ -1,6 +1,6 @@
 import { helpContent, type Help } from "./help-content";
 import { helpWith, ownText, policyWith, termsWith, type CustomPage, type OwnText, type Terms } from "./page-content";
-import { homeTextIn, type HomeText } from "./home-text";
+import { homePhotosIn, homeTextIn, type HomeText } from "./home-text";
 import { writePageBody, type PageKey, type PageText } from "./page-text";
 import { privacyPolicy, type Policy } from "./privacy-content";
 import { termsContent } from "./terms-content";
@@ -24,6 +24,11 @@ async function own(key: PageKey, locale: string): Promise<OwnText> {
 /** What the editor wrote in place of the home page's words. */
 export async function homeTextFor(locale: string): Promise<HomeText> {
   return homeTextIn(await savedPage("home"), locale);
+}
+
+/** The editor's photos for the desktop picture panel (ridge, rally); null where none is set. */
+export async function homePhotosFor(locale: string): Promise<(string | null)[]> {
+  return homePhotosIn(await savedPage("home"), locale);
 }
 
 /** The how-to-play page and the FAQ (and their titles), with the editor's text where there is some. */

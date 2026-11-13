@@ -26,6 +26,8 @@ export function panelPhotos(
   banner: string | null,
   fallback: string,
   count = 2,
+  /** An editor's own photo for a place (null: the app picks). */
+  chosen: readonly (string | null)[] = [],
 ): PanelPhoto[] {
   const out: PanelPhoto[] = [];
   const add = (src: string | null | undefined, credit: string | null) => {
@@ -35,7 +37,8 @@ export function panelPhotos(
   add(banner, null);
   add(fallback, null);
   while (out.length < count) out.push({ src: fallback, credit: null }); // the same fallback twice rather than an empty panel
-  return out;
+  // The editor's photo takes its own place; the others are the app's picks in order.
+  return Array.from({ length: count }, (_, i) => (chosen[i] ? { src: chosen[i]!, credit: null } : out.shift()!));
 }
 
 /** Whether every beat is no taller than the stage; false when a height or the stage is not a number. */

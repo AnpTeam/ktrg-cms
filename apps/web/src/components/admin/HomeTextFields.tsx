@@ -2,8 +2,11 @@
 
 import { useLingui } from "@lingui/react/macro";
 import { useHomeWords } from "@/components/landing/useHomeWords";
-import { parseHomeText, writeHomeText, type HomeSlot } from "@/lib/home-text";
+import { HOME_PHOTO_SLOTS, parseHomeText, writeHomeText, type HomePhotoSlot, type HomeSlot } from "@/lib/home-text";
 import { Field, Section, TextArea, TextInput } from "./fields";
+import { PhotoLinkDetails } from "./PhotoLinkDetails";
+import { PhotoSlot } from "./PhotoSlot";
+import { PhotoUpload } from "./PhotoUpload";
 
 const LONG: readonly HomeSlot[] = ["rallyText", "storyText"];
 
@@ -57,7 +60,8 @@ export function HomeTextFields({ lang, title, body, showBuiltIn, onBody }: { lan
       ],
     },
   ];
-  const edit = (slot: HomeSlot, value: string) => {
+  const photoLabel: Record<HomePhotoSlot, string> = { photoRidge: t`稜線`, photoRally: t`経塚` };
+  const edit = (slot: HomeSlot | HomePhotoSlot, value: string) => {
     const next = { ...text };
     if (value === "") delete next[slot];
     else next[slot] = value;
@@ -84,6 +88,25 @@ export function HomeTextFields({ lang, title, body, showBuiltIn, onBody }: { lan
           })}
         </fieldset>
       ))}
+      {/* The picture panel a desktop shows beside the story's chapters; the sea is the banner photos. Empty: a course's photo is used. */}
+      <fieldset className="flex flex-col gap-3 border-t border-line pt-3">
+        <legend className="text-lg font-bold">{t`パソコンの画面の写真`}</legend>
+        <p className="text-base text-muted">{t`空のままにすると、ルートの写真が使われます。日本語の欄に入れた写真は、英語の画面でも使われます。`}</p>
+        {HOME_PHOTO_SLOTS.map((slot) => {
+          const id = `home-${lang}-${slot}`;
+          return (
+            <Field key={slot} label={photoLabel[slot]} htmlFor={id}>
+              <PhotoUpload onUploaded={(url) => edit(slot, url)} />
+              <div className="mt-2">
+                <PhotoLinkDetails open={false}>
+                  <TextInput id={id} value={text[slot] ?? ""} onChange={(v) => edit(slot, v)} maxLength={500} placeholder="https://" />
+                </PhotoLinkDetails>
+              </div>
+              <PhotoSlot url={text[slot] ?? ""} className="mt-2 max-w-md" />
+            </Field>
+          );
+        })}
+      </fieldset>
     </Section>
   );
 }

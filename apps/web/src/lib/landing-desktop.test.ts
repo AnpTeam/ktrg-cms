@@ -35,6 +35,17 @@ describe("panelPhotos", () => {
     ]);
     expect(panelPhotos([], "", FALLBACK).every((p) => p.src !== "")).toBe(true);
   });
+  test("an editor's chosen photos take their own place; an empty place is filled as before", () => {
+    const routes = [course(1, "ready", "/c1.jpg"), course(2, "ready", "/c2.jpg")];
+    expect(panelPhotos(routes, null, FALLBACK, 2, ["/mine-a.jpg", "/mine-b.jpg"])).toEqual([
+      { src: "/mine-a.jpg", credit: null },
+      { src: "/mine-b.jpg", credit: null },
+    ]);
+    expect(panelPhotos(routes, null, FALLBACK, 2, [null, "/mine-b.jpg"])).toEqual([
+      { src: "/c1.jpg", credit: null },
+      { src: "/mine-b.jpg", credit: null },
+    ]);
+  });
   test("skips a repeated source and leaves the input as it was", () => {
     const routes = [course(1, "ready", "/same.jpg"), course(2, "ready", "/same.jpg"), course(3, "ready", "/other.jpg")];
     const copy = JSON.stringify(routes);

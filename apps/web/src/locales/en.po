@@ -8248,3 +8248,11 @@ msgstr "Motion"
 #: src/components/QuickActions.tsx
 msgid "あり"
 msgstr "On"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "パソコンの画面の写真"
+msgstr "Photos for the desktop screen"
+
+#: src/components/admin/HomeTextFields.tsx
+msgid "空のままにすると、ルートの写真が使われます。日本語の欄に入れた写真は、英語の画面でも使われます。"
+msgstr "If left empty, a course's photo is used. A photo set in the Japanese box is also used on the English screen."
