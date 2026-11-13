@@ -103,9 +103,10 @@ export function parseEnv(source: Record<string, string | undefined>, log: (line:
     // Without a decision, every visitor behind a proxy would share one rate-limit bucket.
     throw new Error("Invalid environment:\n  - TRUST_PROXY: set it in production (true behind a reverse proxy, false when the API is reached directly)");
   }
-  if (env.NODE_ENV === "production" && !env.PHOTO_HOSTS) {
-    // Photo, banner and video links may then point at any website, and visitors' browsers would load them.
-    log("[env] PHOTO_HOSTS is not set: photo and video links may point at any website. Set it to your photo storage host (Wikimedia is always allowed).");
+  if (env.NODE_ENV === "production" && !env.PHOTO_HOSTS && !env.R2_PUBLIC_URL) {
+    // Photo, banner and video links may then point at any website, and visitors' browsers would load them. (With the photo
+    // bucket set up, its own host is the default: see photoHostsFor.)
+    log("[env] PHOTO_HOSTS is not set and there is no photo bucket: photo and video links may point at any website. Set PHOTO_HOSTS to your photo storage host (Wikimedia is always allowed).");
   }
   return env;
 }
