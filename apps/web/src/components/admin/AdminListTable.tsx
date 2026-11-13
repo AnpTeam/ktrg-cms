@@ -311,7 +311,7 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
                       })}
                       {canDelete ? (
                         <td className="p-3 text-right">
-                          <button type="button" disabled={busy} onClick={() => void removeRows([item.id])} className="tap-target rounded-full border-2 border-line px-3 text-base font-bold text-danger disabled:opacity-50">
+                          <button type="button" disabled={busy} onClick={() => void removeRows([item.id])} className="tap-target rounded-full border border-line px-3 text-base font-bold text-danger disabled:opacity-50">
                             {t`削除`}
                           </button>
                         </td>
@@ -375,7 +375,7 @@ export function AdminListTable({ meta: config, initial, locale, choices }: { met
                     </div>
                   </div>
                   {canDelete ? (
-                    <button type="button" disabled={busy} onClick={() => void removeRows([item.id])} className="tap-target shrink-0 rounded-full border-2 border-line px-3 text-base font-bold text-danger disabled:opacity-50">
+                    <button type="button" disabled={busy} onClick={() => void removeRows([item.id])} className="tap-target shrink-0 rounded-full border border-line px-3 text-base font-bold text-danger disabled:opacity-50">
                       {t`削除`}
                     </button>
                   ) : null}

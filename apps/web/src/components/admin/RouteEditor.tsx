@@ -510,7 +510,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
               writeBackup(localStorage, initial, initial.updatedAt, false);
               setOfferClosed(true);
             }}
-            className="tap-target rounded-full border-2 border-line px-5 text-lg font-bold"
+            className="tap-target rounded-full border border-line px-5 text-lg font-bold"
           >
             {t`捨てる`}
           </button>
@@ -772,7 +772,7 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                 </div>
                 {firstAlong ? (
                   // The same setting as 歩き方 in 基本 (周回 / 往復 come back to the start): visitors then see this place as the start and again as the goal, one page and one stamp.
-                  <div className="rounded-xl border-2 border-line bg-paper px-4">
+                  <div className="rounded-xl border border-line bg-paper px-4">
                     <Check
                       id="route-start-is-goal"
                       checked={comesBack}
@@ -863,10 +863,10 @@ export function RouteEditor({ initial, order, locale, shared = [], sharedWith = 
                         .filter((i) => i.required === required)
                         .map((i) => (
                           <li key={i.id} className="flex flex-wrap items-center gap-3 rounded-xl bg-paper p-3">
-                            <span className={`w-20 shrink-0 rounded-lg px-3 py-1 text-center text-base font-bold ${i.done ? "bg-moss text-paper" : required ? "bg-danger text-paper" : "bg-surface"}`}>{i.done ? t`できた` : t`まだ`}</span>
+                            <span className={`w-20 shrink-0 rounded-full px-3 py-1 text-center text-base font-bold ${i.done ? "bg-moss text-paper" : required ? "bg-danger text-paper" : "bg-surface"}`}>{i.done ? t`できた` : t`まだ`}</span>
                             <span className="min-w-0 flex-1 text-lg">{labels.item[i.id]}</span>
                             {!i.done ? (
-                              <button type="button" onClick={() => setSection(i.tab)} className="tap-target rounded-full border border-ink px-4 text-base font-bold">
+                              <button type="button" onClick={() => setSection(i.tab)} className="tap-target rounded-full border border-line px-4 text-base font-bold">
                                 {t`${labels.tab[i.tab]}を開く`}
                               </button>
                             ) : null}

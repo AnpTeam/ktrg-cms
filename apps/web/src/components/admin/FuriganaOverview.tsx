@@ -124,7 +124,7 @@ export function FuriganaOverview() {
           <ul className="flex flex-wrap gap-2">
             {unread.map((u) => (
               <li key={`${u.kind}-${u.id}`}>
-                <Link href={editHref(u)} className="tap-target inline-flex items-center gap-2 rounded-full border-2 border-line bg-paper px-4 text-lg no-underline hover:bg-surface">
+                <Link href={editHref(u)} className="tap-target inline-flex items-center gap-2 rounded-full border border-line bg-paper px-4 text-lg no-underline hover:bg-surface">
                   <span className="text-base text-muted">{kindName[u.kind]}</span>
                   <span className="font-bold">{u.nameJa}</span>
                 </Link>

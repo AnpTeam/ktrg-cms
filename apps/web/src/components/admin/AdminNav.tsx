@@ -62,7 +62,7 @@ export function AdminNav({ lists, isAdmin, footer }: { lists: { key: string; tit
         aria-expanded={open}
         aria-controls="admin-menu"
         onClick={() => setOpen((v) => !v)}
-        className="tap-target flex items-center justify-between rounded-full border-2 border-line px-4 text-lg font-bold lg:hidden"
+        className="tap-target flex items-center justify-between rounded-full border border-line px-4 text-lg font-bold lg:hidden"
       >
         {t`メニュー`}
         {open ? <ChevronUpIcon size={22} /> : <ChevronDownIcon size={22} />}

@@ -60,7 +60,7 @@ export default async function VisitsPage({ searchParams }: { searchParams: Promi
       {data ? (
         <nav aria-label={i18n._(msg`期間`)} className="flex flex-wrap items-center gap-2">
           {presets(data.to).map((p) => (
-            <a key={p.n} href={p.href} aria-current={data.from === p.href.slice(6, 16) ? "true" : undefined} className="tap-target inline-flex items-center rounded-full border border-ink px-5 text-base font-bold hover:bg-surface aria-[current]:bg-selected aria-[current]:text-on-selected">
+            <a key={p.n} href={p.href} aria-current={data.from === p.href.slice(6, 16) ? "true" : undefined} className="tap-target inline-flex items-center rounded-full border border-line px-5 text-base font-bold hover:bg-surface aria-[current]:bg-selected aria-[current]:text-on-selected">
               {i18n._(msg`過去${p.n}日`)}
             </a>
           ))}
@@ -74,15 +74,15 @@ export default async function VisitsPage({ searchParams }: { searchParams: Promi
         <form method="get" className="mt-4 flex flex-wrap items-end gap-3">
           <label className="flex flex-col gap-1 text-base font-bold">
             <Trans>はじめの日</Trans>
-            <input type="date" name="from" defaultValue={data?.from ?? ""} className="tap-target rounded-xl border-2 border-line bg-paper px-3 text-lg font-normal" />
+            <input type="date" name="from" defaultValue={data?.from ?? ""} className="tap-target rounded-full border border-line bg-paper px-3 text-lg font-normal" />
           </label>
           <label className="flex flex-col gap-1 text-base font-bold">
             <Trans>終わりの日</Trans>
-            <input type="date" name="to" defaultValue={data?.to ?? ""} className="tap-target rounded-xl border-2 border-line bg-paper px-3 text-lg font-normal" />
+            <input type="date" name="to" defaultValue={data?.to ?? ""} className="tap-target rounded-full border border-line bg-paper px-3 text-lg font-normal" />
           </label>
           <label className="flex min-w-48 flex-1 flex-col gap-1 text-base font-bold">
             <Trans>ページ（例：/routes や /rallies。空なら全部）</Trans>
-            <input type="text" name="path" defaultValue={q.path ?? ""} placeholder="/routes" maxLength={200} className="tap-target rounded-xl border-2 border-line bg-paper px-3 text-lg font-normal" />
+            <input type="text" name="path" defaultValue={q.path ?? ""} placeholder="/routes" maxLength={200} className="tap-target rounded-full border border-line bg-paper px-3 text-lg font-normal" />
           </label>
           <button type="submit" className="tap-target rounded-full bg-ink px-6 text-lg font-bold text-paper">
             <Trans>表示する</Trans>
