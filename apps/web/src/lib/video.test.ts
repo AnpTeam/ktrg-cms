@@ -14,9 +14,9 @@ describe("parseVideoUrl", () => {
     }
   });
 
-  test("accepts Vimeo", () => {
-    expect(parseVideoUrl("https://vimeo.com/123456789")?.embedUrl).toBe("https://player.vimeo.com/video/123456789");
-    expect(parseVideoUrl("https://player.vimeo.com/video/123456789")?.id).toBe("123456789");
+  test("rejects Vimeo: the site plays YouTube and its own uploads only", () => {
+    expect(parseVideoUrl("https://vimeo.com/123456789")).toBeNull();
+    expect(parseVideoUrl("https://player.vimeo.com/video/123456789")).toBeNull();
   });
 
   test("rejects other hosts, look-alike hosts, plain http and junk", () => {

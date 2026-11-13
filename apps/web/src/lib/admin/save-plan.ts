@@ -328,7 +328,7 @@ export function photoLinkLooksValid(raw: string): boolean {
   }
 }
 
-const VIDEO_HOSTS = ["youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be", "vimeo.com", "www.vimeo.com", "player.vimeo.com"];
+const VIDEO_HOSTS = ["youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be"];
 
 /** Whether a typed video address could be accepted (the API makes the final decision). Empty is fine. */
 export function videoLinkLooksValid(raw: string): boolean {

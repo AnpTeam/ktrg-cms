@@ -6,7 +6,7 @@ const R2_HOST = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)
 
 /**
  * Everything the pages load from outside: GSI map tiles, the admin's place search (Nominatim) and photo finder
- * (Wikipedia / Wikimedia Commons), YouTube and Vimeo embeds, and the admin's video upload straight to R2 (connect-src) and
+ * (Wikipedia / Wikimedia Commons), YouTube embeds, and the admin's video upload straight to R2 (connect-src) and
  * its playback (media-src). Photos may come from any https address until PHOTO_HOSTS is set (the API's setting).
  * 'unsafe-inline' scripts: Next writes small inline scripts; a nonce needs every page to render per request.
  *
@@ -33,7 +33,7 @@ export function buildCsp({ isProd, r2UploadHost, r2PublicHost }: { isProd: boole
     `connect-src 'self' https://cyberjapandata.gsi.go.jp https://maps.gsi.go.jp https://nominatim.openstreetmap.org https://*.wikipedia.org https://commons.wikimedia.org https://*.tile.opentopomap.org ${r2} ${r2Public}${isProd ? "" : " ws: http://localhost:*"}`,
     "media-src 'self' https:",
     "worker-src 'self' blob:",
-    "frame-src https://www.youtube-nocookie.com https://www.youtube.com https://player.vimeo.com",
+    "frame-src https://www.youtube-nocookie.com https://www.youtube.com",
     "frame-ancestors 'none'",
     "object-src 'none'",
     "base-uri 'self'",

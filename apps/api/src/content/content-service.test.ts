@@ -102,7 +102,7 @@ describe("routes", () => {
   test("bad lines and bad video links are refused", async () => {
     const r = await route();
     expect(await svc.updateRoute(ADMIN, r.id, r.updatedAt, { geometry: { type: "LineString", coordinates: [[135, 34]] } })).toEqual({ ok: false, reason: "invalid_line" });
-    for (const url of ["https://example.com/v", "http://youtu.be/dQw4w9WgXcQ", "https://vimeo.com/abc"]) {
+    for (const url of ["https://example.com/v", "http://youtu.be/dQw4w9WgXcQ", "https://vimeo.com/abc", "https://vimeo.com/123456789"]) {
       expect(await svc.updateRoute(ADMIN, r.id, r.updatedAt, { videoUrl: url })).toEqual({ ok: false, reason: "invalid_video_url" });
     }
     expect((await svc.updateRoute(ADMIN, r.id, r.updatedAt, { videoUrl: "https://youtu.be/dQw4w9WgXcQ" })).ok).toBe(true);

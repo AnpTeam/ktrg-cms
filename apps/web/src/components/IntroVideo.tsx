@@ -5,7 +5,7 @@ import { useLingui } from "@lingui/react/macro";
 import type { EmbedVideo } from "@/lib/video";
 
 /**
- * A video that loads nothing until the visitor taps it: no request to YouTube or Vimeo, no cookies, and no data
+ * A video that loads nothing until the visitor taps it: no request to YouTube, no cookies, and no data
  * used on a weak signal before they choose. After the tap the embed replaces the button; a plain link to the
  * video's own page stays underneath for when the embed cannot load.
  */

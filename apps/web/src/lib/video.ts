@@ -1,8 +1,8 @@
-// Video links are accepted from YouTube and Vimeo only (CLAUDE.md, "Video URLs"), checked here before anything
+// Video links are accepted from YouTube only (CLAUDE.md, "Video URLs"; an uploaded video file is the other way, see below), checked here before anything
 // is rendered as an embed. Pure, so it can be tested and used by server and browser code alike.
 
 export interface EmbedVideo {
-  provider: "youtube" | "vimeo";
+  provider: "youtube";
   id: string;
   embedUrl: string;
   /** The normal page for the video, offered as a plain link when the embed cannot load. */
@@ -10,9 +10,7 @@ export interface EmbedVideo {
 }
 
 const YOUTUBE_HOSTS = new Set(["youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be"]);
-const VIMEO_HOSTS = new Set(["vimeo.com", "www.vimeo.com", "player.vimeo.com"]);
 const YOUTUBE_ID = /^[\w-]{11}$/;
-const VIMEO_ID = /^\d{5,12}$/;
 
 export function parseVideoUrl(raw: string | null | undefined): EmbedVideo | null {
   if (!raw) return null;
@@ -35,11 +33,6 @@ export function parseVideoUrl(raw: string | null | undefined): EmbedVideo | null
       embedUrl: `https://www.youtube-nocookie.com/embed/${id}?rel=0`,
       watchUrl: `https://www.youtube.com/watch?v=${id}`,
     };
-  }
-  if (VIMEO_HOSTS.has(host)) {
-    const id = parts.find((p) => VIMEO_ID.test(p));
-    if (!id) return null;
-    return { provider: "vimeo", id, embedUrl: `https://player.vimeo.com/video/${id}`, watchUrl: `https://vimeo.com/${id}` };
   }
   return null;
 }
