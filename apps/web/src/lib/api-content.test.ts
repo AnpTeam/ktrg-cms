@@ -2,6 +2,7 @@ import { pickFeatured } from "./rally-model";
 import { afterEach, describe, expect, test } from "bun:test";
 import {
   areaFromBounds,
+  fetchPublicPosts,
   fetchPublicRoutes,
   ralliesFromApi,
   isEmptyRoute,
@@ -103,6 +104,43 @@ describe("fetching never throws", () => {
     expect(await fetchPublicRoutes()).toBeNull();
     globalThis.fetch = (async () => new Response(JSON.stringify({ ok: true, routes: [route()] }), { status: 200 })) as unknown as typeof fetch;
     expect((await fetchPublicRoutes())?.[0]?.id).toBe("r1");
+  });
+});
+
+describe("the blog list follows the API's pages", () => {
+  const realFetch = globalThis.fetch;
+  afterEach(() => {
+    globalThis.fetch = realFetch;
+  });
+  const asPosts = (ids: string[]) => ids.map((id) => ({ id, titleJa: id }));
+  const answer = (posts: string[], next: number | null) => new Response(JSON.stringify({ ok: true, posts: asPosts(posts), next }), { status: 200 });
+
+  test("keeps asking from `next` until it is null, with the tag on every request, so older posts and their tags are not lost", async () => {
+    const urls: string[] = [];
+    globalThis.fetch = (async (url: string) => {
+      urls.push(String(url).replace(/^.*\/api\/v1/, ""));
+      return urls.length === 1 ? answer(["a", "b"], 2) : urls.length === 2 ? answer(["c"], 3) : answer(["d"], null);
+    }) as unknown as typeof fetch;
+    expect((await fetchPublicPosts("t1"))?.map((p) => p.id)).toEqual(["a", "b", "c", "d"]);
+    expect(urls).toEqual(["/posts?tag=t1", "/posts?tag=t1&offset=2", "/posts?tag=t1&offset=3"]);
+  });
+
+  test("one page needs one request; a page that cannot be read ends the list there (the first one failing is still an error)", async () => {
+    let calls = 0;
+    globalThis.fetch = (async () => (++calls, answer(["a"], null))) as unknown as typeof fetch;
+    expect((await fetchPublicPosts())?.length).toBe(1);
+    expect(calls).toBe(1);
+    globalThis.fetch = (async (url: string) => (String(url).includes("offset") ? new Response("{}", { status: 500 }) : answer(["a"], 1))) as unknown as typeof fetch;
+    expect((await fetchPublicPosts())?.map((p) => p.id)).toEqual(["a"]);
+    globalThis.fetch = (async () => new Response("{}", { status: 500 })) as unknown as typeof fetch;
+    expect(await fetchPublicPosts()).toBeNull();
+  });
+
+  test("a runaway `next` stops after a fixed number of pages", async () => {
+    let calls = 0;
+    globalThis.fetch = (async () => (++calls, answer(["x"], calls * 50))) as unknown as typeof fetch;
+    await fetchPublicPosts();
+    expect(calls).toBe(20);
   });
 });
 
