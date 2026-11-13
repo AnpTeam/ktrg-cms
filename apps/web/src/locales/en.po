@@ -8416,3 +8416,7 @@ msgstr "Click the map (cancel)"
 #: src/components/admin/map-editor/PlaceList.tsx
 msgid "地図で位置を決める"
 msgstr "Set position on the map"
+
+#: src/components/admin/RouteTable.tsx
+msgid "あるとよい {0}"
+msgstr "Nice to have: {0}"
