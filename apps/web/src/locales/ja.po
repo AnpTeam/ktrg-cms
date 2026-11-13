@@ -8388,3 +8388,19 @@ msgstr "横の長さ"
 #: src/components/admin/CourseAreaEditor.tsx
 msgid "縦の長さ"
 msgstr "縦の長さ"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "北西の角"
+msgstr "北西の角"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "北東の角"
+msgstr "北東の角"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "南西の角"
+msgstr "南西の角"
+
+#: src/components/admin/CourseAreaEditor.tsx
+msgid "南東の角"
+msgstr "南東の角"

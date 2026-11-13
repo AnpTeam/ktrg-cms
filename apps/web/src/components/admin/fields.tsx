@@ -254,6 +254,7 @@ export function NumberInput({
   step,
   suffix,
   integer = false,
+  wide = false,
   ariaLabel,
 }: {
   id: string;
@@ -264,6 +265,8 @@ export function NumberInput({
   step?: number;
   suffix?: string;
   integer?: boolean;
+  /** Room for a coordinate with six decimals. */
+  wide?: boolean;
   /** For a box with no visible label of its own (a table cell). */
   ariaLabel?: string;
 }) {
@@ -287,7 +290,7 @@ export function NumberInput({
           const n = e.target.value === "" ? null : Number(e.target.value);
           if (n === null || Number.isFinite(n)) onChange(n === null ? null : integer ? Math.round(n) : n);
         }}
-        className={`${inputClass} max-w-40`}
+        className={`${inputClass} ${wide ? "max-w-56" : "max-w-40"}`}
       />
       {suffix ? <span className="text-lg">{suffix}</span> : null}
     </div>
