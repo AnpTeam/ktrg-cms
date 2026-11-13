@@ -9,6 +9,7 @@ import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode, type ErrorKey } from "@/lib/api-error";
 import { showToast } from "@/lib/admin/toast";
 import { parseRuby } from "@/lib/ruby";
+import { readJson } from "@/lib/read-json";
 
 type Suggestion = { id: string; word: string; reading: string };
 type Unread = { kind: "route" | "spot" | "place"; id: string; routeId?: string; nameJa: string };
@@ -22,7 +23,7 @@ async function call<T>(method: "GET" | "POST", path: string, body?: unknown): Pr
       headers: body === undefined ? undefined : { "content-type": "application/json" },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
-    const json = (await res.json().catch(() => null)) as { ok?: unknown; error?: unknown } | null;
+    const json = await readJson<{ ok?: unknown; error?: unknown }>(res);
     if (res.ok && json?.ok === true) return { ok: true, data: json as T };
     if (json?.ok === false && isServerCode(json.error)) return { ok: false, key: json.error };
     return { ok: false, key: errorKeyFromApi(res.status, json) };

@@ -9,6 +9,7 @@ import { pageCount, pageSlice } from "@/lib/pager";
 import { fileName, filterPhotos, formatSize, sortPhotos, type LibraryPhoto, type SortDir, type SortKey } from "@/lib/admin/photo-library";
 import { inputClass } from "./fields";
 import { ChevronDownIcon, ChevronUpIcon, XIcon } from "@/components/icons";
+import { readJson } from "@/lib/read-json";
 
 const PAGE = 30;
 
@@ -18,7 +19,7 @@ type Loaded = { state: "loading" } | { state: "ready"; photos: LibraryPhoto[] } 
 async function fetchLibrary(): Promise<Loaded> {
   try {
     const res = await fetch("/api/v1/admin/uploads", { credentials: "same-origin" });
-    const json = (await res.json().catch(() => null)) as { ok?: unknown; error?: unknown; photos?: unknown } | null;
+    const json = await readJson<{ ok?: unknown; error?: unknown; photos?: unknown }>(res);
     if (res.ok && json?.ok === true && Array.isArray(json.photos)) return { state: "ready", photos: json.photos as LibraryPhoto[] };
     return { state: "error", key: json?.ok === false && isServerCode(json.error) ? json.error : errorKeyFromApi(res.status, json) };
   } catch {

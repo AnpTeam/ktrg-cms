@@ -7,6 +7,7 @@ import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode } from "@/lib/api-error";
 import { confirmDialog } from "@/components/ConfirmDialog";
 import { showToast } from "@/lib/admin/toast";
+import { readJson } from "@/lib/read-json";
 
 /** 管理 > 詳細設定 > ホームページ: which optional sections visitors see. Each one is off until it is turned on here. */
 export function HomeSectionsForm({ initial }: { initial: { tourism: boolean } }) {
@@ -29,7 +30,7 @@ export function HomeSectionsForm({ initial }: { initial: { tourism: boolean } })
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ tourism: s.tourism }),
       });
-      const json = (await res.json().catch(() => null)) as { ok?: unknown; error?: unknown } | null;
+      const json = await readJson<{ ok?: unknown; error?: unknown }>(res);
       if (res.ok && json?.ok === true) {
         setSaved(s);
         showToast({ kind: "ok", text: t`保存しました。` });

@@ -5,6 +5,7 @@ import { useLingui } from "@lingui/react/macro";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode, type ErrorKey } from "@/lib/api-error";
 import { PhotoLibraryButton } from "./PhotoLibrary";
+import { readJson } from "@/lib/read-json";
 
 /** The longest side a site photo needs, in pixels (a phone photo is often 4000 or more). */
 const MAX_SIDE = 2400;
@@ -41,7 +42,7 @@ export async function uploadPhoto(original: File): Promise<{ ok: true; url: stri
     const form = new FormData();
     form.set("file", file);
     const res = await fetch("/api/v1/admin/uploads", { method: "POST", credentials: "same-origin", body: form });
-    const json = (await res.json().catch(() => null)) as { ok?: unknown; error?: unknown; upload?: { url?: unknown } } | null;
+    const json = await readJson<{ ok?: unknown; error?: unknown; upload?: { url?: unknown } }>(res);
     if (res.ok && json?.ok === true && typeof json.upload?.url === "string") return { ok: true, url: json.upload.url };
     return { ok: false, key: json?.ok === false && isServerCode(json.error) ? json.error : errorKeyFromApi(res.status, json) };
   } catch {
