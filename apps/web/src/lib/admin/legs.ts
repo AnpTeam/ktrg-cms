@@ -35,6 +35,12 @@ export interface Leg {
   curves?: AnchorCurve[];
   /** A side trip (寄り道): out from a stop of the route to a stop-by place. It is not part of the joined line. */
   side?: true;
+  /**
+   * A return leg: a stretch between any two stops of the route that is walked again after the last stop (a loop that comes back
+   * over its own way: 14 to 5, 5 to 4, 4 to 1). Stops are not repeated in the list; the legs say where the line goes back to.
+   * Joined after the route's own legs, in the order they are kept.
+   */
+  back?: true;
   /** Ridden, not walked (a ferry from a port ...): visitors read this time instead of a walking estimate. */
   ride?: Ride;
   /**
@@ -115,6 +121,31 @@ export function sidePairs(places: readonly { key: string; lat: number | null; ln
   return out;
 }
 
+/** The return legs as pairs of stops, in the order they are kept; one whose stop is gone is left out. */
+export function backPairs(stops: readonly Stop[], legs: readonly Leg[]): { from: Stop; to: Stop }[] {
+  const byKey = new Map(stops.map((s) => [s.key, s]));
+  return legs.flatMap((l) => {
+    const [from, to] = [byKey.get(l.from), byKey.get(l.to)];
+    return l.back && from && to ? [{ from, to }] : [];
+  });
+}
+
+/** The id of a leg in the editor: a route leg or side trip by the stop it runs to; a return leg by both its stops (it can end on a stop another leg ends on). */
+export const pairId = (p: { from: Stop; to: Stop; back?: true }): string => (p.back ? `back:${p.from.key}:${p.to.key}` : p.to.key);
+
+/**
+ * Where a return path can go on: its end (where the last return leg ends, else the last stop of the route) and the stops it may
+ * return to next (the ones before the end in the route, so the path only ever goes back).
+ */
+export function backChoices(stops: readonly Stop[], legs: readonly Leg[]): { end: Stop | null; options: Stop[] } {
+  const end = backPairs(stops, legs).at(-1)?.to ?? stops.at(-1) ?? null;
+  const index = end ? stops.findIndex((s) => s.key === end.key) : -1;
+  return { end, options: index > 0 ? stops.slice(0, index) : [] };
+}
+
+/** A new return leg: a straight stretch between two stops, to be drawn. */
+export const backLeg = (from: Stop, to: Stop): Leg => ({ from: from.key, to: to.key, points: [[from.lng, from.lat], [to.lng, to.lat]], back: true });
+
 const at = (s: Stop): LngLatEle => [s.lng, s.lat];
 const sameSpot = (a: readonly (number | undefined)[], b: readonly (number | undefined)[]) => a[0] === b[0] && a[1] === b[1];
 
@@ -147,12 +178,21 @@ export function joinLegs(stops: readonly Stop[], legs: readonly Leg[]): { line: 
   const line: LngLatEle[] = [];
   const pieces: Piece[] = [];
   for (const { from, to } of pairsOf(stops)) {
-    const leg = legOf(legs, from.key, to.key);
+    const leg = legOf(legs.filter((l) => !l.back), from.key, to.key);
     const seg: LngLatEle[] = leg ? leg.points : [at(from), at(to)];
     const last = line.at(-1);
     const skip = !!last && sameSpot(last, seg[0]!);
     const add = skip ? seg.slice(1) : seg;
     if (leg) pieces.push({ from: from.key, to: to.key, start: line.length, skipFirst: skip, length: add.length });
+    line.push(...add);
+  }
+  // The way back: the return legs, in the order they are kept, each continuing from where the line is.
+  for (const leg of legs) {
+    if (!leg.back) continue;
+    const last = line.at(-1);
+    const skip = !!last && sameSpot(last, leg.points[0]!);
+    const add = skip ? leg.points.slice(1) : leg.points;
+    pieces.push({ from: leg.from, to: leg.to, start: line.length, skipFirst: skip, length: add.length });
     line.push(...add);
   }
   return { line, pieces };
@@ -192,14 +232,14 @@ export function reconcileLegs(stops: readonly Stop[], legs: readonly Leg[], side
   const keys = new Set(stops.map((s) => s.key));
   const out: Leg[] = [];
   for (const { from, to } of pairsOf(stops)) {
-    const own = legOf(legs, from.key, to.key);
+    const own = legOf(legs.filter((l) => !l.back), from.key, to.key);
     if (own) {
       // A place that stopped being a stop-by keeps its stretch, now as part of the route.
       const fitted = refit(own, from, to);
       out.push(fitted.side ? { from: fitted.from, to: fitted.to, points: fitted.points, anchors: fitted.anchors, curves: fitted.curves } : fitted);
       continue;
     }
-    const first = legs.find((l) => l.from === from.key && !l.side && !keys.has(l.to));
+    const first = legs.find((l) => l.from === from.key && !l.side && !l.back && !keys.has(l.to));
     const second = first && legs.find((l) => l.from === first.to && l.to === to.key);
     if (first && second) out.push({ from: from.key, to: to.key, points: capPoints([...first.points, ...second.points.slice(1)]) });
   }
@@ -209,6 +249,12 @@ export function reconcileLegs(stops: readonly Stop[], legs: readonly Leg[], side
     if (!own) continue;
     const fitted = refit(own, from, to);
     out.push(fitted.side ? fitted : { ...fitted, side: true });
+  }
+  // Return legs keep their stretch while both their stops stand (their ends follow a moved stop); one whose stop is gone is dropped.
+  const byKey = new Map(stops.map((st) => [st.key, st]));
+  for (const own of legs) {
+    const [from, to] = [byKey.get(own.from), byKey.get(own.to)];
+    if (own.back && from && to) out.push(refit(own, from, to));
   }
   return out.length === legs.length && out.every((l, i) => l === legs[i]) ? (legs as Leg[]) : out;
 }

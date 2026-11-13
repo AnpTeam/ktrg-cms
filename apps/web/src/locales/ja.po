@@ -686,6 +686,34 @@ msgstr "GPXファイルを読み込みました。経由地を2つ以上置く�
 msgid "GPXファイルを読み込めませんでした。道すじ（トラック）か、名前のついた地点が入ったファイルを選んでください。"
 msgstr "GPXファイルを読み込めませんでした。道すじ（トラック）か、名前のついた地点が入ったファイルを選んでください。"
 
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "【戻り】"
+msgstr "【戻り】"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "戻る道"
+msgstr "戻る道"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "最後の経由地から、通った経由地をたどって戻る線です。戻る先を選んで、線を足していきます（例：14 → 5 → 4 → 1）。"
+msgstr "最後の経由地から、通った経由地をたどって戻る線です。戻る先を選んで、線を足していきます（例：14 → 5 → 4 → 1）。"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "戻る先"
+msgstr "戻る先"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "戻る先を選ぶ"
+msgstr "戻る先を選ぶ"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "戻りの線を足す"
+msgstr "戻りの線を足す"
+
+#: src/components/admin/map-editor/PlaceList.tsx
+msgid "いちばん後ろの戻りの線を消す"
+msgstr "いちばん後ろの戻りの線を消す"
+
 #: src/components/admin/map-editor/MapEditor.tsx:664
 msgid "GPXファイルを読み込めませんでした。道すじ（トラック）の入ったファイルを選んでください。"
 msgstr "GPXファイルを読み込めませんでした。道すじ（トラック）の入ったファイルを選んでください。"
