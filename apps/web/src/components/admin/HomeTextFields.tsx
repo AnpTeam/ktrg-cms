@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useLingui } from "@lingui/react/macro";
 import { useHomeWords } from "@/components/landing/useHomeWords";
 import { HOME_PHOTO_SLOTS, parseHomeText, writeHomeText, type HomePhotoSlot, type HomeSlot } from "@/lib/home-text";
@@ -61,6 +62,15 @@ export function HomeTextFields({ lang, title, body, showBuiltIn, onBody }: { lan
     },
   ];
   const photoLabel: Record<HomePhotoSlot, string> = { photoRidge: t`稜線`, photoRally: t`経塚` };
+  // The boxes start filled with the words the site shows now (the app's own where nothing was written), so an editor sees what each
+  // box is and its original. What is typed is kept here as typed; the body stores only words that differ from the app's own, so
+  // a box left as it was keeps following the app, and a cleared box shows the original again after a save.
+  const [typed, setTyped] = useState<Partial<Record<HomeSlot, string>>>({});
+  const shown = (slot: HomeSlot) => typed[slot] ?? text[slot] ?? (showBuiltIn ? builtIn[slot] : "");
+  const change = (slot: HomeSlot, value: string) => {
+    setTyped((cur) => ({ ...cur, [slot]: value }));
+    edit(slot, showBuiltIn && value === builtIn[slot] ? "" : value);
+  };
   const edit = (slot: HomeSlot | HomePhotoSlot, value: string) => {
     const next = { ...text };
     if (value === "") delete next[slot];
@@ -79,9 +89,9 @@ export function HomeTextFields({ lang, title, body, showBuiltIn, onBody }: { lan
             return (
               <Field key={slot} label={label} htmlFor={id}>
                 {LONG.includes(slot) ? (
-                  <TextArea id={id} lang={lang} rows={4} maxLength={1000} value={text[slot] ?? ""} onChange={(v) => edit(slot, v)} placeholder={hint} />
+                  <TextArea id={id} lang={lang} rows={4} maxLength={1000} value={shown(slot as HomeSlot)} onChange={(v) => change(slot as HomeSlot, v)} placeholder={hint} />
                 ) : (
-                  <TextInput id={id} lang={lang} value={text[slot] ?? ""} onChange={(v) => edit(slot, v)} maxLength={200} placeholder={hint} />
+                  <TextInput id={id} lang={lang} value={shown(slot)} onChange={(v) => change(slot, v)} maxLength={200} placeholder={hint} />
                 )}
               </Field>
             );
