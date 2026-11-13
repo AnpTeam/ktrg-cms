@@ -7,7 +7,7 @@ import { BookmarkButton } from "@/components/BookmarkButton";
 /**
  * The course page's sticky bar on a phone: the bookmark, then the titles of its folds. A title opens its fold and scrolls to
  * it (the folds are closed at first, so a plain #link would land on a shut heading). From a wide box everything is open and
- * the bar is not shown. Each target is an element with an id that holds one <details>.
+ * the bar is not shown. The links are spaced by their own padding, not a gap: a tap target's 3rem minimum width left a short title (歴史) with empty space after it. Each target is an element with an id that holds one <details>.
  */
 export function FoldJumps({ routeId, items }: { routeId: string | null; items: { id: string; label: ReactNode }[] }) {
   const { t } = useLingui();
@@ -30,10 +30,10 @@ export function FoldJumps({ routeId, items }: { routeId: string | null; items: {
           <BookmarkButton routeId={routeId} compact />
         </div>
       ) : null}
-      <ul className="flex min-w-0 gap-4 overflow-x-auto px-2 [scrollbar-width:none]">
+      <ul className="flex min-w-0 overflow-x-auto px-1 [scrollbar-width:none]">
         {items.map((item) => (
           <li key={item.id} className="shrink-0">
-            <a href={`#${item.id}`} onClick={(e) => jump(e, item.id)} className="tap-target inline-flex items-center text-lg font-bold text-ink hover:underline">
+            <a href={`#${item.id}`} onClick={(e) => jump(e, item.id)} className="tap-target inline-flex min-w-0! items-center px-3 text-lg font-bold text-ink hover:underline">
               {item.label}
             </a>
           </li>
