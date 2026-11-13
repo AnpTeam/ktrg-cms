@@ -8264,3 +8264,7 @@ msgstr "文章を書きかえる"
 #: src/components/admin/PageTextEditor.tsx
 msgid "欄には、いまサイトに出ている文章が入っています。書きかえた欄だけが保存されます。写真はバナー、コースはルート、お知らせはお知らせの画面で変えられます。"
 msgstr "欄には、いまサイトに出ている文章が入っています。書きかえた欄だけが保存されます。写真はバナー、コースはルート、お知らせはお知らせの画面で変えられます。"
+
+#: src/components/admin/PagePreview.tsx
+msgid "スマホ幅"
+msgstr "スマホ幅"

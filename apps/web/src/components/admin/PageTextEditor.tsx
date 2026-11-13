@@ -1,7 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
+import type { I18n } from "@lingui/core";
+import { I18nProvider } from "@lingui/react";
 import { useLingui } from "@lingui/react/macro";
+import { useHomeWords } from "@/components/landing/useHomeWords";
+import type { HomeSlot } from "@/lib/home-text";
+import { useOtherI18n } from "./useOtherI18n";
 import { useUnsavedGuard } from "./useUnsavedGuard";
 import { useErrorMessages } from "@/components/useErrorMessages";
 import { errorKeyFromApi, isServerCode } from "@/lib/api-error";
@@ -16,6 +21,20 @@ import { showToast } from "@/lib/admin/toast";
 
 type Lang = "ja" | "en";
 
+/** The app's own words of the home page in the language of `i18n` (the admin's own language when it is null). */
+function WordsIn({ children }: { children: (words: Record<HomeSlot, string>) => ReactNode }) {
+  return children(useHomeWords());
+}
+function Words({ i18n, children }: { i18n: I18n | null; children: (words: Record<HomeSlot, string>) => ReactNode }) {
+  return i18n ? (
+    <I18nProvider i18n={i18n}>
+      <WordsIn>{children}</WordsIn>
+    </I18nProvider>
+  ) : (
+    <WordsIn>{children}</WordsIn>
+  );
+}
+
 // 管理 > ページ > one page. Each language has a title and a text. A language that was never written starts from
 // the text the app has now, so nothing is typed from nothing; emptying both boxes brings the built-in page back.
 export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { pageKey: PageKey; saved: PageText | null; home?: HomeData; builtIn: PageText; locale: string }) {
@@ -25,7 +44,10 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
   const [done, setDone] = useState<PageText>(() => ({ ja: start("ja"), en: start("en") }));
   const [text, setText] = useState<PageText>(done);
   const [busy, setBusy] = useState(false);
-  const [view, setView] = useState<"edit" | "preview">("edit");
+  const adminLang: Lang = locale === "en" ? "en" : "ja";
+  // One tab per language, and for the home page a last tab for the preview: the page is edited one language at a time.
+  const [view, setView] = useState<Lang | "preview">(adminLang);
+  const otherI18n = useOtherI18n(adminLang, view === "preview" ? null : view);
   const dirty = JSON.stringify(text) !== JSON.stringify(done);
   const edit = (lang: Lang, patch: Partial<PageLang>) => {
     showToast(null);
@@ -96,37 +118,45 @@ export function PageTextEditor({ pageKey, saved, builtIn, locale, home }: { page
 
       {/* Only the home page: it is boxes. The block editor already looks like the page. The preview is its own tab (a phone frame
           beside the boxes was too small to read and too narrow for the boxes). */}
-      {pageKey === "home" ? (
-        <div role="tablist" aria-label={t`表示`} className={adminTabRow}>
-          <button type="button" role="tab" aria-selected={view === "edit"} onClick={() => setView("edit")} className={adminTab(view === "edit")}>
-            {t`文章を書きかえる`}
+      <div role="tablist" aria-label={t`表示`} className={adminTabRow}>
+        {langs.map(({ lang, name }) => (
+          <button key={lang} type="button" role="tab" lang={lang} aria-selected={view === lang} onClick={() => setView(lang)} className={adminTab(view === lang)}>
+            {name}
           </button>
+        ))}
+        {pageKey === "home" ? (
           <button type="button" role="tab" aria-selected={view === "preview"} onClick={() => setView("preview")} className={adminTab(view === "preview")}>
             {t`プレビュー`}
           </button>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
       <div className="flex min-w-0 flex-col gap-5">
-      {pageKey === "home" && view === "preview" ? (
-        <div className="mx-auto w-full max-w-[26rem]">
-          <PagePreview text={text} locale={locale} home={home} />
-        </div>
-      ) : null}
-      {langs.map(({ lang, name }) => pageKey === "home" ? (
-        view === "edit" ? <HomeTextFields key={lang} lang={lang} title={name} body={text[lang].body} showBuiltIn={lang === (locale === "en" ? "en" : "ja")} onBody={(body) => edit(lang, { body })} /> : null
-      ) : (
-        <Section key={lang} title={name}>
-          <Field label={t`題`} htmlFor={`${pageKey}-${lang}-title`}>
-            <TextInput id={`${pageKey}-${lang}-title`} lang={lang} value={text[lang].title} onChange={(v) => edit(lang, { title: v })} maxLength={200} />
-          </Field>
-          <Field label={t`本文`} htmlFor={`${pageKey}-${lang}-body`}>
-            <BlockEditorLoader id={`${pageKey}-${lang}-body`} lang={lang} label={`${name} ${t`本文`}`} value={text[lang].body} onChange={(v) => edit(lang, { body: v })} look={pageKey === "faq" || pageKey === "guide" ? pageKey : undefined} />
-          </Field>
-          <button type="button" onClick={() => edit(lang, { title: "", body: "" })} className="tap-target w-fit rounded-full border-2 border-line px-5 text-base font-bold">
-            {t`${name}を空にして、もとの文章に戻す`}
-          </button>
-        </Section>
-      ))}
+      {pageKey === "home" && view === "preview" ? <PagePreview text={text} locale={locale} home={home} /> : null}
+      {langs.map(({ lang, name }) => {
+        if (view !== lang) return null;
+        if (pageKey === "home") {
+          // The boxes start with the app's own words in this language: the other language's are loaded when its tab opens.
+          const ready = lang === adminLang || otherI18n !== null;
+          return (
+            <Words key={lang} i18n={lang === adminLang ? null : otherI18n}>
+              {(words) => <HomeTextFields lang={lang} title={name} body={text[lang].body} builtIn={ready ? words : null} onBody={(body) => edit(lang, { body })} />}
+            </Words>
+          );
+        }
+        return (
+          <Section key={lang} title={name}>
+            <Field label={t`題`} htmlFor={`${pageKey}-${lang}-title`}>
+              <TextInput id={`${pageKey}-${lang}-title`} lang={lang} value={text[lang].title} onChange={(v) => edit(lang, { title: v })} maxLength={200} />
+            </Field>
+            <Field label={t`本文`} htmlFor={`${pageKey}-${lang}-body`}>
+              <BlockEditorLoader id={`${pageKey}-${lang}-body`} lang={lang} label={`${name} ${t`本文`}`} value={text[lang].body} onChange={(v) => edit(lang, { body: v })} look={pageKey === "faq" || pageKey === "guide" ? pageKey : undefined} />
+            </Field>
+            <button type="button" onClick={() => edit(lang, { title: "", body: "" })} className="tap-target w-fit rounded-full border-2 border-line px-5 text-base font-bold">
+              {t`${name}を空にして、もとの文章に戻す`}
+            </button>
+          </Section>
+        );
+      })}
       </div>
       <p className="text-base text-muted" lang={locale}>
         {t`ほかの言語（ドイツ語など）の訪問者には、English の文章が表示されます。`}
